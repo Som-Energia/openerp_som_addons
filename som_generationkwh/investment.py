@@ -327,7 +327,7 @@ class GenerationkWhInvestment(osv.osv):
             self.write(
                 cursor, uid, [inv_id], {'active': value}, context=context
             )
-            txt = _("S'ha {0} la inversió {1}").format(action_name, inv_id)
+            txt = _(u"S'ha {0} la inversió {1}").format(action_name, inv_id)
             self.log_action(cursor, uid, inv_id, txt, context=context)
 
         return value

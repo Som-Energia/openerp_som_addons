@@ -97,7 +97,7 @@ class SomenergiaSoci(osv.osv):
             user_vals['name'],
             user_vals['login']
         )
-        comment_txt = "{0}{1}\n".format(header, text)
+        comment_txt = u"{0}{1}\n".format(header, text)
         comments = comment_txt + (member_vals['gkwh_comments'] or '')
 
         self.write(cursor, uid, member_id, {'gkwh_comments': comments})
