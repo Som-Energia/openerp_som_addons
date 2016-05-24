@@ -191,7 +191,7 @@ class GenerationkWhAssignment(osv.osv):
         for a in self.browse(cr, uid, ids, context=context):
             a.unlink()
 
-    def isActive(self, cursor, uid, contract_id, context=None):
+    def anyForContract(self, cursor, uid, contract_id, context=None):
         return len(self.search(
             cursor,
             uid,
@@ -256,9 +256,9 @@ class AssignmentProvider(ErpWrapper):
                 context=self.context)
             ]
 
-    def isActive(self, contract_id):
+    def anyForContract(self, contract_id):
         Assignment = self.erp.pool.get('generationkwh.assignment')
-        return Assignment.isActive(
+        return Assignment.anyForContract(
             self.cursor, self.uid,
             contract_id,
             context=self.context,
