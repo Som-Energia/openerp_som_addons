@@ -1,0 +1,5 @@
+# libfacturacioatr
+numpy
+yamlns
+plantmeter
+python-dateutil
