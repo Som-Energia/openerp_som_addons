@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record model="generationkwh.kwh.per.share" id="gkwh_kwh_per_share_20160301">
+            <field name="version_start_date">2016-03-01</field>
+            <field name="kwh">170</field>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record model="poweremail.templates" id="generationkwh_assignment_notification_mail">
+            <field name="name">Generation kWh - Assignació a contractes per defecte</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'somenergia.soci')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">somenergia.soci</field>
+            <field eval="0" name="use_filter"/>
+            <field name="def_to">${object.partner_id.www_email}</field>
+            <field name="def_bcc">notifica@somenergia.coop</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Generation kWh: Comencem! Assignació inicial als contractes</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="copyvalue">${object.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+        </record>
+    </data>
+</openerp>

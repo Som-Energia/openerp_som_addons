@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_gkwh_invoice_line_owner_form">
+            <field name="name">generationkwh.invoice.line.owner.form</field>
+            <field name="model">generationkwh.invoice.line.owner</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Propietari Drets GkWh Factura">
+                    <field name="factura_id"/>
+                    <field name="factura_number"/>
+                    <field name="factura_line_id"/>
+                    <field name="owner_id"/>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_gkwh_invoice_line_owner_tree">
+            <field name="name">generationkwh.invoice.line.owner.tree</field>
+            <field name="model">generationkwh.invoice.line.owner</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Propietari Drets GkWh Factura">
+                    <field name="factura_id" select="1"/>
+                    <field name="factura_number"/>
+                    <field name="factura_line_id"/>
+                    <field name="owner_id" select="1"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_gkwh_invoice_line_owner_tree" model="ir.actions.act_window">
+            <field name="name">Generation kWh assignats a factures</field>
+            <field name="res_model">generationkwh.invoice.line.owner</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_gkwh_invoice_line_owner_tree"/>
+        </record>
+        <menuitem action="action_gkwh_invoice_line_owner_tree" id="menu_gkwh_invoice_line_owner_tree" parent="giscedata_facturacio.menu_facturacio_base"/>
+    </data>
+</openerp>

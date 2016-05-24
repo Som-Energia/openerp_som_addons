@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_gkwh_investment_form">
+            <field name="name">generationkwh.investment.form</field>
+            <field name="model">generationkwh.investment</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Inversions en Generation kWh">
+                    <field name="member_id"/>
+                    <field name="active"/>
+                    <field name="nshares"/>
+                    <field name="purchase_date"/>
+                    <field name="first_effective_date"/>
+                    <field name="last_effective_date"/>
+                    <group colspan="4" col="1">
+                        <button name="%(action_wizard_generationkwh_investment_activation)d" string="Activate" icon="gtk-ok" type="action" attrs="{'readonly': [('active','=',1)]}" context="{'action': 'activate'}"/>
+                        <button name="%(action_wizard_generationkwh_investment_activation)d" string="Deactivate" icon="gtk-ok" type="action" attrs="{'readonly': [('active','!=',1)]}" context="{'action': 'deactivate'}"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_gkwh_investment_tree">
+            <field name="name">generationkwh.investment.tree</field>
+            <field name="model">generationkwh.investment</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Inversions en Generation kWh" colors="red:active==0">
+                    <field name="member_id" select="1"/>
+                    <field name="active" select="1"/>
+                    <field name="nshares" select="1"/>
+                    <field name="purchase_date" select="1"/>
+                    <field name="first_effective_date" select="1"/>
+                    <field name="last_effective_date" select="1"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_gkwh_investment_tree" model="ir.actions.act_window">
+            <field name="name">Inversions en Generation kWh</field>
+            <field name="res_model">generationkwh.investment</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_gkwh_investment_tree"/>
+        </record>
+        <menuitem id="menu_gkwh_base" name="Generation kWh"/>
+        <menuitem action="action_gkwh_investment_tree"
+            id="menu_gkwh_investment_tree" parent="menu_gkwh_base"/>
+    </data>
+</openerp>
