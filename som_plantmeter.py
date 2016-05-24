@@ -8,8 +8,8 @@ from .erpwrapper import ErpWrapper
 
 from datetime import datetime
 from plantmeter.resource import ProductionAggregator, ProductionPlant, ProductionMeter 
-from plantmeter.mongotimecurve import MongoTimeCurve, tz
-from plantmeter.isodates import localisodate
+from plantmeter.mongotimecurve import MongoTimeCurve, toLocal, asUtc
+from plantmeter.isodates import isodate, assertNaiveTime, naiveisodatetime
 
 class GenerationkwhProductionAggregator(osv.osv):
     '''Implements generationkwh production aggregation '''
@@ -136,24 +136,39 @@ class GenerationkwhProductionAggregatorTesthelper(osv.osv):
     def getWh(self, cursor, uid, pid, start, end, context=None):
         production = self.pool.get('generationkwh.production.aggregator')
         return production.getWh(cursor, uid, pid,
-                localisodate(start), localisodate(end), context)
+                isodate(start), isodate(end), context)
 
     def updateWh(self, cursor, uid, pid, start, end, context=None):
         production = self.pool.get('generationkwh.production.aggregator')
         return production.updateWh(cursor, uid, pid,
-                localisodate(start), localisodate(end), context)
+                isodate(start), isodate(end), context)
 
     def firstMeasurementDate(self, cursor, uid, pid, context=None):
         production = self.pool.get('generationkwh.production.aggregator')
-        return production.firstMeasurementDate(cursor, uid, pid, context)
+        result = production.firstMeasurementDate(cursor, uid, pid, context)
+        return result and str(result)
 
     def lastMeasurementDate(self, cursor, uid, pid, context=None):
         production = self.pool.get('generationkwh.production.aggregator')
-        return production.lastMeasurementDate(cursor, uid, pid, context)
+        result = production.lastMeasurementDate(cursor, uid, pid, context)
+        return result and str(result)
 
     def getNshares(self, cursor, uid, pid, context=None):
         production = self.pool.get('generationkwh.production.aggregator')
         return production.getNshares(cursor, uid, pid, context)
+
+    def clear_mongo_collections(self, cursor, uid, collections, context=None):
+        for collection in collections:
+            mdbpool.get_db().drop_collection(collection)
+
+    def fillMeasurementPoint(self, cursor, uid, pointTime, name, value, context=None):
+        curveProvider = MongoTimeCurve(mdbpool.get_db(),
+                'generationkwh.production.measurement')
+        curveProvider.fillPoint(
+            datetime=toLocal(asUtc(naiveisodatetime(pointTime))),
+            name=name,
+            ae=value)
+
 
 GenerationkwhProductionAggregatorTesthelper()
 
