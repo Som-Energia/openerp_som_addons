@@ -8,7 +8,7 @@ from mongodb_backend.mongodb2 import mdbpool
 from generationkwh.productionloader import ProductionLoader
 from generationkwh.sharescurve import PlantSharesCurve
 from generationkwh.rightspershare import RightsPerShare
-from generationkwh.isodates import localisodate
+from generationkwh.isodates import isodate
 
 class ProductionAggregatorProvider(ErpWrapper):
     def __init__(self, erp, cursor, uid, pid, context=None):
@@ -70,7 +70,7 @@ class GenerationkWhProductionLoader(osv.osv):
     def retrieveMeasuresFromPlants(self, cursor, uid, pid, start, end, context=None):
         logger = netsvc.Logger()
         productionLoader = self._createProductionLoader(cursor, uid, pid, context)
-        productionLoader.retrieveMeasuresFromPlants(localisodate(start), localisodate(end))
+        productionLoader.retrieveMeasuresFromPlants(isodate(start), isodate(end))
 
         logger.notifyChannel('gkwh_productionLoader UPDATE', netsvc.LOG_INFO,
                 'Retrieve measurements from plant')
