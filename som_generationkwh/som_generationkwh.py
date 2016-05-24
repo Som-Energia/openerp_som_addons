@@ -244,6 +244,19 @@ class GenerationkWhTestHelper(osv.osv):
             )
         return int(result)
 
+    def dealer_is_active(self, cursor, uid,
+            contract_id, start, stop,
+            context=None):
+
+        GenerationkWhDealer = self.pool.get('generationkwh.dealer')
+        dealer = GenerationkWhDealer._createDealer(cursor, uid, context)
+        result = dealer.is_active(
+            contract_id,
+            isodate(start),
+            isodate(stop),
+            )
+        return result
+
 
 GenerationkWhTestHelper()
 
