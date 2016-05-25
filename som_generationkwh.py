@@ -25,6 +25,187 @@ import datetime
 
 # Models
 
+
+class GenerationkWhDealer(osv.osv):
+
+    _name = 'generationkwh.dealer'
+    _auto = False
+
+    def is_active(self, cursor, uid,
+                  contract_id, first_date, last_date,
+                  context=None):
+        """ Returns True if contract_id has generation kwh activated
+            during the period"""
+        dealer = self._createDealer(cursor, uid, context)
+
+        if type(first_date) != datetime.date:
+            first_date = isodate(first_date)
+
+        if type(last_date) != datetime.date:
+            last_date = isodate(last_date)
+
+        return dealer.is_active(
+            contract_id, first_date, last_date)
+
+    def _get_available_kwh(self, cursor, uid,
+                          contract_id, first_date, last_date, fare_id, period_id,
+                          context=None):
+        """ Returns generationkwh [kWh] available for contract_id during the
+            date interval, fare and period"""
+        dealer = self._createDealer(cursor, uid, context)
+
+        fare, period = self.get_fare_name_by_id(cursor, uid, fare_id, period_id)
+
+        return dealer.get_available_kwh(
+            contract_id, first_date, last_date, fare, period)
+
+    def get_members_by_partners(self, cursor, uid, partner_ids, context=None):
+        Soci = self.pool.get('somenergia.soci')
+        member_ids = Soci.search(cursor, uid, [('partner_id','in',partner_ids)], context=context)
+        res = Soci.read(cursor, uid, member_ids, ['partner_id'], context=context)
+        return [ (r['partner_id'][0], r['id'])
+            for r in res
+            ]
+
+    def get_members_by_codes(self, cursor, uid, codes, context=None):
+        completedCodes = [
+            "S"+str(code).zfill(6)
+            for code in codes
+            ]
+        Soci = self.pool.get('somenergia.soci')
+        member_ids = Soci.search(cursor, uid, [('ref','in',completedCodes)], context=context)
+        res = Soci.read(cursor, uid, member_ids, ['ref'], context=context)
+        return [ (r['ref'], r['id'])
+            for r in res
+            ]
+
+    def get_partners_by_members(self, cursor, uid, member_ids, context=None):
+        Soci = self.pool.get('somenergia.soci')
+        res = Soci.read(cursor, uid, member_ids, ['partner_id'], context=context)
+        return [
+            (r['id'], r['partner_id'][0])
+            for r in res
+            ]
+
+    def get_fare_name_by_id(self, cursor, uid, fare_id, period_id, context=None):
+        Fare = self.pool.get('giscedata.polissa.tarifa')
+        Period = self.pool.get('giscedata.polissa.tarifa.periodes')
+
+        return (
+            Fare.read(cursor, uid, fare_id, ['name'])['name'],
+            Period.read(cursor, uid, period_id, ['name'])['name']
+        )
+
+    def use_kwh(self, cursor, uid,
+                contract_id, first_date, last_date, fare_id, period_id, kwh,
+                context=None):
+        """Marks the indicated kwh as used, if available, for the contract,
+           date interval, fare and period and returns the ones efectively used.
+        """
+
+        logger = netsvc.Logger()
+
+        dealer = self._createDealer(cursor, uid, context)
+
+        fare, period = self.get_fare_name_by_id(cursor, uid, fare_id, period_id)
+
+        res = dealer.use_kwh(
+            contract_id, isodate(first_date), isodate(last_date), fare, period, kwh)
+
+        socis = [ line['member_id'] for line in res ]
+        members2partners = dict(self.get_partners_by_members(cursor, uid, socis, context=context))
+
+        def soci2partner(soci):
+            return members2partners[soci]
+
+        for line in res:
+            txt = (u'{kwh} Generation kwh of member {member} to {contract} '
+                   u'for period {period} between {start} and {end}').format(
+                    kwh=line['kwh'],
+                    member=line['member_id'],
+                    contract=contract_id,
+                    period=period,
+                    start=first_date,
+                    end=last_date,
+            )
+            logger.notifyChannel('gkwh_dealer USE', netsvc.LOG_INFO, txt)
+
+        return [
+            dict(
+                member_id = soci2partner(line['member_id']),
+                kwh = line['kwh'],
+                )
+            for line in res
+        ]
+
+
+    def refund_kwh(self, cursor, uid,
+                   contract_id, first_date, last_date, fare_id, period_id, kwh,
+                   partner_id, context=None):
+        """Refunds the indicated kwh, marking them as available again, for the
+           contract, date interval, fare and period and returns the ones
+           efectively used.
+        """
+        logger = netsvc.Logger()
+
+        fare, period = self.get_fare_name_by_id(cursor, uid, fare_id, period_id)
+
+        partner2member = dict(self.get_members_by_partners(cursor, uid, [partner_id], context=context))
+        try:
+            member_id = partner2member[partner_id]
+        except KeyError:
+            return 0
+
+        txt = (u'{kwh} Generation kwh of member {member} to {contract} '
+               u'for period {period} between {start} and {end}').format(
+             contract=contract_id,
+             period=period,
+             start=first_date,
+             end=last_date,
+             member=member_id,
+             kwh=kwh
+        )
+        logger.notifyChannel('gkwh_dealer REFUND', netsvc.LOG_INFO, txt)
+
+        dealer = self._createDealer(cursor, uid, context)
+        res = dealer.refund_kwh(
+            contract_id,
+            isodate(first_date),
+            isodate(last_date),
+            fare, period, kwh, member_id)
+        return int(res)
+
+    def _createTracker(self, cursor, uid, context):
+
+        investments = InvestmentProvider(self, cursor, uid, context)
+        memberActiveShares = MemberSharesCurve(investments)
+        rightsPerShare = RightsPerShare(mdbpool.get_db())
+        remainders = RemainderProvider(self, cursor, uid, context)
+
+        generatedRights = MemberRightsCurve(
+            activeShares=memberActiveShares,
+            rightsPerShare=rightsPerShare,
+            remainders=remainders,
+            eager=True,
+            )
+
+        rightsUsage = MemberRightsUsage(mdbpool.get_db())
+
+        holidays = HolidaysProvider(self, cursor, uid, context)
+        farePeriod = FarePeriodCurve(holidays)
+
+        return UsageTracker(generatedRights, rightsUsage, farePeriod)
+
+    def _createDealer(self, cursor, uid, context):
+
+        investments = InvestmentProvider(self, cursor, uid, context)
+        usageTracker = self._createTracker(cursor, uid, context)
+        assignments = AssignmentProvider(self, cursor, uid, context)
+        return Dealer(usageTracker, assignments, investments)
+
+GenerationkWhDealer()
+
+
 class GenerationkWhTestHelper(osv.osv):
     """
         Helper model that enables accessing data providers
@@ -261,180 +442,6 @@ class GenerationkWhTestHelper(osv.osv):
 GenerationkWhTestHelper()
 
 
-
-
-class GenerationkWhDealer(osv.osv):
-
-    _name = 'generationkwh.dealer'
-    _auto = False
-
-    def is_active(self, cursor, uid,
-                  contract_id, first_date, last_date,
-                  context=None):
-        """ Returns True if contract_id has generation kwh activated
-            during the period"""
-        dealer = self._createDealer(cursor, uid, context)
-
-        return dealer.is_active(
-            contract_id, first_date, last_date)
-
-    def _get_available_kwh(self, cursor, uid,
-                          contract_id, first_date, last_date, fare_id, period_id,
-                          context=None):
-        """ Returns generationkwh [kWh] available for contract_id during the
-            date interval, fare and period"""
-        dealer = self._createDealer(cursor, uid, context)
-
-        fare, period = self.get_fare_name_by_id(cursor, uid, fare_id, period_id)
-
-        return dealer.get_available_kwh(
-            contract_id, first_date, last_date, fare, period)
-
-    def get_members_by_partners(self, cursor, uid, partner_ids, context=None):
-        Soci = self.pool.get('somenergia.soci')
-        member_ids = Soci.search(cursor, uid, [('partner_id','in',partner_ids)], context=context)
-        res = Soci.read(cursor, uid, member_ids, ['partner_id'], context=context)
-        return [ (r['partner_id'][0], r['id'])
-            for r in res
-            ]
-
-    def get_members_by_codes(self, cursor, uid, codes, context=None):
-        completedCodes = [
-            "S"+str(code).zfill(6)
-            for code in codes
-            ]
-        Soci = self.pool.get('somenergia.soci')
-        member_ids = Soci.search(cursor, uid, [('ref','in',completedCodes)], context=context)
-        res = Soci.read(cursor, uid, member_ids, ['ref'], context=context)
-        return [ (r['ref'], r['id'])
-            for r in res
-            ]
-
-    def get_partners_by_members(self, cursor, uid, member_ids, context=None):
-        Soci = self.pool.get('somenergia.soci')
-        res = Soci.read(cursor, uid, member_ids, ['partner_id'], context=context)
-        return [
-            (r['id'], r['partner_id'][0])
-            for r in res
-            ]
-
-    def get_fare_name_by_id(self, cursor, uid, fare_id, period_id, context=None):
-        Fare = self.pool.get('giscedata.polissa.tarifa')
-        Period = self.pool.get('giscedata.polissa.tarifa.periodes')
-
-        return (
-            Fare.read(cursor, uid, fare_id, ['name'])['name'],
-            Period.read(cursor, uid, period_id, ['name'])['name']
-        )
-
-    def use_kwh(self, cursor, uid,
-                contract_id, first_date, last_date, fare_id, period_id, kwh,
-                context=None):
-        """Marks the indicated kwh as used, if available, for the contract,
-           date interval, fare and period and returns the ones efectively used.
-        """
-
-        logger = netsvc.Logger()
-
-        dealer = self._createDealer(cursor, uid, context)
-
-        fare, period = self.get_fare_name_by_id(cursor, uid, fare_id, period_id)
-
-        res = dealer.use_kwh(
-            contract_id, isodate(first_date), isodate(last_date), fare, period, kwh)
-
-        socis = [ line['member_id'] for line in res ]
-        members2partners = dict(self.get_partners_by_members(cursor, uid, socis, context=context))
-
-        def soci2partner(soci):
-            return members2partners[soci]
-
-        for line in res:
-            txt = (u'{kwh} Generation kwh of member {member} to {contract} '
-                   u'for period {period} between {start} and {end}').format(
-                    kwh=line['kwh'],
-                    member=line['member_id'],
-                    contract=contract_id,
-                    period=period,
-                    start=first_date,
-                    end=last_date,
-            )
-            logger.notifyChannel('gkwh_dealer USE', netsvc.LOG_INFO, txt)
-
-        return [
-            dict(
-                member_id = soci2partner(line['member_id']),
-                kwh = line['kwh'],
-                )
-            for line in res
-        ]
-
-
-    def refund_kwh(self, cursor, uid,
-                   contract_id, first_date, last_date, fare_id, period_id, kwh,
-                   partner_id, context=None):
-        """Refunds the indicated kwh, marking them as available again, for the
-           contract, date interval, fare and period and returns the ones
-           efectively used.
-        """
-        logger = netsvc.Logger()
-
-        fare, period = self.get_fare_name_by_id(cursor, uid, fare_id, period_id)
-
-        partner2member = dict(self.get_members_by_partners(cursor, uid, [partner_id], context=context))
-        try:
-            member_id = partner2member[partner_id]
-        except KeyError:
-            return 0
-
-        txt = (u'{kwh} Generation kwh of member {member} to {contract} '
-               u'for period {period} between {start} and {end}').format(
-             contract=contract_id,
-             period=period,
-             start=first_date,
-             end=last_date,
-             member=member_id,
-             kwh=kwh
-        )
-        logger.notifyChannel('gkwh_dealer REFUND', netsvc.LOG_INFO, txt)
-
-        dealer = self._createDealer(cursor, uid, context)
-        res = dealer.refund_kwh(
-            contract_id,
-            isodate(first_date),
-            isodate(last_date),
-            fare, period, kwh, member_id)
-        return int(res)
-
-    def _createTracker(self, cursor, uid, context):
-
-        investments = InvestmentProvider(self, cursor, uid, context)
-        memberActiveShares = MemberSharesCurve(investments)
-        rightsPerShare = RightsPerShare(mdbpool.get_db())
-        remainders = RemainderProvider(self, cursor, uid, context)
-
-        generatedRights = MemberRightsCurve(
-            activeShares=memberActiveShares,
-            rightsPerShare=rightsPerShare,
-            remainders=remainders,
-            eager=True,
-            )
-
-        rightsUsage = MemberRightsUsage(mdbpool.get_db())
-
-        holidays = HolidaysProvider(self, cursor, uid, context)
-        farePeriod = FarePeriodCurve(holidays)
-
-        return UsageTracker(generatedRights, rightsUsage, farePeriod)
-
-    def _createDealer(self, cursor, uid, context):
-
-        investments = InvestmentProvider(self, cursor, uid, context)
-        usageTracker = self._createTracker(cursor, uid, context)
-        assignments = AssignmentProvider(self, cursor, uid, context)
-        return Dealer(usageTracker, assignments, investments)
-
-GenerationkWhDealer()
 
 
 class GenerationkWhInvoiceLineOwner(osv.osv):
