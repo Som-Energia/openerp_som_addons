@@ -24,7 +24,10 @@ class RemainderProvider(ErpWrapper):
         """
         Remainder=self.erp.pool.get('generationkwh.remainder')
         Remainder.newRemaindersToTrack(self.cursor,self.uid, nSharesToInit, context=self.context)
-        
+
+    def filled(self):       
+        Remainder=self.erp.pool.get('generationkwh.remainder')
+        return Remainder.filled(self.cursor,self.uid,context=self.context)
 
 
 class GenerationkWhRemainder(osv.osv):

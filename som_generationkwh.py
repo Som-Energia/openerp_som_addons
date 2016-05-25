@@ -239,6 +239,7 @@ class GenerationkWhTestHelper(osv.osv):
         remainders = RemainderProvider(self, cursor, uid, context)
         lastDate = isodate(firstDate) + datetime.timedelta(days=(len(data)+24)%25)
         remainders.updateRemainders([
+            (nshares, isodate(firstDate), 0),
             (nshares, lastDate, 0),
             ])
 
