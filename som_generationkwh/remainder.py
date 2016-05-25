@@ -119,7 +119,24 @@ class GenerationkWhRemainder(osv.osv):
             (n,date,0)
             for n in nshares
             ] ,context)
+
+    def filled(self,cr,uid,context=None):
+        """Returns a list of n-shares that have two or more remainders,
+        meaning that besides initialization, some data has been added."""
+
+        cr.execute("""
+            SELECT r.n_shares
+                FROM generationkwh_remainder AS r
+                GROUP BY r.n_shares
+                HAVING count(r.id)>1
+            """)
+        result = [
+            n_shares
+            for n_shares, in cr.fetchall()
+        ]
+        return result
         
+
 
 GenerationkWhRemainder()
 
