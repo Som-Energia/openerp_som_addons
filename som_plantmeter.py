@@ -9,7 +9,7 @@ from .erpwrapper import ErpWrapper
 from datetime import datetime
 from plantmeter.resource import ProductionAggregator, ProductionPlant, ProductionMeter 
 from plantmeter.mongotimecurve import MongoTimeCurve, toLocal, asUtc
-from plantmeter.isodates import isodate, assertNaiveTime, naiveisodatetime
+from plantmeter.isodates import isodate, naiveisodatetime
 
 class GenerationkwhProductionAggregator(osv.osv):
     '''Implements generationkwh production aggregation '''
