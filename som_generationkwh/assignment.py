@@ -202,14 +202,14 @@ class GenerationkWhAssignment(osv.osv):
                     new_value = new_value[1]
                 if current_value != new_value:
                     fields_txt_list.append(
-                        "• {0}: {1} → {2}".format(
+                        u"• {0}: {1} → {2}".format(
                             field,
                             current_value,
                             new_value
                         )
                     )
 
-            text = "{0}\n{1}".format(header, '\n'.join(fields_txt_list))
+            text = u"{0}\n{1}".format(header, '\n'.join(fields_txt_list))
 
             self.log_action(cr, uid, assignment_id, text, context=context)
 
