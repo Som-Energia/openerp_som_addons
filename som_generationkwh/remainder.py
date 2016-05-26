@@ -50,7 +50,7 @@ class GenerationkWhRemainder(osv.osv):
         ),
         remainder_wh=fields.integer(
             required=True,
-            help="Remainder in Wh"
+            help="Remainder in kWh"
         )
     )
 
