@@ -109,7 +109,6 @@ class SomenergiaSoci(osv.osv):
         """
         if context is None:
             context = {}
-        import pdb; pdb.set_trace()
 
         # super(SomenergiaSoci, self).poweremail_write_callback(
         #     cursor, uid, vals, context=context
