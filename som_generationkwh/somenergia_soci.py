@@ -90,12 +90,11 @@ class SomenergiaSoci(osv.osv):
         user_vals = Users.read(cursor, uid, uid, ['name', 'login'])
 
         header_tmpl = (
-            u"\n----- {0} - {1} ({2}) -------------------------------\n"
+            u"\n----- {0} - {1} ------------------------------------\n"
         )
         header = header_tmpl.format(
             datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             user_vals['name'],
-            user_vals['login']
         )
         comment_txt = u"{0}{1}\n".format(header, text)
         comments = comment_txt + (member_vals['gkwh_comments'] or '')
