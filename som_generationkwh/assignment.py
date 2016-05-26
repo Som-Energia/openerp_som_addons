@@ -170,20 +170,46 @@ class GenerationkWhAssignment(osv.osv):
 
     def write(self, cr, uid, ids, values, context=None):
 
+        # fields to log
+        assignment_fields = ['contract_id', 'priority']
+
+        # current values
+        current_assignment_vals = self.read(cr, uid, ids, assignment_fields)
+        current_assignments = dict(
+            [(a['id'], a) for a in current_assignment_vals]
+        )
+
+        # write
         res = super(GenerationkWhAssignment, self).write(
             cr, uid, ids, values, context=context
         )
 
-        assignment_vals = self.read(cr, uid, ids, ['contract_id', 'priority'])
+        # new_values
+        fields_txt_list = []
+        tuple_fields = ['contract_id']
+        assignment_vals = self.read(cr, uid, ids, assignment_fields)
         for assignment in assignment_vals:
             assignment_id = assignment['id']
-            text_tmpl = _(u"MODIFICADA assignació ({0}):  contracte {1} amb "
-                          u"prioritat {2}")
-            text = text_tmpl.format(
-                assignment_id,
-                assignment['contract_id'][1],
-                assignment['priority'],
-            )
+            header = _(u"MODIFICADA assignació ({0}):").format(assignment_id)
+
+            current_assignment = current_assignments[assignment_id]
+            fields_txt = ''
+            for field in assignment_fields:
+                current_value = current_assignment[field]
+                new_value = assignment[field]
+                if field in tuple_fields:
+                    current_value = current_value[1]
+                    new_value = new_value[1]
+                if current_value != new_value:
+                    fields_txt_list.append(
+                        "• {0}: {1} → {2}".format(
+                            field,
+                            current_value,
+                            new_value
+                        )
+                    )
+
+            text = "{0}\n{1}".format(header, '\n'.join(fields_txt_list))
 
             self.log_action(cr, uid, assignment_id, text, context=context)
 
