@@ -445,8 +445,9 @@ class GiscedataFacturacioFactura(osv.osv):
             'Propietaris Generation kWH', readonly=True
         ),
         'is_gkwh': fields.function(
-            _ff_is_gkwh, method=True, string='Te Generation', type='boolean',
-            stored=True,
+            _ff_is_gkwh,
+            method=True,
+            string='Te Generation', type='boolean', store=True,
         )
     }
 
