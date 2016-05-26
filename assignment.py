@@ -64,6 +64,15 @@ class GenerationkWhAssignment(osv.osv):
 
         return res
 
+    def _default_member_id(self, cursor, uid, context=None):
+        """Gets default member_id from context
+        :return: member_id
+        """
+        if context is None:
+            context = {}
+
+        return context.get('member_id', False)
+
     _columns = dict(
         contract_id=fields.many2one(
             'giscedata.polissa',
@@ -74,6 +83,7 @@ class GenerationkWhAssignment(osv.osv):
         member_id=fields.many2one(
             'somenergia.soci',
             'Soci',
+            readonly=True,
             required=True,
             help="Soci que va comprar accions Generation kWh i els assigna",
             ),
@@ -113,6 +123,10 @@ class GenerationkWhAssignment(osv.osv):
             help="Consum anyal del CUPS. Pot ser estimat.",
             ),
         )
+
+    _defaults = dict(
+        member_id=_default_member_id,
+    )
 
     def create(self, cr, uid, values, context=None):
         self.expire(cr, uid,
