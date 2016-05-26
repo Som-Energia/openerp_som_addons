@@ -15,14 +15,14 @@ class ProductionAggregatorProvider(ErpWrapper):
         self.pid = pid
         super(ProductionAggregatorProvider, self).__init__(erp, cursor, uid, context)
 
-    def getWh(self, start, end):
+    def get_kwh(self, start, end):
         production=self.erp.pool.get('generationkwh.production.aggregator')
-        return production.getWh(self.cursor, self.uid,
+        return production.get_kwh(self.cursor, self.uid,
                 self.pid, start, end, context=self.context)
 
-    def updateWh(self, start, end):
+    def update_kwh(self, start, end):
         production=self.erp.pool.get('generationkwh.production.aggregator')
-        return production.updateWh(self.cursor, self.uid,
+        return production.update_kwh(self.cursor, self.uid,
                 self.pid, start, end, context=self.context)
 
     def getFirstMeasurementDate(self):
