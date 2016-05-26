@@ -107,9 +107,24 @@ class SomenergiaSoci(osv.osv):
         """Hook que cridarà el poweremail quan es modifiqui un email
         a partir d'un soci.
         """
-        for member_id in ids:
-            member_vals = {'gkwh_assignment_notified': True}
-            self.write(cursor, uid, member_id, member_vals, context=context)
+        if context is None:
+            context = {}
+        import pdb; pdb.set_trace()
+
+        # super(SomenergiaSoci, self).poweremail_write_callback(
+        #     cursor, uid, vals, context=context
+        # )
+
+        imd_model = self.pool.get('ir.model.data')
+        model, template_id = imd_model.get_object_reference(
+            cursor, uid, 'som_generationkwh',
+            'generationkwh_assignment_notification_mail'
+        )
+
+        if template_id == int(context.get('template_id', '0')):
+            for member_id in ids:
+                member_vals = {'gkwh_assignment_notified': True}
+                self.write(cursor, uid, member_id, member_vals, context=context)
 
         return True
 
