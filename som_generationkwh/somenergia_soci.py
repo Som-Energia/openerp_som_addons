@@ -125,7 +125,7 @@ class SomenergiaSoci(osv.osv):
             multi='investments'
         ),
         'estimated_anual_kwh': fields.function(
-            _ff_investments, string='Precisió de kWh anual', readonly=True,
+            _ff_investments, string='Previsió de kWh anual', readonly=True,
             type='integer', method=True,
             multi='investments'
         ),

@@ -67,50 +67,50 @@ class GenerationkWhAssignment(osv.osv):
     _columns = dict(
         contract_id=fields.many2one(
             'giscedata.polissa',
-            'Contract',
+            'Contracte',
             required=True,
-            help="Contract which gets rights to use generated kWh",
+            help="Contracte que te els drets per utilitzar els kWh generats",
             ),
         member_id=fields.many2one(
             'somenergia.soci',
-            'Member',
+            'Soci',
             required=True,
-            help="Member who bought Generation kWh shares and assigns them",
+            help="Soci que va comprar accions Generation kWh i els assigna",
             ),
         priority=fields.integer(
-            'Priority',
+            'Prioritat',
             required=True,
-            help="Assignment precedence. "
-                "This assignment won't use rights generated on dates that "
-                "have not been invoiced yet by assignments "
-                "of the same member having higher priority "
-                "(lower the value, higher the priority).",
+            help="Ordre d'assignacions. "
+                 "Aquesta assignació no usara drets generats en els dates que"
+                 "encara no han estat facturades a assignacions del mateix soci"
+                 " que tinguin una prioritat mes alta."
+                 "(a valor més petit, més prioritat",
             ),
         end_date=fields.date(
-            'Expiration date',
-            help="Date at which the rule is no longer active",
+            "Data d'Expiració",
+            help="Data a partir de la qual l'assignació ja no serà activa",
             ),
         # Contract fields
         contract_state=fields.function(
             _ff_contract, string='Contract State', readonly=True, type='char',
             method=True, multi='contract',
-            help="Estate of the selected contract",
+            help="Estat del contracte seleccionat",
             ),
         contract_last_invoiced=fields.function(
             _ff_contract, string='Data última factura', readonly=True,
             type='date', method=True, multi='contract',
-            help="Last invoiced date",
+            help="Data Última lectura facturada",
             ),
         cups_direction=fields.function(
             _ff_contract, string='Direcció CUPS', readonly=True, type='char',
             method=True, multi='contract',
-            help="CUPS address",
+            help="Direcció del CUPS",
             ),
         # Contract fields
         cups_anual_use=fields.function(
             _ff_contract, string='Consum anual', readonly=True, type='integer',
             method=True, multi='contract',
-            help="Annual CUPS energy use. May be stimated.",
+            help="Consum anyal del CUPS. Pot ser estimat.",
             ),
         )
 
