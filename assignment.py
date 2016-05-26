@@ -5,6 +5,7 @@ from .erpwrapper import ErpWrapper
 import datetime
 from yamlns import namespace as ns
 from generationkwh.isodates import isodate
+from tools.translate import _
 
 # TODO: sort rights sources if many members assigned the same contract
 # TODO: Filter out inactive contracts
@@ -128,12 +129,83 @@ class GenerationkWhAssignment(osv.osv):
         member_id=_default_member_id,
     )
 
+    def log_action(self, cursor, uid, ass_id, text, context=None):
+        """
+        :param text: Text to log
+        :return: added text
+        """
+        Member = self.pool.get('somenergia.soci')
+
+        member_id = self.read(
+            cursor, uid, ass_id, ['member_id']
+        )['member_id'][0]
+        return Member.add_gkwh_comment(cursor, uid, member_id, text)
+
     def create(self, cr, uid, values, context=None):
-        self.expire(cr, uid,
-            values.get('contract_id',None),
-            values.get('member_id',None),
-            context=context)
-        return super(GenerationkWhAssignment, self).create(cr, uid, values, context=context)
+
+        Contract = self.pool.get('giscedata.polissa')
+
+        member_id = values.get('member_id',None)
+        contract_id = values.get('contract_id',None)
+        priority = values.get('priority', 0)
+
+        self.expire(cr, uid, contract_id, member_id, context=context)
+
+        assignment_id = super(GenerationkWhAssignment, self).create(
+            cr, uid, values, context=context
+        )
+
+        if contract_id:
+            contract_name = Contract.read(
+                cr, uid, contract_id, ['name'], context=context
+            )['name']
+
+            text_tmpl = _(u"NOVA assignació ({0}) al contracte  {1} amb "
+                          u"prioritat {2}")
+            text = text_tmpl.format(assignment_id, contract_name, priority)
+
+            self.log_action(cr, uid, assignment_id, text, context=context)
+
+        return assignment_id
+
+    def write(self, cr, uid, ids, values, context=None):
+
+        res = super(GenerationkWhAssignment, self).write(
+            cr, uid, ids, values, context=context
+        )
+
+        assignment_vals = self.read(cr, uid, ids, ['contract_id', 'priority'])
+        for assignment in assignment_vals:
+            assignment_id = assignment['id']
+            text_tmpl = _(u"MODIFICADA assignació ({0}):  contracte {1} amb "
+                          u"prioritat {2}")
+            text = text_tmpl.format(
+                assignment_id,
+                assignment['contract_id'][1],
+                assignment['priority'],
+            )
+
+            self.log_action(cr, uid, assignment_id, text, context=context)
+
+        return res
+
+    def unlink(self, cr, uid, ids, context=None):
+
+        assignment_vals = self.read(cr, uid, ids, ['contract_id', 'priority'])
+        for assignment in assignment_vals:
+            assignment_id = assignment['id']
+            text_tmpl = _(u"ESBORRADA assignació ({0}):  contracte {1} amb "
+                          u"prioritat {2}")
+            text = text_tmpl.format(
+                assignment_id,
+                assignment['contract_id'][1],
+                assignment['priority'],
+            )
+            self.log_action(cr, uid, assignment_id, text, context=context)
+
+        return super(GenerationkWhAssignment, self).unlink(
+            cr, uid, ids, context=context
+        )
 
     def expire(self, cr, uid, contract_id, member_id, context=None):
         if contract_id is None: return
