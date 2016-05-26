@@ -43,11 +43,11 @@ class GenerationkWhInvestment(osv.osv):
             help="Quin dia es varen comprar les accions",
             ),
         first_effective_date=fields.date(
-            "Primera data a la que és fa efectiva",
+            "Primera data efectiva",
             help="Dia que les accions començaran a generar drets a kWh",
             ),
         last_effective_date=fields.date(
-            "Darrera data a la que és efectiva",
+            "Darrera data efectiva",
             help="Darrer dia que les accions generaran drets a kWh",
             ),
         move_line_id=fields.many2one(
