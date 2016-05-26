@@ -15,7 +15,7 @@
                         <field name="estimated_anual_kwh"/>
                         <separator string="Assignacions" colspan="4"/>
                         <field name="assignment_ids" ref="view_gkwh_assignment_tree" colspan="4" nolabel="1" height="100" context="{'active_test': False}"/>
-                        <field name="gkwh_assignment_notified" readonly="1"/>
+                        <field name="gkwh_assignment_notified" readonly="1" select="2"/>
                         <separator string="Inversions" colspan="4"/>
                         <field name="investment_ids" colspan="4" nolabel="1" height="100"/>
                         <separator string="Historial Generation kWh" colspan="4"/>
@@ -32,11 +32,12 @@
             <field name="arch" type="xml">
                 <field name="partner_id" position="after">
                     <field name="has_gkwh"/>
+                    <field name="gkwh_assignment_notified" select="2"/>
                 </field>
             </field>
         </record>
         <record id="action_gkwh_member_info_tree" model="ir.actions.act_window">
-            <field name="name">Informació Generation kWh del Soci</field>
+            <field name="name">Socis amb Generation kWh</field>
             <field name="res_model">somenergia.soci</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
