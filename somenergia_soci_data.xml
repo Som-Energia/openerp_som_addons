@@ -13,12 +13,12 @@
             <field eval="0" name="save_to_drafts"/>
             <field name="model_int_name">somenergia.soci</field>
             <field eval="0" name="use_filter"/>
-            <field name="def_to">${object.partner_id.www_email}</field>
+            <field name="def_to">${object.www_email}</field>
             <field name="def_bcc">notifica@somenergia.coop</field>
             <field eval="0" name="auto_email"/>
             <field eval="0" name="single_email"/>
             <field eval="0" name="use_sign"/>
-            <field name="def_subject">Generation kWh: Comencem! Assignació inicial als contractes</field>
+            <field name="def_subject">Generation kWh: Comencem a rebre energia! [${object.ref[1:]}]</field>
             <field name="template_language">mako</field>
             <field eval="0" name="send_on_create"/>
             <field name="lang">${object.partner_id.lang}</field>
