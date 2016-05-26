@@ -95,7 +95,7 @@ class GenerationkWhAssignment(osv.osv):
                  "Aquesta assignació no usara drets generats en els dates que"
                  "encara no han estat facturades a assignacions del mateix soci"
                  " que tinguin una prioritat mes alta."
-                 "(a valor més petit, més prioritat",
+                 "(a valor més petit, més prioritat)",
             ),
         end_date=fields.date(
             "Data d'Expiració",
@@ -323,24 +323,41 @@ class GenerationkWhAssignment(osv.osv):
             ]
         
 
+    def notifyAssigmentByMail(self, cursor, uid, members, context=None):
+        # TODO: implement this
+        print "Dummy notifying ", members
 
-    def unassignedInvestors(self, cursor, uid, context=None):
+    def unassignedInvestors(self, cursor, uid, effectiveBefore, context=None):
         """Returns all the members that have investments but no assignment"""
         cursor.execute("""
             SELECT
                 investment.member_id AS id
             FROM
                 generationkwh_investment AS investment
+            JOIN
+                somenergia_soci as member
+                ON member.id = investment.member_id
             LEFT JOIN
                 generationkwh_assignment AS assignment
                 ON assignment.member_id = investment.member_id
             WHERE
-                assignment.id IS NULL
+                assignment.id IS NULL AND
+--                NOT member.gkwh_assignment_notified AND -- TODO: activate this when tested
+                (%(date)s IS NULL OR 
+                    (
+                        investment.first_effective_date IS NOT NULL AND
+                        investment.first_effective_date <= %(date)s
+                    )
+                ) AND
+                TRUE
             GROUP BY
                 investment.member_id
             ORDER BY
                 investment.member_id
-            """)
+            """, dict(
+                date = effectiveBefore and isodate(effectiveBefore),
+            ))
+        print cursor.query
         result = [ id for id, in cursor.fetchall() ]
         return result
 
@@ -375,6 +392,7 @@ class AssignmentProvider(ErpWrapper):
             contract_id,
             context=self.context,
             )
+
 
 class Generationkwh_Assignment_TestHelper(osv.osv):
     _name = 'generationkwh.assignment.testhelper'
