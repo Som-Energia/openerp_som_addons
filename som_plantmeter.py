@@ -228,7 +228,8 @@ class GenerationkwhProductionMeter(osv.osv):
             pid = pid[0]
 
         meter = self.pool.get('generationkwh.production.meter')
-        return meter.write(cursor, uid, pid, {'lastcommit': lastcommit})
+        if lastcommit:
+            meter.write(cursor, uid, pid, {'lastcommit': lastcommit})
 
 GenerationkwhProductionMeter()
 
