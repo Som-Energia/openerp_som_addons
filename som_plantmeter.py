@@ -28,7 +28,7 @@ class GenerationkwhProductionAggregator(osv.osv):
         'enabled': lambda *a: False
     }
 
-    def getWh(self, cursor, uid, pid, start, end, context=None):
+    def get_kwh(self, cursor, uid, pid, start, end, context=None):
         '''Get production aggregation'''
    
         if not context:
@@ -38,10 +38,10 @@ class GenerationkwhProductionAggregator(osv.osv):
 
         aggr = self.browse(cursor, uid, pid, context)
         _aggr = self._createAggregator(aggr, ['id', 'name', 'description', 'enabled'])
-        return _aggr.getWh(start, end).tolist()
+        return _aggr.get_kwh(start, end).tolist()
 
-    def updateWh(self, cursor, uid, pid, start=None, end=None, context=None):
-        '''Update Wh measurements'''
+    def update_kwh(self, cursor, uid, pid, start=None, end=None, context=None):
+        '''Update kWh measurements'''
 
         notifier = ProductionNotifierProvider(self, cursor, uid, context)
         if start > end: return
@@ -54,7 +54,7 @@ class GenerationkwhProductionAggregator(osv.osv):
         aggr = self.browse(cursor, uid, pid, context)
         _aggr = self._createAggregator(aggr, args)
         self.updateLastCommit(cursor, uid, pid,
-                _aggr.updateWh(start, end, notifier))
+                _aggr.update_kwh(start, end, notifier))
 
     def updateLastCommit(self, cursor, uid, pid, lastcommits, context=None):
         '''Update last commit date'''
@@ -133,14 +133,14 @@ class GenerationkwhProductionAggregatorTesthelper(osv.osv):
     _auto = False
 
 
-    def getWh(self, cursor, uid, pid, start, end, context=None):
+    def get_kwh(self, cursor, uid, pid, start, end, context=None):
         production = self.pool.get('generationkwh.production.aggregator')
-        return production.getWh(cursor, uid, pid,
+        return production.get_kwh(cursor, uid, pid,
                 isodate(start), isodate(end), context)
 
-    def updateWh(self, cursor, uid, pid, start, end, context=None):
+    def update_kwh(self, cursor, uid, pid, start, end, context=None):
         production = self.pool.get('generationkwh.production.aggregator')
-        return production.updateWh(cursor, uid, pid,
+        return production.update_kwh(cursor, uid, pid,
                 isodate(start), isodate(end), context)
 
     def firstMeasurementDate(self, cursor, uid, pid, context=None):
