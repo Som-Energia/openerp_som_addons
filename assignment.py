@@ -339,18 +339,18 @@ class GenerationkWhAssignment(osv.osv):
 
     def enviar_correu(self, cursor, uid, id, template_id, from_id, src_model):
         print "mail enviat a la soci{id}".format(**locals())
-        ctx = {
+        ctx = dict(
+            [('from', from_id,)],
             active_ids = [id],
             active_id = id,
             template_id = template_id,
             src_model = src_model,
             src_rec_ids = [pol_id],
-            from = from_id,
-            }
+            )
         params = dict(
+            [('from', from_id,)],
             state = 'single',
             priority = 0,
-            from = from_id,
             )
 
         wizard_id = self.PoweremailSendWizard.create(params, ctx)
