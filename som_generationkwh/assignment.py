@@ -302,6 +302,11 @@ class GenerationkWhAssignment(osv.osv):
             ],context=context)
         for a in self.browse(cr, uid, ids, context=context):
             a.unlink()
+        Socis = self.pool.get('somenergia.soci')
+        ids = Socis.search(cr, uid, [], context=context)
+        Socis.write(cr, uid, ids, dict(
+            gkwh_assignment_notified=False,
+            ))
 
     def anyForContract(self, cursor, uid, contract_id, context=None):
         return len(self.search(
@@ -322,39 +327,63 @@ class GenerationkWhAssignment(osv.osv):
             in cursor.fetchall()
             ]
         
+    def send_mail(self, cursor, uid,
+            obj_id, model, template_name,
+            context=None):
+
+        ModelData = self.pool.get('ir.model.data')
+        Template = self.pool.get('poweremail.templates')
+        Wizard = self.pool.get('poweremail.send.wizard')
+
+        try:
+            #Busquem la plantilla de mail d'activació
+            _, template_id = ModelData.get_object_reference(
+                cursor, uid,
+                'som_generationkwh',
+                template_name,
+            )
+            template = Template.browse(cursor, uid, template_id)
+            if template.enforce_from_account:
+                mail_from = template.enforce_from_account.id
+
+            ctx = {
+                'active_ids': [obj_id],
+                'active_id': obj_id,
+                'template_id': template_id,
+                'src_rec_ids': [obj_id],
+                'src_model': model,
+                'from': mail_from,
+                'state': 'single',
+                'priority': '0',
+                }
+            params = {
+                'state': 'single',
+                'priority': '0',
+                'from': mail_from,
+                }
+
+            pwswz_id = Wizard.create(cursor, uid, params, ctx)
+            Wizard.send_mail(cursor, uid, [pwswz_id], ctx)
+
+        except osv.except_osv, e:
+                info = u'%s' % unicode(e.value)
+                return (_(u'ERROR'), info)
+
+        except Exception, e:
+                raise Exception(e)
+
+
 
     def notifyAssignmentByMail(self, cursor, uid, members, context=None):
-        # TODO: implement this
-        print "Dummy notifying ", members
-        ModelData = self.pool.get('ir.model.data')
-        model, template_id = ModelData.get_object_reference(
-            cursor, uid, 'som_generationkwh',
-            'generationkwh_assignment_notification_mail'
-        )
+
         generationAddressId = 17
         for member in members:
-            self.enviar_correu(
-                member, template_id, generationAddressId, 'somenergia.soci')
+            self.send_mail(cursor, uid,
+                member,
+                'somenergia.soci',
+                'generationkwh_assignment_notification_mail',
+                context or {})
 
-
-    def enviar_correu(self, cursor, uid, id, template_id, from_id, src_model):
-        print "mail enviat a la soci{id}".format(**locals())
-        ctx = dict(
-            [('from', from_id,)],
-            active_ids = [id],
-            active_id = id,
-            template_id = template_id,
-            src_model = src_model,
-            src_rec_ids = [pol_id],
-            )
-        params = dict(
-            [('from', from_id,)],
-            state = 'single',
-            priority = 0,
-            )
-
-        wizard_id = self.PoweremailSendWizard.create(params, ctx)
-        self.PoweremailSendWizard.send_mail([wizard_id], ctx) 
 
     def unassignedInvestors(self, cursor, uid, effectiveOn, purchasedUntil, context=None):
         """
@@ -377,7 +406,7 @@ class GenerationkWhAssignment(osv.osv):
                 investment.active AND
                 -- Has no assigment
                 assignment.id IS NULL AND
-                -- Has been notified of an assigment
+                -- Has not been notified of an assigment
                 NOT member.gkwh_assignment_notified AND
                 -- Purchased not after lastPurchaseDate
                 (
@@ -398,7 +427,6 @@ class GenerationkWhAssignment(osv.osv):
                 lastPurchaseDate = purchasedUntil and isodate(purchasedUntil),
                 lastFirstEffectiveDate = effectiveOn and isodate(effectiveOn),
             ))
-        print cursor.query
         result = [ id for id, in cursor.fetchall() ]
         return result
 
