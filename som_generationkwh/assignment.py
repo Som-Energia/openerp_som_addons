@@ -323,12 +323,44 @@ class GenerationkWhAssignment(osv.osv):
             ]
         
 
-    def notifyAssigmentByMail(self, cursor, uid, members, context=None):
+    def notifyAssignmentByMail(self, cursor, uid, members, context=None):
         # TODO: implement this
         print "Dummy notifying ", members
+        ModelData = self.pool.get('ir.model.data')
+        model, template_id = ModelData.get_object_reference(
+            cursor, uid, 'som_generationkwh',
+            'generationkwh_assignment_notification_mail'
+        )
+        generationAddressId = 17
+        for member in members:
+            self.enviar_correu(
+                member, template_id, generationAddressId, 'somenergia.soci')
 
-    def unassignedInvestors(self, cursor, uid, effectiveBefore, context=None):
-        """Returns all the members that have investments but no assignment"""
+
+    def enviar_correu(self, cursor, uid, id, template_id, from_id, src_model):
+        print "mail enviat a la soci{id}".format(**locals())
+        ctx = {
+            active_ids = [id],
+            active_id = id,
+            template_id = template_id,
+            src_model = src_model,
+            src_rec_ids = [pol_id],
+            from = from_id,
+            }
+        params = dict(
+            state = 'single',
+            priority = 0,
+            from = from_id,
+            )
+
+        wizard_id = self.PoweremailSendWizard.create(params, ctx)
+        self.PoweremailSendWizard.send_mail([wizard_id], ctx) 
+
+    def unassignedInvestors(self, cursor, uid, effectiveOn, purchasedUntil, context=None):
+        """
+            Returns all the members that have investments but no assignment
+            has been made.
+        """
         cursor.execute("""
             SELECT
                 investment.member_id AS id
@@ -341,13 +373,21 @@ class GenerationkWhAssignment(osv.osv):
                 generationkwh_assignment AS assignment
                 ON assignment.member_id = investment.member_id
             WHERE
+                -- Investment is active
+                investment.active AND
+                -- Has no assigment
                 assignment.id IS NULL AND
---                NOT member.gkwh_assignment_notified AND -- TODO: activate this when tested
-                (%(date)s IS NULL OR 
-                    (
-                        investment.first_effective_date IS NOT NULL AND
-                        investment.first_effective_date <= %(date)s
-                    )
+                -- Has been notified of an assigment
+                NOT member.gkwh_assignment_notified AND
+                -- Purchased not after lastPurchaseDate
+                (
+                    %(lastPurchaseDate)s IS NULL OR
+                    investment.purchase_date <= %(lastPurchaseDate)s
+                ) AND
+                -- First effective date not after lastFirstEffectiveDate
+                (
+                    %(lastFirstEffectiveDate)s IS NULL OR
+                    investment.first_effective_date <= %(lastFirstEffectiveDate)s
                 ) AND
                 TRUE
             GROUP BY
@@ -355,7 +395,8 @@ class GenerationkWhAssignment(osv.osv):
             ORDER BY
                 investment.member_id
             """, dict(
-                date = effectiveBefore and isodate(effectiveBefore),
+                lastPurchaseDate = purchasedUntil and isodate(purchasedUntil),
+                lastFirstEffectiveDate = effectiveOn and isodate(effectiveOn),
             ))
         print cursor.query
         result = [ id for id, in cursor.fetchall() ]
