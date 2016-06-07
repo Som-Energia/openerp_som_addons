@@ -427,6 +427,23 @@ class GiscedataFacturacioFactura(osv.osv):
             return line_ids
         return res
 
+    def _search_is_gkwh(self, cursor, uid, obj, name, args, context=None):
+        """Search function for is_gkwh"""
+        if not args:
+            return [('id', '=', 0)]
+
+        cursor.execute(
+            'SELECT distinct factura_id FROM generationkwh_invoice_line_owner'
+        )
+
+        gkwh_ids = [t[0] for t in cursor.fetchall()]
+
+        operator = 'in'
+        if not args[0][2]:
+            # search for False
+            operator = 'not in'
+        return [('id', operator, gkwh_ids)] 
+
     def _ff_is_gkwh(self, cursor, uid, ids, field_name, arg, context=None):
         """Returns true if invoice has gkwh lines"""
         if not ids:
@@ -447,7 +464,8 @@ class GiscedataFacturacioFactura(osv.osv):
         'is_gkwh': fields.function(
             _ff_is_gkwh,
             method=True,
-            string='Te Generation', type='boolean', store=True,
+            string='Te Generation', type='boolean',
+            fnct_search=_search_is_gkwh
         )
     }
 
