@@ -2,11 +2,10 @@
 
 from osv import osv, fields
 from .erpwrapper import ErpWrapper
-from plantmeter.mongotimecurve import toLocal
 from dateutil.relativedelta import relativedelta
 import datetime
 from yamlns import namespace as ns
-from generationkwh.isodates import isodate, naiveisodate, naiveisodatetime
+from generationkwh.isodates import isodate
 from tools.translate import _
 
 # TODO: This function is duplicated in other sources

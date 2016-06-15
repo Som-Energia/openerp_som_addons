@@ -6,8 +6,6 @@ from osv import osv, fields
 import netsvc
 from mongodb_backend.mongodb2 import mdbpool
 
-from plantmeter.mongotimecurve import addDays
-
 from generationkwh.dealer import Dealer
 from generationkwh.sharescurve import MemberSharesCurve
 from generationkwh.rightspershare import RightsPerShare
