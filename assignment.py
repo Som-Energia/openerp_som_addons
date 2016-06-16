@@ -385,7 +385,7 @@ class GenerationkWhAssignment(osv.osv):
                 context or {})
 
 
-    def unassignedInvestors(self, cursor, uid, effectiveOn, purchasedUntil, context=None):
+    def unassignedInvestors(self, cursor, uid, effectiveOn, purchasedUntil, force, insist, context=None):
         """
             Returns all the members that have investments but no assignment
             has been made.
@@ -404,10 +404,16 @@ class GenerationkWhAssignment(osv.osv):
             WHERE
                 -- Investment is active
                 investment.active AND
-                -- Has no assigment
-                assignment.id IS NULL AND
-                -- Has not been notified of an assigment
-                NOT member.gkwh_assignment_notified AND
+                -- Has no assigment (unless forced)
+                (
+                    %(force)s IS NOT NULL OR
+                    assignment.id IS NULL
+                ) AND
+                -- Has not been notified of an assigment (unless 'insisted')
+                (
+                    %(insist)s IS NOT NULL OR
+                    NOT member.gkwh_assignment_notified
+                ) AND
                 -- Purchased not after lastPurchaseDate
                 (
                     %(lastPurchaseDate)s IS NULL OR
@@ -424,6 +430,8 @@ class GenerationkWhAssignment(osv.osv):
             ORDER BY
                 investment.member_id
             """, dict(
+                force = force or None,
+                insist = insist or None,
                 lastPurchaseDate = purchasedUntil and isodate(purchasedUntil),
                 lastFirstEffectiveDate = effectiveOn and isodate(effectiveOn),
             ))
