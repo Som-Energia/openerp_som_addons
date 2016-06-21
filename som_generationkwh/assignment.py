@@ -326,9 +326,9 @@ class GenerationkWhAssignment(osv.osv):
             for member_id, last_usable_date, _
             in cursor.fetchall()
             ]
-        
+
     def send_mail(self, cursor, uid,
-            obj_id, model, template_name,
+            obj_id, mail_from, model, template_name,
             context=None):
 
         ModelData = self.pool.get('ir.model.data')
@@ -336,13 +336,18 @@ class GenerationkWhAssignment(osv.osv):
         Wizard = self.pool.get('poweremail.send.wizard')
 
         try:
-            #Busquem la plantilla de mail d'activació
-            _, template_id = ModelData.get_object_reference(
-                cursor, uid,
-                'som_generationkwh',
-                template_name,
-            )
+            try:
+                template_id = int(template_name)
+            except ValueError:
+                #Busquem la plantilla de mail d'activació
+                ignored, template_id = ModelData.get_object_reference(
+                    cursor, uid,
+                    'som_generationkwh',
+                    template_name,
+                )
+
             template = Template.browse(cursor, uid, template_id)
+
             if template.enforce_from_account:
                 mail_from = template.enforce_from_account.id
 
@@ -380,8 +385,19 @@ class GenerationkWhAssignment(osv.osv):
         for member in members:
             self.send_mail(cursor, uid,
                 member,
+                generationAddressId,
                 'somenergia.soci',
                 'generationkwh_assignment_notification_mail',
+                context or {})
+
+    def notifyAdvancedEffectiveDate(self, cursor, uid, members, context=None):
+        generationAddressId = 17
+        for member in members:
+            self.send_mail(cursor, uid,
+                member,
+                generationAddressId,
+                'somenergia.soci',
+                70, # TODO this id changes from installation to another!!
                 context or {})
 
 
