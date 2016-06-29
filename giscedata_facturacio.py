@@ -302,7 +302,7 @@ class GiscedataFacturacioFactura(osv.osv):
         gkwh_lineowner_obj = self.pool.get('generationkwh.invoice.line.owner')
         gkwh_dealer_obj = self.pool.get('generationkwh.dealer')
         inv_fields = ['polissa_id', 'data_inici', 'data_final', 'llista_preu',
-                      'tarifa_acces_id', 'linies_energia']
+                      'tarifa_acces_id', 'linies_energia', 'type']
 
         line_fields = ['data_desde', 'data_fins', 'product_id', 'quantity',
                        'multi', 'tipus', 'name', 'price_unit_multi', 'uos_id',
@@ -310,6 +310,7 @@ class GiscedataFacturacioFactura(osv.osv):
                        ]
 
         for inv_id in ids:
+            # Test if is client invoice (out_invoice, out_refund)
             # Test if contract is gkwh enabled
             inv_data = self.read(cursor, uid, inv_id, inv_fields, context)
 
@@ -317,6 +318,9 @@ class GiscedataFacturacioFactura(osv.osv):
             start_date = inv_data['data_inici']
             end_date = inv_data['data_final']
             pricelist = inv_data['llista_preu'][0]
+
+            if inv_data['type'] not in ['out_invoice', 'out_refund']:
+                return
 
             is_gkwh = gkwh_dealer_obj.is_active(
                 cursor, uid, contract_id, start_date, end_date, context=context
@@ -554,7 +558,7 @@ class GiscedataFacturacioFacturaLinia(osv.osv):
                 period_id = fact_obj.get_fare_period(
                     cursor, uid, line.product_id.id, context=context
                 )
-                if invoice_type == 'out_invoice':
+                if invoice_type in ['out_invoice', 'in_invoice']:
                     # refunds rights through dealer
                     if glo_ids:
                         gkwh_lineowner_obj.unlink(cursor, uid, glo_ids)
@@ -570,7 +574,7 @@ class GiscedataFacturacioFacturaLinia(osv.osv):
                         owner_id,
                         context=context
                     )
-                elif invoice_type == 'out_refund':
+                elif invoice_type in ['out_refund', 'out_refund']:
                     # The rights re-use has to be done in invoice scope
                     # Re-use rights through dealer when refund invoice
                     # WARNING: The real use may not be the original one
