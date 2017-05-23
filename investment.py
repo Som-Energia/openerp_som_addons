@@ -7,6 +7,8 @@ import datetime
 from yamlns import namespace as ns
 from generationkwh.isodates import isodate
 from tools.translate import _
+from tools import config
+
 
 # TODO: This function is duplicated in other sources
 def _sqlfromfile(sqlname):
@@ -19,6 +21,7 @@ def _sqlfromfile(sqlname):
         return f.read()
 
 class GenerationkWhInvestment(osv.osv):
+
 
     _name = 'generationkwh.investment'
     _order = 'purchase_date DESC'
@@ -359,6 +362,40 @@ class GenerationkWhInvestment(osv.osv):
             cursor, uid, inv_id, ['member_id']
         )['member_id'][0]
         return Member.add_gkwh_comment(cursor, uid, member_id, text)
+
+    def pending_amortizations(self, cursor, uid, current_date):
+        from generationkwh.amortizations import (
+            pendingAmortization,
+            previousAmortizationDate,
+            )
+        inv_ids = self.search(cursor, uid, [])
+        invs = self.read(cursor, uid, inv_ids, [
+            'member_id',
+            'purchase_date',
+            'nshares',
+            ])
+        for inv in invs:
+            inv.update(
+                amortized_amount=pendingAmortization(
+                    inv['purchase_date'],
+                    current_date,
+                    100*inv['nshares'],
+                    0, # TODO: THIS SHOULD BE THE ACTUAL AMORTIZATION!!
+                    ),
+                amortization_date=previousAmortizationDate(
+                    inv['purchase_date'],
+                    current_date,
+                    ),
+                )
+        return [(
+            inv['id'],
+            inv['member_id'][0],
+            inv['amortization_date'] or False,
+            inv['amortized_amount'],
+            )
+            for inv in invs
+            if inv['amortized_amount']
+        ]
 
 
 class InvestmentProvider(ErpWrapper):
