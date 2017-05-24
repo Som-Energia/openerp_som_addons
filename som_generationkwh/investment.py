@@ -39,6 +39,11 @@ class GenerationkWhInvestment(osv.osv):
             required=True,
             help="Nombre d'accions comprades",
             ),
+        amortized_amount=fields.float(
+            "Amortització Realitzada",
+            digits=(16, int(config['price_accuracy'])),
+            required=True,
+            ),
         purchase_date=fields.date(
             "Data de compra",
             required=True,
@@ -68,6 +73,7 @@ class GenerationkWhInvestment(osv.osv):
 
     _defaults = dict(
         active=lambda *a: True,
+        amortized_amount=lambda *a: 0,
     )
 
     def effective_investments_tuple(self, cursor, uid,
@@ -372,15 +378,16 @@ class GenerationkWhInvestment(osv.osv):
         invs = self.read(cursor, uid, inv_ids, [
             'member_id',
             'purchase_date',
+            'amortized_amount',
             'nshares',
             ])
         for inv in invs:
             inv.update(
-                amortized_amount=pendingAmortization(
+                amortization_amount=pendingAmortization(
                     inv['purchase_date'],
                     current_date,
                     100*inv['nshares'],
-                    0, # TODO: THIS SHOULD BE THE ACTUAL AMORTIZATION!!
+                    inv['amortized_amount'],
                     ),
                 amortization_date=previousAmortizationDate(
                     inv['purchase_date'],
@@ -392,11 +399,18 @@ class GenerationkWhInvestment(osv.osv):
             inv['member_id'][0],
             inv['amortization_date'] or False,
             inv['amortized_amount'],
+            inv['amortization_amount'],
             )
             for inv in invs
-            if inv['amortized_amount']
+            if inv['amortization_amount']
         ]
 
+    def amortize(self, cursor, uid, current_date, context=None):
+        pending = self.pending_amortizations(cursor, uid, current_date)
+        for id, _, _, amortized_amount, amortization_amount in pending:
+            self.write(cursor, uid, id, dict(
+                amortized_amount=amortized_amount+amortization_amount,
+                ), context)
 
 class InvestmentProvider(ErpWrapper):
 
