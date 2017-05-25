@@ -242,7 +242,7 @@ class GenerationkWhInvestment(osv.osv):
             context=context
             )
 
-        invesment_ids = []
+        investment_ids = []
 
         for line in MoveLine.browse(cursor, uid, movelinesids, context):
             # Filter out already converted move lines
@@ -277,7 +277,7 @@ class GenerationkWhInvestment(osv.osv):
                 isodate(line.date_created),
                 waitingDays, expirationYears)
 
-            invesment_id = self.create(cursor, uid, dict(
+            investment_id = self.create(cursor, uid, dict(
                 member_id=member_id,
                 nshares=(line.credit-line.debit)//100,
                 purchase_date=line.date_created,
@@ -286,11 +286,11 @@ class GenerationkWhInvestment(osv.osv):
                 move_line_id=line.id,
                 ))
 
-            invesment_ids.append(invesment_id)
+            investment_ids.append(investment_id)
 
-        self.migrate_created_from_accounting(cursor, uid, invesment_ids, context)
+        self.migrate_created_from_accounting(cursor, uid, investment_ids, context)
 
-        return invesment_ids
+        return sorted(investment_ids)
 
 
     def _disabled_create_from_accounting(self, cursor, uid,
