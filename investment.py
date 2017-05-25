@@ -68,13 +68,55 @@ class GenerationkWhInvestment(osv.osv):
             "Activa",
             required=True,
             help="Permet activar o desactivar la inversió",
+            ),
+        log=fields.text(
+            'Història',
+            required=True,
+            help="Història d'esdeveniments relacionats amb la inversió",
             )
         )
 
     _defaults = dict(
         active=lambda *a: True,
         amortized_amount=lambda *a: 0,
+        log=lambda *a:'',
     )
+
+    def migrate_logs(self, cursor, uid,
+            investment_ids=None,
+            context=None):
+        """
+            Generate initial log for legacy investments.
+            Ignores investments having already log content.
+        """
+        MoveLine = self.pool.get('account.move.line')
+
+        if investment_ids is None:
+            investment_ids = self.search(cursor, uid, [
+                ('log','=',''),
+                ], context)
+
+        investments = self.read(cursor, uid, investment_ids, [
+            'move_line_id',
+            ])
+        for investment in investments:
+            movementline_ids = [investment['move_line_id'][0]]
+            moveline_perms = MoveLine.perm_read(cursor, uid, movementline_ids )[0]
+            investment_perms = self.perm_read(cursor, uid, [investment['id']])[0]
+            self.write(cursor, uid, investment['id'], dict(
+                log=
+                    u'[{} {}] PAYMENT: Remesa efectuada\n'
+                    u'[{} {}] ORDER: Formulari emplenat\n'
+                    .format(
+                        moveline_perms['create_date'],
+                        moveline_perms['create_uid'][1],
+                        # TODO: take it from payment line instead
+                        moveline_perms['create_date'],
+                        'Webforms',
+                    ),
+                ), context)
+
+
 
     def effective_investments_tuple(self, cursor, uid,
             member=None, start=None, end=None,
@@ -200,6 +242,8 @@ class GenerationkWhInvestment(osv.osv):
             context=context
             )
 
+        invesment_ids = []
+
         for line in MoveLine.browse(cursor, uid, movelinesids, context):
             # Filter out already converted move lines
             if self.search(cursor, uid,
@@ -233,7 +277,7 @@ class GenerationkWhInvestment(osv.osv):
                 isodate(line.date_created),
                 waitingDays, expirationYears)
 
-            self.create(cursor, uid, dict(
+            invesment_id = self.create(cursor, uid, dict(
                 member_id=member_id,
                 nshares=(line.credit-line.debit)//100,
                 purchase_date=line.date_created,
@@ -241,6 +285,12 @@ class GenerationkWhInvestment(osv.osv):
                 last_effective_date=lastDateEffective,
                 move_line_id=line.id,
                 ))
+
+            invesment_ids.append(invesment_id)
+
+        self.migrate_logs(cursor, uid, invesment_ids, context)
+
+        return invesment_ids
 
 
     def _disabled_create_from_accounting(self, cursor, uid,
@@ -380,10 +430,11 @@ class GenerationkWhInvestment(osv.osv):
             'purchase_date',
             'amortized_amount',
             'nshares',
+            'log',
             ])
         for inv in invs:
             inv.update(
-                amortization_amount=pendingAmortization(
+                to_be_amortized=pendingAmortization(
                     inv['purchase_date'],
                     current_date,
                     100*inv['nshares'],
@@ -399,17 +450,36 @@ class GenerationkWhInvestment(osv.osv):
             inv['member_id'][0],
             inv['amortization_date'] or False,
             inv['amortized_amount'],
-            inv['amortization_amount'],
+            inv['to_be_amortized'],
+            inv['log'],
             )
             for inv in invs
-            if inv['amortization_amount']
+            if inv['to_be_amortized']
         ]
 
     def amortize(self, cursor, uid, current_date, context=None):
         pending = self.pending_amortizations(cursor, uid, current_date)
-        for id, _, _, amortized_amount, amortization_amount in pending:
-            self.write(cursor, uid, id, dict(
-                amortized_amount=amortized_amount+amortization_amount,
+        for investment_tuple in pending:
+            (
+                investment_id,
+                _,
+                amortization_date,
+                amortized_amount,
+                to_be_amortized,
+                log,
+            ) = investment_tuple
+
+            self.write(cursor, uid, investment_id, dict(
+                amortized_amount=amortized_amount+to_be_amortized,
+                log = u"[{} {}] AMORTIZATION: "
+                    u"Generada amortització de {:.02f} € pel {}\n"
+                    .format(
+                        # TODO: Take this from now and uid
+                        '2015-07-29 09:39:07.70812',
+                        u'David García Garzón',
+                        to_be_amortized,
+                        amortization_date,
+                    )+log,
                 ), context)
 
 class InvestmentProvider(ErpWrapper):
