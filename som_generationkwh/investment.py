@@ -44,6 +44,10 @@ class GenerationkWhInvestment(osv.osv):
             digits=(16, int(config['price_accuracy'])),
             required=True,
             ),
+        order_date=fields.date(
+            "Data de comanda",
+            help="Quin dia es varen demanar les accions",
+            ),
         purchase_date=fields.date(
             "Data de compra",
             required=True,
@@ -118,6 +122,7 @@ class GenerationkWhInvestment(osv.osv):
                         purchase_date, purchase_user,
                         order_date, order_user,
                     ),
+                order_date=order_date,
                 ), context)
 
 
