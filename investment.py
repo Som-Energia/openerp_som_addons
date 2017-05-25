@@ -82,12 +82,13 @@ class GenerationkWhInvestment(osv.osv):
         log=lambda *a:'',
     )
 
-    def migrate_logs(self, cursor, uid,
+    def migrate_created_from_accounting(self, cursor, uid,
             investment_ids=None,
             context=None):
         """
-            Generate initial log for legacy investments.
-            Ignores investments having already log content.
+            Migrate legacy investments created from accounting, not from form.
+            Sets new fields with retrieved or guessed info.
+            Processes any investment with empty log unless specific ids are provided.
         """
         MoveLine = self.pool.get('account.move.line')
 
@@ -115,7 +116,6 @@ class GenerationkWhInvestment(osv.osv):
                         'Webforms',
                     ),
                 ), context)
-
 
 
     def effective_investments_tuple(self, cursor, uid,
@@ -288,7 +288,7 @@ class GenerationkWhInvestment(osv.osv):
 
             invesment_ids.append(invesment_id)
 
-        self.migrate_logs(cursor, uid, invesment_ids, context)
+        self.migrate_created_from_accounting(cursor, uid, invesment_ids, context)
 
         return invesment_ids
 
