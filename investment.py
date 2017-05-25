@@ -104,16 +104,19 @@ class GenerationkWhInvestment(osv.osv):
             movementline_ids = [investment['move_line_id'][0]]
             moveline_perms = MoveLine.perm_read(cursor, uid, movementline_ids )[0]
             investment_perms = self.perm_read(cursor, uid, [investment['id']])[0]
+            # TODO: Take it from PaymentLine instead
+            order_date = moveline_perms['create_date']
+            order_user = 'Webforms'
+            purchase_date = moveline_perms['create_date']
+            purchase_user = moveline_perms['create_uid'][1]
+
             self.write(cursor, uid, investment['id'], dict(
                 log=
                     u'[{} {}] PAYMENT: Remesa efectuada\n'
                     u'[{} {}] ORDER: Formulari emplenat\n'
                     .format(
-                        moveline_perms['create_date'],
-                        moveline_perms['create_uid'][1],
-                        # TODO: take it from payment line instead
-                        moveline_perms['create_date'],
-                        'Webforms',
+                        purchase_date, purchase_user,
+                        order_date, order_user,
                     ),
                 ), context)
 
