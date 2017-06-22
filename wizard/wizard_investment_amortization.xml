@@ -30,7 +30,7 @@
                         <separator string="Previsualització de resultats" colspan="4" />
                         <field name="output" nolabel="1" colspan="4" height="150"/>
                         <separator colspan="4" />
-                        <button string="Crear i mostrar factures" name="calc" type="object" icon="gtk-new" context="{'pre_calc': False}"/>
+                        <button string="Crear i mostrar factures" name="generate" type="object" icon="gtk-new" context="{'pre_calc': False}"/>
                     </group>
                 </form>
             </field>
