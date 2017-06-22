@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_investment_amortization_form">
+            <field name="name">wizard.generationkwh.investment.amortization.form</field>
+            <field name="model">wizard.generationkwh.investment.amortization</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Assistent Amortització de inversions">
+                	<field name="state" invisible="1"/>
+                	<group colspan="4" col="4" attrs="{'invisible':[('state', '!=', 'init')]}">
+	                    <field name="date_end"/>
+						<label string="" colspan="4" />
+						<separator colspan="4" />
+						<button string="Calcular" name="calc" type="object" icon="gtk-execute" context="{'pre_calc': True}"/>
+					</group>
+					<group colspan="4" col="4" attrs="{'invisible':[('state', '!=', 'pre_calc')]}">
+						<separator string="Errors" colspan="4" />
+						<field name="err" nolabel="1" colspan="4" height="150"/>
+						<separator colspan="4" />
+						<button string="Crear i mostrar factures" name="calc" type="object" icon="gtk-new" context="{'pre_calc': False}"/>
+					</group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_investment_amortization_form">
+            <field name="name">Assistent Amortització de inversions</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.generationkwh.investment.amortization</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_investment_amortization_form"/>
+        </record>
+        <menuitem
+            id="menu_wizard_investment_amortization"
+            name="Amortització de inversions"
+            parent="account.menu_finance"
+            action="action_wizard_investment_amortization_form"
+        />
+    </data>
+</openerp>
