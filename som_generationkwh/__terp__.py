@@ -20,6 +20,7 @@
     "giscedata_facturacio_view.xml",
     "som_generationkwh_view.xml",
     "wizard/wizard_investment_activation.xml",
+    "wizard/wizard_investment_amortization.xml",
     "investment_view.xml",
     "assignment_view.xml",
     "somenergia_soci_view.xml",

@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
         <record model="ir.ui.view" id="wizard_generationkwh_investment_activation_view">
