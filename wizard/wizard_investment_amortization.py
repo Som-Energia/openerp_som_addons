@@ -20,6 +20,10 @@ class WizardInvestmentAmortization(osv.osv_memory):
             'Missatges d\'error',
             readonly=True,
         ),
+        'output': fields.text(
+            'Missatges d\'error',
+            readonly=True,
+        ),
         'state': fields.char(
             'Estat',
             50
@@ -28,8 +32,26 @@ class WizardInvestmentAmortization(osv.osv_memory):
 
     _defaults = {
         'state': lambda *a: 'init',
+        'date_end': lambda *a: str(datetime.today()+timedelta(days=6)),
     }
 
+    def preview(self, cursor, uid, ids, context=None):
+        wiz = self.browse(cursor, uid, ids[0], context)
+        context.update(pre_calc=True)
+
+        print wiz.date_end
+        wiz.write(dict(
+            output=
+                '- Amortitzacions pendents: {pending}\n\n'
+                '- Import total: {pending_amount} €\n'
+                .format(
+                        pending = 15,
+                        pending_amount = 3033.23,
+
+                ),
+            state='pre_calc',
+            err='soc un error'
+            ))
 
 
 WizardInvestmentAmortization()
