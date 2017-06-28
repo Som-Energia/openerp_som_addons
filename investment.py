@@ -438,7 +438,7 @@ class GenerationkWhInvestment(osv.osv):
             pendingAmortization,
             previousAmortizationDate,
             )
-        inv_ids = self.search(cursor, uid, [])
+        inv_ids = self.search(cursor, uid, [], order='id')
         invs = self.read(cursor, uid, inv_ids, [
             'member_id',
             'purchase_date',
