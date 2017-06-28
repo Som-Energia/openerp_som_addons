@@ -53,6 +53,7 @@ class GenerationkWhInvestment(osv.osv):
             ),
         order_date=fields.date(
             "Data de comanda",
+            # required=True, # TODO: activate it after migration
             help="Quin dia es varen demanar les accions",
             ),
         purchase_date=fields.date(
