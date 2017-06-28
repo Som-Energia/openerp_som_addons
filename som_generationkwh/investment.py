@@ -473,15 +473,21 @@ class GenerationkWhInvestment(osv.osv):
 
     def amortize(self, cursor, uid, current_date, context=None):
         pending = self.pending_amortizations(cursor, uid, current_date)
+        amortization_ids = []
         for investment_tuple in pending:
             (
                 investment_id,
-                _,
+                member_id,
                 amortization_date,
                 amortized_amount,
                 to_be_amortized,
                 log,
             ) = investment_tuple
+
+            #amortization_id = self.create_amortization_invoice(cursor, uid,
+            #    investment_id, member_id, amortization_date, to_be_amortized)
+
+            #amortization_ids.append(amortization_id)
 
             self.write(cursor, uid, investment_id, dict(
                 amortized_amount=amortized_amount+to_be_amortized,
@@ -495,6 +501,143 @@ class GenerationkWhInvestment(osv.osv):
                         amortization_date,
                     )+log,
                 ), context)
+
+
+    def create_amortization_invoice(self, cursor, uid,
+            investment_id, amortization_date, to_be_amortized,
+            context=None):
+
+        return
+
+        Partner = self.pool.get('res.partner')
+        Invoice = self.pool.get('account.invoice')
+        InvoiceLine = self.pool.get('account.invoice.line')
+        PaymentType = self.pool.get('payment.type')
+        Journal = self.pool.get('account.journal')
+
+        investment = self.browse(investment_id)
+
+        date_invoice = str(datetime.datetime.today().date())
+        year = amortization_date.split('-')[0]
+
+        # The partner
+        partner_id = investment.member_id.partner_id.id
+        partner = Partner.browse(cursor, uid, partner_id)
+
+        # Get or create account
+        if not partner.property_account_liquidacio:
+            partner.button_assign_acc_410() # TODO: Proper account!!
+            partner = partner.browse()[0]
+
+        # The product
+        product_id = Proper.search(cursor, uid, [
+            ('code','=','GENKWH_AMOR'),
+            ])[0]
+        product = Product.browse(cursor, uid, product_id)
+        product_uom_id = product.uom_id.id
+
+        # The journal
+        journal_id = Journal.search(cursor, uid, [
+            ('code','=','GENKWH_AMOR'),
+            ])[0]
+        journal = Journal.browse(journal_id)
+
+        # The payment type
+        payment_type_id = PaymentType.search(cursor, uid, [
+            ('code', '=', 'TRANSFERENCIA_CSB'),
+            ])[0]
+
+        # Default invoice fields for given partner
+        vals = {}
+        vals.update(Invoice.onchange_partner_id(
+            cursor, uid, [], 'in_invoice', partner_id,
+        ).get('value', {}))
+
+        invoice_name = '%s%s%s' % (
+                journal.code,
+                year,
+                partner.ref
+                )
+
+        vals.update({
+            'partner_id': partner_id,
+            'type': 'in_invoice',
+            'name': invoice_name,
+            'journal_id': journal_id,
+            'account_id': partner.property_account_liquidacio.id,
+            'partner_bank': partner.bank_inversions.id, # TODO: si es False fer algo
+            'payment_type': payment_type_id,
+        })
+        if date_invoice:
+            vals['date_invoice'] = date_invoice
+
+        invoice_id = Invoice.create(cursor, uid, vals)
+
+        amortization_per_share = 4
+        investment_name = 'GENKWH_666666666666'
+
+        vals = {
+            'invoice_id': invoice_id,
+            'name': _('Amortització fins a %(amortization_date)s de %(investment)s ') % dict(
+                investment = investment_name,
+                amortization_date = amortization_date.strftime('%d/%m/%Y'),
+            ),
+#            'note': _('Sense notes'),
+            'quantity': 1,
+            'price_unit': to_be_amortized,
+            'product_id': product_id,
+        }
+
+        l_vals = {}
+        l_vals.update(InvoiceLine.product_id_change(cursor, uid, [],
+            product=product_id,
+            uom=product_uom_id,
+            partner_id=partner_id,
+            type='in_invoice').get('value', {})
+        )
+        l_vals['invoice_line_tax_id'] = [
+            (6, 0, l_vals.get('invoice_line_tax_id', []))
+        ]
+        l_vals.update(vals)
+        InvoiceLine.create(cursor, uid, l_vals)
+        return invoice_id
+
+
+    def create_from_form(self, cursor, uid,
+            partner_id, order_date, amount_in_euros, ip,
+            context=None):
+        Soci = self.pool.get('somenergia.soci')
+        IrSequence = self.pool.get('ir.sequence')
+        member_id = Soci.search(cursor, uid, [
+                ('partner_id','=',partner_id)
+                ])[0]
+
+        name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')
+        id = self.create(cursor, uid, dict(
+            name = name,
+            nshares = amount_in_euros/100, # TODO: error if remainder
+            member_id = member_id,
+            order_date = order_date,
+            ), context)
+        creationInfo = self.perm_read(cursor, uid, [id])[0]
+        self.write(cursor, uid, id, dict(
+            log = u'[{create_date} {create_uid[1]}] ORDER: Formulari emplenat des de {ip}\n'
+                .format(ip=ip,**creationInfo)
+            ))
+        return id
+
+
+    def charge(self, cursor, uid, ids, purchase_date):
+        for id in ids:
+            inversio = self.read(cursor, uid, id, ['log'])
+            creationInfo = self.perm_read(cursor, uid, [id])[0]
+            self.write(cursor, uid, id, dict(
+                log = u'[{create_date} {create_uid[1]}] PAYED: Remesada al compte\n'
+                    .format(**creationInfo)
+                    + inversio['log'],
+                purchase_date = purchase_date,
+                ))
+        
 
 class InvestmentProvider(ErpWrapper):
 
