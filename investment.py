@@ -27,6 +27,13 @@ class GenerationkWhInvestment(osv.osv):
     _order = 'purchase_date DESC'
 
     _columns = dict(
+        name=fields.char(
+            "Nom",
+            size=50,
+            required=False,
+            unique=True,
+            help="Referència única de la inversió",
+            ),
         member_id=fields.many2one(
             'somenergia.soci',
             "Inversor",
