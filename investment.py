@@ -58,7 +58,6 @@ class GenerationkWhInvestment(osv.osv):
             ),
         purchase_date=fields.date(
             "Data de compra",
-            required=True,
             help="Quin dia es varen comprar les accions",
             ),
         first_effective_date=fields.date(
