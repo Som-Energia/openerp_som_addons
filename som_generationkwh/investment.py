@@ -507,15 +507,14 @@ class GenerationkWhInvestment(osv.osv):
             investment_id, amortization_date, to_be_amortized,
             context=None):
 
-        return
-
         Partner = self.pool.get('res.partner')
+        Product = self.pool.get('product.product')
         Invoice = self.pool.get('account.invoice')
         InvoiceLine = self.pool.get('account.invoice.line')
         PaymentType = self.pool.get('payment.type')
         Journal = self.pool.get('account.journal')
 
-        investment = self.browse(investment_id)
+        investment = self.browse(cursor, uid, investment_id)
 
         date_invoice = str(datetime.datetime.today().date())
         year = amortization_date.split('-')[0]
@@ -530,9 +529,10 @@ class GenerationkWhInvestment(osv.osv):
             partner = partner.browse()[0]
 
         # The product
-        product_id = Proper.search(cursor, uid, [
-            ('code','=','GENKWH_AMOR'),
+        product_id = Product.search(cursor, uid, [
+            ('default_code','=', 'GENKWH_AMOR'),
             ])[0]
+
         product = Product.browse(cursor, uid, product_id)
         product_uom_id = product.uom_id.id
 
@@ -540,7 +540,7 @@ class GenerationkWhInvestment(osv.osv):
         journal_id = Journal.search(cursor, uid, [
             ('code','=','GENKWH_AMOR'),
             ])[0]
-        journal = Journal.browse(journal_id)
+        journal = Journal.browse(cursor, uid, journal_id)
 
         # The payment type
         payment_type_id = PaymentType.search(cursor, uid, [
@@ -578,9 +578,9 @@ class GenerationkWhInvestment(osv.osv):
 
         vals = {
             'invoice_id': invoice_id,
-            'name': _('Amortització fins a %(amortization_date)s de %(investment)s ') % dict(
+            'name': _('Amortització fins a {amortization_date:%d/%m/%Y} de {investment} ').format(
                 investment = investment_name,
-                amortization_date = amortization_date.strftime('%d/%m/%Y'),
+                amortization_date = datetime.datetime.strptime(amortization_date,'%Y-%m-%d'),
             ),
 #            'note': _('Sense notes'),
             'quantity': 1,
@@ -588,24 +588,27 @@ class GenerationkWhInvestment(osv.osv):
             'product_id': product_id,
         }
 
-        l_vals = {}
-        l_vals.update(InvoiceLine.product_id_change(cursor, uid, [],
+        line = dict(InvoiceLine.product_id_change(cursor, uid, [],
             product=product_id,
             uom=product_uom_id,
             partner_id=partner_id,
-            type='in_invoice').get('value', {})
+            type='in_invoice',
+            ).get('value', {})
         )
-        l_vals['invoice_line_tax_id'] = [
-            (6, 0, l_vals.get('invoice_line_tax_id', []))
+        line['invoice_line_tax_id'] = [
+            (6, 0, line.get('invoice_line_tax_id', []))
         ]
-        l_vals.update(vals)
-        InvoiceLine.create(cursor, uid, l_vals)
+        line.update(vals)
+        InvoiceLine.create(cursor, uid, line)
         return invoice_id
 
 
     def create_from_form(self, cursor, uid,
             partner_id, order_date, amount_in_euros, ip,
             context=None):
+
+        # TODO: IBAN should come from the form
+
         Soci = self.pool.get('somenergia.soci')
         IrSequence = self.pool.get('ir.sequence')
         member_id = Soci.search(cursor, uid, [
@@ -653,4 +656,3 @@ class InvestmentProvider(ErpWrapper):
 
 
 GenerationkWhInvestment()
-
