@@ -178,7 +178,10 @@ class GenerationkWhInvestment(osv.osv):
             accountDomain = [ ('code','in',accountCodes)]
         accountIds = Account.search(cursor, uid, accountDomain)
 
-        criteria = [('account_id','in',accountIds)]
+        criteria = [
+			('account_id', 'in', accountIds),
+			('period_id.special', '=', False),
+			]
         if stop: criteria.append(('date_created', '<=', str(stop)))
         if start: criteria.append(('date_created', '>=', str(start)))
 
