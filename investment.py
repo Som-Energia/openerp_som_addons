@@ -118,7 +118,7 @@ class GenerationkWhInvestment(osv.osv):
             order_date = moveline_perms['create_date']
             order_user = 'Webforms'
             purchase_date = moveline_perms['create_date']
-            purchase_user = moveline_perms['create_uid'][1]
+            purchase_user = moveline_perms['create_uid'][1] if moveline_perms['create_uid'] else 'Nobody'
 
             self.write(cursor, uid, investment['id'], dict(
                 log=
