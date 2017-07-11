@@ -624,7 +624,8 @@ class GenerationkWhInvestment(osv.osv):
             ), context)
         creationInfo = self.perm_read(cursor, uid, [id])[0]
         self.write(cursor, uid, id, dict(
-            log = u'[{create_date} {create_uid[1]}] ORDER: Formulari emplenat des de {ip}\n'
+            log = u'[{create_date} {create_uid[1]}] '
+                'ORDER: Formulari emplenat des de {ip}\n'
                 .format(ip=ip,**creationInfo)
             ))
         return id
