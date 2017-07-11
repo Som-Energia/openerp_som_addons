@@ -553,10 +553,9 @@ class GenerationkWhInvestment(osv.osv):
             cursor, uid, [], 'in_invoice', partner_id,
         ).get('value', {}))
 
-        invoice_name = '%s%s%s' % (
-                journal.code,
+        invoice_name = '%s-AMOR%s' % (
+                investment.name,
                 year,
-                partner.ref
                 )
 
         vals.update({
@@ -574,12 +573,11 @@ class GenerationkWhInvestment(osv.osv):
         invoice_id = Invoice.create(cursor, uid, vals)
 
         amortization_per_share = 4
-        investment_name = 'GENKWH_666666666666'
 
         vals = {
             'invoice_id': invoice_id,
             'name': _('Amortització fins a {amortization_date:%d/%m/%Y} de {investment} ').format(
-                investment = investment_name,
+                investment = investment.name,
                 amortization_date = datetime.datetime.strptime(amortization_date,'%Y-%m-%d'),
             ),
 #            'note': _('Sense notes'),
