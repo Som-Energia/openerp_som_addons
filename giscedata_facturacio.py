@@ -597,3 +597,5 @@ class GiscedataFacturacioFacturaLinia(osv.osv):
         )
 
 GiscedataFacturacioFacturaLinia()
+
+# vim: et ts=4 sw=4
