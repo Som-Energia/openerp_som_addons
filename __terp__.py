@@ -27,6 +27,7 @@
     "somenergia_soci_data.xml",
     "security/som_generationkwh_security.xml",
     "security/ir.model.access.csv",
+    "amortization_report.xml"
     ],
   "active": False,
   "installable": True
