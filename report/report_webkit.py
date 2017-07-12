@@ -16,7 +16,7 @@ class report_webkit_html(report_sxw.rml_parse):
 webkit_report.WebKitParser(
     'report.amortization.gkwh',
     'account.invoice',
-    'somenergia-generationkwh/generationkwh/report/report_amortization_gkwh.mako',
+    'som_generationkwh/report/report_amortization_gkwh.mako',
     parser=report_webkit_html
 )
 

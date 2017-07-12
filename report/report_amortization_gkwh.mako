@@ -99,7 +99,6 @@
 </head>
 <body>
     <div id="img">
-    <img src="${addons_path}/som_inversions/report/logo.jpg" />
     </ div>
     </ br></ br></ br></ br></ br>
     <table>
