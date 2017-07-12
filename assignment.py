@@ -216,7 +216,7 @@ class GenerationkWhAssignment(osv.osv):
         return res
 
     def unlink(self, cr, uid, ids, context=None):
-
+        print "customized unlink..."
         assignment_vals = self.read(cr, uid, ids, ['contract_id', 'priority'])
         for assignment in assignment_vals:
             assignment_id = assignment['id']
