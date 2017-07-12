@@ -5,12 +5,12 @@ from consolemsg import step, warn, success, error, fail
 
 
 def migrate(cr,v):
-    print "somenergia-generationkwh_0.0.1.2: Hem entrat al Migrate"
+    print "somenergia-generationkwh_0.0.1.3: Hem entrat al Migrate"
     return
 
 def up(cursor, installed_version):
     logger= netsvc.Logger()
-    print "somenergia-generationkwh_0.0.1.2: Hem entrat al UP"
+    print "somenergia-generationkwh_0.0.1.3: Hem entrat al UP"
     if not installed_version:
         return
     fail("Oriol: Aquesta és una errada de prova a veure que fa amb la versió")
@@ -38,7 +38,7 @@ def up(cursor, installed_version):
 
 
 def down(cursor):
-    print "somenergia-generationkwh_0.0.1.2: Hem entrat al Down"
+    print "somenergia-generationkwh_0.0.1.3: Hem entrat al Down"
     pass
 
 # vim: ts=4 sw=4 et
