@@ -300,13 +300,13 @@ class GenerationkWhAssignment(osv.osv):
         """Remove all records"""
         ids = self.search(cr, uid, [
             ],context=context)
-        for a in self.browse(cr, uid, ids, context=context):
-            a.unlink()
-        Socis = self.pool.get('somenergia.soci')
-        ids = Socis.search(cr, uid, [], context=context)
-        Socis.write(cr, uid, ids, dict(
-            gkwh_assignment_notified=False,
-            ))
+        super(GenerationkWhAssignment, self).unlink(
+            cr, uid, ids, context=context
+        )
+        cr.execute("""\
+            UPDATE somenergia_soci
+            SET gkwh_assignment_notified = NULL;
+            """)
 
     def anyForContract(self, cursor, uid, contract_id, context=None):
         return len(self.search(
