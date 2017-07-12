@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="report_amortization_gkwh" model="ir.actions.report.xml">
+            <field name="report_type">webkit</field>
+            <field name="report_name">amortization.gkwh</field>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field eval="0" name="auto"/>
+            <field eval="0" name="header"/>
+            <field name="model">account.invoice</field>
+            <field name="type">ir.actions.report.xml</field>
+            <field name="name">Amortitzacions GenerationKWh</field>
+            <field name="report_webkit">som_generationkwh/report/report_amortization_gkwh.mako</field>
+        </record>
+    </data>
+</openerp>
