@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from c2c_webkit_report import webkit_report
-from som_generationkwh.report import report_sxw
+from report import report_sxw
 from tools import config
 
 class report_webkit_html(report_sxw.rml_parse):
@@ -16,7 +16,7 @@ class report_webkit_html(report_sxw.rml_parse):
 webkit_report.WebKitParser(
     'report.amortization.gkwh',
     'account.invoice',
-    'som_inversions/report/report_amortization_gkwh.mako',
+    'somenergia-generationkwh/generationkwh/report/report_amortization_gkwh.mako',
     parser=report_webkit_html
 )
 
