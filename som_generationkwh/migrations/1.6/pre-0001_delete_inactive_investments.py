@@ -3,7 +3,7 @@ from oopgrade import oopgrade
 import netsvc
 from consolemsg import step, warn, success, error, fail
 
-version = "somenergia-generationkwh_0.0.1.4: "
+version = "somenergia-generationkwh_1.6: "
 
 def migrate(cr,v):
     print version + "Hem entrat al Migrate"  
