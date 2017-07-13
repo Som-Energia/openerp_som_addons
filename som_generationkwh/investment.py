@@ -244,9 +244,9 @@ class GenerationkWhInvestment(osv.osv):
         accountIds = Account.search(cursor, uid, accountDomain)
 
         movelinefilter = [
-			('account_id', 'in', accountIds),
-			('period_id.special', '=', False),
-			]
+            ('account_id', 'in', accountIds),
+            ('period_id.special', '=', False),
+            ]
         if stop: movelinefilter.append(('date_created', '<=', str(stop)))
         if start: movelinefilter.append(('date_created', '>=', str(start)))
 
@@ -523,9 +523,16 @@ class GenerationkWhInvestment(osv.osv):
         partner_id = investment.member_id.partner_id.id
         partner = Partner.browse(cursor, uid, partner_id)
 
-        # Get or create account
+        # Get or create partner specific accounts
         if not partner.property_account_liquidacio:
             partner.button_assign_acc_410()
+        if not partner.property_account_gkwh:
+            partner.button_assign_acc_1635()
+
+        if (
+            not partner.property_account_gkwh or
+            not partner.property_account_liquidacio
+            ):
             partner = partner.browse()[0]
 
         # The product
@@ -596,6 +603,7 @@ class GenerationkWhInvestment(osv.osv):
         line['invoice_line_tax_id'] = [
             (6, 0, line.get('invoice_line_tax_id', []))
         ]
+        line['account_id']=partner.property_account_gkwh.id
         line.update(vals)
         InvoiceLine.create(cursor, uid, line)
         return invoice_id
@@ -655,3 +663,5 @@ class InvestmentProvider(ErpWrapper):
 
 
 GenerationkWhInvestment()
+
+# vim: et ts=4 sw=4
