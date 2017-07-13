@@ -1,24 +1,6 @@
 <%
-
     report = objects[0]
-
-    receiptDate = report.investmentReceiptDate()
-
-    ownerName = report.ownerNameInvestmentFromInvoice()
-    ownerNif = report.ownerNifInvestmentFromInvoice()
-
-    inversionId = report.nameInvestmentFromInvoice()
-    inversionInitialAmount = report.amoutInitialInvestment()
-    inversionPendingCapital = report.capitalPendingFromInvestment()
-    inversionBankAccount = report.bankAccountFromInvoice()
-    inversionPurchaseDate = report.datePurchaseInvestment()
-    inversionExpirationDate = report.dateExpirationInvestment()
-
-    amortizationName = report.amortizationNameFromInvoice()
-    amortizationAmount = report.amortitzationAmountFromInvoice()
-    amortizationDate = report.amortizationEndDateFromInvoice()
-    amortizationNumPayment = report.amortizationNumPaymentFromInvoice()
-    amortizationTotalPayments = report.amortizationTotalPaymentFromInvoice()
+    data = report.investmentAmortization_notificationData()
 %>
 <html>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -128,38 +110,38 @@
     <div class="logos">
         <img src="${addons_path}/som_generationkwh/report/Logo-SomEnergia-blanco-quadrado-250x250px.jpg" />
         <img src="${addons_path}/som_generationkwh/report/Logo_Generation-04-Horizontal.jpg" />
-        <p id="cabecera"><b>Liquidació Generation kWh</b><br>${receiptDate} </ p>
+        <p id="cabecera"><b>Liquidació Generation kWh</b><br>${data.receiptDate} </ p>
     </ div>
     <div>
     <table>
         <tr>
-            <th colspan="2"><b>Dades Préstec Generation kWh: ${inversionId}</b></th>
+            <th colspan="2"><b>Dades Préstec Generation kWh: ${data.inversionId}</b></th>
         </tr>
         <tr>
-            <td colspan="2"> Titular: ${ownerName}</td>
+            <td colspan="2"> Titular: ${data.ownerName}</td>
 
         </tr>
         <tr>
-            <td> NIF:  ${ownerNif} </td>
-            <td> Import Inicial:  ${inversionInitialAmount} € </td>
+            <td> NIF:  ${data.ownerNif} </td>
+            <td> Import Inicial:  ${data.inversionInitialAmount} € </td>
         </tr>
         <tr>
-            <td> Data formalització: ${inversionPurchaseDate}</td>
-            <td> Data venciment: ${inversionExpirationDate}</td>
+            <td> Data formalització: ${data.inversionPurchaseDate}</td>
+            <td> Data venciment: ${data.inversionExpirationDate}</td>
         </tr>
     </table>
     </br>
     <table>
         <tr>
-            <th colspan="2"><b>Amortització Actual: ${amortizationName} </b> </th>
+            <th colspan="2"><b>Amortització Actual: ${data.amortizationName} </b> </th>
         </tr>
         <tr>
-            <td> Import: ${amortizationAmount} € </td>
-            <td> Data: ${amortizationDate} </td>
+            <td> Import: ${data.amortizationAmount} € </td>
+            <td> Data: ${data.amortizationDate} </td>
         </tr>
         <tr>
-            <td> Pagament nº:  ${amortizationNumPayment} de ${amortizationTotalPayments} </td>
-            <td> Pendent de retornar: ${inversionPendingCapital} € </td>
+            <td> Pagament nº:  ${data.amortizationNumPayment} de ${data.amortizationTotalPayments} </td>
+            <td> Pendent de retornar: ${data.inversionPendingCapital} € </td>
         </tr>
     </table>
     </br>
@@ -168,7 +150,7 @@
             <th colspan="2"><b> Compte on es realizarà l'ingrés </b></th>
         </tr>
         <tr>
-            <td id="account"> ${inversionBankAccount} </td>
+            <td id="account"> ${data.inversionBankAccount} </td>
         </tr>
     </table>
     </div>

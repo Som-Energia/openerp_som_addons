@@ -10,9 +10,7 @@ class AccountInvoice(osv.osv):
     def investmentAmortization_notificationData(self, cursor, uid, invoice_id):
         report = ns()
 
-        import datetime
-
-        report.receiptDate = datetime.datetime.today().strftime("%d-%m-%Y")
+        report.receiptDate = self.investmentReceiptDate(cursor, uid, invoice_id)
 
         report.ownerName = self.ownerNameInvestmentFromInvoice(cursor, uid, invoice_id)
         report.ownerNif = self.ownerNifInvestmentFromInvoice(cursor, uid, invoice_id)
@@ -28,6 +26,7 @@ class AccountInvoice(osv.osv):
         report.amortizationAmount = self.amortitzationAmountFromInvoice(cursor, uid, invoice_id)
         report.amortizationDate = self.amortizationEndDateFromInvoice(cursor, uid, invoice_id)
         report.amortizationNumPayment = self.amortizationNumPaymentFromInvoice(cursor, uid, invoice_id)
+        report.amortizationTotalPayments = self.amortizationTotalPaymentFromInvoice(cursor, uid, invoice_id)
 
         return report
 
