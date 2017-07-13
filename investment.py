@@ -525,7 +525,7 @@ class GenerationkWhInvestment(osv.osv):
 
         # Get or create account
         if not partner.property_account_liquidacio:
-            partner.button_assign_acc_410() # TODO: Proper account!!
+            partner.button_assign_acc_410()
             partner = partner.browse()[0]
 
         # The product
