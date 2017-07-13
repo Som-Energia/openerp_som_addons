@@ -1,28 +1,28 @@
 <%
-
     import datetime
-
 
     receiptDate = datetime.datetime.today().strftime("%d-%m-%Y")
 
-    ownerName = "Pepito Pepitez Perez"
-    ownerNif = "12345678-Z"
+    report = objects[0]
+    ownerName = report.ownerNameInvestmentFromInvoice()
+    ownerNif = report.ownerNifInvestmentFromInvoice()
 
-    inversionId = "GKWH001"
-    inversionInitialAmount = "1.000,00"
-    inversionPurchaseDate = "20-05-2015"
-    inversionExpirationDate = "19-05-2040"
-    inversionPendingCapital = "960,00"
-    inversionBankAccount = "ES25 0081 5273 6200 0103 9910"
+    inversionId = report.nameInvestmentFromInvoice()
+    inversionInitialAmount = report.amoutInitialInvestment()
+    inversionPendingCapital = report.capitalPendingFromInvestment()
+    inversionBankAccount = report.bankAccountFromInvoice()
+    inversionPurchaseDate = report.datePurchaseInvestment()
+    inversionExpirationDate = report.dateExpirationInvestment()
 
-    amortizationName = "GKWH0000001-AMOR2017"
-    amortizationAmount = "40,00"
-    amortizationDate = "20-05-2017"
-    amortizationNumPayment = "1"
-    amortizationTotalPayments = "24"
+    amortizationName = report.amortizationNameFromInvoice()
+    amortizationAmount = report.amortitzationAmountFromInvoice()
+    amortizationDate = report.amortizationEndDateFromInvoice()
+    amortizationNumPayment = report.amortizationNumPaymentFromInvoice()
+    amortizationTotalPayments = report.amortizationTotalPaymentFromInvoice()
 %>
 <html>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
 <head>
     <title> Liquidació préstec Generation kWh </title>
     <style type="text/css">
@@ -128,7 +128,7 @@
     <div class="logos">
         <img src="${addons_path}/som_generationkwh/report/Logo-SomEnergia-blanco-quadrado-250x250px.jpg" />
         <img src="${addons_path}/som_generationkwh/report/Logo_Generation-04-Horizontal.jpg" />
-        <p id="cabecera">Liquidació Generation kWh ${receiptDate} </ p>
+        <p id="cabecera"><b>Liquidació Generation kWh</b><br>${receiptDate} </ p>
     </ div>
     <div>
     <table>
