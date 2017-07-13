@@ -1,1 +1,2 @@
 import report_webkit
+import report_amortization_gkwh
