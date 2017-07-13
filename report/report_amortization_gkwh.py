@@ -2,10 +2,17 @@
 from osv import osv, fields
 import pooler
 
-class AmortizationGkWhReport(osv.osv):
+class AccountInvoice(osv.osv):
 
-    _name = 'amortization_gkwh_report'
-    _inherit = 'amortization_gkwh_report'
+    #_name = 'amortization_gkwh_report'
+    #_inherit = 'amortization_gkwh_report'
+    _name = 'account.invoice'
+    _inherit = 'account.invoice'
+
+
+
+
+
 
     #Report datas
     def titleReport(self):
@@ -47,4 +54,5 @@ class AmortizationGkWhReport(osv.osv):
     def bankAccountFromInvoice(self, cursor, uid, invoice_id):
         return 'ES25 0081 5273 6200 0103 9910'
 
+AccountInvoice()
 # vim: et ts=4 sw=4

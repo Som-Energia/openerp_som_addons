@@ -1,3 +1,26 @@
+<%
+
+    import datetime
+
+
+    receiptDate = datetime.datetime.today().strftime("%d-%m-%Y")
+
+    ownerName = "Pepito Pepitez Perez"
+    ownerNif = "12345678-Z"
+
+    inversionId = "GKWH001"
+    inversionInitialAmount = "1.000,00"
+    inversionPurchaseDate = "20-05-2015"
+    inversionExpirationDate = "19-05-2040"
+    inversionPendingCapital = "960,00"
+    inversionBankAccount = "ES25 0081 5273 6200 0103 9910"
+
+    amortizationName = "GKWH0000001-AMOR2017"
+    amortizationAmount = "40,00"
+    amortizationDate = "20-05-2017"
+    amortizationNumPayment = "1"
+    amortizationTotalPayments = "24"
+%>
 <html>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <head>
@@ -7,14 +30,10 @@
     img {
         width: 120px;
         height: 120px;
-        margin-left: 15px;
+        margin-left: 10px;
     }
-    #img {
-        position: absolute;
-        left: 0px;
-        top: 0px;
-        z-index: -1;
-        width: 100%;
+    .logos {
+        float: left;
     }
     table a:link {
         color: #666;
@@ -26,9 +45,9 @@
         color:#666;
         font-size:12px;
         text-shadow: 1px 1px 0px #fff;
-        background:#eaebec;
-        margin-left:20%;
-        margin-right: 20%;
+        background:#e0e0e0;
+        margin-left:auto;
+        margin-right:auto;
         width: 60%;
         border:#ccc 1px solid;
 
@@ -41,7 +60,7 @@
         box-shadow: 0 1px 2px #d1d1d1;
     }
     table th {
-        padding:21px 25px 22px 25px;
+        padding:10px 25px;
         border-top:1px solid #fafafa;
         border-bottom:1px solid #e0e0e0;
 
@@ -63,17 +82,26 @@
         -webkit-border-top-right-radius:3px;
         border-top-right-radius:3px;
     }
+    table tr:last-child td:first-child {
+        -moz-border-radius-bottomleft:3px;
+        -webkit-border-bottom-left-radius:3px;
+        border-bottom-left-radius:3px;
+    }
+    table tr:last-child td:last-child {
+        -moz-border-radius-bottomright:3px;
+        -webkit-border-bottom-right-radius:3px;
+        border-bottom-right-radius:3px;
+    }
     table tr {
         text-align: left;
         padding-left:20px;
     }
     table td:first-child {
-        text-align: left;
         padding-left:20px;
         border-left: 0;
     }
     table td {
-        padding:18px;
+        padding:5px 18px;
         border-top: 1px solid #ffffff;
         border-bottom:1px solid #e0e0e0;
         border-left: 1px solid #e0e0e0;
@@ -85,47 +113,53 @@
     table tr:last-child td {
         border-bottom:0;
     }
-    table tr:last-child td:first-child {
-        -moz-border-radius-bottomleft:3px;
-        -webkit-border-bottom-left-radius:3px;
-        border-bottom-left-radius:3px;
+    #account{
+        text-align: center;
     }
-    table tr:last-child td:last-child {
-        -moz-border-radius-bottomright:3px;
-        -webkit-border-bottom-right-radius:3px;
-        border-bottom-right-radius:3px;
+    #cabecera{
+        float: right;
+        padding-top: 20px;
     }
+
     </style>
 </head>
 <body>
-    <div id="img">
+
+    <div class="logos">
+        <img src="${addons_path}/som_generationkwh/report/Logo-SomEnergia-blanco-quadrado-250x250px.jpg" />
+        <img src="${addons_path}/som_generationkwh/report/Logo_Generation-04-Horizontal.jpg" />
+        <p id="cabecera">Liquidació Generation kWh ${receiptDate} </ p>
     </ div>
-    </ br></ br></ br></ br></ br>
+    <div>
     <table>
         <tr>
-            <th colspan="2"><b>Dades Préstec Generation kWh: GKWH001</b></th>
+            <th colspan="2"><b>Dades Préstec Generation kWh: ${inversionId}</b></th>
         </tr>
         <tr>
-            <td> Realitzat per: Pepito </td>
-            <td> Import préstec:  1.000,00 € </td>
+            <td colspan="2"> Titular: ${ownerName}</td>
+
         </tr>
         <tr>
-            <td> Data efectiva préstec: 20-05-2015</td>
-            <td> Data venciment préstec: 19-05-2040 </td>
+            <td> NIF:  ${ownerNif} </td>
+            <td> Import Inicial:  ${inversionInitialAmount} € </td>
+        </tr>
+        <tr>
+            <td> Data formalització: ${inversionPurchaseDate}</td>
+            <td> Data venciment: ${inversionExpirationDate}</td>
         </tr>
     </table>
     </br>
     <table>
         <tr>
-            <th colspan="2"><b>Dades Amortització Actual </b> </th>
+            <th colspan="2"><b>Amortització Actual: ${amortizationName} </b> </th>
         </tr>
         <tr>
-            <td> Import Amortització: 40,00 € </td>
-            <td> Amortitzat fins: 20-05-2017 </td>
+            <td> Import: ${amortizationAmount} € </td>
+            <td> Data: ${amortizationDate} </td>
         </tr>
         <tr>
-            <td> Pagament nº:  1 de 24 </td>
-            <td> Capital pendent: 960,00 € </td>
+            <td> Pagament nº:  ${amortizationNumPayment} de ${amortizationTotalPayments} </td>
+            <td> Pendent de retornar: ${inversionPendingCapital} € </td>
         </tr>
     </table>
     </br>
@@ -134,8 +168,9 @@
             <th colspan="2"><b> Compte on es realizarà l'ingrés </b></th>
         </tr>
         <tr>
-            <td> ES25 XXXX XXX XXX XXXX XXXX </td>
+            <td id="account"> ${inversionBankAccount} </td>
         </tr>
     </table>
+    </div>
 </body>
 </html>
