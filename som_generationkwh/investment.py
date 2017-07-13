@@ -554,16 +554,25 @@ class GenerationkWhInvestment(osv.osv):
             ('code', '=', 'TRANSFERENCIA_CSB'),
             ])[0]
 
+        # Ensure unique amortization
+        invoice_name = '%s-AMOR%s' % (
+                investment.name,
+                year,
+                )
+        existingInvoice = Invoice.search(cursor,uid,[
+            ('name','=', invoice_name),
+            ])
+        if existingInvoice:
+            raise Exception(
+                "Amortization notification {} already exists"
+                .format(invoice_name))
+
+
         # Default invoice fields for given partner
         vals = {}
         vals.update(Invoice.onchange_partner_id(
             cursor, uid, [], 'in_invoice', partner_id,
         ).get('value', {}))
-
-        invoice_name = '%s-AMOR%s' % (
-                investment.name,
-                year,
-                )
 
         vals.update({
             'partner_id': partner_id,
