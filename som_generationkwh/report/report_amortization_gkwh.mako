@@ -1,9 +1,9 @@
 <%
-    import datetime
-
-    receiptDate = datetime.datetime.today().strftime("%d-%m-%Y")
 
     report = objects[0]
+
+    receiptDate = report.investmentReceiptDate()
+
     ownerName = report.ownerNameInvestmentFromInvoice()
     ownerNif = report.ownerNifInvestmentFromInvoice()
 

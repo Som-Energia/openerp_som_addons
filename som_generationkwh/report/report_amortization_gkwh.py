@@ -1,14 +1,49 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
+from yamlns import namespace as ns
 import pooler
 
 class AccountInvoice(osv.osv):
     _name = 'account.invoice'
     _inherit = 'account.invoice'
 
+    def investmentAmortization_notificationData(self, cursor, uid, invoice_id):
+        report = ns()
+
+        import datetime
+
+        report.receiptDate = datetime.datetime.today().strftime("%d-%m-%Y")
+
+        report.ownerName = self.ownerNameInvestmentFromInvoice(cursor, uid, invoice_id)
+        report.ownerNif = self.ownerNifInvestmentFromInvoice(cursor, uid, invoice_id)
+
+        report.inversionId = self.nameInvestmentFromInvoice(cursor, uid, invoice_id)
+        report.inversionInitialAmount = self.amoutInitialInvestment(cursor, uid, invoice_id)
+        report.inversionPendingCapital = self.capitalPendingFromInvestment(cursor, uid, invoice_id)
+        report.inversionBankAccount = self.bankAccountFromInvoice(cursor, uid, invoice_id)
+        report.inversionPurchaseDate = self.datePurchaseInvestment(cursor, uid, invoice_id)
+        report.inversionExpirationDate = self.dateExpirationInvestment(cursor, uid, invoice_id)
+
+        report.amortizationName = self.amortizationNameFromInvoice(cursor, uid, invoice_id)
+        report.amortizationAmount = self.amortitzationAmountFromInvoice(cursor, uid, invoice_id)
+        report.amortizationDate = self.amortizationEndDateFromInvoice(cursor, uid, invoice_id)
+        report.amortizationNumPayment = self.amortizationNumPaymentFromInvoice(cursor, uid, invoice_id)
+
+        return report
+
+    def investmentReceiptDate(self, cursor, uid, invoice_id):
+        import datetime
+        return datetime.datetime.today().strftime("%d-%m-%Y")
 
     # Owner data
     def ownerNameInvestmentFromInvoice(self, cursor, uid, invoice_id):
+        # invoice  id es una lista de ids!
+
+        pool = pooler.get_pool(cursor.dbname)
+        fact_obj = pool.get('giscedata.facturacio.factura')
+        fact_reads = fact_obj.read(cursor, uid,invoice_id)
+
+        #return repr(fact_reads)
         return 'Pepito de Los Palotes'
 
     def ownerNifInvestmentFromInvoice(self, cursor, uid, invoice_id):
