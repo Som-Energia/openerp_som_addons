@@ -2,13 +2,17 @@
 from oopgrade import oopgrade
 import netsvc
 from consolemsg import step, warn, success, error, fail
+import logging
 
 version = "somenergia-generationkwh_1.6: "
 
 def migrate(cr,v):
-    print version + "Hem entrat al Migrate"  
+    if not v:
+        return
 
+    logger = logging.getLogger('openerp.migration')
 
+    logger.info("Check if exist an investment created in special period that remains active")
     query = """\
         select
             inv.id as id
@@ -30,7 +34,7 @@ def migrate(cr,v):
     result = cr. fetchone()
     
     if result:
-        fail("Error: Hi ha inversions a Generationkwh de tancament actives!")
+        raise Exception("Error: Fix active investments in Generationkwh created in special period")
     else:
         query = """\
             delete
@@ -55,18 +59,14 @@ def migrate(cr,v):
             """
 
         cr.execute(query)
-        print "S'han eliminat %d inversions creades pel tancament." % cr.rowcount
+        logger.info("Deleted %d investments created in special period" % cr.rowcount)
 
- 
-#    fail("Oriol: Aquesta és una errada de prova a veure que fa amb la versió")
     return
 
 def up(cursor, installed_version):
-    print version + "Hem entrat al UP"
     pass
 
 def down(cursor):
-    print version + "Hem entrat al Down"
     pass
 
 # vim: ts=4 sw=4 et
