@@ -45,7 +45,7 @@ class WizardInvestmentAmortization(osv.osv_memory):
                 '- Amortitzacions pendents: {pending}\n\n'
                 '- Import total: {pending_amount} €\n'
                 .format(
-                    pending = 15,
+                    pending = 150,
                     pending_amount = 3033.23,
 
                 ),
@@ -55,7 +55,11 @@ class WizardInvestmentAmortization(osv.osv_memory):
 
     def generate(self, cursor, uid, ids, context=None):
         wiz = self.browse(cursor, uid, ids[0], context)
-        invoice_ids = []
+        Invoice = self.pool.get('account.invoice')
+        invoice_ids = Invoice.search(cursor,uid,[
+                ('name','like', "%AMOR%"),
+                ])
+
         return {
             'domain': "[('id','in', %s)]" % str(invoice_ids),
             'name': _('Factures generades'),
