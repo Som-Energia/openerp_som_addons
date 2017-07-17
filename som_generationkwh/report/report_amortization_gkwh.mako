@@ -115,7 +115,7 @@
     <div>
     <table>
         <tr>
-            <th colspan="2"><b>Dades Préstec Generation kWh: ${data.inversionId}</b></th>
+            <th colspan="2"><b>Dades Préstec Generation kWh: ${data.inversionName}</b></th>
         </tr>
         <tr>
             <td colspan="2"> Titular: ${data.ownerName}</td>

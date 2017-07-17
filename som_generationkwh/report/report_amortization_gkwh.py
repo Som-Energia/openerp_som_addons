@@ -8,17 +8,46 @@ class AccountInvoice(osv.osv):
     _name = 'account.invoice'
     _inherit = 'account.invoice'
 
-    def investmentAmortization_notificationData(self, cursor, uid, invoice_id):
+    def investmentAmortization_notificationData(self, cursor, uid, id):
         report = ns()
 
-        report.receiptDate = datetime.datetime.today().strftime("%d-%m-%Y")
+        pool = pooler.get_pool(cursor.dbname)
+        acc_inv = pool.get('account.invoice')
+        gkwh_inv = pool.get('generationkwh.investment')
 
-        report.ownerName = 'Pepito de Los Palotes'
+        report.receiptDate = datetime.datetime.today().strftime("%d-%m-%Y")
         report.ownerNif = '87654321-A'
 
-        report.inversionId = 'GKWH0000001'
-        report.inversionInitialAmount = '1.000,23'
+        #Descripcio
+        inversionId = acc_inv.search(cursor, uid, [
+            ('id', '=', id)
+        ])
+        inversionDictName = acc_inv.read(cursor, uid, inversionId, ['name'])
+        acc_inv_name = [a['name'] for a in inversionDictName]
+        report.inversionName = acc_inv_name[0]
+
+        #Get gkwh Inversion name/id
+        gkwhInversionId = acc_inv.search(cursor, uid, [
+            ('name', '=', report.inversionName)
+        ])
+
+        # Titular
+        gkwhInversionDict = gkwh_inv.read(cursor, uid, gkwhInversionId, ['member_id'])
+        gkwh_inv_ownerName = [a['member_id'] for a in gkwhInversionDict]
+        report.ownerName = gkwh_inv_ownerName[1]
+
+        #Inversion Initial
+        gkwhInversionDict = gkwh_inv.read(cursor, uid, gkwhInversionId, ['nshares'])
+        gkwh_inv_nshares = [a['nshares'] for a in gkwhInversionDict]
+        report.inversionInitialAmount = gkwh_inv_nshares[0] * 100
+
+        #Pending capital
+        gkwhInversionDict = gkwh_inv.read(cursor, uid, gkwhInversionId, ['nshares'])
+        gkwh_inv_nshares = [a['nshares'] for a in gkwhInversionDict]
+        report.inversionInitialAmount = gkwh_inv_nshares[0] * 100
         report.inversionPendingCapital = '960,11'
+
+
         report.inversionBankAccount = 'ES25 0081 5273 6200 0103 ZZZZ'
         report.inversionPurchaseDate = '20-05-2015'
         report.inversionExpirationDate = '19-05-2040'
@@ -29,9 +58,12 @@ class AccountInvoice(osv.osv):
         report.amortizationNumPayment = '7'
         report.amortizationTotalPayments = '24'
 
-        pool = pooler.get_pool(cursor.dbname)
-        fact_obj = pool.get('giscedata.facturacio.factura')
-        fact_reads = fact_obj.read(cursor, uid,invoice_id)
+
+
+        
+
+
+
 
 
         return report
