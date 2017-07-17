@@ -484,10 +484,10 @@ class GenerationkWhInvestment(osv.osv):
                 log,
             ) = investment_tuple
 
-            #amortization_id = self.create_amortization_invoice(cursor, uid,
-            #    investment_id, member_id, amortization_date, to_be_amortized)
+            amortization_id = self.create_amortization_invoice(cursor, uid,
+                investment_id, amortization_date, to_be_amortized)
 
-            #amortization_ids.append(amortization_id)
+            amortization_ids.append(amortization_id)
 
             self.write(cursor, uid, investment_id, dict(
                 amortized_amount=amortized_amount+to_be_amortized,
@@ -501,6 +501,8 @@ class GenerationkWhInvestment(osv.osv):
                         amortization_date,
                     )+log,
                 ), context)
+
+        return amortization_ids
 
 
     def create_amortization_invoice(self, cursor, uid,
@@ -556,7 +558,9 @@ class GenerationkWhInvestment(osv.osv):
 
         # Ensure unique amortization
         invoice_name = '%s-AMOR%s' % (
-                investment.name,
+                #TODO: Now investment.name is empty. When is set, use investment.name instead.
+                #investment.name,
+                investment.id,
                 year,
                 )
         existingInvoice = Invoice.search(cursor,uid,[
