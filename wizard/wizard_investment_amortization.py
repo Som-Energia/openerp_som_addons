@@ -39,13 +39,13 @@ class WizardInvestmentAmortization(osv.osv_memory):
         wiz = self.browse(cursor, uid, ids[0], context)
         context.update(pre_calc=True)
 	
-	    Investment = self.pool.get('generationkwh.investment')
-	    current_date =  wiz.date_end
-	    pending_amortizations = Investment.pending_amortizations(cursor, uid, current_date)
+        Investment = self.pool.get('generationkwh.investment')
+        current_date =  wiz.date_end
+        pending_amortizations = Investment.pending_amortizations(cursor, uid, current_date)
 
-	    total = 0
-	    for p in pending_amortizations:
-	        total = total + p[4]
+        total = 0
+        for p in pending_amortizations:
+            total = total + p[4]
         
         wiz.write(dict(
             output=
@@ -66,9 +66,9 @@ class WizardInvestmentAmortization(osv.osv_memory):
         #invoice_ids = Invoice.search(cursor,uid,[
         #        ('name','like', "%AMOR%"),
         #        ])
-	    current_date = wiz.date_end
-	    Investment = self.pool.get('generationkwh.investment')
-	    invoice_ids = Investment.amortize(cursor, uid, current_date, context)
+        current_date = wiz.date_end
+        Investment = self.pool.get('generationkwh.investment')
+        invoice_ids = Investment.amortize(cursor, uid, current_date, context)
 
         return {
             'domain': "[('id','in', %s)]" % str(invoice_ids),
