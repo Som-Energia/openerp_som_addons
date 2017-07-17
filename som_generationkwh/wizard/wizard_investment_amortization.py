@@ -5,7 +5,7 @@ from tools.translate import _
 from datetime import datetime, timedelta
 from calendar import isleap
 import netsvc
-
+from som_generationkwh import investment
 
 class WizardInvestmentAmortization(osv.osv_memory):
     """Assistent per amortitzar la inversió.
@@ -38,15 +38,22 @@ class WizardInvestmentAmortization(osv.osv_memory):
     def preview(self, cursor, uid, ids, context=None):
         wiz = self.browse(cursor, uid, ids[0], context)
         context.update(pre_calc=True)
+	
+	Investment = self.pool.get('generationkwh.investment')
+	current_date =  wiz.date_end
+	pending_amortizations = Investment.pending_amortizations(cursor, uid, current_date)
 
-        print wiz.date_end
+	total = 0
+	for p in pending_amortizations:
+	    total = total + p[4]
+        
         wiz.write(dict(
             output=
                 '- Amortitzacions pendents: {pending}\n\n'
                 '- Import total: {pending_amount} €\n'
                 .format(
-                    pending = 150,
-                    pending_amount = 3033.23,
+                    pending = len(pending_amortizations),
+                    pending_amount = total,
 
                 ),
             state='pre_calc',
@@ -55,10 +62,13 @@ class WizardInvestmentAmortization(osv.osv_memory):
 
     def generate(self, cursor, uid, ids, context=None):
         wiz = self.browse(cursor, uid, ids[0], context)
-        Invoice = self.pool.get('account.invoice')
-        invoice_ids = Invoice.search(cursor,uid,[
-                ('name','like', "%AMOR%"),
-                ])
+        #Invoice = self.pool.get('account.invoice')
+        #invoice_ids = Invoice.search(cursor,uid,[
+        #        ('name','like', "%AMOR%"),
+        #        ])
+	current_date = wiz.date_end
+	Investment = self.pool.get('generationkwh.investment')
+	invoice_ids = Investment.amortize(cursor, uid, current_date, context)
 
         return {
             'domain': "[('id','in', %s)]" % str(invoice_ids),
@@ -69,6 +79,5 @@ class WizardInvestmentAmortization(osv.osv_memory):
             'type': 'ir.actions.act_window'
         }
 
-
-
 WizardInvestmentAmortization()
+# vim: et ts=4 sw=4 
