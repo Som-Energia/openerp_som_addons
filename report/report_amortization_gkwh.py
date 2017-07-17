@@ -3,6 +3,7 @@ from osv import osv, fields
 from yamlns import namespace as ns
 import pooler
 import datetime
+from dateutil.relativedelta import relativedelta
 
 class AccountInvoice(osv.osv):
     _name = 'account.invoice'
@@ -15,13 +16,19 @@ class AccountInvoice(osv.osv):
         acc_inv = pool.get('account.invoice')
         gkwh_inv = pool.get('generationkwh.investment')
 
-        report.receiptDate = datetime.datetime.today().strftime("%d-%m-%Y")
-        report.ownerNif = '87654321-A'
-
-        #Descripcio
         inversionId = acc_inv.search(cursor, uid, [
             ('id', '=', id)
         ])
+
+        #Receipt Date
+        inversionDictReceDat = acc_inv.read(cursor, uid, inversionId, ['date_invoice'])
+        acc_inv_rec_date = [a['date_invoice'] for a in inversionDictReceDat]
+        report.receiptDate = acc_inv_rec_date[0]
+
+
+        report.ownerNif = '87654321-A'
+
+        #Descripcio
         inversionDictName = acc_inv.read(cursor, uid, inversionId, ['name'])
         acc_inv_name = [a['name'] for a in inversionDictName]
         report.inversionName = acc_inv_name[0]
@@ -37,23 +44,39 @@ class AccountInvoice(osv.osv):
         report.ownerName = gkwh_inv_ownerName[1]
 
         #Inversion Initial
-        gkwhInversionDict = gkwh_inv.read(cursor, uid, gkwhInversionId, ['nshares'])
-        gkwh_inv_nshares = [a['nshares'] for a in gkwhInversionDict]
+        gkwhInversionDictInitAmou = gkwh_inv.read(cursor, uid, gkwhInversionId, ['nshares'])
+        gkwh_inv_nshares = [a['nshares'] for a in gkwhInversionDictInitAmou]
         report.inversionInitialAmount = gkwh_inv_nshares[0] * 100
 
         #Pending capital
-        gkwhInversionDict = gkwh_inv.read(cursor, uid, gkwhInversionId, ['nshares'])
-        gkwh_inv_nshares = [a['nshares'] for a in gkwhInversionDict]
-        report.inversionInitialAmount = gkwh_inv_nshares[0] * 100
-        report.inversionPendingCapital = '960,11'
+        gkwhInversionDictPendCapt = gkwh_inv.read(cursor, uid, gkwhInversionId, ['amortized_amount'])
+        gkwh_inv_amor_amou = [a['amortized_amount'] for a in gkwhInversionDictPendCapt]
+        report.inversionPendingCapital = report.inversionInitialAmount - gkwh_inv_amor_amou[0]
+
+        #Bank Account
+        inversionDictBankAcco = acc_inv.read(cursor, uid, inversionId, ['partner_bank'])
+        acc_inv_bank_acco = [a['partner_bank'] for a in inversionDictBankAcco]
+        report.report.inversionBankAccount = acc_inv_bank_acco[0]
+
+        #Purchase Date
+        gkwhInversionDictPurDat = gkwh_inv.read(cursor, uid, gkwhInversionId, ['purchase_date'])
+        gkwh_inv_pur_date = [a['purchase_date'] for a in gkwhInversionDictPurDat]
+        report.inversionPurchaseDate = gkwh_inv_pur_date[0]
+
+        #Expiration Date
+        report.inversionExpirationDate = datetime.datetime.strptime(gkwh_inv_pur_date[0], "%Y-%m-%d").date() + relativedelta(years=+25)
+
+        #Actual Amortization
+        inversionDictActualAmor = acc_inv.read(cursor, uid, inversionId, ['number'])
+        acc_inv_actu_amor = [a['number'] for a in inversionDictActualAmor]
+        report.amortizationName = acc_inv_actu_amor[0]
+
+        #Amortization Amount
+        inversionDictAmount = acc_inv.read(cursor, uid, inversionId, ['amount_total'])
+        acc_inv_amount = [a['amount_total'] for a in inversionDictAmount]
+        report.amortizationAmount = acc_inv_amount[0]
 
 
-        report.inversionBankAccount = 'ES25 0081 5273 6200 0103 ZZZZ'
-        report.inversionPurchaseDate = '20-05-2015'
-        report.inversionExpirationDate = '19-05-2040'
-
-        report.amortizationName = "GKWH0000001-AMOR2017"
-        report.amortizationAmount = '40,02'
         report.amortizationDate = '20-05-2017'
         report.amortizationNumPayment = '7'
         report.amortizationTotalPayments = '24'
