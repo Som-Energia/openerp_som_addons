@@ -558,9 +558,7 @@ class GenerationkWhInvestment(osv.osv):
 
         # Ensure unique amortization
         invoice_name = '%s-AMOR%s' % (
-                #TODO: Now investment.name is empty. When is set, use investment.name instead.
-                #investment.name,
-                investment.id,
+                investment.name,
                 year,
                 )
         existingInvoice = Invoice.search(cursor,uid,[
