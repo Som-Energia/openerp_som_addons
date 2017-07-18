@@ -621,7 +621,7 @@ class GenerationkWhInvestment(osv.osv):
 
 
     def create_from_form(self, cursor, uid,
-            partner_id, order_date, amount_in_euros, ip,
+            partner_id, order_date, amount_in_euros, ip, iban,
             context=None):
 
         # TODO: IBAN should come from the form
@@ -631,6 +631,9 @@ class GenerationkWhInvestment(osv.osv):
         member_id = Soci.search(cursor, uid, [
                 ('partner_id','=',partner_id)
                 ])[0]
+        Partner = self.pool.get('res.partner')
+        Partner.write(cursor, uid, partner_id, dict(
+                bank_inversions = 2,),context)
 
         name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')
         id = self.create(cursor, uid, dict(
