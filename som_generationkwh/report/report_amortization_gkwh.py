@@ -19,33 +19,37 @@ class AccountInvoice(osv.osv):
         Investment = pool.get('generationkwh.investment')
         Partner = pool.get('res.partner')
 
-        investment_id = ids[0]
+        account_id = ids[0]
 
-        investment = Invoice.read(cursor, uid, investment_id, [
+        invoice = Invoice.read(cursor, uid, account_id, [
             'date_invoice',
             'partner_id',
             'name',
+            'member_id',
             ])
-        report.receiptDate = investment['date_invoice']
 
-        #a partir de partner id
-        partner = Partner.read(cursor, uid, investment['partner_id'][0], ['vat'])
-        # TODO: non spanish vat not covered by tests
+        partner = Partner.read(cursor, uid, invoice['partner_id'][0], [
+            'vat',
+            'name',
+        ])
+
+        # TODO: Find a more reliable way
+        investment_id = Investment.search(cursor,uid, [
+            ('name','=',invoice['name'].split('-AMOR')[0]),
+        ])[0]
+
+        investment = Investment.read(cursor,uid, investment_id, [
+            'name',
+        ])
+
+        report.receiptDate = invoice['date_invoice']
+        # TODO: non spanish vats not covered by tests
         report.ownerNif = partner['vat'][2:] if partner['vat'][:2]=='ES' else partner['vat']
         report.inversionName = investment['name']
+        report.ownerName = partner['name']
 
         return report
 
-
-        #Get gkwh Inversion name/id
-        gkwhInversionId = Investment.search(cursor, uid, [
-            ('name', '=', report.inversionName)
-        ])
-
-        # Titular
-        gkwhInversionDictOwner = Investment.read(cursor, uid, gkwhInversionId, ['member_id'])
-        gkwh_inv_owner_name = [a['member_id'] for a in gkwhInversionDictOwner]
-        report.ownerName = gkwh_inv_owner_name[0][1]
 
         #Inversion Initial
         gkwhInversionDictInitAmou = Investment.read(cursor, uid, gkwhInversionId, ['nshares'])
