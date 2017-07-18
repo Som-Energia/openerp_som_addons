@@ -34,14 +34,14 @@ class AccountInvoice(osv.osv):
         report.inversionName = acc_inv_name[0]
 
         #Get gkwh Inversion name/id
-        gkwhInversionId = acc_inv.search(cursor, uid, [
+        gkwhInversionId = gkwh_inv.search(cursor, uid, [
             ('name', '=', report.inversionName)
         ])
 
         # Titular
-        gkwhInversionDict = gkwh_inv.read(cursor, uid, gkwhInversionId, ['member_id'])
-        gkwh_inv_ownerName = [a['member_id'] for a in gkwhInversionDict]
-        report.ownerName = gkwh_inv_ownerName[1]
+        gkwhInversionDictOwner = gkwh_inv.read(cursor, uid, gkwhInversionId, ['member_id'])
+        gkwh_inv_owner_name = [a['member_id'] for a in gkwhInversionDictOwner]
+        report.ownerName = gkwh_inv_owner_name[0][1]
 
         #Inversion Initial
         gkwhInversionDictInitAmou = gkwh_inv.read(cursor, uid, gkwhInversionId, ['nshares'])
