@@ -1,5 +1,4 @@
 # coding=utf-8
-from oopgrade import oopgrade
 import netsvc
 from consolemsg import step, warn, success, error, fail
 import logging
