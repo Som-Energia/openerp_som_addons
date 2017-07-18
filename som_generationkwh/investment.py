@@ -484,10 +484,10 @@ class GenerationkWhInvestment(osv.osv):
                 log,
             ) = investment_tuple
 
-            amortization_id = self.create_amortization_invoice(cursor, uid,
-                investment_id, amortization_date, to_be_amortized)
+            #amortization_id = self.create_amortization_invoice(cursor, uid,
+                #investment_id, amortization_date, to_be_amortized)
 
-            amortization_ids.append(amortization_id)
+            #amortization_ids.append(amortization_id)
 
             self.write(cursor, uid, investment_id, dict(
                 amortized_amount=amortized_amount+to_be_amortized,
