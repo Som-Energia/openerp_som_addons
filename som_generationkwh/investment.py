@@ -559,7 +559,7 @@ class GenerationkWhInvestment(osv.osv):
         # Memento of mutable data
         investmentMemento = ns()
         # TODO: add here your stuff
-        investmentMemento.amortizedAmount = 666
+        investmentMemento.pendingCapital = investment.nshares * 100.0 - investment.amortized_amount - to_be_amortized
 
         # Ensure unique amortization
         invoice_name = '%s-AMOR%s' % (

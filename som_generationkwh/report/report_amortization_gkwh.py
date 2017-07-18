@@ -52,7 +52,7 @@ class AccountInvoice(osv.osv):
         report.ownerNif = partner['vat'][2:] if partner['vat'][:2]=='ES' else partner['vat']
         report.inversionName = investment['name']
         report.ownerName = partner['name']
-        report.inversionPendingCapital = mutable_information.amortizedAmount
+        report.inversionPendingCapital = float(mutable_information.pendingCapital)
 
         return report
 
