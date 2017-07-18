@@ -18,6 +18,8 @@ class AccountInvoice(osv.osv):
         Invoice = pool.get('account.invoice')
         Investment = pool.get('generationkwh.investment')
         Partner = pool.get('res.partner')
+        InvoiceLine = pool.get('account.invoice.line')
+
 
         account_id = ids[0]
 
@@ -26,6 +28,7 @@ class AccountInvoice(osv.osv):
             'partner_id',
             'name',
             'member_id',
+            'invoice_line',
             ])
 
         partner = Partner.read(cursor, uid, invoice['partner_id'][0], [
@@ -41,12 +44,15 @@ class AccountInvoice(osv.osv):
         investment = Investment.read(cursor,uid, investment_id, [
             'name',
         ])
+        invoice_line = InvoiceLine.read(cursor,uid, invoice['invoice_line'][0],['note'])
+        mutable_information = ns.loads(invoice_line['note'] or '{}')
 
         report.receiptDate = invoice['date_invoice']
         # TODO: non spanish vats not covered by tests
         report.ownerNif = partner['vat'][2:] if partner['vat'][:2]=='ES' else partner['vat']
         report.inversionName = investment['name']
         report.ownerName = partner['name']
+        report.inversionPendingCapital = mutable_information.amortizedAmount
 
         return report
 

@@ -556,6 +556,11 @@ class GenerationkWhInvestment(osv.osv):
             ('code', '=', 'TRANSFERENCIA_CSB'),
             ])[0]
 
+        # Memento of mutable data
+        investmentMemento = ns()
+        # TODO: add here your stuff
+        investmentMemento.amortizedAmount = 666
+
         # Ensure unique amortization
         invoice_name = '%s-AMOR%s' % (
                 investment.name,
@@ -615,6 +620,7 @@ class GenerationkWhInvestment(osv.osv):
             (6, 0, line.get('invoice_line_tax_id', []))
         ]
         line['account_id']=partner.property_account_gkwh.id
+        line['note'] = investmentMemento.dump()
         line.update(vals)
         InvoiceLine.create(cursor, uid, line)
         return invoice_id
