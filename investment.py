@@ -10,6 +10,8 @@ from tools.translate import _
 from tools import config
 import re
 
+shareValue = 100
+
 # TODO: This function is duplicated in other sources
 def _sqlfromfile(sqlname):
     from tools import config
@@ -293,7 +295,7 @@ class GenerationkWhInvestment(osv.osv):
 
             investment_id = self.create(cursor, uid, dict(
                 member_id=member_id,
-                nshares=(line.credit-line.debit)//100,
+                nshares=(line.credit-line.debit)//shareValue,
                 purchase_date=line.date_created,
                 first_effective_date=activation,
                 last_effective_date=lastDateEffective,
@@ -451,7 +453,7 @@ class GenerationkWhInvestment(osv.osv):
                 to_be_amortized=pendingAmortization(
                     inv['purchase_date'],
                     current_date,
-                    100*inv['nshares'],
+                    shareValue*inv['nshares'],
                     inv['amortized_amount'],
                     ),
                 amortization_date=previousAmortizationDate(
@@ -559,7 +561,7 @@ class GenerationkWhInvestment(osv.osv):
         # Memento of mutable data
         investmentMemento = ns()
         # TODO: add here your stuff
-        investmentMemento.pendingCapital = investment.nshares * 100.0 - investment.amortized_amount - to_be_amortized
+        investmentMemento.pendingCapital = investment.nshares * shareValue - investment.amortized_amount - to_be_amortized
 
         # Ensure unique amortization
         invoice_name = '%s-AMOR%s' % (
@@ -594,8 +596,6 @@ class GenerationkWhInvestment(osv.osv):
             vals['date_invoice'] = date_invoice
 
         invoice_id = Invoice.create(cursor, uid, vals)
-
-        amortization_per_share = 4
 
         vals = {
             'invoice_id': invoice_id,
@@ -737,7 +737,7 @@ class GenerationkWhInvestment(osv.osv):
         name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')
         id = self.create(cursor, uid, dict(
             name = name,
-            nshares = amount_in_euros/100, # TODO: error if remainder
+            nshares = amount_in_euros/shareValue, # TODO: error if remainder
             member_id = member_id,
             order_date = order_date,
             ), context)
