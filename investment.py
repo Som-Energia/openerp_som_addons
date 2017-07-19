@@ -261,6 +261,8 @@ class GenerationkWhInvestment(osv.osv):
 
         investment_ids = []
 
+        contextWithInactives = dict(context or {}, active_test=False)
+
         for line in MoveLine.browse(cursor, uid, movelinesids, context):
             # Filter out already converted move lines
             if self.search(cursor, uid,
@@ -281,7 +283,7 @@ class GenerationkWhInvestment(osv.osv):
             # ctx = dict(context)
             # ctx.update({'active_test': False})
             
-            members = Member.search(cursor, uid, domain, context)
+            members = Member.search(cursor, uid, domain, context=contextWithInactives)
             if not members:
                 print (
                     "No existeix el soci de la linia comptable id {l.id} {l.date_created} partner {l.partner_id.name} ac {l.account_id.name}, {l.credit} -{l.debit}  {d}"
