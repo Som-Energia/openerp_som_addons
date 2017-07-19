@@ -603,7 +603,7 @@ class GenerationkWhInvestment(osv.osv):
                 investment = investment.name,
                 amortization_date = datetime.datetime.strptime(amortization_date,'%Y-%m-%d'),
             ),
-#            'note': _('Sense notes'),
+            'note': investmentMemento.dump(),
             'quantity': 1,
             'price_unit': to_be_amortized,
             'product_id': product_id,
@@ -616,11 +616,12 @@ class GenerationkWhInvestment(osv.osv):
             type='in_invoice',
             ).get('value', {})
         )
+        # partner specific account
+        line['account_id']=partner.property_account_gkwh.id
+        # no taxes apply
         line['invoice_line_tax_id'] = [
             (6, 0, line.get('invoice_line_tax_id', []))
         ]
-        line['account_id']=partner.property_account_gkwh.id
-        line['note'] = investmentMemento.dump()
         line.update(vals)
         InvoiceLine.create(cursor, uid, line)
 
