@@ -304,7 +304,7 @@ class GenerationkWhInvestment(osv.osv):
 
             investment_ids.append(investment_id)
 
-        #self.migrate_created_from_accounting(cursor, uid, investment_ids, context)
+        self.migrate_created_from_accounting(cursor, uid, investment_ids, context)
 
         return sorted(investment_ids)
 
