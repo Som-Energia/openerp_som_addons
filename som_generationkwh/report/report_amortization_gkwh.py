@@ -57,6 +57,7 @@ class AccountInvoice(osv.osv):
         report.inversionName = investment['name']
         report.ownerName = partner['name']
         report.inversionPendingCapital = float(mutable_information.pendingCapital)
+        # TODO: magic number shareValue, delegate on investment who knows it
         report.inversionInitialAmount = investment['nshares'] * 100
         report.inversionPurchaseDate = investment['purchase_date']
         report.inversionExpirationDate = investment['last_effective_date']
