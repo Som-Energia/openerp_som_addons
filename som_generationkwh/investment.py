@@ -672,18 +672,18 @@ class GenerationkWhInvestment(osv.osv):
         """
         iban = self.clean_iban(cursor, uid, iban)
         if not re.match('[A-Z]{2}[0-9]{2}', iban[:4]):
-            return None
+            return False
 
         ResPartnerBank = self.pool.get('res.partner.bank')
         generatedIban = ResPartnerBank.calculate_iban(cursor, uid,
             iban[4:], iban[:2])
         if generatedIban != iban:
-            return None
+            return False
 
         # TODO: Just if starts with ES!!
         bank = self.check_spanish_account(cursor, uid, iban[4:])
-        if bank is None:
-            return None 
+        if bank is False:
+            return False
 
         return iban
 
