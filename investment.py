@@ -754,13 +754,24 @@ class GenerationkWhInvestment(osv.osv):
         for id in ids:
             inversio = self.read(cursor, uid, id, ['log'])
             creationInfo = self.perm_read(cursor, uid, [id])[0]
+
+            # TODO: Move that elsewhere
+            waitingDays = 365
+            expirationYears = 25
+
+            first,last = self._effectivePeriod(
+                isodate(purchase_date),
+                waitingDays, expirationYears)
+
             self.write(cursor, uid, id, dict(
                 log = u'[{create_date} {create_uid[1]}] PAYED: Remesada al compte\n'
                     .format(**creationInfo)
                     + inversio['log'],
                 purchase_date = purchase_date,
+                #first_effective_date = first, # TODO: activate when needed
+                last_effective_date = last,
                 ))
-        
+
 
 class InvestmentProvider(ErpWrapper):
 
