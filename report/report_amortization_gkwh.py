@@ -29,6 +29,9 @@ class AccountInvoice(osv.osv):
             'name',
             'member_id',
             'invoice_line',
+            'amount_total',
+            'name',
+            'partner_bank',
             ])
 
         partner = Partner.read(cursor, uid, invoice['partner_id'][0], [
@@ -61,42 +64,15 @@ class AccountInvoice(osv.osv):
         report.inversionInitialAmount = investment['nshares'] * 100
         report.inversionPurchaseDate = investment['purchase_date']
         report.inversionExpirationDate = investment['last_effective_date']
+        report.amortizationAmount = invoice['amount_total']
+        report.amortizationName = invoice['name']
+        report.inversionBankAccount = invoice['partner_bank'][1]
 
         return report
-
-
-        #Pending capital
-        gkwhInversionDictPendCapt = Investment.read(cursor, uid, gkwhInversionId, ['amortized_amount'])
-        gkwh_inv_amor_amou = [a['amortized_amount'] for a in gkwhInversionDictPendCapt]
-        report.inversionPendingCapital = report.inversionInitialAmount - gkwh_inv_amor_amou[0]
-
-        #Bank Account
-        inversionDictBankAcco = Invoice.read(cursor, uid, investment_id, ['partner_bank'])
-        acc_inv_bank_acco = [a['partner_bank'] for a in inversionDictBankAcco]
-        report.report.inversionBankAccount = acc_inv_bank_acco[0]
-
-        #Actual Amortization
-        inversionDictActualAmor = Invoice.read(cursor, uid, investment_id, ['number'])
-        acc_inv_actu_amor = [a['number'] for a in inversionDictActualAmor]
-        report.amortizationName = acc_inv_actu_amor[0]
-
-        #Amortization Amount
-        inversionDictAmount = Invoice.read(cursor, uid, investment_id, ['amount_total'])
-        acc_inv_amount = [a['amount_total'] for a in inversionDictAmount]
-        report.amortizationAmount = acc_inv_amount[0]
-
 
         report.amortizationDate = '20-05-2017'
         report.amortizationNumPayment = '7'
         report.amortizationTotalPayments = '24'
-
-
-
-        
-
-
-
-
 
         return report
 
