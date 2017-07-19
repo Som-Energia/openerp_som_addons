@@ -623,8 +623,99 @@ class GenerationkWhInvestment(osv.osv):
         line['note'] = investmentMemento.dump()
         line.update(vals)
         InvoiceLine.create(cursor, uid, line)
+
         return invoice_id
 
+#def get_default_country(self):
+#        ResCountry = self.pool.get('res.country')         
+#        return ResCountry.search(cursor, uid, [('code', '=', 'ES')])[0]
+#
+#    def check_spanish_account(self, account):
+#        spain = get_default_country()
+#        ResPartnerBank = self.pool.get('res.partner.bank')
+#        ResBank = self.pool.get('res.bank')
+#        vals = ResPartnerBank.onchange_banco([], account, spain, {})
+#        if 'warning' in vals:
+#            # TODO: Use vals['warning']['message']
+#            # TODO: Would require use a context with locale
+#            return None
+#
+#        if 'value' not in vals or not vals['value']:
+#            # TODO: Not string or country not ES... needed?
+#            return None
+#
+#        result = {}
+#
+#        if 'bank' in vals['value']:
+#            bank = ResBank.get(vals['value']['bank'])
+#            result['bank_name'] = bank.name
+#        if 'acc_number' in vals['value']:
+#            result['acc_number'] = vals['value']['acc_number']
+#
+#        return result
+#   
+#    def clean_iban(self, iban):
+#
+#        This function removes all characters from given 'iban' that isn't a
+#        alpha numeric and converts it to upper case.
+#        return "".join(
+#            char.upper()
+#            for char in iban
+#            if char.isalnum()
+#            )
+
+    # TODO: Foreign IBANs accepted? make CCC check conditional
+    # TODO: Foreign IBANs not accepted? should start by ES
+    # TODO: Consider using stdnum
+    def check_iban(self, cursor, uid, iban):
+        """
+        Returns the clean iban if the iban is correct, or None otherwise.
+        """
+        #iban = clean_iban(iban)
+        #if not re.match('[A-Z]{2}[0-9]{2}', iban[:4]):
+        #    return None
+
+        ResPartnerBank = self.pool.get('res.partner.bank')
+        generatedIban = ResPartnerBank.calculate_iban(cursor, uid,
+            iban[4:], iban[:2])
+        if generatedIban != iban:
+            return None
+
+        # TODO: Just if starts with ES!!
+        #bank = check_spanish_account(iban[4:])
+        #if bank is None:
+        #    return None 
+
+        return iban
+
+    def get_or_create_partner_bank(self, cursor, uid,
+            partner_id, iban):
+        """
+        If such an iban is alredy a bank account for the
+        partner, it returns it.
+        If not it creates it and returns the new one.
+        """
+        ResPartnerBank = self.pool.get('res.partner.bank')
+        ResCountry = self.pool.get('res.country')
+        country_id = ResCountry.search(cursor, uid, [('code', '=', 'ES')])[0]
+
+        bank_ids = ResPartnerBank.search(cursor, uid, [
+            ('iban', '=', iban),
+            ('partner_id','=', partner_id),
+            ])  
+        if bank_ids: return bank_ids[0]
+        vals = ResPartnerBank.onchange_banco(cursor, uid,
+            [], iban[4:], country_id, {})
+        vals = vals['value']
+        vals.update({
+            'name': '',
+            'state': 'iban',
+            'iban': iban,
+            'partner_id': partner_id,
+            'country_id': country_id,
+            'acc_country_id': country_id,
+        })
+        return ResPartnerBank.create(cursor, uid, vals)
 
     def create_from_form(self, cursor, uid,
             partner_id, order_date, amount_in_euros, ip, iban,
