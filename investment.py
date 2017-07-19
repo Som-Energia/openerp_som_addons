@@ -681,9 +681,9 @@ class GenerationkWhInvestment(osv.osv):
             return None
 
         # TODO: Just if starts with ES!!
-        #bank = check_spanish_account(iban[4:])
-        #if bank is None:
-        #    return None 
+        bank = self.check_spanish_account(cursor, uid, iban[4:])
+        if bank is None:
+            return None 
 
         return iban
 
@@ -720,16 +720,19 @@ class GenerationkWhInvestment(osv.osv):
             partner_id, order_date, amount_in_euros, ip, iban,
             context=None):
 
-        # TODO: IBAN should come from the form
+        ResPartner = self.pool.get('res.partner') 
+
+        iban = self.check_iban(cursor, uid, iban)
+        bank_id = self.get_or_create_partner_bank(cursor, uid,
+                    partner_id, iban)
+        ResPartner.write(cursor, uid, partner_id, dict(
+            bank_inversions = bank_id,),context)
 
         Soci = self.pool.get('somenergia.soci')
         IrSequence = self.pool.get('ir.sequence')
         member_id = Soci.search(cursor, uid, [
                 ('partner_id','=',partner_id)
                 ])[0]
-        Partner = self.pool.get('res.partner')
-        Partner.write(cursor, uid, partner_id, dict(
-                bank_inversions = 2,),context)
 
         name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')
         id = self.create(cursor, uid, dict(
