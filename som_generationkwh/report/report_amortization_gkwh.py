@@ -46,6 +46,7 @@ class AccountInvoice(osv.osv):
             'nshares',
             'amortized_amount',
             'purchase_date',
+            'last_effective_date',
         ])
         invoice_line = InvoiceLine.read(cursor,uid, invoice['invoice_line'][0],['note'])
         mutable_information = ns.loads(invoice_line['note'] or '{}')
@@ -58,11 +59,7 @@ class AccountInvoice(osv.osv):
         report.inversionPendingCapital = float(mutable_information.pendingCapital)
         report.inversionInitialAmount = investment['nshares'] * 100
         report.inversionPurchaseDate = investment['purchase_date']
-
-        purchase_date = datetime.datetime.strptime(investment['purchase_date'], "%Y-%m-%d").date()
-        report.inversionExpirationDate = \
-            (purchase_date + relativedelta(years=+25)).strftime("%Y-%m-%d")
-
+        report.inversionExpirationDate = investment['last_effective_date']
 
         return report
 

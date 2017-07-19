@@ -757,7 +757,7 @@ class GenerationkWhInvestment(osv.osv):
 
             # TODO: Move that elsewhere
             waitingDays = 365
-            expirationYears = 25
+            expirationYears = 24
 
             first,last = self._effectivePeriod(
                 isodate(purchase_date),
