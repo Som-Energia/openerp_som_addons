@@ -8,7 +8,7 @@ from yamlns import namespace as ns
 from generationkwh.isodates import isodate
 from tools.translate import _
 from tools import config
-
+import re
 
 # TODO: This function is duplicated in other sources
 def _sqlfromfile(sqlname):
@@ -671,8 +671,8 @@ class GenerationkWhInvestment(osv.osv):
         Returns the clean iban if the iban is correct, or None otherwise.
         """
         iban = self.clean_iban(cursor, uid, iban)
-        #if not re.match('[A-Z]{2}[0-9]{2}', iban[:4]):
-        #    return None
+        if not re.match('[A-Z]{2}[0-9]{2}', iban[:4]):
+            return None
 
         ResPartnerBank = self.pool.get('res.partner.bank')
         generatedIban = ResPartnerBank.calculate_iban(cursor, uid,
