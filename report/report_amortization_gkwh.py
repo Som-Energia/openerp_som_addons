@@ -43,6 +43,9 @@ class AccountInvoice(osv.osv):
 
         investment = Investment.read(cursor,uid, investment_id, [
             'name',
+            'nshares',
+            'amortized_amount',
+            'purchase_date',
         ])
         invoice_line = InvoiceLine.read(cursor,uid, invoice['invoice_line'][0],['note'])
         mutable_information = ns.loads(invoice_line['note'] or '{}')
@@ -53,14 +56,16 @@ class AccountInvoice(osv.osv):
         report.inversionName = investment['name']
         report.ownerName = partner['name']
         report.inversionPendingCapital = float(mutable_information.pendingCapital)
+        report.inversionInitialAmount = investment['nshares'] * 100
+        report.inversionPurchaseDate = investment['purchase_date']
+
+        purchase_date = datetime.datetime.strptime(investment['purchase_date'], "%Y-%m-%d").date()
+        report.inversionExpirationDate = \
+            (purchase_date + relativedelta(years=+25)).strftime("%Y-%m-%d")
+
 
         return report
 
-
-        #Inversion Initial
-        gkwhInversionDictInitAmou = Investment.read(cursor, uid, gkwhInversionId, ['nshares'])
-        gkwh_inv_nshares = [a['nshares'] for a in gkwhInversionDictInitAmou]
-        report.inversionInitialAmount = gkwh_inv_nshares[0] * 100
 
         #Pending capital
         gkwhInversionDictPendCapt = Investment.read(cursor, uid, gkwhInversionId, ['amortized_amount'])
@@ -71,14 +76,6 @@ class AccountInvoice(osv.osv):
         inversionDictBankAcco = Invoice.read(cursor, uid, investment_id, ['partner_bank'])
         acc_inv_bank_acco = [a['partner_bank'] for a in inversionDictBankAcco]
         report.report.inversionBankAccount = acc_inv_bank_acco[0]
-
-        #Purchase Date
-        gkwhInversionDictPurDat = Investment.read(cursor, uid, gkwhInversionId, ['purchase_date'])
-        gkwh_inv_pur_date = [a['purchase_date'] for a in gkwhInversionDictPurDat]
-        report.inversionPurchaseDate = gkwh_inv_pur_date[0]
-
-        #Expiration Date
-        report.inversionExpirationDate = datetime.datetime.strptime(gkwh_inv_pur_date[0], "%Y-%m-%d").date() + relativedelta(years=+25)
 
         #Actual Amortization
         inversionDictActualAmor = Invoice.read(cursor, uid, investment_id, ['number'])
