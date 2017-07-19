@@ -626,34 +626,34 @@ class GenerationkWhInvestment(osv.osv):
 
         return invoice_id
 
-#def get_default_country(self):
-#        ResCountry = self.pool.get('res.country')         
-#        return ResCountry.search(cursor, uid, [('code', '=', 'ES')])[0]
-#
-#    def check_spanish_account(self, account):
-#        spain = get_default_country()
-#        ResPartnerBank = self.pool.get('res.partner.bank')
-#        ResBank = self.pool.get('res.bank')
-#        vals = ResPartnerBank.onchange_banco([], account, spain, {})
-#        if 'warning' in vals:
-#            # TODO: Use vals['warning']['message']
-#            # TODO: Would require use a context with locale
-#            return None
-#
-#        if 'value' not in vals or not vals['value']:
-#            # TODO: Not string or country not ES... needed?
-#            return None
-#
-#        result = {}
-#
-#        if 'bank' in vals['value']:
-#            bank = ResBank.get(vals['value']['bank'])
-#            result['bank_name'] = bank.name
-#        if 'acc_number' in vals['value']:
-#            result['acc_number'] = vals['value']['acc_number']
-#
-#        return result
-#   
+    def get_default_country(self, cursor, uid):
+        ResCountry = self.pool.get('res.country')         
+        return ResCountry.search(cursor, uid, [('code', '=', 'ES')])[0]
+
+    def check_spanish_account(self, cursor, uid, account):
+        spain = self.get_default_country(cursor, uid)
+        ResPartnerBank = self.pool.get('res.partner.bank')
+        ResBank = self.pool.get('res.bank')
+        vals = ResPartnerBank.onchange_banco(cursor, uid, [], account, spain, {})
+        if 'warning' in vals:
+            # TODO: Use vals['warning']['message']
+            # TODO: Would require use a context with locale
+            return False
+
+        if 'value' not in vals or not vals['value']:
+            # TODO: Not string or country not ES... needed?
+            return False
+
+        result = {}
+
+        if 'bank' in vals['value']:
+            bank = ResBank.read(cursor, uid, vals['value']['bank'])
+            result['bank_name'] = bank['name']
+        if 'acc_number' in vals['value']:
+            result['acc_number'] = vals['value']['acc_number']
+
+        return result
+   
     def clean_iban(self, cursor, uid, iban):
         '''This function removes all characters from given 'iban' that isn't a
         alpha numeric and converts it to upper case.'''
