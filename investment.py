@@ -654,15 +654,14 @@ class GenerationkWhInvestment(osv.osv):
 #
 #        return result
 #   
-#    def clean_iban(self, iban):
-#
-#        This function removes all characters from given 'iban' that isn't a
-#        alpha numeric and converts it to upper case.
-#        return "".join(
-#            char.upper()
-#            for char in iban
-#            if char.isalnum()
-#            )
+    def clean_iban(self, cursor, uid, iban):
+        '''This function removes all characters from given 'iban' that isn't a
+        alpha numeric and converts it to upper case.'''
+        return "".join(
+            char.upper()
+            for char in iban
+            if char.isalnum()
+            )
 
     # TODO: Foreign IBANs accepted? make CCC check conditional
     # TODO: Foreign IBANs not accepted? should start by ES
@@ -671,7 +670,7 @@ class GenerationkWhInvestment(osv.osv):
         """
         Returns the clean iban if the iban is correct, or None otherwise.
         """
-        #iban = clean_iban(iban)
+        iban = self.clean_iban(cursor, uid, iban)
         #if not re.match('[A-Z]{2}[0-9]{2}', iban[:4]):
         #    return None
 
