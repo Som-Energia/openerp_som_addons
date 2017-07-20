@@ -9,6 +9,7 @@ from generationkwh.isodates import isodate
 from tools.translate import _
 from tools import config
 import re
+import generationkwh.investmentlogs as logs
 
 shareValue = 100
 
@@ -752,17 +753,30 @@ class GenerationkWhInvestment(osv.osv):
             order_date = order_date,
             ), context)
         creationInfo = self.perm_read(cursor, uid, [id])[0]
+        log = dict(
+                create_date = creationInfo['create_date'],
+                user = creationInfo['create_uid'][1],
+                ip = ip,
+                amount = amount_in_euros,
+                iban = iban
+            )
         self.write(cursor, uid, id, dict(
-            log = u'[{create_date} {create_uid[1]}] '
-                'ORDER: Formulari emplenat des de {ip}\n'
-                .format(ip=ip,**creationInfo)
+                log = logs.log_formfilled(log)
             ))
         return id
 
 
     def charge(self, cursor, uid, ids, purchase_date):
+#        Soci = self.pool.get('somenergia.soci')
         for id in ids:
-            inversio = self.read(cursor, uid, id, ['log'])
+            inversio = self.read(cursor, uid, id, [
+                'log',
+#                'nshares',
+#                'member_id',
+                ])
+#            amount = inversio['nshares']*100
+#            soci = Soci.read(cursor,uid,inversio['member_id'][0],['bank_inversions'])
+#            iban = soci['bank_inversions']  
             creationInfo = self.perm_read(cursor, uid, [id])[0]
 
             # TODO: Move that elsewhere
@@ -772,9 +786,9 @@ class GenerationkWhInvestment(osv.osv):
             first,last = self._effectivePeriod(
                 isodate(purchase_date),
                 waitingDays, expirationYears)
-
+#PAYED: Pagament de {amount} € remesat al compte {iban}
             self.write(cursor, uid, id, dict(
-                log = u'[{create_date} {create_uid[1]}] PAYED: Remesada al compte\n'
+                log = u'[{create_date} {create_uid[1]}] PAYED: Pagament de 2000 € remesat al compte ES7712341234161234567890\n'
                     .format(**creationInfo)
                     + inversio['log'],
                 purchase_date = purchase_date,
