@@ -3,6 +3,7 @@ from osv import osv, fields
 from yamlns import namespace as ns
 import pooler
 import datetime
+import investment
 from dateutil.relativedelta import relativedelta
 
 class AccountInvoice(osv.osv):
@@ -60,8 +61,7 @@ class AccountInvoice(osv.osv):
         report.inversionName = investment['name']
         report.ownerName = partner['name']
         report.inversionPendingCapital = float(mutable_information.pendingCapital)
-        # TODO: magic number shareValue, delegate on investment who knows it
-        report.inversionInitialAmount = investment['nshares'] * 100
+        report.inversionInitialAmount = investment['nshares'] * investment.shareValue
         report.inversionPurchaseDate = investment['purchase_date']
         report.inversionExpirationDate = investment['last_effective_date']
         report.amortizationAmount = invoice['amount_total']
