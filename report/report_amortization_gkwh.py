@@ -6,6 +6,7 @@ import datetime
 from dateutil.relativedelta import relativedelta
 
 shareValue = 100
+amortizationTimes = 24
 
 class AccountInvoice(osv.osv):
     _name = 'account.invoice'
@@ -68,12 +69,12 @@ class AccountInvoice(osv.osv):
         report.amortizationAmount = invoice['amount_total']
         report.amortizationName = invoice['name']
         report.inversionBankAccount = invoice['partner_bank'][1]
-        # TODO replace old variables
+        report.amortizationTotalPayments = str(amortizationTimes)
+
         return report
 
         report.amortizationDate = '20-05-2017'
         report.amortizationNumPayment = '7'
-        report.amortizationTotalPayments = '24'
 
         return report
 
