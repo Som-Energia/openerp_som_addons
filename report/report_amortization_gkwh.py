@@ -71,10 +71,7 @@ class AccountInvoice(osv.osv):
         report.inversionBankAccount = invoice['partner_bank'][1]
         report.amortizationTotalPayments = amortizationYears
         report.amortizationDate = mutable_information.amortizationDate
-
-        return report
-
-        report.amortizationNumPayment = '7'
+        report.amortizationNumPayment = 1
 
         return report
 
