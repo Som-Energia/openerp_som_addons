@@ -42,11 +42,10 @@ class AccountInvoice(osv.osv):
             'name',
         ])
 
-        # TODO: Find a more reliable way
-        investment_id = Investment.search(cursor,uid, [
-            ('name','=',invoice['name'].split('-AMOR')[0]),
-        ])[0]
+        invoice_line = InvoiceLine.read(cursor,uid, invoice['invoice_line'][0],['note'])
+        mutable_information = ns.loads(invoice_line['note'] or '{}')
 
+        investment_id = mutable_information.investmentId
         investment = Investment.read(cursor,uid, investment_id, [
             'name',
             'nshares',
@@ -54,8 +53,6 @@ class AccountInvoice(osv.osv):
             'purchase_date',
             'last_effective_date',
         ])
-        invoice_line = InvoiceLine.read(cursor,uid, invoice['invoice_line'][0],['note'])
-        mutable_information = ns.loads(invoice_line['note'] or '{}')
 
         report.receiptDate = invoice['date_invoice']
         # TODO: non spanish vats not covered by tests
