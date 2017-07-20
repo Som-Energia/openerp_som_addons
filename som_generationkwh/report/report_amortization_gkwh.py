@@ -45,24 +45,15 @@ class AccountInvoice(osv.osv):
         invoice_line = InvoiceLine.read(cursor,uid, invoice['invoice_line'][0],['note'])
         mutable_information = ns.loads(invoice_line['note'] or '{}')
 
-        investment_id = mutable_information.investmentId
-        investment = Investment.read(cursor,uid, investment_id, [
-            'name',
-            'nshares',
-            'amortized_amount',
-            'purchase_date',
-            'last_effective_date',
-        ])
-
         report.receiptDate = invoice['date_invoice']
         # TODO: non spanish vats not covered by tests
         report.ownerNif = partner['vat'][2:] if partner['vat'][:2]=='ES' else partner['vat']
-        report.inversionName = investment['name']
+        report.inversionName = mutable_information.investmentName
         report.ownerName = partner['name']
         report.inversionPendingCapital = float(mutable_information.pendingCapital)
-        report.inversionInitialAmount = investment['nshares'] * shareValue
-        report.inversionPurchaseDate = investment['purchase_date']
-        report.inversionExpirationDate = investment['last_effective_date']
+        report.inversionInitialAmount = mutable_information.investmentInitialAmount
+        report.inversionPurchaseDate = mutable_information.investmentPurchaseDate
+        report.inversionExpirationDate = mutable_information.investmentLastEffectiveDate
         report.amortizationAmount = invoice['amount_total']
         report.amortizationName = invoice['name']
         report.inversionBankAccount = invoice['partner_bank'][1]

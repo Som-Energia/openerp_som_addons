@@ -574,6 +574,10 @@ class GenerationkWhInvestment(osv.osv):
         investmentMemento.amortizationDate = amortization_date
         investmentMemento.amortizationNumber = amortization_number
         investmentMemento.investmentId = investment_id
+        investmentMemento.investmentName = investment.name
+        investmentMemento.investmentPurchaseDate = investment.purchase_date
+        investmentMemento.investmentLastEffectiveDate = investment.last_effective_date
+        investmentMemento.investmentInitialAmount = investment.nshares * shareValue
         # Ensure unique amortization
         invoice_name = '%s-AMOR%s' % (
                 investment.name,
