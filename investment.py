@@ -516,6 +516,7 @@ class GenerationkWhInvestment(osv.osv):
 
     def create_amortization_invoice(self, cursor, uid,
             investment_id, amortization_date, to_be_amortized,
+            amortization_number="CACA",
             context=None):
 
         Partner = self.pool.get('res.partner')
@@ -570,6 +571,7 @@ class GenerationkWhInvestment(osv.osv):
         # TODO: add here your stuff
         investmentMemento.pendingCapital = investment.nshares * shareValue - investment.amortized_amount - to_be_amortized
         investmentMemento.amortizationDate = amortization_date
+        investmentMemento.amortizationNumber = amortization_number
         # Ensure unique amortization
         invoice_name = '%s-AMOR%s' % (
                 investment.name,
