@@ -68,7 +68,7 @@ class AccountInvoice(osv.osv):
         report.amortizationAmount = invoice['amount_total']
         report.amortizationName = invoice['name']
         report.inversionBankAccount = invoice['partner_bank'][1]
-
+        # TODO replace old variables
         return report
 
         report.amortizationDate = '20-05-2017'
