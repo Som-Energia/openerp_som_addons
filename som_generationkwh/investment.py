@@ -767,17 +767,23 @@ class GenerationkWhInvestment(osv.osv):
 
 
     def charge(self, cursor, uid, ids, purchase_date):
-#        Soci = self.pool.get('somenergia.soci')
+        Soci = self.pool.get('somenergia.soci')
         for id in ids:
             inversio = self.read(cursor, uid, id, [
                 'log',
-#                'nshares',
-#                'member_id',
+                'nshares',
+                'member_id',
                 ])
-#            amount = inversio['nshares']*100
-#            soci = Soci.read(cursor,uid,inversio['member_id'][0],['bank_inversions'])
-#            iban = soci['bank_inversions']  
+            amount = inversio['nshares']*100
+            soci = Soci.read(cursor,uid,inversio['member_id'][0],['bank_inversions'])
+            iban = self.clean_iban(cursor, uid, soci['bank_inversions'][1])
             creationInfo = self.perm_read(cursor, uid, [id])[0]
+            log = dict(
+                create_date = creationInfo['create_date'],
+                user = creationInfo['create_uid'][1],
+                amount = amount,
+                iban = iban,
+                )
 
             # TODO: Move that elsewhere
             waitingDays = 365
@@ -788,8 +794,8 @@ class GenerationkWhInvestment(osv.osv):
                 waitingDays, expirationYears)
 #PAYED: Pagament de {amount} € remesat al compte {iban}
             self.write(cursor, uid, id, dict(
-                log = u'[{create_date} {create_uid[1]}] PAYED: Pagament de 2000 € remesat al compte ES7712341234161234567890\n'
-                    .format(**creationInfo)
+                log = u'[{create_date} {user}] PAYED: Pagament de {amount} € remesat al compte {iban}\n'
+                    .format(**log)
                     + inversio['log'],
                 purchase_date = purchase_date,
                 #first_effective_date = first, # TODO: activate when needed
