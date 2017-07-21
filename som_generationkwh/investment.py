@@ -741,6 +741,9 @@ class GenerationkWhInvestment(osv.osv):
     def create_from_form(self, cursor, uid,
             partner_id, order_date, amount_in_euros, ip, iban,
             context=None):
+        
+        if amount_in_euros % 100 > 0:
+            return False
 
         ResPartner = self.pool.get('res.partner') 
 
