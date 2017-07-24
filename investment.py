@@ -457,6 +457,7 @@ class GenerationkWhInvestment(osv.osv):
             pendingAmortization,
             previousAmortizationDate,
             currentAmortizationNumber,
+            totalAmortizationNumber,
             )
         inv_ids = self.search(cursor, uid, [], order='id')
         invs = self.read(cursor, uid, inv_ids, [
@@ -482,6 +483,7 @@ class GenerationkWhInvestment(osv.osv):
                     inv['purchase_date'],
                     current_date,
                     ),
+                amortization_total_number=totalAmortizationNumber(),
                 )
         return [(
             inv['id'],
@@ -490,6 +492,7 @@ class GenerationkWhInvestment(osv.osv):
             inv['amortized_amount'],
             inv['to_be_amortized'],
             # TODO: insert here the amortization_number
+            # TODO: insert here the amortization_total_number
             inv['log'],
             )
             for inv in invs
@@ -507,11 +510,13 @@ class GenerationkWhInvestment(osv.osv):
                 amortized_amount,
                 to_be_amortized,
                 # TODO: insert here the amortization_number
+                # TODO: insert here the amortization_total_number
                 log,
             ) = investment_tuple
 
             #amortization_id = self.create_amortization_invoice(cursor, uid,
-                #investment_id, amortization_date, to_be_amortized. amortization_number)
+                #investment_id, amortization_date, to_be_amortized, 
+                #amortization_number, amortization_total_number)
 
             #amortization_ids.append(amortization_id)
 
