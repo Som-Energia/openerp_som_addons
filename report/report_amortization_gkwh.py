@@ -5,9 +5,6 @@ import pooler
 import datetime
 from dateutil.relativedelta import relativedelta
 
-shareValue = 100
-amortizationYears = 24
-
 class AccountInvoice(osv.osv):
     _name = 'account.invoice'
     _inherit = 'account.invoice'
@@ -19,10 +16,8 @@ class AccountInvoice(osv.osv):
         report = ns()
         pool = pooler.get_pool(cursor.dbname)
         Invoice = pool.get('account.invoice')
-        Investment = pool.get('generationkwh.investment')
         Partner = pool.get('res.partner')
         InvoiceLine = pool.get('account.invoice.line')
-
 
         account_id = ids[0]
 
@@ -57,7 +52,7 @@ class AccountInvoice(osv.osv):
         report.amortizationAmount = invoice['amount_total']
         report.amortizationName = invoice['name']
         report.inversionBankAccount = invoice['partner_bank'][1]
-        report.amortizationTotalPayments = amortizationYears
+        report.amortizationTotalPayments = mutable_information.amortizationTotalNumber
         report.amortizationDate = mutable_information.amortizationDate
         report.amortizationNumPayment = mutable_information.amortizationNumber
 
