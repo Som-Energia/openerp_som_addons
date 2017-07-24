@@ -599,6 +599,7 @@ class GenerationkWhInvestment(osv.osv):
         investmentMemento.pendingCapital = investment.nshares * shareValue - investment.amortized_amount - to_be_amortized
         investmentMemento.amortizationDate = amortization_date
         investmentMemento.amortizationNumber = amortization_number
+        investmentMemento.amortizationTotalNumber = amortization_total_number
         investmentMemento.investmentId = investment_id
         investmentMemento.investmentName = investment.name
         investmentMemento.investmentPurchaseDate = investment.purchase_date
