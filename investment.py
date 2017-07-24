@@ -538,7 +538,7 @@ class GenerationkWhInvestment(osv.osv):
 
     def create_amortization_invoice(self, cursor, uid,
             investment_id, amortization_date, to_be_amortized,
-            amortization_number,
+            amortization_number,amortization_total_number,
             context=None):
 
         Partner = self.pool.get('res.partner')
