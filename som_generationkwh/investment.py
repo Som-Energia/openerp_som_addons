@@ -605,11 +605,12 @@ class GenerationkWhInvestment(osv.osv):
         investmentMemento.investmentPurchaseDate = investment.purchase_date
         investmentMemento.investmentLastEffectiveDate = investment.last_effective_date
         investmentMemento.investmentInitialAmount = investment.nshares * shareValue
-        # Ensure unique amortization
+
         invoice_name = '%s-AMOR%s' % (
-                investment.name,
+                investment.name or 'GENKWHID{}'.format(investment.id),
                 year,
                 )
+        # Ensure unique amortization
         existingInvoice = Invoice.search(cursor,uid,[
             ('name','=', invoice_name),
             ])
