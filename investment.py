@@ -134,21 +134,6 @@ class GenerationkWhInvestment(osv.osv):
                 order_date=order_date,
                 ), context)
 
-    def check_investment_name(self, cursor, uid, investment_id, context=None):
-        investment = self.browse(cursor, uid, investment_id)
-        if not investment.name:
-            return False
-        return True
-
-    def get_or_create_investment_name(self, cursor, uid, investment_id, context=None):
-        investment = self.browse(cursor, uid, investment_id)        
-        if investment.name and len(investment.name)>0:
-            return investment.name
-
-        new_name = "GENKWHID{}".format(investment_id)        
-        self.write(cursor, uid, investment_id,dict(name=new_name))
-        return new_name
-
     def effective_investments_tuple(self, cursor, uid,
             member=None, start=None, end=None,
             context=None):
