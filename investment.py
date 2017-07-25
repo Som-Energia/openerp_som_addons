@@ -341,7 +341,7 @@ class GenerationkWhInvestment(osv.osv):
                 purchase_date,
                 move_line_id,
                 first_effective_date,
-                last_effective_date, 
+                last_effective_date,
             ) in cursor.fetchall():
 
             self.create(cursor, uid, dict(
@@ -478,6 +478,8 @@ class GenerationkWhInvestment(osv.osv):
             inv['to_be_amortized'],
             # TODO: insert here the amortization_number
             # TODO: insert here the amortization_total_number
+            inv['amortization_number'],
+            inv['amortization_total_number'],
             inv['log'],
             )
             for inv in invs
@@ -496,14 +498,16 @@ class GenerationkWhInvestment(osv.osv):
                 to_be_amortized,
                 # TODO: insert here the amortization_number
                 # TODO: insert here the amortization_total_number
+                amortization_number,
+                amortization_total_number,
                 log,
             ) = investment_tuple
 
-            #amortization_id = self.create_amortization_invoice(cursor, uid,
-                #investment_id, amortization_date, to_be_amortized, 
-                #amortization_number, amortization_total_number)
+            amortization_id = self.create_amortization_invoice(cursor, uid,
+                investment_id, amortization_date, to_be_amortized,
+                amortization_number, amortization_total_number)
 
-            #amortization_ids.append(amortization_id)
+            amortization_ids.append(amortization_id)
 
             self.write(cursor, uid, investment_id, dict(
                 amortized_amount=amortized_amount+to_be_amortized,
@@ -658,7 +662,7 @@ class GenerationkWhInvestment(osv.osv):
         return invoice_id
 
     def get_default_country(self, cursor, uid):
-        ResCountry = self.pool.get('res.country')         
+        ResCountry = self.pool.get('res.country')
         return ResCountry.search(cursor, uid, [('code', '=', 'ES')])[0]
 
     def check_spanish_account(self, cursor, uid, account):
@@ -684,7 +688,7 @@ class GenerationkWhInvestment(osv.osv):
             result['acc_number'] = vals['value']['acc_number']
 
         return result
-   
+
     def clean_iban(self, cursor, uid, iban):
         '''This function removes all characters from given 'iban' that isn't a
         alpha numeric and converts it to upper case.'''
@@ -732,7 +736,7 @@ class GenerationkWhInvestment(osv.osv):
         bank_ids = ResPartnerBank.search(cursor, uid, [
             ('iban', '=', iban),
             ('partner_id','=', partner_id),
-            ])  
+            ])
         if bank_ids: return bank_ids[0]
         vals = ResPartnerBank.onchange_banco(cursor, uid,
             [], iban[4:], country_id, {})
@@ -750,11 +754,11 @@ class GenerationkWhInvestment(osv.osv):
     def create_from_form(self, cursor, uid,
             partner_id, order_date, amount_in_euros, ip, iban,
             context=None):
-        
+
         if amount_in_euros % 100 > 0:
             return False
 
-        ResPartner = self.pool.get('res.partner') 
+        ResPartner = self.pool.get('res.partner')
 
         iban = self.check_iban(cursor, uid, iban)
         bank_id = self.get_or_create_partner_bank(cursor, uid,
