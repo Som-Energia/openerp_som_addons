@@ -476,8 +476,6 @@ class GenerationkWhInvestment(osv.osv):
             inv['amortization_date'] or False,
             inv['amortized_amount'],
             inv['to_be_amortized'],
-            # TODO: insert here the amortization_number
-            # TODO: insert here the amortization_total_number
             inv['amortization_number'],
             inv['amortization_total_number'],
             inv['log'],
@@ -496,8 +494,6 @@ class GenerationkWhInvestment(osv.osv):
                 amortization_date,
                 amortized_amount,
                 to_be_amortized,
-                # TODO: insert here the amortization_number
-                # TODO: insert here the amortization_total_number
                 amortization_number,
                 amortization_total_number,
                 log,
