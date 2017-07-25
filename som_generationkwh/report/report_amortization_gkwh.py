@@ -13,6 +13,10 @@ class AccountInvoice(osv.osv):
         return dict(self.investmentAmortization_notificationData(cursor, uid, ids))
 
     def investmentAmortization_notificationData(self, cursor, uid, ids):
+        def dateFormat(dateIso):
+            d = datetime.datetime.strptime(dateIso,"%Y-%m-%d")
+            return d.strftime("%d/%m/%Y")
+
         report = ns()
         pool = pooler.get_pool(cursor.dbname)
         Invoice = pool.get('account.invoice')
@@ -40,20 +44,20 @@ class AccountInvoice(osv.osv):
         invoice_line = InvoiceLine.read(cursor,uid, invoice['invoice_line'][0],['note'])
         mutable_information = ns.loads(invoice_line['note'] or '{}')
 
-        report.receiptDate = invoice['date_invoice']
+        report.receiptDate = dateFormat(invoice['date_invoice'])
         # TODO: non spanish vats not covered by tests
         report.ownerNif = partner['vat'][2:] if partner['vat'][:2]=='ES' else partner['vat']
         report.inversionName = mutable_information.investmentName
         report.ownerName = partner['name']
         report.inversionPendingCapital = float(mutable_information.pendingCapital)
         report.inversionInitialAmount = mutable_information.investmentInitialAmount
-        report.inversionPurchaseDate = mutable_information.investmentPurchaseDate
-        report.inversionExpirationDate = mutable_information.investmentLastEffectiveDate
+        report.inversionPurchaseDate = dateFormat(mutable_information.investmentPurchaseDate)
+        report.inversionExpirationDate = dateFormat(mutable_information.investmentLastEffectiveDate)
         report.amortizationAmount = invoice['amount_total']
         report.amortizationName = invoice['name']
         report.inversionBankAccount = invoice['partner_bank'][1]
         report.amortizationTotalPayments = mutable_information.amortizationTotalNumber
-        report.amortizationDate = mutable_information.amortizationDate
+        report.amortizationDate = dateFormat(mutable_information.amortizationDate)
         report.amortizationNumPayment = mutable_information.amortizationNumber
 
         return report
