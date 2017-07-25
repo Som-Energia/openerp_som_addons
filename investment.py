@@ -525,6 +525,7 @@ class GenerationkWhInvestment(osv.osv):
             investment_id, amortization_date, to_be_amortized,
             amortization_number,amortization_total_number,
             context=None):
+        # TODO: Add account_invoice.reference
 
         Partner = self.pool.get('res.partner')
         Product = self.pool.get('product.product')
@@ -821,6 +822,16 @@ class GenerationkWhInvestment(osv.osv):
                 last_effective_date = last,
                 ))
 
+    def open_amortization_invoice(self, cursor, uid, id):
+        obj = self.pool.get('account.invoice')
+
+        openOK = True
+        # TODO: Need to control the Exceptions
+        openOK += obj.action_date_assign(cursor, uid, [id])
+        openOK += obj.action_move_create(cursor, uid, [id])
+        openOK += obj.action_number(cursor, uid, [id])
+        openOK += obj.set_state(cursor, uid, [id],'open')
+        return openOK
 
 class InvestmentProvider(ErpWrapper):
 
