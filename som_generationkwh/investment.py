@@ -10,8 +10,7 @@ from tools.translate import _
 from tools import config
 import re
 import generationkwh.investmentlogs as logs
-
-shareValue = 100
+import generationkwh.investmentmodel as gkwh
 
 # TODO: This function is duplicated in other sources
 def _sqlfromfile(sqlname):
@@ -297,7 +296,7 @@ class GenerationkWhInvestment(osv.osv):
 
             investment_id = self.create(cursor, uid, dict(
                 member_id=member_id,
-                nshares=(line.credit-line.debit)//shareValue,
+                nshares=(line.credit-line.debit)//gkwh.shareValue,
                 purchase_date=line.date_created,
                 first_effective_date=activation,
                 last_effective_date=lastDateEffective,
@@ -457,7 +456,7 @@ class GenerationkWhInvestment(osv.osv):
                 to_be_amortized=pendingAmortization(
                     inv['purchase_date'],
                     current_date,
-                    shareValue*inv['nshares'],
+                    gkwh.shareValue*inv['nshares'],
                     inv['amortized_amount'],
                     ),
                 amortization_date=previousAmortizationDate(
@@ -582,7 +581,7 @@ class GenerationkWhInvestment(osv.osv):
         # Memento of mutable data
         investmentMemento = ns()
         # TODO: add here your stuff
-        investmentMemento.pendingCapital = investment.nshares * shareValue - investment.amortized_amount - to_be_amortized
+        investmentMemento.pendingCapital = investment.nshares * gkwh.shareValue - investment.amortized_amount - to_be_amortized
         investmentMemento.amortizationDate = amortization_date
         investmentMemento.amortizationNumber = amortization_number
         investmentMemento.amortizationTotalNumber = amortization_total_number
@@ -590,7 +589,7 @@ class GenerationkWhInvestment(osv.osv):
         investmentMemento.investmentName = investment.name
         investmentMemento.investmentPurchaseDate = investment.purchase_date
         investmentMemento.investmentLastEffectiveDate = investment.last_effective_date
-        investmentMemento.investmentInitialAmount = investment.nshares * shareValue
+        investmentMemento.investmentInitialAmount = investment.nshares * gkwh.shareValue
 
         invoice_name = '%s-AMOR%s' % (
                 investment.name or 'GENKWHID{}'.format(investment.id),
@@ -751,7 +750,7 @@ class GenerationkWhInvestment(osv.osv):
             partner_id, order_date, amount_in_euros, ip, iban,
             context=None):
 
-        if amount_in_euros % 100 > 0:
+        if amount_in_euros % gkwh.shareValue > 0:
             return False
 
         ResPartner = self.pool.get('res.partner')
@@ -771,7 +770,7 @@ class GenerationkWhInvestment(osv.osv):
         name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')
         id = self.create(cursor, uid, dict(
             name = name,
-            nshares = amount_in_euros/shareValue, # TODO: error if remainder
+            nshares = amount_in_euros/gkwh.shareValue, # TODO: error if remainder
             member_id = member_id,
             order_date = order_date,
             ), context)
@@ -797,7 +796,7 @@ class GenerationkWhInvestment(osv.osv):
                 'nshares',
                 'member_id',
                 ])
-            amount = inversio['nshares']*100
+            amount = inversio['nshares']*gkwh.shareValue
             soci = Soci.read(cursor,uid,inversio['member_id'][0],['bank_inversions'])
             iban = self.clean_iban(cursor, uid, soci['bank_inversions'][1])
             creationInfo = self.perm_read(cursor, uid, [id])[0]
