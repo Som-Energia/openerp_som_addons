@@ -507,3 +507,4 @@ Generationkwh_Assignment_TestHelper()
 
 
 
+# vim: et ts=4 sw=4
