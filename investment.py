@@ -278,10 +278,6 @@ class GenerationkWhInvestment(osv.osv):
             else:
                 domain = [('partner_id', '=', partnerid)]
 
-            # partner to member conversion
-            # ctx = dict(context)
-            # ctx.update({'active_test': False})
-
             members = Member.search(cursor, uid, domain, context=contextWithInactives)
             if not members:
                 print (
@@ -580,7 +576,6 @@ class GenerationkWhInvestment(osv.osv):
 
         # Memento of mutable data
         investmentMemento = ns()
-        # TODO: add here your stuff
         investmentMemento.pendingCapital = investment.nshares * gkwh.shareValue - investment.amortized_amount - to_be_amortized
         investmentMemento.amortizationDate = amortization_date
         investmentMemento.amortizationNumber = amortization_number
