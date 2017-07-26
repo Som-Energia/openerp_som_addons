@@ -281,7 +281,7 @@ class GenerationkWhInvestment(osv.osv):
             # partner to member conversion
             # ctx = dict(context)
             # ctx.update({'active_test': False})
-            
+
             members = Member.search(cursor, uid, domain, context=contextWithInactives)
             if not members:
                 print (
@@ -520,7 +520,6 @@ class GenerationkWhInvestment(osv.osv):
 
         return amortization_ids
 
-
     def create_amortization_invoice(self, cursor, uid,
             investment_id, amortization_date, to_be_amortized,
             amortization_number,amortization_total_number,
@@ -593,9 +592,10 @@ class GenerationkWhInvestment(osv.osv):
         investmentMemento.investmentInitialAmount = investment.nshares * gkwh.shareValue
 
         invoice_name = '%s-AMOR%s' % (
-                investment.name or 'GENKWHID{}'.format(investment.id),
-                year,
-                )
+            # TODO: Remove the GENKWHID stuff when fully migrated, error instead
+            investment.name or 'GENKWHID{}'.format(investment.id),
+            year,
+            )
         # Ensure unique amortization
         existingInvoice = Invoice.search(cursor,uid,[
             ('name','=', invoice_name),
