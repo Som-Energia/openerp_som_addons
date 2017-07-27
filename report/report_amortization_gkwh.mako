@@ -101,6 +101,11 @@
     #cabecera{
         float: right;
         padding-top: 20px;
+        text-align: right;
+    }
+    #warning24{
+        font-size: 75%;
+        vertical-align: text-bottom;
     }
 
     </style>
@@ -110,7 +115,7 @@
     <div class="logos">
         <img src="${addons_path}/som_generationkwh/report/Logo-SomEnergia-blanco-quadrado-250x250px.jpg" />
         <img src="${addons_path}/som_generationkwh/report/Logo_Generation-04-Horizontal.jpg" />
-        <p id="cabecera"><b>Liquidació Generation kWh</b><br>${data.receiptDate} </ p>
+        <p id="cabecera"><b>Liquidació GenerationkWh</b><br>Emisió: ${data.receiptDate} </ p>
     </ div>
     <div>
     <table>
@@ -140,8 +145,11 @@
             <td> Data: ${data.amortizationDate} </td>
         </tr>
         <tr>
-            <td> Pagament nº:  ${data.amortizationNumPayment} de ${data.amortizationTotalPayments} </td>
+            <td> Pagament nº:  ${data.amortizationNumPayment} de ${data.amortizationTotalPayments}</td>
             <td> Pendent de retornar: ${data.inversionPendingCapital} € </td>
+        </tr>
+        <tr>
+            <td colspan="2"> <p id="warning24">Recordeu: el pagament nº 24 serà doble</p></td>
         </tr>
     </table>
     </br>
