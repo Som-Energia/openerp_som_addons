@@ -2,7 +2,7 @@
 from osv import osv, fields
 from yamlns import namespace as ns
 import pooler
-import datetime
+from generationkwh.isodates import isodate
 from dateutil.relativedelta import relativedelta
 
 class AccountInvoice(osv.osv):
@@ -14,8 +14,9 @@ class AccountInvoice(osv.osv):
 
     def investmentAmortization_notificationData(self, cursor, uid, ids):
         def dateFormat(dateIso):
-            d = datetime.datetime.strptime(dateIso,"%Y-%m-%d")
-            return d.strftime("%d/%m/%Y")
+            return isodate(dateIso).strftime("%d/%m/%Y")
+        def moneyFormat(amount):
+            return "{:,.2f}".format(amount).replace(',','X').replace('.',',').replace('X','.')
 
         report = ns()
         pool = pooler.get_pool(cursor.dbname)
@@ -49,11 +50,11 @@ class AccountInvoice(osv.osv):
         report.ownerNif = partner['vat'][2:] if partner['vat'][:2]=='ES' else partner['vat']
         report.inversionName = mutable_information.investmentName
         report.ownerName = partner['name']
-        report.inversionPendingCapital = float(mutable_information.pendingCapital)
-        report.inversionInitialAmount = mutable_information.investmentInitialAmount
+        report.inversionPendingCapital = moneyFormat(float(mutable_information.pendingCapital))
+        report.inversionInitialAmount = moneyFormat(mutable_information.investmentInitialAmount)
         report.inversionPurchaseDate = dateFormat(mutable_information.investmentPurchaseDate)
         report.inversionExpirationDate = dateFormat(mutable_information.investmentLastEffectiveDate)
-        report.amortizationAmount = invoice['amount_total']
+        report.amortizationAmount = moneyFormat(invoice['amount_total'])
         report.amortizationName = invoice['name']
         report.inversionBankAccount = invoice['partner_bank'][1]
         report.amortizationTotalPayments = mutable_information.amortizationTotalNumber
