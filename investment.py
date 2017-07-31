@@ -787,6 +787,35 @@ class GenerationkWhInvestment(osv.osv):
             ))
         return id
 
+    def get_or_create_open_payment_order(self, cursor, uid,  mode_name):
+        """
+        Searches an existing payment order (remesa)
+        with the proper payment mode and still in draft.
+        If none is found, a new one gets created.
+        """
+        PaymentMode = self.pool.get('payment.mode')
+        payment_mode_ids = PaymentMode.search(cursor, uid, [
+            ('name', '=', mode_name),
+            ])
+
+        if not payment_mode_ids: return False
+
+        PaymentOrder = self.pool.get('payment.order')
+        payment_orders = PaymentOrder.search(cursor, uid, [
+            ('mode', '=', payment_mode_ids[0]),
+            ('state', '=', 'draft'),
+            ])
+        if payment_orders:
+            return payment_orders[0]
+
+        return PaymentOrder.create(cursor, uid, dict(
+            date_prefered = 'fixed',
+            user_id = uid,
+            state = 'draft',
+            mode = payment_mode_ids[0],
+            type = 'receivable',
+            create_account_moves = 'direct-payment',
+        ))
 
     def charge(self, cursor, uid, ids, purchase_date):
         Soci = self.pool.get('somenergia.soci')
