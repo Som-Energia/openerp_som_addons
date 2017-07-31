@@ -836,13 +836,9 @@ class GenerationkWhInvestment(osv.osv):
                 iban = iban,
                 )
 
-            # TODO: Move that elsewhere
-            waitingDays = 365
-            expirationYears = 24
-
             first,last = self._effectivePeriod(
                 isodate(purchase_date),
-                waitingDays, expirationYears)
+                gkwh.waitingDays, gkwh.expirationYears-1)
             self.write(cursor, uid, id, dict(
                 log = logs.log_charged(log_data) + inversio['log'],
                 purchase_date = purchase_date,
