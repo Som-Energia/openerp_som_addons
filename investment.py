@@ -857,6 +857,7 @@ class GenerationkWhInvestment(osv.osv):
         openOK += obj.set_state(cursor, uid, [id],'open')
         return openOK
 
+
 class InvestmentProvider(ErpWrapper):
 
     def effectiveInvestments(self, member=None, start=None, end=None):
