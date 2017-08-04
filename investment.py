@@ -83,7 +83,8 @@ class GenerationkWhInvestment(osv.osv):
             ),
         log=fields.text(
             'Història',
-            required=True,
+            # TODO to be required, after develop
+            #required=true,
             help="Història d'esdeveniments relacionats amb la inversió",
             )
         )
@@ -835,7 +836,6 @@ class GenerationkWhInvestment(osv.osv):
                 amount = amount,
                 iban = iban,
                 )
-
             first,last = self._effectivePeriod(
                 isodate(purchase_date),
                 gkwh.waitingDays, gkwh.expirationYears-1)

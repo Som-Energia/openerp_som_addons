@@ -28,7 +28,7 @@ class WizardInvestmentCharge(osv.osv):
         inv_ids = context.get('active_ids', [])
         Investment.charge(cursor, uid, inv_ids, str(date.today()))
         wiz.write(dict(
-            info="Data de comprava i última data efectiva farcides",
+            info="Data de compra i última data efectiva farcides\n Log completat",
             state = 'Done',
             ))
         return True
