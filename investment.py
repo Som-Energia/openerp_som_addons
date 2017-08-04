@@ -628,32 +628,30 @@ class GenerationkWhInvestment(osv.osv):
 
         invoice_id = Invoice.create(cursor, uid, vals)
 
-        vals = {
-            'invoice_id': invoice_id,
-            'name': _('Amortització fins a {amortization_date:%d/%m/%Y} de {investment} ').format(
+        line = dict(
+            InvoiceLine.product_id_change(cursor, uid, [],
+                product=product_id,
+                uom=product_uom_id,
+                partner_id=partner_id,
+                type='in_invoice',
+                ).get('value', {}),
+            invoice_id = invoice_id,
+            name = _('Amortització fins a {amortization_date:%d/%m/%Y} de {investment} ').format(
                 investment = investment.name,
                 amortization_date = datetime.datetime.strptime(amortization_date,'%Y-%m-%d'),
-            ),
-            'note': investmentMemento.dump(),
-            'quantity': 1,
-            'price_unit': to_be_amortized,
-            'product_id': product_id,
-        }
-
-        line = dict(InvoiceLine.product_id_change(cursor, uid, [],
-            product=product_id,
-            uom=product_uom_id,
-            partner_id=partner_id,
-            type='in_invoice',
-            ).get('value', {})
+                ),
+            note = investmentMemento.dump(),
+            quantity = 1,
+            price_unit = to_be_amortized,
+            product_id = product_id,
+            # partner specific account, was generic from product
+            account_id = partner.property_account_gkwh.id,
         )
-        # partner specific account
-        line['account_id']=partner.property_account_gkwh.id
+
         # no taxes apply
         line['invoice_line_tax_id'] = [
             (6, 0, line.get('invoice_line_tax_id', []))
         ]
-        line.update(vals)
         InvoiceLine.create(cursor, uid, line)
 
         return invoice_id
@@ -953,7 +951,7 @@ class GenerationkWhInvestment(osv.osv):
             quantity = investment.nshares,
             price_unit = gkwh.shareValue,
             product_id = product_id,
-            # partner specific account, was generic
+            # partner specific account, was generic from product
             account_id = partner.property_account_gkwh.id,
         )
         # rewrite relation
