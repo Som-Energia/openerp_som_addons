@@ -7,12 +7,21 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Inversions en Generation kWh">
+                    <field name="name"/>
+                    <field name="order_date"/>
                     <field name="member_id"/>
-                    <field name="active"/>
-                    <field name="nshares"/>
                     <field name="purchase_date"/>
+                    <field name="nshares"/>
                     <field name="first_effective_date"/>
+                    <field name="amortized_amount"/>
                     <field name="last_effective_date"/>
+                    <field name="active"/>
+                    <group colspan="4" col="2">
+                        <field name="log"/>
+                    </group>
+                    <group colspan="4" col="2">
+                        <field name="move_line_id"/>
+                    </group>
                     <group colspan="4" col="1">
                         <button name="%(action_wizard_generationkwh_investment_activation)d" string="Activate" icon="gtk-ok" type="action" attrs="{'readonly': [('active','=',1)]}" context="{'action': 'activate'}"/>
                         <button name="%(action_wizard_generationkwh_investment_activation)d" string="Deactivate" icon="gtk-ok" type="action" attrs="{'readonly': [('active','!=',1)]}" context="{'action': 'deactivate'}"/>
@@ -26,13 +35,15 @@
             <field name="type">tree</field>
             <field name="arch" type="xml">
                 <tree string="Inversions en Generation kWh" colors="red:active==0">
-                    <field name="member_id" select="1"/>
                     <field name="active" select="1"/>
+                    <field name="name" select="1"/>
+                    <field name="member_id" select="1"/>
                     <field name="nshares" select="1"/>
+                   <field name="amortized_amount" select="1"/>
+                    <field name="order_date" select="1"/>
                     <field name="purchase_date" select="1"/>
                     <field name="first_effective_date" select="1"/>
                     <field name="last_effective_date" select="1"/>
-                    <field name="move_line_id"/>
                 </tree>
             </field>
         </record>
