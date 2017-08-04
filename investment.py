@@ -931,6 +931,7 @@ class GenerationkWhInvestment(osv.osv):
             'partner_bank': partner.bank_inversions.id, # TODO: si es False fer algo
             'payment_type': payment_type_id,
             'check_total': amount_total,
+            'origin': investment.name,
         })
         if date_invoice:
             vals['date_invoice'] = date_invoice
