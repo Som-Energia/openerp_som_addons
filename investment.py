@@ -565,7 +565,7 @@ class GenerationkWhInvestment(osv.osv):
 
         # The journal
         journal_id = Journal.search(cursor, uid, [
-            ('code','=','GENKWH_AMOR'),
+            ('code','=','GENKWH'),
             ])[0]
         journal = Journal.browse(cursor, uid, journal_id)
 
