@@ -621,6 +621,7 @@ class GenerationkWhInvestment(osv.osv):
             'partner_bank': partner.bank_inversions.id, # TODO: si es False fer algo
             'payment_type': payment_type_id,
             'check_total': to_be_amortized,
+            'origin': investment.name,
         })
         if date_invoice:
             vals['date_invoice'] = date_invoice
@@ -952,7 +953,7 @@ class GenerationkWhInvestment(osv.osv):
             quantity = investment.nshares,
             price_unit = gkwh.shareValue,
             product_id = product_id,
-            # partner specific account
+            # partner specific account, was generic
             account_id = partner.property_account_gkwh.id,
         )
         # rewrite relation
