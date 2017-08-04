@@ -846,6 +846,126 @@ class GenerationkWhInvestment(osv.osv):
                 last_effective_date = last,
                 ))
 
+    def create_initial_invoice(self,cursor,uid, investment_id):
+        # TODO: Add account_invoice.reference
+
+        Partner = self.pool.get('res.partner')
+        Product = self.pool.get('product.product')
+        Invoice = self.pool.get('account.invoice')
+        InvoiceLine = self.pool.get('account.invoice.line')
+        PaymentType = self.pool.get('payment.type')
+        Journal = self.pool.get('account.journal')
+
+        investment = self.browse(cursor, uid, investment_id)
+
+        date_invoice = str(datetime.datetime.today().date())
+
+        # The partner
+        partner_id = investment.member_id.partner_id.id
+        partner = Partner.browse(cursor, uid, partner_id)
+
+        # Get or create partner specific accounts
+        if not partner.property_account_liquidacio:
+            partner.button_assign_acc_410()
+        if not partner.property_account_gkwh:
+            partner.button_assign_acc_1635()
+
+        if (
+            not partner.property_account_gkwh or
+            not partner.property_account_liquidacio
+            ):
+            partner = partner.browse()[0]
+
+        # The product
+        product_id = Product.search(cursor, uid, [
+            ('default_code','=', 'GENKWH_AE'),
+            ])[0]
+
+        product = Product.browse(cursor, uid, product_id)
+        product_uom_id = product.uom_id.id
+
+        # The journal
+        journal_id = Journal.search(cursor, uid, [
+            ('code','=','GENKWH'),
+            ])[0]
+        journal = Journal.browse(cursor, uid, journal_id)
+
+        # The payment type
+        payment_type_id = PaymentType.search(cursor, uid, [
+            ('code', '=', 'RECIBO_CSB'),
+            ])[0]
+
+        # Check if exist bank account
+        if not partner.bank_inversions:
+            raise Exception("El partner {} no té informat un compte corrent"
+                        .format(partner_id))
+
+        invoice_name = '%s-FACT' % (
+                investment.name or 'GENKWHID{}'.format(investment.id),
+                )
+        # Ensure unique amortization
+        existingInvoice = Invoice.search(cursor,uid,[
+            ('name','=', invoice_name),
+            ])
+        # TODO: This is not an amortization
+        # TODO: Test failure case
+        if existingInvoice:
+            raise Exception(
+                "Amortization notification {} already exists"
+                .format(invoice_name))
+
+        amount_total = gkwh.shareValue * investment.nshares
+
+        # Default invoice fields for given partner
+        vals = {}
+        vals.update(Invoice.onchange_partner_id(
+            cursor, uid, [], 'in_invoice', partner_id,
+        ).get('value', {}))
+
+        vals.update({
+            'partner_id': partner_id,
+            'type': 'out_invoice',
+            'name': invoice_name,
+            'journal_id': journal_id,
+            'account_id': partner.property_account_liquidacio.id,
+            'partner_bank': partner.bank_inversions.id, # TODO: si es False fer algo
+            'payment_type': payment_type_id,
+            'check_total': amount_total,
+        })
+        if date_invoice:
+            vals['date_invoice'] = date_invoice
+
+        invoice_id = Invoice.create(cursor, uid, vals)
+
+        vals = {
+            'invoice_id': invoice_id,
+            'name': _('Inversió {investment} ').format(
+                investment = investment.name,
+                amortization_date = '1666-06-06',
+            ),
+            'quantity': investment.nshares,
+            'price_unit': gkwh.shareValue,
+            'product_id': product_id,
+        }
+
+        line = dict(InvoiceLine.product_id_change(cursor, uid, [],
+            product=product_id,
+            uom=product_uom_id,
+            partner_id=partner_id,
+            type='in_invoice',
+            ).get('value', {})
+        )
+        # partner specific account
+        line['account_id']=partner.property_account_gkwh.id
+        # no taxes apply
+        line['invoice_line_tax_id'] = [
+            (6, 0, line.get('invoice_line_tax_id', []))
+        ]
+        line.update(vals)
+        InvoiceLine.create(cursor, uid, line)
+
+        return invoice_id
+
     def open_amortization_invoice(self, cursor, uid, id):
         obj = self.pool.get('account.invoice')
 
