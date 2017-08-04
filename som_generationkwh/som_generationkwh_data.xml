@@ -954,7 +954,7 @@
         </record>
 
         <record id="genkwh_amortization_journal" model="account.journal">
-            <field name="code">GENKWH_AMOR</field>
+            <field name="code">GENKWH</field>
             <field eval="[(6,0,[])]" name="account_control_ids"/>
             <field name="user_id" ref="base.user_root"/>
             <field eval="0" name="centralisation"/>
@@ -967,7 +967,7 @@
             <field name="sequence_id" ref="account.sequence_journal"/>
             <field eval="1" name="active"/>
             <field eval="1" name="update_posted"/>
-            <field name="name">Factures Amortitzacions GenerationkWh</field>
+            <field name="name">Factures GenerationkWh</field>
             <field eval="0" name="refund_journal"/>
             <field eval="0" name="entry_posted"/>
         </record>
