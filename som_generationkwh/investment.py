@@ -725,8 +725,7 @@ class GenerationkWhInvestment(osv.osv):
         If not it creates it and returns the new one.
         """
         ResPartnerBank = self.pool.get('res.partner.bank')
-        ResCountry = self.pool.get('res.country')
-        country_id = ResCountry.search(cursor, uid, [('code', '=', 'ES')])[0]
+        country_id = self.get_default_country(cursor, uid)
 
         bank_ids = ResPartnerBank.search(cursor, uid, [
             ('iban', '=', iban),
