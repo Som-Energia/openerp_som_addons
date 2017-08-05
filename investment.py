@@ -769,12 +769,13 @@ class GenerationkWhInvestment(osv.osv):
             order_date = order_date,
             ), context)
         creationInfo = self.perm_read(cursor, uid, [id])[0]
-        log = dict(
+        log = ns(
                 create_date = creationInfo['create_date'],
                 user = creationInfo['create_uid'][1],
                 ip = ip,
                 amount = amount_in_euros,
-                iban = iban
+                iban = iban,
+                move_line_id = None, # TODO: Provide the proper move_line_id
             )
         self.write(cursor, uid, id, dict(
                 log = logs.log_formfilled(log)
@@ -823,11 +824,12 @@ class GenerationkWhInvestment(osv.osv):
             soci = Soci.read(cursor,uid,inversio['member_id'][0],['bank_inversions'])
             iban = self.clean_iban(cursor, uid, soci['bank_inversions'][1])
             creationInfo = self.perm_read(cursor, uid, [id])[0]
-            log_data = dict(
+            log_data = ns(
                 create_date = creationInfo['create_date'],
                 user = creationInfo['create_uid'][1],
                 amount = amount,
                 iban = iban,
+                move_line_id = None, # TODO: Put the correct move_line_id
                 )
             first,last = self._effectivePeriod(
                 isodate(purchase_date),
