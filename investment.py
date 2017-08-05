@@ -302,8 +302,6 @@ class GenerationkWhInvestment(osv.osv):
 
             investment_ids.append(investment_id)
 
-        self.migrate_created_from_accounting(cursor, uid, investment_ids, context)
-
         return sorted(investment_ids)
 
 
@@ -433,14 +431,14 @@ class GenerationkWhInvestment(osv.osv):
         )['member_id'][0]
         return Member.add_gkwh_comment(cursor, uid, member_id, text)
 
-    def pending_amortizations(self, cursor, uid, current_date):
+    def pending_amortizations(self, cursor, uid, current_date, ids=None):
         from generationkwh.amortizations import (
             pendingAmortization,
             previousAmortizationDate,
             currentAmortizationNumber,
             totalAmortizationNumber,
             )
-        inv_ids = self.search(cursor, uid, [], order='id')
+        inv_ids = ids or self.search(cursor, uid, [], order='id')
         invs = self.read(cursor, uid, inv_ids, [
             'member_id',
             'purchase_date',
@@ -480,8 +478,8 @@ class GenerationkWhInvestment(osv.osv):
             if inv['to_be_amortized']
         ]
 
-    def amortize(self, cursor, uid, current_date, context=None):
-        pending = self.pending_amortizations(cursor, uid, current_date)
+    def amortize(self, cursor, uid, current_date, ids=None, context=None):
+        pending = self.pending_amortizations(cursor, uid, current_date, ids)
         amortization_ids = []
         for investment_tuple in pending:
             (
