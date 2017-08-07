@@ -907,7 +907,7 @@ class GenerationkWhInvestment(osv.osv):
         # TODO: Test failure case
         if existingInvoice:
             raise Exception(
-                "Amortization notification {} already exists"
+                "Initial Invoice {} already exists"
                 .format(invoice_name))
 
         amount_total = gkwh.shareValue * investment.nshares
