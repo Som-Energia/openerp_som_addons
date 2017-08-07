@@ -650,10 +650,12 @@ class GenerationkWhInvestment(osv.osv):
 
         return invoice_id
 
+    # TODO: Move to res.partner
     def get_default_country(self, cursor, uid):
         ResCountry = self.pool.get('res.country')
         return ResCountry.search(cursor, uid, [('code', '=', 'ES')])[0]
 
+    # TODO: Move to res.partner
     def check_spanish_account(self, cursor, uid, account):
         spain = self.get_default_country(cursor, uid)
         ResPartnerBank = self.pool.get('res.partner.bank')
@@ -678,6 +680,7 @@ class GenerationkWhInvestment(osv.osv):
 
         return result
 
+    # TODO: Move to res.partner
     def clean_iban(self, cursor, uid, iban):
         '''This function removes all characters from given 'iban' that isn't a
         alpha numeric and converts it to upper case.'''
@@ -687,6 +690,7 @@ class GenerationkWhInvestment(osv.osv):
             if char.isalnum()
             )
 
+    # TODO: Move to res.partner
     # TODO: Foreign IBANs accepted? make CCC check conditional
     # TODO: Foreign IBANs not accepted? should start by ES
     # TODO: Consider using stdnum
@@ -711,6 +715,7 @@ class GenerationkWhInvestment(osv.osv):
 
         return iban
 
+    # TODO: Move to res.partner
     def get_or_create_partner_bank(self, cursor, uid,
             partner_id, iban):
         """
@@ -904,8 +909,6 @@ class GenerationkWhInvestment(osv.osv):
         existingInvoice = Invoice.search(cursor,uid,[
             ('name','=', invoice_name),
             ])
-        # TODO: This is not an amortization
-        # TODO: Test failure case
         if existingInvoice:
             raise Exception(
                 "Initial Invoice {} already exists"
