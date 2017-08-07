@@ -21,7 +21,7 @@
     "som_generationkwh_view.xml",
     "wizard/wizard_investment_activation.xml",
     "wizard/wizard_investment_amortization.xml",
-    "wizard/wizard_investment_charge.xml",
+    "wizard/wizard_investment_payment.xml",
     "investment_view.xml",
     "assignment_view.xml",
     "somenergia_soci_view.xml",
