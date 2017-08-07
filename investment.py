@@ -960,7 +960,7 @@ class GenerationkWhInvestment(osv.osv):
 
         return invoice_id
 
-    def open_amortization_invoice(self, cursor, uid, id):
+    def open_invoice(self, cursor, uid, id):
         obj = self.pool.get('account.invoice')
 
         openOK = True
