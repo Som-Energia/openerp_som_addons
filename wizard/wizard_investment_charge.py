@@ -21,14 +21,13 @@ class WizardInvestmentCharge(osv.osv):
     }
 
 
-    def do_charge(self, cursor,uid, ids, context=None):
+    def do_invoices_and_payment_order(self, cursor,uid, ids, context=None):
         Investment = self.pool.get('generationkwh.investment')
 
         wiz = self.browse(cursor, uid, ids[0], context)
         inv_ids = context.get('active_ids', [])
-        Investment.charge(cursor, uid, inv_ids, str(date.today()))
         wiz.write(dict(
-            info="Data de compra i última data efectiva farcides\n Log completat",
+            info="TODO: invoices draft \n TODO: invoices_opnened \n TODO: create payment_order \n TODO: invoices in payment_order \n TODO: log",
             state = 'Done',
             ))
         return True
