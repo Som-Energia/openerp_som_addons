@@ -26,12 +26,12 @@ class WizardInvestmentPayment(osv.osv):
 
         wiz = self.browse(cursor, uid, ids[0], context)
         inv_ids = context.get('active_ids', [])
-        Investment.create_initial_invoice(cursor,uid, inv_ids[0])
-        #TODO: open_invoice
+        invoice_id = Investment.create_initial_invoice(cursor,uid, inv_ids[0])
+        Investment.open_invoice(cursor, uid, invoice_id)
         wiz.write(dict(
             info=
-                "TODO: invoices draft \n"
-                "TODO: invoices_opnened \n"
+                "Invoices draft: created \n"
+                "Invoices_opened: did it \n"
                 "TODO: create payment_order \n"
                 "TODO: invoices in payment_order \n"
                 "TODO: log",
