@@ -810,8 +810,10 @@ class GenerationkWhInvestment(osv.osv):
             create_account_moves = 'direct-payment',
         ))
 
-    def charge(self, cursor, uid, ids, purchase_date):
+    def set_paid(self, cursor, uid, ids, purchase_date, movementline_id=None):
         Soci = self.pool.get('somenergia.soci')
+        User = self.pool.get('res.users')
+        user = User.read(cursor, uid, uid, ['name'])
         for id in ids:
             inversio = self.read(cursor, uid, id, [
                 'log',
@@ -821,10 +823,11 @@ class GenerationkWhInvestment(osv.osv):
             amount = inversio['nshares']*gkwh.shareValue
             soci = Soci.read(cursor,uid,inversio['member_id'][0],['bank_inversions'])
             iban = self.clean_iban(cursor, uid, soci['bank_inversions'][1])
+            # FIX: Should take current uid, and current date or purchase_date
             creationInfo = self.perm_read(cursor, uid, [id])[0]
             log_data = ns(
                 create_date = creationInfo['create_date'],
-                user = creationInfo['create_uid'][1],
+                user = user['name'],
                 amount = amount,
                 iban = iban,
                 move_line_id = None, # TODO: Put the correct move_line_id
