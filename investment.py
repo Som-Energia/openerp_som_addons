@@ -973,6 +973,12 @@ class GenerationkWhInvestment(osv.osv):
         openOK += obj.set_state(cursor, uid, [id],'open')
         return openOK
 
+    def invoices_to_payment_order(self,cursor,uid,invoice_ids):
+        Invoice = self.pool.get('account.invoice')
+
+        order_id = self.get_or_create_open_payment_order(cursor, uid,'GENERATION kWh')
+        Invoice.afegeix_a_remesa(cursor,uid,invoice_ids, order_id)
+
 
 class InvestmentProvider(ErpWrapper):
 
