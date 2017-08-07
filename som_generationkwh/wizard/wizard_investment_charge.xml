@@ -6,7 +6,7 @@
             <field name="model">wizard.generationkwh.investment.charge</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <form string="Generar factures d'inversió inicial">
+                <form string="Generar 1r pagament. Facturar i remesar">
                     <field name="state" invisible="1"/>
                     <field name="info" nolabel="1" size="300" colspan="4" readonly="1"/>
                     <button name="do_charge" string="Generar" type="object" icon="gtk-execute" colspan="4" attrs="{'invisible':[('state', '=', 'Done')]}"/>
@@ -16,7 +16,7 @@
             </field>
         </record>
         <record id="action_wizard_generationkwh_investment_charge" model="ir.actions.act_window">
-            <field name="name">Generar factures d'inversió inicial</field>
+            <field name="name">Generar 1r pagament. Facturar i remesar</field>
             <field name="res_model">wizard.generationkwh.investment.charge</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
@@ -25,7 +25,7 @@
         </record>
         <record id="value_wizard_generationkwh_investment_charge" model="ir.values">
             <field name="object" eval="1"/>
-            <field name="name">Generar factures d'inversió inicial</field>
+            <field name="name">Generar 1r pagament. Facturar i remesar</field>
             <field name="model">generationkwh.investment</field>
             <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_generationkwh_investment_charge'))" />
         </record>
