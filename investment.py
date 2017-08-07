@@ -620,6 +620,7 @@ class GenerationkWhInvestment(osv.osv):
             vals['date_invoice'] = date_invoice
 
         invoice_id = Invoice.create(cursor, uid, vals)
+        Invoice.write(cursor,uid, invoice_id,{'sii_to_send':False})
 
         line = dict(
             InvoiceLine.product_id_change(cursor, uid, [],
@@ -933,6 +934,7 @@ class GenerationkWhInvestment(osv.osv):
             vals['date_invoice'] = date_invoice
 
         invoice_id = Invoice.create(cursor, uid, vals)
+        Invoice.write(cursor,uid, invoice_id,{'sii_to_send':False})
 
         line = dict(
             InvoiceLine.product_id_change(cursor, uid, [],
