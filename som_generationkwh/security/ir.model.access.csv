@@ -35,6 +35,9 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 "access_wizard_generationkwh_investment_amortization","wizard.generationkwh.investment.amortization","model_wizard_generationkwh_investment_amortization","som_generationkwh.group_som_generationkwh_r",1,0,0,0
 "access_wizard_generationkwh_investment_amortization","wizard.generationkwh.investment.amortization","model_wizard_generationkwh_investment_amortization","som_generationkwh.group_som_generationkwh_u",1,1,1,1
 "access_wizard_generationkwh_investment_amortization","wizard.generationkwh.investment.amortization","model_wizard_generationkwh_investment_amortization","som_generationkwh.group_som_generationkwh_w",1,1,1,0
+"access_wizard_generationkwh_investment_payment_r","wizard.generationkwh.investment.payment","model_wizard_generationkwh_investment_payment","som_generationkwh.group_som_generationkwh_r",1,0,0,0
+"access_wizard_generationkwh_investment_payment_u","wizard.generationkwh.investment.payment","model_wizard_generationkwh_investment_payment","som_generationkwh.group_som_generationkwh_u",1,1,1,1
+"access_wizard_generationkwh_investment_payment_w","wizard.generationkwh.investment.payment","model_wizard_generationkwh_investment_payment","som_generationkwh.group_som_generationkwh_w",1,1,1,0
 "access_foreign_account_move_line_r","account.move.line","account.model_account_move_line","som_generationkwh.group_som_generationkwh_r",1,0,0,0
 "access_foreign_account_move_line_u","account.move.line","account.model_account_move_line","som_generationkwh.group_som_generationkwh_u",1,0,0,0
 "access_foreign_account_move_line_w","account.move.line","account.model_account_move_line","som_generationkwh.group_som_generationkwh_w",1,0,0,0

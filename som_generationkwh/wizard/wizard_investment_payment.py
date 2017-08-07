@@ -6,9 +6,9 @@ from osv import osv, fields
 from tools.translate import _
 
 
-class WizardInvestmentCharge(osv.osv):
+class WizardInvestmentPayment(osv.osv):
 
-    _name = 'wizard.generationkwh.investment.charge'
+    _name = 'wizard.generationkwh.investment.payment'
 
     _columns = {
         'state': fields.char('State', size=16),
@@ -21,7 +21,7 @@ class WizardInvestmentCharge(osv.osv):
     }
 
 
-    def do_invoices_and_payment_order(self, cursor,uid, ids, context=None):
+    def do_payment(self, cursor,uid, ids, context=None):
         Investment = self.pool.get('generationkwh.investment')
 
         wiz = self.browse(cursor, uid, ids[0], context)
@@ -39,4 +39,4 @@ class WizardInvestmentCharge(osv.osv):
             ))
         return True
 
-WizardInvestmentCharge()
+WizardInvestmentPayment()
