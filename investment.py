@@ -816,7 +816,7 @@ class GenerationkWhInvestment(osv.osv):
             create_account_moves = 'direct-payment',
         ))
 
-    def set_paid(self, cursor, uid, ids, purchase_date, movementline_id=None):
+    def mark_as_paid(self, cursor, uid, ids, purchase_date, movementline_id=None):
         Soci = self.pool.get('somenergia.soci')
         User = self.pool.get('res.users')
         user = User.read(cursor, uid, uid, ['name'])
