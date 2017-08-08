@@ -971,15 +971,15 @@ class GenerationkWhInvestment(osv.osv):
 
         return invoice_ids
 
-    def open_invoice(self, cursor, uid, id):
+    def open_invoice(self, cursor, uid, ids):
         obj = self.pool.get('account.invoice')
 
         openOK = True
         # TODO: Need to control the Exceptions
-        openOK += obj.action_date_assign(cursor, uid, [id])
-        openOK += obj.action_move_create(cursor, uid, [id])
-        openOK += obj.action_number(cursor, uid, [id])
-        openOK += obj.set_state(cursor, uid, [id],'open')
+        openOK += obj.action_date_assign(cursor, uid, ids)
+        openOK += obj.action_move_create(cursor, uid, ids)
+        openOK += obj.action_number(cursor, uid, ids)
+        openOK += obj.set_state(cursor, uid, ids,'open')
         return openOK
 
     def invoices_to_payment_order(self,cursor,uid,invoice_ids):
