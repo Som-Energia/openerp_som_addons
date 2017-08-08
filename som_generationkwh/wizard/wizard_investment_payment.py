@@ -33,7 +33,7 @@ class WizardInvestmentPayment(osv.osv):
         wiz = self.browse(cursor, uid, ids[0], context)
         inv_ids = context.get('active_ids', [])
         invoice_ids = Investment.create_initial_invoices(cursor,uid, inv_ids)
-        Investment.open_invoice(cursor, uid, invoice_ids)
+        Investment.open_invoices(cursor, uid, invoice_ids)
         Investment.invoices_to_payment_order(cursor, uid, [invoice_ids[0]])
         wiz.write(dict(
             info=
