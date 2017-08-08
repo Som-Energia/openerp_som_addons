@@ -21,9 +21,9 @@ class WizardInvestmentPayment(osv.osv):
                            ' la inversió, les obrirà i les posarà dintre de'
                            ' la remesa \n Condicions per a que es crear les'
                            ' factures:\n'
-                           '  - Les inversions no han de tenir data de compra'
-                           '  - No han de tenir una factura ja creada'
-                           '  - Han de tenir bank associat a la persona sòcia'
+                           '  - Les inversions no han de tenir data de compra \n'
+                           '  - No han de tenir una factura ja creada \n'
+                           '  - Han de tenir bank associat a la persona sòcia \n'
     }
 
 
@@ -32,9 +32,9 @@ class WizardInvestmentPayment(osv.osv):
 
         wiz = self.browse(cursor, uid, ids[0], context)
         inv_ids = context.get('active_ids', [])
-        invoice_id = Investment.create_initial_invoice(cursor,uid, inv_ids[0])
-        Investment.open_invoice(cursor, uid, invoice_id)
-        Investment.invoices_to_payment_order(cursor, uid, [invoice_id])
+        invoice_ids = Investment.create_initial_invoices(cursor,uid, inv_ids)
+        Investment.open_invoice(cursor, uid, invoice_ids[0])
+        Investment.invoices_to_payment_order(cursor, uid, [invoice_ids[0]])
         wiz.write(dict(
             info=
                 "Invoices draft: created \n"
