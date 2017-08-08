@@ -881,8 +881,15 @@ class GenerationkWhInvestment(osv.osv):
             ('code', '=', 'RECIBO_CSB'),
             ])[0]
 
+        # TODO: Consider single browse call
+        # TODO: Consider read instead of browse
+
         for investment_id in investment_ids:
             investment = self.browse(cursor, uid, investment_id)
+
+            if investment.purchase_date:
+                raise Exception("Investment {} was already paid"
+                    .format(investment.name))
 
             # The partner
             partner_id = investment.member_id.partner_id.id
