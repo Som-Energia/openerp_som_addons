@@ -29,13 +29,11 @@ class WizardInvestmentPayment(osv.osv):
 
     def do_payment(self, cursor,uid, ids, context=None):
         Investment = self.pool.get('generationkwh.investment')
-
         wiz = self.browse(cursor, uid, ids[0], context)
         inv_ids = context.get('active_ids', [])
-        invoice_ids, errors = Investment.create_initial_invoices(cursor,uid, inv_ids)
-        if invoice_ids:
-            Investment.open_invoices(cursor, uid, invoice_ids)
-            Investment.invoices_to_payment_order(cursor, uid, invoice_ids)
+
+        errors = Investment.investment_payment(cursor, uid, inv_ids)
+
         wiz.write(dict(
             info=
                 "Invoices draft: created \n"

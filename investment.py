@@ -1007,6 +1007,14 @@ class GenerationkWhInvestment(osv.osv):
         order_id = self.get_or_create_open_payment_order(cursor, uid,'GENERATION kWh')
         Invoice.afegeix_a_remesa(cursor,uid,invoice_ids, order_id)
 
+    def investment_payment(self,cursor,uid,investment_ids):
+        Investment = self.pool.get('generationkwh.investment')
+
+        invoice_ids, errors = Investment.create_initial_invoices(cursor,uid, investment_ids)
+        if invoice_ids:
+            Investment.open_invoices(cursor, uid, invoice_ids)
+            Investment.invoices_to_payment_order(cursor, uid, invoice_ids)
+        return errors
 
 class InvestmentProvider(ErpWrapper):
 
