@@ -848,7 +848,7 @@ class GenerationkWhInvestment(osv.osv):
                 last_effective_date = last,
                 ))
 
-    def create_initial_invoice(self,cursor,uid, investment_ids):
+    def create_initial_invoices(self,cursor,uid, investment_ids):
         # TODO: Add account_invoice.reference
 
         Partner = self.pool.get('res.partner')
