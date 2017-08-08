@@ -971,7 +971,7 @@ class GenerationkWhInvestment(osv.osv):
 
         return invoice_ids
 
-    def open_invoice(self, cursor, uid, ids):
+    def open_invoices(self, cursor, uid, ids):
         obj = self.pool.get('account.invoice')
 
         openOK = True
