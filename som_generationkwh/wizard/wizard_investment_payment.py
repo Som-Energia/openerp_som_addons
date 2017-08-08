@@ -17,7 +17,13 @@ class WizardInvestmentPayment(osv.osv):
 
     _defaults = {
         'state': lambda *a: 'init',
-        'info': lambda *a: 'Hola Bon dia. Amb aquesta acció crearem les factures per les inversions inicials',
+        'info': lambda *a: 'Aquesta acció crearà les factures inicials de'
+                           ' la inversió, les obrirà i les posarà dintre de'
+                           ' la remesa \n Condicions per a que es crear les'
+                           ' factures:\n'
+                           '  - Les inversions no han de tenir data de compra'
+                           '  - No han de tenir una factura ja creada'
+                           '  - Han de tenir bank associat a la persona sòcia'
     }
 
 
@@ -28,12 +34,12 @@ class WizardInvestmentPayment(osv.osv):
         inv_ids = context.get('active_ids', [])
         invoice_id = Investment.create_initial_invoice(cursor,uid, inv_ids[0])
         Investment.open_invoice(cursor, uid, invoice_id)
+        Investment.invoices_to_payment_order(cursor, uid, [invoice_id])
         wiz.write(dict(
             info=
                 "Invoices draft: created \n"
                 "Invoices_opened: did it \n"
-                "TODO: create payment_order \n"
-                "TODO: invoices in payment_order \n"
+                "Invoices in payment_order: did it \n"
                 "TODO: log",
             state = 'Done',
             ))
