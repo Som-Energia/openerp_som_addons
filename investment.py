@@ -892,6 +892,10 @@ class GenerationkWhInvestment(osv.osv):
             ('code', '=', 'RECIBO_CSB'),
             ])[0]
 
+        def error(message):
+            raise Exception(message)
+
+
         # TODO: Consider single browse call
         # TODO: Consider read instead of browse
 
@@ -899,12 +903,14 @@ class GenerationkWhInvestment(osv.osv):
             investment = self.browse(cursor, uid, investment_id)
 
             if not investment.active:
-                raise Exception("Investment {} is inactive"
+                error("Investment {} is inactive"
                     .format(investment.name))
+                continue
 
             if investment.purchase_date:
-                raise Exception("Investment {} was already paid"
+                error("Investment {} was already paid"
                     .format(investment.name))
+                continue
 
             # The partner
             partner_id = investment.member_id.partner_id.id
@@ -924,8 +930,9 @@ class GenerationkWhInvestment(osv.osv):
 
             # Check if exist bank account
             if not partner.bank_inversions:
-                raise Exception(u"Partner '{}' has no investment bank account"
-                            .format(partner.name))
+                error(u"Partner '{}' has no investment bank account"
+                    .format(partner.name))
+                continue
 
             invoice_name = '%s-FACT' % (
                     investment.name or 'GENKWHID{}'.format(investment.id),
@@ -936,9 +943,9 @@ class GenerationkWhInvestment(osv.osv):
                 ('name','=', invoice_name),
                 ])
             if existingInvoice:
-                raise Exception(
-                    "Initial Invoice {} already exists"
+                error("Initial Invoice {} already exists"
                     .format(invoice_name))
+                continue
 
             amount_total = gkwh.shareValue * investment.nshares
 
