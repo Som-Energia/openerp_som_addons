@@ -32,15 +32,17 @@ class WizardInvestmentPayment(osv.osv):
 
         wiz = self.browse(cursor, uid, ids[0], context)
         inv_ids = context.get('active_ids', [])
-        invoice_ids = Investment.create_initial_invoices(cursor,uid, inv_ids)
-        Investment.open_invoices(cursor, uid, invoice_ids)
-        Investment.invoices_to_payment_order(cursor, uid, invoice_ids)
+        invoice_ids, errors = Investment.create_initial_invoices(cursor,uid, inv_ids)
+        if invoice_ids:
+            Investment.open_invoices(cursor, uid, invoice_ids)
+            Investment.invoices_to_payment_order(cursor, uid, invoice_ids)
         wiz.write(dict(
             info=
                 "Invoices draft: created \n"
                 "Invoices_opened: did it \n"
                 "Invoices in payment_order: did it \n"
-                "TODO: log",
+                "TODO: log\n"+
+                '\n'.join(errors),
             state = 'Done',
             ))
         return True

@@ -848,18 +848,7 @@ class GenerationkWhInvestment(osv.osv):
                 last_effective_date = last,
                 ))
 
-    def create_initial_invoices(self, cursor, uid, investment_ids):
-        try:
-            invoice_ids = self.create_initial_invoices_imbad(cursor, uid, investment_ids)
-        except Exception as e:
-            return [], [str(e)]
-        return invoice_ids, []
-        try:
-            pass
-        except Exception as e0:
-            return [], [str(e)]
-
-    def create_initial_invoices_imbad(self,cursor,uid, investment_ids):
+    def create_initial_invoices(self,cursor,uid, investment_ids):
         # TODO: Add account_invoice.reference
 
         Partner = self.pool.get('res.partner')
@@ -892,8 +881,9 @@ class GenerationkWhInvestment(osv.osv):
             ('code', '=', 'RECIBO_CSB'),
             ])[0]
 
+        errors = []
         def error(message):
-            raise Exception(message)
+            errors.append(message)
 
 
         # TODO: Consider single browse call
@@ -998,7 +988,7 @@ class GenerationkWhInvestment(osv.osv):
 
             invoice_ids.append(invoice_id)
 
-        return invoice_ids
+        return invoice_ids, errors
 
     def open_invoices(self, cursor, uid, ids):
         obj = self.pool.get('account.invoice')
