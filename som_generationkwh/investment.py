@@ -887,6 +887,10 @@ class GenerationkWhInvestment(osv.osv):
         for investment_id in investment_ids:
             investment = self.browse(cursor, uid, investment_id)
 
+            if not investment.active:
+                raise Exception("Investment {} is inactive"
+                    .format(investment.name))
+
             if investment.purchase_date:
                 raise Exception("Investment {} was already paid"
                     .format(investment.name))
