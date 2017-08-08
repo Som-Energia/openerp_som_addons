@@ -848,7 +848,7 @@ class GenerationkWhInvestment(osv.osv):
                 last_effective_date = last,
                 ))
 
-    def create_initial_invoice(self,cursor,uid, investment_id):
+    def create_initial_invoice(self,cursor,uid, investment_ids):
         # TODO: Add account_invoice.reference
 
         Partner = self.pool.get('res.partner')
@@ -858,25 +858,9 @@ class GenerationkWhInvestment(osv.osv):
         PaymentType = self.pool.get('payment.type')
         Journal = self.pool.get('account.journal')
 
-        investment = self.browse(cursor, uid, investment_id)
+        invoice_ids = []
 
         date_invoice = str(datetime.datetime.today().date())
-
-        # The partner
-        partner_id = investment.member_id.partner_id.id
-        partner = Partner.browse(cursor, uid, partner_id)
-
-        # Get or create partner specific accounts
-        if not partner.property_account_liquidacio:
-            partner.button_assign_acc_410()
-        if not partner.property_account_gkwh:
-            partner.button_assign_acc_1635()
-
-        if (
-            not partner.property_account_gkwh or
-            not partner.property_account_liquidacio
-            ):
-            partner = partner.browse()[0]
 
         # The product
         product_id = Product.search(cursor, uid, [
@@ -897,73 +881,95 @@ class GenerationkWhInvestment(osv.osv):
             ('code', '=', 'RECIBO_CSB'),
             ])[0]
 
-        # Check if exist bank account
-        if not partner.bank_inversions:
-            raise Exception("El partner {} no té informat un compte corrent"
-                        .format(partner_id))
+        for investment_id in investment_ids:
+            investment = self.browse(cursor, uid, investment_id)
 
-        invoice_name = '%s-FACT' % (
-                investment.name or 'GENKWHID{}'.format(investment.id),
+            # The partner
+            partner_id = investment.member_id.partner_id.id
+            partner = Partner.browse(cursor, uid, partner_id)
+
+            # Get or create partner specific accounts
+            if not partner.property_account_liquidacio:
+                partner.button_assign_acc_410()
+            if not partner.property_account_gkwh:
+                partner.button_assign_acc_1635()
+
+            if (
+                not partner.property_account_gkwh or
+                not partner.property_account_liquidacio
+                ):
+                partner = partner.browse()[0]
+
+            # Check if exist bank account
+            if not partner.bank_inversions:
+                raise Exception("El partner {} no té informat un compte corrent"
+                            .format(partner_id))
+
+            invoice_name = '%s-FACT' % (
+                    investment.name or 'GENKWHID{}'.format(investment.id),
                 )
-        # Ensure unique amortization
-        existingInvoice = Invoice.search(cursor,uid,[
-            ('name','=', invoice_name),
-            ])
-        if existingInvoice:
-            raise Exception(
-                "Initial Invoice {} already exists"
-                .format(invoice_name))
 
-        amount_total = gkwh.shareValue * investment.nshares
+            # Ensure unique amortization
+            existingInvoice = Invoice.search(cursor,uid,[
+                ('name','=', invoice_name),
+                ])
+            if existingInvoice:
+                raise Exception(
+                    "Initial Invoice {} already exists"
+                    .format(invoice_name))
 
-        # Default invoice fields for given partner
-        vals = {}
-        vals.update(Invoice.onchange_partner_id(
-            cursor, uid, [], 'in_invoice', partner_id,
-        ).get('value', {}))
+            amount_total = gkwh.shareValue * investment.nshares
 
-        vals.update({
-            'partner_id': partner_id,
-            'type': 'out_invoice',
-            'name': invoice_name,
-            'journal_id': journal_id,
-            'account_id': partner.property_account_liquidacio.id,
-            'partner_bank': partner.bank_inversions.id, # TODO: si es False fer algo
-            'payment_type': payment_type_id,
-            'check_total': amount_total,
-            'origin': investment.name,
-        })
-        if date_invoice:
-            vals['date_invoice'] = date_invoice
+            # Default invoice fields for given partner
+            vals = {}
+            vals.update(Invoice.onchange_partner_id(
+                cursor, uid, [], 'in_invoice', partner_id,
+            ).get('value', {}))
 
-        invoice_id = Invoice.create(cursor, uid, vals)
-        Invoice.write(cursor,uid, invoice_id,{'sii_to_send':False})
+            vals.update({
+                'partner_id': partner_id,
+                'type': 'out_invoice',
+                'name': invoice_name,
+                'journal_id': journal_id,
+                'account_id': partner.property_account_liquidacio.id,
+                'partner_bank': partner.bank_inversions.id, # TODO: si es False fer algo
+                'payment_type': payment_type_id,
+                'check_total': amount_total,
+                'origin': investment.name,
+            })
+            if date_invoice:
+                vals['date_invoice'] = date_invoice
 
-        line = dict(
-            InvoiceLine.product_id_change(cursor, uid, [],
-                product=product_id,
-                uom=product_uom_id,
-                partner_id=partner_id,
-                type='in_invoice',
-                ).get('value', {}),
-            invoice_id = invoice_id,
-            name = _('Inversió {investment} ').format(
-                investment = investment.name,
-            ),
-            quantity = investment.nshares,
-            price_unit = gkwh.shareValue,
-            product_id = product_id,
-            # partner specific account, was generic from product
-            account_id = partner.property_account_gkwh.id,
-        )
-        # rewrite relation
-        line['invoice_line_tax_id'] = [
-            (6, 0, line.get('invoice_line_tax_id', []))
-        ]
+            invoice_id = Invoice.create(cursor, uid, vals)
+            Invoice.write(cursor,uid, invoice_id,{'sii_to_send':False})
 
-        InvoiceLine.create(cursor, uid, line)
+            line = dict(
+                InvoiceLine.product_id_change(cursor, uid, [],
+                    product=product_id,
+                    uom=product_uom_id,
+                    partner_id=partner_id,
+                    type='in_invoice',
+                    ).get('value', {}),
+                invoice_id = invoice_id,
+                name = _('Inversió {investment} ').format(
+                    investment = investment.name,
+                ),
+                quantity = investment.nshares,
+                price_unit = gkwh.shareValue,
+                product_id = product_id,
+                # partner specific account, was generic from product
+                account_id = partner.property_account_gkwh.id,
+            )
+            # rewrite relation
+            line['invoice_line_tax_id'] = [
+                (6, 0, line.get('invoice_line_tax_id', []))
+            ]
 
-        return invoice_id
+            InvoiceLine.create(cursor, uid, line)
+
+            invoice_ids.append(invoice_id)
+
+        return invoice_ids
 
     def open_invoice(self, cursor, uid, id):
         obj = self.pool.get('account.invoice')
