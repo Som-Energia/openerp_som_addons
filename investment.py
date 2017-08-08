@@ -11,6 +11,7 @@ from tools import config
 import re
 import generationkwh.investmentlogs as logs
 import generationkwh.investmentmodel as gkwh
+from uuid import uuid4
 
 # TODO: This function is duplicated in other sources
 def _sqlfromfile(sqlname):
@@ -23,7 +24,6 @@ def _sqlfromfile(sqlname):
         return f.read()
 
 class GenerationkWhInvestment(osv.osv):
-
 
     _name = 'generationkwh.investment'
     _order = 'purchase_date DESC'
@@ -94,6 +94,8 @@ class GenerationkWhInvestment(osv.osv):
         amortized_amount=lambda *a: 0,
         log=lambda *a:'',
     )
+
+    CREDITOR_CODE = 'ES24000F55091367'
 
     def migrate_created_from_accounting(self, cursor, uid,
             investment_ids=None,
@@ -784,7 +786,50 @@ class GenerationkWhInvestment(osv.osv):
         self.write(cursor, uid, id, dict(
                 log = logs.log_formfilled(log)
             ))
+
+        self.get_or_create_payment_mandate(cursor, uid, partner_id, iban, "PRESTEC GENERATION kWh", self.CREDITOR_CODE) #TODO: Purpose parameter for APO
+
         return id
+
+    def get_or_create_payment_mandate(self, cursor, uid, partner_id, iban, purpose, creditor_code):
+        """
+        Searches an active payment (SEPA) mandate for
+        the partner, iban and purpose (communication).
+        If none is found, a new one is created.
+        """
+        ResPartner = self.pool.get("res.partner")
+        PaymentMandate = self.pool.get("payment.mandate")
+        ResPartnerAddress = self.pool.get("res.partner.address")
+        partner = ResPartner.read(cursor, uid, partner_id, ['address', 'name', 'vat'])
+        search_params = [
+            ('debtor_iban', '=', iban),
+            ('debtor_vat', '=', partner['vat']),
+            ('date_end', '=', False),
+            ('reference', '=', 'res.partner,{}'.format(partner_id)),
+            ('notes', '=', purpose),
+        ]
+
+        mandate_ids = PaymentMandate.search(cursor, uid, search_params)
+        if mandate_ids: return mandate_ids[0]
+
+        adr = ResPartnerAddress.read(cursor, uid, partner['address'][0], ['nv', 'state_id'])
+        mandate_name = uuid4().hex
+        mandate_date = datetime.datetime.now()
+        vals = {
+            'debtor_name': partner['name'],
+            'debtor_vat': partner['vat'],
+            'debtor_address': adr['nv'],
+            # TODO: No test covers case having no state
+            'debtor_state': adr['state_id'] and adr['state_id'][1] or '',
+            'debtor_country': self.get_default_country(cursor, uid),
+            'debtor_iban': iban,
+            'reference': 'res.partner,{}'.format(partner_id),
+            'notes': purpose,
+            'name': mandate_name,
+            'creditor_code': creditor_code,
+            'date': mandate_date.strftime('%Y-%m-%d')
+        }
+        return PaymentMandate.create(cursor, uid, vals)
 
     def get_or_create_open_payment_order(self, cursor, uid,  mode_name):
         """
