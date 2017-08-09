@@ -57,5 +57,24 @@
         <menuitem id="menu_gkwh_base" name="Generation kWh"/>
         <menuitem action="action_gkwh_investment_tree"
             id="menu_gkwh_investment_tree" parent="menu_gkwh_base"/>
+
+    <!-- Enllaç des de la inversió a les factures -->
+        <record model="ir.actions.act_window" id="action_sc_invoices_from_investment">
+            <field name="name">Factures de la inversió</field>
+            <field name="res_model">account.invoice</field>
+            <field name="src_model">generationkwh.investment</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <!-- #TODO trobar una altra manera de lligar les inversions amb les factures -->
+            <field name="domain">[('origin', '=', active_id)]</field>
+        </record>
+        <record id="value_action_sc_comptadors_de_polisses" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Factures de la inversió</field>
+            <field name="key2">client_action_relate</field>
+            <field name="key">action</field>
+            <field name="model">generationkwh.investment</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_sc_invoices_from_investment'))" />
+        </record>
     </data>
 </openerp>
