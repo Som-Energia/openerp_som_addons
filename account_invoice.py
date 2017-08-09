@@ -16,16 +16,23 @@ class AccountInvoice(osv.osv):
         print "Estem a la funcio filla"
         return res
 
-    def pay_and_reconcile_group(self, cursor, uid, ids, pay_amount,
+    def pay_and_reconcile(self, cursor, uid, ids, pay_amount,
                                 pay_account_id, period_id, pay_journal_id,
                                 writeoff_acc_id, writeoff_period_id,
                                 writeoff_journal_id, context=None, name=''):
-        res = super(AccountInvoice, self).pay_and_reconcile_group(
+        res = super(AccountInvoice, self).pay_and_reconcile(
             cursor, uid, ids, pay_amount, pay_account_id, period_id,
             pay_journal_id, writeoff_acc_id, writeoff_period_id,
             writeoff_journal_id, context, name
         )
-        print "Estem a la funció filla"
+        #TODO: Untested
+        from datetime import date
+        today = str(date.today())
+        Investment = self.pool.get('generationkwh.investment')
+        for invoice_id in ids:
+            investment_id = self.get_investment(cursor,uid,invoice_id)
+            if not investment_id: continue
+            Investment.mark_as_paid(cursor,uid,[investment_id],today)
         return res
 
     def get_investment(self, cursor, uid, inv_id):
