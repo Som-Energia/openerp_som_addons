@@ -34,13 +34,15 @@ class WizardInvestmentPayment(osv.osv):
 
         errors = Investment.investment_payment(cursor, uid, inv_ids)
 
+        if errors:
+            info =  "ERRORS DURANT EL PROCÉS: \n"
+            for error in errors:
+                info += " -  " + str(error) + "\n"
+        else:
+            info = "No hi ha hagut errors durant el procés"
+
         wiz.write(dict(
-            info=
-                "Invoices draft: created \n"
-                "Invoices_opened: did it \n"
-                "Invoices in payment_order: did it \n"
-                "TODO: log\n"+
-                '\n'.join(errors),
+            info= info,
             state = 'Done',
             ))
         return True
