@@ -893,6 +893,26 @@ class GenerationkWhInvestment(osv.osv):
                 last_effective_date = last,
                 ))
 
+    def mark_as_unpaid(self, cursor, uid, ids, movementline_id=None):
+        Soci = self.pool.get('somenergia.soci')
+        User = self.pool.get('res.users')
+        user = User.read(cursor, uid, uid, ['name'])
+        for id in ids:
+            inversio = self.read(cursor, uid, id, ['log'])
+            #TODO: what's that? perm_read
+            creationInfo = self.perm_read(cursor, uid, [id])[0]
+            log_data = ns(
+                create_date = creationInfo['create_date'],
+                user = user['name'],
+                move_line_id = None, # TODO: Put the correct move_line_id
+                )
+            self.write(cursor, uid, id, dict(
+                log = logs.log_refunded(log_data) + inversio['log'],
+                purchase_date = False,
+                #first_effective_date = first, # TODO: activate when needed
+                last_effective_date = False,
+                ))
+
     def create_initial_invoices(self,cursor,uid, investment_ids):
         # TODO: Add account_invoice.reference
 
