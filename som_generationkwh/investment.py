@@ -1081,6 +1081,16 @@ class GenerationkWhInvestment(osv.osv):
             Investment.invoices_to_payment_order(cursor, uid, invoice_ids)
         return errors
 
+    def send_mail_pas2(self, cursor, uid, id):
+        pwswz_obj = self.pool.get('poweremail.send.wizard')
+        ctx = {'active_ids': [id], 'active_id': id,
+            'template_id': '51', 'src_rec_ids': [id],
+            'src_model': 'account.invoice', 'from': 'generationkwh@somenergia.coop',
+            'state': 'single', 'priority': '0'}
+        params = {'state': 'single', 'priority': '0', 'from': ctx['from']}
+        pwswz_id = pwswz_obj.create(cursor, uid, params, ctx)
+        pwswz_obj.send_mail(cursor, uid, [pwswz_id], ctx)
+
 class InvestmentProvider(ErpWrapper):
 
     def effectiveInvestments(self, member=None, start=None, end=None):
