@@ -26,6 +26,8 @@
         <record id="value_wizard_generationkwh_investment_payment" model="ir.values">
             <field name="object" eval="1"/>
             <field name="name">Generar 1r pagament</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
             <field name="model">generationkwh.investment</field>
             <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_generationkwh_investment_payment'))" />
         </record>
