@@ -13,7 +13,12 @@ class AccountInvoice(osv.osv):
             cursor, uid, ids, amount, pay_account_id, period_id, pay_journal_id,
             context, name
         )
-        print "Estem a la funcio filla"
+        #TODO: Untested
+        Investment = self.pool.get('generationkwh.investment')
+        for invoice_id in ids:
+            investment_id = self.get_investment(cursor,uid,invoice_id)
+            if not investment_id: continue
+            Investment.mark_as_unpaid(cursor,uid,[investment_id])
         return res
 
     def pay_and_reconcile(self, cursor, uid, ids, pay_amount,
