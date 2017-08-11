@@ -874,10 +874,8 @@ class GenerationkWhInvestment(osv.osv):
             amount = inversio['nshares']*gkwh.shareValue
             soci = Soci.read(cursor,uid,inversio['member_id'][0],['bank_inversions'])
             iban = self.clean_iban(cursor, uid, soci['bank_inversions'][1])
-            # FIX: Should take current uid, and current date or purchase_date
-            creationInfo = self.perm_read(cursor, uid, [id])[0]
             log_data = ns(
-                create_date = creationInfo['create_date'],
+                create_date = str(datetime.today()),
                 user = user['name'],
                 amount = amount,
                 iban = iban,
@@ -899,10 +897,8 @@ class GenerationkWhInvestment(osv.osv):
         user = User.read(cursor, uid, uid, ['name'])
         for id in ids:
             inversio = self.read(cursor, uid, id, ['log'])
-            #TODO: what's that? perm_read
-            creationInfo = self.perm_read(cursor, uid, [id])[0]
             log_data = ns(
-                create_date = creationInfo['create_date'],
+                create_date = str(datetime.today()),
                 user = user['name'],
                 move_line_id = None, # TODO: Put the correct move_line_id
                 )
