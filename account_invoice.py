@@ -32,7 +32,7 @@ class AccountInvoice(osv.osv):
         )
         #TODO: Untested
         from datetime import date
-        today = str(date.today())
+        today = str(date.today()) #TODO date more real?
         Investment = self.pool.get('generationkwh.investment')
         for invoice_id in ids:
             investment_id = self.get_investment(cursor,uid,invoice_id)
