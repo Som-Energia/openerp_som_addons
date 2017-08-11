@@ -875,7 +875,7 @@ class GenerationkWhInvestment(osv.osv):
             log_data = ns(
                 create_date = str(datetime.today()),
                 user = user['name'],
-                amount = amount,
+                amount = amount, # TODO: Treure l'amount del move_line_id
                 iban = iban,
                 move_line_id = None, # TODO M: Put the correct move_line_id or invoice?
                 )
