@@ -889,7 +889,7 @@ class GenerationkWhInvestment(osv.osv):
             self.write(cursor, uid, id, dict(
                 log = logs.log_charged(log_data) + inversio['log'],
                 purchase_date = purchase_date,
-                #first_effective_date = first, # TODO: activate when needed
+                first_effective_date = first,
                 last_effective_date = last,
                 ))
 
@@ -909,7 +909,7 @@ class GenerationkWhInvestment(osv.osv):
             self.write(cursor, uid, id, dict(
                 log = logs.log_refunded(log_data) + inversio['log'],
                 purchase_date = False,
-                #first_effective_date = first, # TODO: activate when needed
+                first_effective_date = False,
                 last_effective_date = False,
                 ))
 
