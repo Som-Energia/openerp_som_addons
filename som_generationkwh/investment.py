@@ -3,7 +3,7 @@
 from osv import osv, fields
 from .erpwrapper import ErpWrapper
 from dateutil.relativedelta import relativedelta
-import datetime
+from datetime import datetime, date
 from yamlns import namespace as ns
 from generationkwh.isodates import isodate
 from tools.translate import _
@@ -531,7 +531,7 @@ class GenerationkWhInvestment(osv.osv):
 
         investment = self.browse(cursor, uid, investment_id)
 
-        date_invoice = str(datetime.datetime.today().date())
+        date_invoice = str(date.today())
         year = amortization_date.split('-')[0]
 
         # The partner
@@ -634,7 +634,7 @@ class GenerationkWhInvestment(osv.osv):
             invoice_id = invoice_id,
             name = _('Amortització fins a {amortization_date:%d/%m/%Y} de {investment} ').format(
                 investment = investment.name,
-                amortization_date = datetime.datetime.strptime(amortization_date,'%Y-%m-%d'),
+                amortization_date = datetime.strptime(amortization_date,'%Y-%m-%d'),
                 ),
             note = investmentMemento.dump(),
             quantity = 1,
@@ -814,7 +814,7 @@ class GenerationkWhInvestment(osv.osv):
 
         adr = ResPartnerAddress.read(cursor, uid, partner['address'][0], ['nv', 'state_id'])
         mandate_name = uuid4().hex
-        mandate_date = datetime.datetime.now()
+        mandate_date = datetime.now()
         vals = {
             'debtor_name': partner['name'],
             'debtor_vat': partner['vat'],
@@ -925,7 +925,7 @@ class GenerationkWhInvestment(osv.osv):
 
         invoice_ids = []
 
-        date_invoice = str(datetime.datetime.today().date())
+        date_invoice = str(date.today())
 
         # The product
         product_id = Product.search(cursor, uid, [
