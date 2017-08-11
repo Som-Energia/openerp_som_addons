@@ -567,8 +567,8 @@ class GenerationkWhInvestment(osv.osv):
 
         # Check if exist bank account
         if not partner.bank_inversions:
-            raise Exception("El partner {} no té informat un compte corrent"
-                        .format(partner_id))
+            raise Exception(u"El partner {} no té informat un compte corrent"
+                        .format(partner.name))
 
         # Memento of mutable data
         investmentMemento = ns()
