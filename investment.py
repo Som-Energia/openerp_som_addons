@@ -97,6 +97,7 @@ class GenerationkWhInvestment(osv.osv):
 
     CREDITOR_CODE = 'ES24000F55091367'
 
+    # TODO: delete this function
     def migrate_created_from_accounting(self, cursor, uid,
             investment_ids=None,
             context=None):
@@ -119,7 +120,6 @@ class GenerationkWhInvestment(osv.osv):
             movementline_ids = [investment['move_line_id'][0]]
             moveline_perms = MoveLine.perm_read(cursor, uid, movementline_ids )[0]
             investment_perms = self.perm_read(cursor, uid, [investment['id']])[0]
-            # TODO: Take it from PaymentLine instead
             order_date = moveline_perms['create_date']
             order_user = 'Webforms'
             purchase_date = moveline_perms['create_date']
@@ -306,9 +306,8 @@ class GenerationkWhInvestment(osv.osv):
 
         return sorted(investment_ids)
 
-
+    # TODO: Delete this function
     def _disabled_create_from_accounting(self, cursor, uid,
-            # TODO: member
             start, stop, waitingDays, expirationYears,
             context=None):
         """
@@ -318,8 +317,6 @@ class GenerationkWhInvestment(osv.osv):
             days after the purchase date.
             If expirationYears is not None, expiration date is set, those
             years after the activation date.
-            TODO: Confirm that the expiration is relative to the activation
-            instead the purchase.
         """
 
         query = _sqlfromfile('investment_from_accounting')
@@ -520,7 +517,6 @@ class GenerationkWhInvestment(osv.osv):
             investment_id, amortization_date, to_be_amortized,
             amortization_number,amortization_total_number,
             context=None):
-        # TODO: Add account_invoice.reference
 
         Partner = self.pool.get('res.partner')
         Product = self.pool.get('product.product')
@@ -613,7 +609,7 @@ class GenerationkWhInvestment(osv.osv):
             'name': invoice_name,
             'journal_id': journal_id,
             'account_id': partner.property_account_liquidacio.id,
-            'partner_bank': partner.bank_inversions.id, # TODO: si es False fer algo
+            'partner_bank': partner.bank_inversions.id,
             'payment_type': payment_type_id,
             'check_total': to_be_amortized,
             'origin': investment.name,
@@ -770,7 +766,7 @@ class GenerationkWhInvestment(osv.osv):
         name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')
         id = self.create(cursor, uid, dict(
             name = name,
-            nshares = amount_in_euros/gkwh.shareValue, # TODO: error if remainder
+            nshares = amount_in_euros/gkwh.shareValue,
             member_id = member_id,
             order_date = order_date,
             ), context)
@@ -781,7 +777,7 @@ class GenerationkWhInvestment(osv.osv):
                 ip = ip,
                 amount = amount_in_euros,
                 iban = iban,
-                move_line_id = None, # TODO: Provide the proper move_line_id
+                move_line_id = None, # TODO M: Provide the proper move_line_id
             )
         self.write(cursor, uid, id, dict(
                 log = logs.log_formfilled(log)
@@ -879,7 +875,7 @@ class GenerationkWhInvestment(osv.osv):
                 user = user['name'],
                 amount = amount,
                 iban = iban,
-                move_line_id = None, # TODO: Put the correct move_line_id
+                move_line_id = None, # TODO M: Put the correct move_line_id or invoice?
                 )
             first,last = self._effectivePeriod(
                 isodate(purchase_date),
@@ -900,7 +896,7 @@ class GenerationkWhInvestment(osv.osv):
             log_data = ns(
                 create_date = str(datetime.today()),
                 user = user['name'],
-                move_line_id = None, # TODO: Put the correct move_line_id
+                move_line_id = None, # TODO M: Put the correct move_line_id or invoice?
                 )
             self.write(cursor, uid, id, dict(
                 log = logs.log_refunded(log_data) + inversio['log'],
@@ -910,7 +906,6 @@ class GenerationkWhInvestment(osv.osv):
                 ))
 
     def create_initial_invoices(self,cursor,uid, investment_ids):
-        # TODO: Add account_invoice.reference
 
         Partner = self.pool.get('res.partner')
         Product = self.pool.get('product.product')
@@ -1012,7 +1007,7 @@ class GenerationkWhInvestment(osv.osv):
                 'name': invoice_name,
                 'journal_id': journal_id,
                 'account_id': partner.property_account_liquidacio.id,
-                'partner_bank': partner.bank_inversions.id, # TODO: si es False fer algo
+                'partner_bank': partner.bank_inversions.id,
                 'payment_type': payment_type_id,
                 'check_total': amount_total,
                 'origin': investment.name,
