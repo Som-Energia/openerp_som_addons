@@ -894,10 +894,15 @@ class GenerationkWhInvestment(osv.osv):
         User = self.pool.get('res.users')
         user = User.read(cursor, uid, uid, ['name'])
         for id in ids:
-            inversio = self.read(cursor, uid, id, ['log'])
+            inversio = self.read(cursor, uid, id, [
+                'log',
+                'nshares',
+            ])
+            amount = inversio['nshares']*gkwh.shareValue
             log_data = ns(
                 create_date = str(datetime.today()),
                 user = user['name'],
+                amount = amount, # TODO: Treure l'amount del move_line_id
                 move_line_id = None, # TODO M: Put the correct move_line_id or invoice?
                 )
             self.write(cursor, uid, id, dict(
