@@ -27,7 +27,7 @@
         </record>
     </data>
     <data noupdate="1">
-        <record model="poweremail.templates" id="generationkwh_mail_pas1">
+        <record model="poweremail.templates" id="generationkwh_mail_creacio">
             <field name="name">Generation kWh - Creació de la inversió</field>
             <field name="object_name" model="ir.model" search="[('model', '=', 'generationkwh.investment')]"/>
             <field eval="0" name="save_to_drafts"/>
@@ -48,7 +48,7 @@
         </record>
     </data>
     <data noupdate="1">
-        <record model="poweremail.templates" id="generationkwh_mail_pas2">
+        <record model="poweremail.templates" id="generationkwh_mail_pagament">
             <field name="name">Generation kWh - Pagament inversió</field>
             <field name="object_name" model="ir.model" search="[('model', '=', 'account.invoice')]"/>
             <field eval="0" name="save_to_drafts"/>
