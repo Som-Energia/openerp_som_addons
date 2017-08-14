@@ -7,7 +7,7 @@
         </record>
     </data>
     <data noupdate="1">
-        <record model="poweremail.templates" id="generationkwh_assignment_notification_mail">
+       <record model="poweremail.templates" id="generationkwh_assignment_notification_mail">
             <field name="name">Generation kWh - Assignació a contractes per defecte</field>
             <field name="object_name" model="ir.model" search="[('model', '=', 'somenergia.soci')]"/>
             <field eval="0" name="save_to_drafts"/>
@@ -19,6 +19,48 @@
             <field eval="0" name="single_email"/>
             <field eval="0" name="use_sign"/>
             <field name="def_subject">Generation kWh: Comencem a rebre energia! [${object.ref[1:]}]</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="copyvalue">${object.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record model="poweremail.templates" id="generationkwh_mail_pas1">
+            <field name="name">Generation kWh - Creació de la inversió</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'generationkwh.investment')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">generationkwh.investment</field>
+            <field name="file_name">${object.name}</field>
+            <field eval="1" name="use_filter"/>
+            <field name="def_to">${object.member_id.partner_id.address[0].email}</field>
+            <field name="def_bcc">notifica@somenergia.coop</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Generation kWh Som Enegia Ref. ${object.name}</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang"></field>
+            <field name="copyvalue">${object.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record model="poweremail.templates" id="generationkwh_mail_pas2">
+            <field name="name">Generation kWh - Pagament inversió</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'account.invoice')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">account.invoice</field>
+            <field name="file_name">${object.name}</field>
+            <field eval="1" name="use_filter"/>
+            <field name="def_to">${object.partner_id.address[0].email}</field>
+            <field name="def_bcc">notifica@somenergia.coop</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Cargo / Càrrec Generation kWh Ref. ${object.name}</field>
             <field name="template_language">mako</field>
             <field eval="0" name="send_on_create"/>
             <field name="lang">${object.partner_id.lang}</field>
