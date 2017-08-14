@@ -862,7 +862,7 @@ class GenerationkWhInvestment(osv.osv):
             create_account_moves = 'direct-payment',
         ))
 
-    def mark_as_paid(self, cursor, uid, ids, purchase_date, movementline_id=None):
+    def mark_as_paid(self, cursor, uid, ids, purchase_date, movementline_id=None, Test=None):
         Soci = self.pool.get('somenergia.soci')
         User = self.pool.get('res.users')
         user = User.read(cursor, uid, uid, ['name'])
@@ -891,6 +891,7 @@ class GenerationkWhInvestment(osv.osv):
                 first_effective_date = first,
                 last_effective_date = last,
                 ))
+            self.send_mail_onPayInvestment(cursor, uid, id, False, Test)
 
     def mark_as_unpaid(self, cursor, uid, ids, movementline_id=None):
         Soci = self.pool.get('somenergia.soci')
@@ -1090,7 +1091,6 @@ class GenerationkWhInvestment(osv.osv):
         from_id = PEAccounts.search(cursor, uid,[
                     ('name','=','Generation kWh')
                     ])
-        #template_id = 84 #TODO: IT must be registered in xml data
 
         ctx = {'active_ids': [id], 'active_id': id,
                        'src_rec_ids': [id],
@@ -1100,24 +1100,29 @@ class GenerationkWhInvestment(osv.osv):
         if Test is None:
             WizardInvoiceOpenAndSend.envia_mail_a_client(cursor, uid, id,model_name,'generationkwh_mail_creacio', ctx)
         else:
-            print "Ara s'encuaria el correu per enviar"
+            print "MODE TEST: Ara s'encuaria el correu onCreateInvestment"
 
 
-    def send_mail(self, cursor, uid, ids, template_id, from_id,model_name):
-        pwswz_obj = self.pool.get('poweremail.send.wizard')
-        ctx = {'active_ids': ids,
-               'active_id': ids[0],
-               'template_id': template_id,
-               'src_rec_ids': ids,
-               'src_model': model_name,
-               'from': from_id,
-               'state': 'single',
-               'priority': '0'}
-        params = {'state': 'single',
-                  'priority': '0',
-                  'from': ctx['from']}
-        pwswz_id = pwswz_obj.create(cursor, uid, params, ctx)
-        pwswz_obj.send_mail(cursor, uid, [pwswz_id], ctx)
+
+    def send_mail_onPayInvestment(self, cursor, uid, id, ctx = None, Test = None):
+        model_name = 'account.invoice'
+        PEAccounts = self.pool.get('poweremail.core_accounts')
+        WizardInvoiceOpenAndSend = self.pool.get('wizard.invoice.open.and.send')
+
+        from_id = PEAccounts.search(cursor, uid,[
+                    ('name','=','Generation kWh')
+                    ])
+
+        ctx = {'active_ids': [id], 'active_id': id,
+                       'src_rec_ids': [id],
+                       'src_model': model_name, 'from': from_id,
+                       'state': 'single', 'priority': '0'}
+
+        if Test is None:
+            WizardInvoiceOpenAndSend.envia_mail_a_client(cursor, uid, id,model_name,'generationkwh_mail_creacio', ctx)
+        else:
+            print "MODE TEST: Ara s'encuaria el correu onPayInvestment"
+
 
 class InvestmentProvider(ErpWrapper):
 
