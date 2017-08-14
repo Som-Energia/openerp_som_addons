@@ -746,8 +746,9 @@ class GenerationkWhInvestment(osv.osv):
 
     def create_from_form(self, cursor, uid,
             partner_id, order_date, amount_in_euros, ip, iban,
-            context=None):
-
+            context=None, Test=None):
+        PEAccounts = self.pool.get('poweremail.core_accounts')
+        WizardInvoiceOpenAndSend = self.pool.get('wizard.invoice.open.and.send')
         if amount_in_euros % gkwh.shareValue > 0:
             return False
 
@@ -786,6 +787,8 @@ class GenerationkWhInvestment(osv.osv):
             ))
 
         self.get_or_create_payment_mandate(cursor, uid, partner_id, iban, "PRESTEC GENERATION kWh", self.CREDITOR_CODE) #TODO: Purpose parameter for APO
+
+        self.send_mail_onCreateInvestment(cursor, uid, id, context, Test)
 
         return id
 
@@ -1078,6 +1081,27 @@ class GenerationkWhInvestment(osv.osv):
             Investment.open_invoices(cursor, uid, invoice_ids)
             Investment.invoices_to_payment_order(cursor, uid, invoice_ids)
         return errors
+
+    def send_mail_onCreateInvestment(self, cursor, uid, id, ctx = None, Test = None):
+        model_name = 'generationkwh.investment'
+        PEAccounts = self.pool.get('poweremail.core_accounts')
+        WizardInvoiceOpenAndSend = self.pool.get('wizard.invoice.open.and.send')
+
+        from_id = PEAccounts.search(cursor, uid,[
+                    ('name','=','Generation kWh')
+                    ])
+        #template_id = 84 #TODO: IT must be registered in xml data
+
+        ctx = {'active_ids': [id], 'active_id': id,
+                       'src_rec_ids': [id],
+                       'src_model': model_name, 'from': from_id,
+                       'state': 'single', 'priority': '0'}
+
+        if Test is None:
+            WizardInvoiceOpenAndSend.envia_mail_a_client(cursor, uid, id,model_name,'generationkwh_mail_creacio', ctx)
+        else:
+            print "Ara s'encuaria el correu per enviar"
+
 
     def send_mail(self, cursor, uid, ids, template_id, from_id,model_name):
         pwswz_obj = self.pool.get('poweremail.send.wizard')
