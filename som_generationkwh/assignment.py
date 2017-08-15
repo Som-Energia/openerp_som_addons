@@ -487,7 +487,7 @@ class AssignmentProvider(ErpWrapper):
             )
 
 
-class Generationkwh_Assignment_TestHelper(osv.osv):
+class Generationkwh_Assignment_TestHelper(osv.osv_memory):
     _name = 'generationkwh.assignment.testhelper'
     _auto = False
     
