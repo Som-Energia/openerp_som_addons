@@ -747,8 +747,7 @@ class GenerationkWhInvestment(osv.osv):
     def create_from_form(self, cursor, uid,
             partner_id, order_date, amount_in_euros, ip, iban,
             context=None, Test=None):
-        PEAccounts = self.pool.get('poweremail.core_accounts')
-        WizardInvoiceOpenAndSend = self.pool.get('wizard.invoice.open.and.send')
+
         if amount_in_euros % gkwh.shareValue > 0:
             return False
 
