@@ -23,6 +23,40 @@ def _sqlfromfile(sqlname):
     with open(sqlfile) as f:
         return f.read()
 
+
+class Generationkwh_MailMockup(osv.osv_memory):
+    _name = 'generationkwh.mailmockup'
+    _columns = dict(
+        log=fields.text("Mail logs"),
+    )
+    def isActive(self, cur, uid):
+        return self.search(cur, uid, [])
+
+    def activate(self, cur, uid):
+        self.deactivate(cur, uid)
+        self.create(cur, uid, {})
+
+    def deactivate(self, cur, uid):
+        ids = self.search(cur, uid, [])
+        self.unlink(cur, uid, ids)
+
+    def send_mail(self, cur, uid, values):
+        mock_id = self.search(cur, uid, [])[0]
+        mock = self.browse(cur, uid, mock_id)
+        yamllog = ns.loads(mock.log or 'logs: []')
+        yamllog.logs.append(ns.loads(values))
+        mock.write(dict(log=yamllog.dump()))
+
+    def log(self, cur, uid):
+        ids = self.search(cur, uid, [])
+        return self.browse(cur, uid, ids[0]).log
+        
+        
+        
+
+
+Generationkwh_MailMockup()
+
 class GenerationkWhInvestment(osv.osv):
 
     _name = 'generationkwh.investment'
