@@ -1147,15 +1147,21 @@ class GenerationkWhInvestment(osv.osv):
         model_name = 'account.invoice'
         PEAccounts = self.pool.get('poweremail.core_accounts')
         WizardInvoiceOpenAndSend = self.pool.get('wizard.invoice.open.and.send')
+        MailMockup = self.pool.get('generationkwh.mailmockup')
 
         from_id = PEAccounts.search(cursor, uid,[
-                    ('name','=','Generation kWh')
-                    ])
+            ('name','=','Generation kWh')
+            ])
 
-        ctx = {'active_ids': [id], 'active_id': id,
-                       'src_rec_ids': [id],
-                       'src_model': model_name, 'from': from_id,
-                       'state': 'single', 'priority': '0'}
+        ctx = {
+            'active_ids': [id],
+            'active_id': id,
+            'src_rec_ids': [id],
+            'src_model': model_name,
+            'from': from_id,
+            'state': 'single',
+            'priority': '0',
+            }
 
         if MailMockup.isActive(cursor, uid) or Test:
             print "MODE TEST: Ara s'encuaria el correu onPayInvestment"
