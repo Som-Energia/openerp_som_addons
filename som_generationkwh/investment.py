@@ -1120,21 +1120,27 @@ class GenerationkWhInvestment(osv.osv):
         model_name = 'generationkwh.investment'
         PEAccounts = self.pool.get('poweremail.core_accounts')
         WizardInvoiceOpenAndSend = self.pool.get('wizard.invoice.open.and.send')
+        MailMockup = self.pool.get('generationkwh.mailmockup')
 
         from_id = PEAccounts.search(cursor, uid,[
-                    ('name','=','Generation kWh')
-                    ])
+            ('name','=','Generation kWh')
+            ])
 
-        ctx = {'active_ids': [id], 'active_id': id,
-                       'src_rec_ids': [id],
-                       'src_model': model_name, 'from': from_id,
-                       'state': 'single', 'priority': '0'}
+        ctx = {
+            'active_ids': [id],
+            'active_id': id,
+            'src_rec_ids': [id],
+            'src_model': model_name,
+            'from': from_id,
+            'state': 'single',
+            'priority': '0'
+            }
 
-        if Test is None:
-            WizardInvoiceOpenAndSend.envia_mail_a_client(cursor, uid, id,model_name,'generationkwh_mail_creacio', ctx)
-        else:
+        if MailMockup.isActive(cursor, uid) or Test:
             print "MODE TEST: Ara s'encuaria el correu onCreateInvestment"
-
+        else:
+            WizardInvoiceOpenAndSend.envia_mail_a_client(
+                cursor, uid, id,model_name,'generationkwh_mail_creacio', ctx)
 
 
     def send_mail_onPayInvestment(self, cursor, uid, id, ctx = None, Test = None):
@@ -1151,10 +1157,10 @@ class GenerationkWhInvestment(osv.osv):
                        'src_model': model_name, 'from': from_id,
                        'state': 'single', 'priority': '0'}
 
-        if Test is None:
-            WizardInvoiceOpenAndSend.envia_mail_a_client(cursor, uid, id,model_name,'generationkwh_mail_creacio', ctx)
-        else:
+        if MailMockup.isActive(cursor, uid) or Test:
             print "MODE TEST: Ara s'encuaria el correu onPayInvestment"
+        else:
+            WizardInvoiceOpenAndSend.envia_mail_a_client(cursor, uid, id,model_name,'generationkwh_mail_creacio', ctx)
 
 
 class InvestmentProvider(ErpWrapper):

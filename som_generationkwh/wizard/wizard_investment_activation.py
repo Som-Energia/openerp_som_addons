@@ -86,8 +86,10 @@ class WizardInvestmentActivation(osv.osv):
     _columns = {
         'state': fields.char('State', size=16),
         'info': fields.text('Info'),
-        'action': fields.selection(
-            [('activate', 'Activa'), ('deactivate', 'Desactiva')],
+        'action': fields.selection([
+			('activate', 'Activa'),
+			('deactivate', 'Desactiva')
+			],
             string='Action'
         )
     }
