@@ -528,8 +528,12 @@ class GenerationkWhInvestment(osv.osv):
             ) = investment_tuple
 
             amortization_id = self.create_amortization_invoice(cursor, uid,
-                investment_id, amortization_date, to_be_amortized,
-                amortization_number, amortization_total_number)
+                investment_id = investment_id,
+                amortization_date = amortization_date,
+                to_be_amortized = to_be_amortized,
+                amortization_number = amortization_number,
+                amortization_total_number = amortization_total_number,
+                )
 
             amortization_ids.append(amortization_id)
 
