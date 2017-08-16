@@ -1136,6 +1136,8 @@ class GenerationkWhInvestment(osv.osv):
         if MailMockup.isActive(cursor, uid):
             # TODO: Log and test
             print "MODE TEST: Ara s'encuaria el correu onCreateInvestment"
+            MailMockup.send_mail(cursor, uid, 'generationkwh_mail_creacio')
+            print MailMockup.log(cursor, uid)
         else:
             WizardInvoiceOpenAndSend.envia_mail_a_client(
                 cursor, uid, id,model_name,'generationkwh_mail_creacio', ctx)
@@ -1164,10 +1166,12 @@ class GenerationkWhInvestment(osv.osv):
         if MailMockup.isActive(cursor, uid):
             # TODO: Log and test
             print "MODE TEST: Ara s'encuaria el correu onPayInvestment"
+            MailMockup.send_mail(cursor, uid, 'generationkwh_mail_pagament')
+            print MailMockup.log(cursor, uid)
         else:
             # TODO: same template? Really?
             WizardInvoiceOpenAndSend.envia_mail_a_client(
-                cursor, uid, id,model_name,'generationkwh_mail_creacio', ctx)
+                cursor, uid, id,model_name,'generationkwh_mail_pagament', ctx)
 
 
 class InvestmentProvider(ErpWrapper):
