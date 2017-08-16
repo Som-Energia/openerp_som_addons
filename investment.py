@@ -780,7 +780,7 @@ class GenerationkWhInvestment(osv.osv):
 
     def create_from_form(self, cursor, uid,
             partner_id, order_date, amount_in_euros, ip, iban,
-            context=None, Test=None):
+            context=None):
 
         if amount_in_euros % gkwh.shareValue > 0:
             return False
@@ -821,7 +821,7 @@ class GenerationkWhInvestment(osv.osv):
 
         self.get_or_create_payment_mandate(cursor, uid, partner_id, iban, "PRESTEC GENERATION kWh", self.CREDITOR_CODE) #TODO: Purpose parameter for APO
 
-        self.send_mail_onCreateInvestment(cursor, uid, id, context, Test)
+        self.send_mail_onCreateInvestment(cursor, uid, id, context)
 
         return id
 
@@ -895,7 +895,7 @@ class GenerationkWhInvestment(osv.osv):
             create_account_moves = 'direct-payment',
         ))
 
-    def mark_as_paid(self, cursor, uid, ids, purchase_date, movementline_id=None, Test=None):
+    def mark_as_paid(self, cursor, uid, ids, purchase_date, movementline_id=None):
         Soci = self.pool.get('somenergia.soci')
         User = self.pool.get('res.users')
         user = User.read(cursor, uid, uid, ['name'])
@@ -924,7 +924,7 @@ class GenerationkWhInvestment(osv.osv):
                 first_effective_date = first,
                 last_effective_date = last,
                 ))
-            self.send_mail_onPayInvestment(cursor, uid, id, False, Test)
+            self.send_mail_onPayInvestment(cursor, uid, id)
 
     def mark_as_unpaid(self, cursor, uid, ids, movementline_id=None):
         Soci = self.pool.get('somenergia.soci')
@@ -1116,7 +1116,7 @@ class GenerationkWhInvestment(osv.osv):
             Investment.invoices_to_payment_order(cursor, uid, invoice_ids)
         return errors
 
-    def send_mail_onCreateInvestment(self, cursor, uid, id, ctx = None, Test = None):
+    def send_mail_onCreateInvestment(self, cursor, uid, id):
         model_name = 'generationkwh.investment'
         PEAccounts = self.pool.get('poweremail.core_accounts')
         WizardInvoiceOpenAndSend = self.pool.get('wizard.invoice.open.and.send')
@@ -1136,7 +1136,7 @@ class GenerationkWhInvestment(osv.osv):
             'priority': '0'
             }
 
-        if MailMockup.isActive(cursor, uid) or Test:
+        if MailMockup.isActive(cursor, uid):
             # TODO: Log and test
             print "MODE TEST: Ara s'encuaria el correu onCreateInvestment"
         else:
@@ -1144,7 +1144,7 @@ class GenerationkWhInvestment(osv.osv):
                 cursor, uid, id,model_name,'generationkwh_mail_creacio', ctx)
 
 
-    def send_mail_onPayInvestment(self, cursor, uid, id, ctx = None, Test = None):
+    def send_mail_onPayInvestment(self, cursor, uid, id):
         model_name = 'account.invoice'
         PEAccounts = self.pool.get('poweremail.core_accounts')
         WizardInvoiceOpenAndSend = self.pool.get('wizard.invoice.open.and.send')
@@ -1164,7 +1164,7 @@ class GenerationkWhInvestment(osv.osv):
             'priority': '0',
             }
 
-        if MailMockup.isActive(cursor, uid) or Test:
+        if MailMockup.isActive(cursor, uid):
             # TODO: Log and test
             print "MODE TEST: Ara s'encuaria el correu onPayInvestment"
         else:
