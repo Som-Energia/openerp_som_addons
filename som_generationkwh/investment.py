@@ -11,6 +11,7 @@ from tools import config
 import re
 import generationkwh.investmentlogs as logs
 import generationkwh.investmentmodel as gkwh
+from generationkwh.investmentstate import InvestmentState
 from uuid import uuid4
 
 # TODO: This function is duplicated in other sources
@@ -801,23 +802,19 @@ class GenerationkWhInvestment(osv.osv):
 
         ResUser = self.pool.get('res.users')
         user = ResUser.read(cursor, uid, uid, ['name'])
-
+        inv = InvestmentState(user['name'], datetime.now())
         name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')
-        log = ns(
-                create_date = datetime.now(),
-                user = user['name'],
-                ip = ip,
-                amount = amount_in_euros,
-                iban = iban,
-                move_line_id = None, # TODO M: Provide the proper move_line_id
+        inv.order(
+            name = name.encode('utf-8'),
+            date = order_date,
+            amount = amount_in_euros,
+            iban = iban,
+            ip = ip,
             )
         id = self.create(cursor, uid, dict(
-            name = name,
-            nshares = amount_in_euros/gkwh.shareValue,
+            inv.erpChanges(),
             member_id = member_id,
-            order_date = order_date,
-            log = logs.log_formfilled(log),
-            ), context)
+        ), context)
 
         self.get_or_create_payment_mandate(cursor, uid, partner_id, iban, "PRESTEC GENERATION kWh", self.CREDITOR_CODE) #TODO: Purpose parameter for APO
 
