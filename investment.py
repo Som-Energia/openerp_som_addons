@@ -1114,64 +1114,35 @@ class GenerationkWhInvestment(osv.osv):
         return errors
 
     def send_mail_onCreateInvestment(self, cursor, uid, id):
-        model_name = 'generationkwh.investment'
-        PEAccounts = self.pool.get('poweremail.core_accounts')
-        WizardInvoiceOpenAndSend = self.pool.get('wizard.invoice.open.and.send')
-        MailMockup = self.pool.get('generationkwh.mailmockup')
-
-        from_id = PEAccounts.search(cursor, uid,[
-            ('name','=','Generation kWh')
-            ])
-
-        ctx = {
-            'active_ids': [id],
-            'active_id': id,
-            'src_rec_ids': [id],
-            'src_model': model_name,
-            'from': from_id,
-            'state': 'single',
-            'priority': '0'
-            }
-
-        if MailMockup.isActive(cursor, uid):
-            # TODO: Log and test
-            print "MODE TEST: Ara s'encuaria el correu onCreateInvestment"
-            MailMockup.send_mail(cursor, uid, 'generationkwh_mail_creacio')
-            print MailMockup.log(cursor, uid)
-        else:
-            WizardInvoiceOpenAndSend.envia_mail_a_client(
-                cursor, uid, id,model_name,'generationkwh_mail_creacio', ctx)
-
+        self.send_mail(cursor, uid, id, 'generationkwh.investment', 'generationkwh_mail_creacio')
 
     def send_mail_onPayInvestment(self, cursor, uid, id):
-        model_name = 'account.invoice'
+        self.send_mail(cursor, uid, id, 'account.invoice', 'generationkwh_mail_pagament')
+
+    def send_mail(self, cursor, uid, id, model, template):
         PEAccounts = self.pool.get('poweremail.core_accounts')
         WizardInvoiceOpenAndSend = self.pool.get('wizard.invoice.open.and.send')
         MailMockup = self.pool.get('generationkwh.mailmockup')
 
         from_id = PEAccounts.search(cursor, uid,[
-            ('name','=','Generation kWh')
+           ('name','=','Generation kWh')
             ])
 
         ctx = {
             'active_ids': [id],
             'active_id': id,
             'src_rec_ids': [id],
-            'src_model': model_name,
+            'src_model': model,
             'from': from_id,
             'state': 'single',
             'priority': '0',
             }
 
         if MailMockup.isActive(cursor, uid):
-            # TODO: Log and test
-            print "MODE TEST: Ara s'encuaria el correu onPayInvestment"
-            MailMockup.send_mail(cursor, uid, 'generationkwh_mail_pagament')
-            print MailMockup.log(cursor, uid)
+            MailMockup.send_mail(cursor, uid, template)
         else:
-            # TODO: same template? Really?
             WizardInvoiceOpenAndSend.envia_mail_a_client(
-                cursor, uid, id,model_name,'generationkwh_mail_pagament', ctx)
+                cursor, uid, id,model,template, ctx)
 
 
 class InvestmentProvider(ErpWrapper):
