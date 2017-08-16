@@ -914,7 +914,7 @@ class GenerationkWhInvestment(osv.osv):
             inv = InvestmentState(user['name'], datetime.now(),
                 log = inversio['log'],
                 nominal_amount = amount,
-                paid_amount = 0, # TODO: Take it from elsewhere
+                paid_amount = 0, # TODO: Take it from moveline
             )
 
             inv.pay(
@@ -937,19 +937,22 @@ class GenerationkWhInvestment(osv.osv):
                 'log',
                 'nshares',
             ])
+            ResUser = self.pool.get('res.users')
+            user = ResUser.read(cursor, uid, uid, ['name'])
             amount = inversio['nshares']*gkwh.shareValue
-            log_data = ns(
-                create_date = str(datetime.today()),
-                user = user['name'],
-                amount = amount, # TODO: Treure l'amount del move_line_id
-                move_line_id = None, # TODO M: Put the correct move_line_id or invoice?
-                )
-            self.write(cursor, uid, id, dict(
-                log = logs.log_refunded(log_data) + inversio['log'],
-                purchase_date = False,
-                first_effective_date = False,
-                last_effective_date = False,
-                ))
+
+            inv = InvestmentState(user['name'], datetime.now(),
+                log = inversio['log'],
+                nominal_amount = amount,
+                paid_amount = amount, # TODO: if purchase_date else 0
+            )
+
+            inv.unpay(
+                amount = amount, # TODO: Take it from moveline
+                move_line_id = movementline_id,
+            )
+
+            self.write(cursor, uid, id, inv.erpChanges())
 
     def create_initial_invoices(self,cursor,uid, investment_ids):
 
