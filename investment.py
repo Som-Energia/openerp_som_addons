@@ -534,19 +534,19 @@ class GenerationkWhInvestment(osv.osv):
             amortization_ids.append(amortization_id)
 
             User = self.pool.get('res.users')
-            user = User.read(cursor, uid, uid, ['name'])['name']
+            user = User.read(cursor, uid, uid, ['name'])
 
+            inv = InvestmentState(user['name'], datetime.now(),
+                amortized_amount = amortized_amount,
+                log = log,
+            )
+            inv.amortize(
+                date = amortization_date,
+                to_be_amortized = to_be_amortized,
+                )
             self.write(cursor, uid, investment_id, dict(
-                amortized_amount=amortized_amount+to_be_amortized,
-                log = u"[{} {}] AMORTIZATION: "
-                    u"Generada amortització de {:.02f} € pel {}\n"
-                    .format(
-                        str(datetime.today()), # TODO Untested
-                        user, # TODO Untested
-                        to_be_amortized,
-                        amortization_date,
-                    )+log,
-                ), context)
+                inv.erpChanges(),
+            ), context)
 
         return amortization_ids
 
