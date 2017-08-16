@@ -818,7 +818,7 @@ class GenerationkWhInvestment(osv.osv):
 
         self.get_or_create_payment_mandate(cursor, uid, partner_id, iban, "PRESTEC GENERATION kWh", self.CREDITOR_CODE) #TODO: Purpose parameter for APO
 
-        self.send_mail_onCreateInvestment(cursor, uid, id)
+        self.send_mail(cursor, uid, id, 'generationkwh.investment', 'generationkwh_mail_creacio')
 
         return id
 
@@ -921,7 +921,7 @@ class GenerationkWhInvestment(osv.osv):
                 first_effective_date = first,
                 last_effective_date = last,
                 ))
-            self.send_mail_onPayInvestment(cursor, uid, id)
+            self.send_mail(cursor, uid, id, 'account.invoice', 'generationkwh_mail_pagament')
 
     def mark_as_unpaid(self, cursor, uid, ids, movementline_id=None):
         Soci = self.pool.get('somenergia.soci')
@@ -1112,12 +1112,6 @@ class GenerationkWhInvestment(osv.osv):
             Investment.open_invoices(cursor, uid, invoice_ids)
             Investment.invoices_to_payment_order(cursor, uid, invoice_ids)
         return errors
-
-    def send_mail_onCreateInvestment(self, cursor, uid, id):
-        self.send_mail(cursor, uid, id, 'generationkwh.investment', 'generationkwh_mail_creacio')
-
-    def send_mail_onPayInvestment(self, cursor, uid, id):
-        self.send_mail(cursor, uid, id, 'account.invoice', 'generationkwh_mail_pagament')
 
     def send_mail(self, cursor, uid, id, model, template):
         PEAccounts = self.pool.get('poweremail.core_accounts')
