@@ -799,6 +799,9 @@ class GenerationkWhInvestment(osv.osv):
                 ('partner_id','=',partner_id)
                 ])[0]
 
+        ResUser = self.pool.get('res.users')
+        user = ResUser.read(cursor, uid, uid, ['name'])
+
         name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')
         id = self.create(cursor, uid, dict(
             name = name,
@@ -809,7 +812,7 @@ class GenerationkWhInvestment(osv.osv):
         creationInfo = self.perm_read(cursor, uid, [id])[0]
         log = ns(
                 create_date = creationInfo['create_date'],
-                user = creationInfo['create_uid'][1],
+                user = user['name'],
                 ip = ip,
                 amount = amount_in_euros,
                 iban = iban,
