@@ -802,8 +802,9 @@ class GenerationkWhInvestment(osv.osv):
 
         ResUser = self.pool.get('res.users')
         user = ResUser.read(cursor, uid, uid, ['name'])
-        inv = InvestmentState(user['name'], datetime.now())
         name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')
+
+        inv = InvestmentState(user['name'], datetime.now())
         inv.order(
             name = name.encode('utf-8'),
             date = order_date,
@@ -816,7 +817,9 @@ class GenerationkWhInvestment(osv.osv):
             member_id = member_id,
         ), context)
 
-        self.get_or_create_payment_mandate(cursor, uid, partner_id, iban, "PRESTEC GENERATION kWh", self.CREDITOR_CODE) #TODO: Purpose parameter for APO
+        paymentName = "PRESTEC GENERATION kWh"
+        self.get_or_create_payment_mandate(cursor, uid,
+            partner_id, iban, paymentName, self.CREDITOR_CODE) #TODO: Purpose parameter for APO
 
         self.send_mail(cursor, uid, id, 'generationkwh.investment', 'generationkwh_mail_creacio')
 
@@ -902,26 +905,28 @@ class GenerationkWhInvestment(osv.osv):
                 'nshares',
                 'member_id',
                 ])
+            ResUser = self.pool.get('res.users')
+            user = ResUser.read(cursor, uid, uid, ['name'])
             amount = inversio['nshares']*gkwh.shareValue
             soci = Soci.read(cursor,uid,inversio['member_id'][0],['bank_inversions'])
             iban = self.clean_iban(cursor, uid, soci['bank_inversions'][1])
-            log_data = ns(
-                create_date = str(datetime.today()),
-                user = user['name'],
-                amount = amount, # TODO: Treure l'amount del move_line_id
+
+            inv = InvestmentState(user['name'], datetime.now(),
+                log = inversio['log'],
+                nominal_amount = amount,
+                paid_amount = 0, # TODO: Take it from elsewhere
+            )
+
+            inv.pay(
+                date = isodate(purchase_date),
+                amount = amount,
                 iban = iban,
-                move_line_id = None, # TODO M: Put the correct move_line_id or invoice?
-                )
-            first,last = self._effectivePeriod(
-                isodate(purchase_date),
-                gkwh.waitingDays, gkwh.expirationYears-1)
-            self.write(cursor, uid, id, dict(
-                log = logs.log_charged(log_data) + inversio['log'],
-                purchase_date = purchase_date,
-                first_effective_date = first,
-                last_effective_date = last,
-                ))
-            self.send_mail(cursor, uid, id, 'account.invoice', 'generationkwh_mail_pagament')
+                move_line_id = movementline_id,
+            )
+            self.write(cursor, uid, id, inv.erpChanges())
+
+            self.send_mail(cursor, uid, id,
+                'account.invoice', 'generationkwh_mail_pagament')
 
     def mark_as_unpaid(self, cursor, uid, ids, movementline_id=None):
         Soci = self.pool.get('somenergia.soci')
