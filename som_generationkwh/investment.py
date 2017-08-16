@@ -803,28 +803,25 @@ class GenerationkWhInvestment(osv.osv):
         user = ResUser.read(cursor, uid, uid, ['name'])
 
         name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')
-        id = self.create(cursor, uid, dict(
-            name = name,
-            nshares = amount_in_euros/gkwh.shareValue,
-            member_id = member_id,
-            order_date = order_date,
-            ), context)
-        creationInfo = self.perm_read(cursor, uid, [id])[0]
         log = ns(
-                create_date = creationInfo['create_date'],
+                create_date = datetime.now(),
                 user = user['name'],
                 ip = ip,
                 amount = amount_in_euros,
                 iban = iban,
                 move_line_id = None, # TODO M: Provide the proper move_line_id
             )
-        self.write(cursor, uid, id, dict(
-                log = logs.log_formfilled(log)
-            ))
+        id = self.create(cursor, uid, dict(
+            name = name,
+            nshares = amount_in_euros/gkwh.shareValue,
+            member_id = member_id,
+            order_date = order_date,
+            log = logs.log_formfilled(log),
+            ), context)
 
         self.get_or_create_payment_mandate(cursor, uid, partner_id, iban, "PRESTEC GENERATION kWh", self.CREDITOR_CODE) #TODO: Purpose parameter for APO
 
-        self.send_mail_onCreateInvestment(cursor, uid, id, context)
+        self.send_mail_onCreateInvestment(cursor, uid, id)
 
         return id
 
