@@ -497,9 +497,10 @@ class GenerationkWhInvestment(osv.osv):
                     amortization_total_number = amortization_total_number,
                     )
 
-            amortization_ids.append(amortization_id)
             if error:
                 amortization_errors.append(error)
+                continue
+            amortization_ids.append(amortization_id)
 
             User = self.pool.get('res.users')
             user = User.read(cursor, uid, uid, ['name'])
@@ -576,7 +577,7 @@ class GenerationkWhInvestment(osv.osv):
 
         # Check if exist bank account
         if not partner.bank_inversions:
-            return 0, u"El partner {} no té informat un compte corrent\n".format(partner.name)
+            return 0, u"Inversió {0}: El partner {1} no té informat un compte corrent\n".format(investment.id, partner.name)
 
         # Memento of mutable data
         investmentMemento = ns()
@@ -601,9 +602,9 @@ class GenerationkWhInvestment(osv.osv):
             ])
 
         if existingInvoice:
-            return 0, u"Amortization notification {} already exists".format(invoice_name)
+            return 0, u"Inversió {0}: L'amortització {1} ja existeix".format(investment.id, invoice_name)
 
-        # Default invoice fields for given partner
+        # Default invoice fields for given partne
         vals = {}
         vals.update(Invoice.onchange_partner_id(
             cursor, uid, [], 'in_invoice', partner_id,
