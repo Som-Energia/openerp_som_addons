@@ -923,6 +923,9 @@ class GenerationkWhInvestment(osv.osv):
 
             self.write(cursor, uid, id, inv.erpChanges())
 
+            self.send_mail(cursor, uid, id,
+                'account.invoice', 'generationkwh_mail_impagament')
+
     def create_initial_invoices(self,cursor,uid, investment_ids):
 
         Partner = self.pool.get('res.partner')
