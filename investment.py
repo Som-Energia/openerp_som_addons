@@ -775,7 +775,7 @@ class GenerationkWhInvestment(osv.osv):
 
         inv = InvestmentState(user['name'], datetime.now())
         inv.order(
-            name = name.encode('utf-8'),
+            name = name,
             date = order_date,
             amount = amount_in_euros,
             iban = iban,
