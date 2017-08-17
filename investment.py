@@ -1107,7 +1107,9 @@ class GenerationkWhInvestment(osv.osv):
             }
 
         if MailMockup.isActive(cursor, uid):
-            MailMockup.send_mail(cursor, uid, template)
+            MailMockup.send_mail(cursor, uid, ns(
+                            PlantillaEmailEnviada = template,
+                        ).dump())
         else:
             WizardInvoiceOpenAndSend.envia_mail_a_client(
                 cursor, uid, id,model,template, ctx)
