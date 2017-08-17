@@ -132,44 +132,6 @@ class GenerationkWhInvestment(osv.osv):
 
     CREDITOR_CODE = 'ES24000F55091367'
 
-    # TODO: delete this function
-    def migrate_created_from_accounting(self, cursor, uid,
-            investment_ids=None,
-            context=None):
-        """
-            Migrate legacy investments created from accounting, not from form.
-            Sets new fields with retrieved or guessed info.
-            Processes any investment with empty log unless specific ids are provided.
-        """
-        MoveLine = self.pool.get('account.move.line')
-
-        if investment_ids is None:
-            investment_ids = self.search(cursor, uid, [
-                ('log','=',''),
-                ], context)
-
-        investments = self.read(cursor, uid, investment_ids, [
-            'move_line_id',
-            ])
-        for investment in investments:
-            movementline_ids = [investment['move_line_id'][0]]
-            moveline_perms = MoveLine.perm_read(cursor, uid, movementline_ids )[0]
-            investment_perms = self.perm_read(cursor, uid, [investment['id']])[0]
-            order_date = moveline_perms['create_date']
-            order_user = 'Webforms'
-            purchase_date = moveline_perms['create_date']
-            purchase_user = moveline_perms['create_uid'][1] if moveline_perms['create_uid'] else 'Nobody'
-
-            self.write(cursor, uid, investment['id'], dict(
-                log=
-                    u'[{} {}] PAYMENT: Remesa efectuada\n'
-                    u'[{} {}] ORDER: Formulari emplenat\n'
-                    .format(
-                        purchase_date, purchase_user,
-                        order_date, order_user,
-                    ),
-                order_date=order_date,
-                ), context)
 
     def effective_investments_tuple(self, cursor, uid,
             member=None, start=None, end=None,
