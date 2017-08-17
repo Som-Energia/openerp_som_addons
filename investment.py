@@ -477,6 +477,7 @@ class GenerationkWhInvestment(osv.osv):
     def amortize(self, cursor, uid, current_date, ids=None, context=None):
         pending = self.pending_amortizations(cursor, uid, current_date, ids)
         amortization_ids = []
+        amortization_errors = []
         for investment_tuple in pending:
             (
                 investment_id,
@@ -488,16 +489,17 @@ class GenerationkWhInvestment(osv.osv):
                 amortization_total_number,
                 log,
             ) = investment_tuple
-
-            amortization_id = self.create_amortization_invoice(cursor, uid,
-                investment_id = investment_id,
-                amortization_date = amortization_date,
-                to_be_amortized = to_be_amortized,
-                amortization_number = amortization_number,
-                amortization_total_number = amortization_total_number,
-                )
+            amortization_id, error = self.create_amortization_invoice(cursor, uid,
+                    investment_id = investment_id,
+                    amortization_date = amortization_date,
+                    to_be_amortized = to_be_amortized,
+                    amortization_number = amortization_number,
+                    amortization_total_number = amortization_total_number,
+                    )
 
             amortization_ids.append(amortization_id)
+            if error:
+                amortization_errors.append(error)
 
             User = self.pool.get('res.users')
             user = User.read(cursor, uid, uid, ['name'])
@@ -514,7 +516,7 @@ class GenerationkWhInvestment(osv.osv):
                 inv.erpChanges(),
             ), context)
 
-        return amortization_ids
+        return amortization_ids, amortization_errors
 
     def create_amortization_invoice(self, cursor, uid,
             investment_id, amortization_date, to_be_amortized,
@@ -568,10 +570,13 @@ class GenerationkWhInvestment(osv.osv):
             ('code', '=', 'TRANSFERENCIA_CSB'),
             ])[0]
 
+        errors = []
+        def error(message):
+            errors.append(message)
+
         # Check if exist bank account
         if not partner.bank_inversions:
-            raise Exception(u"El partner {} no té informat un compte corrent"
-                        .format(partner.name))
+            return 0, u"El partner {} no té informat un compte corrent\n".format(partner.name)
 
         # Memento of mutable data
         investmentMemento = ns()
@@ -594,11 +599,9 @@ class GenerationkWhInvestment(osv.osv):
         existingInvoice = Invoice.search(cursor,uid,[
             ('name','=', invoice_name),
             ])
-        if existingInvoice:
-            raise Exception(
-                "Amortization notification {} already exists"
-                .format(invoice_name))
 
+        if existingInvoice:
+            return 0, u"Amortization notification {} already exists".format(invoice_name)
 
         # Default invoice fields for given partner
         vals = {}
@@ -649,7 +652,7 @@ class GenerationkWhInvestment(osv.osv):
         ]
         InvoiceLine.create(cursor, uid, line)
 
-        return invoice_id
+        return invoice_id, errors
 
     # TODO: Move to res.partner
     def get_default_country(self, cursor, uid):
