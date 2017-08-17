@@ -68,12 +68,12 @@ class WizardInvestmentAmortization(osv.osv_memory):
     def generate(self, cursor, uid, ids, context=None):
     
         def generate_error_string(errors):
+            print errors
             if not errors:
                 return ""
-            result = "{} inversions que han donat error.\n\n".format(len(errors))
+            result = "Les següents {} inversions no s'han pogut amortitzar:\n\n".format(len(errors))
             for error in errors:
-                result += "- inversió id "+str(error[0][0])
-                result += " no amortitzada per: "+str(error[1])+"\n\n"
+                result += "- "+str(error)
             return result
 
         wiz = self.browse(cursor, uid, ids[0], context)
@@ -88,6 +88,7 @@ class WizardInvestmentAmortization(osv.osv_memory):
         amortized_invoice_ids, amortized_invoice_errors = Investment.amortize(cursor, uid, current_date, None, context)
 
         """
+        # Check before uncomment!
         # TODO: use this code when amortize_one gets producction ready to control errors
         pending_amortizations = Investment.pending_amortizations(cursor, uid, current_date)
         for pending_amortization in pending_amortizations:
