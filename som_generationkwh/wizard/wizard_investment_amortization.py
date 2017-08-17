@@ -85,7 +85,7 @@ class WizardInvestmentAmortization(osv.osv_memory):
         amortized_invoice_errors = []
 
         # TODO: delete this code when amortize_one gets producction ready
-        amortized_invoice_ids = Investment.amortize(cursor, uid, current_date, context)
+        amortized_invoice_ids, amortized_invoice_errors = Investment.amortize(cursor, uid, current_date, None, context)
 
         """
         # TODO: use this code when amortize_one gets producction ready to control errors
