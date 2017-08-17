@@ -428,6 +428,7 @@ class GenerationkWhInvestment(osv.osv):
 
     def pending_amortizations(self, cursor, uid, current_date, ids=None):
         from generationkwh.amortizations import (
+            pendingAmortizations,
             pendingAmortization,
             previousAmortizationDate,
             currentAmortizationNumber,
@@ -441,37 +442,33 @@ class GenerationkWhInvestment(osv.osv):
             'nshares',
             'log',
             ])
+        result = []
         for inv in invs:
-            inv.update(
-                to_be_amortized=pendingAmortization(
+            alreadyAmortized = inv['amortized_amount']
+            for pending in pendingAmortizations(
                     inv['purchase_date'],
                     current_date,
                     gkwh.shareValue*inv['nshares'],
                     inv['amortized_amount'],
-                    ),
-                amortization_date=previousAmortizationDate(
-                    inv['purchase_date'],
-                    current_date,
-                    ),
-                amortization_number=currentAmortizationNumber(
-                    inv['purchase_date'],
-                    current_date,
-                    ),
-                amortization_total_number=totalAmortizationNumber(),
-                )
-        return [(
-            inv['id'],
-            inv['member_id'][0],
-            inv['amortization_date'] or False,
-            inv['amortized_amount'],
-            inv['to_be_amortized'],
-            inv['amortization_number'],
-            inv['amortization_total_number'],
-            inv['log'],
-            )
-            for inv in invs
-            if inv['to_be_amortized']
-        ]
+                    ):
+                (
+                    amortization_number,
+                    amortization_total_number,
+                    amortization_date,
+                    to_be_amortized,
+                ) = pending
+                result.append([
+                    inv['id'],
+                    inv['member_id'][0],
+                    amortization_date or False,
+                    alreadyAmortized,
+                    to_be_amortized,
+                    amortization_number,
+                    amortization_total_number,
+                    inv['log'],
+                ])
+                alreadyAmortized+=to_be_amortized
+        return result
 
     def amortize(self, cursor, uid, current_date, ids=None, context=None):
         pending = self.pending_amortizations(cursor, uid, current_date, ids)
