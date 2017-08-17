@@ -9,7 +9,6 @@ from generationkwh.isodates import isodate
 from tools.translate import _
 from tools import config
 import re
-import generationkwh.investmentlogs as logs
 import generationkwh.investmentmodel as gkwh
 from generationkwh.investmentstate import InvestmentState
 from uuid import uuid4
