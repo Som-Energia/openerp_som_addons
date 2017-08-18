@@ -513,6 +513,8 @@ class GenerationkWhInvestment(osv.osv):
                 inv.erpChanges(),
             ), context)
 
+            self.send_mail(cursor, uid, id, 'account.invoice', 'generationkwh_mail_amortitzacio')
+
         return amortization_ids, amortization_errors
 
     def create_amortization_invoice(self, cursor, uid,
