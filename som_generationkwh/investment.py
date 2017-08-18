@@ -894,9 +894,6 @@ class GenerationkWhInvestment(osv.osv):
             )
             self.write(cursor, uid, id, inv.erpChanges())
 
-            self.send_mail(cursor, uid, id,
-                'account.invoice', 'generationkwh_mail_pagament')
-
     def mark_as_unpaid(self, cursor, uid, ids, movementline_id=None):
         Soci = self.pool.get('somenergia.soci')
         User = self.pool.get('res.users')
@@ -1091,6 +1088,9 @@ class GenerationkWhInvestment(osv.osv):
         if invoice_ids:
             Investment.open_invoices(cursor, uid, invoice_ids)
             Investment.invoices_to_payment_order(cursor, uid, invoice_ids)
+            for invoice_id in invoice_ids:
+                self.send_mail(cursor, uid, invoice_id,
+                    'account.invoice', 'generationkwh_mail_pagament')
         return errors
 
     def send_mail(self, cursor, uid, id, model, template):
