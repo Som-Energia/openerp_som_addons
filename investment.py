@@ -615,7 +615,8 @@ class GenerationkWhInvestment(osv.osv):
             'partner_bank': partner.bank_inversions.id,
             'payment_type': payment_type_id,
             'check_total': to_be_amortized,
-            'origin': investment.name,
+            # TODO: Remove the GENKWHID stuff when fully migrated, error instead
+            'origin': investment.name or 'GENKWHID{}'.format(investment.id),
         })
         if date_invoice:
             vals['date_invoice'] = date_invoice
