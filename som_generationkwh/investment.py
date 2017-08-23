@@ -120,7 +120,7 @@ class GenerationkWhInvestment(osv.osv):
             # TODO to be required, after develop
             #required=true,
             help="Història d'esdeveniments relacionats amb la inversió",
-            )
+            ),
         )
 
     _defaults = dict(
