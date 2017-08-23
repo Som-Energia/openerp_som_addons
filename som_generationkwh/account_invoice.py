@@ -18,6 +18,7 @@ class AccountInvoice(osv.osv):
         for invoice_id in ids:
             investment_id = self.get_investment(cursor,uid,invoice_id)
             if not investment_id: continue
+            # TODO: pass date and moveline id
             Investment.mark_as_unpaid(cursor,uid,[investment_id])
         return res
 
