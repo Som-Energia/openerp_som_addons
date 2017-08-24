@@ -42,17 +42,6 @@ class AccountInvoice(osv.osv):
             Investment.mark_as_paid(cursor,uid,[investment_id],today)
         return res
 
-    def get_investment_moveline(self, cursor, uid, invoice_id):
-        '''Return moveline from invoice
-        '''
-        return
-        MoveLine = self.pool.get('account.movement.line')
-        Move = self.pool.get('account.movement')
-        invoice = self.read(invoice_id,['move_id'])
-        moveline_ids = MoveLine.search([
-            ('move_id','=',invoice['move_id'][0]),
-            ])
-
     def get_investment(self, cursor, uid, inv_id):
         invoice = self.browse(cursor, uid, inv_id)
 
@@ -73,6 +62,18 @@ class AccountInvoice(osv.osv):
             return investment_ids[0]
 
         return None
+
+    def get_investment_moveline(self, cursor, uid, invoice_id):
+        '''Return moveline from invoice
+        '''
+        MoveLine = self.pool.get('account.move.line')
+        invoice = self.read(cursor, uid, invoice_id,['move_id','name'])
+        for moveline_id in  MoveLine.search(cursor, uid, [
+            ('move_id','=',invoice['move_id'][0]),
+            #('name', '=', invoice['name']),
+            ('debit','=',0),
+            ]):
+            return moveline_id
 
 AccountInvoice()
 
