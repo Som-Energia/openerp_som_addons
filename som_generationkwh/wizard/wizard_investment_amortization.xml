@@ -39,7 +39,9 @@
                         <field name="results" nolabel="1" colspan="4" height="75"/>
                         <separator colspan="4" />
                         <button string="Mostrar factures" name="close_and_show" type="object" icon="gtk-ok"/>
+                        <button string="Mostrar remesa" name="show_payment_order" type="object" icon="gtk-ok"/>
                     </group>
+
 
                 </form>
             </field>
