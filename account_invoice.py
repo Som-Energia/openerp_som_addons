@@ -85,7 +85,7 @@ class TesthelperPaymentWizard(osv.osv_memory):
     _name = 'generationkwh.payment.wizard.testhelper'
     _auto = False
 
-    def pay(self, cursor, uid, invoice_id):
+    def pay(self, cursor, uid, invoice_id, movelinename):
         Invoice = self.pool.get('account.invoice')
         pending = Invoice.read(cursor, uid, invoice_id, ['residual'])['residual']
         wizard_pay(self, cursor, uid, data=dict(
@@ -93,7 +93,7 @@ class TesthelperPaymentWizard(osv.osv_memory):
             ids = [invoice_id],
             form = dict(
                 amount=pending,
-                name="Pagament", # Move line description
+                name="Pagament",
                 journal_id=15,
                 period_id=92,
                 date="2017-08-03",
