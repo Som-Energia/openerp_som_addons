@@ -75,4 +75,33 @@ class AccountInvoice(osv.osv):
         return None
 
 AccountInvoice()
+
+
+from addons.account.wizard.wizard_pay_invoice import _pay_and_reconcile as wizard_pay
+
+
+class TesthelperPaymentWizard(osv.osv_memory):
+
+    _name = 'generationkwh.payment.wizard.testhelper'
+    _auto = False
+
+    def pay(self, cursor, uid, invoice_id):
+        Invoice = self.pool.get('account.invoice')
+        pending = Invoice.read(cursor, uid, invoice_id, ['residual'])['residual']
+        wizard_pay(self, cursor, uid, data=dict(
+            id = invoice_id,
+            ids = [invoice_id],
+            form = dict(
+                amount=pending,
+                name="Pagament", # Move line description
+                journal_id=15,
+                period_id=92,
+                date="2017-08-03",
+            ),
+        ), context={})
+
+TesthelperPaymentWizard()
+
+
+
 # vim: et ts=4 sw=4
