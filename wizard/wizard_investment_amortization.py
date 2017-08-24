@@ -118,5 +118,29 @@ class WizardInvestmentAmortization(osv.osv_memory):
             'type': 'ir.actions.act_window'
         }
 
+    def show_payment_order(self, cursor, uid, ids, context=None):
+        wiz = self.browse(cursor, uid, ids[0], context)
+        amortized_ids = pickle.loads(wiz.amortizeds)
+
+        AccountInvoice = self.pool.get('account.invoice')
+        PaymentOrder = self.pool.get('payment.order')
+        PaymentLine = self.pool.get('payment.line')
+
+        payment_order_id = 0
+        if amortized_ids:
+            invoice = AccountInvoice.read(cursor, uid, amortized_ids[0])
+            lines = PaymentLine.search(cursor, uid, [('communication','ilike',invoice['name'])])
+            line = PaymentLine.read(cursor, uid, lines[0])
+            payment_order_id = line['order_id'][0]
+
+        return {
+            'domain': "[('id','in', %s)]" % str(payment_order_id),
+            'name': _('Ordre de pagament'),
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'payment.order',
+            'type': 'ir.actions.act_window',
+        }
+
 WizardInvestmentAmortization()
 # vim: et ts=4 sw=4 
