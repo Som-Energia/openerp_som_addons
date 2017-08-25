@@ -1093,7 +1093,8 @@ class GenerationkWhInvestment(osv.osv):
             for invoice_id in invoice_ids:
                 self.send_mail(cursor, uid, invoice_id,
                     'account.invoice', 'generationkwh_mail_pagament')
-        return errors
+        return invoice_ids, errors
+
 
     def send_mail(self, cursor, uid, id, model, template):
         PEAccounts = self.pool.get('poweremail.core_accounts')

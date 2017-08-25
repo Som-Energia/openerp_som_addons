@@ -4,7 +4,7 @@ from datetime import date
 
 from osv import osv, fields
 from tools.translate import _
-
+import pickle
 
 class WizardInvestmentPayment(osv.osv):
 
@@ -13,6 +13,9 @@ class WizardInvestmentPayment(osv.osv):
     _columns = {
         'state': fields.char('State', size=16),
         'info': fields.text('Info'),
+        'invoices': fields.text(
+            'test',
+        ),
     }
 
     _defaults = {
@@ -30,21 +33,38 @@ class WizardInvestmentPayment(osv.osv):
     def do_payment(self, cursor,uid, ids, context=None):
         Investment = self.pool.get('generationkwh.investment')
         wiz = self.browse(cursor, uid, ids[0], context)
-        inv_ids = context.get('active_ids', [])
+        investment_ids = context.get('active_ids', [])
 
-        errors = Investment.investment_payment(cursor, uid, inv_ids)
+        invoice_ids, errors = Investment.investment_payment(cursor, uid, investment_ids)
 
         if errors:
             info =  "ERRORS DURANT EL PROCÉS: \n"
             for error in errors:
-                info += " -  " + str(error) + "\n"
+                info+= " -  " + str(error) + "\n"
         else:
             info = "No hi ha hagut errors durant el procés"
 
         wiz.write(dict(
             info= info,
             state = 'Done',
+            invoices = pickle.dumps(invoice_ids),
             ))
         return True
 
+    def show_invoices(self, cursor, uid, ids, context=None):
+        wiz = self.browse(cursor, uid, ids[0], context)
+        invoice_ids = pickle.loads(wiz.invoices)
+        return {
+            'domain': "[('id','in', %s)]" % str(invoice_ids),
+            'name': _('Factures generades'),
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'account.invoice',
+            'type': 'ir.actions.act_window'
+        }
+
+    def show_payment_order(self, cursor, uid, ids, context=None):
+        return True
+ 
 WizardInvestmentPayment()
+# vim: et ts=4 sw=4 
