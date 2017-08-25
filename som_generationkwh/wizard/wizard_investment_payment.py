@@ -64,7 +64,27 @@ class WizardInvestmentPayment(osv.osv):
         }
 
     def show_payment_order(self, cursor, uid, ids, context=None):
-        return True
+        wiz = self.browse(cursor, uid, ids[0], context)
+        invoice_ids = pickle.loads(wiz.invoices)
+
+        AccountInvoice = self.pool.get('account.invoice')
+        PaymentOrder = self.pool.get('payment.order')
+        PaymentLine = self.pool.get('payment.line')
+
+        payment_order_id = 0
+        if invoice_ids:
+            invoice = AccountInvoice.read(cursor, uid, invoice_ids[0])
+            lines = PaymentLine.search(cursor, uid, [('communication','ilike',invoice['name'])])
+            line = PaymentLine.read(cursor, uid, lines[0])
+            payment_order_id = line['order_id'][0]
+        return {
+            'domain': "[('id','=', %s)]" % str(payment_order_id),
+            'name': _('Ordre de cobrament'),
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'payment.order',
+            'type': 'ir.actions.act_window',
+        }
  
 WizardInvestmentPayment()
 # vim: et ts=4 sw=4 
