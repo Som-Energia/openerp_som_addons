@@ -134,7 +134,7 @@ class WizardInvestmentAmortization(osv.osv_memory):
             payment_order_id = line['order_id'][0]
 
         return {
-            'domain': "[('id','in', %s)]" % str(payment_order_id),
+            'domain': "[('id','=', %s)]" % str(payment_order_id),
             'name': _('Ordre de pagament'),
             'view_type': 'form',
             'view_mode': 'tree,form',
