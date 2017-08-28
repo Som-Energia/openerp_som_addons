@@ -129,8 +129,6 @@ class GenerationkWhInvestment(osv.osv):
         log=lambda *a:'',
     )
 
-    CREDITOR_CODE = 'ES24000F55091367'
-
 
     def effective_investments_tuple(self, cursor, uid,
             member=None, start=None, end=None,
@@ -789,9 +787,8 @@ class GenerationkWhInvestment(osv.osv):
             member_id = member_id,
         ), context)
 
-        paymentName = "PRESTEC GENERATION kWh"
         self.get_or_create_payment_mandate(cursor, uid,
-            partner_id, iban, paymentName, self.CREDITOR_CODE) #TODO: Purpose parameter for APO
+            partner_id, iban, gkwh.mandateName, gkwh.creditorCode)
 
         self.send_mail(cursor, uid, invoice_id,
             'generationkwh.investment', 'generationkwh_mail_creacio')
