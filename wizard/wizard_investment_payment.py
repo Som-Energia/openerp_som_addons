@@ -32,17 +32,27 @@ class WizardInvestmentPayment(osv.osv):
 
     def do_payment(self, cursor,uid, ids, context=None):
         Investment = self.pool.get('generationkwh.investment')
+        Invoice = self.pool.get('account.invoice')
+
         wiz = self.browse(cursor, uid, ids[0], context)
         investment_ids = context.get('active_ids', [])
 
         invoice_ids, errors = Investment.investment_payment(cursor, uid, investment_ids)
 
+        info = "RESULTAT: \n"
+        info += "================\n"
+        if not invoice_ids:
+            info+= "No s'han generat factures\n"
+        else:
+            info += "\nFACTURES GENERADES: \n"
+            for invoice_id in invoice_ids:
+                invoice = Invoice.read(cursor, uid, invoice_id)
+                info+= " - " + str(invoice['name']) + "\n"
+
         if errors:
-            info =  "ERRORS DURANT EL PROCÉS: \n"
+            info +=  "\nERRORS DURANT EL PROCÉS: \n"
             for error in errors:
                 info+= " -  " + str(error) + "\n"
-        else:
-            info = "No hi ha hagut errors durant el procés"
 
         wiz.write(dict(
             info= info,
