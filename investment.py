@@ -512,7 +512,8 @@ class GenerationkWhInvestment(osv.osv):
             ), context)
 
             self.open_invoices(cursor, uid, [amortization_id])
-            self.invoices_to_payment_order(cursor, uid, [amortization_id], 'AMORTITZACIO GKWH')
+            self.invoices_to_payment_order(cursor, uid,
+                [amortization_id], gkwh.amortizationPaymentMode)
             self.send_mail(cursor, uid, amortization_id,
                 'account.invoice', 'generationkwh_mail_amortitzacio')
 
@@ -1092,7 +1093,8 @@ class GenerationkWhInvestment(osv.osv):
         invoice_ids, errors = Investment.create_initial_invoices(cursor,uid, investment_ids)
         if invoice_ids:
             Investment.open_invoices(cursor, uid, invoice_ids)
-            Investment.invoices_to_payment_order(cursor, uid, invoice_ids, 'GENERATION kWh')
+            Investment.invoices_to_payment_order(cursor, uid,
+                invoice_ids, gkwh.investmentPaymentMode)
             for invoice_id in invoice_ids:
                 self.send_mail(cursor, uid, invoice_id,
                     'account.invoice', 'generationkwh_mail_pagament')
