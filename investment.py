@@ -512,7 +512,7 @@ class GenerationkWhInvestment(osv.osv):
             ), context)
 
             self.open_invoices(cursor, uid, [amortization_id])
-            self.invoices_to_payment_order(cursor, uid, [amortization_id])
+            self.invoices_to_payment_order(cursor, uid, [amortization_id], 'AMORTITZACIO GKWH')
             self.send_mail(cursor, uid, amortization_id,
                 'account.invoice', 'generationkwh_mail_amortitzacio')
 
@@ -1081,10 +1081,10 @@ class GenerationkWhInvestment(osv.osv):
         openOK += obj.set_state(cursor, uid, ids,'open')
         return openOK
 
-    def invoices_to_payment_order(self,cursor,uid,invoice_ids):
+    def invoices_to_payment_order(self,cursor,uid,invoice_ids, model_name):
         Invoice = self.pool.get('account.invoice')
 
-        order_id = self.get_or_create_open_payment_order(cursor, uid,'GENERATION kWh')
+        order_id = self.get_or_create_open_payment_order(cursor, uid, model_name)
         Invoice.afegeix_a_remesa(cursor,uid,invoice_ids, order_id)
 
     def investment_payment(self,cursor,uid,investment_ids):
@@ -1093,12 +1093,11 @@ class GenerationkWhInvestment(osv.osv):
         invoice_ids, errors = Investment.create_initial_invoices(cursor,uid, investment_ids)
         if invoice_ids:
             Investment.open_invoices(cursor, uid, invoice_ids)
-            Investment.invoices_to_payment_order(cursor, uid, invoice_ids)
+            Investment.invoices_to_payment_order(cursor, uid, invoice_ids, 'GENERATION kWh')
             for invoice_id in invoice_ids:
                 self.send_mail(cursor, uid, invoice_id,
                     'account.invoice', 'generationkwh_mail_pagament')
         return invoice_ids, errors
-
 
     def send_mail(self, cursor, uid, id, model, template):
         PEAccounts = self.pool.get('poweremail.core_accounts')
