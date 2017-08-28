@@ -515,7 +515,8 @@ class GenerationkWhInvestment(osv.osv):
 
             self.open_invoices(cursor, uid, [amortization_id])
             self.invoices_to_payment_order(cursor, uid, [amortization_id])
-            self.send_mail(cursor, uid, id, 'account.invoice', 'generationkwh_mail_amortitzacio')
+            self.send_mail(cursor, uid, amortization_id,
+                'account.invoice', 'generationkwh_mail_amortitzacio')
 
         return amortization_ids, amortization_errors
 
@@ -783,7 +784,7 @@ class GenerationkWhInvestment(osv.osv):
             iban = iban,
             ip = ip,
             )
-        id = self.create(cursor, uid, dict(
+        invoice_id = self.create(cursor, uid, dict(
             inv.erpChanges(),
             member_id = member_id,
         ), context)
@@ -792,9 +793,10 @@ class GenerationkWhInvestment(osv.osv):
         self.get_or_create_payment_mandate(cursor, uid,
             partner_id, iban, paymentName, self.CREDITOR_CODE) #TODO: Purpose parameter for APO
 
-        self.send_mail(cursor, uid, id, 'generationkwh.investment', 'generationkwh_mail_creacio')
+        self.send_mail(cursor, uid, invoice_id,
+            'generationkwh.investment', 'generationkwh_mail_creacio')
 
-        return id
+        return invoice_id
 
     def get_or_create_payment_mandate(self, cursor, uid, partner_id, iban, purpose, creditor_code):
         """
@@ -1117,7 +1119,10 @@ class GenerationkWhInvestment(osv.osv):
 
         if MailMockup.isActive(cursor, uid):
             MailMockup.send_mail(cursor, uid, ns(
-                            PlantillaEmailEnviada = template,
+                            template = template,
+                            model = model,
+                            id = id,
+                            from_id = from_id,
                         ).dump())
         else:
             WizardInvoiceOpenAndSend.envia_mail_a_client(
