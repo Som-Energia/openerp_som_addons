@@ -1014,6 +1014,10 @@ class GenerationkWhInvestment(osv.osv):
 
             amount_total = gkwh.shareValue * investment.nshares
 
+            mandate_id = self.get_or_create_payment_mandate(cursor, uid,
+                partner_id, partner.bank_inversions.iban,
+                gkwh.mandateName, gkwh.creditorCode)
+
             # Default invoice fields for given partner
             vals = {}
             vals.update(Invoice.onchange_partner_id(
@@ -1030,6 +1034,7 @@ class GenerationkWhInvestment(osv.osv):
                 'payment_type': payment_type_id,
                 'check_total': amount_total,
                 'origin': investment.name,
+                'mandate_id': mandate_id,
             })
             if date_invoice:
                 vals['date_invoice'] = date_invoice
