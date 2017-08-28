@@ -553,7 +553,7 @@ class GenerationkWhInvestment(osv.osv):
 
         # The product
         product_id = Product.search(cursor, uid, [
-            ('default_code','=', 'GENKWH_AMOR'),
+            ('default_code','=', gkwh.amortizationProductCode),
             ])[0]
 
         product = Product.browse(cursor, uid, product_id)
@@ -561,9 +561,8 @@ class GenerationkWhInvestment(osv.osv):
 
         # The journal
         journal_id = Journal.search(cursor, uid, [
-            ('code','=','GENKWH'),
+            ('code','=',gkwh.journalCode),
             ])[0]
-        journal = Journal.browse(cursor, uid, journal_id)
 
         # The payment type
         payment_type_id = PaymentType.search(cursor, uid, [
@@ -939,7 +938,7 @@ class GenerationkWhInvestment(osv.osv):
 
         # The product
         product_id = Product.search(cursor, uid, [
-            ('default_code','=', 'GENKWH_AE'),
+            ('default_code','=', gkwh.investmentProductCode),
             ])[0]
 
         product = Product.browse(cursor, uid, product_id)
@@ -947,7 +946,7 @@ class GenerationkWhInvestment(osv.osv):
 
         # The journal
         journal_id = Journal.search(cursor, uid, [
-            ('code','=','GENKWH'),
+            ('code','=',gkwh.journalCode),
             ])[0]
         journal = Journal.browse(cursor, uid, journal_id)
 
