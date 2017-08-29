@@ -959,13 +959,7 @@ class GenerationkWhInvestment(osv.osv):
         def error(message):
             errors.append(message)
 
-
-        # TODO: Consider single browse call
-        # TODO: Consider read instead of browse
-
-        for investment_id in investment_ids:
-            investment = self.browse(cursor, uid, investment_id)
-
+        for investment in self.browse(cursor, uid, investment_ids):
             if not investment.active:
                 error("Investment {} is inactive"
                     .format(investment.name))
