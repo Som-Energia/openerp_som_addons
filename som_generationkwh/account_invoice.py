@@ -43,6 +43,10 @@ class AccountInvoice(osv.osv):
             Investment.mark_as_paid(cursor,uid,[investment_id],today,moveline_id)
         return res
 
+    def is_first_invoice(self, cursor, uid, invoice_id):
+        invoice = self.read(cursor, uid, invoice_id, ['name'])
+        return invoice and 'name' in invoice and invoice['name'].endswith("FACT")
+
     def get_investment(self, cursor, uid, inv_id):
         invoice = self.browse(cursor, uid, inv_id)
 
