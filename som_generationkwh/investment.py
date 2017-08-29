@@ -949,7 +949,6 @@ class GenerationkWhInvestment(osv.osv):
         journal_id = Journal.search(cursor, uid, [
             ('code','=',gkwh.journalCode),
             ])[0]
-        journal = Journal.browse(cursor, uid, journal_id)
 
         # The payment type
         payment_type_id = PaymentType.search(cursor, uid, [
