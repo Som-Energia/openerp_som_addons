@@ -38,8 +38,9 @@ class AccountInvoice(osv.osv):
 
         for invoice_id in ids:
             investment_id = self.get_investment(cursor,uid,invoice_id)
+            moveline_id = self.get_investment_moveline(self,cursor,uid,invoice_id)
             if not investment_id: continue
-            Investment.mark_as_paid(cursor,uid,[investment_id],today)
+            Investment.mark_as_paid(cursor,uid,[investment_id],today,moveline_id)
         return res
 
     def get_investment(self, cursor, uid, inv_id):
