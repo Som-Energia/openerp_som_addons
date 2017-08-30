@@ -100,7 +100,7 @@ class TesthelperPaymentWizard(osv.osv_memory):
             ids = [invoice_id],
             form = dict(
                 amount=pending,
-                name="Pagament",
+                name=movelinename,
                 journal_id=15,
                 period_id=92,
                 date="2017-08-03",
