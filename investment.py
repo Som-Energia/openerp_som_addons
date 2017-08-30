@@ -992,8 +992,9 @@ class GenerationkWhInvestment(osv.osv):
                 continue
 
             invoice_name = '%s-FACT' % (
-                    investment.name or 'GENKWHID{}'.format(investment.id),
-                )
+                # TODO: Remove the GENKWHID stuff when fully migrated, error instead
+                investment.name or 'GENKWHID{}'.format(investment.id),
+            )
 
             # Ensure unique amortization
             existingInvoice = Invoice.search(cursor,uid,[
