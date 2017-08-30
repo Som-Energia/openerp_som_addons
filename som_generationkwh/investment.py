@@ -620,9 +620,8 @@ class GenerationkWhInvestment(osv.osv):
             'check_total': to_be_amortized,
             # TODO: Remove the GENKWHID stuff when fully migrated, error instead
             'origin': investment.name or 'GENKWHID{}'.format(investment.id),
+            'date_invoice': date_invoice,
         })
-        if date_invoice:
-            vals['date_invoice'] = date_invoice
 
         invoice_id = Invoice.create(cursor, uid, vals)
         Invoice.write(cursor,uid, invoice_id,{'sii_to_send':False})
@@ -1028,9 +1027,8 @@ class GenerationkWhInvestment(osv.osv):
                 'check_total': amount_total,
                 'origin': investment.name,
                 'mandate_id': mandate_id,
+                'date_invoice': date_invoice,
             })
-            if date_invoice:
-                vals['date_invoice'] = date_invoice
 
             invoice_id = Invoice.create(cursor, uid, vals)
             Invoice.write(cursor,uid, invoice_id,{'sii_to_send':False})
