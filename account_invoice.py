@@ -18,6 +18,7 @@ class AccountInvoice(osv.osv):
         for invoice_id in ids:
             investment_id = self.get_investment(cursor,uid,invoice_id)
             if not investment_id: continue
+            if not self.is_investment_payment(cursor,uid,invoice_id):continue
             # TODO: pass date and moveline id
             Investment.mark_as_unpaid(cursor,uid,[investment_id])
         return res
@@ -35,17 +36,17 @@ class AccountInvoice(osv.osv):
         from datetime import date
         today = str(date.today()) #TODO date more real?
         Investment = self.pool.get('generationkwh.investment')
-
         for invoice_id in ids:
             investment_id = self.get_investment(cursor,uid,invoice_id)
             moveline_id = self.get_investment_moveline(self,cursor,uid,invoice_id)
             if not investment_id: continue
+            if not self.is_investment_payment(cursor,uid,invoice_id):continue
             Investment.mark_as_paid(cursor,uid,[investment_id],today,moveline_id)
         return res
 
-    def is_first_invoice(self, cursor, uid, invoice_id):
+    def is_investment_payment(self, cursor, uid, invoice_id):
         invoice = self.read(cursor, uid, invoice_id, ['name'])
-        return invoice and 'name' in invoice and invoice['name'].endswith("FACT")
+        return invoice and 'name' in invoice and str(invoice['name']).endswith("FACT")
 
     def get_investment(self, cursor, uid, inv_id):
         invoice = self.browse(cursor, uid, inv_id)
