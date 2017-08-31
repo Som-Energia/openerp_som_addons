@@ -20,7 +20,8 @@ class AccountInvoice(osv.osv):
             if not investment_id: continue
             if not self.is_investment_payment(cursor,uid,invoice_id):continue
             # TODO: pass date and moveline id
-            Investment.mark_as_unpaid(cursor,uid,[investment_id])
+            moveline_id = self.get_investment_moveline(cursor,uid,invoice_id)
+            Investment.mark_as_unpaid(cursor,uid,[investment_id],moveline_id)
         return res
 
     def pay_and_reconcile(self, cursor, uid, ids, pay_amount,
