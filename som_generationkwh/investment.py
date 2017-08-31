@@ -620,6 +620,7 @@ class GenerationkWhInvestment(osv.osv):
             'check_total': to_be_amortized,
             # TODO: Remove the GENKWHID stuff when fully migrated, error instead
             'origin': investment.name or 'GENKWHID{}'.format(investment.id),
+            'reference': invoice_name,
             'date_invoice': date_invoice,
         })
 
