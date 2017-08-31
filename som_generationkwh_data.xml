@@ -952,16 +952,23 @@
         <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p6_e_tarifa_65">
             <field name="product_gkwh_id" ref="p6_gkwh_tarifa_65"/>
         </record>
-
+        <record id="pgc_555000000004" model="account.account">
+            <field name="code">555000000004</field>
+            <field name="reconcile" eval="True"/>
+            <field name="parent_id" model="account.account" search="[('code','=','570')]"/>
+            <field name="type">other</field>
+            <field name="name">CAIXA GKWH</field>
+            <field name="user_type" ref="l10n_chart_ES.financieras"/>
+        </record>
         <record id="genkwh_amortization_journal" model="account.journal">
             <field name="code">GENKWH</field>
             <field eval="[(6,0,[])]" name="account_control_ids"/>
             <field name="user_id" ref="base.user_root"/>
             <field eval="0" name="centralisation"/>
             <field eval="0" name="group_invoice_lines"/>
-            <field name="type">purchase</field>
-            <field name="default_credit_account_id" model="account.account" search="[('code','=','570000000000')]"/>
-            <field name="default_debit_account_id" model="account.account" search="[('code','=','410000000000')]"/>
+            <field name="type">cash</field>
+            <field name="default_credit_account_id" model="account.account" search="[('code','=','555000000004')]"/>
+            <field name="default_debit_account_id" model="account.account" search="[('code','=','555000000004')]"/>
             <field name="view_id" ref="account.account_journal_bank_view"/>
             <field eval="[(6,0,[])]" name="type_control_ids"/>
             <field name="sequence_id" ref="account.sequence_journal"/>
@@ -971,14 +978,34 @@
             <field eval="0" name="refund_journal"/>
             <field eval="0" name="entry_posted"/>
         </record>
-
+        <record id="genkwh_investment_payment_mode" model="payment.mode">
+            <field name="name">GENKWH INVERSIO</field>
+            <field name="type" search="[('code', '=', 'RECIBO_CSB')]"/>
+            <field name="journal" ref="genkwh_amortization_journal"/>
+            <field name="bank_id" search="[('partner_id', '=', 1)]"/>
+            <field name="tipo">sepa19</field>
+            <field name="nombre">Som Energia SCCL</field>
+            <field name="sufijo">000</field>
+            <field name="require_bank_account" eval="True"/>
+            <field name="partner_id">1</field>
+        </record>
+        <record id="genkwh_amortization_payment_mode" model="payment.mode">
+            <field name="name">GENKWH AMORTITZACIO</field>
+            <field name="type" search="[('code', '=', 'TRANSFERENCIA_CSB')]"/>
+            <field name="journal" ref="genkwh_amortization_journal"/>
+            <field name="bank_id" search="[('partner_id', '=', 1)]"/>
+            <field name="tipo">sepa34</field>
+            <field name="nombre">Som Energia SCCL</field>
+            <field name="sufijo">000</field>
+            <field name="require_bank_account" eval="True"/>
+            <field name="partner_id">1</field>
+        </record>
         <record id="genkwh_product_amortization" model="product.product">
             <field name="name">Amortització Generation kWh</field>
             <field name="default_code">GENKWH_AMOR</field>
             <field name="categ_id" model='product.category' search="[('name','=','Inversions')]"/>
             <field name="property_account_expense" model="account.account" search="[('code','=','163500000000')]"/>
         </record>
-
         <record id="genkwh_product_ae" model="product.product">
             <field name="name">Accions Energètiques Generation kWh</field>
             <field name="default_code">GENKWH_AE</field>
