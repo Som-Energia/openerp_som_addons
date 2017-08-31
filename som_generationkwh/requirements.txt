@@ -3,4 +3,3 @@ numpy
 yamlns
 plantmeter
 python-dateutil
-somenergia-generationkwh
