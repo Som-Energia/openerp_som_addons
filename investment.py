@@ -835,7 +835,7 @@ class GenerationkWhInvestment(osv.osv):
         }
         return PaymentMandate.create(cursor, uid, vals)
 
-    def get_or_create_open_payment_order(self, cursor, uid,  mode_name):
+    def get_or_create_open_payment_order(self, cursor, uid,  mode_name, use_invoice = False):
         """
         Searches an existing payment order (remesa)
         with the proper payment mode and still in draft.
@@ -856,13 +856,22 @@ class GenerationkWhInvestment(osv.osv):
         if payment_orders:
             return payment_orders[0]
 
+        PaymentType = self.pool.get('payment.type')
+        payable_type_id = PaymentType.search(cursor, uid, [
+            ('code', '=', 'TRANSFERENCIA_CSB'),
+            ])[0]
+
+        paymentmode = PaymentMode.read(cursor, uid, payment_mode_ids[0])
+        order_moves = 'bank-statement' if use_invoice else 'direct-payment'
+        order_type = 'payable' if paymentmode['type'][0] == payable_type_id else 'receivable'
+
         return PaymentOrder.create(cursor, uid, dict(
             date_prefered = 'fixed',
             user_id = uid,
             state = 'draft',
             mode = payment_mode_ids[0],
-            type = 'receivable',
-            create_account_moves = 'direct-payment',
+            type = order_type,
+            create_account_moves = order_moves,
         ))
 
     def mark_as_paid(self, cursor, uid, ids, purchase_date, movementline_id=None):
