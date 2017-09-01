@@ -961,6 +961,24 @@
             <field name="user_type" ref="l10n_chart_ES.financieras"/>
         </record>
         <record id="genkwh_amortization_journal" model="account.journal">
+            <field name="code">ESBORRAM</field>
+            <field eval="[(6,0,[])]" name="account_control_ids"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field eval="0" name="centralisation"/>
+            <field eval="0" name="group_invoice_lines"/>
+            <field name="type">cash</field>
+            <field name="default_credit_account_id" model="account.account" search="[('code','=','555000000004')]"/>
+            <field name="default_debit_account_id" model="account.account" search="[('code','=','555000000004')]"/>
+            <field name="view_id" ref="account.account_journal_bank_view"/>
+            <field eval="[(6,0,[])]" name="type_control_ids"/>
+            <field name="sequence_id" ref="account.sequence_journal"/>
+            <field eval="1" name="active"/>
+            <field eval="1" name="update_posted"/>
+            <field name="name">Factures GenerationkWh: Residu de desenvolupament molt esborrable</field>
+            <field eval="0" name="refund_journal"/>
+            <field eval="0" name="entry_posted"/>
+        </record>
+        <record id="genkwh_journal" model="account.journal">
             <field name="code">GENKWH</field>
             <field eval="[(6,0,[])]" name="account_control_ids"/>
             <field name="user_id" ref="base.user_root"/>
@@ -981,7 +999,7 @@
         <record id="genkwh_investment_payment_mode" model="payment.mode">
             <field name="name">GENERATION kWh</field>
             <field name="type" search="[('code', '=', 'RECIBO_CSB')]"/>
-            <field name="journal" ref="genkwh_amortization_journal"/>
+            <field name="journal" ref="genkwh_journal"/>
             <field name="bank_id" search="[('partner_id', '=', 1)]"/>
             <field name="tipo">sepa19</field>
             <field name="nombre">Som Energia SCCL</field>
@@ -992,7 +1010,7 @@
         <record id="genkwh_amortization_payment_mode" model="payment.mode">
             <field name="name">GENERATION kWh AMOR</field>
             <field name="type" search="[('code', '=', 'TRANSFERENCIA_CSB')]"/>
-            <field name="journal" ref="genkwh_amortization_journal"/>
+            <field name="journal" ref="genkwh_journal"/>
             <field name="bank_id" search="[('partner_id', '=', 1)]"/>
             <field name="tipo">sepa34</field>
             <field name="nombre">Som Energia SCCL</field>
