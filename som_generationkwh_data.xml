@@ -990,7 +990,7 @@
             <field name="partner_id">1</field>
         </record>
         <record id="genkwh_amortization_payment_mode" model="payment.mode">
-            <field name="name">GENERATION kWh Amor</field>
+            <field name="name">GENERATION kWh AMOR</field>
             <field name="type" search="[('code', '=', 'TRANSFERENCIA_CSB')]"/>
             <field name="journal" ref="genkwh_amortization_journal"/>
             <field name="bank_id" search="[('partner_id', '=', 1)]"/>
