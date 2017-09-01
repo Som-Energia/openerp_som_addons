@@ -1088,7 +1088,8 @@ class GenerationkWhInvestment(osv.osv):
     def invoices_to_payment_order(self,cursor,uid,invoice_ids, model_name):
         Invoice = self.pool.get('account.invoice')
 
-        order_id = self.get_or_create_open_payment_order(cursor, uid, model_name)
+        order_id = self.get_or_create_open_payment_order(cursor, uid, model_name, 
+                    True)
         Invoice.afegeix_a_remesa(cursor,uid,invoice_ids, order_id)
 
     def investment_payment(self,cursor,uid,investment_ids):
