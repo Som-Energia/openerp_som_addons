@@ -300,45 +300,6 @@ class GenerationkWhInvestment(osv.osv):
 
         return sorted(investment_ids)
 
-    # TODO: Delete this function
-    def _disabled_create_from_accounting(self, cursor, uid,
-            start, stop, waitingDays, expirationYears,
-            context=None):
-        """
-            Takes accounting information and generates GenkWh investments
-            purchased among start and stop dates.
-            If waitingDays is not None, activation date is set those
-            days after the purchase date.
-            If expirationYears is not None, expiration date is set, those
-            years after the activation date.
-        """
-
-        query = _sqlfromfile('investment_from_accounting')
-        cursor.execute(query, dict(
-            start = start,
-            stop = stop,
-            waitingDays = waitingDays,
-            expirationYears = expirationYears,
-            generationAccountPrefix = '163500%',
-            ))
-
-        for (
-                member_id,
-                nshares,
-                purchase_date,
-                move_line_id,
-                first_effective_date,
-                last_effective_date,
-            ) in cursor.fetchall():
-
-            self.create(cursor, uid, dict(
-                member_id=member_id,
-                nshares=nshares,
-                purchase_date=purchase_date,
-                first_effective_date=first_effective_date,
-                last_effective_date=last_effective_date,
-                move_line_id=move_line_id,
-                ))
 
     def set_effective(self, cursor, uid,
             start, stop, waitingDays, expirationYears, force,
