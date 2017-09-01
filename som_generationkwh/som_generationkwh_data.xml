@@ -960,6 +960,7 @@
             <field name="name">CAIXA GKWH</field>
             <field name="user_type" ref="l10n_chart_ES.financieras"/>
         </record>
+        <!-- TODO: Remove this as soon as possible, and before release. -->
         <record id="genkwh_amortization_journal" model="account.journal">
             <field name="code">ESBORRAM</field>
             <field eval="[(6,0,[])]" name="account_control_ids"/>
