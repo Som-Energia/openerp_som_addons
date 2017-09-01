@@ -2,3 +2,4 @@
 import wizard_investment_activation
 import wizard_investment_amortization
 import wizard_investment_payment
+import wizard_investment_creation
