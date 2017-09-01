@@ -95,14 +95,20 @@ class TesthelperPaymentWizard(osv.osv_memory):
 
     def pay(self, cursor, uid, invoice_id, movelinename):
         Invoice = self.pool.get('account.invoice')
+        IrModelData = self.pool.get('ir.model.data')
         pending = Invoice.read(cursor, uid, invoice_id, ['residual'])['residual']
+        model, journal_id = IrModelData.get_object_reference(
+            cursor, uid,
+            'som_generationkwh', 'genkwh_journal',
+        )
+
         wizard_pay(self, cursor, uid, data=dict(
             id = invoice_id,
             ids = [invoice_id],
             form = dict(
                 amount=pending,
                 name=movelinename,
-                journal_id=15,
+                journal_id=journal_id,
                 period_id=92,
                 date="2017-08-03",
             ),
