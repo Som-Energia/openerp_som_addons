@@ -59,3 +59,6 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 "access_foreign_somenergia_soci_r","somenergia.soci","som_polissa_soci.model_somenergia_soci","som_generationkwh.group_som_generationkwh_r",1,0,0,0
 "access_foreign_somenergia_soci_u","somenergia.soci","som_polissa_soci.model_somenergia_soci","som_generationkwh.group_som_generationkwh_u",1,0,0,0
 "access_foreign_somenergia_soci_w","somenergia.soci","som_polissa_soci.model_somenergia_soci","som_generationkwh.group_som_generationkwh_w",1,0,0,0
+"access_wizard_generationkwh_investment_creation_r","wizard.generationkwh.investment.creation","model_wizard_generationkwh_investment_creation","som_generationkwh.group_som_generationkwh_r",1,0,0,0
+"access_wizard_generationkwh_investment_creation_u","wizard.generationkwh.investment.creation","model_wizard_generationkwh_investment_creation","som_generationkwh.group_som_generationkwh_u",1,1,1,1
+"access_wizard_generationkwh_investment_creation_w","wizard.generationkwh.investment.creation","model_wizard_generationkwh_investment_creation","som_generationkwh.group_som_generationkwh_w",1,1,1,0

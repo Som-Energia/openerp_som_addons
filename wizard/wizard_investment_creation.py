@@ -19,33 +19,22 @@ class WizardInvestmentCreation(osv.osv):
         Member = self.pool.get('somenergia.soci')
 
         wiz = self.browse(cursor, uid, ids[0], context=context)
-
-        action = wiz.action
-
-    def _default_action(self, cursor, uid, context=None):
-        """Gets wizard action from context"""
-
-
+        result = 'testing'
+        wiz.write({'info': result , 'state': 'done'}, context=context)
 
     def _default_info(self, cursor, uid, context=None):
-        """Fills wizard info field depending on action/investments selected"""
-        action = self._default_action(cursor, uid, context=context)
+        if context is None:
+            context = {}
+        return 'testing'
 
     _columns = {
         'state': fields.char('State', size=16),
         'info': fields.text('Info'),
-        'action': fields.selection([
-            ('activate', 'Activa'),
-            ('deactivate', 'Desactiva')
-            ],
-            string='Action'
-        )
     }
 
     _defaults = {
         'state': lambda *a: 'init',
         'info': _default_info,
-        'action': _default_action,
     }
 
 WizardInvestmentCreation()
