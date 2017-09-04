@@ -19,32 +19,32 @@ class WizardInvestmentCreation(osv.osv):
         Member = self.pool.get('somenergia.soci')
         wiz = self.browse(cursor, uid, ids[0], context=context)
 
-        partner_id  = int(wiz.partner_id)
+        partner_id = int(wiz.partner_id_alt.id)
         amount_in_e = float(wiz.amount_in_euros)
         ip = str(wiz.ip)
         iban = str(wiz.iban)
 
-        Investment.create_from_form(cursor, uid,
+        invoice_id = Investment.create_from_form(cursor, uid,
             partner_id, wiz.order_date, amount_in_e, ip, iban,
             context)
 
-        result = "Partner_id : \t{}\n".format(wiz.partner_id)
-        result += "Order date: \t{}\n".format(wiz.order_date)
-        result += "Amount: \t\t{}\n".format(wiz.amount_in_euros)
-        result += "IP \t\t\t\t{}\n".format(wiz.ip)
-        result += "IBAN : \t\t\t{}".format(wiz.iban)
-        result += "Inversió creada"
-        wiz.write({'info': result , 'state': 'done'}, context=context)
+        if invoice_id:
+            result = "Inversió creada\n"
+        else:
+            result = "Error en creació\n"
+        result += "\nDades d'entrada\n"
+        result += "Partner_id : \t{}\n".format(partner_id)
+        result += "Order date : \t{}\n".format(wiz.order_date)
+        result += "Amount : \t\t{}\n".format(amount_in_e)
+        result += "IP : \t\t\t\t{}\n".format(ip)
+        result += "IBAN : \t\t\t{}\n".format(iban)
 
-    def _default_info(self, cursor, uid, context=None):
-        if context is None:
-            context = {}
-        return 'testing'
+        wiz.write({'info': result , 'state': 'done'}, context=context)
 
     _columns = {
         'state': fields.char('State', size=16),
         'info': fields.text('Info'),
-        'partner_id': fields.integer('partner_id'),
+        'partner_id_alt': fields.many2one('res.partner', 'Titular'),
         'amount_in_euros': fields.float('quantitat aportada'),
         'ip': fields.char("ip d'origen",size=16),
         'iban': fields.char('compte iban',size=35),
@@ -56,8 +56,7 @@ class WizardInvestmentCreation(osv.osv):
 
     _defaults = {
         'state': lambda *a: 'init',
-        'info': _default_info,
-        'partner_id': lambda *a: 0,
+        'info': lambda *a: '',
         'order_date': lambda *a: str(datetime.today()+timedelta(days=6)),
         'amount_in_euros': lambda *a: 0.0,
         'ip': lambda *a: "127.0.0.1",
