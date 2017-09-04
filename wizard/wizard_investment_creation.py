@@ -44,12 +44,14 @@ class WizardInvestmentCreation(osv.osv):
     _columns = {
         'state': fields.char('State', size=16),
         'info': fields.text('Info'),
-        'partner_id_alt': fields.many2one('res.partner', 'Titular'),
-        'amount_in_euros': fields.float('quantitat aportada'),
-        'ip': fields.char("ip d'origen",size=16),
-        'iban': fields.char('compte iban',size=35),
+        'partner_id_alt': fields.many2one('res.partner',
+                                        'Titular',
+                                        domain=[('category_id','=',8)]),
+        'amount_in_euros': fields.float('Quantitat aportada'),
+        'ip': fields.char("Ip d'origen",size=16),
+        'iban': fields.char('Compte iban',size=35),
         'order_date': fields.date(
-            'data de comanda',
+            'Data de comanda',
             required=True
         ),
     }
