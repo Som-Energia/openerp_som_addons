@@ -24,15 +24,25 @@ class WizardInvestmentCreation(osv.osv):
         ip = str(wiz.ip)
         iban = str(wiz.iban)
 
+        start = datetime.now()
+
         invoice_id = Investment.create_from_form(cursor, uid,
             partner_id, wiz.order_date, amount_in_e, ip, iban,
             context)
 
+        end = datetime.now()
+
+        result = ""
+        result += "Creació: \t\t{}\n".format(end - start)
+
+        result += "\n"
         if invoice_id:
-            result = "Inversió creada\n"
+            result += "Inversió creada\n"
         else:
-            result = "Error en creació\n"
-        result += "\nDades d'entrada\n"
+            result += "Error en creació\n"
+
+        result += "\n"
+        result += "Dades d'entrada\n"
         result += "Partner_id : \t{}\n".format(partner_id)
         result += "Order date : \t{}\n".format(wiz.order_date)
         result += "Amount : \t\t{}\n".format(amount_in_e)
