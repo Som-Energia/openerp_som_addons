@@ -28,6 +28,7 @@ class WizardInvestmentCreation(osv.osv):
         investment_id = Investment.create_from_form(cursor, uid,
             partner_id, wiz.order_date, amount_in_e, ip, iban,
             context)
+        invoice_id = Investment.create_initial_invoices(cursor,uid,[investment_id])
 
         end = datetime.now()
 
