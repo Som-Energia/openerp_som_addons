@@ -744,7 +744,7 @@ class GenerationkWhInvestment(osv.osv):
             iban = iban,
             ip = ip,
             )
-        invoice_id = self.create(cursor, uid, dict(
+        investment_id = self.create(cursor, uid, dict(
             inv.erpChanges(),
             member_id = member_id,
         ), context)
@@ -752,10 +752,10 @@ class GenerationkWhInvestment(osv.osv):
         self.get_or_create_payment_mandate(cursor, uid,
             partner_id, iban, gkwh.mandateName, gkwh.creditorCode)
 
-        self.send_mail(cursor, uid, invoice_id,
+        self.send_mail(cursor, uid, investment_id,
             'generationkwh.investment', 'generationkwh_mail_creacio')
 
-        return invoice_id
+        return investment_id
 
     def get_or_create_payment_mandate(self, cursor, uid, partner_id, iban, purpose, creditor_code):
         """
