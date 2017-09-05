@@ -968,7 +968,7 @@ class GenerationkWhInvestment(osv.osv):
                 investment.name or 'GENKWHID{}'.format(investment.id),
             )
 
-            # Ensure unique amortization
+            # Ensure unique invoice
             existingInvoice = Invoice.search(cursor,uid,[
                 ('name','=', invoice_name),
                 ])
