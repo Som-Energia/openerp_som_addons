@@ -16,7 +16,6 @@ class WizardInvestmentCreation(osv.osv):
             context = {}
 
         Investment = self.pool.get('generationkwh.investment')
-        Member = self.pool.get('somenergia.soci')
         wiz = self.browse(cursor, uid, ids[0], context=context)
 
         partner_id = int(wiz.partner_id_alt.id)
