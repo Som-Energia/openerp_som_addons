@@ -386,13 +386,8 @@ class GenerationkWhInvestment(osv.osv):
         return Member.add_gkwh_comment(cursor, uid, member_id, text)
 
     def pending_amortizations(self, cursor, uid, current_date, ids=None):
-        from generationkwh.amortizations import (
-            pendingAmortizations,
-            pendingAmortization,
-            previousAmortizationDate,
-            currentAmortizationNumber,
-            totalAmortizationNumber,
-            )
+        from generationkwh.amortizations import pendingAmortizations
+
         inv_ids = ids or self.search(cursor, uid, [], order='id')
         invs = self.read(cursor, uid, inv_ids, [
             'member_id',
