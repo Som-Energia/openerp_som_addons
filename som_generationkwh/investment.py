@@ -441,16 +441,12 @@ class GenerationkWhInvestment(osv.osv):
             invstate = InvestmentState(username, datetime.now(),
                 log = inv['log'],
                 amortized_amount = amortized_amount,
-                purchase_date = inv['purchase_date'],
+                purchase_date = isodate(inv['purchase_date']),
+                nominal_amount = gkwh.shareValue*inv['nshares'],
             )
 
             from generationkwh.amortizations import pendingAmortizations
-            for pending in pendingAmortizations(
-                    inv['purchase_date'],
-                    current_date,
-                    gkwh.shareValue*inv['nshares'],
-                    inv['amortized_amount'],
-                    ):
+            for pending in invstate.pendingAmortizations(isodate(current_date)):
                 (
                     amortization_number,
                     amortization_total_number,
