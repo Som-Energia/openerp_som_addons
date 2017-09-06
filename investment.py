@@ -387,23 +387,20 @@ class GenerationkWhInvestment(osv.osv):
 
     def pending_amortization_summary(self, cursor, uid, current_date, ids=None):
 
-        from generationkwh.amortizations import pendingAmortizations
-
         inv_ids = ids or self.search(cursor, uid, [], order='id')
         invs = self.read(cursor, uid, inv_ids, [
-            'member_id',
             'purchase_date',
             'amortized_amount',
             'nshares',
             ])
         result = []
         for inv in invs:
-            for pending in pendingAmortizations(
-                    inv['purchase_date'],
-                    current_date,
-                    gkwh.shareValue*inv['nshares'],
-                    inv['amortized_amount'],
-                    ):
+            invstate = InvestmentState('Ignored', datetime.now(),
+                amortized_amount = inv['amortized_amount'],
+                purchase_date = isodate(inv['purchase_date']),
+                nominal_amount = gkwh.shareValue*inv['nshares'],
+            )
+            for pending in invstate.pendingAmortizations(isodate(current_date)):
                 (
                     amortization_number,
                     amortization_total_number,
