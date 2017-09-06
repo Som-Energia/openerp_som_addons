@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
+from datetime import datetime, timedelta
 from osv import osv, fields
 from tools.translate import _
-from datetime import datetime, timedelta
-from calendar import isleap
 import netsvc
 from som_generationkwh import investment
 import pickle
@@ -11,7 +10,9 @@ import pickle
 class WizardInvestmentAmortization(osv.osv_memory):
     """Assistent per amortitzar la inversió.
     """
+
     _name = 'wizard.generationkwh.investment.amortization'
+
     _columns = {
         'date_end': fields.date(
             'Data final',
@@ -48,8 +49,9 @@ class WizardInvestmentAmortization(osv.osv_memory):
 
         Investment = self.pool.get('generationkwh.investment')
         current_date =  wiz.date_end
+        investment_ids = context.get('active_ids', [])
 
-        pending_amortizations = Investment.pending_amortizations(cursor, uid, current_date)
+        pending_amortizations = Investment.pending_amortizations(cursor, uid, current_date, investment_ids)
         total = 0
         for p in pending_amortizations:
             total = total + p[4]
@@ -84,20 +86,9 @@ class WizardInvestmentAmortization(osv.osv_memory):
         amortized_invoice_ids = []
         amortized_invoice_errors = []
 
-        # TODO: delete this code when amortize_one gets producction ready
-        amortized_invoice_ids, amortized_invoice_errors = Investment.amortize(cursor, uid, current_date, None, context)
+        investment_ids = context.get('active_ids', [])
 
-        """
-        # Check before uncomment!
-        # TODO: use this code when amortize_one gets producction ready to control errors
-        pending_amortizations = Investment.pending_amortizations(cursor, uid, current_date)
-        for pending_amortization in pending_amortizations:
-            try:
-                amortized_invoice_id = Investment.amortize_one(cursor, uid, pending_amortization, context)
-                amortized_invoice_ids.append(amortized_invoice_id)
-            except Exception,e: # write specific exception catch code
-                amortized_invoice_errors.append((pending_amortization,str(e)))
-        """
+        amortized_invoice_ids, amortized_invoice_errors = Investment.amortize(cursor, uid, current_date, investment_ids, context)
 
         wiz.write(dict(
             results= "{} inversions amortitzades.\n".format(len(amortized_invoice_ids)),
