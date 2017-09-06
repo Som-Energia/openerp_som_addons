@@ -438,7 +438,7 @@ class GenerationkWhInvestment(osv.osv):
             'nshares',
             ])
         for inv in invs:
-            alreadyAmortized = inv['amortized_amount']
+            amortized_amount = inv['amortized_amount']
             for pending in pendingAmortizations(
                     inv['purchase_date'],
                     current_date,
@@ -455,8 +455,6 @@ class GenerationkWhInvestment(osv.osv):
                 member_id = inv['member_id'][0]
                 amortization_date = amortization_date or False
 
-                alreadyAmortized+=to_be_amortized
-
                 amortization_id, error = self.create_amortization_invoice(cursor, uid,
                         investment_id = investment_id,
                         amortization_date = amortization_date,
@@ -472,16 +470,16 @@ class GenerationkWhInvestment(osv.osv):
 
                 log = self.read(cursor, uid, investment_id, ['log'])['log']
 
-                inv = InvestmentState(username, datetime.now(),
+                invstate = InvestmentState(username, datetime.now(),
                     amortized_amount = amortized_amount,
                     log = log,
                 )
-                inv.amortize(
+                invstate.amortize(
                     date = amortization_date,
                     to_be_amortized = to_be_amortized,
                     )
                 self.write(cursor, uid, investment_id, dict(
-                    inv.erpChanges(),
+                    invstate.erpChanges(),
                 ), context)
 
                 self.open_invoices(cursor, uid, [amortization_id])
@@ -489,6 +487,8 @@ class GenerationkWhInvestment(osv.osv):
                     [amortization_id], gkwh.amortizationPaymentMode)
                 self.send_mail(cursor, uid, amortization_id,
                     'account.invoice', 'generationkwh_mail_amortitzacio')
+
+                amortized_amount+=to_be_amortized
 
         return amortization_ids, amortization_errors
 
