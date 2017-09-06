@@ -437,7 +437,6 @@ class GenerationkWhInvestment(osv.osv):
             'amortized_amount',
             'nshares',
             ])
-        result = []
         for inv in invs:
             alreadyAmortized = inv['amortized_amount']
             for pending in pendingAmortizations(
@@ -456,63 +455,40 @@ class GenerationkWhInvestment(osv.osv):
                 member_id = inv['member_id'][0]
                 amortization_date = amortization_date or False
 
-                result.append([
-                    investment_id,
-                    member_id,
-                    amortization_date,
-                    alreadyAmortized,
-                    to_be_amortized,
-                    amortization_number,
-                    amortization_total_number,
-                ])
                 alreadyAmortized+=to_be_amortized
-        pending = result
 
-        for investment_tuple in pending:
-            (
-                investment_id,
-                member_id,
-                amortization_date,
-                amortized_amount,
-                to_be_amortized,
-                amortization_number,
-                amortization_total_number,
-            ) = investment_tuple
+                amortization_id, error = self.create_amortization_invoice(cursor, uid,
+                        investment_id = investment_id,
+                        amortization_date = amortization_date,
+                        to_be_amortized = to_be_amortized,
+                        amortization_number = amortization_number,
+                        amortization_total_number = amortization_total_number,
+                        )
 
+                if error:
+                    amortization_errors.append(error)
+                    continue
+                amortization_ids.append(amortization_id)
 
+                log = self.read(cursor, uid, investment_id, ['log'])['log']
 
-            amortization_id, error = self.create_amortization_invoice(cursor, uid,
-                    investment_id = investment_id,
-                    amortization_date = amortization_date,
-                    to_be_amortized = to_be_amortized,
-                    amortization_number = amortization_number,
-                    amortization_total_number = amortization_total_number,
-                    )
-
-            if error:
-                amortization_errors.append(error)
-                continue
-            amortization_ids.append(amortization_id)
-
-            log = self.read(cursor, uid, investment_id, ['log'])['log']
-
-            inv = InvestmentState(username, datetime.now(),
-                amortized_amount = amortized_amount,
-                log = log,
-            )
-            inv.amortize(
-                date = amortization_date,
-                to_be_amortized = to_be_amortized,
+                inv = InvestmentState(username, datetime.now(),
+                    amortized_amount = amortized_amount,
+                    log = log,
                 )
-            self.write(cursor, uid, investment_id, dict(
-                inv.erpChanges(),
-            ), context)
+                inv.amortize(
+                    date = amortization_date,
+                    to_be_amortized = to_be_amortized,
+                    )
+                self.write(cursor, uid, investment_id, dict(
+                    inv.erpChanges(),
+                ), context)
 
-            self.open_invoices(cursor, uid, [amortization_id])
-            self.invoices_to_payment_order(cursor, uid,
-                [amortization_id], gkwh.amortizationPaymentMode)
-            self.send_mail(cursor, uid, amortization_id,
-                'account.invoice', 'generationkwh_mail_amortitzacio')
+                self.open_invoices(cursor, uid, [amortization_id])
+                self.invoices_to_payment_order(cursor, uid,
+                    [amortization_id], gkwh.amortizationPaymentMode)
+                self.send_mail(cursor, uid, amortization_id,
+                    'account.invoice', 'generationkwh_mail_amortitzacio')
 
         return amortization_ids, amortization_errors
 
