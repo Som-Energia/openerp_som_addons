@@ -423,9 +423,13 @@ class GenerationkWhInvestment(osv.osv):
         return result
 
     def amortize(self, cursor, uid, current_date, ids=None, context=None):
+        User = self.pool.get('res.users')
+        username = User.read(cursor, uid, uid, ['name'])['name']
+
         pending = self.pending_amortizations(cursor, uid, current_date, ids)
         amortization_ids = []
         amortization_errors = []
+
         for investment_tuple in pending:
             (
                 investment_id,
@@ -436,6 +440,9 @@ class GenerationkWhInvestment(osv.osv):
                 amortization_number,
                 amortization_total_number,
             ) = investment_tuple
+
+
+
             amortization_id, error = self.create_amortization_invoice(cursor, uid,
                     investment_id = investment_id,
                     amortization_date = amortization_date,
@@ -449,12 +456,9 @@ class GenerationkWhInvestment(osv.osv):
                 continue
             amortization_ids.append(amortization_id)
 
-            User = self.pool.get('res.users')
-            user = User.read(cursor, uid, uid, ['name'])
-
             log = self.read(cursor, uid, investment_id, ['log'])['log']
 
-            inv = InvestmentState(user['name'], datetime.now(),
+            inv = InvestmentState(username, datetime.now(),
                 amortized_amount = amortized_amount,
                 log = log,
             )
