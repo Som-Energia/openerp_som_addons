@@ -425,10 +425,44 @@ class GenerationkWhInvestment(osv.osv):
     def amortize(self, cursor, uid, current_date, ids=None, context=None):
         User = self.pool.get('res.users')
         username = User.read(cursor, uid, uid, ['name'])['name']
-
-        pending = self.pending_amortizations(cursor, uid, current_date, ids)
         amortization_ids = []
         amortization_errors = []
+
+        from generationkwh.amortizations import pendingAmortizations
+
+        inv_ids = ids or self.search(cursor, uid, [], order='id')
+        invs = self.read(cursor, uid, inv_ids, [
+            'member_id',
+            'purchase_date',
+            'amortized_amount',
+            'nshares',
+            ])
+        result = []
+        for inv in invs:
+            alreadyAmortized = inv['amortized_amount']
+            for pending in pendingAmortizations(
+                    inv['purchase_date'],
+                    current_date,
+                    gkwh.shareValue*inv['nshares'],
+                    inv['amortized_amount'],
+                    ):
+                (
+                    amortization_number,
+                    amortization_total_number,
+                    amortization_date,
+                    to_be_amortized,
+                ) = pending
+                result.append([
+                    inv['id'],
+                    inv['member_id'][0],
+                    amortization_date or False,
+                    alreadyAmortized,
+                    to_be_amortized,
+                    amortization_number,
+                    amortization_total_number,
+                ])
+                alreadyAmortized+=to_be_amortized
+        pending = result
 
         for investment_tuple in pending:
             (
