@@ -385,7 +385,8 @@ class GenerationkWhInvestment(osv.osv):
         )['member_id'][0]
         return Member.add_gkwh_comment(cursor, uid, member_id, text)
 
-    def pending_amortizations(self, cursor, uid, current_date, ids=None):
+    def pending_amortization_summary(self, cursor, uid, current_date, ids=None):
+
         from generationkwh.amortizations import pendingAmortizations
 
         inv_ids = ids or self.search(cursor, uid, [], order='id')
@@ -397,7 +398,6 @@ class GenerationkWhInvestment(osv.osv):
             ])
         result = []
         for inv in invs:
-            alreadyAmortized = inv['amortized_amount']
             for pending in pendingAmortizations(
                     inv['purchase_date'],
                     current_date,
@@ -410,17 +410,9 @@ class GenerationkWhInvestment(osv.osv):
                     amortization_date,
                     to_be_amortized,
                 ) = pending
-                result.append([
-                    inv['id'],
-                    inv['member_id'][0],
-                    amortization_date or False,
-                    alreadyAmortized,
-                    to_be_amortized,
-                    amortization_number,
-                    amortization_total_number,
-                ])
-                alreadyAmortized+=to_be_amortized
-        return result
+                result.append(to_be_amortized)
+
+        return len(result), sum(result)
 
     def amortize(self, cursor, uid, current_date, ids=None, context=None):
         User = self.pool.get('res.users')
@@ -445,7 +437,6 @@ class GenerationkWhInvestment(osv.osv):
                 nominal_amount = gkwh.shareValue*inv['nshares'],
             )
 
-            from generationkwh.amortizations import pendingAmortizations
             for pending in invstate.pendingAmortizations(isodate(current_date)):
                 (
                     amortization_number,

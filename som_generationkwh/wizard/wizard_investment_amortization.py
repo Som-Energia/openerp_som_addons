@@ -51,18 +51,15 @@ class WizardInvestmentAmortization(osv.osv_memory):
         current_date =  wiz.date_end
         investment_ids = context.get('active_ids', [])
 
-        pending_amortizations = Investment.pending_amortizations(cursor, uid, current_date, investment_ids)
-        total = 0
-        for p in pending_amortizations:
-            total = total + p[4]
+        nAmortizations, totalAmount = Investment.pending_amortization_summary(cursor, uid, current_date, investment_ids)
 
         wiz.write(dict(
             output=
                 '- Amortitzacions pendents: {pending}\n\n'
                 '- Import total: {pending_amount} €\n'
                 .format(
-                    pending = len(pending_amortizations),
-                    pending_amount = total,
+                    pending = nAmortizations,
+                    pending_amount = totalAmount,
                 ),
             state='pre_calc',
             ))
