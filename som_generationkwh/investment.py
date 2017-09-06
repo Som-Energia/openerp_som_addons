@@ -399,7 +399,6 @@ class GenerationkWhInvestment(osv.osv):
             'purchase_date',
             'amortized_amount',
             'nshares',
-            'log',
             ])
         result = []
         for inv in invs:
@@ -424,7 +423,6 @@ class GenerationkWhInvestment(osv.osv):
                     to_be_amortized,
                     amortization_number,
                     amortization_total_number,
-                    inv['log'],
                 ])
                 alreadyAmortized+=to_be_amortized
         return result
@@ -442,7 +440,6 @@ class GenerationkWhInvestment(osv.osv):
                 to_be_amortized,
                 amortization_number,
                 amortization_total_number,
-                log,
             ) = investment_tuple
             amortization_id, error = self.create_amortization_invoice(cursor, uid,
                     investment_id = investment_id,
