@@ -452,10 +452,14 @@ class GenerationkWhInvestment(osv.osv):
                     amortization_date,
                     to_be_amortized,
                 ) = pending
+                investment_id = inv['id']
+                member_id = inv['member_id'][0]
+                amortization_date = amortization_date or False
+
                 result.append([
-                    inv['id'],
-                    inv['member_id'][0],
-                    amortization_date or False,
+                    investment_id,
+                    member_id,
+                    amortization_date,
                     alreadyAmortized,
                     to_be_amortized,
                     amortization_number,
