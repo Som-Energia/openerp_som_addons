@@ -460,6 +460,8 @@ class GenerationkWhInvestment(osv.osv):
             User = self.pool.get('res.users')
             user = User.read(cursor, uid, uid, ['name'])
 
+            log = self.read(cursor, uid, investment_id, ['log'])['log']
+
             inv = InvestmentState(user['name'], datetime.now(),
                 amortized_amount = amortized_amount,
                 log = log,
