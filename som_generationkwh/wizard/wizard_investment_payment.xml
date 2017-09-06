@@ -17,7 +17,7 @@
                 </form>
             </field>
         </record>
-        <record id="action_wizard_generationkwh_investment_payment" model="ir.actions.act_window">
+        <record model="ir.actions.act_window" id="action_wizard_generationkwh_investment_payment">
             <field name="name">Generar 1r pagament</field>
             <field name="res_model">wizard.generationkwh.investment.payment</field>
             <field name="view_type">form</field>
