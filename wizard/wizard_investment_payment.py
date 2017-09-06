@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from datetime import date
-
 from osv import osv, fields
 from tools.translate import _
 import pickle
@@ -87,6 +86,7 @@ class WizardInvestmentPayment(osv.osv):
             lines = PaymentLine.search(cursor, uid, [('communication','ilike',invoice['name'])])
             line = PaymentLine.read(cursor, uid, lines[0])
             payment_order_id = line['order_id'][0]
+
         return {
             'domain': "[('id','=', %s)]" % str(payment_order_id),
             'name': _('Ordre de cobrament'),
@@ -95,6 +95,6 @@ class WizardInvestmentPayment(osv.osv):
             'res_model': 'payment.order',
             'type': 'ir.actions.act_window',
         }
- 
+
 WizardInvestmentPayment()
 # vim: et ts=4 sw=4 
