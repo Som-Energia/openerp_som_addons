@@ -428,22 +428,23 @@ class GenerationkWhInvestment(osv.osv):
         amortization_ids = []
         amortization_errors = []
 
-        from generationkwh.amortizations import pendingAmortizations
-
         inv_ids = ids or self.search(cursor, uid, [], order='id')
         invs = self.read(cursor, uid, inv_ids, [
             'purchase_date',
             'amortized_amount',
             'nshares',
+            'log',
             ])
         for inv in invs:
             amortized_amount = inv['amortized_amount']
             investment_id = inv['id']
-            log = self.read(cursor, uid, investment_id, ['log'])['log']
             invstate = InvestmentState(username, datetime.now(),
+                log = inv['log'],
                 amortized_amount = amortized_amount,
-                log = log,
+                purchase_date = inv['purchase_date'],
             )
+
+            from generationkwh.amortizations import pendingAmortizations
             for pending in pendingAmortizations(
                     inv['purchase_date'],
                     current_date,
