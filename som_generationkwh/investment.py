@@ -417,19 +417,18 @@ class GenerationkWhInvestment(osv.osv):
         amortization_ids = []
         amortization_errors = []
 
-        inv_ids = ids or self.search(cursor, uid, [], order='id')
-        invs = self.read(cursor, uid, inv_ids, [
+        investment_ids = ids or self.search(cursor, uid, [], order='id')
+        investments = self.read(cursor, uid, investment_ids, [
             'purchase_date',
             'amortized_amount',
             'nshares',
             'log',
             ])
-        for inv in invs:
-            amortized_amount = inv['amortized_amount']
+        for inv in investments:
             investment_id = inv['id']
             invstate = InvestmentState(username, datetime.now(),
                 log = inv['log'],
-                amortized_amount = amortized_amount,
+                amortized_amount = inv['amortized_amount'],
                 purchase_date = isodate(inv['purchase_date']),
                 nominal_amount = gkwh.shareValue*inv['nshares'],
             )
@@ -470,7 +469,6 @@ class GenerationkWhInvestment(osv.osv):
                 self.send_mail(cursor, uid, amortization_id,
                     'account.invoice', 'generationkwh_mail_amortitzacio')
 
-                amortized_amount+=to_be_amortized
 
         return amortization_ids, amortization_errors
 
