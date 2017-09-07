@@ -36,7 +36,11 @@ class WizardInvestmentCreation(osv.osv):
 
         result += "\n"
         if investment_id:
-            result += "Inversió creada\n"
+            new_invest = Investment.read(cursor, uid, investment_id, ['name'])
+            result += "Inversió creada amb nom: {} - id: {}\n".format(
+                    new_invest['name'],
+                    investment_id
+                )
         else:
             result += "Error en creació\n"
 
