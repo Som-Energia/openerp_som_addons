@@ -841,8 +841,6 @@ class GenerationkWhInvestment(osv.osv):
             ResUser = self.pool.get('res.users')
             user = ResUser.read(cursor, uid, uid, ['name'])
             amount = inversio['nshares']*gkwh.shareValue
-            soci = Soci.read(cursor,uid,inversio['member_id'][0],['bank_inversions'])
-            iban = self.clean_iban(cursor, uid, soci['bank_inversions'][1])
 
             inv = InvestmentState(user['name'], datetime.now(),
                 log = inversio['log'],
@@ -853,7 +851,6 @@ class GenerationkWhInvestment(osv.osv):
             inv.pay(
                 date = isodate(purchase_date),
                 amount = amount,
-                iban = iban,
                 move_line_id = movementline_id,
             )
             self.write(cursor, uid, id, inv.erpChanges())
