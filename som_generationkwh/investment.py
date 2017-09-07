@@ -12,6 +12,7 @@ import re
 import generationkwh.investmentmodel as gkwh
 from generationkwh.investmentstate import InvestmentState
 from uuid import uuid4
+import netsvc
 
 # TODO: This function is duplicated in other sources
 def _sqlfromfile(sqlname):
@@ -1032,7 +1033,11 @@ class GenerationkWhInvestment(osv.osv):
         openOK += obj.action_date_assign(cursor, uid, ids)
         openOK += obj.action_move_create(cursor, uid, ids)
         openOK += obj.action_number(cursor, uid, ids)
-        openOK += obj.set_state(cursor, uid, ids,'open')
+        #openOK += obj.set_state(cursor, uid, ids,'open')
+        wf_service = netsvc.LocalService('workflow')
+        for inv_id in ids:
+            openOK += wf_service.trg_validate(uid, 'account.invoice', #OpenInvoice
+                    inv_id, 'invoice_open', cursor)
         return openOK
 
     def invoices_to_payment_order(self,cursor,uid,invoice_ids, model_name):
