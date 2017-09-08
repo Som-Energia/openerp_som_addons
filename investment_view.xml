@@ -65,7 +65,7 @@
             <field name="src_model">generationkwh.investment</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('number', 'like', name)]</field>
+            <field name="domain">[('origin', '=', name)]</field>
         </record>
         <record id="value_action_sc_comptadors_de_polisses" model="ir.values">
             <field name="object" eval="1"/>
