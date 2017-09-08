@@ -7,20 +7,20 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Inversions en Generation kWh">
-                    <field name="name"/>
-                    <field name="order_date"/>
-                    <field name="member_id"/>
-                    <field name="purchase_date"/>
-                    <field name="nshares"/>
-                    <field name="first_effective_date"/>
-                    <field name="amortized_amount"/>
-                    <field name="last_effective_date"/>
-                    <field name="active"/>
+                    <field name="name" readonly="1"/>
+                    <field name="order_date" readonly="1"/>
+                    <field name="member_id" readonly="1"/>
+                    <field name="purchase_date" readonly="1"/>
+                    <field name="nshares" readonly="1"/>
+                    <field name="first_effective_date" readonly="1"/>
+                    <field name="amortized_amount" readonly="1"/>
+                    <field name="last_effective_date" readonly="1"/>
+                    <field name="active" readonly="1"/>
                     <group colspan="4" col="2">
-                        <field name="log"/>
+                        <field name="log" readonly="1"/>
                     </group>
                     <group colspan="4" col="2">
-                        <field name="move_line_id"/>
+                        <field name="move_line_id" readonly="1"/>
                     </group>
                     <group colspan="4" col="1">
                         <button name="%(action_wizard_generationkwh_investment_activation)d" string="Activate" icon="gtk-ok" type="action" attrs="{'readonly': [('active','=',1)]}" context="{'action': 'activate'}"/>
