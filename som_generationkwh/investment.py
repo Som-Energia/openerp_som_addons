@@ -1026,14 +1026,7 @@ class GenerationkWhInvestment(osv.osv):
         return invoice_ids, errors
 
     def open_invoices(self, cursor, uid, ids):
-        obj = self.pool.get('account.invoice')
-
         openOK = True
-        # TODO: Need to control the Exceptions
-        openOK += obj.action_date_assign(cursor, uid, ids)
-        openOK += obj.action_move_create(cursor, uid, ids)
-        openOK += obj.action_number(cursor, uid, ids)
-        #openOK += obj.set_state(cursor, uid, ids,'open')
         wf_service = netsvc.LocalService('workflow')
         for inv_id in ids:
             openOK += wf_service.trg_validate(uid, 'account.invoice', #OpenInvoice
