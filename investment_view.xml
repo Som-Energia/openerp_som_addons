@@ -22,9 +22,13 @@
                     <group colspan="4" col="2">
                         <field name="move_line_id" readonly="1"/>
                     </group>
-                    <group colspan="4" col="1">
-                        <button name="%(action_wizard_generationkwh_investment_activation)d" string="Activate" icon="gtk-ok" type="action" attrs="{'readonly': [('active','=',1)]}" context="{'action': 'activate'}"/>
-                        <button name="%(action_wizard_generationkwh_investment_activation)d" string="Deactivate" icon="gtk-ok" type="action" attrs="{'readonly': [('active','!=',1)]}" context="{'action': 'deactivate'}"/>
+                    <group colspan="4" col="3">
+                        <button name="%(action_wizard_generationkwh_investment_payment)d" string="Generar 1er pagament" icon="gtk-convert" type="action" attrs="{'readonly': [('active','!=',1)]}"/>
+                        <button name="%(action_wizard_investment_amortization_form)d" string="Amortitzar" icon="gtk-execute" type="action" attrs="{'readonly': [('active','!=',1)]}"/>
+                        <button name="%(action_wizard_investment_amortization_form)d" string="Fraccionar" icon="gtk-cut" type="action" attrs="{'readonly': [('active','=',1)]}"/>
+                        <button name="%(action_wizard_investment_amortization_form)d" string="Traspasar" icon="gtk-go-forward" type="action" attrs="{'readonly': [('active','=',1)]}"/>
+                        <button name="%(action_wizard_investment_amortization_form)d" string="Desinvertir" icon="gtk-clear" type="action" attrs="{'readonly': [('active','=',1)]}"/>
+                        <button name="%(action_wizard_investment_amortization_form)d" string="Cancelar" icon="gtk-delete" type="action" attrs="{'readonly': [('active','=',1)]}"/>
                     </group>
                 </form>
             </field>
