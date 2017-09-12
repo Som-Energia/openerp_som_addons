@@ -846,12 +846,13 @@ class GenerationkWhInvestment(osv.osv):
             inv = InvestmentState(user['name'], datetime.now(),
                 log = inversio['log'],
                 nominal_amount = amount,
-                paid_amount = 0, # TODO: Take it from moveline
+                paid_amount = 0, # TODO: Take it from amount if purchase date
+                draft = False, # TODO: Db or has invoice?
             )
 
             inv.pay(
                 date = isodate(purchase_date),
-                amount = amount,
+                amount = amount, # TODO: Take it from moveline
                 move_line_id = movementline_id,
             )
             self.write(cursor, uid, id, inv.erpChanges())
@@ -873,6 +874,7 @@ class GenerationkWhInvestment(osv.osv):
                 log = inversio['log'],
                 nominal_amount = amount,
                 paid_amount = amount, # TODO: if purchase_date else 0
+                draft = False, # TODO: Db or has invoice?
             )
 
             inv.unpay(
