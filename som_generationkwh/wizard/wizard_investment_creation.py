@@ -36,12 +36,14 @@ class WizardInvestmentCreation(osv.osv):
 
         result += "\n"
         if investment_id:
+            next_state = 'done'
             new_invest = Investment.read(cursor, uid, investment_id, ['name'])
             result += "Inversió creada amb nom: {} - id: {}\n".format(
                     new_invest['name'],
                     investment_id
                 )
         else:
+            next_state = 'init'
             result += "Error en creació\n"
 
         result += "\n"
@@ -52,7 +54,7 @@ class WizardInvestmentCreation(osv.osv):
         result += "IP : \t\t\t\t{}\n".format(ip)
         result += "IBAN : \t\t\t{}\n".format(iban)
 
-        wiz.write({'info': result , 'state': 'done'}, context=context)
+        wiz.write({'info': result , 'state': next_state}, context=context)
 
     _columns = {
         'state': fields.char('State', size=16),
