@@ -107,7 +107,6 @@ class TesthelperPaymentWizard(osv.osv_memory):
 
         Wizard = self.pool.get('wizard.unpay')
         from datetime import date
-        print "AMOUNT TOTAL", invoice['amount_total']
         wizard_id = Wizard.create(cursor, uid, dict(
             name = movelinename,
             date = date.today(),
