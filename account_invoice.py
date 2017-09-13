@@ -1,7 +1,6 @@
 # coding=utf-8
 from osv import osv
 
-
 class AccountInvoice(osv.osv):
     _name = 'account.invoice'
     _inherit = 'account.invoice'
@@ -87,7 +86,6 @@ class AccountInvoice(osv.osv):
 AccountInvoice()
 
 
-from addons.account.wizard.wizard_pay_invoice import _pay_and_reconcile as wizard_pay
 
 
 class TesthelperPaymentWizard(osv.osv_memory):
@@ -95,7 +93,38 @@ class TesthelperPaymentWizard(osv.osv_memory):
     _name = 'generationkwh.payment.wizard.testhelper'
     _auto = False
 
+    def unpay(self, cursor, uid, invoice_id, movelinename):
+        IrModelData = self.pool.get('ir.model.data')
+        model, journal_id = IrModelData.get_object_reference(
+            cursor, uid,
+            'som_generationkwh', 'genkwh_journal',
+        )
+        Invoice = self.pool.get('account.invoice')
+        invoice = Invoice.read(cursor, uid, invoice_id, [
+            'amount_total',
+            'account_id',
+        ])
+
+        Wizard = self.pool.get('wizard.unpay')
+        from datetime import date
+        wizard_id = Wizard.create(cursor, uid, dict(
+            name = movelinename,
+            date = date.today(),
+            amount = invoice['amount_total'],
+            pay_journal_id=journal_id,
+            pay_account_id=invoice['account_id'],
+        ))
+
+        wizard = Wizard.browse(cursor, uid, wizard_id)
+        wizard.unpay(dict(
+            model = 'account.invoice',
+            active_ids = [invoice_id],
+            date_p = date.today(),
+        ))
+
+
     def pay(self, cursor, uid, invoice_id, movelinename):
+        from addons.account.wizard.wizard_pay_invoice import _pay_and_reconcile as wizard_pay
         Invoice = self.pool.get('account.invoice')
         IrModelData = self.pool.get('ir.model.data')
         pending = Invoice.read(cursor, uid, invoice_id, ['residual'])['residual']
@@ -115,6 +144,7 @@ class TesthelperPaymentWizard(osv.osv_memory):
                 date="2017-08-03",
             ),
         ), context={})
+
 
 TesthelperPaymentWizard()
 
