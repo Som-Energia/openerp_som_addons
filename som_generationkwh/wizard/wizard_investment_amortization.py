@@ -46,10 +46,11 @@ class WizardInvestmentAmortization(osv.osv_memory):
 
     def preview(self, cursor, uid, ids, context=None):
         wiz = self.browse(cursor, uid, ids[0], context)
-
         Investment = self.pool.get('generationkwh.investment')
         current_date =  wiz.date_end
         investment_ids = context.get('active_ids', [])
+        if context.get('search_all'):
+            investment_ids = Investment.search(cursor, uid, [('active', '=', True)])
 
         nAmortizations, totalAmount = Investment.pending_amortization_summary(cursor, uid, current_date, investment_ids)
 
@@ -82,8 +83,9 @@ class WizardInvestmentAmortization(osv.osv_memory):
 
         amortized_invoice_ids = []
         amortized_invoice_errors = []
-
         investment_ids = context.get('active_ids', [])
+        if context.get('search_all'):
+            investment_ids = Investment.search(cursor, uid, [('active', '=', True)])
 
         amortized_invoice_ids, amortized_invoice_errors = Investment.amortize(cursor, uid, current_date, investment_ids, context)
 
