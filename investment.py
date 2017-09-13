@@ -842,12 +842,18 @@ class GenerationkWhInvestment(osv.osv):
                 ])
             ResUser = self.pool.get('res.users')
             user = ResUser.read(cursor, uid, uid, ['name'])
-            amount = inversio['nshares']*gkwh.shareValue
+            nominal_amount = inversio['nshares']*gkwh.shareValue
+            if movementline_id:
+                MoveLine = self.pool.get('account.move.line')
+                moveline = ns(MoveLine.read(cursor, uid, movementline_id, []))
+                amount = moveline.credit - moveline.debit
+            else:
+                amount = nominal_amount
 
             inv = InvestmentState(user['name'], datetime.now(),
                 log = inversio['log'],
-                nominal_amount = amount,
-                paid_amount = amount if inversio['purchase_date'] else 0,
+                nominal_amount = nominal_amount,
+                paid_amount = nominal_amount if inversio['purchase_date'] else 0,
                 draft = False, # TODO: Db or has invoice?
             )
 
@@ -870,12 +876,18 @@ class GenerationkWhInvestment(osv.osv):
             ])
             ResUser = self.pool.get('res.users')
             user = ResUser.read(cursor, uid, uid, ['name'])
-            amount = inversio['nshares']*gkwh.shareValue
+            nominal_amount = inversio['nshares']*gkwh.shareValue
+            if movementline_id:
+                MoveLine = self.pool.get('account.move.line')
+                moveline = ns(MoveLine.read(cursor, uid, movementline_id, []))
+                amount = moveline.credit - moveline.debit
+            else:
+                amount = nominal_amount
 
             inv = InvestmentState(user['name'], datetime.now(),
                 log = inversio['log'],
-                nominal_amount = amount,
-                paid_amount = amount if inversio['purchase_date'] else 0,
+                nominal_amount = nominal_amount,
+                paid_amount = nominal_amount if inversio['purchase_date'] else 0,
                 draft = False, # TODO: Db or has invoice?
             )
 
