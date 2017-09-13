@@ -41,7 +41,8 @@ class AccountInvoice(osv.osv):
             investment_id = self.get_investment(cursor,uid,invoice_id)
             moveline_id = self.get_investment_moveline(cursor,uid,invoice_id)
             if not investment_id: continue
-            if not self.is_investment_payment(cursor,uid,invoice_id):continue
+            if not self.is_investment_payment(cursor,uid,invoice_id):
+                continue
             Investment.mark_as_paid(cursor,uid,[investment_id],today,moveline_id)
         return res
 
@@ -77,6 +78,7 @@ class AccountInvoice(osv.osv):
         invoice = self.read(cursor, uid, invoice_id,['move_id','name'])
         for moveline_id in  MoveLine.search(cursor, uid, [
             ('move_id','=',invoice['move_id'][0]),
+            # TODO: Many investments in a single move? filter out
             #('name', '=', invoice['name']),
             ('debit','=',0),
             ]):
