@@ -960,25 +960,6 @@
             <field name="name">CAIXA GKWH</field>
             <field name="user_type" ref="l10n_chart_ES.financieras"/>
         </record>
-        <!-- TODO: Remove this as soon as possible, and before release. -->
-        <record id="genkwh_amortization_journal" model="account.journal">
-            <field name="code">ESBORRAM</field>
-            <field eval="[(6,0,[])]" name="account_control_ids"/>
-            <field name="user_id" ref="base.user_root"/>
-            <field eval="0" name="centralisation"/>
-            <field eval="0" name="group_invoice_lines"/>
-            <field name="type">cash</field>
-            <field name="default_credit_account_id" model="account.account" search="[('code','=','555000000004')]"/>
-            <field name="default_debit_account_id" model="account.account" search="[('code','=','555000000004')]"/>
-            <field name="view_id" ref="account.account_journal_bank_view"/>
-            <field eval="[(6,0,[])]" name="type_control_ids"/>
-            <field name="sequence_id" ref="account.sequence_journal"/>
-            <field eval="1" name="active"/>
-            <field eval="1" name="update_posted"/>
-            <field name="name">Factures GenerationkWh: Residu de desenvolupament molt esborrable</field>
-            <field eval="0" name="refund_journal"/>
-            <field eval="0" name="entry_posted"/>
-        </record>
         <record id="genkwh_journal" model="account.journal">
             <field name="code">GENKWH</field>
             <field eval="[(6,0,[])]" name="account_control_ids"/>
@@ -995,7 +976,7 @@
             <field eval="1" name="update_posted"/>
             <field name="name">Factures GenerationkWh</field>
             <field eval="0" name="refund_journal"/>
-            <field eval="0" name="entry_posted"/>
+            <field eval="1" name="entry_posted"/>
         </record>
         <record id="genkwh_investment_payment_mode" model="payment.mode">
             <field name="name">GENERATION kWh</field>
