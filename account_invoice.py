@@ -1,6 +1,8 @@
 # coding=utf-8
 from osv import osv
 
+import generationkwh.investmentmodel as gkwh
+
 class AccountInvoice(osv.osv):
     _name = 'account.invoice'
     _inherit = 'account.invoice'
@@ -70,13 +72,18 @@ class AccountInvoice(osv.osv):
         return None
 
     def investment_last_moveline(self, cursor, uid, invoice_id):
+        """
+        For an investment invoice, gets the last moveline againts
+        """
+
+
         invoice = self.read(cursor, uid, invoice_id, [
             'journal_id',
             'name',
         ])
         Account = self.pool.get('account.account')
         account_id = Account.search(cursor, uid, [
-            ('code','=','555000000004'),
+            ('code','=',gkwh.bridgeAccountCode),
             ])[0]
         MoveLine = self.pool.get('account.move.line')
         ids = MoveLine.search(cursor, uid, [
