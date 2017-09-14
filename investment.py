@@ -1099,25 +1099,6 @@ class GenerationkWhInvestment(osv.osv):
             WizardInvoiceOpenAndSend.envia_mail_a_client(
                 cursor, uid, id,model,template, ctx)
 
-    def last_moveline(self, cursor, uid, invoice_id):
-        Invoice = self.pool.get('account.invoice')
-        invoice = Invoice.read(cursor, uid, invoice_id, [
-            'journal_id',
-            'name',
-        ])
-        Account = self.pool.get('account.account')
-        account_id = Account.search(cursor, uid, [
-            ('code','=','555000000004'),
-            ])[0]
-        MoveLine = self.pool.get('account.move.line')
-        ids = MoveLine.search(cursor, uid, [
-            ('ref', '=', invoice['name']),
-            ('journal_id', '=', invoice['journal_id'][0]),
-            ('account_id', '<>', account_id),
-        ])
-        return sorted(ids)[-1]
-
-
 class InvestmentProvider(ErpWrapper):
 
     def effectiveInvestments(self, member=None, start=None, end=None):
