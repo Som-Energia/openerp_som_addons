@@ -859,7 +859,7 @@ class GenerationkWhInvestment(osv.osv):
 
             inv.pay(
                 date = isodate(purchase_date),
-                amount = amount, # TODO: Take it from moveline
+                amount = amount,
                 move_line_id = movementline_id,
             )
             self.write(cursor, uid, id, inv.erpChanges())
@@ -892,7 +892,7 @@ class GenerationkWhInvestment(osv.osv):
             )
 
             inv.unpay(
-                amount = amount, # TODO: Take it from moveline
+                amount = amount,
                 move_line_id = movementline_id,
             )
 
