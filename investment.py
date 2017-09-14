@@ -290,7 +290,9 @@ class GenerationkWhInvestment(osv.osv):
             members = Member.search(cursor, uid, domain, context=contextWithInactives)
             if not members:
                 print (
-                    "No existeix el soci de la linia comptable id {l.id} {l.date_created} partner {l.partner_id.name} ac {l.account_id.name}, {l.credit} -{l.debit}  {d}"
+                    "No existeix el soci de la linia comptable "
+                    "id {l.id} {l.date_created} partner {l.partner_id.name} "
+                    "ac {l.account_id.name}, {l.credit} -{l.debit}  {d}"
                     .format(l=line, d=domain))
                 continue
 
@@ -436,6 +438,7 @@ class GenerationkWhInvestment(osv.osv):
             'amortized_amount',
             'nshares',
             'log',
+            'actions_log',
             ])
         for inv in investments:
             investment_id = inv['id']
@@ -857,6 +860,7 @@ class GenerationkWhInvestment(osv.osv):
         inversio = self.read(cursor, uid, id, [
             'log',
             'draft',
+            'actions_log',
             ])
         ResUser = self.pool.get('res.users')
         user = ResUser.read(cursor, uid, uid, ['name'])
@@ -875,6 +879,7 @@ class GenerationkWhInvestment(osv.osv):
         for id in ids:
             inversio = self.read(cursor, uid, id, [
                 'log',
+                'actions_log',
                 'nshares',
                 'member_id',
                 'purchase_date',
@@ -911,6 +916,7 @@ class GenerationkWhInvestment(osv.osv):
         for id in ids:
             inversio = self.read(cursor, uid, id, [
                 'log',
+                'actions_log',
                 'nshares',
                 'purchase_date',
                 'draft',
