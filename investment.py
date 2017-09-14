@@ -121,10 +121,15 @@ class GenerationkWhInvestment(osv.osv):
             required=True,
             help="Està en esborrany si encara no s'han emés factures",
             ),
+        actions_log=fields.text(
+            'Història',
+            required=True,
+            help="Història d'esdeveniments relacionats amb la inversió en format YAML",
+            ),
         log=fields.text(
             'Història',
             # TODO to be required, after develop
-            #required=true,
+            #required=True,
             help="Història d'esdeveniments relacionats amb la inversió",
             ),
         )
@@ -134,6 +139,7 @@ class GenerationkWhInvestment(osv.osv):
         draft=lambda *a: True,
         amortized_amount=lambda *a: 0,
         log=lambda *a:'',
+        actions_log=lambda *a: '',
     )
 
 
