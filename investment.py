@@ -880,7 +880,7 @@ class GenerationkWhInvestment(osv.osv):
             if movementline_id:
                 MoveLine = self.pool.get('account.move.line')
                 moveline = ns(MoveLine.read(cursor, uid, movementline_id, []))
-                amount = moveline.credit - moveline.debit
+                amount = moveline.debit - moveline.credit
             else:
                 amount = nominal_amount
 
