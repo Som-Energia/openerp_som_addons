@@ -872,6 +872,7 @@ class GenerationkWhInvestment(osv.osv):
                 'nshares',
                 'member_id',
                 'purchase_date',
+                'draft',
                 ])
             ResUser = self.pool.get('res.users')
             user = ResUser.read(cursor, uid, uid, ['name'])
@@ -887,7 +888,7 @@ class GenerationkWhInvestment(osv.osv):
                 log = inversio['log'],
                 nominal_amount = nominal_amount,
                 paid_amount = nominal_amount if inversio['purchase_date'] else 0,
-                draft = False, # TODO: Db or has invoice?
+                draft = False, # inversio['draft'],
             )
 
             inv.pay(
@@ -977,6 +978,11 @@ class GenerationkWhInvestment(osv.osv):
 
             if investment.purchase_date:
                 error("Investment {} was already paid"
+                    .format(investment.name))
+                continue
+
+            if not investment.draft:
+                error("Investment {} already invoiced"
                     .format(investment.name))
                 continue
 
