@@ -955,7 +955,7 @@
         <record id="pgc_555000000004" model="account.account">
             <field name="code">555000000004</field>
             <field name="reconcile" eval="True"/>
-            <field name="parent_id" model="account.account" search="[('code','=','570')]"/>
+            <field name="parent_id" model="account.account" search="[('code','=','555')]"/>
             <field name="type">other</field>
             <field name="name">CAIXA GKWH</field>
             <field name="user_type" ref="l10n_chart_ES.financieras"/>
