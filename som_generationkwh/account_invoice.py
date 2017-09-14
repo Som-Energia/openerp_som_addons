@@ -18,8 +18,7 @@ class AccountInvoice(osv.osv):
             investment_id = self.get_investment(cursor,uid,invoice_id)
             if not investment_id: continue
             if not self.is_investment_payment(cursor,uid,invoice_id):continue
-            # TODO: pass date and moveline id
-            moveline_id = self.get_investment_moveline(cursor,uid,invoice_id)
+            moveline_id = self.investment_last_moveline(cursor,uid,invoice_id)
             Investment.mark_as_unpaid(cursor,uid,[investment_id],moveline_id)
         return res
 
@@ -38,7 +37,7 @@ class AccountInvoice(osv.osv):
         Investment = self.pool.get('generationkwh.investment')
         for invoice_id in ids:
             investment_id = self.get_investment(cursor,uid,invoice_id)
-            moveline_id = self.get_investment_moveline(cursor,uid,invoice_id)
+            moveline_id = self.investment_last_moveline(cursor,uid,invoice_id)
             if not investment_id: continue
             if not self.is_investment_payment(cursor,uid,invoice_id):
                 continue
