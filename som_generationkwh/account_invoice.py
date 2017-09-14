@@ -69,19 +69,6 @@ class AccountInvoice(osv.osv):
 
         return None
 
-    def get_investment_moveline(self, cursor, uid, invoice_id):
-        '''Return moveline from invoice
-        '''
-        MoveLine = self.pool.get('account.move.line')
-        invoice = self.read(cursor, uid, invoice_id,['move_id','name'])
-        for moveline_id in  MoveLine.search(cursor, uid, [
-            ('move_id','=',invoice['move_id'][0]),
-            # TODO: Many investments in a single move? filter out
-            #('name', '=', invoice['name']),
-            ('debit','=',0),
-            ]):
-            return moveline_id
-
     def investment_last_moveline(self, cursor, uid, invoice_id):
         invoice = self.read(cursor, uid, invoice_id, [
             'journal_id',
