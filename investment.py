@@ -116,6 +116,11 @@ class GenerationkWhInvestment(osv.osv):
             required=True,
             help="Permet activar o desactivar la inversió",
             ),
+        draft=fields.boolean(
+            "Esborrany",
+            required=True,
+            help="Està en esborrany si encara no s'han emés factures",
+            ),
         log=fields.text(
             'Història',
             # TODO to be required, after develop
@@ -126,6 +131,7 @@ class GenerationkWhInvestment(osv.osv):
 
     _defaults = dict(
         active=lambda *a: True,
+        draft=lambda *a: True,
         amortized_amount=lambda *a: 0,
         log=lambda *a:'',
     )
@@ -828,6 +834,33 @@ class GenerationkWhInvestment(osv.osv):
             type = order_type,
             create_account_moves = order_moves,
         ))
+
+    def mark_as_invoiced(self, cursor, uid, id):
+        """
+        The investment after ordered is kept in 'draft' state,
+        until we create the payment invoice and include the invoice
+        in a payment order, when it becomes unpaid.
+        This method finishes de draft state.
+        NOT INTENDED TO BE CALLED DIRECTLY, as it does not
+        create the invoice itself.
+        """
+
+        Soci = self.pool.get('somenergia.soci')
+        User = self.pool.get('res.users')
+        user = User.read(cursor, uid, uid, ['name'])
+        inversio = self.read(cursor, uid, id, [
+            'log',
+            'draft',
+            ])
+        ResUser = self.pool.get('res.users')
+        user = ResUser.read(cursor, uid, uid, ['name'])
+
+        inv = InvestmentState(user['name'], datetime.now(),
+            log = inversio['log'],
+            draft = inversio['draft'],
+        )
+        inv.invoice()
+        self.write(cursor, uid, id, inv.erpChanges())
 
     def mark_as_paid(self, cursor, uid, ids, purchase_date, movementline_id=None):
         Soci = self.pool.get('somenergia.soci')
