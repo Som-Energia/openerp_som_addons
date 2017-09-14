@@ -888,7 +888,7 @@ class GenerationkWhInvestment(osv.osv):
                 log = inversio['log'],
                 nominal_amount = nominal_amount,
                 paid_amount = nominal_amount if inversio['purchase_date'] else 0,
-                draft = False, # inversio['draft'],
+                draft = inversio['draft'],
             )
 
             inv.pay(
@@ -981,6 +981,20 @@ class GenerationkWhInvestment(osv.osv):
                     .format(investment.name))
                 continue
 
+            invoice_name = '%s-FACT' % (
+                # TODO: Remove the GENKWHID stuff when fully migrated, error instead
+                investment.name or 'GENKWHID{}'.format(investment.id),
+            )
+
+            # Ensure unique invoice
+            existingInvoice = Invoice.search(cursor,uid,[
+                ('name','=', invoice_name),
+                ])
+            if existingInvoice:
+                error("Initial Invoice {} already exists"
+                    .format(invoice_name))
+                continue
+
             if not investment.draft:
                 error("Investment {} already invoiced"
                     .format(investment.name))
@@ -1006,20 +1020,6 @@ class GenerationkWhInvestment(osv.osv):
             if not partner.bank_inversions:
                 error(u"Partner '{}' has no investment bank account"
                     .format(partner.name))
-                continue
-
-            invoice_name = '%s-FACT' % (
-                # TODO: Remove the GENKWHID stuff when fully migrated, error instead
-                investment.name or 'GENKWHID{}'.format(investment.id),
-            )
-
-            # Ensure unique invoice
-            existingInvoice = Invoice.search(cursor,uid,[
-                ('name','=', invoice_name),
-                ])
-            if existingInvoice:
-                error("Initial Invoice {} already exists"
-                    .format(invoice_name))
                 continue
 
             amount_total = gkwh.shareValue * investment.nshares
@@ -1077,6 +1077,7 @@ class GenerationkWhInvestment(osv.osv):
             InvoiceLine.create(cursor, uid, line)
 
             invoice_ids.append(invoice_id)
+            self.mark_as_invoiced(cursor, uid, investment.id)
 
         return invoice_ids, errors
 
