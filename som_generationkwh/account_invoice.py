@@ -73,10 +73,13 @@ class AccountInvoice(osv.osv):
 
     def investment_last_moveline(self, cursor, uid, invoice_id):
         """
-        For an investment invoice, gets the last moveline againts
+        For an investment invoice, gets the last moveline against
+        non bridge account.
+
+        Intended use is to recover the invoicing account movement
+        after a payment or an unpayment. DO NOT USE FOR ANY OTHER
+        PURPOSE WITHOUT A DOUBLE CHECK.
         """
-
-
         invoice = self.read(cursor, uid, invoice_id, [
             'journal_id',
             'name',
