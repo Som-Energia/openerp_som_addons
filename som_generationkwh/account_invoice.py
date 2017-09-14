@@ -83,6 +83,10 @@ class AccountInvoice(osv.osv):
             ]):
             return moveline_id
 
+    def investment_last_moveline(self, cursor, uid, invoice_id):
+        Investment = self.pool.get('generationkwh.investment')
+        return Investment.last_moveline(cursor, uid, invoice_id)
+
 AccountInvoice()
 
 
