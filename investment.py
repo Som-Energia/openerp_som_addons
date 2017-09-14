@@ -907,6 +907,7 @@ class GenerationkWhInvestment(osv.osv):
                 'log',
                 'nshares',
                 'purchase_date',
+                'draft',
             ])
             ResUser = self.pool.get('res.users')
             user = ResUser.read(cursor, uid, uid, ['name'])
@@ -922,7 +923,7 @@ class GenerationkWhInvestment(osv.osv):
                 log = inversio['log'],
                 nominal_amount = nominal_amount,
                 paid_amount = nominal_amount if inversio['purchase_date'] else 0,
-                draft = False, # TODO: Db or has invoice?
+                draft = inversio['draft'],
             )
 
             inv.unpay(
