@@ -84,6 +84,24 @@ class AccountInvoice(osv.osv):
             return moveline_id
 
     def investment_last_moveline(self, cursor, uid, invoice_id):
+        Invoice = self.pool.get('account.invoice')
+        invoice = Invoice.read(cursor, uid, invoice_id, [
+            'journal_id',
+            'name',
+        ])
+        Account = self.pool.get('account.account')
+        account_id = Account.search(cursor, uid, [
+            ('code','=','555000000004'),
+            ])[0]
+        MoveLine = self.pool.get('account.move.line')
+        ids = MoveLine.search(cursor, uid, [
+            ('ref', '=', invoice['name']),
+            ('journal_id', '=', invoice['journal_id'][0]),
+            ('account_id', '<>', account_id),
+        ])
+        return sorted(ids)[-1]
+
+
         Investment = self.pool.get('generationkwh.investment')
         return Investment.last_moveline(cursor, uid, invoice_id)
 
