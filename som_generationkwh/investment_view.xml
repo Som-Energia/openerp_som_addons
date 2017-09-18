@@ -16,6 +16,7 @@
                     <field name="amortized_amount" readonly="1"/>
                     <field name="last_effective_date" readonly="1"/>
                     <field name="active" readonly="1"/>
+                    <field name="draft" readonly="1"/>
                     <group colspan="4" col="2">
                         <field name="log" readonly="1"/>
                     </group>
@@ -23,13 +24,17 @@
                         <field name="move_line_id" readonly="1"/>
                     </group>
                     <group colspan="4" col="3">
+                        <separator string="Accions de creació" colspan="3"/>
                         <!-- TODO: '1r pagament' should be also readonly when not purchased but already has invoice generated -->
                         <button name="%(action_wizard_generationkwh_investment_payment)d" string="Generar 1er pagament" icon="gtk-convert" type="action" attrs="{'readonly': [('purchase_date','!=',False)]}"/>
+                        <button name="%(action_wizard_investment_amortization_form)d" string="Cancelar" icon="gtk-delete" type="action" attrs="{'readonly': [('draft','!=',True)]}"/>
+                        <button name="%(action_wizard_investment_amortization_form)d" string="Renunciar" icon="gtk-delete" type="action" attrs="{'readonly': []}"/>
+                        <separator string="Accions de temps de vida" colspan="3"/>
                         <button name="%(action_wizard_investment_amortization_form)d" string="Amortitzar" icon="gtk-execute" type="action" attrs="{'readonly': [('purchase_date','==',False)]}"/>
-                        <button name="%(action_wizard_investment_amortization_form)d" string="Fraccionar" icon="gtk-cut" type="action" attrs="{'readonly': []}"/>
-                        <button name="%(action_wizard_investment_amortization_form)d" string="Traspasar" icon="gtk-go-forward" type="action" attrs="{'readonly': []}"/>
+                        <button name="%(action_wizard_investment_amortization_form)d" string="Traspassar" icon="gtk-go-forward" type="action" attrs="{'readonly': []}"/>
+                        <separator string="Accions de finalització" colspan="3"/>
+                        <button name="%(action_wizard_investment_amortization_form)d" string="Desinvertir tempranament" icon="gtk-clear" type="action" attrs="{'readonly': []}"/>
                         <button name="%(action_wizard_investment_amortization_form)d" string="Desinvertir" icon="gtk-clear" type="action" attrs="{'readonly': []}"/>
-                        <button name="%(action_wizard_investment_amortization_form)d" string="Cancelar" icon="gtk-delete" type="action" attrs="{'readonly': []}"/>
                     </group>
                 </form>
             </field>
@@ -44,7 +49,7 @@
                     <field name="name" select="1"/>
                     <field name="member_id" select="1"/>
                     <field name="nshares" select="1"/>
-                   <field name="amortized_amount" select="1"/>
+                    <field name="amortized_amount" select="1"/>
                     <field name="order_date" select="1"/>
                     <field name="purchase_date" select="1"/>
                     <field name="first_effective_date" select="1"/>
