@@ -724,7 +724,7 @@ class GenerationkWhInvestment(osv.osv):
             context=None):
 
         if amount_in_euros % gkwh.shareValue > 0:
-            return False
+            raise Exception("Invalid amount")
 
         ResPartner = self.pool.get('res.partner')
 
