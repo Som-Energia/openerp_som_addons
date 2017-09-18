@@ -729,6 +729,9 @@ class GenerationkWhInvestment(osv.osv):
         ResPartner = self.pool.get('res.partner')
 
         iban = self.check_iban(cursor, uid, iban)
+        if not iban:
+            raise Exception("Wrong iban")
+
         bank_id = self.get_or_create_partner_bank(cursor, uid,
                     partner_id, iban)
         ResPartner.write(cursor, uid, partner_id, dict(
