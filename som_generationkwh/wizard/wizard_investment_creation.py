@@ -22,12 +22,17 @@ class WizardInvestmentCreation(osv.osv):
         amount_in_e = float(wiz.amount_in_euros)
         ip = str(wiz.ip)
         iban = str(wiz.iban)
+        investment_id = []
+        creation_errors = ''
 
         start = datetime.now()
 
-        investment_id = Investment.create_from_form(cursor, uid,
-            partner_id, wiz.order_date, amount_in_e, ip, iban,
-            context)
+        try:
+            investment_id = Investment.create_from_form(cursor, uid,
+                partner_id, wiz.order_date, amount_in_e, ip, iban,
+                context)
+        except Exception, e:
+            creation_errors = str(e)
 
         end = datetime.now()
 
@@ -44,7 +49,7 @@ class WizardInvestmentCreation(osv.osv):
                 )
         else:
             next_state = 'init'
-            result += "Error en creació\n"
+            result += "Error en creació:\t"+ creation_errors +"\n"
 
         result += "\n"
         result += "Dades d'entrada\n"
