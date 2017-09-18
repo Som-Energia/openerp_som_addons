@@ -84,7 +84,7 @@ class GenerationkWhInvestment(osv.osv):
             help="Nombre d'accions comprades",
             ),
         amortized_amount=fields.float(
-            "Amortització Realitzada",
+            "Import amortitzat",
             digits=(16, int(config['price_accuracy'])),
             required=True,
             ),
