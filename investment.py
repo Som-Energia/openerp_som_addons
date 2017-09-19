@@ -723,10 +723,8 @@ class GenerationkWhInvestment(osv.osv):
             partner_id, order_date, amount_in_euros, ip, iban,
             context=None):
 
-        if amount_in_euros % gkwh.shareValue > 0:
+        if amount_in_euros <= 0 or amount_in_euros % gkwh.shareValue > 0:
             raise Exception("Invalid amount")
-
-        ResPartner = self.pool.get('res.partner')
 
         iban = self.check_iban(cursor, uid, iban)
         if not iban:
@@ -734,6 +732,7 @@ class GenerationkWhInvestment(osv.osv):
 
         bank_id = self.get_or_create_partner_bank(cursor, uid,
                     partner_id, iban)
+        ResPartner = self.pool.get('res.partner')
         ResPartner.write(cursor, uid, partner_id, dict(
             bank_inversions = bank_id,),context)
 
