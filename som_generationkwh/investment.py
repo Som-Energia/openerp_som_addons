@@ -730,20 +730,22 @@ class GenerationkWhInvestment(osv.osv):
         if not iban:
             raise Exception("Wrong iban")
 
+        Soci = self.pool.get('somenergia.soci')
+        member_ids = Soci.search(cursor, uid, [
+                ('partner_id','=',partner_id)
+                ])
+        if not member_ids:
+            raise Exception("Not a member")
+
         bank_id = self.get_or_create_partner_bank(cursor, uid,
                     partner_id, iban)
         ResPartner = self.pool.get('res.partner')
         ResPartner.write(cursor, uid, partner_id, dict(
             bank_inversions = bank_id,),context)
 
-        Soci = self.pool.get('somenergia.soci')
-        IrSequence = self.pool.get('ir.sequence')
-        member_id = Soci.search(cursor, uid, [
-                ('partner_id','=',partner_id)
-                ])[0]
-
         ResUser = self.pool.get('res.users')
         user = ResUser.read(cursor, uid, uid, ['name'])
+        IrSequence = self.pool.get('ir.sequence')
         name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')
 
         inv = InvestmentState(user['name'], datetime.now())
@@ -756,7 +758,7 @@ class GenerationkWhInvestment(osv.osv):
             )
         investment_id = self.create(cursor, uid, dict(
             inv.erpChanges(),
-            member_id = member_id,
+            member_id = member_ids[0],
         ), context)
 
         self.get_or_create_payment_mandate(cursor, uid,
