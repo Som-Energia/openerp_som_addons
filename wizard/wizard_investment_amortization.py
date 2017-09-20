@@ -41,7 +41,7 @@ class WizardInvestmentAmortization(osv.osv_memory):
 
     _defaults = {
         'state': lambda *a: 'init',
-        'date_end': lambda *a: str(datetime.today()+timedelta(days=6)),
+        'date_end': lambda *a: str(datetime.today()),
     }
 
     def preview(self, cursor, uid, ids, context=None):

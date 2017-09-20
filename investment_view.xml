@@ -26,7 +26,7 @@
                     <group colspan="4" col="3">
                         <separator string="Abans de pagament" colspan="3"/>
                         <!-- TODO: '1r pagament' should be also readonly when not purchased but already has invoice generated -->
-                        <button name="%(action_wizard_generationkwh_investment_payment)d" string="Generar 1er pagament" icon="gtk-convert" type="action" attrs="{'readonly': [('purchase_date','!=',False)]}"/>
+                        <button name="%(action_wizard_generationkwh_investment_payment)d" string="Generar ordre de cobrament" icon="gtk-convert" type="action" attrs="{'readonly': [('purchase_date','!=',False)]}"/>
                         <button name="%(action_wizard_investment_amortization_form)d" string="Renunciar" icon="gtk-delete" type="action" attrs="{'readonly': []}"/>
                         <separator string="Període de carència" colspan="3"/>
                         <button name="%(action_wizard_investment_amortization_form)d" string="Pacte" icon="gtk-execute" type="action" attrs="{'readonly': [('purchase_date','==',False)]}"/>

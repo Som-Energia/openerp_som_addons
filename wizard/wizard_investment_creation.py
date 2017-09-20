@@ -85,7 +85,7 @@ class WizardInvestmentCreation(osv.osv):
     _defaults = {
         'state': lambda *a: 'init',
         'info': lambda *a: '',
-        'order_date': lambda *a: str(datetime.today()+timedelta(days=6)),
+        'order_date': lambda *a: str(datetime.today()),
         'amount_in_euros': lambda *a: 0.0,
         'ip': lambda *a: "0.0.0.0",
         'iban': lambda *a: ""
