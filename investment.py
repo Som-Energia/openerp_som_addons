@@ -902,7 +902,7 @@ class GenerationkWhInvestment(osv.osv):
             inv = InvestmentState(user['name'], datetime.now(),
                 log = inversio['log'],
                 nominal_amount = nominal_amount,
-                paid_amount = nominal_amount if inversio['purchase_date'] else 0,
+                purchase_date = inversio['purchase_date'],
                 draft = inversio['draft'],
             )
 
@@ -938,7 +938,7 @@ class GenerationkWhInvestment(osv.osv):
             inv = InvestmentState(user['name'], datetime.now(),
                 log = inversio['log'],
                 nominal_amount = nominal_amount,
-                paid_amount = nominal_amount if inversio['purchase_date'] else 0,
+                purchase_date = inversio['purchase_date'],
                 draft = inversio['draft'],
             )
 
