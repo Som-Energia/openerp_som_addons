@@ -96,7 +96,11 @@ class AccountInvoice(osv.osv):
             ('journal_id', '=', invoice['journal_id'][0]),
             ('account_id', '<>', account_id),
         ])
-        return sorted(ids)[-1]
+        moveline_ids = sorted(ids)
+
+        if not moveline_ids: return False # TODO: Untested case
+
+        return moveline_ids[-1]
 
 
 
