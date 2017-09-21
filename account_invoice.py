@@ -57,7 +57,7 @@ class AccountInvoice(osv.osv):
 
         Journal = self.pool.get('account.journal')
         journal_id_gen = Journal.search(cursor, uid, [
-            ('code','=','GENKWH')
+            ('code','=',gkwh.journalCode)
         ])[0]
         if invoice.journal_id.id != journal_id_gen:
             return None
