@@ -53,6 +53,8 @@ class AccountInvoice(osv.osv):
     def get_investment(self, cursor, uid, inv_id):
         invoice = self.browse(cursor, uid, inv_id)
 
+        if not invoice.journal_id: return None # TODO: Test missing
+
         Journal = self.pool.get('account.journal')
         journal_id_gen = Journal.search(cursor, uid, [
             ('code','=','GENKWH')
