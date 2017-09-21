@@ -58,7 +58,7 @@ class Generationkwh_MailMockup(osv.osv_memory):
 
 Generationkwh_MailMockup()
 
-class GenerationkWhInvestment(osv.osv):
+class GenerationkwhInvestment(osv.osv):
 
     _name = 'generationkwh.investment'
     _order = 'purchase_date DESC'
@@ -998,7 +998,7 @@ class GenerationkWhInvestment(osv.osv):
                     .format(investment.name))
                 continue
 
-            invoice_name = '%s-FACT' % (
+            invoice_name = '%s-JUST' % (
                 # TODO: Remove the GENKWHID stuff when fully migrated, error instead
                 investment.name or 'GENKWHID{}'.format(investment.id),
             )
@@ -1169,6 +1169,6 @@ class InvestmentProvider(ErpWrapper):
             member, first_date, last_date, self.context)
 
 
-GenerationkWhInvestment()
+GenerationkwhInvestment()
 
 # vim: et ts=4 sw=4

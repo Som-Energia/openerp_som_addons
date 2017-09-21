@@ -48,7 +48,7 @@ class AccountInvoice(osv.osv):
 
     def is_investment_payment(self, cursor, uid, invoice_id):
         invoice = self.read(cursor, uid, invoice_id, ['name'])
-        return invoice and 'name' in invoice and str(invoice['name']).endswith("FACT")
+        return invoice and 'name' in invoice and str(invoice['name']).endswith("-JUST")
 
     def get_investment(self, cursor, uid, inv_id):
         invoice = self.browse(cursor, uid, inv_id)
