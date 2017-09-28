@@ -26,6 +26,8 @@ class AccountInvoice(osv.osv):
 
         account_id = ids[0]
 
+        if not ids: raise Exception("No invoice provided")
+
         invoice = Invoice.read(cursor, uid, account_id, [
             'date_invoice',
             'partner_id',
@@ -36,6 +38,12 @@ class AccountInvoice(osv.osv):
             'name',
             'partner_bank',
             ])
+
+        if not invoice:
+            raise Exception("Invoice {} not found".format(account_id))
+
+        if not invoice['partner_id']:
+            raise Exception("No partner related to invoice {}".format(account_id))
 
         partner = Partner.read(cursor, uid, invoice['partner_id'][0], [
             'vat',
