@@ -13,6 +13,7 @@ import generationkwh.investmentmodel as gkwh
 from generationkwh.investmentstate import InvestmentState
 from uuid import uuid4
 import netsvc
+from oorq import AsyncMode
 
 # TODO: This function is duplicated in other sources
 def _sqlfromfile(sqlname):
@@ -1127,6 +1128,7 @@ class GenerationkwhInvestment(osv.osv):
         return invoice_ids, errors
 
     def send_mail(self, cursor, uid, id, model, template):
+
         PEAccounts = self.pool.get('poweremail.core_accounts')
         WizardInvoiceOpenAndSend = self.pool.get('wizard.invoice.open.and.send')
         MailMockup = self.pool.get('generationkwh.mailmockup')
@@ -1144,17 +1146,17 @@ class GenerationkwhInvestment(osv.osv):
             'state': 'single',
             'priority': '0',
             }
-
-        if MailMockup.isActive(cursor, uid):
-            MailMockup.send_mail(cursor, uid, ns(
-                            template = template,
-                            model = model,
-                            id = id,
-                            from_id = from_id,
-                        ).dump())
-        else:
-            WizardInvoiceOpenAndSend.envia_mail_a_client(
-                cursor, uid, id,model,template, ctx)
+        with AsyncMode('sync') as asmode:
+            if MailMockup.isActive(cursor, uid):
+                MailMockup.send_mail(cursor, uid, ns(
+                                template = template,
+                                model = model,
+                                id = id,
+                                from_id = from_id,
+                            ).dump())
+            else:
+                WizardInvoiceOpenAndSend.envia_mail_a_client(
+                    cursor, uid, id,model,template, ctx)
 
 class InvestmentProvider(ErpWrapper):
 
