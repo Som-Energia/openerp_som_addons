@@ -13,7 +13,7 @@ import generationkwh.investmentmodel as gkwh
 from generationkwh.investmentstate import InvestmentState
 from uuid import uuid4
 import netsvc
-from oorq import AsyncMode
+from oorq.oorq import AsyncMode
 
 # TODO: This function is duplicated in other sources
 def _sqlfromfile(sqlname):
