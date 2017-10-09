@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from osv import osv, fields
 from tools.translate import _
 import netsvc
 from som_generationkwh import investment
+from generationkwh.isodates import isodate
 import pickle
 
 class WizardInvestmentAmortization(osv.osv_memory):
@@ -30,6 +31,10 @@ class WizardInvestmentAmortization(osv.osv_memory):
             'resultats',
             readonly=True,
         ),
+        'validation':fields.text(
+            '',
+            readonly=True,
+        ),
         'state': fields.char(
             'Estat',
             50
@@ -52,18 +57,29 @@ class WizardInvestmentAmortization(osv.osv_memory):
         if context.get('search_all'):
             investment_ids = Investment.search(cursor, uid, [('active', '=', True)])
 
-        nAmortizations, totalAmount = Investment.pending_amortization_summary(cursor, uid, current_date, investment_ids)
+        limit_date = date.today() + timedelta(days=31)
+        if isodate(current_date) > limit_date:
+            wiz.write(dict(
+                validation=
+                    'Data no permesa, ha de ser inferior a {limit} per poder amortitzar.\n'
+                    .format(
+                        limit = limit_date,
+                    ),
+                state='init',
+                ))
+        else:
+            nAmortizations, totalAmount = Investment.pending_amortization_summary(cursor, uid, current_date, investment_ids)
 
-        wiz.write(dict(
-            output=
-                '- Amortitzacions pendents: {pending}\n\n'
-                '- Import total: {pending_amount} €\n'
-                .format(
-                    pending = nAmortizations,
-                    pending_amount = totalAmount,
-                ),
-            state='pre_calc',
-            ))
+            wiz.write(dict(
+                output=
+                    '- Amortitzacions pendents: {pending}\n\n'
+                    '- Import total: {pending_amount} €\n'
+                    .format(
+                        pending = nAmortizations,
+                        pending_amount = totalAmount,
+                    ),
+                state='pre_calc',
+                ))
 
     def generate(self, cursor, uid, ids, context=None):
     
