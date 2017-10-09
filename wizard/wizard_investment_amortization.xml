@@ -14,11 +14,7 @@
                         <field name="date_end"/>
                         <label string="" colspan="4" />
                         <label string="" colspan="4" />
-                        <label string="" colspan="4" />
-                        <label string="" colspan="4" />
-                        <label string="" colspan="4" />
-                        <label string="" colspan="4" />
-                        <label string="" colspan="4" />
+                        <field name="validation" nolabel="1" colspan="4" />
                         <separator colspan="4" />
                         <button string="Previsualitza" name="preview" type="object" icon="gtk-execute"/>
                     </group>
