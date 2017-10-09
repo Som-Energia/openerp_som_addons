@@ -6,7 +6,7 @@
             <field name="model">wizard.generationkwh.investment.payment</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <form string="Generar 1r pagament. Facturar i remesar">
+                <form string="Generar ordre de cobrament. Facturar i remesar">
                     <field name="state" invisible="1"/>
                     <field name="invoices" invisible="1"/>
                     <field name="info" nolabel="1" size="300" width="1000" height ="300" colspan="4" readonly="1"/>
@@ -18,7 +18,7 @@
             </field>
         </record>
         <record model="ir.actions.act_window" id="action_wizard_generationkwh_investment_payment">
-            <field name="name">Generar 1r pagament</field>
+            <field name="name">Generar ordre de cobrament</field>
             <field name="res_model">wizard.generationkwh.investment.payment</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
@@ -27,7 +27,7 @@
         </record>
         <record id="value_wizard_generationkwh_investment_payment" model="ir.values">
             <field name="object" eval="1"/>
-            <field name="name">Generar 1r pagament</field>
+            <field name="name">Generar ordre de cobrament</field>
             <field name="key2">client_action_multi</field>
             <field name="key">action</field>
             <field name="model">generationkwh.investment</field>
