@@ -29,7 +29,8 @@
     "security/som_generationkwh_security.xml",
     "security/ir.model.access.csv",
     "amortization_report.xml",
-    "wizard/wizard_investment_creation.xml"
+    "wizard/wizard_investment_creation.xml",
+    "wizard/wizard_investment_cancel_or_resign.xml"
     ],
   "active": False,
   "installable": True
