@@ -1193,10 +1193,12 @@ class GenerationkwhInvestment(osv.osv):
                 'purchase_date',
                 'amortized_amount',
             ])
-            nominal_amount = inversio['nshares']*gkwh.shareValuei
+            nominal_amount = inversio['nshares']*gkwh.shareValue
             pending_amount = nominal_amount-inversio['amortized_amount']
 
             #create_investment_invoice
+            self.create_divestment_invoice(cursor, uid, id,
+                '2017-10-13', pending_amount) 
             #open invoice
             #pay invoice
 
@@ -1207,15 +1209,150 @@ class GenerationkwhInvestment(osv.osv):
                 amortized_amount = inversio['amortized_amount'],
             )
 
-            inv.divest(
-                amount = pending_amount,
-                move_line_id = movementline_id,
-                last_effective_date = '2017-10-13',
-            )
+#            inv.divest(
+#                date = '2017-10-13',
+#                amount = pending_amount,
+#                move_line_id = movementline_id,
+#            )
 
             self.write(cursor, uid, id, inv.erpChanges())
 
         return True
+
+    def create_divestment_invoice(self, cursor, uid,
+            investment_id, amortization_date, to_be_amortized,
+#            investment_id, divest_date, pending_amount,
+#            amortization_number,amortization_total_number,
+            context=None):
+
+        Partner = self.pool.get('res.partner')
+        Product = self.pool.get('product.product')
+        Invoice = self.pool.get('account.invoice')
+        InvoiceLine = self.pool.get('account.invoice.line')
+        PaymentType = self.pool.get('payment.type')
+        Journal = self.pool.get('account.journal')
+
+        investment = self.browse(cursor, uid, investment_id)
+
+        date_invoice = str(date.today())
+        amortization_date = date_invoice
+
+        # The partner
+        partner_id = investment.member_id.partner_id.id
+        partner = Partner.browse(cursor, uid, partner_id)
+
+        # Get or create partner specific accounts
+        if not partner.property_account_liquidacio:
+            partner.button_assign_acc_410()
+        if not partner.property_account_gkwh:
+            partner.button_assign_acc_1635()
+
+        if (
+            not partner.property_account_gkwh or
+            not partner.property_account_liquidacio
+            ):
+            partner = partner.browse()[0]
+
+        # The product
+        product_id = Product.search(cursor, uid, [
+            ('default_code','=', gkwh.amortizationProductCode),
+            ])[0]
+
+        product = Product.browse(cursor, uid, product_id)
+        product_uom_id = product.uom_id.id
+
+        # The journal
+        journal_id = Journal.search(cursor, uid, [
+            ('code','=',gkwh.journalCode),
+            ])[0]
+
+        # The payment type
+        payment_type_id = PaymentType.search(cursor, uid, [
+            ('code', '=', 'TRANSFERENCIA_CSB'),
+            ])[0]
+
+        errors = []
+        def error(message):
+            errors.append(message)
+
+        # Check if exist bank account
+        if not partner.bank_inversions:
+            return 0, u"Inversió {0}: El partner {1} no té informat un compte corrent\n".format(investment.id, partner.name)
+
+        # Memento of mutable data
+        investmentMemento = ns()
+        investmentMemento.pendingCapital = investment.nshares * gkwh.shareValue - investment.amortized_amount - to_be_amortized
+        investmentMemento.amortizationDate = amortization_date
+        investmentMemento.investmentId = investment_id
+        investmentMemento.investmentName = investment.name
+        investmentMemento.investmentPurchaseDate = investment.purchase_date
+        investmentMemento.investmentLastEffectiveDate = investment.last_effective_date
+        investmentMemento.investmentInitialAmount = investment.nshares * gkwh.shareValue
+
+        invoice_name = '%s-DES' % (
+            # TODO: Remove the GENKWHID stuff when fully migrated, error instead
+            investment.name or 'GENKWHID{}'.format(investment.id),
+            )
+        # Ensure unique amortization
+        existingInvoice = Invoice.search(cursor,uid,[
+            ('name','=', invoice_name),
+            ])
+
+        if existingInvoice:
+            return 0, u"Inversió {0}: La desinversió {1} ja existeix".format(investment.id, invoice_name)
+
+        # Default invoice fields for given partner
+        vals = {}
+        vals.update(Invoice.onchange_partner_id(
+            cursor, uid, [], 'in_invoice', partner_id,
+        ).get('value', {}))
+
+        vals.update({
+            'partner_id': partner_id,
+            'type': 'in_invoice',
+            'name': invoice_name,
+            'number': invoice_name,
+            'journal_id': journal_id,
+            'account_id': partner.property_account_liquidacio.id,
+            'partner_bank': partner.bank_inversions.id,
+            'payment_type': payment_type_id,
+            'check_total': to_be_amortized,
+            # TODO: Remove the GENKWHID stuff when fully migrated, error instead
+            'origin': investment.name or 'GENKWHID{}'.format(investment.id),
+            'reference': invoice_name,
+            'date_invoice': date_invoice,
+        })
+
+        invoice_id = Invoice.create(cursor, uid, vals)
+        Invoice.write(cursor,uid, invoice_id,{'sii_to_send':False})
+
+        line = dict(
+            InvoiceLine.product_id_change(cursor, uid, [],
+                product=product_id,
+                uom=product_uom_id,
+                partner_id=partner_id,
+                type='in_invoice',
+                ).get('value', {}),
+            invoice_id = invoice_id,
+            name = _('Desinversió total de {investment} ').format(
+                investment = investment.name,
+                amortization_date = datetime.strptime(amortization_date,'%Y-%m-%d'),
+                ),
+            note = investmentMemento.dump(),
+            quantity = 1,
+            price_unit = to_be_amortized,
+            product_id = product_id,
+            # partner specific account, was generic from product
+            account_id = partner.property_account_gkwh.id,
+        )
+
+        # no taxes apply
+        line['invoice_line_tax_id'] = [
+            (6, 0, line.get('invoice_line_tax_id', []))
+        ]
+        InvoiceLine.create(cursor, uid, line)
+
+        return invoice_id, errors
 
 class InvestmentProvider(ErpWrapper):
 
