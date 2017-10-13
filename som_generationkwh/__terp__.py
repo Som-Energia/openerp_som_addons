@@ -22,6 +22,8 @@
     "wizard/wizard_investment_activation.xml",
     "wizard/wizard_investment_amortization.xml",
     "wizard/wizard_investment_payment.xml",
+    "wizard/wizard_investment_creation.xml",
+    "wizard/wizard_investment_cancel_or_resign.xml",
     "investment_view.xml",
     "assignment_view.xml",
     "somenergia_soci_view.xml",
@@ -29,8 +31,6 @@
     "security/som_generationkwh_security.xml",
     "security/ir.model.access.csv",
     "amortization_report.xml",
-    "wizard/wizard_investment_creation.xml",
-    "wizard/wizard_investment_cancel_or_resign.xml"
     ],
   "active": False,
   "installable": True

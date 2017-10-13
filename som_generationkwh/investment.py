@@ -1180,6 +1180,43 @@ class GenerationkwhInvestment(osv.osv):
             inv.cancel()
             self.write(cursor, uid, id, inv.erpChanges())
 
+    def divest(self, cursor, uid, ids):
+        Soci = self.pool.get('somenergia.soci')
+        User = self.pool.get('res.users')
+        user = User.read(cursor, uid, uid, ['name'])
+        movementline_id = 1
+
+        for id in ids:
+            inversio = self.read(cursor, uid, id, [
+                'log',
+                'nshares',
+                'purchase_date',
+                'amortized_amount',
+            ])
+            nominal_amount = inversio['nshares']*gkwh.shareValuei
+            pending_amount = nominal_amount-inversio['amortized_amount']
+
+            #create_investment_invoice
+            #open invoice
+            #pay invoice
+
+            inv = InvestmentState(user['name'], datetime.now(),
+                log = inversio['log'],
+                nominal_amount = nominal_amount,
+                purchase_date = inversio['purchase_date'],
+                amortized_amount = inversio['amortized_amount'],
+            )
+
+            inv.divest(
+                amount = pending_amount,
+                move_line_id = movementline_id,
+                last_effective_date = '2017-10-13',
+            )
+
+            self.write(cursor, uid, id, inv.erpChanges())
+
+        return True
+
 class InvestmentProvider(ErpWrapper):
 
     def effectiveInvestments(self, member=None, start=None, end=None):
