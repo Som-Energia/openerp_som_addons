@@ -1192,28 +1192,30 @@ class GenerationkwhInvestment(osv.osv):
                 'nshares',
                 'purchase_date',
                 'amortized_amount',
+                'first_effective_date',
             ])
             nominal_amount = inversio['nshares']*gkwh.shareValue
             pending_amount = nominal_amount-inversio['amortized_amount']
 
-            #create_investment_invoice
-            self.create_divestment_invoice(cursor, uid, id,
+            invoice_id, errors = self.create_divestment_invoice(cursor, uid, id,
                 '2017-10-13', pending_amount) 
-            #open invoice
-            #pay invoice
+            self.open_invoices(cursor, uid, [invoice_id])
+            self.invoices_to_payment_order(cursor, uid,
+                    [invoice_id], gkwh.amortizationPaymentMode)
 
             inv = InvestmentState(user['name'], datetime.now(),
                 log = inversio['log'],
                 nominal_amount = nominal_amount,
                 purchase_date = inversio['purchase_date'],
                 amortized_amount = inversio['amortized_amount'],
+                first_effective_date = inversio['first_effective_date'],
             )
 
-#            inv.divest(
-#                date = '2017-10-13',
-#                amount = pending_amount,
-#                move_line_id = movementline_id,
-#            )
+            inv.divest(
+                date = '2017-10-13',
+                amount = pending_amount,
+                move_line_id = movementline_id,
+            )
 
             self.write(cursor, uid, id, inv.erpChanges())
 
