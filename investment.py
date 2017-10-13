@@ -1158,6 +1158,28 @@ class GenerationkwhInvestment(osv.osv):
                 WizardInvoiceOpenAndSend.envia_mail_a_client(
                     cursor, uid, id,model,template, ctx)
 
+    def cancel(self,cursor,uid, ids, context=None):
+        Soci = self.pool.get('somenergia.soci')
+        User = self.pool.get('res.users')
+        user = User.read(cursor, uid, uid, ['name'])
+        for id in ids:
+            inversio = self.read(cursor, uid, id, [
+                'log',
+                'actions_log',
+                'purchase_date',
+                'draft',
+                'active',
+                ])
+
+            inv = InvestmentState(user['name'], datetime.now(),
+                log = inversio['log'],
+                purchase_date = inversio['purchase_date'],
+                draft = inversio['draft'],
+                active = inversio['active']
+            )
+            inv.cancel()
+            self.write(cursor, uid, id, inv.erpChanges())
+
 class InvestmentProvider(ErpWrapper):
 
     def effectiveInvestments(self, member=None, start=None, end=None):
