@@ -24,6 +24,7 @@
     "wizard/wizard_investment_payment.xml",
     "wizard/wizard_investment_creation.xml",
     "wizard/wizard_investment_cancel_or_resign.xml",
+    "wizard/wizard_investment_divest.xml",
     "investment_view.xml",
     "assignment_view.xml",
     "somenergia_soci_view.xml",

@@ -31,7 +31,7 @@
                         <separator string="Període de carència" colspan="3"/>
                         <button name="%(action_wizard_investment_amortization_form)d" string="Pacte" icon="gtk-execute" type="action" attrs="{'readonly': [('purchase_date','==',False)]}"/>
                         <button name="%(action_wizard_investment_amortization_form)d" string="Traspassar" icon="gtk-go-forward" type="action" attrs="{'readonly': []}"/>
-                        <button name="%(action_wizard_investment_amortization_form)d" string="Desinvertir" icon="gtk-clear" type="action" attrs="{'readonly': []}"/>
+                        <button name="%(action_wizard_generationkwh_investment_divest)d" string="Desinvertir" icon="gtk-clear" type="action" attrs="{'readonly': [('purchase_date','==',False)]}"/>
                         <separator string="Període efectiu" colspan="3"/>
                         <button name="%(action_wizard_investment_amortization_form)d" string="Amortitzar" icon="gtk-execute" type="action" attrs="{'readonly': [('purchase_date','==',False)]}"/>
                         <button name="%(action_wizard_investment_amortization_form)d" string="Desinvertir amb penalització" icon="gtk-clear" type="action" attrs="{'readonly': []}"/>
