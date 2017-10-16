@@ -1185,6 +1185,9 @@ class GenerationkwhInvestment(osv.osv):
         User = self.pool.get('res.users')
         user = User.read(cursor, uid, uid, ['name'])
         movementline_id = 1
+        invoice_ids = []
+        errors = []
+        date_invoice = datetime.strptime(str(date.today()),'%Y-%m-%d')
 
         for id in ids:
             inversio = self.read(cursor, uid, id, [
@@ -1197,11 +1200,13 @@ class GenerationkwhInvestment(osv.osv):
             nominal_amount = inversio['nshares']*gkwh.shareValue
             pending_amount = nominal_amount-inversio['amortized_amount']
 
-            invoice_id, errors = self.create_divestment_invoice(cursor, uid, id,
-                '2017-10-13', pending_amount) 
+            invoice_id, error = self.create_divestment_invoice(cursor, uid, id,
+                date_invoice, pending_amount)
             self.open_invoices(cursor, uid, [invoice_id])
             self.invoices_to_payment_order(cursor, uid,
                     [invoice_id], gkwh.amortizationPaymentMode)
+            invoice_ids.append(invoice_id)
+            errors.append(error)
 
             inv = InvestmentState(user['name'], datetime.now(),
                 log = inversio['log'],
@@ -1209,22 +1214,20 @@ class GenerationkwhInvestment(osv.osv):
                 purchase_date = inversio['purchase_date'],
                 amortized_amount = inversio['amortized_amount'],
                 first_effective_date = inversio['first_effective_date'],
-            )
 
+            )
             inv.divest(
-                date = '2017-10-13',
+                date = str(date_invoice),
                 amount = pending_amount,
                 move_line_id = movementline_id,
             )
 
             self.write(cursor, uid, id, inv.erpChanges())
 
-        return True
+        return invoice_ids, errors
 
     def create_divestment_invoice(self, cursor, uid,
-            investment_id, amortization_date, to_be_amortized,
-#            investment_id, divest_date, pending_amount,
-#            amortization_number,amortization_total_number,
+            investment_id, date_invoice, to_be_amortized,
             context=None):
 
         Partner = self.pool.get('res.partner')
@@ -1235,9 +1238,6 @@ class GenerationkwhInvestment(osv.osv):
         Journal = self.pool.get('account.journal')
 
         investment = self.browse(cursor, uid, investment_id)
-
-        date_invoice = str(date.today())
-        amortization_date = date_invoice
 
         # The partner
         partner_id = investment.member_id.partner_id.id
@@ -1284,7 +1284,7 @@ class GenerationkwhInvestment(osv.osv):
         # Memento of mutable data
         investmentMemento = ns()
         investmentMemento.pendingCapital = investment.nshares * gkwh.shareValue - investment.amortized_amount - to_be_amortized
-        investmentMemento.amortizationDate = amortization_date
+        investmentMemento.divestmentDate = date_invoice
         investmentMemento.investmentId = investment_id
         investmentMemento.investmentName = investment.name
         investmentMemento.investmentPurchaseDate = investment.purchase_date
@@ -1336,9 +1336,9 @@ class GenerationkwhInvestment(osv.osv):
                 type='in_invoice',
                 ).get('value', {}),
             invoice_id = invoice_id,
-            name = _('Desinversió total de {investment} ').format(
+            name = _('Desinversió total de {investment} a {date} ').format(
                 investment = investment.name,
-                amortization_date = datetime.strptime(amortization_date,'%Y-%m-%d'),
+                date = str(date_invoice),
                 ),
             note = investmentMemento.dump(),
             quantity = 1,
