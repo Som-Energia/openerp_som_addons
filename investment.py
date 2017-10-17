@@ -1196,9 +1196,15 @@ class GenerationkwhInvestment(osv.osv):
                 'purchase_date',
                 'amortized_amount',
                 'first_effective_date',
+                'name',
             ])
             nominal_amount = inversio['nshares']*gkwh.shareValue
             pending_amount = nominal_amount-inversio['amortized_amount']
+            daysFromPayment = (datetime.strptime(str(date.today()),'%Y-%m-%d').date() - datetime.strptime(inversio['purchase_date'],'%Y-%m-%d').date()).days
+
+            if daysFromPayment < gkwh.waitDaysBeforeDivest:
+                errors.append("%s: Too early to divest (< 30 days from purchase)" % inversio['name'])
+                continue
 
             invoice_id, error = self.create_divestment_invoice(cursor, uid, id,
                 date_invoice, pending_amount)
