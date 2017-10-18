@@ -12,6 +12,8 @@
                         <field name="info" nolabel="1" size="3000" width="1000" height ="300" colspan="4" readonly="1" />
                         <separator colspan="4" />
                         <button name="do_cancel_or_resign" string="Cancelar o renunciar" type="object" icon="gtk-execute" colspan="4" attrs="{'invisible':[('state', '!=', 'init')]}"/>
+                        <field name="invoices" invisible="1"/>
+                        <button name="close_and_show" string="Veure factures" type="object" icon="gtk-execute" colspan="4" attrs="{'invisible':[('state', '!=', 'done')]}"/>
                     </group>
                 </form>
             </field>

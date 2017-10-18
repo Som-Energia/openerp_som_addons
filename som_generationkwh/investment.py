@@ -1180,6 +1180,170 @@ class GenerationkwhInvestment(osv.osv):
             inv.cancel()
             self.write(cursor, uid, id, inv.erpChanges())
 
+    def resing(self,cursor,uid, ids, context=None):
+        Soci = self.pool.get('somenergia.soci')
+        User = self.pool.get('res.users')
+        user = User.read(cursor, uid, uid, ['name'])
+        invoice_ids = []
+        invoice_errors = []
+        for id in ids:
+            inversio = self.read(cursor, uid, id, [
+                'log',
+                'actions_log',
+                'purchase_date',
+                'draft',
+                'active',
+                ])
+
+            invoice_id, error = self.create_resign_invoice(cursor, uid, id)
+            self.open_invoices(cursor, uid, [invoice_id])
+            self.invoices_to_payment_order(cursor, uid,
+                [invoice_id], gkwh.amortizationPaymentMode)
+
+            if invoice_id:
+                invoice_ids.append(invoice_id)
+            if error:
+                invoice_errors.append(error)
+
+            inv = InvestmentState(user['name'], datetime.now(),
+                log = inversio['log'],
+                purchase_date = inversio['purchase_date'],
+                draft = inversio['draft'],
+                active = inversio['active']
+            )
+            inv.cancel()
+            self.write(cursor, uid, id, inv.erpChanges())
+
+        return invoice_ids,invoice_errors
+
+    def create_resign_invoice(self, cursor, uid,investment_id,context=None):
+
+        Partner = self.pool.get('res.partner')
+        Product = self.pool.get('product.product')
+        Invoice = self.pool.get('account.invoice')
+        InvoiceLine = self.pool.get('account.invoice.line')
+        PaymentType = self.pool.get('payment.type')
+        Journal = self.pool.get('account.journal')
+
+        investment = self.browse(cursor, uid, investment_id)    # resigning this
+        to_be_resigned = investment.nshares * gkwh.shareValue   # resigning all
+        date_invoice = resigning_date = str(date.today())       # resigning now
+
+        # The partner
+        partner_id = investment.member_id.partner_id.id
+        partner = Partner.browse(cursor, uid, partner_id)
+
+        # Get or create partner specific accounts
+        # this ones should be active by now
+        if not partner.property_account_liquidacio:
+            partner.button_assign_acc_410()
+        if not partner.property_account_gkwh:
+            partner.button_assign_acc_1635()
+
+        if (
+            not partner.property_account_gkwh or
+            not partner.property_account_liquidacio
+            ):
+            partner = partner.browse()[0]
+
+        # The product
+        product_id = Product.search(cursor, uid, [
+            ('default_code','=', gkwh.amortizationProductCode),
+            ])[0]
+
+        product = Product.browse(cursor, uid, product_id)
+        product_uom_id = product.uom_id.id
+
+        # The journal
+        journal_id = Journal.search(cursor, uid, [
+            ('code','=',gkwh.journalCode),
+            ])[0]
+
+        # The payment type
+        payment_type_id = PaymentType.search(cursor, uid, [
+            ('code', '=', 'NO_REMESA'),
+            ])[0]
+
+        # Check if exist bank account
+        if not partner.bank_inversions:
+            return None, u"Inversió {0}: El partner {1} no té informat un compte corrent\n".format(investment.id, partner.name)
+
+        # Memento of mutable data
+        investmentMemento = ns()
+        investmentMemento.pendingCapital = investment.nshares * gkwh.shareValue - investment.amortized_amount - to_be_resigned
+        investmentMemento.amortizationDate = resigning_date
+        investmentMemento.investmentId = investment_id
+        investmentMemento.investmentName = investment.name
+        investmentMemento.investmentPurchaseDate = investment.purchase_date
+        investmentMemento.investmentLastEffectiveDate = investment.last_effective_date
+        investmentMemento.investmentInitialAmount = investment.nshares * gkwh.shareValue
+
+        invoice_name = '%s-RES' % (
+            # TODO: Remove the GENKWHID stuff when fully migrated, error instead
+            investment.name or 'GENKWHID{}'.format(investment.id),
+            )
+        # Ensure unique amortization
+        existingInvoice = Invoice.search(cursor,uid,[
+            ('name','=', invoice_name),
+            ])
+
+        if existingInvoice:
+            return None, u"Inversió {0}: La renúncia {1} ja existeix".format(investment.id, invoice_name)
+
+        # Default invoice fields for given partner
+        vals = {}
+        vals.update(Invoice.onchange_partner_id(
+            cursor, uid, [], 'in_invoice', partner_id,
+        ).get('value', {}))
+
+        vals.update({
+            'partner_id': partner_id,
+            'type': 'in_invoice',
+            'name': invoice_name,
+            'number': invoice_name,             # GKWH0XXXX-RES
+            'journal_id': journal_id,           # gkwh.journalCode
+            'account_id': partner.property_account_liquidacio.id,
+            'partner_bank': partner.bank_inversions.id,
+            'payment_type': payment_type_id,    # NO_REMESA
+            'check_total': to_be_resigned,      # amount
+            # TODO: Remove the GENKWHID stuff when fully migrated, error instead
+            'origin': investment.name or 'GENKWHID{}'.format(investment.id),
+            'reference': invoice_name,
+            'date_invoice': date_invoice,       # now
+        })
+
+        invoice_id = Invoice.create(cursor, uid, vals)
+        Invoice.write(cursor,uid, invoice_id,{'sii_to_send':False})
+
+        line = dict(
+            InvoiceLine.product_id_change(cursor, uid, [],
+                product=product_id,
+                uom=product_uom_id,
+                partner_id=partner_id,
+                type='in_invoice',
+                ).get('value', {}),
+            invoice_id = invoice_id,
+            name = _('Renúncia total de {investment} ').format(
+                investment = investment.name,
+                resigning_date = datetime.strptime(resigning_date,'%Y-%m-%d'),
+                ),
+            note = investmentMemento.dump(),
+            quantity = 1,
+            price_unit = to_be_resigned,
+            product_id = product_id,
+            # partner specific account, was generic from product
+            account_id = partner.property_account_gkwh.id,
+        )
+
+        # no taxes apply
+        line['invoice_line_tax_id'] = [
+            (6, 0, line.get('invoice_line_tax_id', []))
+        ]
+        InvoiceLine.create(cursor, uid, line)
+
+        return invoice_id, None
+
+
     def divest(self, cursor, uid, ids):
         Soci = self.pool.get('somenergia.soci')
         User = self.pool.get('res.users')
