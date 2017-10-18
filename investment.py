@@ -1233,7 +1233,7 @@ class GenerationkwhInvestment(osv.osv):
         return invoice_ids, errors
 
     def create_divestment_invoice(self, cursor, uid,
-            investment_id, date_invoice, to_be_amortized,
+            investment_id, date_invoice, to_be_divested,
             context=None):
 
         Partner = self.pool.get('res.partner')
@@ -1289,7 +1289,7 @@ class GenerationkwhInvestment(osv.osv):
 
         # Memento of mutable data
         investmentMemento = ns()
-        investmentMemento.pendingCapital = investment.nshares * gkwh.shareValue - investment.amortized_amount - to_be_amortized
+        investmentMemento.pendingCapital = investment.nshares * gkwh.shareValue - investment.amortized_amount - to_be_divested
         investmentMemento.divestmentDate = date_invoice
         investmentMemento.investmentId = investment_id
         investmentMemento.investmentName = investment.name
@@ -1324,7 +1324,7 @@ class GenerationkwhInvestment(osv.osv):
             'account_id': partner.property_account_liquidacio.id,
             'partner_bank': partner.bank_inversions.id,
             'payment_type': payment_type_id,
-            'check_total': to_be_amortized,
+            'check_total': to_be_divested,
             # TODO: Remove the GENKWHID stuff when fully migrated, error instead
             'origin': investment.name or 'GENKWHID{}'.format(investment.id),
             'reference': invoice_name,
@@ -1348,7 +1348,7 @@ class GenerationkwhInvestment(osv.osv):
                 ),
             note = investmentMemento.dump(),
             quantity = 1,
-            price_unit = to_be_amortized,
+            price_unit = to_be_divested,
             product_id = product_id,
             # partner specific account, was generic from product
             account_id = partner.property_account_gkwh.id,
