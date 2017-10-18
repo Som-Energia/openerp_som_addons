@@ -3,7 +3,7 @@
 import random
 from osv import osv, fields
 from tools.translate import _
-
+import pickle
 
 class WizardInvestmentCancelOrResing(osv.osv):
 
@@ -11,6 +11,7 @@ class WizardInvestmentCancelOrResing(osv.osv):
     _columns = {
         'state': fields.char('State', size=16),
         'info': fields.text('Info'),
+        'invoices':fields.text('test'),
     }
 
     def do_cancel_or_resign(self, cursor, uid, ids, context=None):
@@ -22,36 +23,51 @@ class WizardInvestmentCancelOrResing(osv.osv):
         investment_ids = context.get('active_ids', [])
         Investment = self.pool.get('generationkwh.investment')
 
+        all_invoices = []
         for counter,investment_id in enumerate(investment_ids):
-            # TODO: 
-            # cancel or resign this investment
-            # detect action to be executed [cancel] [resign] [error-none]
-            # execute The action : call to cancel or resign functions
+
             inv_data = self._get_investment_data(cursor,uid,investment_id,context)
-            if inv_data[2]:     #draft
+            if inv_data[2]:
                 try:
                     Investment.cancel(cursor, uid, [investment_id], context)
                     action = "ha estat cancel·lada"
                 except Exception as e:
-                    action = "ha generat error : " + str(e)
-                result += "{0}/{1} inversió ( {2} , {3} , {4} ) {5}\n".format(
-                    counter+1,
-                    len(investment_ids),
-                    investment_id,
-                    inv_data[0],
-                    inv_data[1],
-                    action
-                )
+                    action = "ha generat error al cancelar: " + str(e)
             else:
-                result += "{0}/{1} inversió ( {2} , {3} , {4} ) no podem tractar\n".format(
-                    counter+1,
-                    len(investment_ids),
-                    investment_id,
-                    inv_data[0],
-                    inv_data[1]
-                )
+                try:
+                    resign_invoices, errors = Investment.resing(cursor, uid, [investment_id], context)
+                    action = "ha estat renunciada"
+                    all_invoices.extend(resign_invoices)
+                    if len(resign_invoices) > 0:
+                        action += "\n\t - S'han generat {0} factures de renúncia IDS: {1}".format(len(resign_invoices),str(resign_invoices))
+                    if len(errors) > 0:
+                        action += "\n\t - S'han generat {0} errors de factura:".format(len(errors))
+                        for error in errors:
+                            action += "\n\t\t · {0}".format(error)
+                except Exception as e:
+                    action = "ha generat error : " + str(e)
 
-        wiz.write({'info': result , 'state': 'done'}, context=context)
+            result += "{0}/{1} inversió ( {2} , {3} , {4} ) {5}\n".format(
+                counter+1,
+                len(investment_ids),
+                investment_id,
+                inv_data[0],
+                inv_data[1],
+                action
+            )
+        wiz.write({'info': result , 'state': 'done' , 'invoices' : pickle.dumps(all_invoices)}, context=context)
+
+    def close_and_show(self, cursor, uid, ids, context=None):
+        wiz = self.browse(cursor, uid, ids[0], context)
+        invoices = pickle.loads(wiz.invoices)
+        return {
+            'domain': "[('id','in', %s)]" % str(invoices),
+            'name': _('Factures generades'),
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'account.invoice',
+            'type': 'ir.actions.act_window'
+        }
 
     def _get_investment_data(self, cursor, uid, investment_id, context=None):
         Investment = self.pool.get('generationkwh.investment')
