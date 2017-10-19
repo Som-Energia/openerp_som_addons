@@ -1180,7 +1180,7 @@ class GenerationkwhInvestment(osv.osv):
             inv.cancel()
             self.write(cursor, uid, id, inv.erpChanges())
 
-    def resing(self,cursor,uid, ids, context=None):
+    def resign(self,cursor,uid, ids, context=None):
         Soci = self.pool.get('somenergia.soci')
         User = self.pool.get('res.users')
         user = User.read(cursor, uid, uid, ['name'])
