@@ -35,7 +35,7 @@ class WizardInvestmentCancelOrResing(osv.osv):
                     action = "ha generat error al cancelar: " + str(e)
             else:
                 try:
-                    resign_invoices, errors = Investment.resing(cursor, uid, [investment_id], context)
+                    resign_invoices, errors = Investment.resign(cursor, uid, [investment_id], context)
                     action = "ha estat renunciada"
                     all_invoices.extend(resign_invoices)
                     if len(resign_invoices) > 0:
