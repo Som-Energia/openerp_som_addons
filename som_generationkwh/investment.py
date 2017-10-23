@@ -1351,7 +1351,8 @@ class GenerationkwhInvestment(osv.osv):
         movementline_id = 1
         invoice_ids = []
         errors = []
-        date_invoice = datetime.strptime(str(date.today()),'%Y-%m-%d')
+        date_invoice = datetime.today().strftime("%Y-%m-%d")
+        #date_invoice = datetime.strptime(str(date.today()),'%Y-%m-%d')
 
         for id in ids:
             inversio = self.read(cursor, uid, id, [
