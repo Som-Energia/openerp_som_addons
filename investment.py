@@ -1347,6 +1347,8 @@ class GenerationkwhInvestment(osv.osv):
     def divest(self, cursor, uid, ids):
         Soci = self.pool.get('somenergia.soci')
         User = self.pool.get('res.users')
+        Invoice = self.pool.get('account.invoice')
+        MoveLine = self.pool.get('account.move.line')
         user = User.read(cursor, uid, uid, ['name'])
         movementline_id = 1
         invoice_ids = []
@@ -1362,6 +1364,7 @@ class GenerationkwhInvestment(osv.osv):
                 'amortized_amount',
                 'first_effective_date',
                 'name',
+                'move_line_id',
             ])
             nominal_amount = inversio['nshares']*gkwh.shareValue
             pending_amount = nominal_amount-inversio['amortized_amount']
@@ -1373,11 +1376,24 @@ class GenerationkwhInvestment(osv.osv):
 
             invoice_id, error = self.create_divestment_invoice(cursor, uid, id,
                 date_invoice, pending_amount)
+
+            if error:
+                errors.append(error)
+                continue
+
             self.open_invoices(cursor, uid, [invoice_id])
             self.invoices_to_payment_order(cursor, uid,
                     [invoice_id], gkwh.amortizationPaymentMode)
             invoice_ids.append(invoice_id)
             errors.append(error)
+
+            #Get moveline id
+            invoice_obj = Invoice.read(cursor, uid, invoice_id, [
+                'move_id',
+            ])
+            ml_invoice = invoice_obj['move_id'][0]
+            movementline_id = MoveLine.search(cursor, uid,
+                [('move_id','=',invoice_obj['move_id'][0])])[0]
 
             inv = InvestmentState(user['name'], datetime.now(),
                 log = inversio['log'],
@@ -1385,7 +1401,6 @@ class GenerationkwhInvestment(osv.osv):
                 purchase_date = inversio['purchase_date'],
                 amortized_amount = inversio['amortized_amount'],
                 first_effective_date = inversio['first_effective_date'],
-
             )
             inv.divest(
                 date = str(date_invoice),
