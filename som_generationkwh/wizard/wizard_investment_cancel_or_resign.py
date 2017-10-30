@@ -27,7 +27,7 @@ class WizardInvestmentCancelOrResing(osv.osv):
         for counter,investment_id in enumerate(investment_ids):
 
             inv_data = self._get_investment_data(cursor,uid,investment_id,context)
-            if inv_data[2]:
+            if inv_data[2]: #draft
                 try:
                     Investment.cancel(cursor, uid, [investment_id], context)
                     action = "ha estat cancel·lada"
@@ -35,17 +35,24 @@ class WizardInvestmentCancelOrResing(osv.osv):
                     action = "ha generat error al cancelar: " + str(e)
             else:
                 try:
-                    resign_invoices, errors = Investment.resign(cursor, uid, [investment_id], context)
+                    resign_invoices, errors = Investment.resign(cursor, uid,
+                                                                [investment_id],
+                                                                context)
                     action = "ha estat renunciada"
                     all_invoices.extend(resign_invoices)
                     if len(resign_invoices) > 0:
-                        action += "\n\t - S'han generat {0} factures de renúncia IDS: {1}".format(len(resign_invoices),str(resign_invoices))
+                        action += "\n\t - S'han donat per pagada la factura "
+                        action += "{0} i s'ha creat la factura de renúncia {1}".format(
+                            resign_invoices[0],
+                            resign_invoices[1]
+                            )
                     if len(errors) > 0:
-                        action += "\n\t - S'han generat {0} errors de factura:".format(len(errors))
+                        action += "\n\t - S'han generat {0} errors de factura:".format(
+                            len(errors))
                         for error in errors:
                             action += "\n\t\t · {0}".format(error)
                 except Exception as e:
-                    action = "ha generat error : " + str(e)
+                    action = "ha generat error al renunciar: " + str(e)
 
             result += "{0}/{1} inversió ( {2} , {3} , {4} ) {5}\n".format(
                 counter+1,
@@ -55,7 +62,10 @@ class WizardInvestmentCancelOrResing(osv.osv):
                 inv_data[1],
                 action
             )
-        wiz.write({'info': result , 'state': 'done' , 'invoices' : pickle.dumps(all_invoices)}, context=context)
+        wiz.write({ 'info': result,
+                    'state': 'done',
+                    'invoices' : pickle.dumps(all_invoices)
+                  }, context=context)
 
     def close_and_show(self, cursor, uid, ids, context=None):
         wiz = self.browse(cursor, uid, ids[0], context)
