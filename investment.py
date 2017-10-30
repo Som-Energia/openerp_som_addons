@@ -1237,6 +1237,7 @@ class GenerationkwhInvestment(osv.osv):
 
         return invoice_ids,invoice_errors
 
+    # TODO: move this function to account invoice
     def pay_resign_invoice(self, cursor, uid,invoice_id,context=None):
         from addons.account.wizard.wizard_pay_invoice import _pay_and_reconcile as wizard_pay
         from addons.account.wizard.wizard_pay_invoice import _get_period as wizard_period
@@ -1314,7 +1315,7 @@ class GenerationkwhInvestment(osv.osv):
 
         # Check if exist bank account
         if not partner.bank_inversions:
-            return None, u"Inversió {0}: El partner {1} no té informat un compte corrent\n".format(investment.id, partner.name)
+            return 0, u"Inversió {0}: El partner {1} no té informat un compte corrent\n".format(investment.id, partner.name)
 
         # Memento of mutable data
         investmentMemento = ns()
@@ -1336,7 +1337,7 @@ class GenerationkwhInvestment(osv.osv):
             ])
 
         if existingInvoice:
-            return None, u"Inversió {0}: La renúncia {1} ja existeix".format(investment.id, invoice_name)
+            return 0, u"Inversió {0}: La renúncia {1} ja existeix".format(investment.id, invoice_name)
 
         # Default invoice fields for given partner
         vals = {}
@@ -1388,7 +1389,7 @@ class GenerationkwhInvestment(osv.osv):
             (6, 0, line.get('invoice_line_tax_id', []))
         ]
         InvoiceLine.create(cursor, uid, line)
-        return invoice_id, None
+        return invoice_id, []
 
 
     def divest(self, cursor, uid, ids):
