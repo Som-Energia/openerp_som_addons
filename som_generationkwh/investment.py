@@ -1159,7 +1159,6 @@ class GenerationkwhInvestment(osv.osv):
                     cursor, uid, id,model,template, ctx)
 
     def cancel(self,cursor,uid, ids, context=None):
-        Soci = self.pool.get('somenergia.soci')
         User = self.pool.get('res.users')
         user = User.read(cursor, uid, uid, ['name'])
         for id in ids:
@@ -1181,13 +1180,15 @@ class GenerationkwhInvestment(osv.osv):
             self.write(cursor, uid, id, inv.erpChanges())
 
     def resign(self,cursor,uid, ids, context=None):
-        Soci = self.pool.get('somenergia.soci')
+        Invoice = self.pool.get('account.invoice')
         User = self.pool.get('res.users')
         user = User.read(cursor, uid, uid, ['name'])
         invoice_ids = []
         invoice_errors = []
         for id in ids:
             inversio = self.read(cursor, uid, id, [
+                'name',
+                'id',
                 'log',
                 'actions_log',
                 'purchase_date',
@@ -1195,16 +1196,36 @@ class GenerationkwhInvestment(osv.osv):
                 'active',
                 ])
 
-            invoice_id, error = self.create_resign_invoice(cursor, uid, id)
-            self.open_invoices(cursor, uid, [invoice_id])
-            self.invoices_to_payment_order(cursor, uid,
-                [invoice_id], gkwh.amortizationPaymentMode)
+            # recover the investment's initial payment invoice
+            invoice_name = '%s-JUST' % (
+                # TODO: Remove the GENKWHID stuff when fully migrated, error instead
+                inversio['name'] or 'GENKWHID{}'.format(inversio['id']),
+            )
 
-            if invoice_id:
-                invoice_ids.append(invoice_id)
+            inversion_invoice_ids = Invoice.search(cursor,uid,[
+                ('name','=', invoice_name),
+                ])
+            if not inversion_invoice_ids or not inversion_invoice_ids[0]:
+                 raise Exception("Inversion without initial invoice, cannot resign")
+            inversion_invoice_id = inversion_invoice_ids[0]
+            invoice_ids.append(inversion_invoice_id)
+
+            # create a investment's resign invoice
+            resign_invoice_id, error = self.create_resign_invoice(cursor, uid, id)
+            if not resign_invoice_id:
+                raise Exception(error)
+            invoice_ids.append(resign_invoice_id)
             if error:
                 invoice_errors.append(error)
 
+            # pay the investment invoice
+            self.pay_resign_invoice(cursor,uid,inversion_invoice_id,context)
+
+            # open and pay the investment resign invoice
+            self.open_invoices(cursor,uid,[resign_invoice_id])
+            self.pay_resign_invoice(cursor,uid,resign_invoice_id,context)
+
+            # mark investment as canceled
             inv = InvestmentState(user['name'], datetime.now(),
                 log = inversio['log'],
                 purchase_date = inversio['purchase_date'],
@@ -1215,6 +1236,33 @@ class GenerationkwhInvestment(osv.osv):
             self.write(cursor, uid, id, inv.erpChanges())
 
         return invoice_ids,invoice_errors
+
+    def pay_resign_invoice(self, cursor, uid,invoice_id,context=None):
+        from addons.account.wizard.wizard_pay_invoice import _pay_and_reconcile as wizard_pay
+        from addons.account.wizard.wizard_pay_invoice import _get_period as wizard_period
+
+        IrModelData = self.pool.get('ir.model.data')
+        model, journal_id = IrModelData.get_object_reference(
+            cursor, uid,
+            'som_generationkwh', 'genkwh_journal',
+        )
+
+        period_data = wizard_period(self, cursor, uid,
+            data=dict(id = invoice_id,),
+            context={}
+        )
+
+        wizard_pay(self, cursor, uid, data=dict(
+            id = invoice_id,
+            ids = [invoice_id],
+            form = dict(
+                name='my test',
+                date=period_data['date'],
+                journal_id=journal_id,
+                amount=period_data['amount'],
+                period_id=period_data['period_id'],
+            ),
+        ), context={})
 
     def create_resign_invoice(self, cursor, uid,investment_id,context=None):
 
@@ -1271,7 +1319,7 @@ class GenerationkwhInvestment(osv.osv):
         # Memento of mutable data
         investmentMemento = ns()
         investmentMemento.pendingCapital = investment.nshares * gkwh.shareValue - investment.amortized_amount - to_be_resigned
-        investmentMemento.amortizationDate = resigning_date
+        investmentMemento.resigningDate = resigning_date
         investmentMemento.investmentId = investment_id
         investmentMemento.investmentName = investment.name
         investmentMemento.investmentPurchaseDate = investment.purchase_date
@@ -1340,7 +1388,6 @@ class GenerationkwhInvestment(osv.osv):
             (6, 0, line.get('invoice_line_tax_id', []))
         ]
         InvoiceLine.create(cursor, uid, line)
-
         return invoice_id, None
 
 
