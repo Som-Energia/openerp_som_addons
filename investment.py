@@ -1257,7 +1257,7 @@ class GenerationkwhInvestment(osv.osv):
             id = invoice_id,
             ids = [invoice_id],
             form = dict(
-                name='my test',
+                name='Compensació factures',
                 date=period_data['date'],
                 journal_id=journal_id,
                 amount=period_data['amount'],
