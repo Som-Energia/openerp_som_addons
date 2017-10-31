@@ -1210,6 +1210,15 @@ class GenerationkwhInvestment(osv.osv):
             inversion_invoice_id = inversion_invoice_ids[0]
             invoice_ids.append(inversion_invoice_id)
 
+            # mark investment as canceled
+            inv = InvestmentState(user['name'], datetime.now(),
+                log = inversio['log'],
+                purchase_date = inversio['purchase_date'],
+                draft = inversio['draft'],
+                active = inversio['active']
+            )
+            inv.cancel()
+
             # create a investment's resign invoice
             resign_invoice_id, error = self.create_resign_invoice(cursor, uid, id)
             if not resign_invoice_id:
@@ -1225,14 +1234,7 @@ class GenerationkwhInvestment(osv.osv):
             self.open_invoices(cursor,uid,[resign_invoice_id])
             self.pay_resign_invoice(cursor,uid,resign_invoice_id,context)
 
-            # mark investment as canceled
-            inv = InvestmentState(user['name'], datetime.now(),
-                log = inversio['log'],
-                purchase_date = inversio['purchase_date'],
-                draft = inversio['draft'],
-                active = inversio['active']
-            )
-            inv.cancel()
+            # store the cancel action over investment
             self.write(cursor, uid, id, inv.erpChanges())
 
         return invoice_ids,invoice_errors
