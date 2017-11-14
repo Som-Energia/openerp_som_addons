@@ -1025,7 +1025,7 @@
             <field name="model_int_name">somenergia.soci</field>
             <field eval="0" name="use_filter"/>
             <field name="def_to">${object.www_email}</field>
-            <field name="def_bcc">notifica@somenergia.coop</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
             <field eval="0" name="auto_email"/>
             <field eval="0" name="single_email"/>
             <field eval="0" name="use_sign"/>
@@ -1046,7 +1046,7 @@
             <field name="file_name">${object.name}</field>
             <field eval="1" name="use_filter"/>
             <field name="def_to">${object.member_id.partner_id.address[0].email}</field>
-            <field name="def_bcc">notifica@somenergia.coop</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
             <field eval="0" name="auto_email"/>
             <field eval="0" name="single_email"/>
             <field eval="0" name="use_sign"/>
@@ -1067,7 +1067,7 @@
             <field name="file_name">${object.name}</field>
             <field eval="1" name="use_filter"/>
             <field name="def_to">${object.partner_id.address[0].email}</field>
-            <field name="def_bcc">notifica@somenergia.coop</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
             <field eval="0" name="auto_email"/>
             <field eval="0" name="single_email"/>
             <field eval="0" name="use_sign"/>
@@ -1087,7 +1087,7 @@
             <field name="model_int_name">account.invoice</field>
             <field eval="1" name="use_filter"/>
             <field name="def_to">${object.partner_id.address[0].email}</field>
-            <field name="def_bcc">notifica@somenergia.coop</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
             <field eval="0" name="auto_email"/>
             <field eval="0" name="single_email"/>
             <field eval="0" name="use_sign"/>
@@ -1106,7 +1106,7 @@
             <field eval="0" name="save_to_drafts"/>
             <field name="model_int_name">account.invoice</field>
             <field name="def_to">${object.partner_id.address[0].email}</field>
-            <field name="def_bcc">notifica@somenergia.coop</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
             <field eval="0" name="auto_email"/>
             <field eval="0" name="single_email"/>
             <field eval="0" name="use_sign"/>
