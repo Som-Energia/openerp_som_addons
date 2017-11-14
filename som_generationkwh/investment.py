@@ -1299,7 +1299,7 @@ class GenerationkwhInvestment(osv.osv):
 
         # The product
         product_id = Product.search(cursor, uid, [
-            ('default_code','=', gkwh.amortizationProductCode),
+            ('default_code','=', gkwh.investmentProductCode),
             ])[0]
 
         product = Product.browse(cursor, uid, product_id)
@@ -1344,12 +1344,12 @@ class GenerationkwhInvestment(osv.osv):
         # Default invoice fields for given partner
         vals = {}
         vals.update(Invoice.onchange_partner_id(
-            cursor, uid, [], 'in_invoice', partner_id,
+            cursor, uid, [], 'out_refund', partner_id,
         ).get('value', {}))
 
         vals.update({
             'partner_id': partner_id,
-            'type': 'in_invoice',
+            'type': 'out_refund',
             'name': invoice_name,
             'number': invoice_name,             # GKWH0XXXX-RES
             'journal_id': journal_id,           # gkwh.journalCode
@@ -1371,7 +1371,7 @@ class GenerationkwhInvestment(osv.osv):
                 product=product_id,
                 uom=product_uom_id,
                 partner_id=partner_id,
-                type='in_invoice',
+                type='out_refund',
                 ).get('value', {}),
             invoice_id = invoice_id,
             name = _('Renúncia total de {investment} ').format(
@@ -1379,8 +1379,8 @@ class GenerationkwhInvestment(osv.osv):
                 resigning_date = datetime.strptime(resigning_date,'%Y-%m-%d'),
                 ),
             note = investmentMemento.dump(),
-            quantity = 1,
-            price_unit = to_be_resigned,
+            quantity = investment.nshares,
+            price_unit = gkwh.shareValue,
             product_id = product_id,
             # partner specific account, was generic from product
             account_id = partner.property_account_gkwh.id,
