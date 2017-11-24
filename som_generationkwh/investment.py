@@ -775,6 +775,11 @@ class GenerationkwhInvestment(osv.osv):
             context=None):
 
         #Comprovar dades del partner al qual es vol tranferir (existeix, soci, iban, compte inversions...)
+
+        old_investment = self.read(cursor, uid, investment_id)
+        if old_investment['draft'] :
+            raise Exception("Investment in draft, so not transferible")
+
         Soci = self.pool.get('somenergia.soci')
         member_ids = Soci.search(cursor, uid, [
                 ('partner_id','=',new_partner_id)
