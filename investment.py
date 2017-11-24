@@ -781,6 +781,8 @@ class GenerationkwhInvestment(osv.osv):
             raise Exception("Investment in draft, so not transferible")
         if not old_investment['active']:
             raise Exception("Investment not active")
+        if old_investment['amortized_amount'] >= old_investment['nshares']*100 :
+            raise Exception("Amount to return = 0, not transferible")
 
         Soci = self.pool.get('somenergia.soci')
         member_ids = Soci.search(cursor, uid, [
