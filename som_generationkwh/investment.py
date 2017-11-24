@@ -770,6 +770,23 @@ class GenerationkwhInvestment(osv.osv):
 
         return investment_id
 
+    def create_from_transfer(self, cursor, uid,
+            investment_id, new_partner_id, order_date,
+            context=None):
+
+        #Comprovar dades del partner al qual es vol tranferir (existeix, soci, iban, compte inversions...)
+        Soci = self.pool.get('somenergia.soci')
+        member_ids = Soci.search(cursor, uid, [
+                ('partner_id','=',new_partner_id)
+                ])
+        if not member_ids:
+            raise Exception("Destination partner is not a member")
+
+        #Crear inversio
+        #Modificar dates?
+        #Enviar correu cofirmació?
+        return 0
+
     def get_or_create_payment_mandate(self, cursor, uid, partner_id, iban, purpose, creditor_code):
         """
         Searches an active payment (SEPA) mandate for
