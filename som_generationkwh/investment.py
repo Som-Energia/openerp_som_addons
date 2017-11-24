@@ -779,6 +779,8 @@ class GenerationkwhInvestment(osv.osv):
         old_investment = self.read(cursor, uid, investment_id)
         if old_investment['draft'] :
             raise Exception("Investment in draft, so not transferible")
+        if not old_investment['active']:
+            raise Exception("Investment not active")
 
         Soci = self.pool.get('somenergia.soci')
         member_ids = Soci.search(cursor, uid, [
