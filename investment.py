@@ -771,11 +771,10 @@ class GenerationkwhInvestment(osv.osv):
         return investment_id
 
     def create_from_transfer(self, cursor, uid,
-            investment_id, new_partner_id, order_date,
+            investment_id, new_partner_id, order_date, iban,
             context=None):
 
-        #Comprovar dades del partner al qual es vol tranferir (existeix, soci, iban, compte inversions...)
-
+        #Obtenir dades inversio (total invertit, total amortiztzat/pendent, data original...)
         old_investment = self.read(cursor, uid, investment_id)
         if old_investment['draft'] :
             raise Exception("Investment in draft, so not transferible")
@@ -784,17 +783,52 @@ class GenerationkwhInvestment(osv.osv):
         if old_investment['amortized_amount'] >= old_investment['nshares']*100 :
             raise Exception("Amount to return = 0, not transferible")
 
+        #Comprovar dades del partner al qual es vol tranferir (existeix, soci, iban, compte inversions..)
         Soci = self.pool.get('somenergia.soci')
         member_ids = Soci.search(cursor, uid, [
-                ('partner_id','=',new_partner_id)
+                ('partner_id','=', new_partner_id)
                 ])
         if not member_ids:
             raise Exception("Destination partner is not a member")
 
+        ResPartner = self.pool.get('res.partner')
+        new_partner = ResPartner.browse(cursor, uid, new_partner_id)
+        if not new_partner.property_account_gkwh:
+            new_partner.button_assign_acc_1635()
+            print "Nou partner: Creat compte comptable de Generation"
+        if not new_partner.bank_inversions:
+            print "Nou partner: Cal definir un IBAN de banc inversions"
+            bank_id = self.get_or_create_partner_bank(cursor, uid,
+                        new_partner_id, iban)
+            ResPartner.write(cursor, uid, new_partner_id, dict(
+                bank_inversions = bank_id,),context)
+
         #Crear inversio
-        #Modificar dates?
+        ResUser = self.pool.get('res.users')
+        user = ResUser.read(cursor, uid, uid, ['name'])
+        IrSequence = self.pool.get('ir.sequence')
+        name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')
+
+        inv = InvestmentState(user['name'], datetime.now())
+        inv.order(
+            name = name,
+            date = old_investment['order_date'],
+            amount = old_investment['nshares']*100,
+            iban = iban,
+            ip = '0.0.0.0',
+            )
+        new_investment_id = self.create(cursor, uid, dict(
+            inv.erpChanges(),
+            member_id = member_ids[0],
+        ), context)
+
+        #Modificar dates
+        self.mark_as_invoiced(cursor, uid, new_investment_id)
+        self.mark_as_paid(cursor, uid, [new_investment_id], old_investment['purchase_date'])
+
+        #Crear moviment 1635old 1635new
         #Enviar correu cofirmació?
-        return 0
+        return new_investment_id
 
     def get_or_create_payment_mandate(self, cursor, uid, partner_id, iban, purpose, creditor_code):
         """
