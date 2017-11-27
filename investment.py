@@ -830,6 +830,69 @@ class GenerationkwhInvestment(osv.osv):
         #Enviar correu cofirmació?
         return new_investment_id
 
+    def move_line_when_tranfer(self, cursor, uid, partner_id_from, partner_id_to,
+            account_id_from, account_id_to, amount):
+        ResPartner = self.pool.get('res.partner')
+        AccountMove = self.pool.get('account.move')
+        AccountMoveLine = self.pool.get('account.move.line')
+        Journal = self.pool.get('account.journal')
+        Period = self.pool.get('account.period')
+
+        # The journal
+        journal_id = Journal.search(cursor, uid, [
+            ('code','=',gkwh.journalCode),
+            ])[0]
+
+        today = datetime.today()#Get date
+
+        # The period
+        period_name = today.strftime('%m/%Y')
+        period_id = Period.search(cursor, uid, [
+            ('name', '=', period_name),
+            ])[0]
+
+        id_move = AccountMove.create(cursor, uid, {
+            'journal_id': journal_id,
+            'date': today,
+            'amount': amount,
+            'name': 'Transfer',
+            'period_id': period_id,
+            'ref': '0000',
+            'to_check': False,
+            'type': 'journal_voucher',
+        })
+        id_moveline_credit = AccountMoveLine.create(cursor, uid, {
+            'journal_id': journal_id,
+            'period_id': period_id,
+            'account_id': account_id_to,
+            'name': 'Rep transfer inversió',
+            'ref': '',
+            'debit': 0,
+            'state': 'valid',
+            'amount_currency': 0,
+            'parnter_id': partner_id_to,
+            'tax_amount': 0,
+            'credit': amount,
+            'quantity': 0,
+            'move_id': id_move,
+        })
+        id_moveline_debit = AccountMoveLine.create(cursor, uid, {
+            'journal_id': journal_id,
+            'period_id': period_id,
+            'account_id': account_id_from,
+            'name': 'Emet transfer inversió',
+            'ref': '',
+            'debit': amount,
+            'state': 'valid',
+            'amount_currency': 0,
+            'parnter_id': partner_id_from,
+            'tax_amount': 0,
+            'credit': 0,
+            'quantity': 0,
+            'move_id': id_move,
+        })
+        return id_move
+
     def get_or_create_payment_mandate(self, cursor, uid, partner_id, iban, purpose, creditor_code):
         """
         Searches an active payment (SEPA) mandate for
