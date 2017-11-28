@@ -861,21 +861,6 @@ class GenerationkwhInvestment(osv.osv):
             'to_check': False,
             'type': 'journal_voucher',
         })
-        id_moveline_credit = AccountMoveLine.create(cursor, uid, {
-            'journal_id': journal_id,
-            'period_id': period_id,
-            'account_id': account_id_to,
-            'name': 'Rep transfer inversió',
-            'ref': '',
-            'debit': 0,
-            'state': 'valid',
-            'amount_currency': 0,
-            'parnter_id': partner_id_to,
-            'tax_amount': 0,
-            'credit': amount,
-            'quantity': 0,
-            'move_id': id_move,
-        })
         id_moveline_debit = AccountMoveLine.create(cursor, uid, {
             'journal_id': journal_id,
             'period_id': period_id,
@@ -891,7 +876,23 @@ class GenerationkwhInvestment(osv.osv):
             'quantity': 0,
             'move_id': id_move,
         })
-        return id_move
+        id_moveline_credit = AccountMoveLine.create(cursor, uid, {
+            'journal_id': journal_id,
+            'period_id': period_id,
+            'account_id': account_id_to,
+            'name': 'Rep transfer inversió',
+            'ref': '',
+            'debit': 0,
+            'state': 'valid',
+            'amount_currency': 0,
+            'parnter_id': partner_id_to,
+            'tax_amount': 0,
+            'credit': amount,
+            'quantity': 0,
+            'move_id': id_move,
+        })
+
+        return id_move, id_moveline_debit, id_moveline_credit
 
     def get_or_create_payment_mandate(self, cursor, uid, partner_id, iban, purpose, creditor_code):
         """
