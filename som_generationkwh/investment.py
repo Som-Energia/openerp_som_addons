@@ -809,26 +809,63 @@ class GenerationkwhInvestment(osv.osv):
         IrSequence = self.pool.get('ir.sequence')
         name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')
 
-        inv = InvestmentState(user['name'], datetime.now())
-        inv.order(
+        inv = InvestmentState(user['name'], datetime.now(),
+                name = old_investment['name'],
+                purchase_date = old_investment['purchase_date'],
+                first_effective_date = old_investment['first_effective_date'],
+                last_effective_date = old_investment['last_effective_date'],
+                order_date = old_investment['order_date']
+        )
+        inv_old = InvestmentState(user['name'], datetime.now(),
+                name = old_investment['name'],
+                purchase_date = isodate(old_investment['purchase_date']),
+                first_effective_date = isodate(old_investment['first_effective_date']),
+                paid_amount = old_investment['nshares']*100,
+                nominal_amount = old_investment['nshares']*100,
+                amortized_amount = old_investment['amortized_amount'],
+                last_effective_date = old_investment['last_effective_date'],
+                order_date = old_investment['order_date']
+        )
+        amount = old_investment['nshares']*100 - old_investment['amortized_amount']
+        to_partner_name = new_partner_id #TODO Get partner name from id
+        move_line_id = 1
+        origin = self.browse(cursor, uid, investment_id)
+        origin_partner_name = origin.member_id.name
+
+        transferred = inv.receiveTransfer(
             name = name,
-            date = old_investment['order_date'],
-            amount = old_investment['nshares']*100,
-            iban = iban,
-            ip = '0.0.0.0',
-            )
+            date = isodate('2019-05-01'),
+            amount = amount,
+            origin = inv_old,
+            origin_partner_name = origin_partner_name,
+            move_line_id = move_line_id
+        )
         new_investment_id = self.create(cursor, uid, dict(
             inv.erpChanges(),
             member_id = member_ids[0],
+            nshares = old_investment['nshares'],
         ), context)
+
+        new_investment = self.browse(cursor, uid, new_investment_id)
+
+        emited = inv_old.emitTransfer(
+            date = isodate('2019-05-01'),
+            amount = amount,
+            to_name = new_investment.name,
+            to_partner_name = new_investment.member_id.name,
+            move_line_id = move_line_id,
+        )
+        self.write(cursor, uid, investment_id, inv_old.erpChanges())
 
         #Modificar dates
         self.mark_as_invoiced(cursor, uid, new_investment_id)
-        self.mark_as_paid(cursor, uid, [new_investment_id], old_investment['purchase_date'])
 
         #Crear moviment 1635old 1635new
+        old_partner = Soci.read(cursor, uid, old_investment['member_id'][0])
+        self.move_line_when_tranfer(cursor, uid, old_partner['id'], new_partner_id, old_partner['property_account_gkwh'][0], new_partner.property_account_gkwh.id, amount)
+
         #Enviar correu cofirmació?
-        return new_investment_id
+        return investment_id, new_investment_id
 
     def move_line_when_tranfer(self, cursor, uid, partner_id_from, partner_id_to,
             account_id_from, account_id_to, amount):
