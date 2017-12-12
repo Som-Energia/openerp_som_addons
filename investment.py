@@ -1040,8 +1040,8 @@ class GenerationkwhInvestment(osv.osv):
 
     def mark_as_paid(self, cursor, uid, ids, purchase_date, movementline_id=None):
         Soci = self.pool.get('somenergia.soci')
-        User = self.pool.get('res.users')
-        user = User.read(cursor, uid, uid, ['name'])
+        ResUser = self.pool.get('res.users')
+        user = ResUser.read(cursor, uid, uid, ['name'])
         for id in ids:
             inversio = self.read(cursor, uid, id, [
                 'log',
@@ -1051,7 +1051,6 @@ class GenerationkwhInvestment(osv.osv):
                 'purchase_date',
                 'draft',
                 ])
-            ResUser = self.pool.get('res.users')
             user = ResUser.read(cursor, uid, uid, ['name'])
             nominal_amount = inversio['nshares']*gkwh.shareValue
             if movementline_id:
@@ -1077,8 +1076,9 @@ class GenerationkwhInvestment(osv.osv):
 
     def mark_as_unpaid(self, cursor, uid, ids, movementline_id=None):
         Soci = self.pool.get('somenergia.soci')
-        User = self.pool.get('res.users')
-        user = User.read(cursor, uid, uid, ['name'])
+        ResUser = self.pool.get('res.users')
+        AccountInvoice = self.pool.get('account.invoice')
+        user = ResUser.read(cursor, uid, uid, ['name'])
         for id in ids:
             inversio = self.read(cursor, uid, id, [
                 'log',
@@ -1086,8 +1086,8 @@ class GenerationkwhInvestment(osv.osv):
                 'nshares',
                 'purchase_date',
                 'draft',
+                'name',
             ])
-            ResUser = self.pool.get('res.users')
             user = ResUser.read(cursor, uid, uid, ['name'])
             nominal_amount = inversio['nshares']*gkwh.shareValue
             if movementline_id:
@@ -1110,8 +1110,11 @@ class GenerationkwhInvestment(osv.osv):
             )
 
             self.write(cursor, uid, id, inv.erpChanges())
-
-            self.send_mail(cursor, uid, id,
+            name_invoice = inversio['name'] + '-JUST'
+            invoice_id = AccountInvoice.search(cursor, uid, [
+                ('name,', '=', name_invoice)
+            ])[0]
+            self.send_mail(cursor, uid, invoice_id,
                 'account.invoice', 'generationkwh_mail_impagament')
 
     def create_initial_invoices(self,cursor,uid, investment_ids):
