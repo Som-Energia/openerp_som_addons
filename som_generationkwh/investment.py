@@ -1112,7 +1112,7 @@ class GenerationkwhInvestment(osv.osv):
             self.write(cursor, uid, id, inv.erpChanges())
             name_invoice = inversio['name'] + '-JUST'
             invoice_id = AccountInvoice.search(cursor, uid, [
-                ('name,', '=', name_invoice)
+                ('name', '=', name_invoice)
             ])[0]
             self.send_mail(cursor, uid, invoice_id,
                 'account.invoice', 'generationkwh_mail_impagament')
