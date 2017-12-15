@@ -793,11 +793,12 @@ class GenerationkwhInvestment(osv.osv):
 
         ResPartner = self.pool.get('res.partner')
         new_partner = ResPartner.browse(cursor, uid, new_partner_id)
-        if not new_partner.property_account_gkwh:
+        if not new_partner.property_account_gkwh.id:
             new_partner.button_assign_acc_1635()
-            print "Nou partner: Creat compte comptable de Generation"
+            new_partner = ResPartner.browse(cursor, uid, new_partner_id)
+            print "Nou partner: Creat compte comptable de Generation: ", new_partner.property_account_gkwh
         if not new_partner.bank_inversions:
-            print "Nou partner: Cal definir un IBAN de banc inversions"
+            print "Nou banc per aquest partner: Cal definir un IBAN de banc inversions"
             bank_id = self.get_or_create_partner_bank(cursor, uid,
                         new_partner_id, iban)
             ResPartner.write(cursor, uid, new_partner_id, dict(
@@ -814,7 +815,8 @@ class GenerationkwhInvestment(osv.osv):
                 purchase_date = old_investment['purchase_date'],
                 first_effective_date = old_investment['first_effective_date'],
                 last_effective_date = old_investment['last_effective_date'],
-                order_date = old_investment['order_date']
+                order_date = old_investment['order_date'],
+                log = old_investment['log'],
         )
         inv_old = InvestmentState(user['name'], datetime.now(),
                 name = old_investment['name'],
@@ -824,7 +826,8 @@ class GenerationkwhInvestment(osv.osv):
                 nominal_amount = old_investment['nshares']*100,
                 amortized_amount = old_investment['amortized_amount'],
                 last_effective_date = old_investment['last_effective_date'],
-                order_date = old_investment['order_date']
+                order_date = old_investment['order_date'],
+                log = old_investment['log'],
         )
         amount = old_investment['nshares']*100 - old_investment['amortized_amount']
         to_partner_name = new_partner_id #TODO Get partner name from id
@@ -834,7 +837,7 @@ class GenerationkwhInvestment(osv.osv):
 
         transferred = inv.receiveTransfer(
             name = name,
-            date = isodate('2019-05-01'),
+            date = date.today(),
             amount = amount,
             origin = inv_old,
             origin_partner_name = origin_partner_name,
@@ -849,7 +852,7 @@ class GenerationkwhInvestment(osv.osv):
         new_investment = self.browse(cursor, uid, new_investment_id)
 
         emited = inv_old.emitTransfer(
-            date = isodate('2019-05-01'),
+            date = date.today(),
             amount = amount,
             to_name = new_investment.name,
             to_partner_name = new_investment.member_id.name,
@@ -859,7 +862,6 @@ class GenerationkwhInvestment(osv.osv):
 
         #Modificar dates
         self.mark_as_invoiced(cursor, uid, new_investment_id)
-
         #Crear moviment 1635old 1635new
         old_partner = Soci.read(cursor, uid, old_investment['member_id'][0])
         self.move_line_when_tranfer(cursor, uid, old_partner['id'], new_partner_id, old_partner['property_account_gkwh'][0], new_partner.property_account_gkwh.id, amount)
