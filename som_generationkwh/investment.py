@@ -144,6 +144,25 @@ class GenerationkwhInvestment(osv.osv):
     )
 
 
+    def list(self, cursor, uid,
+            member=None,
+            context=None):
+        filters = [
+            ]
+        if member:
+            filters.append(('member_id','=',member))
+        ids = self.search(cursor, uid, filters)
+        fields = (
+            "name member_id "
+            "order_date purchase_date "
+            "first_effective_date last_effective_date "
+            "draft active amortized_amount nshares"
+            ).split()
+        contracts = self.read(cursor, uid, ids, fields, context=context)
+        for c in contracts:
+            c['nominal_amount'] = float(c['nshares'] * gkwh.shareValue)
+        return contracts
+
     def effective_investments_tuple(self, cursor, uid,
             member=None, start=None, end=None,
             context=None):
