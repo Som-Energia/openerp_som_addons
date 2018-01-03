@@ -156,7 +156,7 @@ class GenerationkwhInvestment(osv.osv):
             "name member_id "
             "order_date purchase_date "
             "first_effective_date last_effective_date "
-            "draft active amortized_amount nshares"
+            "draft active amortized_amount nshares "
             ).split()
         contracts = self.read(cursor, uid, ids, fields, context=context)
         for c in contracts:
