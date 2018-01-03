@@ -26,6 +26,7 @@ class ResPartner(osv.osv):
         Assignments =self.pool.get('generationkwh.assignment')
         assignment_ids = Assignments.search(cursor, uid, [
             ('member_id', '=', idmap[id]),
+            ('end_date', '=', False),
             ])
         def process(x):
             x['contract_name'] = x['contract_id'][1]
