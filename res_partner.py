@@ -32,6 +32,7 @@ class ResPartner(osv.osv):
             x['contract_id'] = x['contract_id'][0]
             x['member_name'] = x['member_id'][1]
             x['member_id'] = x['member_id'][0]
+            x['annual_use_kwh'] = x.pop('cups_anual_use')
             return x
 
         return sorted([
