@@ -14,7 +14,8 @@ class ResPartner(osv.osv):
         Investment =self.pool.get('generationkwh.investment')
         Dealer =self.pool.get('generationkwh.dealer')
         idmap = dict(Dealer.get_members_by_partners(cursor, uid, [id]))
-        print idmap,id,idmap[id]
+        if not idmap: # Not a member
+            return []
         return Investment.list(cursor, uid, idmap[id], context=context)
     
 
