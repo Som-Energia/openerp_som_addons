@@ -2,7 +2,7 @@
 {
   "name": "Generationkwh production manager",
   "description": """Support for SomEnergia's plantmeter in GisceERP""",
-  "version": "1.5",
+  "version": "1.5.1",
   "author": "Som-Energia",
   "category": "Master",
   "depends": ['base'],
