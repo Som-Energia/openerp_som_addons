@@ -265,6 +265,7 @@ class GenerationkwhProductionNotifier(osv.osv):
     }
 
     _order = 'date_pull desc'
+
 GenerationkwhProductionNotifier()
 
 
