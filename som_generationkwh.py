@@ -85,6 +85,17 @@ class GenerationkWhDealer(osv.osv):
             for r in res
             ]
 
+    def get_contracts_by_ref(self, cursor, uid, contract_refs, context=None):
+        contract_refs = map(str, contract_refs)
+        Contract = self.pool.get('giscedata.polissa')
+        contract_ids = Contract.search(cursor, uid, [
+            ('name', 'in', contract_refs),
+            ], context=context)
+        res = Contract.read(cursor, uid, contract_ids, ['name'], context=context)
+        return [ (r['name'], r['id'])
+            for r in res
+            ]
+
     def get_fare_name_by_id(self, cursor, uid, fare_id, period_id, context=None):
         Fare = self.pool.get('giscedata.polissa.tarifa')
         Period = self.pool.get('giscedata.polissa.tarifa.periodes')
