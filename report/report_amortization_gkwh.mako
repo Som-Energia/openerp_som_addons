@@ -6,7 +6,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
 <head>
-    <title> Liquidació préstec Generation kWh </title>
+    <title>${_(u"Liquidació préstec Generation kWh")}</title>
     <style type="text/css">
     ${css}
     img {
@@ -120,42 +120,42 @@
     <div>
     <table>
         <tr>
-            <th colspan="2"><b>Dades Préstec Generation kWh: ${data.inversionName}</b></th>
+            <th colspan="2"><b>${_(u"Dades Préstec Generation kWh: ")} ${data.inversionName}</b></th>
         </tr>
         <tr>
-            <td colspan="2"> Titular: ${data.ownerName}</td>
+            <td colspan="2"> ${_(u"Titular: ")}${data.ownerName}</td>
 
         </tr>
         <tr>
-            <td> NIF:  ${data.ownerNif} </td>
-            <td> Import Inicial:  ${data.inversionInitialAmount} € </td>
+            <td> ${_(u"NIF: ")} ${data.ownerNif} </td>
+            <td> ${_(u"Import Inicial: ")} ${data.inversionInitialAmount} € </td>
         </tr>
         <tr>
-            <td> Data formalització: ${data.inversionPurchaseDate}</td>
-            <td> Data venciment: ${data.inversionExpirationDate}</td>
-        </tr>
-    </table>
-    </br>
-    <table>
-        <tr>
-            <th colspan="2"><b>Amortització Actual: ${data.amortizationName} </b> </th>
-        </tr>
-        <tr>
-            <td> Import: ${data.amortizationAmount} € </td>
-            <td> Data: ${data.amortizationDate} </td>
-        </tr>
-        <tr>
-            <td> Pagament nº:  ${data.amortizationNumPayment} de ${data.amortizationTotalPayments}</td>
-            <td> Pendent de retornar: ${data.inversionPendingCapital} € </td>
-        </tr>
-        <tr>
-            <td colspan="2"> <p id="warning24">Recordeu: el pagament nº 24 serà doble</p></td>
+            <td> ${_(u"Data formalització: ")}${data.inversionPurchaseDate}</td>
+            <td> ${_(u"Data venciment: ")}${data.inversionExpirationDate}</td>
         </tr>
     </table>
     </br>
     <table>
         <tr>
-            <th colspan="2"><b> Compte on es realizarà l'ingrés </b></th>
+            <th colspan="2"><b>${_(u"Amortització Actual: ")}${data.amortizationName} </b> </th>
+        </tr>
+        <tr>
+            <td> ${_(u"Import: ")}${data.amortizationAmount} € </td>
+            <td> ${_(u"Data: ")}${data.amortizationDate} </td>
+        </tr>
+        <tr>
+            <td> ${_(u"Pagament nº: ")} ${data.amortizationNumPayment} de ${data.amortizationTotalPayments}</td>
+            <td> ${_(u"Pendent de retornar: ")}${data.inversionPendingCapital} € </td>
+        </tr>
+        <tr>
+            <td colspan="2"> <p id="warning24">${_(u"Recordeu: el pagament nº 24 serà doble")}</p></td>
+        </tr>
+    </table>
+    </br>
+    <table>
+        <tr>
+            <th colspan="2"><b> ${_(u"Compte on es realizarà l'ingrés")}</b></th>
         </tr>
         <tr>
             <td id="account"> ${data.inversionBankAccount} </td>
