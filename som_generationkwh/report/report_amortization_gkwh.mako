@@ -111,7 +111,10 @@
     </style>
 </head>
 <body>
-
+<% 
+for account.invoice in objects:
+ setLang(account.invoice.lang_partner)
+%>
     <div class="logos">
         <img src="${addons_path}/som_generationkwh/report/Logo-SomEnergia-blanco-quadrado-250x250px.jpg" />
         <img src="${addons_path}/som_generationkwh/report/Logo_Generation-04-Horizontal.jpg" />

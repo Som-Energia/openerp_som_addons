@@ -1,0 +1,75 @@
+# Translations template for PROJECT.
+# Copyright (C) 2018 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2018-06-08 12:05+0200\n"
+"PO-Revision-Date: 2018-06-08 12:40+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.4.0\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es\n"
+"X-Generator: Poedit 1.8.7.1\n"
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:9
+msgid "Liquidació préstec Generation kWh"
+msgstr "Liquidación préstamo Generation kWh"
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:123
+msgid "Dades Préstec Generation kWh: "
+msgstr "Datos Préstamo Generation kWh: "
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:126
+msgid "Titular: "
+msgstr "Titular: "
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:130
+msgid "NIF: "
+msgstr "NIF: "
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:131
+msgid "Import Inicial: "
+msgstr "Importe Inicial: "
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:134
+msgid "Data formalització: "
+msgstr "Fecha formalización: "
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:135
+msgid "Data venciment: "
+msgstr "Fecha vencimiento: "
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:141
+msgid "Amortització Actual: "
+msgstr "Amortización Actual: "
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:144
+msgid "Import: "
+msgstr "Importe: "
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:145
+msgid "Data: "
+msgstr "Fecha: "
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:148
+msgid "Pagament nº: "
+msgstr "Pago nº: "
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:149
+msgid "Pendent de retornar: "
+msgstr "Pendiente de devolver: "
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:152
+msgid "Recordeu: el pagament nº 24 serà doble"
+msgstr "Recuerde: el pago nº 24 será doble"
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:158
+msgid "Compte on es realizarà l'ingrés"
+msgstr "Cuenta donde se realizará el ingreso"
