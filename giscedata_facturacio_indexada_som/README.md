@@ -1,8 +1,8 @@
-# Indexed invoicing for Electra Energía
+# Indexed invoicing for SOM Energia
 
 ## PHF formula
 
- `PHF = (1 + IMU) * [(PMD + POS + [PC3] + OMIE_REE ) * (1 + Perdidas) +  K + D + FONDO_EFICIENCIA ] + PA`
+ `PHF = (1 + IMU) * [(PMD + POS + [PC3] + PC + OMIE_REE ) * (1 + Perdidas) +  K + D + FONDO_EFICIENCIA ] + PA`
 
 Where:
 
@@ -11,17 +11,17 @@ Where:
 * **POS**: Preu Operació Sistema [€/MWh]
 * **PC3]**: Pagos por capacidad según BOE [€/kWh]
 * **OMIE_REE**: Retribución OMIE y REE según barras de central [€/MWh]
-* **Perdidas**: Perdidas por tarifa [€/MWh]
-* **K**: Coeficiente de comercializadora [€/MWh]
-* **D**: Desvíos de comercializadora [€/MWh]
+* **Perdidas**: Perdidas por tarifa [%]
+* **K**: Coeficiente de comercializadora [€/kWh]
+* **D**: Desvíos de comercializadora [€/kWh]
 * **FONDO_EFICIENCIA**: Pagos al fondo de eficiencia según consumo computado [€/MWh]
 * **PA**: Peajes de acceso según BOE [€/kWh]
 
 ## Hourly Coeficients
 
 * **PMD +POS +PC**: liquicomun -> prmncur
-* **PC**: liquicomun -> prgmncur
-* **PMD + POS**: `prmncur - prgmncur`
+* **PC**: liquicomun -> prgpncur
+* **PMD + POS**: `prmncur - prgpncur`
 * **Perdidas**: liquicomun -> Perdxxxxx. xxxxx diferent by tariff
 
 ## Pricelist coeficients by period

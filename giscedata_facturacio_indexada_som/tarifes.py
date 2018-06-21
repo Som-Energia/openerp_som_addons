@@ -26,13 +26,13 @@ class TarifaPoolSOM(TarifaPool):
         pa = self.get_peaje_component(start_date, holidays)
         # Payments by capacity (PC3) BOE
         pc3_boe = self.get_pricexperiod_component(start_date, 'pc', holidays)
-        # Contract specific coeficient
+        # Contract specific coeficient €/kWh
         k = self.get_coeficient_component(start_date, 'k')
         # Fixed €/kWh
         desvios = self.get_coeficient_component(start_date, 'd')
-        # Coste remuneración OMIE REE €/kWh
+        # Coste remuneración OMIE REE €/MWh
         omie = self.get_coeficient_component(start_date, 'omie')
-        # Fondo de Eficiencia €/kWh
+        # Fondo de Eficiencia €/MWh
         fe = self.get_coeficient_component(start_date, 'fe')
         # Municipal fee in %
         imu = self.get_coeficient_component(start_date, 'imu')
