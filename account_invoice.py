@@ -153,6 +153,14 @@ class TesthelperPaymentWizard(osv.osv_memory):
             'som_generationkwh', 'genkwh_journal',
         )
 
+        # The period
+        Period = self.pool.get('account.period')
+        today = datetime.today()
+        period_name = today.strftime('%m/%Y')
+        period_id = Period.search(cursor, uid, [
+            ('name', '=', period_name),
+            ])[0]
+
         wizard_pay(self, cursor, uid, data=dict(
             id = invoice_id,
             ids = [invoice_id],
@@ -160,8 +168,8 @@ class TesthelperPaymentWizard(osv.osv_memory):
                 amount=pending,
                 name=movelinename,
                 journal_id=journal_id,
-                period_id=92,
-                date="2017-08-03",
+                period_id=period_id,
+                date="2017-08-03", # TODO: Magic date
             ),
         ), context={})
 
