@@ -155,6 +155,7 @@ class TesthelperPaymentWizard(osv.osv_memory):
 
         # The period
         Period = self.pool.get('account.period')
+        from datetime import datetime
         today = datetime.today()
         period_name = today.strftime('%m/%Y')
         period_id = Period.search(cursor, uid, [
