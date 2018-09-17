@@ -799,7 +799,7 @@ class GenerationkwhInvestment(osv.osv):
             raise Exception("Investment in draft, so not transferible")
         if not old_investment['active']:
             raise Exception("Investment not active")
-        if old_investment['amortized_amount'] >= old_investment['nshares']*100 :
+        if old_investment['amortized_amount'] >= old_investment['nshares']*gkwh.shareValue :
             raise Exception("Amount to return = 0, not transferible")
 
         #Comprovar dades del partner al qual es vol tranferir (existeix, soci, iban, compte inversions..)
@@ -841,14 +841,14 @@ class GenerationkwhInvestment(osv.osv):
                 name = old_investment['name'],
                 purchase_date = isodate(old_investment['purchase_date']),
                 first_effective_date = isodate(old_investment['first_effective_date']),
-                paid_amount = old_investment['nshares']*100,
-                nominal_amount = old_investment['nshares']*100,
+                paid_amount = old_investment['nshares']*gkwh.shareValue,
+                nominal_amount = old_investment['nshares']*gkwh.shareValue,
                 amortized_amount = old_investment['amortized_amount'],
                 last_effective_date = old_investment['last_effective_date'],
                 order_date = old_investment['order_date'],
                 log = old_investment['log'],
         )
-        amount = old_investment['nshares']*100 - old_investment['amortized_amount']
+        amount = old_investment['nshares']*gkwh.shareValue - old_investment['amortized_amount']
         to_partner_name = new_partner_id #TODO Get partner name from id
         move_line_id = 1
         origin = self.browse(cursor, uid, investment_id)
