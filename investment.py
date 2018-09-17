@@ -1295,6 +1295,10 @@ class GenerationkwhInvestment(osv.osv):
         return openOK
 
     def invoices_to_payment_order(self,cursor,uid,invoice_ids, model_name):
+        """
+        Add the invoices to the currently open payment order having the
+        specified model name. If none is open, then creates a new one.
+        """
         Invoice = self.pool.get('account.invoice')
 
         order_id = self.get_or_create_open_payment_order(cursor, uid, model_name,
@@ -1302,6 +1306,10 @@ class GenerationkwhInvestment(osv.osv):
         Invoice.afegeix_a_remesa(cursor,uid,invoice_ids, order_id)
 
     def investment_payment(self,cursor,uid,investment_ids):
+        """
+        Creates the invoices, open them and add the current payment order.
+        Called from the investment_payment_wizard.
+        """
         Investment = self.pool.get('generationkwh.investment')
 
         invoice_ids, errors = Investment.create_initial_invoices(cursor,uid, investment_ids)
