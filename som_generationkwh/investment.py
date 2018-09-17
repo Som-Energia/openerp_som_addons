@@ -1131,12 +1131,14 @@ class GenerationkwhInvestment(osv.osv):
             )
 
             self.write(cursor, uid, id, inv.erpChanges())
+
             name_invoice = inversio['name'] + '-JUST'
-            invoice_id = AccountInvoice.search(cursor, uid, [
+            invoice_ids = AccountInvoice.search(cursor, uid, [
                 ('name', '=', name_invoice)
-            ])[0]
-            self.send_mail(cursor, uid, invoice_id,
-                'account.invoice', 'generationkwh_mail_impagament')
+            ])
+            if invoice_ids:
+                self.send_mail(cursor, uid, invoice_ids[0],
+                    'account.invoice', 'generationkwh_mail_impagament')
 
     def create_initial_invoices(self,cursor,uid, investment_ids):
 
