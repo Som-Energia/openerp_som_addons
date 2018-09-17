@@ -1136,7 +1136,7 @@ class GenerationkwhInvestment(osv.osv):
             invoice_ids = AccountInvoice.search(cursor, uid, [
                 ('name', '=', name_invoice)
             ])
-            if invoice_ids:
+            if invoice_ids: # Some tests do not generate invoice
                 self.send_mail(cursor, uid, invoice_ids[0],
                     'account.invoice', 'generationkwh_mail_impagament')
 
