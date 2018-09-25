@@ -51,8 +51,8 @@ class WizardInvestmentTransfer(osv.osv):
 
         info = "RESULTAT: \n"
         info += "================\n"
-        info += "Investment vell: %d" % old['name'] if old else "Error"
-        info += "\nInvestment nou: %d" % new['name'] if new else "Error"
+        info += "Investment vell: %s" % (old['name'] if old else "Error")
+        info += "\nInvestment nou: %s" % (new['name'] if new else "Error")
         wiz.write(dict(
             info= info,
             state = 'Done',
