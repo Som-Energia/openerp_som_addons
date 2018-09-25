@@ -886,7 +886,7 @@ class GenerationkwhInvestment(osv.osv):
         self.move_line_when_tranfer(cursor, uid, old_partner['id'], new_partner_id, old_partner['property_account_gkwh'][0], new_partner.property_account_gkwh.id, amount)
 
         #Enviar correu cofirmació?
-        return investment_id, new_investment_id
+        return new_investment_id
 
     def move_line_when_tranfer(self, cursor, uid, partner_id_from, partner_id_to,
             account_id_from, account_id_to, amount):
