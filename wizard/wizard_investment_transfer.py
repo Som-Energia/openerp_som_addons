@@ -45,12 +45,14 @@ class WizardInvestmentTransfer(osv.osv):
         iban = wiz.iban.iban
         order_date = date.today()
 
-        old_investment_id, new_investment_id = Investment.create_from_transfer(cursor, uid, investment_ids[0], new_partner_id, order_date, iban, context=None)
+        new_investment_id = Investment.create_from_transfer(cursor, uid, investment_ids[0], new_partner_id, order_date, iban, context=None)
+        old = investment.read(investment_ids[0],['name'])
+        new = investment.read(new_investment_id,['name'])
 
         info = "RESULTAT: \n"
         info += "================\n"
-        info += "Investment vell: %d" % old_investment_id
-        info += "\nInvestment nou: %d" % new_investment_id
+        info += "Investment vell: %d" % old['name'] if old else "Error"
+        info += "\nInvestment nou: %d" % new['name'] if new else "Error"
         wiz.write(dict(
             info= info,
             state = 'Done',
