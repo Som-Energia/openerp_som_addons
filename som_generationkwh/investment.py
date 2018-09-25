@@ -790,7 +790,7 @@ class GenerationkwhInvestment(osv.osv):
         return investment_id
 
     def create_from_transfer(self, cursor, uid,
-            investment_id, new_partner_id, order_date, iban,
+            investment_id, new_partner_id, transfer_date, iban,
             context=None):
 
         #Obtenir dades inversio (total invertit, total amortiztzat/pendent, data original...)
@@ -856,7 +856,7 @@ class GenerationkwhInvestment(osv.osv):
 
         transferred = inv.receiveTransfer(
             name = name,
-            date = date.today(),
+            date = isodate(transfer_date),
             amount = amount,
             origin = inv_old,
             origin_partner_name = origin_partner_name,
@@ -871,7 +871,7 @@ class GenerationkwhInvestment(osv.osv):
         new_investment = self.browse(cursor, uid, new_investment_id)
 
         emited = inv_old.emitTransfer(
-            date = date.today(),
+            date = isodate(transfer_date),
             amount = amount,
             to_name = new_investment.name,
             to_partner_name = new_investment.member_id.name,
