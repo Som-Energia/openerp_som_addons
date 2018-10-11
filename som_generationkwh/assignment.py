@@ -378,24 +378,26 @@ class GenerationkWhAssignment(osv.osv):
                 raise Exception(e)
 
 
+    def generationMailAccount(self, cursor, uid):
+        PEAccounts = self.pool.get('poweremail.core_accounts')
+        return PEAccounts.search(cursor,uid,[
+            ('name','=','Generation kWh'),
+            ])[0]
 
     def notifyAssignmentByMail(self, cursor, uid, members, context=None):
-
-        generationAddressId = 17
         for member in members:
             self.send_mail(cursor, uid,
                 member,
-                generationAddressId,
+                self.generationMailAccount(self,cursor,uid),
                 'somenergia.soci',
                 'generationkwh_assignment_notification_mail',
                 context or {})
 
     def notifyAdvancedEffectiveDate(self, cursor, uid, members, context=None):
-        generationAddressId = 17
         for member in members:
             self.send_mail(cursor, uid,
                 member,
-                generationAddressId,
+                self.generationMailAccount(self,cursor,uid),
                 'somenergia.soci',
                 70, # TODO this id changes from installation to another!!
                 context or {})
