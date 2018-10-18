@@ -381,7 +381,7 @@ class GenerationkWhAssignment(osv.osv):
     def generationMailAccount(self, cursor, uid):
         PEAccounts = self.pool.get('poweremail.core_accounts')
         return PEAccounts.search(cursor,uid,[
-            ('name','=','Generation kWh'),
+            ('email_id','=','generationkwh@somenergia.coop'),
             ])[0]
 
     def notifyAssignmentByMail(self, cursor, uid, members, context=None):
