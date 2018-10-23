@@ -1496,7 +1496,7 @@ class GenerationkwhInvestment(osv.osv):
             })
         return refund_invoice_id,[]
 
-    def divest(self, cursor, uid, ids):
+    def divest(self, cursor, uid, ids, divestment_date=None):
         Soci = self.pool.get('somenergia.soci')
         User = self.pool.get('res.users')
         Invoice = self.pool.get('account.invoice')
@@ -1505,8 +1505,7 @@ class GenerationkwhInvestment(osv.osv):
         movementline_id = 1
         invoice_ids = []
         errors = []
-        date_invoice = datetime.today().strftime("%Y-%m-%d")
-        #date_invoice = datetime.strptime(str(date.today()),'%Y-%m-%d')
+        date_invoice = divestment_date or str(datetime.today().date())
 
         for id in ids:
             inversio = self.read(cursor, uid, id, [
@@ -1520,7 +1519,7 @@ class GenerationkwhInvestment(osv.osv):
             ])
             nominal_amount = inversio['nshares']*gkwh.shareValue
             pending_amount = nominal_amount-inversio['amortized_amount']
-            daysFromPayment = (datetime.strptime(str(date.today()),'%Y-%m-%d').date() - datetime.strptime(inversio['purchase_date'],'%Y-%m-%d').date()).days
+            daysFromPayment = (isodate(date_invoice) - isodate(inversio['purchase_date'])).days
 
             if daysFromPayment < gkwh.waitDaysBeforeDivest:
                 errors.append("%s: Too early to divest (< 30 days from purchase)" % inversio['name'])
@@ -1537,7 +1536,6 @@ class GenerationkwhInvestment(osv.osv):
             self.invoices_to_payment_order(cursor, uid,
                     [invoice_id], gkwh.amortizationPaymentMode)
             invoice_ids.append(invoice_id)
-            errors.append(error)
 
             #Get moveline id
             invoice_obj = Invoice.read(cursor, uid, invoice_id, [
