@@ -388,7 +388,7 @@ class GenerationkWhAssignment(osv.osv):
         for member in members:
             self.send_mail(cursor, uid,
                 member,
-                self.generationMailAccount(self,cursor,uid),
+                self.generationMailAccount(cursor,uid),
                 'somenergia.soci',
                 'generationkwh_assignment_notification_mail',
                 context or {})
@@ -397,7 +397,7 @@ class GenerationkWhAssignment(osv.osv):
         for member in members:
             self.send_mail(cursor, uid,
                 member,
-                self.generationMailAccount(self,cursor,uid),
+                self.generationMailAccount(cursor,uid),
                 'somenergia.soci',
                 70, # TODO this id changes from installation to another!!
                 context or {})
