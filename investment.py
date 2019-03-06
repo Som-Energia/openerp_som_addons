@@ -1694,7 +1694,7 @@ class GenerationkwhInvestment(osv.osv):
 
 class InvestmentProvider(ErpWrapper):
 
-    def effectiveInvestments(self, member=None, start=None, end=None):
+    def effectiveItems(self, member=None, start=None, end=None):
         Investment = self.erp.pool.get('generationkwh.investment')
         return Investment.effective_investments( self.cursor, self.uid,
                 member, start, end, self.context)
