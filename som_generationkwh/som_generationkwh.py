@@ -317,7 +317,7 @@ class GenerationkWhTestHelper(osv.osv):
         farePeriod = FarePeriodCurve(holidays)
 
         print 'remainders', remainders.lastRemainders()
-        print 'investment', investment.effectiveItems(
+        print 'investment', investment.items(
             start=isodate(start),
             end=isodate(stop),
             member=member)
