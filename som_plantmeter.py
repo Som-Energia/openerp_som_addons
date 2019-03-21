@@ -214,7 +214,7 @@ class GenerationkwhProductionMeter(osv.osv):
         'plant_id': fields.many2one('generationkwh.production.plant'),
         'uri': fields.char('Host', size=150, required=True),
         'lastcommit': fields.date('Last pull date'),
-        'working_since': fields.date('First operative date'),
+        'first_active_date': fields.date('First operative date'),
         }
     _defaults = {
         'enabled': lambda *a: False,
