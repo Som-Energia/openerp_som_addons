@@ -272,9 +272,9 @@ class PlantShareProvider(ErpWrapper):
         return [
             ns(
                 mix=self.mixname,
-                shares=10,
-                lastEffectiveDate = isodate('2019-03-02'),
-                firstEffectiveDate = isodate('2019-03-03'),
+                shares=plant['nshares'],
+                firstEffectiveDate = plant['first_active_date'],
+                lastEffectiveDate = plant['last_active_date'],
             )
             for plant in plants
         ]
