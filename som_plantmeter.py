@@ -5,6 +5,7 @@ from osv import osv, fields
 from mongodb_backend import osv_mongodb
 from mongodb_backend.mongodb2 import mdbpool
 from .erpwrapper import ErpWrapper
+from yamlns import namespace as ns
 
 from datetime import datetime
 from plantmeter.resource import ProductionAggregator, ProductionPlant, ProductionMeter 
@@ -172,7 +173,11 @@ class GenerationkwhProductionAggregatorTesthelper(osv.osv):
     def plantShareItems(self, cursor, uid, mixname):
         provider = PlantShareProvider(self, cursor, uid, mixname, context={})
         return [
-            dict(item)
+            dict(
+                item,
+                lastEffectiveDate=str(item.lastEffectiveDate),
+                firstEffectiveDate=str(item.firstEffectiveDate),
+            )
             for item in provider.items()
         ]
 
@@ -254,10 +259,25 @@ class PlantShareProvider(ErpWrapper):
     def items(self):
         Mix = self.erp.pool.get('generationkwh.production.aggregator')
         Plant = self.erp.pool.get('generationkwh.production.plant')
-        Mix.search(self.cursor, self.uid, [
+        mix_ids = Mix.search(self.cursor, self.uid, [
             ('name', '=', self.mixname)
         ])
-        return []
+        # if not mixids: ....
+
+        plant_ids = Plant.search(self.cursor, self.uid, [
+            ('aggr_id', '=', mix_ids[0]),
+        ])
+        plants = Plant.read(self.cursor, self.uid, plant_ids, [
+        ])
+        return [
+            ns(
+                mix='testmix',
+                shares=10,
+                lastEffectiveDate = isodate('2019-03-02'),
+                firstEffectiveDate = isodate('2019-03-03'),
+            )
+            for plant in plants
+        ]
 
 
 class ProductionNotifierProvider(ErpWrapper):
