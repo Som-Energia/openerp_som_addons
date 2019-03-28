@@ -169,6 +169,14 @@ class GenerationkwhProductionAggregatorTesthelper(osv.osv):
             name=name,
             ae=value)
 
+    def plantShareItems(self, cursor, uid, mixname):
+        provider = PlantShareProvider(self, cursor, uid, mixname, context={})
+        return [
+            dict(item)
+            for item in provider.items()
+        ]
+
+
 
 GenerationkwhProductionAggregatorTesthelper()
 
@@ -183,7 +191,9 @@ class GenerationkwhProductionPlant(osv.osv):
         'nshares': fields.integer('Number of shares'),
         'aggr_id': fields.many2one('generationkwh.production.aggregator', 'Production aggregator',
                                   required=True),
-        'meters': fields.one2many('generationkwh.production.meter', 'plant_id', 'Meters')
+        'meters': fields.one2many('generationkwh.production.meter', 'plant_id', 'Meters'),
+        'first_active_date': fields.date('First operative date'),
+        'last_active_date': fields.date('Last operative date'),
     }
     _defaults = {
         'enabled': lambda *a: False,
@@ -233,6 +243,21 @@ class GenerationkwhProductionMeter(osv.osv):
             meter.write(cursor, uid, pid, {'lastcommit': lastcommit})
 
 GenerationkwhProductionMeter()
+
+
+class PlantShareProvider(ErpWrapper):
+    ""
+    def __init__(self, erp, cursor, uid, mixname, context=None):
+        self.mixname = mixname
+        super(PlantShareProvider, self).__init__(erp, cursor, uid, context)
+
+    def items(self):
+        Mix = self.erp.pool.get('generationkwh.production.aggregator')
+        Plant = self.erp.pool.get('generationkwh.production.plant')
+        Mix.search(self.cursor, self.uid, [
+            ('name', '=', self.mixname)
+        ])
+        return []
 
 
 class ProductionNotifierProvider(ErpWrapper):
