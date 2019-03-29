@@ -70,6 +70,7 @@ class GenerationkWhRemainder(osv.osv):
                     ON r.n_shares=r2.n_shares
                     AND r.target_day < r2.target_day
                 WHERE r2.target_day IS NULL
+                ORDER BY r.n_shares
             """)
         result = [
             (
