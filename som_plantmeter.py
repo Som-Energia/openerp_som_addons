@@ -135,18 +135,18 @@ class GenerationkwhProductionAggregatorTesthelper(osv.osv):
 
 
     def get_kwh(self, cursor, uid, pid, start, end, context=None):
-        production = self.pool.get('generationkwh.production.aggregator')
-        return production.get_kwh(cursor, uid, pid,
+        mix = self.pool.get('generationkwh.production.aggregator')
+        return mix.get_kwh(cursor, uid, pid,
                 isodate(start), isodate(end), context)
 
     def update_kwh(self, cursor, uid, pid, start, end, context=None):
-        production = self.pool.get('generationkwh.production.aggregator')
-        return production.update_kwh(cursor, uid, pid,
+        mix = self.pool.get('generationkwh.production.aggregator')
+        return mix.update_kwh(cursor, uid, pid,
                 isodate(start), isodate(end), context)
 
     def firstMeasurementDate(self, cursor, uid, pid, context=None):
-        production = self.pool.get('generationkwh.production.aggregator')
-        result = production.firstMeasurementDate(cursor, uid, pid, context)
+        mix = self.pool.get('generationkwh.production.aggregator')
+        result = mix.firstMeasurementDate(cursor, uid, pid, context)
         return result and str(result)
 
     def lastMeasurementDate(self, cursor, uid, pid, context=None):
