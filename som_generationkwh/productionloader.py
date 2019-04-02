@@ -6,9 +6,12 @@ from .erpwrapper import ErpWrapper
 from .remainder import RemainderProvider
 from mongodb_backend.mongodb2 import mdbpool
 from generationkwh.productionloader import ProductionLoader
-from generationkwh.sharescurve import PlantSharesCurve
+from generationkwh.sharescurve import MixTotalSharesCurve
 from generationkwh.rightspershare import RightsPerShare
 from generationkwh.isodates import isodate
+
+from som_plantmeter.som_plantmeter import PlantShareProvider
+
 
 class ProductionAggregatorProvider(ErpWrapper):
     def __init__(self, erp, cursor, uid, pid, context=None):
@@ -49,13 +52,14 @@ class GenerationkWhProductionLoader(osv.osv):
     def _createProductionLoader(self, cursor, uid, pid, context):
         production = ProductionAggregatorProvider(self, cursor, uid, pid, context)
         nshares = production.getNshares(pid)
-        shares = PlantSharesCurve(nshares)
+        plantsharesprovider = PlantShareProvider(self, cursor, uid, 'GenerationkWh')
+        plantsharecurver = MixTotalSharesCurve(plantsharesprovider)
         rights = RightsPerShare(mdbpool.get_db())
         remainders = RemainderProvider(self, cursor, uid, context)
 
         return ProductionLoader(
                 productionAggregator=production,
-                plantShareCurver=shares,
+                plantShareCurver=plantsharecurver,
                 rightsPerShare=rights,
                 remainders=remainders)
 
