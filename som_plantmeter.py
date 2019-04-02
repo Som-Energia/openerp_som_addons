@@ -113,7 +113,10 @@ class GenerationkwhProductionAggregator(osv.osv):
             return {attr: getattr(obj, attr) for attr in attrs}
 
         curveProvider = MongoTimeCurve(mdbpool.get_db(),
-                'generationkwh.production.measurement')
+            'tm_profile',
+            creationField = 'create_date',
+            timestampField = 'utc_gkwh_timestamp',
+            )
 
         # TODO: Clean initialization method
         return ProductionAggregator(**dict(obj_to_dict(aggr, args).items() + 
@@ -164,7 +167,10 @@ class GenerationkwhProductionAggregatorTesthelper(osv.osv):
 
     def fillMeasurementPoint(self, cursor, uid, pointTime, name, value, context=None):
         curveProvider = MongoTimeCurve(mdbpool.get_db(),
-                'generationkwh.production.measurement')
+            'tm_profile',
+            creationField = 'create_date',
+            timestampField = 'utc_gkwh_timestamp',
+            )
         curveProvider.fillPoint(
             datetime=toLocal(asUtc(naiveisodatetime(pointTime))),
             name=name,
