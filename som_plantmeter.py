@@ -119,7 +119,7 @@ class GenerationkwhProductionAggregator(osv.osv):
         return ProductionAggregator(**dict(obj_to_dict(aggr, args).items() + 
             dict(plants=[ProductionPlant(**dict(obj_to_dict(plant, args).items() +
                 dict(meters=[ProductionMeter(
-                    **dict(obj_to_dict(meter, args + ['uri','lastcommit']).items() +
+                    **dict(obj_to_dict(meter, args + ['uri','lastcommit','first_active_date']).items() +
                     dict(curveProvider=curveProvider).items())) 
                 for meter in plant.meters if meter.enabled]).items()))
             for plant in aggr.plants if plant.enabled]).items()))
@@ -273,8 +273,8 @@ class PlantShareProvider(ErpWrapper):
             ns(
                 mix=self.mixname,
                 shares=plant['nshares'],
-                firstEffectiveDate = plant['first_active_date'],
-                lastEffectiveDate = plant['last_active_date'],
+                firstEffectiveDate = isodate(plant['first_active_date']),
+                lastEffectiveDate = isodate(plant['last_active_date']),
             )
             for plant in plants
         ]
