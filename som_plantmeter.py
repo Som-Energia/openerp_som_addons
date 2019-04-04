@@ -10,7 +10,7 @@ from yamlns import namespace as ns
 from datetime import datetime
 from plantmeter.resource import ProductionAggregator, ProductionPlant, ProductionMeter 
 from plantmeter.mongotimecurve import MongoTimeCurve, toLocal, asUtc
-from plantmeter.isodates import isodate, naiveisodatetime
+from plantmeter.isodates import isodate, naiveisodatetime, localisodate
 
 class GenerationkwhProductionAggregator(osv.osv):
     '''Implements generationkwh production aggregation '''
@@ -164,6 +164,19 @@ class GenerationkwhProductionAggregatorTesthelper(osv.osv):
     def clear_mongo_collections(self, cursor, uid, collections, context=None):
         for collection in collections:
             mdbpool.get_db().drop_collection(collection)
+
+    def fillMeasurements(self, cursor, uid, first_date, meter_name, values):
+        curveProvider = MongoTimeCurve(mdbpool.get_db(),
+            'tm_profile',
+            creationField = 'create_date',
+            timestampField = 'utc_gkwh_timestamp',
+            )
+        curveProvider.update(
+            start = localisodate(first_date),
+            filter = meter_name,
+            field = 'ae',
+            data = values,
+            )
 
     def fillMeasurementPoint(self, cursor, uid, pointTime, name, value, context=None):
         curveProvider = MongoTimeCurve(mdbpool.get_db(),
