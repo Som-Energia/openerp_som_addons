@@ -23,11 +23,6 @@ class ProductionAggregatorProvider(ErpWrapper):
         return production.get_kwh(self.cursor, self.uid,
                 self.pid, start, end, context=self.context)
 
-    def update_kwh(self, start, end):
-        production=self.erp.pool.get('generationkwh.production.aggregator')
-        return production.update_kwh(self.cursor, self.uid,
-                self.pid, start, end, context=self.context)
-
     def getFirstMeasurementDate(self):
         production=self.erp.pool.get('generationkwh.production.aggregator')
         return production.firstMeasurementDate(self.cursor, self.uid,
@@ -71,14 +66,6 @@ class GenerationkWhProductionLoader(osv.osv):
         logger.notifyChannel('gkwh_productionLoader COMPUTE', netsvc.LOG_INFO,
                 'Compute available rights')
         return log
-
-    def retrieveMeasuresFromPlants(self, cursor, uid, pid, start, end, context=None):
-        logger = netsvc.Logger()
-        productionLoader = self._createProductionLoader(cursor, uid, pid, context)
-        productionLoader.retrieveMeasuresFromPlants(isodate(start), isodate(end))
-
-        logger.notifyChannel('gkwh_productionLoader UPDATE', netsvc.LOG_INFO,
-                'Retrieve measurements from plant')
 
 GenerationkWhProductionLoader()
 
