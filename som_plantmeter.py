@@ -41,22 +41,6 @@ class GenerationkwhProductionAggregator(osv.osv):
         _aggr = self._createAggregator(aggr, ['id', 'name', 'description', 'enabled'])
         return _aggr.get_kwh(start, end).tolist()
 
-    def update_kwh(self, cursor, uid, pid, start=None, end=None, context=None):
-        '''Update kWh measurements'''
-
-        notifier = ProductionNotifierProvider(self, cursor, uid, context)
-        if start > end: return
-        if not context:
-            context = {}
-        if isinstance(pid, list) or isinstance(pid, tuple):
-            pid = pid[0]
-
-        args = ['id', 'name', 'description', 'enabled']
-        aggr = self.browse(cursor, uid, pid, context)
-        _aggr = self._createAggregator(aggr, args)
-        self.updateLastCommit(cursor, uid, pid,
-                _aggr.update_kwh(start, end, notifier))
-
     def updateLastCommit(self, cursor, uid, pid, lastcommits, context=None):
         '''Update last commit date'''
 
@@ -140,11 +124,6 @@ class GenerationkwhProductionAggregatorTesthelper(osv.osv):
     def get_kwh(self, cursor, uid, pid, start, end, context=None):
         mix = self.pool.get('generationkwh.production.aggregator')
         return mix.get_kwh(cursor, uid, pid,
-                isodate(start), isodate(end), context)
-
-    def update_kwh(self, cursor, uid, pid, start, end, context=None):
-        mix = self.pool.get('generationkwh.production.aggregator')
-        return mix.update_kwh(cursor, uid, pid,
                 isodate(start), isodate(end), context)
 
     def firstMeasurementDate(self, cursor, uid, pid, context=None):
