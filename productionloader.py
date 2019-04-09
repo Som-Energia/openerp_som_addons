@@ -33,11 +33,6 @@ class ProductionAggregatorProvider(ErpWrapper):
         return production.lastMeasurementDate(self.cursor, self.uid,
                 self.pid, context=self.context)
 
-    def getNshares(self, pid):
-        production=self.erp.pool.get('generationkwh.production.aggregator')
-        return production.getNshares(self.cursor, self.uid,
-                pid, context=self.context)
-
 
 class GenerationkWhProductionLoader(osv.osv):
 
@@ -46,7 +41,6 @@ class GenerationkWhProductionLoader(osv.osv):
 
     def _createProductionLoader(self, cursor, uid, pid, context):
         production = ProductionAggregatorProvider(self, cursor, uid, pid, context)
-        nshares = production.getNshares(pid)
         plantsharesprovider = PlantShareProvider(self, cursor, uid, 'GenerationkWh')
         plantsharecurver = MixTotalSharesCurve(plantsharesprovider)
         rights = RightsPerShare(mdbpool.get_db())
