@@ -14,6 +14,3 @@
 "access_generationkwh_production_plant_r","generationkwh.production.plant","model_generationkwh_production_plant","som_plantmeter.group_som_plantmeter_r",1,0,0,0
 "access_generationkwh_production_plant_u","generationkwh.production.plant","model_generationkwh_production_plant","som_plantmeter.group_som_plantmeter_u",1,1,1,1
 "access_generationkwh_production_plant_w","generationkwh.production.plant","model_generationkwh_production_plant","som_plantmeter.group_som_plantmeter_w",1,1,1,0
-"access_generationkwh_production_notifier_r","generationkwh.production.notifier","model_generationkwh_production_notifier","som_plantmeter.group_som_plantmeter_r",1,0,0,0
-"access_generationkwh_production_notifier_u","generationkwh.production.notifier","model_generationkwh_production_notifier","som_plantmeter.group_som_plantmeter_u",1,1,1,1
-"access_generationkwh_production_notifier_w","generationkwh.production.notifier","model_generationkwh_production_notifier","som_plantmeter.group_som_plantmeter_w",1,1,1,0
