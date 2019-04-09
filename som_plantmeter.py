@@ -241,53 +241,6 @@ class PlantShareProvider(ErpWrapper):
         ]
 
 
-class ProductionNotifierProvider(ErpWrapper):
-    def __init__(self, erp, cursor, uid, pid, context=None):
-        self.pid = pid
-        super(ProductionNotifierProvider, self).__init__(erp, cursor, uid, context)
-
-    def push(self, meter_id, status, message):
-        notifier=self.erp.pool.get('generationkwh.production.notifier')
-        return notifier.create(self.cursor, self.uid, {
-            'meter_id': meter_id,
-            'date_pull': datetime.now(),
-            'status': status,
-            'message': message
-            })
-
-class GenerationkwhProductionNotifier(osv.osv):
-    _name = 'generationkwh.production.notifier'
-    _rec_name = 'contract_id'
-
-    _columns = {
-        'meter_id': fields.many2one(
-            'generationkwh.production.meter',
-            'meter'
-        ),
-        'date_pull': fields.datetime('Last pull datetime'),
-        'status': fields.selection([
-            ('failed', 'Failed'),
-            ('done', 'Done')]),
-        'message': fields.char('Message', size=200)
-    }
-
-    _order = 'date_pull desc'
-
-GenerationkwhProductionNotifier()
-
-
-class GenerationkwhProductionNotifierTesthelper(osv.osv):
-    _name = 'generationkwh.production.notifier.testhelper'
-    _auto = False
-
-    def push(self, cursor, uid, meter_id, status, message, context=None):
-        from datetime import datetime
-
-        notifier = ProductionNotifierProvider(self, cursor, uid, context)
-        return notifier.push(meter_id, status, message)
-
-GenerationkwhProductionNotifierTesthelper()
-
 
 class GenerationkwhProductionMeasurement(osv_mongodb.osv_mongodb):
 
