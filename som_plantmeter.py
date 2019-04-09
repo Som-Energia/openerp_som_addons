@@ -13,7 +13,10 @@ from plantmeter.mongotimecurve import MongoTimeCurve, toLocal, asUtc
 from plantmeter.isodates import isodate, naiveisodatetime, localisodate
 
 class GenerationkwhProductionAggregator(osv.osv):
-    '''Implements generationkwh production aggregation '''
+    """
+    Serialization class for a plant mix. See plantmeter.aggregator.
+    A mix would be a set of plants which production is to be added together.
+    """
 
     _name = 'generationkwh.production.aggregator'
 
@@ -102,6 +105,126 @@ class GenerationkwhProductionAggregator(osv.osv):
 GenerationkwhProductionAggregator()
 
 
+class GenerationkwhProductionPlant(osv.osv):
+    """
+    Serialization class for a plant. See plantmeter.plant.
+    """
+
+    _name = 'generationkwh.production.plant'
+    _columns = {
+        'name': fields.char('Name', size=50),
+        'description': fields.char('Description', size=150),
+        'enabled': fields.boolean('Enabled'),
+        'nshares': fields.integer('Number of shares'),
+        'aggr_id': fields.many2one('generationkwh.production.aggregator', 'Production aggregator',
+                                  required=True),
+        'meters': fields.one2many('generationkwh.production.meter', 'plant_id', 'Meters'),
+        'first_active_date': fields.date('First operative date'),
+        'last_active_date': fields.date('Last operative date'),
+    }
+    _defaults = {
+        'enabled': lambda *a: False,
+    }
+
+
+GenerationkwhProductionPlant()
+
+
+class GenerationkwhProductionMeter(osv.osv):
+    """
+    Serialization class for a plant meter. See plantmeter.meter.
+    """
+
+    _name = 'generationkwh.production.meter'
+    _columns = {
+        'name': fields.char('Name', size=50),
+        'description': fields.char('Description', size=150),
+        'enabled': fields.boolean('Enabled'),
+        'plant_id': fields.many2one('generationkwh.production.plant'),
+        'uri': fields.char('Host', size=150, required=True),
+        'first_active_date': fields.date('First operative date'),
+        }
+    _defaults = {
+        'enabled': lambda *a: False,
+    }
+
+GenerationkwhProductionMeter()
+
+class PlantShareProvider(ErpWrapper):
+    """
+    Provides a list for each plant of their active periods and their share value.
+    To be used as provider for a LayeredShareCurve, that generates
+    the curves to represent the share value of the active built plants.
+    """
+    def __init__(self, erp, cursor, uid, mixname, context=None):
+        self.mixname = mixname
+        super(PlantShareProvider, self).__init__(erp, cursor, uid, context)
+
+    def items(self):
+        Mix = self.erp.pool.get('generationkwh.production.aggregator')
+        Plant = self.erp.pool.get('generationkwh.production.plant')
+        mix_ids = Mix.search(self.cursor, self.uid, [
+            ('name', '=', self.mixname)
+        ])
+        # if not mixids: ....
+
+        plant_ids = Plant.search(self.cursor, self.uid, [
+            ('aggr_id', '=', mix_ids[0]),
+        ])
+        plants = Plant.read(self.cursor, self.uid, plant_ids, [
+        ])
+        return [
+            ns(
+                mix=self.mixname,
+                shares=plant['nshares'],
+                firstEffectiveDate = isodate(plant['first_active_date']),
+                lastEffectiveDate = isodate(plant['last_active_date']),
+            )
+            for plant in plants
+        ]
+
+
+
+class GenerationkwhProductionMeasurement(osv_mongodb.osv_mongodb):
+
+    _name = 'generationkwh.production.measurement'
+    _order = 'timestamp desc'
+
+    _columns = {
+        'name': fields.integer('Plant identifier'), # NOTE: workaround due mongodb backend
+        'create_at': fields.datetime('Create datetime'),
+        'datetime': fields.datetime('Exported datetime'),
+        'daylight': fields.char('Exported datetime daylight',size=1),
+        'ae': fields.float('Exported energy (kWh)')
+    }
+
+    def search(self, cursor, uid, args, offset=0, limit=0, order=None,
+               context=None, count=False):
+        '''Exact match for name.
+        In mongodb, even when an index exists, not exact
+        searches for fields scan all documents in collection
+        making it extremely slow. Making name exact search
+        reduces dramatically the amount of documents scanned'''
+
+        new_args = []
+        for arg in args:
+            if not isinstance(arg, (list, tuple)):
+                new_args.append(arg)
+                continue
+            field, operator, value = arg
+            if field == 'name' and operator != '=':
+                operator = '='
+            new_args.append((field, operator, value))
+        return super(GenerationkwhProductionMeasurement,
+                     self).search(cursor, uid, new_args,
+                                  offset=offset, limit=limit,
+                                  order=order, context=context,
+                                  count=count)
+
+GenerationkwhProductionMeasurement()
+
+
+
 class GenerationkwhProductionAggregatorTesthelper(osv.osv):
     '''Implements generationkwh production aggregation testhelper '''
 
@@ -171,113 +294,5 @@ class GenerationkwhProductionAggregatorTesthelper(osv.osv):
 
 GenerationkwhProductionAggregatorTesthelper()
 
-
-class GenerationkwhProductionPlant(osv.osv):
-
-    _name = 'generationkwh.production.plant'
-    _columns = {
-        'name': fields.char('Name', size=50),
-        'description': fields.char('Description', size=150),
-        'enabled': fields.boolean('Enabled'),
-        'nshares': fields.integer('Number of shares'),
-        'aggr_id': fields.many2one('generationkwh.production.aggregator', 'Production aggregator',
-                                  required=True),
-        'meters': fields.one2many('generationkwh.production.meter', 'plant_id', 'Meters'),
-        'first_active_date': fields.date('First operative date'),
-        'last_active_date': fields.date('Last operative date'),
-    }
-    _defaults = {
-        'enabled': lambda *a: False,
-    }
-
-
-GenerationkwhProductionPlant()
-
-
-class GenerationkwhProductionMeter(osv.osv):
-
-    _name = 'generationkwh.production.meter'
-    _columns = {
-        'name': fields.char('Name', size=50),
-        'description': fields.char('Description', size=150),
-        'enabled': fields.boolean('Enabled'),
-        'plant_id': fields.many2one('generationkwh.production.plant'),
-        'uri': fields.char('Host', size=150, required=True),
-        'first_active_date': fields.date('First operative date'),
-        }
-    _defaults = {
-        'enabled': lambda *a: False,
-    }
-
-GenerationkwhProductionMeter()
-
-class PlantShareProvider(ErpWrapper):
-    ""
-    def __init__(self, erp, cursor, uid, mixname, context=None):
-        self.mixname = mixname
-        super(PlantShareProvider, self).__init__(erp, cursor, uid, context)
-
-    def items(self):
-        Mix = self.erp.pool.get('generationkwh.production.aggregator')
-        Plant = self.erp.pool.get('generationkwh.production.plant')
-        mix_ids = Mix.search(self.cursor, self.uid, [
-            ('name', '=', self.mixname)
-        ])
-        # if not mixids: ....
-
-        plant_ids = Plant.search(self.cursor, self.uid, [
-            ('aggr_id', '=', mix_ids[0]),
-        ])
-        plants = Plant.read(self.cursor, self.uid, plant_ids, [
-        ])
-        return [
-            ns(
-                mix=self.mixname,
-                shares=plant['nshares'],
-                firstEffectiveDate = isodate(plant['first_active_date']),
-                lastEffectiveDate = isodate(plant['last_active_date']),
-            )
-            for plant in plants
-        ]
-
-
-
-class GenerationkwhProductionMeasurement(osv_mongodb.osv_mongodb):
-
-    _name = 'generationkwh.production.measurement'
-    _order = 'timestamp desc'
-
-    _columns = {
-        'name': fields.integer('Plant identifier'), # NOTE: workaround due mongodb backend
-        'create_at': fields.datetime('Create datetime'),
-        'datetime': fields.datetime('Exported datetime'),
-        'daylight': fields.char('Exported datetime daylight',size=1),
-        'ae': fields.float('Exported energy (kWh)')
-    }
-
-    def search(self, cursor, uid, args, offset=0, limit=0, order=None,
-               context=None, count=False):
-        '''Exact match for name.
-        In mongodb, even when an index exists, not exact
-        searches for fields scan all documents in collection
-        making it extremely slow. Making name exact search
-        reduces dramatically the amount of documents scanned'''
-
-        new_args = []
-        for arg in args:
-            if not isinstance(arg, (list, tuple)):
-                new_args.append(arg)
-                continue
-            field, operator, value = arg
-            if field == 'name' and operator != '=':
-                operator = '='
-            new_args.append((field, operator, value))
-        return super(GenerationkwhProductionMeasurement,
-                     self).search(cursor, uid, new_args,
-                                  offset=offset, limit=limit,
-                                  order=order, context=context,
-                                  count=count)
-
-GenerationkwhProductionMeasurement()
 
 # vim: ts=4 sw=4 et
