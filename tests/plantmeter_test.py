@@ -152,7 +152,8 @@ class PlantShareProvider_Test(unittest.TestCase):
 
 
 
-class PlantMeterApiTestBase(unittest.TestCase):
+@destructiveTest
+class GenerationkwhProductionAggregator_Test(unittest.TestCase):
 
     def setUp(self):
         import erppeek_wst
@@ -274,9 +275,6 @@ class PlantMeterApiTestBase(unittest.TestCase):
                         naiveisodate(end)+datetime.timedelta(days=1)
                     ), values)
                 ])
-
-@destructiveTest
-class GenerationkwhProductionAggregator_Test(PlantMeterApiTestBase):
 
     def test_get_kwh_onePlant_withNoPoints(self):
         aggr, meters = self.setupAggregator(
