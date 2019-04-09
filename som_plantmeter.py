@@ -41,18 +41,6 @@ class GenerationkwhProductionAggregator(osv.osv):
         _aggr = self._createAggregator(aggr, ['id', 'name', 'description', 'enabled'])
         return _aggr.get_kwh(start, end).tolist()
 
-    def updateLastCommit(self, cursor, uid, pid, lastcommits, context=None):
-        '''Update last commit date'''
-
-        if not context:
-            context = {}
-        if isinstance(pid, list) or isinstance(pid, tuple):
-            pid = pid[0]
-
-        plant = self.pool.get('generationkwh.production.plant')
-        for plant_id, commits in lastcommits:
-            plant.updateLastCommit(cursor, uid, plant_id, commits)
-
     def firstMeasurementDate(self, cursor, uid, pid, context=None):
         '''Get first measurement date'''
 
@@ -106,7 +94,7 @@ class GenerationkwhProductionAggregator(osv.osv):
         return ProductionAggregator(**dict(obj_to_dict(aggr, args).items() + 
             dict(plants=[ProductionPlant(**dict(obj_to_dict(plant, args).items() +
                 dict(meters=[ProductionMeter(
-                    **dict(obj_to_dict(meter, args + ['uri','lastcommit','first_active_date']).items() +
+                    **dict(obj_to_dict(meter, args + ['uri','first_active_date']).items() +
                     dict(curveProvider=curveProvider).items())) 
                 for meter in plant.meters if meter.enabled]).items()))
             for plant in aggr.plants if plant.enabled]).items()))
@@ -202,17 +190,6 @@ class GenerationkwhProductionPlant(osv.osv):
         'enabled': lambda *a: False,
     }
 
-    def updateLastCommit(self, cursor, uid, pid, lastcommits, context=None):
-        '''Update last commit date'''
-
-        if not context:
-            context = {}
-        if isinstance(pid, list) or isinstance(pid, tuple):
-            pid = pid[0]
-
-        meter = self.pool.get('generationkwh.production.meter')
-        for meter_id, commits in lastcommits:
-            meter.updateLastCommit(cursor, uid, meter_id, commits)
 
 GenerationkwhProductionPlant()
 
@@ -226,27 +203,13 @@ class GenerationkwhProductionMeter(osv.osv):
         'enabled': fields.boolean('Enabled'),
         'plant_id': fields.many2one('generationkwh.production.plant'),
         'uri': fields.char('Host', size=150, required=True),
-        'lastcommit': fields.date('Last pull date'),
         'first_active_date': fields.date('First operative date'),
         }
     _defaults = {
         'enabled': lambda *a: False,
     }
 
-    def updateLastCommit(self, cursor, uid, pid, lastcommit, context=None):
-        '''Update last commit date'''
-
-        if not context:
-            context = {}
-        if isinstance(pid, list) or isinstance(pid, tuple):
-            pid = pid[0]
-
-        meter = self.pool.get('generationkwh.production.meter')
-        if lastcommit:
-            meter.write(cursor, uid, pid, {'lastcommit': lastcommit})
-
 GenerationkwhProductionMeter()
-
 
 class PlantShareProvider(ErpWrapper):
     ""
