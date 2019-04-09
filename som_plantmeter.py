@@ -72,17 +72,6 @@ class GenerationkwhProductionAggregator(osv.osv):
         date = _aggr.lastMeasurementDate()
         return date if date else None
 
-    def getNshares(self, cursor, uid, pid, context=None):
-        '''Get number of shares'''
-
-        if not context:
-            context = {}
-        if isinstance(pid, list) or isinstance(pid, tuple):
-            pid = pid[0]
-
-        aggr = self.browse(cursor, uid, pid, context)
-        return sum([plant.nshares for plant in aggr.plants])
-
     def _createAggregator(self, aggr, args):
         def obj_to_dict(obj, attrs):
             return {attr: getattr(obj, attr) for attr in attrs}
@@ -246,10 +235,6 @@ class GenerationkwhProductionAggregatorTesthelper(osv.osv):
         production = self.pool.get('generationkwh.production.aggregator')
         result = production.lastMeasurementDate(cursor, uid, pid, context)
         return result and str(result)
-
-    def getNshares(self, cursor, uid, pid, context=None):
-        production = self.pool.get('generationkwh.production.aggregator')
-        return production.getNshares(cursor, uid, pid, context)
 
     def clear_mongo_collections(self, cursor, uid, collections, context=None):
         for collection in collections:

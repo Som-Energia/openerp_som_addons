@@ -577,21 +577,6 @@ class GenerationkwhProductionAggregator_Test(unittest.TestCase):
             date = self.helper.lastMeasurementDate(aggr_id)
             self.assertEqual(date, '2015-08-16')
 
-    def test_getNshares_onePlant(self):
-            aggr,meters = self.setupAggregator(
-                    nplants=1,
-                    nmeters=1)
-            aggr_id = aggr.read(['id'])['id']
-            shares = self.helper.getNshares(aggr_id)
-            self.assertEqual(shares, 1000)
-
-    def test_getNshares_twoPlant(self):
-            aggr,meters = self.setupAggregator(
-                    nplants=2,
-                    nmeters=1)
-            aggr_id = aggr.read(['id'])['id']
-            shares = self.helper.getNshares(aggr_id)
-            self.assertEqual(shares, 3000)
 
 
 # vim: et ts=4 sw=4
