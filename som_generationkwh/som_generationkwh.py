@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from osv import osv, fields
 import netsvc
 from mongodb_backend.mongodb2 import mdbpool
+from tools import config
 
 from generationkwh.dealer import Dealer
 from generationkwh.sharescurve import MemberSharesCurve
@@ -488,6 +489,46 @@ class GenerationkWhInvoiceLineOwner(osv.osv):
 
         return res
 
+    def getPriceWithoutGeneration(self, cr, uid, line):
+        print "Estic a: getPriceWithoutGeneration"
+        per_obj = self.pool.get('giscedata.polissa.tarifa.periodes')
+        gff_obj = self.pool.get('giscedata.facturacio.factura')
+        ail_obj = self.pool.get('account.invoice.line')
+
+        fare_period = gff_obj.get_fare_period(cr, uid, line.product_id.id)
+        product_id_nogen = per_obj.read(cr, uid, fare_period, ['product_id'])['product_id'][0]
+        print line.invoice_id.id
+        print product_id_nogen
+
+        line_s_gen_id = ail_obj.search(cr, uid, [('invoice_id','=',line.invoice_id.id),('product_id','=',product_id_nogen)])
+        line_s_gen = ail_obj.read(cr, uid, line_s_gen_id[0])
+        return line_s_gen
+
+    def getProfit(self, cr, uid, line):
+        print "Estic a: getProfit"
+        if line.quantity == 0:
+            return 0
+
+        priceNoGen = float(self.getPriceWithoutGeneration(cr, uid, line)['price_unit'])
+        profit = (priceNoGen - line.price_unit) * line.quantity
+        return profit
+
+
+    def _ff_saving_generation(self, cursor, uid, ids, field_name, arg,
+                           context=None ):
+        """Invoice Number"""
+        if not ids:
+            return []
+        gilo_obj = self.pool.get('generationkwh.invoice.line.owner')
+        gffl_obj = self.pool.get('giscedata.facturacio.factura.linia')
+
+        res = {k: {} for k in ids}
+        for gilo_line in self.browse(cursor, uid, ids):
+            line = gffl_obj.browse(cursor, uid, gilo_line.factura_line_id.id)
+            res[gilo_line.id] = self.getProfit(cursor, uid, line)
+
+        return res
+
     _columns = {
         'factura_id': fields.many2one(
             'giscedata.facturacio.factura', 'Factura', required=True,
@@ -503,6 +544,11 @@ class GenerationkWhInvoiceLineOwner(osv.osv):
         ),
         'owner_id': fields.many2one(
             'res.partner', 'Soci Generation', required=True, readonly=True
+        ),
+        'saving_gkw_amount': fields.function(
+            _ff_saving_generation, string='Estalvi Generation',
+            method=True, type='float',
+            digits=(16, int(config['price_accuracy'])),
         ),
     }
 
