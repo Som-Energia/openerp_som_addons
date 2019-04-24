@@ -43,11 +43,11 @@ class WizardInvestmentTransfer(osv.osv):
         investment_ids = context.get('active_ids', [])
         new_partner_id = int(wiz.partner_id_alt.id)
         iban = wiz.iban.iban
-        transfer_date = date.today()
+        transfer_date = date.today().strftime('%Y-%m-%d')
 
         new_investment_id = Investment.create_from_transfer(cursor, uid, investment_ids[0], new_partner_id, transfer_date, iban, context=None)
-        old = investment.read(investment_ids[0],['name'])
-        new = investment.read(new_investment_id,['name'])
+        old = Investment.read(cursor, uid, investment_ids[0],['name'])
+        new = Investment.read(cursor, uid, new_investment_id,['name'])
 
         info = "RESULTAT: \n"
         info += "================\n"
