@@ -548,7 +548,7 @@ class GenerationkWhInvoiceLineOwner(osv.osv):
         'saving_gkw_amount': fields.function(
             _ff_saving_generation, string='Estalvi Generation',
             method=True, type='float',
-            digits=(16, int(config['price_accuracy'])),
+            digits=(16, int(config['price_accuracy'])), stored=True,
         ),
     }
 
