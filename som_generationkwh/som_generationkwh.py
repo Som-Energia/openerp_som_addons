@@ -490,22 +490,18 @@ class GenerationkWhInvoiceLineOwner(osv.osv):
         return res
 
     def getPriceWithoutGeneration(self, cr, uid, line):
-        print "Estic a: getPriceWithoutGeneration"
         per_obj = self.pool.get('giscedata.polissa.tarifa.periodes')
         gff_obj = self.pool.get('giscedata.facturacio.factura')
         ail_obj = self.pool.get('account.invoice.line')
 
         fare_period = gff_obj.get_fare_period(cr, uid, line.product_id.id)
         product_id_nogen = per_obj.read(cr, uid, fare_period, ['product_id'])['product_id'][0]
-        print line.invoice_id.id
-        print product_id_nogen
 
         line_s_gen_id = ail_obj.search(cr, uid, [('invoice_id','=',line.invoice_id.id),('product_id','=',product_id_nogen)])
         line_s_gen = ail_obj.read(cr, uid, line_s_gen_id[0])
         return line_s_gen
 
     def getProfit(self, cr, uid, line):
-        print "Estic a: getProfit"
         if line.quantity == 0:
             return 0
 
@@ -548,7 +544,7 @@ class GenerationkWhInvoiceLineOwner(osv.osv):
         'saving_gkw_amount': fields.function(
             _ff_saving_generation, string='Estalvi Generation',
             method=True, type='float',
-            digits=(16, int(config['price_accuracy'])), stored=True,
+            digits=(16, int(config['price_accuracy'])), store=True,
         ),
     }
 
