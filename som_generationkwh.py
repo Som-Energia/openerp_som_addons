@@ -506,8 +506,10 @@ class GenerationkWhInvoiceLineOwner(osv.osv):
             return 0
 
         priceNoGen = float(self.getPriceWithoutGeneration(cr, uid, line)['price_unit'])
-        profit = (priceNoGen - line.price_unit) * line.quantity
-        return profit
+        if line.factura_id.type == 'out_refund':
+            return (priceNoGen - line.price_unit) * line.quantity * -1
+
+        return (priceNoGen - line.price_unit) * line.quantity
 
 
     def _ff_saving_generation(self, cursor, uid, ids, field_name, arg,
