@@ -481,9 +481,9 @@ class GenerationkwhInvestment(osv.osv):
         #obtenir total factures Generation any anterior
         today = datetime.today()#Get date
         previous_year = today.year - 1
-        start_date = previous_year + '-01-01'
-        end_date = previous_year + '-12-31'
-        total_amount_saving = self.get_total_saving_partner(self, cursor, uid, partner_id, start_date, end_date)
+        start_date = str(previous_year) + '-01-01'
+        end_date = str(previous_year) + '-12-31'
+        total_amount_saving = self.get_total_saving_partner(cursor, uid, partner_id, start_date, end_date)
 
         #obtenir total accions inverions
         total_dayshares_year = 0
