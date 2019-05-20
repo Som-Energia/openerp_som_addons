@@ -446,8 +446,62 @@ class GenerationkwhInvestment(osv.osv):
 
         return len(result), sum(result)
 
+
+    def get_dayshares_investmentyear(self, cursor, uid, inv_obj, start_date, end_date):
+        start_datetime = datetime.strptime(start_date,'%Y-%m-%d')
+        end_datetime = datetime.strptime(end_date,'%Y-%m-%d')
+        first_effective_datetime = datetime.strptime(inv_obj['first_effective_date'],'%Y-%m-%d')
+        last_effective_datetime = datetime.strptime(inv_obj['last_effective_date'],'%Y-%m-%d')
+
+        if start_datetime < first_effective_datetime:
+            start_datetime = first_effective_datetime
+        if end_datetime > last_effective_datetime:
+            end_datetime = last_effective_datetime
+
+        return (end_datetime - start_datetime).days * inv_obj['nshares']
+
+    def get_total_saving_partner(self, cursor, uid, partner_id, start_date, end_date):
+        GenerationkwhInvoiceLineOwner = self.pool.get('generationkwh.invoice.line.owner')
+        total_amount_saving = 0
+        list_gkwlines_ids = GenerationkwhInvoiceLineOwner.search(cursor, uid, [('owner_id','=',partner_id),('factura_id.date_invoice','>=',start_date), ('factura_id.date_invoice','<=',end_date)])
+        for line_id in list_gkwlines_ids:
+            invoice_obj = GenerationkwhInvoiceLineOwner.read(cursor, uid, line_id, ['saving_gkw_amount'])
+            total_amount_saving += invoice_obj['saving_gkw_amount']
+        return total_amount_saving
+
+
+    def get_irpf_amount(self, cursor, uid, investment_id, to_be_amortized, member_id):
+        Invoice = self.pool.get('account.invoice')
+        InvoiceLine = self.pool.get('account.invoice.line')
+        GenerationkwhInvoiceLineOwner = self.pool.get('generationkwh.invoice.line.owner')
+        Investment = self.pool.get('generationkwh.investment')
+        Soci = self.pool.get('somenergia.soci')
+        partner_id = Soci.read(cursor, uid, member_id, ['partner_id'])['partner_id'][0]
+
+        #obtenir total factures Generation any anterior
+        today = datetime.today()#Get date
+        previous_year = today.year - 1
+        start_date = previous_year + '-01-01'
+        end_date = previous_year + '-12-31'
+        total_amount_saving = self.get_total_saving_partner(self, cursor, uid, partner_id, start_date, end_date)
+
+        #obtenir total accions inverions
+        total_dayshares_year = 0
+        list_inv_id = self.search(cursor, uid, [('member_id','=',member_id)])
+        for inv_id in list_inv_id:
+            inv_obj = self.read(cursor, uid, inv_id, ['first_effective_date','last_effective_date','nshares'])
+            total_dayshares_year += self.get_dayshares_investmentyear(cursor, uid, inv_obj, start_date, end_date)
+
+        #regla de tres amb accions inversió actual
+        inv_actual = self.read(cursor, uid, investment_id, ['first_effective_date','last_effective_date','nshares'])
+        daysharesactual = self.get_dayshares_investmentyear(cursor, uid, inv_actual, start_date, end_date)
+
+        return (daysharesactual * total_amount_saving / total_dayshares_year) * gkwh.irpfTaxValue
+
+
     def amortize(self, cursor, uid, current_date, ids=None, context=None):
         User = self.pool.get('res.users')
+        Soci = self.pool.get('somenergia.soci')
         username = User.read(cursor, uid, uid, ['name'])['name']
         amortization_ids = []
         amortization_errors = []
@@ -459,6 +513,7 @@ class GenerationkwhInvestment(osv.osv):
             'nshares',
             'log',
             'actions_log',
+            'member_id',
             ])
         for inv in investments:
             investment_id = inv['id']
@@ -477,6 +532,7 @@ class GenerationkwhInvestment(osv.osv):
                     to_be_amortized,
                 ) = pending
                 amortization_date = amortization_date or False
+                irpf_amount = self.get_irpf_amount(cursor, uid, investment_id, to_be_amortized, inv['member_id'][0])
 
                 amortization_id, error = self.create_amortization_invoice(cursor, uid,
                         investment_id = investment_id,
@@ -484,6 +540,7 @@ class GenerationkwhInvestment(osv.osv):
                         to_be_amortized = to_be_amortized,
                         amortization_number = amortization_number,
                         amortization_total_number = amortization_total_number,
+                        irpf_amount = irpf_amount,
                         )
 
                 if error:
@@ -505,13 +562,12 @@ class GenerationkwhInvestment(osv.osv):
                 self.send_mail(cursor, uid, amortization_id,
                     'account.invoice', 'generationkwh_mail_amortitzacio')
 
-
         return amortization_ids, amortization_errors
 
     def create_amortization_invoice(self, cursor, uid,
             investment_id, amortization_date, to_be_amortized,
             amortization_number,amortization_total_number,
-            context=None):
+            irpf_amount, context=None):
 
         Partner = self.pool.get('res.partner')
         Product = self.pool.get('product.product')
@@ -607,7 +663,7 @@ class GenerationkwhInvestment(osv.osv):
             'account_id': partner.property_account_liquidacio.id,
             'partner_bank': partner.bank_inversions.id,
             'payment_type': payment_type_id,
-            'check_total': to_be_amortized,
+            'check_total': to_be_amortized + (irpf_amount * -1),
             # TODO: Remove the GENKWHID stuff when fully migrated, error instead
             'origin': investment.name or 'GENKWHID{}'.format(investment.id),
             'reference': invoice_name,
@@ -633,6 +689,39 @@ class GenerationkwhInvestment(osv.osv):
             quantity = 1,
             price_unit = to_be_amortized,
             product_id = product_id,
+            # partner specific account, was generic from product
+            account_id = partner.property_account_gkwh.id,
+        )
+
+        # no taxes apply
+        line['invoice_line_tax_id'] = [
+            (6, 0, line.get('invoice_line_tax_id', []))
+        ]
+        InvoiceLine.create(cursor, uid, line)
+
+        # IRPF retention
+        product_irpf_id = Product.search(cursor, uid, [
+            ('default_code','=', gkwh.irpfProductCode),
+            ])[0]
+        product_irpf = Product.browse(cursor, uid, product_irpf_id)
+        product_uom_irpf_id = product_irpf.uom_id.id
+
+        line = dict(
+            InvoiceLine.product_id_change(cursor, uid, [],
+                product=product_irpf_id,
+                uom=product_uom_irpf_id,
+                partner_id=partner_id,
+                type='in_invoice',
+                ).get('value', {}),
+            invoice_id = invoice_id,
+            name = _('Retenció IRPF sobre l\'estalvi del Generationkwh de {retention_date:%Y} de {investment} ').format(
+                investment = investment.name,
+                retention_date = datetime.strptime(amortization_date,'%Y-%m-%d') - relativedelta(years=1),
+                ),
+            note = investmentMemento.dump(),
+            quantity = 1,
+            price_unit = irpf_amount * -1,
+            product_id = product_irpf_id,
             # partner specific account, was generic from product
             account_id = partner.property_account_gkwh.id,
         )

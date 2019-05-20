@@ -1014,6 +1014,12 @@
             <field name="categ_id" model='product.category' search="[('name','=','Inversions')]"/>
             <field name="property_account_expense" model="account.account" search="[('code','=','163500000000')]"/>
         </record>
+        <record id="genkwh_product_irpf" model="product.product">
+            <field name="name">Retenció IRPF estalvi Generation kWh</field>
+            <field name="default_code">GENKWH_IRPF</field>
+            <field name="categ_id" model='product.category' search="[('name','=','Inversions')]"/>
+            <field name="property_account_expense" model="account.account" search="[('code','=','163500000000')]"/>
+        </record>
     </data>
 
    <!-- Poweremail templates -->
