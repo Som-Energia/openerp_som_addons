@@ -463,12 +463,14 @@ class GenerationkwhInvestment(osv.osv):
     def get_total_saving_partner(self, cursor, uid, partner_id, start_date, end_date):
         GenerationkwhInvoiceLineOwner = self.pool.get('generationkwh.invoice.line.owner')
         total_amount_saving = 0
+        gffl_added = set()
         list_gkwlines_ids = GenerationkwhInvoiceLineOwner.search(cursor, uid, [('owner_id','=',partner_id),('factura_id.date_invoice','>=',start_date), ('factura_id.date_invoice','<=',end_date)])
         for line_id in list_gkwlines_ids:
-            invoice_obj = GenerationkwhInvoiceLineOwner.read(cursor, uid, line_id, ['saving_gkw_amount'])
-            total_amount_saving += invoice_obj['saving_gkw_amount']
+            invoice_obj = GenerationkwhInvoiceLineOwner.read(cursor, uid, line_id, ['saving_gkw_amount', 'factura_line_id'])
+            if invoice_obj['factura_line_id'] not in gffl_added:
+                total_amount_saving += invoice_obj['saving_gkw_amount']
+                gffl_added.add(invoice_obj['factura_line_id'])
         return total_amount_saving
-
 
     def get_irpf_amount(self, cursor, uid, investment_id, to_be_amortized, member_id):
         Invoice = self.pool.get('account.invoice')
