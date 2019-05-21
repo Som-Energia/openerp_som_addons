@@ -457,8 +457,8 @@ class GenerationkwhInvestment(osv.osv):
             start_datetime = first_effective_datetime
         if end_datetime > last_effective_datetime:
             end_datetime = last_effective_datetime
-
-        return (end_datetime - start_datetime).days * inv_obj['nshares']
+        dayShares = ((end_datetime - start_datetime).days + 1) * inv_obj['nshares']
+        return dayShares if dayShares > 0 else 0
 
     def get_total_saving_partner(self, cursor, uid, partner_id, start_date, end_date):
         GenerationkwhInvoiceLineOwner = self.pool.get('generationkwh.invoice.line.owner')
