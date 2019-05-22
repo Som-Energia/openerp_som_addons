@@ -457,7 +457,7 @@ class GenerationkwhInvestment(osv.osv):
             start_datetime = first_effective_datetime
         if end_datetime > last_effective_datetime:
             end_datetime = last_effective_datetime
-        dayShares = ((end_datetime - start_datetime).days + 1) * inv_obj['nshares']
+        dayShares = (end_datetime - start_datetime).days * inv_obj['nshares']
         return dayShares if dayShares > 0 else 0
 
     def get_total_saving_partner(self, cursor, uid, partner_id, start_date, end_date):
@@ -488,7 +488,7 @@ class GenerationkwhInvestment(osv.osv):
         total_amount_saving = self.get_total_saving_partner(cursor, uid, partner_id, start_date, end_date)
 
         #obtenir total accions inverions
-        total_dayshares_year = 0
+        total_dayshares_year = 1
         list_inv_id = self.search(cursor, uid, [('member_id','=',member_id)])
         for inv_id in list_inv_id:
             inv_obj = self.read(cursor, uid, inv_id, ['first_effective_date','last_effective_date','nshares'])
@@ -724,8 +724,6 @@ class GenerationkwhInvestment(osv.osv):
             quantity = 1,
             price_unit = irpf_amount * -1,
             product_id = product_irpf_id,
-            # partner specific account, was generic from product
-            account_id = partner.property_account_gkwh.id,
         )
 
         # no taxes apply
