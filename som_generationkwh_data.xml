@@ -1018,7 +1018,17 @@
             <field name="name">Retenció IRPF estalvi Generation kWh</field>
             <field name="default_code">GENKWH_IRPF</field>
             <field name="categ_id" model='product.category' search="[('name','=','Inversions')]"/>
-            <field name="property_account_expense" model="account.account" search="[('code','=','163500000000')]"/>
+            <field name="property_account_expense" model="account.account" search="[('code','=','475119000001')]"/>
+	    <field name="property_account_income" model="account.account" search="[('code','=','475119000001')]"/>
+	    <field name="type">service</field>
+        </record>
+        <record id="pgc_475119000001" model="account.account">
+            <field name="code">475119000001</field>
+            <field name="reconcile" eval="True"/>
+            <field name="parent_id" model="account.account" search="[('code','=','4751')]"/>
+            <field name="type">other</field>
+            <field name="name">IRPF 19% GENERATION KWh</field>
+            <field name="user_type" ref="l10n_chart_ES.tax"/>
         </record>
     </data>
 
