@@ -1585,6 +1585,12 @@ class GenerationkwhInvestment(osv.osv):
             })
         return refund_invoice_id,[]
 
+    def is_last_year_amortized(self, cursor, uid, investment_name, current_year):
+        Invoice = self.pool.get('account.invoice')
+        invoice_number = investment_name + "-AMOR" + str(int(current_year)-1)
+        amortized = Invoice.search(cursor, uid, [('number','=', invoice_number)])
+        return amortized
+
     def divest(self, cursor, uid, ids, divestment_date=None):
         Soci = self.pool.get('somenergia.soci')
         User = self.pool.get('res.users')
