@@ -703,35 +703,36 @@ class GenerationkwhInvestment(osv.osv):
         InvoiceLine.create(cursor, uid, line)
 
         # IRPF retention
-        product_irpf_id = Product.search(cursor, uid, [
-            ('default_code','=', gkwh.irpfProductCode),
-            ])[0]
-        product_irpf = Product.browse(cursor, uid, product_irpf_id)
-        product_uom_irpf_id = product_irpf.uom_id.id
+        if irpf_amount:
+            product_irpf_id = Product.search(cursor, uid, [
+                ('default_code','=', gkwh.irpfProductCode),
+                ])[0]
+            product_irpf = Product.browse(cursor, uid, product_irpf_id)
+            product_uom_irpf_id = product_irpf.uom_id.id
 
-        line = dict(
-            InvoiceLine.product_id_change(cursor, uid, [],
-                product=product_irpf_id,
-                uom=product_uom_irpf_id,
-                partner_id=partner_id,
-                type='in_invoice',
-                ).get('value', {}),
-            invoice_id = invoice_id,
-            name = _('Retenció IRPF sobre l\'estalvi del Generationkwh de {retention_date:%Y} de {investment} ').format(
-                investment = investment.name,
-                retention_date = datetime.strptime(amortization_date,'%Y-%m-%d') - relativedelta(years=1),
-                ),
-            note = investmentMemento.dump(),
-            quantity = 1,
-            price_unit = irpf_amount * -1,
-            product_id = product_irpf_id,
-        )
+            line = dict(
+                InvoiceLine.product_id_change(cursor, uid, [],
+                    product=product_irpf_id,
+                    uom=product_uom_irpf_id,
+                    partner_id=partner_id,
+                    type='in_invoice',
+                    ).get('value', {}),
+                invoice_id = invoice_id,
+                name = _('Retenció IRPF sobre l\'estalvi del Generationkwh de {retention_date:%Y} de {investment} ').format(
+                    investment = investment.name,
+                    retention_date = datetime.strptime(amortization_date,'%Y-%m-%d') - relativedelta(years=1),
+                    ),
+                note = investmentMemento.dump(),
+                quantity = 1,
+                price_unit = irpf_amount * -1,
+                product_id = product_irpf_id,
+            )
 
-        # no taxes apply
-        line['invoice_line_tax_id'] = [
-            (6, 0, line.get('invoice_line_tax_id', []))
-        ]
-        InvoiceLine.create(cursor, uid, line)
+            # no taxes apply
+            line['invoice_line_tax_id'] = [
+                (6, 0, line.get('invoice_line_tax_id', []))
+            ]
+            InvoiceLine.create(cursor, uid, line)
 
         return invoice_id, errors
 
