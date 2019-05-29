@@ -666,7 +666,7 @@ class GenerationkwhInvestment(osv.osv):
             'account_id': partner.property_account_liquidacio.id,
             'partner_bank': partner.bank_inversions.id,
             'payment_type': payment_type_id,
-            'check_total': to_be_amortized + (irpf_amount * -1),
+            #'check_total': to_be_amortized + (irpf_amount * -1),
             # TODO: Remove the GENKWHID stuff when fully migrated, error instead
             'origin': investment.name or 'GENKWHID{}'.format(investment.id),
             'reference': invoice_name,
@@ -733,6 +733,8 @@ class GenerationkwhInvestment(osv.osv):
                 (6, 0, line.get('invoice_line_tax_id', []))
             ]
             InvoiceLine.create(cursor, uid, line)
+
+        Invoice.write(cursor,uid, invoice_id,{'check_total': to_be_amortized + (irpf_amount * -1)})
 
         return invoice_id, errors
 
@@ -1855,7 +1857,8 @@ class GenerationkwhInvestment(osv.osv):
                 (6, 0, line.get('invoice_line_tax_id', []))
             ]
             InvoiceLine.create(cursor, uid, line)
-            Invoice.write(cursor,uid, invoice_id,{'check_total': to_be_divested + (irpf_amount_current_year * -1) + (irpf_amount * -1)})
+
+        Invoice.write(cursor,uid, invoice_id,{'check_total': to_be_divested + (irpf_amount_current_year * -1) + (irpf_amount * -1)})
 
         return invoice_id, errors
 
