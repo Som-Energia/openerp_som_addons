@@ -66,10 +66,11 @@ class GenerationkWhProductionLoader(osv.osv):
     def computeAvailableRights(self, cursor, uid, pid, context=None):
         logger = netsvc.Logger()
         productionLoader = self._createProductionLoader(cursor, uid, pid, context)
-        productionLoader.computeAvailableRights()
+        log = productionLoader.computeAvailableRights()
 
         logger.notifyChannel('gkwh_productionLoader COMPUTE', netsvc.LOG_INFO,
                 'Compute available rights')
+        return log
 
     def retrieveMeasuresFromPlants(self, cursor, uid, pid, start, end, context=None):
         logger = netsvc.Logger()
