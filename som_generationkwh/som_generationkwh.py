@@ -494,10 +494,10 @@ class GenerationkWhInvoiceLineOwner(osv.osv):
         gff_obj = self.pool.get('giscedata.facturacio.factura')
         ail_obj = self.pool.get('account.invoice.line')
 
-        fare_period = gff_obj.get_fare_period(cr, uid, line.product_id.id)
+        fare_period = gff_obj.get_fare_period(cr, uid, line['product_id'])
         product_id_nogen = per_obj.read(cr, uid, fare_period, ['product_id'])['product_id'][0]
-
-        line_s_gen_id = ail_obj.search(cr, uid, [('invoice_id','=',line.invoice_id.id),('product_id','=',product_id_nogen)])
+        ai_id = gff_obj.read(cr, uid, line['invoice_id'][0], ['invoice_id'])['invoice_id'][0]
+        line_s_gen_id = ail_obj.search(cr, uid, [('invoice_id','=', ai_id),('product_id','=',product_id_nogen)])
         line_s_gen = ail_obj.read(cr, uid, line_s_gen_id[0])
         return line_s_gen
 
@@ -522,7 +522,7 @@ class GenerationkWhInvoiceLineOwner(osv.osv):
 
         res = {k: {} for k in ids}
         for gilo_line in self.browse(cursor, uid, ids):
-            line = gffl_obj.browse(cursor, uid, gilo_line.factura_line_id.id)
+            line = gffl_obj.read(cursor, uid, gilo_line.factura_line_id.id)
             res[gilo_line.id] = self.getProfit(cursor, uid, line)
 
         return res
