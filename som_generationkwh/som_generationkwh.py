@@ -496,20 +496,20 @@ class GenerationkWhInvoiceLineOwner(osv.osv):
 
         fare_period = gff_obj.get_fare_period(cr, uid, line['product_id'])
         product_id_nogen = per_obj.read(cr, uid, fare_period, ['product_id'])['product_id'][0]
-        ai_id = gff_obj.read(cr, uid, line['invoice_id'][0], ['invoice_id'])['invoice_id'][0]
-        line_s_gen_id = ail_obj.search(cr, uid, [('invoice_id','=', ai_id),('product_id','=',product_id_nogen)])
+        line_s_gen_id = ail_obj.search(cr, uid, [('invoice_id','=', line['invoice_id'][0]),('product_id','=',product_id_nogen)])
         line_s_gen = ail_obj.read(cr, uid, line_s_gen_id[0])
         return line_s_gen
 
     def getProfit(self, cr, uid, line):
-        if line.quantity == 0:
+        ai_obj = self.pool.get('account.invoice')
+
+        if line['quantity'] == 0:
             return 0
 
         priceNoGen = float(self.getPriceWithoutGeneration(cr, uid, line)['price_unit'])
-        if line.factura_id.type == 'out_refund':
-            return (priceNoGen - line.price_unit) * line.quantity * -1
-
-        return (priceNoGen - line.price_unit) * line.quantity
+        if ai_obj.read(cr, uid, line['invoice_id'][0], ['type'])['type'] == 'out_refund':
+            return round((priceNoGen - line['price_unit']) * line['quantity'] * -1,2)
+        return round((priceNoGen - line['price_unit']) * line['quantity'],2)
 
 
     def _ff_saving_generation(self, cursor, uid, ids, field_name, arg,
