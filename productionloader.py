@@ -72,7 +72,6 @@ class GenerationkWhProductionLoader(osv.osv):
             initialRemainders,
             context=None,
         ):
-        result=[]
         logger = netsvc.Logger()
         firstDateToRecompute = isodate(firstDateToRecompute)
         lastDateToRecompute = isodate(lastDateToRecompute)
@@ -107,6 +106,7 @@ class GenerationkWhProductionLoader(osv.osv):
                 plantShareCurver=plantsharecurver,
                 rightsPerShare=rights,
                 remainders=remainders)
+        result=[]
         productionLoader.computeAvailableRights(lastDateToRecompute)
 
         logger.notifyChannel('gkwh_productionLoader COMPUTE', netsvc.LOG_INFO,
