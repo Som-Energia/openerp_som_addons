@@ -484,6 +484,8 @@ class GenerationkwhInvestment(osv.osv):
         if not year:
             today = datetime.today()#Get date
             year = today.year - 1
+        if year == 2018:
+            return 0
         start_date = str(year) + '-01-01'
         end_date = str(year) + '-12-31'
         total_amount_saving = self.get_total_saving_partner(cursor, uid, partner_id, start_date, end_date)
