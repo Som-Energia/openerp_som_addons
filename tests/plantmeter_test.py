@@ -227,6 +227,7 @@ class GenerationkwhProductionAggregator_Test(unittest.TestCase):
             name='myplant%d' % plant,
             description='myplant%d' % plant,
             enabled=True,
+            first_active_date='2000-01-01',
             nshares=1000*(plant+1)))
 
     def setupMeter(self, plant_id, plant, meter):
@@ -509,6 +510,24 @@ class GenerationkwhProductionAggregator_Test(unittest.TestCase):
             production = self.helper.get_kwh(
                     aggr_id, '2015-08-16', '2015-08-16')
             self.assertEqual(production, 10*[0]+14*[10]+[0])
+
+    def test_firstActiveDate_noPlants(self):
+            aggr,meters = self.setupAggregator(
+                    nplants=0,
+                    nmeters=0)
+            aggr_id = aggr.read(['id'])['id']
+
+            date = self.helper.firstActiveDate(aggr_id)
+            self.assertEqual(date, False)
+
+    def test_firstActiveDate_singlePlant(self):
+            aggr,meters = self.setupAggregator(
+                    nplants=1,
+                    nmeters=1)
+            aggr_id = aggr.read(['id'])['id']
+
+            date = self.helper.firstActiveDate(aggr_id)
+            self.assertEqual(date, '2000-01-01')
 
     def test_firstMeasurementDate_noPoint(self):
             aggr,meters = self.setupAggregator(
