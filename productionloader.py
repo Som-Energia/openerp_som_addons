@@ -72,10 +72,11 @@ class GenerationkWhProductionLoader(osv.osv):
     def recomputeRights(self, cursor, uid, mix_id, first_date, last_date, context=None):
         logger = netsvc.Logger()
         productionLoader = self._createProductionLoader(cursor, uid, mix_id, context)
-        productionLoader.recomputeRights(isodate(first_date), isodate(last_date))
+        log = productionLoader.recomputeRights(isodate(first_date), isodate(last_date))
 
         logger.notifyChannel('gkwh_productionLoader COMPUTE', netsvc.LOG_INFO,
                 'Compute available rights')
+        return log
 
 
 
