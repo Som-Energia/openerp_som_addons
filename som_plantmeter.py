@@ -75,13 +75,24 @@ class GenerationkwhProductionAggregator(osv.osv):
 
         # TODO: Clean initialization method
         args = ['id', 'name', 'description', 'enabled']
-        return ProductionAggregator(**dict(attr_tuples(aggr, args) + 
-            dict(plants=[ProductionPlant(**dict(attr_tuples(plant, args+['first_active_date']) +
-                dict(meters=[ProductionMeter(
-                    **dict(attr_tuples(meter, args + ['uri','first_active_date']) +
-                    dict(curveProvider=curveProvider).items())) 
-                for meter in plant.meters if meter.enabled]).items()))
-            for plant in aggr.plants if plant.enabled]).items()))
+        return ProductionAggregator(
+            plants=[
+                ProductionPlant(
+                    meters=[
+                        ProductionMeter(
+                            curveProvider=curveProvider,
+                            **dict(attr_tuples(meter, args + ['uri','first_active_date']))
+                            )
+                        for meter in plant.meters
+                        if meter.enabled
+                        ],
+                    **dict(attr_tuples(plant, args+['first_active_date']))
+                    )
+                for plant in aggr.plants
+                if plant.enabled
+                ],
+            **dict(attr_tuples(aggr, args))
+            )
 
 GenerationkwhProductionAggregator()
 
