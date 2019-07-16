@@ -32,50 +32,40 @@ class GenerationkwhProductionAggregator(osv.osv):
         'enabled': lambda *a: False
     }
 
-    def get_kwh(self, cursor, uid, pid, start, end, context=None):
+    def get_kwh(self, cursor, uid, mix_id, start, end, context=None):
         '''Get production aggregation'''
    
         if not context:
             context = {}
-        if isinstance(pid, list) or isinstance(pid, tuple):
-            pid = pid[0]
-
-        aggr = self.browse(cursor, uid, pid, context)
-        _aggr = self._createAggregator(aggr, ['id', 'name', 'description', 'enabled'])
+        _aggr = self._createAggregator(cursor, uid, mix_id)
         return _aggr.get_kwh(start, end).tolist()
 
-    def firstMeasurementDate(self, cursor, uid, pid, context=None):
+    def firstMeasurementDate(self, cursor, uid, mix_id, context=None):
         '''Get first measurement date'''
 
         if not context:
             context = {}
-        if isinstance(pid, list) or isinstance(pid, tuple):
-            pid = pid[0]
-
-        args = ['id', 'name', 'description', 'enabled']
-        aggr = self.browse(cursor, uid, pid, context)
-        _aggr = self._createAggregator(aggr, args)
+        _aggr = self._createAggregator(cursor, uid, mix_id)
         date = _aggr.firstMeasurementDate()
         return date if date else None
 
-    def lastMeasurementDate(self, cursor, uid, pid, context=None):
+    def lastMeasurementDate(self, cursor, uid, mix_id, context=None):
         '''Get last measurement date'''
 
         if not context:
             context = {}
-        if isinstance(pid, list) or isinstance(pid, tuple):
-            pid = pid[0]
-
-        args = ['id', 'name', 'description', 'enabled']
-        aggr = self.browse(cursor, uid, pid, context)
-        _aggr = self._createAggregator(aggr, args)
+        _aggr = self._createAggregator(cursor, uid, mix_id)
         date = _aggr.lastMeasurementDate()
         return date if date else None
 
-    def _createAggregator(self, aggr, args):
+    def _createAggregator(self, cursor, uid, mix_id):
         def obj_to_dict(obj, attrs):
             return {attr: getattr(obj, attr) for attr in attrs}
 
+        if isinstance(mix_id, list) or isinstance(mix_id, tuple):
+            mix_id = mix_id[0]
+
+        aggr = self.browse(cursor, uid, mix_id)
         curveProvider = MongoTimeCurve(mdbpool.get_db(),
             'tm_profile',
             creationField = 'create_date',
@@ -83,6 +73,7 @@ class GenerationkwhProductionAggregator(osv.osv):
             )
 
         # TODO: Clean initialization method
+        args = ['id', 'name', 'description', 'enabled']
         return ProductionAggregator(**dict(obj_to_dict(aggr, args).items() + 
             dict(plants=[ProductionPlant(**dict(obj_to_dict(plant, args).items() +
                 dict(meters=[ProductionMeter(
@@ -221,19 +212,19 @@ class GenerationkwhProductionAggregatorTesthelper(osv.osv):
     _auto = False
 
 
-    def get_kwh(self, cursor, uid, pid, start, end, context=None):
+    def get_kwh(self, cursor, uid, mix_id, start, end, context=None):
         mix = self.pool.get('generationkwh.production.aggregator')
-        return mix.get_kwh(cursor, uid, pid,
+        return mix.get_kwh(cursor, uid, mix_id,
                 isodate(start), isodate(end), context)
 
-    def firstMeasurementDate(self, cursor, uid, pid, context=None):
+    def firstMeasurementDate(self, cursor, uid, mix_id, context=None):
         mix = self.pool.get('generationkwh.production.aggregator')
-        result = mix.firstMeasurementDate(cursor, uid, pid, context)
+        result = mix.firstMeasurementDate(cursor, uid, mix_id, context)
         return result and str(result)
 
-    def lastMeasurementDate(self, cursor, uid, pid, context=None):
+    def lastMeasurementDate(self, cursor, uid, mix_id, context=None):
         production = self.pool.get('generationkwh.production.aggregator')
-        result = production.lastMeasurementDate(cursor, uid, pid, context)
+        result = production.lastMeasurementDate(cursor, uid, mix_id, context)
         return result and str(result)
 
     def clear_mongo_collections(self, cursor, uid, collections, context=None):
