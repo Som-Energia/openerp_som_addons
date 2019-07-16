@@ -60,7 +60,7 @@ class GenerationkwhProductionAggregator(osv.osv):
 
     def _createAggregator(self, cursor, uid, mix_id):
         def obj_to_dict(obj, attrs):
-            return {attr: getattr(obj, attr) for attr in attrs}
+            return [(attr, getattr(obj, attr)) for attr in attrs]
 
         if isinstance(mix_id, list) or isinstance(mix_id, tuple):
             mix_id = mix_id[0]
@@ -74,10 +74,10 @@ class GenerationkwhProductionAggregator(osv.osv):
 
         # TODO: Clean initialization method
         args = ['id', 'name', 'description', 'enabled']
-        return ProductionAggregator(**dict(obj_to_dict(aggr, args).items() + 
-            dict(plants=[ProductionPlant(**dict(obj_to_dict(plant, args).items() +
+        return ProductionAggregator(**dict(obj_to_dict(aggr, args) + 
+            dict(plants=[ProductionPlant(**dict(obj_to_dict(plant, args+['first_active_date']) +
                 dict(meters=[ProductionMeter(
-                    **dict(obj_to_dict(meter, args + ['uri','first_active_date']).items() +
+                    **dict(obj_to_dict(meter, args + ['uri','first_active_date']) +
                     dict(curveProvider=curveProvider).items())) 
                 for meter in plant.meters if meter.enabled]).items()))
             for plant in aggr.plants if plant.enabled]).items()))
