@@ -8,6 +8,7 @@ from mongodb_backend.mongodb2 import mdbpool
 from generationkwh.productionloader import ProductionLoader
 from generationkwh.sharescurve import MixTotalSharesCurve
 from generationkwh.rightspershare import RightsPerShare
+from generationkwh.rightscorrection import RightsCorrection
 from generationkwh.isodates import (
     localisodate,
     addDays,
@@ -49,13 +50,15 @@ class GenerationkWhProductionLoader(osv.osv):
         plantsharesprovider = PlantShareProvider(self, cursor, uid, 'GenerationkWh')
         plantsharecurver = MixTotalSharesCurve(plantsharesprovider)
         rights = RightsPerShare(mdbpool.get_db())
+        rightsCorrection = RightsCorrection(mdbpool.get_db())
         remainders = RemainderProvider(self, cursor, uid, context)
 
         return ProductionLoader(
                 productionAggregator=production,
                 plantShareCurver=plantsharecurver,
                 rightsPerShare=rights,
-                remainders=remainders)
+                remainders=remainders,
+                rightsCorrection=rightsCorrection)
 
     def computeAvailableRights(self, cursor, uid, pid, context=None):
         logger = netsvc.Logger()
@@ -65,6 +68,16 @@ class GenerationkWhProductionLoader(osv.osv):
         logger.notifyChannel('gkwh_productionLoader COMPUTE', netsvc.LOG_INFO,
                 'Compute available rights')
         return log
+
+    def recomputeRights(self, cursor, uid, mix_id, first_date, last_date, context=None):
+        logger = netsvc.Logger()
+        productionLoader = self._createProductionLoader(cursor, uid, mix_id, context)
+        productionLoader.recomputeRights(isodate(first_date), isodate(last_date))
+
+        logger.notifyChannel('gkwh_productionLoader COMPUTE', netsvc.LOG_INFO,
+                'Compute available rights')
+
+
 
     def recomputeRightsOnPeriod(self, cursor, uid, pid,
             firstDateToRecompute,

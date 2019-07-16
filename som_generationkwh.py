@@ -10,6 +10,7 @@ from tools import config
 from generationkwh.dealer import Dealer
 from generationkwh.sharescurve import MemberSharesCurve
 from generationkwh.rightspershare import RightsPerShare
+from generationkwh.rightscorrection import RightsCorrection
 from generationkwh.memberrightscurve import MemberRightsCurve
 from generationkwh.memberrightsusage import MemberRightsUsage
 from generationkwh.fareperiodcurve import FarePeriodCurve
@@ -247,7 +248,7 @@ class GenerationkWhTestHelper(osv.osv):
         rightsPerShare = RightsPerShare(mdbpool.get_db())
         rightsPerShare.updateRightsPerShare(nshares, isodate(firstDate), data)
         remainders = RemainderProvider(self, cursor, uid, context)
-        lastDate = isodate(firstDate) + datetime.timedelta(days=(len(data)+24)%25)
+        lastDate = isodate(firstDate) + datetime.timedelta(days=(len(data)+24)//25)
         remainders.updateRemainders([
             (nshares, isodate(firstDate), 0),
             (nshares, lastDate, 0),
@@ -258,6 +259,15 @@ class GenerationkWhTestHelper(osv.osv):
             context=None):
         rights = RightsPerShare(mdbpool.get_db())
         return list(int(i) for i in rights.rightsPerShare(nshares,
+                isodate(firstDate),
+                isodate(lastDate)
+                ))
+
+    def rights_correction(self, cursor, uid,
+            nshares, firstDate, lastDate,
+            context=None):
+        correction = RightsCorrection(mdbpool.get_db())
+        return list(int(i) for i in correction.rightsCorrection(nshares,
                 isodate(firstDate),
                 isodate(lastDate)
                 ))
