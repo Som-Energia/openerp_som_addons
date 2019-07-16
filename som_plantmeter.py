@@ -59,9 +59,9 @@ class GenerationkwhProductionAggregator(osv.osv):
         return date if date else None
 
     def _createAggregator(self, cursor, uid, mix_id):
-        def attr_tuples(obj, attrs):
+        def extract_attrs(obj, attrs):
             # extracts name value tuples from erp browse object
-            return [(attr, getattr(obj, attr)) for attr in attrs]
+            return {attr: getattr(obj, attr) for attr in attrs}
 
         if isinstance(mix_id, list) or isinstance(mix_id, tuple):
             mix_id = mix_id[0]
@@ -75,24 +75,24 @@ class GenerationkwhProductionAggregator(osv.osv):
 
         # TODO: Clean initialization method
         args = ['id', 'name', 'description', 'enabled']
-        return ProductionAggregator(
+        return ProductionAggregator(**dict(
+            extract_attrs(aggr, args),
             plants=[
-                ProductionPlant(
+                ProductionPlant(**dict(
+                    extract_attrs(plant, args+['first_active_date']),
                     meters=[
                         ProductionMeter(
                             curveProvider=curveProvider,
-                            **dict(attr_tuples(meter, args + ['uri','first_active_date']))
+                            **extract_attrs(meter, args + ['uri','first_active_date'])
                             )
                         for meter in plant.meters
                         if meter.enabled
                         ],
-                    **dict(attr_tuples(plant, args+['first_active_date']))
-                    )
+                    ))
                 for plant in aggr.plants
                 if plant.enabled
                 ],
-            **dict(attr_tuples(aggr, args))
-            )
+            ))
 
 GenerationkwhProductionAggregator()
 
