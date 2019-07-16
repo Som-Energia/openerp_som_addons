@@ -40,6 +40,15 @@ class GenerationkwhProductionAggregator(osv.osv):
         _aggr = self._createAggregator(cursor, uid, mix_id)
         return _aggr.get_kwh(start, end).tolist()
 
+    def firstActiveDate(self, cursor, uid, mix_id, context=None):
+        '''Get first measurement date'''
+
+        if not context:
+            context = {}
+        _aggr = self._createAggregator(cursor, uid, mix_id)
+        date = _aggr.firstActiveDate()
+        return date if date else None
+
     def firstMeasurementDate(self, cursor, uid, mix_id, context=None):
         '''Get first measurement date'''
 
@@ -228,6 +237,11 @@ class GenerationkwhProductionAggregatorTesthelper(osv.osv):
         mix = self.pool.get('generationkwh.production.aggregator')
         return mix.get_kwh(cursor, uid, mix_id,
                 isodate(start), isodate(end), context)
+
+    def firstActiveDate(self, cursor, uid, mix_id, context=None):
+        mix = self.pool.get('generationkwh.production.aggregator')
+        result = mix.firstActiveDate(cursor, uid, mix_id, context)
+        return result and str(result)
 
     def firstMeasurementDate(self, cursor, uid, mix_id, context=None):
         mix = self.pool.get('generationkwh.production.aggregator')
