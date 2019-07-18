@@ -236,7 +236,6 @@ class GenerationkwhProductionAggregator_Test(unittest.TestCase):
             plant_id=plant_id,
             name='mymeter%d%d' % (plant, meter),
             description='mymeter%d%d' % (plant, meter),
-            uri='csv://%s/mymeter%d%d' % (self.tempdir, plant, meter),
             first_active_date='2000-01-01',
             enabled=True))
 
