@@ -168,5 +168,6 @@ class GenerationkWhRemainderTesthelper(osv.osv):
         remainder = self.pool.get('generationkwh.remainder')
         remainder.clean(cr, uid, context)
 
+
 GenerationkWhRemainderTesthelper()
 
