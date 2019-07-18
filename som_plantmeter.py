@@ -92,7 +92,7 @@ class GenerationkwhProductionAggregator(osv.osv):
                     meters=[
                         ProductionMeter(
                             curveProvider=curveProvider,
-                            **extract_attrs(meter, args + ['uri','first_active_date'])
+                            **extract_attrs(meter, args + ['first_active_date'])
                             )
                         for meter in plant.meters
                         if meter.enabled
@@ -142,7 +142,6 @@ class GenerationkwhProductionMeter(osv.osv):
         'description': fields.char('Description', size=150),
         'enabled': fields.boolean('Enabled'),
         'plant_id': fields.many2one('generationkwh.production.plant'),
-        'uri': fields.char('Host', size=150, required=True),
         'first_active_date': fields.date('First operative date'),
         }
     _defaults = {
