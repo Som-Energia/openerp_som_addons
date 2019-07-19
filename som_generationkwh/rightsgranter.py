@@ -2,9 +2,12 @@
 
 from osv import osv, fields
 import netsvc
+from mongodb_backend.mongodb2 import mdbpool
+
 from .erpwrapper import ErpWrapper
 from .remainder import RemainderProvider
-from mongodb_backend.mongodb2 import mdbpool
+from som_plantmeter.som_plantmeter import PlantShareProvider
+
 from generationkwh.rightsgranter import RightsGranter
 from generationkwh.sharescurve import MixTotalSharesCurve
 from generationkwh.rightspershare import RightsPerShare
@@ -16,27 +19,26 @@ from generationkwh.isodates import (
     dateToLocal,
     )
 from yamlns import namespace as ns
-from som_plantmeter.som_plantmeter import PlantShareProvider
 
 
-class ProductionAggregatorProvider(ErpWrapper):
+class ProductionMixProvider(ErpWrapper):
     def __init__(self, erp, cursor, uid, pid, context=None):
         self.pid = pid
-        super(ProductionAggregatorProvider, self).__init__(erp, cursor, uid, context)
+        super(ProductionMixProvider, self).__init__(erp, cursor, uid, context)
 
     def get_kwh(self, start, end):
-        production=self.erp.pool.get('generationkwh.production.aggregator')
-        return production.get_kwh(self.cursor, self.uid,
+        mix=self.erp.pool.get('generationkwh.production.aggregator')
+        return mix.get_kwh(self.cursor, self.uid,
                 self.pid, start, end, context=self.context)
 
     def getFirstMeasurementDate(self):
-        production=self.erp.pool.get('generationkwh.production.aggregator')
-        return production.firstMeasurementDate(self.cursor, self.uid,
+        mix=self.erp.pool.get('generationkwh.production.aggregator')
+        return mix.firstMeasurementDate(self.cursor, self.uid,
                 self.pid, context=self.context)
 
     def getLastMeasurementDate(self):
-        production=self.erp.pool.get('generationkwh.production.aggregator')
-        return production.lastMeasurementDate(self.cursor, self.uid,
+        mix=self.erp.pool.get('generationkwh.production.aggregator')
+        return mix.lastMeasurementDate(self.cursor, self.uid,
                 self.pid, context=self.context)
 
 class GenerationkWhRightsGranter(osv.osv):
@@ -44,8 +46,8 @@ class GenerationkWhRightsGranter(osv.osv):
     _name = 'generationkwh.rights.granter'
     _auto = False
 
-    def _createRightsGranter(self, cursor, uid, pid, context):
-        production = ProductionAggregatorProvider(self, cursor, uid, pid, context)
+    def _createRightsGranter(self, cursor, uid, mix_id, context):
+        mix = ProductionMixProvider(self, cursor, uid, mix_id, context)
         plantsharesprovider = PlantShareProvider(self, cursor, uid, 'GenerationkWh')
         plantsharecurver = MixTotalSharesCurve(plantsharesprovider)
         rights = RightsPerShare(mdbpool.get_db())
@@ -53,15 +55,15 @@ class GenerationkWhRightsGranter(osv.osv):
         remainders = RemainderProvider(self, cursor, uid, context)
 
         return RightsGranter(
-                productionAggregator=production,
+                productionAggregator=mix,
                 plantShareCurver=plantsharecurver,
                 rightsPerShare=rights,
                 remainders=remainders,
                 rightsCorrection=rightsCorrection)
 
-    def computeAvailableRights(self, cursor, uid, pid, context=None):
+    def computeAvailableRights(self, cursor, uid, mix_id, context=None):
         logger = netsvc.Logger()
-        rightsGranter = self._createRightsGranter(cursor, uid, pid, context)
+        rightsGranter = self._createRightsGranter(cursor, uid, mix_id, context)
         log = rightsGranter.computeAvailableRights()
 
         logger.notifyChannel('gkwh_rightsgranter COMPUTE', netsvc.LOG_INFO,
