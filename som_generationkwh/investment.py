@@ -704,20 +704,22 @@ class GenerationkwhInvestment(osv.osv):
         ]
         InvoiceLine.create(cursor, uid, line)
 
-        retention_date = isodate(amortization_date) - relativedelta(years=1),
-        self.irpfRetention(cursor, uid, investment_id, investment, irpf_amount, partner_id, invoice_id, retention_date, investmentMemento)
+        retention_date = isodate(amortization_date) - relativedelta(years=1)
+        self.irpfRetention(cursor, uid, investment_id, investment, irpf_amount, invoice_id, retention_date, investmentMemento)
 
         Invoice.write(cursor,uid, invoice_id,{'check_total': to_be_amortized + (irpf_amount * -1)})
 
         return invoice_id, errors
 
-    def irpfRetention(self, cursor, uid, investment_id, investment, irpf_amount, partner_id, invoice_id, retention_date, investmentMemento):
+    def irpfRetention(self, cursor, uid, investment_id, investment, irpf_amount, invoice_id, retention_date, investmentMemento):
         if not irpf_amount: return
 
         print type(retention_date)
 
         Product = self.pool.get('product.product')
         InvoiceLine = self.pool.get('account.invoice.line')
+
+        partner_id = investment.member_id.partner_id.id
 
         product_irpf_id = Product.search(cursor, uid, [
             ('default_code','=', gkwh.irpfProductCode),
@@ -1807,8 +1809,8 @@ class GenerationkwhInvestment(osv.osv):
         ]
         InvoiceLine.create(cursor, uid, line)
 
-        self.irpfRetention(cursor, uid, investment_id, investment, irpf_amount_current_year, partner_id, invoice_id, isodate(date_invoice), investmentMemento)
-        self.irpfRetention(cursor, uid, investment_id, investment, irpf_amount, partner_id, invoice_id, isodate(date_invoice)-timedelta(year=1), investmentMemento)
+        self.irpfRetention(cursor, uid, investment_id, investment, irpf_amount_current_year, invoice_id, isodate(date_invoice), investmentMemento)
+        self.irpfRetention(cursor, uid, investment_id, investment, irpf_amount, invoice_id, isodate(date_invoice)-relativedelta(years=1), investmentMemento)
 
         Invoice.write(cursor,uid, invoice_id,{'check_total': to_be_divested + (irpf_amount_current_year * -1) + (irpf_amount * -1)})
 
