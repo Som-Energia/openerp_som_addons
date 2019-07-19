@@ -7,3 +7,4 @@ import somenergia_soci
 import account_invoice
 import wizard
 import report
+import rightsgranter
