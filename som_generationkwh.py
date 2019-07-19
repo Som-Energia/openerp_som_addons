@@ -20,7 +20,6 @@ from .assignment import AssignmentProvider
 from .remainder import RemainderProvider
 from .investment import InvestmentProvider
 from .holidays import HolidaysProvider
-from .productionloader import ProductionAggregatorProvider # unused, force load
 import datetime
 
 # Models

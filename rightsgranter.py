@@ -5,7 +5,7 @@ import netsvc
 from .erpwrapper import ErpWrapper
 from .remainder import RemainderProvider
 from mongodb_backend.mongodb2 import mdbpool
-from generationkwh.productionloader import RightsGranter
+from generationkwh.rightsgranter import RightsGranter
 from generationkwh.sharescurve import MixTotalSharesCurve
 from generationkwh.rightspershare import RightsPerShare
 from generationkwh.rightscorrection import RightsCorrection
@@ -61,19 +61,19 @@ class GenerationkWhRightsGranter(osv.osv):
 
     def computeAvailableRights(self, cursor, uid, pid, context=None):
         logger = netsvc.Logger()
-        productionLoader = self._createRightsGranter(cursor, uid, pid, context)
-        log = productionLoader.computeAvailableRights()
+        rightsGranter = self._createRightsGranter(cursor, uid, pid, context)
+        log = rightsGranter.computeAvailableRights()
 
-        logger.notifyChannel('gkwh_productionLoader COMPUTE', netsvc.LOG_INFO,
+        logger.notifyChannel('gkwh_rightsgranter COMPUTE', netsvc.LOG_INFO,
                 'Compute available rights')
         return log
 
     def recomputeRights(self, cursor, uid, mix_id, first_date, last_date, context=None):
         logger = netsvc.Logger()
-        productionLoader = self._createRightsGranter(cursor, uid, mix_id, context)
-        log = productionLoader.recomputeRights(isodate(first_date), isodate(last_date))
+        rightsGranter = self._createRightsGranter(cursor, uid, mix_id, context)
+        log = rightsGranter.recomputeRights(isodate(first_date), isodate(last_date))
 
-        logger.notifyChannel('gkwh_productionLoader COMPUTE', netsvc.LOG_INFO,
+        logger.notifyChannel('gkwh_rightsgranter COMPUTE', netsvc.LOG_INFO,
                 'Compute available rights')
         return log
 
