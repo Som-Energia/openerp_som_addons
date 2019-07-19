@@ -166,7 +166,7 @@ class PlantShareProvider(ErpWrapper):
         mix_ids = Mix.search(self.cursor, self.uid, [
             ('name', '=', self.mixname)
         ])
-        # if not mixids: ....
+        # TODO: if not mixids: ....
 
         plant_ids = Plant.search(self.cursor, self.uid, [
             ('aggr_id', '=', mix_ids[0]),
