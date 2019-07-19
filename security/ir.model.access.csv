@@ -17,9 +17,9 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 "access_generationkwh_kwh_per_share_r","generationkwh.kwh.per.share","model_generationkwh_kwh_per_share","som_generationkwh.group_som_generationkwh_r",1,0,0,0
 "access_generationkwh_kwh_per_share_u","generationkwh.kwh.per.share","model_generationkwh_kwh_per_share","som_generationkwh.group_som_generationkwh_u",1,1,1,1
 "access_generationkwh_kwh_per_share_w","generationkwh.kwh.per.share","model_generationkwh_kwh_per_share","som_generationkwh.group_som_generationkwh_w",1,1,1,0
-"access_generationkwh_production_loader_r","generationkwh.production.loader","model_generationkwh_production_loader","som_generationkwh.group_som_generationkwh_r",1,0,0,0
-"access_generationkwh_production_loader_u","generationkwh.production.loader","model_generationkwh_production_loader","som_generationkwh.group_som_generationkwh_u",1,1,1,1
-"access_generationkwh_production_loader_w","generationkwh.production.loader","model_generationkwh_production_loader","som_generationkwh.group_som_generationkwh_w",1,1,1,0
+"access_generationkwh_rights_granter_r","generationkwh.rights.granter","model_generationkwh_rights_granter","som_generationkwh.group_som_generationkwh_r",1,0,0,0
+"access_generationkwh_rights_granter_u","generationkwh.rights.granter","model_generationkwh_rights_granter","som_generationkwh.group_som_generationkwh_u",1,1,1,1
+"access_generationkwh_rights_granter_w","generationkwh.rights.granter","model_generationkwh_rights_granter","som_generationkwh.group_som_generationkwh_w",1,1,1,0
 "access_generationkwh_remainder_r","generationkwh.remainder","model_generationkwh_remainder","som_generationkwh.group_som_generationkwh_r",1,0,0,0
 "access_generationkwh_remainder_testhelper_r","generationkwh.remainder.testhelper","model_generationkwh_remainder_testhelper","som_generationkwh.group_som_generationkwh_r",1,0,0,0
 "access_generationkwh_remainder_testhelper_u","generationkwh.remainder.testhelper","model_generationkwh_remainder_testhelper","som_generationkwh.group_som_generationkwh_u",1,1,1,1

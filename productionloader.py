@@ -5,7 +5,7 @@ import netsvc
 from .erpwrapper import ErpWrapper
 from .remainder import RemainderProvider
 from mongodb_backend.mongodb2 import mdbpool
-from generationkwh.productionloader import ProductionLoader
+from generationkwh.productionloader import RightsGranter
 from generationkwh.sharescurve import MixTotalSharesCurve
 from generationkwh.rightspershare import RightsPerShare
 from generationkwh.rightscorrection import RightsCorrection
@@ -39,13 +39,12 @@ class ProductionAggregatorProvider(ErpWrapper):
         return production.lastMeasurementDate(self.cursor, self.uid,
                 self.pid, context=self.context)
 
-# TODO: Rename it as GenerationkwhRightsCalculator
-class GenerationkWhProductionLoader(osv.osv):
+class GenerationkWhRightsGranter(osv.osv):
 
-    _name = 'generationkwh.production.loader'
+    _name = 'generationkwh.rights.granter'
     _auto = False
 
-    def _createProductionLoader(self, cursor, uid, pid, context):
+    def _createRightsGranter(self, cursor, uid, pid, context):
         production = ProductionAggregatorProvider(self, cursor, uid, pid, context)
         plantsharesprovider = PlantShareProvider(self, cursor, uid, 'GenerationkWh')
         plantsharecurver = MixTotalSharesCurve(plantsharesprovider)
@@ -53,7 +52,7 @@ class GenerationkWhProductionLoader(osv.osv):
         rightsCorrection = RightsCorrection(mdbpool.get_db())
         remainders = RemainderProvider(self, cursor, uid, context)
 
-        return ProductionLoader(
+        return RightsGranter(
                 productionAggregator=production,
                 plantShareCurver=plantsharecurver,
                 rightsPerShare=rights,
@@ -62,7 +61,7 @@ class GenerationkWhProductionLoader(osv.osv):
 
     def computeAvailableRights(self, cursor, uid, pid, context=None):
         logger = netsvc.Logger()
-        productionLoader = self._createProductionLoader(cursor, uid, pid, context)
+        productionLoader = self._createRightsGranter(cursor, uid, pid, context)
         log = productionLoader.computeAvailableRights()
 
         logger.notifyChannel('gkwh_productionLoader COMPUTE', netsvc.LOG_INFO,
@@ -71,7 +70,7 @@ class GenerationkWhProductionLoader(osv.osv):
 
     def recomputeRights(self, cursor, uid, mix_id, first_date, last_date, context=None):
         logger = netsvc.Logger()
-        productionLoader = self._createProductionLoader(cursor, uid, mix_id, context)
+        productionLoader = self._createRightsGranter(cursor, uid, mix_id, context)
         log = productionLoader.recomputeRights(isodate(first_date), isodate(last_date))
 
         logger.notifyChannel('gkwh_productionLoader COMPUTE', netsvc.LOG_INFO,
@@ -79,6 +78,6 @@ class GenerationkWhProductionLoader(osv.osv):
         return log
 
 
-GenerationkWhProductionLoader()
+GenerationkWhRightsGranter()
 
 
