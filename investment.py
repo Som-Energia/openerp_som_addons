@@ -704,41 +704,51 @@ class GenerationkwhInvestment(osv.osv):
         ]
         InvoiceLine.create(cursor, uid, line)
 
-        # IRPF retention
-        if irpf_amount:
-            product_irpf_id = Product.search(cursor, uid, [
-                ('default_code','=', gkwh.irpfProductCode),
-                ])[0]
-            product_irpf = Product.browse(cursor, uid, product_irpf_id)
-            product_uom_irpf_id = product_irpf.uom_id.id
-
-            line = dict(
-                InvoiceLine.product_id_change(cursor, uid, [],
-                    product=product_irpf_id,
-                    uom=product_uom_irpf_id,
-                    partner_id=partner_id,
-                    type='in_invoice',
-                    ).get('value', {}),
-                invoice_id = invoice_id,
-                name = _('Retenció IRPF sobre l\'estalvi del Generationkwh de {retention_date:%Y} de {investment} ').format(
-                    investment = investment.name,
-                    retention_date = datetime.strptime(amortization_date,'%Y-%m-%d') - relativedelta(years=1),
-                    ),
-                note = investmentMemento.dump(),
-                quantity = 1,
-                price_unit = irpf_amount * -1,
-                product_id = product_irpf_id,
-            )
-
-            # no taxes apply
-            line['invoice_line_tax_id'] = [
-                (6, 0, line.get('invoice_line_tax_id', []))
-            ]
-            InvoiceLine.create(cursor, uid, line)
+        retention_date = isodate(amortization_date) - relativedelta(years=1),
+        self.irpfRetention(cursor, uid, investment_id, investment, irpf_amount, partner_id, invoice_id, retention_date, investmentMemento)
 
         Invoice.write(cursor,uid, invoice_id,{'check_total': to_be_amortized + (irpf_amount * -1)})
 
         return invoice_id, errors
+
+    def irpfRetention(self, cursor, uid, investment_id, investment, irpf_amount, partner_id, invoice_id, retention_date, investmentMemento):
+        if not irpf_amount: return
+
+        print type(retention_date)
+
+        Product = self.pool.get('product.product')
+        InvoiceLine = self.pool.get('account.invoice.line')
+
+        product_irpf_id = Product.search(cursor, uid, [
+            ('default_code','=', gkwh.irpfProductCode),
+            ])[0]
+        product_irpf = Product.browse(cursor, uid, product_irpf_id)
+        product_uom_irpf_id = product_irpf.uom_id.id
+
+        line = dict(
+            InvoiceLine.product_id_change(cursor, uid, [],
+                product=product_irpf_id,
+                uom=product_uom_irpf_id,
+                partner_id=partner_id,
+                type='in_invoice',
+                ).get('value', {}),
+            invoice_id = invoice_id,
+            name = _('Retenció IRPF sobre l\'estalvi del Generationkwh de {retention_date:%Y} de {investment} ').format(
+                investment = investment.name,
+                retention_date = retention_date,
+                ),
+            note = investmentMemento.dump(),
+            quantity = 1,
+            price_unit = -irpf_amount,
+            product_id = product_irpf_id,
+        )
+
+        # no taxes apply
+        line['invoice_line_tax_id'] = [
+            (6, 0, line.get('invoice_line_tax_id', []))
+        ]
+        InvoiceLine.create(cursor, uid, line)
+
 
     # TODO: Move to res.partner
     def get_default_country(self, cursor, uid):
@@ -1797,68 +1807,8 @@ class GenerationkwhInvestment(osv.osv):
         ]
         InvoiceLine.create(cursor, uid, line)
 
-        # IRPF retention
-        if irpf_amount_current_year:
-            product_irpf_id = Product.search(cursor, uid, [
-                ('default_code','=', gkwh.irpfProductCode),
-                ])[0]
-            product_irpf = Product.browse(cursor, uid, product_irpf_id)
-            product_uom_irpf_id = product_irpf.uom_id.id
-
-            line = dict(
-                InvoiceLine.product_id_change(cursor, uid, [],
-                    product=product_irpf_id,
-                    uom=product_uom_irpf_id,
-                    partner_id=partner_id,
-                    type='in_invoice',
-                    ).get('value', {}),
-                invoice_id = invoice_id,
-                name = _('Retenció IRPF sobre l\'estalvi del Generationkwh de {retention_date:%Y} de {investment} ').format(
-                    investment = investment.name,
-                    retention_date = datetime.strptime(date_invoice,'%Y-%m-%d'),
-                    ),
-                note = investmentMemento.dump(),
-                quantity = 1,
-                price_unit = irpf_amount_current_year * -1,
-                product_id = product_irpf_id,
-            )
-
-            # no taxes apply
-            line['invoice_line_tax_id'] = [
-                (6, 0, line.get('invoice_line_tax_id', []))
-            ]
-            InvoiceLine.create(cursor, uid, line)
-
-        if irpf_amount: #No AMOR invoice last year
-            product_irpf_id = Product.search(cursor, uid, [
-                ('default_code','=', gkwh.irpfProductCode),
-                ])[0]
-            product_irpf = Product.browse(cursor, uid, product_irpf_id)
-            product_uom_irpf_id = product_irpf.uom_id.id
-
-            line = dict(
-                InvoiceLine.product_id_change(cursor, uid, [],
-                    product=product_irpf_id,
-                    uom=product_uom_irpf_id,
-                    partner_id=partner_id,
-                    type='in_invoice',
-                    ).get('value', {}),
-                invoice_id = invoice_id,
-                name = _('Retenció IRPF sobre l\'estalvi del Generationkwh de {year} de {investment} ').format(
-                    investment = investment.name,
-                    year = int(datetime.strptime(date_invoice,'%Y-%m-%d').year) - 1,
-                    ),
-                note = investmentMemento.dump(),
-                quantity = 1,
-                price_unit = irpf_amount * -1,
-                product_id = product_irpf_id,
-            )
-
-            # no taxes apply
-            line['invoice_line_tax_id'] = [
-                (6, 0, line.get('invoice_line_tax_id', []))
-            ]
-            InvoiceLine.create(cursor, uid, line)
+        self.irpfRetention(cursor, uid, investment_id, investment, irpf_amount_current_year, partner_id, invoice_id, isodate(date_invoice), investmentMemento)
+        self.irpfRetention(cursor, uid, investment_id, investment, irpf_amount, partner_id, invoice_id, isodate(date_invoice)-timedelta(year=1), investmentMemento)
 
         Invoice.write(cursor,uid, invoice_id,{'check_total': to_be_divested + (irpf_amount_current_year * -1) + (irpf_amount * -1)})
 
