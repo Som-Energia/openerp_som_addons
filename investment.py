@@ -94,6 +94,10 @@ class GenerationkwhInvestment(osv.osv):
             # required=True, # TODO: activate it after migration
             help="Quin dia es varen demanar les accions",
             ),
+        signed_date=fields.date(
+            "Data de firma",
+            help="Quin dia es va firmar el contracte de GKWH",
+            ),
         purchase_date=fields.date(
             "Data de compra",
             help="Quin dia es varen comprar les accions",
@@ -994,6 +998,30 @@ class GenerationkwhInvestment(osv.osv):
 
         #Enviar correu cofirmació?
         return new_investment_id
+
+    def mark_as_signed(self, cursor, uid, id, signed_date=None):
+        """
+        The investment after ordered is kept in 'draft' state,
+        until the customer sign the contract.
+        """
+
+        Soci = self.pool.get('somenergia.soci')
+        User = self.pool.get('res.users')
+        user = User.read(cursor, uid, uid, ['name'])
+        inversio = self.read(cursor, uid, id, [
+            'log',
+            'draft',
+            'actions_log',
+            'signed_date',
+            ])
+        ResUser = self.pool.get('res.users')
+        user = ResUser.read(cursor, uid, uid, ['name'])
+
+        inv = InvestmentState(user['name'], datetime.now(),
+            log = inversio['log'],
+            signed_date = inversio['signed_date'],
+        )
+        self.write(cursor, uid, id, inv.erpChanges())
 
     def move_line_when_tranfer(self, cursor, uid, partner_id_from, partner_id_to,
             account_id_from, account_id_to, amount):

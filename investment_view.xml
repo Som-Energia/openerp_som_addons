@@ -11,6 +11,7 @@
                     <field name="order_date" readonly="1"/>
                     <field name="member_id" readonly="1"/>
                     <field name="purchase_date" readonly="1"/>
+                    <field name="signed_date" readonly="1"/>
                     <field name="nshares" readonly="1"/>
                     <field name="first_effective_date" readonly="1"/>
                     <field name="amortized_amount" readonly="1"/>
@@ -52,6 +53,7 @@
                     <field name="amortized_amount" select="1"/>
                     <field name="order_date" select="1"/>
                     <field name="purchase_date" select="1"/>
+                    <field name="signed_date" select="1"/>
                     <field name="first_effective_date" select="1"/>
                     <field name="last_effective_date" select="1"/>
                 </tree>
