@@ -566,6 +566,47 @@ class Investment_Test(unittest.TestCase):
             "Wrong iban"
             )
 
+    def test__mark_as_signed(self):
+        id = self.Investment.create_from_form(
+            self.personalData.partnerid,
+            '2017-01-01', # order_date
+            4000,
+            '10.10.23.123',
+            'ES7712341234161234567890',
+            )
+
+        self.Investment.mark_as_signed(id)
+
+        investment = ns(self.Investment.read(id, []))
+        log = investment.pop('log')
+        name = investment.pop('name')
+        actions_log = investment.pop('actions_log') # TODO: Test
+
+        self.assertLogEquals(log,
+            u'INVOICED: Facturada i remesada\n'
+            u'ORDER: Formulari omplert des de la IP 10.10.23.123,'
+            u' Quantitat: 4000 €, IBAN: ES7712341234161234567890\n'
+            )
+
+        self.assertNsEqual(investment, u"""
+            id: {id}
+            member_id:
+            - {member_id}
+            - {surname}, {name}
+            order_date: '2017-01-01'
+            purchase_date: false
+            first_effective_date: false
+            last_effective_date: false
+            nshares: 40
+            amortized_amount: 0.0
+            move_line_id: false
+            active: true
+            draft: false
+            """.format(
+                id=id,
+                **self.personalData
+                ))
+
     def test__mark_as_invoiced(self):
         id = self.Investment.create_from_form(
             self.personalData.partnerid,
