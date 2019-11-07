@@ -117,7 +117,7 @@ class Assignment_Test(unittest.TestCase):
                 ))
 
     def assertAssignmentsEqual(self, expectation):
-        result = self.Assignment.browse([])
+        result = self.Assignment.browse([], limit=None)
         self.assertEqual( [
                 (
                     r.contract_id.id,
@@ -211,7 +211,7 @@ class Assignment_Test(unittest.TestCase):
             ])
         self.assertAssignmentsEqual([
             (self.contract, self.member, 1, self.today),
-            (self.contract,self.member,2, False),
+            (self.contract, self.member, 2, False),
             ])
 
     def test_three_member_three_polissas(self):
