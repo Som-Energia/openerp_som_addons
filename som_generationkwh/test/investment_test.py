@@ -2348,19 +2348,24 @@ class Investment_Test(unittest.TestCase):
             ))
 
     def test__divest__beforeEffectivePeriod(self):
+        divestment_date = datetime.today()
+        effective_date = divestment_date + timedelta(days=1)
+        payment_date = date(effective_date.year-1, effective_date.month, effective_date.day)
+        order_date = payment_date - timedelta(days=1)
+
         lastyear = str(datetime.today().year-1)
         currentyear = str(datetime.today().year)
         id = self.Investment.create_from_form(
             self.personalData.partnerid,
-            lastyear+'-01-01', # order_date
+            order_date,
             1000,
             '10.10.23.123',
             'ES7712341234161234567890',
             )
         self.Investment.mark_as_invoiced(id)
-        self.Investment.mark_as_paid([id], lastyear+'-09-02')
+        self.Investment.mark_as_paid([id], payment_date)
 
-        invoice_ids, errors = self.Investment.divest([id], currentyear+'-09-01')
+        invoice_ids, errors = self.Investment.divest([id], divestment_date)
         self.assertEqual([], errors)
 
         investment = ns(self.Investment.read(id, []))
@@ -2372,9 +2377,9 @@ class Investment_Test(unittest.TestCase):
             member_id:
             - {member_id}
             - {surname}, {name}
-            order_date: '{lastyear}-01-01'
-            purchase_date: '{lastyear}-09-02'
-            first_effective_date: '{currentyear}-09-02'
+            order_date: '{order_date}'
+            purchase_date: '{payment_date}'
+            first_effective_date: '{effective_date}'
             last_effective_date: '{divestment_date}'
             nshares: 10
             amortized_amount: 1000.0
@@ -2383,7 +2388,10 @@ class Investment_Test(unittest.TestCase):
             draft: false
             """.format(
                 id=id,
-                divestment_date = currentyear+'-09-01',
+                divestment_date = divestment_date,
+                payment_date = payment_date,
+                order_date = order_date,
+                effective_date = effective_date,
                 lastyear=lastyear,
                 currentyear=currentyear,
                 **self.personalData
