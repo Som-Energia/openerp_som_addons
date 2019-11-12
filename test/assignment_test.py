@@ -45,7 +45,7 @@ left join
         on p.id in (c.titular, c.soci, c.pagador)
         and c.active
         and c.state='activa'
-group by p.id, p.ref, s.id
+group by p.id, p.name, p.ref, s.id
 ;
 """
 
