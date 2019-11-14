@@ -2348,7 +2348,7 @@ class Investment_Test(unittest.TestCase):
             ))
 
     def test__divest__beforeEffectivePeriod(self):
-        divestment_date = datetime.today()
+        divestment_date = date.today()
         effective_date = divestment_date + timedelta(days=1)
         payment_date = date(effective_date.year-1, effective_date.month, effective_date.day)
         order_date = payment_date - timedelta(days=1)
