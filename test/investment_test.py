@@ -2353,8 +2353,6 @@ class Investment_Test(unittest.TestCase):
         payment_date = date(effective_date.year-1, effective_date.month, effective_date.day)
         order_date = payment_date - timedelta(days=1)
 
-        lastyear = str(datetime.today().year-1)
-        currentyear = str(datetime.today().year)
         id = self.Investment.create_from_form(
             self.personalData.partnerid,
             order_date,
@@ -2392,8 +2390,6 @@ class Investment_Test(unittest.TestCase):
                 payment_date = payment_date,
                 order_date = order_date,
                 effective_date = effective_date,
-                lastyear=lastyear,
-                currentyear=currentyear,
                 **self.personalData
                 ))
 
