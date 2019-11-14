@@ -1684,6 +1684,7 @@ class Investment_Test(unittest.TestCase):
                 notes: GENERATION kWh
                 payment_type: recurring
                 reference: res.partner,{partner_id}
+                signed: true
                 """.format(
                     id=mandate_id,
                     name=mandate.name, # always change
