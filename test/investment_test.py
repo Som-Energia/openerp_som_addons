@@ -2355,15 +2355,15 @@ class Investment_Test(unittest.TestCase):
 
         id = self.Investment.create_from_form(
             self.personalData.partnerid,
-            order_date,
+            str(order_date),
             1000,
             '10.10.23.123',
             'ES7712341234161234567890',
             )
         self.Investment.mark_as_invoiced(id)
-        self.Investment.mark_as_paid([id], payment_date)
+        self.Investment.mark_as_paid([id], str(payment_date))
 
-        invoice_ids, errors = self.Investment.divest([id], divestment_date)
+        invoice_ids, errors = self.Investment.divest([id], str(divestment_date))
         self.assertEqual([], errors)
 
         investment = ns(self.Investment.read(id, []))
