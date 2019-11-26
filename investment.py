@@ -1017,10 +1017,14 @@ class GenerationkwhInvestment(osv.osv):
         ResUser = self.pool.get('res.users')
         user = ResUser.read(cursor, uid, uid, ['name'])
 
+        if not signed_date:
+            signed_date = str(datetime.today().date())
+
         inv = InvestmentState(user['name'], datetime.now(),
             log = inversio['log'],
             signed_date = inversio['signed_date'],
         )
+        inv.sign(signed_date)
         self.write(cursor, uid, id, inv.erpChanges())
 
     def move_line_when_tranfer(self, cursor, uid, partner_id_from, partner_id_to,
