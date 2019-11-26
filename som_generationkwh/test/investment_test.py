@@ -484,6 +484,7 @@ class Investment_Test(unittest.TestCase):
             move_line_id: false
             active: true
             draft: true
+            signed_date: false
             """.format(
                 id=id,
                 **self.personalData
@@ -575,7 +576,7 @@ class Investment_Test(unittest.TestCase):
             'ES7712341234161234567890',
             )
 
-        self.Investment.mark_as_signed(id)
+        self.Investment.mark_as_signed(id, '2017-01-06')
 
         investment = ns(self.Investment.read(id, []))
         log = investment.pop('log')
@@ -583,10 +584,9 @@ class Investment_Test(unittest.TestCase):
         actions_log = investment.pop('actions_log') # TODO: Test
 
         self.assertLogEquals(log,
-            u'INVOICED: Facturada i remesada\n'
+            u'SIGN: Inversió signada amb data 2017-01-06\n'
             u'ORDER: Formulari omplert des de la IP 10.10.23.123,'
-            u' Quantitat: 4000 €, IBAN: ES7712341234161234567890\n'
-            )
+            u' Quantitat: 4000 €, IBAN: ES7712341234161234567890\n')
 
         self.assertNsEqual(investment, u"""
             id: {id}
@@ -601,7 +601,8 @@ class Investment_Test(unittest.TestCase):
             amortized_amount: 0.0
             move_line_id: false
             active: true
-            draft: false
+            draft: true
+            signed_date: '2017-01-06'
             """.format(
                 id=id,
                 **self.personalData
@@ -615,7 +616,7 @@ class Investment_Test(unittest.TestCase):
             '10.10.23.123',
             'ES7712341234161234567890',
             )
-
+        self.Investment.mark_as_signed(id, '2017-01-03')
         self.Investment.mark_as_invoiced(id)
 
         investment = ns(self.Investment.read(id, []))
@@ -625,6 +626,7 @@ class Investment_Test(unittest.TestCase):
 
         self.assertLogEquals(log,
             u'INVOICED: Facturada i remesada\n'
+            u'SIGN: Inversió signada amb data 2017-01-03\n'
             u'ORDER: Formulari omplert des de la IP 10.10.23.123,'
             u' Quantitat: 4000 €, IBAN: ES7712341234161234567890\n'
             )
@@ -643,6 +645,7 @@ class Investment_Test(unittest.TestCase):
             move_line_id: false
             active: true
             draft: false
+            signed_date: '2017-01-03'
             """.format(
                 id=id,
                 **self.personalData
@@ -659,7 +662,7 @@ class Investment_Test(unittest.TestCase):
             '10.10.23.123',
             'ES7712341234161234567890',
             )
-
+        self.Investment.mark_as_signed(id, '2017-01-03')
         self.Investment.mark_as_invoiced(id)
         self.Investment.mark_as_paid([id], '2017-01-03')
 
@@ -671,6 +674,7 @@ class Investment_Test(unittest.TestCase):
         self.assertLogEquals(log,
             u'PAID: Pagament de 2000 € efectuat [None]\n'
             u'INVOICED: Facturada i remesada\n'
+            u'SIGN: Inversió signada amb data 2017-01-03\n'
             u'ORDER: Formulari omplert des de la IP 10.10.23.123,'
             u' Quantitat: 2000 €, IBAN: ES7712341234161234567890\n'
             )
@@ -689,6 +693,7 @@ class Investment_Test(unittest.TestCase):
             move_line_id: false
             active: true
             draft: false
+            signed_date: '2017-01-03'
             """.format(
                 id=id,
                 **self.personalData
@@ -804,7 +809,7 @@ class Investment_Test(unittest.TestCase):
             '10.10.23.123',
             'ES7712341234161234567890',
         )
-
+        self.Investment.mark_as_signed(id, '2017-01-03')
         self.Investment.mark_as_invoiced(id)
         self.Investment.mark_as_paid([id], '2017-01-03')
         self.Investment.mark_as_unpaid([id])
@@ -818,6 +823,7 @@ class Investment_Test(unittest.TestCase):
             u'UNPAID: Devolució del pagament de 2000 € [None]\n'
             u'PAID: Pagament de 2000 € efectuat [None]\n'
             u'INVOICED: Facturada i remesada\n'
+            u'SIGN: Inversió signada amb data 2017-01-03\n'
             u'ORDER: Formulari omplert des de la IP 10.10.23.123,'
             u' Quantitat: 2000 €, IBAN: ES7712341234161234567890\n'
             )
@@ -836,6 +842,7 @@ class Investment_Test(unittest.TestCase):
             move_line_id: false
             active: true
             draft: false
+            signed_date: '2017-01-03'
             """.format(
             id=id,
             **self.personalData
@@ -2089,6 +2096,7 @@ class Investment_Test(unittest.TestCase):
             move_line_id: false
             active: false
             draft: true
+            signed_date: false
             """.format(
                 id=id,
                 **self.personalData
@@ -2137,6 +2145,7 @@ class Investment_Test(unittest.TestCase):
             '10.10.23.1',
             'ES7712341234161234567890',
         )
+        self.Investment.mark_as_signed(id, '2000-01-03')
         self.Investment.mark_as_invoiced(id)
         self.Investment.mark_as_paid([id], '2000-01-05')
         self.Investment.mark_as_unpaid([id])
@@ -2152,6 +2161,7 @@ class Investment_Test(unittest.TestCase):
             u'UNPAID: Devolució del pagament de 2000 € [None]\n'
             u'PAID: Pagament de 2000 € efectuat [None]\n'
             u'INVOICED: Facturada i remesada\n'
+            u'SIGN: Inversió signada amb data 2000-01-03\n'
             u'ORDER: Formulari omplert des de la IP 10.10.23.1,'
             u' Quantitat: 2000 €, IBAN: ES7712341234161234567890\n'
             )
@@ -2170,6 +2180,7 @@ class Investment_Test(unittest.TestCase):
             move_line_id: false
             active: false
             draft: false
+            signed_date: '2000-01-03'
             """.format(
                 id=id,
                 **self.personalData
@@ -2183,6 +2194,7 @@ class Investment_Test(unittest.TestCase):
             '10.10.23.1',
             'ES7712341234161234567890',
         )
+        self.Investment.mark_as_signed(id, '2000-01-03')
         self.Investment.investment_payment([id])
         self.Investment.mark_as_paid([id], '2000-01-05')
         self.Investment.mark_as_unpaid([id])
@@ -2198,6 +2210,7 @@ class Investment_Test(unittest.TestCase):
             u'UNPAID: Devolució del pagament de 2000 € [None]\n'
             u'PAID: Pagament de 2000 € efectuat [None]\n'
             u'INVOICED: Facturada i remesada\n'
+            u'SIGN: Inversió signada amb data 2000-01-03\n'
             u'ORDER: Formulari omplert des de la IP 10.10.23.1,'
             u' Quantitat: 2000 €, IBAN: ES7712341234161234567890\n'
             )
@@ -2216,6 +2229,7 @@ class Investment_Test(unittest.TestCase):
             move_line_id: false
             active: false
             draft: false
+            signed_date: '2000-01-03'
             """.format(
                 id=id,
                 **self.personalData
@@ -2402,6 +2416,7 @@ class Investment_Test(unittest.TestCase):
             '10.10.23.123',
             'ES7712341234161234567890',
             )
+        self.Investment.mark_as_signed(id, str(order_date))
         self.Investment.mark_as_invoiced(id)
         self.Investment.mark_as_paid([id], str(payment_date))
 
@@ -2426,6 +2441,7 @@ class Investment_Test(unittest.TestCase):
             move_line_id: false
             active: false
             draft: false
+            signed_date: '{order_date}'
             """.format(
                 id=id,
                 divestment_date = divestment_date,
@@ -2443,6 +2459,7 @@ class Investment_Test(unittest.TestCase):
             '10.10.23.123',
             'ES7712341234161234567890',
             )
+        self.Investment.mark_as_signed(id, '2015-09-03')
         self.Investment.mark_as_invoiced(id)
         self.Investment.mark_as_paid([id], '2015-09-01')
         date_today = str(date.today())
@@ -2467,6 +2484,7 @@ class Investment_Test(unittest.TestCase):
             move_line_id: false
             active: true
             draft: false
+            signed_date: '2015-09-03'
             """.format(
                 id=id,
                 date_today = date_today,
@@ -2531,6 +2549,7 @@ class Investment_Test(unittest.TestCase):
             '10.10.23.123',
             'ES7712341234161234567890',
             )
+        self.Investment.mark_as_signed(id, '2017-01-03')
         self.Investment.mark_as_invoiced(id)
         self.Investment.mark_as_paid([id], '2015-09-01')
         date_today = str(date.today())
@@ -2557,6 +2576,7 @@ class Investment_Test(unittest.TestCase):
             move_line_id: false
             active: true
             draft: false
+            signed_date: '2017-01-03'
             """.format(
                 id=id,
                 date_today = date_today,
@@ -2995,6 +3015,7 @@ class Investment_Test(unittest.TestCase):
             '10.10.23.123',
             'ES7712341234161234567890',
             )
+        self.Investment.mark_as_signed(old_id, '2017-01-03')
         self.Investment.mark_as_invoiced(old_id)
         self.Investment.mark_as_paid([old_id], '2017-01-02')
         date_today = str(date.today())
@@ -3024,6 +3045,7 @@ class Investment_Test(unittest.TestCase):
             move_line_id: false
             active: true
             draft: false
+            signed_date: '2017-01-03'
             """.format(
                 id=old_id,
                 newMember = newMember,
@@ -3048,6 +3070,7 @@ class Investment_Test(unittest.TestCase):
             move_line_id: false
             active: true
             draft: false
+            signed_date: false
             """.format(
                 id=new_investment_id,
                 **self.personalData
@@ -3062,6 +3085,7 @@ class Investment_Test(unittest.TestCase):
             '10.10.23.123',
             'ES7712341234161234567890',
             )
+        self.Investment.mark_as_signed(id, '2017-01-03')
         self.Investment.mark_as_invoiced(id)
         self.Investment.mark_as_paid([id], '2017-01-02')
         date_today = str(date.today())
@@ -3092,6 +3116,7 @@ class Investment_Test(unittest.TestCase):
             move_line_id: false
             active: true
             draft: false
+            signed_date: '2017-01-03'
             """.format(
                 newMember = newMember,
                 id=id,
@@ -3116,6 +3141,7 @@ class Investment_Test(unittest.TestCase):
             move_line_id: false
             active: true
             draft: false
+            signed_date: false
             """.format(
                 id=new_investment_id,
                 **self.personalData
