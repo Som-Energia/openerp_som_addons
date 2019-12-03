@@ -1,5 +1,34 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <openerp>
+    <data noupdate="1">
+        <record id="genkwh_investment_payment_mode" model="payment.mode">
+            <field name="name">GENERATION kWh</field>
+            <field name="type" search="[('code', '=', 'RECIBO_CSB')]"/>
+            <field name="journal" ref="genkwh_journal"/>
+	    <field name="bank_id" search="[('partner_id', '=', 1)]"/>
+            <field name="tipo">sepa19</field>
+            <field name="nombre">Som Energia SCCL</field>
+            <field name="sufijo">000</field>
+            <field name="require_bank_account" eval="True"/>
+            <field name="partner_id">1</field>
+            <field name="sepa_creditor_code">ES24000F55091367</field>
+        </record>
+        <record id="genkwh_amortization_payment_mode" model="payment.mode">
+            <field name="name">GENERATION kWh AMOR</field>
+            <field name="type" search="[('code', '=', 'TRANSFERENCIA_CSB')]"/>
+            <field name="journal" ref="genkwh_journal"/>
+	    <field name="bank_id" search="[('partner_id', '=', 1)]"/>
+            <field name="tipo">sepa34</field>
+            <field name="nombre">Som Energia SCCL</field>
+            <field name="sufijo">000</field>
+            <field name="require_bank_account" eval="True"/>
+            <field name="partner_id">1</field>
+            <field name="sepa_creditor_code">ES24000F55091367</field>
+        </record>
+        <record model="product.category" id="categ_inversions">
+            <field name="name">Inversions</field>
+        </record>
+    </data>
     <data>
         <!-- GKWH Products-->
         <!-- Products categories to invoice  GkWh -->
@@ -977,30 +1006,6 @@
             <field name="name">Factures GenerationkWh</field>
             <field eval="0" name="refund_journal"/>
             <field eval="1" name="entry_posted"/>
-        </record>
-        <record id="genkwh_investment_payment_mode" model="payment.mode">
-            <field name="name">GENERATION kWh</field>
-            <field name="type" search="[('code', '=', 'RECIBO_CSB')]"/>
-            <field name="journal" ref="genkwh_journal"/>
-            <field name="bank_id" search="[('iban', 'ilike', 'ES33%6442')]"/>
-            <field name="tipo">sepa19</field>
-            <field name="nombre">Som Energia SCCL</field>
-            <field name="sufijo">000</field>
-            <field name="require_bank_account" eval="True"/>
-            <field name="partner_id">1</field>
-            <field name="sepa_creditor_code">ES24000F55091367</field>
-        </record>
-        <record id="genkwh_amortization_payment_mode" model="payment.mode">
-            <field name="name">GENERATION kWh AMOR</field>
-            <field name="type" search="[('code', '=', 'TRANSFERENCIA_CSB')]"/>
-            <field name="journal" ref="genkwh_journal"/>
-            <field name="bank_id" search="[('iban', 'ilike', 'ES36%4781')]"/>
-            <field name="tipo">sepa34</field>
-            <field name="nombre">Som Energia SCCL</field>
-            <field name="sufijo">000</field>
-            <field name="require_bank_account" eval="True"/>
-            <field name="partner_id">1</field>
-            <field name="sepa_creditor_code">ES24000F55091367</field>
         </record>
         <record id="genkwh_product_amortization" model="product.product">
             <field name="name">Amortització Generation kWh</field>
