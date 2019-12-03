@@ -71,3 +71,12 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 "access_wizard_generationkwh_investment_transfer_u","wizard.generationkwh.investment.transfer","model_wizard_generationkwh_investment_transfer","som_generationkwh.group_som_generationkwh_u",1,1,1,1
 "access_wizard_generationkwh_investment_transfer_r","wizard.generationkwh.investment.transfer","model_wizard_generationkwh_investment_transfer","som_generationkwh.group_som_generationkwh_r",1,0,0,0
 "access_wizard_generationkwh_investment_transfer_w","wizard.generationkwh.investment.transfer","model_wizard_generationkwh_investment_transfer","som_generationkwh.group_som_generationkwh_w",1,1,1,0
+"access_generationkwh_assignment_testhelper_r","generationkwh.assignment.testhelper","model_generationkwh_assignment_testhelper","som_generationkwh.group_som_generationkwh_r",1,0,0,0
+"access_generationkwh_assignment_testhelper_u","generationkwh.assignment.testhelper","model_generationkwh_assignment_testhelper","som_generationkwh.group_som_generationkwh_u",1,1,1,1
+"access_generationkwh_assignment_testhelper_w","generationkwh.assignment.testhelper","model_generationkwh_assignment_testhelper","som_generationkwh.group_som_generationkwh_w",1,1,1,0
+"access_generationkwh_mailmockup_r","generationkwh.mailmockup","model_generationkwh_mailmockup","som_generationkwh.group_som_generationkwh_r",1,0,0,0
+"access_generationkwh_mailmockup_u","generationkwh.mailmockup","model_generationkwh_mailmockup","som_generationkwh.group_som_generationkwh_u",1,1,1,1
+"access_generationkwh_mailmockup_w","generationkwh.mailmockup","model_generationkwh_mailmockup","som_generationkwh.group_som_generationkwh_w",1,1,1,0
+"access_generationkwh_payment_wizard_testhelper_r","generationkwh.payment.wizard.testhelper","model_generationkwh_payment_wizard_testhelper","som_generationkwh.group_som_generationkwh_r",1,0,0,0
+"access_generationkwh_payment_wizard_testhelper_u","generationkwh.payment.wizard.testhelper","model_generationkwh_payment_wizard_testhelper","som_generationkwh.group_som_generationkwh_u",1,1,1,1
+"access_generationkwh_payment_wizard_testhelper_w","generationkwh.payment.wizard.testhelper","model_generationkwh_payment_wizard_testhelper","som_generationkwh.group_som_generationkwh_w",1,1,1,0
