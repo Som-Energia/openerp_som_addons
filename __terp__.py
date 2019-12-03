@@ -14,7 +14,9 @@
     'som_plantmeter',
     ],
   "init_xml": [],
-  "demo_xml": [],
+  "demo_xml": [
+      "tests/generation_data_demo.xml",
+      ],
   "update_xml": [
     "som_generationkwh_data.xml",
     "giscedata_facturacio_view.xml",

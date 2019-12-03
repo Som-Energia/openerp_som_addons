@@ -37,11 +37,5 @@
             <field name="model">generationkwh.investment</field>
             <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_investment_creation_form'))" />
         </record>
-        <menuitem
-            id="menu_wizard_investment_creation"
-            name="Creació d'inversió"
-            parent="menu_gkwh_base"
-            action="action_wizard_investment_creation_form"
-        />
     </data>
 </openerp>

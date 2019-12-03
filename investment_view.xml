@@ -87,5 +87,17 @@
             <field name="model">generationkwh.investment</field>
             <field name="value" eval="'ir.actions.act_window,'+str(ref('action_sc_invoices_from_investment'))" />
         </record>
+        <menuitem
+            id="menu_wizard_investment_amortization"
+            name="Amortització de inversions"
+            parent="menu_gkwh_base"
+            action="action_wizard_investment_amortization_form_global"
+	/>
+        <menuitem
+            id="menu_wizard_investment_creation"
+            name="Creació d'inversió"
+            parent="menu_gkwh_base"
+            action="action_wizard_investment_creation_form"
+        />
     </data>
 </openerp>
