@@ -37,6 +37,7 @@
     "security/som_generationkwh_security.xml",
     "security/ir.model.access.csv",
     "amortization_report.xml",
+    "emission_view.xml",
     ],
   "active": False,
   "installable": True

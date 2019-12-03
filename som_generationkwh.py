@@ -20,6 +20,7 @@ from .assignment import AssignmentProvider
 from .remainder import RemainderProvider
 from .investment import InvestmentProvider
 from .holidays import HolidaysProvider
+from .emission import GenerationkwhEmission
 import datetime
 
 # Models

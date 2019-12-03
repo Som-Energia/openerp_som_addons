@@ -5,6 +5,9 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 "access_generationkwh_dealer_r","generationkwh.dealer","model_generationkwh_dealer","som_generationkwh.group_som_generationkwh_r",1,0,0,0
 "access_generationkwh_dealer_u","generationkwh.dealer","model_generationkwh_dealer","som_generationkwh.group_som_generationkwh_u",1,1,1,1
 "access_generationkwh_dealer_w","generationkwh.dealer","model_generationkwh_dealer","som_generationkwh.group_som_generationkwh_w",1,1,1,0
+"access_generationkwh_emission_r","generationkwh.emission","model_generationkwh_emission","som_generationkwh.group_som_generationkwh_r",1,0,0,0
+"access_generationkwh_emission_u","generationkwh.emission","model_generationkwh_emission","som_generationkwh.group_som_generationkwh_r",1,1,1,1
+"access_generationkwh_emission_w","generationkwh.emission","model_generationkwh_emission","som_generationkwh.group_som_generationkwh_r",1,1,1,0
 "access_generationkwh_holidays_testhelper_r","generationkwh.holidays.testhelper","model_generationkwh_holidays_testhelper","som_generationkwh.group_som_generationkwh_r",1,0,0,0
 "access_generationkwh_holidays_testhelper_u","generationkwh.holidays.testhelper","model_generationkwh_holidays_testhelper","som_generationkwh.group_som_generationkwh_u",1,1,1,1
 "access_generationkwh_holidays_testhelper_w","generationkwh.holidays.testhelper","model_generationkwh_holidays_testhelper","som_generationkwh.group_som_generationkwh_w",1,1,1,0
