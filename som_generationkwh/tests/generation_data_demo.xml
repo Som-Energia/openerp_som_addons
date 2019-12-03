@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+	<!--Emissions-->
+        <record id="emissio_0001" model="generationkwh.emission">
+            <field name="name">Aportacions 2018</field>
+            <field name="start_date">2018-03-01</field>
+	    <field name="amount_emission">100000</field>
+            <field name="state">draft</field>
+            <field name="type">apo</field>
+            <field name="grace_period">12</field>
+        </record>
+
+	<!--Soci-->
+        <record id="soci_0001" model="somenergia.soci">
+            <field name="name">Cognoms, Nom</field>
+            <field name="member_id" search="[]" model="res.partner"/>
+	    <field name="baixa">False</field>
+       </record>
+
+        <!--Inversions-->
+        <record id="genkwh_0001" model="generationkwh.investment">
+            <field name="name">GKWH00001</field>
+            <field name="nshares">10</field>
+	    <field name="member_id" ref="soci_0001"/>
+	    <field name="active">False</field>
+            <field name="order_date">2019-10-01</field>
+        </record>
+    </data>
+</openerp>

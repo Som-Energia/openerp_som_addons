@@ -69,11 +69,5 @@
             <field name="target">new</field>
             <field name="context">{'search_all': 'True'}</field>
         </record>
-        <menuitem
-            id="menu_wizard_investment_amortization"
-            name="Amortització de inversions"
-            parent="menu_gkwh_base"
-            action="action_wizard_investment_amortization_form_global"
-        />
     </data>
 </openerp>
