@@ -31,4 +31,4 @@ class InvestmentTests(testing.OOTestCase):
             inv_0001 = investment_obj.browse(cursor, uid, inv_id)
             self.assertEquals(inv_0001.signed_date, '2017-01-06')
 
-
+# vim: et ts=4 sw=4

@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+    <!-- Assignment tree in member view -->
+        <record model="ir.ui.view" id="view_gkwh_emission_tree">
+            <field name="name">generationkwh.emission.tree</field>
+            <field name="model">generationkwh.emission</field>
+            <field name="type">tree</field>
+            <field name="priority">10</field>
+            <field name="arch" type="xml">
+                <tree string="Campanyes d'emissions d'inversions">
+                    <field name="name"/>
+                    <field name="state"/>
+                    <field name="start_date"/>
+                    <field name="amount_emission"/>
+                </tree>
+            </field>
+        </record>
+        <!-- generic assignments views -->
+        <record model="ir.ui.view" id="view_gkwh_emission_form">
+            <field name="name">generationkwh.emission.form</field>
+            <field name="model">generationkwh.emission</field>
+            <field name="type">form</field>
+            <field name="priority">50</field>
+            <field name="arch" type="xml">
+                <form string="Campanya d'emissions d'inversions">
+                    <field name="name"/>
+                    <field name="state"/>
+                    <field name="start_date"/>
+		    <field name="amount_emission"/>
+                    <group col="4" colspan="2">
+                        <button name="cancel" states="draft,open,done" string="Cancel"/>
+                        <button name="action_open" states="draft" string="Confirm" type="object"/>
+                        <button name="set_to_draft" states="cancel" string="Set to draft" type="object"/>
+                        <button name="set_done" states="open" string="Set to done" type="object"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_gkwh_emission_tree" model="ir.actions.act_window">
+            <field name="name">Campanyes d'emissions d'inversions</field>
+            <field name="res_model">generationkwh.emission</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_gkwh_emission_tree"/>
+        </record>
+        <menuitem id="menu_gkwh_base" name="Generation kWh"/>
+        <menuitem action="action_gkwh_emission_tree"
+            id="menu_gkwh_emission_tree" parent="menu_gkwh_base"/>
+    </data>
+</openerp>
