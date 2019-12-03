@@ -3,12 +3,29 @@
     <data>
 	<!--Emissions-->
         <record id="emissio_0001" model="generationkwh.emission">
-            <field name="name">Aportacions 2018</field>
-            <field name="start_date">2018-03-01</field>
-	    <field name="amount_emission">100000</field>
+            <field name="name">GenerationkWH</field>
+            <field name="start_date">2015-06-19</field>
+	    <field name="amount_emission">0</field>
             <field name="state">draft</field>
-            <field name="type">apo</field>
-            <field name="grace_period">12</field>
+            <field name="type">genkwh</field>
+	    <field name="grace_period">2</field>
+	    <field name="expiration_years">25</field>
+	    <field name="waiting_days">365</field>
+	    <field name="mandate_name">PRESTEC GENERATION kWh</field>
+	    <field name="journal_id" model="account.journal"
+		    search="[('code','=','GENKWH')]" />
+	    <field name="investment_product_id" model="product.product"
+		    search="[('default_code','=','GENKWH_AE')]" />
+	    <field name="amortization_product_id" model="product.product"
+		    search="[('default_code','=','GENKWH_AMOR')]" />
+	    <field name="irpf_product_id" model="product.product"
+		    search="[('default_code','=','GENKWH_IRPF')]" />
+	    <field name="investment_payment_mode_id" model="payment.mode"
+		    search="[('name','=','GENERATION kWh')]" />
+	    <field name="amortization_payment_mode_id" model="payment.mode"
+		    search="[('name','=','GENERATION kWh AMOR')]" />
+	    <field name="bridge_account_payments_id" model="account.account"
+		    search="[('code','=','555000000004')]" />
         </record>
 
 	<!--Soci-->

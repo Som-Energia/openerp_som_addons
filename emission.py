@@ -16,54 +16,56 @@ class GenerationkwhEmission(osv.osv):
         waitDaysBeforeDivest = 30 #no allow divest before 30 deays from payment_date
         irpfTaxValue = 0.19
         creditorCode = 'ES24000F55091367'
-
+        shareValue = 100
     '''
     _columns = {
         'name': fields.char(
             "Nom", size=50, required=False, unique=True,
             help="Nom de la campanya d'inversió",),
         'start_date': fields.date(
-            "Data d'inici",
-            #required=True, #TODO: activate it after migration
+            "Data d'inici", required=True,
             help="Quin dia es va començar l'emissió",),
         'amount_emission': fields.integer(
-            "Import de l'emissió",
-            required=False,
+            "Import de l'emissió", required=False,
             help="Total de l'emissió en €. Si es deixa buit, és il.limitada",),
         'state': fields.selection([
-            ('draft', 'Esborrany'),
-            ('open', 'Oberta'),
-            ('done', 'Realitzat'),
-            ('cancel', 'Cancelat'),
+            ('draft', 'Esborrany'), ('open', 'Oberta'),
+            ('done', 'Realitzat'), ('cancel', 'Cancelat'),
             ], 'Emission State', readonly=True, help="Gives the state of the emission. Only emission in open state accepts new investments.", select=True),
         'type': fields.selection([
-            ('genkwh', 'GenerationkWh'),
-            ('tit', 'Títols'),
-            ('apo', 'Aportacions'),
-            ('other', 'Other'), #When not implementet yet
-            ], 'Emission Type', help="Type of the emission.", select=True, required=False),
+            ('genkwh', 'GenerationkWh'), ('tit', 'Títols'),
+            ('apo', 'Aportacions'), ('other', 'Other'), #When not implementet yet
+            ], 'Emission Type', help="Type of the emission.",
+            select=True, required=False),
         'grace_period': fields.integer(
-            "Periode de carència",
-            required=False,
-            help="Període de carènciai en anys, abans de fer la primera amortització",),
+            "Periode de carència", required=False,
+            help="Període de carència en anys, abans de fer la primera amortització",),
         'expiration_years': fields.integer(
-            "Duració prèstec",
-            required=False,
+            "Duració prèstec", required=False,
             help="Anys que dura el prèstec",),
         'waiting_days': fields.integer(
-            "Dies per activació GKWH",
-            required=False,
+            "Dies per activació GKWH", required=False,
             help="Nombre de dies que passen perquè es comencin a repartir kwh",),
         'mandate_name': fields.char(
             "Nom de mandato", size=50, required=False,
             help="Motiu pel qual es podra fer servir el mandato",),
-        #JournalRelation
-        #investmentProductCode
-        #amortizationProductCode
-        #irpfProductCode
-        #investmentPaymentMode = 'GENERATION kWh'
-        #amortizationPaymentMode = 'GENERATION kWh AMOR'
-        #bridgeAccountCode = '555000000004' # Bridge account to concile payments to the bank
+        'journal_id': fields.many2one('account.journal', "Diari",
+            domain="[('type','=','cash')]", required=True,
+             help="Diari on es comptabilitzaràn les inversions"),
+        'investment_product_id': fields.many2one('product.product',
+            'Producte factura inversió', required=True,
+            help="Producte de la línia del capital dins la factura de la inversió"),
+        'amortization_product_id': fields.many2one('product.product',
+            'Producte factura amortizació', required=True, help="Producte de la línia de l'amortització dins la factura de la inversió"),
+        'irpf_product_id': fields.many2one('product.product',
+            'Producte factura IRPF', required=True, help="Producte de la línia IRPF dins la factura de la inversió"),
+        'investment_payment_mode_id': fields.many2one('payment.mode',
+            'Mode pagament inversió', required=True),
+        'amortization_payment_mode_id': fields.many2one('payment.mode',
+            'Mode pagament amortització', required=True),
+        'bridge_account_payments_id': fields.many2one('account.account',
+            'Compte pont per conciliar moviments', required=True),
+
    }
 
     _defaults = {
