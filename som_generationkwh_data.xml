@@ -1170,5 +1170,68 @@
 	    <field name="bridge_account_payments_id" model="account.account"
 		    search="[('code','=','555000000004')]" />
         </record>
+        <record id="pgc_555000000010" model="account.account">
+            <field name="code">555000000010</field>
+            <field name="reconcile" eval="True"/>
+            <field name="parent_id" model="account.account" search="[('code','=','555')]"/>
+            <field name="type">other</field>
+            <field name="name">CAIXA Aportacions</field>
+            <field name="user_type" ref="l10n_chart_ES.financieras"/>
+        </record>
+        <record id="apo_journal" model="account.journal">
+            <field name="code">APO</field>
+            <field eval="[(6,0,[])]" name="account_control_ids"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field eval="0" name="centralisation"/>
+            <field eval="0" name="group_invoice_lines"/>
+            <field name="type">cash</field>
+            <field name="default_credit_account_id" model="account.account" search="[('code','=','555000000010')]"/>
+            <field name="default_debit_account_id" model="account.account" search="[('code','=','555000000010')]"/>
+            <field name="view_id" ref="account.account_journal_bank_view"/>
+            <field eval="[(6,0,[])]" name="type_control_ids"/>
+            <field name="sequence_id" ref="account.sequence_journal"/>
+            <field eval="1" name="active"/>
+            <field eval="1" name="update_posted"/>
+            <field name="name">Factures Liquidació Aportacions</field>
+            <field eval="0" name="refund_journal"/>
+            <field eval="1" name="entry_posted"/>
+        </record>
+        <record id="apo_product_ae" model="product.product">
+            <field name="name">Aportacions</field>
+            <field name="default_code">APO_AE</field>
+            <field name="categ_id" model='product.category' search="[('name','=','Inversions')]"/>
+            <field name="property_account_expense" model="account.account" search="[('code','=','662000000001')]"/>
+        </record>
+        <record id="apo_investment_payment_mode" model="payment.mode">
+            <field name="name">APORTACIONS (Enginyers)</field>
+            <field name="type" search="[('code', '=', 'RECIBO_CSB')]"/>
+            <field name="journal" ref="apo_journal"/>
+	    <field name="bank_id" search="[('partner_id', '=', 1)]"/>
+            <field name="tipo">sepa19</field>
+            <field name="nombre">Som Energia SCCL</field>
+            <field name="sufijo">000</field>
+            <field name="require_bank_account" eval="True"/>
+            <field name="partner_id">1</field>
+            <field name="sepa_creditor_code">ES24000F55091367</field>
+        </record>
+        <record id="emissio_apo" model="generationkwh.emission">
+            <field name="name">Aportacions</field>
+            <field name="start_date">2015-06-19</field>
+	    <field name="amount_emission">5000000</field>
+            <field name="state">done</field>
+            <field name="type">apo</field>
+	    <field name="grace_period">1</field>
+	    <field name="expiration_years">0</field>
+	    <field name="waiting_days">0</field>
+	    <field name="mandate_name">PRESTEC Aportacions</field>
+	    <field name="journal_id" model="account.journal"
+		    search="[('code','=','APO')]" />
+	    <field name="investment_product_id" model="product.product"
+		    search="[('default_code','=','APO_AE')]" />
+	    <field name="investment_payment_mode_id" model="payment.mode"
+		    search="[('name','=','APORTACIONS (Enginyers)')]" />
+	    <field name="bridge_account_payments_id" model="account.account"
+		    search="[('code','=','555000000010')]" />
+        </record>
     </data>
 </openerp>

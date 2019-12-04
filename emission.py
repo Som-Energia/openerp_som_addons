@@ -56,15 +56,15 @@ class GenerationkwhEmission(osv.osv):
             'Producte factura inversió', required=True,
             help="Producte de la línia del capital dins la factura de la inversió"),
         'amortization_product_id': fields.many2one('product.product',
-            'Producte factura amortizació', required=True, help="Producte de la línia de l'amortització dins la factura de la inversió"),
+            'Producte factura amortizació', help="Producte de la línia de l'amortització dins la factura de la inversió"),
         'irpf_product_id': fields.many2one('product.product',
-            'Producte factura IRPF', required=True, help="Producte de la línia IRPF dins la factura de la inversió"),
+            'Producte factura IRPF', help="Producte de la línia IRPF dins la factura de la inversió"),
         'investment_payment_mode_id': fields.many2one('payment.mode',
             'Mode pagament inversió', required=True),
         'amortization_payment_mode_id': fields.many2one('payment.mode',
-            'Mode pagament amortització', required=True),
+            'Mode pagament amortització' ),
         'bridge_account_payments_id': fields.many2one('account.account',
-            'Compte pont per conciliar moviments', required=True),
+            'Compte pont per conciliar moviments'),
 
    }
 

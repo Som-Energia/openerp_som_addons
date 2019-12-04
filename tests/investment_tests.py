@@ -72,4 +72,45 @@ class InvestmentTests(testing.OOTestCase):
                     'name': u'APO00001'
                 })
 
+    def test_create_from_form_apo(self):
+        """
+        Checks if investment aportacio is created
+        :return:
+        """
+        pool = self.openerp.pool
+        investment_obj = pool.get('investment.aportacio')
+        imd_obj = pool.get('ir.model.data')
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            inv_id = investment_obj.create_from_form(cursor, uid,
+                    1,
+                    '2017-01-06',
+                    4000,
+                    '10.10.23.123',
+                    'ES7712341234161234567890',
+                    'emissio_apo')
+
+            inv_0001 = investment_obj.read(cursor, uid, inv_id)
+            inv_0001.pop('actions_log')
+            inv_0001.pop('log')
+            inv_0001.pop('id')
+            id_emission, name_emission = inv_0001.pop('emission_id')
+            self.assertEqual(name_emission, "Aportacions")
+            self.assertEquals(inv_0001,
+                {
+                    'first_effective_date': False,
+                    'move_line_id': False,
+                    'last_effective_date': False,
+                    'nshares': 10,
+                    'signed_date': '2019-12-19',
+                    'draft': True,
+                    'purchase_date': False,
+                    'member_id': (1, u'Cognoms, Nom'),
+                    'active': True,
+                    'order_date': '2019-10-01',
+                    'amortized_amount': 0.0,
+                    'name': u'APO00001'
+                })
 # vim: et ts=4 sw=4
