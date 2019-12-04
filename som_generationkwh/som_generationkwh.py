@@ -16,11 +16,11 @@ from generationkwh.memberrightsusage import MemberRightsUsage
 from generationkwh.fareperiodcurve import FarePeriodCurve
 from generationkwh.usagetracker import UsageTracker
 from generationkwh.isodates import isodate
+from .emission import GenerationkwhEmission
 from .assignment import AssignmentProvider
 from .remainder import RemainderProvider
 from .investment import InvestmentProvider
 from .holidays import HolidaysProvider
-from .emission import GenerationkwhEmission
 from .investment_apo import InvestmentAportacio
 import datetime
 

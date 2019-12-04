@@ -137,6 +137,13 @@ class GenerationkwhInvestment(osv.osv):
             #required=True,
             help="Història d'esdeveniments relacionats amb la inversió",
             ),
+        emission_id=fields.many2one(
+            'generationkwh.emission',
+            "Emissió",
+            select=True,
+            #required=True, # TODO to be required
+            help="Campanya d'emissió de la que forma part la inversió",
+            ),
         )
 
     _defaults = dict(
@@ -851,7 +858,7 @@ class GenerationkwhInvestment(osv.osv):
         return ResPartnerBank.create(cursor, uid, vals)
 
     def create_from_form(self, cursor, uid,
-            partner_id, order_date, amount_in_euros, ip, iban,
+            partner_id, order_date, amount_in_euros, ip, iban, emission=None,
             context=None):
 
         if amount_in_euros <= 0 or amount_in_euros % gkwh.shareValue > 0:
@@ -861,6 +868,13 @@ class GenerationkwhInvestment(osv.osv):
         if not iban:
             raise Exception("Wrong iban")
 
+        if not emission:
+            emission = 'emissio_genkwh'
+
+        imd_model = self.pool.get('ir.model.data')
+        emission_id = imd_model.get_object_reference(
+            cursor, uid, 'som_generationkwh', emission
+        )[1]
         Soci = self.pool.get('somenergia.soci')
         member_ids = Soci.search(cursor, uid, [
                 ('partner_id','=',partner_id)
@@ -890,6 +904,7 @@ class GenerationkwhInvestment(osv.osv):
         investment_id = self.create(cursor, uid, dict(
             inv.erpChanges(),
             member_id = member_ids[0],
+            emission_id = emission_id,
         ), context)
 
         self.get_or_create_payment_mandate(cursor, uid,
@@ -977,6 +992,7 @@ class GenerationkwhInvestment(osv.osv):
             inv.erpChanges(),
             member_id = member_ids[0],
             nshares = old_investment['nshares'],
+            emission_id = old_investment['emission_id'][0]
         ), context)
 
         new_investment = self.browse(cursor, uid, new_investment_id)

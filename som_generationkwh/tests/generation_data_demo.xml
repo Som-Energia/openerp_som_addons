@@ -42,6 +42,8 @@
 	    <field name="member_id" ref="soci_0001"/>
 	    <field name="active">False</field>
             <field name="order_date">2019-10-01</field>
+	    <field name="emission_id" model="generationkwh.emission"
+		    search="[('name','=','GenerationkWH')]" />
         </record>
         <record id="apo_0001" model="investment.aportacio">
             <field name="name">APO00001</field>
@@ -49,6 +51,8 @@
 	    <field name="member_id" ref="soci_0001"/>
 	    <field name="active">False</field>
             <field name="order_date">2019-10-01</field>
+	    <field name="emission_id" model="generationkwh.emission"
+		    search="[('name','=','Aportacions')]" />
         </record>
     </data>
 </openerp>
