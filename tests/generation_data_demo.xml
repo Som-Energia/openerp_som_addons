@@ -43,5 +43,12 @@
 	    <field name="active">False</field>
             <field name="order_date">2019-10-01</field>
         </record>
+        <record id="apo_0001" model="investment.aportacio">
+            <field name="name">APO00001</field>
+            <field name="nshares">10</field>
+	    <field name="member_id" ref="soci_0001"/>
+	    <field name="active">False</field>
+            <field name="order_date">2019-10-01</field>
+        </record>
     </data>
 </openerp>

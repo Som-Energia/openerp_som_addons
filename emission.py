@@ -72,6 +72,7 @@ class GenerationkwhEmission(osv.osv):
         'state' : lambda *a: 'draft',
         'grace_period': lambda *a: 0,
         'expiration_years': lambda *a: 0,
+        'waiting_days': lambda *a: 0,
     }
 
     def set_to_draft(self, cr, uid, ids, *args):
