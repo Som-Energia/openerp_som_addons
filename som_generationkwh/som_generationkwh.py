@@ -21,6 +21,7 @@ from .remainder import RemainderProvider
 from .investment import InvestmentProvider
 from .holidays import HolidaysProvider
 from .emission import GenerationkwhEmission
+from .investment_apo import InvestmentAportacio
 import datetime
 
 # Models
