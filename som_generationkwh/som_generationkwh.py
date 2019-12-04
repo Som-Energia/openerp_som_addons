@@ -21,7 +21,7 @@ from .assignment import AssignmentProvider
 from .remainder import RemainderProvider
 from .investment import InvestmentProvider
 from .holidays import HolidaysProvider
-from .investment_apo import InvestmentAportacio
+from .investment_aportacions import InvestmentAportacio
 import datetime
 
 # Models
