@@ -54,6 +54,8 @@ class InvestmentTests(testing.OOTestCase):
             inv_0001.pop('actions_log')
             inv_0001.pop('log')
             inv_0001.pop('id')
+            id_emission, name_emission = inv_0001.pop('emission_id')
+            self.assertEqual(name_emission, "Aportacions")
             self.assertEquals(inv_0001,
                 {
                     'first_effective_date': False,
