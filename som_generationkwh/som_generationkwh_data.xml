@@ -1142,9 +1142,6 @@
             <field name="partner_id">1</field>
             <field name="sepa_creditor_code">ES24000F55091367</field>
         </record>
-        <record model="product.category" id="categ_inversions">
-            <field name="name">Inversions</field>
-        </record>
         <record id="emissio_genkwh" model="generationkwh.emission">
             <field name="name">GenerationkWH</field>
             <field name="start_date">2015-06-19</field>
