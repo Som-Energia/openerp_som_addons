@@ -16,12 +16,12 @@ def migrate(cursor, installed_version):
 
     # evitar creació constraint consum_positiu
     imd_obj = pool.get('ir.model.data')
-    emissio_id = imd_obj.get_object_reference(cursor, uid,
+    emission_id = imd_obj.get_object_reference(cursor, uid,
             'som_generationkwh','emissio_genkwh')[1]
 
     cursor.execute("UPDATE generationkwh_investment"
-                   "SET emission_id = %s"
-                   "WHERE emission_id IS NULL AND name ilike 'GKWH%'" % imd_id)
+                   " SET emission_id = " + str(emission_id) + 
+                   " WHERE emission_id IS NULL AND name ilike 'GKWH%'")
 
 
 
