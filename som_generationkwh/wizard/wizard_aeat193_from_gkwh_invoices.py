@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 from osv import osv, fields
 from tools import config
+from tools.translate import _
 
 
 class WizardComputeMod193Invoice(osv.osv_memory):
@@ -44,6 +45,8 @@ class WizardComputeMod193Invoice(osv.osv_memory):
 
         report_obj = self.pool.get('l10n.es.aeat.mod193.report')
         record_obj = self.pool.get('l10n.es.aeat.mod193.record')
+        partner_obj = self.pool.get('res.partner')
+        part_add_obj = self.pool.get('res.partner.address')
         report_id = context.get('active_id')
 
         report = report_obj.browse(cursor, uid, report_id, context)
@@ -68,7 +71,7 @@ class WizardComputeMod193Invoice(osv.osv_memory):
             'code_bank': '',
             'pending': ' ',
             'fiscal_year_id': report.fiscalyear_id.id,
-            'incoming_type': '1'
+            'incoming_type': '2'
         }
 
         query_file = (u"%s/som_generationkwh/sql/aeat193_from_gkwh_invoices_query.sql" % config['addons_path'])
@@ -78,22 +81,27 @@ class WizardComputeMod193Invoice(osv.osv_memory):
         new_linies = 0
         updated_lines = 0
         for data in cursor.fetchall():
+            partner_id = data[0]
             partner_vat = data[1]
-            search_params = {
-                'partner_vat': partner_vat,
-                'report_id': report.id,
-                'tax_percent': wiz.tax_id.amount * 100
-            }
+            part_add_id = part_add_obj.search(cursor, uid, [('partner_id', '=', partner_id)])
+            amount = float(data[2])
+
+            search_params = [
+                ('partner_vat', '=', partner_vat),
+                ('report_id', '=', report.id),
+                ('tax_percent', '=', abs(wiz.tax_id.amount) * 100)
+            ]
 
             vals = common_vals.copy()
-            amount = float(data[2])
             vals.update({
-                'partner_id': data[0],
+                'partner_id': partner_id,
                 'partner_vat': partner_vat,
                 'amount': amount,
                 'amount_base': amount,
-                'amount_tax': amount * wiz.tax_id.name,
-                'tax_percent': wiz.tax_id.amount * 100
+                'amount_tax': amount * abs(wiz.tax_id.amount),
+                'tax_percent': wiz.tax_id.amount * 100,
+                'postal_address_id': part_add_id,
+                'fiscal_address_id': part_add_id
             })
 
             record_ids = record_obj.search(cursor, uid, search_params)
