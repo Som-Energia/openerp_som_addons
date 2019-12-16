@@ -83,9 +83,19 @@ class WizardComputeMod193Invoice(osv.osv_memory):
         for data in cursor.fetchall():
             partner_id = data[0]
             partner_vat = data[1]
-            part_add_id = part_add_obj.search(cursor, uid, [('partner_id', '=', partner_id)])
             amount = float(data[2])
+            part_add_id = part_add_obj.search(cursor, uid, [('partner_id', '=', partner_id)])
+            if not part_add_id:
+                raise osv.except_osv("Error",
+                                     _(u"No s'han trobat adreces pel partner amb VAT {} i ID {}").
+                                     format(partner_vat, partner_id))
 
+            state_id = part_add_obj.read(cursor, uid, part_add_id[0], ['state_id'])
+            if not state_id:
+                raise osv.except_osv("Error",
+                                     _(u"L'adreça amb ID {} pel partner amb VAT {} no té definida província. "
+                                       u"Aquesta és necessària pel procés. Si us plau revisi les dades.").
+                                     format(part_add_id, partner_vat))
             search_params = [
                 ('partner_vat', '=', partner_vat),
                 ('report_id', '=', report.id),
@@ -100,8 +110,9 @@ class WizardComputeMod193Invoice(osv.osv_memory):
                 'amount_base': amount,
                 'amount_tax': amount * abs(wiz.tax_id.amount),
                 'tax_percent': wiz.tax_id.amount * 100,
-                'postal_address_id': part_add_id,
-                'fiscal_address_id': part_add_id
+                'state_id': state_id['state_id'][0],
+                'postal_address_id': part_add_id[0],
+                'fiscal_address_id': part_add_id[0]
             })
 
             record_ids = record_obj.search(cursor, uid, search_params)
