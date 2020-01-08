@@ -36,7 +36,7 @@ class InvestmentTests(testing.OOTestCase):
         :return:
         """
         pool = self.openerp.pool
-        investment_obj = pool.get('investment.aportacio')
+        investment_obj = pool.get('generationkwh.investment')
         imd_obj = pool.get('ir.model.data')
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
@@ -61,10 +61,10 @@ class InvestmentTests(testing.OOTestCase):
                     'move_line_id': False,
                     'last_effective_date': False,
                     'nshares': 10,
-                    'signed_date': '2019-12-19',
+                    'signed_date': '2017-01-06',
                     'draft': True,
                     'purchase_date': False,
-                    'member_id': (1, u'Cognoms, Nom'),
+                    'member_id': (1, u'Gil, Pere'),
                     'active': True,
                     'order_date': '2019-10-01',
                     'amortized_amount': 0.0,
