@@ -14,6 +14,7 @@ from generationkwh.investmentstate import InvestmentState
 from uuid import uuid4
 import netsvc
 from oorq.oorq import AsyncMode
+from investment_strategy import AportacionsActions, GenerationkwhActions
 
 # TODO: This function is duplicated in other sources
 def _sqlfromfile(sqlname):
@@ -861,58 +862,12 @@ class GenerationkwhInvestment(osv.osv):
             partner_id, order_date, amount_in_euros, ip, iban, emission=None,
             context=None):
 
-        if amount_in_euros <= 0 or amount_in_euros % gkwh.shareValue > 0:
-            raise Exception("Invalid amount")
-
-        iban = self.check_iban(cursor, uid, iban)
-        if not iban:
-            raise Exception("Wrong iban")
-
-        if not emission:
-            emission = 'emissio_genkwh'
-
-        imd_model = self.pool.get('ir.model.data')
-        emission_id = imd_model.get_object_reference(
-            cursor, uid, 'som_generationkwh', emission
-        )[1]
-        Soci = self.pool.get('somenergia.soci')
-        member_ids = Soci.search(cursor, uid, [
-                ('partner_id','=',partner_id)
-                ])
-        if not member_ids:
-            raise Exception("Not a member")
-
-        bank_id = self.get_or_create_partner_bank(cursor, uid,
-                    partner_id, iban)
-        ResPartner = self.pool.get('res.partner')
-        ResPartner.write(cursor, uid, partner_id, dict(
-            bank_inversions = bank_id,),context)
-
-        ResUser = self.pool.get('res.users')
-        user = ResUser.read(cursor, uid, uid, ['name'])
-        IrSequence = self.pool.get('ir.sequence')
-        name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')
-
-        inv = InvestmentState(user['name'], datetime.now())
-        inv.order(
-            name = name,
-            date = order_date,
-            amount = amount_in_euros,
-            iban = iban,
-            ip = ip,
-            )
-        investment_id = self.create(cursor, uid, dict(
-            inv.erpChanges(),
-            member_id = member_ids[0],
-            emission_id = emission_id,
-        ), context)
-
-        self.get_or_create_payment_mandate(cursor, uid,
-            partner_id, iban, gkwh.mandateName, gkwh.creditorCode)
-
-        self.send_mail(cursor, uid, investment_id,
-            'generationkwh.investment', 'generationkwh_mail_creacio')
-
+        investment_actions = GenerationkwhActions(self, cursor, uid, 1)
+        if emission == 'emissio_apo':
+            investment_actions = AportacionsActions(self, cursor, uid, 1)
+        investment_id = investment_actions.create_from_form(cursor, uid,
+                partner_id, order_date, amount_in_euros, ip, iban, emission,
+                context)
         return investment_id
 
     def create_from_transfer(self, cursor, uid,
