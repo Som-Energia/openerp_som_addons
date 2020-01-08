@@ -4,6 +4,24 @@
         <record model="product.category" id="categ_inversions">
             <field name="name">Inversions</field>
         </record>
+        <record model="poweremail.core_accounts" id="genertion_mail_account">
+            <field name="email_id">generationkwh@somenergia.coop</field>
+            <field name="company">yes</field>
+            <field name="smtpserver">smtp.mandrillapp.com</field>
+            <field name="send_pref">html</field>
+            <field name="name">Generation kWh</field>
+            <field name="state">approved</field>
+            <field name="smtpport">587</field>
+        </record>
+        <record model="poweremail.core_accounts" id="inversions_mail_account">
+            <field name="email_id">invertir@somenergia.coop</field>
+            <field name="company">yes</field>
+            <field name="smtpserver">smtp.mandrillapp.com</field>
+            <field name="send_pref">html</field>
+            <field name="name">Som Energia Invertir</field>
+            <field name="state">approved</field>
+            <field name="smtpport">587</field>
+        </record>
     </data>
     <data>
         <!-- GKWH Products-->
@@ -1116,8 +1134,30 @@
             <field name="def_body_text"><![CDATA[text_to_replace]]></field>
             <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Generation kWh')]"/> 
         </record>
+        <record model="poweremail.templates" id="aportacio_mail_creacio">
+            <field name="name">Aportacions - Creació de la inversió</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'investment.aportacio')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">investment.aportacio</field>
+            <field name="file_name">${object.name}</field>
+            <field eval="1" name="use_filter"/>
+            <field name="def_to">${object.member_id.partner_id.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Aportació al capital social Som Enegia Ref. ${object.name}</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang"></field>
+            <field name="copyvalue">${object.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text"><![CDATA[text_to_replace]]></field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('email_id','=', 'invertir@somenergia.coop')]"/>
+        </record>
     </data>
     <data noupdate="1">
+
         <record id="genkwh_investment_payment_mode" model="payment.mode">
             <field name="name">GENERATION kWh</field>
             <field name="type" search="[('code', '=', 'RECIBO_CSB')]"/>
@@ -1229,6 +1269,18 @@
 		    search="[('name','=','APORTACIONS (Enginyers)')]" />
 	    <field name="bridge_account_payments_id" model="account.account"
 		    search="[('code','=','555000000010')]" />
+        </record>
+        <record model="ir.sequence.type" id="seq_type_som_aportacions">
+            <field name="name">Seq. Aportacions al Capital Social</field>
+            <field name="code">seq.som.aportacions</field>
+        </record>
+        <record model="ir.sequence" id="seq_som_aportacions">
+            <field name="name">Seq. Aportacions al Capital Social</field>
+            <field name="code">seq.som.aportacions</field>
+            <field name="padding">6</field>
+            <field name="number_increment">1</field>
+            <field name="number_next">5000</field>
+	    <field name="prefix">APO</field>
         </record>
     </data>
 </openerp>
