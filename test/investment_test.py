@@ -2789,7 +2789,7 @@ class Investment_Test(unittest.TestCase):
               - {id}
               - 'SI: {investment_name}'
               invoice_line_tax_id: []
-              name: 'Retenció IRPF sobre l''estalvi del Generationkwh de 2019 de {investment_name} '
+              name: 'Retenció IRPF sobre l''estalvi del Generationkwh de {year} de {investment_name} '
               note:
                 divestmentDate: '{invoice_date}'
                 investmentId: {investment_id}
@@ -2823,7 +2823,7 @@ class Investment_Test(unittest.TestCase):
                 invoice_date = datetime.today().strftime("%Y-%m-%d"),
                 id = invoice_id,
                 iban = 'ES77 1234 1234 1612 3456 7890',
-                year = 2018,
+                year = datetime.today().strftime("%Y"),
                 investment_name = investment.name,
                 p = self.personalData,
                 investment_id = id,
@@ -2884,7 +2884,7 @@ class Investment_Test(unittest.TestCase):
               - {id}
               - 'SI: {investment_name}'
               invoice_line_tax_id: []
-              name: 'Retenció IRPF sobre l''estalvi del Generationkwh de 2019 de {investment_name} '
+              name: 'Retenció IRPF sobre l''estalvi del Generationkwh de {year} de {investment_name} '
               note:
                 divestmentDate: '{invoice_date}'
                 investmentId: {investment_id}
@@ -2906,7 +2906,7 @@ class Investment_Test(unittest.TestCase):
               - {id}
               - 'SI: {investment_name}'
               invoice_line_tax_id: []
-              name: 'Retenció IRPF sobre l''estalvi del Generationkwh de 2018 de {investment_name} '
+              name: 'Retenció IRPF sobre l''estalvi del Generationkwh de {yearm1} de {investment_name} '
               note:
                 divestmentDate: '{invoice_date}'
                 investmentId: {investment_id}
@@ -2940,7 +2940,8 @@ class Investment_Test(unittest.TestCase):
                 invoice_date = datetime.today().strftime("%Y-%m-%d"),
                 id = invoice_id,
                 iban = 'ES77 1234 1234 1612 3456 7890',
-                year = 2018,
+                year = datetime.today().strftime("%Y"),
+                yearm1 = int(datetime.today().strftime("%Y")) - 1,
                 investment_name = investment.name,
                 p = self.personalData,
                 investment_id = id,
