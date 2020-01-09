@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 from erpwrapper import ErpWrapper
 from generationkwh.isodates import isodate
 import generationkwh.investmentmodel as gkwh
@@ -39,12 +38,13 @@ class InvestmentActions(ErpWrapper):
         ResPartner.write(cursor, uid, partner_id, dict(
             bank_inversions = bank_id,),context)
 
+        return member_ids, emission_id
 
 class GenerationkwhActions(InvestmentActions):
 
     def create_from_form(self, cursor, uid, partner_id, order_date, amount_in_euros, ip, iban,
             emission=None, context=None):
-        super(GenerationkwhActions, self).create_from_form(cursor, uid, partner_id, order_date, amount_in_euros, ip, iban,emission, context)
+        member_ids, emission_id = super(GenerationkwhActions, self).create_from_form(cursor, uid, partner_id, order_date, amount_in_euros, ip, iban,emission, context)
 
         print "Estic a GenerationkwhActions.get()"
         GenerationkwhInvestment = self.erp.pool.get('generationkwh.investment')
@@ -80,7 +80,7 @@ class AportacionsActions(InvestmentActions):
 
     def create_from_form(self, cursor, uid, partner_id, order_date, amount_in_euros, ip, iban,
             emission=None, context=None):
-        super(AportacionsActions, self).create_from_form(cursor, uid, partner_id, order_date, amount_in_euros, ip, iban,emission, context)
+        member_ids, emission_id = super(AportacionsActions, self).create_from_form(cursor, uid, partner_id, order_date, amount_in_euros, ip, iban,emission, context)
 
         print "Estic a AportacionsActions.get()"
         GenerationkwhInvestment = self.erp.pool.get('generationkwh.investment')
@@ -126,3 +126,4 @@ class AportacionsActions(InvestmentActions):
 
         return investment_id
 
+# vim: et ts=4 sw=4
