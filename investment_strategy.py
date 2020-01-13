@@ -9,7 +9,6 @@ class InvestmentActions(ErpWrapper):
 
     def create_from_form(self, cursor, uid, partner_id, order_date, amount_in_euros, ip, iban,
             emission=None, context=None):
-        print "Estic a InvestmentActions.create_from_form()"
         GenerationkwhInvestment = self.erp.pool.get('generationkwh.investment')
 
         if amount_in_euros <= 0 or amount_in_euros % gkwh.shareValue > 0:
@@ -46,7 +45,6 @@ class GenerationkwhActions(InvestmentActions):
             emission=None, context=None):
         member_ids, emission_id = super(GenerationkwhActions, self).create_from_form(cursor, uid, partner_id, order_date, amount_in_euros, ip, iban,emission, context)
 
-        print "Estic a GenerationkwhActions.get()"
         GenerationkwhInvestment = self.erp.pool.get('generationkwh.investment')
         ResUser = self.erp.pool.get('res.users')                            
         user = ResUser.read(cursor, uid, uid, ['name'])                 
@@ -82,7 +80,6 @@ class AportacionsActions(InvestmentActions):
             emission=None, context=None):
         member_ids, emission_id = super(AportacionsActions, self).create_from_form(cursor, uid, partner_id, order_date, amount_in_euros, ip, iban,emission, context)
 
-        print "Estic a AportacionsActions.get()"
         GenerationkwhInvestment = self.erp.pool.get('generationkwh.investment')
 
         if not emission:
