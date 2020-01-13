@@ -774,7 +774,7 @@ class GenerationkwhInvestment(osv.osv):
         spain = self.get_default_country(cursor, uid)
         ResPartnerBank = self.pool.get('res.partner.bank')
         ResBank = self.pool.get('res.bank')
-        vals = ResPartnerBank.onchange_banco(cursor, uid, [], account, spain, {})
+        vals = ResPartnerBank.onchange_banco(cursor, uid, [], account, int(spain), {})
         if 'warning' in vals:
             # TODO: Use vals['warning']['message']
             # TODO: Would require use a context with locale
@@ -791,7 +791,6 @@ class GenerationkwhInvestment(osv.osv):
             result['bank_name'] = bank['name']
         if 'acc_number' in vals['value']:
             result['acc_number'] = vals['value']['acc_number']
-
         return result
 
     # TODO: Move to res.partner
