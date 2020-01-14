@@ -482,14 +482,34 @@ class GiscedataFacturacioFacturador(osv.osv):
     _name = 'giscedata.facturacio.facturador'
     _inherit = 'giscedata.facturacio.facturador'
 
+
+    def elimina_ajustar_saldo_excedents_autoconsum(self, cursor, uid, factura_id, context=None):
+        flinia_o = self.pool.get("giscedata.facturacio.factura.linia")
+        imd_o = self.pool.get("ir.model.data")
+        producte_ajust_autoconsum = product_id = imd_o.get_object_reference(cursor, uid, "giscedata_facturacio_comer", 'saldo_excedents_autoconsum')[1]
+        l_autoc = flinia_o.search(cursor, uid, [('tipus', '=', 'generacio'), ('factura_id', '=', factura_id), ('product_id', '=', producte_ajust_autoconsum)])
+        if len(l_autoc):
+            flinia_o.unlink(cursor, uid, l_autoc)
+            return True
+        return False
+
+    def reaplica_ajustar_saldo_excedents_autoconsum(self, cursor, uid, factura_ids, context=None):
+        if not isinstance(factura_ids, (tuple, list)):
+            factura_ids = [factura_ids]
+        for factura_id in factura_ids:
+            if self.elimina_ajustar_saldo_excedents_autoconsum(cursor, uid, factura_id, context=context):
+                self.ajustar_saldo_excedents_autoconsum(cursor, uid, factura_id, context=context)
+        return True
+
     def fact_via_lectures(self, cursor, uid, polissa_id, lot_id, context=None):
         factures = super(GiscedataFacturacioFacturador,
                          self).fact_via_lectures(cursor, uid, polissa_id,
                                                  lot_id, context)
         factura_obj = self.pool.get('giscedata.facturacio.factura')
         factura_obj.apply_gkwh(cursor, uid, factures, context)
-
+        self.reaplica_ajustar_saldo_excedents_autoconsum(cursor, uid, factures, context)
         return factures
+
 
 GiscedataFacturacioFacturador()
 
