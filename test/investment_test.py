@@ -507,6 +507,7 @@ class Investment_Test(unittest.TestCase):
             )
         self.assertFalse(id) # ??
 
+    #Copied to tests/investment_test.py
     def test__create_from_form__whenNotAMember(self):
         with self.assertRaises(Exception) as ctx:
             id = self.Investment.create_from_form(
@@ -520,6 +521,7 @@ class Investment_Test(unittest.TestCase):
             "Not a member"
             )
 
+    #Copied to tests/investment_test.py
     def test__create_from_form__withNonDivisibleAmount(self):
         with self.assertRaises(Exception) as ctx:
             id = self.Investment.create_from_form(
@@ -533,6 +535,7 @@ class Investment_Test(unittest.TestCase):
             "Invalid amount"
             )
 
+    #Copied to tests/investment_test.py
     def test__create_from_form__withNegativeAmount(self):
         with self.assertRaises(Exception) as ctx:
             id = self.Investment.create_from_form(
@@ -546,6 +549,7 @@ class Investment_Test(unittest.TestCase):
             "Invalid amount"
             )
 
+    #Copied to tests/investment_test.py
     def test__create_from_form__withZeroAmount(self):
         with self.assertRaises(Exception) as ctx:
             id = self.Investment.create_from_form(
@@ -559,6 +563,7 @@ class Investment_Test(unittest.TestCase):
             "Invalid amount"
             )
 
+    #Copied to tests/investment_test.py
     def test__create_from_form__withBadIban(self):
         with self.assertRaises(Exception) as ctx:
             id = self.Investment.create_from_form(
