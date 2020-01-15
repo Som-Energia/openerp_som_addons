@@ -283,6 +283,12 @@ class GenerationkWhTestHelper(osv.osv):
                 ))
 
     def clear_mongo_collections(self, cursor, uid, collections, context=None):
+
+        Config = self.pool.get('res.config')
+        destructiveAllowed = Config.get('destructive_testing_allowed', False)
+        if not destructiveAllowed:
+            raise Exception("Trying to drop Mongo collections in production!")
+
         for collection in collections:
             mdbpool.get_db().drop_collection(collection)
 
