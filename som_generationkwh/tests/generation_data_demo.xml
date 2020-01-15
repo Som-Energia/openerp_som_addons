@@ -43,6 +43,19 @@
                 <field name="partner_id" ref="res_partner_inversor1"/>
         </record>
 
+	<record id="res_partner_noinversor1" model="res.partner">
+                <field name="name">Puig, Anna</field>
+        </record>
+        <record id="res_partner_address_noinversor1" model="res.partner.address">
+                <field name="city">Solsona</field>
+                <field name="name">Adreça Anna Puig</field>
+                <field name="zip">25280</field>
+                <field name="title">Ms.</field>
+                <field name="country_id" model="res.country" search="[('name','=','Espanya')]"/>
+                <field name="street">Major, 3</field>
+                <field name="type">default</field>
+                <field name="partner_id" ref="res_partner_noinversor1"/>
+        </record>
 	<!--Soci-->
         <record id="soci_0001" model="somenergia.soci">
             <field name="partner_id" ref="res_partner_inversor1"/>
