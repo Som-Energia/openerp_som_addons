@@ -14,6 +14,7 @@ class InvestmentTests(testing.OOTestCase):
         self.PEAccounts = self.openerp.pool.get('poweremail.core_accounts')
         self.Investment = self.openerp.pool.get('generationkwh.investment')
         self.IrModelData = self.openerp.pool.get('ir.model.data')
+        self.Partner = self.openerp.pool.get('res.partner')
 
     def tearDown(self):
         pass
@@ -404,5 +405,23 @@ class InvestmentTests(testing.OOTestCase):
                     account_id = self._generationMailAccount(cursor, uid),
                 ))
             self.MailMockup.deactivate(cursor, uid)
+
+    def test__create_from_form__ibanIsSet(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                        )[1]
+
+            inv_id = self.Investment.create_from_form(cursor, uid,
+                partner_id,
+                '2017-01-01', # order_date
+                2000,
+                '10.10.23.1',
+                'ES7712341234161234567890',
+            )
+            partner = self.Partner.browse(cursor, uid, partner_id)
+            self.assertTrue(partner.bank_inversions)
 
 # vim: et ts=4 sw=4
