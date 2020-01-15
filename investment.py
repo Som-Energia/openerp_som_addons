@@ -1436,10 +1436,19 @@ class GenerationkwhInvestment(osv.osv):
         PEAccounts = self.pool.get('poweremail.core_accounts')
         WizardInvoiceOpenAndSend = self.pool.get('wizard.invoice.open.and.send')
         MailMockup = self.pool.get('generationkwh.mailmockup')
+        IrModelData = self.pool.get('ir.model.data')
+        template_id = IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', template
+        )[1]
+        PETemplate = self.pool.get('poweremail.templates')
+        from_id = PETemplate.read(cursor, uid, template_id)['enforce_from_account']
 
-        from_id = PEAccounts.search(cursor, uid,[
-           ('name','=','Generation kWh')
-            ])
+        if not from_id:
+            from_id = PEAccounts.search(cursor, uid,[
+               ('name','=','Generation kWh')
+                ])
+        else:
+            from_id = from_id[:1]
 
         ctx = {
             'active_ids': [id],
