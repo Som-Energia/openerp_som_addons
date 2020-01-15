@@ -431,6 +431,7 @@ class Investment_Test(unittest.TestCase):
 
     assertNsEqual=assertNsEqual
 
+    #Copied to tests/investment_test.py
     def assertLogEquals(self, log, expected):
         for x in log.splitlines():
             self.assertRegexpMatches(x,
@@ -445,9 +446,11 @@ class Investment_Test(unittest.TestCase):
                 )
         self.assertMultiLineEqual(logContent, expected)
 
+    #Copied to tests/investment_test.py
     def assertMailLogEqual(self, expected):
         self.assertNsEqual(self.MailMockup.log() or '{}', expected)
 
+    #Copied to tests/investment_test.py
     def test__create_from_form__allOk(self):
         id = self.Investment.create_from_form(
             self.personalData.partnerid,
@@ -1757,6 +1760,7 @@ class Investment_Test(unittest.TestCase):
                     today=datetime.today().strftime("%Y-%m-%d"),
                 ))
 
+    #Copied to tests/investment_test.py
     def _generationMailAccount(self):
         PEAccounts = self.erp.PoweremailCore_accounts
         return PEAccounts.search([
@@ -1764,6 +1768,7 @@ class Investment_Test(unittest.TestCase):
             ])[0]
         
 
+    #Copied to tests/investment_test.py
     def test__create_from_form__sendsCreationEmail(self):
         id = self.Investment.create_from_form(
             self.personalData.partnerid,

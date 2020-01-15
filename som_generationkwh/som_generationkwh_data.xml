@@ -1136,9 +1136,9 @@
         </record>
         <record model="poweremail.templates" id="aportacio_mail_creacio">
             <field name="name">Aportacions - Creació de la inversió</field>
-            <field name="object_name" model="ir.model" search="[('model', '=', 'investment.aportacio')]"/>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'generationkwh.investment')]"/>
             <field eval="0" name="save_to_drafts"/>
-            <field name="model_int_name">investment.aportacio</field>
+            <field name="model_int_name">generationkwh.investment</field>
             <field name="file_name">${object.name}</field>
             <field eval="1" name="use_filter"/>
             <field name="def_to">${object.member_id.partner_id.address[0].email}</field>

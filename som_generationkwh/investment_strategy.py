@@ -119,7 +119,7 @@ class AportacionsActions(InvestmentActions):
             partner_id, iban, emi_obj['mandate_name'], gkwh.creditorCode)
 
         GenerationkwhInvestment.send_mail(cursor, uid, investment_id,
-            'investment.aportacio', 'aportacio_mail_creacio')
+            'generationkwh.investment', 'aportacio_mail_creacio')
 
         return investment_id
 
