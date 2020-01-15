@@ -577,6 +577,7 @@ class Investment_Test(unittest.TestCase):
             "Wrong iban"
             )
 
+    #Copied to tests/investment_test.py
     def test__mark_as_signed(self):
         id = self.Investment.create_from_form(
             self.personalData.partnerid,
@@ -1504,6 +1505,7 @@ class Investment_Test(unittest.TestCase):
                 inv = inv,
         ))
 
+    #Copied to tests/investment_test.py
     def test__create_from_form__ibanIsSet(self):
 
         id = self.Investment.create_from_form(
