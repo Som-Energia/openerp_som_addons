@@ -13,6 +13,7 @@ from generationkwh.isodates import (
     addDays,
     isodate,
     )
+from somutils.testutils import destructiveTest
 
 def datespan(startDate, endDate, delta=datetime.timedelta(hours=1)):
     currentDate = startDate
@@ -21,6 +22,7 @@ def datespan(startDate, endDate, delta=datetime.timedelta(hours=1)):
         currentDate += delta
 
 @unittest.skipIf(not dbconfig, "depends on ERP")
+@destructiveTest
 class RightsGranter_Test(unittest.TestCase):
     from plantmeter.testutils import assertNsEqual
     def setUp(self):
