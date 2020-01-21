@@ -6,6 +6,9 @@ import netsvc
 import time
 import random
 from generationkwh.testutils import assertNsEqual
+from datetime import datetime, timedelta, date
+from yamlns import namespace as ns
+import generationkwh.investmentmodel as gkwh
 
 class InvestmentTests(testing.OOTestCase):
 
@@ -15,11 +18,54 @@ class InvestmentTests(testing.OOTestCase):
         self.Investment = self.openerp.pool.get('generationkwh.investment')
         self.IrModelData = self.openerp.pool.get('ir.model.data')
         self.Partner = self.openerp.pool.get('res.partner')
+        self.Invoice = self.openerp.pool.get('account.invoice')
+        self.InvoiceLine = self.openerp.pool.get('account.invoice.line')
+        self.Emission = self.openerp.pool.get('generationkwh.emission')
+        self.maxDiff = None
 
     def tearDown(self):
         pass
 
     assertNsEqual=assertNsEqual
+
+    def assertInvoiceInfoEqual(self, cursor, uid, invoice_id, expected):
+        def proccesLine(line):
+            line = ns(line)
+            line.product_id = line.product_id[1]
+            line.account_id = line.account_id[1]
+            line.uos_id = line.uos_id[1]
+            line.note = ns.loads(line.note) if line.note else line.note
+            del line.id
+            return line
+
+        invoice = ns(self.Invoice.read(cursor, uid, invoice_id, [
+            'amount_total',
+            'amount_untaxed',
+            'partner_id',
+            'type',
+            'name',
+            'number',
+            'journal_id',
+            'account_id',
+            'partner_bank',
+            'payment_type',
+            'date_invoice',
+            'invoice_line',
+            'check_total',
+            'origin',
+            'sii_to_send',
+            'mandate_id',
+            'state',
+        ]))
+        invoice.journal_id = invoice.journal_id[1]
+        invoice.mandate_id = invoice.mandate_id and invoice.mandate_id[0]
+        invoice.partner_bank = invoice.partner_bank[1] if invoice.partner_bank else "None"
+        invoice.account_id = invoice.account_id[1]
+        invoice.invoice_line = [
+            proccesLine(line)
+            for line in self.InvoiceLine.read(cursor, uid, invoice.invoice_line, [])
+            ]
+        self.assertNsEqual(invoice, expected)
 
     def assertLogEquals(self, log, expected):
         for x in log.splitlines():
@@ -423,5 +469,159 @@ class InvestmentTests(testing.OOTestCase):
             )
             partner = self.Partner.browse(cursor, uid, partner_id)
             self.assertTrue(partner.bank_inversions)
+
+    def test__create_initial_invoices__GKWH(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                        )[1]
+            id = self.Investment.create_from_form(cursor, uid,
+                partner_id,
+                '2017-01-01', # order_date
+                2000,
+                '10.10.23.1',
+                'ES7712341234161234567890',
+                'emissio_genkwh',
+                )
+
+            invoice_ids, errs =  self.Investment.create_initial_invoices(cursor, uid, [id])
+
+            self.assertFalse(errs)
+            self.assertTrue(invoice_ids)
+            investment = self.Investment.browse(cursor, uid, id)
+            iban = 'ES7712341234161234567890'
+
+            emission_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'emissio_0001'
+            )[1]
+            emission_data = self.Emission.browse(cursor, uid, emission_id)
+            mandate_id = self.Investment.get_or_create_payment_mandate(cursor, uid,
+                partner_id, iban, emission_data.mandate_name, gkwh.creditorCode)
+            partner_data = self.Partner.browse(cursor, uid, partner_id)
+            self.assertInvoiceInfoEqual(cursor, uid, invoice_ids[0], u"""\
+                account_id: 410000{num_soci:0>6s} {p.name}
+                amount_total: 2000.0
+                amount_untaxed: 2000.0
+                check_total: 2000.0
+                date_invoice: '{invoice_date}'
+                id: {id}
+                invoice_line:
+                - account_analytic_id: false
+                  uos_id: PCE
+                  account_id: 163500{num_soci:0>6s} {p.name}
+                  name: 'Inversió {investment_name} '
+                  discount: 0.0
+                  invoice_id:
+                  - {id}
+                  - 'CI: {investment_name}-JUST'
+                  origin: false
+                  price_unit: 100.0
+                  price_subtotal: 2000.0
+                  note: false
+                  quantity: 20.0
+                  product_id: '[GENKWH_AE] Accions Energètiques Generation kWh'
+                  invoice_line_tax_id: []
+                journal_id: Factures GenerationkWh
+                mandate_id: {mandate_id}
+                name: {investment_name}-JUST
+                number: {investment_name}-JUST
+                origin: {investment_name}
+                partner_bank: {iban}
+                partner_id:
+                - {p.id}
+                - {p.name}
+                payment_type:
+                - 2
+                - Recibo domiciliado
+                sii_to_send: false
+                type: out_invoice
+                state: draft
+                """.format(
+                invoice_date=datetime.today().strftime("%Y-%m-%d"),
+                id=invoice_ids[0],
+                iban='ES77 1234 1234 1612 3456 7890',
+                year=2018,
+                investment_name=investment.name,
+                p=partner_data,
+                num_soci= partner_data.ref[1:],
+                investment_id=id,
+                mandate_id=mandate_id,
+                ))
+
+    def test__create_initial_invoices__APO(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0001'
+                        )[1]
+
+
+            invoice_ids, errs =  self.Investment.create_initial_invoices(cursor, uid, [id])
+
+            self.assertFalse(errs)
+            self.assertTrue(invoice_ids)
+            investment = self.Investment.browse(cursor, uid, id)
+            iban = 'ES7712341234161234567890'
+
+            partner_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                        )[1]
+            emission_id = investment.emission_id
+            emission_data = self.Emission.browse(cursor, uid, emission_id)
+            mandate_id = self.Investment.get_or_create_payment_mandate(cursor, uid,
+                partner_id, iban, emission_data.mandate_name, gkwh.creditorCode)
+            partner_data = self.Partner.browse(cursor, uid, partner_id)
+            self.assertInvoiceInfoEqual(cursor, uid, invoice_ids[0], u"""\
+                account_id: 410000{num_soci:0>6s} {p.name}
+                amount_total: 1000.0
+                amount_untaxed: 1000.0
+                check_total: 1000.0
+                date_invoice: '{invoice_date}'
+                id: {id}
+                invoice_line:
+                - account_analytic_id: false
+                  uos_id: PCE
+                  account_id: 163500{num_soci:0>6s} {p.name}
+                  name: 'Inversió {investment_name} '
+                  discount: 0.0
+                  invoice_id:
+                  - {id}
+                  - 'CI: {investment_name}-JUST'
+                  origin: false
+                  price_unit: 100.0
+                  price_subtotal: 1000.0
+                  note: false
+                  quantity: 10.0
+                  product_id: '[GENKWH_AE] Accions Energètiques Generation kWh'
+                  invoice_line_tax_id: []
+                journal_id: Factures GenerationkWh
+                mandate_id: {mandate_id}
+                name: {investment_name}-JUST
+                number: {investment_name}-JUST
+                origin: {investment_name}
+                partner_bank: {iban}
+                partner_id:
+                - {p.id}
+                - {p.name}
+                payment_type:
+                - 2
+                - Recibo domiciliado
+                sii_to_send: false
+                type: out_invoice
+                state: draft
+                """.format(
+                invoice_date=datetime.today().strftime("%Y-%m-%d"),
+                id=invoice_ids[0],
+                iban='ES77 1234 1234 1612 3456 7890',
+                year=2018,
+                investment_name=investment.name,
+                p=partner_data,
+                num_soci= partner_data.ref[1:],
+                investment_id=id,
+                mandate_id=mandate_id,
+                ))
 
 # vim: et ts=4 sw=4

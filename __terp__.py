@@ -14,6 +14,7 @@
     'som_inversions',
     'som_plantmeter',
     'l10n_ES_aeat_mod193',
+    'l10n_ES_aeat_sii',
     ],
   "init_xml": [],
   "demo_xml": [

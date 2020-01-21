@@ -31,6 +31,7 @@
 	<!-- Partner -->
 	<record id="res_partner_inversor1" model="res.partner">
                 <field name="name">Gil, Pere</field>
+                <field name="ref">S202001</field>
         </record>
         <record id="res_partner_address_inversor1" model="res.partner.address">
                 <field name="city">Berga</field>
@@ -42,7 +43,11 @@
                 <field name="type">default</field>
                 <field name="partner_id" ref="res_partner_inversor1"/>
         </record>
-
+    <record model="res.partner.bank" id="partner_bank1">
+        <field name="iban">ES7712341234161234567890</field>
+		<field name="state">iban</field>
+		<field name="partner_id" ref="res_partner_inversor1"></field>
+	</record>
 	<record id="res_partner_noinversor1" model="res.partner">
                 <field name="name">Puig, Anna</field>
         </record>
@@ -107,6 +112,9 @@
             <field name="name">Generation kWh</field>
             <field name="state">approved</field>
             <field name="smtpport">587</field>
+        </record>
+	<record id="res_partner_inversor1" model="res.partner">
+                <field name="bank_inversions" ref="partner_bank1"></field>
         </record>
     </data>
 </openerp>
