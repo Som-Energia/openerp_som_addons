@@ -1262,19 +1262,6 @@ class GenerationkwhInvestment(osv.osv):
 
         date_invoice = str(date.today())
 
-        # The product
-        product_id = Product.search(cursor, uid, [
-            ('default_code','=', gkwh.investmentProductCode),
-            ])[0]
-
-        product = Product.browse(cursor, uid, product_id)
-        product_uom_id = product.uom_id.id
-
-        # The journal
-        journal_id = Journal.search(cursor, uid, [
-            ('code','=',gkwh.journalCode),
-            ])[0]
-
         # The payment type
         payment_type_id = PaymentType.search(cursor, uid, [
             ('code', '=', 'RECIBO_CSB'),
@@ -1294,6 +1281,9 @@ class GenerationkwhInvestment(osv.osv):
                 error("Investment {} was already paid"
                     .format(investment.name))
                 continue
+
+            # The product
+            product = investment.emission_id.investment_product_id
 
             invoice_name = '%s-JUST' % (
                 # TODO: Remove the GENKWHID stuff when fully migrated, error instead
@@ -1319,16 +1309,20 @@ class GenerationkwhInvestment(osv.osv):
             partner = Partner.browse(cursor, uid, partner_id)
 
             # Get or create partner specific accounts
+            account_inv_id = 0
             if not partner.property_account_liquidacio:
                 partner.button_assign_acc_410()
-            if not partner.property_account_gkwh:
-                partner.button_assign_acc_1635()
-
-            if (
-                not partner.property_account_gkwh or
-                not partner.property_account_liquidacio
-                ):
                 partner = partner.browse()[0]
+            if investment.emission_id.type == 'genkwh':
+                if not partner.property_account_gkwh:
+                    partner.button_assign_acc_1635()
+                    partner = partner.browse()[0]
+                account_inv_id = partner.property_account_gkwh.id
+            if investment.emission_id.type == 'apo':
+                if not partner.property_account_aportacions:
+                    partner.button_assign_acc_163()
+                    partner = partner.browse()[0]
+                account_inv_id = partner.property_account_aportacions.id
 
             # Check if exist bank account
             if not partner.bank_inversions:
@@ -1340,7 +1334,7 @@ class GenerationkwhInvestment(osv.osv):
 
             mandate_id = self.get_or_create_payment_mandate(cursor, uid,
                 partner_id, partner.bank_inversions.iban,
-                gkwh.mandateName, gkwh.creditorCode)
+                investment.emission_id.mandate_name, gkwh.creditorCode)
 
             # Default invoice fields for given partner
             vals = {}
@@ -1353,7 +1347,7 @@ class GenerationkwhInvestment(osv.osv):
                 'type': 'out_invoice',
                 'name': invoice_name,
                 'number': invoice_name,
-                'journal_id': journal_id,
+                'journal_id': investment.emission_id.journal_id.id,
                 'account_id': partner.property_account_liquidacio.id,
                 'partner_bank': partner.bank_inversions.id,
                 'payment_type': payment_type_id,
@@ -1368,8 +1362,8 @@ class GenerationkwhInvestment(osv.osv):
 
             line = dict(
                 InvoiceLine.product_id_change(cursor, uid, [],
-                    product=product_id,
-                    uom=product_uom_id,
+                    product=product.id,
+                    uom=product.uom_id.id,
                     partner_id=partner_id,
                     type='in_invoice',
                     ).get('value', {}),
@@ -1379,9 +1373,9 @@ class GenerationkwhInvestment(osv.osv):
                 ),
                 quantity = investment.nshares,
                 price_unit = gkwh.shareValue,
-                product_id = product_id,
+                product_id = product.id,
                 # partner specific account, was generic from product
-                account_id = partner.property_account_gkwh.id,
+                account_id = account_inv_id,
             )
             # rewrite relation
             line['invoice_line_tax_id'] = [

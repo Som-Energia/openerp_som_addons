@@ -470,19 +470,20 @@ class InvestmentTests(testing.OOTestCase):
             partner = self.Partner.browse(cursor, uid, partner_id)
             self.assertTrue(partner.bank_inversions)
 
-    def test__create_initial_invoices__GKWH(self):
+    def test__create_initial_invoices__AllOkGKWH(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
             partner_id = self.IrModelData.get_object_reference(
                         cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
                         )[1]
+            iban = 'ES7712341234161234567890'
             id = self.Investment.create_from_form(cursor, uid,
                 partner_id,
                 '2017-01-01', # order_date
                 2000,
                 '10.10.23.1',
-                'ES7712341234161234567890',
+                iban,
                 'emissio_genkwh',
                 )
 
@@ -491,14 +492,8 @@ class InvestmentTests(testing.OOTestCase):
             self.assertFalse(errs)
             self.assertTrue(invoice_ids)
             investment = self.Investment.browse(cursor, uid, id)
-            iban = 'ES7712341234161234567890'
-
-            emission_id = self.IrModelData.get_object_reference(
-                cursor, uid, 'som_generationkwh', 'emissio_0001'
-            )[1]
-            emission_data = self.Emission.browse(cursor, uid, emission_id)
             mandate_id = self.Investment.get_or_create_payment_mandate(cursor, uid,
-                partner_id, iban, emission_data.mandate_name, gkwh.creditorCode)
+                partner_id, iban, investment.emission_id.mandate_name, gkwh.creditorCode)
             partner_data = self.Partner.browse(cursor, uid, partner_id)
             self.assertInvoiceInfoEqual(cursor, uid, invoice_ids[0], u"""\
                 account_id: 410000{num_soci:0>6s} {p.name}
@@ -550,7 +545,7 @@ class InvestmentTests(testing.OOTestCase):
                 mandate_id=mandate_id,
                 ))
 
-    def test__create_initial_invoices__APO(self):
+    def test__create_initial_invoices__AllOkAPO(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
@@ -558,19 +553,16 @@ class InvestmentTests(testing.OOTestCase):
                         cursor, uid, 'som_generationkwh', 'apo_0001'
                         )[1]
 
-
             invoice_ids, errs =  self.Investment.create_initial_invoices(cursor, uid, [id])
 
             self.assertFalse(errs)
             self.assertTrue(invoice_ids)
             investment = self.Investment.browse(cursor, uid, id)
             iban = 'ES7712341234161234567890'
-
             partner_id = self.IrModelData.get_object_reference(
                         cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
                         )[1]
-            emission_id = investment.emission_id
-            emission_data = self.Emission.browse(cursor, uid, emission_id)
+            emission_data = investment.emission_id
             mandate_id = self.Investment.get_or_create_payment_mandate(cursor, uid,
                 partner_id, iban, emission_data.mandate_name, gkwh.creditorCode)
             partner_data = self.Partner.browse(cursor, uid, partner_id)
@@ -584,7 +576,7 @@ class InvestmentTests(testing.OOTestCase):
                 invoice_line:
                 - account_analytic_id: false
                   uos_id: PCE
-                  account_id: 163500{num_soci:0>6s} {p.name}
+                  account_id: 163000{num_soci:0>6s} {p.name}
                   name: 'Inversió {investment_name} '
                   discount: 0.0
                   invoice_id:
@@ -595,9 +587,9 @@ class InvestmentTests(testing.OOTestCase):
                   price_subtotal: 1000.0
                   note: false
                   quantity: 10.0
-                  product_id: '[GENKWH_AE] Accions Energètiques Generation kWh'
+                  product_id: '[APO_AE] Aportacions'
                   invoice_line_tax_id: []
-                journal_id: Factures GenerationkWh
+                journal_id: Factures Liquidació Aportacions
                 mandate_id: {mandate_id}
                 name: {investment_name}-JUST
                 number: {investment_name}-JUST
