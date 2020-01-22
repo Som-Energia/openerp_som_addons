@@ -513,7 +513,7 @@ class GenerationkwhInvestment(osv.osv):
         inv_actual = self.read(cursor, uid, investment_id, ['first_effective_date','last_effective_date','nshares'])
         daysharesactual = self.get_dayshares_investmentyear(cursor, uid, inv_actual, start_date, end_date)
 
-        return (daysharesactual * total_amount_saving / total_dayshares_year) * gkwh.irpfTaxValue
+        return round((daysharesactual * total_amount_saving / total_dayshares_year) * gkwh.irpfTaxValue,2)
 
 
     def amortize(self, cursor, uid, current_date, ids=None, context=None):
@@ -1819,6 +1819,9 @@ class GenerationkwhInvestment(osv.osv):
             (6, 0, line.get('invoice_line_tax_id', []))
         ]
         InvoiceLine.create(cursor, uid, line)
+
+        irpf_amount_current_year = round(irpf_amount_current_year,2)
+        irpf_amount = round(irpf_amount,2)
 
         self.irpfRetentionLine(cursor, uid, investment, irpf_amount_current_year, invoice_id, isodate(date_invoice), investmentMemento)
         self.irpfRetentionLine(cursor, uid, investment, irpf_amount, invoice_id, isodate(date_invoice)-relativedelta(years=1), investmentMemento)
