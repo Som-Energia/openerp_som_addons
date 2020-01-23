@@ -1285,10 +1285,14 @@ class GenerationkwhInvestment(osv.osv):
             # The product
             product = investment.emission_id.investment_product_id
 
-            invoice_name = '%s-JUST' % (
-                # TODO: Remove the GENKWHID stuff when fully migrated, error instead
-                investment.name or 'GENKWHID{}'.format(investment.id),
-            )
+            # TODO: Remove the GENKWHID stuff when fully migrated, error instead
+            invoice_name = '%s-JUST' % '{}'.format(investment.id)
+            if investment.name:
+                 invoice_name = '%s-JUST' % investment.name
+            elif investment.emission_id.type == 'genkwh':
+                 invoice_name = '%s-JUST' % 'GENKWHID{}'.format(investment.id)
+            elif investment.emission_id.type == 'apo':
+                 invoice_name = '%s-JUST' % 'APOID{}'.format(investment.id)
 
             # Ensure unique invoice
             existingInvoice = Invoice.search(cursor,uid,[

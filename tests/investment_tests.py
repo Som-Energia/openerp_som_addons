@@ -616,4 +616,266 @@ class InvestmentTests(testing.OOTestCase):
                 mandate_id=mandate_id,
                 ))
 
+    def test__create_initial_invoices__withNegativeAmount_APO(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0001'
+                        )[1]
+            investment = self.Investment.browse(cursor, uid, id)
+            self.Investment.mark_as_invoiced(cursor, uid, id)
+
+            result = self.Investment.create_initial_invoices(cursor, uid, [id])
+
+            inv = self.Investment.read(cursor, uid, id)
+            self.assertEqual(result, ([], [
+                "Investment {name} already invoiced".format(**inv)
+                ]))
+
+    def test__create_initial_invoices__withNegativeAmount_GKWH(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
+                        )[1]
+            investment = self.Investment.browse(cursor, uid, id)
+            self.Investment.mark_as_invoiced(cursor, uid, id)
+
+            result = self.Investment.create_initial_invoices(cursor, uid, [id])
+
+            inv = self.Investment.read(cursor, uid, id)
+            self.assertEqual(result, ([], [
+                "Investment {name} already invoiced".format(**inv)
+                ]))
+
+    def test__create_initial_invoices__twice_APO(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0001'
+                        )[1]
+            investment = self.Investment.browse(cursor, uid, id)
+            self.Investment.create_initial_invoices(cursor, uid, [id])
+
+            result = self.Investment.create_initial_invoices(cursor, uid, [id])
+
+            inv = self.Investment.read(cursor, uid, id)
+            self.assertEqual(result, ([], [
+                "Initial Invoice {name}-JUST already exists".format(**inv)
+                ]))
+
+    def test__create_initial_invoices__twice_GKWH(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
+                        )[1]
+            investment = self.Investment.browse(cursor, uid, id)
+            self.Investment.create_initial_invoices(cursor, uid, [id])
+
+            result = self.Investment.create_initial_invoices(cursor, uid, [id])
+
+            inv = self.Investment.read(cursor, uid, id)
+            self.assertEqual(result, ([], [
+                "Initial Invoice {name}-JUST already exists".format(**inv)
+                ]))
+
+    def test__create_initial_invoices__withUnnamedInvestment_APO(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0001'
+                        )[1]
+            self.Investment.write(cursor, uid, id, dict(name=None))
+
+            invoice_ids, errs = self.Investment.create_initial_invoices(cursor, uid, [id])
+
+            invoice = self.Invoice.browse(cursor, uid, invoice_ids[0])
+            self.assertEqual(invoice.name, "APOID{}-JUST".format(id))
+
+    def test__create_initial_invoices__withUnnamedInvestment_GKWH(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
+                        )[1]
+            self.Investment.write(cursor, uid, id, dict(name=None))
+
+            invoice_ids, errs = self.Investment.create_initial_invoices(cursor, uid, [id])
+
+            invoice = self.Invoice.browse(cursor, uid, invoice_ids[0])
+            self.assertEqual(invoice.name, "GENKWHID{}-JUST".format(id))
+
+    def test__create_initial_invoices__errorWhenNoBank_APO(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0001'
+                        )[1]
+            inv = self.Investment.browse(cursor, uid, id)
+            self.Partner.write(cursor, uid, inv.member_id.partner_id.id, dict(bank_inversions = False ))
+
+            invoice_ids, errs = self.Investment.create_initial_invoices(cursor, uid, [id])
+
+            inv = self.Investment.browse(cursor, uid, id)
+            self.assertEqual(errs, [u"""Partner '{name}' has no investment bank account"""
+                    .format(name=inv.member_id.partner_id.name)])
+
+    def test__create_initial_invoices__errorWhenNoBank_GKWH(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
+                        )[1]
+            inv = self.Investment.browse(cursor, uid, id)
+            self.Partner.write(cursor, uid, inv.member_id.partner_id.id, dict(bank_inversions = False ))
+
+            invoice_ids, errs = self.Investment.create_initial_invoices(cursor, uid, [id])
+
+            inv = self.Investment.browse(cursor, uid, id)
+            self.assertEqual(errs, [u"""Partner '{name}' has no investment bank account"""
+                    .format(name=inv.member_id.partner_id.name)])
+
+    def test__create_initial_invoices__investmentWithPurchaseDate_APO(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0001'
+                        )[1]
+            self.Investment.mark_as_invoiced(cursor, uid, id)
+            self.Investment.mark_as_paid(cursor, uid, [id], '2016-01-04')
+
+            result = self.Investment.create_initial_invoices(cursor, uid, [id])
+
+            inv = self.Investment.read(cursor, uid, id)
+            self.assertEqual(result, ([], [
+                "Investment {name} was already paid".format(**inv)
+                ]))
+
+    def test__create_initial_invoices__investmentWithPurchaseDate_GKWH(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
+                        )[1]
+            self.Investment.mark_as_invoiced(cursor, uid, id)
+            self.Investment.mark_as_paid(cursor, uid, [id], '2016-01-04')
+
+            result = self.Investment.create_initial_invoices(cursor, uid, [id])
+
+            inv = self.Investment.read(cursor, uid, id)
+            self.assertEqual(result, ([], [
+                "Investment {name} was already paid".format(**inv)
+                ]))
+
+    def test__create_initial_invoices__inactiveInvestment_APO(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0001'
+                        )[1]
+            self.Investment.write(cursor, uid, id, {'active':False})
+
+            result = self.Investment.create_initial_invoices(cursor, uid, [id])
+
+            inv = self.Investment.read(cursor, uid, id)
+            self.assertEqual(result, ([], [
+                "Investment {name} is inactive".format(**inv)
+                ]))
+
+    def test__create_initial_invoices__inactiveInvestment_GKWH(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
+                        )[1]
+            self.Investment.write(cursor, uid, id, {'active':False})
+
+            result = self.Investment.create_initial_invoices(cursor, uid, [id])
+
+            inv = self.Investment.read(cursor, uid, id)
+            self.assertEqual(result, ([], [
+                "Investment {name} is inactive".format(**inv)
+                ]))
+
+    def test__create_initial_invoices__multiInvestments(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            id1 = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0001'
+                        )[1]
+            id2 = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
+                        )[1]
+
+            result, errs = self.Investment.create_initial_invoices(cursor, uid, [id1,id2])
+
+            self.assertEqual(len(result), 2)
+
+    def test__create_initial_invoices__OkAndKo(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            id1 = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0001'
+                        )[1]
+            self.Investment.write(cursor, uid, id1, {'active':False})
+            id2 = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
+                        )[1]
+
+            result, errs = self.Investment.create_initial_invoices(cursor, uid, [id1,id2])
+
+            inv = self.Investment.read(cursor, uid, id1)
+            self.assertEqual(errs, [
+                "Investment {name} is inactive".format(**inv),
+                ])
+            self.assertEqual(len(result), 1)
+
+    def test__create_initial_invoices__twoErrors(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            id1 = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0001'
+                        )[1]
+            self.Investment.write(cursor, uid, id1, {'active':False})
+            id2 = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
+                        )[1]
+            self.Investment.mark_as_invoiced(cursor, uid, id2)
+            self.Investment.mark_as_paid(cursor, uid, [id2], '2016-01-04')
+
+            result, errs = self.Investment.create_initial_invoices(cursor, uid, [id1,id2])
+
+            inv1 = self.Investment.read(cursor, uid, id1)
+            inv2 = self.Investment.read(cursor, uid, id2)
+            self.assertEqual(errs, [
+                "Investment {name} is inactive".format(**inv1),
+                "Investment {name} was already paid".format(**inv2),
+                ])
+            self.assertEqual(len(result), 0)
+
+    def test__create_initial_invoices__zeroInvestments(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            result, errs = self.Investment.create_initial_invoices(cursor, uid, [])
+
+            self.assertEqual(len(result), 0)
+
 # vim: et ts=4 sw=4
