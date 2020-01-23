@@ -450,52 +450,6 @@ class Investment_Test(unittest.TestCase):
     def assertMailLogEqual(self, expected):
         self.assertNsEqual(self.MailMockup.log() or '{}', expected)
 
-    #Copied to tests/investment_test.py
-    def test__create_from_form__allOk(self):
-        id = self.Investment.create_from_form(
-            self.personalData.partnerid,
-            '2017-01-01', # order_date
-            4000,
-            '10.10.23.123',
-            'ES7712341234161234567890',
-            )
-
-        self.assertTrue(id)
-
-        investment = ns(self.Investment.read(id, []))
-        log = investment.pop('log')
-        name = investment.pop('name')
-        actions_log = investment.pop('actions_log') # TODO: Test
-        id_emission, name_emission = investment.pop('emission_id')
-        self.assertEqual(name_emission, "GenerationkWH")
-
-        self.assertLogEquals(log,
-            u'ORDER: Formulari omplert des de la IP 10.10.23.123,'
-            u' Quantitat: 4000 €, IBAN: ES7712341234161234567890\n'
-            )
-
-        self.assertRegexpMatches(name,r'^GKWH[0-9]{5}$')
-        self.assertNsEqual(investment, u"""
-            id: {id}
-            member_id:
-            - {member_id}
-            - {surname}, {name}
-            order_date: '2017-01-01'
-            purchase_date: false
-            first_effective_date: false
-            last_effective_date: false
-            nshares: 40
-            amortized_amount: 0.0
-            move_line_id: false
-            active: true
-            draft: true
-            signed_date: false
-            """.format(
-                id=id,
-                **self.personalData
-                ))
-
-
     @unittest.skip('Not implemented')
     def test__create_from_form__whenBadOrderDate(self):
         id = self.Investment.create_from_form(
@@ -506,120 +460,6 @@ class Investment_Test(unittest.TestCase):
             'ES7712341234161234567890',
             )
         self.assertFalse(id) # ??
-
-    #Copied to tests/investment_test.py
-    def test__create_from_form__whenNotAMember(self):
-        with self.assertRaises(Exception) as ctx:
-            id = self.Investment.create_from_form(
-                1, # magic number, not member
-                '2017-01-01', # order_date
-                4000,
-                '10.10.23.123',
-                'ES7712341234161234567890',
-                )
-        self.assertEqual(ctx.exception.faultCode,
-            "Not a member"
-            )
-
-    #Copied to tests/investment_test.py
-    def test__create_from_form__withNonDivisibleAmount(self):
-        with self.assertRaises(Exception) as ctx:
-            id = self.Investment.create_from_form(
-                self.personalData.partnerid,
-                '2017-01-01', # order_date
-                4003,
-                '10.10.23.123',
-                'ES7712341234161234567890',
-                )
-        self.assertEqual(ctx.exception.faultCode,
-            "Invalid amount"
-            )
-
-    #Copied to tests/investment_test.py
-    def test__create_from_form__withNegativeAmount(self):
-        with self.assertRaises(Exception) as ctx:
-            id = self.Investment.create_from_form(
-                self.personalData.partnerid,
-                '2017-01-01', # order_date
-                -400,
-                '10.10.23.123',
-                'ES7712341234161234567890',
-                )
-        self.assertEqual(ctx.exception.faultCode,
-            "Invalid amount"
-            )
-
-    #Copied to tests/investment_test.py
-    def test__create_from_form__withZeroAmount(self):
-        with self.assertRaises(Exception) as ctx:
-            id = self.Investment.create_from_form(
-                self.personalData.partnerid,
-                '2017-01-01', # order_date
-                0,
-                '10.10.23.123',
-                'ES7712341234161234567890',
-                )
-        self.assertEqual(ctx.exception.faultCode,
-            "Invalid amount"
-            )
-
-    #Copied to tests/investment_test.py
-    def test__create_from_form__withBadIban(self):
-        with self.assertRaises(Exception) as ctx:
-            id = self.Investment.create_from_form(
-                self.personalData.partnerid,
-                '2017-01-01', # order_date
-                3000,
-                '10.10.23.123',
-                'ES77123412341612345678ZZ',
-                )
-        self.assertEqual(ctx.exception.faultCode,
-            "Wrong iban"
-            )
-
-    #Copied to tests/investment_test.py
-    def test__mark_as_signed(self):
-        id = self.Investment.create_from_form(
-            self.personalData.partnerid,
-            '2017-01-01', # order_date
-            4000,
-            '10.10.23.123',
-            'ES7712341234161234567890',
-            )
-
-        self.Investment.mark_as_signed(id, '2017-01-06')
-
-        investment = ns(self.Investment.read(id, []))
-        log = investment.pop('log')
-        name = investment.pop('name')
-        actions_log = investment.pop('actions_log') # TODO: Test
-        id_emission, name_emission = investment.pop('emission_id')
-        self.assertEqual(name_emission, "GenerationkWH")
-
-        self.assertLogEquals(log,
-            u'SIGN: Inversió signada amb data 2017-01-06\n'
-            u'ORDER: Formulari omplert des de la IP 10.10.23.123,'
-            u' Quantitat: 4000 €, IBAN: ES7712341234161234567890\n')
-
-        self.assertNsEqual(investment, u"""
-            id: {id}
-            member_id:
-            - {member_id}
-            - {surname}, {name}
-            order_date: '2017-01-01'
-            purchase_date: false
-            first_effective_date: false
-            last_effective_date: false
-            nshares: 40
-            amortized_amount: 0.0
-            move_line_id: false
-            active: true
-            draft: true
-            signed_date: '2017-01-06'
-            """.format(
-                id=id,
-                **self.personalData
-                ))
 
     def test__mark_as_invoiced(self):
         id = self.Investment.create_from_form(
@@ -1236,18 +1076,6 @@ class Investment_Test(unittest.TestCase):
                 inv = inv,
         ))
 
-    #Copied to tests/investment_test.py
-    def test__create_from_form__ibanIsSet(self):
-
-        id = self.Investment.create_from_form(
-            self.personalData.partnerid,
-            '2017-01-01', # order_date
-            2000,
-            '10.10.23.1',
-            'ES7712341234161234567890',
-            )
-        partner = self.Partner.browse(self.personalData.partnerid)
-        self.assertTrue(partner.bank_inversions)
 
     def test__amortize__writes_log(self):
         investment_id = self.Investment.create_from_form(
@@ -1504,28 +1332,6 @@ class Investment_Test(unittest.TestCase):
         return PEAccounts.search([
            ('name','=','Generation kWh')
             ])[0]
-        
-
-    #Copied to tests/investment_test.py
-    def test__create_from_form__sendsCreationEmail(self):
-        id = self.Investment.create_from_form(
-            self.personalData.partnerid,
-            '2017-01-01', # order_date
-            4000,
-            '10.10.23.123',
-            'ES7712341234161234567890',
-            )
-
-        self.assertMailLogEqual("""\
-            logs:
-            - model: generationkwh.investment
-              id: {id}
-              template: generationkwh_mail_creacio
-              from_id: [ {account_id} ]
-            """.format(
-                id=id,
-                account_id = self._generationMailAccount(),
-            ))
 
     def test__investment_payment__sendsPaymentEmail(self):
         id = self.Investment.create_from_form(
