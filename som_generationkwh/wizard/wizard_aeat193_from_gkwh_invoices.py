@@ -75,7 +75,8 @@ class WizardComputeMod193Invoice(osv.osv_memory):
         }
 
         query_file = (u"%s/som_generationkwh/sql/aeat193_from_gkwh_invoices_query.sql" % config['addons_path'])
-        query = open(query_file).read()
+        with open(query_file) as f:
+            query = f.read()
         cursor.execute(query, dict(start=dates['start'], end=dates['end']))
 
         new_linies = 0
