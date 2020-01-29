@@ -7,9 +7,10 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Afegir generation kwh a AEAT mod193">
+                    <field name="state" invisible="1"/>
                     <field name="tax_id"/>
                     <field name="info" nolabel="1" size="300" colspan="4" readonly="1"/>
-                    <button name="do_action" string="Executa" type="object" icon="gtk-execute" colspan="4"/>
+                    <button name="do_action" string="Executa" type="object" icon="gtk-execute" colspan="4" states="init"/>
                     <button special="cancel" string="Tancar" icon="gtk-no" colspan="4"/>
                 </form>
             </field>
