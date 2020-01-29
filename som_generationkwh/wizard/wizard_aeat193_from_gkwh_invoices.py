@@ -81,10 +81,8 @@ class WizardComputeMod193Invoice(osv.osv_memory):
 
         new_linies = 0
         updated_lines = 0
-        for data in cursor.fetchall():
-            partner_id = data[0]
-            partner_vat = data[1]
-            amount = float(data[2])
+        for partner_id, partner_vat, amount in cursor.fetchall():
+            amount = float(amount)
             part_add_id = part_add_obj.search(cursor, uid, [('partner_id', '=', partner_id)])
             if not part_add_id:
                 raise osv.except_osv("Error",
