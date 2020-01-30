@@ -79,7 +79,6 @@ class WizardComputeMod193Invoice(osv.osv_memory):
         cursor.execute(query, dict(start=dates['start'], end=dates['end']))
 
         new_linies = 0
-        updated_lines = 0
         for data in cursor.fetchall():
             partner_id = data[0]
             partner_vat = data[1]
@@ -98,13 +97,6 @@ class WizardComputeMod193Invoice(osv.osv_memory):
                                      format(part_add_id, partner_vat))
 
             partner_nif = partner_vat.replace('ES', '')
-
-            search_params = [
-                ('partner_vat', 'ilike', '%{}%'.format(partner_nif)),
-                ('report_id', '=', report.id),
-                ('tax_percent', '=', abs(wiz.tax_id.amount) * 100)
-            ]
-
             vals = common_vals.copy()
             vals.update({
                 'partner_id': partner_id,
@@ -118,24 +110,10 @@ class WizardComputeMod193Invoice(osv.osv_memory):
                 'fiscal_address_id': part_add_id[0]
             })
 
-            record_ids = record_obj.search(cursor, uid, search_params)
-            if record_ids:
-                if len(record_ids) > 1:
-                    raise osv.except_osv("Error",
-                                         _(u"S'ha trobat més d'una línia per al client amb VAT '{0}'. I per la taxa"
-                                           u"Revisin les dades si us plau.").
-                                         format(partner_vat))
-                record_vals = record_obj.read(cursor, uid, record_ids[0], ['amount', 'amount_base', 'amount_tax'])
-                record_vals.pop('id')
-                for key, value in record_vals:
-                    record_vals[key] = value + vals[key]
-                record_obj.write(cursor, uid, record_ids[0], record_vals)
-                updated_lines += 1
-            else:
-                record_obj.create(cursor, uid, vals)
-                new_linies += 1
+            record_obj.create(cursor, uid, vals)
+            new_linies += 1
 
-        txt += u'\nAfegides {} línies al model 193 i modificades {} de les existents'.format(new_linies, updated_lines)
+        txt += u'\nAfegides {} línies al model 193.'.format(new_linies)
 
         wiz.write({'info': txt, 'state': 'done'})
 
