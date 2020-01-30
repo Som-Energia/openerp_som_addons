@@ -96,8 +96,11 @@ class WizardComputeMod193Invoice(osv.osv_memory):
                                      _(u"L'adreça amb ID {} pel partner amb VAT {} no té definida província. "
                                        u"Aquesta és necessària pel procés. Si us plau revisi les dades.").
                                      format(part_add_id, partner_vat))
+
+            partner_nif = partner_vat.replace('ES', '')
+
             search_params = [
-                ('partner_vat', '=', partner_vat),
+                ('partner_vat', 'ilike', '%{}%'.format(partner_nif)),
                 ('report_id', '=', report.id),
                 ('tax_percent', '=', abs(wiz.tax_id.amount) * 100)
             ]
@@ -105,7 +108,7 @@ class WizardComputeMod193Invoice(osv.osv_memory):
             vals = common_vals.copy()
             vals.update({
                 'partner_id': partner_id,
-                'partner_vat': partner_vat,
+                'partner_vat': partner_nif,
                 'amount': amount,
                 'amount_base': amount,
                 'amount_tax': amount * abs(wiz.tax_id.amount),
