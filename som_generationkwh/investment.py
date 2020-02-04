@@ -155,6 +155,7 @@ class GenerationkwhInvestment(osv.osv):
         actions_log=lambda *a: '',
     )
 
+    investment_actions = None
 
     def list(self, cursor, uid,
             member=None,
@@ -577,7 +578,7 @@ class GenerationkwhInvestment(osv.osv):
                 self.invoices_to_payment_order(cursor, uid,
                     [amortization_id], gkwh.amortizationPaymentMode)
                 self.send_mail(cursor, uid, amortization_id,
-                    'account.invoice', 'generationkwh_mail_amortitzacio')
+                    'account.invoice', '_mail_amortitzacio')
 
         return amortization_ids, amortization_errors
 
@@ -861,10 +862,10 @@ class GenerationkwhInvestment(osv.osv):
             partner_id, order_date, amount_in_euros, ip, iban, emission=None,
             context=None):
 
-        investment_actions = GenerationkwhActions(self, cursor, uid, 1)
+        self.investment_actions = GenerationkwhActions(self, cursor, uid, 1)
         if emission == 'emissio_apo':
-            investment_actions = AportacionsActions(self, cursor, uid, 1)
-        investment_id = investment_actions.create_from_form(cursor, uid,
+            self.investment_actions = AportacionsActions(self, cursor, uid, 1)
+        investment_id = self.investment_actions.create_from_form(cursor, uid,
                 partner_id, order_date, amount_in_euros, ip, iban, emission,
                 context)
         return investment_id
@@ -1247,7 +1248,7 @@ class GenerationkwhInvestment(osv.osv):
             ])
             if invoice_ids: # Some tests do not generate invoice
                 self.send_mail(cursor, uid, invoice_ids[0],
-                    'account.invoice', 'generationkwh_mail_impagament')
+                    'account.invoice', '_mail_impagament')
 
     def create_initial_invoices(self,cursor,uid, investment_ids):
 
@@ -1426,7 +1427,7 @@ class GenerationkwhInvestment(osv.osv):
                 invoice_ids, gkwh.investmentPaymentMode)
             for invoice_id in invoice_ids:
                 self.send_mail(cursor, uid, invoice_id,
-                    'account.invoice', 'generationkwh_mail_pagament')
+                    'account.invoice', '_mail_pagament')
         return invoice_ids, errors
 
     def send_mail(self, cursor, uid, id, model, template):
@@ -1435,8 +1436,9 @@ class GenerationkwhInvestment(osv.osv):
         WizardInvoiceOpenAndSend = self.pool.get('wizard.invoice.open.and.send')
         MailMockup = self.pool.get('generationkwh.mailmockup')
         IrModelData = self.pool.get('ir.model.data')
+        prefix = self.investment_actions.get_prefix_semantic_id()
         template_id = IrModelData.get_object_reference(
-                cursor, uid, 'som_generationkwh', template
+                cursor, uid, 'som_generationkwh', prefix + template
         )[1]
         PETemplate = self.pool.get('poweremail.templates')
         from_id = PETemplate.read(cursor, uid, template_id)['enforce_from_account']
@@ -1460,14 +1462,14 @@ class GenerationkwhInvestment(osv.osv):
         with AsyncMode('sync') as asmode:
             if MailMockup.isActive(cursor, uid):
                 MailMockup.send_mail(cursor, uid, ns(
-                                template = template,
+                                template = prefix + template,
                                 model = model,
                                 id = id,
                                 from_id = from_id,
                             ).dump())
             else:
                 WizardInvoiceOpenAndSend.envia_mail_a_client(
-                    cursor, uid, id,model,template, ctx)
+                    cursor, uid, id,model, prefix + template, ctx)
 
     def cancel(self,cursor,uid, ids, context=None):
         User = self.pool.get('res.users')
