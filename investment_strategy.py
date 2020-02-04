@@ -69,10 +69,12 @@ class GenerationkwhActions(InvestmentActions):
             partner_id, iban, gkwh.mandateName, gkwh.creditorCode)      
                                                                         
         GenerationkwhInvestment.send_mail(cursor, uid, investment_id,                      
-            'generationkwh.investment', 'generationkwh_mail_creacio')   
+            'generationkwh.investment', '_mail_creacio')
 
         return investment_id
 
+    def get_prefix_semantic_id(self):
+        return 'generationkwh'
 
 class AportacionsActions(InvestmentActions):
 
@@ -119,8 +121,11 @@ class AportacionsActions(InvestmentActions):
             partner_id, iban, emi_obj['mandate_name'], gkwh.creditorCode)
 
         GenerationkwhInvestment.send_mail(cursor, uid, investment_id,
-            'generationkwh.investment', 'aportacio_mail_creacio')
+            'generationkwh.investment', '_mail_creacio')
 
         return investment_id
+
+    def get_prefix_semantic_id(self):
+        return 'aportacio'
 
 # vim: et ts=4 sw=4
