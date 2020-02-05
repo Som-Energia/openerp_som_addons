@@ -1011,7 +1011,8 @@ class InvestmentTests(testing.OOTestCase):
             self.assertEquals(payment_order,{
                 'create_account_moves': u'bank-statement',
                 'line_ids': lines,
-                'mode': (4, u'GENERATION kWh'),
+                'mode': (emission_data.investment_payment_mode_id.id,
+                    emission_data.investment_payment_mode_id.name),
                 'n_lines': 1,
                 'paid': False,
                 'payment_type_name': u'Recibo domiciliado',
@@ -1020,5 +1021,41 @@ class InvestmentTests(testing.OOTestCase):
                 'type': u'receivable',
                 'id': payment_order['id'],
             })
+
+    def test__get_or_create_investment_account_APO(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0001'
+                        )[1]
+            investment = self.Investment.browse(cursor, uid, id)
+            partner_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                        )[1]
+
+            self.Investment.investment_actions(cursor, uid, investment.id).get_or_create_investment_account(cursor, uid, partner_id)
+
+            partner = self.Partner.browse(cursor, uid, partner_id)
+            self.assertEquals(partner.property_account_aportacions.code, '163000202001')
+            self.assertEquals(partner.property_account_liquidacio.code, '410000202001')
+
+    def test__get_or_create_investment_account_GKWH(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
+                        )[1]
+            investment = self.Investment.browse(cursor, uid, id)
+            partner_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                        )[1]
+
+            self.Investment.investment_actions(cursor, uid, investment.id).get_or_create_investment_account(cursor, uid, partner_id)
+
+            partner = self.Partner.browse(cursor, uid, partner_id)
+            self.assertEquals(partner.property_account_gkwh.code, '163500202001')
+            self.assertEquals(partner.property_account_liquidacio.code, '410000202001')
 
 # vim: et ts=4 sw=4
