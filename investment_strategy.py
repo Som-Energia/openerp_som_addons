@@ -84,6 +84,18 @@ class GenerationkwhActions(InvestmentActions):
         PaymentMode = self.erp.pool.get('payment.mode')
         return PaymentMode.read(cursor, uid, payment_mode_id, ['name'])['name']
 
+    def get_or_create_investment_account(self, cursor, uid, partner_id):
+        Partner = self.erp.pool.get('res.partner')
+        partner = Partner.browse(cursor, uid, partner_id)
+        if not partner.property_account_liquidacio:
+            partner.button_assign_acc_410()
+            partner = partner.browse()[0]
+        if not partner.property_account_gkwh:
+            partner.button_assign_acc_1635()
+            partner = partner.browse()[0]
+        return partner.property_account_gkwh.id
+
+
 class AportacionsActions(InvestmentActions):
 
     def create_from_form(self, cursor, uid, partner_id, order_date, amount_in_euros, ip, iban,
@@ -143,5 +155,16 @@ class AportacionsActions(InvestmentActions):
         )[1]
         PaymentMode = self.erp.pool.get('payment.mode')
         return PaymentMode.read(cursor, uid, payment_mode_id, ['name'])['name']
+
+    def get_or_create_investment_account(self, cursor, uid, partner_id):
+        Partner = self.erp.pool.get('res.partner')
+        partner = Partner.browse(cursor, uid, partner_id)
+        if not partner.property_account_liquidacio:
+            partner.button_assign_acc_410()
+            partner = partner.browse()[0]
+        if not partner.property_account_aportacions:
+            partner.button_assign_acc_163()
+            partner = partner.browse()[0]
+        return partner.property_account_aportacions.id
 
 # vim: et ts=4 sw=4

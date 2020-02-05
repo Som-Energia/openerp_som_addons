@@ -1315,23 +1315,9 @@ class GenerationkwhInvestment(osv.osv):
 
             # The partner
             partner_id = investment.member_id.partner_id.id
-            partner = Partner.browse(cursor, uid, partner_id)
 
-            # Get or create partner specific accounts
-            account_inv_id = 0
-            if not partner.property_account_liquidacio:
-                partner.button_assign_acc_410()
-                partner = partner.browse()[0]
-            if investment.emission_id.type == 'genkwh':
-                if not partner.property_account_gkwh:
-                    partner.button_assign_acc_1635()
-                    partner = partner.browse()[0]
-                account_inv_id = partner.property_account_gkwh.id
-            if investment.emission_id.type == 'apo':
-                if not partner.property_account_aportacions:
-                    partner.button_assign_acc_163()
-                    partner = partner.browse()[0]
-                account_inv_id = partner.property_account_aportacions.id
+            account_inv_id = self.investment_actions(cursor, uid, investment.id).get_or_create_investment_account(cursor, uid, partner_id)
+            partner = Partner.browse(cursor, uid, partner_id)
 
             # Check if exist bank account
             if not partner.bank_inversions:
@@ -1479,7 +1465,7 @@ class GenerationkwhInvestment(osv.osv):
                             ).dump())
             else:
                 WizardInvoiceOpenAndSend.envia_mail_a_client(
-                    cursor, uid, id,model, prefix + template, ctx)
+                    cursor, uid, id, model, prefix + template, ctx)
 
     def cancel(self,cursor,uid, ids, context=None):
         User = self.pool.get('res.users')
