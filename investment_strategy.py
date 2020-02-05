@@ -76,6 +76,14 @@ class GenerationkwhActions(InvestmentActions):
     def get_prefix_semantic_id(self):
         return 'generationkwh'
 
+    def get_payment_mode_name(self, cursor, uid):
+        IrModelData = self.erp.pool.get('ir.model.data')
+        payment_mode_id = IrModelData.get_object_reference(
+            cursor, uid, 'som_generationkwh', 'genkwh_investment_payment_mode'
+        )[1]
+        PaymentMode = self.erp.pool.get('payment.mode')
+        return PaymentMode.read(cursor, uid, payment_mode_id, ['name'])['name']
+
 class AportacionsActions(InvestmentActions):
 
     def create_from_form(self, cursor, uid, partner_id, order_date, amount_in_euros, ip, iban,
@@ -127,5 +135,13 @@ class AportacionsActions(InvestmentActions):
 
     def get_prefix_semantic_id(self):
         return 'aportacio'
+
+    def get_payment_mode_name(self, cursor, uid):
+        imd_model = self.erp.pool.get('ir.model.data')
+        payment_mode_id = imd_model.get_object_reference(
+            cursor, uid, 'som_generationkwh', 'apo_investment_payment_mode'
+        )[1]
+        PaymentMode = self.erp.pool.get('payment.mode')
+        return PaymentMode.read(cursor, uid, payment_mode_id, ['name'])['name']
 
 # vim: et ts=4 sw=4

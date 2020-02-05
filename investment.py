@@ -155,7 +155,11 @@ class GenerationkwhInvestment(osv.osv):
         actions_log=lambda *a: '',
     )
 
-    investment_actions = None
+    def investment_actions(self, cursor, uid, id):
+        inv = self.browse(cursor, uid, id, ['emission_id'])
+        if str(inv.emission_id.type) == 'apo':
+            return AportacionsActions(self, cursor, uid, 1)
+        return GenerationkwhActions(self, cursor, uid, 1)
 
     def list(self, cursor, uid,
             member=None,
@@ -862,10 +866,10 @@ class GenerationkwhInvestment(osv.osv):
             partner_id, order_date, amount_in_euros, ip, iban, emission=None,
             context=None):
 
-        self.investment_actions = GenerationkwhActions(self, cursor, uid, 1)
+        investment_actions = GenerationkwhActions(self, cursor, uid, 1)
         if emission == 'emissio_apo':
-            self.investment_actions = AportacionsActions(self, cursor, uid, 1)
-        investment_id = self.investment_actions.create_from_form(cursor, uid,
+            investment_actions = AportacionsActions(self, cursor, uid, 1)
+        investment_id = investment_actions.create_from_form(cursor, uid,
                 partner_id, order_date, amount_in_euros, ip, iban, emission,
                 context)
         return investment_id
@@ -1408,7 +1412,6 @@ class GenerationkwhInvestment(osv.osv):
         specified model name. If none is open, then creates a new one.
         """
         Invoice = self.pool.get('account.invoice')
-
         order_id = self.get_or_create_open_payment_order(cursor, uid, model_name,
                     True)
         Invoice.afegeix_a_remesa(cursor,uid,invoice_ids, order_id)
@@ -1419,30 +1422,37 @@ class GenerationkwhInvestment(osv.osv):
         Called from the investment_payment_wizard.
         """
         Investment = self.pool.get('generationkwh.investment')
+        Invoice = self.pool.get('account.invoice')
 
         invoice_ids, errors = Investment.create_initial_invoices(cursor,uid, investment_ids)
         if invoice_ids:
             Investment.open_invoices(cursor, uid, invoice_ids)
+            payment_mode = self.investment_actions(cursor, uid, investment_ids[0]).get_payment_mode_name(cursor, uid)
             Investment.invoices_to_payment_order(cursor, uid,
-                invoice_ids, gkwh.investmentPaymentMode)
+                invoice_ids, payment_mode)
             for invoice_id in invoice_ids:
+                invoice_data = Invoice.read(cursor, uid, invoice_id, ['origin'])
+                investment_ids = Investment.search(cursor, uid,[
+                    ('name','=',invoice_data['origin'])])
                 self.send_mail(cursor, uid, invoice_id,
-                    'account.invoice', '_mail_pagament')
+                    'account.invoice', '_mail_pagament', investment_ids[0])
         return invoice_ids, errors
 
-    def send_mail(self, cursor, uid, id, model, template):
+    def send_mail(self, cursor, uid, id, model, template, investment_id=None):
 
         PEAccounts = self.pool.get('poweremail.core_accounts')
         WizardInvoiceOpenAndSend = self.pool.get('wizard.invoice.open.and.send')
         MailMockup = self.pool.get('generationkwh.mailmockup')
         IrModelData = self.pool.get('ir.model.data')
-        prefix = self.investment_actions.get_prefix_semantic_id()
+        if not investment_id:
+            investment_id = id
+        prefix = self.investment_actions(cursor, uid, investment_id).get_prefix_semantic_id()
         template_id = IrModelData.get_object_reference(
                 cursor, uid, 'som_generationkwh', prefix + template
         )[1]
         PETemplate = self.pool.get('poweremail.templates')
-        from_id = PETemplate.read(cursor, uid, template_id)['enforce_from_account']
 
+        from_id = PETemplate.read(cursor, uid, template_id)['enforce_from_account']
         if not from_id:
             from_id = PEAccounts.search(cursor, uid,[
                ('name','=','Generation kWh')
