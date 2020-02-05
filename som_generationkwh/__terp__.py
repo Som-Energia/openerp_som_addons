@@ -15,6 +15,8 @@
     'som_plantmeter',
     'l10n_ES_aeat_mod193',
     'l10n_ES_aeat_sii',
+    'remeses_base',
+    'som_poweremail_common_templates',
     ],
   "init_xml": [],
   "demo_xml": [

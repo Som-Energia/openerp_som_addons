@@ -1333,30 +1333,6 @@ class Investment_Test(unittest.TestCase):
            ('name','=','Generation kWh')
             ])[0]
 
-    def test__investment_payment__sendsPaymentEmail(self):
-        id = self.Investment.create_from_form(
-            self.personalData.partnerid,
-            '2017-01-01', # order_date
-            4000,
-            '10.10.23.123',
-            'ES7712341234161234567890',
-            )
-        self.MailMockup.deactivate()
-        self.MailMockup.activate()
-
-        invoice_ids, errors = self.Investment.investment_payment([id])
-
-        self.assertMailLogEqual("""\
-            logs:
-            - model: account.invoice
-              id: {id}
-              template: generationkwh_mail_pagament
-              from_id: [ {account_id} ]
-            """.format(
-                id=invoice_ids[0],
-                account_id = self._generationMailAccount(),
-            ))
-
     def test__mark_as_paid__sendsPaymentEmail(self):
         id = self.Investment.create_from_form(
             self.personalData.partnerid,

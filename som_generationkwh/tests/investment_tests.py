@@ -21,6 +21,8 @@ class InvestmentTests(testing.OOTestCase):
         self.Invoice = self.openerp.pool.get('account.invoice')
         self.InvoiceLine = self.openerp.pool.get('account.invoice.line')
         self.Emission = self.openerp.pool.get('generationkwh.emission')
+        self.PaymentLine = self.openerp.pool.get('payment.line')
+        self.PaymentOrder = self.openerp.pool.get('payment.order')
         self.maxDiff = None
 
     def tearDown(self):
@@ -877,5 +879,146 @@ class InvestmentTests(testing.OOTestCase):
             result, errs = self.Investment.create_initial_invoices(cursor, uid, [])
 
             self.assertEqual(len(result), 0)
+
+    def test__investment_payment__sendsPaymentEmail_APO(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                        )[1]
+            inv_id = self.Investment.create_from_form(cursor, uid,
+                    partner_id,
+                    '2017-01-06',
+                    4000,
+                    '10.10.23.123',
+                    'ES7712341234161234567890',
+                    'emissio_apo')
+            self.MailMockup.activate(cursor, uid)
+
+            invoice_ids, errors = self.Investment.investment_payment(cursor, uid, [inv_id])
+
+            self.assertMailLogEqual(self.MailMockup.log(cursor, uid), """\
+                logs:
+                - model: account.invoice
+                  id: {id}
+                  template: aportacio_mail_pagament
+                  from_id: [ {account_id} ]
+                """.format(
+                    id=invoice_ids[0],
+                    account_id = self._invertirMailAccount(cursor, uid),
+                ))
+            self.MailMockup.deactivate(cursor, uid)
+
+    def test__investment_payment__sendsPaymentEmail_GKWH(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                        )[1]
+            inv_id = self.Investment.create_from_form(cursor, uid,
+                    partner_id,
+                    '2017-01-06',
+                    4000,
+                    '10.10.23.123',
+                    'ES7712341234161234567890',
+                    'emissio_genkwh')
+            self.MailMockup.activate(cursor, uid)
+
+            invoice_ids, errors = self.Investment.investment_payment(cursor, uid, [inv_id])
+
+            self.assertMailLogEqual(self.MailMockup.log(cursor, uid), """\
+                logs:
+                - model: account.invoice
+                  id: {id}
+                  template: generationkwh_mail_pagament
+                  from_id: [ {account_id} ]
+                """.format(
+                    id=invoice_ids[0],
+                    account_id = self._generationMailAccount(cursor, uid),
+                ))
+            self.MailMockup.deactivate(cursor, uid)
+
+    def test__invoices_to_payment_order_APO(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0001'
+                        )[1]
+            invoice_ids, errs =  self.Investment.create_initial_invoices(cursor, uid, [id])
+            self.Investment.open_invoices(cursor, uid, invoice_ids)
+            emission_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'emissio_apo'
+                        )[1]
+            emission_data = self.Emission.browse(cursor, uid, emission_id, ['name'])
+
+            self.Investment.invoices_to_payment_order(cursor, uid, invoice_ids,
+                    emission_data.investment_payment_mode_id.name)
+
+            invoice = self.Invoice.browse(cursor, uid, invoice_ids[0])
+            order_id = self.Investment.get_or_create_open_payment_order(cursor,
+                    uid, emission_data.investment_payment_mode_id.name)
+            lines = self.PaymentLine.search(cursor, uid, [
+                ('order_id','=', order_id),
+                ('communication','like', invoice.origin),
+                ])
+            payment_order = self.PaymentOrder.read(cursor, uid, order_id,
+                    ['line_ids','create_account_moves','mode','n_lines',
+                    'paid', 'payment_type_name','state','total','type'])
+            self.assertEquals(payment_order,{
+                'create_account_moves': u'bank-statement',
+                'line_ids': lines,
+                'mode': (emission_data.investment_payment_mode_id.id,
+                    emission_data.investment_payment_mode_id.name),
+                'n_lines': 1,
+                'paid': False,
+                'payment_type_name': u'Recibo domiciliado',
+                'state': u'draft',
+                'total': -1000.0,
+                'type': u'receivable',
+                'id': payment_order['id'],
+             })
+
+    def test__invoices_to_payment_order_GKWH(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
+                        )[1]
+            invoice_ids, errs =  self.Investment.create_initial_invoices(cursor, uid, [id])
+            self.Investment.open_invoices(cursor, uid, invoice_ids)
+            emission_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'emissio_apo'
+                        )[1]
+            emission_data = self.Emission.browse(cursor, uid, emission_id, ['name'])
+
+            self.Investment.invoices_to_payment_order(cursor, uid,
+                    invoice_ids, emission_data.investment_payment_mode_id.name)
+
+            invoice = self.Invoice.browse(cursor, uid, invoice_ids[0])
+            order_id = self.Investment.get_or_create_open_payment_order(cursor,
+                    uid, emission_data.investment_payment_mode_id.name)
+            lines = self.PaymentLine.search(cursor, uid, [
+                ('order_id','=', order_id),
+                ('communication','like', invoice.origin),
+                ])
+            payment_order = self.PaymentOrder.read(cursor, uid, order_id,
+                    ['line_ids','create_account_moves','mode','n_lines',
+                    'paid', 'payment_type_name','state','total','type'])
+            self.assertEquals(payment_order,{
+                'create_account_moves': u'bank-statement',
+                'line_ids': lines,
+                'mode': (4, u'GENERATION kWh'),
+                'n_lines': 1,
+                'paid': False,
+                'payment_type_name': u'Recibo domiciliado',
+                'state': u'draft',
+                'total': -1000.0,
+                'type': u'receivable',
+                'id': payment_order['id'],
+            })
 
 # vim: et ts=4 sw=4
