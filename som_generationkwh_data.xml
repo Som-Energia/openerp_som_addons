@@ -1127,6 +1127,7 @@
             <field eval="0" name="use_sign"/>
             <field name="def_subject">Generation kWh Som Enegia Ref. ${object.number or ''}</field>
             <field name="template_language">mako</field>
+            <field name="report_template" ref="report_amortization_gkwh"/>
             <field eval="0" name="send_on_create"/>
             <field name="lang"></field>
             <field name="copyvalue"></field>
@@ -1134,170 +1135,9 @@
             <field name="def_body_text"><![CDATA[text_to_replace]]></field>
             <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Generation kWh')]"/> 
         </record>
-
-
-        <record model="poweremail.templates" id="aportacio_mail_impagament">
-            <field name="name">Aportacions - Impagament inversió</field>
-            <field name="object_name" model="ir.model" search="[('model', '=', 'account.invoice')]"/>
-            <field eval="0" name="save_to_drafts"/>
-            <field name="model_int_name">account.invoice</field>
-            <field eval="1" name="use_filter"/>
-            <field name="def_to">${object.partner_id.address[0].email}</field>
-            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
-            <field eval="0" name="auto_email"/>
-            <field eval="0" name="single_email"/>
-            <field eval="0" name="use_sign"/>
-            <field name="def_subject">Recibo devuelto inversión / Rebut retornat inversió ${object.name}</field>
-            <field name="template_language">mako</field>
-            <field eval="0" name="send_on_create"/>
-            <field name="lang">${object.partner_id.lang}</field>
-            <field name="copyvalue">${object.partner_id.lang}</field>
-            <field eval="0" name="send_on_write"/>
-            <field name="def_body_text"><![CDATA[text_to_replace]]></field>
-            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('email_id','=', 'invertir@somenergia.coop')]"/>
-        </record>
-    </data>
-    <data noupdate="1">
-        <record id="genkwh_investment_payment_mode" model="payment.mode">
-            <field name="name">GENERATION kWh</field>
-            <field name="type" search="[('code', '=', 'RECIBO_CSB')]"/>
-            <field name="journal" ref="genkwh_journal"/>
-	    <field name="bank_id" search="[('partner_id', '=', 1)]"/>
-            <field name="tipo">sepa19</field>
-            <field name="nombre">Som Energia SCCL</field>
-            <field name="sufijo">000</field>
-            <field name="require_bank_account" eval="True"/>
-            <field name="partner_id">1</field>
-            <field name="sepa_creditor_code">ES24000F55091367</field>
-        </record>
-        <record id="genkwh_amortization_payment_mode" model="payment.mode">
-            <field name="name">GENERATION kWh AMOR</field>
-            <field name="type" search="[('code', '=', 'TRANSFERENCIA_CSB')]"/>
-            <field name="journal" ref="genkwh_journal"/>
-	    <field name="bank_id" search="[('partner_id', '=', 1)]"/>
-            <field name="tipo">sepa34</field>
-            <field name="nombre">Som Energia SCCL</field>
-            <field name="sufijo">000</field>
-            <field name="require_bank_account" eval="True"/>
-            <field name="partner_id">1</field>
-            <field name="sepa_creditor_code">ES24000F55091367</field>
-        </record>
-        <record id="emissio_genkwh" model="generationkwh.emission">
-            <field name="name">GenerationkWH</field>
-            <field name="start_date">2015-06-19</field>
-	    <field name="amount_emission">0</field>
-            <field name="state">draft</field>
-            <field name="type">genkwh</field>
-	    <field name="grace_period">2</field>
-	    <field name="expiration_years">25</field>
-	    <field name="waiting_days">365</field>
-	    <field name="mandate_name">PRESTEC GENERATION kWh</field>
-	    <field name="journal_id" model="account.journal"
-		    search="[('code','=','GENKWH')]" />
-	    <field name="investment_product_id" model="product.product"
-		    search="[('default_code','=','GENKWH_AE')]" />
-	    <field name="amortization_product_id" model="product.product"
-		    search="[('default_code','=','GENKWH_AMOR')]" />
-	    <field name="irpf_product_id" model="product.product"
-		    search="[('default_code','=','GENKWH_IRPF')]" />
-	    <field name="investment_payment_mode_id" model="payment.mode"
-		    search="[('name','=','GENERATION kWh')]" />
-	    <field name="amortization_payment_mode_id" model="payment.mode"
-		    search="[('name','=','GENERATION kWh AMOR')]" />
-	    <field name="bridge_account_payments_id" model="account.account"
-		    search="[('code','=','555000000004')]" />
-        </record>
-        <record id="pgc_555000000010" model="account.account">
-            <field name="code">555000000010</field>
-            <field name="reconcile" eval="True"/>
-            <field name="parent_id" model="account.account" search="[('code','=','555')]"/>
-            <field name="type">other</field>
-            <field name="name">CAIXA Aportacions</field>
-            <field name="user_type" ref="l10n_chart_ES.financieras"/>
-        </record>
-        <record id="apo_journal" model="account.journal">
-            <field name="code">APO</field>
-            <field eval="[(6,0,[])]" name="account_control_ids"/>
-            <field name="user_id" ref="base.user_root"/>
-            <field eval="0" name="centralisation"/>
-            <field eval="0" name="group_invoice_lines"/>
-            <field name="type">cash</field>
-            <field name="default_credit_account_id" model="account.account" search="[('code','=','555000000010')]"/>
-            <field name="default_debit_account_id" model="account.account" search="[('code','=','555000000010')]"/>
-            <field name="view_id" ref="account.account_journal_bank_view"/>
-            <field eval="[(6,0,[])]" name="type_control_ids"/>
-            <field name="sequence_id" ref="account.sequence_journal"/>
-            <field eval="1" name="active"/>
-            <field eval="1" name="update_posted"/>
-            <field name="name">Factures Liquidació Aportacions</field>
-            <field eval="0" name="refund_journal"/>
-            <field eval="1" name="entry_posted"/>
-        </record>
-        <record id="apo_product_ae" model="product.product">
-            <field name="name">Aportacions</field>
-            <field name="default_code">APO_AE</field>
-            <field name="categ_id" model='product.category' search="[('name','=','Inversions')]"/>
-            <field name="property_account_expense" model="account.account" search="[('code','=','662000000001')]"/>
-        </record>
-        <record id="apo_investment_payment_mode" model="payment.mode">
-            <field name="name">APORTACIONS (Enginyers)</field>
-            <field name="type" search="[('code', '=', 'RECIBO_CSB')]"/>
-            <field name="journal" ref="apo_journal"/>
-	    <field name="bank_id" search="[('partner_id', '=', 1)]"/>
-            <field name="tipo">sepa19</field>
-            <field name="nombre">Som Energia SCCL</field>
-            <field name="sufijo">000</field>
-            <field name="require_bank_account" eval="True"/>
-            <field name="partner_id">1</field>
-            <field name="sepa_creditor_code">ES24000F55091367</field>
-        </record>
-        <record id="emissio_apo" model="generationkwh.emission">
-            <field name="name">Aportacions</field>
-            <field name="start_date">2015-06-19</field>
-	    <field name="amount_emission">5000000</field>
-            <field name="state">done</field>
-            <field name="type">apo</field>
-	    <field name="grace_period">1</field>
-	    <field name="expiration_years">0</field>
-	    <field name="waiting_days">0</field>
-	    <field name="mandate_name">PRESTEC Aportacions</field>
-	    <field name="journal_id" model="account.journal"
-		    search="[('code','=','APO')]" />
-	    <field name="investment_product_id" model="product.product"
-		    search="[('default_code','=','APO_AE')]" />
-	    <field name="investment_payment_mode_id" model="payment.mode"
-		    search="[('name','=','APORTACIONS (Enginyers)')]" />
-	    <field name="bridge_account_payments_id" model="account.account"
-		    search="[('code','=','555000000010')]" />
-        </record>
-        <record model="ir.sequence.type" id="seq_type_som_aportacions">
-            <field name="name">Seq. Aportacions al Capital Social</field>
-            <field name="code">seq.som.aportacions</field>
-        </record>
-        <record model="ir.sequence" id="seq_som_aportacions">
-            <field name="name">Seq. Aportacions al Capital Social</field>
-            <field name="code">seq.som.aportacions</field>
-            <field name="padding">6</field>
-            <field name="number_increment">1</field>
-            <field name="number_next">5000</field>
-	    <field name="prefix">APO</field>
-        </record>
     </data>
 
-    <!-- Reports -->
-    <data>
-        <record id="report_contract_apo" model="ir.actions.report.xml">
-            <field name="report_type">webkit</field>
-            <field name="report_name">contract.apo</field>
-            <field eval="[(6,0,[])]" name="groups_id"/>
-            <field eval="0" name="multi"/>
-            <field eval="0" name="auto"/>
-            <field eval="0" name="header"/>
-            <field name="model">account.invoice</field>
-            <field name="type">ir.actions.report.xml</field>
-            <field name="name">Contracte Aportacions Capital Social</field>
-            <field name="report_webkit">som_generationkwh/report/report_contract_apo.mako</field>
-        </record>
+    <data noupdate="0">
         <record model="poweremail.templates" id="aportacio_mail_pagament">
             <field name="name">Aportacions - Pagament inversió</field>
             <field name="object_name" model="ir.model" search="[('model', '=', 'account.invoice')]"/>
@@ -1505,6 +1345,152 @@ ${text_legal}
 </body>
 </html>]]></field>
             <field name="enforce_from_account" model="poweremail.core_accounts" search="[('email_id','=', 'invertir@somenergia.coop')]"/>
+        </record>
+        <record model="poweremail.templates" id="aportacio_mail_impagament">
+            <field name="name">Aportacions - Impagament inversió</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'account.invoice')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">account.invoice</field>
+            <field eval="1" name="use_filter"/>
+            <field name="def_to">${object.partner_id.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Recibo devuelto inversión / Rebut retornat inversió ${object.name}</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="copyvalue">${object.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text"><![CDATA[text_to_replace]]></field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('email_id','=', 'invertir@somenergia.coop')]"/>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record id="genkwh_investment_payment_mode" model="payment.mode">
+            <field name="name">GENERATION kWh</field>
+            <field name="type" search="[('code', '=', 'RECIBO_CSB')]"/>
+            <field name="journal" ref="genkwh_journal"/>
+	    <field name="bank_id" search="[('partner_id', '=', 1)]"/>
+            <field name="tipo">sepa19</field>
+            <field name="nombre">Som Energia SCCL</field>
+            <field name="sufijo">000</field>
+            <field name="require_bank_account" eval="True"/>
+            <field name="partner_id">1</field>
+            <field name="sepa_creditor_code">ES24000F55091367</field>
+        </record>
+        <record id="genkwh_amortization_payment_mode" model="payment.mode">
+            <field name="name">GENERATION kWh AMOR</field>
+            <field name="type" search="[('code', '=', 'TRANSFERENCIA_CSB')]"/>
+            <field name="journal" ref="genkwh_journal"/>
+	    <field name="bank_id" search="[('partner_id', '=', 1)]"/>
+            <field name="tipo">sepa34</field>
+            <field name="nombre">Som Energia SCCL</field>
+            <field name="sufijo">000</field>
+            <field name="require_bank_account" eval="True"/>
+            <field name="partner_id">1</field>
+            <field name="sepa_creditor_code">ES24000F55091367</field>
+        </record>
+        <record id="emissio_genkwh" model="generationkwh.emission">
+            <field name="name">GenerationkWH</field>
+            <field name="start_date">2015-06-19</field>
+	    <field name="amount_emission">0</field>
+            <field name="state">draft</field>
+            <field name="type">genkwh</field>
+	    <field name="grace_period">2</field>
+	    <field name="expiration_years">25</field>
+	    <field name="waiting_days">365</field>
+	    <field name="mandate_name">PRESTEC GENERATION kWh</field>
+	    <field name="journal_id" model="account.journal"
+		    search="[('code','=','GENKWH')]" />
+	    <field name="investment_product_id" model="product.product"
+		    search="[('default_code','=','GENKWH_AE')]" />
+	    <field name="amortization_product_id" model="product.product"
+		    search="[('default_code','=','GENKWH_AMOR')]" />
+	    <field name="irpf_product_id" model="product.product"
+		    search="[('default_code','=','GENKWH_IRPF')]" />
+	    <field name="investment_payment_mode_id" model="payment.mode"
+		    search="[('name','=','GENERATION kWh')]" />
+	    <field name="amortization_payment_mode_id" model="payment.mode"
+		    search="[('name','=','GENERATION kWh AMOR')]" />
+	    <field name="bridge_account_payments_id" model="account.account"
+		    search="[('code','=','555000000004')]" />
+        </record>
+        <record id="pgc_555000000010" model="account.account">
+            <field name="code">555000000010</field>
+            <field name="reconcile" eval="True"/>
+            <field name="parent_id" model="account.account" search="[('code','=','555')]"/>
+            <field name="type">other</field>
+            <field name="name">CAIXA Aportacions</field>
+            <field name="user_type" ref="l10n_chart_ES.financieras"/>
+        </record>
+        <record id="apo_journal" model="account.journal">
+            <field name="code">APO</field>
+            <field eval="[(6,0,[])]" name="account_control_ids"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field eval="0" name="centralisation"/>
+            <field eval="0" name="group_invoice_lines"/>
+            <field name="type">cash</field>
+            <field name="default_credit_account_id" model="account.account" search="[('code','=','555000000010')]"/>
+            <field name="default_debit_account_id" model="account.account" search="[('code','=','555000000010')]"/>
+            <field name="view_id" ref="account.account_journal_bank_view"/>
+            <field eval="[(6,0,[])]" name="type_control_ids"/>
+            <field name="sequence_id" ref="account.sequence_journal"/>
+            <field eval="1" name="active"/>
+            <field eval="1" name="update_posted"/>
+            <field name="name">Factures Liquidació Aportacions</field>
+            <field eval="0" name="refund_journal"/>
+            <field eval="1" name="entry_posted"/>
+        </record>
+        <record id="apo_product_ae" model="product.product">
+            <field name="name">Aportacions</field>
+            <field name="default_code">APO_AE</field>
+            <field name="categ_id" model='product.category' search="[('name','=','Inversions')]"/>
+            <field name="property_account_expense" model="account.account" search="[('code','=','662000000001')]"/>
+        </record>
+        <record id="apo_investment_payment_mode" model="payment.mode">
+            <field name="name">APORTACIONS (Enginyers)</field>
+            <field name="type" search="[('code', '=', 'RECIBO_CSB')]"/>
+            <field name="journal" ref="apo_journal"/>
+	    <field name="bank_id" search="[('partner_id', '=', 1)]"/>
+            <field name="tipo">sepa19</field>
+            <field name="nombre">Som Energia SCCL</field>
+            <field name="sufijo">000</field>
+            <field name="require_bank_account" eval="True"/>
+            <field name="partner_id">1</field>
+            <field name="sepa_creditor_code">ES24000F55091367</field>
+        </record>
+        <record id="emissio_apo" model="generationkwh.emission">
+            <field name="name">Aportacions</field>
+            <field name="start_date">2015-06-19</field>
+	    <field name="amount_emission">5000000</field>
+            <field name="state">done</field>
+            <field name="type">apo</field>
+	    <field name="grace_period">1</field>
+	    <field name="expiration_years">0</field>
+	    <field name="waiting_days">0</field>
+	    <field name="mandate_name">PRESTEC Aportacions</field>
+	    <field name="journal_id" model="account.journal"
+		    search="[('code','=','APO')]" />
+	    <field name="investment_product_id" model="product.product"
+		    search="[('default_code','=','APO_AE')]" />
+	    <field name="investment_payment_mode_id" model="payment.mode"
+		    search="[('name','=','APORTACIONS (Enginyers)')]" />
+	    <field name="bridge_account_payments_id" model="account.account"
+		    search="[('code','=','555000000010')]" />
+        </record>
+        <record model="ir.sequence.type" id="seq_type_som_aportacions">
+            <field name="name">Seq. Aportacions al Capital Social</field>
+            <field name="code">seq.som.aportacions</field>
+        </record>
+        <record model="ir.sequence" id="seq_som_aportacions">
+            <field name="name">Seq. Aportacions al Capital Social</field>
+            <field name="code">seq.som.aportacions</field>
+            <field name="padding">6</field>
+            <field name="number_increment">1</field>
+            <field name="number_next">5000</field>
+	    <field name="prefix">APO</field>
         </record>
     </data>
 </openerp>

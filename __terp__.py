@@ -23,6 +23,7 @@
       "tests/generation_data_demo.xml",
       ],
   "update_xml": [
+    "amortization_report.xml",
     "som_generationkwh_data.xml",
     "giscedata_facturacio_view.xml",
     "som_generationkwh_view.xml",
@@ -40,7 +41,6 @@
     "somenergia_soci_data.xml",
     "security/som_generationkwh_security.xml",
     "security/ir.model.access.csv",
-    "amortization_report.xml",
     "emission_view.xml",
     ],
   "active": False,

@@ -13,5 +13,17 @@
             <field name="name">Amortitzacions GenerationKWh</field>
             <field name="report_webkit">som_generationkwh/report/report_amortization_gkwh.mako</field>
         </record>
+        <record id="report_contract_apo" model="ir.actions.report.xml">
+            <field name="report_type">webkit</field>
+            <field name="report_name">contract.apo</field>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field eval="0" name="auto"/>
+            <field eval="0" name="header"/>
+            <field name="model">account.invoice</field>
+            <field name="type">ir.actions.report.xml</field>
+            <field name="name">Contracte Aportacions Capital Social</field>
+            <field name="report_webkit">som_generationkwh/report/report_contract_apo.mako</field>
+        </record>
     </data>
 </openerp>
