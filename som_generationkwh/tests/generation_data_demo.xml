@@ -32,6 +32,7 @@
 	<record id="res_partner_inversor1" model="res.partner">
                 <field name="name">Gil, Pere</field>
                 <field name="ref">S202001</field>
+                <field name="vat">ES13900056Y</field>
         </record>
         <record id="res_partner_address_inversor1" model="res.partner.address">
                 <field name="city">Berga</field>
@@ -74,6 +75,21 @@
 	    <field name="member_id" ref="soci_0001"/>
 	    <field name="active">False</field>
             <field name="order_date">2019-10-01</field>
+	    <field name="emission_id" model="generationkwh.emission"
+		    search="[('name','=','GenerationkWH')]" />
+        </record>
+        <record id="genkwh_0002" model="generationkwh.investment">
+            <field name="name">GKWH00002</field>
+            <field name="nshares">10</field>
+	    <field name="member_id" ref="soci_0001"/>
+	    <field name="active">True</field>
+	    <field name="draft">False</field>
+	    <field name="amortized_amount">0</field>
+            <field name="order_date">2019-10-01</field>
+            <field name="signed_date">2019-10-02</field>
+            <field name="purchase_date">2019-10-12</field>
+            <field name="first_effective_date">2020-10-12</field>
+            <field name="last_effective_date">2044-10-12</field>
 	    <field name="emission_id" model="generationkwh.emission"
 		    search="[('name','=','GenerationkWH')]" />
         </record>

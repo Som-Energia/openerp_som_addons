@@ -44,7 +44,6 @@ class AccountInvoice(osv.osv):
 
         if not invoice['partner_id']:
             raise Exception("No partner related to invoice {}".format(account_id))
-
         partner = Partner.read(cursor, uid, invoice['partner_id'][0], [
             'vat',
             'name',

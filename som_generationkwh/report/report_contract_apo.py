@@ -9,10 +9,10 @@ class AccountInvoice(osv.osv):
     _name = 'account.invoice'
     _inherit = 'account.invoice'
 
-    def investmentAmortization_notificationData_asDict(self, cursor, uid, ids):
-        return dict(self.investmentAmortization_notificationData(cursor, uid, ids))
+    def investmentCreationAPO_notificationData_asDict(self, cursor, uid, ids):
+        return dict(self.investmentCreationAPO_notificationData(cursor, uid, ids))
 
-    def investmentAmortization_notificationData(self, cursor, uid, ids):
+    def investmentCreationAPO_notificationData(self, cursor, uid, ids):
         def dateFormat(dateIso):
             return isodate(dateIso).strftime("%d/%m/%Y")
         def moneyFormat(amount):
@@ -56,18 +56,15 @@ class AccountInvoice(osv.osv):
         report.receiptDate = dateFormat(invoice['date_invoice'])
         # TODO: non spanish vats not covered by tests
         report.ownerNif = partner['vat'][2:] if partner['vat'][:2]=='ES' else partner['vat']
+
+
         report.inversionName = mutable_information.investmentName
         report.ownerName = partner['name']
         report.inversionPendingCapital = moneyFormat(float(mutable_information.pendingCapital))
         report.inversionInitialAmount = moneyFormat(mutable_information.investmentInitialAmount)
         report.inversionPurchaseDate = dateFormat(mutable_information.investmentPurchaseDate)
         report.inversionExpirationDate = dateFormat(mutable_information.investmentLastEffectiveDate)
-        report.amortizationAmount = moneyFormat(invoice['amount_total'])
-        report.amortizationName = invoice['name']
         report.inversionBankAccount = invoice['partner_bank'][1]
-        report.amortizationTotalPayments = mutable_information.amortizationTotalNumber
-        report.amortizationDate = dateFormat(mutable_information.amortizationDate)
-        report.amortizationNumPayment = mutable_information.amortizationNumber
 
         return report
 

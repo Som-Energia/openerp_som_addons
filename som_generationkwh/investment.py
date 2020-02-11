@@ -261,6 +261,9 @@ class GenerationkwhInvestment(osv.osv):
 
         return firstEffective, lastEffective
 
+    def get_max_investment(partner_id, investment_type=None):
+        return True
+
     def create_from_accounting(self, cursor, uid,
             member_id, start, stop, waitingDays, expirationYears,
             context=None):
@@ -493,7 +496,6 @@ class GenerationkwhInvestment(osv.osv):
         Invoice = self.pool.get('account.invoice')
         InvoiceLine = self.pool.get('account.invoice.line')
         GenerationkwhInvoiceLineOwner = self.pool.get('generationkwh.invoice.line.owner')
-        Investment = self.pool.get('generationkwh.investment')
         Soci = self.pool.get('somenergia.soci')
         partner_id = Soci.read(cursor, uid, member_id, ['partner_id'])['partner_id'][0]
 
@@ -511,8 +513,9 @@ class GenerationkwhInvestment(osv.osv):
         total_dayshares_year = 1
         list_inv_id = self.search(cursor, uid, [('member_id','=',member_id)])
         for inv_id in list_inv_id:
-            inv_obj = self.read(cursor, uid, inv_id, ['first_effective_date','last_effective_date','nshares'])
-            total_dayshares_year += self.get_dayshares_investmentyear(cursor, uid, inv_obj, start_date, end_date)
+            inv_obj = self.read(cursor, uid, inv_id, ['first_effective_date','last_effective_date','nshares', 'name'])
+            if inv_obj['first_effective_date']:
+                total_dayshares_year += self.get_dayshares_investmentyear(cursor, uid, inv_obj, start_date, end_date)
 
         #regla de tres amb accions inversió actual
         inv_actual = self.read(cursor, uid, investment_id, ['first_effective_date','last_effective_date','nshares'])
@@ -582,7 +585,7 @@ class GenerationkwhInvestment(osv.osv):
                 self.invoices_to_payment_order(cursor, uid,
                     [amortization_id], gkwh.amortizationPaymentMode)
                 self.send_mail(cursor, uid, amortization_id,
-                    'account.invoice', '_mail_amortitzacio')
+                    'account.invoice', '_mail_amortitzacio', investment_id)
 
         return amortization_ids, amortization_errors
 
@@ -1252,7 +1255,7 @@ class GenerationkwhInvestment(osv.osv):
             ])
             if invoice_ids: # Some tests do not generate invoice
                 self.send_mail(cursor, uid, invoice_ids[0],
-                    'account.invoice', '_mail_impagament')
+                    'account.invoice', '_mail_impagament',  investment_id)
 
     def create_initial_invoices(self,cursor,uid, investment_ids):
 
@@ -1355,6 +1358,15 @@ class GenerationkwhInvestment(osv.osv):
             invoice_id = Invoice.create(cursor, uid, vals)
             Invoice.write(cursor,uid, invoice_id,{'sii_to_send':False})
 
+            # Memento of mutable data
+            investmentMemento = ns()
+            investmentMemento.pendingCapital = investment.nshares * gkwh.shareValue
+            investmentMemento.investmentId = investment.id
+            investmentMemento.investmentName = investment.name
+            investmentMemento.investmentPurchaseDate = investment.purchase_date
+            investmentMemento.investmentLastEffectiveDate = investment.last_effective_date
+            investmentMemento.investmentInitialAmount = investment.nshares * gkwh.shareValue
+
             line = dict(
                 InvoiceLine.product_id_change(cursor, uid, [],
                     product=product.id,
@@ -1371,6 +1383,7 @@ class GenerationkwhInvestment(osv.osv):
                 product_id = product.id,
                 # partner specific account, was generic from product
                 account_id = account_inv_id,
+                note = investmentMemento.dump(),
             )
             # rewrite relation
             line['invoice_line_tax_id'] = [
@@ -1407,18 +1420,17 @@ class GenerationkwhInvestment(osv.osv):
         Creates the invoices, open them and add the current payment order.
         Called from the investment_payment_wizard.
         """
-        Investment = self.pool.get('generationkwh.investment')
         Invoice = self.pool.get('account.invoice')
 
-        invoice_ids, errors = Investment.create_initial_invoices(cursor,uid, investment_ids)
+        invoice_ids, errors = self.create_initial_invoices(cursor,uid, investment_ids)
         if invoice_ids:
-            Investment.open_invoices(cursor, uid, invoice_ids)
+            self.open_invoices(cursor, uid, invoice_ids)
             payment_mode = self.investment_actions(cursor, uid, investment_ids[0]).get_payment_mode_name(cursor, uid)
-            Investment.invoices_to_payment_order(cursor, uid,
+            self.invoices_to_payment_order(cursor, uid,
                 invoice_ids, payment_mode)
             for invoice_id in invoice_ids:
                 invoice_data = Invoice.read(cursor, uid, invoice_id, ['origin'])
-                investment_ids = Investment.search(cursor, uid,[
+                investment_ids = self.search(cursor, uid,[
                     ('name','=',invoice_data['origin'])])
                 self.send_mail(cursor, uid, invoice_id,
                     'account.invoice', '_mail_pagament', investment_ids[0])
@@ -1445,7 +1457,6 @@ class GenerationkwhInvestment(osv.osv):
                 ])
         else:
             from_id = from_id[:1]
-
         ctx = {
             'active_ids': [id],
             'active_id': id,

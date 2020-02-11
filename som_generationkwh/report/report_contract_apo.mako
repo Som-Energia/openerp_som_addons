@@ -1,6 +1,6 @@
 <%
     report = objects[0]
-    data = report.investmentAmortization_notificationData()
+    data = report.investmentCreationAPO_notificationData()
 %>
 <html>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -138,22 +138,6 @@ for account.invoice in objects:
         </tr>
     </table>
     </br>
-    <table>
-        <tr>
-            <th colspan="2"><b>${_(u"Amortització Actual: ")}${data.amortizationName} </b> </th>
-        </tr>
-        <tr>
-            <td> ${_(u"Import: ")}${data.amortizationAmount} € </td>
-            <td> ${_(u"Data: ")}${data.amortizationDate} </td>
-        </tr>
-        <tr>
-            <td> ${_(u"Pagament nº: ")} ${data.amortizationNumPayment} de ${data.amortizationTotalPayments}</td>
-            <td> ${_(u"Pendent de retornar: ")}${data.inversionPendingCapital} € </td>
-        </tr>
-        <tr>
-            <td colspan="2"> <p id="warning24">${_(u"Recordeu: el pagament nº 24 serà doble")}</p></td>
-        </tr>
-    </table>
     </br>
     <table>
         <tr>
