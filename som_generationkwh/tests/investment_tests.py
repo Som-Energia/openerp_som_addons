@@ -517,7 +517,13 @@ class InvestmentTests(testing.OOTestCase):
                   origin: false
                   price_unit: 100.0
                   price_subtotal: 2000.0
-                  note: false
+                  note:
+                    investmentId: {investment_id}
+                    investmentInitialAmount: 2000
+                    investmentLastEffectiveDate: false
+                    investmentName: GKWH00001
+                    investmentPurchaseDate: false
+                    pendingCapital: 2000
                   quantity: 20.0
                   product_id: '[GENKWH_AE] Accions Energètiques Generation kWh'
                   invoice_line_tax_id: []
@@ -588,7 +594,13 @@ class InvestmentTests(testing.OOTestCase):
                   origin: false
                   price_unit: 100.0
                   price_subtotal: 1000.0
-                  note: false
+                  note:
+                    investmentId: {investment_id}
+                    investmentInitialAmount: 1000
+                    investmentLastEffectiveDate: false
+                    investmentName: APO00001
+                    investmentPurchaseDate: false
+                    pendingCapital: 1000
                   quantity: 10.0
                   product_id: '[APO_AE] Aportacions'
                   invoice_line_tax_id: []
@@ -1157,7 +1169,74 @@ class InvestmentTests(testing.OOTestCase):
                     ('name','=',invoice_data['origin'])])
 
             #txn.cursor.commit()
-            #self.Investment.send_mail(cursor, uid, invoice_ids[0],
-            #        'account.invoice', '_mail_pagament', investment_ids[0])
+            self.Investment.send_mail(cursor, uid, invoice_ids[0],
+                    'account.invoice', '_mail_pagament', investment_ids[0])
+
+
+    def test__get_investments_amount__noInvestments(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'res_partner_noinversor1'
+                        )[1]
+
+            amount = self.Investment.get_investments_amount(cursor, uid,
+                partner_id, #Not existing
+            )
+
+            self.assertEqual(amount, 0)
+
+    def test__get_investments_amount__moreThanOne(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            member_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'soci_0001'
+                        )[1]
+
+            amount = self.Investment.get_investments_amount(cursor, uid,
+                member_id,
+            )
+
+            self.assertEqual(amount, 1000)
+
+    def test__get_investments_amount__withOldAportacions(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            member_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'soci_0002'
+                        )[1]
+
+            amount = self.Investment.get_investments_amount(cursor, uid,
+                member_id,
+            )
+
+            self.assertEqual(amount, 5000)
+
+    def test__get_investments_amount__withOldAndNewAportacions(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            member_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'soci_0002'
+                        )[1]
+            partner_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'res_partner_inversor2'
+                        )[1]
+            inv_id = self.Investment.create_from_form(cursor, uid,
+                    partner_id,
+                    '2020-01-06',
+                    4000,
+                    '10.10.23.123',
+                    'ES7712341234161234567890',
+                    'emissio_apo')
+
+            amount = self.Investment.get_investments_amount(cursor, uid,
+                member_id,
+            )
+
+            self.assertEqual(amount, 9000)
 
 # vim: et ts=4 sw=4
