@@ -23,7 +23,8 @@
             <field name="model">account.invoice</field>
             <field name="type">ir.actions.report.xml</field>
             <field name="name">Contracte Aportacions Capital Social</field>
-            <field name="report_webkit">som_generationkwh/report/report_contract_apo.mako</field>
+	    <field name="report_webkit">som_generationkwh/report/report_contract_apo.mako</field>
+            <field name="webkit_header" ref="account_invoice_base.invoice_webkit_header"/>
         </record>
     </data>
 </openerp>
