@@ -10,6 +10,17 @@ from generationkwh.testutils import assertNsEqual
 from datetime import datetime, timedelta, date
 from yamlns import namespace as ns
 import generationkwh.investmentmodel as gkwh
+from osv import osv, fields
+
+class AccountInvoice(osv.osv):
+    _name = 'account.invoice'
+    _inherit = 'account.invoice'
+
+    def send_sii_sync(self, cursor, uid, inv_id, context=None):
+        print "Estic al Mock send_sii_sync"
+        return None
+
+AccountInvoice()
 
 class InvestmentTests(testing.OOTestCase):
 
@@ -1168,21 +1179,34 @@ class InvestmentTests(testing.OOTestCase):
             investment_ids = self.Investment.search(cursor, uid,[
                     ('name','=',invoice_data['origin'])])
 
-            #txn.cursor.commit()
             self.Investment.send_mail(cursor, uid, invoice_ids[0],
                     'account.invoice', '_mail_pagament', investment_ids[0])
+
+    def test__send_mail__WizardAPO2(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            inv_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0001'
+                        )[1]
+            investment = self.Investment.browse(cursor, uid, inv_id)
+
+            invoice_ids, errors = self.Investment.investment_payment(cursor, uid, [inv_id])
+
+            self.assertEqual(len(invoice_ids), 1)
+            self.assertEqual(len(errors), 0)
 
 
     def test__get_investments_amount__noInvestments(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
-            partner_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'res_partner_noinversor1'
+            member_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'soci_0003'
                         )[1]
 
             amount = self.Investment.get_investments_amount(cursor, uid,
-                partner_id, #Not existing
+                member_id,
             )
 
             self.assertEqual(amount, 0)
