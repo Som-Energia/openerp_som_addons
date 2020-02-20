@@ -5,6 +5,11 @@ import generationkwh.investmentmodel as gkwh
 from generationkwh.investmentstate import InvestmentState
 from datetime import datetime, date
 
+class PartnerException(Exception):
+    pass
+class InvestmentException(Exception):
+    pass
+
 class InvestmentActions(ErpWrapper):
 
     def create_from_form(self, cursor, uid, partner_id, order_date, amount_in_euros, ip, iban,
@@ -12,11 +17,11 @@ class InvestmentActions(ErpWrapper):
         GenerationkwhInvestment = self.erp.pool.get('generationkwh.investment')
 
         if amount_in_euros <= 0 or amount_in_euros % gkwh.shareValue > 0:
-                raise Exception("Invalid amount")
+                raise InvestmentException("Invalid amount")
         iban = GenerationkwhInvestment.check_iban(cursor, uid, iban)
 
         if not iban:
-                raise Exception("Wrong iban")
+                raise PartnerException("Wrong iban")
         if not emission:
             emission = 'emissio_genkwh'
 
@@ -29,7 +34,7 @@ class InvestmentActions(ErpWrapper):
                 ('partner_id','=',partner_id)
                 ])
         if not member_ids:
-            raise Exception("Not a member")
+            raise PartnerException("Not a member")
 
         bank_id = GenerationkwhInvestment.get_or_create_partner_bank(cursor, uid,
                     partner_id, iban)

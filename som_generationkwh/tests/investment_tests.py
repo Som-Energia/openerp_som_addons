@@ -11,13 +11,13 @@ from datetime import datetime, timedelta, date
 from yamlns import namespace as ns
 import generationkwh.investmentmodel as gkwh
 from osv import osv, fields
+from ..investment_strategy import PartnerException, InvestmentException
 
 class AccountInvoice(osv.osv):
     _name = 'account.invoice'
     _inherit = 'account.invoice'
 
     def send_sii_sync(self, cursor, uid, inv_id, context=None):
-        print "Estic al Mock send_sii_sync"
         return None
 
 AccountInvoice()
@@ -210,7 +210,7 @@ class InvestmentTests(testing.OOTestCase):
             self.MailMockup.deactivate(cursor, uid)
 
     def test__create_from_form__whenNotAMember_GKWH(self):
-        with self.assertRaises(Exception) as ctx:
+        with self.assertRaises(PartnerException) as ctx:
             with Transaction().start(self.database) as txn:
                 cursor = txn.cursor
                 uid = txn.user
@@ -226,10 +226,10 @@ class InvestmentTests(testing.OOTestCase):
                     'ES7712341234161234567890',
                     'emissio_genkwh',
                     )
-        self.assertEqual(ctx.exception.message,'Not a member')
+        self.assertEqual(str(ctx.exception),'Not a member')
 
     def test__create_from_form__whenNotAMember_APO(self):
-        with self.assertRaises(Exception) as ctx:
+        with self.assertRaises(PartnerException) as ctx:
             with Transaction().start(self.database) as txn:
                 cursor = txn.cursor
                 uid = txn.user
@@ -246,10 +246,10 @@ class InvestmentTests(testing.OOTestCase):
                     'emissio_apo',
                     )
 
-        self.assertEqual(ctx.exception.message,'Not a member')
+        self.assertEqual(str(ctx.exception),'Not a member')
 
     def test__create_from_form__withNonDivisibleAmount_APO(self):
-        with self.assertRaises(Exception) as ctx:
+        with self.assertRaises(InvestmentException) as ctx:
             with Transaction().start(self.database) as txn:
                 cursor = txn.cursor
                 uid = txn.user
@@ -266,10 +266,10 @@ class InvestmentTests(testing.OOTestCase):
                     'emissio_apo',
                     )
 
-        self.assertEqual(ctx.exception.message,'Invalid amount')
+        self.assertEqual(str(ctx.exception),'Invalid amount')
 
     def test__create_from_form__withNonDivisibleAmount_GKWH(self):
-        with self.assertRaises(Exception) as ctx:
+        with self.assertRaises(InvestmentException) as ctx:
             with Transaction().start(self.database) as txn:
                 cursor = txn.cursor
                 uid = txn.user
@@ -286,10 +286,10 @@ class InvestmentTests(testing.OOTestCase):
                     'emissio_genkwh',
                     )
 
-        self.assertEqual(ctx.exception.message,'Invalid amount')
+        self.assertEqual(str(ctx.exception),'Invalid amount')
 
     def test__create_from_form__withNegativeAmount_APO(self):
-        with self.assertRaises(Exception) as ctx:
+        with self.assertRaises(InvestmentException) as ctx:
             with Transaction().start(self.database) as txn:
                 cursor = txn.cursor
                 uid = txn.user
@@ -306,10 +306,10 @@ class InvestmentTests(testing.OOTestCase):
                     'emissio_apo',
                     )
 
-        self.assertEqual(ctx.exception.message,'Invalid amount')
+        self.assertEqual(str(ctx.exception),'Invalid amount')
 
     def test__create_from_form__withNegativeAmount_GKWH(self):
-        with self.assertRaises(Exception) as ctx:
+        with self.assertRaises(InvestmentException) as ctx:
             with Transaction().start(self.database) as txn:
                 cursor = txn.cursor
                 uid = txn.user
@@ -326,10 +326,10 @@ class InvestmentTests(testing.OOTestCase):
                     'emissio_genkwh',
                     )
 
-        self.assertEqual(ctx.exception.message,'Invalid amount')
+        self.assertEqual(str(ctx.exception),'Invalid amount')
 
     def test__create_from_form__withZeroAmount_APO(self):
-        with self.assertRaises(Exception) as ctx:
+        with self.assertRaises(InvestmentException) as ctx:
             with Transaction().start(self.database) as txn:
                 cursor = txn.cursor
                 uid = txn.user
@@ -346,10 +346,10 @@ class InvestmentTests(testing.OOTestCase):
                     'emissio_apo',
                     )
 
-        self.assertEqual(ctx.exception.message,'Invalid amount')
+        self.assertEqual(str(ctx.exception),'Invalid amount')
 
     def test__create_from_form__withZeroAmount_GKWH(self):
-        with self.assertRaises(Exception) as ctx:
+        with self.assertRaises(InvestmentException) as ctx:
             with Transaction().start(self.database) as txn:
                 cursor = txn.cursor
                 uid = txn.user
@@ -366,10 +366,10 @@ class InvestmentTests(testing.OOTestCase):
                     'emissio_genkwh',
                     )
 
-        self.assertEqual(ctx.exception.message,'Invalid amount')
+        self.assertEqual(str(ctx.exception),'Invalid amount')
 
     def test__create_from_form__withBadIban_APO(self):
-        with self.assertRaises(Exception) as ctx:
+        with self.assertRaises(PartnerException) as ctx:
             with Transaction().start(self.database) as txn:
                 cursor = txn.cursor
                 uid = txn.user
@@ -386,10 +386,10 @@ class InvestmentTests(testing.OOTestCase):
                     'emissio_apo',
                     )
 
-        self.assertEqual(ctx.exception.message,'Wrong iban')
+        self.assertEqual(str(ctx.exception),'Wrong iban')
 
     def test__create_from_form__withBadIban_GKWH(self):
-        with self.assertRaises(Exception) as ctx:
+        with self.assertRaises(PartnerException) as ctx:
             with Transaction().start(self.database) as txn:
                 cursor = txn.cursor
                 uid = txn.user
@@ -406,7 +406,7 @@ class InvestmentTests(testing.OOTestCase):
                     'emissio_gkwh',
                     )
 
-        self.assertEqual(ctx.exception.message,'Wrong iban')
+        self.assertEqual(str(ctx.exception),'Wrong iban')
 
     def test__create_from_form__sendsCreationEmailAPO(self):
         with Transaction().start(self.database) as txn:
