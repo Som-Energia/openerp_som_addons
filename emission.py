@@ -65,7 +65,15 @@ class GenerationkwhEmission(osv.osv):
             'Mode pagament amortització' ),
         'bridge_account_payments_id': fields.many2one('account.account',
             'Compte pont per conciliar moviments'),
-
+        #TODO: Model limit by date
+        'end_date_limit_campaign': fields.date(
+            "Data final limit inversió per la campanya"),
+        'amount_limit_first_week': fields.integer(
+            "Import limit inversió per la campanya",
+            help="Limit en € en aportacions per persona",),
+        'end_date': fields.date(
+            "Data final campanya",
+            help="Dia en que es tanca la campanya. Si es deixa buit, és il·limitada",),
    }
 
     _defaults = {
