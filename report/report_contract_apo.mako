@@ -1,152 +1,233 @@
+## -*- coding: utf-8 -*-
 <%
-    report = objects[0]
-    data = report.investmentCreationAPO_notificationData()
+from datetime import datetime, date
+from math import ceil
 %>
+<!doctype html>
 <html>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <head>
-    <title>${_(u"Liquidació préstec Generation kWh")}</title>
     <style type="text/css">
     ${css}
-    img {
-        width: 120px;
-        height: 120px;
-        margin-left: 10px;
+    body {
+        font-family: helvetica;
+        font-size: 14px;
+        padding: 10px;
     }
-    .logos {
-        float: left;
-    }
-    table a:link {
-        color: #666;
-        font-weight: bold;
-        text-decoration:none;
-    }
-    table {
-        font-family:Arial, Helvetica, sans-serif;
-        color:#666;
-        font-size:12px;
-        text-shadow: 1px 1px 0px #fff;
-        background:#e0e0e0;
-        margin-left:auto;
-        margin-right:auto;
-        width: 60%;
-        border:#ccc 1px solid;
 
-        -moz-border-radius:3px;
-        -webkit-border-radius:3px;
-        border-radius:3px;
-
-        -moz-box-shadow: 0 1px 2px #d1d1d1;
-        -webkit-box-shadow: 0 1px 2px #d1d1d1;
-        box-shadow: 0 1px 2px #d1d1d1;
-    }
-    table th {
-        padding:10px 25px;
-        border-top:1px solid #fafafa;
-        border-bottom:1px solid #e0e0e0;
-
-        background: #ededed;
-        background: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#ebebeb));
-        background: -moz-linear-gradient(top,  #ededed,  #ebebeb);
-    }
-    table th:first-child {
-        text-align: center;
-        padding-left:20px;
-    }
-    table tr:first-child th:first-child {
-        -moz-border-radius-topleft:3px;
-        -webkit-border-top-left-radius:3px;
-        border-top-left-radius:3px;
-    }
-    table tr:first-child th:last-child {
-        -moz-border-radius-topright:3px;
-        -webkit-border-top-right-radius:3px;
-        border-top-right-radius:3px;
-    }
-    table tr:last-child td:first-child {
-        -moz-border-radius-bottomleft:3px;
-        -webkit-border-bottom-left-radius:3px;
-        border-bottom-left-radius:3px;
-    }
-    table tr:last-child td:last-child {
-        -moz-border-radius-bottomright:3px;
-        -webkit-border-bottom-right-radius:3px;
-        border-bottom-right-radius:3px;
-    }
-    table tr {
-        text-align: left;
-        padding-left:20px;
-    }
-    table td:first-child {
-        padding-left:20px;
-        border-left: 0;
-    }
-    table td {
-        padding:5px 18px;
-        border-top: 1px solid #ffffff;
-        border-bottom:1px solid #e0e0e0;
-        border-left: 1px solid #e0e0e0;
-
-        background: #fafafa;
-        background: -webkit-gradient(linear, left top, left bottom, from(#fbfbfb), to(#fafafa));
-        background: -moz-linear-gradient(top,  #fbfbfb,  #fafafa);
-    }
-    table tr:last-child td {
-        border-bottom:0;
-    }
-    #account{
-        text-align: center;
-    }
-    #cabecera{
+    img.logo {
         float: right;
-        padding-top: 20px;
-        text-align: right;
-    }
-    #warning24{
-        font-size: 75%;
-        vertical-align: text-bottom;
     }
 
-    </style>
+     div.contracte {
+         clear: both;
+         margin: 30px;
+    }
+
+    h1 {
+        font-size: large;
+        text-align: center;
+        page-break-before: avoid;
+    }
+
+    h2, .h2_format {
+        font-size: medium;
+        text-decoration: underline;
+        font-weight: bold;
+    }
+
+    h3 {
+        font-size: medium;
+        text-decoration: underline;
+    }
+
+    p {
+        padding: 8px;
+    }
+
+    div.signatures_block {
+        page-break-inside: avoid;
+        padding: 0px;
+        margin: 0px;
+    }
+
+    div.signatures {
+        align: center;
+        width: 100%;
+        page-break-inside: avoid;
+    }
+
+    div.signatura {
+        float: left;
+        page-break-inside: avoid;
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0px;
+        margin-left: 5em;
+    }
+
+     li.image {
+         height: 150px;
+         width: 150px;
+     }
+
+     li.signature_text {
+         height: 90px;
+         width: 150px;
+         margin-top: 60px;
+         margin-bottom: 0px;
+         font-size: xx-small;
+     }
+
+     div.contracte_llarg {
+         margin-left: 30px;
+     }
+
+     div.contracte_llarg h2 {
+         text-decoration: none;
+         display: inline;
+         margin: 30px 0px;
+     }
+
+    ol {
+        counter-reset: item;
+        display: table;
+        margin: 0px;
+        padding: 10px;
+    }
+
+    ol li {
+        display: table-row;
+        border-spacing: 10px;
+        font-size: medium;
+    }
+
+    ol li::before {
+        display: table-cell;
+        padding-right: 5px;
+        content: counters(item, ".") ". ";
+        counter-increment: item;
+        font-weight: bold;
+    }
+
+    div.annex1, div.annex2  {
+        margin-left: 30px;
+        font-size: medium;
+    }
+
+/* ANNEX */
+    table {
+        border-collapse: collapse;
+        font-size: medium;
+        width: 100%;
+        page-break-inside: avoid;
+    }
+
+    th {
+        background-color: lightgrey;
+        font-weight: bold;
+    }
+
+    table, td, th{
+        border: 1px solid black;
+        text-align: left;
+    }
+
+    table.annex1_table caption {
+        padding: 5px 0px;
+        text-align: left;
+    }
+
+    table.annex2_table {
+        border: 0px;
+        text-align: left;
+        page-break-inside: avoid;
+    }
+
+    table.annex2_table caption {
+        text-align: left;
+    }
+
+    table.annex2_table td, table.annex2_table tr{
+        border: 0px;
+        text-align: left;
+    }
+
+    table.annex2_table td {
+        width: 50px;
+    }
+
+    .big_sum {
+        font-size: xx-large;
+    }
+
+     p.math {
+         border: 1px solid black;
+     }
+</style>
 </head>
 <body>
-<% 
-for account.invoice in objects:
- setLang(account.invoice.lang_partner)
-%>
-    <div class="logos">
-        <img src="${addons_path}/som_generationkwh/report/Logo-SomEnergia-blanco-quadrado-250x250px.jpg" />
-        <p id="cabecera"><b>Liquidació GenerationkWh</b><br>Emisió: ${data.receiptDate} </ p>
-    </ div>
-    <div>
-    <table>
-        <tr>
-            <th colspan="2"><b>${_(u"Dades Préstec Generation kWh: ")} ${data.inversionName}</b></th>
-        </tr>
-        <tr>
-            <td colspan="2"> ${_(u"Titular: ")}${data.ownerName}</td>
+%for inv in objects :
+<% setLang(inv.partner_id.lang)
 
-        </tr>
-        <tr>
-            <td> ${_(u"NIF: ")} ${data.ownerNif} </td>
-            <td> ${_(u"Import Inicial: ")} ${data.inversionInitialAmount} € </td>
-        </tr>
-        <tr>
-            <td> ${_(u"Data formalització: ")}${data.inversionPurchaseDate}</td>
-            <td> ${_(u"Data venciment: ")}${data.inversionExpirationDate}</td>
-        </tr>
-    </table>
-    </br>
-    </br>
-    <table>
-        <tr>
-            <th colspan="2"><b> ${_(u"Compte on es realizarà l'ingrés")}</b></th>
-        </tr>
-        <tr>
-            <td id="account"> ${data.inversionBankAccount} </td>
-        </tr>
-    </table>
+month_names = [_('gener'), _('febrer'), _('març'), _('abril'), _('maig'),
+               _('juny'), _('juliol'), _('agost'), _('setembre'), _('octubre'),
+               _('novembre'), _('desembre')]
+
+investment = inv.pool.get('generationkwh.investment')
+investment_id = investment.search(inv._cr, inv._uid, [('name','=',inv.origin)])
+investment_obj = investment.read(inv._cr, inv._uid, investment_id)
+purchase_date = investment_obj[0]['purchase_date']
+contract_date = datetime.strptime((purchase_date!='' and purchase_date)
+				   or (inv.date_invoice!='' and date_invoice) \
+                                   or date.today().strftime('%Y-%m-%d'),
+                                   '%Y-%m-%d')
+nshares = investment_obj[0]['nshares']
+amount = int(nshares * 100)
+num_accions = nshares
+perm_data = inv.perm_read()[0]
+creation_date = datetime.strptime(perm_data['create_date'], '%Y-%m-%d %H:%M:%S.%f')
+creation_date_str = creation_date.strftime(_('%d/%m/%Y a les %T'))
+%>
+<%def name="signatures(inv)">
+<div class="signatures_block">
+    <h3>${_(u"Data del contracte:")}</h3>
+    <p class="data">${contract_date.day} de ${month_names[contract_date.month-1]} de ${contract_date.year}</p>
+    <p>${_("Aquest contracte noms ser actiu un cop el pagament corresponent s'hagi fet efectiu")}</p>
+
+    <div class="signatures">
+        <div class="signatura">
+            <ul>
+                <li><b>Som Energia, SCCL</b></li>
+                <li><img src="${addons_path}/som_inversions/report/firma_cb.png" height="150" width="200"/></li>
+                <li><b>${_(u"Signat:")} Carles Barbar Puig</b></li>
+            </ul>
+        </div>
+        <div class="signatura">
+            <ul>
+                <li><b>${_(u"El Soci/La Scia")}</b></li>
+                <li class="signature_text">${_('Condicions acceptades a travs del formulari web el dia %s') % creation_date_str}</li>
+                <li><b>${_(u"Signat:")} ${inv.partner_id.name or ''}</b></li>
+            </ul>
+        </div>
     </div>
+</div>
+</%def>
+<div>
+    <img class="logo" src="${addons_path}/som_inversions/report/logo.jpg" width="150" height="150"/>
+</div>
+<div class="contracte">
+    <h1>${_(u"CONTRACTE D'ADHESIÓ AL SISTEMA D'AUTOPRODUCCIO COLLECTIVA D'ENERGIA ELCTRICA PROVINENT DE FONTS RENOVABLES")}</h1>
+    ${signatures(inv)}
+</div>
+<p style="page-break-after:always"></p>
+<div class="contracte_llarg">
+
+    ${signatures(inv)}
+</div>
+<p style="page-break-after:always"></p>
+%endfor
 </body>
 </html>

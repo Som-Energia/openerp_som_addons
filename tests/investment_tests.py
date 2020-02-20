@@ -904,75 +904,6 @@ class InvestmentTests(testing.OOTestCase):
 
             self.assertEqual(len(result), 0)
 
-    @unittest.skip("Not working. Transacions and workers issues ")
-    def test__investment_payment__sendsPaymentEmail_APO(self):
-        with Transaction().start(self.database) as txn:
-            cursor = txn.cursor
-            uid = txn.user
-            partner_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                        )[1]
-            inv_id = self.Investment.create_from_form(cursor, uid,
-                    partner_id,
-                    '2017-01-06',
-                    4000,
-                    '10.10.23.123',
-                    'ES7712341234161234567890',
-                    'emissio_apo')
-            self.MailMockup.activate(cursor, uid)
-
-            invoice_ids, errors = self.Investment.investment_payment(cursor, uid, [inv_id])
-
-            self.assertMailLogEqual(self.MailMockup.log(cursor, uid), """\
-                logs:
-                - model: account.invoice
-                  id: {id}
-                  template: aportacio_mail_pagament
-                  from_id: [ {account_id} ]
-                """.format(
-                    id=invoice_ids[0],
-                    account_id = self._invertirMailAccount(cursor, uid),
-                ))
-            self.MailMockup.deactivate(cursor, uid)
-
-    @unittest.skip("Not working. Transacions and workers issues ")
-    def test__investment_payment__sendsPaymentEmail_GKWH(self):
-        with Transaction().start(self.database) as txn:
-            cursor = txn.cursor
-            uid = txn.user
-            partner_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                        )[1]
-            inv_id = self.Investment.create_from_form(cursor, uid,
-                    partner_id,
-                    '2017-01-06',
-                    4000,
-                    '10.10.23.123',
-                    'ES7712341234161234567890',
-                    'emissio_genkwh')
-            txn.cursor.commit()
-            self.MailMockup.activate(cursor, uid)
-
-            id2 = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
-                        )[1]
-            invoice_ids, errors = self.Investment.investment_payment(cursor, uid, [inv_id])
-            #invoice_ids, errors = self.Investment.investment_payment(cursor, uid, [id2])
-
-            self.assertMailLogEqual(self.MailMockup.log(cursor, uid), """\
-                logs:
-                - model: account.invoice
-                  id: {id}
-                  template: generationkwh_mail_pagament
-                  from_id: [ {account_id} ]
-                """.format(
-                    id=invoice_ids[0],
-                    account_id = self._generationMailAccount(cursor, uid),
-                ))
-            self.MailMockup.deactivate(cursor, uid)
-            #txn.cursor.commit()
-
-    @unittest.skip("Not working. Transacions and workers issues ")
     def test__invoices_to_payment_order_APO(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
@@ -1014,7 +945,6 @@ class InvestmentTests(testing.OOTestCase):
                 'id': payment_order['id'],
              })
 
-    @unittest.skip("Not working. Transacions and workers issues ")
     def test__invoices_to_payment_order_GKWH(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
@@ -1092,100 +1022,62 @@ class InvestmentTests(testing.OOTestCase):
             self.assertEquals(partner.property_account_gkwh.code, '163500202001')
             self.assertEquals(partner.property_account_liquidacio.code, '410000202001')
 
-    def test__send_mail__mailCreacioPagamentGKWH(self):
+    def test__amortize__oneAmortizationGKWH(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
             self.MailMockup.activate(cursor, uid)
-            partner_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+            investment_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'genkwh_0002'
                         )[1]
-            inv_id = self.Investment.create_from_form(cursor, uid,
-                    partner_id,
-                    '2017-01-06',
-                    4000,
-                    '10.10.23.123',
-                    'ES7712341234161234567890',
-                    'emissio_genkwh')
-            invoice_ids, errors = self.Investment.create_initial_invoices(cursor,uid, [inv_id])
-            self.Investment.open_invoices(cursor, uid, invoice_ids)
-            payment_mode = self.Investment.investment_actions(cursor, uid, inv_id).get_payment_mode_name(cursor, uid)
-            self.Investment.invoices_to_payment_order(cursor, uid,
-                invoice_ids, payment_mode)
-            invoice_data = self.Invoice.read(cursor, uid, invoice_ids[0], ['origin'])
-            investment_ids = self.Investment.search(cursor, uid,[
-                    ('name','=',invoice_data['origin'])])
+            inv = self.Investment.read(cursor, uid, investment_id)
 
-            self.Investment.send_mail(cursor, uid, invoice_ids[0],
-                    'account.invoice', '_mail_pagament', investment_ids[0])
+            amortization_ids, errors = self.Investment.amortize(cursor, uid, '2021-10-13', [investment_id])
 
+            self.assertEqual(len(amortization_ids), 1)
+            self.assertEqual(len(errors), 0)
             self.assertMailLogEqual(self.MailMockup.log(cursor, uid), """\
                 logs:
-                - model: generationkwh.investment
-                  id: {inv_id}
-                  template: generationkwh_mail_creacio
+                - model: account.invoice
+                  id: {id}
+                  template: generationkwh_mail_amortitzacio
                   from_id: [ {account_id} ]
+                """.format(
+                    id=amortization_ids[0],
+                    account_id = self._generationMailAccount(cursor, uid),
+                ))
+            self.MailMockup.deactivate(cursor, uid)
+
+    def test__investment_payment__oneGKWH(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            self.MailMockup.activate(cursor, uid)
+            id2 = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
+                        )[1]
+
+            invoice_ids, errors = self.Investment.investment_payment(cursor, uid, [id2])
+
+            self.assertEqual(len(invoice_ids), 1)
+            self.assertEqual(len(errors), 0)
+            self.assertMailLogEqual(self.MailMockup.log(cursor, uid), """\
+                logs:
                 - model: account.invoice
                   id: {id}
                   template: generationkwh_mail_pagament
                   from_id: [ {account_id} ]
                 """.format(
-                    inv_id=inv_id,
                     id=invoice_ids[0],
                     account_id = self._generationMailAccount(cursor, uid),
                 ))
             self.MailMockup.deactivate(cursor, uid)
 
-    def test__send_mail__WizardGKWH(self):
+    def test__investment_payment__oneAPO(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
-            investment_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0002'
-                        )[1]
-            inv = self.Investment.read(cursor, uid, investment_id)
-            print "Estic aqui"
-            print inv
-            amortization_ids, errors = self.Investment.amortize(cursor, uid, '2021-10-13', [investment_id])
-            print amortization_ids
-            print errors
-
-            self.assertTrue(amortization_ids)
-            #txn.cursor.commit()
-            #self.Investment.send_mail(cursor, uid, amortization_ids[0],
-            #        'account.invoice', '_mail_amortitzacio', investment_id)
-
-
-    def test__send_mail__WizardAPO(self):
-        with Transaction().start(self.database) as txn:
-            cursor = txn.cursor
-            uid = txn.user
-            partner_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                        )[1]
-            inv_id = self.Investment.create_from_form(cursor, uid,
-                    partner_id,
-                    '2017-01-06',
-                    4000,
-                    '10.10.23.123',
-                    'ES7712341234161234567890',
-                    'emissio_apo')
-            invoice_ids, errors = self.Investment.create_initial_invoices(cursor,uid, [inv_id])
-            self.Investment.open_invoices(cursor, uid, invoice_ids)
-            payment_mode = self.Investment.investment_actions(cursor, uid, inv_id).get_payment_mode_name(cursor, uid)
-            self.Investment.invoices_to_payment_order(cursor, uid,
-                invoice_ids, payment_mode)
-            invoice_data = self.Invoice.read(cursor, uid, invoice_ids[0], ['origin'])
-            investment_ids = self.Investment.search(cursor, uid,[
-                    ('name','=',invoice_data['origin'])])
-
-            self.Investment.send_mail(cursor, uid, invoice_ids[0],
-                    'account.invoice', '_mail_pagament', investment_ids[0])
-
-    def test__send_mail__WizardAPO2(self):
-        with Transaction().start(self.database) as txn:
-            cursor = txn.cursor
-            uid = txn.user
+            self.MailMockup.activate(cursor, uid)
             inv_id = self.IrModelData.get_object_reference(
                         cursor, uid, 'som_generationkwh', 'apo_0001'
                         )[1]
@@ -1195,7 +1087,17 @@ class InvestmentTests(testing.OOTestCase):
 
             self.assertEqual(len(invoice_ids), 1)
             self.assertEqual(len(errors), 0)
-
+            self.assertMailLogEqual(self.MailMockup.log(cursor, uid), """\
+                logs:
+                - model: account.invoice
+                  id: {id}
+                  template: aportacio_mail_pagament
+                  from_id: [ {account_id} ]
+                """.format(
+                    id=invoice_ids[0],
+                    account_id = self._invertirMailAccount(cursor, uid),
+                ))
+            self.MailMockup.deactivate(cursor, uid)
 
     def test__get_investments_amount__noInvestments(self):
         with Transaction().start(self.database) as txn:
