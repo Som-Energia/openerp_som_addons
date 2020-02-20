@@ -28,8 +28,6 @@
                     <group col="4" colspan="2">
                         <separator string="Característiques inversió" colspan="4"/>
                         <field name="name"/>
-	                <field name="start_date"/>
-                        <field name="amount_emission"/>
                         <field name="type"/>
                         <field name="grace_period"/>
                         <field name="expiration_years"/>
@@ -43,6 +41,14 @@
                         <field name="investment_product_id"/>
                         <field name="amortization_product_id"/>
                         <field name="irpf_product_id"/>
+                    </group>
+                    <group col="4" colspan="2">
+                        <separator string="Limits" colspan="4"/>
+	                <field name="start_date"/>
+	                <field name="end_date"/>
+                        <field name="amount_emission"/>
+                        <field name="end_date_limit_campaign"/>
+                        <field name="amount_limit_first_week"/>
                     </group>
                     <group col="2" colspan="2">
                         <separator string="Comptabilitat" colspan="2"/>
