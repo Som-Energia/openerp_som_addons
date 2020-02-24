@@ -1165,4 +1165,21 @@ class InvestmentTests(testing.OOTestCase):
 
             self.assertEqual(amount, 9000)
 
+    def test__get_max_investment__noInvestments_inTemporaLimit(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            member_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'soci_0003'
+                        )[1]
+            partner_id = self.IrModelData.get_object_reference(
+                    cursor, uid, 'som_generationkwh', 'res_partner_noinversor2'
+                    )[1]
+
+            amount = self.Investment.get_max_investment(cursor, uid,
+                partner_id, 'APO_202003'
+            )
+
+            self.assertEqual(amount, 5000000)
+
 # vim: et ts=4 sw=4

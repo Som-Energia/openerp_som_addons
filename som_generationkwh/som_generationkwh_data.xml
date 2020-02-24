@@ -1461,25 +1461,6 @@ ${text_legal}
             <field name="partner_id">1</field>
             <field name="sepa_creditor_code">ES24000F55091367</field>
         </record>
-        <record id="emissio_apo" model="generationkwh.emission">
-            <field name="name">Aportacions</field>
-            <field name="start_date">2015-06-19</field>
-	    <field name="amount_emission">5000000</field>
-            <field name="state">done</field>
-            <field name="type">apo</field>
-	    <field name="grace_period">1</field>
-	    <field name="expiration_years">0</field>
-	    <field name="waiting_days">0</field>
-	    <field name="mandate_name">PRESTEC Aportacions</field>
-	    <field name="journal_id" model="account.journal"
-		    search="[('code','=','APO')]" />
-	    <field name="investment_product_id" model="product.product"
-		    search="[('default_code','=','APO_AE')]" />
-	    <field name="investment_payment_mode_id" model="payment.mode"
-		    search="[('name','=','APORTACIONS (Enginyers)')]" />
-	    <field name="bridge_account_payments_id" model="account.account"
-		    search="[('code','=','555000000010')]" />
-        </record>
         <record model="ir.sequence.type" id="seq_type_som_aportacions">
             <field name="name">Seq. Aportacions al Capital Social</field>
             <field name="code">seq.som.aportacions</field>
