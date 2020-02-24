@@ -22,6 +22,9 @@ class GenerationkwhEmission(osv.osv):
         'name': fields.char(
             "Nom", size=50, required=False, unique=True,
             help="Nom de la campanya d'inversió",),
+        'code': fields.char(
+            "Codi emissió", size=50, unique=True,
+            help="Codi de la campanya d'inversió",),
         'start_date': fields.date(
             "Data d'inici", required=True,
             help="Quin dia es va començar l'emissió",),

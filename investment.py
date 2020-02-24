@@ -328,9 +328,29 @@ class GenerationkwhInvestment(osv.osv):
 
         return amount
 
-    def get_max_investment(self, cursor, uid, partner_id, investment_type=None):
-        #TODO: on s'agafa
-        return True
+    def get_max_investment(self, cursor, uid, partner_id, investment_code):
+        #TODO: on s'agafaI
+        Member = self.pool.get('somenergia.soci')
+        Emission = self.pool.get('generationkwh.emission')
+
+        member_id = Member.search(cursor, uid, [('partner_id','=',partner_id)])[0]
+        amount_investments = self.get_investments_amount(cursor, uid, member_id)
+
+        #Limit legal 100.000
+        max_amount = gkwh.maxAmountInvested - amount_investments
+
+        # Comprovació que campanya <= 5000000
+        # Comprovació primera setmana 5000
+        emission_id = Emission.search(cursor, uid, [('code','=',investment_code), ('state','=','open')])
+
+        if not emission_id:
+            raise Exception("Emission not exist or is not open anymore")
+
+        emission_data = Emission.read(cursor, uid, emission_id[0], ['amount_emission'])
+        max_amount = emission_data['amount_emission'] - amount_investments
+
+
+        return max_amount
 
     def create_from_accounting(self, cursor, uid,
             member_id, start, stop, waitingDays, expirationYears,
