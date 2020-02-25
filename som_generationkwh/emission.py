@@ -3,12 +3,51 @@ from osv import osv, fields
 from tools.translate import _
 from tools import config
 import netsvc
+import generationkwh.investmentmodel as gkwh
 
+def field_function(ff_func):
+    def string_key(*args, **kwargs):
+        res = ff_func(*args, **kwargs)
+        ctx = kwargs.get('context', None)
+        if ctx or ctx is None:
+            return res
+
+        if not ctx.get('xmlrpc', False):
+            return res
+
+        return dict([(str(key), value) for key, value in res.tuples])
+
+    return string_key
 
 class GenerationkwhEmission(osv.osv):
 
     _name = 'generationkwh.emission'
     _order = 'name DESC'
+
+    def _ff_investments(self, cursor, uid, ids, field_names, args,
+                        context=None):
+        """ Check's if a member any gkwh investment"""
+        invest_obj = self.pool.get('generationkwh.investment')
+
+        if context is None:
+            context = {}
+
+        if not isinstance(ids, (tuple, list)):
+            ids = [ids]
+
+        init_dict = dict([(f, False) for f in field_names])
+        res = {}.fromkeys(ids, {})
+        for k in res.keys():
+            res[k] = init_dict.copy()
+
+        for emission_id in ids:
+            investment_ids = invest_obj.search(cursor, uid, [('emission_id','=',emission_id)])
+            amount = 0
+            for investment_id in investment_ids:
+                amount = amount + invest_obj.read(cursor, uid, investment_id, ['nshares'])['nshares'] * gkwh.shareValue
+            res[emission_id] = {'amount_investments': amount}
+
+        return res
 
     '''
     Field inspired in generationkwh/investmentmodel.py
@@ -68,7 +107,6 @@ class GenerationkwhEmission(osv.osv):
             'Mode pagament amortització' ),
         'bridge_account_payments_id': fields.many2one('account.account',
             'Compte pont per conciliar moviments'),
-        #TODO: Model limit by date
         'end_date_limit_campaign': fields.date(
             "Data final limit inversió per la campanya"),
         'amount_limit_first_week': fields.integer(
@@ -77,6 +115,11 @@ class GenerationkwhEmission(osv.osv):
         'end_date': fields.date(
             "Data final campanya",
             help="Dia en que es tanca la campanya. Si es deixa buit, és il·limitada",),
+        'amount_investments': fields.function(
+            _ff_investments, string='Total invertit',
+            type='integer', method=True,
+            multi='investments', store=True,
+        ),
    }
 
     _defaults = {
