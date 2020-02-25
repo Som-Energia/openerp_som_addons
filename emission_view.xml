@@ -48,6 +48,7 @@
 	                <field name="start_date"/>
 	                <field name="end_date"/>
                         <field name="amount_emission"/>
+                        <field name="amount_investments"/>
                         <separator string="Limits temporals" colspan="4"/>
                         <field name="end_date_limit_campaign"/>
                         <field name="amount_limit_first_week"/>
