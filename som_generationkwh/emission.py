@@ -41,11 +41,12 @@ class GenerationkwhEmission(osv.osv):
             res[k] = init_dict.copy()
 
         for emission_id in ids:
-            investment_ids = invest_obj.search(cursor, uid, [('emission_id','=',emission_id)])
+            investment_ids = invest_obj.search(cursor, uid, [('emission_id', '=', emission_id)])
             amount = 0
             for investment_id in investment_ids:
-                amount = amount + invest_obj.read(cursor, uid, investment_id, ['nshares'])['nshares'] * gkwh.shareValue
-            res[emission_id] = {'amount_investments': amount}
+                investment_data = invest_obj.read(cursor, uid, investment_id, ['nshares', 'amortized_amount'])
+                amount = amount + investment_data['nshares'] * gkwh.shareValue - investment_data['amortized_amount']
+            res[emission_id] = {'current_total_amount_invested': int(amount)}
 
         return res
 
@@ -107,20 +108,19 @@ class GenerationkwhEmission(osv.osv):
             'Mode pagament amortització' ),
         'bridge_account_payments_id': fields.many2one('account.account',
             'Compte pont per conciliar moviments'),
-        'end_date_limit_campaign': fields.date(
+        'limited_period_end_date': fields.date(
             "Data final limit inversió per la campanya"),
-        'amount_limit_first_week': fields.integer(
+        'limited_period_amount': fields.integer(
             "Import limit inversió per la campanya",
             help="Limit en € en aportacions per persona",),
         'end_date': fields.date(
             "Data final campanya",
             help="Dia en que es tanca la campanya. Si es deixa buit, és il·limitada",),
-        'amount_investments': fields.function(
+        'current_total_amount_invested': fields.function(
             _ff_investments, string='Total invertit',
             type='integer', method=True,
             multi='investments', store=True,
-        ),
-   }
+        )}
 
     _defaults = {
         'state' : lambda *a: 'draft',
@@ -134,7 +134,7 @@ class GenerationkwhEmission(osv.osv):
         return True
 
     def action_open(self, cr, uid, ids, *args):
-        self.write(cr,uid,ids,{'state': 'open',})
+        self.write(cr, uid, ids, {'state': 'open',})
         return True
 
     def set_done(self, cr, uid, ids, *args):

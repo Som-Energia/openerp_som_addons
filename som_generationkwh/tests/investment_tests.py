@@ -12,6 +12,7 @@ from yamlns import namespace as ns
 import generationkwh.investmentmodel as gkwh
 from osv import osv, fields
 from ..investment_strategy import PartnerException, InvestmentException
+from freezegun import freeze_time
 
 class AccountInvoice(osv.osv):
     _name = 'account.invoice'
@@ -160,7 +161,7 @@ class InvestmentTests(testing.OOTestCase):
                     'purchase_date': False,
                     'member_id': (1, u'Gil, Pere'),
                     'active': True,
-                    'order_date': '2019-10-01',
+                    'order_date': '2020-03-04',
                     'amortized_amount': 0.0,
                     'name': u'APO00001'
                 })
@@ -1113,7 +1114,7 @@ class InvestmentTests(testing.OOTestCase):
 
             self.assertEqual(amount, 0)
 
-    def test__get_investments_amount__moreThanOne(self):
+    def test__get_investments_amount__moreThanOne_AllEmissions(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
@@ -1123,6 +1124,23 @@ class InvestmentTests(testing.OOTestCase):
 
             amount = self.Investment.get_investments_amount(cursor, uid,
                 member_id,
+            )
+
+            self.assertEqual(amount, 6000)
+
+    def test__get_investments_amount__moreThanOne_diferentEmissions(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            member_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'soci_0001'
+                        )[1]
+            emission_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'emissio_apo'
+            )[1]
+
+            amount = self.Investment.get_investments_amount(cursor, uid,
+                member_id, emission_id
             )
 
             self.assertEqual(amount, 1000)
@@ -1165,13 +1183,27 @@ class InvestmentTests(testing.OOTestCase):
 
             self.assertEqual(amount, 9000)
 
-    def test__get_max_investment__noInvestments_inTemporaLimit(self):
+    @freeze_time("2020-03-03")
+    def test__get_max_investment__noInvestments_inTemporaLimitWithoutLimitInEmission(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
-            member_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'soci_0003'
-                        )[1]
+            partner_id = self.IrModelData.get_object_reference(
+                    cursor, uid, 'som_generationkwh', 'res_partner_noinversor2'
+                    )[1]
+
+            amount = self.Investment.get_max_investment(cursor, uid,
+                partner_id, 'APO_202003'
+            )
+            #emission limit date is
+
+            self.assertEqual(amount, 100000)
+
+    @freeze_time("2020-03-13")
+    def test__get_max_investment__noInvestments_outOfTemporaLimitWithoutLimitInEmission(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
             partner_id = self.IrModelData.get_object_reference(
                     cursor, uid, 'som_generationkwh', 'res_partner_noinversor2'
                     )[1]
@@ -1180,6 +1212,131 @@ class InvestmentTests(testing.OOTestCase):
                 partner_id, 'APO_202003'
             )
 
-            self.assertEqual(amount, 5000000)
+            self.assertEqual(amount, 100000)
+
+    @freeze_time("2020-03-03")
+    def test__get_max_investment__noInvestments_inTemporaLimit(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'res_partner_noinversor2'
+            )[1]
+            emission_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'emissio_apo'
+            )[1]
+            self.Emission.write(cursor, uid, emission_id,
+                                {'limited_period_amount': 5000,
+                                 'limited_period_end_date': '2020-03-10',
+                                 'current_total_amount_invested': 0})
+
+            amount = self.Investment.get_max_investment(cursor, uid,
+                                                        partner_id, 'APO_202003'
+                                                        )
+            self.assertEqual(amount, 5000)
+
+    @freeze_time("2020-03-13")
+    def test__get_max_investment__noInvestments_outOfTemporaLimit(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'res_partner_noinversor2'
+            )[1]
+            emission_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'emissio_apo'
+            )[1]
+            self.Emission.write(cursor, uid, emission_id,
+                                {'limited_period_amount': 5000,
+                                 'limited_period_end_date': '2020-03-10',
+                                 'current_total_amount_invested': 0})
+
+            amount = self.Investment.get_max_investment(cursor, uid,
+                                                        partner_id, 'APO_202003'
+                                                        )
+
+            self.assertEqual(amount, 100000)
+
+    @freeze_time("2020-03-03")
+    def test__get_max_investment__withInvestments_inTemporaLimit(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+            )[1]
+            emission_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'emissio_apo'
+            )[1]
+            self.Emission.write(cursor, uid, emission_id,
+                                {'limited_period_amount': 1000,
+                                 'limited_period_end_date': '2020-03-10'})
+
+            amount = self.Investment.get_max_investment(cursor, uid,
+                                                        partner_id, 'APO_202003'
+                                                        )
+            self.assertEqual(amount, 0)
+
+    @freeze_time("2020-03-13")
+    def test__get_max_investment__withInvestments_outOfTemporaLimit(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+            )[1]
+            emission_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'emissio_apo'
+            )[1]
+            self.Emission.write(cursor, uid, emission_id,
+                                {'limited_period_amount': 1000,
+                                 'limited_period_end_date': '2020-03-10'})
+
+            amount = self.Investment.get_max_investment(cursor, uid,
+                                                        partner_id, 'APO_202003'
+                                                        )
+
+            self.assertEqual(amount, 94000)
+
+    @freeze_time("2020-03-03")
+    def test__get_max_investment__withOldInvestments_inTemporaLimit(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor2'
+            )[1]
+            emission_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'emissio_apo'
+            )[1]
+            self.Emission.write(cursor, uid, emission_id,
+                                {'limited_period_amount': 1000,
+                                 'limited_period_end_date': '2020-03-10'})
+
+            amount = self.Investment.get_max_investment(cursor, uid,
+                                                        partner_id, 'APO_202003'
+                                                        )
+            self.assertEqual(amount, 1000)
+
+    @freeze_time("2020-03-13")
+    def test__get_max_investment__withOldInvestments_outOfTemporaLimit(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor2'
+            )[1]
+            emission_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'emissio_apo'
+            )[1]
+            self.Emission.write(cursor, uid, emission_id,
+                                {'limited_period_amount': 500,
+                                 'limited_period_end_date': '2020-03-10'})
+
+            amount = self.Investment.get_max_investment(cursor, uid,
+                                                        partner_id, 'APO_202003'
+                                                        )
+
+            self.assertEqual(amount, 95000)
 
 # vim: et ts=4 sw=4

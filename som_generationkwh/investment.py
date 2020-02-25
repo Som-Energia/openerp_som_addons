@@ -261,12 +261,19 @@ class GenerationkwhInvestment(osv.osv):
 
         return firstEffective, lastEffective
 
-    def get_investments_amount(self, cursor, uid, member_id, investment_type=None):
-        investment_ids = self.search(cursor, uid, [('member_id','=',member_id), ('emission_id.type', '=', 'apo')])
+    def get_investments_amount(self, cursor, uid, member_id, emission_id=None):
+        search_params = [('member_id', '=', member_id), ('emission_id.type', '=', 'apo')]
+        if emission_id:
+            search_params.append(('emission_id', '=', emission_id))
+        investment_ids = self.search(cursor, uid, search_params)
+
         amount = 0
         #New investments
         for id in investment_ids:
             amount += self.read(cursor, uid, id, ['nshares'])['nshares'] * gkwh.shareValue
+
+        if emission_id: #Avoid old investments amount
+            return amount
 
         #START Old investments (remove when migrated)
         Member = self.pool.get('somenergia.soci')
@@ -329,28 +336,29 @@ class GenerationkwhInvestment(osv.osv):
         return amount
 
     def get_max_investment(self, cursor, uid, partner_id, investment_code):
-        #TODO: on s'agafaI
         Member = self.pool.get('somenergia.soci')
         Emission = self.pool.get('generationkwh.emission')
-
+        current_date = datetime.now()
         member_id = Member.search(cursor, uid, [('partner_id','=',partner_id)])[0]
         amount_investments = self.get_investments_amount(cursor, uid, member_id)
 
-        #Limit legal 100.000
+        #Check legal limit 100.000
         max_amount = gkwh.maxAmountInvested - amount_investments
 
-        # Comprovació que campanya <= 5000000
-        # Comprovació primera setmana 5000
-        emission_id = Emission.search(cursor, uid, [('code','=',investment_code), ('state','=','open')])
+        #Check emission limit <= emission_data['amount_emission']
+        emission_id = Emission.search(cursor, uid, [('code', '=', investment_code), ('state', '=', 'open')])
+        emission_data = Emission.read(cursor, uid, emission_id[0], ['amount_emission','limited_period_amount','limited_period_end_date','current_total_amount_invested'])
+        max_amount_available = emission_data['amount_emission'] - emission_data['current_total_amount_invested']
 
-        if not emission_id:
-            raise Exception("Emission not exist or is not open anymore")
+        #Check emission first week limit
+        limited_period_amount = max_amount
+        amount_investments_of_emission = self.get_investments_amount(cursor, uid, member_id, emission_id)
+        if emission_data['limited_period_amount'] and \
+                current_date <= datetime.strptime(emission_data['limited_period_end_date'], '%Y-%m-%d'):
+                limited_period_amount = emission_data['limited_period_amount'] - amount_investments_of_emission
 
-        emission_data = Emission.read(cursor, uid, emission_id[0], ['amount_emission'])
-        max_amount = emission_data['amount_emission'] - amount_investments
-
-
-        return max_amount
+        min_amount = min(max_amount, max_amount_available, limited_period_amount)
+        return min_amount if min_amount >= 0 else 0
 
     def create_from_accounting(self, cursor, uid,
             member_id, start, stop, waitingDays, expirationYears,
