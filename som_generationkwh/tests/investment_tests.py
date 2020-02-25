@@ -166,6 +166,7 @@ class InvestmentTests(testing.OOTestCase):
                     'name': u'APO00001'
                 })
 
+    @freeze_time("2020-03-03")
     def test_create_from_form_allOk_APO(self):
         """
         Checks if investment aportacio is created
@@ -209,6 +210,53 @@ class InvestmentTests(testing.OOTestCase):
                     'name': u'APO005000'
                 })
             self.MailMockup.deactivate(cursor, uid)
+
+    @freeze_time("2020-03-02")
+    def test_create_from_form_beforeOpenEmission_APO(self):
+        """
+        Checks if investment aportacio is created
+        :return:
+        """
+        with self.assertRaises(InvestmentException) as ctx:
+            with Transaction().start(self.database) as txn:
+                cursor = txn.cursor
+                uid = txn.user
+                self.MailMockup.activate(cursor, uid)
+                partner_id = self.IrModelData.get_object_reference(
+                            cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                            )[1]
+
+                inv_id = self.Investment.create_from_form(cursor, uid,
+                        partner_id,
+                        '2017-01-06',
+                        4000,
+                        '10.10.23.123',
+                        'ES7712341234161234567890',
+                        'emissio_apo')
+
+                inv_0001 = self.Investment.read(cursor, uid, inv_id)
+                inv_0001.pop('actions_log')
+                inv_0001.pop('log')
+                inv_0001.pop('id')
+                id_emission, name_emission = inv_0001.pop('emission_id')
+                self.assertEqual(name_emission, "Aportacions")
+                self.assertEquals(inv_0001,
+                    {
+                        'first_effective_date': False,
+                        'move_line_id': False,
+                        'last_effective_date': False,
+                        'nshares': 40,
+                        'signed_date': False,
+                        'draft': True,
+                        'purchase_date': False,
+                        'member_id': (1, u'Gil, Pere'),
+                        'active': True,
+                        'order_date': '2017-01-06',
+                        'amortized_amount': 0.0,
+                        'name': u'APO005000'
+                    })
+                self.MailMockup.deactivate(cursor, uid)
+        self.assertEqual(str(ctx.exception),'Emission not open yet')
 
     def test__create_from_form__whenNotAMember_GKWH(self):
         with self.assertRaises(PartnerException) as ctx:
@@ -409,6 +457,7 @@ class InvestmentTests(testing.OOTestCase):
 
         self.assertEqual(str(ctx.exception),'Wrong iban')
 
+    @freeze_time("2020-03-03")
     def test__create_from_form__sendsCreationEmailAPO(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
@@ -1159,6 +1208,7 @@ class InvestmentTests(testing.OOTestCase):
 
             self.assertEqual(amount, 5000)
 
+    @freeze_time("2020-03-03")
     def test__get_investments_amount__withOldAndNewAportacions(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
@@ -1338,5 +1388,88 @@ class InvestmentTests(testing.OOTestCase):
                                                         )
 
             self.assertEqual(amount, 95000)
+
+    @freeze_time("2020-03-13")
+    def test__get_max_investment__emissionNotExist(self):
+        with self.assertRaises(InvestmentException) as ctx:
+            with Transaction().start(self.database) as txn:
+                cursor = txn.cursor
+                uid = txn.user
+                partner_id = self.IrModelData.get_object_reference(
+                            cursor, uid, 'som_generationkwh', 'res_partner_inversor2'
+                            )[1]
+                emission_id = self.IrModelData.get_object_reference(
+                    cursor, uid, 'som_generationkwh', 'emissio_apo'
+                )[1]
+
+                amount = self.Investment.get_max_investment(cursor, uid,
+                                                            partner_id, 'fake_emission_code'
+                                                            )
+
+        self.assertEqual(str(ctx.exception),'Emission closed or not exist')
+
+    @freeze_time("2020-03-01")
+    def test__get_max_investment__emissionDayBeforeOpen(self):
+        with self.assertRaises(InvestmentException) as ctx:
+            with Transaction().start(self.database) as txn:
+                cursor = txn.cursor
+                uid = txn.user
+                partner_id = self.IrModelData.get_object_reference(
+                            cursor, uid, 'som_generationkwh', 'res_partner_inversor2'
+                            )[1]
+                emission_id = self.IrModelData.get_object_reference(
+                    cursor, uid, 'som_generationkwh', 'emissio_apo'
+                )[1]
+                self.Emission.write(cursor, uid, emission_id,
+                                {'end_date': '2020-03-03', })
+
+                amount = self.Investment.get_max_investment(cursor, uid,
+                                                            partner_id, 'APO_202003'
+                                                            )
+
+        self.assertEqual(str(ctx.exception),'Emission not open yet')
+
+    @freeze_time("2020-05-01")
+    def test__get_max_investment__emissionDayAfterClosed(self):
+        with self.assertRaises(InvestmentException) as ctx:
+            with Transaction().start(self.database) as txn:
+                cursor = txn.cursor
+                uid = txn.user
+                partner_id = self.IrModelData.get_object_reference(
+                            cursor, uid, 'som_generationkwh', 'res_partner_inversor2'
+                            )[1]
+                emission_id = self.IrModelData.get_object_reference(
+                    cursor, uid, 'som_generationkwh', 'emissio_apo'
+                )[1]
+                self.Emission.write(cursor, uid, emission_id,
+                                {'end_date': '2020-04-30', })
+
+                amount = self.Investment.get_max_investment(cursor, uid,
+                                                            partner_id, 'APO_202003'
+                                                            )
+
+        self.assertEqual(str(ctx.exception),'Emission closed')
+
+    @freeze_time("2020-03-04")
+    def test__get_max_investment__emissionNotOpen(self):
+        with self.assertRaises(InvestmentException) as ctx:
+            with Transaction().start(self.database) as txn:
+                cursor = txn.cursor
+                uid = txn.user
+                partner_id = self.IrModelData.get_object_reference(
+                            cursor, uid, 'som_generationkwh', 'res_partner_inversor2'
+                            )[1]
+                emission_id = self.IrModelData.get_object_reference(
+                    cursor, uid, 'som_generationkwh', 'emissio_apo'
+                )[1]
+                self.Emission.write(cursor, uid, emission_id,
+                                {'state': 'draft', })
+
+                amount = self.Investment.get_max_investment(cursor, uid,
+                                                            partner_id, 'APO_202003'
+                                                            )
+
+        self.assertEqual(str(ctx.exception),'Emission closed or not exist')
+
 
 # vim: et ts=4 sw=4

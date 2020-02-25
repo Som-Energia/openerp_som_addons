@@ -103,19 +103,22 @@ class GenerationkwhActions(InvestmentActions):
 
 class AportacionsActions(InvestmentActions):
 
-    def create_from_form(self, cursor, uid, partner_id, order_date, amount_in_euros, ip, iban,
-            emission=None, context=None):
+    def create_from_form(self, cursor, uid, partner_id, order_date, amount_in_euros, ip, iban, emission=None, context=None):
         member_ids, emission_id = super(AportacionsActions, self).create_from_form(cursor, uid, partner_id, order_date, amount_in_euros, ip, iban,emission, context)
 
         GenerationkwhInvestment = self.erp.pool.get('generationkwh.investment')
 
         if not emission:
             emission = 'emissio_apo'
-
         IrModelData = self.erp.pool.get('ir.model.data')
+        Emission = self.erp.pool.get('generationkwh.emission')
         emission_id = IrModelData.get_object_reference(
             cursor, uid, 'som_generationkwh', emission
         )[1]
+        emi_obj = Emission.read(cursor, uid, emission_id, ['mandate_name','code'])
+
+        if not GenerationkwhInvestment.check_investment_creation(cursor, uid, partner_id, emi_obj['code'], amount_in_euros):
+            raise InvestmentException("Impossible to create investment")
 
         Soci = self.erp.pool.get('somenergia.soci')
         member_ids = Soci.search(cursor, uid, [
@@ -140,8 +143,7 @@ class AportacionsActions(InvestmentActions):
             emission_id = emission_id,
         ), context)
 
-        Emission = self.erp.pool.get('generationkwh.emission')
-        emi_obj = Emission.read(cursor, uid, emission_id)
+
         GenerationkwhInvestment.get_or_create_payment_mandate(cursor, uid,
             partner_id, iban, emi_obj['mandate_name'], gkwh.creditorCode)
 
