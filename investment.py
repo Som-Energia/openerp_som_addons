@@ -14,7 +14,7 @@ from generationkwh.investmentstate import InvestmentState
 from uuid import uuid4
 import netsvc
 from oorq.oorq import AsyncMode
-from investment_strategy import AportacionsActions, GenerationkwhActions
+from investment_strategy import AportacionsActions, GenerationkwhActions, PartnerException, InvestmentException
 
 # TODO: This function is duplicated in other sources
 def _sqlfromfile(sqlname):
@@ -289,6 +289,9 @@ class GenerationkwhInvestment(osv.osv):
             accountDomain = [ ('code','ilike',accountCodes)]
         accountId = Account.search(cursor, uid, accountDomain)
 
+        if not accountId: #No Old investments
+            return amount
+
         movelinefilter = [
             ('account_id', 'in', accountId),
             ('period_id.special', '=', False),
@@ -335,10 +338,27 @@ class GenerationkwhInvestment(osv.osv):
 
         return amount
 
+    def check_investment_creation(self, cursor, uid, partner_id, investment_code, investment_amount):
+        return investment_amount <= self.get_max_investment(cursor, uid, partner_id, investment_code)
+
     def get_max_investment(self, cursor, uid, partner_id, investment_code):
         Member = self.pool.get('somenergia.soci')
         Emission = self.pool.get('generationkwh.emission')
         current_date = datetime.now()
+
+        emission_id = Emission.search(cursor, uid, [('code', '=', investment_code), ('state', '=', 'open')])
+        if not emission_id:
+            raise InvestmentException("Emission closed or not exist")
+
+        emission_data = Emission.read(cursor, uid, emission_id[0], ['amount_emission','limited_period_amount','limited_period_end_date','current_total_amount_invested', 'start_date', 'end_date'])
+
+        if emission_data['start_date'] and datetime.strptime(emission_data['start_date'],'%Y-%m-%d') > current_date:
+            raise InvestmentException("Emission not open yet")
+        if emission_data['end_date'] and datetime.strptime(emission_data['end_date'],'%Y-%m-%d') < current_date:
+            raise InvestmentException("Emission closed")
+        if emission_data['amount_emission'] <= emission_data['current_total_amount_invested']:
+            raise InvestmentException("Emission completed")
+
         member_id = Member.search(cursor, uid, [('partner_id','=',partner_id)])[0]
         amount_investments = self.get_investments_amount(cursor, uid, member_id)
 
@@ -346,8 +366,6 @@ class GenerationkwhInvestment(osv.osv):
         max_amount = gkwh.maxAmountInvested - amount_investments
 
         #Check emission limit <= emission_data['amount_emission']
-        emission_id = Emission.search(cursor, uid, [('code', '=', investment_code), ('state', '=', 'open')])
-        emission_data = Emission.read(cursor, uid, emission_id[0], ['amount_emission','limited_period_amount','limited_period_end_date','current_total_amount_invested'])
         max_amount_available = emission_data['amount_emission'] - emission_data['current_total_amount_invested']
 
         #Check emission first week limit
