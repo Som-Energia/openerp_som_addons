@@ -7,165 +7,198 @@ from math import ceil
 <html>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <head>
-    <style type="text/css">
-    ${css}
-    body {
-        font-family: helvetica;
-        font-size: 14px;
-        padding: 10px;
-    }
+<style type="text/css">
+body {
+  margin: 5% 10% 5% 20%;
+}
+h1, h2, h3, p, ol, ul {
+  font-family: Roboto;
+  margin: 0px;
+}
+.capsalera{
+  width: 100%;
+  display: table;
+}
+.fila {
+  display: table-row;
+}
+.LogoPpal {
+  display: table-cell;
+  width: 35%;
+  vertical-align: top;
+  text-align: left;
+}
+.LogoPpal img {
+  display: block;
+  margin-left: 19px;
+}
+.sotalogo {
+  margin-top: -5px;
+  padding: 0px 28px;
+  font-size: 0.8em;
+  line-height: 1.5em;
+}
+.TitolHeader {
+  display: table-cell;
+  vertical-align: top;
+}
+h1.titol {
+  text-align: right;
+  font-size: 1.5em;
+  margin-top:8px;
+  margin-bottom: 46px;
+}
+.caixaHeader {
+  background: #EDEEF0;
+  border-bottom: 10px solid #BFC74D;
+  padding: 5px 5px 2px 20px;
+  width: 80%;
+  float: right;
+  
+}
+.textcaixa {
+  text-align: justify;
+  font-size: 0.85em;
+  line-height: 1.5em;
+  font-weight:200;
+}
+.DataDoc {
+  margin: 70px 0;
+  text-align: right;
+  font-size: 1em;
+}
+.TitolCaixa {
+  background: #4D4D4D;
+}
+.TitolCaixa h2, .CaixaTitTitular h3,.CaixaTitAportacio h3, .InfoAddTitol h3 {
+  font-weight: 900;
+  font-size: 1em;
+  color: white;
+  padding: 8px 27px;
+}
+.CaixaFons {
+  background: #EDEEF0;
+}
+.doblecaixa{
+  width: 95%;
+  display: table;
+  margin-left: 27px;
+  padding-top:20px;
 
-    img.logo {
-        float: right;
-    }
+}
+.CaixaTitTitular, .CaixaTitAportacio {
+  display: table-cell;
+  background: #BFC74D;
+  color:white;
+  width:48.5%;
+  margin-top:0px;
+}
+.CaixaDadesTitular, .CaixaDadesAportacio {
+  display: table-cell;
+  background: white;
+  padding: 30px 30px;
+  line-height: 2.2em;
+  font-size: 0.85em;
+  text-align: justify;
+}
 
-     div.contracte {
-         clear: both;
-         margin: 30px;
-    }
-
-    h1 {
-        font-size: large;
-        text-align: center;
-        page-break-before: avoid;
-    }
-
-    h2, .h2_format {
-        font-size: medium;
-        text-decoration: underline;
-        font-weight: bold;
-    }
-
-    h3 {
-        font-size: medium;
-        text-decoration: underline;
-    }
-
-    p {
-        padding: 8px;
-    }
-
-    div.signatures_block {
-        page-break-inside: avoid;
-        padding: 0px;
-        margin: 0px;
-    }
-
-    div.signatures {
-        align: center;
-        width: 100%;
-        page-break-inside: avoid;
-    }
-
-    div.signatura {
-        float: left;
-        page-break-inside: avoid;
-    }
-
-    ul {
-        list-style-type: none;
-        padding: 0px;
-        margin-left: 5em;
-    }
-
-     li.image {
-         height: 150px;
-         width: 150px;
-     }
-
-     li.signature_text {
-         height: 90px;
-         width: 150px;
-         margin-top: 60px;
-         margin-bottom: 0px;
-         font-size: xx-small;
-     }
-
-     div.contracte_llarg {
-         margin-left: 30px;
-     }
-
-     div.contracte_llarg h2 {
-         text-decoration: none;
-         display: inline;
-         margin: 30px 0px;
-     }
-
-    ol {
-        counter-reset: item;
-        display: table;
-        margin: 0px;
-        padding: 10px;
-    }
-
-    ol li {
-        display: table-row;
-        border-spacing: 10px;
-        font-size: medium;
-    }
-
-    ol li::before {
-        display: table-cell;
-        padding-right: 5px;
-        content: counters(item, ".") ". ";
-        counter-increment: item;
-        font-weight: bold;
-    }
-
-    div.annex1, div.annex2  {
-        margin-left: 30px;
-        font-size: medium;
-    }
-
-/* ANNEX */
-    table {
-        border-collapse: collapse;
-        font-size: medium;
-        width: 100%;
-        page-break-inside: avoid;
-    }
-
-    th {
-        background-color: lightgrey;
-        font-weight: bold;
-    }
-
-    table, td, th{
-        border: 1px solid black;
-        text-align: left;
-    }
-
-    table.annex1_table caption {
-        padding: 5px 0px;
-        text-align: left;
-    }
-
-    table.annex2_table {
-        border: 0px;
-        text-align: left;
-        page-break-inside: avoid;
-    }
-
-    table.annex2_table caption {
-        text-align: left;
-    }
-
-    table.annex2_table td, table.annex2_table tr{
-        border: 0px;
-        text-align: left;
-    }
-
-    table.annex2_table td {
-        width: 50px;
-    }
-
-    .big_sum {
-        font-size: xx-large;
-    }
-
-     p.math {
-         border: 1px solid black;
-     }
+.CaixaUnica {
+  width: 95%;
+  display: table;
+  margin-left: 27px;
+  padding-top:20px;
+  padding-bottom:30px;
+}
+.InfoAddTitol {
+  display: table-row;
+  background: #BFC74D;
+  color:white;
+  width:100%;
+  margin-top:0px;
+}
+.InfoAddTxt {
+  display: table-row;
+  background: white;
+  width:100%;
+  margin-top:0px;
+  line-height: 2.2em;
+  font-size: 0.85em;
+}
+.TextFormula {
+  text-align:left;
+  padding: 30px 30px 0px 30px;
+}
+.TextExplica {
+  text-align:center;
+  padding: 20px 0 10px 0;
+}
+.TextInfo {
+  text-align: justify;
+  padding: 10px 30px;
+}
+.TextInfo2 {
+  text-align: justify;
+  padding: 5px 30px 20px 30px;
+}
+.TitolCondicions {
+  text-transform: uppercase;
+  font-weight: 900;
+  padding: 30px 30px 10px 30px;
+  font-size: 0.85em;
+}
+.sagnia {
+  text-indent: -24px;
+  padding-left: 52px;
+  padding-right: 30px;
+  padding-bottom: 5px;
+  font-size: 0.85em;
+  text-align: justify;
+}
+.alpha {
+    counter-reset: alpha;
+    list-style-type: none;
+}
+.alpha > li {
+    text-indent: -14px;
+    padding-left: 27px;
+    margin-top: 3px;
+    padding-right: 30px;
+  padding-bottom: 10px;
+  font-size: 0.85em;
+  text-align: justify;
+}
+.alpha > li:before {
+    counter-increment: alpha;
+    content: counter(alpha, lower-alpha)") ";
+}
+.punts {
+  display: block;
+  list-style-type: disc;
+  padding-left: 72px;
+  padding-bottom: 10px;
+  font-size: 0.85em;
+  margin-top:5px;
+}
+.punts > li {
+  text-indent:0;
+}
+.final {
+  padding: 20px;
+}
+.footer {
+  position:relative;
+  top:-20px;
+  background: white;
+  padding: 30px 0px;
+  text-align: center;
+  font-size: 0.85em;
+}
+@media print {
+  footer {  
+    position:relative;
+    top:-20px;
+  }
+}
 </style>
 </head>
 <body>
