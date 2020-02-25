@@ -48,10 +48,10 @@
 	                <field name="start_date"/>
 	                <field name="end_date"/>
                         <field name="amount_emission"/>
-                        <field name="amount_investments"/>
+                        <field name="current_total_amount_invested"/>
                         <separator string="Limits temporals" colspan="4"/>
-                        <field name="end_date_limit_campaign"/>
-                        <field name="amount_limit_first_week"/>
+                        <field name="limited_period_end_date"/>
+                        <field name="limited_period_amount"/>
                     </group>
                     <group col="2" colspan="2" >
                         <separator string="Comptabilitat" colspan="2"/>

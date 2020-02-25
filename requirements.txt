@@ -3,3 +3,4 @@ numpy
 yamlns
 plantmeter
 python-dateutil
+freezegun
