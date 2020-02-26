@@ -28,26 +28,6 @@
             <field name="bridge_account_payments_id" model="account.account"
                 search="[('code','=','555000000004')]" />
         </record>
-        <record id="emissio_apo" model="generationkwh.emission">
-            <field name="name">Aportacions</field>
-            <field name="code">APO_202003</field>
-            <field name="start_date">2020-03-03</field>
-            <field name="amount_emission">5000000</field>
-            <field name="state">open</field>
-            <field name="type">apo</field>
-            <field name="grace_period">1</field>
-            <field name="expiration_years">0</field>
-            <field name="waiting_days">0</field>
-            <field name="mandate_name">PRESTEC Aportacions</field>
-            <field name="journal_id" model="account.journal"
-                   search="[('code','=','APO')]" />
-            <field name="investment_product_id" model="product.product"
-                   search="[('default_code','=','APO_AE')]" />
-            <field name="investment_payment_mode_id" model="payment.mode"
-                   search="[('name','=','APORTACIONS (Enginyers)')]" />
-            <field name="bridge_account_payments_id" model="account.account"
-                   search="[('code','=','555000000010')]" />
-        </record>
         <record id="emissio_apo2" model="generationkwh.emission">
             <field name="name">Aportacions Juny</field>
             <field name="code">APO_202006</field>
@@ -179,6 +159,7 @@
             <field name="member_id" ref="soci_0001"/>
             <field name="active">False</field>
             <field name="order_date">2020-03-04</field>
+            <field name="draft">False</field>
             <field name="emission_id" ref='emissio_apo' />
         </record>
         <record id="apo_0002" model="generationkwh.investment">

@@ -52,26 +52,27 @@ class AccountInvoice(osv.osv):
 
     def get_investment(self, cursor, uid, inv_id):
         invoice = self.browse(cursor, uid, inv_id)
+        Investment = self.pool.get('generationkwh.investment')
+        Emission = self.pool.get('generationkwh.emission')
+        investment_ids = Investment.search(cursor, uid, [
+            ('name','=',invoice.origin),
+        ])
+        if not investment_ids:
+            return None
+
+        investment_data = Investment.read(cursor, uid, investment_ids[0], ['emission_id'])
+        emission_data = Emission.read(cursor, uid, investment_data['emission_id'][0], ['journal_id'])
 
         if not invoice.journal_id: return None # TODO: Test missing
 
         Journal = self.pool.get('account.journal')
-        journal_id_gen = Journal.search(cursor, uid, [
-            ('code','=',gkwh.journalCode)
-        ])[0]
+        journal_id_gen = emission_data['journal_id'][0]
+
         if invoice.journal_id.id != journal_id_gen:
             return None
 
-        Investment = self.pool.get('generationkwh.investment')
+        return investment_ids[0]
 
-        investment_ids = Investment.search(cursor, uid, [
-            ('name','=',invoice.origin),
-        ])
-
-        if investment_ids:
-            return investment_ids[0]
-
-        return None
 
     def investment_last_moveline(self, cursor, uid, invoice_id):
         """

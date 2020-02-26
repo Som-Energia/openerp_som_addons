@@ -15,6 +15,7 @@ class InvestmentActions(ErpWrapper):
     def create_from_form(self, cursor, uid, partner_id, order_date, amount_in_euros, ip, iban,
             emission=None, context=None):
         GenerationkwhInvestment = self.erp.pool.get('generationkwh.investment')
+        Emission = self.erp.pool.get('generationkwh.emission')
 
         if amount_in_euros <= 0 or amount_in_euros % gkwh.shareValue > 0:
                 raise InvestmentException("Invalid amount")
@@ -25,10 +26,14 @@ class InvestmentActions(ErpWrapper):
         if not emission:
             emission = 'emissio_genkwh'
 
+        #Compatibility 'emission_apo'
         imd_model = self.erp.pool.get('ir.model.data')
-        emission_id = imd_model.get_object_reference(
-            cursor, uid, 'som_generationkwh', emission
-        )[1]
+        imd_emission_id = imd_model.search(cursor, uid, [('module','=', 'som_generationkwh'),('name','=',emission)])
+        if imd_emission_id:
+            emission_id = imd_model.read(cursor, uid, imd_emission_id[0], ['res_id'])['res_id']
+        else:
+            emission_id = Emission.search(cursor, uid, [('code','=',emission)])[0]
+
         Soci = self.erp.pool.get('somenergia.soci')
         member_ids = Soci.search(cursor, uid, [
                 ('partner_id','=',partner_id)
@@ -105,16 +110,9 @@ class AportacionsActions(InvestmentActions):
 
     def create_from_form(self, cursor, uid, partner_id, order_date, amount_in_euros, ip, iban, emission=None, context=None):
         member_ids, emission_id = super(AportacionsActions, self).create_from_form(cursor, uid, partner_id, order_date, amount_in_euros, ip, iban,emission, context)
-
         GenerationkwhInvestment = self.erp.pool.get('generationkwh.investment')
 
-        if not emission:
-            emission = 'emissio_apo'
-        IrModelData = self.erp.pool.get('ir.model.data')
         Emission = self.erp.pool.get('generationkwh.emission')
-        emission_id = IrModelData.get_object_reference(
-            cursor, uid, 'som_generationkwh', emission
-        )[1]
         emi_obj = Emission.read(cursor, uid, emission_id, ['mandate_name','code'])
 
         if not GenerationkwhInvestment.check_investment_creation(cursor, uid, partner_id, emi_obj['code'], amount_in_euros):

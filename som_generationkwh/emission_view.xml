@@ -32,9 +32,9 @@
                         <field name="type"/>
                         <field name="grace_period"/>
                         <field name="expiration_years"/>
-		        <group col="2" colspan="2"
-			    attrs="{'invisible':[('type','in', ('apo', 'tit', 'other'))]}">
-		           <field name="waiting_days"/>
+                        <group col="2" colspan="2"
+                            attrs="{'invisible':[('type','in', ('apo', 'tit', 'other'))]}">
+                            <field name="waiting_days"/>
                         </group>
                     </group>
                     <group col="2" colspan="2">
@@ -45,8 +45,8 @@
                     </group>
                     <group col="4" colspan="2">
                         <separator string="Limits campanya" colspan="4"/>
-	                <field name="start_date"/>
-	                <field name="end_date"/>
+                        <field name="start_date"/>
+                        <field name="end_date"/>
                         <field name="amount_emission"/>
                         <field name="current_total_amount_invested"/>
                         <separator string="Limits temporals" colspan="4"/>
@@ -63,11 +63,11 @@
                     </group>
                     <group col="4" colspan="2">
                         <separator string="Operacions" colspan="4"/>
+                        <field name="state"/>
                         <button name="action_open" states="draft" string="Confirm" type="object"/>
                         <button name="set_done" states="open" string="Set to done" type="object"/>
                         <button name="cancel" states="draft,open" string="Cancel"/>
                         <button name="set_to_draft" states="cancel" string="Set to draft" type="object"/>
-                        <field name="state"/>
                     </group>
                 </form>
             </field>

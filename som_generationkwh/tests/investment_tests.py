@@ -1471,5 +1471,87 @@ class InvestmentTests(testing.OOTestCase):
 
         self.assertEqual(str(ctx.exception),'Emission closed or not exist')
 
+    def test_mark_as_paid__allOk_APO(self):
+        """
+        Checks if signed_date change
+        :return:
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            inv_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0001'
+                        )[1]
+            inv_0001 = self.Investment.browse(cursor, uid, inv_id)
+            self.Investment.mark_as_invoiced(cursor, uid, inv_id)
 
+            self.Investment.mark_as_paid(cursor, uid, [inv_id], '2017-01-06')
+
+            inv_0001 = self.Investment.read(cursor, uid, inv_id)
+            self.assertLogEquals(inv_0001['log'],
+                u'PAID: Pagament de 1000 € efectuat [None]\n'
+                u'INVOICED: Facturada i remesada\n'
+            )
+            inv_0001.pop('actions_log')
+            inv_0001.pop('log')
+            inv_0001.pop('id')
+            id_emission, name_emission = inv_0001.pop('emission_id')
+            self.assertEqual(name_emission, "Aportacions")
+            self.assertEquals(inv_0001,
+                {
+                    'first_effective_date': False,
+                    'move_line_id': False,
+                    'last_effective_date': False,
+                    'nshares': 10,
+                    'signed_date': False,
+                    'draft': False,
+                    'purchase_date': '2017-01-06',
+                    'member_id': (1, u'Gil, Pere'),
+                    'active': True,
+                    'order_date': '2020-03-04',
+                    'amortized_amount': 0.0,
+                    'name': u'APO00001'
+                })
+
+    def test_mark_as_paid__allOk_GKWH(self):
+        """
+        Checks if signed_date change
+        :return:
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            inv_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
+                        )[1]
+            inv_0001 = self.Investment.browse(cursor, uid, inv_id)
+            self.Investment.mark_as_invoiced(cursor, uid, inv_id)
+
+            self.Investment.mark_as_paid(cursor, uid, [inv_id], '2017-01-06')
+
+            inv_0001 = self.Investment.read(cursor, uid, inv_id)
+            self.assertLogEquals(inv_0001['log'],
+                u'PAID: Pagament de 1000 € efectuat [None]\n'
+                u'INVOICED: Facturada i remesada\n'
+            )
+            inv_0001.pop('actions_log')
+            inv_0001.pop('log')
+            inv_0001.pop('id')
+            id_emission, name_emission = inv_0001.pop('emission_id')
+            self.assertEqual(name_emission, "GenerationkWH")
+            self.assertEquals(inv_0001,
+                {
+                    'first_effective_date': '2018-01-06',
+                    'move_line_id': False,
+                    'last_effective_date': '2042-01-06',
+                    'nshares': 10,
+                    'signed_date': False,
+                    'draft': False,
+                    'purchase_date': '2017-01-06',
+                    'member_id': (1, u'Gil, Pere'),
+                    'active': True,
+                    'order_date': '2019-10-01',
+                    'amortized_amount': 0.0,
+                    'name': u'GKWH00001'
+                })
 # vim: et ts=4 sw=4

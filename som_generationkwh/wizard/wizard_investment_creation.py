@@ -14,8 +14,8 @@ class WizardInvestmentCreation(osv.osv):
         """ Do selected action"""
         if context is None:
             context = {}
-
         Investment = self.pool.get('generationkwh.investment')
+        Emission = self.pool.get('generationkwh.emission')
         wiz = self.browse(cursor, uid, ids[0], context=context)
 
         partner_id = int(wiz.partner_id_alt.id)
@@ -30,10 +30,14 @@ class WizardInvestmentCreation(osv.osv):
 
         try:
             imd_model = self.pool.get('ir.model.data')
-            imd_emission_id = imd_model.search(cursor, uid, [('module','=', 'som_generationkwh'),('res_id','=',emission_id)])[0]
-            emission_semantic_id = imd_model.read(cursor, uid, imd_emission_id)['name']
+            imd_emission_id = imd_model.search(cursor, uid, [('module','=', 'som_generationkwh'),('res_id','=',emission_id)])
+            emission_code = Emission.read(cursor, uid, emission_id, ['code'])['code']
+            #Compatibility 'emissio_apo'
+            if imd_emission_id:
+                emission_code = imd_model.read(cursor, uid, imd_emission_id[0])['name']
+
             investment_id = Investment.create_from_form(cursor, uid,
-                   partner_id, wiz.order_date, amount_in_e, ip, iban, emission_semantic_id,
+                   partner_id, wiz.order_date, amount_in_e, ip, iban, emission_code,
                 context)
         except Exception, e:
             creation_errors = str(e)
