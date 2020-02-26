@@ -248,7 +248,7 @@ ${_(u"Adreça electrònica: aporta@somenergia.coop")}
 </div>
 
 <div class="DataDoc">
-  <p>${_(u"A Girona, a ")}${data.receiptDate}</p>
+  <p>${_(u"Girona, a XX de XXXX de 2020")}</p>
 </div>
 
 <div class="TitolCaixa">
