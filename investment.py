@@ -10,7 +10,7 @@ from tools.translate import _
 from tools import config
 import re
 import generationkwh.investmentmodel as gkwh
-from generationkwh.investmentstate import InvestmentState
+from generationkwh.investmentstate import InvestmentState, AportacionsState, GenerationkwhState
 from uuid import uuid4
 import netsvc
 from oorq.oorq import AsyncMode
@@ -160,6 +160,12 @@ class GenerationkwhInvestment(osv.osv):
         if str(inv.emission_id.type) == 'apo':
             return AportacionsActions(self, cursor, uid, 1)
         return GenerationkwhActions(self, cursor, uid, 1)
+
+    def state_actions(self, cursor, uid, id, user, timestamp, **values):
+        inv = self.browse(cursor, uid, id, ['emission_id'])
+        if str(inv.emission_id.type) == 'apo':
+            return AportacionsState(user, timestamp, **values)
+        return GenerationkwhState(user, timestamp, **values)
 
     def list(self, cursor, uid,
             member=None,
@@ -982,9 +988,9 @@ class GenerationkwhInvestment(osv.osv):
     def create_from_form(self, cursor, uid,
             partner_id, order_date, amount_in_euros, ip, iban, emission=None,
             context=None):
-
         investment_actions = GenerationkwhActions(self, cursor, uid, 1)
-        if emission == 'emissio_apo':
+        #Compatibility 'emissio_apo'
+        if emission == 'emissio_apo' or 'APO_' in emission :
             investment_actions = AportacionsActions(self, cursor, uid, 1)
         investment_id = investment_actions.create_from_form(cursor, uid,
                 partner_id, order_date, amount_in_euros, ip, iban, emission,
@@ -1312,7 +1318,7 @@ class GenerationkwhInvestment(osv.osv):
             else:
                 amount = nominal_amount
 
-            inv = InvestmentState(user['name'], datetime.now(),
+            inv = self.state_actions(cursor, uid, id, user['name'], datetime.now(),
                 log = inversio['log'],
                 nominal_amount = nominal_amount,
                 purchase_date = inversio['purchase_date'],
