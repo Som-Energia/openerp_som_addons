@@ -990,7 +990,7 @@ class GenerationkwhInvestment(osv.osv):
             context=None):
         investment_actions = GenerationkwhActions(self, cursor, uid, 1)
         #Compatibility 'emissio_apo'
-        if emission == 'emissio_apo' or 'APO_' in emission :
+        if emission == 'emissio_apo' or (emission and 'APO_' in emission) :
             investment_actions = AportacionsActions(self, cursor, uid, 1)
         investment_id = investment_actions.create_from_form(cursor, uid,
                 partner_id, order_date, amount_in_euros, ip, iban, emission,

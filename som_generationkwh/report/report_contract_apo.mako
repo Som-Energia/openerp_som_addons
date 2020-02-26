@@ -2,6 +2,8 @@
 <%
 from datetime import datetime, date
 from math import ceil
+report = objects[0]
+data = report.investmentCreationAPO_notificationData()
 %>
 <!doctype html>
 <html>
@@ -9,7 +11,7 @@ from math import ceil
 <head>
 <style type="text/css">
 body {
-  margin: 5% 10% 5% 20%;
+  margin: 5% 5% 5% 5%;
 }
 h1, h2, h3, p, ol, ul {
   font-family: Roboto;
@@ -74,13 +76,7 @@ h1.titol {
   font-weight: 900;
   font-size: 1em;
   color: white;
-  padding: 8px 27px;
-}
-.CaixaFons {
-  background: #EDEEF0;
-}
-.doblecaixa{
-  width: 95%;
+  padding: 8px 27px;20
   display: table;
   margin-left: 27px;
   padding-top:20px;
@@ -225,7 +221,6 @@ perm_data = inv.perm_read()[0]
 creation_date = datetime.strptime(perm_data['create_date'], '%Y-%m-%d %H:%M:%S.%f')
 creation_date_str = creation_date.strftime(_('%d/%m/%Y a les %T'))
 %>
-<%def name="signatures(inv)">
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700,900&display=swap" rel="stylesheet">
 
 
@@ -234,7 +229,7 @@ creation_date_str = creation_date.strftime(_('%d/%m/%Y a les %T'))
     <div class="LogoPpal">
     <a href="https://www.somenergia.coop" target="_blank">
       <img src="https://www.somenergia.coop/iconespdf/logo_som_energia.svg" alt="Logo Som Energia" width="200" height="100" /></a><br>
-      <p class="sotalogo"><b>${_(u"Som Energia, SCCL")}")}</b><br>${_(u"CIF: F55091367")}<br>${_(u"Domicili: C/Pic de Peguera, 11. 17003- Girona")}<br>
+      <p class="sotalogo"><b>${_(u"Som Energia, SCCL")}</b><br>${_(u"CIF: F55091367")}<br>${_(u"Domicili: C/Pic de Peguera, 11. 17003- Girona")}<br>
 ${_(u"Adreça electrònica: aporta@somenergia.coop")}
   </div>
     <div class="TitolHeader">
@@ -248,7 +243,7 @@ ${_(u"Adreça electrònica: aporta@somenergia.coop")}
 </div>
 
 <div class="DataDoc">
-  <p>${_(u"Girona, a XX de XXXX de 2020")}</p>
+  <p>${_(u"Girona, a ")}${data.invoiceDate}</p>
 </div>
 
 <div class="TitolCaixa">
@@ -269,12 +264,12 @@ ${_(u"Adreça electrònica: aporta@somenergia.coop")}
     </div>
     <div class="fila">
       <div class="CaixaDadesTitular">
-    <p class="ContingutDades"><b>${_(u"Titular:")}</b> ${data.ownerName}<br><b>${_(u"DNI/NIE/CIF:")}</b> ${data.ownerNif}<br><b>${_(u"Adreça fiscal:")}</b> ${data.}<br><b>${_(u"Correu electrònic:")}</b> ${data.}</p>
+    <p class="ContingutDades"><b>${_(u"Titular:")}</b> ${data.ownerName}<br><b>${_(u"DNI/NIE/CIF:")}</b> ${data.ownerNif}<br><b>${_(u"Adreça fiscal:")}</b> ${data.partnerAddress}<br><b>${_(u"Correu electrònic:")}</b> ${data.partnerEmail}</p>
   </div>
       <div class="CaixaEspai">
       </div>
       <div class="CaixaDadesAportacio">
-         <p class="ContingutDades"><b>${_(u"Data d'aportació:")}</b> ${data.inversionPurchaseDate}<br><b>${_(u"Venciment:")}</b> ${_(u"Indefinit.")}<br><b>${_(u"Sol·licitud de cancel·lació:")}</b> En qualsevol moment.<br><b>${_(u"Import:")}</b> ${data.inversionInitialAmount} €<br><b>${_(u"Remuneració:")}</b> ${_(u"1,75% interès nominal anual (revisable anualment per l'Assemblea general).")}<br><b>${_(u"Meritació d’interessos:")}</b> ${_(u"Anual, de l’1 de gener al 31 de desembre.")}<br><b>${_(u"Pagament:")}</b> ${_(u"Anual, durant el mes de gener de l’any següent.")}</p>
+         <p class="ContingutDades"><b>${_(u"Data d'aportació:")}</b> ${data.inversionOrderDate}<br><b>${_(u"Venciment:")}</b> ${_(u"Indefinit.")}<br><b>${_(u"Sol·licitud de cancel·lació:")}</b> En qualsevol moment.<br><b>${_(u"Import:")}</b> ${data.inversionInitialAmount} €<br><b>${_(u"Remuneració:")}</b> ${_(u"1,75% interès nominal anual (revisable anualment per l'Assemblea general).")}<br><b>${_(u"Meritació d’interessos:")}</b> ${_(u"Anual, de l’1 de gener al 31 de desembre.")}<br><b>${_(u"Pagament:")}</b> ${_(u"Anual, durant el mes de gener de l’any següent.")}</p>
 </div>
     </div>
   </div>
