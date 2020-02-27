@@ -1503,6 +1503,24 @@ ${text_legal}
             <field eval="0" name="refund_journal"/>
             <field eval="1" name="entry_posted"/>
         </record>
+        <record id="apo_fact_journal" model="account.journal">
+            <field name="code">APO_FACT</field>
+            <field eval="[(6,0,[])]" name="account_control_ids"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field eval="0" name="centralisation"/>
+            <field eval="0" name="group_invoice_lines"/>
+            <field name="type">cash</field>
+            <field name="default_credit_account_id" ref="pgc_555000000010" />
+            <field name="default_debit_account_id" ref="pgc_555000000010" />
+            <field name="view_id" ref="account.account_journal_bank_view"/>
+            <field eval="[(6,0,[])]" name="type_control_ids"/>
+            <field name="sequence_id" ref="account.sequence_journal"/>
+            <field eval="1" name="active"/>
+            <field eval="1" name="update_posted"/>
+            <field name="name">Factures Aportacions</field>
+            <field eval="0" name="refund_journal"/>
+            <field eval="1" name="entry_posted"/>
+        </record>
         <record id="apo_product_ae" model="product.product">
             <field name="name">Aportacions</field>
             <field name="default_code">APO_AE</field>
@@ -1512,7 +1530,7 @@ ${text_legal}
         <record id="apo_investment_payment_mode" model="payment.mode">
             <field name="name">APORTACIONS (Enginyers)</field>
             <field name="type" search="[('code', '=', 'RECIBO_CSB')]"/>
-            <field name="journal" ref="apo_journal"/>
+            <field name="journal" ref="apo_fact_journal"/>
             <field name="bank_id" search="[('partner_id', '=', 1)]"/>
             <field name="tipo">sepa19</field>
             <field name="nombre">Som Energia SCCL</field>
@@ -1532,14 +1550,10 @@ ${text_legal}
             <field name="expiration_years">0</field>
             <field name="waiting_days">0</field>
             <field name="mandate_name">PRESTEC Aportacions</field>
-            <field name="journal_id" model="account.journal"
-                   search="[('code','=','APO')]" />
-            <field name="investment_product_id" model="product.product"
-                   search="[('default_code','=','APO_AE')]" />
-            <field name="investment_payment_mode_id" model="payment.mode"
-                   search="[('name','=','APORTACIONS (Enginyers)')]" />
-            <field name="bridge_account_payments_id" model="account.account"
-                   search="[('code','=','555000000010')]" />
+            <field name="journal_id" ref="apo_fact_journal"/>
+            <field name="investment_product_id" ref="apo_product_ae" />
+            <field name="investment_payment_mode_id" ref="apo_investment_payment_mode" />
+            <field name="bridge_account_payments_id" ref="pgc_555000000010" />
         </record>
         <record model="ir.sequence.type" id="seq_type_som_aportacions">
             <field name="name">Seq. Aportacions al Capital Social</field>
