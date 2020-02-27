@@ -86,11 +86,16 @@ class AccountInvoice(osv.osv):
         invoice = self.read(cursor, uid, invoice_id, [
             'journal_id',
             'name',
+            'origin'
         ])
         Account = self.pool.get('account.account')
-        account_id = Account.search(cursor, uid, [
-            ('code','=',gkwh.bridgeAccountCode),
-            ])[0]
+        Investment = self.pool.get('generationkwh.investment')
+        Emission = self.pool.get('generationkwh.emission')
+        inv_id = Investment.search(cursor, uid, [('name','=',invoice['origin'])])
+        inv_data = Investment.read(cursor, uid, inv_id[0], ['emission_id'])
+        em_data = Emission.read(cursor, uid, inv_data['emission_id'][0], ['bridge_account_payments_id'])
+        account_id = em_data['bridge_account_payments_id'][0]
+
         MoveLine = self.pool.get('account.move.line')
         ids = MoveLine.search(cursor, uid, [
             ('ref', '=', invoice['name']),
