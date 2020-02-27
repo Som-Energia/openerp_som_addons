@@ -665,7 +665,7 @@ class InvestmentTests(testing.OOTestCase):
                   quantity: 10.0
                   product_id: '[APO_AE] Aportacions'
                   invoice_line_tax_id: []
-                journal_id: Factures Liquidació Aportacions
+                journal_id: Factures Aportacions
                 mandate_id: {mandate_id}
                 name: {investment_name}-JUST
                 number: {investment_name}-JUST

@@ -1375,7 +1375,7 @@ class GenerationkwhInvestment(osv.osv):
             ])
             if invoice_ids: # Some tests do not generate invoice
                 self.send_mail(cursor, uid, invoice_ids[0],
-                    'account.invoice', '_mail_impagament',  investment_id)
+                    'account.invoice', '_mail_impagament',  id)
 
     def create_initial_invoices(self,cursor,uid, investment_ids):
 
