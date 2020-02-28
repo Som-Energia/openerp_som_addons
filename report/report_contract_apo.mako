@@ -4,13 +4,13 @@ from datetime import datetime, date
 from math import ceil
 report = objects[0]
 data = report.investmentCreationAPO_notificationData()
-FontTitHead = 12px
-FontCaixaHead = 10.5px
-FontData = 10.5px
-FontTitolCaixa = 
-FontTextPag = 
-FontTextPeu = 
-FontTextCondicions = 
+FontTitHead = "12px"
+FontCaixaHead = "10.5px"
+FontData = "10.5px"
+FontTitolCaixa = "10px"
+FontTextPag = "9px"
+FontTextPeu = "8px"
+FontTextCondicions = "8px"
 %>
 <!doctype html>
 <html>
