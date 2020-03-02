@@ -1170,6 +1170,7 @@
 <html>
 <body>
 <img width='130' height='65' src="https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png">
+<br/><br/>
 <%
 from mako.template import Template
 def render(text_to_render, object_):
@@ -1194,10 +1195,9 @@ Benvolgut/da ${object.partner_id.name.split(',')[-1]},<br/>
 <br/>
 Volem informar-te que a data d'avui hem girat l'import ${int(abs(object.amount_total))} € corresponent a la teva aportació voluntària al capital social de la cooperativa Som Energia SCCL i per tant, en dos o tres dies (laborables) es realitzarà el càrrec al teu compte. <br/>
 <br/>
-T'adjuntem les condicions de la teva inversió i et recordem que per a qualsevol dubte o aclariment en relació a l’aportació realitzada pots enviar una mail a <a href="mailto:invertir@somenergia.coop">invertir@somenergia.coop</a> o consultar el web <a href="https://www.somenergia.coop/ca">www.somenergia.coop</a>. <br/>
+T'adjuntem les condicions de la teva aportació i et recordem que per a qualsevol dubte o aclariment en relació a l’aportació realitzada pots enviar una mail a <a href="mailto:aporta@somenergia.coop">aporta@somenergia.coop</a> o consultar el web <a href="https://www.somenergia.coop/ca">www.somenergia.coop</a>. <br/>
 <br/>
-Aprofitem per agrair-te, una vegada més, la teva implicació amb l’objectiu compartit d’assolir un model energètic 100% renovable!
-Recorda que també pots participar de la Generació kWh per generar la teva energia a partir de nous projectes col·lectius de generació. Consulta el web <a href="https://www.generationkwh.org/ca">www.generationkwh.org</a>.<br/>
+Aprofitem per agrair-te, una vegada més, la teva implicació amb l’objectiu compartit d’assolir un model energètic 100% renovable!<br/>
 <br/>
 Pots fer córrer la veu explicant el projecte a familiars i amics/gues. Com més siguem, més energia verda generarem!<br/>
 <br/>
@@ -1217,10 +1217,9 @@ Apreciado/a ${object.partner_id.name.split(',')[-1]},<br/>
 <br/>
 Queremos informarte que a fecha de hoy hemos girado el importe de ${int(abs(object.amount_total))} € correspondiente a tu aportación voluntaria al capital social de la cooperativa Som EnergiaSCCL y en dos o tres días (laborables) se realizará el cargo a tu cuenta.<br/>
 <br/>
-Adjuntamos el contrato con las condiciones de tu inversión y te recordamos que para cualquier duda o aclaración en relación a la aportación realizada puedes enviar una mail a <a href="mailto:invertir@somenergia.coop">invertir@somenergia.coop</a> o consultar la web <a href="https://www.somenergia.coop">www.somenergia.coop</a>. <br/>
+Adjuntamos el contrato con las condiciones de tu aportación y te recordamos que para cualquier duda o aclaración en relación a la aportación realizada puedes enviar una mail a <a href="mailto:aporta@somenergia.coop">aporta@somenergia.coop</a> o consultar la web <a href="https://www.somenergia.coop">www.somenergia.coop</a>. <br/>
 <br/>
-Aprovechamos para agradecerte, una vez más, tu implicación con el objetivo compartido de lograr un modelo energético 100% renovable.
-Recuerda que también puedes participar de la Generación kWh para generar tu energía con nuevos proyectos colectivos de generación. Consulta la web <a href="https://www.generationkwh.org/es">www.generationkwh.org</a>.<br/>
+Aprovechamos para agradecerte, una vez más, tu implicación con el objetivo compartido de lograr un modelo energético 100% renovable.<br/>
 <br/>
 Haz que corra la voz explicando el proyecto a familiares y amigos. Cuantos/as más seamos, más energía verde generaremos.<br/>
 <br/>
@@ -1260,6 +1259,7 @@ ${text_legal}
 <html>
 <body>
 <img width='130' height='65' src="https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png">
+<br/><br/>
 <%
 Soci = object.pool.get('somenergia.soci')
 Partner = object.pool.get('res.partner')
@@ -1272,6 +1272,11 @@ lang = part_obj['lang']
 name = part_obj['name']
 iban = bank_obj['iban']
 amount_currency= int(object.nshares) * 100
+
+nom_pagador = ''
+es_empresa = Partner.vat_es_empresa(object._cr, object._uid, object.member_id.vat)
+if not es_empresa:
+    nom_pagador =' ' + Partner.separa_cognoms(object._cr, object._uid, object.member_id.name)['nom']
 %>
 
 <%
@@ -1294,7 +1299,7 @@ text_legal = render(t_obj.read(
 %>
 <br/>
 % if lang != "es_ES":
-Benvolgut/da ${name.split(',')[-1]},<br/>
+Benvolgut/da${nom_pagador},<br/>
 <br/>
 Et confirmem que hem rebut correctament la teva sol•licitud per fer una aportació voluntària al capital social de Som Energia, amb les següents dades:<br/>
 <br/>
@@ -1302,16 +1307,28 @@ Soci/Sòcia: ${name}<br/>
 Compte de càrrec: ${iban[:-4]}****<br/>
 Import aportació: ${int(abs(amount_currency))} €<br/>
 <br/>
-En els propers dies rebràs el càrrec bancari en aquest compte, siusplau verifica que totes les dades facilitades són correctes i que disposes dels diners que vols invertir, per tal que no hi hagi cap incidència en el gir del rebut.<br/>
+% if es_empresa:
+<p>Et recordem que per fer l'aportació en nom d'una persona jurídica has d'estar documentalment acreditat. </p>
+<p>Per aquesta raó, necessitem que ens responguis aquest correu adjuntant la següent documentació addicional:</p>
+<ul>
+    <li>el teu DNI (en tant que persona representant de la persona jurídica) </li>
+    <li>escriptures de poders de representació vigents </li>
+    <li>escriptura constitutiva i, si escau, escriptura de titularitat real </li>
+    <li>número CNAE activitat econòmica </li>
+</ul>
+<p>Un cop rebuda i verificada la documentació, procedirem a realitzar el corresponent càrrec en compte per l'import que ens has sol.licitat.</p>
+% else:
+En els propers dies rebràs el càrrec bancari en aquest compte, siusplau verifica que totes les dades facilitades són correctes i que disposes dels diners, per tal que no hi hagi cap incidència en el gir del rebut.<br/>
 <br/>
 Un cop verificada la validesa del pagament realitzat rebràs una nova notificació confirmant l'aportació realitzada i detallant les condicions particulars de la teva aportació.<br/>
 <br/>
-Agrair la teva implicació amb la cooperativa i informar-te que per a qualsevol dubte o aclariment pots consultar el web <a href="https://www.somenergia.coop/ca">www.somenergia.coop</a> o bé mitjançant un mail a <a href="mailto:invertir@somenergia.coop">invertir@somenergia.coop</a>.<br/>
+Agrair la teva implicació amb la cooperativa i informar-te que per a qualsevol dubte o aclariment pots consultar el web <a href="https://www.somenergia.coop/ca">www.somenergia.coop</a> o bé mitjançant un mail a <a href="mailto:aporta@somenergia.coop">aporta@somenergia.coop</a>.<br/>
 <br/>
 Recorda que també pots participar de la Generació kWh per generar la teva energia a partir de nous projectes col•lectius de generació. Consulta el web <a href="https://www.generationkwh.org/ca">www.generationkwh.org</a>.<br/>
 <br/>
 Pots fer córrer la veu explicant el projecte a familiars i amics/gues. Com més siguem, més energia verda generarem!<br/>
 <br/>
+% endif
 Moltes gràcies i bona energia!<br/>
 <br/>
 Atentament,<br/>
@@ -1324,7 +1341,7 @@ Som Energia, SCCL<br/>
 <br/><HR align="LEFT" size="1" width="400" color="Black" noshade><br/>
 % endif
 % if lang != "ca_ES":
-Apreciado/a ${name.split(',')[-1]},<br/>
+Apreciado/a${nom_pagador},<br/>
 <br/>
 Te confirmamos que hemos recibido correctamente tu solicitud para realizar una aportación voluntaria al capital social de Som Energia, con los siguientes datos:<br/>
 <br/>
@@ -1332,15 +1349,27 @@ Socio/a: ${name}<br/>
 Cuenta de cargo: ${iban[:-4]}****<br/>
 Importe aportación: ${int(abs(amount_currency))} €<br/>
 <br/>
-En los próximos dias recibirás el cargo bancario en esta cuenta, por favor verifica que todos los datos facilitados sean correctos y dispones del dinero que quieres invertir, para evitar cualquier incidencia en el giro del recibo.<br/>
+% if es_empresa:
+<p>Te recordamos que para hacer la aportación en nombre de una persona jurídica tienes que estar documentalmente acreditado.</p>
+<p>Es por esta razón que necesitamos que respondas este correo adjuntando la siguiente documentación:</p>
+<ul>
+    <li>tu DNI (en tanto que persona representante de la persona jurídica)</li>
+    <li>escrituras de poderes de representación vigentes</li>
+    <li>escritura constitutiva y si procede, escritura de titularidad real</li>
+    <li>número CNAE actividad económica</li>
+</ul>
+<p>Una vez recibida y verificada la doncumentación, procederemos a realizar el correspondiente cargo en cuenta por el importe que nos has solicitado.</p>
+% else:
+En los próximos dias recibirás el cargo bancario en esta cuenta, por favor verifica que todos los datos facilitados sean correctos y dispones del dinero, para evitar cualquier incidencia en el giro del recibo.<br/>
 <br/>
 Una vez verificada la validez del pago realizado recibirás una nueva notificación confirmando la aportación realizada y detallando las condiciones particulares de tu aportación.<br/>
+Agradecer tu implicación con la cooperativa y informarte que para cualquier duda o aclaración puedes consultar nuestra web <a href="https://www.somenergia.coop">www.somenergia.coop</a> o enviarnos un correo electrónico a <a href="mailto:aporta@somenergia.coop">aporta@somenergia.coop</a><br/>
 <br/>
-Agradecer tu implicación con la cooperativa y informarte que para cualquier duda o aclaración puedes consultar nuestra web <a href="https://www.somenergia.coop">www.somenergia.coop</a> o enviarnos un correo electrónico a <a href="mailto:invertir@somenergia.coop">invertir@somenergia.coop</a>
 Recuerda que también puedes participar de la Generación kWh para generar tu energía con nuevos proyectos colectivos de generación. Consulta la web <a href="https://www.generationkwh.org/es">www.generationkwh.org</a>.<br/>
 <br/>
 Haz que corra la voz explicando el proyecto a familiares y amigos. Cuantos más seamos, más energía verde generaremos!<br/>
 <br/>
+% endif
 ¡Muchas gracias y buena energía!<br/>
 <br/>
 Atentamente,<br/>
@@ -1352,7 +1381,8 @@ Som Energia, SCCL<br/>
 <br/>
 ${text_legal}
 </body>
-</html>]]></field>
+</html>
+]]></field>
             <field name="enforce_from_account" ref="aportacions_mail_account"/>
         </record>
         <record model="poweremail.templates" id="aportacio_mail_impagament">
@@ -1401,9 +1431,9 @@ text_legal = render(t_obj.read(
 <br>
 Hola ${object.partner_id.name.split(',')[-1]},<br>
 <br>
-Avui ens ha vingut retornat el rebut de ${object.amount_total} euros corresponent a la teva inversió en aportacions voluntàries al capital social de SOM ENERGIA. Si segueixes interessat a fer-la, t'agrairem que ens facis una transferència al següent número de compte: ES19 3025 0016 12 1400005159<br>
+Avui ens ha vingut retornat el rebut de ${object.amount_total} euros corresponent a la teva aportació voluntària al capital social de SOM ENERGIA. Si segueixes interessat/da en fer-la, t'agrairem que ens facis una transferència al següent número de compte: ES19 3025 0016 12 1400005159<br>
 <br>
-Si pel contrari has canviat d'idea i ja no vols fer la inversió, t'agrairem que ens ho comuniquis.<br>
+Si pel contrari has canviat d'idea i ja la vols fer, t'agrairem que ens ho comuniquis contestant aquest mateix correu.<br>
 <br>
 Salutacions,<br>
 <br>
@@ -1418,11 +1448,9 @@ Som Energia, SCCL<br>
 <br>
 Hola ${object.partner_id.name.split(',')[-1]},<br>
 <br>
-Hoy nos ha venido devuelto el recibo de ${object.amount_total}  euros correspondiente a tu inversión en aportaciones voluntarias al capital social de SOM ENERGIA. Si sigues interesado en invertir, tendrás que realizar-nos una transferencia al siguiente número de cuenta: ES19 3025 0016 12 1400005159<br>
+Hoy nos ha venido devuelto el recibo de ${object.amount_total} euros correspondiente a tu aportación voluntaria al capital social de SOM ENERGIA. Si sigues interesado/a en participar, tendrás que realizar-nos una transferencia al siguiente número de cuenta: ES19 3025 0016 12 1400005159.<br>
 <br>
-Si por el contrario has cambiado de idea y ya no quieres invertir te agradeceremos que nos lo comuniques.<br>
-<br>
-Si por el contrario ya no estás interesado en esta aportación te agradeceremos que nos lo comuniques.<br>
+Si por el contrario ya no te interesa aportar al capital social de Som Energia te agradeceremos que nos lo comuniques contestando este correo.<br>
 <br>
 Un saludo,<br>
 <br>
