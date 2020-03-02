@@ -109,6 +109,11 @@ class InvestmentTests(testing.OOTestCase):
            ('email_id','=','invertir@somenergia.coop')
             ])[0]
 
+    def _aportaMailAccount(self, cursor, uid):
+        return self.PEAccounts.search(cursor, uid, [
+           ('email_id','=','aporta@somenergia.coop')
+            ])[0]
+
     def test_mark_as_signed_allOk_GKWH(self):
         """
         Checks if signed_date change
@@ -483,7 +488,7 @@ class InvestmentTests(testing.OOTestCase):
                   from_id: [ {account_id} ]
                 """.format(
                     id=inv_id,
-                    account_id = self._invertirMailAccount(cursor, uid),
+                    account_id = self._aportaMailAccount(cursor, uid),
                 ))
             self.MailMockup.deactivate(cursor, uid)
 
@@ -1145,7 +1150,7 @@ class InvestmentTests(testing.OOTestCase):
                   from_id: [ {account_id} ]
                 """.format(
                     id=invoice_ids[0],
-                    account_id = self._invertirMailAccount(cursor, uid),
+                    account_id = self._aportaMailAccount(cursor, uid),
                 ))
             self.MailMockup.deactivate(cursor, uid)
 

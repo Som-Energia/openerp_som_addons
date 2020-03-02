@@ -22,6 +22,15 @@
             <field name="state">approved</field>
             <field name="smtpport">587</field>
         </record>
+        <record model="poweremail.core_accounts" id="aportacions_mail_account">
+            <field name="email_id">aporta@somenergia.coop</field>
+            <field name="company">yes</field>
+            <field name="smtpserver">smtp.mandrillapp.com</field>
+            <field name="send_pref">html</field>
+            <field name="name">Som Energia Aporta</field>
+            <field name="state">approved</field>
+            <field name="smtpport">587</field>
+        </record>
     </data>
     <data>
         <!-- GKWH Products-->
@@ -1226,7 +1235,7 @@ Som Energia, SCCL<br/>
 ${text_legal}
 </body>
 </html>]]></field>
-            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('email_id','=', 'invertir@somenergia.coop')]"/>
+            <field name="enforce_from_account" ref="aportacions_mail_account"/>
         </record>
         <record model="poweremail.templates" id="aportacio_mail_creacio">
             <field name="name">Aportacions - Creació de la inversió</field>
@@ -1344,7 +1353,7 @@ Som Energia, SCCL<br/>
 ${text_legal}
 </body>
 </html>]]></field>
-            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('email_id','=', 'invertir@somenergia.coop')]"/>
+            <field name="enforce_from_account" ref="aportacions_mail_account"/>
         </record>
         <record model="poweremail.templates" id="aportacio_mail_impagament">
             <field name="name">Aportacions - Impagament inversió</field>
@@ -1364,7 +1373,7 @@ ${text_legal}
             <field name="copyvalue">${object.partner_id.lang}</field>
             <field eval="0" name="send_on_write"/>
             <field name="def_body_text"><![CDATA[text_to_replace]]></field>
-            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('email_id','=', 'invertir@somenergia.coop')]"/>
+            <field name="enforce_from_account" ref="aportacions_mail_account"/>
             <field name="def_body_text"><![CDATA[
             <!doctype html>
 <html>
