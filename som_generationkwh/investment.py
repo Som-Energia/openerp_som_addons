@@ -1299,6 +1299,7 @@ class GenerationkwhInvestment(osv.osv):
     def mark_as_paid(self, cursor, uid, ids, purchase_date, movementline_id=None):
         Soci = self.pool.get('somenergia.soci')
         ResUser = self.pool.get('res.users')
+        Emission = self.pool.get('generationkwh.emission')
         user = ResUser.read(cursor, uid, uid, ['name'])
         for id in ids:
             inversio = self.read(cursor, uid, id, [
@@ -1308,6 +1309,7 @@ class GenerationkwhInvestment(osv.osv):
                 'member_id',
                 'purchase_date',
                 'draft',
+                'emission_id',
                 ])
             user = ResUser.read(cursor, uid, uid, ['name'])
             nominal_amount = inversio['nshares']*gkwh.shareValue
@@ -1324,11 +1326,15 @@ class GenerationkwhInvestment(osv.osv):
                 purchase_date = inversio['purchase_date'],
                 draft = inversio['draft'],
             )
-
+            emission_data = Emission.read(cursor, uid, inversio['emission_id'][0], ['waiting_days', 'expiration_years'])
+            waitDays = emission_data['waiting_days']
+            expirationYears = emission_data['expiration_years']
             inv.pay(
                 date = isodate(purchase_date),
                 amount = amount,
                 move_line_id = movementline_id,
+                waitDays = waitDays,
+                expirationYears = expirationYears,
             )
             self.write(cursor, uid, id, inv.erpChanges())
 
