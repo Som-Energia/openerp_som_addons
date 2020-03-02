@@ -66,7 +66,7 @@
             <field name="res_model">generationkwh.investment</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-	    <field name="view_id" ref="view_gkwh_investment_tree"/>
+            <field name="view_id" ref="view_gkwh_investment_tree"/>
             <field name="context">{'emission_id.type':'genkwh'}</field>
             <field name="domain">[('emission_id.type', '=', 'genkwh')]</field>
         </record>
@@ -78,10 +78,21 @@
             <field name="res_model">generationkwh.investment</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-	    <field name="view_id" ref="view_gkwh_investment_tree"/>
+            <field name="view_id" ref="view_gkwh_investment_tree"/>
         </record>
         <menuitem action="action_all_investment_tree"
             id="menu_all_investment_tree" parent="menu_gkwh_base"/>
+        <record id="action_apo_investment_tree" model="ir.actions.act_window">
+            <field name="name">Aportacions al capital social</field>
+            <field name="res_model">generationkwh.investment</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_gkwh_investment_tree"/>
+            <field name="context">{'emission_id.type':'apo'}</field>
+            <field name="domain">[('emission_id.type', '=', 'apo')]</field>
+        </record>
+        <menuitem action="action_apo_investment_tree"
+            id="menu_apo_investment_tree" parent="menu_gkwh_base"/>
     <!-- Enllaç des de la inversió a les factures -->
         <record model="ir.actions.act_window" id="action_sc_invoices_from_investment">
             <field name="name">Factures de la inversió</field>
