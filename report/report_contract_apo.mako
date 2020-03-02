@@ -81,7 +81,7 @@ h1.titol {
 }
 .TitolCaixa h2, .CaixaTitTitular h3,.CaixaTitAportacio h3, .InfoAddTitol h3 {
   font-weight: 900;
-  font-size: 12px;
+  font-size: ${FontTitolCaixa};
   color: white;
   padding: 8px 27px;
 }
@@ -107,7 +107,7 @@ h1.titol {
   background: white;
   padding: 30px 30px;
   line-height: 2.2em;
-  font-size: 9.5px;
+  font-size: ${FontTextPag};
   text-align: justify;
 }
 
@@ -131,7 +131,7 @@ h1.titol {
   width:100%;
   margin-top:0px;
   line-height: 2.2em;
-  font-size: 0.85em;
+  font-size: ${FontTextPag};
 }
 .TextFormula {
   text-align:left;
@@ -153,14 +153,14 @@ h1.titol {
   text-transform: uppercase;
   font-weight: 900;
   padding: 30px 30px 10px 30px;
-  font-size: 0.85em;
+  font-size: ${FontTitolCaixa};
 }
 .sagnia {
   text-indent: -24px;
   padding-left: 52px;
   padding-right: 30px;
   padding-bottom: 5px;
-  font-size: 0.85em;
+  font-size: ${FontTextCondicions}
   text-align: justify;
 }
 .alpha {
@@ -173,7 +173,7 @@ h1.titol {
     margin-top: 3px;
     padding-right: 30px;
   padding-bottom: 10px;
-  font-size: 0.85em;
+  font-size: ${FontTextCondicions}
   text-align: justify;
 }
 .alpha > li:before {
@@ -185,10 +185,10 @@ h1.titol {
   list-style-type: disc;
   padding-left: 72px;
   padding-bottom: 10px;
-  font-size: 0.85em;
+  font-size: ${FontTextCondicions}
   margin-top:5px;
 }
-.punts > li {
+.punts > li, .punts2 > li {
   text-indent:0;
 }
 .final {
@@ -200,7 +200,7 @@ h1.titol {
   background: white;
   padding: 30px 0px;
   text-align: center;
-  font-size: 0.85em;
+  font-size: ${FontTextPeu}
 }
 @media print {
   footer {  
@@ -338,7 +338,7 @@ ${_(u"Adreça electrònica: aporta@somenergia.coop")}
 <ol class="alpha">
 <li>${_(u"En el termini d'un mes de l'aprovació dels comptes anuals de l'exercici en què causi baixa la persona sòcia, s'ha de procedir a fixar l'import definitiu del reemborsament de les seves aportacions al capital social, sobre la base de l'exercici econòmic en què es produeixi la baixa i, si escau, de la imputació de resultats que li sigui atribuïble. El Consell Rector pot fixar un import provisional abans de l'aprovació dels comptes i, si convé, autoritzar un reemborsament a compte del definitiu.")}</li>
 <li>${_(u"De l'import definitiu del reemborsament resultant, d'acord amb el paràgraf anterior, s'han de fer les deduccions següents, quan convingui:")}<br>
-<ul style="list-style-type: disc;">
+<ul class="punts2" style="list-style-type: disc;padding-left: 42px;">
   <li>${_(u"Totes les quantitats que la persona sòcia degui a la cooperativa, per qualsevol concepte.")}</li>
   <li>${_(u"Les procedents per baixa no justificada o expulsió.")}</li>
   <li>${_(u"Les responsabilitats que li poden ser imputades i quantificades, sense perjudici de la responsabilitat patrimonial en virtut del que estableixi la Llei de cooperatives de Catalunya.")}</li>
