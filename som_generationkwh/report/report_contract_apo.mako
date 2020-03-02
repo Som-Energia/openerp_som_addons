@@ -4,13 +4,6 @@ from datetime import datetime, date
 from math import ceil
 report = objects[0]
 data = report.investmentCreationAPO_notificationData()
-FontTitHead = "12px"
-FontCaixaHead = "10.5px"
-FontData = "10.5px"
-FontTitolCaixa = "10px"
-FontTextPag = "9px"
-FontTextPeu = "8px"
-FontTextCondicions = "8px"
 %>
 <!doctype html>
 <html>
@@ -18,7 +11,7 @@ FontTextCondicions = "8px"
 <head>
 <style type="text/css">
 body {
-  margin: 10% 5% 5% 5%;
+  margin: 5% 5% 5% 5%;
 }
 h1, h2, h3, p, ol, ul {
   font-family: Roboto;
@@ -44,7 +37,7 @@ h1, h2, h3, p, ol, ul {
 .sotalogo {
   margin-top: -5px;
   padding: 0px 28px;
-  font-size: 8px;
+  font-size: 0.8em;
   line-height: 1.5em;
 }
 .TitolHeader {
@@ -53,7 +46,7 @@ h1, h2, h3, p, ol, ul {
 }
 h1.titol {
   text-align: right;
-  font-size: ${FontTitHead};
+  font-size: 1.5em;
   margin-top:8px;
   margin-bottom: 46px;
 }
@@ -67,29 +60,23 @@ h1.titol {
 }
 .textcaixa {
   text-align: justify;
-  font-size: ${FontCaixaHead};
+  font-size: 0.85em;
   line-height: 1.5em;
   font-weight:200;
 }
 .DataDoc {
   margin: 70px 0;
   text-align: right;
-  font-size: ${FontData};
+  font-size: 1em;
 }
 .TitolCaixa {
   background: #4D4D4D;
 }
 .TitolCaixa h2, .CaixaTitTitular h3,.CaixaTitAportacio h3, .InfoAddTitol h3 {
   font-weight: 900;
-  font-size: ${FontTitolCaixa};
+  font-size: 1em;
   color: white;
-  padding: 8px 27px;
-}
-.CaixaFons {
-  background: #EDEEF0;
-}
-.doblecaixa{
-  width: 95%;
+  padding: 8px 27px;20
   display: table;
   margin-left: 27px;
   padding-top:20px;
@@ -107,7 +94,7 @@ h1.titol {
   background: white;
   padding: 30px 30px;
   line-height: 2.2em;
-  font-size: ${FontTextPag};
+  font-size: 0.85em;
   text-align: justify;
 }
 
@@ -131,7 +118,7 @@ h1.titol {
   width:100%;
   margin-top:0px;
   line-height: 2.2em;
-  font-size: ${FontTextPag};
+  font-size: 0.85em;
 }
 .TextFormula {
   text-align:left;
@@ -153,14 +140,14 @@ h1.titol {
   text-transform: uppercase;
   font-weight: 900;
   padding: 30px 30px 10px 30px;
-  font-size: ${FontTitolCaixa};
+  font-size: 0.85em;
 }
 .sagnia {
   text-indent: -24px;
   padding-left: 52px;
   padding-right: 30px;
   padding-bottom: 5px;
-  font-size: ${FontTextCondicions}
+  font-size: 0.85em;
   text-align: justify;
 }
 .alpha {
@@ -173,7 +160,7 @@ h1.titol {
     margin-top: 3px;
     padding-right: 30px;
   padding-bottom: 10px;
-  font-size: ${FontTextCondicions}
+  font-size: 0.85em;
   text-align: justify;
 }
 .alpha > li:before {
@@ -185,10 +172,10 @@ h1.titol {
   list-style-type: disc;
   padding-left: 72px;
   padding-bottom: 10px;
-  font-size: ${FontTextCondicions}
+  font-size: 0.85em;
   margin-top:5px;
 }
-.punts > li, .punts2 > li {
+.punts > li {
   text-indent:0;
 }
 .final {
@@ -200,7 +187,7 @@ h1.titol {
   background: white;
   padding: 30px 0px;
   text-align: center;
-  font-size: ${FontTextPeu}
+  font-size: 0.85em;
 }
 @media print {
   footer {  
@@ -234,7 +221,6 @@ perm_data = inv.perm_read()[0]
 creation_date = datetime.strptime(perm_data['create_date'], '%Y-%m-%d %H:%M:%S.%f')
 creation_date_str = creation_date.strftime(_('%d/%m/%Y a les %T'))
 %>
-<%def name="signatures(inv)">
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700,900&display=swap" rel="stylesheet">
 
 
@@ -243,7 +229,7 @@ creation_date_str = creation_date.strftime(_('%d/%m/%Y a les %T'))
     <div class="LogoPpal">
     <a href="https://www.somenergia.coop" target="_blank">
       <img src="https://www.somenergia.coop/iconespdf/logo_som_energia.svg" alt="Logo Som Energia" width="200" height="100" /></a><br>
-      <p class="sotalogo"><b>${_(u"Som Energia, SCCL")}")}</b><br>${_(u"CIF: F55091367")}<br>${_(u"Domicili: C/Pic de Peguera, 11<br>17003- Girona")}<br>
+      <p class="sotalogo"><b>${_(u"Som Energia, SCCL")}</b><br>${_(u"CIF: F55091367")}<br>${_(u"Domicili: C/Pic de Peguera, 11. 17003- Girona")}<br>
 ${_(u"Adreça electrònica: aporta@somenergia.coop")}
   </div>
     <div class="TitolHeader">
@@ -257,7 +243,7 @@ ${_(u"Adreça electrònica: aporta@somenergia.coop")}
 </div>
 
 <div class="DataDoc">
-  <p>${_(u"A Girona, a ")}${data.receiptDate}</p>
+  <p>${_(u"Girona, a ")}${data.invoiceDate}</p>
 </div>
 
 <div class="TitolCaixa">
@@ -278,12 +264,12 @@ ${_(u"Adreça electrònica: aporta@somenergia.coop")}
     </div>
     <div class="fila">
       <div class="CaixaDadesTitular">
-    <p class="ContingutDades"><b>${_(u"Titular:")}</b> ${data.ownerName}<br><b>${_(u"DNI/NIE/CIF:")}</b> ${data.ownerNif}<br><b>${_(u"Adreça fiscal:")}</b> ${data.}<br><b>${_(u"Correu electrònic:")}</b> ${data.}</p>
+    <p class="ContingutDades"><b>${_(u"Titular:")}</b> ${data.ownerName}<br><b>${_(u"DNI/NIE/CIF:")}</b> ${data.ownerNif}<br><b>${_(u"Adreça fiscal:")}</b> ${data.partnerAddress}<br><b>${_(u"Correu electrònic:")}</b> ${data.partnerEmail}</p>
   </div>
       <div class="CaixaEspai">
       </div>
       <div class="CaixaDadesAportacio">
-         <p class="ContingutDades"><b>${_(u"Data d'aportació:")}</b> ${data.inversionPurchaseDate}<br><b>${_(u"Venciment:")}</b> ${_(u"Indefinit.")}<br><b>${_(u"Sol·licitud de cancel·lació:")}</b> En qualsevol moment.<br><b>${_(u"Import:")}</b> ${data.inversionInitialAmount} €<br><b>${_(u"Remuneració:")}</b> ${_(u"1,75% interès nominal anual (revisable anualment per l'Assemblea general).")}<br><b>${_(u"Meritació d’interessos:")}</b> ${_(u"Anual, de l’1 de gener al 31 de desembre.")}<br><b>${_(u"Pagament:")}</b> ${_(u"Anual, durant el mes de gener de l’any següent.")}</p>
+         <p class="ContingutDades"><b>${_(u"Data d'aportació:")}</b> ${data.inversionOrderDate}<br><b>${_(u"Venciment:")}</b> ${_(u"Indefinit.")}<br><b>${_(u"Sol·licitud de cancel·lació:")}</b> En qualsevol moment.<br><b>${_(u"Import:")}</b> ${data.inversionInitialAmount} €<br><b>${_(u"Remuneració:")}</b> ${_(u"1,75% interès nominal anual (revisable anualment per l'Assemblea general).")}<br><b>${_(u"Meritació d’interessos:")}</b> ${_(u"Anual, de l’1 de gener al 31 de desembre.")}<br><b>${_(u"Pagament:")}</b> ${_(u"Anual, durant el mes de gener de l’any següent.")}</p>
 </div>
     </div>
   </div>
@@ -338,7 +324,7 @@ ${_(u"Adreça electrònica: aporta@somenergia.coop")}
 <ol class="alpha">
 <li>${_(u"En el termini d'un mes de l'aprovació dels comptes anuals de l'exercici en què causi baixa la persona sòcia, s'ha de procedir a fixar l'import definitiu del reemborsament de les seves aportacions al capital social, sobre la base de l'exercici econòmic en què es produeixi la baixa i, si escau, de la imputació de resultats que li sigui atribuïble. El Consell Rector pot fixar un import provisional abans de l'aprovació dels comptes i, si convé, autoritzar un reemborsament a compte del definitiu.")}</li>
 <li>${_(u"De l'import definitiu del reemborsament resultant, d'acord amb el paràgraf anterior, s'han de fer les deduccions següents, quan convingui:")}<br>
-<ul class="punts2" style="list-style-type: disc;padding-left: 42px;">
+<ul style="list-style-type: disc;">
   <li>${_(u"Totes les quantitats que la persona sòcia degui a la cooperativa, per qualsevol concepte.")}</li>
   <li>${_(u"Les procedents per baixa no justificada o expulsió.")}</li>
   <li>${_(u"Les responsabilitats que li poden ser imputades i quantificades, sense perjudici de la responsabilitat patrimonial en virtut del que estableixi la Llei de cooperatives de Catalunya.")}</li>
