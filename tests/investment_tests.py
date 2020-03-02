@@ -1488,6 +1488,10 @@ class InvestmentTests(testing.OOTestCase):
             self.Investment.mark_as_paid(cursor, uid, [inv_id], '2017-01-06')
 
             inv_0001 = self.Investment.read(cursor, uid, inv_id)
+            self.assertLogEquals(inv_0001['log'],
+                u'PAID: Pagament de 1000 € efectuat [None]\n'
+                u'INVOICED: Facturada i remesada\n'
+            )
             inv_0001.pop('actions_log')
             inv_0001.pop('log')
             inv_0001.pop('id')
@@ -1495,7 +1499,7 @@ class InvestmentTests(testing.OOTestCase):
             self.assertEqual(name_emission, "Aportacions")
             self.assertEquals(inv_0001,
                 {
-                    'first_effective_date': False,
+                    'first_effective_date': '2017-01-06',
                     'move_line_id': False,
                     'last_effective_date': False,
                     'nshares': 10,
