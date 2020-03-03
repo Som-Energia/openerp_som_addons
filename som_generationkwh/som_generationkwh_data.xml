@@ -1248,7 +1248,7 @@ ${text_legal}
             <field eval="0" name="auto_email"/>
             <field eval="0" name="single_email"/>
             <field eval="0" name="use_sign"/>
-            <field name="def_subject">Aportació al capital social Som Enegia Ref. ${object.name}</field>
+            <field name="def_subject">Aportació / Aportación al capital social Som Enegia Ref. ${object.name}</field>
             <field name="template_language">mako</field>
             <field eval="0" name="send_on_create"/>
             <field name="lang"></field>
@@ -1514,8 +1514,8 @@ ${text_legal}
             <field name="bridge_account_payments_id" model="account.account"
 		        search="[('code','=','555000000004')]" />
         </record>
-        <record id="pgc_555000000010" model="account.account">
-            <field name="code">555000000010</field>
+        <record id="pgc_555000000011" model="account.account">
+            <field name="code">555000000011</field>
             <field name="reconcile" eval="True"/>
             <field name="parent_id" model="account.account" search="[('code','=','555')]"/>
             <field name="type">other</field>
@@ -1529,8 +1529,8 @@ ${text_legal}
             <field eval="0" name="centralisation"/>
             <field eval="0" name="group_invoice_lines"/>
             <field name="type">cash</field>
-            <field name="default_credit_account_id" model="account.account" search="[('code','=','555000000010')]"/>
-            <field name="default_debit_account_id" model="account.account" search="[('code','=','555000000010')]"/>
+            <field name="default_credit_account_id" ref="pgc_555000000011" />
+            <field name="default_debit_account_id" ref="pgc_555000000011" />
             <field name="view_id" ref="account.account_journal_bank_view"/>
             <field eval="[(6,0,[])]" name="type_control_ids"/>
             <field name="sequence_id" ref="account.sequence_journal"/>
@@ -1547,8 +1547,8 @@ ${text_legal}
             <field eval="0" name="centralisation"/>
             <field eval="0" name="group_invoice_lines"/>
             <field name="type">cash</field>
-            <field name="default_credit_account_id" ref="pgc_555000000010" />
-            <field name="default_debit_account_id" ref="pgc_555000000010" />
+            <field name="default_credit_account_id" ref="pgc_555000000011" />
+            <field name="default_debit_account_id" ref="pgc_555000000011" />
             <field name="view_id" ref="account.account_journal_bank_view"/>
             <field eval="[(6,0,[])]" name="type_control_ids"/>
             <field name="sequence_id" ref="account.sequence_journal"/>
@@ -1590,7 +1590,7 @@ ${text_legal}
             <field name="journal_id" ref="apo_fact_journal"/>
             <field name="investment_product_id" ref="apo_product_ae" />
             <field name="investment_payment_mode_id" ref="apo_investment_payment_mode" />
-            <field name="bridge_account_payments_id" ref="pgc_555000000010" />
+            <field name="bridge_account_payments_id" ref="pgc_555000000011" />
         </record>
         <record model="ir.sequence.type" id="seq_type_som_aportacions">
             <field name="name">Seq. Aportacions al Capital Social</field>
