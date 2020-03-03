@@ -65,7 +65,7 @@ h1.titol {
   font-weight:200;
 }
 .DataDoc {
-  margin: 70px 0;
+  margin: 60px 0;
   text-align: right;
   font-size: 1em;
 }
@@ -269,11 +269,12 @@ ${_(u"Adreça electrònica: aporta@somenergia.coop")}
       <div class="CaixaEspai">
       </div>
       <div class="CaixaDadesAportacio">
-         <p class="ContingutDades"><b>${_(u"Data d'aportació:")}</b> ${data.inversionOrderDate}<br><b>${_(u"Venciment:")}</b> ${_(u"Indefinit.")}<br><b>${_(u"Sol·licitud de cancel·lació:")}</b> En qualsevol moment.<br><b>${_(u"Import:")}</b> ${data.inversionInitialAmount} €<br><b>${_(u"Remuneració:")}</b> ${_(u"1,75% interès nominal anual (revisable anualment per l'Assemblea general).")}<br><b>${_(u"Meritació d’interessos:")}</b> ${_(u"Anual, de l’1 de gener al 31 de desembre.")}<br><b>${_(u"Pagament:")}</b> ${_(u"Anual, durant el mes de gener de l’any següent.")}</p>
+         <p class="ContingutDades"><b>${_(u"Data d'aportació:")}</b> ${data.inversionOrderDate}<br><b>${_(u"Venciment:")}</b> ${_(u"Indefinit.")}<br><b>${_(u"Sol·licitud de cancel·lació:")}</b> ${_(u"En qualsevol moment.")}<br><b>${_(u"Import:")}</b> ${data.inversionInitialAmount} €<br><b>${_(u"Remuneració:")}</b> ${_(u"1,75% interès nominal anual (revisable anualment per l'Assemblea general).")}<br><b>${_(u"Meritació d’interessos:")}</b> ${_(u"Anual, de l’1 de gener al 31 de desembre.")}<br><b>${_(u"Pagament:")}</b> ${_(u"Anual, durant el mes de gener de l’any següent.")}</p>
 </div>
     </div>
   </div>
-
+<div style="page-break-after: always">
+</div>
     <div class="CaixaUnica">
     <div class="InfoAddTitol">
       <h3>${_(u"INFORMACIÓ ADDICIONAL")}</h3>
@@ -289,9 +290,6 @@ ${_(u"Adreça electrònica: aporta@somenergia.coop")}
   
 </div>
 <div style="page-break-after: always">
-  <div class="footer">
-    <p class="TextPeu">${_(u"Som Energia, SCCL, CIF F55091367 | Domicili Pic de Peguera, 11 A 28 - 17003 - Girona | aporta@somenergia.coop | www.somenergia.coop")}</p>
-  </div>
 </div>
 <!-- Pàgina 2 -->
 <div class="TitolCaixa">
@@ -342,17 +340,6 @@ ${_(u"Adreça electrònica: aporta@somenergia.coop")}
 <p class="sagnia">${_(u"6.2 La persona sòcia que es doni de baixa continua sent responsable durant cinc anys davant la cooperativa, amb la limitació esmentada al paràgraf anterior, per les obligacions assumides per aquesta amb anterioritat a la data de la baixa.")}</p>
 <div class="final"></div>
 </div>
-
-
-<div style="page-break-after: always">
-  <div class="footer">
-    <p class="TextPeu">${_(u"Som Energia, SCCL, CIF F55091367 | Domicili Pic de Peguera, 11 A 28 - 17003 - Girona | aporta@somenergia.coop | www.somenergia.coop")}</p>
-  </div>
-</div>
-<!-- Pàgina 3 -->
-<div class="TitolCaixa">
-     <h2>${_(u"CONDICIONS GENERALS DE LES APORTACIONS VOLUNTÀRIES AL CAPITAL SOCIAL")}</h2>
-</div>
 <div class="CaixaFons">  
 <p class="TitolCondicions">${_(u"7. DRET DE DESISTIMENT")}</p>  
 <p class="sagnia">${_(u"7.1 Totes les persones sòcies que formalitzin aquest contracte disposaran de 14 dies naturals des de la data del contracte per desistir dels serveis. En cas que es vulgui desistir, serà necessària la notificació a través del correu electrònic o postal, determinat a les Condicions Generals previstes al mateix web de contractació o bé directament a aporta@somenergia.coop.")}</p>
@@ -381,9 +368,6 @@ ${_(u"Adreça electrònica: aporta@somenergia.coop")}
 
 <p class="sagnia">${_(u"9.5 Totes les controvèrsies que puguin sorgir en relació amb aquest contracte se sotmetran a la jurisdicció dels jutjats i tribunals de la ciutat de Girona, excepte en aquells supòsits que es disposi una altra cosa de forma imperativa per la normativa aplicable a l’efecte.")}</p>
 <div class="final"></div>
-</div>
-<div class="footer">
-  <p class="TextPeu">${_(u"Som Energia, SCCL, CIF F55091367 | Domicili Pic de Peguera, 11 A 28 - 17003 - Girona | aporta@somenergia.coop | www.somenergia.coop")}</p>
 </div>
 %endfor
 </body>
