@@ -2,6 +2,7 @@
 
 import datetime
 import unittest
+from somutils.testutils import destructiveTest
 
 dbconfig = None
 try:
@@ -72,6 +73,7 @@ class IdMappers_Test(unittest.TestCase):
 
 
 @unittest.skipIf(not dbconfig, "depends on ERP")
+@destructiveTest
 class UsageTracker_Test(unittest.TestCase):
 
     def setUp(self):

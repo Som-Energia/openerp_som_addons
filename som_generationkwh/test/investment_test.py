@@ -72,8 +72,6 @@ class Investment_OLD_Test(unittest.TestCase):
                 [1, '2017-09-21', False, -1],
                 [1, '2017-09-26', False, -1],
                 [1, '2017-09-28', False, -1],
-                #[1, '2016-05-19', False, -86], #Fiscal year closing
-                #[1, '2016-05-19', False, 86],  #Fiscal year closing
                 [1, '2017-12-01', False, -2],
                 [1, '2017-12-01', False, -2],
                 [1, '2018-08-24', False, -1],
@@ -84,6 +82,8 @@ class Investment_OLD_Test(unittest.TestCase):
                 [1, '2019-07-11', False, -1],
                 [1, '2019-07-11', False, -1],
                 [1, '2019-08-06', False, -1],
+                [1, '2019-12-03', False, -2],
+                [1, '2019-12-03', False, -2],
             ])
 
     def test__create_from_accounting__restrictingFirst(self):
@@ -431,6 +431,7 @@ class Investment_Test(unittest.TestCase):
 
     assertNsEqual=assertNsEqual
 
+    #Copied to tests/investment_test.py
     def assertLogEquals(self, log, expected):
         for x in log.splitlines():
             self.assertRegexpMatches(x,
@@ -445,51 +446,9 @@ class Investment_Test(unittest.TestCase):
                 )
         self.assertMultiLineEqual(logContent, expected)
 
+    #Copied to tests/investment_test.py
     def assertMailLogEqual(self, expected):
         self.assertNsEqual(self.MailMockup.log() or '{}', expected)
-
-    def test__create_from_form__allOk(self):
-        id = self.Investment.create_from_form(
-            self.personalData.partnerid,
-            '2017-01-01', # order_date
-            4000,
-            '10.10.23.123',
-            'ES7712341234161234567890',
-            )
-
-        self.assertTrue(id)
-
-        investment = ns(self.Investment.read(id, []))
-        log = investment.pop('log')
-        name = investment.pop('name')
-        actions_log = investment.pop('actions_log') # TODO: Test
-
-        self.assertLogEquals(log,
-            u'ORDER: Formulari omplert des de la IP 10.10.23.123,'
-            u' Quantitat: 4000 €, IBAN: ES7712341234161234567890\n'
-            )
-
-        self.assertRegexpMatches(name,r'^GKWH[0-9]{5}$')
-        self.assertNsEqual(investment, u"""
-            id: {id}
-            member_id:
-            - {member_id}
-            - {surname}, {name}
-            order_date: '2017-01-01'
-            purchase_date: false
-            first_effective_date: false
-            last_effective_date: false
-            nshares: 40
-            amortized_amount: 0.0
-            move_line_id: false
-            active: true
-            draft: true
-            signed_date: false
-            """.format(
-                id=id,
-                **self.personalData
-                ))
-
 
     @unittest.skip('Not implemented')
     def test__create_from_form__whenBadOrderDate(self):
@@ -501,112 +460,6 @@ class Investment_Test(unittest.TestCase):
             'ES7712341234161234567890',
             )
         self.assertFalse(id) # ??
-
-    def test__create_from_form__whenNotAMember(self):
-        with self.assertRaises(Exception) as ctx:
-            id = self.Investment.create_from_form(
-                1, # magic number, not member
-                '2017-01-01', # order_date
-                4000,
-                '10.10.23.123',
-                'ES7712341234161234567890',
-                )
-        self.assertEqual(ctx.exception.faultCode,
-            "Not a member"
-            )
-
-    def test__create_from_form__withNonDivisibleAmount(self):
-        with self.assertRaises(Exception) as ctx:
-            id = self.Investment.create_from_form(
-                self.personalData.partnerid,
-                '2017-01-01', # order_date
-                4003,
-                '10.10.23.123',
-                'ES7712341234161234567890',
-                )
-        self.assertEqual(ctx.exception.faultCode,
-            "Invalid amount"
-            )
-
-    def test__create_from_form__withNegativeAmount(self):
-        with self.assertRaises(Exception) as ctx:
-            id = self.Investment.create_from_form(
-                self.personalData.partnerid,
-                '2017-01-01', # order_date
-                -400,
-                '10.10.23.123',
-                'ES7712341234161234567890',
-                )
-        self.assertEqual(ctx.exception.faultCode,
-            "Invalid amount"
-            )
-
-    def test__create_from_form__withZeroAmount(self):
-        with self.assertRaises(Exception) as ctx:
-            id = self.Investment.create_from_form(
-                self.personalData.partnerid,
-                '2017-01-01', # order_date
-                0,
-                '10.10.23.123',
-                'ES7712341234161234567890',
-                )
-        self.assertEqual(ctx.exception.faultCode,
-            "Invalid amount"
-            )
-
-    def test__create_from_form__withBadIban(self):
-        with self.assertRaises(Exception) as ctx:
-            id = self.Investment.create_from_form(
-                self.personalData.partnerid,
-                '2017-01-01', # order_date
-                3000,
-                '10.10.23.123',
-                'ES77123412341612345678ZZ',
-                )
-        self.assertEqual(ctx.exception.faultCode,
-            "Wrong iban"
-            )
-
-    def test__mark_as_signed(self):
-        id = self.Investment.create_from_form(
-            self.personalData.partnerid,
-            '2017-01-01', # order_date
-            4000,
-            '10.10.23.123',
-            'ES7712341234161234567890',
-            )
-
-        self.Investment.mark_as_signed(id, '2017-01-06')
-
-        investment = ns(self.Investment.read(id, []))
-        log = investment.pop('log')
-        name = investment.pop('name')
-        actions_log = investment.pop('actions_log') # TODO: Test
-
-        self.assertLogEquals(log,
-            u'SIGN: Inversió signada amb data 2017-01-06\n'
-            u'ORDER: Formulari omplert des de la IP 10.10.23.123,'
-            u' Quantitat: 4000 €, IBAN: ES7712341234161234567890\n')
-
-        self.assertNsEqual(investment, u"""
-            id: {id}
-            member_id:
-            - {member_id}
-            - {surname}, {name}
-            order_date: '2017-01-01'
-            purchase_date: false
-            first_effective_date: false
-            last_effective_date: false
-            nshares: 40
-            amortized_amount: 0.0
-            move_line_id: false
-            active: true
-            draft: true
-            signed_date: '2017-01-06'
-            """.format(
-                id=id,
-                **self.personalData
-                ))
 
     def test__mark_as_invoiced(self):
         id = self.Investment.create_from_form(
@@ -623,6 +476,8 @@ class Investment_Test(unittest.TestCase):
         log = investment.pop('log')
         name = investment.pop('name')
         actions_log = investment.pop('actions_log') # TODO: Test
+        id_emission, name_emission = investment.pop('emission_id')
+        self.assertEqual(name_emission, "GenerationkWH")
 
         self.assertLogEquals(log,
             u'INVOICED: Facturada i remesada\n'
@@ -670,6 +525,8 @@ class Investment_Test(unittest.TestCase):
         log = investment.pop('log')
         name = investment.pop('name')
         actions_log = investment.pop('actions_log') # TODO: Test
+        id_emission, name_emission = investment.pop('emission_id')
+        self.assertEqual(name_emission, "GenerationkWH")
 
         self.assertLogEquals(log,
             u'PAID: Pagament de 2000 € efectuat [None]\n'
@@ -818,6 +675,8 @@ class Investment_Test(unittest.TestCase):
         log = investment.pop('log')
         name = investment.pop('name')
         actions_log = investment.pop('actions_log') # TODO: Test
+        id_emission, name_emission = investment.pop('emission_id')
+        self.assertEqual(name_emission, "GenerationkWH")
 
         self.assertLogEquals(log,
             u'UNPAID: Devolució del pagament de 2000 € [None]\n'
@@ -1010,275 +869,6 @@ class Investment_Test(unittest.TestCase):
             for line in self.InvoiceLine.read(invoice.invoice_line, [])
             ]
         self.assertNsEqual(invoice, expected)
-
-    def test__create_initial_invoices(self):
-        id = self.Investment.create_from_form(
-            self.personalData.partnerid,
-            '2017-01-01', # order_date
-            2000,
-            '10.10.23.1',
-            'ES7712341234161234567890',
-            )
-
-        invoice_ids, errs =  self.Investment.create_initial_invoices([id])
-
-        self.assertFalse(errs)
-        self.assertTrue(invoice_ids)
-
-        investment = self.Investment.browse(id)
-
-
-        iban = 'ES7712341234161234567890'
-        mandate_id = self.Investment.get_or_create_payment_mandate(
-            self.personalData.partnerid, iban, gkwh.mandateName, gkwh.creditorCode)
-
-        self.assertInvoiceInfoEqual(invoice_ids[0], u"""\
-            account_id: 410000{p.nsoci:0>6s} {p.surname}, {p.name}
-            amount_total: 2000.0
-            amount_untaxed: 2000.0
-            check_total: 2000.0
-            date_invoice: '{invoice_date}'
-            id: {id}
-            invoice_line:
-            - origin: false
-              uos_id: PCE
-              account_id: 163500{p.nsoci:0>6s} {p.surname}, {p.name}
-              name: 'Inversió {investment_name} '
-              invoice_id:
-              - {id}
-              - 'CI: {investment_name}-JUST'
-              price_unit: 100.0
-              price_subtotal: 2000.0
-              invoice_line_tax_id: []
-              note: false
-              discount: 0.0
-              account_analytic_id: false
-              quantity: 20.0
-              product_id: '[GENKWH_AE] Accions Energètiques Generation kWh'
-            journal_id: Factures GenerationkWh
-            mandate_id: {mandate_id}
-            name: {investment_name}-JUST
-            number: {investment_name}-JUST
-            origin: {investment_name}
-            partner_bank: {iban}
-            partner_id:
-            - {p.partnerid}
-            - {p.surname}, {p.name}
-            payment_type:
-            - 1
-            - Recibo domiciliado
-            sii_to_send: false
-            type: out_invoice
-            state: draft
-            """.format(
-            invoice_date=datetime.today().strftime("%Y-%m-%d"),
-            id=invoice_ids[0],
-            iban='ES77 1234 1234 1612 3456 7890',
-            year=2018,
-            investment_name=investment.name,
-            p=self.personalData,
-            investment_id=id,
-            mandate_id = mandate_id,
-            ))
-
-    def test__create_initial_invoices__notDraft(self):
-
-        id = self.Investment.create_from_form(
-            self.personalData.partnerid,
-            '2017-01-01', # order_date
-            2000,
-            '10.10.23.1',
-            'ES7712341234161234567890',
-            )
-
-        self.Investment.mark_as_invoiced(id)
-
-        result = self.Investment.create_initial_invoices([id])
-
-        inv = self.Investment.read(id, ['name'])
-        self.assertEqual(result, [[], [
-            "Investment {name} already invoiced".format(**inv)
-            ]])
-
-    def test__create_initial_invoices__twice(self):
-
-        id = self.Investment.create_from_form(
-            self.personalData.partnerid,
-            '2017-01-01', # order_date
-            2000,
-            '10.10.23.1',
-            'ES7712341234161234567890',
-            )
-        inv = self.Investment.read(id, ['name'])
-
-        self.Investment.create_initial_invoices([id])
-
-        result = self.Investment.create_initial_invoices([id])
-
-        self.assertEqual(result, [[], [
-            "Initial Invoice {name}-JUST already exists".format(**inv)
-            ]])
-
-    def test__create_initial_invoices__withUnnamedInvestment(self):
-        id = self.Investment.create_from_form(
-            self.personalData.partnerid,
-            '2016-01-01', # order_date
-            2000,
-            '10.10.23.1',
-            'ES7712341234161234567890',
-            )
-
-        self.Investment.write(id, dict(
-            name=None)
-            )
-
-        invoice_ids, errs = self.Investment.create_initial_invoices([id])
-
-        invoice = self.Invoice.browse(invoice_ids[0])
-        self.assertEqual(invoice.name,
-            "GENKWHID{}-JUST".format(id))
-
-    def test__create_initial_invoices__errorWhenNoBank(self):
-        id = self.Investment.create_from_form(
-            self.personalData.partnerid,
-            '2017-01-01', # order_date
-            2000,
-            '10.10.23.1',
-            'ES7712341234161234567890',
-            )
-        self.Partner.write(self.personalData.partnerid,dict(bank_inversions = False))
-        result = self.Investment.create_initial_invoices([id])
-        self.assertEqual(result, [[], [
-            u"Partner '{surname}, {name}' has no investment bank account"
-                .format(**self.personalData)
-            ]])
-
-    def test__create_initial_invoices__investmentWithPurchaseDate(self):
-
-        id = self.Investment.create_from_form(
-            self.personalData.partnerid,
-            '2016-01-01', # order_date
-            2000,
-            '10.10.23.1',
-            'ES7712341234161234567890',
-            )
-
-        inv = self.Investment.read(id,['name'])
-
-        self.Investment.mark_as_invoiced(id)
-        self.Investment.mark_as_paid([id], '2016-01-04')
-        result = self.Investment.create_initial_invoices([id])
-
-        self.assertEquals(result, [[], [
-            "Investment {name} was already paid".format(**inv),
-            ]])
-
-    def test__create_initial_invoices__inactiveInvestment(self):
-
-        id = self.Investment.create_from_form(
-            self.personalData.partnerid,
-            '2016-01-01', # order_date
-            2000,
-            '10.10.23.1',
-            'ES7712341234161234567890',
-            )
-
-        inv = self.Investment.read(id,['name'])
-
-        self.Investment.write(id, {'active':False})
-
-        result = self.Investment.create_initial_invoices([id])
-
-        self.assertEquals(result, [[], [
-            "Investment {name} is inactive".format(**inv),
-            ]])
-
-
-    def test__create_initial_invoices__multiInvestments(self):
-
-        id1 = self.Investment.create_from_form(
-            self.personalData.partnerid,
-            '2017-01-01', # order_date
-            2000,
-            '10.10.23.1',
-            'ES7712341234161234567890',
-            )
-
-        id2 = self.Investment.create_from_form(
-            self.personalData.partnerid,
-            '2017-01-02', # order_date
-            500,
-            '10.10.23.2',
-            'ES7712341234161234567890',
-            )
-
-        invoice_ids, errs = self.Investment.create_initial_invoices([id1, id2])
-
-        self.assertEqual(2,len(invoice_ids))
-
-
-    def test__create_initial_invoices__OkAndKo(self):
-        id1 = self.Investment.create_from_form(
-            self.personalData.partnerid,
-            '2017-01-01', # order_date
-            2000,
-            '10.10.23.1',
-            'ES7712341234161234567890',
-            )
-        id2 = self.Investment.create_from_form(
-            self.personalData.partnerid,
-            '2017-02-02', # order_date
-            3000,
-            '10.10.23.2',
-            'ES7712341234161234567890',
-            )
-        investment = self.Investment.read(id1,['name'])
-        self.Investment.write(id1, {'active':False})
-
-        invoice_ids, errs = self.Investment.create_initial_invoices([id1,id2])
-
-        self.assertEqual(errs, [
-            "Investment {name} is inactive".format(**investment),
-            ])
-        self.assertEqual(len(invoice_ids), 1)
-
-
-    def test__create_initial_invoices__twoErrors(self):
-        id1 = self.Investment.create_from_form(
-            self.personalData.partnerid,
-            '2017-01-01', # order_date
-            2000,
-            '10.10.23.1',
-            'ES7712341234161234567890',
-            )
-        id2 = self.Investment.create_from_form(
-            self.personalData.partnerid,
-            '2017-02-02', # order_date
-            3000,
-            '10.10.23.2',
-            'ES7712341234161234567890',
-            )
-        investment1 = self.Investment.read(id1,['name'])
-        investment2 = self.Investment.read(id2,['name'])
-
-        self.Investment.write(id1, {'active':False})
-        self.Investment.mark_as_invoiced(id2)
-        self.Investment.mark_as_paid([id2], '2016-01-04')
-
-        result = self.Investment.create_initial_invoices([id1,id2])
-
-        self.assertEqual(result, [[],[
-            "Investment {name} is inactive".format(**investment1),
-            "Investment {name} was already paid".format(**investment2),
-            ]])
-
-
-    def test__create_initial_invoices__zeroInvestments(self):
-
-        result  = self.Investment.create_initial_invoices([])
-
-        self.assertEqual(result, [[],[]])
-
 
     def test__create_amortization_invoice(self):
 
@@ -1486,17 +1076,6 @@ class Investment_Test(unittest.TestCase):
                 inv = inv,
         ))
 
-    def test__create_from_form__ibanIsSet(self):
-
-        id = self.Investment.create_from_form(
-            self.personalData.partnerid,
-            '2017-01-01', # order_date
-            2000,
-            '10.10.23.1',
-            'ES7712341234161234567890',
-            )
-        partner = self.Partner.browse(self.personalData.partnerid)
-        self.assertTrue(partner.bank_inversions)
 
     def test__amortize__writes_log(self):
         investment_id = self.Investment.create_from_form(
@@ -1747,56 +1326,12 @@ class Investment_Test(unittest.TestCase):
                     today=datetime.today().strftime("%Y-%m-%d"),
                 ))
 
+    #Copied to tests/investment_test.py
     def _generationMailAccount(self):
         PEAccounts = self.erp.PoweremailCore_accounts
         return PEAccounts.search([
            ('name','=','Generation kWh')
             ])[0]
-        
-
-    def test__create_from_form__sendsCreationEmail(self):
-        id = self.Investment.create_from_form(
-            self.personalData.partnerid,
-            '2017-01-01', # order_date
-            4000,
-            '10.10.23.123',
-            'ES7712341234161234567890',
-            )
-
-        self.assertMailLogEqual("""\
-            logs:
-            - model: generationkwh.investment
-              id: {id}
-              template: generationkwh_mail_creacio
-              from_id: [ {account_id} ]
-            """.format(
-                id=id,
-                account_id = self._generationMailAccount(),
-            ))
-
-    def test__investment_payment__sendsPaymentEmail(self):
-        id = self.Investment.create_from_form(
-            self.personalData.partnerid,
-            '2017-01-01', # order_date
-            4000,
-            '10.10.23.123',
-            'ES7712341234161234567890',
-            )
-        self.MailMockup.deactivate()
-        self.MailMockup.activate()
-
-        invoice_ids, errors = self.Investment.investment_payment([id])
-
-        self.assertMailLogEqual("""\
-            logs:
-            - model: account.invoice
-              id: {id}
-              template: generationkwh_mail_pagament
-              from_id: [ {account_id} ]
-            """.format(
-                id=invoice_ids[0],
-                account_id = self._generationMailAccount(),
-            ))
 
     def test__mark_as_paid__sendsPaymentEmail(self):
         id = self.Investment.create_from_form(
@@ -2076,6 +1611,8 @@ class Investment_Test(unittest.TestCase):
         log = investment.pop('log')
         name = investment.pop('name')
         actions_log = investment.pop('actions_log') # TODO: Test
+        id_emission, name_emission = investment.pop('emission_id')
+        self.assertEqual(name_emission, "GenerationkWH")
 
         self.assertLogEquals(log,
             u'CANCEL: La inversió ha estat cancel·lada\n'
@@ -2155,6 +1692,8 @@ class Investment_Test(unittest.TestCase):
         log = investment.pop('log')
         name = investment.pop('name')
         actions_log = investment.pop('actions_log') # TODO: Test
+        id_emission, name_emission = investment.pop('emission_id')
+        self.assertEqual(name_emission, "GenerationkWH")
 
         self.assertLogEquals(log,
             u'CANCEL: La inversió ha estat cancel·lada\n'
@@ -2204,6 +1743,8 @@ class Investment_Test(unittest.TestCase):
         log = investment.pop('log')
         name = investment.pop('name')
         actions_log = investment.pop('actions_log') # TODO: Test
+        id_emission, name_emission = investment.pop('emission_id')
+        self.assertEqual(name_emission, "GenerationkWH")
 
         self.assertLogEquals(log,
             u'CANCEL: La inversió ha estat cancel·lada\n'
@@ -2427,6 +1968,9 @@ class Investment_Test(unittest.TestCase):
         log = investment.pop('log')
         name = investment.pop('name')
         actions_log = investment.pop('actions_log') 
+        id_emission, name_emission = investment.pop('emission_id')
+        self.assertEqual(name_emission, "GenerationkWH")
+
         self.assertNsEqual(investment, u"""
             id: {id}
             member_id:
@@ -2470,6 +2014,8 @@ class Investment_Test(unittest.TestCase):
         log = investment.pop('log')
         name = investment.pop('name')
         actions_log = investment.pop('actions_log')
+        id_emission, name_emission = investment.pop('emission_id')
+        self.assertEqual(name_emission, "GenerationkWH")
         self.assertNsEqual(investment, u"""
             id: {id}
             member_id:
@@ -2562,6 +2108,8 @@ class Investment_Test(unittest.TestCase):
         log = investment.pop('log')
         investment_name = investment.pop('name')
         actions_log = investment.pop('actions_log')
+        id_emission, name_emission = investment.pop('emission_id')
+        self.assertEqual(name_emission, "GenerationkWH")
         self.assertNsEqual(investment, u"""
             id: {id}
             member_id:
@@ -2766,7 +2314,7 @@ class Investment_Test(unittest.TestCase):
               - {id}
               - 'SI: {investment_name}'
               invoice_line_tax_id: []
-              name: 'Retenció IRPF sobre l''estalvi del Generationkwh de 2019 de {investment_name} '
+              name: 'Retenció IRPF sobre l''estalvi del Generationkwh de {year} de {investment_name} '
               note:
                 divestmentDate: '{invoice_date}'
                 investmentId: {investment_id}
@@ -2800,7 +2348,125 @@ class Investment_Test(unittest.TestCase):
                 invoice_date = datetime.today().strftime("%Y-%m-%d"),
                 id = invoice_id,
                 iban = 'ES77 1234 1234 1612 3456 7890',
-                year = 2018,
+                year = datetime.today().strftime("%Y"),
+                investment_name = investment.name,
+                p = self.personalData,
+                investment_id = id,
+                mandate_id = False,
+            ))
+
+    def test__create_divestment_invoice__withProfitTwoYears_irpfNotRoundedOk(self):
+        id = self.Investment.create_from_form(
+            self.personalData.partnerid,
+            '2017-01-01', # order_date
+            100,
+            '10.10.23.1',
+            'ES7712341234161234567890',
+            )
+        invoice_date = datetime.today().strftime("%Y-%m-%d")
+        self.Investment.mark_as_invoiced(id)
+        self.Investment.mark_as_paid([id], '2017-01-01')
+
+        invoice_id, errors = self.Investment.create_divestment_invoice(
+            id, invoice_date, 100, 0.03221174863387978, 0.07325795454545454)
+
+        self.assertTrue(invoice_id)
+        investment = self.Investment.browse(id)
+        self.assertInvoiceInfoEqual(invoice_id, u"""\
+            account_id: 410000{p.nsoci:0>6s} {p.surname}, {p.name}
+            amount_total: 99.9
+            amount_untaxed: 99.9
+            check_total: 99.9
+            date_invoice: '{invoice_date}'
+            id: {id}
+            invoice_line:
+            - origin: false
+              uos_id: PCE
+              account_id: 163500{p.nsoci:0>6s} {p.surname}, {p.name}
+              name: 'Desinversió total de {investment_name} a {invoice_date} '
+              invoice_id:
+              - {id}
+              - 'SI: {investment_name}'
+              price_unit: 100.0
+              price_subtotal: 100.0
+              invoice_line_tax_id: []
+              note:
+                pendingCapital: 0.0
+                divestmentDate: '{invoice_date}'
+                investmentId: {investment_id}
+                investmentName: {investment_name}
+                investmentPurchaseDate: '2017-01-01'
+                investmentLastEffectiveDate: '2042-01-01'
+                investmentInitialAmount: 100
+              discount: 0.0
+              account_analytic_id: false
+              quantity: 1.0
+              product_id: '[GENKWH_AMOR] Amortització Generation kWh'
+            - account_analytic_id: false
+              account_id: 475119000001 IRPF 19% GENERATION KWh
+              discount: 0.0
+              invoice_id:
+              - {id}
+              - 'SI: {investment_name}'
+              invoice_line_tax_id: []
+              name: 'Retenció IRPF sobre l''estalvi del Generationkwh de {year} de {investment_name} '
+              note:
+                divestmentDate: '{invoice_date}'
+                investmentId: {investment_id}
+                investmentInitialAmount: 100
+                investmentLastEffectiveDate: '2042-01-01'
+                investmentName: {investment_name}
+                investmentPurchaseDate: '2017-01-01'
+                pendingCapital: 0.0
+              origin: false
+              price_subtotal: -0.03
+              price_unit: -0.03
+              product_id: '[GENKWH_IRPF] Retenció IRPF estalvi Generation kWh'
+              quantity: 1.0
+              uos_id: PCE
+            - account_analytic_id: false
+              account_id: 475119000001 IRPF 19% GENERATION KWh
+              discount: 0.0
+              invoice_id:
+              - {id}
+              - 'SI: {investment_name}'
+              invoice_line_tax_id: []
+              name: 'Retenció IRPF sobre l''estalvi del Generationkwh de {yearm1} de {investment_name} '
+              note:
+                divestmentDate: '{invoice_date}'
+                investmentId: {investment_id}
+                investmentInitialAmount: 100
+                investmentLastEffectiveDate: '2042-01-01'
+                investmentName: {investment_name}
+                investmentPurchaseDate: '2017-01-01'
+                pendingCapital: 0.0
+              origin: false
+              price_subtotal: -0.07
+              price_unit: -0.07
+              product_id: '[GENKWH_IRPF] Retenció IRPF estalvi Generation kWh'
+              quantity: 1.0
+              uos_id: PCE
+            journal_id: Factures GenerationkWh
+            mandate_id: {mandate_id}
+            name: {investment_name}-DES
+            number: {investment_name}-DES
+            origin: {investment_name}
+            partner_bank: {iban}
+            partner_id:
+            - {p.partnerid}
+            - {p.surname}, {p.name}
+            payment_type:
+            - 2
+            - Transferencia
+            sii_to_send: false
+            type: in_invoice
+            state: draft
+            """.format(
+                invoice_date = datetime.today().strftime("%Y-%m-%d"),
+                id = invoice_id,
+                iban = 'ES77 1234 1234 1612 3456 7890',
+                year = datetime.today().strftime("%Y"),
+                yearm1 = int(datetime.today().strftime("%Y")) - 1,
                 investment_name = investment.name,
                 p = self.personalData,
                 investment_id = id,
@@ -2861,7 +2527,7 @@ class Investment_Test(unittest.TestCase):
               - {id}
               - 'SI: {investment_name}'
               invoice_line_tax_id: []
-              name: 'Retenció IRPF sobre l''estalvi del Generationkwh de 2019 de {investment_name} '
+              name: 'Retenció IRPF sobre l''estalvi del Generationkwh de {year} de {investment_name} '
               note:
                 divestmentDate: '{invoice_date}'
                 investmentId: {investment_id}
@@ -2883,7 +2549,7 @@ class Investment_Test(unittest.TestCase):
               - {id}
               - 'SI: {investment_name}'
               invoice_line_tax_id: []
-              name: 'Retenció IRPF sobre l''estalvi del Generationkwh de 2018 de {investment_name} '
+              name: 'Retenció IRPF sobre l''estalvi del Generationkwh de {yearm1} de {investment_name} '
               note:
                 divestmentDate: '{invoice_date}'
                 investmentId: {investment_id}
@@ -2917,7 +2583,8 @@ class Investment_Test(unittest.TestCase):
                 invoice_date = datetime.today().strftime("%Y-%m-%d"),
                 id = invoice_id,
                 iban = 'ES77 1234 1234 1612 3456 7890',
-                year = 2018,
+                year = datetime.today().strftime("%Y"),
+                yearm1 = int(datetime.today().strftime("%Y")) - 1,
                 investment_name = investment.name,
                 p = self.personalData,
                 investment_id = id,
@@ -3031,6 +2698,8 @@ class Investment_Test(unittest.TestCase):
         log = old_investment.pop('log')
         name = old_investment.pop('name')
         actions_log = old_investment.pop('actions_log')
+        id_emission, name_emission = old_investment.pop('emission_id')
+        self.assertEqual(name_emission, "GenerationkWH")
         self.assertNsEqual(old_investment, u"""
             id: {id}
             member_id:
@@ -3056,6 +2725,8 @@ class Investment_Test(unittest.TestCase):
         log = investment.pop('log')
         name = investment.pop('name')
         actions_log = investment.pop('actions_log')
+        id_emission, name_emission = investment.pop('emission_id')
+        self.assertEqual(name_emission, "GenerationkWH")
         self.assertNsEqual(investment, u"""
             id: {id}
             member_id:
@@ -3102,6 +2773,8 @@ class Investment_Test(unittest.TestCase):
         log = old_investment.pop('log')
         name = old_investment.pop('name')
         actions_log = old_investment.pop('actions_log')
+        id_emission, name_emission = old_investment.pop('emission_id')
+        self.assertEqual(name_emission, "GenerationkWH")
         self.assertNsEqual(old_investment, u"""
             id: {id}
             member_id:
@@ -3127,6 +2800,8 @@ class Investment_Test(unittest.TestCase):
         log = investment.pop('log')
         name = investment.pop('name')
         actions_log = investment.pop('actions_log')
+        id_emission, name_emission = investment.pop('emission_id')
+        self.assertEqual(name_emission, "GenerationkWH")
         self.assertNsEqual(investment, u"""
             id: {id}
             member_id:

@@ -10,10 +10,11 @@ from tools.translate import _
 from tools import config
 import re
 import generationkwh.investmentmodel as gkwh
-from generationkwh.investmentstate import InvestmentState
+from generationkwh.investmentstate import InvestmentState, AportacionsState, GenerationkwhState
 from uuid import uuid4
 import netsvc
 from oorq.oorq import AsyncMode
+from investment_strategy import AportacionsActions, GenerationkwhActions, PartnerException, InvestmentException
 
 # TODO: This function is duplicated in other sources
 def _sqlfromfile(sqlname):
@@ -137,6 +138,13 @@ class GenerationkwhInvestment(osv.osv):
             #required=True,
             help="Història d'esdeveniments relacionats amb la inversió",
             ),
+        emission_id=fields.many2one(
+            'generationkwh.emission',
+            "Emissió",
+            select=True,
+            #required=True, # TODO to be required
+            help="Campanya d'emissió de la que forma part la inversió",
+            ),
         )
 
     _defaults = dict(
@@ -147,6 +155,17 @@ class GenerationkwhInvestment(osv.osv):
         actions_log=lambda *a: '',
     )
 
+    def investment_actions(self, cursor, uid, id):
+        inv = self.browse(cursor, uid, id, ['emission_id'])
+        if str(inv.emission_id.type) == 'apo':
+            return AportacionsActions(self, cursor, uid, 1)
+        return GenerationkwhActions(self, cursor, uid, 1)
+
+    def state_actions(self, cursor, uid, id, user, timestamp, **values):
+        inv = self.browse(cursor, uid, id, ['emission_id'])
+        if str(inv.emission_id.type) == 'apo':
+            return AportacionsState(user, timestamp, **values)
+        return GenerationkwhState(user, timestamp, **values)
 
     def list(self, cursor, uid,
             member=None,
@@ -247,6 +266,123 @@ class GenerationkwhInvestment(osv.osv):
         lastEffective = firstEffective+relativedelta(years=expirationYears)
 
         return firstEffective, lastEffective
+
+    def get_investments_amount(self, cursor, uid, member_id, emission_id=None):
+        search_params = [('member_id', '=', member_id), ('emission_id.type', '=', 'apo')]
+        if emission_id:
+            search_params.append(('emission_id', '=', emission_id))
+        investment_ids = self.search(cursor, uid, search_params)
+
+        amount = 0
+        #New investments
+        for id in investment_ids:
+            amount += self.read(cursor, uid, id, ['nshares'])['nshares'] * gkwh.shareValue
+
+        if emission_id: #Avoid old investments amount
+            return amount
+
+        #START Old investments (remove when migrated)
+        Member = self.pool.get('somenergia.soci')
+        MoveLine = self.pool.get('account.move.line')
+        Account = self.pool.get('account.account')
+        aportacionsAccountPrefix = '163000'
+
+        if member_id is None:
+            accountDomain = [('code','ilike',aportacionsAccountPrefix+'%')]
+        else:
+            memberCodes = Member.read(cursor, uid, member_id, ['ref'])
+            accountCodes = aportacionsAccountPrefix + memberCodes['ref'][1:]
+            accountDomain = [ ('code','ilike',accountCodes)]
+        accountId = Account.search(cursor, uid, accountDomain)
+
+        if not accountId: #No Old investments
+            return amount
+
+        movelinefilter = [
+            ('account_id', 'in', accountId),
+            ('period_id.special', '=', False),
+            ]
+
+        movelinesids = MoveLine.search(
+            cursor, uid, movelinefilter,
+            order='date_created asc, id asc',
+            )
+
+        investment_ids = []
+
+        contextWithInactives = dict({}, active_test=False)
+
+        for line in MoveLine.browse(cursor, uid, movelinesids):
+            # Filter out already converted move lines
+            if self.search(cursor, uid,
+                [('move_line_id','=',line.id)],
+                context=dict({}, active_test=False),
+            ):
+                continue
+
+            partnerid = line.partner_id.id
+            if not partnerid:
+                # Handle cases with no partner_id
+                membercode = int(line.account_id.code[4:])
+                domain = [('ref', 'ilike', '%'+str(membercode).zfill(6))]
+            else:
+                domain = [('partner_id', '=', partnerid)]
+
+            members = Member.search(cursor, uid, domain, context=contextWithInactives)
+            if not members:
+                print (
+                    "No existeix el soci de la linia comptable "
+                    "id {l.id} {l.date_created} partner {l.partner_id.name} "
+                    "ac {l.account_id.name}, {l.credit} -{l.debit}  {d}"
+                    .format(l=line, d=domain))
+                continue
+
+            member_id = members[0]
+
+            amount += line.credit-line.debit
+        #END Old investments (remove when migrated)
+
+        return amount
+
+    def check_investment_creation(self, cursor, uid, partner_id, investment_code, investment_amount):
+        return investment_amount <= self.get_max_investment(cursor, uid, partner_id, investment_code)
+
+    def get_max_investment(self, cursor, uid, partner_id, investment_code):
+        Member = self.pool.get('somenergia.soci')
+        Emission = self.pool.get('generationkwh.emission')
+        current_date = datetime.now()
+
+        emission_id = Emission.search(cursor, uid, [('code', '=', investment_code), ('state', '=', 'open')])
+        if not emission_id:
+            raise InvestmentException("Emission closed or not exist")
+
+        emission_data = Emission.read(cursor, uid, emission_id[0], ['amount_emission','limited_period_amount','limited_period_end_date','current_total_amount_invested', 'start_date', 'end_date'])
+
+        if emission_data['start_date'] and datetime.strptime(emission_data['start_date'],'%Y-%m-%d') > current_date:
+            raise InvestmentException("Emission not open yet")
+        if emission_data['end_date'] and datetime.strptime(emission_data['end_date'],'%Y-%m-%d') < current_date:
+            raise InvestmentException("Emission closed")
+        if emission_data['amount_emission'] <= emission_data['current_total_amount_invested']:
+            raise InvestmentException("Emission completed")
+
+        member_id = Member.search(cursor, uid, [('partner_id','=',partner_id)])[0]
+        amount_investments = self.get_investments_amount(cursor, uid, member_id)
+
+        #Check legal limit 100.000
+        max_amount = gkwh.maxAmountInvested - amount_investments
+
+        #Check emission limit <= emission_data['amount_emission']
+        max_amount_available = emission_data['amount_emission'] - emission_data['current_total_amount_invested']
+
+        #Check emission first week limit
+        limited_period_amount = max_amount
+        amount_investments_of_emission = self.get_investments_amount(cursor, uid, member_id, emission_id)
+        if emission_data['limited_period_amount'] and \
+                current_date <= datetime.strptime(emission_data['limited_period_end_date'], '%Y-%m-%d'):
+                limited_period_amount = emission_data['limited_period_amount'] - amount_investments_of_emission
+
+        min_amount = min(max_amount, max_amount_available, limited_period_amount)
+        return min_amount if min_amount >= 0 else 0
 
     def create_from_accounting(self, cursor, uid,
             member_id, start, stop, waitingDays, expirationYears,
@@ -480,7 +616,6 @@ class GenerationkwhInvestment(osv.osv):
         Invoice = self.pool.get('account.invoice')
         InvoiceLine = self.pool.get('account.invoice.line')
         GenerationkwhInvoiceLineOwner = self.pool.get('generationkwh.invoice.line.owner')
-        Investment = self.pool.get('generationkwh.investment')
         Soci = self.pool.get('somenergia.soci')
         partner_id = Soci.read(cursor, uid, member_id, ['partner_id'])['partner_id'][0]
 
@@ -498,14 +633,15 @@ class GenerationkwhInvestment(osv.osv):
         total_dayshares_year = 1
         list_inv_id = self.search(cursor, uid, [('member_id','=',member_id)])
         for inv_id in list_inv_id:
-            inv_obj = self.read(cursor, uid, inv_id, ['first_effective_date','last_effective_date','nshares'])
-            total_dayshares_year += self.get_dayshares_investmentyear(cursor, uid, inv_obj, start_date, end_date)
+            inv_obj = self.read(cursor, uid, inv_id, ['first_effective_date','last_effective_date','nshares', 'name'])
+            if inv_obj['first_effective_date']:
+                total_dayshares_year += self.get_dayshares_investmentyear(cursor, uid, inv_obj, start_date, end_date)
 
         #regla de tres amb accions inversió actual
         inv_actual = self.read(cursor, uid, investment_id, ['first_effective_date','last_effective_date','nshares'])
         daysharesactual = self.get_dayshares_investmentyear(cursor, uid, inv_actual, start_date, end_date)
 
-        return (daysharesactual * total_amount_saving / total_dayshares_year) * gkwh.irpfTaxValue
+        return round((daysharesactual * total_amount_saving / total_dayshares_year) * gkwh.irpfTaxValue,2)
 
 
     def amortize(self, cursor, uid, current_date, ids=None, context=None):
@@ -569,7 +705,7 @@ class GenerationkwhInvestment(osv.osv):
                 self.invoices_to_payment_order(cursor, uid,
                     [amortization_id], gkwh.amortizationPaymentMode)
                 self.send_mail(cursor, uid, amortization_id,
-                    'account.invoice', 'generationkwh_mail_amortitzacio')
+                    'account.invoice', '_mail_amortitzacio', investment_id)
 
         return amortization_ids, amortization_errors
 
@@ -766,7 +902,7 @@ class GenerationkwhInvestment(osv.osv):
         spain = self.get_default_country(cursor, uid)
         ResPartnerBank = self.pool.get('res.partner.bank')
         ResBank = self.pool.get('res.bank')
-        vals = ResPartnerBank.onchange_banco(cursor, uid, [], account, spain, {})
+        vals = ResPartnerBank.onchange_banco(cursor, uid, [], account, int(spain), {})
         if 'warning' in vals:
             # TODO: Use vals['warning']['message']
             # TODO: Would require use a context with locale
@@ -783,7 +919,6 @@ class GenerationkwhInvestment(osv.osv):
             result['bank_name'] = bank['name']
         if 'acc_number' in vals['value']:
             result['acc_number'] = vals['value']['acc_number']
-
         return result
 
     # TODO: Move to res.partner
@@ -851,53 +986,15 @@ class GenerationkwhInvestment(osv.osv):
         return ResPartnerBank.create(cursor, uid, vals)
 
     def create_from_form(self, cursor, uid,
-            partner_id, order_date, amount_in_euros, ip, iban,
+            partner_id, order_date, amount_in_euros, ip, iban, emission=None,
             context=None):
-
-        if amount_in_euros <= 0 or amount_in_euros % gkwh.shareValue > 0:
-            raise Exception("Invalid amount")
-
-        iban = self.check_iban(cursor, uid, iban)
-        if not iban:
-            raise Exception("Wrong iban")
-
-        Soci = self.pool.get('somenergia.soci')
-        member_ids = Soci.search(cursor, uid, [
-                ('partner_id','=',partner_id)
-                ])
-        if not member_ids:
-            raise Exception("Not a member")
-
-        bank_id = self.get_or_create_partner_bank(cursor, uid,
-                    partner_id, iban)
-        ResPartner = self.pool.get('res.partner')
-        ResPartner.write(cursor, uid, partner_id, dict(
-            bank_inversions = bank_id,),context)
-
-        ResUser = self.pool.get('res.users')
-        user = ResUser.read(cursor, uid, uid, ['name'])
-        IrSequence = self.pool.get('ir.sequence')
-        name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')
-
-        inv = InvestmentState(user['name'], datetime.now())
-        inv.order(
-            name = name,
-            date = order_date,
-            amount = amount_in_euros,
-            iban = iban,
-            ip = ip,
-            )
-        investment_id = self.create(cursor, uid, dict(
-            inv.erpChanges(),
-            member_id = member_ids[0],
-        ), context)
-
-        self.get_or_create_payment_mandate(cursor, uid,
-            partner_id, iban, gkwh.mandateName, gkwh.creditorCode)
-
-        self.send_mail(cursor, uid, investment_id,
-            'generationkwh.investment', 'generationkwh_mail_creacio')
-
+        investment_actions = GenerationkwhActions(self, cursor, uid, 1)
+        #Compatibility 'emissio_apo'
+        if emission == 'emissio_apo' or (emission and 'APO_' in emission) :
+            investment_actions = AportacionsActions(self, cursor, uid, 1)
+        investment_id = investment_actions.create_from_form(cursor, uid,
+                partner_id, order_date, amount_in_euros, ip, iban, emission,
+                context)
         return investment_id
 
     def create_from_transfer(self, cursor, uid,
@@ -977,6 +1074,7 @@ class GenerationkwhInvestment(osv.osv):
             inv.erpChanges(),
             member_id = member_ids[0],
             nshares = old_investment['nshares'],
+            emission_id = old_investment['emission_id'][0]
         ), context)
 
         new_investment = self.browse(cursor, uid, new_investment_id)
@@ -1201,6 +1299,7 @@ class GenerationkwhInvestment(osv.osv):
     def mark_as_paid(self, cursor, uid, ids, purchase_date, movementline_id=None):
         Soci = self.pool.get('somenergia.soci')
         ResUser = self.pool.get('res.users')
+        Emission = self.pool.get('generationkwh.emission')
         user = ResUser.read(cursor, uid, uid, ['name'])
         for id in ids:
             inversio = self.read(cursor, uid, id, [
@@ -1210,6 +1309,7 @@ class GenerationkwhInvestment(osv.osv):
                 'member_id',
                 'purchase_date',
                 'draft',
+                'emission_id',
                 ])
             user = ResUser.read(cursor, uid, uid, ['name'])
             nominal_amount = inversio['nshares']*gkwh.shareValue
@@ -1220,17 +1320,21 @@ class GenerationkwhInvestment(osv.osv):
             else:
                 amount = nominal_amount
 
-            inv = InvestmentState(user['name'], datetime.now(),
+            inv = self.state_actions(cursor, uid, id, user['name'], datetime.now(),
                 log = inversio['log'],
                 nominal_amount = nominal_amount,
                 purchase_date = inversio['purchase_date'],
                 draft = inversio['draft'],
             )
-
+            emission_data = Emission.read(cursor, uid, inversio['emission_id'][0], ['waiting_days', 'expiration_years'])
+            waitDays = emission_data['waiting_days']
+            expirationYears = emission_data['expiration_years']
             inv.pay(
                 date = isodate(purchase_date),
                 amount = amount,
                 move_line_id = movementline_id,
+                waitDays = waitDays,
+                expirationYears = expirationYears,
             )
             self.write(cursor, uid, id, inv.erpChanges())
 
@@ -1277,7 +1381,7 @@ class GenerationkwhInvestment(osv.osv):
             ])
             if invoice_ids: # Some tests do not generate invoice
                 self.send_mail(cursor, uid, invoice_ids[0],
-                    'account.invoice', 'generationkwh_mail_impagament')
+                    'account.invoice', '_mail_impagament',  id)
 
     def create_initial_invoices(self,cursor,uid, investment_ids):
 
@@ -1291,19 +1395,6 @@ class GenerationkwhInvestment(osv.osv):
         invoice_ids = []
 
         date_invoice = str(date.today())
-
-        # The product
-        product_id = Product.search(cursor, uid, [
-            ('default_code','=', gkwh.investmentProductCode),
-            ])[0]
-
-        product = Product.browse(cursor, uid, product_id)
-        product_uom_id = product.uom_id.id
-
-        # The journal
-        journal_id = Journal.search(cursor, uid, [
-            ('code','=',gkwh.journalCode),
-            ])[0]
 
         # The payment type
         payment_type_id = PaymentType.search(cursor, uid, [
@@ -1325,10 +1416,17 @@ class GenerationkwhInvestment(osv.osv):
                     .format(investment.name))
                 continue
 
-            invoice_name = '%s-JUST' % (
-                # TODO: Remove the GENKWHID stuff when fully migrated, error instead
-                investment.name or 'GENKWHID{}'.format(investment.id),
-            )
+            # The product
+            product = investment.emission_id.investment_product_id
+
+            # TODO: Remove the GENKWHID stuff when fully migrated, error instead
+            invoice_name = '%s-JUST' % '{}'.format(investment.id)
+            if investment.name:
+                 invoice_name = '%s-JUST' % investment.name
+            elif investment.emission_id.type == 'genkwh':
+                 invoice_name = '%s-JUST' % 'GENKWHID{}'.format(investment.id)
+            elif investment.emission_id.type == 'apo':
+                 invoice_name = '%s-JUST' % 'APOID{}'.format(investment.id)
 
             # Ensure unique invoice
             existingInvoice = Invoice.search(cursor,uid,[
@@ -1346,19 +1444,9 @@ class GenerationkwhInvestment(osv.osv):
 
             # The partner
             partner_id = investment.member_id.partner_id.id
+
+            account_inv_id = self.investment_actions(cursor, uid, investment.id).get_or_create_investment_account(cursor, uid, partner_id)
             partner = Partner.browse(cursor, uid, partner_id)
-
-            # Get or create partner specific accounts
-            if not partner.property_account_liquidacio:
-                partner.button_assign_acc_410()
-            if not partner.property_account_gkwh:
-                partner.button_assign_acc_1635()
-
-            if (
-                not partner.property_account_gkwh or
-                not partner.property_account_liquidacio
-                ):
-                partner = partner.browse()[0]
 
             # Check if exist bank account
             if not partner.bank_inversions:
@@ -1370,7 +1458,7 @@ class GenerationkwhInvestment(osv.osv):
 
             mandate_id = self.get_or_create_payment_mandate(cursor, uid,
                 partner_id, partner.bank_inversions.iban,
-                gkwh.mandateName, gkwh.creditorCode)
+                investment.emission_id.mandate_name, gkwh.creditorCode)
 
             # Default invoice fields for given partner
             vals = {}
@@ -1383,7 +1471,7 @@ class GenerationkwhInvestment(osv.osv):
                 'type': 'out_invoice',
                 'name': invoice_name,
                 'number': invoice_name,
-                'journal_id': journal_id,
+                'journal_id': investment.emission_id.journal_id.id,
                 'account_id': partner.property_account_liquidacio.id,
                 'partner_bank': partner.bank_inversions.id,
                 'payment_type': payment_type_id,
@@ -1396,10 +1484,19 @@ class GenerationkwhInvestment(osv.osv):
             invoice_id = Invoice.create(cursor, uid, vals)
             Invoice.write(cursor,uid, invoice_id,{'sii_to_send':False})
 
+            # Memento of mutable data
+            investmentMemento = ns()
+            investmentMemento.pendingCapital = investment.nshares * gkwh.shareValue
+            investmentMemento.investmentId = investment.id
+            investmentMemento.investmentName = investment.name
+            investmentMemento.investmentPurchaseDate = investment.purchase_date
+            investmentMemento.investmentLastEffectiveDate = investment.last_effective_date
+            investmentMemento.investmentInitialAmount = investment.nshares * gkwh.shareValue
+
             line = dict(
                 InvoiceLine.product_id_change(cursor, uid, [],
-                    product=product_id,
-                    uom=product_uom_id,
+                    product=product.id,
+                    uom=product.uom_id.id,
                     partner_id=partner_id,
                     type='in_invoice',
                     ).get('value', {}),
@@ -1409,9 +1506,10 @@ class GenerationkwhInvestment(osv.osv):
                 ),
                 quantity = investment.nshares,
                 price_unit = gkwh.shareValue,
-                product_id = product_id,
+                product_id = product.id,
                 # partner specific account, was generic from product
-                account_id = partner.property_account_gkwh.id,
+                account_id = account_inv_id,
+                note = investmentMemento.dump(),
             )
             # rewrite relation
             line['invoice_line_tax_id'] = [
@@ -1439,7 +1537,6 @@ class GenerationkwhInvestment(osv.osv):
         specified model name. If none is open, then creates a new one.
         """
         Invoice = self.pool.get('account.invoice')
-
         order_id = self.get_or_create_open_payment_order(cursor, uid, model_name,
                     True)
         Invoice.afegeix_a_remesa(cursor,uid,invoice_ids, order_id)
@@ -1449,28 +1546,43 @@ class GenerationkwhInvestment(osv.osv):
         Creates the invoices, open them and add the current payment order.
         Called from the investment_payment_wizard.
         """
-        Investment = self.pool.get('generationkwh.investment')
+        Invoice = self.pool.get('account.invoice')
 
-        invoice_ids, errors = Investment.create_initial_invoices(cursor,uid, investment_ids)
+        invoice_ids, errors = self.create_initial_invoices(cursor,uid, investment_ids)
         if invoice_ids:
-            Investment.open_invoices(cursor, uid, invoice_ids)
-            Investment.invoices_to_payment_order(cursor, uid,
-                invoice_ids, gkwh.investmentPaymentMode)
+            self.open_invoices(cursor, uid, invoice_ids)
+            payment_mode = self.investment_actions(cursor, uid, investment_ids[0]).get_payment_mode_name(cursor, uid)
+            self.invoices_to_payment_order(cursor, uid,
+                invoice_ids, payment_mode)
             for invoice_id in invoice_ids:
+                invoice_data = Invoice.read(cursor, uid, invoice_id, ['origin'])
+                investment_ids = self.search(cursor, uid,[
+                    ('name','=',invoice_data['origin'])])
                 self.send_mail(cursor, uid, invoice_id,
-                    'account.invoice', 'generationkwh_mail_pagament')
+                    'account.invoice', '_mail_pagament', investment_ids[0])
         return invoice_ids, errors
 
-    def send_mail(self, cursor, uid, id, model, template):
+    def send_mail(self, cursor, uid, id, model, template, investment_id=None):
 
         PEAccounts = self.pool.get('poweremail.core_accounts')
         WizardInvoiceOpenAndSend = self.pool.get('wizard.invoice.open.and.send')
         MailMockup = self.pool.get('generationkwh.mailmockup')
+        IrModelData = self.pool.get('ir.model.data')
+        if not investment_id:
+            investment_id = id
+        prefix = self.investment_actions(cursor, uid, investment_id).get_prefix_semantic_id()
+        template_id = IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', prefix + template
+        )[1]
+        PETemplate = self.pool.get('poweremail.templates')
 
-        from_id = PEAccounts.search(cursor, uid,[
-           ('name','=','Generation kWh')
-            ])
-
+        from_id = PETemplate.read(cursor, uid, template_id)['enforce_from_account']
+        if not from_id:
+            from_id = PEAccounts.search(cursor, uid,[
+               ('name','=','Generation kWh')
+                ])
+        else:
+            from_id = from_id[:1]
         ctx = {
             'active_ids': [id],
             'active_id': id,
@@ -1483,14 +1595,14 @@ class GenerationkwhInvestment(osv.osv):
         with AsyncMode('sync') as asmode:
             if MailMockup.isActive(cursor, uid):
                 MailMockup.send_mail(cursor, uid, ns(
-                                template = template,
+                                template = prefix + template,
                                 model = model,
                                 id = id,
                                 from_id = from_id,
                             ).dump())
             else:
                 WizardInvoiceOpenAndSend.envia_mail_a_client(
-                    cursor, uid, id,model,template, ctx)
+                    cursor, uid, id, model, prefix + template, ctx)
 
     def cancel(self,cursor,uid, ids, context=None):
         User = self.pool.get('res.users')
@@ -1840,6 +1952,9 @@ class GenerationkwhInvestment(osv.osv):
             (6, 0, line.get('invoice_line_tax_id', []))
         ]
         InvoiceLine.create(cursor, uid, line)
+
+        irpf_amount_current_year = round(irpf_amount_current_year,2)
+        irpf_amount = round(irpf_amount,2)
 
         self.irpfRetentionLine(cursor, uid, investment, irpf_amount_current_year, invoice_id, isodate(date_invoice), investmentMemento)
         self.irpfRetentionLine(cursor, uid, investment, irpf_amount, invoice_id, isodate(date_invoice)-relativedelta(years=1), investmentMemento)
