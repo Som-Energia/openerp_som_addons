@@ -1332,6 +1332,29 @@ class InvestmentTests(testing.OOTestCase):
                                                         )
             self.assertEqual(amount, 0)
 
+    @freeze_time("2020-06-11")
+    def test__get_max_investment__withInvestments_overEmissionLimit(self):
+        with self.assertRaises(InvestmentException) as ctx:
+            with Transaction().start(self.database) as txn:
+                cursor = txn.cursor
+                uid = txn.user
+                partner_id = self.IrModelData.get_object_reference(
+                    cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                )[1]
+                emission_id = self.IrModelData.get_object_reference(
+                    cursor, uid, 'som_generationkwh', 'emissio_apo2'
+                )[1]
+                self.Emission.write(cursor, uid, emission_id,
+                                    {'limited_period_amount': 1000,
+                                     'amount_emission': 4900,
+                                     'limited_period_end_date': '2020-06-10'})
+
+                amount = self.Investment.get_max_investment(cursor, uid,
+                                                            partner_id, 'APO_202006'
+                                                            )
+
+        self.assertEqual(str(ctx.exception),'Emission completed')
+
     @freeze_time("2020-06-13")
     def test__get_max_investment__withInvestments_outOfTemporaLimit(self):
         with Transaction().start(self.database) as txn:
@@ -1559,4 +1582,118 @@ class InvestmentTests(testing.OOTestCase):
                     'amortized_amount': 0.0,
                     'name': u'GKWH00001'
                 })
+
+    def test__effective_investments_tuple__allGKWH(self):
+        """
+        Check effective investments tuple, only Generation
+        :return:
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            inv_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
+                        )[1]
+
+            inv_tuple = self.Investment.effective_investments_tuple(cursor, uid)
+
+            self.assertEquals(inv_tuple, [(1, False, False, 10), (1, '2020-10-12', '2044-10-12', 10), (5, '2020-11-12', '2044-11-12', 5)])
+
+    def test__effective_investments_tuple__allAPO(self):
+        """
+        Check effective investments tuple, only Generation
+        :return:
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            inv_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
+                        )[1]
+
+            inv_tuple = self.Investment.effective_investments_tuple(cursor, uid, emission_type='apo')
+
+            self.assertEquals(set(inv_tuple), set([(1, False, False, 50), (1, False, False, 10), (4, '2020-03-12', False, 10)]))
+
+    def test__effective_investments_tuple__oneAPO(self):
+        """
+        Check effective investments tuple, only Generation
+        :return:
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            inv_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
+                        )[1]
+
+            inv_tuple = self.Investment.effective_investments_tuple(cursor, uid, emission_type='apo', emission_code='APO_202006')
+
+            self.assertEquals(inv_tuple, [(1, False, False, 50)])
+
+    def test__member_has_effective__onlyGKWH(self):
+        """
+        Check if member has Generation
+        :return:
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            member_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'soci_generation'
+                        )[1]
+
+            has_effectives = self.Investment.member_has_effective(cursor, uid, member_id, '2010-01-01','2022-01-01')
+
+            self.assertTrue(has_effectives)
+
+    def test__member_has_effective__onlyAPO(self):
+        """
+        Check if member has Generation
+        :return:
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            member_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'soci_aportacions'
+                        )[1]
+
+            has_effectives = self.Investment.member_has_effective(cursor, uid, member_id, '2010-01-01','2022-01-01', emission_type='apo')
+
+            self.assertTrue(has_effectives)
+
+    def test__member_has_effective__noGKWH(self):
+        """
+        Check if member has Generation
+        :return:
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            member_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'soci_aportacions'
+                        )[1]
+
+            has_effectives = self.Investment.member_has_effective(cursor, uid, member_id, '2010-01-01','2022-01-01')
+
+            self.assertFalse(has_effectives)
+
+    def test__member_has_effective__noAPO(self):
+        """
+        Check if member has Generation
+        :return:
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            member_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'soci_generation'
+                        )[1]
+
+            has_effectives = self.Investment.member_has_effective(cursor, uid, member_id, '2010-01-01','2022-01-01', emission_type='apo')
+
+            self.assertFalse(has_effectives)
+
+
 # vim: et ts=4 sw=4

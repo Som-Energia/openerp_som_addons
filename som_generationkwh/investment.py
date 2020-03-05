@@ -187,7 +187,7 @@ class GenerationkwhInvestment(osv.osv):
         return contracts
 
     def effective_investments_tuple(self, cursor, uid,
-            member=None, start=None, end=None,
+            member=None, start=None, end=None, emission_type=None, emission_code=None,
             context=None):
         """
             List active investments between start and end, both included,
@@ -198,7 +198,18 @@ class GenerationkwhInvestment(osv.osv):
             If neither start or end are specified all investments are listed
             active or not.
         """
-        filters = []
+        Emission = self.pool.get('generationkwh.emission')
+        emission_filters = []
+        if emission_type is None:
+            emission_filters = [('type', '=', 'genkwh')]
+        else:
+            emission_filters = [('type', '=', emission_type)]
+        if emission_code:
+            emission_filters = emission_filters + [('code', '=', emission_code)]
+        emission_ids = Emission.search(cursor, uid, emission_filters)
+
+        filters = [('emission_id', 'in', emission_ids)]
+
         if member: filters.append( ('member_id','=',member) )
         if end: filters += [
             ('first_effective_date','<=',end), # No activation also filtered
@@ -233,7 +244,7 @@ class GenerationkwhInvestment(osv.osv):
         ]
 
     def effective_investments(self, cursor, uid,
-            member, start, end,
+            member, start, end, emission_code=None,
             context=None):
 
         return [
@@ -244,15 +255,15 @@ class GenerationkwhInvestment(osv.osv):
                 shares=shares,
             )
             for member, first, last, shares
-            in self.effective_investments_tuple(cursor, uid, member, start, end, context)
+            in self.effective_investments_tuple(cursor, uid, member, start, end, emission_code, context)
         ]
 
     def member_has_effective(self, cursor, uid,
-            member_id, first_date, last_date,
+            member_id, first_date, last_date, emission_type=None, emission_code=None,
             context=None):
 
         return len(self.effective_investments_tuple(cursor, uid,
-            member_id, first_date, last_date, context))>0
+            member_id, first_date, last_date, emission_type, emission_code, context))>0
 
     def _effectivePeriod(self, purchaseDate, waitingDays, expirationYears):
         if waitingDays is None:
@@ -601,6 +612,9 @@ class GenerationkwhInvestment(osv.osv):
         return dayShares if dayShares > 0 else 0
 
     def get_total_saving_partner(self, cursor, uid, partner_id, start_date, end_date):
+        """
+        :param partner_id: In this function, partner_id is the partner of Investment, not the Parnter of Invoice.
+        """
         GenerationkwhInvoiceLineOwner = self.pool.get('generationkwh.invoice.line.owner')
         total_amount_saving = 0
         gffl_added = set()
@@ -1972,10 +1986,10 @@ class InvestmentProvider(ErpWrapper):
         return Investment.effective_investments( self.cursor, self.uid,
                 member, start, end, self.context)
 
-    def effectiveForMember(self, member, first_date, last_date):
+    def effectiveForMember(self, member, first_date, last_date, emission_code=None):
         Investment = self.erp.pool.get('generationkwh.investment')
         return Investment.member_has_effective(self.cursor, self.uid,
-            member, first_date, last_date, self.context)
+            member, first_date, last_date, emission_code, self.context)
 
 
 GenerationkwhInvestment()

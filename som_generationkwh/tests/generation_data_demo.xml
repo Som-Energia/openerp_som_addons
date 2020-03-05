@@ -45,9 +45,9 @@
                    search="[('default_code','=','APO_AE')]" />
             <field name="investment_payment_mode_id" model="payment.mode"
                    search="[('name','=','APORTACIONS (Enginyers)')]" />
-            <field name="bridge_account_payments_id" model="account.account"
-                   search="[('code','=','555000000010')]" />
+            <field name="bridge_account_payments_id" ref="pgc_555000000011" />
         </record>
+
         <!-- Partner -->
         <record id="res_partner_inversor1" model="res.partner">
             <field name="name">Gil, Pere</field>
@@ -73,6 +73,8 @@
             <field name="partner_id" ref="res_partner_inversor1"/>
             <field name="baixa">False</field>
         </record>
+
+        <!-- Clienta no sòcia -->
         <record id="res_partner_noinversor1" model="res.partner">
             <field name="name">Puig, Anna</field>
         </record>
@@ -86,6 +88,8 @@
                 <field name="type">default</field>
                 <field name="partner_id" ref="res_partner_noinversor1"/>
         </record>
+
+        <!-- Sòcia no inversora -->
         <record id="res_partner_noinversor2" model="res.partner">
             <field name="name">Lovelace, Ada</field>
             <field name="ref">S202003</field>
@@ -105,6 +109,8 @@
             <field name="partner_id" ref="res_partner_noinversor2"/>
             <field name="baixa">False</field>
         </record>
+
+        <!-- Sòcia inversora 2 -->
         <record id="res_partner_inversor2" model="res.partner">
             <field name="name">Associació Morera Montsant</field>
             <field name="ref">S202002</field>
@@ -127,6 +133,58 @@
         </record>
         <record id="soci_0002" model="somenergia.soci">
             <field name="partner_id" ref="res_partner_inversor2"/>
+            <field name="baixa">False</field>
+       </record>
+
+        <!-- Sòcia inversora de només aportacions -->
+        <record id="res_partner_aportacions" model="res.partner">
+            <field name="name">Alina Aníssimova</field>
+            <field name="ref">S202003</field>
+            <field name="vat">ES16405474B</field>
+        </record>
+        <record id="res_partner_address_aportacions" model="res.partner.address">
+            <field name="city">Deltebre</field>
+            <field name="name">Esperança, 8</field>
+            <field name="zip">43580</field>
+            <field name="title">Ms.</field>
+            <field name="country_id" model="res.country" search="[('name','=','Espanya')]"/>
+            <field name="street">Esperança, 8</field>
+            <field name="type">default</field>
+            <field name="partner_id" ref="res_partner_aportacions"/>
+        </record>
+        <record model="res.partner.bank" id="partner_bank_aportacions">
+            <field name="iban">ES3701517119600211219240</field>
+            <field name="state">iban</field>
+            <field name="partner_id" ref="res_partner_aportacions"></field>
+        </record>
+        <record id="soci_aportacions" model="somenergia.soci">
+            <field name="partner_id" ref="res_partner_aportacions"/>
+            <field name="baixa">False</field>
+       </record>
+
+        <!-- Sòcia inversora de només generationkwh -->
+        <record id="res_partner_generation" model="res.partner">
+            <field name="name">Kathleen McNulty Mauchly Antonelli</field>
+            <field name="ref">S202004</field>
+            <field name="vat">ES93646384K</field>
+        </record>
+        <record id="res_partner_address_generation" model="res.partner.address">
+            <field name="city">Arbeca</field>
+            <field name="name">Carrer de Lleida, 32</field>
+            <field name="zip">25140</field>
+            <field name="title">Ms.</field>
+            <field name="country_id" model="res.country" search="[('name','=','Espanya')]"/>
+            <field name="street">Carrer de Lleida, 32</field>
+            <field name="type">default</field>
+            <field name="partner_id" ref="res_partner_generation"/>
+        </record>
+        <record model="res.partner.bank" id="partner_bank_generation">
+            <field name="iban">ES3502243156350965980326</field>
+            <field name="state">iban</field>
+            <field name="partner_id" ref="res_partner_aportacions"></field>
+        </record>
+        <record id="soci_generation" model="somenergia.soci">
+            <field name="partner_id" ref="res_partner_generation"/>
             <field name="baixa">False</field>
        </record>
 
@@ -153,6 +211,20 @@
             <field name="last_effective_date">2044-10-12</field>
             <field name="emission_id" ref='emissio_genkwh' />
         </record>
+        <record id="genkwh_0003" model="generationkwh.investment">
+            <field name="name">GKWH00003</field>
+            <field name="nshares">5</field>
+            <field name="member_id" ref="soci_generation"/>
+            <field name="active">True</field>
+            <field name="draft">False</field>
+            <field name="amortized_amount">0</field>
+            <field name="order_date">2019-11-01</field>
+            <field name="signed_date">2019-11-02</field>
+            <field name="purchase_date">2019-11-12</field>
+            <field name="first_effective_date">2020-11-12</field>
+            <field name="last_effective_date">2044-11-12</field>
+            <field name="emission_id" ref='emissio_genkwh' />
+        </record>
         <record id="apo_0001" model="generationkwh.investment">
             <field name="name">APO00001</field>
             <field name="nshares">10</field>
@@ -169,6 +241,17 @@
             <field name="active">False</field>
             <field name="order_date">2020-06-01</field>
             <field name="emission_id" ref='emissio_apo2' />
+        </record>
+        <record id="apo_0003" model="generationkwh.investment">
+            <field name="name">APO00003</field>
+            <field name="nshares">10</field>
+            <field name="member_id" ref="soci_aportacions"/>
+            <field name="active">True</field>
+            <field name="order_date">2020-03-04</field>
+            <field name="purchase_date">2020-03-12</field>
+            <field name="first_effective_date">2020-03-12</field>
+            <field name="draft">False</field>
+            <field name="emission_id" ref='emissio_apo' />
         </record>
         <record id="res_bank_1234" model="res.bank">
             <field name="name">TestBank</field>
