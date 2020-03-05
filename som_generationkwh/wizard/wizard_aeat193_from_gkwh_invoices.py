@@ -80,9 +80,11 @@ class WizardComputeMod193Invoice(osv.osv_memory):
         cursor.execute(query, dict(start=dates['start'], end=dates['end']))
 
         new_linies = 0
-        updated_lines = 0
-        for partner_id, partner_vat, amount in cursor.fetchall():
-            amount = float(amount)
+        for data in cursor.fetchall():
+            partner_id = data[0]
+            partner_vat = data[1]
+            amount = float(data[2])
+
             part_add_id = part_add_obj.search(cursor, uid, [('partner_id', '=', partner_id)])
             if not part_add_id:
                 raise osv.except_osv("Error",
@@ -95,16 +97,12 @@ class WizardComputeMod193Invoice(osv.osv_memory):
                                      _(u"L'adreça amb ID {} pel partner amb VAT {} no té definida província. "
                                        u"Aquesta és necessària pel procés. Si us plau revisi les dades.").
                                      format(part_add_id, partner_vat))
-            search_params = [
-                ('partner_vat', '=', partner_vat),
-                ('report_id', '=', report.id),
-                ('tax_percent', '=', abs(wiz.tax_id.amount) * 100)
-            ]
 
+            partner_nif = partner_vat.replace('ES', '')
             vals = common_vals.copy()
             vals.update({
                 'partner_id': partner_id,
-                'partner_vat': partner_vat,
+                'partner_vat': partner_nif,
                 'amount': amount,
                 'amount_base': amount,
                 'amount_tax': amount * abs(wiz.tax_id.amount),
@@ -114,24 +112,10 @@ class WizardComputeMod193Invoice(osv.osv_memory):
                 'fiscal_address_id': part_add_id[0]
             })
 
-            record_ids = record_obj.search(cursor, uid, search_params)
-            if record_ids:
-                if len(record_ids) > 1:
-                    raise osv.except_osv("Error",
-                                         _(u"S'ha trobat més d'una línia per al client amb VAT '{0}'. I per la taxa"
-                                           u"Revisin les dades si us plau.").
-                                         format(partner_vat))
-                record_vals = record_obj.read(cursor, uid, record_ids[0], ['amount', 'amount_base', 'amount_tax'])
-                record_vals.pop('id')
-                for key, value in record_vals:
-                    record_vals[key] = value + vals[key]
-                record_obj.write(cursor, uid, record_ids[0], record_vals)
-                updated_lines += 1
-            else:
-                record_obj.create(cursor, uid, vals)
-                new_linies += 1
+            record_obj.create(cursor, uid, vals)
+            new_linies += 1
 
-        txt += u'\nAfegides {} línies al model 193 i modificades {} de les existents'.format(new_linies, updated_lines)
+        txt += u'\nAfegides {} línies al model 193.'.format(new_linies)
 
         wiz.write({'info': txt, 'state': 'done'})
 
