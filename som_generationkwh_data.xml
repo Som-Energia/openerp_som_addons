@@ -1495,6 +1495,7 @@ ${text_legal}
             <field name="amount_emission">0</field>
             <field name="state">draft</field>
             <field name="type">genkwh</field>
+            <field name="code">GKWH</field>
             <field name="grace_period">2</field>
             <field name="expiration_years">25</field>
             <field name="waiting_days">365</field>
