@@ -4,15 +4,16 @@ from yamlns import namespace as ns
 import pooler
 from generationkwh.isodates import isodate
 from dateutil.relativedelta import relativedelta
+from datetime import datetime
 
 class AccountInvoice(osv.osv):
     _name = 'account.invoice'
     _inherit = 'account.invoice'
 
-    def investmentAmortization_notificationData_asDict(self, cursor, uid, ids):
-        return dict(self.investmentAmortization_notificationData(cursor, uid, ids))
+    def investmentCreationAPO_notificationData_asDict(self, cursor, uid, ids):
+        return dict(self.investmentCreationAPO_notificationData(cursor, uid, ids))
 
-    def investmentAmortization_notificationData(self, cursor, uid, ids):
+    def investmentCreationAPO_notificationData(self, cursor, uid, ids):
         def dateFormat(dateIso):
             return isodate(dateIso).strftime("%d/%m/%Y")
         def moneyFormat(amount):
@@ -22,7 +23,9 @@ class AccountInvoice(osv.osv):
         pool = pooler.get_pool(cursor.dbname)
         Invoice = pool.get('account.invoice')
         Partner = pool.get('res.partner')
+        PartnerAddress = pool.get('res.partner.address')
         InvoiceLine = pool.get('account.invoice.line')
+        Investment = pool.get('generationkwh.investment')
 
         account_id = ids[0]
 
@@ -37,6 +40,7 @@ class AccountInvoice(osv.osv):
             'amount_total',
             'name',
             'partner_bank',
+            'address_invoice_id',
             ])
 
         if not invoice:
@@ -44,29 +48,29 @@ class AccountInvoice(osv.osv):
 
         if not invoice['partner_id']:
             raise Exception("No partner related to invoice {}".format(account_id))
+
         partner = Partner.read(cursor, uid, invoice['partner_id'][0], [
             'vat',
             'name',
         ])
 
+        partner_address = PartnerAddress.read(cursor, uid, invoice['address_invoice_id'][0], ['email', 'street'])
         invoice_line = InvoiceLine.read(cursor,uid, invoice['invoice_line'][0],['note'])
         mutable_information = ns.loads(invoice_line['note'] or '{}')
 
-        report.receiptDate = dateFormat(invoice['date_invoice'])
+        investment = Investment.read(cursor, uid, mutable_information.investmentId, ['order_date'])
+        report.invoiceDate = dateFormat(invoice['date_invoice'])
         # TODO: non spanish vats not covered by tests
         report.ownerNif = partner['vat'][2:] if partner['vat'][:2]=='ES' else partner['vat']
+
         report.inversionName = mutable_information.investmentName
         report.ownerName = partner['name']
         report.inversionPendingCapital = moneyFormat(float(mutable_information.pendingCapital))
         report.inversionInitialAmount = moneyFormat(mutable_information.investmentInitialAmount)
-        report.inversionPurchaseDate = dateFormat(mutable_information.investmentPurchaseDate)
-        report.inversionExpirationDate = dateFormat(mutable_information.investmentLastEffectiveDate)
-        report.amortizationAmount = moneyFormat(invoice['amount_total'])
-        report.amortizationName = invoice['name']
+        report.inversionOrderDate = datetime.strftime(datetime.strptime(investment['order_date'],'%Y-%m-%d'),'%d/%m/%Y')
         report.inversionBankAccount = invoice['partner_bank'][1]
-        report.amortizationTotalPayments = mutable_information.amortizationTotalNumber
-        report.amortizationDate = dateFormat(mutable_information.amortizationDate)
-        report.amortizationNumPayment = mutable_information.amortizationNumber
+        report.partnerAddress = partner_address['street']
+        report.partnerEmail = partner_address['email']
 
         return report
 

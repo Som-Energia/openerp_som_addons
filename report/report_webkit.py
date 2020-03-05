@@ -20,4 +20,11 @@ webkit_report.WebKitParser(
     parser=report_webkit_html
 )
 
+webkit_report.WebKitParser(
+    'report.contract.apo',
+    'account.invoice',
+    'som_generationkwh/report/report_contract_apo.mako',
+    parser=report_webkit_html
+)
+
 # vim: et ts=4 sw=4

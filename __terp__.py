@@ -2,23 +2,28 @@
 {
   "name": "Generation kWh",
   "description": """Support for SomEnergia's Generation kWh in GisceERP""",
-  "version": "2.5.4",
+  "version": "2.5.7",
   "author": "GISCE-TI & Som Energia",
   "category": "Master",
   "depends": [
     'base',
+    'product',
     "poweremail",
     "poweremail_references",
     'som_polissa_soci',
     'som_inversions',
     'som_plantmeter',
     'l10n_ES_aeat_mod193',
+    'l10n_ES_aeat_sii',
+    'remeses_base',
+    'som_poweremail_common_templates',
     ],
   "init_xml": [],
   "demo_xml": [
       "tests/generation_data_demo.xml",
       ],
   "update_xml": [
+    "amortization_report.xml",
     "som_generationkwh_data.xml",
     "giscedata_facturacio_view.xml",
     "som_generationkwh_view.xml",
@@ -36,7 +41,7 @@
     "somenergia_soci_data.xml",
     "security/som_generationkwh_security.xml",
     "security/ir.model.access.csv",
-    "amortization_report.xml",
+    "emission_view.xml",
     ],
   "active": False,
   "installable": True

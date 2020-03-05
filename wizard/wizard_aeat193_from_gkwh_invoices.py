@@ -75,7 +75,8 @@ class WizardComputeMod193Invoice(osv.osv_memory):
         }
 
         query_file = (u"%s/som_generationkwh/sql/aeat193_from_gkwh_invoices_query.sql" % config['addons_path'])
-        query = open(query_file).read()
+        with open(query_file) as f:
+            query = f.read()
         cursor.execute(query, dict(start=dates['start'], end=dates['end']))
 
         new_linies = 0
@@ -83,6 +84,7 @@ class WizardComputeMod193Invoice(osv.osv_memory):
             partner_id = data[0]
             partner_vat = data[1]
             amount = float(data[2])
+
             part_add_id = part_add_obj.search(cursor, uid, [('partner_id', '=', partner_id)])
             if not part_add_id:
                 raise osv.except_osv("Error",

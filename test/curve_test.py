@@ -12,7 +12,9 @@ import genkwh_curve
 from genkwh_curve import isodate
 from yamlns import namespace as ns
 import generationkwh.investmentmodel as gkwh
+from somutils.testutils import destructiveTest
 
+@destructiveTest
 class CurveExporter_Test(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
