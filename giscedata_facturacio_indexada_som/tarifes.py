@@ -107,6 +107,10 @@ class Tarifa61BPoolSOM(TarifaPoolSOM, Tarifa61BPool):
     pass
 
 
+class Tarifa62PoolSOM(TarifaPoolSOM, Tarifa62Pool):
+    pass
+
+
 TARIFFS_FACT = {
     '2.0A': Tarifa20APoolSOM,
     '2.0DHA': Tarifa20DHAPoolSOM,
@@ -117,4 +121,5 @@ TARIFFS_FACT = {
     '3.1A LB': Tarifa31ALBPoolSOM,
     '6.1A': Tarifa61APoolSOM,
     '6.1B': Tarifa61BPoolSOM,
+    '6.2': Tarifa62PoolSOM,
 }
