@@ -419,6 +419,9 @@ class GenerationkWhAssignment(osv.osv):
             LEFT JOIN
                 generationkwh_assignment AS assignment
                 ON assignment.member_id = investment.member_id
+            LEFT JOIN
+                generationkwh_emission AS emission
+                ON emission.id = investment.emission_id
             WHERE
                 -- Investment is active
                 investment.active AND
@@ -442,6 +445,8 @@ class GenerationkWhAssignment(osv.osv):
                     %(lastFirstEffectiveDate)s IS NULL OR
                     investment.first_effective_date <= %(lastFirstEffectiveDate)s
                 ) AND
+                emission.type = 'genkwh' AND
+                investment.emission_id =  emission.id AND
                 TRUE
             GROUP BY
                 investment.member_id
