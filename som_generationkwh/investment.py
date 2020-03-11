@@ -244,7 +244,7 @@ class GenerationkwhInvestment(osv.osv):
         ]
 
     def effective_investments(self, cursor, uid,
-            member, start, end, emission_code=None,
+            member, start, end, emission_type=None, emission_code=None,
             context=None):
 
         return [
@@ -255,7 +255,7 @@ class GenerationkwhInvestment(osv.osv):
                 shares=shares,
             )
             for member, first, last, shares
-            in self.effective_investments_tuple(cursor, uid, member, start, end, emission_code, context)
+            in self.effective_investments_tuple(cursor, uid, member, start, end, emission_type, emission_code, context)
         ]
 
     def member_has_effective(self, cursor, uid,
@@ -1984,12 +1984,12 @@ class InvestmentProvider(ErpWrapper):
     def items(self, member=None, start=None, end=None):
         Investment = self.erp.pool.get('generationkwh.investment')
         return Investment.effective_investments( self.cursor, self.uid,
-                member, start, end, self.context)
+                member, start, end, context=self.context)
 
-    def effectiveForMember(self, member, first_date, last_date, emission_code=None):
+    def effectiveForMember(self, member, first_date, last_date, emission_type=None, emission_code=None):
         Investment = self.erp.pool.get('generationkwh.investment')
         return Investment.member_has_effective(self.cursor, self.uid,
-            member, first_date, last_date, emission_code, self.context)
+            member, first_date, last_date, emisson_type, emission_code, self.context)
 
 
 GenerationkwhInvestment()

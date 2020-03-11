@@ -75,7 +75,9 @@ class SomenergiaSoci(osv.osv):
     def _search_has_gkwh(self, cursor, uid, obj, field_name, args,
                          context=None):
         """ Search has_gkwh members"""
-        sql = "SELECT  distinct(member_id) FROM generationkwh_investment"
+        sql = """SELECT distinct(member_id)
+                    FROM generationkwh_investment WHERE emission_id  IN
+                    ( SELECT id from generationkwh_emission where type = 'genkwh')"""
         cursor.execute(sql)
         vals = [v[0] for v in cursor.fetchall()]
 
