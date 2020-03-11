@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
-    <data>
+    <data noupdate="1">
         <record id="report_amortization_gkwh" model="ir.actions.report.xml">
             <field name="report_type">webkit</field>
             <field name="report_name">amortization.gkwh</field>
