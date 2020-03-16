@@ -573,7 +573,7 @@ class GenerationkwhInvestment(osv.osv):
 
     def pending_amortization_summary(self, cursor, uid, current_date, ids=None):
 
-        inv_ids = ids or self.search(cursor, uid, [], order='id')
+        inv_ids = ids or self.search(cursor, uid, [('emission_id.type','=','genkwh')], order='id')
         invs = self.read(cursor, uid, inv_ids, [
             'purchase_date',
             'amortized_amount',
@@ -645,7 +645,7 @@ class GenerationkwhInvestment(osv.osv):
 
         #obtenir total accions inverions
         total_dayshares_year = 1
-        list_inv_id = self.search(cursor, uid, [('member_id','=',member_id)])
+        list_inv_id = self.search(cursor, uid, [('member_id','=',member_id), ('emission_id.type','=','genkwh')])
         for inv_id in list_inv_id:
             inv_obj = self.read(cursor, uid, inv_id, ['first_effective_date','last_effective_date','nshares', 'name'])
             if inv_obj['first_effective_date']:
@@ -665,7 +665,7 @@ class GenerationkwhInvestment(osv.osv):
         amortization_ids = []
         amortization_errors = []
 
-        investment_ids = ids or self.search(cursor, uid, [], order='id')
+        investment_ids = ids or self.search(cursor, uid, [('emission_id.type','=','genkwh')], order='id')
         investments = self.read(cursor, uid, investment_ids, [
             'purchase_date',
             'amortized_amount',
