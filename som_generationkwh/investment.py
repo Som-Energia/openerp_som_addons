@@ -1989,7 +1989,7 @@ class InvestmentProvider(ErpWrapper):
     def effectiveForMember(self, member, first_date, last_date, emission_type=None, emission_code=None):
         Investment = self.erp.pool.get('generationkwh.investment')
         return Investment.member_has_effective(self.cursor, self.uid,
-            member, first_date, last_date, emisson_type, emission_code, self.context)
+            member, first_date, last_date, emission_type, emission_code, self.context)
 
 
 GenerationkwhInvestment()
