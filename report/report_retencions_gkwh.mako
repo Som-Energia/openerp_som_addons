@@ -25,11 +25,12 @@
         position: fixed;
         display: block;
         margin-top: 110px;
+        font-size: 10px;
     }
     .subtitle {
       padding-top: 50px;
       text-align: left;
-      font-size: 20px;
+      font-size: 16px;
     }
     .label {
       width: 150px;
