@@ -56,8 +56,9 @@
     partner_id = investment.member_id.partner_id.id
     data_inici = date(year, 1, 1).isoformat()
     data_fi = date(year, 12, 31).isoformat()
-    estalvi = Investment.get_total_saving_partner(cursor, uid, partner_id, data_inici, data_fi)
-    retencio = Investment.get_irpf_amount(cursor, uid, investment_id , member_id, year)
+    irpf_values = get_irpf_amounts(cursor, uid, investment_id , member_id, year)
+    estalvi = irpf_values['irpf_saving']
+    retencio = irpf_values['irpf_amount']
     %>
      <img  style="float: left; position: fixed; z-index:-1; margin-top: -10px;" src="${addons_path}/som_inversions/report/logo.jpg" width="150" height="150"/>
     <div class="logo_footer">
@@ -85,7 +86,7 @@
       </tr>
       <tr>
         <td class="label">${_("Tipus d'aportació")}:</td>
-            <td class="text">${_("Aportacions en Generation kWh")}</td>
+            <td class="text">${_("Generation kWh")}</td>
       </tr>
     </table>
     <hr />
