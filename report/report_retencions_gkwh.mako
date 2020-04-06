@@ -56,7 +56,7 @@
     partner_id = investment.member_id.partner_id.id
     data_inici = date(year, 1, 1).isoformat()
     data_fi = date(year, 12, 31).isoformat()
-    irpf_values = get_irpf_amounts(cursor, uid, investment_id , member_id, year)
+    irpf_values = Investment.get_irpf_amounts(cursor, uid, investment_id , member_id, year)
     estalvi = irpf_values['irpf_saving']
     retencio = irpf_values['irpf_amount']
     %>
