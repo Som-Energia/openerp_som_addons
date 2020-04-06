@@ -1,4 +1,6 @@
 <%
+    import logging
+    logger = logging.getLogger('openerp')
     report = objects[0]
     data = report.generationkwh_amortization_data()
 %>
