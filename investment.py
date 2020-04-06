@@ -626,7 +626,7 @@ class GenerationkwhInvestment(osv.osv):
                 gffl_added.add(invoice_obj['factura_line_id'])
         return total_amount_saving
 
-    def get_irpf_amount(self, cursor, uid, investment_id, member_id, year=None):
+    def get_irpf_amounts(self, cursor, uid, investment_id, member_id, year=None):
         Invoice = self.pool.get('account.invoice')
         InvoiceLine = self.pool.get('account.invoice.line')
         GenerationkwhInvoiceLineOwner = self.pool.get('generationkwh.invoice.line.owner')
@@ -655,7 +655,11 @@ class GenerationkwhInvestment(osv.osv):
         inv_actual = self.read(cursor, uid, investment_id, ['first_effective_date','last_effective_date','nshares'])
         daysharesactual = self.get_dayshares_investmentyear(cursor, uid, inv_actual, start_date, end_date)
 
-        return round((daysharesactual * total_amount_saving / total_dayshares_year) * gkwh.irpfTaxValue,2)
+        ret_values = {}
+        ret_values['irpf_amount'] = round((daysharesactual * total_amount_saving / total_dayshares_year) * gkwh.irpfTaxValue,2)
+        ret_values['irpf_saving'] = total_amount_saving
+
+        return ret_values
 
 
     def amortize(self, cursor, uid, current_date, ids=None, context=None):
@@ -691,7 +695,7 @@ class GenerationkwhInvestment(osv.osv):
                     to_be_amortized,
                 ) = pending
                 amortization_date = amortization_date or False
-                irpf_amount = self.get_irpf_amount(cursor, uid, investment_id, inv['member_id'][0])
+                irpf_amount = self.get_irpf_amounts(cursor, uid, investment_id, inv['member_id'][0])['irpf_amount']
 
                 amortization_id, error = self.create_amortization_invoice(cursor, uid,
                         investment_id = investment_id,
@@ -1799,8 +1803,8 @@ class GenerationkwhInvestment(osv.osv):
 
             irpf_amount_last_year = 0
             if not self.is_last_year_amortized(cursor, uid, inversio['name'], datetime.now().year):
-                irpf_amount_last_year = self.get_irpf_amount(cursor, uid, id, inversio['member_id'][0])
-            irpf_amount_current_year = self.get_irpf_amount(cursor, uid, id, inversio['member_id'][0], datetime.now().year)
+                irpf_amount_last_year = self.get_irpf_amounts(cursor, uid, id, inversio['member_id'][0])['irpf_amount']
+            irpf_amount_current_year = self.get_irpf_amounts(cursor, uid, id, inversio['member_id'][0], datetime.now().year)['irpf_amount']
 
             invoice_id, error = self.create_divestment_invoice(cursor, uid, id,
                 date_invoice, pending_amount, irpf_amount_current_year, irpf_amount_last_year)
