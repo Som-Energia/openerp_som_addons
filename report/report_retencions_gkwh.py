@@ -4,6 +4,8 @@ from yamlns import namespace as ns
 import pooler
 from generationkwh.isodates import isodate
 from dateutil.relativedelta import relativedelta
+from datetime import datetime, timedelta, date
+import logging
 
 class GenerationkwhInvestment(osv.osv):
     _name = 'generationkwh.investment'
@@ -14,6 +16,8 @@ class GenerationkwhInvestment(osv.osv):
 
     def generationkwh_amortization_data(self, cursor, uid, ids):
         
+        logger = logging.getLogger('openerp')
+
         investment_id = ids[0]
         if not ids: raise Exception("No investments provided")
 
@@ -23,8 +27,8 @@ class GenerationkwhInvestment(osv.osv):
         ResPartner = pool.get('res.partner')
         ResPartnerAdress = pool.get('res.partner.address')
         partner_id = 1#ResPartner.search(cursor, uid, [('vat','=','ESF55091367')])
-        address = ResPartnerAdress.read(cursor, uid, partner['address'][0], ['street','zip','city','email'])
         partner = ResPartner.read(cursor, uid, partner_id, ['name','vat','address'])
+        address = ResPartnerAdress.read(cursor, uid, partner['address'][0], ['street','zip','city','email'])
         report.year = (datetime.now() - timedelta(days=365)).year
 
 
