@@ -1466,11 +1466,11 @@ ${text_legal}
 
         <record model="poweremail.templates" id="certificat_retencio_rendiment_generationkwh">
             <field name="name">Retenció sobre el rendiment Generationkwh</field>
-            <field name="object_name" model="ir.model" search="[('model', '=', 'generationkwh.investment')]"/>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'somenergia.soci')]"/>
             <field eval="0" name="save_to_drafts"/>
-            <field name="model_int_name">generationkwh.investment</field>
+            <field name="model_int_name">somenergia.soci</field>
             <field eval="1" name="use_filter"/>
-            <field name="def_to">${object.member_id.partner_id.address[0].email}</field>
+            <field name="def_to">${object.partner_id.address[0].email}</field>
             <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
             <field eval="0" name="auto_email"/>
             <field eval="0" name="single_email"/>
@@ -1478,8 +1478,8 @@ ${text_legal}
             <field name="def_subject">Certificat de retenció sobre el rendiment de GenerationkWh</field>
             <field name="template_language">mako</field>
             <field eval="0" name="send_on_create"/>
-            <field name="lang">${object.member_id.partner_id.lang}</field>
-            <field name="copyvalue">${object.member_id.partner_id.lang}</field>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="copyvalue">${object.partner_id.lang}</field>
             <field eval="0" name="send_on_write"/>
             <field name="enforce_from_account" ref="genertion_mail_account"/>
             <field name="def_body_text"><![CDATA[
@@ -1506,13 +1506,13 @@ text_legal = render(t_obj.read(
 )
 year = (datetime.now() - timedelta(days=365)).year
 %>
-% if object.member_id.partner_id.lang != "es_ES":
+% if object.partner_id.lang != "es_ES":
 <br />
 Benvolgut/da,<br />
 <br />
 Com cada any per aquestes dates, ha començat la campanya de la Renda ${year}.<br />
 <br />
-T’enviem, per si és del teu interès, el comunicat dels rendiments obtinguts i les retencions aplicades en relació al projecte GenerationkWh de SOM ENERGIA durant l’any ${year}.<br />
+T’enviem, per si és del teu interès, el comunicat dels rendiments en espècie obtinguts i les retencions aplicades en relació al projecte GenerationkWh de SOM ENERGIA durant l’any ${year}.<br />
 <br />
 Aprofitem per agrair-te una vegada més la teva implicació en el nostre projecte.<br />
 <br />
@@ -1522,16 +1522,16 @@ Equip Som Energia<br />
 generationkwh@somenergia.coop<br />
 <a href="https://www.somenergia.coop/ca">www.somenergia.coop</a><br />
 % endif
-% if object.member_id.partner_id.lang != "ca_ES" and object.member_id.partner_id.lang != "es_ES":
+% if object.partner_id.lang != "ca_ES" and object.partner_id.lang != "es_ES":
 ----------------------------------------------------------------------------------------------------
 % endif
-% if object.member_id.partner_id.lang != "ca_ES":
+% if object.partner_id.lang != "ca_ES":
 <br />
 Apreciado/a,<br />
 <br />
 Como cada año por estas fechas, ha empezado la campaña de Renta ${year}.<br />
 <br />
-Te enviamos, por si es de tu interés, comunicado de los rendimientos obtenidos y retenciones aplicadas en relación a tus inversiones en aportaciones voluntarias de SOM ENERGIA durante el año ${year}.<br />
+Te enviamos, por si es de tu interés, comunicado de los rendimientos en especie obtenidos y retenciones aplicadas en relación a tus inversiones en aportaciones voluntarias de SOM ENERGIA durante el año ${year}.<br />
 <br />
 Aprovechamos una vez más para agradecer tu implicación en nuestro proyecto.<br />
 <br />
