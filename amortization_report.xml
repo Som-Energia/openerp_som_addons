@@ -44,7 +44,7 @@
             <field eval="0" name="multi"/>
             <field eval="0" name="auto"/>
             <field eval="0" name="header"/>
-            <field name="model">generationkwh.investment</field>
+            <field name="model">somenergia.soci</field>
             <field name="type">ir.actions.report.xml</field>
             <field name="name">Retencions sobre el rendiment de GenerationKWh</field>
             <field name="report_webkit">som_generationkwh/report/report_retencions_gkwh.mako</field>
