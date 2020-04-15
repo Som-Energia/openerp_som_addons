@@ -17,9 +17,13 @@
                     <group col="2" attrs="{'invisible': [('state', '!=', 'ok')]}">
                         <label colspan="4" string="E-mails enviats correctament"/>
                         <field name="total_sent"/>
+                        <separator string="" colspan="1"/>
+                        <button string="D'acord" special="cancel" colspan="2"/>
                     </group>
                     <group col="2" attrs="{'invisible': [('state', '!=', 'error')]}">
                         <label colspan="4" string="No s'ha fet cap enviament"/>
+                        <separator string="" colspan="1"/>
+                        <button string="D'acord" special="cancel" colspan="2"/>
                     </group>
                 </form>
             </field>
