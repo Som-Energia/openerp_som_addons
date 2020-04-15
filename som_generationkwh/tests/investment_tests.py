@@ -1714,7 +1714,8 @@ class InvestmentTests(testing.OOTestCase):
 
     def test__send_emails_to_investors_with_savings_in_year__when_noFirstEffectiveDate(self):
         """
-        Check send_emails_to_investors_with_savings_in_year when no emissions for Generationkwh
+        Check send_emails_to_investors_with_savings_in_year no active investments,
+        not already paid (first_effective_date is False)
         :return:
         """
         with Transaction().start(self.database) as txn:
@@ -1729,7 +1730,8 @@ class InvestmentTests(testing.OOTestCase):
 
     def test__send_emails_to_investors_with_savings_in_year__when_invalidFirstEffectiveDate(self):
         """
-        Check send_emails_to_investors_with_savings_in_year when no emissions for Generationkwh
+        Check send_emails_to_investors_with_savings_in_year when no active investments,
+        investments out of active period (first_effective_date over fiscal year used)
         :return:
         """
         with Transaction().start(self.database) as txn:
@@ -1744,7 +1746,7 @@ class InvestmentTests(testing.OOTestCase):
 
     def test__send_emails_to_investors_with_savings_in_year__when_oneMember(self):
         """
-        Check send_emails_to_investors_with_savings_in_year when no emissions for Generationkwh
+        Check send_emails_to_investors_with_savings_in_year when one member one emission
         :return:
         """
         with Transaction().start(self.database) as txn:
@@ -1763,7 +1765,7 @@ class InvestmentTests(testing.OOTestCase):
 
     def test__send_emails_to_investors_with_savings_in_year__when_manyInvestmets_sameMember(self):
         """
-        Check send_emails_to_investors_with_savings_in_year when no emissions for Generationkwh
+        Check send_emails_to_investors_with_savings_in_year when many investments same member
         :return:
         """
         with Transaction().start(self.database) as txn:
@@ -1786,7 +1788,7 @@ class InvestmentTests(testing.OOTestCase):
 
     def test__send_emails_to_investors_with_savings_in_year__when_manyMembers(self):
         """
-        Check send_emails_to_investors_with_savings_in_year when no emissions for Generationkwh
+        Check send_emails_to_investors_with_savings_in_year when many members, one investment each
         :return:
         """
         with Transaction().start(self.database) as txn:
