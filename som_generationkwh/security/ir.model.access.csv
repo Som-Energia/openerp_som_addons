@@ -86,3 +86,5 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 "access_wizard_aeat193_from_gkwh_invoices_u","wizard.aeat193.from.gkwh.invoices","model_wizard_aeat193_from_gkwh_invoices","som_generationkwh.group_som_generationkwh_u",1,1,1,1
 "access_wizard_aeat193_from_gkwh_invoices_r","wizard.aeat193.from.gkwh.invoices","model_wizard_aeat193_from_gkwh_invoices","som_generationkwh.group_som_generationkwh_r",1,0,0,0
 "access_wizard_aeat193_from_gkwh_invoices_w","wizard.aeat193.from.gkwh.invoices","model_wizard_aeat193_from_gkwh_invoices","som_generationkwh.group_som_generationkwh_w",1,1,1,0
+"access_send_retencio_estalvi_to_members_wizard_rcwd","send.retencio.estalvi.to.members.wizard","model_send_retencio_estalvi_to_members_wizard","base.group_erp_manager",1,1,1,1
+"access_send_retencio_estalvi_to_members_wizard_rcwd","send.retencio.estalvi.to.members.wizard","model_send_retencio_estalvi_to_members_wizard","base.group_system",1,1,1,1

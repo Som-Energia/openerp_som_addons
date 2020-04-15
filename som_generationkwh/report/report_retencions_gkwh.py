@@ -27,7 +27,7 @@ class GenerationkwhInvestment(osv.osv):
 
         last_day = str(year) + '-12-31'
 
-        all_investments_ids_in_year = Investment.search(cursor, uid, [('first_effective_date','<=', last_day)])
+        all_investments_ids_in_year = Investment.search(cursor, uid, [('first_effective_date','<=', last_day), ('emission_id.type', '=', 'genkwh')])
         if all_investments_ids_in_year is None:
             raise Exception("No investments found at year {}".format(year))
 
@@ -39,11 +39,11 @@ class GenerationkwhInvestment(osv.osv):
         members = set(members)
         email_params = RetencionsSobreRendimentGenerationKwh.get_email_params(cursor, uid, self)
 
+        successfully_sent = 0
         for member_id in members:
-            RetencionsSobreRendimentGenerationKwh.send_email(
-                cursor, uid, self, member_id, email_params
-            )
-        return True
+            if RetencionsSobreRendimentGenerationKwh.send_email(cursor, uid, self, member_id, email_params) > 0:
+                successfully_sent += 1
+        return successfully_sent
 
     def added_member_investment_in_year(self, cursor, uid, year=None):
         if year is None:
@@ -167,15 +167,10 @@ class RetencionsSobreRendimentGenerationKwh():
                 'priority': '0',
             }
 
-            power_email_tmpl_obj = _object.pool.get('poweremail.templates')
-            template = power_email_tmpl_obj.browse(cursor, uid, [email_params['template_id']])
-
-            if template.report_template.context:
-                ctx.update(eval(template.report_template.context))
-
             params = {'state': 'single', 'priority': '0', 'from': ctx['from']}
             wiz_id = wiz_send_obj.create(cursor, uid, params, ctx)
-            return wiz_send_obj.send_mail(cursor, uid, [wiz_id], ctx)
+            wiz_send_obj.send_mail(cursor, uid, [wiz_id], ctx)
+            return 1
 
         except Exception as e:
             logger.info(
