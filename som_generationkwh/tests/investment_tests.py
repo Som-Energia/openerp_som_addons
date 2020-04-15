@@ -1696,5 +1696,108 @@ class InvestmentTests(testing.OOTestCase):
 
             self.assertFalse(has_effectives)
 
+    def test__send_emails_to_investors_with_savings_in_year__whenNoGenkwhEmission(self):
+        """
+        Check send_emails_to_investors_with_savings_in_year when no emissions for Generationkwh
+        :return:
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            all_emissions = self.Emission.search(cursor, uid, [])
+            self.Emission.write(cursor, uid, all_emissions, dict(type='apo'))
+
+            # year 2020 in order to take effects over genkwh_0002 generationkwh investment
+            ret_value = self.Soci.send_emails_to_investors_with_savings_in_year(cursor, uid, year=2020)
+            self.assertEqual(ret_value, 0)
+
+    def test__send_emails_to_investors_with_savings_in_year__when_noFirstEffectiveDate(self):
+        """
+        Check send_emails_to_investors_with_savings_in_year when no emissions for Generationkwh
+        :return:
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            all_gen_investments = self.Investment.search(cursor, uid, [('emission_id.type', '=', 'genkwh')])
+            self.Investment.write(cursor, uid, all_gen_investments, dict(first_effective_date=False))
+
+            ret_value = self.Soci.send_emails_to_investors_with_savings_in_year(cursor, uid, year=2020)
+            self.assertEqual(ret_value, 0)
+
+    def test__send_emails_to_investors_with_savings_in_year__when_invalidFirstEffectiveDate(self):
+        """
+        Check send_emails_to_investors_with_savings_in_year when no emissions for Generationkwh
+        :return:
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            all_gen_investments = self.Investment.search(cursor, uid, [('emission_id.type', '=', 'genkwh')])
+            self.Investment.write(cursor, uid, all_gen_investments, dict(first_effective_date='01-01-2021'))
+
+            ret_value = self.Soci.send_emails_to_investors_with_savings_in_year(cursor, uid, year=2020)
+            self.assertEqual(ret_value, 0)
+
+    def test__send_emails_to_investors_with_savings_in_year__when_oneMember(self):
+        """
+        Check send_emails_to_investors_with_savings_in_year when no emissions for Generationkwh
+        :return:
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            investments = self.Investment.search(cursor, uid, [('emission_id.type', '=', 'genkwh'),
+                                                               ('first_effective_date', '>=', '01-01-2020'),
+                                                               ('first_effective_date', '<=', '12-31-2020')])
+            one_valid_investment = investments[0]
+            investments.remove(one_valid_investment)
+            self.Investment.write(cursor, uid, investments, dict(first_effective_date=False))
+
+            ret_value = self.Soci.send_emails_to_investors_with_savings_in_year(cursor, uid, year=2020)
+            self.assertEqual(ret_value, 1)
+
+    def test__send_emails_to_investors_with_savings_in_year__when_manyInvestmets_sameMember(self):
+        """
+        Check send_emails_to_investors_with_savings_in_year when no emissions for Generationkwh
+        :return:
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            investments = self.Investment.search(cursor, uid, [('emission_id.type', '=', 'genkwh'),
+                                                               ('first_effective_date', '>=', '01-01-2020'),
+                                                               ('first_effective_date', '<=', '12-31-2020')])
+
+            member_id = self.Investment.read(cursor, uid, investments[0], ['member_id'])['member_id'][0]
+            for investment_id in investments:
+                self.Investment.write(cursor, uid, investments, dict(member_id=member_id))
+
+            ret_value = self.Soci.send_emails_to_investors_with_savings_in_year(cursor, uid, year=2020)
+
+            self.assertTrue(len(investments) > 1)
+            self.assertEqual(ret_value, 1)
+
+
+    def test__send_emails_to_investors_with_savings_in_year__when_manyMembers(self):
+        """
+        Check send_emails_to_investors_with_savings_in_year when no emissions for Generationkwh
+        :return:
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            investments = self.Investment.search(cursor, uid, [('emission_id.type', '=', 'genkwh'),
+                                                               ('first_effective_date', '>=', '01-01-2020'),
+                                                               ('first_effective_date', '<=', '12-31-2020')])
+
+            ret_value = self.Soci.send_emails_to_investors_with_savings_in_year(cursor, uid, year=2020)
+            self.assertEqual(ret_value, len(investments))
 
 # vim: et ts=4 sw=4
