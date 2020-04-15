@@ -36,6 +36,7 @@ class InvestmentTests(testing.OOTestCase):
         self.Emission = self.openerp.pool.get('generationkwh.emission')
         self.PaymentLine = self.openerp.pool.get('payment.line')
         self.PaymentOrder = self.openerp.pool.get('payment.order')
+        self.Soci = self.openerp.pool.get('somenergia.soci')
         self.maxDiff = None
 
     def tearDown(self):
