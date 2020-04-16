@@ -156,13 +156,13 @@ class GenerationkwhInvestment(osv.osv):
     )
 
     def investment_actions(self, cursor, uid, id):
-        inv = self.browse(cursor, uid, id, ['emission_id'])
+        inv = self.browse(cursor, uid, id)
         if str(inv.emission_id.type) == 'apo':
             return AportacionsActions(self, cursor, uid, 1)
         return GenerationkwhActions(self, cursor, uid, 1)
 
     def state_actions(self, cursor, uid, id, user, timestamp, **values):
-        inv = self.browse(cursor, uid, id, ['emission_id'])
+        inv = self.browse(cursor, uid, id)
         if str(inv.emission_id.type) == 'apo':
             return AportacionsState(user, timestamp, **values)
         return GenerationkwhState(user, timestamp, **values)

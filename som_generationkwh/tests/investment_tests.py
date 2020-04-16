@@ -971,7 +971,7 @@ class InvestmentTests(testing.OOTestCase):
             emission_id = self.IrModelData.get_object_reference(
                         cursor, uid, 'som_generationkwh', 'emissio_apo'
                         )[1]
-            emission_data = self.Emission.browse(cursor, uid, emission_id, ['name'])
+            emission_data = self.Emission.browse(cursor, uid, emission_id)
 
             self.Investment.invoices_to_payment_order(cursor, uid, invoice_ids,
                     emission_data.investment_payment_mode_id.name)
@@ -1012,7 +1012,7 @@ class InvestmentTests(testing.OOTestCase):
             emission_id = self.IrModelData.get_object_reference(
                         cursor, uid, 'som_generationkwh', 'emissio_apo'
                         )[1]
-            emission_data = self.Emission.browse(cursor, uid, emission_id, ['name'])
+            emission_data = self.Emission.browse(cursor, uid, emission_id)
 
             self.Investment.invoices_to_payment_order(cursor, uid,
                     invoice_ids, emission_data.investment_payment_mode_id.name)
