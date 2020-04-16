@@ -55,7 +55,7 @@ class WizardInvestmentAmortization(osv.osv_memory):
         current_date =  wiz.date_end
         investment_ids = context.get('active_ids', [])
         if context.get('search_all'):
-            investment_ids = Investment.search(cursor, uid, [('active', '=', True)])
+            investment_ids = Investment.search(cursor, uid, [('active', '=', True),('emission_id.type','=','genkwh')])
 
         limit_date = date.today() + timedelta(days=31)
         if isodate(current_date) > limit_date:
@@ -101,7 +101,7 @@ class WizardInvestmentAmortization(osv.osv_memory):
         amortized_invoice_errors = []
         investment_ids = context.get('active_ids', [])
         if context.get('search_all'):
-            investment_ids = Investment.search(cursor, uid, [('active', '=', True)])
+            investment_ids = Investment.search(cursor, uid, [('active', '=', True),('emission_id.type','=','genkwh')])
 
         amortized_invoice_ids, amortized_invoice_errors = Investment.amortize(cursor, uid, current_date, investment_ids, context)
 
