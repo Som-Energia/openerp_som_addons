@@ -1695,7 +1695,26 @@ class InvestmentTests(testing.OOTestCase):
             has_effectives = self.Investment.member_has_effective(cursor, uid, member_id, '2010-01-01','2022-01-01', emission_type='apo')
 
             self.assertFalse(has_effectives)
+            
+    def test__pending_amortization_summary__manyAmortizationsSameInvestment(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            inv_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'genkwh_0002'
+                        )[1]
 
+            self.assertEqual((2, 80),
+                self.Investment.pending_amortization_summary(cursor, uid, '2022-11-20', [inv_id]))
+
+    def test__pending_amortization_summary__allInvestments(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            self.assertEqual((4, 120),
+                self.Investment.pending_amortization_summary(cursor, uid, '2022-11-20'))
+            
     def test__send_emails_to_investors_with_savings_in_year__whenNoGenkwhEmission(self):
         """
         Check send_emails_to_investors_with_savings_in_year when no emissions for Generationkwh
