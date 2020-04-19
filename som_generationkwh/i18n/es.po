@@ -2920,6 +2920,7 @@ msgstr "9.5 Todas las controversias que puedan surgir en relación con este cont
 msgid ""
 "Som Energia, SCCL, CIF F55091367 | Domicili Pic de Peguera, 11 A 28 - 17003 "
 "- Girona | aporta@somenergia.coop | www.somenergia.coop"
+msgstr "Som Energia, SCCL, CIF F55091367 | Domicilio Pic de Peguera, 11 A 28 - 17003 - Girona | aporta@somenergia.coop | www.somenergia.coop"
 
 #: rml:som_generationkwh/report/report_retencions_gkwh.mako:57
 msgid "CIF:"
@@ -2964,4 +2965,3 @@ msgstr "Ahorro"
 #: rml:som_generationkwh/report/report_retencions_gkwh.mako:101
 msgid "19% Retenció sobre l'estalvi"
 msgstr "19% Retencion sobre el ahorro"
-msgstr "Som Energia, SCCL, CIF F55091367 | Domicilio Pic de Peguera, 11 A 28 - 17003 - Girona | aporta@somenergia.coop | www.somenergia.coop"
