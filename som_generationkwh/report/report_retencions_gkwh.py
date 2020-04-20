@@ -25,9 +25,12 @@ class GenerationkwhInvestment(osv.osv):
         pool = pooler.get_pool(cursor.dbname)
         Investment = pool.get('generationkwh.investment')
 
+        first_day = str(year) + '-01-01'
         last_day = str(year) + '-12-31'
 
-        all_investments_ids_in_year = Investment.search(cursor, uid, [('first_effective_date','<=', last_day), ('emission_id.type', '=', 'genkwh')])
+        all_investments_ids_in_year = Investment.search(cursor, uid, [('first_effective_date', '<=', last_day),
+                                                                      ('last_effective_date', '>=', first_day),
+                                                                      ('emission_id.type', '=', 'genkwh')])
         if all_investments_ids_in_year is None:
             raise Exception("No investments found at year {}".format(year))
 
