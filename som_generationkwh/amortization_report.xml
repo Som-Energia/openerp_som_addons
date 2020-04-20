@@ -37,5 +37,18 @@
             <field name="report_webkit">som_generationkwh/report/report_contract_apo.mako</field>
             <field name="webkit_header" ref="report_header_contract_apo"/>
         </record>
+        <record id="report_retencions_rendiment_gkwh" model="ir.actions.report.xml">
+            <field name="report_type">webkit</field>
+            <field name="report_name">retencions.rendiment.gkwh</field>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field eval="0" name="auto"/>
+            <field eval="0" name="header"/>
+            <field name="model">somenergia.soci</field>
+            <field name="type">ir.actions.report.xml</field>
+            <field name="name">Retencions sobre el rendiment de GenerationKWh</field>
+            <field name="report_webkit">som_generationkwh/report/report_retencions_gkwh.mako</field>
+            <field name="webkit_header" ref="report_header_contract_apo"/>
+        </record>
     </data>
 </openerp>

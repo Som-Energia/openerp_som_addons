@@ -2921,3 +2921,47 @@ msgid ""
 "Som Energia, SCCL, CIF F55091367 | Domicili Pic de Peguera, 11 A 28 - 17003 "
 "- Girona | aporta@somenergia.coop | www.somenergia.coop"
 msgstr "Som Energia, SCCL, CIF F55091367 | Domicilio Pic de Peguera, 11 A 28 - 17003 - Girona | aporta@somenergia.coop | www.somenergia.coop"
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:57
+msgid "CIF:"
+msgstr "CIF"
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:58
+msgid "Domicili:"
+msgstr "Domicilio"
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:59
+msgid "Adreça electrònica:"
+msgstr "Correo electrónico"
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:63
+msgid "Informació fiscal"
+msgstr "Infomación fiscal"
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:66
+msgid "Comunicat de rendiments per a la declaració de renda"
+msgstr "Comunicado de rendimientos para la declaracion de la renta"
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:71
+msgid "Data"
+msgstr "Fecha"
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:75
+msgid "Exercici"
+msgstr "Ejercicio"
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:79
+msgid "Tipus d'aportació"
+msgstr "Tipo de aportación"
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:90
+msgid "NIF titular"
+msgstr "NIF titular"
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:97
+msgid "Estalvi"
+msgstr "Ahorro"
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:101
+msgid "19% Retenció sobre l'estalvi"
+msgstr "19% Retencion sobre el ahorro"

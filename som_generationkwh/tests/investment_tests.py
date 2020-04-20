@@ -36,6 +36,7 @@ class InvestmentTests(testing.OOTestCase):
         self.Emission = self.openerp.pool.get('generationkwh.emission')
         self.PaymentLine = self.openerp.pool.get('payment.line')
         self.PaymentOrder = self.openerp.pool.get('payment.order')
+        self.Soci = self.openerp.pool.get('somenergia.soci')
         self.maxDiff = None
 
     def tearDown(self):
@@ -1694,7 +1695,7 @@ class InvestmentTests(testing.OOTestCase):
             has_effectives = self.Investment.member_has_effective(cursor, uid, member_id, '2010-01-01','2022-01-01', emission_type='apo')
 
             self.assertFalse(has_effectives)
-
+            
     def test__pending_amortization_summary__manyAmortizationsSameInvestment(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
@@ -1713,5 +1714,111 @@ class InvestmentTests(testing.OOTestCase):
 
             self.assertEqual((4, 120),
                 self.Investment.pending_amortization_summary(cursor, uid, '2022-11-20'))
+            
+    def test__send_emails_to_investors_with_savings_in_year__whenNoGenkwhEmission(self):
+        """
+        Check send_emails_to_investors_with_savings_in_year when no emissions for Generationkwh
+        :return:
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            all_emissions = self.Emission.search(cursor, uid, [])
+            self.Emission.write(cursor, uid, all_emissions, dict(type='apo'))
+
+            # year 2020 in order to take effects over genkwh_0002 generationkwh investment
+            ret_value = self.Soci.send_emails_to_investors_with_savings_in_year(cursor, uid, year=2020)
+            self.assertEqual(ret_value, 0)
+
+    def test__send_emails_to_investors_with_savings_in_year__when_noFirstEffectiveDate(self):
+        """
+        Check send_emails_to_investors_with_savings_in_year no active investments,
+        not already paid (first_effective_date is False)
+        :return:
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            all_gen_investments = self.Investment.search(cursor, uid, [('emission_id.type', '=', 'genkwh')])
+            self.Investment.write(cursor, uid, all_gen_investments, dict(first_effective_date=False))
+
+            ret_value = self.Soci.send_emails_to_investors_with_savings_in_year(cursor, uid, year=2020)
+            self.assertEqual(ret_value, 0)
+
+    def test__send_emails_to_investors_with_savings_in_year__when_invalidFirstEffectiveDate(self):
+        """
+        Check send_emails_to_investors_with_savings_in_year when no active investments,
+        investments out of active period (first_effective_date over fiscal year used)
+        :return:
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            all_gen_investments = self.Investment.search(cursor, uid, [('emission_id.type', '=', 'genkwh')])
+            self.Investment.write(cursor, uid, all_gen_investments, dict(first_effective_date='01-01-2021'))
+
+            ret_value = self.Soci.send_emails_to_investors_with_savings_in_year(cursor, uid, year=2020)
+            self.assertEqual(ret_value, 0)
+
+    def test__send_emails_to_investors_with_savings_in_year__when_oneMember(self):
+        """
+        Check send_emails_to_investors_with_savings_in_year when one member one emission
+        :return:
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            investments = self.Investment.search(cursor, uid, [('emission_id.type', '=', 'genkwh'),
+                                                               ('first_effective_date', '>=', '01-01-2020'),
+                                                               ('first_effective_date', '<=', '12-31-2020')])
+            one_valid_investment = investments[0]
+            investments.remove(one_valid_investment)
+            self.Investment.write(cursor, uid, investments, dict(first_effective_date=False))
+
+            ret_value = self.Soci.send_emails_to_investors_with_savings_in_year(cursor, uid, year=2020)
+            self.assertEqual(ret_value, 1)
+
+    def test__send_emails_to_investors_with_savings_in_year__when_manyInvestmets_sameMember(self):
+        """
+        Check send_emails_to_investors_with_savings_in_year when many investments same member
+        :return:
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            investments = self.Investment.search(cursor, uid, [('emission_id.type', '=', 'genkwh'),
+                                                               ('first_effective_date', '>=', '01-01-2020'),
+                                                               ('first_effective_date', '<=', '12-31-2020')])
+
+            member_id = self.Investment.read(cursor, uid, investments[0], ['member_id'])['member_id'][0]
+            for investment_id in investments:
+                self.Investment.write(cursor, uid, investments, dict(member_id=member_id))
+
+            ret_value = self.Soci.send_emails_to_investors_with_savings_in_year(cursor, uid, year=2020)
+
+            self.assertTrue(len(investments) > 1)
+            self.assertEqual(ret_value, 1)
+
+
+    def test__send_emails_to_investors_with_savings_in_year__when_manyMembers(self):
+        """
+        Check send_emails_to_investors_with_savings_in_year when many members, one investment each
+        :return:
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            investments = self.Investment.search(cursor, uid, [('emission_id.type', '=', 'genkwh'),
+                                                               ('first_effective_date', '>=', '01-01-2020'),
+                                                               ('first_effective_date', '<=', '12-31-2020')])
+
+            ret_value = self.Soci.send_emails_to_investors_with_savings_in_year(cursor, uid, year=2020)
+            self.assertEqual(ret_value, len(investments))
 
 # vim: et ts=4 sw=4
