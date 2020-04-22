@@ -2,8 +2,7 @@
 from osv import osv, fields
 from yamlns import namespace as ns
 import pooler
-from generationkwh.isodates import isodate
-from dateutil.relativedelta import relativedelta
+import generationkwh.investmentmodel as gkwh
 from datetime import datetime, timedelta, date
 import logging
 
@@ -57,7 +56,9 @@ class GenerationkwhInvestment(osv.osv):
 
     def generationkwh_amortization_data(self, cursor, uid, ids):
 
-        if not ids: raise Exception("No member provided")
+        if not ids:
+            raise Exception("No member provided")
+
         member_id = ids[0]
 
         report = ns()
@@ -80,8 +81,9 @@ class GenerationkwhInvestment(osv.osv):
         else:
             report.address_email = None
 
-        investments = Investment.search(cursor, uid, [('emission_id.type', '=', 'genkwh'), ('member_id','=', member_id)])
-        first_investment = Investment.browse(cursor, uid, investments[0])
+        investment_id = Investment.search(cursor, uid, [('emission_id.type', '=', 'genkwh'),
+                                                        ('member_id', '=', member_id)])
+        first_investment = Investment.browse(cursor, uid, investment_id[0])
 
         report.address_city = address['city']
         report.address_zip = address['zip']
@@ -90,31 +92,18 @@ class GenerationkwhInvestment(osv.osv):
         report.partner_vat = partner['vat']
         report.partner_address = partner['address']
 
-        member_id = first_investment.member_id.id
-
-        total_irpf_values = {}
-        for investment_id in investments:
-            if Investment.read(cursor, uid, investment_id, ['first_effective_date'])['first_effective_date'] is False:
-                continue
-
-            irpf_values = Investment.get_irpf_amounts(cursor, uid, investment_id , member_id, report.year)
-
-            if 'total_irpf_saving' in total_irpf_values:
-                total_irpf_values['total_irpf_saving'] += irpf_values['irpf_saving']
-            else:
-                total_irpf_values['total_irpf_saving'] = irpf_values['irpf_saving']
-
-            if 'total_irpf_amount' in total_irpf_values:
-                total_irpf_values['total_irpf_amount'] += irpf_values['irpf_amount']
-            else:
-                total_irpf_values['total_irpf_amount'] = irpf_values['irpf_amount']
-
+        partner_id = first_investment.member_id.partner_id.id
         report.data_inici = date(report.year, 1, 1).isoformat()
         report.data_fi = date(report.year, 12, 31).isoformat()
+
+        irpf_value_saving = Investment.get_total_saving_partner(cursor, uid, partner_id,
+                                                                report.data_inici, report.data_fi)
+        irpf_value_retencio = round(irpf_value_saving * gkwh.irpfTaxValue, 2)
+
         report.member_name = first_investment.member_id.partner_id.name
         report.member_vat = first_investment.member_id.partner_id.vat[2:]
-        report.estalvi = total_irpf_values['total_irpf_saving']
-        report.retencio = total_irpf_values['total_irpf_amount']
+        report.estalvi = irpf_value_saving
+        report.retencio = irpf_value_retencio
         report.language = first_investment.member_id.partner_id.lang
 
         return report
