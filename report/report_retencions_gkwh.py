@@ -51,9 +51,6 @@ class GenerationkwhInvestment(osv.osv):
         if year is None:
             raise Exception("Year must have a value")
 
-    def generationkwh_amortization_data_as_dict(self, cursor, uid, ids):
-        return dict(self.investmentAmortization_notificationData(cursor, uid, ids))
-
     def generationkwh_amortization_data(self, cursor, uid, ids):
 
         if not ids:
