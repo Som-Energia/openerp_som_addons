@@ -2,7 +2,10 @@
 from osv import osv, fields
 from yamlns import namespace as ns
 import pooler
+from tools import config
 import generationkwh.investmentmodel as gkwh
+from generationkwh.isodates import isodate
+from dateutil.relativedelta import relativedelta
 from datetime import datetime, timedelta, date
 import logging
 
@@ -47,12 +50,8 @@ class GenerationkwhInvestment(osv.osv):
                 successfully_sent += 1
         return successfully_sent
 
-    def added_member_investment_in_year(self, cursor, uid, year=None):
-        if year is None:
-            raise Exception("Year must have a value")
 
     def generationkwh_amortization_data(self, cursor, uid, ids):
-
         if not ids:
             raise Exception("No member provided")
 
@@ -61,12 +60,17 @@ class GenerationkwhInvestment(osv.osv):
         report = ns()
         pool = pooler.get_pool(cursor.dbname)
         Accounts = pool.get('poweremail.core_accounts')
-        Investment = pool.get('generationkwh.investment')
         ResPartner = pool.get('res.partner')
         ResPartnerAdress = pool.get('res.partner.address')
-        partner_id = 1  # ResPartner.search(cursor, uid, [('vat','=','ESF55091367')])
-        partner = ResPartner.read(cursor, uid, partner_id, ['name', 'vat', 'address'])
-        address = ResPartnerAdress.read(cursor, uid, partner['address'][0], ['street', 'zip', 'city'])
+        Soci = pool.get('somenergia.soci')
+        som_partner_id = 1  # ResPartner.search(cursor, uid, [('vat','=','ESF55091367')])
+        som_partner = ResPartner.read(cursor, uid, som_partner_id, ['name', 'vat', 'address'])
+        som_address = ResPartnerAdress.read(cursor, uid, som_partner['address'][0], ['street', 'zip', 'city'])
+        report.address_city = som_address['city']
+        report.address_zip = som_address['zip']
+        report.address_street = som_address['street']
+        report.partner_name = som_partner['name']
+        report.partner_vat = som_partner['vat']
 
         report.year = (datetime.now() - timedelta(days=365)).year
 
@@ -78,32 +82,33 @@ class GenerationkwhInvestment(osv.osv):
         else:
             report.address_email = None
 
-        investment_id = Investment.search(cursor, uid, [('emission_id.type', '=', 'genkwh'),
-                                                        ('member_id', '=', member_id)])
-        first_investment = Investment.browse(cursor, uid, investment_id[0])
-
-        report.address_city = address['city']
-        report.address_zip = address['zip']
-        report.address_street = address['street']
-        report.partner_name = partner['name']
-        report.partner_vat = partner['vat']
-        report.partner_address = partner['address']
-
-        partner_id = first_investment.member_id.partner_id.id
+        partner_id = Soci.read(cursor, uid, member_id, ['partner_id'])['partner_id'][0]
+        partner = ResPartner.read(cursor, uid, partner_id, ['vat', 'name', 'lang'])
         report.data_inici = date(report.year, 1, 1).isoformat()
         report.data_fi = date(report.year, 12, 31).isoformat()
 
-        irpf_value_saving = Investment.get_total_saving_partner(cursor, uid, partner_id,
-                                                                report.data_inici, report.data_fi)
-        irpf_value_retencio = round(irpf_value_saving * gkwh.irpfTaxValue, 2)
+        query_file = (u"%s/som_generationkwh/sql/genkwh_savings_between_dates_for_partner.sql" % config['addons_path'])
 
-        report.member_name = first_investment.member_id.partner_id.name
-        report.member_vat = first_investment.member_id.partner_id.vat[2:]
+        with open(query_file) as f:
+            query = f.read()
+
+        irpf_value_saving = 0
+        irpf_value_retencio = 0
+
+        cursor.execute(query, dict(partner_id=partner_id, start=report.data_inici, end=report.data_fi))
+        result = cursor.fetchall()
+
+        if result:
+            irpf_value_saving = result[0][2]
+            irpf_value_retencio = round(irpf_value_saving * gkwh.irpfTaxValue, 2)
+
+        report.member_name = partner['name']
+        report.member_vat = partner['vat'][2:]
         report.estalvi = irpf_value_saving
         report.retencio = irpf_value_retencio
-        report.language = first_investment.member_id.partner_id.lang
+        report.language = partner['lang']
 
-        return report
+        return dict(report)
 
 GenerationkwhInvestment()
 
