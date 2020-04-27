@@ -58,10 +58,10 @@
     </div>
     <br/>
     <h1 class="title">
-      ${_("Informació fiscal")}
+      ${_(u"Informació fiscal")}
     </h1>
     <h2 class="subtitle">
-      ${_("Comunicat de rendiments per a la declaració de renda")} ${data['year']}
+      ${_(u"Comunicat de rendiments per a la declaració de renda")} ${data['year']}
     </h2>
     <hr />
     <table>
@@ -74,7 +74,7 @@
         <td class="text">${data['year']}</td>
       </tr>
       <tr>
-        <td class="label">${_("Tipus d'aportació")}:</td>
+        <td class="label">${_(u"Tipus d'aportació")}:</td>
             <td class="text">${_("Generation kWh")}</td>
       </tr>
     </table>
@@ -96,7 +96,7 @@
         <td class="text">${formatLang(data['estalvi'], monetary=True)}</td>
       </tr>
       <tr>
-        <td class="label">${_("19% Retenció sobre l'estalvi")}:</td>
+        <td class="label">${_(u"19% Retenció sobre l'estalvi")}:</td>
         <td class="text">${formatLang(data['retencio'], monetary=True)}</td>
       </tr>
     </table>
