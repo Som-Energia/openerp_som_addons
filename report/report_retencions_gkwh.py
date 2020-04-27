@@ -2,7 +2,7 @@
 from osv import osv, fields
 from yamlns import namespace as ns
 import pooler
-from tools import config
+from osv.expression import OOQuery
 import generationkwh.investmentmodel as gkwh
 from generationkwh.isodates import isodate
 from dateutil.relativedelta import relativedelta
@@ -87,19 +87,24 @@ class GenerationkwhInvestment(osv.osv):
         report.data_inici = date(report.year, 1, 1).isoformat()
         report.data_fi = date(report.year, 12, 31).isoformat()
 
-        query_file = (u"%s/som_generationkwh/sql/genkwh_savings_between_dates_for_partner.sql" % config['addons_path'])
+        pool = pooler.get_pool(cursor.dbname)
+        genln_obj = pool.get('generationkwh.invoice.line.owner')
+        q = OOQuery(genln_obj, cursor, uid)
 
-        with open(query_file) as f:
-            query = f.read()
+        search_params = [('owner_id.id', '=', partner_id),
+                         ('factura_id.invoice_id.date_invoice', '>=', report.data_inici),
+                         ('factura_id.invoice_id.date_invoice', '<=', report.data_fi)]
+
+        sql = q.select(['saving_gkw_amount']).where(search_params)
+        cursor.execute(*sql)
 
         irpf_value_saving = 0
         irpf_value_retencio = 0
 
-        cursor.execute(query, dict(partner_id=partner_id, start=report.data_inici, end=report.data_fi))
-        result = cursor.fetchall()
+        result = cursor.dictfetchall()
 
         if result:
-            irpf_value_saving = result[0][2]
+            irpf_value_saving = sum([item['saving_gkw_amount'] for item in result])
             irpf_value_retencio = round(irpf_value_saving * gkwh.irpfTaxValue, 2)
 
         report.member_name = partner['name']
