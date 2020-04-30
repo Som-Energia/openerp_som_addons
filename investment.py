@@ -1845,7 +1845,7 @@ class GenerationkwhInvestment(osv.osv):
 
     def create_divestment_invoice(self, cursor, uid,
             investment_id, date_invoice, to_be_divested,
-            irpf_amount_current_year, irpf_amount, context=None):
+            irpf_amount_current_year=0, irpf_amount=0, context=None):
 
         Partner = self.pool.get('res.partner')
         Product = self.pool.get('product.product')
@@ -1970,12 +1970,12 @@ class GenerationkwhInvestment(osv.osv):
             (6, 0, line.get('invoice_line_tax_id', []))
         ]
         InvoiceLine.create(cursor, uid, line)
-
-        irpf_amount_current_year = round(irpf_amount_current_year,2)
-        irpf_amount = round(irpf_amount,2)
-
-        self.irpfRetentionLine(cursor, uid, investment, irpf_amount_current_year, invoice_id, isodate(date_invoice), investmentMemento)
-        self.irpfRetentionLine(cursor, uid, investment, irpf_amount, invoice_id, isodate(date_invoice)-relativedelta(years=1), investmentMemento)
+        if irpf_amount_current_year:
+            irpf_amount_current_year = round(irpf_amount_current_year,2)
+            self.irpfRetentionLine(cursor, uid, investment, irpf_amount_current_year, invoice_id, isodate(date_invoice), investmentMemento)
+        if irpf_amount:
+            irpf_amount = round(irpf_amount,2)
+            self.irpfRetentionLine(cursor, uid, investment, irpf_amount, invoice_id, isodate(date_invoice)-relativedelta(years=1), investmentMemento)
 
         Invoice.write(cursor,uid, invoice_id, dict(
             check_total = to_be_divested - irpf_amount_current_year - irpf_amount,
