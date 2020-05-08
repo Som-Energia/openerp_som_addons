@@ -762,7 +762,7 @@ class GenerationkwhInvestment(osv.osv):
 
         # The product
         product_id = Product.search(cursor, uid, [
-            ('default_code','=', gkwh.amortizationProductCode),
+            ('default_code','=', self.investment_actions(cursor, uid, investment_id).productCode),
             ])[0]
 
         product = Product.browse(cursor, uid, product_id)
@@ -770,7 +770,7 @@ class GenerationkwhInvestment(osv.osv):
 
         # The journal
         journal_id = Journal.search(cursor, uid, [
-            ('code','=',gkwh.journalCode),
+            ('code','=',self.investment_actions(cursor, uid, investment_id).journalCode),
             ])[0]
 
         # The payment type
@@ -1153,7 +1153,7 @@ class GenerationkwhInvestment(osv.osv):
 
         # The journal
         journal_id = Journal.search(cursor, uid, [
-            ('code','=',gkwh.journalCode),
+            ('code','=', gkwh.journalCode),
             ])[0]
 
         today = datetime.today()#Get date
@@ -1772,216 +1772,25 @@ class GenerationkwhInvestment(osv.osv):
         return amortized
 
     def divest(self, cursor, uid, ids, divestment_date=None):
-        Soci = self.pool.get('somenergia.soci')
-        User = self.pool.get('res.users')
-        Invoice = self.pool.get('account.invoice')
-        MoveLine = self.pool.get('account.move.line')
-        user = User.read(cursor, uid, uid, ['name'])
-        movementline_id = 1
         invoice_ids = []
         errors = []
         date_invoice = divestment_date or str(datetime.today().date())
 
         for id in ids:
-            inversio = self.read(cursor, uid, id, [
-                'log',
-                'nshares',
-                'purchase_date',
-                'amortized_amount',
-                'first_effective_date',
-                'name',
-                'move_line_id',
-                'member_id'
-            ])
-            nominal_amount = inversio['nshares']*gkwh.shareValue
-            pending_amount = nominal_amount-inversio['amortized_amount']
-            daysFromPayment = (isodate(date_invoice) - isodate(inversio['purchase_date'])).days
-
-            if daysFromPayment < gkwh.waitDaysBeforeDivest:
-                errors.append("%s: Too early to divest (< 30 days from purchase)" % inversio['name'])
-                continue
-
-            irpf_amount_last_year = 0
-            if not self.is_last_year_amortized(cursor, uid, inversio['name'], datetime.now().year):
-                irpf_amount_last_year = self.get_irpf_amounts(cursor, uid, id, inversio['member_id'][0])['irpf_amount']
-            irpf_amount_current_year = self.get_irpf_amounts(cursor, uid, id, inversio['member_id'][0], datetime.now().year)['irpf_amount']
-
-            invoice_id, error = self.create_divestment_invoice(cursor, uid, id,
-                date_invoice, pending_amount, irpf_amount_current_year, irpf_amount_last_year)
-
-            if error:
-                errors.append(error)
-                continue
-
-            self.open_invoices(cursor, uid, [invoice_id])
-            self.invoices_to_payment_order(cursor, uid,
-                    [invoice_id], gkwh.amortizationPaymentMode)
-            invoice_ids.append(invoice_id)
-
-            #Get moveline id
-            invoice_obj = Invoice.read(cursor, uid, invoice_id, [
-                'move_id',
-            ])
-            ml_invoice = invoice_obj['move_id'][0]
-            movementline_id = MoveLine.search(cursor, uid,
-                [('move_id','=',invoice_obj['move_id'][0])])[0]
-
-            inv = InvestmentState(user['name'], datetime.now(),
-                log = inversio['log'],
-                nominal_amount = nominal_amount,
-                purchase_date = inversio['purchase_date'],
-                amortized_amount = inversio['amortized_amount'],
-                first_effective_date = inversio['first_effective_date'],
-            )
-            inv.divest(
-                date = str(date_invoice),
-                amount = pending_amount,
-                move_line_id = movementline_id,
-            )
-
-            self.write(cursor, uid, id, inv.erpChanges())
+            inv = self.browse(cursor, uid, id)
+            investment_actions = GenerationkwhActions(self, cursor, uid, 1)
+            if str(inv.emission_id.type) == 'apo':
+                investment_actions = AportacionsActions(self, cursor, uid, 1)
+            investment_actions.divest(cursor, uid, id, errors, invoice_ids, date_invoice)
 
         return invoice_ids, errors
-
+        
     def create_divestment_invoice(self, cursor, uid,
-            investment_id, date_invoice, to_be_divested,
-            irpf_amount_current_year=0, irpf_amount=0, context=None):
+        investment_id, date_invoice, to_be_divested,
+        irpf_amount_current_year=0, irpf_amount=0, context=None):
 
-        Partner = self.pool.get('res.partner')
-        Product = self.pool.get('product.product')
-        Invoice = self.pool.get('account.invoice')
-        InvoiceLine = self.pool.get('account.invoice.line')
-        PaymentType = self.pool.get('payment.type')
-        Journal = self.pool.get('account.journal')
-
-        investment = self.browse(cursor, uid, investment_id)
-
-        # The partner
-        partner_id = investment.member_id.partner_id.id
-        partner = Partner.browse(cursor, uid, partner_id)
-
-        # Get or create partner specific accounts
-        if not partner.property_account_liquidacio:
-            partner.button_assign_acc_410()
-        if not partner.property_account_gkwh:
-            partner.button_assign_acc_1635()
-
-        if (
-            not partner.property_account_gkwh or
-            not partner.property_account_liquidacio
-            ):
-            partner = partner.browse()[0]
-
-        # The product
-        product_id = Product.search(cursor, uid, [
-            ('default_code','=', gkwh.amortizationProductCode),
-            ])[0]
-
-        product = Product.browse(cursor, uid, product_id)
-        product_uom_id = product.uom_id.id
-
-        # The journal
-        journal_id = Journal.search(cursor, uid, [
-            ('code','=',gkwh.journalCode),
-            ])[0]
-
-        # The payment type
-        payment_type_id = PaymentType.search(cursor, uid, [
-            ('code', '=', 'TRANSFERENCIA_CSB'),
-            ])[0]
-
-        errors = []
-        def error(message):
-            errors.append(message)
-
-        # Check if exist bank account
-        if not partner.bank_inversions:
-            return 0, u"Inversió {0}: El partner {1} no té informat un compte corrent\n".format(investment.id, partner.name)
-
-        # Memento of mutable data
-        investmentMemento = ns()
-        investmentMemento.pendingCapital = investment.nshares * gkwh.shareValue - investment.amortized_amount - to_be_divested
-        investmentMemento.divestmentDate = date_invoice
-        investmentMemento.investmentId = investment_id
-        investmentMemento.investmentName = investment.name
-        investmentMemento.investmentPurchaseDate = investment.purchase_date
-        investmentMemento.investmentLastEffectiveDate = investment.last_effective_date
-        investmentMemento.investmentInitialAmount = investment.nshares * gkwh.shareValue
-
-        invoice_name = '%s-DES' % (
-            # TODO: Remove the GENKWHID stuff when fully migrated, error instead
-            investment.name or 'GENKWHID{}'.format(investment.id),
-            )
-        # Ensure unique amortization
-        existingInvoice = Invoice.search(cursor,uid,[
-            ('name','=', invoice_name),
-            ])
-
-        if existingInvoice:
-            return 0, u"Inversió {0}: La desinversió {1} ja existeix".format(investment.id, invoice_name)
-
-        # Default invoice fields for given partner
-        vals = {}
-        vals.update(Invoice.onchange_partner_id(
-            cursor, uid, [], 'in_invoice', partner_id,
-        ).get('value', {}))
-
-        vals.update({
-            'partner_id': partner_id,
-            'type': 'in_invoice',
-            'name': invoice_name,
-            'number': invoice_name,
-            'journal_id': journal_id,
-            'account_id': partner.property_account_liquidacio.id,
-            'partner_bank': partner.bank_inversions.id,
-            'payment_type': payment_type_id,
-            #'check_total': to_be_divested,
-            # TODO: Remove the GENKWHID stuff when fully migrated, error instead
-            'origin': investment.name or 'GENKWHID{}'.format(investment.id),
-            'reference': invoice_name,
-            'date_invoice': date_invoice,
-        })
-
-        invoice_id = Invoice.create(cursor, uid, vals)
-        Invoice.write(cursor,uid, invoice_id,{'sii_to_send':False})
-
-        line = dict(
-            InvoiceLine.product_id_change(cursor, uid, [],
-                product=product_id,
-                uom=product_uom_id,
-                partner_id=partner_id,
-                type='in_invoice',
-                ).get('value', {}),
-            invoice_id = invoice_id,
-            name = _('Desinversió total de {investment} a {date} ').format(
-                investment = investment.name,
-                date = str(date_invoice),
-                ),
-            note = investmentMemento.dump(),
-            quantity = 1,
-            price_unit = to_be_divested,
-            product_id = product_id,
-            # partner specific account, was generic from product
-            account_id = partner.property_account_gkwh.id,
-        )
-
-        # no taxes apply
-        line['invoice_line_tax_id'] = [
-            (6, 0, line.get('invoice_line_tax_id', []))
-        ]
-        InvoiceLine.create(cursor, uid, line)
-        if irpf_amount_current_year:
-            irpf_amount_current_year = round(irpf_amount_current_year,2)
-            self.irpfRetentionLine(cursor, uid, investment, irpf_amount_current_year, invoice_id, isodate(date_invoice), investmentMemento)
-        if irpf_amount:
-            irpf_amount = round(irpf_amount,2)
-            self.irpfRetentionLine(cursor, uid, investment, irpf_amount, invoice_id, isodate(date_invoice)-relativedelta(years=1), investmentMemento)
-
-        Invoice.write(cursor,uid, invoice_id, dict(
-            check_total = to_be_divested - irpf_amount_current_year - irpf_amount,
-            ))
-
-        return invoice_id, errors
+        return self.investment_actions(cursor, uid, investment_id).\
+            create_divestment_invoice(cursor, uid, investment_id, date_invoice, to_be_divested, irpf_amount_current_year, irpf_amount)
 
 class InvestmentProvider(ErpWrapper):
 
