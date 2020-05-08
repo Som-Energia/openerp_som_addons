@@ -197,7 +197,6 @@ class InvestmentActions(ErpWrapper):
         Invoice.write(cursor, uid, invoice_id, dict(
             check_total=to_be_divested - irpf_amount_current_year - irpf_amount,
             ))
-        import pudb; pudb.set_trace()
         return invoice_id, errors
 
 class GenerationkwhActions(InvestmentActions):
