@@ -2261,4 +2261,121 @@ class InvestmentTests(testing.OOTestCase):
                 last_effective_date=investment.last_effective_date,
                 ))
 
+    def test__create_divestment_invoice__APO(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                        )[1]
+            investment_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0001'
+                        )[1]
+            iban = 'ES7712341234161234567890'
+            investment = self.Investment.browse(cursor, uid, investment_id)
+            mandate_id = self.Investment.get_or_create_payment_mandate(cursor, uid,
+                partner_id, iban, investment.emission_id.mandate_name, gkwh.creditorCode)
+            date_invoice = '2020-04-23'
+            pending_amount = 1000
+
+            invoice_ids, errs = self.Investment.create_divestment_invoice(cursor, uid, investment_id, date_invoice, pending_amount)
+
+            self.assertFalse(errs)
+            self.assertTrue(invoice_ids)
+            partner_data = self.Partner.browse(cursor, uid, partner_id)
+            self.assertInvoiceInfoEqual(cursor, uid, invoice_ids, u"""\
+                account_id: 410000{num_soci:0>6s} {p.name}
+                amount_total: 1000.0
+                amount_untaxed: 1000.0
+                check_total: 1000.0
+                date_invoice: '{invoice_date}'
+                id: {id}
+                invoice_line:
+                - account_analytic_id: false
+                  uos_id: PCE
+                  account_id: 163000{num_soci:0>6s} {p.name}
+                  name: 'Desinversió total de {investment_name} a {invoice_date} '
+                  discount: 0.0
+                  invoice_id:
+                  - {id}
+                  - 'SI: {investment_name}'
+                  origin: false
+                  price_unit: 1000.0
+                  price_subtotal: 1000.0
+                  note:
+                    investmentId: {investment_id}
+                    investmentInitialAmount: 1000
+                    investmentLastEffectiveDate: false
+                    investmentName: APO00001
+                    investmentPurchaseDate: false
+                    divestmentDate: '{invoice_date}'
+                    pendingCapital: 0.0 
+                  quantity: 1.0
+                  product_id: '[APO_AE] Aportacions'
+                  invoice_line_tax_id: []
+                journal_id: Factures Aportacions
+                mandate_id: {mandate_id}
+                name: {investment_name}-DES
+                number: {investment_name}-DES
+                origin: {investment_name}
+                partner_bank: {iban}
+                partner_id:
+                - {p.id}
+                - {p.name}
+                payment_type:
+                - 3 
+                - Transferencia 
+                sii_to_send: false
+                type: in_invoice
+                state: draft
+                """.format(
+                invoice_date='2020-04-23',
+                id=invoice_ids,
+                iban='ES77 1234 1234 1612 3456 7890',
+                year=2018,
+                investment_name=investment.name,
+                p=partner_data,
+                num_soci=partner_data.ref[1:],
+                investment_id=investment_id,
+                mandate_id=False,
+                ))
+
+    def test__divest_investment__APO_whenOne(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            investment_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'apo_0003'
+            )[1]
+            member_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'soci_0001'
+            )[1]
+            
+            self.Investment.write(cursor, uid, investment_id, {'member_id': member_id})
+            
+            self.Investment.divest(cursor, uid, [investment_id])
+
+            last_effective_date = self.Investment.read(cursor, uid, investment_id, ['last_effective_date'])['last_effective_date']
+            today = datetime.today().strftime("%Y-%m-%d")
+            
+            self.assertEqual(last_effective_date, today)
+
+            #2019-10-01
+    def test__divest_investment__GkWh_withOutProfit(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+            )[1]
+            investment_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'genkwh_0002'
+            )[1]
+            self.Investment.divest(cursor, uid, [investment_id])
+
+            last_effective_date = self.Investment.read(cursor, uid, investment_id, ['last_effective_date'])['last_effective_date']
+            today = datetime.today().strftime("%Y-%m-%d")
+            self.assertEqual(last_effective_date, today)
+            
+            
 # vim: et ts=4 sw=4
