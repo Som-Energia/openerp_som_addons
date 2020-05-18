@@ -363,5 +363,8 @@
             <field name="credit">0.0</field>
             <field name="journal_id" ref="journal_old_investments"/>
         </record>
+        <record id="giscedata_polissa.polissa_0001" model="giscedata.polissa">
+            <field name="titular" ref="res_partner_inversor1"></field>
+        </record>
     </data>
 </openerp>
