@@ -9,14 +9,25 @@ class ResPartner(osv.osv):
 
     def www_generationkwh_investments(self, cursor, uid, id, context=None):
         """
-        Returns the list of investments
+        Returns the list of investments type Generationkwh
         """
         Investment =self.pool.get('generationkwh.investment')
         Dealer =self.pool.get('generationkwh.dealer')
         idmap = dict(Dealer.get_members_by_partners(cursor, uid, [id]))
         if not idmap: # Not a member
             return []
-        return Investment.list(cursor, uid, idmap[id], context=context)
+        return Investment.list(cursor, uid, idmap[id], 'genkwh', context=context)
+
+    def www_aportacions_investments(self, cursor, uid, id, context=None):
+        """
+        Returns the list of investments type Aportacions
+        """
+        Investment =self.pool.get('generationkwh.investment')
+        Dealer =self.pool.get('generationkwh.dealer')
+        idmap = dict(Dealer.get_members_by_partners(cursor, uid, [id]))
+        if not idmap: # Not a member
+            return []
+        return Investment.list(cursor, uid, idmap[id], 'apo', context=context)
 
     def www_generationkwh_assignments(self, cursor, uid, id, context=None):
         Dealer =self.pool.get('generationkwh.dealer')

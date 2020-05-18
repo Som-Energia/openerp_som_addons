@@ -1773,8 +1773,8 @@ class InvestmentTests(testing.OOTestCase):
             uid = txn.user
 
             investments = self.Investment.search(cursor, uid, [('emission_id.type', '=', 'genkwh'),
-                                                               ('first_effective_date', '>=', '01-01-2020'),
-                                                               ('first_effective_date', '<=', '12-31-2020')])
+                                                               ('first_effective_date', '>=', '2020-01-01'),
+                                                               ('first_effective_date', '<=', '2020-12-31')])
             one_valid_investment = investments[0]
             investments.remove(one_valid_investment)
             self.Investment.write(cursor, uid, investments, dict(first_effective_date=False))
@@ -1792,8 +1792,8 @@ class InvestmentTests(testing.OOTestCase):
             uid = txn.user
 
             investments = self.Investment.search(cursor, uid, [('emission_id.type', '=', 'genkwh'),
-                                                               ('first_effective_date', '>=', '01-01-2020'),
-                                                               ('first_effective_date', '<=', '12-31-2020')])
+                                                               ('first_effective_date', '>=', '2020-01-01'),
+                                                               ('first_effective_date', '<=', '2020-12-31')])
 
             member_id = self.Investment.read(cursor, uid, investments[0], ['member_id'])['member_id'][0]
             for investment_id in investments:
@@ -1815,8 +1815,8 @@ class InvestmentTests(testing.OOTestCase):
             uid = txn.user
 
             investments = self.Investment.search(cursor, uid, [('emission_id.type', '=', 'genkwh'),
-                                                               ('first_effective_date', '>=', '01-01-2020'),
-                                                               ('first_effective_date', '<=', '12-31-2020')])
+                                                               ('first_effective_date', '>=', '2020-01-01'),
+                                                               ('first_effective_date', '<=', '2020-12-31')])
 
             ret_value = self.Soci.send_emails_to_investors_with_savings_in_year(cursor, uid, year=2020)
             self.assertEqual(ret_value, len(investments))
