@@ -1983,6 +1983,29 @@ class GenerationkwhInvestment(osv.osv):
 
         return invoice_id, errors
 
+    def get_stats_investment_generation(self, cursor, uid, context=None):
+        """
+        Returns a list of dict with investment GenerationKwh statistics:
+            res: {'account': account code
+                  'socis': Number of 'socis' with Generation
+                  'amount': Total investment in Generation without amortizations}
+            params: No params
+        """
+
+        result = []
+
+        if not context:
+            context = {}
+
+        socis_ids = self.search(cursor, uid, [('emission_id.type', '=', 'genkwh'), ('last_effective_date', '=', False)])
+        n_socis = len(set(socis_ids))
+        shares_data = self.read(cursor, uid, socis_ids, ['nshares'])
+        amount = sum([share_data['nshares'] for share_data in shares_data]) * 100
+
+        result.append({'amount': amount,
+                       'socis': n_socis})
+        return result
+
 class InvestmentProvider(ErpWrapper):
 
     def items(self, member=None, start=None, end=None):
