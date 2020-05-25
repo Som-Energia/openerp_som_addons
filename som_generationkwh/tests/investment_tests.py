@@ -1821,4 +1821,53 @@ class InvestmentTests(testing.OOTestCase):
             ret_value = self.Soci.send_emails_to_investors_with_savings_in_year(cursor, uid, year=2020)
             self.assertEqual(ret_value, len(investments))
 
+    def test__get_stats_investment_generation__when_last_effective_date(self):
+        """
+        Check get_stats_investment_generation when some investements with last_effective_date
+        """
+
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            inv_ids = self.Investment.search(cursor, uid, [('emission_id.type', '=', 'genkwh')])
+
+            with_last_effective_date = len(inv_ids) / 2 if inv_ids else 0
+
+            with_last_effective_date_ids = inv_ids[:with_last_effective_date]
+            without_last_effective_date_ids = inv_ids[with_last_effective_date+1:]
+
+            self.Investment.write(cursor, uid, without_last_effective_date_ids ,{'last_effective_date':False})
+            self.Investment.write(cursor, uid, with_last_effective_date_ids ,{'last_effective_date':'2019-02-01'})
+
+            ret = self.Investment.get_stats_investment_generation(cursor, uid)
+            socis = ret[0]['socis']
+
+            self.assertEqual(socis,len(without_last_effective_date_ids))
+
+    def test__get_stats_investment_generation__amount_when_last_effective_date(self):
+        """
+        Check get_stats_investment_generation when some investements with last_effective_date
+        """
+
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            inv_ids = self.Investment.search(cursor, uid, [('emission_id.type', '=', 'genkwh')])
+
+            with_last_effective_date = len(inv_ids) / 2 if inv_ids else 0
+
+            with_last_effective_date_ids = inv_ids[:with_last_effective_date]
+            without_last_effective_date_ids = inv_ids[with_last_effective_date+1:]
+
+            self.Investment.write(cursor, uid, without_last_effective_date_ids ,{'last_effective_date':False})
+            self.Investment.write(cursor, uid, without_last_effective_date_ids ,{'nshares':10})
+            self.Investment.write(cursor, uid, with_last_effective_date_ids ,{'last_effective_date':'2019-02-01'})
+
+            ret = self.Investment.get_stats_investment_generation(cursor, uid)
+            amount = ret[0]['amount']
+
+            self.assertEqual(amount, len(without_last_effective_date_ids) * 1000)
+
 # vim: et ts=4 sw=4
