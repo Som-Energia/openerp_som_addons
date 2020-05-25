@@ -1781,7 +1781,7 @@ class GenerationkwhInvestment(osv.osv):
             investment_actions = GenerationkwhActions(self, cursor, uid, 1)
             if str(inv.emission_id.type) == 'apo':
                 investment_actions = AportacionsActions(self, cursor, uid, 1)
-            investment_actions.divest(cursor, uid, id, errors, invoice_ids, date_invoice)
+            investment_actions.divest(cursor, uid, id, invoice_ids, errors, date_invoice)
 
         return invoice_ids, errors
         
