@@ -95,16 +95,17 @@ class GenerationkwhInvestment(osv.osv):
                          ('factura_id.invoice_id.date_invoice', '>=', report.data_inici),
                          ('factura_id.invoice_id.date_invoice', '<=', report.data_fi)]
 
-        sql = q.select(['saving_gkw_amount']).where(search_params)
+        sql = q.select(['saving_gkw_amount','factura_line_id']).where(search_params)
         cursor.execute(*sql)
 
         irpf_value_saving = 0
         irpf_value_retencio = 0
 
         result = cursor.dictfetchall()
+        result = {d['factura_line_id']: d['saving_gkw_amount'] for d in result}
 
         if result:
-            irpf_value_saving = sum([item['saving_gkw_amount'] for item in result])
+            irpf_value_saving = sum(result.values())
             irpf_value_retencio = round(irpf_value_saving * gkwh.irpfTaxValue, 2)
 
         report.member_name = partner['name']
