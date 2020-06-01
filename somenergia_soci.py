@@ -188,15 +188,22 @@ class SomenergiaSoci(osv.osv):
         if polisses:
             raise osv.except_osv(_('El soci no pot ser donat de baixa!'), _('El soci té al menys un contracte actiu.'))
 
-        # - Anar a la fitxa de persona sòcia (No fitxa client)
-        # - Treure categoria sòcia a General a Categories.
-        # - Clicar a Soci, soci de baixa i posar la data de la baixa.
-        # - A Notes afegir inicials de la persona que fa la baixa i data i les observacions  que facin falta.
-        # - Deixar fitxa activa.
-
         soci_category_id = imd_obj.get_object_reference(
             cursor, uid, 'som_partner_account', 'res_partner_category_soci'
         )[1]
+
+        def delete_rel(cursor, uid, categ_id, res_partner_id):
+            cursor.execute('delete from res_partner_category_rel where category_id=%s and partner_id=%s',(categ_id, res_partner_id))
+
+        res_users = self.pool.get('res.users')
+        usuari = res_users.read(cursor, uid, uid, ['name'])['name']
+        old_comment = soci_obj.read(cursor, uid, [member_id], ['comment'])[0]['comment']
+        old_comment = old_comment + '\n' if old_comment else '' 
+        comment =  "{}Baixa efectuada a data {} per: {}".format(old_comment, today, usuari)
+        soci_obj.write(cursor, uid, [member_id], {'baixa': True,
+                                                'data_baixa_soci': today,
+                                                'comment': comment })
+        delete_rel(cursor, uid, soci_category_id, res_partner_id)
 
 
     _columns = {
