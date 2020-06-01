@@ -143,7 +143,7 @@ class SomenergiaSoci(osv.osv):
         if isinstance(ids, (int, long)):
             ids = [ids]
         if len(ids) != 1:
-            raise osv.except_osv(_('adsads'), _('asdads11'))  # TODO:
+            raise osv.except_osv(_('Com ha minim es necessita un soci'))
 
         imd_obj = self.pool.get('ir.model.data')
         invest_obj = self.pool.get('generationkwh.investment')
@@ -151,9 +151,8 @@ class SomenergiaSoci(osv.osv):
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         soci_obj = self.pool.get('somenergia.soci')
         today = datetime.today().strftime('%Y-%m-%d')
-        res_partner_id = ids[0]
-
-        member_id = soci_obj.search(cursor, uid, [('partner_id', '=', res_partner_id)])[0]
+        member_id = ids[0]
+        res_partner_id = soci_obj.read(cursor, uid, member_id, ['partner_id'])['partner_id'][0]
 
         baixa = soci_obj.read(cursor, uid, [member_id], ['baixa'])[0]['baixa']
 
