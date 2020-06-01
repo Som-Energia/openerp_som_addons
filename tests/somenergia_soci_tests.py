@@ -33,11 +33,11 @@ class SomenergiaSociTests(testing.OOTestCase):
         today = date.today()
         future_date = (today + timedelta(days=365)).strftime('%Y-%m-%d')
         investment.write({'last_effective_date': future_date})
-        partner_id = investment.member_id.partner_id.id
-        self.Soci.write(self.cursor, self.uid, [investment.member_id.id], {'baixa': False, 'data_baixa_soci': None})
+        member_id = investment.member_id.id
+        self.Soci.write(self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
 
         with self.assertRaises(except_osv) as ctx:
-            self.Soci.verifica_baixa_soci(self.cursor, self.uid, partner_id)
+            self.Soci.verifica_baixa_soci(self.cursor, self.uid, member_id)
 
         self.assertEqual(ctx.exception.message,
             "warning -- El soci no pot ser donat de baixa!\n\nEl soci té inversions de generation actives.")
@@ -49,13 +49,12 @@ class SomenergiaSociTests(testing.OOTestCase):
         investment = self.Investment.browse(self.cursor, self.uid, invest_id)
         member_id = investment.member_id.id
         self.Soci.write(self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
-        partner_id = investment.member_id.partner_id.id
         investment.write({'last_effective_date': False})
         generation_invs = self.Investment.search(self.cursor, self.uid, [('member_id','=', member_id),('emission_id','=',1)])
         self.Investment.write(self.cursor, self.uid, generation_invs, {'active':False})
 
         with self.assertRaises(except_osv) as ctx:
-            self.Soci.verifica_baixa_soci(self.cursor, self.uid, partner_id)
+            self.Soci.verifica_baixa_soci(self.cursor, self.uid, member_id)
 
         self.assertEqual(ctx.exception.message,
             "warning -- El soci no pot ser donat de baixa!\n\nEl soci té aportacions actives.")
@@ -80,7 +79,7 @@ class SomenergiaSociTests(testing.OOTestCase):
                                                        'state': 'open'})
     
         with self.assertRaises(except_osv) as ctx:
-            self.Soci.verifica_baixa_soci(self.cursor, self.uid, partner_id)
+            self.Soci.verifica_baixa_soci(self.cursor, self.uid, member_id)
 
         self.assertEqual(ctx.exception.message,
             "warning -- El soci no pot ser donat de baixa!\n\nEl soci té factures pendents.")
@@ -104,7 +103,7 @@ class SomenergiaSociTests(testing.OOTestCase):
         self.Polissa.write(self.cursor, self.uid, [polissa_id], {'titular': partner_id})
     
         with self.assertRaises(except_osv) as ctx:
-            self.Soci.verifica_baixa_soci(self.cursor, self.uid, partner_id)
+            self.Soci.verifica_baixa_soci(self.cursor, self.uid, member_id)
 
         self.assertEqual(ctx.exception.message,
             "warning -- El soci no pot ser donat de baixa!\n\nEl soci té al menys un contracte actiu.")
