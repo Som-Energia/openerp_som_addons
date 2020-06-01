@@ -8,7 +8,7 @@ from osv import osv, fields
 from osv.orm import ValidateException
 from osv.osv import except_osv
 
-class ResPartnerTests(testing.OOTestCase):
+class SomenergiaSociTests(testing.OOTestCase):
 
     def setUp(self):
         self.txn = Transaction().start(self.database)
@@ -20,6 +20,7 @@ class ResPartnerTests(testing.OOTestCase):
         self.Invoice = self.openerp.pool.get('account.invoice')
         self.Factura = self.openerp.pool.get('giscedata.facturacio.factura')
         self.Polissa = self.openerp.pool.get('giscedata.polissa')
+        self.Soci = self.openerp.pool.get('somenergia.soci')
 
     def tearDown(self):
         self.txn.stop()
@@ -29,11 +30,14 @@ class ResPartnerTests(testing.OOTestCase):
             self.cursor, self.uid, 'som_generationkwh', 'genkwh_0001'
             )[1]
         investment = self.Investment.browse(self.cursor, self.uid, invest_id)
-        investment.write({'last_effective_date':'15/03/3000'})
+        today = date.today()
+        future_date = (today + timedelta(days=365)).strftime('%Y-%m-%d')
+        investment.write({'last_effective_date': future_date})
         partner_id = investment.member_id.partner_id.id
+        self.Soci.write(self.cursor, self.uid, [investment.member_id.id], {'baixa': False, 'data_baixa_soci': None})
 
         with self.assertRaises(except_osv) as ctx:
-            self.ResPartner.verifica_baixa_soci(self.cursor, self.uid, partner_id)
+            self.Soci.verifica_baixa_soci(self.cursor, self.uid, partner_id)
 
         self.assertEqual(ctx.exception.message,
             "warning -- El soci no pot ser donat de baixa!\n\nEl soci té inversions de generation actives.")
@@ -44,13 +48,14 @@ class ResPartnerTests(testing.OOTestCase):
             )[1]
         investment = self.Investment.browse(self.cursor, self.uid, invest_id)
         member_id = investment.member_id.id
+        self.Soci.write(self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
         partner_id = investment.member_id.partner_id.id
         investment.write({'last_effective_date': False})
         generation_invs = self.Investment.search(self.cursor, self.uid, [('member_id','=', member_id),('emission_id','=',1)])
         self.Investment.write(self.cursor, self.uid, generation_invs, {'active':False})
 
         with self.assertRaises(except_osv) as ctx:
-            self.ResPartner.verifica_baixa_soci(self.cursor, self.uid, partner_id)
+            self.Soci.verifica_baixa_soci(self.cursor, self.uid, partner_id)
 
         self.assertEqual(ctx.exception.message,
             "warning -- El soci no pot ser donat de baixa!\n\nEl soci té aportacions actives.")
@@ -65,6 +70,8 @@ class ResPartnerTests(testing.OOTestCase):
         member_id = self.IrModelData.get_object_reference(
             self.cursor, self.uid, 'som_generationkwh', 'soci_0001' 
             )[1]
+        self.Soci.write(self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
+
         invs = self.Investment.search(self.cursor, self.uid, [('member_id','=', member_id)])
         self.Investment.write(self.cursor, self.uid, invs, {'active':False})
 
@@ -73,22 +80,21 @@ class ResPartnerTests(testing.OOTestCase):
                                                        'state': 'open'})
     
         with self.assertRaises(except_osv) as ctx:
-            self.ResPartner.verifica_baixa_soci(self.cursor, self.uid, partner_id)
+            self.Soci.verifica_baixa_soci(self.cursor, self.uid, partner_id)
 
         self.assertEqual(ctx.exception.message,
             "warning -- El soci no pot ser donat de baixa!\n\nEl soci té factures pendents.")
 
     def test_cancel_member_with_active_contract__notAllowed(self):
-        fact_id = self.IrModelData.get_object_reference(
-            self.cursor, self.uid, 'giscedata_facturacio', 'factura_0001'
-            )[1]
         partner_id = self.IrModelData.get_object_reference(
             self.cursor, self.uid, 'som_generationkwh', 'res_partner_inversor1' 
             )[1]
         member_id = self.IrModelData.get_object_reference(
             self.cursor, self.uid, 'som_generationkwh', 'soci_0001' 
             )[1]
+        self.Soci.write(self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
         invs = self.Investment.search(self.cursor, self.uid, [('member_id','=', member_id)])
+
         self.Investment.write(self.cursor, self.uid, invs, {'active':False})
 
         polissa_id = self.IrModelData.get_object_reference(
@@ -98,7 +104,7 @@ class ResPartnerTests(testing.OOTestCase):
         self.Polissa.write(self.cursor, self.uid, [polissa_id], {'titular': partner_id})
     
         with self.assertRaises(except_osv) as ctx:
-            self.ResPartner.verifica_baixa_soci(self.cursor, self.uid, partner_id)
+            self.Soci.verifica_baixa_soci(self.cursor, self.uid, partner_id)
 
         self.assertEqual(ctx.exception.message,
             "warning -- El soci no pot ser donat de baixa!\n\nEl soci té al menys un contracte actiu.")
