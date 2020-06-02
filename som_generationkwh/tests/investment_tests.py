@@ -1821,6 +1821,121 @@ class InvestmentTests(testing.OOTestCase):
             ret_value = self.Soci.send_emails_to_investors_with_savings_in_year(cursor, uid, year=2020)
             self.assertEqual(ret_value, len(investments))
 
+           
+    def test__get_stats_investment_generation__when_last_effective_date(self):
+        """
+        Check get_stats_investment_generation when some investements with last_effective_date
+        """
+
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            inv_ids = self.Investment.search(cursor, uid, [('emission_id.type', '=', 'genkwh')])
+
+            with_last_effective_date = len(inv_ids) / 2 if inv_ids else 0
+
+            with_last_effective_date_ids = inv_ids[:with_last_effective_date]
+            without_last_effective_date_ids = inv_ids[with_last_effective_date:]
+
+            inv_datas = self.Investment.read(cursor, uid, without_last_effective_date_ids, ['member_id'])
+            members = [inv_data['member_id'] for inv_data in inv_datas]
+
+            today = date.today().strftime('%Y-%m-%d')
+            yesterday = (date.today() - timedelta(days=1)).strftime('%Y-%m-%d')
+
+            self.Investment.write(cursor, uid, without_last_effective_date_ids ,{'last_effective_date':None})
+            self.Investment.write(cursor, uid, with_last_effective_date_ids ,{'last_effective_date': yesterday})
+
+            ret = self.Investment.get_stats_investment_generation(cursor, uid, {'today': today})
+            socis = ret[0]['socis']
+
+            self.assertEqual(socis, len(set(members)))
+
+    def test__get_stats_investment_generation__when_last_effective_date_not_done(self):
+        """
+        Check get_stats_investment_generation when some investements with last_effective_date not done
+        """
+
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            inv_ids = self.Investment.search(cursor, uid, [('emission_id.type', '=', 'genkwh')])
+            inv_datas = self.Investment.read(cursor, uid, inv_ids, ['member_id'])
+            members = [inv_data['member_id'] for inv_data in inv_datas]
+
+            with_last_effective_date = len(inv_ids) / 2 if inv_ids else 0
+
+            with_last_effective_date_ids = inv_ids[:with_last_effective_date]
+            without_last_effective_date_ids = inv_ids[with_last_effective_date:]
+
+            today = date.today().strftime('%Y-%m-%d')
+            yesterday = (date.today() - timedelta(days=1)).strftime('%Y-%m-%d')
+
+            self.Investment.write(cursor, uid, without_last_effective_date_ids ,{'last_effective_date':None})
+            self.Investment.write(cursor, uid, with_last_effective_date_ids ,{'last_effective_date': today})
+
+            ret = self.Investment.get_stats_investment_generation(cursor, uid, {'today': yesterday})
+            socis = ret[0]['socis']
+
+            self.assertEqual(socis, len(set(members)))
+
+    def test__get_stats_investment_generation__amount_when_last_effective_date(self):
+        """
+        Check get_stats_investment_generation when some investements with last_effective_date
+        """
+
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            inv_ids = self.Investment.search(cursor, uid, [('emission_id.type', '=', 'genkwh')])
+
+            with_last_effective_date = len(inv_ids) / 2 if inv_ids else 0
+
+            with_last_effective_date_ids = inv_ids[:with_last_effective_date]
+            without_last_effective_date_ids = inv_ids[with_last_effective_date:]
+
+            today = date.today().strftime('%Y-%m-%d')
+            yesterday = (date.today() - timedelta(days=1)).strftime('%Y-%m-%d')
+
+            self.Investment.write(cursor, uid, without_last_effective_date_ids ,{'last_effective_date':None , 'nshares':10})
+            self.Investment.write(cursor, uid, with_last_effective_date_ids ,{'last_effective_date':yesterday})
+
+            ret = self.Investment.get_stats_investment_generation(cursor, uid, {'today': today})
+            amount = ret[0]['amount']
+
+            self.assertEqual(amount, len(without_last_effective_date_ids) * 1000)
+
+    def test__get_stats_investment_generation__amount_when_last_effective_date_not_done(self):
+        """
+        Check get_stats_investment_generation when some investements with last_effective_date not done
+        """
+
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            inv_ids = self.Investment.search(cursor, uid, [('emission_id.type', '=', 'genkwh')])
+
+            with_last_effective_date = len(inv_ids) / 2 if inv_ids else 0
+
+            with_last_effective_date_ids = inv_ids[:with_last_effective_date]
+            without_last_effective_date_ids = inv_ids[with_last_effective_date:]
+
+            today = date.today().strftime('%Y-%m-%d')
+            yesterday = (date.today() - timedelta(days=1)).strftime('%Y-%m-%d')
+
+            self.Investment.write(cursor, uid, without_last_effective_date_ids ,{'last_effective_date':None , 'nshares':10})
+            self.Investment.write(cursor, uid, with_last_effective_date_ids ,{'last_effective_date':today , 'nshares':10})
+
+            ret = self.Investment.get_stats_investment_generation(cursor, uid, {'today': yesterday})
+            amount = ret[0]['amount']
+
+            self.assertEqual(amount, len(inv_ids) * 1000)
+
+
     def test__create_divestment_invoice__withouProfitGKWH(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
@@ -2376,6 +2491,5 @@ class InvestmentTests(testing.OOTestCase):
             last_effective_date = self.Investment.read(cursor, uid, investment_id, ['last_effective_date'])['last_effective_date']
             today = datetime.today().strftime("%Y-%m-%d")
             self.assertEqual(last_effective_date, today)
-            
             
 # vim: et ts=4 sw=4
