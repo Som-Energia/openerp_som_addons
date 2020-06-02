@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <openerp>
-    <data>
+    <data noupdate="0">
         <record model="ir.ui.view" id="view_gkwh_member_info_form">
             <field name="name">generationkwh.member.info.form</field>
             <field name="model">somenergia.soci</field>
@@ -66,5 +66,23 @@
             <field name="view_id" ref="view_generationkwh_kwh_per_share_tree"/>
         </record>
         <menuitem action="action_generationkwh_kwh_per_share_tree" id="menu_generationkwh_kwh_per_share_tree" parent="menu_gkwh_base"/>
+
+        <record id="view_partner_form_soci_generationkwh_fields" model="ir.ui.view">
+            <field name="name">somenergia.soci.form</field>
+            <field name="model">somenergia.soci</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="som_partner_account.view_partner_form_soci_fields"/>
+            <field name="priority" eval="20"/>
+            <field name="arch" type="xml">
+                <data>
+                   <xpath expr="//form[@string='Partners']/group/field[@name='supplier']" position="after">
+                        <group colspan="2" attrs="{'invisible': [('baixa','=', True)]}">
+                            <button name="verifica_baixa_soci" string="Baixa soci" type="object" icon="gtk-execute"/>
+                        </group>
+                    </xpath>
+                </data>
+            </field>
+        </record>
+
     </data>
 </openerp>

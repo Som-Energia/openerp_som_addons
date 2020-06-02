@@ -17,6 +17,7 @@
     'l10n_ES_aeat_sii',
     'remeses_base',
     'som_poweremail_common_templates',
+    'som_partner_account',
     ],
   "init_xml": [],
   "demo_xml": [
