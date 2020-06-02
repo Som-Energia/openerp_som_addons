@@ -1821,6 +1821,7 @@ class InvestmentTests(testing.OOTestCase):
             ret_value = self.Soci.send_emails_to_investors_with_savings_in_year(cursor, uid, year=2020)
             self.assertEqual(ret_value, len(investments))
 
+           
     def test__get_stats_investment_generation__when_last_effective_date(self):
         """
         Check get_stats_investment_generation when some investements with last_effective_date
@@ -1934,4 +1935,561 @@ class InvestmentTests(testing.OOTestCase):
 
             self.assertEqual(amount, len(inv_ids) * 1000)
 
+
+    def test__create_divestment_invoice__withouProfitGKWH(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                        )[1]
+            investment_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
+                        )[1]
+            iban = 'ES7712341234161234567890'
+            investment = self.Investment.browse(cursor, uid, investment_id)
+            mandate_id = self.Investment.get_or_create_payment_mandate(cursor, uid,
+                partner_id, iban, investment.emission_id.mandate_name, gkwh.creditorCode)
+            date_invoice = '2020-04-23'
+            pending_amount = 1000
+
+            invoice_ids, errs =  self.Investment.create_divestment_invoice(cursor, uid, investment_id, date_invoice, pending_amount)
+
+            self.assertFalse(errs)
+            self.assertTrue(invoice_ids)
+            partner_data = self.Partner.browse(cursor, uid, partner_id)
+            self.assertInvoiceInfoEqual(cursor, uid, invoice_ids, u"""\
+                account_id: 410000{num_soci:0>6s} {p.name}
+                amount_total: 1000.0
+                amount_untaxed: 1000.0
+                check_total: 1000.0
+                date_invoice: '{invoice_date}'
+                id: {id}
+                invoice_line:
+                - account_analytic_id: false
+                  uos_id: PCE
+                  account_id: 163500{num_soci:0>6s} {p.name}
+                  name: 'Desinversió total de {investment_name} a {invoice_date} '
+                  discount: 0.0
+                  invoice_id:
+                  - {id}
+                  - 'SI: {investment_name}'
+                  origin: false
+                  price_unit: 1000.0
+                  price_subtotal: 1000.0
+                  note:
+                    investmentId: {investment_id}
+                    investmentInitialAmount: 1000
+                    investmentLastEffectiveDate: false
+                    investmentName: GKWH00001
+                    investmentPurchaseDate: false
+                    divestmentDate: '{invoice_date}'
+                    pendingCapital: 0.0 
+                  quantity: 1.0
+                  product_id: '[GENKWH_AMOR] Amortització Generation kWh'
+                  invoice_line_tax_id: []
+                journal_id: Factures GenerationkWh
+                mandate_id: {mandate_id}
+                name: {investment_name}-DES
+                number: {investment_name}-DES
+                origin: {investment_name}
+                partner_bank: {iban}
+                partner_id:
+                - {p.id}
+                - {p.name}
+                payment_type:
+                - 3 
+                - Transferencia 
+                sii_to_send: false
+                type: in_invoice
+                state: draft
+                """.format(
+                invoice_date='2020-04-23',
+                id=invoice_ids,
+                iban='ES77 1234 1234 1612 3456 7890',
+                year=2018,
+                investment_name=investment.name,
+                p=partner_data,
+                num_soci= partner_data.ref[1:],
+                investment_id=investment_id,
+                mandate_id=False,
+                ))
+                
+    def test__create_divestment_invoice__withProfitOneYearOkGKWH(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                        )[1]
+            investment_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
+                        )[1]
+            iban = 'ES7712341234161234567890'
+            investment = self.Investment.browse(cursor, uid, investment_id)
+            mandate_id = self.Investment.get_or_create_payment_mandate(cursor, uid,
+                partner_id, iban, investment.emission_id.mandate_name, gkwh.creditorCode)
+            date_invoice = '2020-04-23'
+            pending_amount = 1000
+            irpf_amount_current_year = 7
+            irpf_amount = 0
+
+            invoice_ids, errs =  self.Investment.create_divestment_invoice(cursor, uid, investment_id, date_invoice, pending_amount, irpf_amount_current_year, irpf_amount)
+
+            self.assertFalse(errs)
+            self.assertTrue(invoice_ids)
+            partner_data = self.Partner.browse(cursor, uid, partner_id)
+            self.assertInvoiceInfoEqual(cursor, uid, invoice_ids, u"""\
+                account_id: 410000{num_soci:0>6s} {p.name}
+                amount_total: 993.0
+                amount_untaxed: 993.0
+                check_total: 993.0
+                date_invoice: '{invoice_date}'
+                id: {id}
+                invoice_line:
+                - account_analytic_id: false
+                  uos_id: PCE
+                  account_id: 163500{num_soci:0>6s} {p.name}
+                  name: 'Desinversió total de {investment_name} a {invoice_date} '
+                  discount: 0.0
+                  invoice_id:
+                  - {id}
+                  - 'SI: {investment_name}'
+                  origin: false
+                  price_unit: 1000.0
+                  price_subtotal: 1000.0
+                  note:
+                    investmentId: {investment_id}
+                    investmentInitialAmount: 1000
+                    investmentLastEffectiveDate: false
+                    investmentName: GKWH00001
+                    investmentPurchaseDate: false
+                    divestmentDate: '{invoice_date}'
+                    pendingCapital: 0.0 
+                  quantity: 1.0
+                  product_id: '[GENKWH_AMOR] Amortització Generation kWh'
+                  invoice_line_tax_id: []
+                - account_analytic_id: false
+                  account_id: 475119000001 IRPF 19% GENERATION KWh
+                  discount: 0.0
+                  invoice_id:
+                  - {id}
+                  - 'SI: {investment_name}'
+                  invoice_line_tax_id: []
+                  name: 'Retenció IRPF sobre l''estalvi del Generationkwh de {year} de {investment_name} '
+                  note:
+                    divestmentDate: '{invoice_date}'
+                    investmentId: {investment_id}
+                    investmentInitialAmount: 1000
+                    investmentLastEffectiveDate: {last_effective_date}
+                    investmentName: {investment_name}
+                    investmentPurchaseDate: {purchase_date}
+                    pendingCapital: 0.0
+                  origin: false
+                  price_subtotal: -7.0
+                  price_unit: -7.0
+                  product_id: '[GENKWH_IRPF] Retenció IRPF estalvi Generation kWh'
+                  quantity: 1.0
+                  uos_id: PCE
+                journal_id: Factures GenerationkWh
+                mandate_id: {mandate_id}
+                name: {investment_name}-DES
+                number: {investment_name}-DES
+                origin: {investment_name}
+                partner_bank: {iban}
+                partner_id:
+                - {p.id}
+                - {p.name}
+                payment_type:
+                - 3 
+                - Transferencia 
+                sii_to_send: false
+                type: in_invoice
+                state: draft
+                """.format(
+                invoice_date='2020-04-23',
+                id=invoice_ids,
+                iban='ES77 1234 1234 1612 3456 7890',
+                year=2020,
+                investment_name=investment.name,
+                p=partner_data,
+                num_soci= partner_data.ref[1:],
+                investment_id=investment_id,
+                mandate_id=False,
+                purchase_date=investment.purchase_date,
+                last_effective_date=investment.last_effective_date,
+                ))
+
+    def test__create_divestment_invoice__withProfitTwoYears_irpNotRoundedOkGKWH(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                        )[1]
+            investment_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
+                        )[1]
+            iban = 'ES7712341234161234567890'
+            investment = self.Investment.browse(cursor, uid, investment_id)
+            mandate_id = self.Investment.get_or_create_payment_mandate(cursor, uid,
+                partner_id, iban, investment.emission_id.mandate_name, gkwh.creditorCode)
+            date_invoice = '2020-04-23'
+            pending_amount = 1000
+            irpf_amount_current_year = 0.032211777
+            irpf_amount = 0.073257954
+
+            invoice_ids, errs =  self.Investment.create_divestment_invoice(cursor, uid, investment_id, date_invoice, pending_amount, irpf_amount_current_year, irpf_amount)
+
+            self.assertFalse(errs)
+            self.assertTrue(invoice_ids)
+            partner_data = self.Partner.browse(cursor, uid, partner_id)
+            self.assertInvoiceInfoEqual(cursor, uid, invoice_ids, u"""\
+                account_id: 410000{num_soci:0>6s} {p.name}
+                amount_total: 999.9
+                amount_untaxed: 999.9
+                check_total: 999.9
+                date_invoice: '{invoice_date}'
+                id: {id}
+                invoice_line:
+                - account_analytic_id: false
+                  uos_id: PCE
+                  account_id: 163500{num_soci:0>6s} {p.name}
+                  name: 'Desinversió total de {investment_name} a {invoice_date} '
+                  discount: 0.0
+                  invoice_id:
+                  - {id}
+                  - 'SI: {investment_name}'
+                  origin: false
+                  price_unit: 1000.0
+                  price_subtotal: 1000.0
+                  note:
+                    investmentId: {investment_id}
+                    investmentInitialAmount: 1000
+                    investmentLastEffectiveDate: false
+                    investmentName: GKWH00001
+                    investmentPurchaseDate: false
+                    divestmentDate: '{invoice_date}'
+                    pendingCapital: 0.0 
+                  quantity: 1.0
+                  product_id: '[GENKWH_AMOR] Amortització Generation kWh'
+                  invoice_line_tax_id: []
+                - account_analytic_id: false
+                  account_id: 475119000001 IRPF 19% GENERATION KWh
+                  discount: 0.0
+                  invoice_id:
+                  - {id}
+                  - 'SI: {investment_name}'
+                  invoice_line_tax_id: []
+                  name: 'Retenció IRPF sobre l''estalvi del Generationkwh de {year} de {investment_name} '
+                  note:
+                    divestmentDate: '{invoice_date}'
+                    investmentId: {investment_id}
+                    investmentInitialAmount: 1000
+                    investmentLastEffectiveDate: {last_effective_date}
+                    investmentName: {investment_name}
+                    investmentPurchaseDate: {purchase_date}
+                    pendingCapital: 0.0
+                  origin: false
+                  price_subtotal: -0.03
+                  price_unit: -0.03
+                  product_id: '[GENKWH_IRPF] Retenció IRPF estalvi Generation kWh'
+                  quantity: 1.0
+                  uos_id: PCE
+                - account_analytic_id: false
+                  account_id: 475119000001 IRPF 19% GENERATION KWh
+                  discount: 0.0
+                  invoice_id:
+                  - {id}
+                  - 'SI: {investment_name}'
+                  invoice_line_tax_id: []
+                  name: 'Retenció IRPF sobre l''estalvi del Generationkwh de {yearm1} de {investment_name} '
+                  note:
+                    divestmentDate: '{invoice_date}'
+                    investmentId: {investment_id}
+                    investmentInitialAmount: 1000
+                    investmentLastEffectiveDate: {last_effective_date}
+                    investmentName: {investment_name}
+                    investmentPurchaseDate: {purchase_date}
+                    pendingCapital: 0.0
+                  origin: false
+                  price_subtotal: -0.07
+                  price_unit: -0.07
+                  product_id: '[GENKWH_IRPF] Retenció IRPF estalvi Generation kWh'
+                  quantity: 1.0
+                  uos_id: PCE
+                journal_id: Factures GenerationkWh
+                mandate_id: {mandate_id}
+                name: {investment_name}-DES
+                number: {investment_name}-DES
+                origin: {investment_name}
+                partner_bank: {iban}
+                partner_id:
+                - {p.id}
+                - {p.name}
+                payment_type:
+                - 3 
+                - Transferencia 
+                sii_to_send: false
+                type: in_invoice
+                state: draft
+                """.format(
+                invoice_date='2020-04-23',
+                id=invoice_ids,
+                iban='ES77 1234 1234 1612 3456 7890',
+                year=2020,
+                yearm1 = 2019,
+                investment_name=investment.name,
+                p=partner_data,
+                num_soci= partner_data.ref[1:],
+                investment_id=investment_id,
+                mandate_id=False,
+                purchase_date=investment.purchase_date,
+                last_effective_date=investment.last_effective_date,
+                ))
+
+    def test__create_divestment_invoice__withProfitTwoYears_okGKWH(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                        )[1]
+            investment_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
+                        )[1]
+            iban = 'ES7712341234161234567890'
+            investment = self.Investment.browse(cursor, uid, investment_id)
+            mandate_id = self.Investment.get_or_create_payment_mandate(cursor, uid,
+                partner_id, iban, investment.emission_id.mandate_name, gkwh.creditorCode)
+            date_invoice = '2020-04-23'
+            pending_amount = 1000
+            irpf_amount_current_year = 7
+            irpf_amount = 3
+
+            invoice_ids, errs =  self.Investment.create_divestment_invoice(cursor, uid, investment_id, date_invoice, pending_amount, irpf_amount_current_year, irpf_amount)
+
+            self.assertFalse(errs)
+            self.assertTrue(invoice_ids)
+            partner_data = self.Partner.browse(cursor, uid, partner_id)
+            self.assertInvoiceInfoEqual(cursor, uid, invoice_ids, u"""\
+                account_id: 410000{num_soci:0>6s} {p.name}
+                amount_total: 990.0
+                amount_untaxed: 990.0
+                check_total: 990.0
+                date_invoice: '{invoice_date}'
+                id: {id}
+                invoice_line:
+                - account_analytic_id: false
+                  uos_id: PCE
+                  account_id: 163500{num_soci:0>6s} {p.name}
+                  name: 'Desinversió total de {investment_name} a {invoice_date} '
+                  discount: 0.0
+                  invoice_id:
+                  - {id}
+                  - 'SI: {investment_name}'
+                  origin: false
+                  price_unit: 1000.0
+                  price_subtotal: 1000.0
+                  note:
+                    investmentId: {investment_id}
+                    investmentInitialAmount: 1000
+                    investmentLastEffectiveDate: false
+                    investmentName: GKWH00001
+                    investmentPurchaseDate: false
+                    divestmentDate: '{invoice_date}'
+                    pendingCapital: 0.0 
+                  quantity: 1.0
+                  product_id: '[GENKWH_AMOR] Amortització Generation kWh'
+                  invoice_line_tax_id: []
+                - account_analytic_id: false
+                  account_id: 475119000001 IRPF 19% GENERATION KWh
+                  discount: 0.0
+                  invoice_id:
+                  - {id}
+                  - 'SI: {investment_name}'
+                  invoice_line_tax_id: []
+                  name: 'Retenció IRPF sobre l''estalvi del Generationkwh de {year} de {investment_name} '
+                  note:
+                    divestmentDate: '{invoice_date}'
+                    investmentId: {investment_id}
+                    investmentInitialAmount: 1000
+                    investmentLastEffectiveDate: {last_effective_date}
+                    investmentName: {investment_name}
+                    investmentPurchaseDate: {purchase_date}
+                    pendingCapital: 0.0
+                  origin: false
+                  price_subtotal: -7.0
+                  price_unit: -7.0
+                  product_id: '[GENKWH_IRPF] Retenció IRPF estalvi Generation kWh'
+                  quantity: 1.0
+                  uos_id: PCE
+                - account_analytic_id: false
+                  account_id: 475119000001 IRPF 19% GENERATION KWh
+                  discount: 0.0
+                  invoice_id:
+                  - {id}
+                  - 'SI: {investment_name}'
+                  invoice_line_tax_id: []
+                  name: 'Retenció IRPF sobre l''estalvi del Generationkwh de {yearm1} de {investment_name} '
+                  note:
+                    divestmentDate: '{invoice_date}'
+                    investmentId: {investment_id}
+                    investmentInitialAmount: 1000
+                    investmentLastEffectiveDate: {last_effective_date}
+                    investmentName: {investment_name}
+                    investmentPurchaseDate: {purchase_date}
+                    pendingCapital: 0.0
+                  origin: false
+                  price_subtotal: -3.0
+                  price_unit: -3.0
+                  product_id: '[GENKWH_IRPF] Retenció IRPF estalvi Generation kWh'
+                  quantity: 1.0
+                  uos_id: PCE
+                journal_id: Factures GenerationkWh
+                mandate_id: {mandate_id}
+                name: {investment_name}-DES
+                number: {investment_name}-DES
+                origin: {investment_name}
+                partner_bank: {iban}
+                partner_id:
+                - {p.id}
+                - {p.name}
+                payment_type:
+                - 3 
+                - Transferencia 
+                sii_to_send: false
+                type: in_invoice
+                state: draft
+                """.format(
+                invoice_date='2020-04-23',
+                id=invoice_ids,
+                iban='ES77 1234 1234 1612 3456 7890',
+                year=2020,
+                yearm1 = 2019,
+                investment_name=investment.name,
+                p=partner_data,
+                num_soci= partner_data.ref[1:],
+                investment_id=investment_id,
+                mandate_id=False,
+                purchase_date=investment.purchase_date,
+                last_effective_date=investment.last_effective_date,
+                ))
+
+    def test__create_divestment_invoice__APO(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                        )[1]
+            investment_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0001'
+                        )[1]
+            iban = 'ES7712341234161234567890'
+            investment = self.Investment.browse(cursor, uid, investment_id)
+            mandate_id = self.Investment.get_or_create_payment_mandate(cursor, uid,
+                partner_id, iban, investment.emission_id.mandate_name, gkwh.creditorCode)
+            date_invoice = '2020-04-23'
+            pending_amount = 1000
+
+            invoice_ids, errs = self.Investment.create_divestment_invoice(cursor, uid, investment_id, date_invoice, pending_amount)
+
+            self.assertFalse(errs)
+            self.assertTrue(invoice_ids)
+            partner_data = self.Partner.browse(cursor, uid, partner_id)
+            self.assertInvoiceInfoEqual(cursor, uid, invoice_ids, u"""\
+                account_id: 410000{num_soci:0>6s} {p.name}
+                amount_total: 1000.0
+                amount_untaxed: 1000.0
+                check_total: 1000.0
+                date_invoice: '{invoice_date}'
+                id: {id}
+                invoice_line:
+                - account_analytic_id: false
+                  uos_id: PCE
+                  account_id: 163000{num_soci:0>6s} {p.name}
+                  name: 'Desinversió total de {investment_name} a {invoice_date} '
+                  discount: 0.0
+                  invoice_id:
+                  - {id}
+                  - 'SI: {investment_name}'
+                  origin: false
+                  price_unit: 1000.0
+                  price_subtotal: 1000.0
+                  note:
+                    investmentId: {investment_id}
+                    investmentInitialAmount: 1000
+                    investmentLastEffectiveDate: false
+                    investmentName: APO00001
+                    investmentPurchaseDate: false
+                    divestmentDate: '{invoice_date}'
+                    pendingCapital: 0.0 
+                  quantity: 1.0
+                  product_id: '[APO_AE] Aportacions'
+                  invoice_line_tax_id: []
+                journal_id: Factures Aportacions
+                mandate_id: {mandate_id}
+                name: {investment_name}-DES
+                number: {investment_name}-DES
+                origin: {investment_name}
+                partner_bank: {iban}
+                partner_id:
+                - {p.id}
+                - {p.name}
+                payment_type:
+                - 3 
+                - Transferencia 
+                sii_to_send: false
+                type: in_invoice
+                state: draft
+                """.format(
+                invoice_date='2020-04-23',
+                id=invoice_ids,
+                iban='ES77 1234 1234 1612 3456 7890',
+                year=2018,
+                investment_name=investment.name,
+                p=partner_data,
+                num_soci=partner_data.ref[1:],
+                investment_id=investment_id,
+                mandate_id=False,
+                ))
+
+    def test__divest_investment__APO_whenOne(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            investment_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'apo_0003'
+            )[1]
+            member_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'soci_0001'
+            )[1]
+            
+            self.Investment.write(cursor, uid, investment_id, {'member_id': member_id})
+            
+            self.Investment.divest(cursor, uid, [investment_id])
+
+            last_effective_date = self.Investment.read(cursor, uid, investment_id, ['last_effective_date'])['last_effective_date']
+            today = datetime.today().strftime("%Y-%m-%d")
+            
+            self.assertEqual(last_effective_date, today)
+
+            #2019-10-01
+    def test__divest_investment__GkWh_withOutProfit(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+            )[1]
+            investment_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'genkwh_0002'
+            )[1]
+            self.Investment.divest(cursor, uid, [investment_id])
+
+            last_effective_date = self.Investment.read(cursor, uid, investment_id, ['last_effective_date'])['last_effective_date']
+            today = datetime.today().strftime("%Y-%m-%d")
+            self.assertEqual(last_effective_date, today)
+            
 # vim: et ts=4 sw=4
