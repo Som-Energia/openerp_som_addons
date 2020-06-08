@@ -169,11 +169,16 @@ class GenerationkwhInvestment(osv.osv):
 
     def list(self, cursor, uid,
             member=None,
+            emission_type=None,
             context=None):
         filters = [
             ]
         if member:
             filters.append(('member_id','=',member))
+        if emission_type is None:
+            filters.append(('emission_id.type','=','genkwh'))
+        else:
+            filters.append(('emission_id.type','=',emission_type))
         ids = self.search(cursor, uid, filters)
         fields = (
             "name member_id "
