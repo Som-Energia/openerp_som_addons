@@ -32,7 +32,7 @@ class WizardBaixaSoci(osv.osv):
         else:
             if send_mail:
                 self.send_mail(cursor, uid, soci_id[0])
-                self.write(cursor, uid, ids, {'state':'ok'})
+            self.write(cursor, uid, ids, {'state':'ok'})
 
 
     def baixa_soci_and_send_mail(self, cursor, uid, ids, context=None):
