@@ -43,7 +43,7 @@
 
 	
 	<record model="ir.actions.act_window" id="action_wizard_confirm_soci_baixa">
-	    <field name="name">Baixa de soci</field>
+	    <field name="name">Baixa de sòcia</field>
 	    <field name="res_model">wizard.baixa.soci</field>
 	    <field name="view_type">form</field>
 	    <field name="view_mode">form</field>
@@ -53,7 +53,7 @@
 
 	<record id="value_wizard_confirm_soci_baixa" model="ir.values">
             <field name="object" eval="1"/>
-            <field name="name">Baixa de soci</field>
+            <field name="name">Baixa de sòcia</field>
             <field name="key2">client_action_multi</field>
             <field name="key">action</field>
             <field name="model">somenergia.soci</field>
