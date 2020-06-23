@@ -158,7 +158,7 @@ class SomenergiaSoci(osv.osv):
 
         if baixa:
             raise osv.except_osv(_('El soci no pot ser donat de baixa!'),
-                                 _('Ja ha estat donat de baixa baixa anteriorment!'))
+                                 _('Ja ha estat donat de baixa anteriorment!'))
 
         gen_invest = invest_obj.search(cursor, uid, [('member_id', '=', member_id),
                                                      ('emission_id', '=', 1),
@@ -203,6 +203,8 @@ class SomenergiaSoci(osv.osv):
                                                 'data_baixa_soci': today,
                                                 'comment': comment })
         delete_rel(cursor, uid, soci_category_id, res_partner_id)
+
+        return True
 
 
     _columns = {

@@ -37,6 +37,7 @@
     "wizard/wizard_investment_transfer.xml",
     "wizard/wizard_aeat193_from_gkwh_invoices_view.xml",
     "wizard/wizard_send_retencio_estalvi_to_members.xml",
+    "wizard/wizard_baixa_soci.xml",
     "investment_view.xml",
     "assignment_view.xml",
     "somenergia_soci_view.xml",
