@@ -66,5 +66,19 @@
             <field name="view_id" ref="view_generationkwh_kwh_per_share_tree"/>
         </record>
         <menuitem action="action_generationkwh_kwh_per_share_tree" id="menu_generationkwh_kwh_per_share_tree" parent="menu_gkwh_base"/>
+
+        <record id="view_soci_form_account_fields_bank" model="ir.ui.view">
+            <field name="name">somenergia.soci.som.form.bank.interessos</field>
+            <field name="model">somenergia.soci</field>
+            <field name="type">form</field>
+            <field name="priority">90</field>
+            <field name="inherit_id" ref="som_inversions.view_partner_form_account_fields_bank"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='bank_inversions']"
+                       position="replace">
+                        <field name="bank_inversions" domain="[('partner_id', '=', partner_id)]"/>
+                </xpath>
+            </field>
+        </record>
     </data>
 </openerp>
