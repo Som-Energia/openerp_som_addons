@@ -8,3 +8,4 @@ import account_invoice
 import wizard
 import report
 import rightsgranter
+import investment_sign

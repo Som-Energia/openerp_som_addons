@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_generationkwh_contract_sign_form">
+            <field name="name">wizard.generationkwh.sign.signaturit.view</field>
+            <field name="model">wizard.generationkwh.sign.signaturit</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Atenció" >
+                    <field name="state" invisible="1"/>
+                    <group colspan="4" col="4" attrs="{'invisible': [('state', '!=', 'init')]}">
+                        <image name="gtk-dialog-warning"/>
+                        <label string="¿Està segur de voler iniciar el procés de Signaturit per als següents contractes de GenerationKWH? Aquesta acció enviará una peticó a Signaturit per a un procés de signatura digital per a cada contracte."/>
+                        <separator colspan="4"/>
+                        <group string="Préstec de GenerationKWh afectat" colspan="4">
+                            <field name="info" nolabel="1"/>
+                        </group>
+                        <group colspan="4">
+                            <button special="cancel" string="Cancel·lar" icon="gtk-no"/>
+                            <button icon="gtk-yes" name="start_request" string="Endavant" type="object" attrs="{'invisible':[('state', '!=', 'init')]}"/>
+                        </group>
+                    </group>
+
+                     <group colspan="4" col="4" attrs="{'invisible': [('state', '!=', 'done')]}">
+                         <separator colspan="4"/>
+                         <separator colspan="4"/>
+                         <separator colspan="4"/>
+                         <separator colspan="4"/>
+                         <label string="El procés s'ha llençat correctament."/>
+                         <separator colspan="4"/>
+                         <separator colspan="4"/>
+                         <separator colspan="4"/>
+                         <separator colspan="4"/>
+                        <group colspan="4">
+                            <button icon="gtk-ok" special="cancel" string="Tanca" type="object" colspan="1"/>
+                        </group>
+                    </group>
+
+                    <group colspan="4" col="4" attrs="{'invisible': [('state', '!=', 'failed')]}">
+
+                        <image name="gtk-dialog-warning"/>
+                        <label string="No s'ha notificat cap contracte GenerationKwh perquè alguns contractes ja han estat notificats..."/>
+                        <separator colspan="4"/>
+                        <group string="Contractes ja notificats:" colspan="4">
+                            <field name="failed_records" nolabel="1"/>
+                        </group>
+                        <group colspan="4">
+                            <button special="cancel" string="Cancel·lar" icon="gtk-no"/>
+                            <button icon="gtk-yes" name="start_request" string="Endavant" type="object" attrs="{'invisible':[('state', '!=', 'init')]}"/>
+                        </group>
+                    </group>
+                </form>
+
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_generationkwh_contract_sign_form">
+            <field name="name">Iniciar procés de signatura</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.generationkwh.sign.signaturit</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_generationkwh_contract_sign_form"/>
+        </record>
+        <record id="value_wizard_generationkwh_contract_sign" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Iniciar procés de signatura</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">generationkwh.investment</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_generationkwh_contract_sign_form'))" />
+        </record>
+    </data>
+</openerp>
