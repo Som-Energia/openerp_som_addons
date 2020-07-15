@@ -89,3 +89,4 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 "access_send_retencio_estalvi_to_members_wizard_rcwd","send.retencio.estalvi.to.members.wizard","model_send_retencio_estalvi_to_members_wizard","base.group_erp_manager",1,1,1,1
 "access_send_retencio_estalvi_to_members_wizard_rcwd","send.retencio.estalvi.to.members.wizard","model_send_retencio_estalvi_to_members_wizard","base.group_system",1,1,1,1
 "access_wizard_baixa_soci_rcwd","wizard.baixa.soci","model_wizard_baixa_soci","base.group_partner_manager",1,1,1,1
+"access_wizard_generationkwh_sign_signaturit_rcwd","wizard.generationkwh.sign.signaturit","model_wizard_generationkwh_sign_signaturit","som_generationkwh.group_som_generationkwh_u",1,1,1,1
