@@ -19,6 +19,7 @@
     'som_poweremail_common_templates',
     'som_partner_account',
     'giscedata_signatura_documents_signaturit',
+    'account_invoice_som',
     ],
   "init_xml": [],
   "demo_xml": [

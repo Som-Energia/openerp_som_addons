@@ -62,6 +62,7 @@
             <field name="country_id" model="res.country" search="[('name','=','Espanya')]"/>
             <field name="street">Major, 3</field>
             <field name="type">default</field>
+            <field name="email">test@test.test</field>
             <field name="partner_id" ref="res_partner_inversor1"/>
         </record>
         <record model="res.partner.bank" id="partner_bank1">
@@ -376,6 +377,20 @@
         </record>
         <record id="giscedata_polissa.polissa_0001" model="giscedata.polissa">
             <field name="titular" ref="res_partner_inversor1"></field>
+        </record>
+
+        <record id="invoice_GKWH00002" model="account.invoice">
+            <field name="name">GKWH00002-JUST</field>
+            <field name="origin">GKWH00002</field>
+            <field name="type">out_invoice</field>
+            <field name="state">paid</field>
+            <field name="date_invoice">2016-02-29</field>
+            <field name="partner_id" ref="res_partner_inversor1"/>
+            <field name="address_invoice_id" ref="res_partner_address_inversor1"/>
+            <field name="period_id" ref="account.period_1"/>
+            <field name="account_id" ref="account.a_recv"/>
+            <field name="origin_date_invoice">2015-10-09</field>
+            <field name="reference">GISCE</field>
         </record>
     </data>
 </openerp>
