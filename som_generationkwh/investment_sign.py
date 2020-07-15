@@ -12,6 +12,9 @@ class GenerationkwhInvestmentSign(osv.osv):
     _inherit = 'generationkwh.investment'
 
     def investment_sign_request(self, cursor, uid, gen_ids, context=None):
+        if not isinstance(gen_ids, (list, tuple)):
+            gen_ids = [gen_ids]
+
         if context is None:
             context = {}
 
@@ -19,14 +22,14 @@ class GenerationkwhInvestmentSign(osv.osv):
             invest = self.browse(cursor, uid, item_id)
             email = None
             address_id = None
-            try:
-                address_id = invest.member_id.address[0].id
-                email = invest.member_id.address[0].email
-            except Exception as e:
+
+            address_id = invest.member_id.address[0].id
+            email = invest.member_id.address[0].email
+            if not email:
                 raise osv.except_osv(
                     _('Error!'),
-                    _(u"Se necesita una dirección con correo electrónico "
-                      u"donde enviar el documento a firmar.")
+                    _(u"""Es necessita una adreça de correu electrònic
+                            per enviar el document a signar.""")
                 )
             else:
                 acc_inv_obj = self.pool.get('account.invoice')
@@ -43,9 +46,12 @@ class GenerationkwhInvestmentSign(osv.osv):
                     cursor, uid, 'som_inversions', 'report_generationkwh_doc'
                 )[1]
 
+                invoice_categ = attach_obj.get_category_for(
+                    cursor, uid, 'invoice', context=context)
+
                 data = json.dumps({
                     'callback_method': 'generationkwh_signed',
-                    'gen_id': item_id
+                    'gen_id': item_id,
                 })
 
                 subject = 'Firma del contracte GenerationKWh amb identificador ' + self.read(cursor, uid, item_id, ['name'])['name']
@@ -62,7 +68,7 @@ class GenerationkwhInvestmentSign(osv.osv):
                 doc_file = (0, 0, {
                     'model': 'account.invoice,{}'.format(acc_inv_id[0]),
                     'report_id': generation_report_id,
-                    'category_id': 0, #TODO: no hi ha cateogries, s'han de fer?
+                    'category_id': invoice_categ
                 })
                 files.append(doc_file)
 
@@ -88,6 +94,35 @@ class GenerationkwhInvestmentSign(osv.osv):
                 process_id = pro_obj.create(cursor, uid, values, context=context)
                 pro_obj.start(cursor, uid, [process_id], context=context)
 
-        return 0
+        return True
+
+    def generationkwh_signed(self, cursor, uid, gen_id, context=None):
+        if not isinstance(gen_id, (list, tuple)):
+            gen_id = [gen_id]
+        today = datetime.now().strftime('%Y-%m-%d')
+        return self.write(cursor, uid, gen_id, {'signed_date': today})
 
 GenerationkwhInvestmentSign()
+
+
+class AccountInvoice(osv.osv):
+
+    _name = 'account.invoice'
+    _inherit = 'account.invoice'
+
+    def process_signature_callback(self, cursor, uid, ids, context=None):
+        if not context:
+            context = {}
+        process_data = context.get('process_data', False)
+        if process_data:
+            method_name = process_data.get('callback_method', False)
+            if method_name == 'generationkwh_signed':
+                inv_obj = self.pool.get('generationkwh.investment')
+                ids = process_data.get('gen_id', False)
+                method = getattr(inv_obj, method_name)
+            else:
+                method = getattr(self, method_name)
+            if method:
+                method(cursor, uid, ids, context=context)
+
+AccountInvoice()

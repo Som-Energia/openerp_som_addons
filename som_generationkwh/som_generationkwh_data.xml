@@ -1693,5 +1693,9 @@ ${text_legal}
             <field name="number_next">5000</field>
 	    <field name="prefix">APO</field>
         </record>
+        <!--Incloem model_generationkwh_investment com a signable-->
+        <record model="giscedata.signatura.models" id="signatura_gkwh_investment">
+            <field name="name" ref="model_generationkwh_investment"/>
+        </record>
     </data>
 </openerp>
