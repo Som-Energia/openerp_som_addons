@@ -11,11 +11,20 @@ from tools.translate import _
 from tools import config
 import re
 import generationkwh.investmentmodel as gkwh
-from generationkwh.investmentstate import InvestmentState, AportacionsState, GenerationkwhState
+from generationkwh.investmentstate import (
+    InvestmentState,
+    AportacionsState,
+    GenerationkwhState,
+)
 from uuid import uuid4
 import netsvc
 from oorq.oorq import AsyncMode
-from investment_strategy import AportacionsActions, GenerationkwhActions, PartnerException, InvestmentException
+from investment_strategy import (
+    AportacionsActions,
+    GenerationkwhActions,
+    PartnerException,
+    InvestmentException,
+)
 
 # TODO: This function is duplicated in other sources
 def _sqlfromfile(sqlname):
