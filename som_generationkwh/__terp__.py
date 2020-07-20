@@ -18,6 +18,8 @@
     'remeses_base',
     'som_poweremail_common_templates',
     'som_partner_account',
+    'giscedata_signatura_documents_signaturit',
+    'account_invoice_som',
     ],
   "init_xml": [],
   "demo_xml": [
@@ -38,6 +40,7 @@
     "wizard/wizard_aeat193_from_gkwh_invoices_view.xml",
     "wizard/wizard_send_retencio_estalvi_to_members.xml",
     "wizard/wizard_baixa_soci.xml",
+    "wizard/wizard_contract_sign_signaturit.xml",
     "investment_view.xml",
     "assignment_view.xml",
     "somenergia_soci_view.xml",

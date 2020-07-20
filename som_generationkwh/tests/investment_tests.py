@@ -13,6 +13,8 @@ import generationkwh.investmentmodel as gkwh
 from osv import osv, fields
 from ..investment_strategy import PartnerException, InvestmentException
 from freezegun import freeze_time
+import mock
+from osv.osv import except_osv
 
 class AccountInvoice(osv.osv):
     _name = 'account.invoice'
@@ -31,6 +33,7 @@ class InvestmentTests(testing.OOTestCase):
         self.Investment = self.openerp.pool.get('generationkwh.investment')
         self.IrModelData = self.openerp.pool.get('ir.model.data')
         self.Partner = self.openerp.pool.get('res.partner')
+        self.PartnerAddress = self.openerp.pool.get('res.partner.address')
         self.Invoice = self.openerp.pool.get('account.invoice')
         self.InvoiceLine = self.openerp.pool.get('account.invoice.line')
         self.Emission = self.openerp.pool.get('generationkwh.emission')
@@ -2491,5 +2494,64 @@ class InvestmentTests(testing.OOTestCase):
             last_effective_date = self.Investment.read(cursor, uid, investment_id, ['last_effective_date'])['last_effective_date']
             today = datetime.today().strftime("%Y-%m-%d")
             self.assertEqual(last_effective_date, today)
+
+    @mock.patch("giscedata_signatura_documents_signaturit.giscedata_signatura_documents.GiscedataSignaturaProcess.start")
+    def test__generationwkwh_investment_sign__ok(self, mocked_sign):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            investment_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'genkwh_0002'
+            )[1]
+
+            self.Investment.investment_sign_request(cursor, uid, investment_id)
+            mocked_sign.assert_called_with(cursor, uid, mock.ANY, context={})
+
+    def test__generationwkwh_investment_sign__withoutMail(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            investment_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'genkwh_0002'
+            )[1]
+            partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+            )[1]
+            address_id = self.PartnerAddress.search(cursor, uid, [('partner_id', '=', partner_id)])[0]
+            self.PartnerAddress.write(cursor, uid, [address_id], {'email': False})
+
+            with self.assertRaises(except_osv) as ctx:
+                self.Investment.investment_sign_request(cursor, uid, investment_id)
+
+    def test__generationwkwh_investment_sign__withoutInvoice(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            investment_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'genkwh_0001'
+            )[1]
+
+            with self.assertRaises(except_osv) as ctx:
+                self.Investment.investment_sign_request(cursor, uid, investment_id)
             
+    def test__generationwkwh_investment_sign_callback__ok(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            investment_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'genkwh_0002'
+            )[1]
+            self.Investment.write(cursor, uid, investment_id, {'signed_date': False})
+            self.Investment.investment_sign_request(cursor, uid, investment_id)
+            context = {
+                'process_data': {
+                    'callback_method': 'generationkwh_signed',
+                    'gen_id': investment_id
+                }
+            }
+            self.Invoice.process_signature_callback(cursor, uid, [], context)
+            signed_date = self.Investment.read(cursor, uid, investment_id, ['signed_date'])['signed_date']
+            self.assertTrue(signed_date)
+
+
 # vim: et ts=4 sw=4
