@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from osv import osv, fields
+from osv.expression import OOQuery
 from .erpwrapper import ErpWrapper
 from dateutil.relativedelta import relativedelta
 from datetime import datetime, date
@@ -621,15 +622,24 @@ class GenerationkwhInvestment(osv.osv):
         :param partner_id: In this function, partner_id is the partner of Investment, not the Parnter of Invoice.
         """
         GenerationkwhInvoiceLineOwner = self.pool.get('generationkwh.invoice.line.owner')
+        q = OOQuery(GenerationkwhInvoiceLineOwner, cursor, uid)
+
         total_amount_saving = 0
-        gffl_added = set()
-        list_gkwlines_ids = GenerationkwhInvoiceLineOwner.search(cursor, uid, [('owner_id','=',partner_id),('factura_id.date_invoice','>=',start_date), ('factura_id.date_invoice','<=',end_date)])
-        for line_id in list_gkwlines_ids:
-            invoice_obj = GenerationkwhInvoiceLineOwner.read(cursor, uid, line_id, ['saving_gkw_amount', 'factura_line_id'])
-            if invoice_obj['factura_line_id'] not in gffl_added:
-                total_amount_saving += invoice_obj['saving_gkw_amount']
-                gffl_added.add(invoice_obj['factura_line_id'])
+        search_params = [('owner_id.id', '=', partner_id),
+                         ('factura_id.invoice_id.date_invoice', '>=', start_date),
+                         ('factura_id.invoice_id.date_invoice', '<=', end_date)]
+
+        sql = q.select(['saving_gkw_amount','factura_line_id']).where(search_params)
+        cursor.execute(*sql)
+        total_amount_saving = 0
+        result = cursor.dictfetchall()
+        result = {d['factura_line_id']: d['saving_gkw_amount'] for d in result}
+
+        if result:
+            total_amount_saving = sum(result.values())
+
         return total_amount_saving
+
 
     def get_irpf_amounts(self, cursor, uid, investment_id, member_id, year=None):
         Invoice = self.pool.get('account.invoice')
