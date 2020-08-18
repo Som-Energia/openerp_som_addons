@@ -4,4 +4,4 @@ yamlns
 plantmeter
 python-dateutil
 freezegun
--e git://github.com/mailchimp/mailchimp-marketing-python.git@master#egg=mailchimp-marketing-python
+-e git://github.com/mailchimp/mailchimp-marketing-python.git#egg=mailchimp-marketing-python
