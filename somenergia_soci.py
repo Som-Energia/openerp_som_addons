@@ -135,7 +135,6 @@ class SomenergiaSoci(osv.osv):
         """
         Archive member async method
         """
-        logger = logging.getLogger('openerp.{0}.mailchimp_tasks'.format(__name__))
         return self.arxiva_socia_mailchimp(cursor, uid, ids, context=context)
 
 
