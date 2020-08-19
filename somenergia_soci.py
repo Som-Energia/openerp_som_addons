@@ -4,7 +4,6 @@ from __future__ import absolute_import
 
 from osv import osv, fields
 from tools.translate import _
-import mailchimp_marketing as MailchimpMarketing
 from tools import config
 from oorq.decorators import job
 
@@ -141,6 +140,7 @@ class SomenergiaSoci(osv.osv):
 
 
     def arxiva_socia_mailchimp(self, cursor, uid, ids, context=None):
+        import mailchimp_marketing as MailchimpMarketing
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
         MAILCHIMP_CLIENT = MailchimpMarketing.Client(

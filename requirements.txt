@@ -1,7 +1,7 @@
+https://github.com/mailchimp/mailchimp-marketing-python/archive/master.zip
 # libfacturacioatr
 numpy
 yamlns
 plantmeter
 python-dateutil
 freezegun
--e git://github.com/mailchimp/mailchimp-marketing-python.git#egg=mailchimp-marketing-python
