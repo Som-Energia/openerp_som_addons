@@ -497,7 +497,7 @@ class GiscedataFacturacioFacturador(osv.osv):
         if not isinstance(factura_ids, (tuple, list)):
             factura_ids = [factura_ids]
         for factura_id in factura_ids:
-            self.elimina_ajustar_saldo_excedents_autoconsum(cursor, uid, factura_id, context=context):
+            self.elimina_ajustar_saldo_excedents_autoconsum(cursor, uid, factura_id, context=context)
             self.ajustar_saldo_excedents_autoconsum(cursor, uid, factura_id, context=context)
         return True
 
