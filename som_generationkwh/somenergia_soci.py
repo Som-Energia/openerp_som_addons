@@ -4,6 +4,8 @@ from __future__ import absolute_import
 
 from osv import osv, fields
 from tools.translate import _
+from tools import config
+from oorq.decorators import job
 
 from datetime import datetime, date
 
@@ -128,6 +130,36 @@ class SomenergiaSoci(osv.osv):
 
         return True
 
+    @job(queue="mailchimp_tasks")
+    def arxiva_socia_mailchimp_async(self, cursor, uid, ids, context=None):
+        """
+        Archive member async method
+        """
+        return self.arxiva_socia_mailchimp(cursor, uid, ids, context=context)
+
+
+    def arxiva_socia_mailchimp(self, cursor, uid, ids, context=None):
+        import mailchimp_marketing as MailchimpMarketing
+        if not isinstance(ids, (list, tuple)):
+            ids = [ids]
+        MAILCHIMP_CLIENT = MailchimpMarketing.Client(
+            dict(api_key=config.options.get('mailchimp_apikey'),
+                 server=config.options.get('mailchimp_server_prefix')
+            ))
+
+        conf_obj = self.pool.get('res.config')
+        res_partner_obj = self.pool.get('res.partner')
+        res_partner_address_obj = self.pool.get('res.partner.address')
+
+        list_name = conf_obj.get(
+            cursor, uid, 'mailchimp_socis_list', None)
+
+        list_id = res_partner_address_obj.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
+        for partner_id in self.read(cursor, uid, ids,['partner_id']):
+            address_list = res_partner_obj.read(cursor, uid, partner_id['partner_id'][0], ['address'])['address']
+            res_partner_address_obj.archieve_mail_in_list(cursor, uid, address_list, list_id, MAILCHIMP_CLIENT)
+
+
     def verifica_baixa_soci(self, cursor, uid, ids, context=None):
         # - Comprovar si té generationkwh: Existeix atribut al model generation que ho indica. Altrament es poden buscar les inversions.
         # - Comprovar si té inversions vigents: Buscar inversions vigents.
@@ -203,6 +235,8 @@ class SomenergiaSoci(osv.osv):
                                                 'data_baixa_soci': today,
                                                 'comment': comment })
         delete_rel(cursor, uid, soci_category_id, res_partner_id)
+
+        self.arxiva_socia_mailchimp_async(cursor, uid, member_id)
 
         return True
 

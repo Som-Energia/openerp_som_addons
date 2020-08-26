@@ -7,6 +7,9 @@ from datetime import datetime, timedelta, date
 from osv import osv, fields
 from osv.orm import ValidateException
 from osv.osv import except_osv
+import mock
+import som_polissa_soci
+import mailchimp_marketing
 
 class SomenergiaSociTests(testing.OOTestCase):
 
@@ -17,6 +20,7 @@ class SomenergiaSociTests(testing.OOTestCase):
         self.Investment = self.openerp.pool.get('generationkwh.investment')
         self.IrModelData = self.openerp.pool.get('ir.model.data')
         self.ResPartner = self.openerp.pool.get('res.partner')
+        self.ResPartnerAddress = self.openerp.pool.get('res.partner.address')
         self.Invoice = self.openerp.pool.get('account.invoice')
         self.Factura = self.openerp.pool.get('giscedata.facturacio.factura')
         self.Polissa = self.openerp.pool.get('giscedata.polissa')
@@ -109,5 +113,54 @@ class SomenergiaSociTests(testing.OOTestCase):
             "warning -- El soci no pot ser donat de baixa!\n\nEl soci té al menys un contracte actiu.")
 
 
-       
+    @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.archieve_mail_in_list")
+    @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.get_mailchimp_list_id")
+    @mock.patch.object(mailchimp_marketing, "Client")
+    def test__arxiva_socia_mailchimp__withAddress(self, mock_mailchimp_client, mock_get_list_id, mock_archieve):
+        soci_id = self.IrModelData.get_object_reference(
+            self.cursor, self.uid, 'som_generationkwh', 'soci_0001'
+            )[1]
+        partner_id = self.Soci.read(self.cursor, self.uid, soci_id, ['partner_id'])['partner_id'][0]
+        address_list = self.ResPartner.read(self.cursor, self.uid, partner_id, ['address'])['address']
+
+        self.Soci.arxiva_socia_mailchimp(self.cursor, self.uid, soci_id)
+
+        mock_get_list_id.return_value.get_mailchimp_list_id.return_value = 'id'
+        mock_mailchimp_client.return_value = 'MAILCHIMP_CLIENT'
+        mock_archieve.assert_called_with(self.cursor, self.uid, address_list, mock.ANY, mock.ANY)
+
+    @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.archieve_mail_in_list")
+    @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.get_mailchimp_list_id")
+    @mock.patch.object(mailchimp_marketing, "Client")
+    def test__arxiva_socia_mailchimp__withManyAddress(self, mock_mailchimp_client, mock_get_list_id, mock_archieve):
+        soci_id = self.IrModelData.get_object_reference(
+            self.cursor, self.uid, 'som_generationkwh', 'soci_0001'
+            )[1]
+        partner_id = self.Soci.read(self.cursor, self.uid, soci_id, ['partner_id'])['partner_id'][0]
+        address_list = self.ResPartner.read(self.cursor, self.uid, partner_id, ['address'])['address']
+        other_address_id = self.ResPartnerAddress.search(self.cursor, self.uid, [('partner_id', '!=', partner_id)])[0]
+        self.ResPartnerAddress.write(self.cursor, self.uid, other_address_id, {'partner_id': partner_id, 'email':'other@mail.com'})
+        self.Soci.arxiva_socia_mailchimp(self.cursor, self.uid, soci_id)
+
+        mock_get_list_id.return_value.get_mailchimp_list_id.return_value = 'id'
+        mock_mailchimp_client.return_value = 'MAILCHIMP_CLIENT'
+        address_list.append(other_address_id)
+        mock_archieve.assert_called_with(self.cursor, self.uid, sorted(address_list), mock.ANY, mock.ANY)
+
+    @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.archieve_mail_in_list")
+    @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.get_mailchimp_list_id")
+    @mock.patch.object(mailchimp_marketing, "Client")
+    def test__arxiva_socia_mailchimp__withoutMail(self, mock_mailchimp_client, mock_get_list_id, mock_archieve):
+        #agafem un soci que no té email
+        soci_id = self.IrModelData.get_object_reference(
+            self.cursor, self.uid, 'som_generationkwh', 'soci_0003'
+            )[1]
+        partner_id = self.Soci.read(self.cursor, self.uid, soci_id, ['partner_id'])['partner_id'][0]
+        address_list = self.ResPartner.read(self.cursor, self.uid, partner_id, ['address'])['address']
+
+        self.Soci.arxiva_socia_mailchimp(self.cursor, self.uid, soci_id)
+
+        mock_get_list_id.return_value.get_mailchimp_list_id.return_value = 'id'
+        mock_mailchimp_client.return_value = 'MAILCHIMP_CLIENT'
+        mock_archieve.assert_called_with(self.cursor, self.uid, address_list, mock.ANY, mock.ANY)
 
