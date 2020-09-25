@@ -123,11 +123,12 @@ class SomenergiaSociTests(testing.OOTestCase):
         partner_id = self.Soci.read(self.cursor, self.uid, soci_id, ['partner_id'])['partner_id'][0]
         address_list = self.ResPartner.read(self.cursor, self.uid, partner_id, ['address'])['address']
 
+        mock_get_list_id.return_value = 'id'
+        mock_mailchimp_client.return_value = 'MAILCHIMP_CLIENT'
+
         self.Soci.arxiva_socia_mailchimp(self.cursor, self.uid, soci_id)
 
-        mock_get_list_id.return_value.get_mailchimp_list_id.return_value = 'id'
-        mock_mailchimp_client.return_value = 'MAILCHIMP_CLIENT'
-        mock_archieve.assert_called_with(self.cursor, self.uid, address_list, mock.ANY, mock.ANY)
+        mock_archieve.assert_called_with(self.cursor, self.uid, address_list, 'id', 'MAILCHIMP_CLIENT')
 
     @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.archieve_mail_in_list")
     @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.get_mailchimp_list_id")
@@ -140,12 +141,14 @@ class SomenergiaSociTests(testing.OOTestCase):
         address_list = self.ResPartner.read(self.cursor, self.uid, partner_id, ['address'])['address']
         other_address_id = self.ResPartnerAddress.search(self.cursor, self.uid, [('partner_id', '!=', partner_id)])[0]
         self.ResPartnerAddress.write(self.cursor, self.uid, other_address_id, {'partner_id': partner_id, 'email':'other@mail.com'})
+
+        mock_get_list_id.return_value = 'id'
+        mock_mailchimp_client.return_value = 'MAILCHIMP_CLIENT'
+
         self.Soci.arxiva_socia_mailchimp(self.cursor, self.uid, soci_id)
 
-        mock_get_list_id.return_value.get_mailchimp_list_id.return_value = 'id'
-        mock_mailchimp_client.return_value = 'MAILCHIMP_CLIENT'
         address_list.append(other_address_id)
-        mock_archieve.assert_called_with(self.cursor, self.uid, sorted(address_list), mock.ANY, mock.ANY)
+        mock_archieve.assert_called_with(self.cursor, self.uid, sorted(address_list), 'id', 'MAILCHIMP_CLIENT')
 
     @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.archieve_mail_in_list")
     @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.get_mailchimp_list_id")
@@ -157,10 +160,10 @@ class SomenergiaSociTests(testing.OOTestCase):
             )[1]
         partner_id = self.Soci.read(self.cursor, self.uid, soci_id, ['partner_id'])['partner_id'][0]
         address_list = self.ResPartner.read(self.cursor, self.uid, partner_id, ['address'])['address']
+        mock_get_list_id.return_value = 'id'
+        mock_mailchimp_client.return_value = 'MAILCHIMP_CLIENT'
 
         self.Soci.arxiva_socia_mailchimp(self.cursor, self.uid, soci_id)
 
-        mock_get_list_id.return_value.get_mailchimp_list_id.return_value = 'id'
-        mock_mailchimp_client.return_value = 'MAILCHIMP_CLIENT'
-        mock_archieve.assert_called_with(self.cursor, self.uid, address_list, mock.ANY, mock.ANY)
+        mock_archieve.assert_called_with(self.cursor, self.uid, address_list,  'id', 'MAILCHIMP_CLIENT')
 
