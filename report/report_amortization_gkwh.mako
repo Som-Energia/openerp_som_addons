@@ -1,6 +1,7 @@
 <%
     report = objects[0]
     data = report.investmentAmortization_notificationData()
+    from babel.numbers import format_currency
 %>
 <html>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -111,7 +112,7 @@
     </style>
 </head>
 <body>
-<% 
+<%
 for account.invoice in objects:
  setLang(account.invoice.lang_partner)
 %>
@@ -144,7 +145,11 @@ for account.invoice in objects:
             <th colspan="2"><b>${_(u"Amortització Actual: ")}${data.amortizationName} </b> </th>
         </tr>
         <tr>
-            <td> ${_(u"Import: ")}${data.amortizationAmount} € </td>
+            <td>
+                ${_(u"Import: ")}${format_currency(data.irpfSaving,'EUR', locale='es_ES')}<br>
+                ${_(u"IRPF 19% en ")}${data.previousYear}${_(u": ")}-${format_currency(data.irpfAmount,'EUR', locale='es_ES')}<br>
+                ${_(u"Import net: ")}${data.amortizationAmount} €
+            </td>
             <td> ${_(u"Data: ")}${data.amortizationDate} </td>
         </tr>
         <tr>
