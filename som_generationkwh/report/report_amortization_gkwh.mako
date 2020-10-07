@@ -147,7 +147,7 @@ for account.invoice in objects:
         <tr>
             <td>
                 ${_(u"Import: ")}${format_currency(data.irpfSaving,'EUR', locale='es_ES')}<br>
-                ${_(u"IRPF 19% en ")}${data.previousYear}${_(u": ")}-${format_currency(data.irpfAmount,'EUR', locale='es_ES')}<br>
+                ${_(u"IRPF 19% ")}${data.previousYear}${_(u": ")}-${format_currency(data.irpfAmount,'EUR', locale='es_ES')}<br>
                 ${_(u"Import net: ")}${data.amortizationAmount} €
             </td>
             <td> ${_(u"Data: ")}${data.amortizationDate} </td>
