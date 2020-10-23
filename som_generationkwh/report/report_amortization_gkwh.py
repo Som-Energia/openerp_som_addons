@@ -25,6 +25,7 @@ class AccountInvoice(osv.osv):
         Partner = pool.get('res.partner')
         InvoiceLine = pool.get('account.invoice.line')
         Investment = pool.get('generationkwh.investment')
+        IrModelData = pool.get('ir.model.data')
 
         account_id = ids[0]
 
@@ -61,6 +62,11 @@ class AccountInvoice(osv.osv):
         investment_obj = Investment.read(cursor, uid, investment_id)
         member_id = investment_obj[0]['member_id'][0]
         irpf_values = Investment.get_irpf_amounts(cursor, uid, investment_id[0], member_id, previous_year)
+        amort_product_id = IrModelData.get_object_reference(cursor, uid, 'som_generationkwh', 'genkwh_product_amortization')[1]
+        amort_value = 0
+        for line in invoice.invoice_line:
+            if line.product_id.id == amort_product_id:
+                amort_value += line.price_subtotal
 
         report.receiptDate = dateFormat(invoice['date_invoice'])
         # TODO: non spanish vats not covered by tests
@@ -78,9 +84,8 @@ class AccountInvoice(osv.osv):
         report.amortizationDate = dateFormat(mutable_information.amortizationDate)
         report.amortizationNumPayment = mutable_information.amortizationNumber
         report.irpfAmount = irpf_values['irpf_amount']
-        report.irpfSaving = irpf_values['irpf_saving']
         report.previousYear = previous_year
-
+        report.amortValue = amort_value
         return report
 
 AccountInvoice()
