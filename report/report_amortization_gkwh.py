@@ -64,7 +64,8 @@ class AccountInvoice(osv.osv):
         irpf_values = Investment.get_irpf_amounts(cursor, uid, investment_id[0], member_id, previous_year)
         amort_product_id = IrModelData.get_object_reference(cursor, uid, 'som_generationkwh', 'genkwh_product_amortization')[1]
         amort_value = 0
-        for line in invoice.invoice_line:
+        for line_id in invoice['invoice_line']:
+            line = InvoiceLine.browse(cursor, uid, line_id)
             if line.product_id.id == amort_product_id:
                 amort_value += line.price_subtotal
 
