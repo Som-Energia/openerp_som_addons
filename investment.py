@@ -410,6 +410,7 @@ class GenerationkwhInvestment(osv.osv):
         min_amount = min(max_amount, max_amount_available, limited_period_amount)
         return min_amount if min_amount >= 0 else 0
 
+    # Deprecated
     def create_from_accounting(self, cursor, uid,
             member_id, start, stop, waitingDays, expirationYears,
             context=None):
