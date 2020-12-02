@@ -696,6 +696,7 @@ class GenerationkwhInvestment(osv.osv):
         for inv in investments:
             investment_id = inv['id']
             invstate = InvestmentState(username, datetime.now(),
+                actions_log = inv['actions_log'],
                 log = inv['log'],
                 amortized_amount = inv['amortized_amount'],
                 purchase_date = isodate(inv['purchase_date']),
@@ -1077,6 +1078,7 @@ class GenerationkwhInvestment(osv.osv):
                 last_effective_date = old_investment['last_effective_date'],
                 order_date = old_investment['order_date'],
                 log = old_investment['log'],
+                actions_log = old_investment['actions_log'],
         )
         inv_old = InvestmentState(user['name'], datetime.now(),
                 name = old_investment['name'],
@@ -1088,6 +1090,7 @@ class GenerationkwhInvestment(osv.osv):
                 last_effective_date = old_investment['last_effective_date'],
                 order_date = old_investment['order_date'],
                 log = old_investment['log'],
+                actions_log = old_investment['actions_log'],
         )
         amount = old_investment['nshares']*gkwh.shareValue - old_investment['amortized_amount']
         to_partner_name = new_partner_id #TODO Get partner name from id
@@ -1152,6 +1155,7 @@ class GenerationkwhInvestment(osv.osv):
             signed_date = str(datetime.today().date())
 
         inv = InvestmentState(user['name'], datetime.now(),
+            actions_log = investment['actions_log'],
             log = investment['log'],
             signed_date = investment['signed_date'],
         )
@@ -1323,6 +1327,7 @@ class GenerationkwhInvestment(osv.osv):
         user = ResUser.read(cursor, uid, uid, ['name'])
 
         inv = InvestmentState(user['name'], datetime.now(),
+            actions_log = investment['actions_log'],
             log = investment['log'],
             draft = investment['draft'],
         )
@@ -1395,6 +1400,7 @@ class GenerationkwhInvestment(osv.osv):
                 amount = nominal_amount
 
             inv = InvestmentState(user['name'], datetime.now(),
+                actions_log = investment['actions_log'],
                 log = investment['log'],
                 nominal_amount = nominal_amount,
                 purchase_date = investment['purchase_date'],
@@ -1650,6 +1656,7 @@ class GenerationkwhInvestment(osv.osv):
                 ])
 
             inv = InvestmentState(user['name'], datetime.now(),
+                actions_log = investment['actions_log'],
                 log = investment['log'],
                 purchase_date = investment['purchase_date'],
                 draft = investment['draft'],
@@ -1691,6 +1698,7 @@ class GenerationkwhInvestment(osv.osv):
 
             # mark investment as canceled
             inv = InvestmentState(user['name'], datetime.now(),
+                actions_log = investment['actions_log'],
                 log = investment['log'],
                 purchase_date = investment['purchase_date'],
                 draft = investment['draft'],
