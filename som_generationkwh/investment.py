@@ -1359,6 +1359,7 @@ class GenerationkwhInvestment(osv.osv):
                 amount = nominal_amount
 
             inv = self.state_actions(cursor, uid, id, user['name'], datetime.now(),
+                actions_log = investment['actions_log'],
                 log = investment['log'],
                 nominal_amount = nominal_amount,
                 purchase_date = investment['purchase_date'],
