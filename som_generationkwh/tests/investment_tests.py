@@ -1732,7 +1732,7 @@ class InvestmentTests(testing.OOTestCase):
             has_effectives = self.Investment.member_has_effective(cursor, uid, member_id, '2010-01-01','2022-01-01', emission_type='apo')
 
             self.assertFalse(has_effectives)
-            
+
     def test__pending_amortization_summary__manyAmortizationsSameInvestment(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
@@ -1751,7 +1751,7 @@ class InvestmentTests(testing.OOTestCase):
 
             self.assertEqual((4, 120),
                 self.Investment.pending_amortization_summary(cursor, uid, '2022-11-20'))
-            
+
     def test__send_emails_to_investors_with_savings_in_year__whenNoGenkwhEmission(self):
         """
         Check send_emails_to_investors_with_savings_in_year when no emissions for Generationkwh
@@ -1858,7 +1858,7 @@ class InvestmentTests(testing.OOTestCase):
             ret_value = self.Soci.send_emails_to_investors_with_savings_in_year(cursor, uid, year=2020)
             self.assertEqual(ret_value, len(investments))
 
-           
+
     def test__get_stats_investment_generation__when_last_effective_date(self):
         """
         Check get_stats_investment_generation when some investements with last_effective_date
@@ -2021,7 +2021,7 @@ class InvestmentTests(testing.OOTestCase):
                     investmentName: GKWH00001
                     investmentPurchaseDate: false
                     divestmentDate: '{invoice_date}'
-                    pendingCapital: 0.0 
+                    pendingCapital: 0.0
                   quantity: 1.0
                   product_id: '[GENKWH_AMOR] Amortització Generation kWh'
                   invoice_line_tax_id: []
@@ -2035,8 +2035,8 @@ class InvestmentTests(testing.OOTestCase):
                 - {p.id}
                 - {p.name}
                 payment_type:
-                - 3 
-                - Transferencia 
+                - 3
+                - Transferencia
                 sii_to_send: false
                 type: in_invoice
                 state: draft
@@ -2051,7 +2051,7 @@ class InvestmentTests(testing.OOTestCase):
                 investment_id=investment_id,
                 mandate_id=False,
                 ))
-                
+
     def test__create_divestment_invoice__withProfitOneYearOkGKWH(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
@@ -2102,7 +2102,7 @@ class InvestmentTests(testing.OOTestCase):
                     investmentName: GKWH00001
                     investmentPurchaseDate: false
                     divestmentDate: '{invoice_date}'
-                    pendingCapital: 0.0 
+                    pendingCapital: 0.0
                   quantity: 1.0
                   product_id: '[GENKWH_AMOR] Amortització Generation kWh'
                   invoice_line_tax_id: []
@@ -2138,8 +2138,8 @@ class InvestmentTests(testing.OOTestCase):
                 - {p.id}
                 - {p.name}
                 payment_type:
-                - 3 
-                - Transferencia 
+                - 3
+                - Transferencia
                 sii_to_send: false
                 type: in_invoice
                 state: draft
@@ -2207,7 +2207,7 @@ class InvestmentTests(testing.OOTestCase):
                     investmentName: GKWH00001
                     investmentPurchaseDate: false
                     divestmentDate: '{invoice_date}'
-                    pendingCapital: 0.0 
+                    pendingCapital: 0.0
                   quantity: 1.0
                   product_id: '[GENKWH_AMOR] Amortització Generation kWh'
                   invoice_line_tax_id: []
@@ -2265,8 +2265,8 @@ class InvestmentTests(testing.OOTestCase):
                 - {p.id}
                 - {p.name}
                 payment_type:
-                - 3 
-                - Transferencia 
+                - 3
+                - Transferencia
                 sii_to_send: false
                 type: in_invoice
                 state: draft
@@ -2335,7 +2335,7 @@ class InvestmentTests(testing.OOTestCase):
                     investmentName: GKWH00001
                     investmentPurchaseDate: false
                     divestmentDate: '{invoice_date}'
-                    pendingCapital: 0.0 
+                    pendingCapital: 0.0
                   quantity: 1.0
                   product_id: '[GENKWH_AMOR] Amortització Generation kWh'
                   invoice_line_tax_id: []
@@ -2393,8 +2393,8 @@ class InvestmentTests(testing.OOTestCase):
                 - {p.id}
                 - {p.name}
                 payment_type:
-                - 3 
-                - Transferencia 
+                - 3
+                - Transferencia
                 sii_to_send: false
                 type: in_invoice
                 state: draft
@@ -2461,7 +2461,7 @@ class InvestmentTests(testing.OOTestCase):
                     investmentName: APO00001
                     investmentPurchaseDate: false
                     divestmentDate: '{invoice_date}'
-                    pendingCapital: 0.0 
+                    pendingCapital: 0.0
                   quantity: 1.0
                   product_id: '[APO_AE] Aportacions'
                   invoice_line_tax_id: []
@@ -2475,8 +2475,8 @@ class InvestmentTests(testing.OOTestCase):
                 - {p.id}
                 - {p.name}
                 payment_type:
-                - 3 
-                - Transferencia 
+                - 3
+                - Transferencia
                 sii_to_send: false
                 type: in_invoice
                 state: draft
@@ -2502,7 +2502,7 @@ class InvestmentTests(testing.OOTestCase):
             member_id = self.IrModelData.get_object_reference(
                 cursor, uid, 'som_generationkwh', 'soci_0001'
             )[1]
-            
+
             self.Investment.write(cursor, uid, investment_id, {'member_id': member_id})
             
             self.Investment.divest(cursor, uid, [investment_id])
