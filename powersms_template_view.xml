@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="powersms_template_form">
+            <field name="name">powersms.templates.form</field>
+            <field name="model">powersms.templates</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Power SMS Templates">
+                    <field name="name" />
+                    <field name="object_name" required="1"/>
+                    <field name="model_int_name" invisible="1" />
+                    <notebook colspan="4">
+                        <page string="SMS Details">
+                            <group col="4" colspan="2">
+                                <field name="def_from" colspan="4"
+                                    required="1" />
+                                <field name="def_to" colspan="4"
+                                    required="1" />
+                                <field name="certificate" colspan="4" />
+                                <field name="lang" colspan="4" />
+                            </group>
+                            <separator colspan="3" string="Standard Body" />
+
+                            <notebook>
+                                <page string="Body (Text)">
+                                    <field name="def_body_text"
+                                        colspan="4" nolabel="1" />
+                                </page>
+                            </notebook>
+                        </page>
+                        <page string="Advanced">
+                            <separator string="Automatic SMS"
+                                colspan="4" />
+                            <field name="enforce_from_account"
+                                attrs="{'required':[('auto_sms','=',True)]}" />
+                            <field name="auto_sms" />
+                            <field name="send_on_create" />
+                            <field name="send_on_write" />
+                            <field name="use_filter" />
+                            <group string="Filter" colspan="4" attrs="{'invisible':[('use_filter','=',False)]}">
+                                <group colspan="3" col="1">
+                                    <separator string="OpenObject Code Filter:"/>
+                                    <field name="filter" nolabel="1"/>
+                                </group>
+                                <group colspan="1" col="1">
+                                    <separator string="Available global variables:"/>
+                                    <label string="o - current object"/>
+                                    <label string="self - objects pointer"/>
+                                    <label string="uid - current user ID"/>
+                                    <label string="cr - database cursor"/>
+                                    <label string="context - current context"/>
+                                </group>
+                            </group>
+                            <separator string="SMS action and wizard"
+                                colspan="4" />
+                            <group colspan="4" col="6">
+                                <field name="ref_ir_act_window" colspan="2"/>
+                                <button
+                                        string="Create action and value"
+                                        colspan="1" name="create_action_reference"
+                                        type="object"
+                                        attrs="{'readonly':[('ref_ir_act_window', '!=', False), ('ref_ir_value', '!=', False)]}"/>
+                                <field name="ref_ir_value" colspan="2"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="powersms_template_tree">
+            <field name="name">powersms.templates.tree</field>
+            <field name="model">powersms.templates</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Power SMS Templates">
+                    <field name="name" select="1" />
+                    <field name="object_name" required="1" select="1" />
+                    <field name="def_from" colspan="4" select="1" />
+                    <field name="def_to" colspan="4" select="1" />
+                    <field name="certificate" colspan="4" select="1" />
+                    <field name="enforce_from_account" select="2"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record model="ir.actions.act_window" id="action_powersms_template_tree_all">
+            <field name="name">SMS Templates</field>
+            <field name="res_model">powersms.templates</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form,tree</field>
+            <field name="view_id" ref="powersms_template_tree" />
+        </record>
+
+        <record model="ir.actions.act_window" id="action_powersms_template_form">
+            <field name="name">SMS Templates</field>
+            <field name="res_model">powersms.templates</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form,tree</field>
+            <field name="view_id" ref="powersms_template_form" />
+        </record>
+
+        <menuitem name="Templates" id="menu_powersms_templates" parent="menu_powersms_administration_server" />
+        <menuitem name="SMS Templates" id="menu_powersms_templates_all"
+            parent="menu_powersms_templates" action="action_powersms_template_tree_all" />
+    </data>
+</openerp>
