@@ -148,6 +148,10 @@ class InvestmentTests(testing.OOTestCase):
             inv_id = self.IrModelData.get_object_reference(
                         cursor, uid, 'som_generationkwh', 'apo_0001'
                         )[1]
+
+            member_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'soci_0001')[1]
+
             inv_0001 = self.Investment.browse(cursor, uid, inv_id)
             self.assertEquals(inv_0001.signed_date, False)
 
@@ -168,7 +172,7 @@ class InvestmentTests(testing.OOTestCase):
                     'signed_date': '2017-01-06',
                     'draft': True,
                     'purchase_date': False,
-                    'member_id': (1, u'Gil, Pere'),
+                    'member_id': (member_id, u'Gil, Pere'),
                     'active': True,
                     'order_date': '2020-03-04',
                     'amortized_amount': 0.0,
@@ -197,6 +201,9 @@ class InvestmentTests(testing.OOTestCase):
                     'ES7712341234161234567890',
                     'APO_202006')
 
+            member_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'soci_0001')[1]
+
             inv_0001 = self.Investment.read(cursor, uid, inv_id)
             inv_0001.pop('actions_log')
             inv_0001.pop('log')
@@ -212,7 +219,7 @@ class InvestmentTests(testing.OOTestCase):
                     'signed_date': False,
                     'draft': True,
                     'purchase_date': False,
-                    'member_id': (1, u'Gil, Pere'),
+                    'member_id': (member_id, u'Gil, Pere'),
                     'active': True,
                     'order_date': '2020-06-06',
                     'amortized_amount': 0.0,
@@ -242,6 +249,8 @@ class InvestmentTests(testing.OOTestCase):
                         '10.10.23.123',
                         'ES7712341234161234567890',
                         'APO_202006')
+                member_id = self.IrModelData.get_object_reference(
+                    cursor, uid, 'som_generationkwh', 'soci_0001')[1]
 
                 inv_0001 = self.Investment.read(cursor, uid, inv_id)
                 inv_0001.pop('actions_log')
@@ -258,7 +267,7 @@ class InvestmentTests(testing.OOTestCase):
                         'signed_date': False,
                         'draft': True,
                         'purchase_date': False,
-                        'member_id': (1, u'Gil, Pere'),
+                        'member_id': (member_id, u'Gil, Pere'),
                         'active': True,
                         'order_date': '2020-06-06',
                         'amortized_amount': 0.0,
@@ -1514,6 +1523,10 @@ class InvestmentTests(testing.OOTestCase):
             inv_id = self.IrModelData.get_object_reference(
                         cursor, uid, 'som_generationkwh', 'apo_0001'
                         )[1]
+
+            member_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'soci_0001')[1]
+
             inv_0001 = self.Investment.browse(cursor, uid, inv_id)
             self.Investment.mark_as_invoiced(cursor, uid, inv_id)
 
@@ -1538,7 +1551,7 @@ class InvestmentTests(testing.OOTestCase):
                     'signed_date': False,
                     'draft': False,
                     'purchase_date': '2017-01-06',
-                    'member_id': (1, u'Gil, Pere'),
+                    'member_id': (member_id, u'Gil, Pere'),
                     'active': True,
                     'order_date': '2020-03-04',
                     'amortized_amount': 0.0,
@@ -1556,6 +1569,10 @@ class InvestmentTests(testing.OOTestCase):
             inv_id = self.IrModelData.get_object_reference(
                         cursor, uid, 'som_generationkwh', 'genkwh_0001'
                         )[1]
+
+            member_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'soci_0001')[1]
+
             inv_0001 = self.Investment.browse(cursor, uid, inv_id)
             self.Investment.mark_as_invoiced(cursor, uid, inv_id)
 
@@ -1580,7 +1597,7 @@ class InvestmentTests(testing.OOTestCase):
                     'signed_date': False,
                     'draft': False,
                     'purchase_date': '2017-01-06',
-                    'member_id': (1, u'Gil, Pere'),
+                    'member_id': (member_id, u'Gil, Pere'),
                     'active': True,
                     'order_date': '2019-10-01',
                     'amortized_amount': 0.0,
@@ -1595,13 +1612,20 @@ class InvestmentTests(testing.OOTestCase):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
-            inv_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
-                        )[1]
+
+            member1_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'soci_0001')[1]
+            
+            member2_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'soci_generation')[1]
 
             inv_tuple = self.Investment.effective_investments_tuple(cursor, uid)
 
-            self.assertEquals(inv_tuple, [(1, False, False, 10), (1, '2020-10-12', '2044-10-12', 10), (5, '2020-11-12', '2044-11-12', 5)])
+            self.assertEquals(inv_tuple, [
+                (member1_id, False, False, 10),
+                (member1_id, '2020-10-12', '2044-10-12', 10),
+                (member2_id, '2020-11-12', '2044-11-12', 5),
+            ])
 
     def test__effective_investments_tuple__allAPO(self):
         """
@@ -1611,15 +1635,22 @@ class InvestmentTests(testing.OOTestCase):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
-            inv_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
-                        )[1]
+
+            member1_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'soci_0001')[1]
+
+            member2_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'soci_aportacions')[1]
 
             inv_tuple = self.Investment.effective_investments_tuple(cursor, uid, emission_type='apo')
 
-            self.assertEquals(set(inv_tuple), set([(1, False, False, 50), (1, False, False, 10), (4, '2020-03-12', False, 10)]))
+            self.assertEquals(set(inv_tuple), set([
+                (member1_id, False, False, 50),
+                (member1_id, False, False, 10),
+                (member2_id, '2020-03-12', False, 10),
+            ]))
 
-    def test__effective_investments_tuple__oneAPO(self):
+    def test__effective_investments_tuple__filteredByEmissionCode(self):
         """
         Check effective investments tuple, only Generation
         :return:
@@ -1631,9 +1662,12 @@ class InvestmentTests(testing.OOTestCase):
                         cursor, uid, 'som_generationkwh', 'genkwh_0001'
                         )[1]
 
+            member_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'soci_0001')[1]
+
             inv_tuple = self.Investment.effective_investments_tuple(cursor, uid, emission_type='apo', emission_code='APO_202006')
 
-            self.assertEquals(inv_tuple, [(1, False, False, 50)])
+            self.assertEquals(inv_tuple, [(member_id, False, False, 50)])
 
     def test__member_has_effective__onlyGKWH(self):
         """
