@@ -1,9 +1,9 @@
-import unittest
-
+# -*- coding: utf-8 -*-
 from destral import testing
 from destral.transaction import Transaction
 from expects import *
-from ..tarifes import *
+from giscedata_facturacio_indexada_som.tarifes import *
+import os
 import tools
 
 HOLIDAYS = [
@@ -137,6 +137,7 @@ class IndexadaSOMTest(testing.OOTestCase):
             uid = txn.user
 
             contract_obj = self.openerp.pool.get('giscedata.polissa')
+            pricelist_obj = self.openerp.pool.get('product.pricelist')
             imd_obj = self.openerp.pool.get('ir.model.data')
 
             # gets contract 0001
@@ -182,6 +183,8 @@ class IndexadaSOMTest(testing.OOTestCase):
                 expect(productes).to(have_key('pc'))
                 expect(productes).to(have_key('fe'))
                 expect(productes).to(have_key('atr'))
+                if pricelist_obj.browse(cursor, uid, pricelist_id).indexed_formula == u'Indexada Península':
+                    expect(productes).to(have_key('h'))
 
             preus = facturador_obj.versions_de_preus(
                 cursor, uid, contract_id_atr, '2017-01-01', '2017-01-31',
@@ -189,7 +192,7 @@ class IndexadaSOMTest(testing.OOTestCase):
             )
 
             for version, productes in preus.items():
-                expect(productes).to(be_an(int))
+                expect(productes).to(be_an((int, long)))
                 expect(productes).to(equal(pricelist_id))
 
     def test_phf(self):
@@ -239,7 +242,6 @@ class IndexadaSOMTest(testing.OOTestCase):
                 context
             )
 
-
             curve_data = self.get_curve()
             curve = Curve(datetime(2017, 1, 1))
             curve.load(curve_data)
@@ -261,9 +263,10 @@ class IndexadaSOMTest(testing.OOTestCase):
                 audit=['pmd', 'curve', 'pc3_ree']
             )
 
-            component = tarifa.phf_calc(
+            getattr(tarifa, tarifa.phf_function)(
                 curve, date(2017, 1, 1)
             )
+
             # test component
             tarifa.factura_energia()
             assert tarifa.code == '2.0A'
@@ -282,6 +285,9 @@ class IndexadaSOMTest(testing.OOTestCase):
             with open('/tmp/curve_data.csv', 'r') as curvefile:
                 first_line = curvefile.readline()
             expect(first_line).to(equal('2017-01-01 01;0.001;;\r\n'))
+
+            if os.path.exists('/tmp/curve_data.csv'):
+                os.remove('/tmp/curve_data.csv')
 
             # PMD
             pmd_audit = tarifa.get_audit_data('pmd')
@@ -313,3 +319,104 @@ class IndexadaSOMTest(testing.OOTestCase):
                     prmncur.get(1, 0), prmncur.file_version)
                 )
             )
+
+            if os.path.exists('/tmp/pmd_data.csv'):
+                os.remove('/tmp/pmd_data.csv')
+
+    def test_phf_peninsula(self):
+        ESIOS_TOKEN = tools.config['esios_token']
+        token = ESIOS_TOKEN
+
+        facturador_obj = self.openerp.pool.get(
+            'giscedata.facturacio.facturador'
+        )
+        self.openerp.install_module(
+            'giscedata_tarifas_pagos_capacidad_20170101'
+        )
+        self.openerp.install_module(
+            'giscedata_tarifas_peajes_20170101'
+        )
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            contract_obj = self.openerp.pool.get('giscedata.polissa')
+            imd_obj = self.openerp.pool.get('ir.model.data')
+            pricelist_obj = self.openerp.pool.get('product.pricelist')
+
+            # gets contract 0001
+            contract_id_index = imd_obj.get_object_reference(
+                cursor, uid, 'giscedata_polissa', 'polissa_0001'
+            )[1]
+
+            contract_id_atr = imd_obj.get_object_reference(
+                cursor, uid, 'giscedata_polissa', 'polissa_0002'
+            )[1]
+
+            pricelist_id = imd_obj.get_object_reference(
+                cursor, uid, 'giscedata_facturacio',
+                'pricelist_tarifas_electricidad'
+            )[1]
+
+            # change formula to 'Pass-Through Ebroenergia'
+            pricelist_obj.write(cursor, uid, pricelist_id, {'indexed_formula': u'Indexada Península'})
+
+            contract_obj.send_signal(
+                cursor, uid, [contract_id_index], ['validar', 'contracte']
+            )
+            self.crear_modcon(
+                cursor, uid, contract_id_index, '2017-01-01', '2017-12-31'
+            )
+
+            context = {'llista_preu': pricelist_id}
+            versions = facturador_obj.versions_de_preus(
+                cursor, uid, contract_id_index, '2017-01-01', '2017-01-31',
+                context
+            )
+
+            curve_data = self.get_curve()
+            curve = Curve(datetime(2017, 1, 1))
+            curve.load(curve_data)
+
+            consums = {
+                'activa': {'2017-01-01': curve_data},
+                'reactiva': {'P1': 2}
+            }
+            tarifa = Tarifa20APoolSOM(
+                consums, {},
+                '2017-01-01', '2017-01-31',
+                facturacio=1, facturacio_potencia='icp',
+                data_inici_periode='2017-01-01',
+                data_final_periode='2017-01-31',
+                potencies_contractades={'P1': 4.6},
+                versions=versions,
+                holidays=HOLIDAYS,
+                esios_token=token,
+                audit=['pmd', 'curve'],
+                indexed_formula=u'Indexada Península'
+            )
+
+            getattr(tarifa, tarifa.phf_function)(
+                curve, date(2017, 1, 1)
+            )
+
+            # test component
+            tarifa.factura_energia()
+            assert tarifa.code == '2.0A'
+
+            # CURVE
+            curve_audit = tarifa.get_audit_data('curve')
+            tarifa.dump_audit_data('curve', '/tmp/curve_data.csv')
+            # test
+            expect(curve_audit[0]).to(
+                equal(("2017-01-01 01", 0.001, '', ''))
+            )
+            expect(curve_audit[-1]).to(
+                equal(("2017-01-31 24", 0.03123, '', ''))
+            )
+            with open('/tmp/curve_data.csv', 'r') as curvefile:
+                first_line = curvefile.readline()
+            expect(first_line).to(equal('2017-01-01 01;0.001;;\r\n'))
+
+            if os.path.exists('/tmp/curve_data.csv'):
+                os.remove('/tmp/curve_data.csv')
