@@ -17,7 +17,7 @@
 							<group col="2" colspan="2">
 								<field name="user" select="2" colspan="2" />
                             	<field name="api_server" select="1" colspan="2" />
-								<field name="tel_id" select="1" on_change="on_change_smsid(name,tel_id)" colspan="2" />
+								<field name="tel_id" select="1" colspan="2" />
 							</group>
 							<group col="2" colspan="2">
 								<field name="api_uname" select="1" colspan="2" />
@@ -34,7 +34,6 @@
 						<button string="Approve Account" name="button_approval" states="draft" type="workflow" colspan="2" />
 						<button string="Suspend Account" name="button_suspended" states="approved" type="workflow" colspan="2" />
 						<button string="Request Re-activation" name="get_reapprove" states="suspended" type="workflow" colspan="2" />
-						<button string="Send/Receive" name="send_receive" states="approved" type="object" colspan="2" />
 					</group>
 				</form>
 			</field>
