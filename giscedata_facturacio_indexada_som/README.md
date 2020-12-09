@@ -90,3 +90,17 @@ Where:
 * **curve**: Curva
 * **pmd**: prmdiari
 * **perdues**: perdxxxxx
+
+## PHF Generació
+
+ `PHF = [PMD]`
+
+### Hourly Coeficients
+
+* **PMD**: liquicomun -> prmdiari
+
+### audit files
+
+* **pvpc_gen**: prmdiari
+* **curve_gen**: Curva
+* **phf_gen**: Precio Horario Final (incluye consumo)

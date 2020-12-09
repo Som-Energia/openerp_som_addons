@@ -25,6 +25,56 @@ class TarifaPoolSOM(TarifaPool):
 
         return res
 
+    def get_available_audit_coefs_gen(self):
+        """
+        changes 'pvpc_gen' to 'prmdiari'
+        :return: {
+            'pvpc_gen': 'prmdiari',
+            'curve_gen': 'B',
+            'phf_gen': 'component',
+        }
+        """
+        res = super(TarifaPoolSOM, self).get_available_audit_coefs()
+        res['pvpc_gen'] = 'prmdiari'
+        return res
+
+    def phf_calc_generacio(self, curve, start_date):
+        """
+        Calcs component PHF as:
+        PHF = [PMD]
+        :param curve: Component curve
+        :param start_date: component start date
+        :return: returns a component
+        """
+        num_days = calendar.monthrange(start_date.year, start_date.month)[1]
+        end_date = datetime(start_date.year, start_date.month, num_days).date()
+
+        esios_token = self.conf['esios_token']
+        holidays = self.conf['holidays']
+
+        # REE
+        postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d")))
+        prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+
+        A = (prmdiari * 0.001)
+        B = curve * 0.001
+        component = A * B
+
+        audit_keys = self.get_available_audit_coefs_gen()
+        for key in self.conf.get('audit_gen', []):
+            if key not in self.audit_data.keys():
+                self.audit_data[key] = []
+            if key not in self.audit_components.keys():
+                self.audit_components[key] = None
+            var_name = audit_keys[key]
+            com = locals()[var_name]
+            self.audit_components[key] = com
+            self.audit_data[key].extend(
+                com.get_audit_data(start=start_date.day)
+            )
+
+        return component
+
     def phf_calc(self, curve, start_date):
         '''
         Calcs component PHF as:
