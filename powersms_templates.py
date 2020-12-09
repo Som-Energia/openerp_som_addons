@@ -24,6 +24,74 @@ class PowersmsTemplates(osv.osv):
             res[template_id] = mod_name
         return res
 
+    def create_action_reference(self, cursor, uid, ids, context):
+        template = self.pool.get('powersms.templates').browse(
+            cursor, uid, ids[0]
+        )
+        src_obj = template.object_name.model
+        values_obj = self.pool.get('ir.values')
+        action_obj = self.pool.get('ir.actions.act_window')
+        if template.ref_ir_act_window:
+            if template.ref_ir_value:
+                return
+        if not template.ref_ir_act_window:
+            ctx = "{}{}{}".format(
+                '{', (
+                    "'src_model': '{}', 'template_id': '{}',"
+                    "'src_rec_id':active_id, 'src_rec_ids':active_ids"
+                ).format(
+                    src_obj, template.id
+                ), '}'
+            )
+            ref_ir_act_window = action_obj.create(
+                cursor, uid, {
+                    'name': _("%s SMS Form") % template.name,
+                    'type': 'ir.actions.act_window',
+                    'res_model': 'powersms.send.wizard',
+                    'src_model': src_obj,
+                    'view_type': 'form',
+                    'context': ctx,
+                    'view_mode': 'form,tree',
+                    'view_id': self.pool.get('ir.ui.view').search(
+                        cursor, uid, [
+                            ('name', '=', 'powersms.send.wizard.form')
+                        ],
+                        context=context
+                    )[0],
+                    'target': 'new',
+                    'auto_refresh': 1
+                }, context
+            )
+            if template.ref_ir_value:
+                values_obj.unlink(cursor, uid, template.ref_ir_value.id)
+            ref_ir_value = values_obj.create(
+                cursor, uid, {
+                    'name': _('Send SMS (%s)') % template.name,
+                    'model': src_obj,
+                    'key2': 'client_action_multi',
+                    'value': "ir.actions.act_window," + str(ref_ir_act_window),
+                    'object': True,
+                }, context
+            )
+            self.write(cursor, uid, ids, {
+                'ref_ir_act_window': ref_ir_act_window,
+                'ref_ir_value': ref_ir_value,
+            })
+        elif not template.ref_ir_value:
+            ref_ir_value = values_obj.create(
+                cursor, uid, {
+                    'name': _('Send SMS (%s)') % template.name,
+                    'model': src_obj,
+                    'key2': 'client_action_multi',
+                    'value': "ir.actions.act_window," + str(
+                        template.ref_ir_act_window),
+                    'object': True,
+                }, context
+            )
+            self.write(cursor, uid, ids, {
+                'ref_ir_value': ref_ir_value,
+            }, context)
+
 
     _columns = {
         'name': fields.char('Name of Template', size=100, required=True),

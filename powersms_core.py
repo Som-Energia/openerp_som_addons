@@ -3,9 +3,13 @@ from tools.translate import _
 
 class PowersmsCoreAccounts(osv.osv):
     """
-    Object to store email account settings
+    Object to store sms account settings
     """
     _name = "powersms.core_accounts"
+
+
+    def do_approval(self, cr, uid, ids, context={}):
+        self.write(cr, uid, ids, {'state':'approved'}, context=context)
 
     _columns = {
         'name': fields.char('SMS Account name',
