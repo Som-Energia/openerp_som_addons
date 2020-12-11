@@ -2,13 +2,18 @@
 from destral import testing
 from destral.transaction import Transaction
 from destral.patch import PatchNewCursors
+from yamlns import namespace as ns
 import netsvc
 import time
 import random
 
 
 class PartnerTests(testing.OOTestCase):
+
+    from yamlns.testutils import assertNsEqual
+
     def setUp(self):
+        self.maxDiff = None
         self.pool = self.openerp.pool
         self.imd_obj = self.pool.get('ir.model.data')
         self.emission_obj = self.pool.get('generationkwh.emission')
@@ -104,21 +109,38 @@ class PartnerTests(testing.OOTestCase):
             partner_id = self.IrModelData.get_object_reference(
                         cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
                         )[1]
+            member_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'soci_0001')[1]
 
             inv_list = self.partner_obj.www_generationkwh_investments(cursor, uid, partner_id)
 
             for inv in inv_list:
                 inv.pop('id')
-            self.assertEquals(inv_list, [
-                {'nominal_amount': 1000.0, 'first_effective_date': False, 
-                    'name': u'GKWH00001', 'last_effective_date': False, 'draft': True,
-                    'purchase_date': False, 'member_id': (1, u'Gil, Pere'), 'active': True,
-                    'order_date': '2019-10-01', 'amortized_amount': 0.0, 'nshares': 10},
-                {'nominal_amount': 1000.0, 'first_effective_date': '2020-10-12', 
-                    'name': u'GKWH00002', 'last_effective_date': '2044-10-12', 'draft': True,
-                    'purchase_date': '2019-10-12', 'member_id': (1, u'Gil, Pere'), 'active': True,
-                    'order_date': '2019-10-01', 'amortized_amount': 0.0, 'nshares': 10}
-            ])
+            self.assertNsEqual(ns(entries=inv_list), """
+                entries:
+                - nominal_amount: 1000.0
+                  name: GKWH00001
+                  order_date: '2019-10-01'
+                  purchase_date: false
+                  first_effective_date: false
+                  last_effective_date: false
+                  draft: true
+                  member_id: [{member_id}, 'Gil, Pere']
+                  active: true
+                  amortized_amount: 0.0
+                  nshares: 10
+                - nominal_amount: 1000.0
+                  name: GKWH00002
+                  order_date: '2019-10-01'
+                  purchase_date: '2019-10-12'
+                  first_effective_date: '2020-10-12'
+                  last_effective_date: '2044-10-12'
+                  draft: true
+                  member_id: [{member_id}, 'Gil, Pere']
+                  active: true
+                  amortized_amount: 0.0
+                  nshares: 10
+            """.format(member_id=member_id))
 
     def test__www_aportacions_investments__twoAPO(self):
         with Transaction().start(self.database) as txn:
@@ -127,21 +149,38 @@ class PartnerTests(testing.OOTestCase):
             partner_id = self.IrModelData.get_object_reference(
                         cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
                         )[1]
+            member_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'soci_0001')[1]
 
             inv_list = self.partner_obj.www_aportacions_investments(cursor, uid, partner_id)
 
             for inv in inv_list:
                 inv.pop('id')
-            self.assertEquals(inv_list, [
-                {'nominal_amount': 1000.0, 'first_effective_date': False, 'name': u'APO00001',
-                    'last_effective_date': False, 'draft': True, 'purchase_date': False,
-                    'member_id': (1, u'Gil, Pere'), 'active': True, 'order_date': '2020-03-04',
-                    'amortized_amount': 0.0, 'nshares': 10},
-                {'nominal_amount': 5000.0, 'first_effective_date': False, 'name': u'APO00002',
-                    'last_effective_date': False, 'draft': True, 'purchase_date': False,
-                    'member_id': (1, u'Gil, Pere'), 'active': True, 'order_date': '2020-06-01',
-                    'amortized_amount': 0.0, 'nshares': 50}
-            ])
+            self.assertNsEqual(ns(entries=inv_list), """
+                entries:
+                - nominal_amount: 1000.0
+                  name: APO00001
+                  order_date: '2020-03-04'
+                  purchase_date: false
+                  first_effective_date: false
+                  last_effective_date: false
+                  draft: true
+                  member_id: [{member_id}, 'Gil, Pere']
+                  active: true
+                  amortized_amount: 0.0
+                  nshares: 10
+                - nominal_amount: 5000.0
+                  name: APO00002
+                  order_date: '2020-06-01'
+                  purchase_date: false
+                  first_effective_date: false
+                  last_effective_date: false
+                  draft: true
+                  member_id: [{member_id}, 'Gil, Pere']
+                  active: true
+                  amortized_amount: 0.0
+                  nshares: 50
+            """.format(member_id=member_id))
 
     def test__www_generationkwh_assignments__twoGKWH(self):
         with Transaction().start(self.database) as txn:
@@ -163,7 +202,7 @@ class PartnerTests(testing.OOTestCase):
             self.assertEquals(assig_list, [{'annual_use_kwh': False,
                 'contract_address': u'carrer inventat 1 1 1 1 aclaridor 00001 (Poble de Prova)',
                 'contract_id': 1, 'contract_last_invoiced': False, 'contract_name': u'0001C',
-                'contract_state': u'esborrany', 'member_id': 1, 'member_name': u'Gil, Pere',
+                'contract_state': u'esborrany', 'member_id': member_id, 'member_name': u'Gil, Pere',
                 'priority': 0}])
 
 # vim: et ts=4 sw=4
