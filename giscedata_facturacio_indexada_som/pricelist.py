@@ -2,6 +2,8 @@
 from osv import fields, osv
 from .tarifes import TarifaPoolSOM
 
+from tools.translate import _
+
 
 class ProductPriceList(osv.osv):
 
@@ -17,7 +19,7 @@ class ProductPriceList(osv.osv):
         return selection
 
     _columns = {
-        'indexed_formula': fields.selection(_pricelist_type_get, 'Fòrmula indexada',
+        'indexed_formula': fields.selection(_pricelist_type_get, _('Fòrmula indexada'),
                                             required=True)
     }
 
