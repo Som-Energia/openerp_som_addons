@@ -696,6 +696,7 @@ class GenerationkwhInvestment(osv.osv):
         for inv in investments:
             investment_id = inv['id']
             invstate = InvestmentState(username, datetime.now(),
+                actions_log = inv['actions_log'],
                 log = inv['log'],
                 amortized_amount = inv['amortized_amount'],
                 purchase_date = isodate(inv['purchase_date']),
@@ -1077,6 +1078,7 @@ class GenerationkwhInvestment(osv.osv):
                 last_effective_date = old_investment['last_effective_date'],
                 order_date = old_investment['order_date'],
                 log = old_investment['log'],
+                actions_log = old_investment['actions_log'],
         )
         inv_old = InvestmentState(user['name'], datetime.now(),
                 name = old_investment['name'],
@@ -1088,6 +1090,7 @@ class GenerationkwhInvestment(osv.osv):
                 last_effective_date = old_investment['last_effective_date'],
                 order_date = old_investment['order_date'],
                 log = old_investment['log'],
+                actions_log = old_investment['actions_log'],
         )
         amount = old_investment['nshares']*gkwh.shareValue - old_investment['amortized_amount']
         to_partner_name = new_partner_id #TODO Get partner name from id
@@ -1139,7 +1142,7 @@ class GenerationkwhInvestment(osv.osv):
         Soci = self.pool.get('somenergia.soci')
         User = self.pool.get('res.users')
         user = User.read(cursor, uid, uid, ['name'])
-        inversio = self.read(cursor, uid, id, [
+        investment = self.read(cursor, uid, id, [
             'log',
             'draft',
             'actions_log',
@@ -1152,8 +1155,9 @@ class GenerationkwhInvestment(osv.osv):
             signed_date = str(datetime.today().date())
 
         inv = InvestmentState(user['name'], datetime.now(),
-            log = inversio['log'],
-            signed_date = inversio['signed_date'],
+            actions_log = investment['actions_log'],
+            log = investment['log'],
+            signed_date = investment['signed_date'],
         )
         inv.sign(signed_date)
         self.write(cursor, uid, id, inv.erpChanges())
@@ -1314,7 +1318,7 @@ class GenerationkwhInvestment(osv.osv):
         Soci = self.pool.get('somenergia.soci')
         User = self.pool.get('res.users')
         user = User.read(cursor, uid, uid, ['name'])
-        inversio = self.read(cursor, uid, id, [
+        investment = self.read(cursor, uid, id, [
             'log',
             'draft',
             'actions_log',
@@ -1323,8 +1327,9 @@ class GenerationkwhInvestment(osv.osv):
         user = ResUser.read(cursor, uid, uid, ['name'])
 
         inv = InvestmentState(user['name'], datetime.now(),
-            log = inversio['log'],
-            draft = inversio['draft'],
+            actions_log = investment['actions_log'],
+            log = investment['log'],
+            draft = investment['draft'],
         )
         inv.invoice()
         self.write(cursor, uid, id, inv.erpChanges())
@@ -1335,7 +1340,7 @@ class GenerationkwhInvestment(osv.osv):
         Emission = self.pool.get('generationkwh.emission')
         user = ResUser.read(cursor, uid, uid, ['name'])
         for id in ids:
-            inversio = self.read(cursor, uid, id, [
+            investment = self.read(cursor, uid, id, [
                 'log',
                 'actions_log',
                 'nshares',
@@ -1345,7 +1350,7 @@ class GenerationkwhInvestment(osv.osv):
                 'emission_id',
                 ])
             user = ResUser.read(cursor, uid, uid, ['name'])
-            nominal_amount = inversio['nshares']*gkwh.shareValue
+            nominal_amount = investment['nshares']*gkwh.shareValue
             if movementline_id:
                 MoveLine = self.pool.get('account.move.line')
                 moveline = ns(MoveLine.read(cursor, uid, movementline_id, []))
@@ -1354,12 +1359,13 @@ class GenerationkwhInvestment(osv.osv):
                 amount = nominal_amount
 
             inv = self.state_actions(cursor, uid, id, user['name'], datetime.now(),
-                log = inversio['log'],
+                actions_log = investment['actions_log'],
+                log = investment['log'],
                 nominal_amount = nominal_amount,
-                purchase_date = inversio['purchase_date'],
-                draft = inversio['draft'],
+                purchase_date = investment['purchase_date'],
+                draft = investment['draft'],
             )
-            emission_data = Emission.read(cursor, uid, inversio['emission_id'][0], ['waiting_days', 'expiration_years'])
+            emission_data = Emission.read(cursor, uid, investment['emission_id'][0], ['waiting_days', 'expiration_years'])
             waitDays = emission_data['waiting_days']
             expirationYears = emission_data['expiration_years']
             inv.pay(
@@ -1377,7 +1383,7 @@ class GenerationkwhInvestment(osv.osv):
         AccountInvoice = self.pool.get('account.invoice')
         user = ResUser.read(cursor, uid, uid, ['name'])
         for id in ids:
-            inversio = self.read(cursor, uid, id, [
+            investment = self.read(cursor, uid, id, [
                 'log',
                 'actions_log',
                 'nshares',
@@ -1386,7 +1392,7 @@ class GenerationkwhInvestment(osv.osv):
                 'name',
             ])
             user = ResUser.read(cursor, uid, uid, ['name'])
-            nominal_amount = inversio['nshares']*gkwh.shareValue
+            nominal_amount = investment['nshares']*gkwh.shareValue
             if movementline_id:
                 MoveLine = self.pool.get('account.move.line')
                 moveline = ns(MoveLine.read(cursor, uid, movementline_id, []))
@@ -1395,10 +1401,11 @@ class GenerationkwhInvestment(osv.osv):
                 amount = nominal_amount
 
             inv = InvestmentState(user['name'], datetime.now(),
-                log = inversio['log'],
+                actions_log = investment['actions_log'],
+                log = investment['log'],
                 nominal_amount = nominal_amount,
-                purchase_date = inversio['purchase_date'],
-                draft = inversio['draft'],
+                purchase_date = investment['purchase_date'],
+                draft = investment['draft'],
             )
 
             inv.unpay(
@@ -1408,7 +1415,7 @@ class GenerationkwhInvestment(osv.osv):
 
             self.write(cursor, uid, id, inv.erpChanges())
 
-            name_invoice = inversio['name'] + '-JUST'
+            name_invoice = investment['name'] + '-JUST'
             invoice_ids = AccountInvoice.search(cursor, uid, [
                 ('name', '=', name_invoice)
             ])
@@ -1641,7 +1648,7 @@ class GenerationkwhInvestment(osv.osv):
         User = self.pool.get('res.users')
         user = User.read(cursor, uid, uid, ['name'])
         for id in ids:
-            inversio = self.read(cursor, uid, id, [
+            investment = self.read(cursor, uid, id, [
                 'log',
                 'actions_log',
                 'purchase_date',
@@ -1650,10 +1657,11 @@ class GenerationkwhInvestment(osv.osv):
                 ])
 
             inv = InvestmentState(user['name'], datetime.now(),
-                log = inversio['log'],
-                purchase_date = inversio['purchase_date'],
-                draft = inversio['draft'],
-                active = inversio['active']
+                actions_log = investment['actions_log'],
+                log = investment['log'],
+                purchase_date = investment['purchase_date'],
+                draft = investment['draft'],
+                active = investment['active']
             )
             inv.cancel()
             self.write(cursor, uid, id, inv.erpChanges())
@@ -1665,7 +1673,7 @@ class GenerationkwhInvestment(osv.osv):
         invoice_ids = []
         invoice_errors = []
         for id in ids:
-            inversio = self.read(cursor, uid, id, [
+            investment = self.read(cursor, uid, id, [
                 'name',
                 'id',
                 'log',
@@ -1678,7 +1686,7 @@ class GenerationkwhInvestment(osv.osv):
             # recover the investment's initial payment invoice
             invoice_name = '%s-JUST' % (
                 # TODO: Remove the GENKWHID stuff when fully migrated, error instead
-                inversio['name'] or 'GENKWHID{}'.format(inversio['id']),
+                investment['name'] or 'GENKWHID{}'.format(investment['id']),
             )
 
             inversion_invoice_ids = Invoice.search(cursor,uid,[
@@ -1691,10 +1699,11 @@ class GenerationkwhInvestment(osv.osv):
 
             # mark investment as canceled
             inv = InvestmentState(user['name'], datetime.now(),
-                log = inversio['log'],
-                purchase_date = inversio['purchase_date'],
-                draft = inversio['draft'],
-                active = inversio['active']
+                actions_log = investment['actions_log'],
+                log = investment['log'],
+                purchase_date = investment['purchase_date'],
+                draft = investment['draft'],
+                active = investment['active']
             )
             inv.cancel()
 
