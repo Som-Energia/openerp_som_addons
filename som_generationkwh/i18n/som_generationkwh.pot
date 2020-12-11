@@ -6,14 +6,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2020-03-03 19:40+0000\n"
-"PO-Revision-Date: 2020-03-03 19:40+0000\n"
+"POT-Creation-Date: 2020-10-06 15:19+0000\n"
+"PO-Revision-Date: 2020-10-06 15:19+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: \n"
-"Generated-By: Babel 2.7.0\n"
+"Generated-By: Babel 2.8.0\n"
 
 #. module: som_generationkwh
 #: model:ir.actions.act_window,name:som_generationkwh.action_wizard_investment_amortization_form
@@ -41,6 +41,11 @@ msgid "wizard.generationkwh.investment.divest"
 msgstr ""
 
 #. module: som_generationkwh
+#: model:ir.model,name:som_generationkwh.model_wizard_generationkwh_investment_cancel_or_resign
+msgid "wizard.generationkwh.investment.cancel.or.resign"
+msgstr ""
+
+#. module: som_generationkwh
 #: help:generationkwh.emission,waiting_days:0
 msgid "Nombre de dies que passen perquè es comencin a repartir kwh"
 msgstr ""
@@ -51,13 +56,13 @@ msgid "Mostrar remesa"
 msgstr ""
 
 #. module: som_generationkwh
-#: view:generationkwh.emission:0
-msgid "Set to draft"
+#: selection:send.retencio.estalvi.to.members.wizard,state:0
+msgid "Init"
 msgstr ""
 
 #. module: som_generationkwh
-#: field:generationkwh.investment,nshares:0
-msgid "Nombre d'accions"
+#: field:generationkwh.assignment,cups_anual_use:0
+msgid "Consum anual"
 msgstr ""
 
 #. module: som_generationkwh
@@ -80,14 +85,90 @@ msgid "Resultats"
 msgstr ""
 
 #. module: som_generationkwh
-#: help:generationkwh.emission,state:0
+#: model:poweremail.templates,def_body_text:som_generationkwh.email_baixa_soci
+#, python-format
 msgid ""
-"Gives the state of the emission. Only emission in open state accepts new "
-"investments."
+"<!doctype html>\n"
+"                <html>\n"
+"<head><meta charset='utf8'></head><body>\n"
+"<%\n"
+"from mako.template import Template\n"
+"def render(text_to_render, object_):\n"
+"    templ = Template(text_to_render)\n"
+"    return templ.render_unicode(\n"
+"        object=object_,\n"
+"        format_exceptions=True\n"
+"    )\n"
+"t_obj = object.pool.get('poweremail.templates')\n"
+"md_obj = object.pool.get('ir.model.data')\n"
+"template_id = md_obj.get_object_reference(\n"
+"                    object._cr, object._uid,  "
+"'som_poweremail_common_templates', 'common_template_legal_footer'\n"
+"                )[1]\n"
+"text_legal = render(t_obj.read(\n"
+"    object._cr, object._uid, [template_id], "
+"['def_body_text'])[0]['def_body_text'],\n"
+"    object\n"
+")\n"
+"%>\n"
+"% if object.partner_id.lang != \"es_ES\":\n"
+"<br>\n"
+"Hola,<br>\n"
+"<br>\n"
+"Ens posem amb contacte amb tu per informar-te que hem tramitat "
+"correctament la teva baixa de persona sòcia.<br>\n"
+"<br>\n"
+"T’agraïm el temps que has passat amb nosaltres ajudant-nos a canviar el "
+"model energètic actual.<br>\n"
+"<br>\n"
+"Desitgem que ens retrobem en un futur.<br>\n"
+"<br>\n"
+"Salut i bona energia!<br>\n"
+"<br>\n"
+"Equip de Som Energia<br>\n"
+"<a href=\"www.somenergia.coop/ca\">www.somenergia.coop</a>\n"
+"info@somenergia.coop\n"
+"<a href=\"http://ca.support.somenergia.coop/article/470-com-puc-"
+"contactar-amb-la-cooperativa-mail-telefon-etc\">Contactar amb Som "
+"Energia</a>\n"
+"% endif\n"
+"\n"
+"% if object.partner_id.lang != \"ca_ES\" and object.partner_id.lang != "
+"\"es_ES\":\n"
+"----------------------------------------------------------------------------------------------------"
+"\n"
+"% endif\n"
+"\n"
+"% if object.partner_id.lang != \"ca_ES\":\n"
+"<br>\n"
+"Hola,<br>\n"
+"<br>\n"
+"Nos ponemos en contacto contigo para informarte que hemos tramitado "
+"correctamente tu baja de persona socia.<br>\n"
+"<br>\n"
+"Te agradecemos el tiempo que has pasado con nosotros ayudándonos a "
+"cambiar el modelo energético actual.<br>\n"
+"<br>\n"
+"Deseamos reencontrarnos en un futuro.<br>\n"
+"<br>\n"
+"Salud y buena energía!<br>\n"
+"<br>\n"
+"Equipo de Som Energia<br>\n"
+"<a href=\"www.somenergia.coop/ca\">www.somenergia.coop</a>\n"
+"info@somenergia.coop\n"
+"<a href=\"https://es.support.somenergia.coop/article/471-como-puedo-"
+"contactar-con-la-cooperativa-mail-telefono-etc\">Contactar con Som "
+"Energia</a>\n"
+"% endif\n"
+"${text_legal}\n"
+"</body>\n"
+"</html>\n"
+"\n"
+"                "
 msgstr ""
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/investment.py:829
+#: code:addons/som_generationkwh/investment.py:862
 #, python-format
 msgid "Amortització fins a {amortization_date:%d/%m/%Y} de {investment} "
 msgstr ""
@@ -95,6 +176,11 @@ msgstr ""
 #. module: som_generationkwh
 #: view:generationkwh.investment:0
 msgid "Abans de pagament"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:ir.actions.act_window,name:som_generationkwh.action_send_retencio_estalvi_to_members
+msgid "Enviament massiu certificat de retenció sobre rendiment"
 msgstr ""
 
 #. module: som_generationkwh
@@ -113,10 +199,8 @@ msgid "Campanya d'emissions d'inversions"
 msgstr ""
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/investment.py:878
-msgid ""
-"Retenció IRPF sobre l'estalvi del Generationkwh de {retention_date:%Y} de"
-" {investment} "
+#: view:wizard.baixa.soci:0
+msgid "Baixa"
 msgstr ""
 
 #. module: som_generationkwh
@@ -126,8 +210,8 @@ msgid "Nom"
 msgstr ""
 
 #. module: som_generationkwh
-#: field:generationkwh.emission,journal_id:0
-msgid "Diari"
+#: view:wizard.generationkwh.sign.signaturit:0
+msgid "Atenció"
 msgstr ""
 
 #. module: som_generationkwh
@@ -139,6 +223,11 @@ msgstr ""
 #. module: som_generationkwh
 #: field:generationkwh.assignment,contract_state:0
 msgid "Contract State"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:generationkwh.investment,nshares:0
+msgid "Nombre d'accions"
 msgstr ""
 
 #. module: som_generationkwh
@@ -155,6 +244,14 @@ msgid "Línia del moviment contable corresponent a la inversió"
 msgstr ""
 
 #. module: som_generationkwh
+#: view:wizard.generationkwh.sign.signaturit:0
+msgid ""
+"¿Està segur de voler iniciar el procés de Signaturit per als següents "
+"contractes de GenerationKWH? Aquesta acció enviará una peticó a "
+"Signaturit per a un procés de signatura digital per a cada contracte."
+msgstr ""
+
+#. module: som_generationkwh
 #: field:generationkwh.invoice.line.owner,owner_id:0
 msgid "Soci Generation"
 msgstr ""
@@ -165,8 +262,8 @@ msgid "Total invertit"
 msgstr ""
 
 #. module: som_generationkwh
-#: model:ir.model,name:som_generationkwh.model_generationkwh_remainder_testhelper
-msgid "generationkwh.remainder.testhelper"
+#: view:wizard.generationkwh.sign.signaturit:0
+msgid "Préstec de GenerationKWh afectat"
 msgstr ""
 
 #. module: som_generationkwh
@@ -180,8 +277,8 @@ msgid "wizard.generationkwh.investment.payment"
 msgstr ""
 
 #. module: som_generationkwh
-#: selection:generationkwh.emission,type:0
-msgid "GenerationkWh"
+#: constraint:account.period:0
+msgid "Error ! The duration of the Period(s) is/are invalid. "
 msgstr ""
 
 #. module: som_generationkwh
@@ -210,17 +307,8 @@ msgid "generationkwh.investment"
 msgstr ""
 
 #. module: som_generationkwh
-#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_30A_product_template
-#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_31A_LB_product_template
-#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_31A_product_template
-#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_61_product_template
-#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_61a_product_template
-#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_61b_product_template
-#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_62_product_template
-#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_63_product_template
-#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_64_product_template
-#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_65_product_template
-msgid "P5"
+#: field:send.retencio.estalvi.to.members.wizard,fiscal_year:0
+msgid "Any fiscal"
 msgstr ""
 
 #. module: som_generationkwh
@@ -231,6 +319,11 @@ msgstr ""
 #. module: som_generationkwh
 #: model:poweremail.templates,def_subject:som_generationkwh.aportacio_mail_pagament
 msgid "Cargo / Càrrec Capital Social Ref. ${object.name}"
+msgstr ""
+
+#. module: som_generationkwh
+#: selection:send.retencio.estalvi.to.members.wizard,state:0
+msgid "Ok"
 msgstr ""
 
 #. module: som_generationkwh
@@ -245,8 +338,43 @@ msgid "Compte iban"
 msgstr ""
 
 #. module: som_generationkwh
+#: constraint:account.move.line:0
+msgid "You can not create move line on closed account."
+msgstr ""
+
+#. module: som_generationkwh
+#: model:poweremail.templates,def_body_text:som_generationkwh.generationkwh_assignment_notification_mail
+#: model:poweremail.templates,def_body_text:som_generationkwh.generationkwh_mail_amortitzacio
+#: model:poweremail.templates,def_body_text:som_generationkwh.generationkwh_mail_creacio
+#: model:poweremail.templates,def_body_text:som_generationkwh.generationkwh_mail_impagament
+#: model:poweremail.templates,def_body_text:som_generationkwh.generationkwh_mail_pagament
+msgid "text_to_replace"
+msgstr ""
+
+#. module: som_generationkwh
 #: help:generationkwh.investment,emission_id:0
 msgid "Campanya d'emissió de la que forma part la inversió"
+msgstr ""
+
+#. module: som_generationkwh
+#: constraint:account.move:0
+msgid "You cannot create more than one move per period on centralized journal"
+msgstr ""
+
+#. module: som_generationkwh
+#: view:wizard.generationkwh.sign.signaturit:0
+msgid "Tanca"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:ir.model,name:som_generationkwh.model_wizard_baixa_soci
+msgid "wizard.baixa.soci"
+msgstr ""
+
+#. module: som_generationkwh
+#: code:addons/som_generationkwh/investment_sign.py:30
+#: code:addons/som_generationkwh/investment_sign.py:64
+msgid "Error!"
 msgstr ""
 
 #. module: som_generationkwh
@@ -255,8 +383,21 @@ msgid "generationkwh.invoice.line.owner"
 msgstr ""
 
 #. module: som_generationkwh
-#: help:generationkwh.emission,code:0
-msgid "Codi de la campanya d'inversió"
+#: field:wizard.aeat193.from.gkwh.invoices,state:0
+#: field:wizard.baixa.soci,state:0
+#: field:wizard.generationkwh.investment.activation,state:0
+#: field:wizard.generationkwh.investment.cancel.or.resign,state:0
+#: field:wizard.generationkwh.investment.creation,state:0
+#: field:wizard.generationkwh.investment.divest,state:0
+#: field:wizard.generationkwh.investment.payment,state:0
+#: field:wizard.generationkwh.investment.transfer,state:0
+#: field:wizard.generationkwh.sign.signaturit,state:0
+msgid "State"
+msgstr ""
+
+#. module: som_generationkwh
+#: view:generationkwh.emission:0
+msgid "Set to draft"
 msgstr ""
 
 #. module: som_generationkwh
@@ -265,8 +406,9 @@ msgid "Cargo / Càrrec Generation kWh Ref. ${object.name}"
 msgstr ""
 
 #. module: som_generationkwh
-#: field:generationkwh.assignment,cups_anual_use:0
-msgid "Consum anual"
+#: model:ir.actions.act_window,name:som_generationkwh.action_apo_investment_tree
+#: model:ir.ui.menu,name:som_generationkwh.menu_apo_investment_tree
+msgid "Aportacions al capital social"
 msgstr ""
 
 #. module: som_generationkwh
@@ -308,8 +450,13 @@ msgid "Generar ordre de cobrament"
 msgstr ""
 
 #. module: som_generationkwh
-#: help:generationkwh.emission,type:0
-msgid "Type of the emission."
+#: code:addons/som_generationkwh/somenergia_soci.py:213
+msgid "El soci té factures pendents."
+msgstr ""
+
+#. module: som_generationkwh
+#: view:send.retencio.estalvi.to.members.wizard:0
+msgid "Enviar correus"
 msgstr ""
 
 #. module: som_generationkwh
@@ -318,8 +465,8 @@ msgid "Error ! You can not create recursive categories."
 msgstr ""
 
 #. module: som_generationkwh
-#: model:product.template,name:som_generationkwh.genkwh_product_amortization_product_template
-msgid "Amortització Generation kWh"
+#: view:wizard.baixa.soci:0
+msgid "ATENCIÓ!"
 msgstr ""
 
 #. module: som_generationkwh
@@ -333,94 +480,8 @@ msgid "Duració prèstec"
 msgstr ""
 
 #. module: som_generationkwh
-#: model:ir.model,name:som_generationkwh.model_generationkwh_holidays_testhelper
-msgid "generationkwh.holidays.testhelper"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:poweremail.templates,def_body_text:som_generationkwh.generationkwh_mail_impagament
-#, python-format
-msgid ""
-"<!doctype html>\n"
-"<html>\n"
-"<body>\n"
-"<img width='130' height='65' src=\"https://www.somenergia.coop/wp-"
-"content/uploads/2014/11/logo-somenergia.png\"><br>\n"
-"<%\n"
-"from mako.template import Template\n"
-"def render(text_to_render, object_):\n"
-"    templ = Template(text_to_render)\n"
-"    return templ.render_unicode(\n"
-"        object=object_,\n"
-"        format_exceptions=True\n"
-"    )\n"
-"t_obj = object.pool.get('poweremail.templates')\n"
-"md_obj = object.pool.get('ir.model.data')\n"
-"template_id = md_obj.get_object_reference(\n"
-"                    object._cr, object._uid,  "
-"'som_poweremail_common_templates', 'common_template_legal_footer'\n"
-"                )[1]\n"
-"text_legal = render(t_obj.read(\n"
-"    object._cr, object._uid, [template_id], "
-"['def_body_text'])[0]['def_body_text'],\n"
-"    object\n"
-")\n"
-"%>\n"
-"% if object.partner_id.lang != \"es_ES\":\n"
-"<br>\n"
-"Hola ${object.partner_id.name.split(',')[-1]},<br>\n"
-"<br>\n"
-"Ahir ens va venir retornat el rebut de ${object.amount_total} € que et "
-"vam girar fa uns dies corresponent a la teva inversió en Generation kWh "
-"amb referència ${object.origin}<br>\n"
-"<br>\n"
-"Si segueixes interessat en aquesta inversió tens dues opcions:<br>\n"
-"Transferir aquesta quantitat al següent número de compte de Som Energia: "
-"ES19 3025 0016 12 1400005159, indicant el teu nom.<br>\n"
-"Dir-nos a partir de quina data et podem tornar a girar aquest rebut al "
-"teu banc.<br>\n"
-"<br>\n"
-"Si pel contrari, ja no estàs interessat en aquesta inversió t'agraïrem "
-"que ens ho comuniquis.<br>\n"
-"<br>\n"
-"Salut,<br>\n"
-"<br>\n"
-"<br>\n"
-"Som Energia, SCCL<br>\n"
-"<a href=\"http://www.somenergia.coop/ca/\">www.somenergia.coop</a><br>\n"
-"% endif\n"
-"% if  object.partner_id.lang != \"ca_ES\" and  object.partner_id.lang != "
-"\"es_ES\":\n"
-"<br><HR align=\"LEFT\" size=\"1\" width=\"400\" color=\"Black\" "
-"noshade><br>\n"
-"% endif\n"
-"% if  object.partner_id.lang != \"ca_ES\":\n"
-"<br>\n"
-"Hola ${object.partner_id.name.split(',')[-1]},<br>\n"
-"<br>\n"
-"Ayer nos vino devuelto el recibo de ${object.amount_total} € que te "
-"giramos hace unos dias correspondiente a tu inversión en Generation kWh "
-"con referencia ${object.origin}<br>\n"
-"<br>\n"
-"Si sigues interesado en esta inversión tienes dos opciones:<br>\n"
-" Hacer una  transferencia al siguiente número de cuenta de Som Energia: "
-"ES19 3025 0016 12 1400005159, indicando tu nombre.<br>\n"
-" Decirnos a partir de  que fecha podemos volver a girar el recibo en tu "
-"banco.<br>\n"
-"<br>\n"
-"Si por el contrario ya no estás interesado en esta inversión te "
-"agradeceremos que nos lo comuniques.<br>\n"
-"<br>\n"
-"Salud,<br>\n"
-"<br>\n"
-"<br>\n"
-"Som Energia, SCCL<br>\n"
-"<a href=\"http://www.somenergia.coop\">www.somenergia.coop</a><br>\n"
-"% endif\n"
-"<br>\n"
-"${text_legal}\n"
-"</body>\n"
-"</html>"
+#: constraint:res.partner:0
+msgid "The VAT doesn't seem to be correct."
 msgstr ""
 
 #. module: som_generationkwh
@@ -434,8 +495,8 @@ msgid "Import limit inversió per la campanya"
 msgstr ""
 
 #. module: som_generationkwh
-#: selection:generationkwh.emission,state:0
-msgid "Oberta"
+#: model:poweremail.templates,def_subject:som_generationkwh.generationkwh_mail_creacio
+msgid "Generation kWh Som Enegia Ref. ${object.name}"
 msgstr ""
 
 #. module: som_generationkwh
@@ -444,31 +505,18 @@ msgid "Període de carència"
 msgstr ""
 
 #. module: som_generationkwh
-#: model:poweremail.templates,def_subject:som_generationkwh.aportacio_mail_creacio
-msgid "Aportació al capital social Som Enegia Ref. ${object.name}"
+#: help:generationkwh.emission,type:0
+msgid "Type of the emission."
 msgstr ""
 
 #. module: som_generationkwh
-#: model:poweremail.templates,file_name:som_generationkwh.generationkwh_mail_amortitzacio
-msgid "${object.number}"
+#: help:generationkwh.emission,irpf_product_id:0
+msgid "Producte de la línia IRPF dins la factura de la inversió"
 msgstr ""
 
 #. module: som_generationkwh
-#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_20DHA_new_product_template
-#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_20DHA_product_template
-#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_20DHS_product_template
-#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_21DHS_product_template
-#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_30A_product_template
-#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_31A_LB_product_template
-#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_31A_product_template
-#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_61_product_template
-#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_61a_product_template
-#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_61b_product_template
-#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_62_product_template
-#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_63_product_template
-#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_64_product_template
-#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_65_product_template
-msgid "P2"
+#: view:wizard.baixa.soci:0
+msgid "Aquesta acció donarà de baixa el soci seleccionat"
 msgstr ""
 
 #. module: som_generationkwh
@@ -478,516 +526,32 @@ msgid "Assignaments a contracte de Generation kWh"
 msgstr ""
 
 #. module: som_generationkwh
-#: constraint:ir.actions.act_window:0
-msgid "Invalid model name in the action definition."
-msgstr ""
-
-#. module: som_generationkwh
-#: view:generationkwh.emission:0
-msgid "Confirm"
-msgstr ""
-
-#. module: som_generationkwh
-#: field:generationkwh.investment,first_effective_date:0
-msgid "Primera data efectiva"
-msgstr ""
-
-#. module: som_generationkwh
-#: field:wizard.generationkwh.investment.creation,ip:0
-msgid "Ip d'origen"
-msgstr ""
-
-#. module: som_generationkwh
-#: code:addons/som_generationkwh/assignment.py:163
-msgid "NOVA assignació ({0}) al contracte  {1} amb prioritat {2}"
-msgstr ""
-
-#. module: som_generationkwh
-#: field:wizard.generationkwh.investment.amortization,state:0
-msgid "Estat"
-msgstr ""
-
-#. module: som_generationkwh
-#: help:generationkwh.assignment,end_date:0
-msgid "Data a partir de la qual l'assignació ja no serà activa"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:ir.ui.menu,name:som_generationkwh.menu_wizard_investment_amortization
-msgid "Amortització de inversions"
-msgstr ""
-
-#. module: som_generationkwh
-#: field:generationkwh.invoice.line.owner,saving_gkw_amount:0
-msgid "Estalvi Generation"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:poweremail.templates,def_body_text:som_generationkwh.generationkwh_mail_amortitzacio
-#, python-format
+#: help:generationkwh.emission,state:0
 msgid ""
-"<!doctype html><html><head><meta charset=\"utf-8\"/></head><body><table "
-"width=\"100%\" frame=\"below\" bgcolor=\"#E8F1D4\"><tr><td valign=TOP "
-"rowspan=\"4\" align=\"right\"><img width='130' height='65' "
-"src=\"https://www.somenergia.coop/wp-content/uploads/2014/11/logo-"
-"somenergia.png\"></td></tr></table>\n"
-"<%\n"
-"Investment = object.pool.get('generationkwh.investment')\n"
-"investment_name = object.origin\n"
-"investment_id = Investment.search(object._cr, object._uid, [('name','=', "
-"investment_name)])\n"
-"investment_obj = Investment.read(object._cr, object._uid, investment_id)\n"
-"date_investment = investment_obj[0]['purchase_date']\n"
-"from datetime import datetime, timedelta\n"
-"date = datetime.strptime(date_investment, '%Y-%m-%d')\n"
-"date = date.strftime('%d/%m/%Y')\n"
-"\n"
-"nominal_amount = investment_obj[0]['nshares']*100\n"
-"amount_amortization = nominal_amount*4/100\n"
-"num_amortization = "
-"int(investment_obj[0]['amortized_amount']/amount_amortization)\n"
-"partner_bank = object.partner_bank.iban\n"
-"bank_account = ' '.join(partner_bank[i:i+4] for i in "
-"xrange(0,len(partner_bank),4))\n"
-"%>\n"
-"<%\n"
-"from mako.template import Template\n"
-"def render(text_to_render, object_):\n"
-"    templ = Template(text_to_render)\n"
-"    return templ.render_unicode(\n"
-"        object=object_,\n"
-"        format_exceptions=True\n"
-"    )\n"
-"t_obj = object.pool.get('poweremail.templates')\n"
-"md_obj = object.pool.get('ir.model.data')\n"
-"template_id = md_obj.get_object_reference(\n"
-"                    object._cr, object._uid,  "
-"'som_poweremail_common_templates', 'common_template_legal_footer'\n"
-"                )[1]\n"
-"text_legal = render(t_obj.read(\n"
-"    object._cr, object._uid, [template_id], "
-"['def_body_text'])[0]['def_body_text'],\n"
-"    object\n"
-")\n"
-"%>\n"
-"% if object.partner_id.lang == \"es_ES\":\n"
-"<br/>\n"
-"Hola ${object.partner_id.name.split(',')[-1]},<br/>\n"
-"<br/>\n"
-"Te adjuntamos la liquidación ${num_amortization} de 24 correspondiente al"
-" retorno parcial del préstamo Generation kWh que hiciste el ${date}. "
-"<br/>\n"
-"<br/>\n"
-"El importe amortizado será transferido, en los próximos días, a esta "
-"cuenta bancaria: <b>${bank_account}</b>.<br/>\n"
-"<br/>\n"
-"Por favor, <b>verifica que el número de cuenta bancaria de abono es "
-"correcto</b>. En caso de no serlo, responde de forma urgente este correo "
-"indicando a qué cuenta quieres la transferencia.<br/>\n"
-"<br/>\n"
-"<b>Resumen de la liquidación</b><br/>\n"
-"· Titular:  ${object.partner_id.name}<br/>\n"
-"· Inversion:  ${nominal_amount}€<br/>\n"
-"· Referencia:  ${object.name or ''}<br/>\n"
-"· <b>Retorno parcial:</b>  ${object.amount_total}€<br/>\n"
-"· <b>Pago número:</b> ${num_amortization} de 24<br/>\n"
-"<br/>\n"
-"Para cualquier duda o aclaración antes de responder este correo te "
-"recomendamos visitar primero el <a "
-"href=\"https://es.support.somenergia.coop/category/595-generation-"
-"kwh\">centro de ayuda de la Generación kWh</a> donde hay listadas las "
-"principales preguntas que nos han ido llegando.<br/>\n"
-"<br/>\n"
-"Aprovechamos para agradecerte, una vez más, tu implicación con el "
-"objetivo compartido de alcanzar un modelo energético 100% renovable. "
-"Cuantas más seamos, más energía verde generamos. ¡Que corra la voz!<br/>"
-"\n"
-"<br/>\n"
-"Salud y buena energía,<br/>\n"
-"<br/>\n"
-"<br/>\n"
-"Som Energia, SCCL<br/>\n"
-"<a href=\"https://www.somenergia.coop\">www.somenergia.coop</a><br/>\n"
-"% endif\n"
-"% if object.partner_id.lang != \"ca_ES\" and object.partner_id.lang != "
-"\"es_ES\":\n"
-"<br/>\n"
-"----------------------------------------------------------------------------------------------------<br/>"
-"\n"
-"<br/>\n"
-"% endif\n"
-"% if object.partner_id.lang == \"ca_ES\":\n"
-"<br/>\n"
-"Hola ${object.partner_id.name.split(',')[-1]},<br/>\n"
-"<br/>\n"
-"T'adjuntem la liquidació ${num_amortization} de 24 corresponent al retorn"
-" parcial del préstec Generation kWh que vas fer el ${date}. <br/>\n"
-"<br/>\n"
-"L'import amortitzat et serà transferit, en els propers dies, al següent "
-"compte bancari: <b>${bank_account}</b>.<br/>\n"
-"<br/>\n"
-"Si us plau, <b>verifica que el número de compte bancari d’abonament és "
-"correcte</b>. En cas de no ser-ho, respon de forma urgent aquest correu "
-"indicant a quin compte vols que et fem la transferència.<br/>\n"
-"<br/>\n"
-"<b>Resum de la liquidació</b><br/>\n"
-"· Titular:  ${object.partner_id.name}<br/>\n"
-"· Inversió:  ${nominal_amount}€<br/>\n"
-"· Referència:  ${object.name or ''}<br/>\n"
-"· <b>Retorn parcial:</b>  ${object.amount_total}€<br/>\n"
-"· <b>Pagament número:</b> ${num_amortization} de 24<br/>\n"
-"<br/>\n"
-"Per a qualsevol dubte o aclariment abans de respondre aquest correu et "
-"recomanem visitar el <a "
-"href=\"https://ca.support.somenergia.coop/category/580-generation-"
-"kwh\">centre d’ajuda de la Generació kWh</a> on hi ha llistades les "
-"principals preguntes que ens han anat arribant.<br/>\n"
-"<br/>\n"
-"Aprofitem per agrair-te, una vegada més, la teva implicació amb "
-"l’objectiu compartit d’assolir un model energètic 100% renovable. Quantes"
-" més siguem, més energia verda generarem. Que corri la veu!<br/>\n"
-"<br/>\n"
-"Salut i bona energia,<br/>\n"
-"<br/>\n"
-"<br/>\n"
-"Som Energia, SCCL<br/>\n"
-"<a href=\"https://www.somenergia.coop/ca/\">www.somenergia.coop</a><br/>\n"
-"% endif\n"
-"<br/>\n"
-"${text_legal}\n"
-"<br/>\n"
-"</body>\n"
-"</html>"
+"Gives the state of the emission. Only emission in open state accepts new "
+"investments."
 msgstr ""
 
 #. module: som_generationkwh
-#: help:wizard.aeat193.from.gkwh.invoices,tax_id:0
-msgid "Retenció IRPF a aplicar"
+#: model:ir.model,name:som_generationkwh.model_generationkwh_remainder_testhelper
+msgid "generationkwh.remainder.testhelper"
 msgstr ""
 
 #. module: som_generationkwh
-#: field:generationkwh.invoice.line.owner,factura_id:0
-msgid "Factura"
+#: model:product.template,name:som_generationkwh.genkwh_product_amortization_product_template
+msgid "Amortització Generation kWh"
 msgstr ""
 
 #. module: som_generationkwh
-#: field:generationkwh.emission,bridge_account_payments_id:0
-msgid "Compte pont per conciliar moviments"
-msgstr ""
-
-#. module: som_generationkwh
-#: help:generationkwh.emission,start_date:0
-msgid "Quin dia es va començar l'emissió"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:account.journal,name:som_generationkwh.apo_fact_journal
-msgid "Factures Aportacions"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_30A_product_template
-#: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_31A_LB_product_template
-#: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_31A_product_template
-#: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_61_product_template
-#: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_61a_product_template
-#: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_61b_product_template
-#: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_62_product_template
-#: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_63_product_template
-#: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_64_product_template
-#: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_65_product_template
-msgid "P4"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:poweremail.templates,def_body_text:som_generationkwh.generationkwh_assignment_notification_mail
-#, python-format
+#: constraint:account.period:0
 msgid ""
-"<!doctype html><html><head><meta charset=\"utf-8\" /></head><body style"
-"='font-family:sans'><div style=\"float: right\"><img "
-"src=\"https://www.somenergia.coop/wp-"
-"content/uploads/2014/07/logo.png\"></div>\n"
-"<%\n"
-"Contract = object.pool.get('giscedata.polissa')\n"
-"Assignment = object.pool.get('generationkwh.assignment')\n"
-"Investment = object.pool.get('generationkwh.investment')\n"
-"\n"
-"import datetime\n"
-"\n"
-"def slashdate(date):\n"
-"    return date.strftime('%d/%m/%Y')\n"
-"\n"
-"investment_ids = Investment.search(\n"
-"    object._cr, object._uid,\n"
-"    [\n"
-"    ('member_id', '=', object.id),\n"
-"    ('first_effective_date', '!=', False),\n"
-"    ],\n"
-"    order='first_effective_date ASC',\n"
-")\n"
-"\n"
-"if investment_ids:\n"
-"    effectivedate = Investment.read(\n"
-"        object._cr, object._uid,\n"
-"        investment_ids[0],\n"
-"        ['first_effective_date'],\n"
-"        )['first_effective_date']\n"
-"else:\n"
-"    effectivedate = None\n"
-"\n"
-"if effectivedate:\n"
-"    effectivedate = datetime.datetime.strptime(effectivedate, "
-"\"%Y-%m-%d\").date()\n"
-"    effectivedate = slashdate(effectivedate)\n"
-"else:\n"
-"    effectivedate = \"???\"\n"
-"\n"
-"def assignedContracts():\n"
-"    assignments_ids = Assignment.search(object._cr, object._uid, [\n"
-"        ('member_id','=',object.id),\n"
-"        ], 0,0, 'priority asc',)\n"
-"    assignments = Assignment.browse(object._cr, object._uid, "
-"assignments_ids)\n"
-"    return [\n"
-"        assignment['contract_id'].id\n"
-"        for assignment in assignments\n"
-"        ]\n"
-"\n"
-"contracts = assignedContracts()\n"
-"\n"
-"cadenes = dict(\n"
-"    ca = dict(\n"
-"        descripcio= u\"\"\"\\n- Número de contracte: {name}<br/>\n"
-"- Adreça:  {adreca}<br/>\n"
-"- CUPS: {cups}<br/>\n"
-"- Persona titular: {titular}<br/>\n"
-"- Persona pagadora: {pagador}<br/>\"\"\",\n"
-"        capContracte=u\"- Cap contracte\",\n"
-"        ),\n"
-"    es = dict(\n"
-"        descripcio= u\"\"\"\\n- Número de contrato: {name}<br/>\n"
-"- Dirección:  {adreca}<br/>\n"
-"- CUPS: {cups}<br/>\n"
-"- Persona titular: {titular}<br/>\n"
-"- Persona pagadora: {pagador}<br/>\"\"\",\n"
-"        capContracte=u\"- Ningún contrato\",\n"
-"        ),\n"
-"    )\n"
-"\n"
-"def contractDescription(ids, idioma):\n"
-"    templates = cadenes[idioma]\n"
-"    if not ids:\n"
-"        return templates['capContracte']\n"
-"\n"
-"    return u'\n"
-"'.join([templates['descripcio'].format(\n"
-"        name = contract.name,\n"
-"        adreca = contract.cups_direccio,\n"
-"        cups = contract.cups.name,\n"
-"        titular = contract.titular.name,\n"
-"        pagador = contract.pagador.name,\n"
-"        )\n"
-"        for contract in Contract.browse(object._cr, object._uid, ids)\n"
-"        ])\n"
-"\n"
-"%>\n"
-"<%\n"
-"from mako.template import Template\n"
-"\n"
-"def render(text_to_render, object_):\n"
-"    templ = Template(text_to_render)\n"
-"    return templ.render_unicode(\n"
-"        object=object_,\n"
-"        format_exceptions=True\n"
-"    )\n"
-"\n"
-"t_obj = object.pool.get('poweremail.templates')\n"
-"md_obj = object.pool.get('ir.model.data')\n"
-"template_id = md_obj.get_object_reference(\n"
-"                    object._cr, object._uid,  "
-"'som_poweremail_common_templates', 'common_template_legal_footer'\n"
-"                )[1]\n"
-"\n"
-"text_legal = render(t_obj.read(\n"
-"    object._cr, object._uid, [template_id], "
-"['def_body_text'])[0]['def_body_text'],\n"
-"    object\n"
-")\n"
-"%>\n"
-"Hola,<br/>\n"
-"<br/>\n"
-"%if object.lang != 'es_ES':\n"
-"Ens alegra comunicar-te que a partir del dia ${ effectivedate } la teva "
-"inversió del <em>Generation kWh</em> començarà a generar energia i ja es "
-"veurà reflectida a les teves factures, o a les d’aquells contractes que "
-"ens indiquis.<br/>\n"
-"<br/>\n"
-"Per defecte, se t’han assignat tots els contractes dels quals ets la "
-"persona titular o pagadora. S’ha fixat un contracte com a prioritari "
-"(aquell que ens consta amb més ús elèctric anual) i els kWh que cada mes "
-"no utilitzi aquest contracte, els podran anar aprofitant la resta de "
-"contractes. <br/>\n"
-"<br/>\n"
-"%if contracts:\n"
-"La prioritat que hem establert inicialment és la següent:<br/>\n"
-"<br/>\n"
-"Contracte assignat amb més prioritat:<br/>\n"
-"<br/>\n"
-"${ contractDescription(contracts[0:1],'ca') }\n"
-"<br/>\n"
-"Contractes assignats amb menys prioritat:<br/>\n"
-"<br/>\n"
-"${ contractDescription(contracts[1:],'ca') }\n"
-"<br/>\n"
-"Si vols modificar aquesta assignació per defecte, pots demanar-ho "
-"contestant aquest mateix missatge. <br/>\n"
-"%else:\n"
-"En el teu cas no tens cap contracte on figuris com a persona titular o "
-"pagadora i no s'ha fet cap assignació per defecte.<br/>\n"
-"<br/>\n"
-"<b>Per aprofitar la teva inversió, et recomanem que assignis com a mínim "
-"un contracte.</b> Pots demanar-ho contestant aquest mateix missatge.<br/>"
-"\n"
-"%endif\n"
-"<br/>\n"
-"Pots assignar energia a qualsevol contracte que estigui amb la "
-"cooperativa (no cal que estigui al teu nom), però per a cadascun d’ells, "
-"necessitarem saber el seu número de contracte o en el seu defecte el seu "
-"número de CUPS.<br/>\n"
-"<br/>\n"
-"<br/>\n"
-"Salutacions i seguim en contacte, amb encara més bona energia!<br/>\n"
-"<br/>\n"
-"Equip de Som Energia.<br/>\n"
-"<a href=\"https://www.somenergia.coop/ca\">www.somenergia.coop</a><br/>\n"
-"<a "
-"href=\"https://www.generationkwh.org/ca\">www.generationkwh.org</a><br/>"
-"\n"
-"%elif object.lang != 'ca_ES':\n"
-"Nos alegra comunicarte que el día ${ effectivedate } tu inversión del "
-"<em>Generation kWh</em> comenzará a generar energía y ya se verá "
-"reflejada en tus facturas, o en las de aquellos contratos que nos "
-"indiques.<br/>\n"
-"<br/>\n"
-"Por defecto, se te han asignado todos los contratos de los que eres la "
-"persona titular o pagadora. Se ha fijado un contrato como prioritario "
-"(aquel que nos consta con más uso eléctrico anual) y los kWh que cada mes"
-" no utilice este contrato, los podrán ir aprovechando el resto de "
-"contratos. <br/>\n"
-"<br/>\n"
-"%if contracts:\n"
-"La prioridad que hemos establecido inicialmente es la siguiente:<br/>\n"
-"<br/>\n"
-"Contrato asignado con más prioridad:<br/>\n"
-"<br/>\n"
-"${ contractDescription(contracts[0:1],'es') }\n"
-"<br/>\n"
-"Contratos asignados con menos prioridad:<br/>\n"
-"<br/>\n"
-"${ contractDescription(contracts[1:],'es') }\n"
-"<br/>\n"
-"Si quieres modificar esta asignación por defecto, puedes pedirlo "
-"contestando este mismo mensaje.<br/>\n"
-"%else:\n"
-"En tu caso no tienes ningún contrato donde figuras como persona titular o"
-" pagadora y no se ha hecho ninguna asignación por defecto.<br/>\n"
-"<br/>\n"
-"<b>Para aprovechar tu inversión, te recomendamos que asignes al menos un "
-"contrato.</b> Puedes pedirlo contestando este mismo mensaje.<br/>\n"
-"%endif\n"
-"<br/>\n"
-"Puedes asignar energía a cualquier contrato que esté con la cooperativa "
-"(no hace falta que esté a tu nombre), pero para cada uno de ellos, "
-"necesitaremos saber su número de contrato o en su defecto su número de "
-"CUPS.<br/>\n"
-"<br/>\n"
-"<br/>\n"
-"Saludos y seguimos en contacto, ¡con aún más buena energía!<br/>\n"
-"<br/>\n"
-"Equipo de Som Energia.<br/>\n"
-"<a href=\"https://www.somenergia.coop/es\">www.somenergia.coop</a><br/>\n"
-"<a "
-"href=\"https://www.generationkwh.org/es\">www.generationkwh.org</a><br/>"
-"\n"
-"%endif\n"
-"<br/>\n"
-"${text_legal}\n"
-"</body>\n"
-"</html>"
+"Invalid period ! Some periods overlap or the date period is not in the "
+"scope of the fiscal year. "
 msgstr ""
 
 #. module: som_generationkwh
-#: model:ir.actions.report.xml,name:som_generationkwh.report_amortization_gkwh
-msgid "Amortitzacions GenerationKWh"
-msgstr ""
-
-#. module: som_generationkwh
-#: constraint:ir.model:0
-msgid "The Object name must start with x_ and not contain any special character !"
-msgstr ""
-
-#. module: som_generationkwh
-#: code:addons/som_generationkwh/wizard/wizard_aeat193_from_gkwh_invoices.py:89
-msgid "No s'han trobat adreces pel partner amb VAT {} i ID {}"
-msgstr ""
-
-#. module: som_generationkwh
-#: field:generationkwh.assignment,cups_direction:0
-msgid "Direcció CUPS"
-msgstr ""
-
-#. module: som_generationkwh
-#: help:generationkwh.investment,actions_log:0
-msgid "Història d'esdeveniments relacionats amb la inversió en format YAML"
-msgstr ""
-
-#. module: som_generationkwh
-#: help:generationkwh.investment,active:0
-msgid "Permet activar o desactivar la inversió"
-msgstr ""
-
-#. module: som_generationkwh
-#: view:wizard.generationkwh.investment.amortization:0
-msgid "Previsualitza"
-msgstr ""
-
-#. module: som_generationkwh
-#: field:generationkwh.investment,actions_log:0
-#: field:generationkwh.investment,log:0
-msgid "Història"
-msgstr ""
-
-#. module: som_generationkwh
-#: help:generationkwh.assignment,contract_id:0
-msgid "Contracte que te els drets per utilitzar els kWh generats"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:poweremail.templates,def_subject:som_generationkwh.generationkwh_mail_impagament
-msgid ""
-"Recibo devuelto inversión / Rebut retornat inversió Generation kWh "
-"${object.name}"
-msgstr ""
-
-#. module: som_generationkwh
-#: view:wizard.generationkwh.investment.cancel.or.resign:0
-msgid "Assistent de cancel·lació o renúncia"
-msgstr ""
-
-#. module: som_generationkwh
-#: code:addons/som_generationkwh/giscedata_facturacio.py:402
-msgid "{0} GkWh"
-msgstr ""
-
-#. module: som_generationkwh
-#: field:wizard.aeat193.from.gkwh.invoices,info:0
-#: field:wizard.generationkwh.investment.activation,info:0
-#: field:wizard.generationkwh.investment.cancel.or.resign,info:0
-#: field:wizard.generationkwh.investment.creation,info:0
-#: field:wizard.generationkwh.investment.divest,info:0
-#: field:wizard.generationkwh.investment.payment,info:0
-#: field:wizard.generationkwh.investment.transfer,info:0
-msgid "Info"
+#: field:generationkwh.kwh.per.share,kwh:0
+msgid "kWh per acció"
 msgstr ""
 
 #. module: som_generationkwh
@@ -999,6 +563,7 @@ msgid ""
 "<body>\n"
 "<img width='130' height='65' src=\"https://www.somenergia.coop/wp-"
 "content/uploads/2014/11/logo-somenergia.png\">\n"
+"<br/><br/>\n"
 "<%\n"
 "from mako.template import Template\n"
 "def render(text_to_render, object_):\n"
@@ -1029,20 +594,15 @@ msgid ""
 "tant, en dos o tres dies (laborables) es realitzarà el càrrec al teu "
 "compte. <br/>\n"
 "<br/>\n"
-"T'adjuntem les condicions de la teva inversió i et recordem que per a "
+"T'adjuntem les condicions de la teva aportació i et recordem que per a "
 "qualsevol dubte o aclariment en relació a l’aportació realitzada pots "
 "enviar una mail a <a "
-"href=\"mailto:invertir@somenergia.coop\">invertir@somenergia.coop</a> o "
+"href=\"mailto:aporta@somenergia.coop\">aporta@somenergia.coop</a> o "
 "consultar el web <a "
 "href=\"https://www.somenergia.coop/ca\">www.somenergia.coop</a>. <br/>\n"
 "<br/>\n"
 "Aprofitem per agrair-te, una vegada més, la teva implicació amb "
-"l’objectiu compartit d’assolir un model energètic 100% renovable!\n"
-"Recorda que també pots participar de la Generació kWh per generar la teva"
-" energia a partir de nous projectes col·lectius de generació. Consulta el"
-" web <a "
-"href=\"https://www.generationkwh.org/ca\">www.generationkwh.org</a>.<br/>"
-"\n"
+"l’objectiu compartit d’assolir un model energètic 100% renovable!<br/>\n"
 "<br/>\n"
 "Pots fer córrer la veu explicant el projecte a familiars i amics/gues. "
 "Com més siguem, més energia verda generarem!<br/>\n"
@@ -1068,20 +628,15 @@ msgid ""
 "voluntaria al capital social de la cooperativa Som EnergiaSCCL y en dos o"
 " tres días (laborables) se realizará el cargo a tu cuenta.<br/>\n"
 "<br/>\n"
-"Adjuntamos el contrato con las condiciones de tu inversión y te "
+"Adjuntamos el contrato con las condiciones de tu aportación y te "
 "recordamos que para cualquier duda o aclaración en relación a la "
 "aportación realizada puedes enviar una mail a <a "
-"href=\"mailto:invertir@somenergia.coop\">invertir@somenergia.coop</a> o "
+"href=\"mailto:aporta@somenergia.coop\">aporta@somenergia.coop</a> o "
 "consultar la web <a "
 "href=\"https://www.somenergia.coop\">www.somenergia.coop</a>. <br/>\n"
 "<br/>\n"
 "Aprovechamos para agradecerte, una vez más, tu implicación con el "
-"objetivo compartido de lograr un modelo energético 100% renovable.\n"
-"Recuerda que también puedes participar de la Generación kWh para generar "
-"tu energía con nuevos proyectos colectivos de generación. Consulta la web"
-" <a "
-"href=\"https://www.generationkwh.org/es\">www.generationkwh.org</a>.<br/>"
-"\n"
+"objetivo compartido de lograr un modelo energético 100% renovable.<br/>\n"
 "<br/>\n"
 "Haz que corra la voz explicando el proyecto a familiares y amigos. "
 "Cuantos/as más seamos, más energía verde generaremos.<br/>\n"
@@ -1102,6 +657,209 @@ msgstr ""
 #. module: som_generationkwh
 #: constraint:ir.ui.view:0
 msgid "Invalid XML for View Architecture!"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:ir.model,name:som_generationkwh.model_generationkwh_kwh_per_share
+msgid "generationkwh.kwh.per.share"
+msgstr ""
+
+#. module: som_generationkwh
+#: code:addons/som_generationkwh/assignment.py:163
+msgid "NOVA assignació ({0}) al contracte  {1} amb prioritat {2}"
+msgstr ""
+
+#. module: som_generationkwh
+#: view:wizard.baixa.soci:0
+msgid "Add a comment"
+msgstr ""
+
+#. module: som_generationkwh
+#: help:generationkwh.assignment,end_date:0
+msgid "Data a partir de la qual l'assignació ja no serà activa"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:ir.actions.report.xml,name:som_generationkwh.report_retencions_rendiment_gkwh
+msgid "Retencions sobre el rendiment de GenerationKWh"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:ir.ui.menu,name:som_generationkwh.menu_wizard_investment_amortization
+msgid "Amortització de inversions"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:generationkwh.invoice.line.owner,saving_gkw_amount:0
+msgid "Estalvi Generation"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:poweremail.templates,def_subject:som_generationkwh.certificat_retencio_rendiment_generationkwh
+msgid "Certificat de retenció sobre el rendiment de GenerationkWh"
+msgstr ""
+
+#. module: som_generationkwh
+#: help:generationkwh.remainder,remainder_wh:0
+msgid "Remainder in Wh"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:generationkwh.invoice.line.owner,factura_id:0
+msgid "Factura"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:generationkwh.emission,bridge_account_payments_id:0
+msgid "Compte pont per conciliar moviments"
+msgstr ""
+
+#. module: som_generationkwh
+#: constraint:res.partner.bank:0
+msgid "The IBAN number doesn't seem to be correct."
+msgstr ""
+
+#. module: som_generationkwh
+#: code:addons/som_generationkwh/somenergia_soci.py:193
+msgid "Ja ha estat donat de baixa anteriorment!"
+msgstr ""
+
+#. module: som_generationkwh
+#: help:generationkwh.emission,start_date:0
+msgid "Quin dia es va començar l'emissió"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:account.journal,name:som_generationkwh.apo_fact_journal
+msgid "Factures Aportacions"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_30A_product_template
+#: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_31A_LB_product_template
+#: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_31A_product_template
+#: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_61_product_template
+#: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_61a_product_template
+#: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_61b_product_template
+#: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_62_product_template
+#: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_63_product_template
+#: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_64_product_template
+#: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_65_product_template
+msgid "P4"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:ir.actions.report.xml,name:som_generationkwh.report_amortization_gkwh
+msgid "Amortitzacions GenerationKWh"
+msgstr ""
+
+#. module: som_generationkwh
+#: constraint:ir.model:0
+msgid "The Object name must start with x_ and not contain any special character !"
+msgstr ""
+
+#. module: som_generationkwh
+#: code:addons/som_generationkwh/wizard/wizard_aeat193_from_gkwh_invoices.py:91
+msgid "No s'han trobat adreces pel partner amb VAT {} i ID {}"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:generationkwh.assignment,cups_direction:0
+msgid "Direcció CUPS"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:generationkwh.remainder,n_shares:0
+#: field:generationkwh.remainder,remainder_wh:0
+#: field:generationkwh.remainder,target_day:0
+#: field:wizard.generationkwh.sign.signaturit,failed_records:0
+msgid "unknown"
+msgstr ""
+
+#. module: som_generationkwh
+#: help:generationkwh.investment,actions_log:0
+msgid "Història d'esdeveniments relacionats amb la inversió en format YAML"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:generationkwh.emission,waiting_days:0
+msgid "Dies per activació GKWH"
+msgstr ""
+
+#. module: som_generationkwh
+#: view:wizard.generationkwh.investment.amortization:0
+msgid "Previsualitza"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:generationkwh.emission,investment_payment_mode_id:0
+msgid "Mode pagament inversió"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:generationkwh.investment,actions_log:0
+#: field:generationkwh.investment,log:0
+msgid "Història"
+msgstr ""
+
+#. module: som_generationkwh
+#: view:wizard.baixa.soci:0
+msgid "No s'ha pogut efectuar la baixa"
+msgstr ""
+
+#. module: som_generationkwh
+#: help:generationkwh.assignment,contract_id:0
+msgid "Contracte que te els drets per utilitzar els kWh generats"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:poweremail.templates,def_subject:som_generationkwh.generationkwh_mail_impagament
+msgid ""
+"Recibo devuelto inversión / Rebut retornat inversió Generation kWh "
+"${object.name}"
+msgstr ""
+
+#. module: som_generationkwh
+#: view:wizard.generationkwh.investment.cancel.or.resign:0
+msgid "Assistent de cancel·lació o renúncia"
+msgstr ""
+
+#. module: som_generationkwh
+#: view:wizard.generationkwh.sign.signaturit:0
+msgid ""
+"No s'ha notificat cap contracte GenerationKwh perquè alguns contractes ja"
+" han estat notificats..."
+msgstr ""
+
+#. module: som_generationkwh
+#: code:addons/som_generationkwh/giscedata_facturacio.py:402
+msgid "{0} GkWh"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:wizard.generationkwh.investment.activation,action:0
+msgid "Action"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_20DHS_product_template
+#: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_21DHS_product_template
+#: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_30A_product_template
+#: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_31A_LB_product_template
+#: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_31A_product_template
+#: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_61_product_template
+#: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_61a_product_template
+#: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_61b_product_template
+#: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_62_product_template
+#: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_63_product_template
+#: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_64_product_template
+#: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_65_product_template
+msgid "P3"
+msgstr ""
+
+#. module: som_generationkwh
+#: view:wizard.generationkwh.sign.signaturit:0
+msgid "Contractes ja notificats:"
 msgstr ""
 
 #. module: som_generationkwh
@@ -1134,6 +892,11 @@ msgid "Data final limit inversió per la campanya"
 msgstr ""
 
 #. module: som_generationkwh
+#: model:ir.model,name:som_generationkwh.model_wizard_generationkwh_sign_signaturit
+msgid "wizard.generationkwh.sign.signaturit"
+msgstr ""
+
+#. module: som_generationkwh
 #: field:wizard.generationkwh.investment.amortization,date_end:0
 msgid "Data final"
 msgstr ""
@@ -1154,7 +917,7 @@ msgid "Es desactivarà la inversió {0} amb data {1}"
 msgstr ""
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/investment.py:1938
+#: code:addons/som_generationkwh/investment_strategy.py:172
 msgid "Desinversió total de {investment} a {date} "
 msgstr ""
 
@@ -1164,8 +927,22 @@ msgid "Periode de carència"
 msgstr ""
 
 #. module: som_generationkwh
-#: help:generationkwh.emission,amortization_product_id:0
-msgid "Producte de la línia de l'amortització dins la factura de la inversió"
+#: view:send.retencio.estalvi.to.members.wizard:0
+msgid ""
+"Aquesta acció inicia l'enviament massiu  dels certificats de retenció "
+"sobre l'estalvi de l'any:"
+msgstr ""
+
+#. module: som_generationkwh
+#: code:addons/som_generationkwh/investment_sign.py:31
+msgid ""
+"Es necessita una adreça de correu electrònic\n"
+"                            per enviar el document a signar."
+msgstr ""
+
+#. module: som_generationkwh
+#: model:ir.model,name:som_generationkwh.model_send_retencio_estalvi_to_members_wizard
+msgid "send.retencio.estalvi.to.members.wizard"
 msgstr ""
 
 #. module: som_generationkwh
@@ -1185,18 +962,24 @@ msgstr ""
 
 #. module: som_generationkwh
 #: model:product.category,name:som_generationkwh.categ_inversions
-#: field:somenergia.soci,investment_ids view:somenergia.soci:0
+#: field:somenergia.soci,investment_ids:0
+#: view:somenergia.soci:0
 msgid "Inversions"
 msgstr ""
 
 #. module: som_generationkwh
-#: help:generationkwh.emission,journal_id:0
-msgid "Diari on es comptabilitzaràn les inversions"
+#: field:generationkwh.emission,journal_id:0
+msgid "Diari"
 msgstr ""
 
 #. module: som_generationkwh
-#: field:wizard.generationkwh.investment.creation,amount_in_euros:0
-msgid "Quantitat aportada"
+#: view:send.retencio.estalvi.to.members.wizard:0
+msgid "Enviar certificats als socis"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:account.journal,name:som_generationkwh.journal_old_investments
+msgid "ENGINYERS - INVERSIONS"
 msgstr ""
 
 #. module: som_generationkwh
@@ -1210,7 +993,7 @@ msgid "Data d'Expiració"
 msgstr ""
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/wizard/wizard_aeat193_from_gkwh_invoices.py:95
+#: code:addons/som_generationkwh/wizard/wizard_aeat193_from_gkwh_invoices.py:97
 msgid ""
 "L'adreça amb ID {} pel partner amb VAT {} no té definida província. "
 "Aquesta és necessària pel procés. Si us plau revisi les dades."
@@ -1248,13 +1031,18 @@ msgid "Dia en que es tanca la campanya. Si es deixa buit, és il·limitada"
 msgstr ""
 
 #. module: som_generationkwh
-#: constraint:payment.mode:0
-msgid "The SEPA creditor code is not correct"
+#: selection:generationkwh.emission,state:0
+msgid "Realitzat"
 msgstr ""
 
 #. module: som_generationkwh
 #: view:generationkwh.assignment:0
 msgid "Assignacions a contracte de Generation kWh"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:somenergia.soci,has_gkwh:0
+msgid "Te drets GkWh"
 msgstr ""
 
 #. module: som_generationkwh
@@ -1274,10 +1062,8 @@ msgid "Mostra factures"
 msgstr ""
 
 #. module: som_generationkwh
-#: field:generationkwh.remainder,n_shares:0
-#: field:generationkwh.remainder,remainder_wh:0
-#: field:generationkwh.remainder,target_day:0
-msgid "unknown"
+#: model:ir.actions.act_window,name:som_generationkwh.action_wizard_generationkwh_contract_sign_form
+msgid "Iniciar procés de signatura"
 msgstr ""
 
 #. module: som_generationkwh
@@ -1291,6 +1077,11 @@ msgid "Període de carència en anys, abans de fer la primera amortització"
 msgstr ""
 
 #. module: som_generationkwh
+#: model:ir.model,name:som_generationkwh.model_generationkwh_emission
+msgid "generationkwh.emission"
+msgstr ""
+
+#. module: som_generationkwh
 #: field:giscedata.facturacio.factura,is_gkwh:0
 msgid "Te Generation"
 msgstr ""
@@ -1301,164 +1092,29 @@ msgid "Està en esborrany si encara no s'han emés factures"
 msgstr ""
 
 #. module: som_generationkwh
-#: model:poweremail.templates,def_subject:som_generationkwh.generationkwh_mail_amortitzacio
-msgid "Generation kWh Som Energia Ref. ${object.number or ''}"
+#: help:generationkwh.assignment,contract_last_invoiced:0
+msgid "Data Última lectura facturada"
+msgstr ""
+
+#. module: som_generationkwh
+#: constraint:payment.mode:0
+msgid "The SEPA creditor code is not correct"
 msgstr ""
 
 #. module: som_generationkwh
 #: model:account.journal,name:som_generationkwh.apo_journal
+#: model:account.journal,name:som_generationkwh.journal_aportacions
 msgid "Factures Liquidació Aportacions"
 msgstr ""
 
 #. module: som_generationkwh
-#: model:poweremail.templates,def_body_text:som_generationkwh.generationkwh_mail_creacio
-#, python-format
-msgid ""
-"<!doctype html>\n"
-"<html>\n"
-"<body>\n"
-"<img width='130' height='65' src=\"https://www.somenergia.coop/wp-"
-"content/uploads/2014/11/logo-somenergia.png\">\n"
-"<%\n"
-"Soci = object.pool.get('somenergia.soci')\n"
-"Partner = object.pool.get('res.partner')\n"
-"PartnerBank = object.pool.get('res.partner.bank')\n"
-"\n"
-"soci_id = object.member_id.id\n"
-"soci_obj = Soci.read(object._cr, object._uid, soci_id)\n"
-"part_obj = Partner.read(object._cr,object._uid,soci_obj['partner_id'][0])"
-"\n"
-"bank_obj = PartnerBank.read(object._cr, object._uid, "
-"part_obj['bank_inversions'][0])\n"
-"\n"
-"lang = part_obj['lang']\n"
-"name = part_obj['name']\n"
-"iban = bank_obj['iban']\n"
-"amount_currency= int(object.nshares) * 100\n"
-"%>\n"
-"<%\n"
-"from mako.template import Template\n"
-"\n"
-"def render(text_to_render, object_):\n"
-"    templ = Template(text_to_render)\n"
-"    return templ.render_unicode(\n"
-"        object=object_,\n"
-"        format_exceptions=True\n"
-"    )\n"
-"\n"
-"t_obj = object.pool.get('poweremail.templates')\n"
-"md_obj = object.pool.get('ir.model.data')\n"
-"template_id = md_obj.get_object_reference(\n"
-"                    object._cr, object._uid,  "
-"'som_poweremail_common_templates', 'common_template_legal_footer'\n"
-"                )[1]\n"
-"\n"
-"text_legal = render(t_obj.read(\n"
-"    object._cr, object._uid, [template_id], "
-"['def_body_text'])[0]['def_body_text'],\n"
-"    object\n"
-")\n"
-"%>\n"
-"% if lang == \"ca_ES\":\n"
-"Hola ${name.split(',')[-1]},<br>\n"
-"<br>\n"
-"Et confirmem que hem rebut correctament la teva sol·licitud per fer una "
-"aportació als projectes de la Generació kWh, amb les següents dades:<br>"
-"\n"
-"<br>\n"
-"Soci/Sòcia: ${name}<br>\n"
-"Compte de càrrec: ${iban[:-4]}****<br>\n"
-"Import aportació: ${int(abs(amount_currency))} €<br>\n"
-"<br>\n"
-"En els propers dies rebràs el càrrec bancari en aquest compte, si us plau"
-" verifica que totes les dades facilitades són correctes i que disposes "
-"dels diners que hi vols invertir, per tal que no hi hagi cap incidència "
-"en el gir del rebut.<br>\n"
-"<br>\n"
-"Un cop passem el rebut d’aquest import, t’enviarem un altre mail per "
-"confirmar la teva aportació i detallar-ne les condicions particulars.<br>"
-"\n"
-"<br>\n"
-"Agraïm la teva participació en l’impuls de nous projectes i et recordem "
-"que per a qualsevol dubte o aclariment hi ha el <a "
-"href=\"http://ca.support.somenergia.coop/category/580-generation-"
-"kwh\">Centre d’Ajuda</a> de la web. També pots respondre a aquest correu "
-"o escriure a <a "
-"href=\"mailto:generationkwh@somenergia.coop\">generationkwh@somenergia.coop</a>.<br>"
-"\n"
-"<br>\n"
-"Pots fer córrer la veu i explicar el projecte a familiars i amistats. Si "
-"estàs connectat a les xarxes socials també pots compartir fàcilment un "
-"missatge des d'aquest enllaç a <a "
-"href=\"http://ctt.ec/7Yr1X\">Twitter</a>, a <a "
-"href=\"https://www.facebook.com/sharer/sharer.php?u=http://www.generationkwh.cat\">Facebook</a>,"
-" <a "
-"href=\"https://www.linkedin.com/cws/share?url=http://www.generationkwh.cat&utm_source=Preinscripción+GenerationkWh&utm_campaign"
-"=98c4d8873e-"
-"_ES_2a_Newsletter_Generation_kWh6_13_2015&utm_medium=email&utm_term"
-"=0_b8985e435a-98c4d8873e-311450445\">Linkedin</a> i, fins tot, a <a "
-"href=\"https://plus.google.com/share?url=http://www.generationkwh.cat&utm_source=Preinscripción+GenerationkWh&utm_campaign"
-"=98c4d8873e-"
-"_ES_2a_Newsletter_Generation_kWh6_13_2015&utm_medium=email&utm_term"
-"=0_b8985e435a-98c4d8873e-311450445\">Google+</a>. Quantes més siguem, més"
-" energia verda generarem!<br>\n"
-"<br>\n"
-"Moltes gràcies i bona energia!<br>\n"
-"<br>\n"
-"Som Energia, SCCL<br>\n"
-"<a href=\"http://www.somenergia.coop/ca\">www.somenergia.coop</a><br>\n"
-"% endif\n"
-"% if  lang != \"ca_ES\" and  lang != \"es_ES\":\n"
-"<HR align=\"LEFT\" size=\"1\" width=\"400\" color=\"Black\" noshade>\n"
-"% endif\n"
-"% if  lang == \"es_ES\":\n"
-"Hola ${name.split(',')[-1]},<br>\n"
-"<br>\n"
-"Te confirmamos que hemos recibido correctamente tu solicitud para hacer "
-"una aportación en los proyectos de la Generación kWh, con los siguientes "
-"datos:<br>\n"
-"<br>\n"
-"Socio/Socia: ${name}<br>\n"
-"Cuenta de cargo: ${iban[:-4]}****<br>\n"
-"Importe aportación: ${int(abs(amount_currency))} €<br>\n"
-"<br>\n"
-"En los próximos días recibirás el cargo bancario en esta cuenta, por "
-"favor verifica que todos los datos facilitados son correctos y que "
-"dispones del dinero que quieres invertir, para que no haya ninguna "
-"incidencia en el giro del recibo.<br>\n"
-"<br>\n"
-"Una vez pasemos el recibo de este importe, te mandaremos otro mail para "
-"confirmar tu aportación y detallar las condiciones particulares.<br>\n"
-"<br>\n"
-"Agradecemos tu participación en el impulso de nuevos proyectos y te "
-"recordamos que para cualquier duda o aclaración existe el <a "
-"href=\"http://es.support.somenergia.coop/category/595-generation-"
-"kwh\">Centro de Ayuda</a> de la web. También puedes responder "
-"directamente este correo o escribir a <a "
-"href=\"mailto:generationkwh@somenergia.coop\">generationkwh@somenergia.coop</a>.<br>"
-"\n"
-"<br>\n"
-"Puedes hacer correr la voz y explicar el proyecto a familiares y "
-"amistades. Si estás conectado a las redes sociales también puedes "
-"compartir fácilmente un mensaje desde este enlace en  <a "
-"href=\"http://ctt.ec/134fX\">Twitter</a>, en <a "
-"href=\"https://www.facebook.com/sharer/sharer.php?u=http://www.generationkwh.es\">Facebook</a>,"
-" en <a href=\"http://generationkwh.us2.list-"
-"manage.com/track/click?u=56d8bf2e8806722821a650fd1&id=45ac0c2d2d&e=6e8d00bf75\">Linkedin</a>"
-" e, incluso, <a href=\"http://generationkwh.us2.list-"
-"manage1.com/track/click?u=56d8bf2e8806722821a650fd1&id=870e457cc5&e=6e8d00bf75\">Google+</a>."
-" Cuantas más seamos, ¡más energía verde generaremos!<br>\n"
-"<br>\n"
-"¡Muchas gracias y buena energía!<br>\n"
-"<br>\n"
-"Som Energia, SCCL<br>\n"
-"<a href=\"http://www.somenergia.coop\">www.somenergia.coop</a><br>\n"
-"% endif\n"
-"<br>\n"
-"${text_legal}\n"
-"<br>\n"
-"</body>\n"
-"</html>"
+#: view:wizard.baixa.soci:0
+msgid "Estas segur?"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:ir.model,name:som_generationkwh.model_generationkwh_holidays_testhelper
+msgid "generationkwh.holidays.testhelper"
 msgstr ""
 
 #. module: som_generationkwh
@@ -1520,9 +1176,15 @@ msgstr ""
 #: model:product.category,name:som_generationkwh.categ_gkwh_t64
 #: model:product.category,name:som_generationkwh.categ_gkwh_t65
 #: field:giscedata.polissa.tarifa.periodes,product_gkwh_id:0
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:78
 #: view:giscedata.facturacio.factura:0
 #: view:somenergia.soci:0
 msgid "Generation kWh"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:send.retencio.estalvi.to.members.wizard,total_sent:0
+msgid "Total enviats"
 msgstr ""
 
 #. module: som_generationkwh
@@ -1546,13 +1208,18 @@ msgid "Pacte"
 msgstr ""
 
 #. module: som_generationkwh
+#: code:addons/som_generationkwh/somenergia_soci.py:220
+msgid "El soci té al menys un contracte actiu."
+msgstr ""
+
+#. module: som_generationkwh
 #: model:account.journal,name:som_generationkwh.genkwh_journal
 msgid "Factures GenerationkWh"
 msgstr ""
 
 #. module: som_generationkwh
-#: help:generationkwh.emission,irpf_product_id:0
-msgid "Producte de la línia IRPF dins la factura de la inversió"
+#: constraint:ir.actions.act_window:0
+msgid "Invalid model name in the action definition."
 msgstr ""
 
 #. module: som_generationkwh
@@ -1566,6 +1233,200 @@ msgid "wizard.generationkwh.investment.creation"
 msgstr ""
 
 #. module: som_generationkwh
+#: model:poweremail.templates,def_body_text:som_generationkwh.aportacio_mail_creacio
+#, python-format
+msgid ""
+"\n"
+"<!doctype html>\n"
+"<html>\n"
+"<body>\n"
+"<img width='130' height='65' src=\"https://www.somenergia.coop/wp-"
+"content/uploads/2014/11/logo-somenergia.png\">\n"
+"<br/><br/>\n"
+"<%\n"
+"Soci = object.pool.get('somenergia.soci')\n"
+"Partner = object.pool.get('res.partner')\n"
+"PartnerBank = object.pool.get('res.partner.bank')\n"
+"soci_id = object.member_id.id\n"
+"soci_obj = Soci.read(object._cr, object._uid, soci_id)\n"
+"part_obj = Partner.read(object._cr,object._uid,soci_obj['partner_id'][0])"
+"\n"
+"bank_obj = PartnerBank.read(object._cr, object._uid, "
+"part_obj['bank_inversions'][0])\n"
+"lang = part_obj['lang']\n"
+"name = part_obj['name']\n"
+"iban = bank_obj['iban']\n"
+"amount_currency= int(object.nshares) * 100\n"
+"\n"
+"nom_pagador = ''\n"
+"es_empresa = Partner.vat_es_empresa(object._cr, object._uid, "
+"object.member_id.vat)\n"
+"if not es_empresa:\n"
+"    nom_pagador =' ' + Partner.separa_cognoms(object._cr, object._uid, "
+"object.member_id.name)['nom']\n"
+"%>\n"
+"\n"
+"<%\n"
+"from mako.template import Template\n"
+"def render(text_to_render, object_):\n"
+"    templ = Template(text_to_render)\n"
+"    return templ.render_unicode(\n"
+"        object=object_,\n"
+"        format_exceptions=True\n"
+"    )\n"
+"t_obj = object.pool.get('poweremail.templates')\n"
+"md_obj = object.pool.get('ir.model.data')\n"
+"template_id = md_obj.get_object_reference(\n"
+"                    object._cr, object._uid,  "
+"'som_poweremail_common_templates', 'common_template_legal_footer'\n"
+"                )[1]\n"
+"text_legal = render(t_obj.read(\n"
+"    object._cr, object._uid, [template_id], "
+"['def_body_text'])[0]['def_body_text'],\n"
+"    object\n"
+")\n"
+"%>\n"
+"<br/>\n"
+"% if lang != \"es_ES\":\n"
+"Benvolgut/da${nom_pagador},<br/>\n"
+"<br/>\n"
+"Et confirmem que hem rebut correctament la teva sol•licitud per fer una "
+"aportació voluntària al capital social de Som Energia, amb les següents "
+"dades:<br/>\n"
+"<br/>\n"
+"Soci/Sòcia: ${name}<br/>\n"
+"Compte de càrrec: ${iban[:-4]}****<br/>\n"
+"Import aportació: ${int(abs(amount_currency))} €<br/>\n"
+"<br/>\n"
+"% if es_empresa:\n"
+"<p>Et recordem que per fer l'aportació en nom d'una persona jurídica has "
+"d'estar documentalment acreditat. </p>\n"
+"<p>Per aquesta raó, necessitem que ens responguis aquest correu adjuntant"
+" la següent documentació addicional:</p>\n"
+"<ul>\n"
+"    <li>el teu DNI (en tant que persona representant de la persona "
+"jurídica) </li>\n"
+"    <li>escriptures de poders de representació vigents </li>\n"
+"    <li>escriptura constitutiva i, si escau, escriptura de titularitat "
+"real </li>\n"
+"    <li>número CNAE activitat econòmica </li>\n"
+"</ul>\n"
+"<p>Un cop rebuda i verificada la documentació, procedirem a realitzar el "
+"corresponent càrrec en compte per l'import que ens has sol.licitat.</p>\n"
+"% else:\n"
+"En els propers dies rebràs el càrrec bancari en aquest compte, siusplau "
+"verifica que totes les dades facilitades són correctes i que disposes "
+"dels diners, per tal que no hi hagi cap incidència en el gir del "
+"rebut.<br/>\n"
+"<br/>\n"
+"Un cop verificada la validesa del pagament realitzat rebràs una nova "
+"notificació confirmant l'aportació realitzada i detallant les condicions "
+"particulars de la teva aportació.<br/>\n"
+"<br/>\n"
+"Agrair la teva implicació amb la cooperativa i informar-te que per a "
+"qualsevol dubte o aclariment pots consultar el web <a "
+"href=\"https://www.somenergia.coop/ca\">www.somenergia.coop</a> o bé "
+"mitjançant un mail a <a "
+"href=\"mailto:aporta@somenergia.coop\">aporta@somenergia.coop</a>.<br/>\n"
+"<br/>\n"
+"Recorda que també pots participar de la Generació kWh per generar la teva"
+" energia a partir de nous projectes col•lectius de generació. Consulta el"
+" web <a "
+"href=\"https://www.generationkwh.org/ca\">www.generationkwh.org</a>.<br/>"
+"\n"
+"<br/>\n"
+"Pots fer córrer la veu explicant el projecte a familiars i amics/gues. "
+"Com més siguem, més energia verda generarem!<br/>\n"
+"<br/>\n"
+"% endif\n"
+"Moltes gràcies i bona energia!<br/>\n"
+"<br/>\n"
+"Atentament,<br/>\n"
+"<br/>\n"
+"<br/>\n"
+"Som Energia, SCCL<br/>\n"
+"<a href=\"https://www.somenergia.coop/ca\">www.somenergia.coop</a><br/>\n"
+"% endif\n"
+"% if lang != \"ca_ES\" and lang != \"es_ES\":\n"
+"<br/><HR align=\"LEFT\" size=\"1\" width=\"400\" color=\"Black\" "
+"noshade><br/>\n"
+"% endif\n"
+"% if lang != \"ca_ES\":\n"
+"Apreciado/a${nom_pagador},<br/>\n"
+"<br/>\n"
+"Te confirmamos que hemos recibido correctamente tu solicitud para "
+"realizar una aportación voluntaria al capital social de Som Energia, con "
+"los siguientes datos:<br/>\n"
+"<br/>\n"
+"Socio/a: ${name}<br/>\n"
+"Cuenta de cargo: ${iban[:-4]}****<br/>\n"
+"Importe aportación: ${int(abs(amount_currency))} €<br/>\n"
+"<br/>\n"
+"% if es_empresa:\n"
+"<p>Te recordamos que para hacer la aportación en nombre de una persona "
+"jurídica tienes que estar documentalmente acreditado.</p>\n"
+"<p>Es por esta razón que necesitamos que respondas este correo adjuntando"
+" la siguiente documentación:</p>\n"
+"<ul>\n"
+"    <li>tu DNI (en tanto que persona representante de la persona "
+"jurídica)</li>\n"
+"    <li>escrituras de poderes de representación vigentes</li>\n"
+"    <li>escritura constitutiva y si procede, escritura de titularidad "
+"real</li>\n"
+"    <li>número CNAE actividad económica</li>\n"
+"</ul>\n"
+"<p>Una vez recibida y verificada la doncumentación, procederemos a "
+"realizar el correspondiente cargo en cuenta por el importe que nos has "
+"solicitado.</p>\n"
+"% else:\n"
+"En los próximos dias recibirás el cargo bancario en esta cuenta, por "
+"favor verifica que todos los datos facilitados sean correctos y dispones "
+"del dinero, para evitar cualquier incidencia en el giro del recibo.<br/>"
+"\n"
+"<br/>\n"
+"Una vez verificada la validez del pago realizado recibirás una nueva "
+"notificación confirmando la aportación realizada y detallando las "
+"condiciones particulares de tu aportación.<br/>\n"
+"Agradecer tu implicación con la cooperativa y informarte que para "
+"cualquier duda o aclaración puedes consultar nuestra web <a "
+"href=\"https://www.somenergia.coop\">www.somenergia.coop</a> o enviarnos "
+"un correo electrónico a <a "
+"href=\"mailto:aporta@somenergia.coop\">aporta@somenergia.coop</a><br/>\n"
+"<br/>\n"
+"Recuerda que también puedes participar de la Generación kWh para generar "
+"tu energía con nuevos proyectos colectivos de generación. Consulta la web"
+" <a "
+"href=\"https://www.generationkwh.org/es\">www.generationkwh.org</a>.<br/>"
+"\n"
+"<br/>\n"
+"Haz que corra la voz explicando el proyecto a familiares y amigos. "
+"Cuantos más seamos, más energía verde generaremos!<br/>\n"
+"<br/>\n"
+"% endif\n"
+"¡Muchas gracias y buena energía!<br/>\n"
+"<br/>\n"
+"Atentamente,<br/>\n"
+"<br/>\n"
+"<br/>\n"
+"Som Energia, SCCL<br/>\n"
+"<a href=\"https://www.somenergia.coop\">www.somenergia.coop</a><br/>\n"
+"% endif\n"
+"<br/>\n"
+"${text_legal}\n"
+"</body>\n"
+"</html>\n"
+msgstr ""
+
+#. module: som_generationkwh
+#: code:addons/som_generationkwh/somenergia_soci.py:192
+#: code:addons/som_generationkwh/somenergia_soci.py:199
+#: code:addons/som_generationkwh/somenergia_soci.py:207
+#: code:addons/som_generationkwh/somenergia_soci.py:213
+#: code:addons/som_generationkwh/somenergia_soci.py:220
+msgid "El soci no pot ser donat de baixa!"
+msgstr ""
+
+#. module: som_generationkwh
 #: field:generationkwh.emission,code:0
 msgid "Codi emissió"
 msgstr ""
@@ -1576,6 +1437,11 @@ msgid "Creació de inversion"
 msgstr ""
 
 #. module: som_generationkwh
+#: view:send.retencio.estalvi.to.members.wizard:0
+msgid "D'acord"
+msgstr ""
+
+#. module: som_generationkwh
 #: view:generationkwh.emission:0
 msgid "Característiques inversió"
 msgstr ""
@@ -1583,7 +1449,13 @@ msgstr ""
 #. module: som_generationkwh
 #: field:wizard.generationkwh.investment.creation,partner_id_alt:0
 #: field:wizard.generationkwh.investment.transfer,partner_id_alt:0
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:84
 msgid "Titular"
+msgstr ""
+
+#. module: som_generationkwh
+#: help:generationkwh.investment,signed_date:0
+msgid "Quin dia es va firmar el contracte de GKWH"
 msgstr ""
 
 #. module: som_generationkwh
@@ -1594,15 +1466,8 @@ msgid "Inversions en Generation kWh"
 msgstr ""
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/wizard/wizard_aeat193_from_gkwh_invoices.py:121
-msgid ""
-"S'ha trobat més d'una línia per al client amb VAT '{0}'. I per la "
-"taxaRevisin les dades si us plau."
-msgstr ""
-
-#. module: som_generationkwh
-#: help:generationkwh.assignment,contract_last_invoiced:0
-msgid "Data Última lectura facturada"
+#: view:generationkwh.emission:0
+msgid "Confirm"
 msgstr ""
 
 #. module: som_generationkwh
@@ -1621,6 +1486,13 @@ msgid "Data última factura"
 msgstr ""
 
 #. module: som_generationkwh
+#: view:send.retencio.estalvi.to.members.wizard:0
+#: view:wizard.baixa.soci:0
+#: view:wizard.generationkwh.sign.signaturit:0
+msgid "Cancel·lar"
+msgstr ""
+
+#. module: som_generationkwh
 #: view:wizard.generationkwh.investment.amortization:0
 msgid "Crear amortitzacions"
 msgstr ""
@@ -1628,6 +1500,11 @@ msgstr ""
 #. module: som_generationkwh
 #: field:generationkwh.emission,investment_product_id:0
 msgid "Producte factura inversió"
+msgstr ""
+
+#. module: som_generationkwh
+#: help:wizard.aeat193.from.gkwh.invoices,tax_id:0
+msgid "Retenció IRPF a aplicar"
 msgstr ""
 
 #. module: som_generationkwh
@@ -1643,8 +1520,8 @@ msgid ""
 msgstr ""
 
 #. module: som_generationkwh
-#: model:ir.model,name:som_generationkwh.model_wizard_generationkwh_investment_cancel_or_resign
-msgid "wizard.generationkwh.investment.cancel.or.resign"
+#: model:ir.model,name:som_generationkwh.model_generationkwh_rights_granter
+msgid "generationkwh.rights.granter"
 msgstr ""
 
 #. module: som_generationkwh
@@ -1675,13 +1552,23 @@ msgid "Genera totes les amortitzacions pendents"
 msgstr ""
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/investment.py:1504
+#: code:addons/som_generationkwh/investment.py:1537
 msgid "Inversió {investment} "
+msgstr ""
+
+#. module: som_generationkwh
+#: view:wizard.baixa.soci:0
+msgid "Baixa i enviament de correu"
 msgstr ""
 
 #. module: som_generationkwh
 #: field:generationkwh.emission,irpf_product_id:0
 msgid "Producte factura IRPF"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:wizard.generationkwh.investment.creation,amount_in_euros:0
+msgid "Quantitat aportada"
 msgstr ""
 
 #. module: som_generationkwh
@@ -1700,18 +1587,13 @@ msgid "Període efectiu"
 msgstr ""
 
 #. module: som_generationkwh
-#: field:somenergia.soci,has_gkwh:0
-msgid "Te drets GkWh"
+#: view:send.retencio.estalvi.to.members.wizard:0
+msgid "E-mails enviats correctament"
 msgstr ""
 
 #. module: som_generationkwh
 #: field:generationkwh.invoice.line.owner,factura_number:0
 msgid "Num. Factura"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:ir.model,name:som_generationkwh.model_generationkwh_production_loader
-msgid "generationkwh.production.loader"
 msgstr ""
 
 #. module: som_generationkwh
@@ -1727,13 +1609,13 @@ msgid "IBAN"
 msgstr ""
 
 #. module: som_generationkwh
-#: field:generationkwh.kwh.per.share,kwh:0
-msgid "kWh per acció"
+#: selection:send.retencio.estalvi.to.members.wizard,state:0
+msgid "Error"
 msgstr ""
 
 #. module: som_generationkwh
-#: field:wizard.generationkwh.investment.activation,action:0
-msgid "Action"
+#: model:ir.actions.act_window,name:som_generationkwh.action_wizard_confirm_soci_baixa
+msgid "Baixa de sòcia"
 msgstr ""
 
 #. module: som_generationkwh
@@ -1747,642 +1629,8 @@ msgid "Generar ordre de cobrament. Facturar i remesar"
 msgstr ""
 
 #. module: som_generationkwh
-#: view:generationkwh.emission:0
-msgid "Limits temporals"
-msgstr ""
-
-#. module: som_generationkwh
-#: view:wizard.generationkwh.investment.creation:0
-msgid "Crear"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:ir.model,name:som_generationkwh.model_investment_aportacio
-msgid "investment.aportacio"
-msgstr ""
-
-#. module: som_generationkwh
-#: field:generationkwh.emission,waiting_days:0
-msgid "Dies per activació GKWH"
-msgstr ""
-
-#. module: som_generationkwh
-#: view:wizard.generationkwh.investment.cancel.or.resign:0
-msgid "Veure factures"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:poweremail.templates,def_body_text:som_generationkwh.generationkwh_mail_pagament
-#, python-format
-msgid ""
-"<!doctype html>\n"
-"<html>\n"
-"<body>\n"
-"<img width='130' height='65' src=\"https://www.somenergia.coop/wp-"
-"content/uploads/2014/11/logo-somenergia.png\"><br/>\n"
-"<%\n"
-"from mako.template import Template\n"
-"def render(text_to_render, object_):\n"
-"    templ = Template(text_to_render)\n"
-"    return templ.render_unicode(\n"
-"        object=object_,\n"
-"        format_exceptions=True\n"
-"    )\n"
-"t_obj = object.pool.get('poweremail.templates')\n"
-"md_obj = object.pool.get('ir.model.data')\n"
-"template_id = md_obj.get_object_reference(\n"
-"                    object._cr, object._uid,  "
-"'som_poweremail_common_templates', 'common_template_legal_footer'\n"
-"                )[1]\n"
-"text_legal = render(t_obj.read(\n"
-"    object._cr, object._uid, [template_id], "
-"['def_body_text'])[0]['def_body_text'],\n"
-"    object\n"
-")\n"
-"%>\n"
-"% if object.partner_id.lang != \"es_ES\":\n"
-"<br/>\n"
-"Hola ${object.partner_id.name.split(',')[-1]},<br/>\n"
-"<br/>\n"
-"Volem informar-te que a data d'avui hem girat l’import "
-"${int(abs(object.amount_total))} € corresponent a la teva participació a "
-"la Generació kWh i, per tant, en dos o tres dies (laborables) es passarà "
-"el càrrec al teu compte bancari.<br/>\n"
-"<br/>\n"
-"T'adjuntem el contracte amb les condicions generals de la teva inversió i"
-" et recordem que per a qualsevol dubte o aclariment en relació amb la "
-"teva aportació pots respondre aquest correu, escriure a <a "
-"href=\"mailto:generationkwh@somenergia.coop\">generationkwh@somenergia.coop</a>"
-" o consultar el <a href=\"https://ca.support.somenergia.coop/category/580"
-"-generation-kwh\">centre d’ajuda</a> de la web.<br/>\n"
-"<br/>\n"
-"Aprofitem per agrair-te, una vegada més, la teva implicació amb "
-"l’objectiu compartit d’assolir un model energètic 100% renovable! <br/>\n"
-"<br/>\n"
-"Recorda que pots fer córrer la veu i explicar el projecte a familiars i "
-"amistats. Si estàs connectat a les xarxes socials també pots compartir "
-"fàcilment un missatge des d'aquest enllaç a <a "
-"href=\"https://ctt.ec/7Yr1X\">Twitter</a>, a <a "
-"href=\"https://www.facebook.com/sharer/sharer.php?u=https://www.generationkwh.cat\">Facebook</a>,"
-" <a "
-"href=\"https://www.linkedin.com/cws/share?url=https://www.generationkwh.cat&utm_source=Preinscripción+GenerationkWh&utm_campaign"
-"=98c4d8873e-"
-"_ES_2a_Newsletter_Generation_kWh6_13_2015&utm_medium=email&utm_term"
-"=0_b8985e435a-98c4d8873e-311450445\">Linkedin</a> i, fins tot, a <a "
-"href=\"https://plus.google.com/share?url=https://www.generationkwh.cat&utm_source=Preinscripción+GenerationkWh&utm_campaign"
-"=98c4d8873e-"
-"_ES_2a_Newsletter_Generation_kWh6_13_2015&utm_medium=email&utm_term"
-"=0_b8985e435a-98c4d8873e-311450445\">Google+</a>. Quants més siguem, més "
-"energia verda generarem!<br/>\n"
-"<br/>\n"
-"<br/>\n"
-"Moltes gràcies i bona energia!<br/>\n"
-"<br/>\n"
-"<br/>\n"
-"Som Energia, SCCL<br/>\n"
-"<a href=\"https://www.somenergia.coop/ca/\">www.somenergia.coop</a><br/>\n"
-"% endif\n"
-"% if  object.partner_id.lang != \"ca_ES\" and  object.partner_id.lang != "
-"\"es_ES\":\n"
-"<br/><HR align=\"LEFT\" size=\"1\" width=\"400\" color=\"Black\" "
-"noshade><br/>\n"
-"% endif\n"
-"% if  object.partner_id.lang != \"ca_ES\":\n"
-"<br/>\n"
-"Hola ${object.partner_id.name.split(',')[-1]},<br/>\n"
-"<br/>\n"
-"Queremos informarte que a fecha de hoy hemos girado el importe de "
-"${int(abs(object.amount_total))} € correspondiente a tu participación en "
-"la Generación kWh y, por tanto, en dos o tres días (laborables) se pasará"
-" el cargo a tu cuenta bancaria.<br/>\n"
-"<br/>\n"
-"Te adjuntamos el contrato con las condiciones generales de tu inversión y"
-" te recordamos que para cualquier duda o aclaración en relación a tu "
-"aportación puedes responder a este correo, escribir a <a "
-"href=\"mailto:generationkwh@somenergia.coop\">generationkwh@somenergia.coop</a>"
-" o consultar el <a href = "
-"\"https://es.support.somenergia.coop/category/595-generation-kwh\">centro"
-" de ayuda</a> de la web.<br/>\n"
-"<br/>\n"
-"Aprovechamos para agradecerte, una vez más, tu implicación con el "
-"objetivo compartido de alcanzar un modelo energético 100% renovable.<br/>"
-"\n"
-"<br/>\n"
-"Recuerda que puedes hacer correr la voz y explicar el proyecto a "
-"familiares y amistades. Si estás conectado a las redes sociales también "
-"puedes compartir fácilmente un mensaje desde este enlace en <a "
-"href=\"https://ctt.ec/134fX\">Twitter</a>, en <a "
-"href=\"https://www.facebook.com/sharer/sharer.php?u=https://www.generationkwh.es\">Facebook</a>,"
-" en <a href=\"https://generationkwh.us2.list-"
-"manage.com/track/click?u=56d8bf2e8806722821a650fd1&id=45ac0c2d2d&e=6e8d00bf75\">Linkedin</a>"
-" e incluso en <a href=\"https://generationkwh.us2.list-"
-"manage1.com/track/click?u=56d8bf2e8806722821a650fd1&id=870e457cc5&e=6e8d00bf75\">Google+</a>."
-" Cuantas más seamos, ¡más energía verde generaremos!<br/>\n"
-"<br/>\n"
-"<br/>\n"
-"¡Muchas gracias y buena energía!<br/>\n"
-"<br/>\n"
-"<br/>\n"
-"Som Energia, SCCL<br/>\n"
-"<a href=\"https://www.somenergia.coop\">www.somenergia.coop</a><br/>\n"
-"% endif\n"
-"<br/>\n"
-"${text_legal}\n"
-"</body>\n"
-"</html>\n"
-msgstr ""
-
-#. module: som_generationkwh
-#: help:generationkwh.assignment,member_id:0
-msgid "Soci que va comprar accions Generation kWh i els assigna"
-msgstr ""
-
-#. module: som_generationkwh
-#: code:addons/som_generationkwh/wizard/wizard_investment_activation.py:24
-msgid "Desactivat"
-msgstr ""
-
-#. module: som_generationkwh
-#: code:addons/som_generationkwh/investment.py:532
-msgid "S'ha {0} la inversió {1}"
-msgstr ""
-
-#. module: som_generationkwh
-#: view:generationkwh.emission:0
-msgid "Comptabilitat"
-msgstr ""
-
-#. module: som_generationkwh
-#: field:wizard.aeat193.from.gkwh.invoices,state:0
-#: field:wizard.generationkwh.investment.activation,state:0
-#: field:wizard.generationkwh.investment.cancel.or.resign,state:0
-#: field:wizard.generationkwh.investment.creation,state:0
-#: field:wizard.generationkwh.investment.divest,state:0
-#: field:wizard.generationkwh.investment.payment,state:0
-#: field:wizard.generationkwh.investment.transfer,state:0
-msgid "State"
-msgstr ""
-
-#. module: som_generationkwh
-#: field:generationkwh.emission,amortization_payment_mode_id:0
-msgid "Mode pagament amortització"
-msgstr ""
-
-#. module: som_generationkwh
-#: view:wizard.generationkwh.investment.divest:0
-#: view:wizard.generationkwh.investment.payment:0
-msgid "Generar"
-msgstr ""
-
-#. module: som_generationkwh
-#: field:generationkwh.emission,investment_payment_mode_id:0
-msgid "Mode pagament inversió"
-msgstr ""
-
-#. module: som_generationkwh
-#: field:generationkwh.investment,order_date:0
-#: field:wizard.generationkwh.investment.creation,order_date:0
-msgid "Data de comanda"
-msgstr ""
-
-#. module: som_generationkwh
-#: view:generationkwh.emission:0
-msgid "Cancel"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:ir.model,name:som_generationkwh.model_generationkwh_kwh_per_share
-msgid "generationkwh.kwh.per.share"
-msgstr ""
-
-#. module: som_generationkwh
-#: help:generationkwh.emission,investment_product_id:0
-msgid "Producte de la línia del capital dins la factura de la inversió"
-msgstr ""
-
-#. module: som_generationkwh
-#: view:generationkwh.emission:0
-msgid "Productes de la factura"
-msgstr ""
-
-#. module: som_generationkwh
-#: selection:generationkwh.emission,state:0
-msgid "Realitzat"
-msgstr ""
-
-#. module: som_generationkwh
-#: field:generationkwh.investment,emission_id:0
-#: field:wizard.generationkwh.investment.creation,emission_id:0
-msgid "Emissió"
-msgstr ""
-
-#. module: som_generationkwh
-#: constraint:poweremail.core_accounts:0
-msgid "Error: You are not allowed to have more than 1 account."
-msgstr ""
-
-#. module: som_generationkwh
-#: field:generationkwh.investment,amortized_amount:0
-msgid "Import amortitzat"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:ir.actions.act_window,name:som_generationkwh.action_all_investment_tree
-#: model:ir.ui.menu,name:som_generationkwh.menu_all_investment_tree
-msgid "Totes les Inversions"
-msgstr ""
-
-#. module: som_generationkwh
-#: view:generationkwh.investment:0
-msgid "Desinvertir amb penalització"
-msgstr ""
-
-#. module: som_generationkwh
-#: field:somenergia.soci,assignment_ids view:somenergia.soci:0
-msgid "Assignacions"
-msgstr ""
-
-#. module: som_generationkwh
-#: field:generationkwh.investment,draft selection:generationkwh.emission,state:0
-msgid "Esborrany"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:poweremail.templates,def_subject:som_generationkwh.aportacio_mail_impagament
-msgid "Recibo devuelto inversión / Rebut retornat inversió ${object.name}"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_20DHS_product_template
-#: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_21DHS_product_template
-#: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_30A_product_template
-#: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_31A_LB_product_template
-#: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_31A_product_template
-#: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_61_product_template
-#: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_61a_product_template
-#: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_61b_product_template
-#: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_62_product_template
-#: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_63_product_template
-#: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_64_product_template
-#: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_65_product_template
-msgid "P3"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:poweremail.templates,def_body_text:som_generationkwh.aportacio_mail_creacio
-#, python-format
-msgid ""
-"\n"
-"<!doctype html>\n"
-"<html>\n"
-"<body>\n"
-"<img width='130' height='65' src=\"https://www.somenergia.coop/wp-"
-"content/uploads/2014/11/logo-somenergia.png\">\n"
-"<%\n"
-"Soci = object.pool.get('somenergia.soci')\n"
-"Partner = object.pool.get('res.partner')\n"
-"PartnerBank = object.pool.get('res.partner.bank')\n"
-"soci_id = object.member_id.id\n"
-"soci_obj = Soci.read(object._cr, object._uid, soci_id)\n"
-"part_obj = Partner.read(object._cr,object._uid,soci_obj['partner_id'][0])"
-"\n"
-"bank_obj = PartnerBank.read(object._cr, object._uid, "
-"part_obj['bank_inversions'][0])\n"
-"lang = part_obj['lang']\n"
-"name = part_obj['name']\n"
-"iban = bank_obj['iban']\n"
-"amount_currency= int(object.nshares) * 100\n"
-"%>\n"
-"\n"
-"<%\n"
-"from mako.template import Template\n"
-"def render(text_to_render, object_):\n"
-"    templ = Template(text_to_render)\n"
-"    return templ.render_unicode(\n"
-"        object=object_,\n"
-"        format_exceptions=True\n"
-"    )\n"
-"t_obj = object.pool.get('poweremail.templates')\n"
-"md_obj = object.pool.get('ir.model.data')\n"
-"template_id = md_obj.get_object_reference(\n"
-"                    object._cr, object._uid,  "
-"'som_poweremail_common_templates', 'common_template_legal_footer'\n"
-"                )[1]\n"
-"text_legal = render(t_obj.read(\n"
-"    object._cr, object._uid, [template_id], "
-"['def_body_text'])[0]['def_body_text'],\n"
-"    object\n"
-")\n"
-"%>\n"
-"<br/>\n"
-"% if lang != \"es_ES\":\n"
-"Benvolgut/da ${name.split(',')[-1]},<br/>\n"
-"<br/>\n"
-"Et confirmem que hem rebut correctament la teva sol•licitud per fer una "
-"aportació voluntària al capital social de Som Energia, amb les següents "
-"dades:<br/>\n"
-"<br/>\n"
-"Soci/Sòcia: ${name}<br/>\n"
-"Compte de càrrec: ${iban[:-4]}****<br/>\n"
-"Import aportació: ${int(abs(amount_currency))} €<br/>\n"
-"<br/>\n"
-"En els propers dies rebràs el càrrec bancari en aquest compte, siusplau "
-"verifica que totes les dades facilitades són correctes i que disposes "
-"dels diners que vols invertir, per tal que no hi hagi cap incidència en "
-"el gir del rebut.<br/>\n"
-"<br/>\n"
-"Un cop verificada la validesa del pagament realitzat rebràs una nova "
-"notificació confirmant l'aportació realitzada i detallant les condicions "
-"particulars de la teva aportació.<br/>\n"
-"<br/>\n"
-"Agrair la teva implicació amb la cooperativa i informar-te que per a "
-"qualsevol dubte o aclariment pots consultar el web <a "
-"href=\"https://www.somenergia.coop/ca\">www.somenergia.coop</a> o bé "
-"mitjançant un mail a <a "
-"href=\"mailto:invertir@somenergia.coop\">invertir@somenergia.coop</a>.<br/>"
-"\n"
-"<br/>\n"
-"Recorda que també pots participar de la Generació kWh per generar la teva"
-" energia a partir de nous projectes col•lectius de generació. Consulta el"
-" web <a "
-"href=\"https://www.generationkwh.org/ca\">www.generationkwh.org</a>.<br/>"
-"\n"
-"<br/>\n"
-"Pots fer córrer la veu explicant el projecte a familiars i amics/gues. "
-"Com més siguem, més energia verda generarem!<br/>\n"
-"<br/>\n"
-"Moltes gràcies i bona energia!<br/>\n"
-"<br/>\n"
-"Atentament,<br/>\n"
-"<br/>\n"
-"<br/>\n"
-"Som Energia, SCCL<br/>\n"
-"<a href=\"https://www.somenergia.coop/ca\">www.somenergia.coop</a><br/>\n"
-"% endif\n"
-"% if lang != \"ca_ES\" and lang != \"es_ES\":\n"
-"<br/><HR align=\"LEFT\" size=\"1\" width=\"400\" color=\"Black\" "
-"noshade><br/>\n"
-"% endif\n"
-"% if lang != \"ca_ES\":\n"
-"Apreciado/a ${name.split(',')[-1]},<br/>\n"
-"<br/>\n"
-"Te confirmamos que hemos recibido correctamente tu solicitud para "
-"realizar una aportación voluntaria al capital social de Som Energia, con "
-"los siguientes datos:<br/>\n"
-"<br/>\n"
-"Socio/a: ${name}<br/>\n"
-"Cuenta de cargo: ${iban[:-4]}****<br/>\n"
-"Importe aportación: ${int(abs(amount_currency))} €<br/>\n"
-"<br/>\n"
-"En los próximos dias recibirás el cargo bancario en esta cuenta, por "
-"favor verifica que todos los datos facilitados sean correctos y dispones "
-"del dinero que quieres invertir, para evitar cualquier incidencia en el "
-"giro del recibo.<br/>\n"
-"<br/>\n"
-"Una vez verificada la validez del pago realizado recibirás una nueva "
-"notificación confirmando la aportación realizada y detallando las "
-"condiciones particulares de tu aportación.<br/>\n"
-"<br/>\n"
-"Agradecer tu implicación con la cooperativa y informarte que para "
-"cualquier duda o aclaración puedes consultar nuestra web <a "
-"href=\"https://www.somenergia.coop\">www.somenergia.coop</a> o enviarnos "
-"un correo electrónico a <a "
-"href=\"mailto:invertir@somenergia.coop\">invertir@somenergia.coop</a>\n"
-"Recuerda que también puedes participar de la Generación kWh para generar "
-"tu energía con nuevos proyectos colectivos de generación. Consulta la web"
-" <a "
-"href=\"https://www.generationkwh.org/es\">www.generationkwh.org</a>.<br/>"
-"\n"
-"<br/>\n"
-"Haz que corra la voz explicando el proyecto a familiares y amigos. "
-"Cuantos más seamos, más energía verde generaremos!<br/>\n"
-"<br/>\n"
-"¡Muchas gracias y buena energía!<br/>\n"
-"<br/>\n"
-"Atentamente,<br/>\n"
-"<br/>\n"
-"<br/>\n"
-"Som Energia, SCCL<br/>\n"
-"<a href=\"https://www.somenergia.coop\">www.somenergia.coop</a><br/>\n"
-"% endif\n"
-"<br/>\n"
-"${text_legal}\n"
-"</body>\n"
-"</html>"
-msgstr ""
-
-#. module: som_generationkwh
-#: help:generationkwh.investment,name:0
-msgid "Referència única de la inversió"
-msgstr ""
-
-#. module: som_generationkwh
-#: field:generationkwh.assignment,member_id view:somenergia.soci:0
-msgid "Soci"
-msgstr ""
-
-#. module: som_generationkwh
-#: help:generationkwh.remainder,remainder_wh:0
-msgid "Remainder in Wh"
-msgstr ""
-
-#. module: som_generationkwh
-#: view:giscedata.facturacio.factura:0
-msgid "Energia"
-msgstr ""
-
-#. module: som_generationkwh
-#: selection:generationkwh.emission,type:0
-msgid "Other"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:ir.actions.act_window,name:som_generationkwh.action_gkwh_invoice_line_owner_tree
-#: model:ir.ui.menu,name:som_generationkwh.menu_gkwh_invoice_line_owner_tree
-msgid "Generation kWh assignats a factures"
-msgstr ""
-
-#. module: som_generationkwh
-#: field:generationkwh.emission,amortization_product_id:0
-msgid "Producte factura amortizació"
-msgstr ""
-
-#. module: som_generationkwh
-#: field:generationkwh.investment,purchase_date:0
-msgid "Data de compra"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:ir.model,name:som_generationkwh.model_wizard_generationkwh_investment_activation
-msgid "wizard.generationkwh.investment.activation"
-msgstr ""
-
-#. module: som_generationkwh
-#: view:wizard.aeat193.from.gkwh.invoices:0
-#: view:wizard.generationkwh.investment.activation:0
-#: view:wizard.generationkwh.investment.transfer:0
-msgid "Tancar"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:ir.actions.act_window,name:som_generationkwh.action_wizard_aeat193_from_gkwh_invoices
-#: view:wizard.aeat193.from.gkwh.invoices:0
-msgid "Afegir generation kwh a AEAT mod193"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:poweremail.templates,def_subject:som_generationkwh.generationkwh_assignment_notification_mail
-msgid "Generation kWh: ¡Empezamos a recibir energía! [${object.ref[1:]}]"
-msgstr ""
-
-#. module: som_generationkwh
-#: help:generationkwh.assignment,cups_direction:0
-msgid "Direcció del CUPS"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:ir.actions.act_window,name:som_generationkwh.action_wizard_generationkwh_investment_divest
-#: view:generationkwh.investment:0
-msgid "Desinvertir"
-msgstr ""
-
-#. module: som_generationkwh
-#: view:wizard.generationkwh.investment.divest:0
-#: view:wizard.generationkwh.investment.transfer:0
-msgid "Generar factura de desinversió i remesar"
-msgstr ""
-
-#. module: som_generationkwh
-#: view:wizard.generationkwh.investment.amortization:0
-msgid "Mostrar factures"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:ir.actions.act_window,name:som_generationkwh.action_gkwh_emission_tree
-#: model:ir.ui.menu,name:som_generationkwh.menu_gkwh_emission_tree
-#: view:generationkwh.emission:0
-msgid "Campanyes d'emissions d'inversions"
-msgstr ""
-
-#. module: som_generationkwh
-#: view:generationkwh.investment:0
-msgid "Renunciar"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:ir.model,name:som_generationkwh.model_wizard_generationkwh_investment_transfer
-msgid "wizard.generationkwh.investment.transfer"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:ir.model,name:som_generationkwh.model_generationkwh_mailmockup
-msgid "generationkwh.mailmockup"
-msgstr ""
-
-#. module: som_generationkwh
-#: field:wizard.generationkwh.investment.amortization,amortizeds:0
-#: field:wizard.generationkwh.investment.cancel.or.resign,invoices:0
-#: field:wizard.generationkwh.investment.divest,invoices:0
-#: field:wizard.generationkwh.investment.payment,invoices:0
-#: field:wizard.generationkwh.investment.transfer,invoices:0
-msgid "test"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:ir.model,name:som_generationkwh.model_generationkwh_dealer
-msgid "generationkwh.dealer"
-msgstr ""
-
-#. module: som_generationkwh
-#: field:generationkwh.emission,type:0
-msgid "Emission Type"
-msgstr ""
-
-#. module: som_generationkwh
-#: selection:generationkwh.emission,type:0
-msgid "Títols"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:ir.model,name:som_generationkwh.model_generationkwh_rights_granter
-msgid "generationkwh.rights.granter"
-msgstr ""
-
-#. module: som_generationkwh
-#: view:generationkwh.investment:0
-msgid "Amortitzar"
-msgstr ""
-
-#. module: som_generationkwh
-#: field:wizard.generationkwh.investment.amortization,errors:0
-#: field:wizard.generationkwh.investment.amortization,output:0
-msgid "Missatges d'error"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_20A_new_product_template
-#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_20A_product_template
-#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_20DHA_new_product_template
-#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_20DHA_product_template
-#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_20DHS_product_template
-#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_21DHS_product_template
-#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_30A_product_template
-#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_31A_LB_product_template
-#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_31A_product_template
-#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_61_product_template
-#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_61a_product_template
-#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_61b_product_template
-#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_62_product_template
-#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_63_product_template
-#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_64_product_template
-#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_65_product_template
-msgid "P1"
-msgstr ""
-
-#. module: som_generationkwh
-#: help:generationkwh.investment,signed_date:0
-msgid "Quin dia es va firmar el contracte de GKWH"
-msgstr ""
-
-#. module: som_generationkwh
-#: view:wizard.generationkwh.investment.amortization:0
-msgid "Previsualització de resultats"
-msgstr ""
-
-#. module: som_generationkwh
-#: help:generationkwh.investment,purchase_date:0
-msgid "Quin dia es varen comprar les accions"
-msgstr ""
-
-#. module: som_generationkwh
-#: help:generationkwh.investment,nshares:0
-msgid "Nombre d'accions comprades"
-msgstr ""
-
-#. module: som_generationkwh
-#: field:wizard.generationkwh.investment.amortization,results:0
-msgid "resultats"
-msgstr ""
-
-#. module: som_generationkwh
-#: help:generationkwh.assignment,cups_anual_use:0
-msgid "Consum anyal del CUPS. Pot ser estimat."
-msgstr ""
-
-#. module: som_generationkwh
-#: field:generationkwh.investment,member_id:0
-msgid "Inversor"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:product.template,name:som_generationkwh.apo_product_ae_product_template
-#: selection:generationkwh.emission,type:0
-msgid "Aportacions"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:ir.model,name:som_generationkwh.model_investment_generationkwh
-msgid "investment.generationkwh"
+#: code:addons/som_generationkwh/somenergia_soci.py:178
+msgid "Com ha minim es necessita un soci"
 msgstr ""
 
 #. module: som_generationkwh
@@ -2420,13 +1668,13 @@ msgid ""
 "Hola ${object.partner_id.name.split(',')[-1]},<br>\n"
 "<br>\n"
 "Avui ens ha vingut retornat el rebut de ${object.amount_total} euros "
-"corresponent a la teva inversió en aportacions voluntàries al capital "
-"social de SOM ENERGIA. Si segueixes interessat a fer-la, t'agrairem que "
-"ens facis una transferència al següent número de compte: ES19 3025 0016 "
-"12 1400005159<br>\n"
+"corresponent a la teva aportació voluntària al capital social de SOM "
+"ENERGIA. Si segueixes interessat/da en fer-la, t'agrairem que ens facis "
+"una transferència al següent número de compte: ES19 3025 0016 12 "
+"1400005159<br>\n"
 "<br>\n"
-"Si pel contrari has canviat d'idea i ja no vols fer la inversió, "
-"t'agrairem que ens ho comuniquis.<br>\n"
+"Si pel contrari has canviat d'idea i ja la vols fer, t'agrairem que ens "
+"ho comuniquis contestant aquest mateix correu.<br>\n"
 "<br>\n"
 "Salutacions,<br>\n"
 "<br>\n"
@@ -2443,17 +1691,15 @@ msgid ""
 "<br>\n"
 "Hola ${object.partner_id.name.split(',')[-1]},<br>\n"
 "<br>\n"
-"Hoy nos ha venido devuelto el recibo de ${object.amount_total}  euros "
-"correspondiente a tu inversión en aportaciones voluntarias al capital "
-"social de SOM ENERGIA. Si sigues interesado en invertir, tendrás que "
-"realizar-nos una transferencia al siguiente número de cuenta: ES19 3025 "
-"0016 12 1400005159<br>\n"
+"Hoy nos ha venido devuelto el recibo de ${object.amount_total} euros "
+"correspondiente a tu aportación voluntaria al capital social de SOM "
+"ENERGIA. Si sigues interesado/a en participar, tendrás que realizar-nos "
+"una transferencia al siguiente número de cuenta: ES19 3025 0016 12 "
+"1400005159.<br>\n"
 "<br>\n"
-"Si por el contrario has cambiado de idea y ya no quieres invertir te "
-"agradeceremos que nos lo comuniques.<br>\n"
-"<br>\n"
-"Si por el contrario ya no estás interesado en esta aportación te "
-"agradeceremos que nos lo comuniques.<br>\n"
+"Si por el contrario ya no te interesa aportar al capital social de Som "
+"Energia te agradeceremos que nos lo comuniques contestando este "
+"correo.<br>\n"
 "<br>\n"
 "Un saludo,<br>\n"
 "<br>\n"
@@ -2465,6 +1711,543 @@ msgid ""
 "${text_legal}\n"
 "</body>\n"
 "</html>"
+msgstr ""
+
+#. module: som_generationkwh
+#: view:wizard.generationkwh.investment.creation:0
+msgid "Crear"
+msgstr ""
+
+#. module: som_generationkwh
+#: help:generationkwh.emission,code:0
+msgid "Codi de la campanya d'inversió"
+msgstr ""
+
+#. module: som_generationkwh
+#: view:wizard.generationkwh.investment.cancel.or.resign:0
+msgid "Veure factures"
+msgstr ""
+
+#. module: som_generationkwh
+#: code:addons/som_generationkwh/investment_sign.py:65
+msgid "No hi ha cap factura per a aquest préstec de generation!"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_20A_new_product_template
+#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_20A_product_template
+#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_20DHA_new_product_template
+#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_20DHA_product_template
+#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_20DHS_product_template
+#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_21DHS_product_template
+#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_30A_product_template
+#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_31A_LB_product_template
+#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_31A_product_template
+#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_61_product_template
+#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_61a_product_template
+#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_61b_product_template
+#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_62_product_template
+#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_63_product_template
+#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_64_product_template
+#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_65_product_template
+msgid "P1"
+msgstr ""
+
+#. module: som_generationkwh
+#: help:generationkwh.assignment,member_id:0
+msgid "Soci que va comprar accions Generation kWh i els assigna"
+msgstr ""
+
+#. module: som_generationkwh
+#: code:addons/som_generationkwh/wizard/wizard_investment_activation.py:24
+msgid "Desactivat"
+msgstr ""
+
+#. module: som_generationkwh
+#: code:addons/som_generationkwh/investment.py:549
+msgid "S'ha {0} la inversió {1}"
+msgstr ""
+
+#. module: som_generationkwh
+#: view:generationkwh.emission:0
+msgid "Comptabilitat"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:wizard.generationkwh.investment.amortization,state:0
+msgid "Estat"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:wizard.generationkwh.investment.creation,ip:0
+msgid "Ip d'origen"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:generationkwh.emission,amortization_payment_mode_id:0
+msgid "Mode pagament amortització"
+msgstr ""
+
+#. module: som_generationkwh
+#: view:wizard.generationkwh.investment.divest:0
+#: view:wizard.generationkwh.investment.payment:0
+msgid "Generar"
+msgstr ""
+
+#. module: som_generationkwh
+#: code:addons/som_generationkwh/somenergia_soci.py:207
+msgid "El soci té aportacions actives."
+msgstr ""
+
+#. module: som_generationkwh
+#: field:generationkwh.investment,order_date:0
+#: field:wizard.generationkwh.investment.creation,order_date:0
+msgid "Data de comanda"
+msgstr ""
+
+#. module: som_generationkwh
+#: view:generationkwh.emission:0
+msgid "Cancel"
+msgstr ""
+
+#. module: som_generationkwh
+#: help:generationkwh.investment,active:0
+msgid "Permet activar o desactivar la inversió"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:poweremail.templates,def_subject:som_generationkwh.generationkwh_assignment_notification_mail
+msgid "Generation kWh: Comencem a rebre energia! [${object.ref[1:]}]"
+msgstr ""
+
+#. module: som_generationkwh
+#: help:generationkwh.emission,investment_product_id:0
+msgid "Producte de la línia del capital dins la factura de la inversió"
+msgstr ""
+
+#. module: som_generationkwh
+#: view:generationkwh.emission:0
+msgid "Productes de la factura"
+msgstr ""
+
+#. module: som_generationkwh
+#: selection:generationkwh.emission,type:0
+msgid "GenerationkWh"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:generationkwh.investment,emission_id:0
+#: field:wizard.generationkwh.investment.creation,emission_id:0
+msgid "Emissió"
+msgstr ""
+
+#. module: som_generationkwh
+#: constraint:poweremail.core_accounts:0
+msgid "Error: You are not allowed to have more than 1 account."
+msgstr ""
+
+#. module: som_generationkwh
+#: field:generationkwh.investment,amortized_amount:0
+msgid "Import amortitzat"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:ir.actions.act_window,name:som_generationkwh.action_all_investment_tree
+#: model:ir.ui.menu,name:som_generationkwh.menu_all_investment_tree
+msgid "Totes les Inversions"
+msgstr ""
+
+#. module: som_generationkwh
+#: view:generationkwh.investment:0
+msgid "Desinvertir amb penalització"
+msgstr ""
+
+#. module: som_generationkwh
+#: view:wizard.baixa.soci:0
+msgid "La baixa s'ha efectuat correctament"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:somenergia.soci,assignment_ids:0
+#: view:somenergia.soci:0
+msgid "Assignacions"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:generationkwh.investment,draft:0
+#: selection:generationkwh.emission,state:0
+msgid "Esborrany"
+msgstr ""
+
+#. module: som_generationkwh
+#: constraint:account.move:0
+msgid "You cannot create entries on different periods/journals in the same move"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:poweremail.templates,def_subject:som_generationkwh.aportacio_mail_impagament
+msgid "Recibo devuelto inversión / Rebut retornat inversió ${object.name}"
+msgstr ""
+
+#. module: som_generationkwh
+#: help:generationkwh.investment,name:0
+msgid "Referència única de la inversió"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:generationkwh.assignment,member_id:0
+#: view:somenergia.soci:0
+msgid "Soci"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:send.retencio.estalvi.to.members.wizard,state:0
+msgid "Progress State"
+msgstr ""
+
+#. module: som_generationkwh
+#: help:generationkwh.emission,amortization_product_id:0
+msgid "Producte de la línia de l'amortització dins la factura de la inversió"
+msgstr ""
+
+#. module: som_generationkwh
+#: view:giscedata.facturacio.factura:0
+msgid "Energia"
+msgstr ""
+
+#. module: som_generationkwh
+#: selection:generationkwh.emission,type:0
+msgid "Other"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:ir.actions.act_window,name:som_generationkwh.action_gkwh_invoice_line_owner_tree
+#: model:ir.ui.menu,name:som_generationkwh.menu_gkwh_invoice_line_owner_tree
+msgid "Generation kWh assignats a factures"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:generationkwh.investment,first_effective_date:0
+msgid "Primera data efectiva"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:generationkwh.emission,amortization_product_id:0
+msgid "Producte factura amortizació"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:generationkwh.investment,purchase_date:0
+msgid "Data de compra"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:ir.model,name:som_generationkwh.model_wizard_generationkwh_investment_activation
+msgid "wizard.generationkwh.investment.activation"
+msgstr ""
+
+#. module: som_generationkwh
+#: view:wizard.aeat193.from.gkwh.invoices:0
+#: view:wizard.baixa.soci:0
+#: view:wizard.generationkwh.investment.activation:0
+#: view:wizard.generationkwh.investment.transfer:0
+msgid "Tancar"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:ir.actions.act_window,name:som_generationkwh.action_wizard_aeat193_from_gkwh_invoices
+#: view:wizard.aeat193.from.gkwh.invoices:0
+msgid "Afegir generation kwh a AEAT mod193"
+msgstr ""
+
+#. module: som_generationkwh
+#: code:addons/som_generationkwh/somenergia_soci.py:200
+msgid "El soci té inversions de generation actives."
+msgstr ""
+
+#. module: som_generationkwh
+#: view:send.retencio.estalvi.to.members.wizard:0
+msgid "No s'ha fet cap enviament"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_20DHA_new_product_template
+#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_20DHA_product_template
+#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_20DHS_product_template
+#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_21DHS_product_template
+#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_30A_product_template
+#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_31A_LB_product_template
+#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_31A_product_template
+#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_61_product_template
+#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_61a_product_template
+#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_61b_product_template
+#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_62_product_template
+#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_63_product_template
+#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_64_product_template
+#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_65_product_template
+msgid "P2"
+msgstr ""
+
+#. module: som_generationkwh
+#: help:generationkwh.assignment,cups_direction:0
+msgid "Direcció del CUPS"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:ir.actions.act_window,name:som_generationkwh.action_wizard_generationkwh_investment_divest
+#: view:generationkwh.investment:0
+msgid "Desinvertir"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:poweremail.templates,def_body_text:som_generationkwh.certificat_retencio_rendiment_generationkwh
+#, python-format
+msgid ""
+"\n"
+"<!doctype html>\n"
+"<html><body>\n"
+"<img src=\"https://www.somenergia.coop/wp-"
+"content/uploads/2014/07/logo.png\">\n"
+"<%\n"
+"from datetime import datetime, timedelta\n"
+"from mako.template import Template\n"
+"def render(text_to_render, object_):\n"
+"    templ = Template(text_to_render)\n"
+"    return templ.render_unicode(\n"
+"        object=object_,\n"
+"        format_exceptions=True\n"
+"    )\n"
+"t_obj = object.pool.get('poweremail.templates')\n"
+"md_obj = object.pool.get('ir.model.data')\n"
+"template_id = md_obj.get_object_reference(\n"
+"                    object._cr, object._uid,  "
+"'som_poweremail_common_templates', 'common_template_legal_footer'\n"
+"                )[1]\n"
+"text_legal = render(t_obj.read(\n"
+"    object._cr, object._uid, [template_id], "
+"['def_body_text'])[0]['def_body_text'],\n"
+"    object\n"
+")\n"
+"year = (datetime.now() - timedelta(days=365)).year\n"
+"%>\n"
+"% if object.partner_id.lang != \"es_ES\":\n"
+"<br />\n"
+"Benvolgut/da,<br />\n"
+"<br />\n"
+"Com cada any per aquestes dates, ha començat la campanya de la Renda "
+"${year}.<br />\n"
+"<br />\n"
+"T’enviem, per si és del teu interès, el comunicat dels rendiments en "
+"espècie obtinguts i les retencions aplicades en relació al projecte "
+"GenerationkWh de SOM ENERGIA durant l’any ${year}.<br />\n"
+"<br />\n"
+"Aprofitem per agrair-te una vegada més la teva implicació en el nostre "
+"projecte.<br />\n"
+"<br />\n"
+"Atentament,<br />\n"
+"<br />\n"
+"Equip Som Energia<br />\n"
+"generationkwh@somenergia.coop<br />\n"
+"<a href=\"https://www.somenergia.coop/ca\">www.somenergia.coop</a><br />\n"
+"% endif\n"
+"% if object.partner_id.lang != \"ca_ES\" and object.partner_id.lang != "
+"\"es_ES\":\n"
+"----------------------------------------------------------------------------------------------------"
+"\n"
+"% endif\n"
+"% if object.partner_id.lang != \"ca_ES\":\n"
+"<br />\n"
+"Apreciado/a,<br />\n"
+"<br />\n"
+"Como cada año por estas fechas, ha empezado la campaña de Renta "
+"${year}.<br />\n"
+"<br />\n"
+"Te enviamos, por si es de tu interés, comunicado de los rendimientos en "
+"especie obtenidos y retenciones aplicadas en relación a tus inversiones "
+"en aportaciones voluntarias de SOM ENERGIA durante el año ${year}.<br />"
+"\n"
+"<br />\n"
+"Aprovechamos una vez más para agradecer tu implicación en nuestro "
+"proyecto.<br />\n"
+"<br />\n"
+"Atentamente,<br />\n"
+"<br />\n"
+"Equipo de Som Energia<br />\n"
+"generationkwh@somenergia.coop<br />\n"
+"<a href=\"https://www.somenergia.coop\">www.somenergia.coop</a><br />\n"
+"% endif\n"
+"<br />\n"
+"${text_legal}\n"
+"</body>\n"
+"</html>"
+msgstr ""
+
+#. module: som_generationkwh
+#: view:wizard.generationkwh.investment.divest:0
+#: view:wizard.generationkwh.investment.transfer:0
+msgid "Generar factura de desinversió i remesar"
+msgstr ""
+
+#. module: som_generationkwh
+#: constraint:account.fiscalyear:0
+msgid "Error ! The duration of the Fiscal Year is invalid. "
+msgstr ""
+
+#. module: som_generationkwh
+#: field:wizard.aeat193.from.gkwh.invoices,info:0
+#: field:wizard.baixa.soci,info:0
+#: field:wizard.generationkwh.investment.activation,info:0
+#: field:wizard.generationkwh.investment.cancel.or.resign,info:0
+#: field:wizard.generationkwh.investment.creation,info:0
+#: field:wizard.generationkwh.investment.divest,info:0
+#: field:wizard.generationkwh.investment.payment,info:0
+#: field:wizard.generationkwh.investment.transfer,info:0
+#: field:wizard.generationkwh.sign.signaturit,info:0
+msgid "Info"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:ir.actions.act_window,name:som_generationkwh.action_gkwh_emission_tree
+#: model:ir.ui.menu,name:som_generationkwh.menu_gkwh_emission_tree
+#: view:generationkwh.emission:0
+msgid "Campanyes d'emissions d'inversions"
+msgstr ""
+
+#. module: som_generationkwh
+#: view:generationkwh.investment:0
+msgid "Renunciar"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:ir.model,name:som_generationkwh.model_wizard_generationkwh_investment_transfer
+msgid "wizard.generationkwh.investment.transfer"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:poweremail.templates,def_subject:som_generationkwh.generationkwh_mail_amortitzacio
+msgid "Generation kWh Som Enegia Ref. ${object.number or ''}"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:ir.model,name:som_generationkwh.model_generationkwh_mailmockup
+msgid "generationkwh.mailmockup"
+msgstr ""
+
+#. module: som_generationkwh
+#: code:addons/som_generationkwh/investment.py:911
+msgid ""
+"Retenció IRPF sobre l'estalvi del Generationkwh de {retention_date:%Y} de"
+" {investment} "
+msgstr ""
+
+#. module: som_generationkwh
+#: field:wizard.generationkwh.investment.amortization,amortizeds:0
+#: field:wizard.generationkwh.investment.cancel.or.resign,invoices:0
+#: field:wizard.generationkwh.investment.divest,invoices:0
+#: field:wizard.generationkwh.investment.payment,invoices:0
+#: field:wizard.generationkwh.investment.transfer,invoices:0
+msgid "test"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:ir.model,name:som_generationkwh.model_generationkwh_dealer
+msgid "generationkwh.dealer"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:generationkwh.emission,type:0
+msgid "Emission Type"
+msgstr ""
+
+#. module: som_generationkwh
+#: selection:generationkwh.emission,type:0
+msgid "Títols"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_30A_product_template
+#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_31A_LB_product_template
+#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_31A_product_template
+#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_61_product_template
+#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_61a_product_template
+#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_61b_product_template
+#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_62_product_template
+#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_63_product_template
+#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_64_product_template
+#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_65_product_template
+msgid "P5"
+msgstr ""
+
+#. module: som_generationkwh
+#: view:generationkwh.investment:0
+msgid "Amortitzar"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:wizard.generationkwh.investment.amortization,errors:0
+#: field:wizard.generationkwh.investment.amortization,output:0
+msgid "Missatges d'error"
+msgstr ""
+
+#. module: som_generationkwh
+#: help:generationkwh.emission,expiration_years:0
+msgid "Anys que dura el prèstec"
+msgstr ""
+
+#. module: som_generationkwh
+#: view:generationkwh.emission:0
+msgid "Limits temporals"
+msgstr ""
+
+#. module: som_generationkwh
+#: selection:generationkwh.emission,state:0
+msgid "Oberta"
+msgstr ""
+
+#. module: som_generationkwh
+#: view:wizard.generationkwh.investment.amortization:0
+msgid "Previsualització de resultats"
+msgstr ""
+
+#. module: som_generationkwh
+#: help:generationkwh.investment,purchase_date:0
+msgid "Quin dia es varen comprar les accions"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:ir.model,name:som_generationkwh.model_wizard_generationkwh_investment_amortization
+msgid "wizard.generationkwh.investment.amortization"
+msgstr ""
+
+#. module: som_generationkwh
+#: help:generationkwh.investment,nshares:0
+msgid "Nombre d'accions comprades"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:wizard.generationkwh.investment.amortization,results:0
+msgid "resultats"
+msgstr ""
+
+#. module: som_generationkwh
+#: help:generationkwh.assignment,cups_anual_use:0
+msgid "Consum anyal del CUPS. Pot ser estimat."
+msgstr ""
+
+#. module: som_generationkwh
+#: field:generationkwh.investment,member_id:0
+msgid "Inversor"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:product.template,name:som_generationkwh.apo_product_ae_product_template
+#: selection:generationkwh.emission,type:0
+msgid "Aportacions"
+msgstr ""
+
+#. module: som_generationkwh
+#: constraint:account.account:0
+msgid "Error ! You can not create recursive accounts."
 msgstr ""
 
 #. module: som_generationkwh
@@ -2488,8 +2271,8 @@ msgid "generationkwh.assignment"
 msgstr ""
 
 #. module: som_generationkwh
-#: model:ir.model,name:som_generationkwh.model_generationkwh_emission
-msgid "generationkwh.emission"
+#: view:wizard.generationkwh.sign.signaturit:0
+msgid "Endavant"
 msgstr ""
 
 #. module: som_generationkwh
@@ -2503,13 +2286,18 @@ msgid "Resum Generation kWh"
 msgstr ""
 
 #. module: som_generationkwh
-#: model:poweremail.templates,def_subject:som_generationkwh.generationkwh_mail_creacio
-msgid "Generation kWh Som Energia Ref. ${object.name}"
+#: model:ir.model,name:som_generationkwh.model_generationkwh_payment_wizard_testhelper
+msgid "generationkwh.payment.wizard.testhelper"
 msgstr ""
 
 #. module: som_generationkwh
 #: model:ir.actions.act_window,name:som_generationkwh.action_wizard_generationkwh_investment_activation
 msgid "(Des)Activació de Inversions en Generation kWh"
+msgstr ""
+
+#. module: som_generationkwh
+#: help:generationkwh.emission,mandate_name:0
+msgid "Motiu pel qual es podra fer servir el mandato"
 msgstr ""
 
 #. module: som_generationkwh
@@ -2530,8 +2318,8 @@ msgid "Cancelat"
 msgstr ""
 
 #. module: som_generationkwh
-#: constraint:account.account:0
-msgid "Error ! You can not create recursive accounts."
+#: help:generationkwh.emission,journal_id:0
+msgid "Diari on es comptabilitzaràn les inversions"
 msgstr ""
 
 #. module: som_generationkwh
@@ -2540,28 +2328,33 @@ msgid "Accions actives"
 msgstr ""
 
 #. module: som_generationkwh
+#: model:poweremail.templates,def_subject:som_generationkwh.aportacio_mail_creacio
+msgid "Aportació / Aportación al capital social Som Enegia Ref. ${object.name}"
+msgstr ""
+
+#. module: som_generationkwh
 #: constraint:product.product:0
 msgid "Error: Invalid ean code"
 msgstr ""
 
 #. module: som_generationkwh
-#: help:generationkwh.emission,expiration_years:0
-msgid "Anys que dura el prèstec"
+#: view:wizard.generationkwh.investment.amortization:0
+msgid "Mostrar factures"
 msgstr ""
 
 #. module: som_generationkwh
-#: model:ir.model,name:som_generationkwh.model_wizard_generationkwh_investment_amortization
-msgid "wizard.generationkwh.investment.amortization"
+#: model:poweremail.templates,def_subject:som_generationkwh.email_baixa_soci
+msgid "Confirmació baixa persona sòcia / Confirmación baja persona socia"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:res.request.link,name:som_generationkwh.res_partner_document
+msgid "Partner"
 msgstr ""
 
 #. module: som_generationkwh
 #: field:giscedata.facturacio.factura,gkwh_linia_ids:0
 msgid "Propietaris Generation kWH"
-msgstr ""
-
-#. module: som_generationkwh
-#: model:ir.model,name:som_generationkwh.model_generationkwh_payment_wizard_testhelper
-msgid "generationkwh.payment.wizard.testhelper"
 msgstr ""
 
 #. module: som_generationkwh
@@ -2571,8 +2364,8 @@ msgid "Transferir"
 msgstr ""
 
 #. module: som_generationkwh
-#: help:generationkwh.emission,mandate_name:0
-msgid "Motiu pel qual es podra fer servir el mandato"
+#: view:wizard.generationkwh.sign.signaturit:0
+msgid "El procés s'ha llençat correctament."
 msgstr ""
 
 #. module: som_generationkwh
@@ -2580,67 +2373,76 @@ msgstr ""
 msgid "Ordre de cobrament"
 msgstr ""
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:9
-#: rml:som_generationkwh/report/report_contract_apo_old.mako:9
+#. module: som_generationkwh
+#: constraint:account.move.line:0
+msgid "You can not create move line on view account."
+msgstr ""
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:10
 msgid "Liquidació préstec Generation kWh"
 msgstr ""
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:126
-#: rml:som_generationkwh/report/report_contract_apo_old.mako:125
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:127
 msgid "Dades Préstec Generation kWh: "
 msgstr ""
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:129
-#: rml:som_generationkwh/report/report_contract_apo_old.mako:128
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:130
 msgid "Titular: "
 msgstr ""
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:133
-#: rml:som_generationkwh/report/report_contract_apo_old.mako:132
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:134
 msgid "NIF: "
 msgstr ""
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:134
-#: rml:som_generationkwh/report/report_contract_apo_old.mako:133
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:135
 msgid "Import Inicial: "
 msgstr ""
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:137
-#: rml:som_generationkwh/report/report_contract_apo_old.mako:136
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:138
 msgid "Data formalització: "
 msgstr ""
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:138
-#: rml:som_generationkwh/report/report_contract_apo_old.mako:137
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:139
 msgid "Data venciment: "
 msgstr ""
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:144
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:145
 msgid "Amortització Actual: "
 msgstr ""
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:147
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:149
 msgid "Import: "
 msgstr ""
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:148
-msgid "Data: "
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:150
+msgid "IRPF 19% "
+msgstr ""
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:150
+msgid ": "
 msgstr ""
 
 #: rml:som_generationkwh/report/report_amortization_gkwh.mako:151
+msgid "Import net: "
+msgstr ""
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:153
+msgid "Data: "
+msgstr ""
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:156
 msgid "Pagament nº: "
 msgstr ""
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:152
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:157
 msgid "Pendent de retornar: "
 msgstr ""
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:155
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:160
 msgid "Recordeu: el pagament nº 24 serà doble"
 msgstr ""
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:161
-#: rml:som_generationkwh/report/report_contract_apo_old.mako:144
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:166
 msgid "Compte on es realizarà l'ingrés"
 msgstr ""
 
@@ -3194,9 +2996,47 @@ msgid ""
 "cosa de forma imperativa per la normativa aplicable a l’efecte."
 msgstr ""
 
-#: rml:som_generationkwh/report/report_contract_apo.mako:373
-msgid ""
-"Som Energia, SCCL, CIF F55091367 | Domicili Pic de Peguera, 11 A 28 - "
-"17003 - Girona | aporta@somenergia.coop | www.somenergia.coop"
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:55
+msgid "CIF:"
+msgstr ""
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:56
+msgid "Domicili:"
+msgstr ""
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:57
+msgid "Adreça electrònica:"
+msgstr ""
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:61
+msgid "Informació fiscal"
+msgstr ""
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:64
+msgid "Comunicat de rendiments per a la declaració de renda"
+msgstr ""
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:69
+msgid "Data"
+msgstr ""
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:73
+msgid "Exercici"
+msgstr ""
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:77
+msgid "Tipus d'aportació"
+msgstr ""
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:88
+msgid "NIF titular"
+msgstr ""
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:95
+msgid "Estalvi"
+msgstr ""
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:99
+msgid "19% Retenció sobre l'estalvi"
 msgstr ""
 

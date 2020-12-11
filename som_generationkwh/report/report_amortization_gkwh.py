@@ -4,6 +4,7 @@ from yamlns import namespace as ns
 import pooler
 from generationkwh.isodates import isodate
 from dateutil.relativedelta import relativedelta
+from datetime import datetime, timedelta
 
 class AccountInvoice(osv.osv):
     _name = 'account.invoice'
@@ -23,6 +24,8 @@ class AccountInvoice(osv.osv):
         Invoice = pool.get('account.invoice')
         Partner = pool.get('res.partner')
         InvoiceLine = pool.get('account.invoice.line')
+        Investment = pool.get('generationkwh.investment')
+        IrModelData = pool.get('ir.model.data')
 
         account_id = ids[0]
 
@@ -37,6 +40,7 @@ class AccountInvoice(osv.osv):
             'amount_total',
             'name',
             'partner_bank',
+            'origin'
             ])
 
         if not invoice:
@@ -49,8 +53,21 @@ class AccountInvoice(osv.osv):
             'name',
         ])
 
-        invoice_line = InvoiceLine.read(cursor,uid, invoice['invoice_line'][0],['note'])
+        invoice_line = InvoiceLine.read(cursor, uid, invoice['invoice_line'][0],['note'])
         mutable_information = ns.loads(invoice_line['note'] or '{}')
+
+        date_invoice = datetime.strptime(invoice['date_invoice'], '%Y-%m-%d')
+        previous_year = (date_invoice + timedelta(weeks=-52)).year
+        investment_id = Investment.search(cursor, uid, [('name','=', invoice['origin'])])
+        investment_obj = Investment.read(cursor, uid, investment_id)
+        member_id = investment_obj[0]['member_id'][0]
+        irpf_values = Investment.get_irpf_amounts(cursor, uid, investment_id[0], member_id, previous_year)
+        amort_product_id = IrModelData.get_object_reference(cursor, uid, 'som_generationkwh', 'genkwh_product_amortization')[1]
+        amort_value = 0
+        for line_id in invoice['invoice_line']:
+            line = InvoiceLine.browse(cursor, uid, line_id)
+            if line.product_id.id == amort_product_id:
+                amort_value += line.price_subtotal
 
         report.receiptDate = dateFormat(invoice['date_invoice'])
         # TODO: non spanish vats not covered by tests
@@ -67,7 +84,9 @@ class AccountInvoice(osv.osv):
         report.amortizationTotalPayments = mutable_information.amortizationTotalNumber
         report.amortizationDate = dateFormat(mutable_information.amortizationDate)
         report.amortizationNumPayment = mutable_information.amortizationNumber
-
+        report.irpfAmount = irpf_values['irpf_amount']
+        report.previousYear = previous_year
+        report.amortValue = amort_value
         return report
 
 AccountInvoice()
