@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+		<record model="ir.ui.view" id="powersms_send_wizard_form">
+			<field name="name">powersms.send.wizard.form</field>
+			<field name="model">powersms.send.wizard</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Send SMS Wizard">
+					<separator string="Send SMS Wizard" colspan="4" />
+                </form>
+			</field>
+		</record>
+	</data>
+</openerp>
+
