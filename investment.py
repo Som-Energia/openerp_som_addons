@@ -1079,6 +1079,8 @@ class GenerationkwhInvestment(osv.osv):
         ResUser = self.pool.get('res.users')
         user = ResUser.read(cursor, uid, uid, ['name'])
         IrSequence = self.pool.get('ir.sequence')
+
+        # TODO: This has to be the sequence of the kind of investment!!!! (APO, GKWH...)
         name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')
 
         inv = InvestmentState(user['name'], datetime.now(),
