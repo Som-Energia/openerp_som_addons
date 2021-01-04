@@ -1,72 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-	<data>
-		<!--SMS client Form view  -->
-		<record model="ir.ui.view" id="powersms_core_accounts_form">
-			<field name="name">powersms.core_accounts.form</field>
-			<field name="model">powersms.core_accounts</field>
-			<field name="type">form</field>
-			<field name="arch" type="xml">
-				<form string="Power SMS Configuration">
-					<group colspan="2">
-						<field name="name" select="1" />
-					</group>
-					<notebook colspan="4">
-						<page string="Outgoing">
-							<separator string="Server Information" colspan="4" />
-							<group col="2" colspan="2">
-								<field name="user" select="2" colspan="2" />
-                            	<field name="api_server" select="1" colspan="2" />
-								<field name="tel_id" select="1" colspan="2" />
-							</group>
-							<group col="2" colspan="2">
-								<field name="api_uname" select="1" colspan="2" />
-								<field name="api_pass" password="True" colspan="2" />
+    <data>
+        <!--SMS client Form view  -->
+        <record model="ir.ui.view" id="powersms_core_accounts_form">
+            <field name="name">powersms.core_accounts.form</field>
+            <field name="model">powersms.core_accounts</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Power SMS Configuration">
+                    <group colspan="2">
+                        <field name="name" select="1" />
+                    </group>
+                    <notebook colspan="4">
+                        <page string="Outgoing">
+                            <separator string="Server Information" colspan="4" />
+                            <group col="2" colspan="2">
+                                <field name="user" select="2" colspan="2" />
+                                <field name="api_server" select="1" colspan="2" />
+                                <field name="tel_id" select="1" colspan="2" />
+                            </group>
+                            <group col="2" colspan="2">
+                                <field name="api_uname" select="1" colspan="2" />
+                                <field name="api_pass" password="True" colspan="2" />
                                 <button name="check_outgoing_connection" type="object" string="Check Outgoing Connection" />
-							</group>
-						</page>
-						<page string="Security" attrs="{'invisible':[('company','!=','yes')]}">
-							<field name="allowed_groups" attrs="{'required':[('company','=','yes')]}" />
-						</page>
-					</notebook>
-					<field name="state" select="1" colspan="2" />
-					<group col="2">
-						<button string="Approve Account" name="button_approval" states="draft" type="workflow" colspan="2" />
-						<button string="Suspend Account" name="button_suspended" states="approved" type="workflow" colspan="2" />
-						<button string="Request Re-activation" name="get_reapprove" states="suspended" type="workflow" colspan="2" />
-					</group>
-				</form>
-			</field>
-		</record>
+                            </group>
+                        </page>
+                        <page string="Security" attrs="{'invisible':[('company','!=','yes')]}">
+                            <field name="allowed_groups" attrs="{'required':[('company','=','yes')]}" />
+                        </page>
+                    </notebook>
+                    <field name="state" select="1" colspan="2" />
+                    <group col="2">
+                        <button string="Approve Account" name="button_approval" states="draft" type="workflow" colspan="2" />
+                        <button string="Suspend Account" name="button_suspended" states="approved" type="workflow" colspan="2" />
+                        <button string="Request Re-activation" name="get_reapprove" states="suspended" type="workflow" colspan="2" />
+                    </group>
+                </form>
+            </field>
+        </record>
 
-		<record model="ir.ui.view" id="powersms_core_accounts_tree">
-			<field name="name">powersms.core_accounts.tree</field>
-			<field name="model">powersms.core_accounts</field>
-			<field name="type">tree</field>
-			<field name="arch" type="xml">
-				<tree string="SMS Server">
-					<field name="name" select="1" />
-					<field name="tel_id" select="1" />
-					<field name="api_uname" select="1" />
-					<field name="user" select="1" />
-					<field name="api_server" select="1" />
-					<field name="state" select="1" />
-				</tree>
-			</field>
-		</record>
+        <record model="ir.ui.view" id="powersms_core_accounts_tree">
+            <field name="name">powersms.core_accounts.tree</field>
+            <field name="model">powersms.core_accounts</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="SMS Server">
+                    <field name="name" select="1" />
+                    <field name="tel_id" select="1" />
+                    <field name="api_uname" select="1" />
+                    <field name="user" select="1" />
+                    <field name="api_server" select="1" />
+                    <field name="state" select="1" />
+                </tree>
+            </field>
+        </record>
         <record model="ir.actions.act_window" id="action_powersms_core_accounts_tree_all">
-			<field name="name">All Accounts</field>
-			<field name="res_model">powersms.core_accounts</field>
-			<field name="view_type">form</field>
-			<field name="view_mode">form,tree</field>
-			<field name="view_id" ref="powersms_core_accounts_tree" />
-		</record>
+            <field name="name">All Accounts</field>
+            <field name="res_model">powersms.core_accounts</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form,tree</field>
+            <field name="view_id" ref="powersms_core_accounts_tree" />
+        </record>
 
-		<menuitem name="Power SMS" id="menu_powersms_administration_server" />
-		<menuitem name="Configuration" id="menu_powersms_configuration_server" parent="menu_powersms_administration_server" />
-		<menuitem name="All Accounts" id="menu_powersms_core_accounts_all" parent="menu_powersms_configuration_server" action="action_powersms_core_accounts_tree_all" groups="res_groups_psmsmanager" />
+        <menuitem name="Power SMS" id="menu_powersms_administration_server" />
+        <menuitem name="Configuration" id="menu_powersms_configuration_server" parent="menu_powersms_administration_server" />
+        <menuitem name="All Accounts" id="menu_powersms_core_accounts_all" parent="menu_powersms_configuration_server" action="action_powersms_core_accounts_tree_all" groups="res_groups_psmsmanager" />
 
-	</data>
+    </data>
 </openerp>
 
 

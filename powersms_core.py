@@ -11,6 +11,17 @@ class PowersmsCoreAccounts(osv.osv):
     def do_approval(self, cr, uid, ids, context={}):
         self.write(cr, uid, ids, {'state':'approved'}, context=context)
 
+    def filter_send_sms(self, cr, uid, sms_str):
+        if not sms_str:
+            sms_str = ''
+        response = ''
+        for e in sms_str.split(','):
+            if self.pool.get('powersms.smsbox').check_mobile(e.strip()):
+                if response:
+                    response += ','
+                response += e
+        return response
+
     _columns = {
         'name': fields.char('SMS Account name',
                         size=64, required=True,

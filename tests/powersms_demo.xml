@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
-	<data noupdate="0">
+    <data noupdate="0">
         <record id="sms_account_001" model="powersms.core_accounts">
             <field name="name">SMS Account</field>
-			<field name="tel_id">600000000</field>
-			<field name="api_server">api.smsserver.com</field>
-			<field name="state">approved</field>
+            <field name="tel_id">600000000</field>
+            <field name="api_server">api.smsserver.com</field>
+            <field name="state">approved</field>
         </record>
         <record model="powersms.templates" id="sms_template_001">
             <field name="name">My first template</field>
@@ -31,9 +31,9 @@
             <field name="date_sms">2020-12-07</field>
             <field name="psms_to">611111111</field>
             <field name="psms_body_text">This is my message in draft</field>
-			<field name="folder">drafts</field>
-			<field name="history"></field>
-			<field name="state">na</field>
+            <field name="folder">drafts</field>
+            <field name="history"></field>
+            <field name="state">na</field>
         </record>
         <record id="sms_outbox_001" model="powersms.smsbox">
             <field name="psms_account_id" ref="sms_account_001" />
@@ -41,9 +41,9 @@
             <field name="date_sms">2020-12-07</field>
             <field name="psms_to">611111111</field>
             <field name="psms_body_text">This is my message in outbox</field>
-			<field name="folder">outbox</field>
-			<field name="history"></field>
-			<field name="state">na</field>
+            <field name="folder">outbox</field>
+            <field name="history"></field>
+            <field name="state">na</field>
         </record>
         <record id="sms_sent_001" model="powersms.smsbox">
             <field name="psms_account_id" ref="sms_account_001" />
@@ -51,9 +51,9 @@
             <field name="date_sms">2020-12-07</field>
             <field name="psms_to">611111111</field>
             <field name="psms_body_text">This is my sent message</field>
-			<field name="folder">sent</field>
-			<field name="history"></field>
-			<field name="state">sent</field>
+            <field name="folder">sent</field>
+            <field name="history"></field>
+            <field name="state">sent</field>
         </record>
     </data>
 </openerp>

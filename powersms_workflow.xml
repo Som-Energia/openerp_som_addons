@@ -18,7 +18,7 @@
             <field name="wkf_id" ref="wkf_powersms_setting"/>
             <field name="flow_start">True</field>
             <field name="name">draft</field>
-	    <field name="kind">function</field>
+        <field name="kind">function</field>
             <field name="action">write({'state':'draft'})</field>
         </record>
 

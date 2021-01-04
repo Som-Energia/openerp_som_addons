@@ -1,17 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-	<data>
+    <data>
 
-		<record model="ir.ui.view" id="powersms_send_wizard_form">
-			<field name="name">powersms.send.wizard.form</field>
-			<field name="model">powersms.send.wizard</field>
-			<field name="type">form</field>
-			<field name="arch" type="xml">
-				<form string="Send SMS Wizard">
-					<separator string="Send SMS Wizard" colspan="4" />
+        <record model="ir.ui.view" id="powersms_send_wizard_form">
+            <field name="name">powersms.send.wizard.form</field>
+            <field name="model">powersms.send.wizard</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Send SMS Wizard">
+                    <separator string="Send SMS Wizard" colspan="4" />
+                    <group col="4" colspan="4">
+                        <field name="rel_model" colspan="2" />
+                        <field name="account" colspan="2" />
+                        <field name="from" colspan="2" />
+                    </group>
+                    <group col="4" colspan="4">
+                        <group col="6" colspan="4">
+                            <field name="to" select="1" colspan="4" />
+                            <newline />
+                        </group>
+                        <separator string="" colspan="4" />
+                        <notebook colspan="4">
+                            <page string="Body (Plain Text)">
+                                <field name="body_text" select="2" colspan="4" nolabel="1" height="100" width="200"/>
+                            </page>
+                        </notebook>
+                    </group>
+                    <button icon="gtk-ok" name="send_sms" string="Send SMS" type="object" colspan="2" />
+                    <button icon="gtk-cancel" special="cancel" string="Discard SMS" colspan="2" />
                 </form>
-			</field>
-		</record>
-	</data>
+            </field>
+        </record>
+    </data>
 </openerp>
 

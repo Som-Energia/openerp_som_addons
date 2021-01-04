@@ -1,124 +1,124 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
-	<data>
-		<!-- Power SMS Template PReview -->
-		<record model="ir.ui.view" id="powersms_smsbox_form">
-			<field name="name">powersms.smsbox.form</field>
-			<field name="model">powersms.smsbox</field>
-			<field name="type">form</field>
-			<field name="arch" type="xml">
-				<form string="Power SMS Inbox">
-					<group col="4" colspan="2">
-						<field name="psms_from" colspan="4" select="1"/>
-						<field name="psms_to" colspan="4" required="1" select="1" />
-						<field name="date_sms" colspan="4" select="2"/>
-					</group>
-					<notebook colspan="4">
-						<page string="Standard Body">
-							<separator colspan="4" string="Standard Body" />
-							<notebook colspan="4">
-								<page string="Standard Body (Text)">
-									<field name="psms_body_text" nolabel="1" colspan="4" select="1"/>
-								</page>
-							</notebook>
-						</page>
-						<page string="Advanced">
-							<group col="4">
-								<field name="psms_account_id" colspan="2" />
-								<field name="folder" colspan="2" select="2"/>
-								<separator string="History" colspan="4" />
-								<field name="history" nolabel="1" colspan="4" height="400"/>
-							</group>
-						</page>
-					</notebook>
-					<separator colspan="4" string="" />
-					<group col="4" colspan="4">
-						<field name="state" colspan="2" readonly="1" />
-						<button name="send_this_sms" type="object" string="Send SMS" />
-					</group>
-				</form>
-			</field>
-		</record>
+    <data>
+        <!-- Power SMS Template PReview -->
+        <record model="ir.ui.view" id="powersms_smsbox_form">
+            <field name="name">powersms.smsbox.form</field>
+            <field name="model">powersms.smsbox</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Power SMS Inbox">
+                    <group col="4" colspan="2">
+                        <field name="psms_from" colspan="4" select="1"/>
+                        <field name="psms_to" colspan="4" required="1" select="1" />
+                        <field name="date_sms" colspan="4" select="2"/>
+                    </group>
+                    <notebook colspan="4">
+                        <page string="Standard Body">
+                            <separator colspan="4" string="Standard Body" />
+                            <notebook colspan="4">
+                                <page string="Standard Body (Text)">
+                                    <field name="psms_body_text" nolabel="1" colspan="4" select="1"/>
+                                </page>
+                            </notebook>
+                        </page>
+                        <page string="Advanced">
+                            <group col="4">
+                                <field name="psms_account_id" colspan="2" />
+                                <field name="folder" colspan="2" select="2"/>
+                                <separator string="History" colspan="4" />
+                                <field name="history" nolabel="1" colspan="4" height="400"/>
+                            </group>
+                        </page>
+                    </notebook>
+                    <separator colspan="4" string="" />
+                    <group col="4" colspan="4">
+                        <field name="state" colspan="2" readonly="1" />
+                        <button name="send_this_sms" type="object" string="Send SMS" />
+                    </group>
+                </form>
+            </field>
+        </record>
 
-		<!-- TREE VIEWS -->
-		<!--DRAFTS-->
-		<record model="ir.ui.view" id="powersms_drafts_tree">
-			<field name="name">powersms.smsbox.draftstree</field>
-			<field name="model">powersms.smsbox</field>
-			<field name="type">tree</field>
-			<field name="arch" type="xml">
-				<tree string="Power SMS Drafts">
-					<field name="date_sms" select="1" />
-					<field name="psms_from" select="1" />
-					<field name="psms_to" select="1" />
-					<field name="psms_body_text" select="1"/>
-				</tree>
-			</field>
-		</record>
-		<!--OUTBOX-->
-		<record model="ir.ui.view" id="powersms_outbox_tree">
-			<field name="name">powersms.smsbox.outboxtree</field>
-			<field name="model">powersms.smsbox</field>
-			<field name="type">tree</field>
-			<field name="arch" type="xml">
-				<tree string="Power SMS Outbox">
-					<field name="date_sms" select="1" />
-					<field name="psms_from" select="1" />
-					<field name="psms_to" select="1" />
-					<field name="psms_body_text" select="1"/>
-				</tree>
-			</field>
-		</record>
-		<!--SENT-->
-		<record model="ir.ui.view" id="powersms_sentbox_tree">
-			<field name="name">powersms.smsbox.sentboxtree</field>
-			<field name="model">powersms.smsbox</field>
-			<field name="type">tree</field>
-			<field name="arch" type="xml">
-				<tree string="Power SMS Sent">
-					<field name="date_sms" select="1" />
-					<field name="psms_from" select="1" />
-					<field name="psms_to" select="1" />
-					<field name="psms_body_text" select="1"/>
-				</tree>
-			</field>
-		</record>
+        <!-- TREE VIEWS -->
+        <!--DRAFTS-->
+        <record model="ir.ui.view" id="powersms_drafts_tree">
+            <field name="name">powersms.smsbox.draftstree</field>
+            <field name="model">powersms.smsbox</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Power SMS Drafts">
+                    <field name="date_sms" select="1" />
+                    <field name="psms_from" select="1" />
+                    <field name="psms_to" select="1" />
+                    <field name="psms_body_text" select="1"/>
+                </tree>
+            </field>
+        </record>
+        <!--OUTBOX-->
+        <record model="ir.ui.view" id="powersms_outbox_tree">
+            <field name="name">powersms.smsbox.outboxtree</field>
+            <field name="model">powersms.smsbox</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Power SMS Outbox">
+                    <field name="date_sms" select="1" />
+                    <field name="psms_from" select="1" />
+                    <field name="psms_to" select="1" />
+                    <field name="psms_body_text" select="1"/>
+                </tree>
+            </field>
+        </record>
+        <!--SENT-->
+        <record model="ir.ui.view" id="powersms_sentbox_tree">
+            <field name="name">powersms.smsbox.sentboxtree</field>
+            <field name="model">powersms.smsbox</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Power SMS Sent">
+                    <field name="date_sms" select="1" />
+                    <field name="psms_from" select="1" />
+                    <field name="psms_to" select="1" />
+                    <field name="psms_body_text" select="1"/>
+                </tree>
+            </field>
+        </record>
 
-		<!-- ACTIONS -->
-		<!--OUTBOX-->
-		<record model="ir.actions.act_window" id="action_powersms_outbox_tree_company">
-			<field name="name">SMS OutBox</field>
-			<field name="res_model">powersms.smsbox</field>
-			<field name="view_type">form</field>
-			<field name="view_mode">form,tree</field>
-			<field name="view_id" ref="powersms_outbox_tree" />
-			<field name="domain">[('folder','=','outbox')]</field>
-		</record>
-		<!--DRAFTS-->
-		<record model="ir.actions.act_window" id="action_powersms_drafts_tree_company">
-			<field name="name">SMS DraftBox</field>
-			<field name="res_model">powersms.smsbox</field>
-			<field name="view_type">form</field>
-			<field name="view_mode">form,tree</field>
-			<field name="view_id" ref="powersms_drafts_tree" />
-			<field name="domain">[('folder','=','drafts')]</field>
-		</record>
-		<!--SENT-->
-		<record model="ir.actions.act_window" id="action_powersms_sent_tree_company">
-			<field name="name">SMS SentBox</field>
-			<field name="res_model">powersms.smsbox</field>
-			<field name="view_type">form</field>
-			<field name="view_mode">form,tree</field>
-			<field name="view_id" ref="powersms_sentbox_tree" />
-			<field name="domain">[('folder','=','sent')]</field>
-		</record>
+        <!-- ACTIONS -->
+        <!--OUTBOX-->
+        <record model="ir.actions.act_window" id="action_powersms_outbox_tree_company">
+            <field name="name">SMS OutBox</field>
+            <field name="res_model">powersms.smsbox</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form,tree</field>
+            <field name="view_id" ref="powersms_outbox_tree" />
+            <field name="domain">[('folder','=','outbox')]</field>
+        </record>
+        <!--DRAFTS-->
+        <record model="ir.actions.act_window" id="action_powersms_drafts_tree_company">
+            <field name="name">SMS DraftBox</field>
+            <field name="res_model">powersms.smsbox</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form,tree</field>
+            <field name="view_id" ref="powersms_drafts_tree" />
+            <field name="domain">[('folder','=','drafts')]</field>
+        </record>
+        <!--SENT-->
+        <record model="ir.actions.act_window" id="action_powersms_sent_tree_company">
+            <field name="name">SMS SentBox</field>
+            <field name="res_model">powersms.smsbox</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form,tree</field>
+            <field name="view_id" ref="powersms_sentbox_tree" />
+            <field name="domain">[('folder','=','sent')]</field>
+        </record>
 
-		<!-- MENUS -->
-		<menuitem name="SMSBox" id="menu_powersms_smsbox_all_main2" parent="menu_powersms_administration_server" />
-		<menuitem name="Drafts" id="menu_powersms_drafts_company" parent="menu_powersms_smsbox_all_main2" action="action_powersms_drafts_tree_company" />
-		<menuitem name="Outbox" id="menu_powersms_outbox_company" parent="menu_powersms_smsbox_all_main2" action="action_powersms_outbox_tree_company" />
-		<menuitem name="Sent" id="menu_powersms_sent_company" parent="menu_powersms_smsbox_all_main2" action="action_powersms_sent_tree_company" />
-	</data>
+        <!-- MENUS -->
+        <menuitem name="SMSBox" id="menu_powersms_smsbox_all_main2" parent="menu_powersms_administration_server" />
+        <menuitem name="Drafts" id="menu_powersms_drafts_company" parent="menu_powersms_smsbox_all_main2" action="action_powersms_drafts_tree_company" />
+        <menuitem name="Outbox" id="menu_powersms_outbox_company" parent="menu_powersms_smsbox_all_main2" action="action_powersms_outbox_tree_company" />
+        <menuitem name="Sent" id="menu_powersms_sent_company" parent="menu_powersms_smsbox_all_main2" action="action_powersms_sent_tree_company" />
+    </data>
 </openerp>
 
 
