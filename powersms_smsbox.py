@@ -1,10 +1,20 @@
 from osv import osv, fields
+import re
 
 class PowersmsSMSbox(osv.osv):
     _name = "powersms.smsbox"
     _description = 'Power SMS SMSbox included all type inbox,outbox,junk..'
     _rec_name = "psms_subject"
     _order = "date_sms desc"
+
+    def check_mobile(self, mobile_number):
+        if not re.match(r"((?:\+34)*|(?:0034)*)6[0-9]{8}|((?:\+34)*|(?:0034)*)7[0-9]{8}", mobile_number):
+            return False
+        return True
+
+    def is_valid(self, cursor, uid, sms_id, context=None):
+        mail = self.read(cursor, uid, sms_id, ['psms_to'], context)
+        return self.check_mobile(mail['psms_to'])
 
     _columns = {
             'psms_account_id' :fields.many2one(

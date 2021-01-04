@@ -1,5 +1,8 @@
 from osv import osv, fields
 from tools.translate import _
+import tools
+from mako.template import Template as MakoTemplate
+from mako import exceptions
 
 class PowersmsTemplates(osv.osv):
     "Templates for sending SMS"
@@ -91,6 +94,56 @@ class PowersmsTemplates(osv.osv):
             self.write(cursor, uid, ids, {
                 'ref_ir_value': ref_ir_value,
             }, context)
+
+    def get_value(self, cursor, user, recid, message=None, template=None, context=None):
+        """
+        Evaluates an expression and returns its value
+        @param cursor: Database Cursor
+        @param user: ID of current user
+        @param recid: ID of the target record under evaluation
+        @param message: The expression to be evaluated
+        @param template: BrowseRecord object of the current template
+        @param context: Open ERP Context
+        @return: Computed message (unicode) or u""
+        """
+        if message is None:
+            message = {}
+        #Returns the computed expression
+        if message:
+            try:
+                message = tools.ustr(message)
+                if not context:
+                    context = {}
+                ctx = context.copy()
+                ctx.update({'browse_reference': True})
+                object = self.pool.get(
+                    template.object_name.model
+                ).browse(cursor, user, recid, ctx)
+                env = context.copy()
+                env.update({
+                    'user': self.pool.get('res.users').browse(cursor, user, user,
+                                                        context),
+                    'db': cursor.dbname
+                })
+
+                templ = MakoTemplate(message, input_encoding='utf-8')
+                extra_render_values = env.get('extra_render_values', {}) or {}
+                values = {
+                    'object': object,
+                    'peobject': object,
+                    'env': env,
+                    'format_exceptions': True,
+                }
+                values.update(extra_render_values)
+                reply = templ.render_unicode(**values)
+
+                return reply or False
+            except Exception:
+                import traceback
+                traceback.print_exc()
+                return u""
+        else:
+            return message
 
 
     _columns = {
