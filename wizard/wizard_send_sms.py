@@ -142,7 +142,6 @@ class PowersmsSendWizard(osv.osv_memory):
     }
 
     _defaults = {
-        #'state': lambda self,cr,uid,ctx: len(ctx['src_rec_ids']) > 1 and 'send_type' or 'single',
         'rel_model': lambda self,cr,uid,ctx: self.pool.get('ir.model').search(cr,uid,[('model','=',ctx['src_model'])],context=ctx)[0],
         'to': lambda self,cr,uid,ctx: self.pool.get('powersms.core_accounts').filter_send_sms(cr, uid, self._get_template_value(cr, uid, 'def_to', ctx)),
         'from': lambda self,cr,uid,ctx: self._get_template_value(cr, uid, 'def_from', ctx),
