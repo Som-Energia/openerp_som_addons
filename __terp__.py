@@ -4,7 +4,7 @@
     "author" : "Som Energia SCCL",
     "website" : "https://github.com/Som-Energia/powersms",
     "category" : "Added functionality",
-    "depends" : ['base'],
+    "depends" : ['base_extended'],
     "description": """Power SMS""",
     "demo_xml": [
         "tests/powersms_demo.xml",

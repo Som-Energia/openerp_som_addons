@@ -19,11 +19,7 @@
             <field name="lang">${object.partner_id.lang}</field>
             <field eval="0" name="send_on_write"/>
             <field name="enforce_from_account" model="powersms.core_accounts" search="[('name','=', 'SMS Account')]"/>
-            <field name="def_body_text">
-            <![CDATA[
-            Hello world!
-            ]]>
-            </field>
+            <field name="def_body_text"><![CDATA[This is a SMS message]]></field>
         </record>
         <record id="sms_draft_001" model="powersms.smsbox">
             <field name="psms_account_id" ref="sms_account_001" />
