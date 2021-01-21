@@ -154,7 +154,7 @@ jobs:
       - image: timescale/timescaledb-postgis:latest-pg11
         environment:
           POSTGRES_USER: erp
-          POSTGRES_PASSWORD erp
+          POSTGRES_PASSWORD: erp
 
   test-py37:
     <<: *test-template
