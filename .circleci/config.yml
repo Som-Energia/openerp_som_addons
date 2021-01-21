@@ -25,7 +25,7 @@ jobs:
 
     steps:
       - checkout:
-          path: ~/src/$TESTING_REPO
+          path: ~/src/powersms
 
       - run:
           name: Download required repositories
@@ -68,7 +68,7 @@ jobs:
             pip install /tmp/ooop.tar.gz
             pip install -r $ROOT_DIR_SRC/erp/requirements-dev.txt
             pip install -r $ROOT_DIR_SRC/erp/requirements.txt
-            #test -x $ROOT_DIR_SRC/$TESTING_REPO/requirements.txt && pip install -r $ROOT_DIR_SRC/$TESTING_REPO/requirements.txt
+            #test -x $ROOT_DIR_SRC/powersms/requirements.txt && pip install -r $ROOT_DIR_SRC/powersms/requirements.txt
 
 
       - run:
@@ -102,7 +102,7 @@ jobs:
       - run:
           name: run tests
           command: |
-            export CI_REPO=gisce/$TESTING_REPO
+            export CI_REPO=gisce/powersms
             export OPENERP_DB_HOST=localhost
             export OPENERP_DB_PORT=5432
             export OPENERP_DB_USER=erp
@@ -116,10 +116,10 @@ jobs:
             export OORQ_ASYNC=False
             . venv/bin/activate
             export PYTHONPATH=$ROOT_DIR_SRC/erp/server/bin:$ROOT_DIR_SRC/erp/server/bin/addons:$ROOT_DIR_SRC/erp/server/sitecustomize
-            cd $ROOT_DIR_SRC/$TESTING_REPO
+            cd $ROOT_DIR_SRC/powersms
             #destral --report-coverage --enable-coverage --report-junitxml $ROOT_DIR_SRC/test-results/destral
             echo $ROOT_DIR_SRC
-            echo $TESTING_REPO
+            #echo powersms
             ls ~/src/erp/server/bin/addons
             destral -m powersms --report-coverage --enable-coverage --report-junitxml $ROOT_DIR_SRC/test-results/destral
 
@@ -129,7 +129,7 @@ jobs:
             export ROOT_DIR_SRC=~/src
             cd $ROOT_DIR_SRC
             . venv/bin/activate
-            cd $ROOT_DIR_SRC/$TESTING_REPO
+            cd $ROOT_DIR_SRC/powersms
             coverage report
             coverage html
             coveralls
@@ -154,7 +154,7 @@ jobs:
       - image: timescale/timescaledb-postgis:latest-pg11
         environment:
           POSTGRES_USER: erp
-          POSTGRES_PASSWORD: erp
+          POSTGRES_PASSWORD erp
 
   test-py37:
     <<: *test-template
