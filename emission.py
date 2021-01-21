@@ -145,6 +145,13 @@ class GenerationkwhEmission(osv.osv):
         self.write(cr,uid,ids,{'state': 'cancel',})
         return True
 
+    def current_interest(self, cr, uid):
+        cfg_obj = self.pool.get('res.config')
+        current_interest = float(
+            cfg_obj.get(cr, uid, 'som_aportacions_interest', '0')
+        )
+        return current_interest
+
 GenerationkwhEmission()
 
 # vim: et ts=4 sw=4
