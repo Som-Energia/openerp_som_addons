@@ -1742,5 +1742,14 @@ ${text_legal}
             <field name="investment_product_id" ref="apo_product_ae" />
             <field name="investment_payment_mode_id" ref="apo_investment_payment_mode"/>
         </record>
+
+        <record model="res.config" id="som_aportacions_interest">
+            <field name="name">som_aportacions_interest</field>
+            <field name="value"></field>
+            <field name="description">
+                Definim l'interes aplicat actualment en les aportacions fetes al capital social.
+                Decimal definit amb punt. Exemple: "1.5"
+            </field>
+        </record>
     </data>
 </openerp>
