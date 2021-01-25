@@ -18,6 +18,8 @@
         'powersms_smsbox_view.xml',
         'powersms_workflow.xml',
         'wizard/wizard_send_sms_view.xml',
+        'powersms_data.xml',
+        'powersms_scheduler_data.xml',
     ],
     "installable": True,
     "active": False,
