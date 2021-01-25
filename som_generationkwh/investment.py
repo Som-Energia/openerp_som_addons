@@ -11,11 +11,20 @@ from tools.translate import _
 from tools import config
 import re
 import generationkwh.investmentmodel as gkwh
-from generationkwh.investmentstate import InvestmentState, AportacionsState, GenerationkwhState
+from generationkwh.investmentstate import (
+    InvestmentState,
+    AportacionsState,
+    GenerationkwhState,
+)
 from uuid import uuid4
 import netsvc
 from oorq.oorq import AsyncMode
-from investment_strategy import AportacionsActions, GenerationkwhActions, PartnerException, InvestmentException
+from investment_strategy import (
+    AportacionsActions,
+    GenerationkwhActions,
+    PartnerException,
+    InvestmentException,
+)
 
 # TODO: This function is duplicated in other sources
 def _sqlfromfile(sqlname):
@@ -401,6 +410,7 @@ class GenerationkwhInvestment(osv.osv):
         min_amount = min(max_amount, max_amount_available, limited_period_amount)
         return min_amount if min_amount >= 0 else 0
 
+    # Deprecated
     def create_from_accounting(self, cursor, uid,
             member_id, start, stop, waitingDays, expirationYears,
             context=None):
@@ -1069,6 +1079,8 @@ class GenerationkwhInvestment(osv.osv):
         ResUser = self.pool.get('res.users')
         user = ResUser.read(cursor, uid, uid, ['name'])
         IrSequence = self.pool.get('ir.sequence')
+
+        # TODO: This has to be the sequence of the kind of investment!!!! (APO, GKWH...)
         name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')
 
         inv = InvestmentState(user['name'], datetime.now(),
