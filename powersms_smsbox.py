@@ -7,6 +7,7 @@ import time
 from tools.translate import _
 from tools.config import config
 import tools
+from oorq.decorators import job
 
 LOGGER = netsvc.Logger()
 
@@ -21,7 +22,6 @@ class PowersmsSMSbox(osv.osv):
         This method is called by Open ERP Scheduler
         to periodically fetch sms
         """
-        #import pudb;pu.db
         try:
             self.send_all_sms(cursor, user, context=context)
         except Exception, e:
@@ -62,8 +62,13 @@ class PowersmsSMSbox(osv.osv):
         finally:
             cr_tmp.close()
         #send sms one by one
-        self.send_this_sms(cr, uid, ids, context)
+        if ids:
+            self.async_send_this_sms(cr, uid, ids, context)
         return True
+
+    @job(queue='powersms', timeout=180)
+    def async_send_this_sms(self, cr, uid, ids=None, context=None):
+        self.send_this_sms(cr, uid, ids, context)
 
     def send_this_sms(self, cr, uid, ids=None, context=None):
         if ids is None:
@@ -88,11 +93,12 @@ class PowersmsSMSbox(osv.osv):
                     self.historise(cr, uid, [id], "SMS sent successfully", context)
                 else:
                     self.historise(cr, uid, [id], result, context, error=True)
+                    self.write(cr, uid, id, {'state':'na'}, context)
             except Exception, error:
                 logger = netsvc.Logger()
                 logger.notifyChannel(_("Power SMS"), netsvc.LOG_ERROR, _("Sending of SMS %s failed. Probable Reason: Could not login to server\nError: %s") % (id, error))
                 self.historise(cr, uid, [id], error, context, error=True)
-            self.write(cr, uid, id, {'state':'na'}, context)
+                self.write(cr, uid, id, {'state':'na'}, context)
         return True
 
     def historise(self, cr, uid, ids, message='', context=None, error=False):

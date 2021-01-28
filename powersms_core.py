@@ -1,7 +1,7 @@
 from osv import osv, fields
 from tools.translate import _
 import netsvc
-from lleida_net.sms import Client                                                            
+from lleida_net.sms import Client
 
 class PowersmsCoreAccounts(osv.osv):
     """
@@ -10,14 +10,19 @@ class PowersmsCoreAccounts(osv.osv):
     _name = "powersms.core_accounts"
 
     def check_numbers(self, cr, uid, ids, numbers):
-        return True
+        box_obj = self.pool.get('powersms.smsbox')
+        if box_obj.check_mobile(numbers):
+            return True
+        return False
 
     def send_sms_lleida(self, cr, uid, ids, number_to, message, from_name, context=None):
-        config = {
-            'user': self.pool.get("res.config").get(cursor, uid, "lleida_net_user", ""),
-            'password': self.pool.get("res.config").get(cursor, uid, "lleida_net_pass", ""),
-        }
-        c = Client(**config) 
+        if isinstance(ids, list):
+            ids = ids[0]
+        if not self.check_numbers(number_to):
+            raise Exception("Incorrect cell number: " + number_to)
+        
+        values = self.read(cr, uid, ids, ['api_uname', 'api_pass'])
+        c = Client(user=str(values['api_uname']), password=str(values['api_pass']))
         headers = {'content-type': 'application/x-www-form-urlencoded', 'accept': 'application/json'}
         resposta = c.API.post(resource='',json={
             "sms": {
@@ -34,16 +39,12 @@ class PowersmsCoreAccounts(osv.osv):
         if context is None:
             context = {}
         logger = netsvc.Logger()
-        # Check numbers to send the SMS
-        #TODO: number_list = self.check_numbers()
-
         # Try to send the e-mail from each allowed account
         # Only one mail is sent
         for account_id in ids:
             account = self.browse(cr, uid, account_id, context)
             try:
                 self.send_sms_lleida(cr, uid, ids, numbers_to, body, from_name)
-                print("SendSMS")
                 return True
             except Exception as error:
                 logger.notifyChannel(

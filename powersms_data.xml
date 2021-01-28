@@ -10,7 +10,7 @@
         <record model="powersms.templates" id="sms_template_factura_impagada">
             <field name="name">Recordatori factura impagada</field>
             <field name="object_name" model="ir.model" search="[('model', '=', 'res.partner.address')]"/>
-            <field name="def_from">Info</field>
+            <field name="def_from">Som Energia</field>
             <field name="model_int_name">res.partner.address</field>
             <field name="def_to">${object.phone}</field>
             <field eval="0" name="auto_sms"/>
@@ -19,17 +19,7 @@
             <field name="lang">${object.partner_id.lang}</field>
             <field eval="0" name="send_on_write"/>
             <field name="enforce_from_account" model="powersms.core_accounts" search="[('name','=', 'Som Energia')]"/>
-            <field name="def_body_text"><![CDATA[El teu banc ens ha retornat una factura. T'hem enviat un correu amb instruccions de com pagar-la. Salutacions,]]></field>
-        </record>
-        <record model="res.config" id="lleida_net_user">
-            <field name="name">lleida_net_user</field>
-            <field name="value">myuser</field>
-            <field name="description">Your Lleida.net API user</field>
-        </record>
-        <record model="res.config" id="lleida_net_pass">
-            <field name="name">lleida_net_pass</field>
-            <field name="value">myuser</field>
-            <field name="description">Your Lleida.net API password</field>
+            <field name="def_body_text"><![CDATA[El teu banc ens ha retornat una factura. T'hem enviat un correu amb instruccions de com pagar-la. Salutacions.]]></field>
         </record>
     </data>
 </openerp>
