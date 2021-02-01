@@ -53,7 +53,7 @@
             <field name="name">Gil, Pere</field>
             <field name="ref">S202001</field>
             <field name="vat">ES13900056Y</field>
-            <field name="date">2017-01-01</field>            
+            <field name="date">2017-01-01</field>
         </record>
         <record id="res_partner_address_inversor1" model="res.partner.address">
             <field name="city">Berga</field>
@@ -143,6 +143,7 @@
             <field name="name">Alina Aníssimova</field>
             <field name="ref">S202003</field>
             <field name="vat">ES16405474B</field>
+            <field name="data">2017-01-01</field>
         </record>
         <record id="res_partner_address_aportacions" model="res.partner.address">
             <field name="city">Deltebre</field>
@@ -169,6 +170,8 @@
             <field name="name">Kathleen McNulty Mauchly Antonelli</field>
             <field name="ref">S202004</field>
             <field name="vat">ES93646384K</field>
+            <field name="data">2017-01-01</field>
+            <field name="data_baixa">2022-01-01</field>
         </record>
         <record id="res_partner_address_generation" model="res.partner.address">
             <field name="city">Arbeca</field>
