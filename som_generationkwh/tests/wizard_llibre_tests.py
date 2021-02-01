@@ -30,13 +30,13 @@ class TestsWizard(testing.OOTestCase):
         self.assertEqual(values, {'adreca': u'Esperan\xe7a, 8',
 	     'cp': u'43580',
 	     'data_alta': False,
-	     'data_baixa': False,
+	     'data_baixa': '',
 	     'dni': u'16405474B',
-	     'email': u'',
-	     'municipi': False,
+	     'email': '',
+	     'municipi': '',
 	     'nom': u'Alina An\xedssimova',
 	     'num_soci': u'S202003',
-	     'provincia': False,
+	     'provincia': '',
 	     'tipus': 'Consumidor'})
 
     def test_get_aportacions_obligatories_values(self):
