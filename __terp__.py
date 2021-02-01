@@ -20,6 +20,7 @@
     'som_partner_account',
     'giscedata_signatura_documents_signaturit',
     'account_invoice_som',
+    'www_som',
     ],
   "init_xml": [],
   "demo_xml": [
@@ -48,6 +49,7 @@
     "security/som_generationkwh_security.xml",
     "security/ir.model.access.csv",
     "emission_view.xml",
+    "wizard/wizard_llibre_registre_socis_view.xml",
     ],
   "active": False,
   "installable": True

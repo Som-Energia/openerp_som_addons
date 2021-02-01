@@ -53,6 +53,7 @@
             <field name="name">Gil, Pere</field>
             <field name="ref">S202001</field>
             <field name="vat">ES13900056Y</field>
+            <field name="date">2017-01-01</field>            
         </record>
         <record id="res_partner_address_inversor1" model="res.partner.address">
             <field name="city">Berga</field>
@@ -391,6 +392,6 @@
             <field name="account_id" ref="account.a_recv"/>
             <field name="origin_date_invoice">2015-10-09</field>
             <field name="reference">GISCE</field>
-        </record>
+        </record>        
     </data>
 </openerp>
