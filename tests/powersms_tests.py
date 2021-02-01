@@ -23,7 +23,7 @@ class powersms_tests(testing.OOTestCase):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
-            model = self.openerp.pool.get('powersms.send.wizard')
+            model = self.pool.get('powersms.send.wizard')
             temp_id = self.imd_obj.get_object_reference(
                 cursor, uid, 'powersms', 'sms_template_001')[1]
             rpa_id = self.imd_obj.get_object_reference(
@@ -53,7 +53,7 @@ class powersms_tests(testing.OOTestCase):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
-            model = self.openerp.pool.get('powersms.send.wizard')
+            model = self.pool.get('powersms.send.wizard')
             temp_id = self.imd_obj.get_object_reference(
                 cursor, uid, 'powersms', 'sms_template_001')[1]
             rpa_id = self.imd_obj.get_object_reference(
@@ -74,3 +74,41 @@ class powersms_tests(testing.OOTestCase):
                 [('psms_body_text', '=', 'Test sms in draft folder'), ('folder','=','drafts')]
             )
             self.assertTrue(sms_id)
+
+    def test__powersms_run_sms_scheduler__ok(self):
+        """
+        Checks if when state changed, everithing works
+        :return:
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            psb = self.openerp.pool.get('powersms.smsbox')
+            nsms_outbox = psb.search(cursor, uid, [('folder','=','outbox')])
+            nsms_sent = psb.search(cursor, uid, [('folder','=','sent')])
+            self.assertTrue(len(nsms_outbox) > 0)
+
+            wizard_id = psb.run_sms_scheduler(cursor, uid, {})
+
+            nsms_outbox_post = psb.search(cursor, uid, [('folder','=','outbox')])
+            nsms_sent_post = psb.search(cursor, uid, [('folder','=','sent')])
+            #self.assertEqual(nsms_outbox_post, [])
+            #self.assertTrue(len(nsms_sent) > 1)
+            #TODO: send_all_sms commit cursor!!
+
+    def test__powersms_historise__ok(self):
+        """
+        Checks if when state changed, everithing works
+        :return:
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            psb = self.pool.get('powersms.smsbox')
+            sms_id = self.imd_obj.get_object_reference(
+                cursor, uid, 'powersms', 'sms_outbox_001')[1]
+
+            response = psb.historise(cursor, uid, [sms_id], u'SMS sent successfully')
+
+            history = psb.read(cursor, uid, sms_id, ['history'])
+            self.assertTrue(u'SMS sent successfully' in history['history'])
