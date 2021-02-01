@@ -87,7 +87,6 @@ class PowersmsSendWizard(osv.osv_memory):
 
     def save_to_smsbox(self, cr, uid, ids, context=None):
         model_obj = self.pool.get('ir.model')
-
         if context is None:
             context = {}
         def get_end_value(id, value):
@@ -113,21 +112,24 @@ class PowersmsSendWizard(osv.osv_memory):
                 'state':'na',
             }
 
-            #Create partly the mail and later update attachments
-            ctx = context.copy()
-            ctx.update({'src_rec_id': id})
-            sms_id = self.pool.get('powersms.smsbox').create(cr, uid, vals, ctx)
-            sms_ids.append(sms_id)
+            numbers = list(set(map(str.strip,vals['psms_to'].split(','))))
+            for number in numbers:
+                vals.update({'psms_to': number})
+                #Create partly the mail and later update attachments
+                ctx = context.copy()
+                ctx.update({'src_rec_id': id})
+                sms_id = self.pool.get('powersms.smsbox').create(cr, uid, vals, ctx)
+                sms_ids.append(sms_id)
 
-           # Ensure report is rendered using template's language. If not found, user's launguage is used.
-            ctx = context.copy()
-            if template.lang:
-                ctx['lang'] = self.get_value(cr, uid, template, template.lang, context, id)
-                lang = self.get_value(cr, uid, template, template.lang, context, id)
-                if len(self.pool.get('res.lang').search(cr, uid, [('name','=',lang)], context = context)):
-                    ctx['lang'] = lang
-            if not ctx.get('lang', False) or ctx['lang'] == 'False':
-                ctx['lang'] = self.pool.get('res.users').read(cr, uid, uid, ['context_lang'], context)['context_lang']
+               # Ensure report is rendered using template's language. If not found, user's launguage is used.
+                ctx = context.copy()
+                if template.lang:
+                    ctx['lang'] = self.get_value(cr, uid, template, template.lang, context, id)
+                    lang = self.get_value(cr, uid, template, template.lang, context, id)
+                    if len(self.pool.get('res.lang').search(cr, uid, [('name','=',lang)], context = context)):
+                        ctx['lang'] = lang
+                if not ctx.get('lang', False) or ctx['lang'] == 'False':
+                    ctx['lang'] = self.pool.get('res.users').read(cr, uid, uid, ['context_lang'], context)['context_lang']
 
         return sms_ids
 

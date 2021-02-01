@@ -1,5 +1,7 @@
 from osv import osv, fields
 from tools.translate import _
+import netsvc
+from lleida_net.sms import Client
 
 class PowersmsCoreAccounts(osv.osv):
     """
@@ -7,6 +9,51 @@ class PowersmsCoreAccounts(osv.osv):
     """
     _name = "powersms.core_accounts"
 
+    def check_numbers(self, cr, uid, ids, numbers):
+        box_obj = self.pool.get('powersms.smsbox')
+        if box_obj.check_mobile(numbers):
+            return True
+        return False
+
+    def send_sms_lleida(self, cr, uid, ids, number_to, message, from_name, context=None):
+        if isinstance(ids, list):
+            ids = ids[0]
+        if not self.check_numbers(number_to):
+            raise Exception("Incorrect cell number: " + number_to)
+        
+        values = self.read(cr, uid, ids, ['api_uname', 'api_pass'])
+        c = Client(user=str(values['api_uname']), password=str(values['api_pass']))
+        headers = {'content-type': 'application/x-www-form-urlencoded', 'accept': 'application/json'}
+        resposta = c.API.post(resource='',json={
+            "sms": {
+                "txt": message,
+                "dst": {
+                    "num": number_to,
+                },
+                "src": from_name,
+            }
+        }, headers=headers)
+        return resposta.result['code'] == 200 and resposta.result['status'] == u'Success'
+
+    def send_sms(self, cr, uid, ids, from_name, numbers_to, body='', context=None):
+        if context is None:
+            context = {}
+        logger = netsvc.Logger()
+        # Try to send the e-mail from each allowed account
+        # Only one mail is sent
+        for account_id in ids:
+            account = self.browse(cr, uid, account_id, context)
+            try:
+                self.send_sms_lleida(cr, uid, ids, numbers_to, body, from_name)
+                return True
+            except Exception as error:
+                logger.notifyChannel(
+                    _("Power SMS"), netsvc.LOG_ERROR,
+                    _("Could not create mail "
+                      "from Account \"{account.name}\".\n"
+                      "Description: {error}").format(**locals())
+                )
+                return error
 
     def do_approval(self, cr, uid, ids, context={}):
         self.write(cr, uid, ids, {'state':'approved'}, context=context)
@@ -61,14 +108,7 @@ class PowersmsCoreAccounts(osv.osv):
 
     _defaults = {
          'name':lambda self, cursor, user, context:self.pool.get(
-                                                'res.users'
-                                                ).read(
-                                                        cursor,
-                                                        user,
-                                                        user,
-                                                        ['name'],
-                                                        context
-                                                        )['name'],
+            'res.users').read(cursor, user, user, ['name'], context)['name'],
          'state':lambda * a:'draft',
          'user':lambda self, cursor, user, context:user,
     }
