@@ -1150,9 +1150,7 @@
             <field name="def_body_text"><![CDATA[text_to_replace]]></field>
             <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Generation kWh')]"/> 
         </record>
-    </data>
 
-    <data noupdate="0">
         <record model="poweremail.templates" id="aportacio_mail_pagament">
             <field name="name">Aportacions - Pagament inversió</field>
             <field name="object_name" model="ir.model" search="[('model', '=', 'account.invoice')]"/>
