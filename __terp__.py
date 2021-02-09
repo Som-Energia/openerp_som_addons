@@ -21,6 +21,7 @@
     'giscedata_signatura_documents_signaturit',
     'account_invoice_som',
     'www_som',
+    'c2c_webkit_report',
     ],
   "init_xml": [],
   "demo_xml": [

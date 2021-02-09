@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
-import tools
-from osv import osv, fields
+import base64
+from c2c_webkit_report import webkit_report
 from datetime import datetime
+from oorq.decorators import job
+from osv import osv, fields
+from report import report_sxw
+import tools
 
 
 class WizardLlibreRegistreSocis(osv.osv_memory):
@@ -9,27 +13,38 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
 
     _name = 'wizard.llibre.registre.socis'
 
-
-    def print_report(self, cursor, uid, ids, context=None):
+    @job(queue="print_report", timeout=3000)
+    def generate_report(self, cursor, uid, ids, context=None):
         wiz = self.browse(cursor, uid, ids[0])
         dades = self.get_report_data(cursor, uid, ids)
-        if not context:
-            context = {}
-        return {
-            'type': 'ir.actions.report.xml',
-            'model': 'somenergia.soci',
-            'report_name': 'somenergia.soci.report_llibre_registre_socis',
-            'report_webkit': "'som_generationkwh/report/report_llibre_registre_socis.mako'",
-            'webkit_header': 'report_sense_fons',
-            'groups_id': [],
-            'multi': '0',
-            'auto': '0',
-            'header': '0',
-            'report_rml': 'False',
-            'datas': {
-            'dades': dades,
-            },
+
+        report_printer = webkit_report.WebKitParser(
+            'report.somenergia.soci.report_llibre_registre_socis',
+            'somenergia.soci',
+            'som_generationkwh/report/report_llibre_registre_socis.mako',
+            parser=report_sxw.rml_parse
+        )
+
+        data = {
+            'model': 'giscedata.facturacio.factura',
+            'report_type': 'webkit',
+            'dades': dades
         }
+
+        document_binary = report_printer.create(
+            cursor, uid, ids, data,
+            context=context
+        )
+        if document_binary:
+            print "ha funcionat"
+        else:
+            print "problem"
+        f = open("/tmp/llibre_registre_socis.pdf", 'wb+' )
+        try:
+            bits = base64.b64decode(base64.b64encode(document_binary[0]))
+            f.write(bits)
+        finally:
+            f.close()
 
     def get_report_data(self, cursor, uid, ids, context=None):
         soci_obj = self.pool.get('somenergia.soci')
