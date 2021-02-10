@@ -49,7 +49,7 @@ class TestsWizard(testing.OOTestCase):
         values = wiz_o.get_aportacions_obligatories_values(cursor, uid, soci_id)
 
         self.assertEqual(values, [{'concepte': u'Aportaci\xf3n obligatoria',
-             'data_compra': '2017-01-01',
+             'data': '2017-01-01',
              'import': 100}])
 
 
@@ -62,7 +62,6 @@ class TestsWizard(testing.OOTestCase):
         values = wiz_o.get_aportacions_voluntaries_values(cursor, uid, soci_id)
 
         self.assertEqual(values, [{'concepte': u'Aportaci\xf3n voluntaria',
-        'data_compra': '2020-03-12',
-        'data_venda': False,
+        'data': '2020-03-12',
         'import': 1000,
         'import_amortitzat': 0.0}])
