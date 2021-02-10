@@ -13,10 +13,24 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
 
     _name = 'wizard.llibre.registre.socis'
 
-    @job(queue="print_report", timeout=3000)
     def generate_report(self, cursor, uid, ids, context=None):
+	def chunks(lst, n):
+	    """Yield successive n-sized chunks from lst."""
+	    for i in range(0, len(lst), n):
+		yield lst[i:i + n]
+
+	wiz = self.browse(cursor, uid, ids[0])
+	soci_obj = self.pool.get('somenergia.soci')
+	socis = soci_obj.search(cursor, uid, [('active','=',True)])
+        socis.sort()
+	for soci in socis:
+	    self.generate_one_report(cursor, uid, ids, [soci])
+
+
+    @job(queue="print_report", timeout=3000)
+    def generate_one_report(self, cursor, uid, ids, llista, context=None):
         wiz = self.browse(cursor, uid, ids[0])
-        dades = self.get_report_data(cursor, uid, ids)
+        dades = self.get_report_data(cursor, uid, ids, llista)
 
         report_printer = webkit_report.WebKitParser(
             'report.somenergia.soci.report_llibre_registre_socis',
@@ -35,26 +49,25 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
             cursor, uid, ids, data,
             context=context
         )
-        if document_binary:
-            print "ha funcionat"
-        else:
-            print "problem"
-        f = open("/tmp/llibre_registre_socis.pdf", 'wb+' )
+        if not document_binary:
+            raise Exception("We can't create the report")
+
+        f = open("/tmp/reports/llibre_registre_socis_" + str(llista[0]).zfill(6)  + ".pdf", 'wb+' )
         try:
             bits = base64.b64decode(base64.b64encode(document_binary[0]))
             f.write(bits)
         finally:
             f.close()
 
-    def get_report_data(self, cursor, uid, ids, context=None):
+    def get_report_data(self, cursor, uid, ids, socis, context=None):
         soci_obj = self.pool.get('somenergia.soci')
-        socis = soci_obj.search(cursor, uid, [('active','=',True)])
+        #socis = soci_obj.search(cursor, uid, [('active','=',True)])
         values = {}
         for soci in socis:
             header = self.get_soci_values(cursor, uid, soci)
             apos = self.get_aportacions_obligatories_values(cursor, uid, soci)
             apo_vol = self.get_aportacions_voluntaries_values(cursor, uid, soci)
-            quadre_moviments = sorted(iter(apos + apo_vol), key=lambda item: item['data_compra'])
+            quadre_moviments = sorted(iter(apos + apo_vol), key=lambda item: item['data'])
             total = 0
             for it in iter(quadre_moviments):
                 it['total'] = total + it['import']
@@ -76,7 +89,7 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
             'dni': data['vat'][2:] if data['vat'] else False,
             'email': data['www_email'] if data['www_email'] else '',
             'adreca': data['www_street'] if data['www_street'] else '',
-            'municipi': data['www_municipi'] if data['www_municipi'] else '',
+            'municipi': data['www_municipi'][1]['name'] if data['www_municipi'] else '',
             'cp': data['www_zip'] if data['www_zip'] else '',
             'provincia': data['www_provincia'][1]['name'] if data['www_provincia'] else '',
             'data_alta': data['date'],
@@ -88,13 +101,13 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
         data = soci_obj.read(cursor, uid, soci, ['date', 'data_baixa_soci'])
         inversions = []
         inversions.append({
-            'data_compra': data['date'],
+            'data': data['date'],
             'concepte': u'Aportación obligatoria',
             'import': 100
         })
         if data['data_baixa_soci']:
             inversions.append({
-                'data_compra': data['data_baixa_soci'],
+                'data': data['data_baixa_soci'],
                 'concepte': u'Aportación obligatoria',
                 'import': -100
             })
@@ -111,15 +124,13 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
             if data['purchase_date']:
                 if data['last_effective_date']:
                     inversions.append({
-                        'data_compra': data['purchase_date'],
-                        'data_venda': data['last_effective_date'],
+                        'data': data['last_effective_date'],
                         'concepte': u'Aportación voluntaria',
                         'import': data['nshares']*100*-1,
                         'import_amortitzat': data['amortized_amount']*-1
                 })
                 inversions.append({
-                    'data_compra': data['purchase_date'],
-                    'data_venda': data['last_effective_date'],
+                    'data': data['purchase_date'],
                     'concepte': u'Aportación voluntaria',
                     'import': data['nshares']*100,
                     'import_amortitzat':  data['amortized_amount']

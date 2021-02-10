@@ -100,7 +100,7 @@ html {
      </tr>
 %    for dades_apo in dades_soci['inversions']:
       <tr>
-       <td>${dades_apo['data_compra']}</td>
+       <td>${dades_apo['data']}</td>
        <td>${dades_apo['concepte']}</td>
        <td></td>
 %      if dades_apo['concepte'] == u'Aportación obligatoria':
