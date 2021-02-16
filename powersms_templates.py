@@ -159,7 +159,7 @@ class PowersmsTemplates(osv.osv):
                 help="Public name of remitent"),
         'def_to':fields.char(
                 'Recepients (To)',
-                size=40,
+                size=250,
                 help="The recepient(s) of sms. "
                 "Placeholders can be used here."),
         'enforce_from_account':fields.many2one(
