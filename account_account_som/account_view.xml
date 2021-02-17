@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- Account parent required -->
+        <record id="view_account_form_som" model="ir.ui.view">
+            <field name="name">account.account.form</field>
+            <field name="model">account.account</field>
+            <field name="inherit_id" ref="account.view_account_form"/>
+	        <field name="type">form</field>
+            <field name="arch" type="xml">
+                <field name="parent_id" position="replace">
+	                <field name="parent_id" required = "True"/>
+                </field>
+                <field name="check_history" position="after">
+                    <field name="ocultar" select="2"/>
+                </field>
+                <field name="user_type" position="after">
+                    <group colspan="2" col="3">
+                        <field name="debit"/>
+                        <field name="credit"/>
+                        <field name="balance"/>
+                    </group>
+                </field>
+            </field>
+        </record>
+        <record id="account.action_account_form" model="ir.actions.act_window">
+            <field name="domain">[('ocultar','=',False)]</field>
+        </record>
+        <record id="view_account_tree_2" model="ir.ui.view">
+            <field name="name">account.account.fast.tree</field>
+            <field name="model">account.account</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Account" toolbar="1" colors="blue:type=='view'">
+                    <field name="code"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_account_form_2" model="ir.actions.act_window">
+            <field name="name">Llistat de comptes ràpid</field>
+            <field name="res_model">account.account</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_account_tree_2"/>
+        </record>
+        <menuitem action="action_account_form_2" id="menu_action_account_form_2" parent="account.account_account_menu"/>
+
+    </data>
+</openerp>

@@ -1,0 +1,172 @@
+# Translations template for PROJECT.
+# Copyright (C) 2015 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2015-10-29 16:14+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 1.3\n"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:51
+msgid "Informe Energètic"
+msgstr "Informe Energético"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:53
+msgid "Dades personals"
+msgstr "Datos personales"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:57
+msgid "CUPS"
+msgstr "CUPS"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:58
+msgid "Tarifa"
+msgstr "Tarifa"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:59
+msgid "Potència"
+msgstr "Potencia"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:66
+msgid "Comparació amb llars similars"
+msgstr "Comparación con viviendas similares"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:74
+msgid "Com ho estàs fent ?"
+msgstr "Cómo lo estás haciendo ?"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:95
+#: rml:som_empowering/report/report_informe_energetic.mako:159
+msgid "Llars similars"
+msgstr "Viviendas similares"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:96
+#: rml:som_empowering/report/report_informe_energetic.mako:160
+msgid "Tu"
+msgstr "Tu"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:97
+msgid "Llars similars eficients "
+msgstr "Viviendas eficientes"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:107
+#: rml:som_empowering/report/report_informe_energetic.mako:165
+#: rml:som_empowering/report/report_informe_energetic.mako:207
+msgid "Has consumit un"
+msgstr "Has consumido un"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:109
+#: rml:som_empowering/report/report_informe_energetic.mako:113
+#: rml:som_empowering/report/report_informe_energetic.mako:167
+#: rml:som_empowering/report/report_informe_energetic.mako:207
+msgid "més"
+msgstr "más"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:109
+#: rml:som_empowering/report/report_informe_energetic.mako:113
+#: rml:som_empowering/report/report_informe_energetic.mako:167
+#: rml:som_empowering/report/report_informe_energetic.mako:207
+msgid "menys"
+msgstr "menos"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:111
+msgid "que les llars similars i un"
+msgstr "que las viviendas similares y un"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:114
+msgid "que les llars similars eficients"
+msgstr "que las viviendas similares eficientes"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:118
+msgid "Les llars similars són"
+msgstr "Las viviendas similares son"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:124
+msgid "Les llars similars eficients són el"
+msgstr "Las viviendas similares eficientes son el"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:124
+msgid "més eficient del grup de llars similars"
+msgstr "más eficiente del grupo de viviendas similares"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:129
+msgid "Genial"
+msgstr "Genial"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:132
+msgid "Bé"
+msgstr "Bién"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:135
+msgid "Regular"
+msgstr "Regular"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:142
+msgid "Comparació últims 12 mesos"
+msgstr "Comparación últimos 12 meses"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:161
+msgid "Llars similars eficients"
+msgstr "Viviendas similares eficientes"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:169
+msgid "que les llars similars més eficients"
+msgstr "que las viviendas similares más eficientes"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:182
+msgid "Comparació amb el mateix mes de l'any anterior"
+msgstr "Comparación con el mismo mes del año anterior"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:202
+msgid "Consum any passat"
+msgstr "Consumo año pasado"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:203
+msgid "Consum actual"
+msgstr "Consumo actual"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:207
+msgid "que l\\'any passat."
+msgstr "que el año pasado"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:216
+msgid "Consells personalitzats"
+msgstr "Consejos personalizados"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:237
+msgid "Informació addicional"
+msgstr "Información adicional"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:240
+msgid ""
+"Disposes de comptador amb telegestió activada. A l'oficina virtual podràs "
+"accedir al teus consums horaris"
+msgstr ""
+"Dispones de contador con telegestión activada. En la oficina virtualpodrás "
+"acceder a tus consumos horarios"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:242
+msgid "No disposes de comptador amb telegestió activada"
+msgstr "No dispones de un contador con telegestión activada"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:247
+msgid "Per a més informació pots accedir a l'oficina virtual"
+msgstr "Para más información puedes acceder a la oficina virtual"
+
+#: rml:som_empowering/report/report_informe_energetic.mako:248
+msgid ""
+"Allà trobaràs serveis addicionals i tota la informació relacionada amb els "
+"teus contractes"
+msgstr ""
+"Allí encontrarás servicios adicionales y toda la información relacionada con "
+"tus contratos"

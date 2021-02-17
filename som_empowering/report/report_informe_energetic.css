@@ -1,0 +1,244 @@
+.container {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.box {
+    padding: 15px;
+    border: 1px solid #bbb;
+    border-radius: 5px;
+    height: 235px;
+    margin-top: 30px;
+}
+
+
+.Personal {
+    border: 1px solid #bbb;
+    border-radius: 5px;
+    height: 200px;
+    margin-top: 20px;
+}
+
+.Personal h2 {
+    margin: 0;
+	margin-right: 28em;
+	margin-top: 0.75em;
+    padding: .5em;
+    background-color: #BAC92A;
+    color: #ffffff;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-top-right-radius: 1em;
+    border-bottom-right-radius: 1em;
+}
+
+.PersonalData {
+    padding: 15px;
+}
+
+.PersonalData h3 {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.contract {
+    margin-top: 62px;
+}
+
+.sombox {
+    float: right;
+    height: 100px;
+    margin-top: 60px;
+	margin-right: 3em;
+}
+
+
+.OT {
+    border: 1px solid #bbb;
+    border-radius: 5px;
+    height: 235px;
+    margin-top: 20px;
+}
+
+.OTResults {
+    padding: 15px;
+}
+
+.OT h2 {
+    margin: 0;
+    margin-right: 45em;
+    margin-top: 0.75em;
+    padding: .5em;
+    background-color: #619735;
+    color: #ffffff;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-top-right-radius: 1em;
+    border-bottom-right-radius: 1em;
+}
+
+.ot101.averageConsumption path {
+    fill: #F0AD4E;
+}
+
+.ot101.averageConsumption .icons, .ot101.averageConsumption .label {
+    fill: #F0AD4E;
+    font-size: 25em;
+}
+
+.ot101.averageConsumption line {
+    stroke: #F0AD4E;
+}
+
+.ot101.consumption path {
+    fill: #BAC92A;
+}
+
+.ot101.consumption .icons, .ot101.consumption .label {
+    fill: #BAC92A;
+    font-weight: bold;
+    font-size: 5em;
+}
+
+.ot101.consumption line {
+    stroke: #BAC92A;
+}
+
+.ot101.consumption {
+    color: #BAC92A;
+    font-weight: bold;
+}
+
+.ot101.averageEffConsumption path {
+    fill: #5CB85C;
+}
+
+.ot101.averageEffConsumption .icons, .ot101.averageEffConsumption .label {
+    fill: #5CB85C;
+} 
+
+.ot101.averageEffConsumption line {
+    stroke: #5CB85C;
+}
+
+.ot101_classification {
+    text-transform: uppercase;
+}
+
+
+.ot103 .line.averageConsumption {
+    stroke: #F0AD4E;
+}
+
+.ot103 .legend .averageConsumption {
+    fill: #F0AD4E;
+}
+
+.ot103 .line.consumption {
+    stroke: #BAC92A;
+}
+
+.ot103 .legend .consumption {
+    fill: #BAC92A;
+}
+
+.ot103 .line.averageEffConsumption {
+    stroke: #5CB85C;
+}
+
+.ot103 .legend .averageEffConsumption {
+    fill: #5CB85C;
+}
+
+.point.averageConsumption {
+    fill: #F0AD4E;
+}
+
+.point.consumption {
+    fill: #BAC92A;
+}
+
+.point.averageEffConsumption {
+    fill: #5CB85C;
+}
+
+.ot201.consumption path {
+    fill: #BAC92A;
+}
+
+.ot201.consumption .icons, .ot201.consumption .label {
+    fill: #BAC92A;
+}
+
+.ot201.consumption line {
+    stroke: #BAC92A;
+}
+
+.ot201.consumption {
+    color: #BAC92A;
+}
+
+.ot201.previousConsumption path {
+  fill: #D9534F;
+}
+
+.ot201.previousConsumption .icons, .ot201.previousConsumption .label {
+  fill: #D9534F;
+}
+
+.ot201.previousConsumption line {
+    stroke: #D9534F;
+}
+
+.ot201.previousConsumption {
+    color: #D9534F;
+}
+
+.AdditionalInfo {
+    border: 1px solid #bbb;
+    border-radius: 5px;
+    height: 200px;
+    margin-top: 20px;
+}
+
+.AdditionalInfoData {
+    padding: 15px;
+}
+
+.AdditionalInfo h2 {
+    margin: 0;
+	margin-right: 45em;
+	margin-top: 0.75em;
+    padding: .5em;
+    background-color: #5FC4EC;
+    color: #ffffff;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-top-right-radius: 1em;
+    border-bottom-right-radius: 1em;
+}
+
+.OVInfo {
+	margin-left: 2em;
+    font-size: 1.5em;
+    text-align: center;
+}
+
+.ot101_classification > .active {
+    font-weight: bold;
+}
+
+#smiley_great.active {
+    color: green;
+}
+
+#smiley_good.active {
+    color: lightgreen;
+}
+
+#smiley_bad.active {
+    color: red;
+}
