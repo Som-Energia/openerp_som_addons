@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    	<record id="view_partner_empowering_form" model="ir.ui.view">
+            <field name="name">res.partner.empowering.form</field>
+            <field name="model">res.partner</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="www_som.view_partner_www_form"/>
+            <field name="arch" type="xml">
+                <page string="Oficina virtual" position="inside">
+                    <group colspan="4">
+                        <separator string="Empowering token" colspan="4"/>
+                        <field name="empowering_token" colspan="3" nolabel="1"/>
+                        <button name="assign_token" string="Assign new token" type="object"/>
+                    </group>
+                </page>
+            </field>
+		</record>
+	</data>
+</openerp>
