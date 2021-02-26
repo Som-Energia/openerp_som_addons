@@ -8,14 +8,145 @@ from tools.translate import _
 from tools.config import config
 import tools
 from oorq.decorators import job
+import six
 
 LOGGER = netsvc.Logger()
 
 class PowersmsSMSbox(osv.osv):
     _name = "powersms.smsbox"
     _description = 'Power SMS SMSbox included all type inbox,outbox,junk..'
-    _rec_name = "psms_subject"
+    _rec_name = "reference"
     _order = "date_sms desc"
+
+    callbacks = {'create': 'powersms_create_callback',
+                 'write': 'powersms_write_callback',
+                 'unlink': 'powersms_unlink_callback',
+                }
+
+    def powersms_callback(self, cursor, uid, ids, func, vals=None, context=None):
+        """Crida el callback callbacks[func] del reference de ids
+        """
+        if context is None:
+            context = {}
+        data = self.read(cursor, uid, ids, ['reference', 'meta'])
+        if not isinstance(data, list):
+            data = [data]
+        ids_cbk = {}
+        ctx = context.copy()
+        ctx['ps_callback_origin_ids'] = {}
+        ctx['meta'] = {}
+        if vals:
+            init_meta = vals.get('meta', {}) or {}
+            if isinstance(init_meta, basestring):
+                init_meta = json.loads(init_meta)
+        else:
+            init_meta = {}
+        for i in data:
+            if not i['reference']:
+                continue
+            meta_vals = i['meta']
+            if meta_vals:
+                meta = json.loads(meta_vals)
+                meta.update(init_meta)
+            else:
+                meta = {}
+
+            ref = i['reference'].split(',')
+            ids_cbk[ref[0]] = ids_cbk.get(ref[0], []) + [int(ref[1])]
+            ctx['ps_callback_origin_ids'][int(ref[1])] = i['id']
+            ctx['meta'][int(ref[1])] = meta
+        for model in ids_cbk:
+            src = self.pool.get(model)
+            try:
+                if vals:
+                    getattr(src, self.callbacks[func])(cursor, uid,
+                                                ids_cbk[model], vals, ctx)
+                else:
+                    getattr(src, self.callbacks[func])(cursor, uid,
+                                                ids_cbk[model], ctx)
+            except AttributeError:
+                pass
+
+    def create(self, cursor, uid, vals, context=None):
+        if context is None:
+            context = {}
+        src_id = context.get('src_rec_id', False)
+        if src_id:
+            upd_vals = {
+                'reference': '%s,%d' % (context['src_model'], src_id)
+            }
+            meta = context.get('meta')
+            if meta:
+                upd_vals['meta'] = json.dumps(context['meta'])
+            vals.update(upd_vals)
+        ps_id = super(PowersmsSMSbox,
+                      self).create(cursor, uid, vals, context)
+        self.powersms_callback(cursor, uid, ps_id, 'create', vals, context)
+        return ps_id
+
+    def validate_referenced_object_exists(self, cursor, uid, id, vals, context=None):
+        ret = True
+        fields = ['reference']
+        result = self._read_flat(cursor, uid, id, fields, context, '_classic_read')
+        for r in result:
+            if 'reference' in r.keys():
+                v = r['reference']
+                if v:
+                    model, ref_id = v.split(',')
+                    ref_obj = self.pool.get(model)
+
+                    if ref_id != '0':
+                        id_exist = ref_obj.search(cursor, 1, [
+                            ('id', '=', ref_id)
+                        ], context={'active_test': False})
+                        if not id_exist:
+                            ret = False
+        return ret
+
+    def read(self, cursor, uid, ids, fields=None, context=None, load='_classic_read'):
+        if context is None:
+            context = {}
+        select = ids
+        if isinstance(ids, six.integer_types):
+            select = [ids]
+        valid_select = []
+        for id in select:
+            res = self.validate_referenced_object_exists(cursor, uid, [id], fields, context=None)
+            if res:
+                valid_select.append(id)
+            else:
+                super(PowersmsSMSbox,
+                        self).unlink(cursor, uid, [id], context)
+        ret = []
+        if valid_select:
+            ret = super(PowersmsSMSbox,
+                        self).read(cursor, uid, valid_select, fields, context, load)
+        if isinstance(ids, six.integer_types) and ret:
+            return ret[0]
+        return ret
+
+    def write(self, cursor, uid, ids, vals, context=None):
+        if context is None:
+            context = {}
+        meta = context.get('meta')
+        if meta:
+            vals['meta'] = json.dumps(meta)
+        self.powersms_callback(cursor, uid, ids, 'write', vals, context)
+        ret = super(PowersmsSMSbox,
+                     self).write(cursor, uid, ids, vals, context)
+        return ret
+
+    def unlink(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+        self.powersms_callback(cursor, uid, ids, 'unlink', context=context)
+        ret = super(PowersmsSMSbox,
+                     self).unlink(cursor, uid, ids, context)
+        return ret
+
+    def _get_models(self, cursor, uid, context={}):
+        cursor.execute('select m.model, m.name from ir_model m order by m.model')
+        return cursor.fetchall()
 
     def run_sms_scheduler(self, cursor, user, context=None):
         """
@@ -109,27 +240,6 @@ class PowersmsSMSbox(osv.osv):
         if 'lang' not in context:
             context.update({'lang': user.context_lang})
         for psms_id in ids:
-            # Notify the sender errors
-            if context.get('notify_errors', False) \
-                    and not context.get('bounce', False) \
-                    and error:
-                sms = self.browse(cr, uid, psms_id)
-                vals = {
-                    'folder': 'outbox',
-                    'history': '',
-                    'pem_to': sms.pem_account_id.email_id,
-                    'pem_subject': _(
-                        u"Error sending email with id {}"
-                    ).format(sms.id)
-                }
-                bounce_sms_id = self.copy(cr, uid, psms_id, vals)
-                ctx = context.copy()
-                ctx.update({'bounce': True})
-                self.send_this_sms(cr, uid, [bounce_sms_id], ctx)
-                bounce_sms = self.browse(cr, uid, bounce_sms_id)
-                # If bounce sms cannot be sent, unlink it
-                if bounce_sms.folder != 'sent':
-                    bounce_sms.unlink()
             history = self.read(
                 cr, uid, psms_id, ['history'], context).get('history', '') or ''
             history_limit = config.get('psms_history_limit', 10)
@@ -149,8 +259,8 @@ class PowersmsSMSbox(osv.osv):
         return True
 
     def is_valid(self, cursor, uid, sms_id, context=None):
-        mail = self.read(cursor, uid, sms_id, ['psms_to'], context)
-        return self.check_mobile(mail['psms_to'])
+        sms = self.read(cursor, uid, sms_id, ['psms_to'], context)
+        return self.check_mobile(sms['psms_to'])
 
     _columns = {
             'psms_account_id' :fields.many2one(
@@ -186,6 +296,9 @@ class PowersmsSMSbox(osv.osv):
                             'History',
                             readonly=True,
                             store=True),
+            'reference': fields.reference('Source Object', selection=_get_models,
+                                        size=128),
+            'meta': fields.text('Meta information')
         }
 
     _defaults = {
