@@ -150,13 +150,6 @@ class GiscedataPolissaTarifa(osv.osv):
             if period['tipus'] not in preus:
                 preus[period['tipus']] = {}
 
-            # gkwh can have P1 and P2 only
-            if period['tipus'] == 'gkwh' and int(period['name'][1:]) > 2:
-                preus[period['tipus']][period['name']] = {
-                    "value": "N/A"
-                }
-                continue
-
             product_id = period['product_id']
 
             # taxes for gkwh are calculated later and taxes for autoconsum
