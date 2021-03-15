@@ -4,7 +4,6 @@ import tools
 class PowersmsSendWizard(osv.osv_memory):
     _name = 'powersms.send.wizard'
     _description = 'This is the wizard for sending SMS'
-    _rec_name = "subject"
 
     def _get_accounts(self, cr, uid, context=None):
         if context is None:
@@ -71,7 +70,6 @@ class PowersmsSendWizard(osv.osv_memory):
         smsbox_obj = self.pool.get('powersms.smsbox')
         folder = context.get('folder', 'outbox')
         values = {'folder': folder}
-
         sms_ids = self.save_to_smsbox(cursor, uid, ids, context)
 
         if sms_ids:
@@ -111,8 +109,7 @@ class PowersmsSendWizard(osv.osv_memory):
                 'psms_account_id': screen_vals['account'],
                 'state':'na',
             }
-
-            numbers = list(set(map(str.strip,vals['psms_to'].split(','))))
+            numbers = list(set(map(str.strip,str(vals['psms_to']).split(','))))
             for number in numbers:
                 vals.update({'psms_to': number})
                 #Create partly the mail and later update attachments

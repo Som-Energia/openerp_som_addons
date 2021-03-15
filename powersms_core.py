@@ -18,9 +18,9 @@ class PowersmsCoreAccounts(osv.osv):
     def send_sms_lleida(self, cr, uid, ids, number_to, message, from_name, context=None):
         if isinstance(ids, list):
             ids = ids[0]
-        if not self.check_numbers(number_to):
+        if not self.check_numbers(cr, uid, ids, number_to):
             raise Exception("Incorrect cell number: " + number_to)
-        
+
         values = self.read(cr, uid, ids, ['api_uname', 'api_pass'])
         c = Client(user=str(values['api_uname']), password=str(values['api_pass']))
         headers = {'content-type': 'application/x-www-form-urlencoded', 'accept': 'application/json'}
