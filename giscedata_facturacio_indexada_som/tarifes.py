@@ -21,7 +21,8 @@ class TarifaPoolSOM(TarifaPool):
         if self.phf_function == 'phf_calc_peninsula':
             # only if 'phf_calc_peninsula' formula is used
             res['pmd'] = 'prmdiari'
-            del res['pc3_ree']
+            res['pc3_ree'] = 'pc3_boe'
+            res['pos'] = 'sobrecostes_ree'
 
         return res
 
@@ -192,7 +193,7 @@ class TarifaPoolSOM(TarifaPool):
         coste_medio_desvios.load(grcosdnc.indicators[GRCOSDNC_MAGNS[8]])
         sobrecostes_ree = coste_total - coste_medio_desvios
 
-        A = (prmdiari * 0.001) + pc3_boe + sobrecostes_ree + si + (omie * 0.001) + h
+        A = ((prmdiari + sobrecostes_ree + si) * 0.001) + pc3_boe + (omie * 0.001) + h
         B = (1 + (perdues * 0.01))
         C = A * B
         D = (fe * 0.001) + k + d
