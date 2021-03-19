@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data noupdate="0">
+		<record id="res_partner_energetica" model="res.partner">
+            <field name="name">Sociedad Cooperativa Energética</field>
+            <field name="ref">S019753</field>
+        </record>
+		<record id="res_partner_category_energetica" model="res.partner.category">
+            <field name="name">Energética</field>
+        </record>
+    </data>
+</openerp>
