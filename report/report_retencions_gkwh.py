@@ -114,7 +114,7 @@ class GenerationkwhInvestment(osv.osv):
         report.retencio = irpf_value_retencio
         report.language = partner['lang']
 
-        return dict(report)
+        return report
 
 GenerationkwhInvestment()
 
