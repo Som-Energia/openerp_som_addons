@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2020-10-06 15:19+0000\n"
-"PO-Revision-Date: 2020-10-06 15:19+0000\n"
+"POT-Creation-Date: 2021-03-29 17:04+0000\n"
+"PO-Revision-Date: 2021-03-29 17:04+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -168,7 +168,7 @@ msgid ""
 msgstr ""
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/investment.py:862
+#: code:addons/som_generationkwh/investment.py:873
 #, python-format
 msgid "Amortització fins a {amortization_date:%d/%m/%Y} de {investment} "
 msgstr ""
@@ -1176,7 +1176,7 @@ msgstr ""
 #: model:product.category,name:som_generationkwh.categ_gkwh_t64
 #: model:product.category,name:som_generationkwh.categ_gkwh_t65
 #: field:giscedata.polissa.tarifa.periodes,product_gkwh_id:0
-#: rml:som_generationkwh/report/report_retencions_gkwh.mako:78
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:179
 #: view:giscedata.facturacio.factura:0
 #: view:somenergia.soci:0
 msgid "Generation kWh"
@@ -1449,7 +1449,6 @@ msgstr ""
 #. module: som_generationkwh
 #: field:wizard.generationkwh.investment.creation,partner_id_alt:0
 #: field:wizard.generationkwh.investment.transfer,partner_id_alt:0
-#: rml:som_generationkwh/report/report_retencions_gkwh.mako:84
 msgid "Titular"
 msgstr ""
 
@@ -1552,7 +1551,7 @@ msgid "Genera totes les amortitzacions pendents"
 msgstr ""
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/investment.py:1537
+#: code:addons/som_generationkwh/investment.py:1556
 msgid "Inversió {investment} "
 msgstr ""
 
@@ -1764,7 +1763,7 @@ msgid "Desactivat"
 msgstr ""
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/investment.py:549
+#: code:addons/som_generationkwh/investment.py:559
 msgid "S'ha {0} la inversió {1}"
 msgstr ""
 
@@ -2134,7 +2133,7 @@ msgid "generationkwh.mailmockup"
 msgstr ""
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/investment.py:911
+#: code:addons/som_generationkwh/investment.py:922
 msgid ""
 "Retenció IRPF sobre l'estalvi del Generationkwh de {retention_date:%Y} de"
 " {investment} "
@@ -2540,6 +2539,7 @@ msgid "CONDICIONS PARTICULARS DE L’APORTACIÓ AL CAPITAL SOCIAL"
 msgstr ""
 
 #: rml:som_generationkwh/report/report_contract_apo.mako:257
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:200
 msgid "DADES DEL TITULAR"
 msgstr ""
 
@@ -2996,47 +2996,69 @@ msgid ""
 "cosa de forma imperativa per la normativa aplicable a l’efecte."
 msgstr ""
 
-#: rml:som_generationkwh/report/report_retencions_gkwh.mako:55
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:160
 msgid "CIF:"
 msgstr ""
 
-#: rml:som_generationkwh/report/report_retencions_gkwh.mako:56
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:160
 msgid "Domicili:"
 msgstr ""
 
-#: rml:som_generationkwh/report/report_retencions_gkwh.mako:57
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:161
 msgid "Adreça electrònica:"
 msgstr ""
 
-#: rml:som_generationkwh/report/report_retencions_gkwh.mako:61
-msgid "Informació fiscal"
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:165
+msgid "Comunicat de rendiments per a la"
 msgstr ""
 
-#: rml:som_generationkwh/report/report_retencions_gkwh.mako:64
-msgid "Comunicat de rendiments per a la declaració de renda"
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:165
+msgid "declaració de la RENDA "
 msgstr ""
 
-#: rml:som_generationkwh/report/report_retencions_gkwh.mako:69
-msgid "Data"
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:171
+msgid "<b>Data:</b>"
 msgstr ""
 
-#: rml:som_generationkwh/report/report_retencions_gkwh.mako:73
-msgid "Exercici"
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:172
+msgid "<b>Tipus d'aportació:</b>"
 msgstr ""
 
-#: rml:som_generationkwh/report/report_retencions_gkwh.mako:77
-msgid "Tipus d'aportació"
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:173
+msgid "<b>Exercici:</b>"
 msgstr ""
 
-#: rml:som_generationkwh/report/report_retencions_gkwh.mako:88
-msgid "NIF titular"
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:205
+msgid "INFORMACIÓ FISCAL"
 msgstr ""
 
-#: rml:som_generationkwh/report/report_retencions_gkwh.mako:95
-msgid "Estalvi"
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:210
+msgid "Nom:"
 msgstr ""
 
-#: rml:som_generationkwh/report/report_retencions_gkwh.mako:99
-msgid "19% Retenció sobre l'estalvi"
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:210
+msgid "NIF/NIE:"
+msgstr ""
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:216
+msgid "Estalvi:"
+msgstr ""
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:217
+msgid "19% Retenció sobre l'estalvi:"
+msgstr ""
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:218
+msgid "Tipus percepció:"
+msgstr ""
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:218
+msgid "Guany en espècie"
+msgstr ""
+
+#: rml:som_generationkwh/report/report_retencions_gkwh.mako:225
+msgid ""
+"Som Energia, SCCL, CIF F55091367 | Domicili Pic de Peguera, 11 A 28 - "
+"17003 - Girona | generationkwh@somenergia.coop | www.somenergia.coop"
 msgstr ""
 
