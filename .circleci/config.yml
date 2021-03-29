@@ -127,7 +127,6 @@ jobs:
             cd $ROOT_DIR_SRC/$TESTING_REPO
             # Add "-m new_module_name" for every new module on this repository
             destral -a --report-coverage --enable-coverage --report-junitxml $ROOT_DIR_SRC/test-results/destral
-            python -m unittest -v tests.test_version_checker
 
       - run:
           name: coverage
