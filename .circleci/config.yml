@@ -109,6 +109,7 @@ jobs:
       - run:
           name: run tests
           command: |
+            export TESTING_REPO=openerp_som_addons
             export CI_REPO=gisce/$TESTING_REPO
             export OPENERP_DB_HOST=localhost
             export OPENERP_DB_PORT=5432
@@ -125,7 +126,7 @@ jobs:
             export PYTHONPATH=$ROOT_DIR_SRC/erp/server/bin:$ROOT_DIR_SRC/erp/server/bin/addons:$ROOT_DIR_SRC/erp/server/sitecustomize
             cd $ROOT_DIR_SRC/$TESTING_REPO
             # Add "-m new_module_name" for every new module on this repository
-            destral --report-coverage --enable-coverage --report-junitxml $ROOT_DIR_SRC/test-results/destral
+            destral -a --report-coverage --enable-coverage --report-junitxml $ROOT_DIR_SRC/test-results/destral
             python -m unittest -v tests.test_version_checker
 
       - run:
