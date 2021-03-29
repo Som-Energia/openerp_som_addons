@@ -1,0 +1,173 @@
+From 5e337df02859e90bea9fb7da27e00fe7123a5e3f Mon Sep 17 00:00:00 2001
+From: Oriol Piera <oriol.piera@somenergia.coop>
+Date: Mon, 15 Mar 2021 11:32:47 +0100
+Subject: [PATCH] Fix bug incorrect characters and overlap contract data in
+ report. Remove WIP wizard
+
+---
+ .../SomEnergia/som_infoenergia/__terp__.py    |  1 -
+ .../som_infoenergia/pdf_tools/topdf.py        |  2 +-
+ .../report/infoenergia_header.mako            | 13 ++++---
+ .../som_infoenergia/som_infoenergia_view.xml  |  1 -
+ .../som_infoenergia/wizard/__init__.py        |  1 -
+ .../wizard/wizard_resend_email.py             | 30 ----------------
+ .../wizard/wizard_resend_email_view.xml       | 34 -------------------
+ 7 files changed, 9 insertions(+), 73 deletions(-)
+ delete mode 100644 addons/gisce/SomEnergia/som_infoenergia/wizard/wizard_resend_email.py
+ delete mode 100644 addons/gisce/SomEnergia/som_infoenergia/wizard/wizard_resend_email_view.xml
+
+diff --git a/addons/gisce/SomEnergia/som_infoenergia/__terp__.py b/addons/gisce/SomEnergia/som_infoenergia/__terp__.py
+index 6aee695270c1..1c8b6ce29271 100644
+--- a/addons/gisce/SomEnergia/som_infoenergia/__terp__.py
++++ b/addons/gisce/SomEnergia/som_infoenergia/__terp__.py
+@@ -29,7 +29,6 @@
+         "wizard/wizard_download_pdf_view.xml",
+         "wizard/wizard_download_csv_view.xml",
+         "wizard/wizard_send_reports_view.xml",
+-        "wizard/wizard_resend_email_view.xml",
+     ],
+     "active": False,
+     "installable": True
+diff --git a/addons/gisce/SomEnergia/som_infoenergia/pdf_tools/topdf.py b/addons/gisce/SomEnergia/som_infoenergia/pdf_tools/topdf.py
+index 9c8308eeec13..6166fcd8486e 100644
+--- a/addons/gisce/SomEnergia/som_infoenergia/pdf_tools/topdf.py
++++ b/addons/gisce/SomEnergia/som_infoenergia/pdf_tools/topdf.py
+@@ -8,7 +8,7 @@
+ import pdfkit
+ import pypdftk_ as pypdftk
+ 
+-ENCODING = 'iso-8859-1'
++ENCODING = 'utf-8'
+ WKHTMLTOPDF = os.getenv('WKHTMLTOPDF_', None)
+ 
+ def read_mako_template(path):
+diff --git a/addons/gisce/SomEnergia/som_infoenergia/report/infoenergia_header.mako b/addons/gisce/SomEnergia/som_infoenergia/report/infoenergia_header.mako
+index 6fe3d1a01b2f..0695dc2d792d 100644
+--- a/addons/gisce/SomEnergia/som_infoenergia/report/infoenergia_header.mako
++++ b/addons/gisce/SomEnergia/som_infoenergia/report/infoenergia_header.mako
+@@ -1,4 +1,8 @@
+-<html
++## -*- coding: utf-8 -*-
++<html>
++<head>
++<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
++</head>
+ <body>
+ <style>
+ .absolute {
+@@ -12,14 +16,13 @@
+ }
+ </style>
+ <div class="absolute">
+-<span style="font-family: Open Sans; font-size: 1.1em; line-height: 18px">
++<span style="font-family: Open Sans; font-size: 1em; line-height: 18px">
+ <span style="font-weight:bold">
+-${customer['name']}
+-<br>${customer['surname']}
++${customer['name']} ${customer['surname']}
+ </span>
+ <br>${customer['address']}
+ <br><span style="font-weight:bold">CUPS ${customer['cups']}</span>
+ </span>
+ </div>
+ </body>
+-</html>
+\ No newline at end of file
++</html>
+diff --git a/addons/gisce/SomEnergia/som_infoenergia/som_infoenergia_view.xml b/addons/gisce/SomEnergia/som_infoenergia/som_infoenergia_view.xml
+index 8794a2419a34..775c6e3b3188 100644
+--- a/addons/gisce/SomEnergia/som_infoenergia/som_infoenergia_view.xml
++++ b/addons/gisce/SomEnergia/som_infoenergia/som_infoenergia_view.xml
+@@ -23,7 +23,6 @@
+                         <field name='pdf_filename' select="1" readonly="1"/>
+                         <field name='info' readonly="1"/>
+                         <field name='mail_id' readonly="1"/>
+-                        <button name="resend_email" string="open_form" type="object"/>
+                     </group>
+                 </form>
+             </field>
+diff --git a/addons/gisce/SomEnergia/som_infoenergia/wizard/__init__.py b/addons/gisce/SomEnergia/som_infoenergia/wizard/__init__.py
+index 1e815bb05164..61e88f5dd4c5 100644
+--- a/addons/gisce/SomEnergia/som_infoenergia/wizard/__init__.py
++++ b/addons/gisce/SomEnergia/som_infoenergia/wizard/__init__.py
+@@ -1,4 +1,3 @@
+ import wizard_download_pdf
+ import wizard_download_csv
+ import wizard_send_reports
+-import wizard_resend_email
+diff --git a/addons/gisce/SomEnergia/som_infoenergia/wizard/wizard_resend_email.py b/addons/gisce/SomEnergia/som_infoenergia/wizard/wizard_resend_email.py
+deleted file mode 100644
+index 921b6e614038..000000000000
+--- a/addons/gisce/SomEnergia/som_infoenergia/wizard/wizard_resend_email.py
++++ /dev/null
+@@ -1,30 +0,0 @@
+-# -*- coding: utf-8 -*-
+-
+-from osv import osv, fields
+-from tools.translate import _
+-
+-
+-class WizardResendEmail(osv.osv_memory):
+-    _name = 'wizard.resend.email'
+-
+-    def resend_email(self, cursor, uid, vals, context=None):
+-        md_obj = self.pool.get('ir.model.data')
+-        view_id = md_obj.get_object_reference(
+-            cursor, uid, 'poweremail', 'poweremail_mailbox_form')[1]
+-        sie_obj = self.pool.get('som.infoenergia.enviament')
+-        mail_id = sie_obj.read(cursor, uid, context['active_id'], ['mail_id'])['mail_id'][0]
+-        return {
+-            'name': 'Reenviar',
+-            'view_type':'form',
+-            'view_mode':'form',
+-            #'views' : [(view_id,'form')],
+-            'res_model':'poweremail.mailbox',
+-            'view_id':False,
+-            #'view_id':view_id,
+-            'type':'ir.actions.act_window',
+-            'res_id': mail_id,
+-            'target': 'new',
+-            #'context': context,
+-        }
+-
+-WizardResendEmail()
+diff --git a/addons/gisce/SomEnergia/som_infoenergia/wizard/wizard_resend_email_view.xml b/addons/gisce/SomEnergia/som_infoenergia/wizard/wizard_resend_email_view.xml
+deleted file mode 100644
+index 2c79cc9d7cfc..000000000000
+--- a/addons/gisce/SomEnergia/som_infoenergia/wizard/wizard_resend_email_view.xml
++++ /dev/null
+@@ -1,34 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8" ?>
+-<openerp>
+-    <data>
+-        <record model="ir.ui.view" id="view_wizard_resend_email_form">
+-            <field name="name">wizard.resend.email.form</field>
+-            <field name="model">wizard.resend.email</field>
+-            <field name="type">form</field>
+-            <field name="arch" type="xml">
+-                <form string="Resend email">
+-                        <button special="cancel" string="Cancelar" icon="gtk-cancel"/>
+-                        <button name="resend_email" type="object" string="Renviar email"/>
+-                </form>
+-            </field>
+-        </record>
+-        <record model="ir.actions.act_window" id="action_wizard_resend_email">
+-            <field name="name">Renviar email</field>
+-            <field name="type">ir.actions.act_window</field>
+-            <field name="res_model">wizard.resend.email</field>
+-            <field name="view_type">form</field>
+-            <field name="target">new</field>
+-            <field name="view_id" ref="view_wizard_resend_email_form"/>
+-            <!-- <field name="view_id" ref="poweremail.poweremail_mailbox_form>"/> -->
+-            <!-- <field name="domain">[('id','in',active_ids)]</field> -->
+-        </record>
+-        <record id="values_infoenergia_resend_email_form" model="ir.values">
+-            <field name="object" eval="1"/>
+-            <field name="name">Reenviar email</field>
+-            <field name="key2">client_action_multi</field>
+-            <field name="key">action</field>
+-            <field name="model">som.infoenergia.enviament</field>
+-            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_resend_email'))"/>
+-        </record>
+-    </data>
+-</openerp>

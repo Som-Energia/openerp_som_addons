@@ -1,0 +1,17 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_wizard_infoenergia_download_pdf_rcwd","wizard.infoenergia.download.pdf","model_wizard_infoenergia_download_pdf","som_infoenergia.group_infoenergia_u",1,1,1,1
+"access_wizard_infoenergia_download_pdf_rcw","wizard.infoenergia.download.pdf","model_wizard_infoenergia_download_pdf","som_infoenergia.group_infoenergia_w",1,1,1,0
+"access_wizard_infoenergia_download_pdf_r","wizard.infoenergia.download.pdf","model_wizard_infoenergia_download_pdf","som_infoenergia.group_infoenergia_r",1,0,0,0
+"access_wizard_infoenergia_download_csv_rcwd","wizard.infoenergia.download.csv","model_wizard_infoenergia_download_csv","som_infoenergia.group_infoenergia_u",1,1,1,1
+"access_wizard_infoenergia_download_csv_rcw","wizard.infoenergia.download.csv","model_wizard_infoenergia_download_csv","som_infoenergia.group_infoenergia_w",1,1,1,0
+"access_wizard_infoenergia_download_csv_r","wizard.infoenergia.download.csv","model_wizard_infoenergia_download_csv","som_infoenergia.group_infoenergia_r",1,0,0,0
+"access_som_infoenergia_lot_enviament_rcwd","som.infoenergia.lot.enviament","model_som_infoenergia_lot_enviament","som_infoenergia.group_infoenergia_u",1,1,1,1
+"access_som_infoenergia_lot_enviament_rcw","som.infoenergia.lot.enviament","model_som_infoenergia_lot_enviament","som_infoenergia.group_infoenergia_w",1,1,1,0
+"access_som_infoenergia_lot_enviament_r","som.infoenergia.lot.enviament","model_som_infoenergia_lot_enviament","som_infoenergia.group_infoenergia_r",1,0,0,0
+"access_som_infoenergia_enviament_rcwd","som.infoenergia.enviament","model_som_infoenergia_enviament","som_infoenergia.group_infoenergia_u",1,1,1,1
+"access_som_infoenergia_enviament_rcw","som.infoenergia.enviament","model_som_infoenergia_enviament","som_infoenergia.group_infoenergia_w",1,1,1,0
+"access_som_infoenergia_enviament_r","som.infoenergia.enviament","model_som_infoenergia_enviament","som_infoenergia.group_infoenergia_r",1,0,0,0
+"access_wizard_infoenergia_send_reports_rcwd","wizard.infoenergia.send.reports","model_wizard_infoenergia_send_reports","som_infoenergia.group_infoenergia_u",1,1,1,1
+"access_wizard_infoenergia_send_reports_rcw","wizard.infoenergia.send.reports","model_wizard_infoenergia_send_reports","som_infoenergia.group_infoenergia_w",1,1,1,0
+"access_wizard_infoenergia_send_reports_r","wizard.infoenergia.send.reports","model_wizard_infoenergia_send_reports","som_infoenergia.group_infoenergia_r",1,0,0,0
+

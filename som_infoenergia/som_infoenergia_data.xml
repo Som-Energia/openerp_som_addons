@@ -1,0 +1,190 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="1">
+        <record model="poweremail.templates" id="env_empowering_report_empresa">
+            <field name="name">Infoenergia Entitats i Empreses</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.polissa')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">giscedata.polissa</field>
+            <field eval="0" name="use_filter"/>
+            <field name="def_to">${object.pagador_email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Informe energètic personalitzat pel teu contracte ${object.name} amb tarifa ${object.tarifa_codi} - Servei Infoenergia</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.pagador.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text">
+    <![CDATA[
+    <!doctype html>
+    <html>
+    <head></head>
+    <body>
+    Benvolgut/da ${object.direccio_pagament.name},
+
+    Informe energètic
+
+    </body>
+    </html>
+        ]]></field>
+        </record>
+
+        <record model="poweremail.templates" id="env_empowering_report_domestic">
+            <field name="name">Infoenergia Domèstic</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.polissa')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">giscedata.polissa</field>
+            <field eval="0" name="use_filter"/>
+            <field name="def_to">${object.pagador_email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Infoenergia - Tancament d’any 2020 (contracte ${object.name})</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.pagador.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text">
+    <![CDATA[
+    <!doctype html>
+    <html>
+    <head></head>
+    <body>
+    Benvolgut/da ${object.direccio_pagament.name},
+
+    Informe energètic
+
+    </body>
+    </html>
+        ]]></field>
+        </record>
+
+        <record model="poweremail.templates" id="env_empowering_report_fv_auto">
+            <field name="name">Infoenergia FV Auto</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.polissa')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">giscedata.polissa</field>
+            <field eval="0" name="use_filter"/>
+            <field name="def_to">${object.pagador_email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">[Informe] Quin potencial d’autoproducció tens? (contracte ${object.name})</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.pagador.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text">
+    <![CDATA[
+    <!doctype html>
+    <html>
+    <head></head>
+    <body>
+    Benvolgut/da ${object.direccio_pagament.name},
+
+    Informe energètic
+
+    </body>
+    </html>
+        ]]></field>
+        </record>
+
+    <!-- Templates on som.infoenergia.enviament model-->
+    <record model="poweremail.templates" id="env_empowering_report_empresa_from_enviament">
+            <field name="name">Enviament: Infoenergia Entitats i Empreses</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'som.infoenergia.enviament')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">som.infoenergia.enviament</field>
+            <field eval="0" name="use_filter"/>
+            <field name="def_to">${object.polissa_id.titular.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Informe energètic personalitzat pel teu contracte ${object.polissa_id.name} amb tarifa ${object.polissa_id.tarifa_codi} - Servei Infoenergia</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.polissa_id.titular.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text">
+    <![CDATA[
+    <!doctype html>
+    <html>
+    <head></head>
+    <body>
+    Benvolgut/da ${object.polissa_id.direccio_pagament.name},
+
+    Informe energètic
+
+    </body>
+    </html>
+        ]]></field>
+        </record>
+
+        <record model="poweremail.templates" id="env_empowering_report_domestic_from_enviament">
+            <field name="name">Enviament: Infoenergia Domèstic</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'som.infoenergia.enviament')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">som.infoenergia.enviament</field>
+            <field eval="0" name="use_filter"/>
+            <field name="def_to">${object.polissa_id.titular.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Som Energia - Infoenergia')]"/>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Infoenergia - Tancament d’any 2020 (contracte ${object.polissa_id.name})</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.polissa_id.titular.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text">
+    <![CDATA[
+    <!doctype html>
+    <html>
+    <head></head>
+    <body>
+    Benvolgut/da ${object.polissa_id.direccio_pagament.name},
+
+    Informe energètic
+
+    </body>
+    </html>
+        ]]></field>
+        </record>
+
+        <record model="poweremail.templates" id="env_empowering_report_fv_auto_from_enviament">
+            <field name="name">Enviament: Infoenergia FV Auto</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'som.infoenergia.enviament')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">som.infoenergia.enviament</field>
+            <field eval="0" name="use_filter"/>
+            <field name="def_to">${object.polissa_id.titular.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">[Informe] Quin potencial d’autoproducció tens? (contracte ${object.polissa_id.name})</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.polissa_id.titular.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text">
+    <![CDATA[
+    <!doctype html>
+    <html>
+    <head></head>
+    <body>
+    Benvolgut/da ${object.polissa_id.direccio_pagament.name},
+
+    Informe energètic
+
+    </body>
+    </html>
+        ]]></field>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record model="res.config" id="infoenergia_send_tasks_max_procs">
+            <field name="name">infoenergia_send_tasks_max_procs</field>
+            <field name="value">0</field>
+            <field name="description">Numero màxim de workers dedicats enviar informes d'Infoenergia en paral·lel. Si s'indica '0' (per defecte), no hi ha limit.</field>
+        </record>
+    </data>
+</openerp>
