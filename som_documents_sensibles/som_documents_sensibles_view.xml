@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_som_documents_sensibles_form">
+            <field name="name">som_documents_sensibles.form</field>
+            <field name="model">som.documents.sensibles</field>
+            <field name="arch" type="xml">
+                <form string="Documents Sensibles">
+                    <separator string="Nou document sensible" colspan="4"/>
+                    <group colspan="2" col="3">
+                        <field name='categoria' select="1"/>
+                        <field name='partner_id' select="1"/>
+                    </group>
+                    <newline/>
+                    <separator string="Dates" colspan="4"/>
+                    <group colspan="2" col="3">
+                        <field name='data_recepcio' select="1"/>
+                        <field name='darrera_data_valida' select="1"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_som_documents_sensibles_tree">
+            <field name="name">som_documents_sensibles.tree</field>
+            <field name="model">som.documents.sensibles</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Documents Sensibles">
+                        <field name="categoria"/>
+                        <field name="create_uid"/>
+                        <field name='data_recepcio'/>
+                        <field name='darrera_data_valida'/>
+                        <field name='partner_id'/>
+                        <field name='nif'/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_som_documents_sensibles_tree">
+            <field name="name">Documents Sensibles</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">som.documents.sensibles</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_som_documents_sensibles_tree"/>
+        </record>
+        <menuitem action="action_som_documents_sensibles_tree" id="menu_som_documents_sensibles_tree"  parent="base.menu_base_partner"/>
+    </data>
+</openerp>

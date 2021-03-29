@@ -1,0 +1,3 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_som_documents_sensibles_rcwd","som.documents.sensibles","model_som_documents_sensibles","group_docs_sensibles",1,1,1,1
+"access_som_documents_sensibles_category_rcwd","som.documents.sensibles.category","model_som_documents_sensibles_category","group_docs_sensibles",1,1,1,1
