@@ -1,0 +1,944 @@
+From ac920acaf74ffe28e005558f5a33716d3f11addd Mon Sep 17 00:00:00 2001
+From: Oriol Piera <oriol.piera@somenergia.coop>
+Date: Fri, 12 Mar 2021 18:45:53 +0100
+Subject: [PATCH] WIP: Refactor Enviament and Lot, and minor fixs
+
+---
+ .../SomEnergia/som_infoenergia/__init__.py    |   3 +-
+ .../SomEnergia/som_infoenergia/__terp__.py    |   1 +
+ .../som_infoenergia/giscedata_polissa.py      |  10 +-
+ .../giscedata_polissa_view.xml                |   4 +-
+ ...nergia.py => som_infoenergia_enviament.py} | 322 +++---------------
+ .../som_infoenergia/som_infoenergia_lot.py    | 318 +++++++++++++++++
+ .../som_infoenergia/som_infoenergia_view.xml  |  27 +-
+ .../som_infoenergia/wizard/__init__.py        |   1 +
+ .../wizard/wizard_resend_email.py             |  30 ++
+ .../wizard/wizard_resend_email_view.xml       |  34 ++
+ 10 files changed, 462 insertions(+), 288 deletions(-)
+ rename addons/gisce/SomEnergia/som_infoenergia/{infoenergia.py => som_infoenergia_enviament.py} (52%)
+ create mode 100644 addons/gisce/SomEnergia/som_infoenergia/som_infoenergia_lot.py
+ create mode 100644 addons/gisce/SomEnergia/som_infoenergia/wizard/wizard_resend_email.py
+ create mode 100644 addons/gisce/SomEnergia/som_infoenergia/wizard/wizard_resend_email_view.xml
+
+diff --git a/addons/gisce/SomEnergia/som_infoenergia/__init__.py b/addons/gisce/SomEnergia/som_infoenergia/__init__.py
+index 615f43776c2c..e5b3aac81d3f 100644
+--- a/addons/gisce/SomEnergia/som_infoenergia/__init__.py
++++ b/addons/gisce/SomEnergia/som_infoenergia/__init__.py
+@@ -1,4 +1,5 @@
+ # -*- coding: utf-8 -*-
+-import infoenergia
++import som_infoenergia_lot
++import som_infoenergia_enviament
+ import wizard
+ import giscedata_polissa
+diff --git a/addons/gisce/SomEnergia/som_infoenergia/__terp__.py b/addons/gisce/SomEnergia/som_infoenergia/__terp__.py
+index 1c8b6ce29271..6aee695270c1 100644
+--- a/addons/gisce/SomEnergia/som_infoenergia/__terp__.py
++++ b/addons/gisce/SomEnergia/som_infoenergia/__terp__.py
+@@ -29,6 +29,7 @@
+         "wizard/wizard_download_pdf_view.xml",
+         "wizard/wizard_download_csv_view.xml",
+         "wizard/wizard_send_reports_view.xml",
++        "wizard/wizard_resend_email_view.xml",
+     ],
+     "active": False,
+     "installable": True
+diff --git a/addons/gisce/SomEnergia/som_infoenergia/giscedata_polissa.py b/addons/gisce/SomEnergia/som_infoenergia/giscedata_polissa.py
+index 36ff0b46e2d1..ba29743ac4cb 100644
+--- a/addons/gisce/SomEnergia/som_infoenergia/giscedata_polissa.py
++++ b/addons/gisce/SomEnergia/som_infoenergia/giscedata_polissa.py
+@@ -22,12 +22,16 @@ def write(self, cursor, uid, ids, vals, context=None):
+                 profile_id = profile_obj.search(cursor, uid, [('name','=', 'Default profile')])[0]
+             vals['empowering_profile_id'] = profile_id
+ 
++        if 'emp_allow_send_data' in vals:
++            if not vals['emp_allow_send_data']:
++                vals['emp_allow_recieve_mail_infoenergia'] = False
++
+         res = super(GiscedataPolissaInfoenergia, self).write(cursor, uid, ids, vals, context)
+         return res
+ 
+     _columns = {
+-        'emp_allow_send_data': fields.boolean('Permetre compartir dades per infoenergia',
+-                                  help="Compartir dades pel servei d'infoenergia"),
++        'emp_allow_send_data': fields.boolean('Permetre compartir dades amb BeeData',
++                                  help="Compartir dades a través de l'API amb BeeData"),
+         'emp_allow_recieve_mail_infoenergia': fields.boolean('Permetre rebre informes',
+                                   help="Indica si es vol rebre informes per email del servei"
+                                        "d'infoenergia"),
+@@ -37,4 +41,4 @@ def write(self, cursor, uid, ids, vals, context=None):
+         'emp_allow_recieve_mail_infoenergia': lambda *a: True,
+     }
+ 
+-GiscedataPolissaInfoenergia()
+\ No newline at end of file
++GiscedataPolissaInfoenergia()
+diff --git a/addons/gisce/SomEnergia/som_infoenergia/giscedata_polissa_view.xml b/addons/gisce/SomEnergia/som_infoenergia/giscedata_polissa_view.xml
+index 12e453ada734..01426c52c1b5 100644
+--- a/addons/gisce/SomEnergia/som_infoenergia/giscedata_polissa_view.xml
++++ b/addons/gisce/SomEnergia/som_infoenergia/giscedata_polissa_view.xml
+@@ -10,7 +10,7 @@
+                 <xpath expr="//notebook" position="inside">
+                     <page string="Infoenergia">
+                         <field name="emp_allow_send_data" string="Compartir dades per infoenergia" />
+-                        <field name="emp_allow_recieve_mail_infoenergia" string="Rebre email infoenergia"/>
++                        <field name="emp_allow_recieve_mail_infoenergia" string="Rebre email infoenergia" attrs="{'readonly' : [('emp_allow_send_data', '=', False)]}"/>
+                     </page>
+                 </xpath>
+             </field>
+@@ -33,4 +33,4 @@
+             <field name="value" eval="'ir.actions.act_window,'+str(ref('action_open_infoenergia_enviaments'))" />
+         </record>
+     </data>
+-</openerp>
+\ No newline at end of file
++</openerp>
+diff --git a/addons/gisce/SomEnergia/som_infoenergia/infoenergia.py b/addons/gisce/SomEnergia/som_infoenergia/som_infoenergia_enviament.py
+similarity index 52%
+rename from addons/gisce/SomEnergia/som_infoenergia/infoenergia.py
+rename to addons/gisce/SomEnergia/som_infoenergia/som_infoenergia_enviament.py
+index f5e12371d98e..4f6a62f601ad 100644
+--- a/addons/gisce/SomEnergia/som_infoenergia/infoenergia.py
++++ b/addons/gisce/SomEnergia/som_infoenergia/som_infoenergia_enviament.py
+@@ -16,24 +16,6 @@
+ from som_infoenergia.pdf_tools import topdf
+ 
+ 
+-ESTAT_LOT = [
+-    ('esborrany','Esborrany'),
+-    ('obert', 'Obert'),
+-    ('realitzat', 'Realitzat'),
+-]
+-
+-TIPUS_INFORME = [
+-    ('m1', 'M1 terciari'),
+-    ('m2', 'M2 domèstic'),
+-    ('m5', 'M5 domèstic'),
+-    ('m6_domestic', 'M6 domèstic'),
+-    ('m6_terciari', 'M6 terciari'),
+-    ('m10', 'M10 terciari'),
+-    ('m11', 'M11 domèstic'),
+-    ('fv', 'FV (fotovoltaic)'),
+-    ('altres', 'Altres'),
+-]
+-
+ 
+ def get_ssh_connection():
+     beedata_user = config.get(
+@@ -55,266 +37,6 @@ def get_ssh_connection():
+                 password=beedata_password)
+     return ssh
+ 
+-class SomInfoenergiaLotEnviament(osv.osv):
+-    _name = 'som.infoenergia.lot.enviament'
+-
+-    def _attach_csv(self, cursor, uid, ids, filepath):
+-        if isinstance(ids, (tuple, list)):
+-                ids = ids[0]
+-        attachment_obj = self.pool.get('ir.attachment')
+-        attachment_to_delete = attachment_obj.search(cursor, uid,
+-            [('res_id', '=', ids), ('res_model', '=', 'som.infoenergia.lot.enviament')])
+-
+-        with open(filepath, 'r') as pdf_file:
+-            data = pdf_file.read()
+-            values = {
+-                'name': 'Enviaments.csv',
+-                'datas': base64.b64encode(data),
+-                'res_model': 'som.infoenergia.lot.enviament',
+-                'res_id': ids
+-            }
+-            attachment_id = attachment_obj.create(cursor, uid, values)
+-
+-        attachment_obj.unlink(cursor, uid, attachment_to_delete)
+-
+-        if os.path.isfile(filepath) or os.path.islink(filepath):
+-            os.unlink(filepath)
+-        return attachment_id
+-
+-    def create_enviaments_from_attached_csv(self, cursor, uid, ids, attach_id, context=None):
+-
+-            attachment_obj = self.pool.get('ir.attachment')
+-            attach_data = attachment_obj.read(cursor,uid, attach_id, ['datas'])['datas']
+-            csv_file = StringIO(base64.b64decode(attach_data))
+-            headers = [
+-                h.lower()
+-                for h in csv.reader(csv_file, delimiter=';', quotechar='"').next()
+-            ]
+-
+-            csv_dictReader = csv.DictReader(csv_file, delimiter=';', quotechar='"', fieldnames=headers, restkey="wrong_row")
+-            csv_data = list(csv_dictReader)
+-            self.write(cursor, uid, ids, {'number_csv_rows': len(csv_data)})
+-
+-            self.create_enviaments_from_csv(cursor, uid, ids, csv_data)
+-
+-    def create_enviaments_from_csv(self, cursor, uid, ids, csv_data, context=None):
+-        if isinstance(ids, (tuple, list)):
+-            ids = ids[0]
+-
+-        for idx, env in enumerate(csv_data):
+-            self.create_single_enviament_async(cursor, uid, ids, env)
+-
+-        return idx
+-
+-    @job(queue="infoenergia_download")
+-    def create_single_enviament_async(self, cursor, uid, ids, env_data, context=None):
+-        self.create_single_enviament(cursor, uid, ids, env_data, context)
+-
+-    def create_single_enviament(self, cursor, uid, ids, env_data, context=None):
+-        if isinstance(ids, (tuple, list)):
+-            ids = ids[0]
+-
+-        pol_obj = self.pool.get('giscedata.polissa')
+-        env_obj = self.pool.get('som.infoenergia.enviament')
+-
+-        pol_ids = pol_obj.search(cursor, uid, [('name','=',env_data['contractid'])]) if env_data['contractid'] != "True" else None
+-        msg = ""
+-        env_values = {
+-            'polissa_id': pol_ids[0] if pol_ids else None,
+-            'pdf_filename': env_data['report'],
+-            'num_polissa_csv': env_data['contractid'],
+-            'body_text': env_data['text'],
+-            'lot_enviament': ids,
+-            'estat': 'esborrany'
+-        }
+-        if not pol_ids:
+-            pol_inactive_ids = pol_obj.search(cursor, uid, [('name','=',env_data['contractid']), ('active','=',False)]) if env_data['contractid'] != "True" else None
+-            if pol_inactive_ids:
+-                env_values['polissa_id'] = pol_inactive_ids[0]
+-                env_values['estat'] = 'cancellat'
+-                msg += 'La pòlissa {} està donada de baixa. '.format(env_values['num_polissa_csv'])
+-            else:
+-                env_values['estat'] = 'error'
+-                msg += 'No s\'ha trobat la pòlissa {}. '.format(env_values['num_polissa_csv'])
+-
+-        env_id = env_obj.search(cursor, uid, [('lot_enviament','=',ids), ('pdf_filename', '=', env_data['report'])])
+-        if "wrong_row" in env_data:
+-            env_values['estat'] = 'error'
+-            msg += 'La línia del csv té un format incorrecte: {}. '.format(env_data)
+-        if not env_data['valid']:
+-            env_values['estat'] = 'error'
+-            msg += 'Informe marcat "no vàlid" al csv. '
+-
+-        if env_id:
+-            msg += "Dades actualitzades. "
+-            env_obj.write(cursor, uid,env_id[0], env_values, context)
+-        else:
+-            env_id = env_obj.create(cursor, uid, env_values, context)
+-
+-        if msg:
+-            env_obj.add_info_line(cursor, uid, env_id, msg)
+-
+-        return True
+-
+-    def add_info_line(self, cursor, uid, ids, new_info, context=None):
+-        if isinstance(ids, (tuple, list)):
+-            ids = ids[0]
+-        lot = self.browse(cursor, uid, ids)
+-        now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+-        info = lot.info if lot.info else ''
+-        lot.write({'info': str(now) + ': ' + new_info + '\n' + info})
+-
+-    def get_csv(self, cursor, uid, ids, context=None):
+-        if isinstance(ids, (tuple, list)):
+-            ids = ids[0]
+-
+-        lot_obj = self.pool.get('som.infoenergia.lot.enviament')
+-        lot = lot_obj.browse(cursor, uid, ids)
+-
+-        try:
+-            ssh = get_ssh_connection()
+-            output_dir = config.get(
+-                "infoenergia_report_download_dir", "/tmp/test_shera/reports")
+-
+-            csv_path_file = lot.csv_path_file
+-            output_filepath = os.path.join(output_dir, 'Enviaments.csv')
+-
+-            scp = SCPClient(ssh.get_transport())
+-            scp.get(csv_path_file, output_filepath)
+-
+-            attachment_id = self._attach_csv(cursor, uid, ids, output_filepath)
+-            lot.create_enviaments_from_attached_csv(attachment_id)
+-
+-            self.add_info_line(cursor, uid, ids, 'CSV descarregat correctament')
+-        except Exception as e:
+-            message = 'ERROR ' + str(e)
+-            self.add_info_line(cursor, uid, ids, message)
+-
+-    def _ff_totals(self, cursor, uid, ids, field_name, arg,
+-                             context=None):
+-        res = {}
+-        env_obj = self.pool.get('som.infoenergia.enviament')
+-        if field_name == 'total_enviaments':
+-            for _id in ids:
+-                res[_id] = env_obj.search_count(cursor, uid,
+-                                        [('lot_enviament.id', '=', _id)])
+-        else:
+-            estats = {
+-                'total_enviats': 'enviat',
+-                'total_oberts': 'obert',
+-                'total_esborrany': 'esborrany',
+-                'total_cancelats': 'cancellat',
+-                'total_errors': 'error',
+-                'total_encuats': 'encuat',
+-
+-            }
+-            for _id in ids:
+-                res[_id] = env_obj.search_count(cursor, uid,
+-                                        [('lot_enviament.id', '=', _id),('estat','=',estats[field_name])])
+-        return res
+-
+-    def _ff_progress(self, cursor, uid, ids, field_name, arg,
+-                             context=None):
+-        res = {}
+-        for _id in ids:
+-            number_csv_rows = float(self.read(cursor, uid, _id, ['number_csv_rows'])['number_csv_rows'])
+-            if not number_csv_rows:
+-                res[_id] = 0
+-            elif field_name == 'env_creation_progress':
+-                total_enviaments = self.read(cursor, uid, _id, ['total_enviaments'])['total_enviaments']
+-                res[_id] = (total_enviaments / number_csv_rows) * 100
+-            elif field_name == 'pdf_download_progress':
+-                # TODO: comprovar si el progrés dels PDF es pot fer millor
+-                lot_values = self.read(cursor, uid, _id,
+-                    ['total_enviats', 'total_oberts', 'total_cancelats', 'total_errors','total_encuats']
+-                )
+-                denominador = float(number_csv_rows - lot_values['total_cancelats'] - lot_values['total_errors'])
+-                if denominador == 0:
+-                    res[_id] = 0
+-                else:
+-                    res[_id] = 100 * (lot_values['total_oberts'] + lot_values['total_enviats'] + lot_values['total_encuats']) / denominador
+-            elif field_name == 'env_sending_progress':
+-                lot_values = self.read(cursor, uid, _id,
+-                    ['total_enviats', 'total_cancelats', 'total_errors', 'number_csv_rows']
+-                )
+-                denominador = float(number_csv_rows - lot_values['total_cancelats'] - lot_values['total_errors'])
+-                if denominador == 0:
+-                    res[_id] = 0
+-                else:
+-                    res[_id] = (lot_values['total_enviats'] / denominador) * 100
+-        return res
+-
+-    _columns = {
+-        'name': fields.char(_('Nom del lot'), size=256, required=True),
+-        'estat': fields.selection(ESTAT_LOT, _('Estat'),
+-            required=True),
+-        'is_test': fields.boolean('Test',
+-            help=_(u"És un enviament de prova?")),
+-        'tipus_informe': fields.selection(TIPUS_INFORME, _('Tipus d\'informe'),
+-            required=True),
+-        'info': fields.text(_(u'Informació Adicional'),
+-            help=_(u"Inclou qualsevol informació adicional, com els errors del Shera")),
+-        'email_template': fields.many2one(
+-            'poweremail.templates', 'Plantilla del correu del lot', required=True,
+-            domain="[('object_name.model', '=', 'som.infoenergia.enviament')]"
+-        ),
+-        'pdf_path_folder': fields.char(_('Ruta carpeta dels PDFs'), size=256),
+-        'csv_path_file': fields.char(_('Ruta fitxer CSV'), size=256),
+-        'total_enviaments': fields.function(
+-            _ff_totals, string='Enviaments totals', readonly=True,
+-            type='integer', method=True),
+-        'total_enviats': fields.function(
+-            _ff_totals, string='Enviaments enviats', readonly=True,
+-            type='integer', method=True
+-        ),
+-        'total_encuats': fields.function(
+-            _ff_totals, string='Enviaments encuats per enviar', readonly=True,
+-            type='integer', method=True, help="S'ha realitzat l'acció d'enviar i el procés en segon pla té la tasca pendent"
+-        ),
+-        'total_oberts': fields.function(
+-            _ff_totals, string='Enviaments oberts', readonly=True,
+-            type='integer', method=True, help="Enviaments que tenen el PDF adjunt i encara no s'han enviat"
+-        ),
+-        'total_esborrany': fields.function(
+-            _ff_totals, string='Enviaments en esborrany (sense PDF)', readonly=True,
+-            type='integer', method=True
+-        ),
+-        'total_cancelats': fields.function(
+-            _ff_totals, string='Enviaments cancel·lats', readonly=True,
+-            type='integer', method=True,
+-            help="Ja sigui perquè la pòlissa està de baixa, té l'enviament deshabilitat..."
+-        ),
+-        'total_errors': fields.function(
+-            _ff_totals, string='Enviaments amb error', readonly=True,
+-            type='integer', method=True
+-        ),
+-        'env_creation_progress': fields.function(
+-            _ff_progress, string='Progrés de la creació dels enviaments del lot', readonly=True,
+-            type='float', method=True
+-        ),
+-        'pdf_download_progress': fields.function(
+-            _ff_progress, string='Progrés de la descàrrega de PDFs', readonly=True,
+-            type='float', method=True
+-        ),
+-        'env_sending_progress': fields.function(
+-            _ff_progress, string='Progrés de l\'enviament de les línies d\'enviament', readonly=True,
+-            type='float', method=True
+-        ),
+-        'number_csv_rows': fields.integer(
+-            'Número total de files del CSV', readonly=True
+-        ),
+-    }
+-
+-    _defaults = {
+-        'estat': lambda *a: 'obert',
+-        'is_test': lambda *a: False,
+-        'number_csv_rows': lambda *a: 0,
+-        'env_sending_progress': lambda *a: 0,
+-        'pdf_download_progress': lambda *a: 0,
+-        'env_sending_progress': lambda *a: 0,
+-    }
+-
+-SomInfoenergiaLotEnviament()
+ 
+ 
+ ESTAT_ENVIAT = [
+@@ -355,7 +77,7 @@ def _attach_pdf(self, cursor, uid, ids, filepath):
+                 'name':'Lot {}, informe {}, contracte {}'.format(
+                         enviament.lot_enviament.name, enviament.lot_enviament.tipus_informe.upper(), enviament.polissa_id.name
+                     ),
+-                'datas_fname': '{}_{}.pdf'.format(enviament.polissa_id.name, enviament.lot_enviament.tipus_informe.upper()),
++                'datas_fname': '{}_{}.pdf'.format(enviament.polissa_id.name, enviament.lot_enviament.name),
+                 'datas': base64.b64encode(data),
+                 'res_model': 'som.infoenergia.enviament',
+                 'res_id': ids
+@@ -556,8 +278,9 @@ def poweremail_create_callback(self, cursor, uid, ids, vals, context=None):
+         """Hook que cridarà el poweremail quan es creei un email
+         a partir d'un enviament.
+         """
++        origin_ids = context.get('pe_callback_origin_ids', {})
+         for _id in ids:
+-            self.write(cursor, uid, _id, {'estat':'encuat'})
++            self.write(cursor, uid, _id, {'estat':'encuat', 'mail_id': origin_ids.get(_id, False)})
+             self.add_info_line(cursor, uid, _id, "INFO: Correu encuat per enviar", context)
+         return True
+ 
+@@ -577,6 +300,35 @@ def poweremail_write_callback(self, cursor, uid, ids, vals, context=None):
+                     self.add_info_line(cursor, uid, _id, "INFO: Correu enviat", context)
+         return True
+ 
++    def resend_email(self, cursor, uid, id, context=None):
++        md_obj = self.pool.get('ir.model.data')
++        view_id = md_obj.get_object_reference(
++            cursor, uid, 'poweremail', 'poweremail_mailbox_form')[1]
++        mail_id = self.read(cursor, uid, id[0], ['mail_id'])['mail_id'][0]
++        return {
++            'name': 'Reenviar',
++            'view_type':'form',
++            'view_mode':'form',
++            #'views' : [(view_id,'form')],
++            'res_model':'poweremail.mailbox',
++            'view_id':False,
++            #'view_id':view_id,
++            'type':'ir.actions.act_window',
++            'res_id': mail_id,
++            'target': 'new',
++            #'context': context,
++        }
++
++
++    def _ff_te_autoconsum(self, cursor, uid, ids, field_name, args, context):
++        res = {}
++        gp_obj = self.pool.get('giscedata.polissa')
++        for item in ids:
++            pol = self.read(cursor, uid, item, ['polissa_id'])
++            auto_type = gp_obj.read(cursor, uid, pol['polissa_id'][0], ['autoconsumo'])['autoconsumo']
++            res[item] = auto_type != '00'
++
++        return res
+ 
+     _columns = {
+         'polissa_id': fields.many2one('giscedata.polissa', _('Contracte'),
+@@ -592,12 +344,22 @@ def poweremail_write_callback(self, cursor, uid, ids, vals, context=None):
+             type='char',
+             string=_('Num Polissa'),
+             readonly=True),
++        'autoconsum': fields.function(
++            _ff_te_autoconsum, type='bool', string=_("Té Autoproducció"),
++            readonly=True, method=True),
++        'tarifa': fields.related('polissa_id', 'tarifa', 'name',
++            type='char',
++            string=_('Tarifa'),
++            readonly=True),
+         'estat': fields.selection(ESTAT_ENVIAT, _('Estat'),
+             required=True),
+         'lot_enviament': fields.many2one('som.infoenergia.lot.enviament', _('Lot Enviament'),
+             required=True,
+             ondelete='restrict',
+             select=True),
++        'mail_id': fields.many2one(
++            'poweremail.mailbox', 'Mail'
++        ),
+         'tipus_informe_lot': fields.related('lot_enviament', 'tipus_informe',
+             type='char',
+             string=_('Tipus d\'informe lot'),
+diff --git a/addons/gisce/SomEnergia/som_infoenergia/som_infoenergia_lot.py b/addons/gisce/SomEnergia/som_infoenergia/som_infoenergia_lot.py
+new file mode 100644
+index 000000000000..edde5c2a5fb2
+--- /dev/null
++++ b/addons/gisce/SomEnergia/som_infoenergia/som_infoenergia_lot.py
+@@ -0,0 +1,318 @@
++# -*- coding: utf-8 -*-
++import os, datetime, csv
++from dateutil.relativedelta import relativedelta
++from paramiko import SSHClient, AutoAddPolicy
++import tempfile, shutil
++import base64
++from scp import SCPClient
++import shutil
++from StringIO import StringIO
++
++from autoworker import AutoWorker
++from oorq.decorators import job, create_jobs_group
++from osv import fields, osv
++from tools.translate import _
++from tools import config
++from som_infoenergia.pdf_tools import topdf
++
++
++ESTAT_LOT = [
++    ('esborrany','Esborrany'),
++    ('obert', 'Obert'),
++    ('realitzat', 'Realitzat'),
++]
++
++TIPUS_INFORME = [
++    ('m1', 'M1 terciari'),
++    ('m2', 'M2 domèstic'),
++    ('m5', 'M5 domèstic'),
++    ('m6_domestic', 'M6 domèstic'),
++    ('m6_terciari', 'M6 terciari'),
++    ('m10', 'M10 terciari'),
++    ('m11', 'M11 domèstic'),
++    ('fv', 'FV (fotovoltaic)'),
++    ('altres', 'Altres'),
++]
++
++
++def get_ssh_connection():
++    beedata_user = config.get(
++        "beedata_ssh_user", "")
++    beedata_password = config.get(
++        "beedata_ssh_password", "")
++    beedata_host = config.get(
++        "beedata_ssh_host", "")
++    beedata_port = config.get(
++        "beedata_ssh_port", "22")
++
++    ssh = SSHClient()
++    ssh.load_system_host_keys()
++    ssh.set_missing_host_key_policy(AutoAddPolicy)
++
++    ssh.connect(hostname=beedata_host,
++                port=beedata_port,
++                username=beedata_user,
++                password=beedata_password)
++    return ssh
++
++class SomInfoenergiaLotEnviament(osv.osv):
++    _name = 'som.infoenergia.lot.enviament'
++
++    def _attach_csv(self, cursor, uid, ids, filepath):
++        if isinstance(ids, (tuple, list)):
++                ids = ids[0]
++        attachment_obj = self.pool.get('ir.attachment')
++        attachment_to_delete = attachment_obj.search(cursor, uid,
++            [('res_id', '=', ids), ('res_model', '=', 'som.infoenergia.lot.enviament')])
++
++        with open(filepath, 'r') as pdf_file:
++            data = pdf_file.read()
++            values = {
++                'name': 'Enviaments.csv',
++                'datas': base64.b64encode(data),
++                'res_model': 'som.infoenergia.lot.enviament',
++                'res_id': ids
++            }
++            attachment_id = attachment_obj.create(cursor, uid, values)
++
++        attachment_obj.unlink(cursor, uid, attachment_to_delete)
++
++        if os.path.isfile(filepath) or os.path.islink(filepath):
++            os.unlink(filepath)
++        return attachment_id
++
++    def create_enviaments_from_attached_csv(self, cursor, uid, ids, attach_id, context=None):
++
++            attachment_obj = self.pool.get('ir.attachment')
++            attach_data = attachment_obj.read(cursor,uid, attach_id, ['datas'])['datas']
++            csv_file = StringIO(base64.b64decode(attach_data))
++            headers = [
++                h.lower()
++                for h in csv.reader(csv_file, delimiter=';', quotechar='"').next()
++            ]
++
++            csv_dictReader = csv.DictReader(csv_file, delimiter=';', quotechar='"', fieldnames=headers, restkey="wrong_row")
++            csv_data = list(csv_dictReader)
++            self.write(cursor, uid, ids, {'number_csv_rows': len(csv_data)})
++
++            self.create_enviaments_from_csv(cursor, uid, ids, csv_data)
++
++    def create_enviaments_from_csv(self, cursor, uid, ids, csv_data, context=None):
++        if isinstance(ids, (tuple, list)):
++            ids = ids[0]
++
++        for idx, env in enumerate(csv_data):
++            self.create_single_enviament_async(cursor, uid, ids, env)
++
++        return idx
++
++    @job(queue="infoenergia_download")
++    def create_single_enviament_async(self, cursor, uid, ids, env_data, context=None):
++        self.create_single_enviament(cursor, uid, ids, env_data, context)
++
++    def create_single_enviament(self, cursor, uid, ids, env_data, context=None):
++        if isinstance(ids, (tuple, list)):
++            ids = ids[0]
++
++        pol_obj = self.pool.get('giscedata.polissa')
++        env_obj = self.pool.get('som.infoenergia.enviament')
++
++        pol_ids = pol_obj.search(cursor, uid, [('name','=',env_data['contractid'])]) if env_data['contractid'] != "True" else None
++        msg = ""
++        env_values = {
++            'polissa_id': pol_ids[0] if pol_ids else None,
++            'pdf_filename': env_data['report'],
++            'num_polissa_csv': env_data['contractid'],
++            'body_text': env_data['text'],
++            'lot_enviament': ids,
++            'estat': 'esborrany'
++        }
++        if not pol_ids:
++            pol_inactive_ids = pol_obj.search(cursor, uid, [('name','=',env_data['contractid']), ('active','=',False)]) if env_data['contractid'] != "True" else None
++            if pol_inactive_ids:
++                env_values['polissa_id'] = pol_inactive_ids[0]
++                env_values['estat'] = 'cancellat'
++                msg += 'La pòlissa {} està donada de baixa. '.format(env_values['num_polissa_csv'])
++            else:
++                env_values['estat'] = 'error'
++                msg += 'No s\'ha trobat la pòlissa {}. '.format(env_values['num_polissa_csv'])
++
++        env_id = env_obj.search(cursor, uid, [('lot_enviament','=',ids), ('pdf_filename', '=', env_data['report'])])
++        if "wrong_row" in env_data:
++            env_values['estat'] = 'error'
++            msg += 'La línia del csv té un format incorrecte: {}. '.format(env_data)
++        if not env_data['valid']:
++            env_values['estat'] = 'error'
++            msg += 'Informe marcat "no vàlid" al csv. '
++
++        if env_id:
++            msg += "Dades actualitzades. "
++            env_obj.write(cursor, uid,env_id[0], env_values, context)
++        else:
++            env_id = env_obj.create(cursor, uid, env_values, context)
++
++        if msg:
++            env_obj.add_info_line(cursor, uid, env_id, msg)
++
++        return True
++
++    def add_info_line(self, cursor, uid, ids, new_info, context=None):
++        if isinstance(ids, (tuple, list)):
++            ids = ids[0]
++        lot = self.browse(cursor, uid, ids)
++        now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
++        info = lot.info if lot.info else ''
++        lot.write({'info': str(now) + ': ' + new_info + '\n' + info})
++
++    def get_csv(self, cursor, uid, ids, context=None):
++        if isinstance(ids, (tuple, list)):
++            ids = ids[0]
++
++        lot_obj = self.pool.get('som.infoenergia.lot.enviament')
++        lot = lot_obj.browse(cursor, uid, ids)
++
++        try:
++            ssh = get_ssh_connection()
++            output_dir = config.get(
++                "infoenergia_report_download_dir", "/tmp/test_shera/reports")
++
++            csv_path_file = lot.csv_path_file
++            output_filepath = os.path.join(output_dir, 'Enviaments.csv')
++
++            scp = SCPClient(ssh.get_transport())
++            scp.get(csv_path_file, output_filepath)
++
++            attachment_id = self._attach_csv(cursor, uid, ids, output_filepath)
++            lot.create_enviaments_from_attached_csv(attachment_id)
++
++            self.add_info_line(cursor, uid, ids, 'CSV descarregat correctament')
++        except Exception as e:
++            message = 'ERROR ' + str(e)
++            self.add_info_line(cursor, uid, ids, message)
++
++    def _ff_totals(self, cursor, uid, ids, field_name, arg,
++                             context=None):
++        res = {}
++        env_obj = self.pool.get('som.infoenergia.enviament')
++        if field_name == 'total_enviaments':
++            for _id in ids:
++                res[_id] = env_obj.search_count(cursor, uid,
++                                        [('lot_enviament.id', '=', _id)])
++        else:
++            estats = {
++                'total_enviats': 'enviat',
++                'total_oberts': 'obert',
++                'total_esborrany': 'esborrany',
++                'total_cancelats': 'cancellat',
++                'total_errors': 'error',
++                'total_encuats': 'encuat',
++
++            }
++            for _id in ids:
++                res[_id] = env_obj.search_count(cursor, uid,
++                                        [('lot_enviament.id', '=', _id),('estat','=',estats[field_name])])
++        return res
++
++    def _ff_progress(self, cursor, uid, ids, field_name, arg,
++                             context=None):
++        res = {}
++        for _id in ids:
++            number_csv_rows = float(self.read(cursor, uid, _id, ['number_csv_rows'])['number_csv_rows'])
++            if not number_csv_rows:
++                res[_id] = 0
++            elif field_name == 'env_creation_progress':
++                total_enviaments = self.read(cursor, uid, _id, ['total_enviaments'])['total_enviaments']
++                res[_id] = (total_enviaments / number_csv_rows) * 100
++            elif field_name == 'pdf_download_progress':
++                # TODO: comprovar si el progrés dels PDF es pot fer millor
++                lot_values = self.read(cursor, uid, _id,
++                    ['total_enviats', 'total_oberts', 'total_cancelats', 'total_errors','total_encuats']
++                )
++                denominador = float(number_csv_rows - lot_values['total_cancelats'] - lot_values['total_errors'])
++                if denominador == 0:
++                    res[_id] = 0
++                else:
++                    res[_id] = 100 * (lot_values['total_oberts'] + lot_values['total_enviats'] + lot_values['total_encuats']) / denominador
++            elif field_name == 'env_sending_progress':
++                lot_values = self.read(cursor, uid, _id,
++                    ['total_enviats', 'total_cancelats', 'total_errors', 'number_csv_rows']
++                )
++                denominador = float(number_csv_rows - lot_values['total_cancelats'] - lot_values['total_errors'])
++                if denominador == 0:
++                    res[_id] = 0
++                else:
++                    res[_id] = (lot_values['total_enviats'] / denominador) * 100
++        return res
++
++    _columns = {
++        'name': fields.char(_('Nom del lot'), size=256, required=True),
++        'estat': fields.selection(ESTAT_LOT, _('Estat'),
++            required=True),
++        'is_test': fields.boolean('Test',
++            help=_(u"És un enviament de prova?")),
++        'tipus_informe': fields.selection(TIPUS_INFORME, _('Tipus d\'informe'),
++            required=True),
++        'info': fields.text(_(u'Informació Adicional'),
++            help=_(u"Inclou qualsevol informació adicional, com els errors del Shera")),
++        'email_template': fields.many2one(
++            'poweremail.templates', 'Plantilla del correu del lot', required=True,
++            domain="[('object_name.model', '=', 'som.infoenergia.enviament')]"
++        ),
++        'pdf_path_folder': fields.char(_('Ruta carpeta dels PDFs'), size=256),
++        'csv_path_file': fields.char(_('Ruta fitxer CSV'), size=256),
++        'total_enviaments': fields.function(
++            _ff_totals, string='Enviaments totals', readonly=True,
++            type='integer', method=True),
++        'total_enviats': fields.function(
++            _ff_totals, string='Enviaments enviats', readonly=True,
++            type='integer', method=True
++        ),
++        'total_encuats': fields.function(
++            _ff_totals, string='Enviaments encuats per enviar', readonly=True,
++            type='integer', method=True, help="S'ha realitzat l'acció d'enviar i el procés en segon pla té la tasca pendent"
++        ),
++        'total_oberts': fields.function(
++            _ff_totals, string='Enviaments oberts', readonly=True,
++            type='integer', method=True, help="Enviaments que tenen el PDF adjunt i encara no s'han enviat"
++        ),
++        'total_esborrany': fields.function(
++            _ff_totals, string='Enviaments en esborrany (sense PDF)', readonly=True,
++            type='integer', method=True
++        ),
++        'total_cancelats': fields.function(
++            _ff_totals, string='Enviaments cancel·lats', readonly=True,
++            type='integer', method=True,
++            help="Ja sigui perquè la pòlissa està de baixa, té l'enviament deshabilitat..."
++        ),
++        'total_errors': fields.function(
++            _ff_totals, string='Enviaments amb error', readonly=True,
++            type='integer', method=True
++        ),
++        'env_creation_progress': fields.function(
++            _ff_progress, string='Progrés de la creació dels enviaments del lot', readonly=True,
++            type='float', method=True
++        ),
++        'pdf_download_progress': fields.function(
++            _ff_progress, string='Progrés de la descàrrega de PDFs', readonly=True,
++            type='float', method=True
++        ),
++        'env_sending_progress': fields.function(
++            _ff_progress, string='Progrés de l\'enviament de les línies d\'enviament', readonly=True,
++            type='float', method=True
++        ),
++        'number_csv_rows': fields.integer(
++            'Número total de files del CSV', readonly=True
++        ),
++    }
++
++    _defaults = {
++        'estat': lambda *a: 'obert',
++        'is_test': lambda *a: False,
++        'number_csv_rows': lambda *a: 0,
++        'env_sending_progress': lambda *a: 0,
++        'pdf_download_progress': lambda *a: 0,
++        'env_sending_progress': lambda *a: 0,
++    }
++
++SomInfoenergiaLotEnviament()
++
+diff --git a/addons/gisce/SomEnergia/som_infoenergia/som_infoenergia_view.xml b/addons/gisce/SomEnergia/som_infoenergia/som_infoenergia_view.xml
+index d2886391eca2..8794a2419a34 100644
+--- a/addons/gisce/SomEnergia/som_infoenergia/som_infoenergia_view.xml
++++ b/addons/gisce/SomEnergia/som_infoenergia/som_infoenergia_view.xml
+@@ -9,6 +9,8 @@
+                     <separator string="Dades polissa" colspan="4"/>
+                     <group colspan="2" col="3">
+                         <field name='polissa_id' select="1" readonly="1"/>
++                        <field name='autoconsum' widget="boolean" select="1" readonly="1"/>
++                        <field name='tarifa' select="1"/>
+                         <field name='lang' select="1"/>
+                     </group>
+                     <newline/>
+@@ -20,6 +22,8 @@
+                         <field name='data_enviament' select="1" readonly="1"/>
+                         <field name='pdf_filename' select="1" readonly="1"/>
+                         <field name='info' readonly="1"/>
++                        <field name='mail_id' readonly="1"/>
++                        <button name="resend_email" string="open_form" type="object"/>
+                     </group>
+                 </form>
+             </field>
+@@ -39,6 +43,8 @@
+                         <field name='pdf_filename' select="1"/>
+                         <field name='info'/>
+                         <field name='lang'/>
++                        <field name='autoconsum' widget="boolean" select="1"/>
++                        <field name='tarifa' select="1"/>
+                 </tree>
+             </field>
+         </record>
+@@ -149,10 +155,27 @@
+             <field name="view_type">form</field>
+             <field name="view_mode">tree,form</field>
+             <field name="domain">[('internal','like','infoenergia.%')]</field>
+-            <field name="context">{'active_test': False}</field>
+             <field name="auto_refresh">5</field>
+             <field name="view_id" ref="oorq.view_oorq_jobs_group_tree"/>
+         </record>
+         <menuitem id="enviament_jobs_groups" action="action_enviament_jobs_group_list" parent="menu_infoenergia" icon="terp-project"/>
++
++        <record model="ir.actions.act_window" id="action_resend_mail_infoenergia">
++            <field name="name">Reenviar informe</field>
++            <field name="res_model">poweremail.mailbox</field>
++            <field name="src_model">som.infoenergia.enviament</field>
++            <field name="view_type">form</field>
++            <field name="view_mode">form</field>
++            <field name="view_id" ref="poweremail.poweremail_mailbox_form"/>
++            <field name="domain">[('reference','=','som.infoenergia.enviament,' + str(active_id))]</field>
++        </record>
++        <record id="value_action_resend_mail_infoenergia" model="ir.values">
++            <field name="object" eval="1"/>
++            <field name="name">Reenviar informe</field>
++            <field name="key2">client_action_relate</field>
++            <field name="key">action</field>
++            <field name="model">som.infoenergia.enviament</field>
++            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_resend_mail_infoenergia'))" />
++        </record>
+     </data>
+-</openerp>
+\ No newline at end of file
++</openerp>
+diff --git a/addons/gisce/SomEnergia/som_infoenergia/wizard/__init__.py b/addons/gisce/SomEnergia/som_infoenergia/wizard/__init__.py
+index 61e88f5dd4c5..1e815bb05164 100644
+--- a/addons/gisce/SomEnergia/som_infoenergia/wizard/__init__.py
++++ b/addons/gisce/SomEnergia/som_infoenergia/wizard/__init__.py
+@@ -1,3 +1,4 @@
+ import wizard_download_pdf
+ import wizard_download_csv
+ import wizard_send_reports
++import wizard_resend_email
+diff --git a/addons/gisce/SomEnergia/som_infoenergia/wizard/wizard_resend_email.py b/addons/gisce/SomEnergia/som_infoenergia/wizard/wizard_resend_email.py
+new file mode 100644
+index 000000000000..921b6e614038
+--- /dev/null
++++ b/addons/gisce/SomEnergia/som_infoenergia/wizard/wizard_resend_email.py
+@@ -0,0 +1,30 @@
++# -*- coding: utf-8 -*-
++
++from osv import osv, fields
++from tools.translate import _
++
++
++class WizardResendEmail(osv.osv_memory):
++    _name = 'wizard.resend.email'
++
++    def resend_email(self, cursor, uid, vals, context=None):
++        md_obj = self.pool.get('ir.model.data')
++        view_id = md_obj.get_object_reference(
++            cursor, uid, 'poweremail', 'poweremail_mailbox_form')[1]
++        sie_obj = self.pool.get('som.infoenergia.enviament')
++        mail_id = sie_obj.read(cursor, uid, context['active_id'], ['mail_id'])['mail_id'][0]
++        return {
++            'name': 'Reenviar',
++            'view_type':'form',
++            'view_mode':'form',
++            #'views' : [(view_id,'form')],
++            'res_model':'poweremail.mailbox',
++            'view_id':False,
++            #'view_id':view_id,
++            'type':'ir.actions.act_window',
++            'res_id': mail_id,
++            'target': 'new',
++            #'context': context,
++        }
++
++WizardResendEmail()
+diff --git a/addons/gisce/SomEnergia/som_infoenergia/wizard/wizard_resend_email_view.xml b/addons/gisce/SomEnergia/som_infoenergia/wizard/wizard_resend_email_view.xml
+new file mode 100644
+index 000000000000..2c79cc9d7cfc
+--- /dev/null
++++ b/addons/gisce/SomEnergia/som_infoenergia/wizard/wizard_resend_email_view.xml
+@@ -0,0 +1,34 @@
++<?xml version="1.0" encoding="UTF-8" ?>
++<openerp>
++    <data>
++        <record model="ir.ui.view" id="view_wizard_resend_email_form">
++            <field name="name">wizard.resend.email.form</field>
++            <field name="model">wizard.resend.email</field>
++            <field name="type">form</field>
++            <field name="arch" type="xml">
++                <form string="Resend email">
++                        <button special="cancel" string="Cancelar" icon="gtk-cancel"/>
++                        <button name="resend_email" type="object" string="Renviar email"/>
++                </form>
++            </field>
++        </record>
++        <record model="ir.actions.act_window" id="action_wizard_resend_email">
++            <field name="name">Renviar email</field>
++            <field name="type">ir.actions.act_window</field>
++            <field name="res_model">wizard.resend.email</field>
++            <field name="view_type">form</field>
++            <field name="target">new</field>
++            <field name="view_id" ref="view_wizard_resend_email_form"/>
++            <!-- <field name="view_id" ref="poweremail.poweremail_mailbox_form>"/> -->
++            <!-- <field name="domain">[('id','in',active_ids)]</field> -->
++        </record>
++        <record id="values_infoenergia_resend_email_form" model="ir.values">
++            <field name="object" eval="1"/>
++            <field name="name">Reenviar email</field>
++            <field name="key2">client_action_multi</field>
++            <field name="key">action</field>
++            <field name="model">som.infoenergia.enviament</field>
++            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_resend_email'))"/>
++        </record>
++    </data>
++</openerp>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_download_pdf_form">
+            <field name="name">wizard.infoenergia.download.pdf.form</field>
+            <field name="model">wizard.infoenergia.download.pdf</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Descàrrega PDF Infoenergia">
+                    <field name="state" invisible="1"/>
+                    <group attrs="{'invisible': [('state', '!=', 'init')]}">
+                        <label string="Es descarragaran i desanonimitzaran els PDFs de Beedata"/>
+                    </group>
+                    <group attrs="{'invisible': [('state', '!=', 'finished')]}">
+                        <label string="El informe es desarà als Adjunts del Enviament"/>
+                    </group>
+                    <group colspan="6" attrs="{'invisible': [('state', '=', 'finished')]}">
+                        <button special="cancel" string="Cancelar" icon="gtk-cancel"/>
+                        <button name="download_pdf" type="object" string="Descarregar"/>
+                    </group>
+                    <group colspan="6" attrs="{'invisible': [('state', '!=', 'finished')]}">
+                        <button special="cancel" string="Sortir" icon="gtk-ok"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_download_pdf">
+            <field name="name">Descàrrega PDF Infoenergia</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.infoenergia.download.pdf</field>
+            <field name="view_type">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_download_pdf_form"/>
+            <field name="context">{'from_model':'som.infoenergia.enviament'}</field>
+        </record>
+        <record id="values_infoenergia_download_pdf_form" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Descàrrega PDF Infoenergia</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">som.infoenergia.enviament</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_download_pdf'))"/>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_wizard_download_lot_pdfs">
+            <field name="name">Descàrrega PDFs Infoenergia del Lot</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.infoenergia.download.pdf</field>
+            <field name="view_type">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_download_pdf_form"/>
+            <field name="context">{'from_model':'som.infoenergia.lot.enviament'}</field>
+        </record>
+        <record id="values_infoenergia_download_lot_pdfs_form" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Descàrrega PDFs Infoenergia del Lot</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">som.infoenergia.lot.enviament</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_download_lot_pdfs'))"/>
+        </record>
+    </data>
+</openerp>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_polisses_form">
+            <field name="name">giscedata_polissa.form</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="giscedata_polissa.view_polisses_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="Infoenergia">
+                        <field name="emp_allow_send_data" string="Compartir dades per infoenergia" />
+                        <field name="emp_allow_recieve_mail_infoenergia" string="Rebre email infoenergia"/>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_open_infoenergia_enviaments">
+            <field name="name">Enviaments d'Infoenergia</field>
+            <field name="res_model">som.infoenergia.enviament</field>
+            <field name="src_model">giscedata.polissa</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('polissa_id','=',active_id),('lot_enviament.is_test','=',False)]</field>
+        </record>
+        <record id="value_action_open_infoenergia_enviaments" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Enviaments d'Infoenergia</field>
+            <field name="key2">client_action_relate</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_open_infoenergia_enviaments'))" />
+        </record>
+    </data>
+</openerp>

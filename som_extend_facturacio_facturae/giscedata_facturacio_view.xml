@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+       <record model="ir.ui.view" id="view_factura_tree_facturae">
+            <field name="name">giscedata.facturacio.factura.view.facturae.tree</field>
+            <field name="model">giscedata.facturacio.factura</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="giscedata_facturacio.view_factura_tree"/>
+            <field name="arch" type="xml">
+                <field name="partner_id" position="before">
+                    <field name="has_facturae" select="2"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>

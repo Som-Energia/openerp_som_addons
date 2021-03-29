@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_send_reports_form">
+            <field name="name">wizard.infoenergia.send_reports.form</field>
+            <field name="model">wizard.infoenergia.send.reports</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Envia reports Infoenergia">
+                    <field name="state" invisible="1"/>
+                    <field name="is_test" invisible="1"/>
+                    <group attrs="{'invisible': [('state', '!=', 'init')]}" colspan="4">
+                        <label string="S'enviaran els reports pendents del lot (el procés es farà en segon pla)." colspan="4" />
+                        <label string="" colspan="4"/>
+                        <field name="allow_reenviar" widget="boolean"/>
+                        <group attrs="{'invisible': [('is_test', '=', False)]}" colspan="4" >
+                            <separator string="Enviament de test" colspan="4"/>
+                            <field name="email_to" colspan="4" width="500"/>
+                            <field name="email_subject" colspan="4" width="500"/>
+                        </group>
+                    </group>
+                    <group colspan="6" attrs="{'invisible': [('state', '=', 'finished')]}">
+                        <button special="cancel" string="Cancelar" icon="gtk-cancel"/>
+                        <button name="send_reports" type="object" string="Enviar" icon="gtk-ok"/>
+                    </group>
+                    <group colspan="6" attrs="{'invisible': [('state', '!=', 'finished')]}">
+                        <button special="cancel" string="Sortir" icon="gtk-ok"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_send_report_lot">
+            <field name="name">Enviament reports Infoenergia del lot</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.infoenergia.send.reports</field>
+            <field name="view_type">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_send_reports_form"/>
+            <field name="context">{'from_model':'som.infoenergia.lot.enviament'}</field>
+        </record>
+        <record id="values_infoenergia_send_report_lot_form" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Envia reports Infoenergia del lot</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">som.infoenergia.lot.enviament</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_send_report_lot'))"/>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_send_reports">
+            <field name="name">Enviament report Infoenergia</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.infoenergia.send.reports</field>
+            <field name="view_type">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_send_reports_form"/>
+            <field name="context">{'from_model':'som.infoenergia.enviament'}</field>
+        </record>
+        <record id="values_infoenergia_send_report_form" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Enviament report Infoenergia</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">som.infoenergia.enviament</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_send_reports'))"/>
+        </record>
+    </data>
+</openerp>
