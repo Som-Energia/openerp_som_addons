@@ -21,7 +21,7 @@ class WizardSendReportsTests(testing.OOTestCase):
     def tearDown(self):
         self.txn.stop()
 
-    @mock.patch('som_infoenergia.infoenergia.SomInfoenergiaEnviament.send_reports')
+    @mock.patch('som_infoenergia.som_infoenergia_enviament.SomInfoenergiaEnviament.send_reports')
     def test_send_reports_from_lot(self, mocked_send_reports):
         imd_obj = self.openerp.pool.get('ir.model.data')
         env_obj = self.openerp.pool.get('som.infoenergia.enviament')
@@ -41,7 +41,7 @@ class WizardSendReportsTests(testing.OOTestCase):
         wiz_obj.send_reports(cursor, uid, [wiz_id], context=ctx)
         mocked_send_reports.assert_called_with(cursor, uid, env_ids, context={'allow_reenviar':False})
 
-    @mock.patch('som_infoenergia.infoenergia.SomInfoenergiaEnviament.send_reports')
+    @mock.patch('som_infoenergia.som_infoenergia_enviament.SomInfoenergiaEnviament.send_reports')
     def test_send_reports_from_enviament(self, mocked_send_reports):
         imd_obj = self.openerp.pool.get('ir.model.data')
         cursor = self.cursor
@@ -61,7 +61,7 @@ class WizardSendReportsTests(testing.OOTestCase):
         mocked_send_reports.assert_called_with(cursor, uid, [enviament_id], context={'allow_reenviar':False})
 
 
-    @mock.patch('som_infoenergia.infoenergia.SomInfoenergiaEnviament.send_reports')
+    @mock.patch('som_infoenergia.som_infoenergia_enviament.SomInfoenergiaEnviament.send_reports')
     def test_send_reports_from_test_lot_missing_email(self, mocked_send_reports):
         imd_obj = self.openerp.pool.get('ir.model.data')
         lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
@@ -83,7 +83,7 @@ class WizardSendReportsTests(testing.OOTestCase):
         self.assertEqual(error_email.exception.value, "Cal indicar l'email destinatari de l'enviament")
         mocked_send_reports.assert_not_called()
 
-    @mock.patch('som_infoenergia.infoenergia.SomInfoenergiaEnviament.send_reports')
+    @mock.patch('som_infoenergia.som_infoenergia_enviament.SomInfoenergiaEnviament.send_reports')
     def test_send_reports_from_test_lot(self, mocked_send_reports):
         imd_obj = self.openerp.pool.get('ir.model.data')
         lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
