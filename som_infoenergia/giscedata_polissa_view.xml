@@ -10,7 +10,7 @@
                 <xpath expr="//notebook" position="inside">
                     <page string="Infoenergia">
                         <field name="emp_allow_send_data" string="Compartir dades per infoenergia" />
-                        <field name="emp_allow_recieve_mail_infoenergia" string="Rebre email infoenergia"/>
+                        <field name="emp_allow_recieve_mail_infoenergia" string="Rebre email infoenergia" attrs="{'readonly' : [('emp_allow_send_data', '=', False)]}"/>
                     </page>
                 </xpath>
             </field>

@@ -9,6 +9,8 @@
                     <separator string="Dades polissa" colspan="4"/>
                     <group colspan="2" col="3">
                         <field name='polissa_id' select="1" readonly="1"/>
+                        <field name='autoconsum' widget="boolean" select="1" readonly="1"/>
+                        <field name='tarifa' select="1"/>
                         <field name='lang' select="1"/>
                     </group>
                     <newline/>
@@ -20,6 +22,7 @@
                         <field name='data_enviament' select="1" readonly="1"/>
                         <field name='pdf_filename' select="1" readonly="1"/>
                         <field name='info' readonly="1"/>
+                        <field name='mail_id' readonly="1"/>
                     </group>
                 </form>
             </field>
@@ -39,6 +42,8 @@
                         <field name='pdf_filename' select="1"/>
                         <field name='info'/>
                         <field name='lang'/>
+                        <field name='autoconsum' widget="boolean" select="1"/>
+                        <field name='tarifa' select="1"/>
                 </tree>
             </field>
         </record>
@@ -149,7 +154,6 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="domain">[('internal','like','infoenergia.%')]</field>
-            <field name="context">{'active_test': False}</field>
             <field name="auto_refresh">5</field>
             <field name="view_id" ref="oorq.view_oorq_jobs_group_tree"/>
         </record>
