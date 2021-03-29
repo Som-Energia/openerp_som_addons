@@ -162,7 +162,7 @@
     </div>
   </div>
   <div class="TitolHeader">
-    <h2 class="titol">${_(u"Comunicat de rendiments per a la")}<br/>${_(u"declaració de RENTA ")}${data.year}</h2>
+    <h2 class="titol">${_(u"Comunicat de rendiments per a la")}<br/>${_(u"declaració de la RENDA ")}${data.year}</h2>
     <div class="caixaHeader">
       <div class="doblecaixa">
          <div class="fila">
