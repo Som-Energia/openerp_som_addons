@@ -34,7 +34,7 @@ class LotEnviamentTests(testing.OOTestCase):
                 results.append(row)
         return results
 
-    @mock.patch('som_infoenergia.infoenergia.SomInfoenergiaLotEnviament.create_enviaments_from_csv')
+    @mock.patch('som_infoenergia.som_infoenergia_lot.SomInfoenergiaLotEnviament.create_enviaments_from_csv')
     def test_create_enviaments_from_attached_csv(self, mocked_create_enviaments_from_csv):
         imd_obj = self.openerp.pool.get('ir.model.data')
         lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
