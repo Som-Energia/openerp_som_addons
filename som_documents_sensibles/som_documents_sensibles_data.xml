@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="1">
+        <record model="res.groups" id="group_docs_sensibles">
+            <field name="name">Documents Sensibles Access</field>
+        </record>
+        <record id="documents_sensibles_category_electrodependent" model="som.documents.sensibles.category">
+            <field name="name">Electrodependencia</field>
+            <field name="code">1</field>
+        </record>
+        <record id="documents_sensibles_category_other" model="som.documents.sensibles.category">
+            <field name="name">Altres</field>
+            <field name="code">2</field>
+        </record>
+    </data>
+</openerp>
