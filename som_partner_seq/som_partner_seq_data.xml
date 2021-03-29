@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data noupdate="1">
+        <record model="ir.sequence.type" id="seq_type_som_partner_seq">
+            <field name="name">Socis</field>
+            <field name="code">res.partner.soci</field>
+        </record>
+        <record model="ir.sequence" id="seq_som_partner_seq">
+            <field name="name">Seqüència Socis</field>
+            <field name="code">res.partner.soci</field>
+            <field name="prefix">S</field>
+            <field name="padding">6</field>
+        </record>
+		<record model="ir.sequence.type" id="seq_type_som_titular_seq">
+            <field name="name">Titulars</field>
+            <field name="code">res.partner.titular</field>
+        </record>
+        <record model="ir.sequence" id="seq_som_titular_seq">
+            <field name="name">Seqüència Titulars</field>
+            <field name="code">res.partner.titular</field>
+            <field name="prefix">T</field>
+            <field name="padding">6</field>
+        </record>
+    </data>
+</openerp>

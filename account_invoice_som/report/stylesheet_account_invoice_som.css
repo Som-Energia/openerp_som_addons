@@ -1,0 +1,262 @@
+/* etiquetes */
+body {
+    padding: 0px;
+    margin: 0px;
+    color: #4b4b4b;
+    font-family: 'Roboto';
+}
+
+h2 {
+    color: white;
+    font-size: 13px;
+    line-height: 28px;
+    font-weight: bold;
+    font-family: 'Roboto';
+    padding: 0px;
+    margin: 0px;
+}
+
+@font-face {
+    font-family: 'Lato';
+    src: url("assets/Lato-Regular.ttf") format('sans-serif');
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: 'Lato';
+    src: url("assets/Lato-Bold.ttf") format('sans-serif');
+    font-weight: bold;
+}
+
+/* classes */
+
+.title {
+    padding-left: 10px;
+}
+
+.black {
+    background-color: #4b4b4b;
+}
+
+.black_font {
+    color: #4b4b4b;
+}
+
+.white_font {
+    color: white;
+}
+
+.olivian_green {
+    background-color: #bec83f
+}
+
+.gray {
+    background-color: #edeef0;
+}
+
+.mid_gray {
+    background-color: #e5e6e8;
+}
+
+.dark_gray {
+    background-color: #c2c3c9;
+}
+
+.light_gray {
+    background-color: #f8f8f9;
+}
+
+.content {
+    padding: 10px;
+}
+
+.intro {
+    white-space: pre-line;
+}
+
+.concepte {
+    margin: 0px;
+    padding: 15px;
+    line-height: 15px;
+    font-family: 'Lato';
+    font-size: 12.25px;
+    height: 20px;
+}
+
+.preu_concepte {
+    margin: 0px;
+    padding: 15px;
+    line-height: 15px;
+    font-family: 'Lato';
+    font-size: 12.25px;
+    text-align: right;
+    height: 20px;
+}
+
+.preu_final {
+    margin: 0px;
+    padding: 10px;
+    padding-bottom: 0px;
+    line-height: 15px;
+    font-family: 'Lato';
+    font-size: 12.25px;
+    text-align: center;
+    height: 30px;
+}
+
+.taules_finals {
+    margin: 0px;
+    margin-top: 2px;
+    padding: 0px;
+    width: 100%;
+}
+
+.taules_finals td {
+    text-align: center;
+    height: 28px;
+    font-size: 13px;
+    line-height: 28px;
+    font-family: 'Roboto';
+    padding: 0px;
+    margin: 0px;
+}
+
+.ta_l {
+    text-align: left;
+}
+
+.normal_text {
+    padding: 10px;
+    font-size: 12.25px;
+    font-family: 'Lato';
+    font-weight: normal;
+}
+
+.logo {
+    height: 80px;
+}
+
+.center {
+    text-align: center;
+}
+
+.right {
+    text-align: right;
+}
+
+.pr_20 {
+    padding-right: 20px;
+}
+/* específics */
+
+#dades_empresa {
+    white-space: pre-line;
+    line-height: 15px;
+    font-size: 12.25px;
+    font-family: 'Lato';
+    padding: 0px;
+}
+
+#dades_factura {
+    /* float: right; */
+    border: solid 1.5px #4b4b4b;
+    padding: 0px;
+    font-family: 'Lato';
+    font-size: 11.5px;
+}
+
+#concepte_factura {
+    margin-top: 10px;
+}
+
+#totals {
+    margin-top: 30px;
+}
+
+#taula_conceptes {
+    margin: 0px;
+    margin-top: 2px;
+    padding: 0px;
+    height: 500px;
+    width: 100%;
+}
+
+#quadres {
+    background-color: green;
+    height: 500px;
+}
+
+.price_section {
+    margin: 0px;
+    padding: 0px;
+    min-height: 350px;
+    background-color: #edeef0;
+    text-align: center;
+    width: 17.8%;
+    float: left;
+}
+
+.quantity_section {
+    text-align: center;
+    margin: 0px;
+    padding: 0px;
+    min-height: 350px;
+    background-color: #edeef0;
+    width: 9%;
+    float: left;
+}
+
+.subprice_section {
+    color: grey;
+    margin: 0px;
+    padding: 0px;
+    min-height: 350px;
+    background-color: #edeef0;
+    text-align: center;
+    width: 15%;
+    float: left;
+}
+
+#concept_section {
+    min-height: 350px;
+    background-color: #f8f8f9;
+    width: 58.5%;
+    float: left;
+}
+
+#outer {
+    width: 15px;
+    position: relative;
+    float: left;
+    font-size: 8px;
+}
+
+#vertical_text {
+    -webkit-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+    position: absolute;
+    left: 5px;
+    transform-origin: left top;
+    -webkit-transform-origin: left top;
+    width: 750px;
+    bottom: -900px;
+    padding: 15px;
+    font-size: 8px;
+    color: #c2c3c9;
+    text-align: center;
+}
+
+
+/* Test Classes */
+
+.green {
+    background-color: green;
+}
+
+.blue {
+    background-color: blue;
+}
+
+.yellow {
+    background-color: yellow;
+}

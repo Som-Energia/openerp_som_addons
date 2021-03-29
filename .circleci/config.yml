@@ -125,7 +125,7 @@ jobs:
             export PYTHONPATH=$ROOT_DIR_SRC/erp/server/bin:$ROOT_DIR_SRC/erp/server/bin/addons:$ROOT_DIR_SRC/erp/server/sitecustomize
             cd $ROOT_DIR_SRC/$TESTING_REPO
             # Add "-m new_module_name" for every new module on this repository
-            destral -m account_account_som --report-coverage --enable-coverage --report-junitxml $ROOT_DIR_SRC/test-results/destral
+            destral -m account_account_som -m account_invoice_som -m som_energetica --report-coverage --enable-coverage --report-junitxml $ROOT_DIR_SRC/test-results/destral
 
       - run:
           name: coverage

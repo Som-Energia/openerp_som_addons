@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data noupdate="1">
+        <record model="ir.header_webkit" id="invoice_webkit_header">
+            <field name="format">A4</field>
+            <field name="margin_bottom">10</field>
+            <field name="margin_top">15</field>
+            <field name="margin_left">0.01</field>
+            <field name="margin_right">0.01</field>
+            <field name="name">Generic invoice header</field>
+            <field name="orientation">Portrait</field>
+            <field name="footer_html">
+                <![CDATA[
+                    <html>
+
+                    </html>
+                ]]>
+            </field>
+        </record>
+        <record id="account.account_invoices" model="ir.actions.report.xml">
+            <field name="report_type">webkit</field>
+            <field name="report_name">account.invoice</field>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field eval="0" name="auto"/>
+            <field eval="0" name="header"/>
+            <field name="model">account.invoice</field>
+            <field name="type">ir.actions.report.xml</field>
+            <field name="name">Factura</field>
+            <field name="report_webkit"
+                   eval="'account_invoice_som/report/account_invoice_som.mako'"/>
+            <field name="webkit_header" ref="invoice_webkit_header"/>
+            <field name="report_rml" eval="False"/>
+        </record>
+
+        <!-- Plantilla inscripció per compres col·lectives -->
+        <record model="poweremail.templates" id="email_self_consumption_registration">
+            <field name="name">Factura Inscripció Compra col·lectiva</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'account.invoice')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">account.invoice</field>
+            <field eval="0" name="use_filter"/>
+            <field name="file_name">${object.number}</field>
+            <field name="report_template" model="ir.actions.report.xml" search="[('name', '=', 'Factura')]"/>
+            <field name="def_to">${object.partner_id.address[0].email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="def_subject">Factura inscripció compra autoproducció</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.lang_partner}</field>
+            <field name="copyvalue">${object.number}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text">
+                <![CDATA[
+<!doctype html>
+<html>
+<head><meta charset='utf8'></head><body>
+<%
+from mako.template import Template
+def render(text_to_render, object_):
+    templ = Template(text_to_render)
+    return templ.render_unicode(
+        object=object_,
+        format_exceptions=True
+    )
+t_obj = object.pool.get('poweremail.templates')
+md_obj = object.pool.get('ir.model.data')
+template_id = md_obj.get_object_reference(
+                    object._cr, object._uid,  'som_poweremail_common_templates', 'common_template_legal_footer'
+                )[1]
+text_legal = render(t_obj.read(
+    object._cr, object._uid, [template_id], ['def_body_text'])[0]['def_body_text'],
+    object
+)
+%>
+<div align="right"><img src="http://www.somenergia.coop/wp-content/uploads/2014/07/logo.png"></div>
+% if object.partner_id.lang != "es_ES":
+<p><br>
+Hola, <br>
+<br>
+Enhorabona, ja estàs formalment inscrit a la compra col·lectiva de Som Energia.<br>
+<br>
+Hem rebut el teu pagament de 150 € del qual t’adjuntem la factura en aquest mateix correu. A la factura posa forma de pagament mitjançant transferència, no en feu cas si us plau, aquest missatge surt a totes les factures per defecte i per ara no ho podem treure. Si rebeu la factura és que ja hem rebut el pagament.<br>
+<br>
+Et recordem quins seran els següents passos a partir d’ara:<br>
+<ol>
+    <li>
+        <b>Preinforme:</b> D’aquí uns dies o setmanes (depenent de l’estat de les inscripcions) l’empresa instal·ladora adjudicatària de la compra col·lectiva es posarà en contacte amb tu per fer-te arribar un <b>preinforme</b> on es contrasta el model fotovoltaic que has escollit amb el teu ús de l’energia, l’orientació de la seva teulada i possibles ombres que afectin el rendiment de les plaques solars.<br>
+    </li>
+    <li>
+        <b>Visita tècnica:</b> Haureu d’acordar una data per que els tècnics de l’empresa instal·ladora vinguin a conèixer de primera mà l’emplaçament on s’ha de fer el muntage de la instal·lació. Aquest és un moment important per resoldre dubtes i rebre l’assessorament dels experts.<br>
+    </li>
+    <li>
+        <b>Contracte Clau en Mà:</b> Desprès d’acceptar la oferta definitiva, haureu de signar el contracte clau en mà per la ue l’empresa instal·ladora pugui iniciar la tramitació dels permisos d’obra. En aquest moment haureu de fer el pagament del 50% de la instal·lació. És important que no demoreu la signatura!<br>
+    </li>
+    <li>
+        <b>Muntatge i posada en marxa:</b> En tenir la llicència municipal caldrà acordar una data d’obra. Les obres com a molt han de durar un màxim de 5 dies i una vegada finalitzades, quan tot estigui al seu lloc i en funcionament, haureu de signar l’acta de recepció. Serà el moment de fer un pagament del 40% de la instal·lació.<br>
+    </li>
+    <li>
+        <b>Legalització:</b> Finalment l’empresa instal·ladora s’encarregarà de fer la inscripció al registre d’autoconsum autonòmic. Serà el moment de fer el pagament del 10% restant.<br>
+    </li>
+</ol>
+
+És important prendre consciència que en participar d’una compra col·lectiva, el servei no es rep de forma instantània i cal que les persones participants s’adaptin a les temporalitats i ritmes establerts. Per altra banda, l’empresa instal·ladora es compromet a informar de forma regular i atendre totes les consultes, dubtes i incidències amb diligència, agilitat i qualitat.<br>
+<br>
+Per qualsevol dubte, consulta o proposta, restem a la vostra disposició.<br>
+<br>
+Salut i bona energia!<br>
+<br>
+Equip de Som Energia<br>
+<a href="mailto:auto@somenergia.coop">auto@somenergia.coop</a><br>
+<a href="https://www.somenergia.coop/ca">www.somenergia.coop</a><br>
+% endif
+% if object.partner_id.lang != "ca_ES":
+<p><br>
+Hola,<br>
+<br>
+Enhorabuena, ya estás formalmente inscrito a la compra colectiva de Som Energia.<br>
+<br>
+Hemos recibido tu pago de 150 € del que te adjuntamos la factura en este mismo correo. (En la factura pone forma de pago mediante transferencia, no hagáis caso por favor, este mensaje sale en todas las facturas por defecto.)<br>
+<br>
+Te recordamos cuáles serán los siguientes pasos a partir de ahora:<br>
+<ol>
+    <li>
+        <b>Preinforme</b>: Dentro de unos días o semanas (dependiendo del estado de las inscripciones) la empresa instaladora adjudicataria de la compra colectiva se pondrá en contacto contigo para hacerte llegar un <b>preinforme</b> donde se contrasta el modelo fotovoltaico que has escogido con tu uso de la energía, la orientación de su tejado y posibles sombras que afecten el rendimiento de las placas solares.<br>
+    </li>
+    <li>
+        <b>Visita técnica</b>: Deberéis acordar una fecha con los técnicos de la empresa instaladora para que vengan a conocer de primera mano el emplazamiento donde se hará el montaje de la instalación. Este es un momento importante para resolver dudas y recibir el asesoramiento de los expertos.<br>
+    </li>
+    <li>
+        <b>Contrato Llave en Mano</b>: Después de aceptar la oferta definitiva, deberéis firmar el contrato llave en mano para la que la empresa instaladora pueda iniciar la tramitación de los permisos de obra. En este momento deberéis  hacer el pago del 50% de la instalación. Para el buen funcionamiento de la campaña és importante que no demoréis esta firma!<br>
+    </li>
+    <li>
+        <b>Montaje y puesta en marcha</b>: Al tener la licencia municipal deberéis acordar una fecha de obra. Las obras como mucho deben durar un máximo de 5 días y una vez finalizadas, cuando todo esté en su sitio y en funcionamiento, deberéis firmar el acta de recepción. Será el momento de hacer un pago del 40% de la instalación.<br>
+    </li>
+    <li>
+        <b>Legalización</b>: Finalmente la empresa instaladora se encargará de hacer la inscripción en el registro de autoconsumo autonómico. Será el momento de hacer el pago del 10% restante.<br>
+    </li>
+</ol>
+Es importante tomar conciencia de que al participar de una compra colectiva, el servicio no se recibe de forma instantánea y es necesario que las personas participantes se adapten a las temporalidades y ritmos establecidos. Por otra parte, la empresa instaladora se compromete a informar de forma regular y atender todas las consultas, dudas e incidencias con diligencia, agilidad y calidad.<br>
+<br>
+Para cualquier duda, consulta o propuesta, quedamos a su disposición.<br>
+<br>
+Salud y buena energía!<br>
+<br>
+Equipo de Som Energia<br>
+<a href="mailto:auto@somenergia.coop">auto@somenergia.coop</a><br>
+<a href="https://www.somenergia.coop/es">www.somenergia.coop</a><br>
+% endif
+${text_legal}
+</body>
+</html>
+                ]]>
+            </field>
+        </record>
+
+<!-- Plantilla Account Invoice confirmació pagada -->
+        <record model="poweremail.templates" id="email_notif_account_invoice_pagada">
+            <field name="name">Avis transferencia rebuda (comptab. i fin.)</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'account.invoice')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">account.invoice</field>
+            <field eval="0" name="use_filter"/>
+            <field name="file_name">${object.number}</field>
+            <field name="def_to">${object.partner_id.address[0].email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="def_subject">Factura pagada ${object.number}</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.lang_partner}</field>
+            <field name="copyvalue">${object.number}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text">
+                <![CDATA[
+                    <!doctype html><html><head><meta charset="utf-8"/><html>
+<%
+  pol_obj = object.pool.get('giscedata.polissa')
+  polissa_id = pol_obj.search(object._cr, object._uid, [('name', '=', object.name)], context={'active_test': False})
+  polissa = pol_obj.browse(object._cr, object._uid, polissa_id[0])
+%>
+% if object.lang_partner == "ca_ES":
+<head><meta charset="utf-8" /><table width="100%" frame="below" BGCOLOR="#E8F1D4"><tr><td height = 2px><FONT SIZE=2><strong>Contracte Som Energia nº ${polissa.name}:</strong></font></td><td VALIGN=TOP rowspan="4"><align="right"><align="right"><img width='130' height='65' src="https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png"></td></tr><tr><td height = 2px><FONT SIZE=1>Adreça punt subministrament: ${polissa.cups.direccio}</font></td></tr><tr><td height = 2px><FONT SIZE=1>Codi CUPS: ${polissa.cups.name}</font></td></tr><tr><td height = 2px width=100%><FONT SIZE=1>Titular: ${polissa.titular.name}</font></td></tr></table></head><body>
+% else:
+<head><meta charset="utf-8" /><table width="100%" frame="below" BGCOLOR="#E8F1D4"><tr><td height = 2px><FONT SIZE=2><strong>Contrato Som Energia nº ${polissa.name}: </strong></font></td><td VALIGN=TOP rowspan="4"><align="right"><align="right"><img width='130' height='65' src="https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png"></td></tr><tr><td height = 2px><FONT SIZE=1>Dirección punto suministro: ${polissa.cups.direccio}</font></td></tr><tr><td height = 2px><FONT SIZE=1>Código CUPS: ${polissa.cups.name}</font></td></tr><tr><td height = 2px width=100%><FONT SIZE=1>Titular: ${polissa.titular.name}</font></td></tr></table></head><body>
+% endif
+<%
+try:
+  p_obj = object.pool.get('res.partner')
+  if not p_obj.vat_es_empresa(object._cr, object._uid, polissa.pagador.vat):
+    nom_pagador =' ' + p_obj.separa_cognoms(object._cr, object._uid, polissa.pagador.name)['nom']
+  else:
+    nom_pagador = ''
+except:
+  nom_pagador = ''
+%>
+Hola${nom_pagador},
+
+% if object.lang_partner != "es_ES":
+Avui hem rebut la teva transferència com a pagament de la factura <b>${object.number}</b>. Aquesta factura ha quedat regularitzada.
+
+Per a qualsevol consulta seguim en contacte.
+
+Salutacions,
+
+Equip de Som Energia
+<a href="http://ca.support.somenergia.coop/category/183-ja-tinc-la-llum-contractada">Centre de Suport</a>
+cobraments@somenergia.coop
+<a href="www.somenergia.coop/ca">www.somenergia.coop</a>
+% endif
+% if object.lang_partner != "ca_ES" and object.lang_partner != "es_ES":
+----------------------------------------------------------------------------------------------------
+% endif
+% if object.lang_partner != "ca_ES":
+Hoy hemos recibido tu transferencia como pago de la factura <b>${object.number}</b>. Esta factura ha quedado regularizada.
+
+Para cualquier duda o consulta seguimos en contacto.
+
+Un saludo,
+Equipo de Som Energia
+<a href="http://es.support.somenergia.coop/category/139-ya-tengo-la-luz-contratada">Centro de Ayuda</a>
+cobraments@somenergia.coop
+<a href="http://www.somenergia.coop">www.somenergia.coop</a>
+% endif
+</body>
+</html>
+                ]]>
+            </field>
+        </record>
+    </data>
+</openerp>

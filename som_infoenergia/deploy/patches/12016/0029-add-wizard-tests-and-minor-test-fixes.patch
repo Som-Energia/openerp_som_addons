@@ -1,0 +1,192 @@
+From af4cd5be870aca291161bb1bdc912c7aca893a57 Mon Sep 17 00:00:00 2001
+From: Mar Jene <mar.jene@somenergia.coop>
+Date: Thu, 4 Mar 2021 13:51:17 +0100
+Subject: [PATCH] add wizard tests and minor test fixes
+
+---
+ .../som_infoenergia/tests/__init__.py         |   3 +-
+ .../som_infoenergia/tests/test_enviament.py   |  14 ++-
+ .../tests/test_wizard_send_reports.py         | 110 ++++++++++++++++++
+ 3 files changed, 120 insertions(+), 7 deletions(-)
+ create mode 100644 addons/gisce/SomEnergia/som_infoenergia/tests/test_wizard_send_reports.py
+
+diff --git a/addons/gisce/SomEnergia/som_infoenergia/tests/__init__.py b/addons/gisce/SomEnergia/som_infoenergia/tests/__init__.py
+index 197c9e1511c9..aa3bc51001de 100644
+--- a/addons/gisce/SomEnergia/som_infoenergia/tests/__init__.py
++++ b/addons/gisce/SomEnergia/som_infoenergia/tests/__init__.py
+@@ -1,2 +1,3 @@
+ from test_lot_enviament import *
+-from test_enviament import *
+\ No newline at end of file
++from test_enviament import *
++from test_wizard_send_reports import *
+\ No newline at end of file
+diff --git a/addons/gisce/SomEnergia/som_infoenergia/tests/test_enviament.py b/addons/gisce/SomEnergia/som_infoenergia/tests/test_enviament.py
+index ff68115a4fbe..0d92dd1c2b9c 100644
+--- a/addons/gisce/SomEnergia/som_infoenergia/tests/test_enviament.py
++++ b/addons/gisce/SomEnergia/som_infoenergia/tests/test_enviament.py
+@@ -1,5 +1,6 @@
+ # -*- coding: utf-8 -*-
+ from destral import testing
++import unittest
+ from destral.transaction import Transaction
+ 
+ from expects import *
+@@ -21,6 +22,7 @@ def setUp(self):
+     def tearDown(self):
+         self.txn.stop()
+ 
++    @unittest.skip('Pending refactor to remove empowering_profile_id from polissa')
+     @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
+     def test_send_single_report_not_emp_allow_recieve_mail_infoenergia(self, mocked_send_mail):
+         imd_obj = self.openerp.pool.get('ir.model.data')
+@@ -175,8 +177,8 @@ def test_send_single_report_allow_reenviar(self, mocked_send_mail):
+             )
+         mocked_send_mail.assert_called_with(
+             context={'src_model': 'som.infoenergia.enviament',
+-            'body_personal': enviament.body_text, 'src_rec_ids': [enviament_id],
+-            'body_common': '', 'allow_reenviar': True, 'template_id': enviament.lot_enviament.email_template.id,
++            'src_rec_ids': [enviament_id],
++            'allow_reenviar': True, 'template_id': enviament.lot_enviament.email_template.id,
+             'active_id': enviament_id
+         })
+ 
+@@ -205,8 +207,8 @@ def test_send_single_report_ok(self, mocked_send_mail):
+             )
+         mocked_send_mail.assert_called_with(
+             context={'src_model': 'som.infoenergia.enviament',
+-            'body_personal': enviament.body_text, 'src_rec_ids': [enviament_id],
+-            'body_common': '', 'template_id': enviament.lot_enviament.email_template.id,
++            'src_rec_ids': [enviament_id],
++            'template_id': enviament.lot_enviament.email_template.id,
+             'active_id': enviament_id
+         })
+ 
+@@ -236,8 +238,8 @@ def test_send_single_report_email_subject_context(self, mocked_send_mail):
+             )
+         mocked_send_mail.assert_called_with(
+             context={'src_model': 'som.infoenergia.enviament',
+-            'body_personal': enviament.body_text, 'src_rec_ids': [enviament_id],
+-            'body_common': '', 'template_id': enviament.lot_enviament.email_template.id,
++            'src_rec_ids': [enviament_id],
++            'template_id': enviament.lot_enviament.email_template.id,
+             'email_to': 'test@test.test', 'email_subject': 'Test subject',
+             'active_id': enviament_id
+         })
+\ No newline at end of file
+diff --git a/addons/gisce/SomEnergia/som_infoenergia/tests/test_wizard_send_reports.py b/addons/gisce/SomEnergia/som_infoenergia/tests/test_wizard_send_reports.py
+new file mode 100644
+index 000000000000..6ec02d19bdd6
+--- /dev/null
++++ b/addons/gisce/SomEnergia/som_infoenergia/tests/test_wizard_send_reports.py
+@@ -0,0 +1,110 @@
++# -*- coding: utf-8 -*-
++from destral import testing
++from destral.transaction import Transaction
++
++from expects import *
++import osv
++
++import csv
++import os
++import mock
++
++
++class WizardSendReportsTests(testing.OOTestCase):
++
++    def setUp(self):
++        self.txn = Transaction().start(self.database)
++
++        self.cursor = self.txn.cursor
++        self.uid = self.txn.user
++
++    def tearDown(self):
++        self.txn.stop()
++
++    @mock.patch('som_infoenergia.infoenergia.SomInfoenergiaEnviament.send_reports')
++    def test_send_reports_from_lot(self, mocked_send_reports):
++        imd_obj = self.openerp.pool.get('ir.model.data')
++        env_obj = self.openerp.pool.get('som.infoenergia.enviament')
++        cursor = self.cursor
++        uid = self.uid
++        lot_enviament_id = imd_obj.get_object_reference(
++            cursor, uid, 'som_infoenergia', 'lot_enviament_0001'
++        )[1]
++        env_ids = env_obj.search(cursor, uid, [('lot_enviament','=', lot_enviament_id)])
++        wiz_obj = self.openerp.pool.get('wizard.infoenergia.send.reports')
++        ctx = {
++            'active_id': lot_enviament_id, 'active_ids': [lot_enviament_id],
++            'from_model':'som.infoenergia.lot.enviament'
++        }
++
++        wiz_id = wiz_obj.create(cursor, uid, {},context=ctx)
++        wiz_obj.send_reports(cursor, uid, [wiz_id], context=ctx)
++        mocked_send_reports.assert_called_with(cursor, uid, env_ids, context={'allow_reenviar':False})
++
++    @mock.patch('som_infoenergia.infoenergia.SomInfoenergiaEnviament.send_reports')
++    def test_send_reports_from_enviament(self, mocked_send_reports):
++        imd_obj = self.openerp.pool.get('ir.model.data')
++        cursor = self.cursor
++        uid = self.uid
++        enviament_id = imd_obj.get_object_reference(
++            cursor, uid, 'som_infoenergia', 'enviament_obert_amb_attach'
++        )[1]
++
++        wiz_obj = self.openerp.pool.get('wizard.infoenergia.send.reports')
++        ctx = {
++            'active_id': enviament_id, 'active_ids': [enviament_id],
++            'from_model':'som.infoenergia.enviament'
++        }
++
++        wiz_id = wiz_obj.create(cursor, uid, {},context=ctx)
++        wiz_obj.send_reports(cursor, uid, [wiz_id], context=ctx)
++        mocked_send_reports.assert_called_with(cursor, uid, [enviament_id], context={'allow_reenviar':False})
++
++
++    @mock.patch('som_infoenergia.infoenergia.SomInfoenergiaEnviament.send_reports')
++    def test_send_reports_from_test_lot_missing_email(self, mocked_send_reports):
++        imd_obj = self.openerp.pool.get('ir.model.data')
++        lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
++        cursor = self.cursor
++        uid = self.uid
++        lot_enviament_id = imd_obj.get_object_reference(
++            cursor, uid, 'som_infoenergia', 'lot_enviament_0001'
++        )[1]
++        lot_env_obj.write(cursor, uid, lot_enviament_id, {'is_test': True})
++        wiz_obj = self.openerp.pool.get('wizard.infoenergia.send.reports')
++        ctx = {
++            'active_id': lot_enviament_id, 'active_ids': [lot_enviament_id],
++            'from_model':'som.infoenergia.lot.enviament'
++        }
++
++        wiz_id = wiz_obj.create(cursor, uid, {},context=ctx)
++        with self.assertRaises(osv.osv.except_osv) as error_email:
++            wiz_obj.send_reports(cursor, uid, [wiz_id], context=ctx)
++        self.assertEqual(error_email.exception.value, "Cal indicar l'email destinatari de l'enviament")
++        mocked_send_reports.assert_not_called()
++
++    @mock.patch('som_infoenergia.infoenergia.SomInfoenergiaEnviament.send_reports')
++    def test_send_reports_from_test_lot(self, mocked_send_reports):
++        imd_obj = self.openerp.pool.get('ir.model.data')
++        lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
++        env_obj = self.openerp.pool.get('som.infoenergia.enviament')
++        cursor = self.cursor
++        uid = self.uid
++        lot_enviament_id = imd_obj.get_object_reference(
++            cursor, uid, 'som_infoenergia', 'lot_enviament_0001'
++        )[1]
++        lot_env_obj.write(cursor, uid, lot_enviament_id, {'is_test': True})
++
++        env_ids = env_obj.search(cursor, uid, [('lot_enviament','=', lot_enviament_id)])
++        wiz_obj = self.openerp.pool.get('wizard.infoenergia.send.reports')
++        ctx = {
++            'active_id': lot_enviament_id, 'active_ids': [lot_enviament_id],
++            'from_model':'som.infoenergia.lot.enviament'
++        }
++        vals = {
++            'email_to':'test@test.com', 'email_subject':'TEST',
++            'allow_reenviar':False
++        }
++        wiz_id = wiz_obj.create(cursor, uid, vals.copy(),context=ctx)
++        wiz_obj.send_reports(cursor, uid, [wiz_id], context=ctx)
++        mocked_send_reports.assert_called_with(cursor, uid, env_ids, context=vals)

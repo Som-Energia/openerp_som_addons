@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+        <record id="som_company_control_report" model="ir.actions.report.xml">
+            <field name="report_type">webkit</field>
+            <field name="report_name">som.company.control</field>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field eval="0" name="auto"/>
+            <field eval="0" name="header"/>
+            <field name="model">res.company</field>
+            <field name="type">ir.actions.report.xml</field>
+            <field name="name">Control Report</field>
+            <field name="report_webkit"
+                   eval="'som_control_reports/report/company_control_report.mako'"/>
+            <!--<field name="webkit_header" ref="factura_som_webkit_header"/>-->
+            <field name="report_rml" eval="False"/>
+        </record>
+	</data>
+</openerp>

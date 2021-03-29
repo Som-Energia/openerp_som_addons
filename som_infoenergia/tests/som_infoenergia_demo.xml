@@ -1,0 +1,48 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>
+		<record id="lot_enviament_0001" model="som.infoenergia.lot.enviament">
+            <field name="name">LOT0001</field>
+            <field name="estat">esborrany</field>
+            <field name="tipus_informe">m1</field>
+            <field name="info" eval="1"/>
+            <field name="email_template" ref="env_empowering_report_domestic_from_enviament"/>
+            <field name="total_enviaments" eval="1"/>
+            <field name="total_enviats" eval="1"/>
+            <field name="total_no_enviats" eval="1"/>
+            <field name="total_sense_pdf" eval="1"/>
+            <field name="total_cancelats" eval="1"/>
+		</record>
+        <record id="enviament_esborrany" model="som.infoenergia.enviament">
+            <field name="polissa_id" ref='giscedata_polissa.polissa_0001'/>
+            <field name="estat">esborrany</field>
+            <field name="lot_enviament" ref="lot_enviament_0001"/>
+            <field name="info">Pdf descarregat correctament</field>
+            <field name="num_polissa_csv">0001</field>
+            <field name="body_text">Informe infoenergia</field>
+		</record>
+        <record id="enviament_obert" model="som.infoenergia.enviament">
+            <field name="polissa_id" ref='giscedata_polissa.polissa_0002'/>
+            <field name="estat">obert</field>
+            <field name="pdf_filename">00002.pdf</field>
+            <field name="lot_enviament" ref="lot_enviament_0001"/>
+            <field name="info">Pdf descarregat correctament</field>
+            <field name="num_polissa_csv">0002</field>
+            <field name="body_text">Informe infoenergia</field>
+        </record>
+        <record id="enviament_obert_amb_attach" model="som.infoenergia.enviament">
+            <field name="polissa_id" ref='giscedata_polissa.polissa_0002'/>
+            <field name="estat">obert</field>
+            <field name="pdf_filename">00002.pdf</field>
+            <field name="lot_enviament" ref="lot_enviament_0001"/>
+            <field name="info">Pdf descarregat correctament</field>
+            <field name="num_polissa_csv">0002</field>
+            <field name="body_text">Informe infoenergia</field>
+        </record>
+        <record id="attach_infoenergia" model="ir.attachment">
+            <field name="name">infoenergia.pdf</field>
+            <field name="res_model">som.infoenergia.enviament</field>
+            <field name="res_id" ref="enviament_obert_amb_attach"/>
+        </record>
+    </data>
+</openerp>

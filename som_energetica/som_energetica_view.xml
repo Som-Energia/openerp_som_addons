@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <menuitem name="Energética" id="menu_energetica"/>
+        <record model="ir.actions.act_window" id="action_menu_energetica">
+            <field name="name">Energética</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="usage">menu</field>
+            <field name="res_model">ir.ui.menu</field>
+            <field name="view_id" ref="base.view_menu"/>
+            <field name="view_type">tree</field>
+            <field name="domain" eval="[('parent_id','=',ref('menu_energetica'))]"/>
+        </record>
+        <menuitem name="Gestión de contratos" id="menu_energetica_gestion_contratos" parent="menu_energetica"/>
+        <menuitem name="Gestión de contratos" id="menu_energetica_gestion_contratos_tree" action="giscedata_polissa.action_polisses" parent="menu_energetica_gestion_contratos"/>
+        <menuitem name="Todos los contratos" id="menu_energetica_gestion_todos_contratos_tree" action="giscedata_polissa.action_polisses_all" parent="menu_energetica_gestion_contratos"/>
+        <menuitem name="Gestión ATR" id="menu_energetica_gestion_atr" parent="menu_energetica"/>
+        <menuitem name="Gestión ATR" id="menu_energetica_gestion_atr_tree" action="giscedata_switching.action_giscedata_switching_view" parent="menu_energetica_gestion_atr"/>
+    </data>
+</openerp>
