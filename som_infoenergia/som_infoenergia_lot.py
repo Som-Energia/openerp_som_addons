@@ -103,13 +103,13 @@ class SomInfoenergiaLotEnviament(osv.osv):
 
         job_ids = []
         for pol_id in polissa_ids:
-            job = self.create_single_enviament_from_polissa_async(cursor, uid, pol_id, context=context)
+            job = self.create_single_enviament_from_polissa_async(cursor, uid, ids, pol_id, context=context)
             job_ids.append(job.id)
             # Create a jobs_group to see the status of the operation
         create_jobs_group(
             cursor.dbname, uid,
-            _('Validar devolucio {0}: {1} linies.').format(devolucio_info['name'], len(job_ids)),
-            'devolucions.confirm_devolucio_lines', job_ids
+            _('Crear Enviaments al lot amb ID {0} a partir de {1} polisses.').format(ids, len(job_ids)),
+            'infoenergia.create_enviaments', job_ids
         )
         amax_proc = int(self.pool.get("res.config").get(cursor, uid, "infoenergia_create_enviaments_tasks_max_procs", "0"))
         if not amax_proc:
