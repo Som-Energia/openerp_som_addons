@@ -32,7 +32,7 @@ def get_ssh_connection():
     ssh.set_missing_host_key_policy(AutoAddPolicy)
 
     ssh.connect(hostname=beedata_host,
-                port=beedata_port,
+                port=int(beedata_port),
                 username=beedata_user,
                 password=beedata_password)
     return ssh
