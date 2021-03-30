@@ -50,7 +50,7 @@ def get_ssh_connection():
     ssh.set_missing_host_key_policy(AutoAddPolicy)
 
     ssh.connect(hostname=beedata_host,
-                port=beedata_port,
+                port=int(beedata_port),
                 username=beedata_user,
                 password=beedata_password)
     return ssh
@@ -95,7 +95,7 @@ class SomInfoenergiaLotEnviament(osv.osv):
             csv_data = list(csv_dictReader)
             self.write(cursor, uid, ids, {'number_csv_rows': len(csv_data)})
 
-            self.create_enviaments_from_csv(cursor, uid, ids, csv_data)
+            self.create_enviaments_from_csv(cursor, uid, ids, csv_data, context)
 
     def create_enviaments_from_polissa_list(self, cursor, uid, ids, polissa_ids, context=None):
         if isinstance(ids, (tuple, list)):
@@ -142,7 +142,7 @@ class SomInfoenergiaLotEnviament(osv.osv):
             ids = ids[0]
 
         for idx, env in enumerate(csv_data):
-            self.create_single_enviament_async(cursor, uid, ids, env)
+            self.create_single_enviament_async(cursor, uid, ids, env, context)
 
         return idx
 
@@ -161,7 +161,7 @@ class SomInfoenergiaLotEnviament(osv.osv):
         msg = ""
         env_values = {
             'polissa_id': pol_ids[0] if pol_ids else None,
-            'pdf_filename': env_data['report'],
+            'pdf_filename': context.get('path_pdf', '') + "/" + env_data['report'],
             'num_polissa_csv': env_data['contractid'],
             'body_text': env_data['text'],
             'lot_enviament': ids,
@@ -177,7 +177,7 @@ class SomInfoenergiaLotEnviament(osv.osv):
                 env_values['estat'] = 'error'
                 msg += 'No s\'ha trobat la pòlissa {}. '.format(env_values['num_polissa_csv'])
 
-        env_id = env_obj.search(cursor, uid, [('lot_enviament','=',ids), ('pdf_filename', '=', env_data['report'])])
+        env_id = env_obj.search(cursor, uid, [('lot_enviament','=',ids), ('polissa_id', '=', env_values['polissa_id'])])
         if "wrong_row" in env_data:
             env_values['estat'] = 'error'
             msg += 'La línia del csv té un format incorrecte: {}. '.format(env_data)
@@ -216,14 +216,14 @@ class SomInfoenergiaLotEnviament(osv.osv):
             output_dir = config.get(
                 "infoenergia_report_download_dir", "/tmp/test_shera/reports")
 
-            csv_path_file = lot.csv_path_file
+            csv_path_file = context.get('path_csv','')
             output_filepath = os.path.join(output_dir, 'Enviaments.csv')
 
             scp = SCPClient(ssh.get_transport())
             scp.get(csv_path_file, output_filepath)
 
             attachment_id = self._attach_csv(cursor, uid, ids, output_filepath)
-            lot.create_enviaments_from_attached_csv(attachment_id)
+            lot.create_enviaments_from_attached_csv(attachment_id, context)
 
             self.add_info_line(cursor, uid, ids, 'CSV descarregat correctament')
         except Exception as e:
@@ -298,8 +298,6 @@ class SomInfoenergiaLotEnviament(osv.osv):
             'poweremail.templates', 'Plantilla del correu del lot', required=True,
             domain="[('object_name.model', '=', 'som.infoenergia.enviament')]"
         ),
-        'pdf_path_folder': fields.char(_('Ruta carpeta dels PDFs'), size=256),
-        'csv_path_file': fields.char(_('Ruta fitxer CSV'), size=256),
         'total_enviaments': fields.function(
             _ff_totals, string='Enviaments totals', readonly=True,
             type='integer', method=True),

@@ -8,8 +8,10 @@
             <field name="arch" type="xml">
                 <form string="Descàrrega CSV Infoenergia">
                     <field name="state" invisible="1"/>
-                    <group attrs="{'invisible': [('state', '!=', 'init')]}">
-                        <label string="Es descarragarà el CSV de Beedata i es crearan les línies d'enviament"/>
+                    <group attrs="{'invisible': [('state', '!=', 'init')]}"  >
+                        <label string="Es descarragarà el CSV de Beedata i es crearan o actualitzaran les línies d'enviament" colspan="4"/>
+                        <field name="path_csv" string="Ruta del CSV" colspan="4" width="400" />
+                        <field name="path_pdf" string="Ruta dels PDFs" colspan="4"  width="400"/>
                     </group>
                     <group attrs="{'invisible': [('state', '!=', 'finished')]}">
                         <label string="El fitxer CSV es desarà als Adjunts del Lot"/>

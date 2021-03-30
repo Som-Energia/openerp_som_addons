@@ -75,8 +75,6 @@
                         <field name='tipus_informe' select="1"/>
                         <field name="email_template" select="1"/>
                         <field name='info' select="1" readonly="1"/>
-                        <field name='pdf_path_folder' select="1"/>
-                        <field name='csv_path_file' select="1"/>
                     </group>
                     <separator string="Quantitats" colspan="4"/>
                     <group colspan="2" col="3">
