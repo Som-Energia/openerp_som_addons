@@ -154,3 +154,30 @@ class LotEnviamentTests(testing.OOTestCase):
             ])
         self.assertEqual(len(post_enviaments), 1)
 
+    def test_create_single_enviament_from_polissa(self):
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
+        env_obj = self.openerp.pool.get('som.infoenergia.enviament')
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
+        cursor = self.cursor
+        uid = self.uid
+        lot_enviament_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_infoenergia', 'lot_enviament_0001'
+        )[1]
+        lot_enviament = lot_env_obj.browse(cursor, uid, lot_enviament_id)
+        pol_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_polissa', 'polissa_0005'
+        )[1]
+        enviaments_in_lot = env_obj.search(cursor, uid, [('lot_enviament','=',lot_enviament_id),('polissa_id','=',pol_id)])
+        self.assertEqual(len(enviaments_in_lot), 0)
+        pol_name = pol_obj.read(cursor, uid, pol_id, ['name'])['name']
+
+        lot_enviament.create_single_enviament_from_polissa(pol_id)
+
+        post_enviaments = env_obj.search(cursor, uid,
+            [("lot_enviament", "=", lot_enviament_id),
+            ('estat', "=", 'preesborrany'), ('polissa_id','=', pol_id),
+            ('info','ilike','INFO: Enviament creat des de pòlissa')
+            ])
+        self.assertEqual(len(post_enviaments), 1)
+

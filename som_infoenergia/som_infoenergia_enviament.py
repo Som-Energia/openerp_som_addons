@@ -40,6 +40,7 @@ def get_ssh_connection():
 
 
 ESTAT_ENVIAT = [
+    ('preesborrany', "Pre Esborrany"),
     ('esborrany','Esborrany'),
     ('obert', 'Obert'),
     ('error', 'Error'),

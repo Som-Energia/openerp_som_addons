@@ -97,6 +97,46 @@ class SomInfoenergiaLotEnviament(osv.osv):
 
             self.create_enviaments_from_csv(cursor, uid, ids, csv_data)
 
+    def create_enviaments_from_polissa_list(self, cursor, uid, ids, polissa_ids, context=None):
+        if isinstance(ids, (tuple, list)):
+            ids = ids[0]
+
+        job_ids = []
+        for pol_id in polissa_ids:
+            job = self.create_single_enviament_from_polissa_async(cursor, uid, pol_id, context=context)
+            job_ids.append(job.id)
+            # Create a jobs_group to see the status of the operation
+        create_jobs_group(
+            cursor.dbname, uid,
+            _('Validar devolucio {0}: {1} linies.').format(devolucio_info['name'], len(job_ids)),
+            'devolucions.confirm_devolucio_lines', job_ids
+        )
+        amax_proc = int(self.pool.get("res.config").get(cursor, uid, "infoenergia_create_enviaments_tasks_max_procs", "0"))
+        if not amax_proc:
+            amax_proc = None
+        aw = AutoWorker(queue="infoenergia_create_enviament", default_result_ttl=24 * 3600, max_procs=amax_proc)
+        aw.work()
+
+        return True
+
+    @job(queue="infoenergia_create_enviament")
+    def create_single_enviament_from_polissa_async(self, cursor, uid, ids, polissa_id, context=None):
+        self.create_single_enviament_from_polissa(cursor, uid, ids, polissa_id, context)
+
+    def create_single_enviament_from_polissa(self, cursor, uid, ids, polissa_id, context=None):
+        if isinstance(ids, (tuple, list)):
+            ids = ids[0]
+        env_obj = self.pool.get('som.infoenergia.enviament')
+        env_values = {
+            'polissa_id': polissa_id,
+            'lot_enviament': ids,
+            'estat': 'preesborrany',
+        }
+        env_id = env_obj.search(cursor, uid, [('lot_enviament','=',ids), ('polissa_id', '=', polissa_id)])
+        if not env_id:
+            env_id = env_obj.create(cursor, uid, env_values, context)
+            env_obj.add_info_line(cursor, uid, env_id, u'INFO: Enviament creat des de pòlissa')
+
     def create_enviaments_from_csv(self, cursor, uid, ids, csv_data, context=None):
         if isinstance(ids, (tuple, list)):
             ids = ids[0]
