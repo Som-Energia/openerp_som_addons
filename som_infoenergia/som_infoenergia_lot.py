@@ -15,6 +15,10 @@ from tools.translate import _
 from tools import config
 from som_infoenergia.pdf_tools import topdf
 
+TIPUS_LOT = [
+    ('infoenergia','Infoenergia'),
+    ('altres', 'Altres'),
+]
 
 ESTAT_LOT = [
     ('esborrany','Esborrany'),
@@ -100,6 +104,8 @@ class SomInfoenergiaLotEnviament(osv.osv):
         if isinstance(ids, (tuple, list)):
             ids = ids[0]
 
+        lot_info = self.read(cursor, uid, ids, ['name','tipus'])
+        context['tipus'] = lot_info['tipus']
         job_ids = []
         for pol_id in polissa_ids:
             job = self.create_single_enviament_from_polissa_async(cursor, uid, ids, pol_id, context=context)
@@ -107,7 +113,7 @@ class SomInfoenergiaLotEnviament(osv.osv):
             # Create a jobs_group to see the status of the operation
         create_jobs_group(
             cursor.dbname, uid,
-            _('Crear Enviaments al lot amb ID {0} a partir de {1} polisses.').format(ids, len(job_ids)),
+            _('Crear Enviaments al lot {0} a partir de {1} polisses.').format(lot_info['name'], len(job_ids)),
             'infoenergia.create_enviaments', job_ids
         )
         amax_proc = int(self.pool.get("res.config").get(cursor, uid, "infoenergia_create_enviaments_tasks_max_procs", "0"))
@@ -125,13 +131,17 @@ class SomInfoenergiaLotEnviament(osv.osv):
     def create_single_enviament_from_polissa(self, cursor, uid, ids, polissa_id, context=None):
         if isinstance(ids, (tuple, list)):
             ids = ids[0]
-        env_obj = self.pool.get('som.infoenergia.enviament')
+        if context['tipus'] == 'infoenergia':
+            env_obj = self.pool.get('som.infoenergia.enviament')
+        elif context['tipus'] == 'altres':
+            env_obj = self.pool.get('som.enviament.massiu')
+
         env_values = {
             'polissa_id': polissa_id,
             'lot_enviament': ids,
-            'estat': 'preesborrany',
+            'estat': 'preesborrany' if context['tipus'] == 'infoenergia' else 'obert',
         }
-        env_id = env_obj.search(cursor, uid, [('lot_enviament','=',ids), ('polissa_id', '=', polissa_id)])
+        env_id = env_obj.search(cursor, uid, [('lot_enviament','=', ids), ('polissa_id', '=', polissa_id)])
         if not env_id:
             env_id = env_obj.create(cursor, uid, env_values, context)
             env_obj.add_info_line(cursor, uid, env_id, u'Enviament creat des de pòlissa')
@@ -229,18 +239,36 @@ class SomInfoenergiaLotEnviament(osv.osv):
             message = 'ERROR ' + str(e)
             self.add_info_line(cursor, uid, ids, message)
 
+    def get_enviament_object(cursor, uid, id, context=None):
+        if isinstance(id, (tuple, list)):
+            id = id[0]
+        tipus = self.read(cursor, uid, id, ['tipus'])['tipus']
+
+        if tipus == 'infoenergia':
+            env_obj = self.pool.get('som.infoenergia.enviament')
+        elif tipus == 'altres':
+            env_obj = self.pool.get('som.enviament.massiu')
+
+        return env_obj
+
     def _ff_totals(self, cursor, uid, ids, field_name, arg,
                              context=None):
         res = {}
-        env_obj = self.pool.get('som.infoenergia.enviament')
+
         if field_name == 'total_enviaments':
             for _id in ids:
+                env_obj = self.get_enviament_object(cursor, uid, _id)
                 res[_id] = env_obj.search_count(cursor, uid,
                                         [('lot_enviament.id', '=', _id)])
-        elif field_name == 'total_env_csv':
+        elif  field_name == 'total_env_csv':
             for _id in ids:
-                res[_id] = env_obj.search_count(cursor, uid,
-                                        [('lot_enviament.id', '=', _id), ('pdf_filename','!=','')])
+                tipus = self.read(cursor, uid, _id, ['tipus'])['tipus']
+                if tipus == 'infoenergia':
+                    env_obj = self.pool.get('som.infoenergia.enviament')
+                    res[_id] = env_obj.search_count(cursor, uid,
+                                            [('lot_enviament.id', '=', _id), ('pdf_filename','!=','')])
+                else:
+                    res[_id] = 0
         else:
             estats = {
                 'total_preesborrany': 'preesborrany',
@@ -252,6 +280,7 @@ class SomInfoenergiaLotEnviament(osv.osv):
                 'total_encuats': 'encuat',
             }
             for _id in ids:
+                env_obj = self.get_enviament_object(cursor, uid, _id)
                 res[_id] = env_obj.search_count(cursor, uid,
                                         [('lot_enviament.id', '=', _id),('estat','=',estats[field_name])])
         return res
@@ -259,33 +288,39 @@ class SomInfoenergiaLotEnviament(osv.osv):
     def _ff_progress(self, cursor, uid, ids, field_name, arg,
                              context=None):
         res = {}
-        env_obj = self.pool.get('som.infoenergia.enviament')
         for _id in ids:
+            env_obj = self.get_enviament_object(cursor, uid, _id)
             total_enviaments = float(self.read(cursor, uid, _id, ['total_enviaments'])['total_enviaments'])
+            tipus = self.read(cursor, uid, _id, ['tipus'])['tipus']
             if not total_enviaments:
                 res[_id] = 0
-            elif field_name == 'env_csv_progress':
-                total_env_csv = self.read(cursor, uid, _id, ['total_env_csv'])['total_env_csv']
-                res[_id] = (total_env_csv / total_enviaments) * 100
-            elif field_name == 'pdf_download_progress':
-                # TODO: comprovar si el progrés dels PDF es pot fer millor
-                total_env_amb_pdf = env_obj.search_count(cursor, uid,
-                                        [('lot_enviament.id', '=', _id), ('data_informe', '!=', False)])
-                res[_id] = (total_env_amb_pdf / total_enviaments) * 100
             elif field_name == 'env_sending_progress':
                 total_env_enviats = env_obj.search_count(cursor, uid,
                                         [('lot_enviament.id', '=', _id), ('data_enviament', '!=', False)])
                 res[_id] = (total_env_enviats / total_enviaments) * 100
+            elif tipus == 'infoenergia' and field_name == 'env_csv_progress':
+                total_env_csv = self.read(cursor, uid, _id, ['total_env_csv'])['total_env_csv']
+                res[_id] = (total_env_csv / total_enviaments) * 100
+            elif tipus == 'infoenergia' and field_name == 'pdf_download_progress':
+                # TODO: comprovar si el progrés dels PDF es pot fer millor
+                total_env_amb_pdf = env_obj.search_count(cursor, uid,
+                                        [('lot_enviament.id', '=', _id), ('data_informe', '!=', False)])
+                res[_id] = (total_env_amb_pdf / total_enviaments) * 100
+            else:
+                res[_id] = 0
+
         return res
 
     _columns = {
         'name': fields.char(_('Nom del lot'), size=256, required=True),
         'estat': fields.selection(ESTAT_LOT, _('Estat'),
             required=True),
+        'tipus': fields.selection(TIPUS_LOT, _('Tipus de lot'),
+            required=True),
         'is_test': fields.boolean('Test',
             help=_(u"És un enviament de prova?")),
         'tipus_informe': fields.selection(TIPUS_INFORME, _('Tipus d\'informe'),
-            required=True),
+        ),
         'info': fields.text(_(u'Informació Adicional'),
             help=_(u"Inclou qualsevol informació adicional, com els errors del Shera")),
         'email_template': fields.many2one(
@@ -347,6 +382,7 @@ class SomInfoenergiaLotEnviament(osv.osv):
 
     _defaults = {
         'estat': lambda *a: 'obert',
+        'tipus': lambda *a: 'infoenergia',
         'is_test': lambda *a: False,
         'env_csv_progress': lambda *a: 0,
         'pdf_download_progress': lambda *a: 0,

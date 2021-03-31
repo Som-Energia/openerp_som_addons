@@ -65,33 +65,34 @@
                 <form string="Infoenergia Lot Enviament">
                     <separator string="Informació del lot" colspan="4"/>
                     <group colspan="2" col="3">
-                        <field name='name' select="1"/>
-                        <field name='estat' select="1"/>
-                        <field name='is_test' select="1"/>
+                        <field name='name'/>
+                        <field name='estat'/>
+                        <field name='tipus'/>
+                        <field name='is_test'/>
                     </group>
                     <newline/>
                     <separator string="Dades enviament" colspan="4"/>
                     <group colspan="2" col="3">
-                        <field name='tipus_informe' select="1"/>
-                        <field name="email_template" select="1"/>
-                        <field name='info' select="1" readonly="1"/>
+                        <field name='tipus_informe' attrs="{'invisible': [('tipus','=','altres')]}"/>
+                        <field name="email_template"/>
+                        <field name='info' readonly="1"/>
                     </group>
                     <separator string="Quantitats" colspan="4"/>
                     <group colspan="2" col="3">
-                        <field name='total_preesborrany' select="1"/>
-                        <field name='total_esborrany' select="1"/>
-                        <field name='total_oberts' select="1"/>
-                        <field name='total_encuats' select="1"/>
-                        <field name='total_enviats' select="1"/>
-                        <field name='total_cancelats' select="1"/>
-                        <field name='total_errors' select="1"/>
-                        <field name='total_env_csv' select="1"/>
-                        <field name='total_enviaments' select="1"/>
+                        <field name='total_preesborrany' attrs="{'invisible': [('tipus','=','altres')]}"/>
+                        <field name='total_esborrany' attrs="{'invisible': [('tipus','=','altres')]}"/>
+                        <field name='total_oberts'/>
+                        <field name='total_encuats'/>
+                        <field name='total_enviats'/>
+                        <field name='total_cancelats'/>
+                        <field name='total_errors' attrs="{'invisible': [('tipus','=','altres')]}"/>
+                        <field name='total_env_csv' attrs="{'invisible': [('tipus','=','altres')]}"/>
+                        <field name='total_enviaments'/>
                     </group>
                     <separator string="Progrés" colspan="4"/>
                     <group colspan="2" col="3">
-                        <field name='env_csv_progress' widget="progressbar"/>
-                        <field name='pdf_download_progress' widget="progressbar"/>
+                        <field name='env_csv_progress' widget="progressbar" attrs="{'invisible': [('tipus','=','altres')]}"/>
+                        <field name='pdf_download_progress' widget="progressbar" attrs="{'invisible': [('tipus','=','altres')]}"/>
                         <field name='env_sending_progress' widget="progressbar"/>
                     </group>
                 </form>
@@ -125,7 +126,16 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">som.infoenergia.lot.enviament</field>
             <field name="view_type">form</field>
+            <field name="domain">[('tipus','=','infoenergia')]</field>
             <field name="view_id" ref="view_som_infoenergia_lot_tree"/>
+        </record>
+        <record model="ir.actions.act_window" id="action_som_infoenergia_lot_altres_tree">
+            <field name="name">Lots enviaments massius</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">som.infoenergia.lot.enviament</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_som_infoenergia_lot_tree"/>
+            <field name="domain">[('tipus','=','altres')]</field>
         </record>
 
         <!--Enviaments del lot-->
@@ -148,6 +158,7 @@
 		</record>
 
         <menuitem action="action_som_infoenergia_lot_tree" id="menu_som_infoenergia_lot_tree"  parent="menu_infoenergia" name="Lots enviament infoenergia"/>
+        <menuitem action="action_som_infoenergia_lot_altres_tree" id="menu_som_infoenergia_lot_altres_tree"  parent="menu_infoenergia" name="Lots enviaments massius"/>
 
         <record model="ir.actions.act_window" id="action_enviament_jobs_group_list">
             <field name="name">Tasques d'enviament</field>

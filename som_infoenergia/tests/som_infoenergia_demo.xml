@@ -5,12 +5,21 @@
             <field name="name">LOT0001</field>
             <field name="estat">esborrany</field>
             <field name="tipus_informe">m1</field>
+            <field name='tipus'>infoenergia</field>
             <field name="info" eval="1"/>
             <field name="email_template" ref="env_empowering_report_domestic_from_enviament"/>
             <field name="total_enviaments" eval="1"/>
             <field name="total_enviats" eval="1"/>
-            <field name="total_no_enviats" eval="1"/>
-            <field name="total_sense_pdf" eval="1"/>
+            <field name="total_cancelats" eval="1"/>
+		</record>
+		<record id="lot_enviament_0002" model="som.infoenergia.lot.enviament">
+            <field name="name">LOT0002</field>
+            <field name="estat">esborrany</field>
+            <field name='tipus'>altres</field>
+            <field name="info" eval="1"/>
+            <field name="email_template" ref="env_empowering_report_domestic_from_enviament"/>
+            <field name="total_enviaments" eval="1"/>
+            <field name="total_enviats" eval="1"/>
             <field name="total_cancelats" eval="1"/>
 		</record>
         <record id="enviament_esborrany" model="som.infoenergia.enviament">
@@ -43,6 +52,12 @@
             <field name="name">infoenergia.pdf</field>
             <field name="res_model">som.infoenergia.enviament</field>
             <field name="res_id" ref="enviament_obert_amb_attach"/>
+        </record>
+        <record id="enviament_obert_tipus_altre" model="som.infoenergia.enviament">
+            <field name="polissa_id" ref='giscedata_polissa.polissa_0002'/>
+            <field name="estat">obert</field>
+            <field name="lot_enviament" ref="lot_enviament_0002"/>
+            <field name="info">Enviament creat des de polissa</field>
         </record>
     </data>
 </openerp>

@@ -230,7 +230,7 @@ class SomInfoenergiaEnviament(osv.osv):
         polissa = enviament.polissa_id
 
         if not polissa.emp_allow_recieve_mail_infoenergia:
-            message = u"INFO: La pòlissa no té habilitada la opció de rebre correus d'Infoenergia"
+            message = u"La pòlissa no té habilitada la opció de rebre correus d'Infoenergia"
             enviament.write({'estat': 'cancellat'})
             self.add_info_line(cursor, uid, _id, message, context)
             return
@@ -245,7 +245,7 @@ class SomInfoenergiaEnviament(osv.osv):
             self.add_info_line(cursor, uid, _id, message, context)
             return
         if not polissa.active or polissa.data_baixa:
-            message = u"INFO: La pòlissa està inactiva o té data de baixa"
+            message = u"La pòlissa està inactiva o té data de baixa"
             enviament.write({'estat': 'cancellat'})
             self.add_info_line(cursor, uid, _id, message, context)
             return
@@ -284,7 +284,7 @@ class SomInfoenergiaEnviament(osv.osv):
         origin_ids = context.get('pe_callback_origin_ids', {})
         for _id in ids:
             self.write(cursor, uid, _id, {'estat':'encuat', 'mail_id': origin_ids.get(_id, False)})
-            self.add_info_line(cursor, uid, _id, "INFO: Correu encuat per enviar", context)
+            self.add_info_line(cursor, uid, _id, "Correu encuat per enviar", context)
         return True
 
     def poweremail_write_callback(self, cursor, uid, ids, vals, context=None):
@@ -300,7 +300,7 @@ class SomInfoenergiaEnviament(osv.osv):
             if vals_w['folder'] == 'sent':
                 for _id in ids:
                     self.write(cursor, uid, _id, {'estat':'enviat', 'data_enviament': vals_w['date_sent']})
-                    self.add_info_line(cursor, uid, _id, "INFO: Correu enviat", context)
+                    self.add_info_line(cursor, uid, _id, "Correu enviat", context)
         return True
 
     def resend_email(self, cursor, uid, id, context=None):
@@ -338,7 +338,6 @@ class SomInfoenergiaEnviament(osv.osv):
 
     _columns = {
         'polissa_id': fields.many2one('giscedata.polissa', _('Contracte'),
-            translate=True,
             ondelete='restrict',
             select=True, pol_rel='no'),
         'lang': fields.related('polissa_id', 'titular', 'lang',
