@@ -93,7 +93,6 @@ class SomInfoenergiaLotEnviament(osv.osv):
 
             csv_dictReader = csv.DictReader(csv_file, delimiter=';', quotechar='"', fieldnames=headers, restkey="wrong_row")
             csv_data = list(csv_dictReader)
-            self.write(cursor, uid, ids, {'number_csv_rows': len(csv_data)})
 
             self.create_enviaments_from_csv(cursor, uid, ids, csv_data, context)
 
@@ -238,15 +237,19 @@ class SomInfoenergiaLotEnviament(osv.osv):
             for _id in ids:
                 res[_id] = env_obj.search_count(cursor, uid,
                                         [('lot_enviament.id', '=', _id)])
+        elif field_name == 'total_env_csv':
+            for _id in ids:
+                res[_id] = env_obj.search_count(cursor, uid,
+                                        [('lot_enviament.id', '=', _id), ('pdf_filename','!=','')])
         else:
             estats = {
-                'total_enviats': 'enviat',
-                'total_oberts': 'obert',
+                'total_preesborrany': 'preesborrany',
                 'total_esborrany': 'esborrany',
+                'total_oberts': 'obert',
+                'total_enviats': 'enviat',
                 'total_cancelats': 'cancellat',
                 'total_errors': 'error',
                 'total_encuats': 'encuat',
-
             }
             for _id in ids:
                 res[_id] = env_obj.search_count(cursor, uid,
@@ -256,32 +259,23 @@ class SomInfoenergiaLotEnviament(osv.osv):
     def _ff_progress(self, cursor, uid, ids, field_name, arg,
                              context=None):
         res = {}
+        env_obj = self.pool.get('som.infoenergia.enviament')
         for _id in ids:
-            number_csv_rows = float(self.read(cursor, uid, _id, ['number_csv_rows'])['number_csv_rows'])
-            if not number_csv_rows:
+            total_enviaments = float(self.read(cursor, uid, _id, ['total_enviaments'])['total_enviaments'])
+            if not total_enviaments:
                 res[_id] = 0
-            elif field_name == 'env_creation_progress':
-                total_enviaments = self.read(cursor, uid, _id, ['total_enviaments'])['total_enviaments']
-                res[_id] = (total_enviaments / number_csv_rows) * 100
+            elif field_name == 'env_csv_progress':
+                total_env_csv = self.read(cursor, uid, _id, ['total_env_csv'])['total_env_csv']
+                res[_id] = (total_env_csv / total_enviaments) * 100
             elif field_name == 'pdf_download_progress':
                 # TODO: comprovar si el progrés dels PDF es pot fer millor
-                lot_values = self.read(cursor, uid, _id,
-                    ['total_enviats', 'total_oberts', 'total_cancelats', 'total_errors','total_encuats']
-                )
-                denominador = float(number_csv_rows - lot_values['total_cancelats'] - lot_values['total_errors'])
-                if denominador == 0:
-                    res[_id] = 0
-                else:
-                    res[_id] = 100 * (lot_values['total_oberts'] + lot_values['total_enviats'] + lot_values['total_encuats']) / denominador
+                total_env_amb_pdf = env_obj.search_count(cursor, uid,
+                                        [('lot_enviament.id', '=', _id), ('data_informe', '!=', False)])
+                res[_id] = (total_env_amb_pdf / total_enviaments) * 100
             elif field_name == 'env_sending_progress':
-                lot_values = self.read(cursor, uid, _id,
-                    ['total_enviats', 'total_cancelats', 'total_errors', 'number_csv_rows']
-                )
-                denominador = float(number_csv_rows - lot_values['total_cancelats'] - lot_values['total_errors'])
-                if denominador == 0:
-                    res[_id] = 0
-                else:
-                    res[_id] = (lot_values['total_enviats'] / denominador) * 100
+                total_env_enviats = env_obj.search_count(cursor, uid,
+                                        [('lot_enviament.id', '=', _id), ('data_enviament', '!=', False)])
+                res[_id] = (total_env_enviats / total_enviaments) * 100
         return res
 
     _columns = {
@@ -297,6 +291,11 @@ class SomInfoenergiaLotEnviament(osv.osv):
         'email_template': fields.many2one(
             'poweremail.templates', 'Plantilla del correu del lot', required=True,
             domain="[('object_name.model', '=', 'som.infoenergia.enviament')]"
+        ),
+        'total_env_csv': fields.function(_ff_totals,
+            string='Enviaments presents en CSVs',
+            help="Enviaments que han estat informats en algun CSV descarregat de Beedata", readonly=True,
+            type='integer', method=True
         ),
         'total_enviaments': fields.function(
             _ff_totals, string='Enviaments totals', readonly=True,
@@ -317,6 +316,11 @@ class SomInfoenergiaLotEnviament(osv.osv):
             _ff_totals, string='Enviaments en esborrany (sense PDF)', readonly=True,
             type='integer', method=True
         ),
+        'total_preesborrany': fields.function(
+            _ff_totals, string='Enviaments en pre-esborrany (creats des de pòlissa)',
+            help="Enviaments que s'han creat des d'una pòlissa i no s'han descarregat en cap CSV", readonly=True,
+            type='integer', method=True
+        ),
         'total_cancelats': fields.function(
             _ff_totals, string='Enviaments cancel·lats', readonly=True,
             type='integer', method=True,
@@ -326,28 +330,25 @@ class SomInfoenergiaLotEnviament(osv.osv):
             _ff_totals, string='Enviaments amb error', readonly=True,
             type='integer', method=True
         ),
-        'env_creation_progress': fields.function(
-            _ff_progress, string='Progrés de la creació dels enviaments del lot', readonly=True,
-            type='float', method=True
+        'env_csv_progress': fields.function(
+            _ff_progress, string='Enviaments informats en algun CSV descarregat', readonly=True,
+            type='float', method=True, help="Indica quants enviaments s'han trobat en algun CSV descarregat de Beedata"
         ),
         'pdf_download_progress': fields.function(
-            _ff_progress, string='Progrés de la descàrrega de PDFs', readonly=True,
-            type='float', method=True
+            _ff_progress, string='Enviaments amb PDF descarregat', readonly=True,
+            type='float', method=True, help="Indica quants PDFs s'han descarregat del total d'enviaments del Lot"
         ),
         'env_sending_progress': fields.function(
-            _ff_progress, string='Progrés de l\'enviament de les línies d\'enviament', readonly=True,
-            type='float', method=True
+            _ff_progress, string='Enviaments enviats', readonly=True,
+            type='float', method=True, help="Indica quants enviaments s'han enviat del total d'enviaments del Lot"
         ),
-        'number_csv_rows': fields.integer(
-            'Número total de files del CSV', readonly=True
-        ),
+
     }
 
     _defaults = {
         'estat': lambda *a: 'obert',
         'is_test': lambda *a: False,
-        'number_csv_rows': lambda *a: 0,
-        'env_sending_progress': lambda *a: 0,
+        'env_csv_progress': lambda *a: 0,
         'pdf_download_progress': lambda *a: 0,
         'env_sending_progress': lambda *a: 0,
     }

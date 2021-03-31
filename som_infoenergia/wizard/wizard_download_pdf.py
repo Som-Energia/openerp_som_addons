@@ -13,6 +13,8 @@ class WizardDownloadPdf(osv.osv_memory):
 
     _columns = {
         'state': fields.selection(STATES, _(u'Estat del wizard de baixada de PDF')),
+        'force_download_pdf': fields.boolean('Forçar baixada pdfs ja baixats',
+            help=_(u"Es tornaran a baixar els PDFs dels Enviaments en estat Obert")),
     }
 
     _defaults = {
@@ -29,7 +31,7 @@ class WizardDownloadPdf(osv.osv_memory):
 
         elif context.get('from_model') == 'som.infoenergia.enviament':
             env_ids = context.get('active_ids', [])
-
+        context.update({'force_download_pdf': wiz.force_download_pdf})
         wiz.write({'state': "finished"})
         for env_id in env_ids:
             env = env_obj.browse(cursor, uid, env_id)
