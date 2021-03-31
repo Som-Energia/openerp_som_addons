@@ -134,7 +134,7 @@ class SomInfoenergiaLotEnviament(osv.osv):
         env_id = env_obj.search(cursor, uid, [('lot_enviament','=',ids), ('polissa_id', '=', polissa_id)])
         if not env_id:
             env_id = env_obj.create(cursor, uid, env_values, context)
-            env_obj.add_info_line(cursor, uid, env_id, u'INFO: Enviament creat des de pòlissa')
+            env_obj.add_info_line(cursor, uid, env_id, u'Enviament creat des de pòlissa')
 
     def create_enviaments_from_csv(self, cursor, uid, ids, csv_data, context=None):
         if isinstance(ids, (tuple, list)):

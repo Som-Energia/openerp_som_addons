@@ -30,6 +30,7 @@
         "wizard/wizard_download_csv_view.xml",
         "wizard/wizard_send_reports_view.xml",
         "wizard/wizard_create_enviaments_from_pol_view.xml",
+        "wizard/wizard_multiple_state_change_view.xml",
     ],
     "active": False,
     "installable": True
