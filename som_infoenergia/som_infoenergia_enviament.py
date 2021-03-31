@@ -106,24 +106,26 @@ class SomInfoenergiaEnviament(osv.osv):
         env_obj = self.pool.get('som.infoenergia.enviament')
 
         env = env_obj.browse(cursor, uid, ids)
+        to_download = ['esborrany']
+        if context.get('force_download_pdf', False):
+            to_download.append('obert')
 
         if not env.polissa_id:
             env.write({'estat': 'error'})
             message = u'ERROR: No es pot descarregar el PDF perque l\'enviament no té cap pòlissa associada'
             self.add_info_line(cursor, uid, ids, message, context)
             return
-
+        if env.estat not in to_download:
+            return
         try:
             ssh = get_ssh_connection()
             output_dir = config.get(
                 "infoenergia_report_download_dir", "/tmp/test_shera/reports")
-            pdf_path_folder = env.lot_enviament.pdf_path_folder
-
-            download_filepath = os.path.join(pdf_path_folder, env.pdf_filename)
-            output_filepath = os.path.join(output_dir, env.pdf_filename)
+            pdf_name = env.pdf_filename.split("/")[-1]
+            output_filepath = os.path.join(output_dir, pdf_name)
 
             scp = SCPClient(ssh.get_transport())
-            scp.get(download_filepath, output_filepath)
+            scp.get(env.pdf_filename, output_filepath)
 
             self.render_header_data(cursor, uid, ids, output_filepath, output_dir)
 

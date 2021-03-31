@@ -78,18 +78,20 @@
                     </group>
                     <separator string="Quantitats" colspan="4"/>
                     <group colspan="2" col="3">
+                        <field name="total_preesborrany" select="1"/>
+                        <field name='total_preesborrany' select="1"/>
                         <field name='total_esborrany' select="1"/>
                         <field name='total_oberts' select="1"/>
                         <field name='total_encuats' select="1"/>
                         <field name='total_enviats' select="1"/>
                         <field name='total_cancelats' select="1"/>
                         <field name='total_errors' select="1"/>
+                        <field name='total_env_csv' select="1"/>
                         <field name='total_enviaments' select="1"/>
-                        <field name='number_csv_rows' select="1"/>
                     </group>
                     <separator string="Progrés" colspan="4"/>
                     <group colspan="2" col="3">
-                        <field name='env_creation_progress' widget="progressbar"/>
+                        <field name='env_csv_progress' widget="progressbar"/>
                         <field name='pdf_download_progress' widget="progressbar"/>
                         <field name='env_sending_progress' widget="progressbar"/>
                     </group>
@@ -106,11 +108,13 @@
                         <field name="name" select="1"/>
                         <field name="estat" select="1"/>
                         <field name="tipus_informe" select="1"/>
+                        <field name="total_preesborrany" select="1"/>
                         <field name="total_esborrany" select="1"/>
                         <field name="total_oberts" select="1"/>
                         <field name="total_enviats" select="1"/>
                         <field name="total_cancelats" select="1"/>
                         <field name="total_errors" select="1"/>
+                        <field name='total_env_csv' select="1"/>
                         <field name="total_enviaments" select="1"/>
                         <field name="info" select="1"/>
                 </tree>
