@@ -17,3 +17,6 @@
 "access_wizard_infoenergia_create_enviament_from_pol_rcwd","wizard.infoenergia.create.enviaments.from.pol","model_wizard_infoenergia_create_enviaments_from_pol","som_infoenergia.group_infoenergia_u",1,1,1,1
 "access_wizard_infoenergia_create_enviament_from_pol_rcw","wizard.infoenergia.create.enviaments.from.pol","model_wizard_infoenergia_create_enviaments_from_pol","som_infoenergia.group_infoenergia_w",1,1,1,0
 "access_wizard_infoenergia_create_enviament_from_pol_r","wizard.infoenergia.create.enviaments.from.pol","model_wizard_infoenergia_create_enviaments_from_pol","som_infoenergia.group_infoenergia_r",1,0,0,0
+"access_wizard_infoenergia_multiple_state_change_rcwd","wizard.infoenergia.multiple.state.change","model_wizard_infoenergia_multiple_state_change","som_infoenergia.group_infoenergia_u",1,1,1,1
+"access_wizard_infoenergia_multiple_state_change_rcw","wizard.infoenergia.multiple.state.change","model_wizard_infoenergia_multiple_state_change","som_infoenergia.group_infoenergia_w",1,1,1,0
+"access_wizard_infoenergia_multiple_state_change_r","wizard.infoenergia.multiple.state.change","model_wizard_infoenergia_multiple_state_change","som_infoenergia.group_infoenergia_r",1,0,0,0
