@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_infoenergia_multiple_state_change_form">
+            <field name="name">wizard.infoenergia.multiple.state.change.form</field>
+            <field name="model">wizard.infoenergia.multiple.state.change</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Canvi d'estat múltiple">
+                    <field name="state" invisible="1"/>
+                    <group attrs="{'invisible': [('state', '!=', 'init')]}">
+                        <field name="new_state" colspan="4"/>
+                        <field name="message" colspan="4" width="500" />
+                    </group>
+                    <group colspan="6" attrs="{'invisible': [('state', '=', 'finished')]}">
+                        <button special="cancel" string="Cancelar" icon="gtk-cancel"/>
+                        <button name="multiple_state_change" type="object" string="Canvi d'estat" icon="gtk-ok"/>
+                    </group>
+                    <group colspan="6" attrs="{'invisible': [('state', '!=', 'finished')]}">
+                        <button special="cancel" string="Sortir" icon="gtk-ok"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_infoenergia_multiple_state_change">
+            <field name="name">Canvi d'estat múltiple</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.infoenergia.multiple.state.change</field>
+            <field name="view_type">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_infoenergia_multiple_state_change_form"/>
+        </record>
+        <record id="values_wizard_infoenergia_multiple_state_change" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Canvi d'estat múltiple</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">som.infoenergia.enviament</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_infoenergia_multiple_state_change'))"/>
+        </record>
+    </data>
+</openerp>
