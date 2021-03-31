@@ -108,3 +108,37 @@ class WizardSendReportsTests(testing.OOTestCase):
         wiz_id = wiz_obj.create(cursor, uid, vals.copy(),context=ctx)
         wiz_obj.send_reports(cursor, uid, [wiz_id], context=ctx)
         mocked_send_reports.assert_called_with(cursor, uid, env_ids, context=vals)
+
+
+class WizardMultipleStateChange(testing.OOTestCase):
+
+    def setUp(self):
+        self.txn = Transaction().start(self.database)
+
+        self.cursor = self.txn.cursor
+        self.uid = self.txn.user
+
+    def tearDown(self):
+        self.txn.stop()
+
+    def test_multiple_state_change(self):
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        cursor = self.cursor
+        uid = self.uid
+        enviament_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_infoenergia', 'enviament_obert_amb_attach'
+        )[1]
+        wiz_obj = self.openerp.pool.get('wizard.infoenergia.multiple.state.change')
+        ctx = {
+            'active_id': enviament_id, 'active_ids': [enviament_id],
+        }
+        vals = {'new_state':'esborrany', 'message':''}
+        wiz_id = wiz_obj.create(cursor, uid, vals,context=ctx)
+
+        wiz_obj.multiple_state_change(cursor, uid, [wiz_id], context=ctx)
+
+        env_obj = self.openerp.pool.get('som.infoenergia.enviament')
+        env_data = env_obj.read(cursor, uid, enviament_id, ['estat', 'info'])
+        self.assertTrue('Obert -> Esborrany' in env_data['info'])
+        self.assertEqual('esborrany', env_data['estat'])
+
