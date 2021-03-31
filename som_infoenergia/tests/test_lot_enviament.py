@@ -176,7 +176,7 @@ class LotEnviamentTests(testing.OOTestCase):
         post_enviaments = env_obj.search(cursor, uid,
             [("lot_enviament", "=", lot_enviament_id),
             ('estat', "=", 'preesborrany'), ('polissa_id','=', pol_id),
-            ('info','ilike','INFO: Enviament creat des de pòlissa')
+            ('info','ilike','Enviament creat des de pòlissa')
             ])
         self.assertEqual(len(post_enviaments), 1)
 
