@@ -184,7 +184,7 @@ class LotEnviamentTests(testing.OOTestCase):
     def test_create_single_enviament_from_polissa_lot_tipus_altres(self):
         imd_obj = self.openerp.pool.get('ir.model.data')
         lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
-        env_obj = self.openerp.pool.get('som.infoenergia.enviament')
+        env_obj = self.openerp.pool.get('som.enviament.massiu')
         pol_obj = self.openerp.pool.get('giscedata.polissa')
         cursor = self.cursor
         uid = self.uid
@@ -207,4 +207,50 @@ class LotEnviamentTests(testing.OOTestCase):
             ('info','ilike','Enviament creat des de pòlissa')
             ])
         self.assertEqual(len(post_enviaments), 1)
+
+    def test_ff_totals_ff_progress_altres(self):
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
+        cursor = self.cursor
+        uid = self.uid
+        lot_enviament_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_infoenergia', 'lot_enviament_0004'
+        )[1]
+        lot_enviament = lot_env_obj.browse(cursor, uid, lot_enviament_id)
+
+        self.assertEqual(lot_enviament.total_enviaments, 4)
+        self.assertEqual(lot_enviament.total_env_csv, 0)
+        self.assertEqual(lot_enviament.total_enviats, 1)
+        self.assertEqual(lot_enviament.total_encuats, 1)
+        self.assertEqual(lot_enviament.total_oberts, 1)
+        self.assertEqual(lot_enviament.total_esborrany, 0)
+        self.assertEqual(lot_enviament.total_preesborrany, 0)
+        self.assertEqual(lot_enviament.total_cancelats, 1)
+        self.assertEqual(lot_enviament.total_errors, 0)
+        self.assertEqual(lot_enviament.env_csv_progress, 0)
+        self.assertEqual(lot_enviament.pdf_download_progress, 0)
+        self.assertEqual(lot_enviament.env_sending_progress, 25)
+
+    def test_ff_totals_ff_progress_infoenergia(self):
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
+        cursor = self.cursor
+        uid = self.uid
+        lot_enviament_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_infoenergia', 'lot_enviament_0003'
+        )[1]
+        lot_enviament = lot_env_obj.browse(cursor, uid, lot_enviament_id)
+
+        self.assertEqual(lot_enviament.total_preesborrany, 0)
+        self.assertEqual(lot_enviament.total_esborrany, 1)
+        self.assertEqual(lot_enviament.total_oberts, 2)
+        self.assertEqual(lot_enviament.total_enviats, 0)
+        self.assertEqual(lot_enviament.total_cancelats, 0)
+        self.assertEqual(lot_enviament.total_errors, 0)
+        self.assertEqual(lot_enviament.total_encuats, 0)
+        self.assertEqual(lot_enviament.total_enviaments, 3)
+        self.assertEqual(lot_enviament.total_env_csv, 2)
+        self.assertEqual(lot_enviament.env_csv_progress, 66.66666666666666)
+        self.assertEqual(lot_enviament.pdf_download_progress, 66.66666666666666)
+        self.assertEqual(lot_enviament.env_sending_progress, 0)
 

@@ -20,3 +20,6 @@
 "access_wizard_infoenergia_multiple_state_change_rcwd","wizard.infoenergia.multiple.state.change","model_wizard_infoenergia_multiple_state_change","som_infoenergia.group_infoenergia_u",1,1,1,1
 "access_wizard_infoenergia_multiple_state_change_rcw","wizard.infoenergia.multiple.state.change","model_wizard_infoenergia_multiple_state_change","som_infoenergia.group_infoenergia_w",1,1,1,0
 "access_wizard_infoenergia_multiple_state_change_r","wizard.infoenergia.multiple.state.change","model_wizard_infoenergia_multiple_state_change","som_infoenergia.group_infoenergia_r",1,0,0,0
+"access_som_enviament_massiu_rcwd","som.enviament.massiu","model_som_enviament_massiu","som_infoenergia.group_infoenergia_u",1,1,1,1
+"access_som_enviament_massiu_rcw","som.enviament.massiu","model_som_enviament_massiu","som_infoenergia.group_infoenergia_w",1,1,1,0
+"access_som_enviament_massiu_r","som.enviament.massiu","model_som_enviament_massiu","som_infoenergia.group_infoenergia_r",1,0,0,0

@@ -239,7 +239,7 @@ class SomInfoenergiaLotEnviament(osv.osv):
             message = 'ERROR ' + str(e)
             self.add_info_line(cursor, uid, ids, message)
 
-    def get_enviament_object(cursor, uid, id, context=None):
+    def get_enviament_object(self, cursor, uid, id, context=None):
         if isinstance(id, (tuple, list)):
             id = id[0]
         tipus = self.read(cursor, uid, id, ['tipus'])['tipus']
@@ -325,7 +325,7 @@ class SomInfoenergiaLotEnviament(osv.osv):
             help=_(u"Inclou qualsevol informació adicional, com els errors del Shera")),
         'email_template': fields.many2one(
             'poweremail.templates', 'Plantilla del correu del lot', required=True,
-            domain="[('object_name.model', '=', 'som.infoenergia.enviament')]"
+            domain="[('object_name.model', 'in', ['som.enviament.massiu','som.infoenergia.enviament'])]"
         ),
         'total_env_csv': fields.function(_ff_totals,
             string='Enviaments presents en CSVs',

@@ -53,7 +53,7 @@ class SomEnviamentMassiu(osv.osv):
             )
             job_ids.append(j.id)
         create_jobs_group(
-            cursor.dbname, uid, _('Enviament Infoenergia Lot {} - {} enviaments').format(
+            cursor.dbname, uid, _('Enviament Massiu Lot {} - {} enviaments').format(
                 lot_name, len(ids)
             ), 'infoenergia.infoenergia_send', job_ids
         )
@@ -66,12 +66,10 @@ class SomEnviamentMassiu(osv.osv):
     def send_single_report(self, cursor, uid, _id, context=None):
         if context is None:
             context = {}
-
         if isinstance(_id, (tuple, list)):
             _id = _id[0]
 
         pe_send_obj = self.pool.get('poweremail.send.wizard')
-        attach_obj = self.pool.get('ir.attachment')
         enviament = self.browse(cursor, uid, _id, context=context)
         allowed_states = ['obert']
         if context.get('allow_reenviar', False):
@@ -79,43 +77,18 @@ class SomEnviamentMassiu(osv.osv):
         if enviament.estat not in allowed_states:
             return
 
-        polissa = enviament.polissa_id
-
-        if not polissa.emp_allow_recieve_mail_infoenergia:
-            message = u"La pòlissa no té habilitada la opció de rebre correus d'Infoenergia"
-            enviament.write({'estat': 'cancellat'})
-            self.add_info_line(cursor, uid, _id, message, context)
-            return
-
-        attachment_id = attach_obj.search(cursor, uid,
-        [('res_id', '=', _id), ('res_model', '=', 'som.infoenergia.enviament')])
-        if attachment_id:
-            attachment_id = attachment_id[0]
-        else:
-            message = u"ERROR: No es pot enviar el report perquè no s'ha trobat l'adjunt"
-            enviament.write({'estat': 'error'})
-            self.add_info_line(cursor, uid, _id, message, context)
-            return
-        if not polissa.active or polissa.data_baixa:
-            message = u"La pòlissa està inactiva o té data de baixa"
-            enviament.write({'estat': 'cancellat'})
-            self.add_info_line(cursor, uid, _id, message, context)
-            return
-
         template_id = enviament.lot_enviament.email_template.id
-
         tmpl = enviament.lot_enviament.email_template
 
         ctx = context.copy()
         ctx.update({
             'src_rec_ids': [_id],
-            'src_model': 'som.infoenergia.enviament',
+            'src_model': 'som.enviament.massiu',
             'template_id': template_id,
             'active_id': _id,
         })
         send_id = pe_send_obj.create(cursor, uid, {}, context=ctx)
-        vals = {'from': tmpl.enforce_from_account.id,
-                'attachment_ids': [(6, 0, [attachment_id])]}
+        vals = {'from': tmpl.enforce_from_account.id}
         if context.get('email_to', False):
             vals.update({'to':context.get('email_to')})
             vals.update({'bcc':''})
@@ -154,7 +127,6 @@ class SomEnviamentMassiu(osv.osv):
                     self.write(cursor, uid, _id, {'estat':'enviat', 'data_enviament': vals_w['date_sent']})
                     self.add_info_line(cursor, uid, _id, "Correu enviat", context)
         return True
-
 
 
     _columns = {
