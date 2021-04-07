@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data noupdate="0">
+        <record id="sms_account_001" model="powersms.core_accounts">
+            <field name="name">SMS Account</field>
+            <field name="tel_id">600000000</field>
+            <field name="api_server">api.smsserver.com</field>
+            <field name="state">approved</field>
+        </record>
+        <record model="powersms.templates" id="sms_template_001">
+            <field name="name">My first template</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'res.partner.address')]"/>
+            <field name="def_from">Info</field>
+            <field name="model_int_name">res.partner.address</field>
+            <field name="def_to">${object.phone}</field>
+            <field eval="0" name="auto_sms"/>
+            <field eval="0" name="certificate"/>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="enforce_from_account" model="powersms.core_accounts" search="[('name','=', 'SMS Account')]"/>
+            <field name="def_body_text"><![CDATA[This is a SMS message]]></field>
+        </record>
+        <record id="sms_draft_001" model="powersms.smsbox">
+            <field name="psms_account_id" ref="sms_account_001" />
+            <field name="psms_from">My Name</field>
+            <field name="date_sms">2020-12-07</field>
+            <field name="psms_to">611111111</field>
+            <field name="psms_body_text">This is my message in draft</field>
+            <field name="folder">drafts</field>
+            <field name="history"></field>
+            <field name="state">na</field>
+        </record>
+        <record id="sms_outbox_001" model="powersms.smsbox">
+            <field name="psms_account_id" ref="sms_account_001" />
+            <field name="psms_from">My Name</field>
+            <field name="date_sms">2020-12-07</field>
+            <field name="psms_to">611111111</field>
+            <field name="psms_body_text">This is my message in outbox</field>
+            <field name="folder">outbox</field>
+            <field name="history"></field>
+            <field name="state">na</field>
+        </record>
+        <record id="sms_sent_001" model="powersms.smsbox">
+            <field name="psms_account_id" ref="sms_account_001" />
+            <field name="psms_from">My Name</field>
+            <field name="date_sms">2020-12-07</field>
+            <field name="psms_to">611111111</field>
+            <field name="psms_body_text">This is my sent message</field>
+            <field name="folder">sent</field>
+            <field name="history"></field>
+            <field name="state">sent</field>
+        </record>
+    </data>
+</openerp>
