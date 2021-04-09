@@ -57,7 +57,7 @@ class LotEnviamentTests(testing.OOTestCase):
 
         lot_enviament.create_enviaments_from_attached_csv(attach_id, {})
 
-        mocked_create_enviaments_from_csv.assert_called_with(cursor, uid, [lot_enviament_id], [{'report': '0001.pdf','text': 'First;Text', 'contractid': '0001'}])
+        mocked_create_enviaments_from_csv.assert_called_with(cursor, uid, [lot_enviament_id], [{'report': '0001.pdf','text': 'First;Text', 'contractid': '0001'}],{})
 
     def test_create_single_enviament_polissaNotFound(self):
         imd_obj = self.openerp.pool.get('ir.model.data')
@@ -95,29 +95,28 @@ class LotEnviamentTests(testing.OOTestCase):
         imd_obj = self.openerp.pool.get('ir.model.data')
         lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
         env_obj = self.openerp.pool.get('som.infoenergia.enviament')
-
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
         cursor = self.cursor
         uid = self.uid
-
         lot_enviament_id = imd_obj.get_object_reference(
             cursor, uid, 'som_infoenergia', 'lot_enviament_0001'
         )[1]
+        pol_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_polissa', 'polissa_0001'
+        )[1]
+        pol_name = pol_obj.read(cursor, uid, pol_id, ['name'])['name']
         lot_enviament = lot_env_obj.browse(cursor, uid, lot_enviament_id)
+        lot_enviament.create_single_enviament_from_polissa(pol_id)
 
-        env_data = {'contractid':'0001', 'cups': '1',
-                'potencia':'2', 'tarifa':'2.0A','informe':'M2',
-                'text':'Text', 'valid':'True', 'report':'0001.pdf'}
-
-        lot_enviament.create_single_enviament(env_data, {})
-        csv_updated_data = {'contractid':'0001', 'cups': '1',
+        csv_updated_data = {'contractid': pol_name, 'cups': '1',
                 'potencia':'2', 'tarifa':'2.0A','informe':'M2',
                 'text':'Updated Text', 'valid':'True', 'report':'0001.pdf'}
 
-        lot_enviament.create_single_enviament(csv_updated_data, {})
+        lot_enviament.create_single_enviament(csv_updated_data, context={'path_pdf': 'test_path'})
 
         updated_env = env_obj.search(cursor, uid,
             [("lot_enviament", "=", lot_enviament_id),
-                ('pdf_filename','=','0001.pdf')]
+                ('pdf_filename','=','test_path/0001.pdf')]
         )
         self.assertEqual(len(updated_env),1)
         self.assertEqual(env_obj.read(cursor, uid, updated_env, ['body_text'])[0]['body_text'], 'Updated Text')
@@ -151,6 +150,33 @@ class LotEnviamentTests(testing.OOTestCase):
             [("lot_enviament", "=", lot_enviament_id),
             ('estat', "=", 'cancellat'), ('polissa_id','=', pol_id),
             ('info','ilike','La pòlissa {} està donada de baixa'.format(pol_name))
+            ])
+        self.assertEqual(len(post_enviaments), 1)
+
+    def test_create_single_enviament_from_polissa(self):
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
+        env_obj = self.openerp.pool.get('som.infoenergia.enviament')
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
+        cursor = self.cursor
+        uid = self.uid
+        lot_enviament_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_infoenergia', 'lot_enviament_0001'
+        )[1]
+        lot_enviament = lot_env_obj.browse(cursor, uid, lot_enviament_id)
+        pol_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_polissa', 'polissa_0005'
+        )[1]
+        enviaments_in_lot = env_obj.search(cursor, uid, [('lot_enviament','=',lot_enviament_id),('polissa_id','=',pol_id)])
+        self.assertEqual(len(enviaments_in_lot), 0)
+        pol_name = pol_obj.read(cursor, uid, pol_id, ['name'])['name']
+
+        lot_enviament.create_single_enviament_from_polissa(pol_id)
+
+        post_enviaments = env_obj.search(cursor, uid,
+            [("lot_enviament", "=", lot_enviament_id),
+            ('estat', "=", 'preesborrany'), ('polissa_id','=', pol_id),
+            ('info','ilike','INFO: Enviament creat des de pòlissa')
             ])
         self.assertEqual(len(post_enviaments), 1)
 
