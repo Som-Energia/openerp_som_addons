@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data noupdate="1">
+        <record id="sms_account_som" model="powersms.core_accounts">
+            <field name="name">Som Energia</field>
+            <field name="tel_id">600000000</field>
+            <field name="api_server">api.lleida.net</field>
+            <field name="state">approved</field>
+        </record>
+        <record model="powersms.templates" id="sms_template_factura_impagada">
+            <field name="name">Recordatori factura impagada</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'res.partner.address')]"/>
+            <field name="def_from">Som Energia</field>
+            <field name="model_int_name">res.partner.address</field>
+            <field name="def_to">${object.phone}</field>
+            <field eval="0" name="auto_sms"/>
+            <field eval="0" name="certificate"/>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="enforce_from_account" model="powersms.core_accounts" search="[('name','=', 'Som Energia')]"/>
+            <field name="def_body_text"><![CDATA[El teu banc ens ha retornat una factura. T'hem enviat un correu amb instruccions de com pagar-la. Salutacions.]]></field>
+        </record>
+    </data>
+</openerp>
