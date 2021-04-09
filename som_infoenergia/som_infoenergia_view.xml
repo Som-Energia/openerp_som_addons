@@ -56,7 +56,9 @@
             <field name="view_id" ref="view_som_infoenergia_tree"/>
         </record>
         <menuitem id="menu_infoenergia" name="Infoenergia"/>
-        <menuitem action="action_som_infoenergia_tree" id="menu_som_infoenergia_tree"  parent="menu_infoenergia" name="Enviaments infoenergia"/>
+        <menuitem id="menu_carpeta_infoenergia" parent="menu_infoenergia" name="Enviaments Infoenergia" sequence="1"/>
+        <menuitem id="menu_carpeta_massius" parent="menu_infoenergia" name="Enviaments Massius" sequence="2"/>
+        <menuitem action="action_som_infoenergia_tree" id="menu_som_infoenergia_tree"  parent="menu_carpeta_infoenergia" name="Enviaments infoenergia" sequence="2"/>
 
         <record model="ir.ui.view" id="view_som_infoenergia_lot_form">
             <field name="name">som_infoenergia_lot_enviament.form</field>
@@ -67,25 +69,26 @@
                     <group colspan="2" col="3">
                         <field name='name' select="1"/>
                         <field name='estat' select="1"/>
+                        <field name='tipus'/>
                         <field name='is_test' select="1"/>
                     </group>
                     <newline/>
                     <separator string="Dades enviament" colspan="4"/>
                     <group colspan="2" col="3">
-                        <field name='tipus_informe' select="1"/>
+                        <field name='tipus_informe' select="2"/>
                         <field name="email_template" select="1"/>
-                        <field name='info' select="1" readonly="1"/>
+                        <field name='info' readonly="1"/>
                     </group>
                     <separator string="Quantitats" colspan="4"/>
                     <group colspan="2" col="3">
-                        <field name='total_preesborrany' select="1"/>
-                        <field name='total_esborrany' select="1"/>
+                        <field name='total_preesborrany' select="2"/>
+                        <field name='total_esborrany' select="2"/>
                         <field name='total_oberts' select="1"/>
                         <field name='total_encuats' select="1"/>
                         <field name='total_enviats' select="1"/>
                         <field name='total_cancelats' select="1"/>
-                        <field name='total_errors' select="1"/>
-                        <field name='total_env_csv' select="1"/>
+                        <field name='total_errors' select="2"/>
+                        <field name='total_env_csv' select="2"/>
                         <field name='total_enviaments' select="1"/>
                     </group>
                     <separator string="Progrés" colspan="4"/>
@@ -119,18 +122,99 @@
                 </tree>
             </field>
         </record>
+        <record model="ir.ui.view" id="view_som_enviament_massiu_lot_form">
+            <field name="name">som_enviament_massiu_lot.form</field>
+            <field name="model">som.infoenergia.lot.enviament</field>
+            <field name="arch" type="xml">
+                <form string="Infoenergia Lot Enviament">
+                    <separator string="Informació del lot" colspan="4"/>
+                    <group colspan="2" col="3">
+                        <field name='name'/>
+                        <field name='estat'/>
+                        <field name='tipus'/>
+                        <field name='is_test'/>
+                    </group>
+                    <newline/>
+                    <separator string="Dades enviament" colspan="4"/>
+                    <group colspan="2" col="3">
+                        <field name="email_template"/>
+                        <field name='info' readonly="1"/>
+                    </group>
+                    <separator string="Quantitats" colspan="4"/>
+                    <group colspan="2" col="3">
+                        <field name='total_oberts'/>
+                        <field name='total_encuats'/>
+                        <field name='total_enviats'/>
+                        <field name='total_cancelats'/>
+                        <field name='total_enviaments'/>
+                    </group>
+                    <separator string="Progrés" colspan="4"/>
+                    <group colspan="2" col="3">
+                        <field name='env_sending_progress' widget="progressbar"/>
+                    </group>
+                </form>
+            </field>
+        </record>
 
-        <record model="ir.actions.act_window" id="action_som_infoenergia_lot_tree">
+        <record model="ir.ui.view" id="view_som_enviament_massiu_lot_tree">
+            <field name="name">som_enviament_massiu_lot_tree.tree</field>
+            <field name="model">som.infoenergia.lot.enviament</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Lots enviaments infoenergia">
+                        <field name="name" select="1"/>
+                        <field name="estat" select="1"/>
+                        <field name="total_oberts" select="1"/>
+                        <field name="total_enviats" select="1"/>
+                        <field name="total_cancelats" select="1"/>
+                        <field name="total_enviaments" select="1"/>
+                        <field name="info" select="1"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_som_infoenergia_lot">
             <field name="name">Lots Infoenergia</field>
-            <field name="type">ir.actions.act_window</field>
             <field name="res_model">som.infoenergia.lot.enviament</field>
             <field name="view_type">form</field>
-            <field name="view_id" ref="view_som_infoenergia_lot_tree"/>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('tipus','=','infoenergia')]</field>
         </record>
+
+        <record model="ir.actions.act_window.view" id="action_som_infoenergia_lot_tree">
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_som_infoenergia_lot_tree"/>
+            <field name="act_window_id" ref="action_som_infoenergia_lot"/>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_som_infoenergia_lot_form">
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_som_infoenergia_lot_form"/>
+            <field name="act_window_id" ref="action_som_infoenergia_lot"/>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_som_enviament_massiu_lot">
+            <field name="name">Lots enviaments massius</field>
+            <field name="res_model">som.infoenergia.lot.enviament</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('tipus','=','altres')]</field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_som_enviament_massiu_lot_tree">
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_som_enviament_massiu_lot_tree"/>
+            <field name="act_window_id" ref="action_som_enviament_massiu_lot"/>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_som_enviament_massiu_lot_form">
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_som_enviament_massiu_lot_form"/>
+            <field name="act_window_id" ref="action_som_enviament_massiu_lot"/>
+        </record>
+
+
+
 
         <!--Enviaments del lot-->
         <record model="ir.actions.act_window" id="action_obrir_enviament_lot">
-            <field name="name">Enviaments del Lot</field>
+            <field name="name">Enviaments d'Infoenergia del Lot</field>
             <field name="res_model">som.infoenergia.enviament</field>
             <field name="src_model">som.infoenergia.lot.enviament</field>
             <field name="view_type">form</field>
@@ -140,14 +224,15 @@
 
         <record id="value_action_obrir_enviament_lot" model="ir.values">
 			<field name="object" eval="1"/>
-			<field name="name">Enviaments del Lot</field>
+			<field name="name">Enviaments d'Infoenergia del Lot</field>
             <field name="key2">client_action_relate</field>
 			<field name="key">action</field>
 			<field name="model">som.infoenergia.lot.enviament</field>
 			<field name="value" eval="'ir.actions.act_window,'+str(ref('action_obrir_enviament_lot'))" />
 		</record>
 
-        <menuitem action="action_som_infoenergia_lot_tree" id="menu_som_infoenergia_lot_tree"  parent="menu_infoenergia" name="Lots enviament infoenergia"/>
+        <menuitem action="action_som_infoenergia_lot" id="menu_som_infoenergia_lot_tree"  parent="menu_carpeta_infoenergia" name="Lots enviament infoenergia" sequence="1"/>
+        <menuitem action="action_som_enviament_massiu_lot" id="menu_som_enviament_massiu_lot_altres_tree"  parent="menu_carpeta_massius" name="Lots enviaments massius" sequence="1"/>
 
         <record model="ir.actions.act_window" id="action_enviament_jobs_group_list">
             <field name="name">Tasques d'enviament</field>
@@ -158,6 +243,78 @@
             <field name="auto_refresh">5</field>
             <field name="view_id" ref="oorq.view_oorq_jobs_group_tree"/>
         </record>
-        <menuitem id="enviament_jobs_groups" action="action_enviament_jobs_group_list" parent="menu_infoenergia" icon="terp-project"/>
+        <menuitem id="enviament_jobs_groups" action="action_enviament_jobs_group_list" parent="menu_infoenergia" icon="terp-project" sequence="99"/>
+
+        <record model="ir.ui.view" id="view_som_enviament_massiu_form">
+            <field name="name">som_enviament_massiu.form</field>
+            <field name="model">som.enviament.massiu</field>
+            <field name="arch" type="xml">
+                <form string="Infoenergia Enviaments">
+                    <separator string="Dades polissa" colspan="4"/>
+                    <group colspan="2" col="3">
+                        <field name='partner_id' readonly="1"/>
+                        <field name='polissa_id' readonly="1"/>
+                        <field name='lang' select="1"/>
+                    </group>
+                    <newline/>
+                    <separator string="Dades enviament" colspan="4"/>
+                    <group colspan="2" col="3">
+                        <field name='estat' select="1"/>
+                        <field name='lot_enviament' readonly="1"/>
+                        <field name='data_enviament' readonly="1"/>
+                        <field name='info' readonly="1"/>
+                        <field name='mail_id' readonly="1"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_som_enviament_massiu_tree">
+            <field name="name">som_enviament_massiu.tree</field>
+            <field name="model">som.enviament.massiu</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Enviaments infoenergia" colors="red:estat=='error'">
+                        <field name="name" select="1"/>
+                        <field name="polissa_id" select="1"/>
+                        <field name="partner_id" select="1"/>
+                        <field name='lot_enviament' select="1"/>
+                        <field name='data_enviament' select="1"/>
+                        <field name='estat' select="1"/>
+                        <field name='info'/>
+                        <field name='lang'  select="1"/>
+                        <field name='mail_id' select="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_som_enviament_massiu_tree">
+            <field name="name">Enviaments Massius</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">som.enviament.massiu</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_som_enviament_massiu_tree"/>
+        </record>
+        <menuitem action="action_som_enviament_massiu_tree" id="menu_som_enviament_massiu_tree"  parent="menu_carpeta_massius" name="Enviaments massius" sequence="2"/>
+
+        <!--Enviaments Massius del lot-->
+        <record model="ir.actions.act_window" id="action_obrir_enviament_massiu_lot">
+            <field name="name">Enviaments Massius del Lot</field>
+            <field name="res_model">som.enviament.massiu</field>
+            <field name="src_model">som.infoenergia.lot.enviament</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('lot_enviament', '=', active_id)]</field>
+        </record>
+
+        <record id="value_action_obrir_enviament_massiu_lot" model="ir.values">
+			<field name="object" eval="1"/>
+			<field name="name">Enviaments Massius del Lot</field>
+            <field name="key2">client_action_relate</field>
+			<field name="key">action</field>
+			<field name="model">som.infoenergia.lot.enviament</field>
+			<field name="value" eval="'ir.actions.act_window,'+str(ref('action_obrir_enviament_massiu_lot'))" />
+		</record>
+
     </data>
 </openerp>

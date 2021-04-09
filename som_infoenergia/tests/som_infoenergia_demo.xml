@@ -1,16 +1,16 @@
 <?xml version="1.0" ?>
 <openerp>
     <data>
+    <!-- Lots i Enviaments tipus Infoenergia 0001-->
 		<record id="lot_enviament_0001" model="som.infoenergia.lot.enviament">
             <field name="name">LOT0001</field>
             <field name="estat">esborrany</field>
             <field name="tipus_informe">m1</field>
+            <field name='tipus'>infoenergia</field>
             <field name="info" eval="1"/>
             <field name="email_template" ref="env_empowering_report_domestic_from_enviament"/>
             <field name="total_enviaments" eval="1"/>
             <field name="total_enviats" eval="1"/>
-            <field name="total_no_enviats" eval="1"/>
-            <field name="total_sense_pdf" eval="1"/>
             <field name="total_cancelats" eval="1"/>
 		</record>
         <record id="enviament_esborrany" model="som.infoenergia.enviament">
@@ -24,6 +24,7 @@
         <record id="enviament_obert" model="som.infoenergia.enviament">
             <field name="polissa_id" ref='giscedata_polissa.polissa_0002'/>
             <field name="estat">obert</field>
+            <field name="data_informe">2021-01-01</field>
             <field name="pdf_filename">00002.pdf</field>
             <field name="lot_enviament" ref="lot_enviament_0001"/>
             <field name="info">Pdf descarregat correctament</field>
@@ -33,6 +34,7 @@
         <record id="enviament_obert_amb_attach" model="som.infoenergia.enviament">
             <field name="polissa_id" ref='giscedata_polissa.polissa_0002'/>
             <field name="estat">obert</field>
+            <field name="data_informe">2021-01-01</field>
             <field name="pdf_filename">00002.pdf</field>
             <field name="lot_enviament" ref="lot_enviament_0001"/>
             <field name="info">Pdf descarregat correctament</field>
@@ -43,6 +45,120 @@
             <field name="name">infoenergia.pdf</field>
             <field name="res_model">som.infoenergia.enviament</field>
             <field name="res_id" ref="enviament_obert_amb_attach"/>
+        </record>
+
+        <!-- Lot i enviaments Infoenergia 0003 -->
+		<record id="lot_enviament_0003" model="som.infoenergia.lot.enviament">
+            <field name="name">LOT0003</field>
+            <field name="estat">realitzat</field>
+            <field name="tipus_informe">m1</field>
+            <field name='tipus'>infoenergia</field>
+            <field name="info" eval="1"/>
+            <field name="email_template" ref="env_empowering_report_domestic_from_enviament"/>
+		</record>
+        <record id="enviament_infoenergia_0003_esborrany" model="som.infoenergia.enviament">
+            <field name="polissa_id" ref='giscedata_polissa.polissa_0001'/>
+            <field name="estat">esborrany</field>
+            <field name="lot_enviament" ref="lot_enviament_0003"/>
+            <field name="info">Pdf descarregat correctament</field>
+            <field name="num_polissa_csv">0001</field>
+            <field name="body_text">Informe infoenergia</field>
+		</record>
+        <record id="enviament_infoenergia_0003_obert" model="som.infoenergia.enviament">
+            <field name="polissa_id" ref='giscedata_polissa.polissa_0002'/>
+            <field name="estat">obert</field>
+            <field name="data_informe">2021-01-01</field>
+            <field name="pdf_filename">00002.pdf</field>
+            <field name="lot_enviament" ref="lot_enviament_0003"/>
+            <field name="info">Pdf descarregat correctament</field>
+            <field name="num_polissa_csv">0002</field>
+            <field name="body_text">Informe infoenergia</field>
+        </record>
+        <record id="enviament_infoenergia_0003_obert_amb_attach" model="som.infoenergia.enviament">
+            <field name="polissa_id" ref='giscedata_polissa.polissa_0002'/>
+            <field name="estat">obert</field>
+            <field name="data_informe">2021-01-01</field>
+            <field name="pdf_filename">00002.pdf</field>
+            <field name="lot_enviament" ref="lot_enviament_0003"/>
+            <field name="info">Pdf descarregat correctament</field>
+            <field name="num_polissa_csv">0002</field>
+            <field name="body_text">Informe infoenergia</field>
+        </record>
+        <record id="enviament_infoenergia_0003_attach_infoenergia" model="ir.attachment">
+            <field name="name">infoenergia.pdf</field>
+            <field name="res_model">som.infoenergia.enviament</field>
+            <field name="res_id" ref="enviament_obert_amb_attach"/>
+        </record>
+
+
+
+    <!-- Lots i Enviaments Massius (tipus Altres) -->
+
+		<record id="lot_enviament_0002" model="som.infoenergia.lot.enviament">
+            <field name="name">LOT0002</field>
+            <field name="estat">esborrany</field>
+            <field name='tipus'>altres</field>
+            <field name="email_template" ref="env_empowering_report_domestic_from_enviament"/>
+		</record>
+
+		<record id="lot_enviament_0004" model="som.infoenergia.lot.enviament">
+            <field name="name">LOT0004</field>
+            <field name="estat">realitzat</field>
+            <field name='tipus'>altres</field>
+            <field name="email_template" ref="env_empowering_report_domestic_from_enviament"/>
+		</record>
+        <record id="enviament_obert_tipus_altre" model="som.enviament.massiu">
+            <field name="polissa_id" ref='giscedata_polissa.polissa_0002'/>
+            <field name="estat">obert</field>
+            <field name="lot_enviament" ref="lot_enviament_0002"/>
+            <field name="info">Enviament massiu creat des de polissa en estat obert</field>
+        </record>
+        <record id="enviament_enviat_tipus_altre" model="som.enviament.massiu">
+            <field name="partner_id" ref='base.res_partner_agrolait'/>
+            <field name="estat">enviat</field>
+            <field name="data_enviament">2021-01-01</field>
+            <field name="lot_enviament" ref="lot_enviament_0002"/>
+            <field name="info">Enviament massiu creat des de polissa en estat enviat</field>
+        </record>
+        <record id="enviament_encuat_tipus_altre" model="som.enviament.massiu">
+            <field name="partner_id" ref='base.res_partner_c2c'/>
+            <field name="polissa_id" ref='giscedata_polissa.polissa_0001'/>
+            <field name="estat">encuat</field>
+            <field name="lot_enviament" ref="lot_enviament_0002"/>
+            <field name="info">Enviament massiu creat des de polissa en estat encuat</field>
+        </record>
+        <record id="enviament_cancelat_tipus_altre" model="som.enviament.massiu">
+            <field name="partner_id" ref='base.res_partner_tinyatwork'/>
+            <field name="estat">cancellat</field>
+            <field name="lot_enviament" ref="lot_enviament_0002"/>
+            <field name="info">Enviament massiu creat des de polissa en estat cancellat</field>
+        </record>
+
+        <record id="enviament_0004_obert_tipus_altre" model="som.enviament.massiu">
+            <field name="polissa_id" ref='giscedata_polissa.polissa_0002'/>
+            <field name="estat">obert</field>
+            <field name="lot_enviament" ref="lot_enviament_0004"/>
+            <field name="info">Enviament massiu creat des de polissa en estat obert</field>
+        </record>
+        <record id="enviament_0004_enviat_tipus_altre" model="som.enviament.massiu">
+            <field name="partner_id" ref='base.res_partner_agrolait'/>
+            <field name="estat">enviat</field>
+            <field name="data_enviament">2021-01-01</field>
+            <field name="lot_enviament" ref="lot_enviament_0004"/>
+            <field name="info">Enviament massiu creat des de polissa en estat enviat</field>
+        </record>
+        <record id="enviament_0004_encuat_tipus_altre" model="som.enviament.massiu">
+            <field name="partner_id" ref='base.res_partner_c2c'/>
+            <field name="polissa_id" ref='giscedata_polissa.polissa_0001'/>
+            <field name="estat">encuat</field>
+            <field name="lot_enviament" ref="lot_enviament_0004"/>
+            <field name="info">Enviament massiu creat des de polissa en estat encuat</field>
+        </record>
+        <record id="enviament_0004_cancelat_tipus_altre" model="som.enviament.massiu">
+            <field name="partner_id" ref='base.res_partner_tinyatwork'/>
+            <field name="estat">cancellat</field>
+            <field name="lot_enviament" ref="lot_enviament_0004"/>
+            <field name="info">Enviament massiu creat des de polissa en estat cancellat</field>
         </record>
     </data>
 </openerp>

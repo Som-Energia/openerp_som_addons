@@ -21,6 +21,10 @@ class WizardSendReports(osv.osv_memory):
             env_obj = self.pool.get('som.infoenergia.enviament')
             env_id = context.get('active_id', 0)
             lot_id = env_obj.read(cursor, uid, env_id, ['lot_enviament'])['lot_enviament'][0]
+        elif context.get('from_model') == 'som.enviament.massiu':
+            env_obj = self.pool.get('som.enviament.massiu')
+            env_id = context.get('active_id', 0)
+            lot_id = env_obj.read(cursor, uid, env_id, ['lot_enviament'])['lot_enviament'][0]
         return lot_id
 
     def _get_is_test(self, cursor, uid, context=None):
@@ -40,7 +44,7 @@ class WizardSendReports(osv.osv_memory):
 
     def send_reports(self, cursor, uid, ids, context=None):
         wiz = self.browse(cursor, uid, ids[0], context=context)
-        env_obj = self.pool.get('som.infoenergia.enviament')
+        env_obj = self.pool.get(context.get('from_model'))
 
         ctx = {'allow_reenviar': wiz.allow_reenviar}
         if wiz.is_test:
@@ -52,8 +56,16 @@ class WizardSendReports(osv.osv_memory):
         env_ids = []
         if context.get('from_model') == 'som.infoenergia.lot.enviament':
             lot_id = context.get('active_id', 0)
+            lot_obj = self.pool.get(context['from_model'])
+            tipus_lot = lot_obj.read(cursor, uid, lot_id, ['tipus'])['tipus']
+            if tipus_lot == 'infoenergia':
+                env_obj = self.pool.get('som.infoenergia.enviament')
+            elif tipus_lot == 'altres':
+                env_obj = self.pool.get('som.enviament.massiu')
+            else:
+                raise osv.except_osv(_(u'ERROR'), "Tipus de lot desconegut")
             env_ids = env_obj.search(cursor, uid, [('lot_enviament', '=', lot_id)])
-        elif context.get('from_model') == 'som.infoenergia.enviament':
+        elif context.get('from_model') in ['som.infoenergia.enviament', 'som.enviament.massiu']:
             env_ids = context.get('active_ids', [])
 
         wiz.write({'state': "finished"})
