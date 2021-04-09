@@ -379,7 +379,6 @@ class SomInfoenergiaLotEnviament(osv.osv):
             _ff_progress, string='Enviaments enviats', readonly=True,
             type='float', method=True, help="Indica quants enviaments s'han enviat del total d'enviaments del Lot"
         ),
-
     }
 
     _defaults = {
