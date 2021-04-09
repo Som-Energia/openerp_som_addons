@@ -10,13 +10,17 @@
                     <field name="state" invisible="1"/>
                     <group attrs="{'invisible': [('state', '!=', 'init')]}">
                         <label string="Es descarragaran i desanonimitzaran els PDFs de Beedata"/>
+                        <label string="" colspan="4"/>
+                        <label string="" colspan="4"/>
+                        <label string="" colspan="4"/>
+                        <field name="force_download_pdf" widget="boolean" colspan="4"/>
                     </group>
                     <group attrs="{'invisible': [('state', '!=', 'finished')]}">
                         <label string="El informe es desarà als Adjunts del Enviament"/>
                     </group>
                     <group colspan="6" attrs="{'invisible': [('state', '=', 'finished')]}">
                         <button special="cancel" string="Cancelar" icon="gtk-cancel"/>
-                        <button name="download_pdf" type="object" string="Descarregar"/>
+                        <button name="download_pdf" type="object" string="Descarregar" icon="gtk-ok"/>
                     </group>
                     <group colspan="6" attrs="{'invisible': [('state', '!=', 'finished')]}">
                         <button special="cancel" string="Sortir" icon="gtk-ok"/>

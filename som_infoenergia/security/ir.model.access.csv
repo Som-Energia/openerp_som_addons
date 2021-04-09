@@ -14,4 +14,6 @@
 "access_wizard_infoenergia_send_reports_rcwd","wizard.infoenergia.send.reports","model_wizard_infoenergia_send_reports","som_infoenergia.group_infoenergia_u",1,1,1,1
 "access_wizard_infoenergia_send_reports_rcw","wizard.infoenergia.send.reports","model_wizard_infoenergia_send_reports","som_infoenergia.group_infoenergia_w",1,1,1,0
 "access_wizard_infoenergia_send_reports_r","wizard.infoenergia.send.reports","model_wizard_infoenergia_send_reports","som_infoenergia.group_infoenergia_r",1,0,0,0
-
+"access_wizard_infoenergia_create_enviament_from_pol_rcwd","wizard.infoenergia.create.enviaments.from.pol","model_wizard_infoenergia_create_enviaments_from_pol","som_infoenergia.group_infoenergia_u",1,1,1,1
+"access_wizard_infoenergia_create_enviament_from_pol_rcw","wizard.infoenergia.create.enviaments.from.pol","model_wizard_infoenergia_create_enviaments_from_pol","som_infoenergia.group_infoenergia_w",1,1,1,0
+"access_wizard_infoenergia_create_enviament_from_pol_r","wizard.infoenergia.create.enviaments.from.pol","model_wizard_infoenergia_create_enviaments_from_pol","som_infoenergia.group_infoenergia_r",1,0,0,0

@@ -12,7 +12,7 @@ jobs:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
       - image: circleci/python:2.7
-      
+
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
@@ -34,8 +34,7 @@ jobs:
           name: Download required repositories
           command: |
             export ROOT_DIR_SRC=~/src
-            #git clone --depth 1 https://github.com/gisce/erp.git -b developer $ROOT_DIR_SRC/erp #Temporaly checkout PR #11926
-            git clone --depth 1 https://github.com/Som-Energia/erp.git -b ADD_link_som_addons $ROOT_DIR_SRC/erp
+            git clone --depth 1 https://github.com/gisce/erp.git -b developer $ROOT_DIR_SRC/erp
             git clone --depth 1 https://github.com/gisce/oorq.git -b api_v5 $ROOT_DIR_SRC/oorq
             git clone --depth 1 https://github.com/gisce/spawn_oop.git $ROOT_DIR_SRC/spawn_oop
             git clone --depth 1 https://github.com/gisce/poweremail.git $ROOT_DIR_SRC/poweremail2
@@ -100,7 +99,7 @@ jobs:
           command: |
             export ROOT_DIR_SRC=~/src
             cd $ROOT_DIR_SRC/erp && ./tools/link_addons.sh
-        
+
       # run tests!
       # this example uses Django's built-in test-runner
       # other common Python testing frameworks include pytest and nose
@@ -109,7 +108,8 @@ jobs:
       - run:
           name: run tests
           command: |
-            export CI_REPO=gisce/$TESTING_REPO
+            export CI_REPO=som-energia/openerp_som_addons
+            export CI_PULL_REQUEST=$CIRCLE_PULL_REQUEST
             export OPENERP_DB_HOST=localhost
             export OPENERP_DB_PORT=5432
             export OPENERP_DB_USER=erp
@@ -124,8 +124,7 @@ jobs:
             . venv/bin/activate
             export PYTHONPATH=$ROOT_DIR_SRC/erp/server/bin:$ROOT_DIR_SRC/erp/server/bin/addons:$ROOT_DIR_SRC/erp/server/sitecustomize
             cd $ROOT_DIR_SRC/$TESTING_REPO
-            # Add "-m new_module_name" for every new module on this repository
-            destral -m account_account_som -m account_invoice_som -m som_energetica --report-coverage --enable-coverage --report-junitxml $ROOT_DIR_SRC/test-results/destral
+            destral --report-coverage --enable-coverage --report-junitxml $ROOT_DIR_SRC/test-results/destral
 
       - run:
           name: coverage
@@ -148,4 +147,3 @@ jobs:
       - store_artifacts:
           path: ~/src/somenergia-generationkwh/htmlcov
           destination: coverage
-
