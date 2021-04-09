@@ -98,18 +98,13 @@
             <field name="name">LOT0002</field>
             <field name="estat">esborrany</field>
             <field name='tipus'>altres</field>
-            <field name="info" eval="1"/>
             <field name="email_template" ref="env_empowering_report_domestic_from_enviament"/>
-            <field name="total_enviaments" eval="1"/>
-            <field name="total_enviats" eval="1"/>
-            <field name="total_cancelats" eval="1"/>
 		</record>
 
 		<record id="lot_enviament_0004" model="som.infoenergia.lot.enviament">
             <field name="name">LOT0004</field>
             <field name="estat">realitzat</field>
             <field name='tipus'>altres</field>
-            <field name="info" eval="1"/>
             <field name="email_template" ref="env_empowering_report_domestic_from_enviament"/>
 		</record>
         <record id="enviament_obert_tipus_altre" model="som.enviament.massiu">
@@ -138,6 +133,7 @@
             <field name="lot_enviament" ref="lot_enviament_0002"/>
             <field name="info">Enviament massiu creat des de polissa en estat cancellat</field>
         </record>
+
         <record id="enviament_0004_obert_tipus_altre" model="som.enviament.massiu">
             <field name="polissa_id" ref='giscedata_polissa.polissa_0002'/>
             <field name="estat">obert</field>

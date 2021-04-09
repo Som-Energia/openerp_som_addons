@@ -26,6 +26,14 @@ ESTAT_ENVIAT = [
 class SomEnviamentMassiu(osv.osv):
     _name = 'som.enviament.massiu'
 
+    def create(self, cursor, uid, vals=None, context=None):
+        pol_obj = self.pool.get('giscedata.polissa')
+        if 'polissa_id' in vals:
+            titular_id = pol_obj.read(cursor, uid, vals['polissa_id'], ['titular'])['titular'][0]
+            vals['partner_id'] = titular_id
+
+        return super(SomEnviamentMassiu, self).create(cursor, uid, vals, context)
+
     def add_info_line(self, cursor, uid, ids, new_info, context=None):
         if isinstance(ids, (tuple, list)):
             ids = ids[0]

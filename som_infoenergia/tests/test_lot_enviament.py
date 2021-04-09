@@ -4,7 +4,7 @@ from destral.transaction import Transaction
 
 from expects import *
 import osv
-
+import unittest
 import csv
 import os
 import mock
@@ -106,7 +106,7 @@ class LotEnviamentTests(testing.OOTestCase):
         )[1]
         pol_name = pol_obj.read(cursor, uid, pol_id, ['name'])['name']
         lot_enviament = lot_env_obj.browse(cursor, uid, lot_enviament_id)
-        lot_enviament.create_single_enviament_from_polissa(pol_id, context={'tipus': 'infoenergia'})
+        lot_enviament.create_single_enviament_from_object(pol_id, context={'tipus': 'infoenergia'})
 
         csv_updated_data = {'contractid': pol_name, 'cups': '1',
                 'potencia':'2', 'tarifa':'2.0A','informe':'M2',
@@ -153,7 +153,7 @@ class LotEnviamentTests(testing.OOTestCase):
             ])
         self.assertEqual(len(post_enviaments), 1)
 
-    def test_create_single_enviament_from_polissa(self):
+    def test_create_single_enviament_from_object(self):
         imd_obj = self.openerp.pool.get('ir.model.data')
         lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
         env_obj = self.openerp.pool.get('som.infoenergia.enviament')
@@ -171,17 +171,16 @@ class LotEnviamentTests(testing.OOTestCase):
         self.assertEqual(len(enviaments_in_lot), 0)
         pol_name = pol_obj.read(cursor, uid, pol_id, ['name'])['name']
 
-        lot_enviament.create_single_enviament_from_polissa(pol_id, context={'tipus': 'infoenergia'})
+        lot_enviament.create_single_enviament_from_object(pol_id, context={'tipus': 'infoenergia'})
 
         post_enviaments = env_obj.search(cursor, uid,
             [("lot_enviament", "=", lot_enviament_id),
             ('estat', "=", 'preesborrany'), ('polissa_id','=', pol_id),
-            ('info','ilike','Enviament creat des de pòlissa')
+            ('info','ilike','Enviament creat des de polissa_id')
             ])
         self.assertEqual(len(post_enviaments), 1)
 
-
-    def test_create_single_enviament_from_polissa_lot_tipus_altres(self):
+    def test_create_single_enviament_from_object_lot_tipus_altres_from_pol(self):
         imd_obj = self.openerp.pool.get('ir.model.data')
         lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
         env_obj = self.openerp.pool.get('som.enviament.massiu')
@@ -199,12 +198,63 @@ class LotEnviamentTests(testing.OOTestCase):
         self.assertEqual(len(enviaments_in_lot), 0)
         pol_name = pol_obj.read(cursor, uid, pol_id, ['name'])['name']
 
-        lot_enviament.create_single_enviament_from_polissa(pol_id, context={'tipus': 'altres'})
+        lot_enviament.create_single_enviament_from_object(pol_id, context={'tipus': 'altres', 'from_model': 'polissa_id'})
 
         post_enviaments = env_obj.search(cursor, uid,
             [("lot_enviament", "=", lot_enviament_id),
             ('estat', "=", 'obert'), ('polissa_id','=', pol_id),
-            ('info','ilike','Enviament creat des de pòlissa')
+            ('info','ilike','Enviament creat des de polissa_id')
+            ])
+        self.assertEqual(len(post_enviaments), 1)
+
+    def test_create_single_enviament_from_object_lot_tipus_altres_from_partner(self):
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
+        env_obj = self.openerp.pool.get('som.enviament.massiu')
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
+        cursor = self.cursor
+        uid = self.uid
+        lot_enviament_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_infoenergia', 'lot_enviament_0002'
+        )[1]
+        lot_enviament = lot_env_obj.browse(cursor, uid, lot_enviament_id)
+        partner_id = imd_obj.get_object_reference(
+            cursor, uid, 'base', 'res_partner_5'
+        )[1]
+        enviaments_in_lot = env_obj.search(cursor, uid, [('lot_enviament','=',lot_enviament_id),('partner_id','=', partner_id)])
+        self.assertEqual(len(enviaments_in_lot), 0)
+
+        lot_enviament.create_single_enviament_from_object(partner_id, context={'tipus': 'altres', 'from_model': 'partner_id'})
+
+        post_enviaments = env_obj.search(cursor, uid,
+            [("lot_enviament", "=", lot_enviament_id),
+            ('estat', "=", 'obert'), ('partner_id','=', partner_id),
+            ('info','ilike','Enviament creat des de partner_id')
+            ])
+        self.assertEqual(len(post_enviaments), 1)
+
+    def test_create_single_enviament_from_object_lot_tipus_altres_from_partner_already_exist(self):
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
+        env_obj = self.openerp.pool.get('som.enviament.massiu')
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
+        cursor = self.cursor
+        uid = self.uid
+        lot_enviament_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_infoenergia', 'lot_enviament_0002'
+        )[1]
+        lot_enviament = lot_env_obj.browse(cursor, uid, lot_enviament_id)
+        partner_id = imd_obj.get_object_reference(
+            cursor, uid, 'base', 'res_partner_agrolait'
+        )[1]
+        enviaments_in_lot = env_obj.search(cursor, uid, [('lot_enviament','=',lot_enviament_id),('partner_id','=', partner_id)])
+        self.assertEqual(len(enviaments_in_lot), 1)
+
+        lot_enviament.create_single_enviament_from_object(partner_id, context={'tipus': 'altres', 'from_model': 'partner_id'})
+
+        post_enviaments = env_obj.search(cursor, uid,
+            [("lot_enviament", "=", lot_enviament_id),
+            ('estat', "=", 'enviat'), ('partner_id','=', partner_id),
             ])
         self.assertEqual(len(post_enviaments), 1)
 
