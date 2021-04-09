@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data noupdate="0">
+		<record id="res_groups_psmsmanager" model="res.groups">
+			<field name="name">PowerSMS / Settings_Manager</field>
+		</record>
+		<record id="res_groups_psmsuserse" model="res.groups">
+			<field name="name">PowerSMS / External_users</field>
+		</record>
+		<record id="res_groups_psmsusersi" model="res.groups">
+			<field name="name">PowerSMS / Internal_users</field>
+		</record>
+	</data>
+</openerp>
