@@ -100,20 +100,20 @@ class SomInfoenergiaLotEnviament(osv.osv):
 
             self.create_enviaments_from_csv(cursor, uid, ids, csv_data, context)
 
-    def create_enviaments_from_polissa_list(self, cursor, uid, ids, polissa_ids, context=None):
+    def create_enviaments_from_object_list(self, cursor, uid, ids, object_ids, context=None):
         if isinstance(ids, (tuple, list)):
             ids = ids[0]
 
         lot_info = self.read(cursor, uid, ids, ['name','tipus'])
         context['tipus'] = lot_info['tipus']
         job_ids = []
-        for pol_id in polissa_ids:
-            job = self.create_single_enviament_from_polissa_async(cursor, uid, ids, pol_id, context=context)
+        for obj_id in object_ids:
+            job = self.create_single_enviament_from_object_async(cursor, uid, ids, obj_id, context=context)
             job_ids.append(job.id)
             # Create a jobs_group to see the status of the operation
         create_jobs_group(
             cursor.dbname, uid,
-            _('Crear Enviaments al lot {0} a partir de {1} polisses.').format(lot_info['name'], len(job_ids)),
+            _('Crear Enviaments al lot {0} a partir de {1} {2}.').format(lot_info['name'], len(job_ids), context['from_model']),
             'infoenergia.create_enviaments', job_ids
         )
         amax_proc = int(self.pool.get("res.config").get(cursor, uid, "infoenergia_create_enviaments_tasks_max_procs", "0"))
@@ -125,26 +125,28 @@ class SomInfoenergiaLotEnviament(osv.osv):
         return True
 
     @job(queue="infoenergia_create_enviament")
-    def create_single_enviament_from_polissa_async(self, cursor, uid, ids, polissa_id, context=None):
-        self.create_single_enviament_from_polissa(cursor, uid, ids, polissa_id, context)
+    def create_single_enviament_from_object_async(self, cursor, uid, ids, object_id, context=None):
+        self.create_single_enviament_from_object(cursor, uid, ids, object_id, context)
 
-    def create_single_enviament_from_polissa(self, cursor, uid, ids, polissa_id, context=None):
+    def create_single_enviament_from_object(self, cursor, uid, ids, object_id, context=None):
         if isinstance(ids, (tuple, list)):
             ids = ids[0]
+
         if context['tipus'] == 'infoenergia':
             env_obj = self.pool.get('som.infoenergia.enviament')
+            context['from_model'] = 'polissa_id'
         elif context['tipus'] == 'altres':
             env_obj = self.pool.get('som.enviament.massiu')
 
         env_values = {
-            'polissa_id': polissa_id,
+            context['from_model']: object_id,
             'lot_enviament': ids,
             'estat': 'preesborrany' if context['tipus'] == 'infoenergia' else 'obert',
         }
-        env_id = env_obj.search(cursor, uid, [('lot_enviament','=', ids), ('polissa_id', '=', polissa_id)])
+        env_id = env_obj.search(cursor, uid, [('lot_enviament','=', ids), (context['from_model'], '=', object_id)])
         if not env_id:
             env_id = env_obj.create(cursor, uid, env_values, context)
-            env_obj.add_info_line(cursor, uid, env_id, u'Enviament creat des de pòlissa')
+            env_obj.add_info_line(cursor, uid, env_id, u'Enviament creat des de ' + context['from_model'])
 
     def create_enviaments_from_csv(self, cursor, uid, ids, csv_data, context=None):
         if isinstance(ids, (tuple, list)):
