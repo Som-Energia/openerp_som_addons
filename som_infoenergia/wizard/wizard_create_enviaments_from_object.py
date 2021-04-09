@@ -7,8 +7,8 @@ STATES = [
     ('finished', 'Estat Final'),
 ]
 
-class WizardCreateEnviamentsFromPol(osv.osv_memory):
-    _name = 'wizard.infoenergia.create.enviaments.from.pol'
+class WizardCreateEnviamentsFromObject(osv.osv_memory):
+    _name = 'wizard.infoenergia.create.enviaments.from.object'
 
     def create_enviaments(self, cursor, uid, ids, context=None):
         wiz = self.browse(cursor, uid, ids[0], context=context)
@@ -19,7 +19,8 @@ class WizardCreateEnviamentsFromPol(osv.osv_memory):
 
         pol_ids = context.get('active_ids',[])
         wiz.write({'state': "finished"})
-        lot_obj.create_enviaments_from_polissa_list(cursor, uid, lot_id, pol_ids, context)
+
+        lot_obj.create_enviaments_from_object_list(cursor, uid, lot_id, pol_ids, context)
 
 
     _columns = {
@@ -33,4 +34,4 @@ class WizardCreateEnviamentsFromPol(osv.osv_memory):
     }
 
 
-WizardCreateEnviamentsFromPol()
+WizardCreateEnviamentsFromObject()
