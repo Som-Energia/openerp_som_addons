@@ -8,7 +8,7 @@ from mako import exceptions
 import pdfkit
 import pypdftk_ as pypdftk
 
-ENCODING = 'iso-8859-1'
+ENCODING = 'utf-8'
 WKHTMLTOPDF = os.getenv('WKHTMLTOPDF_', None)
 
 def read_mako_template(path):
