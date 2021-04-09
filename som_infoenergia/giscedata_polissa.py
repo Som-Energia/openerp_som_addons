@@ -22,12 +22,16 @@ class GiscedataPolissaInfoenergia(osv.osv):
                 profile_id = profile_obj.search(cursor, uid, [('name','=', 'Default profile')])[0]
             vals['empowering_profile_id'] = profile_id
 
+        if 'emp_allow_send_data' in vals:
+            if not vals['emp_allow_send_data']:
+                vals['emp_allow_recieve_mail_infoenergia'] = False
+
         res = super(GiscedataPolissaInfoenergia, self).write(cursor, uid, ids, vals, context)
         return res
 
     _columns = {
-        'emp_allow_send_data': fields.boolean('Permetre compartir dades per infoenergia',
-                                  help="Compartir dades pel servei d'infoenergia"),
+        'emp_allow_send_data': fields.boolean('Permetre compartir dades amb BeeData',
+                                  help="Compartir dades a través de l'API amb BeeData"),
         'emp_allow_recieve_mail_infoenergia': fields.boolean('Permetre rebre informes',
                                   help="Indica si es vol rebre informes per email del servei"
                                        "d'infoenergia"),

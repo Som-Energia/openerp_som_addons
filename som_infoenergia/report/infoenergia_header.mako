@@ -1,4 +1,8 @@
-<html
+## -*- coding: utf-8 -*-
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+</head>
 <body>
 <style>
 .absolute {
@@ -12,10 +16,9 @@
 }
 </style>
 <div class="absolute">
-<span style="font-family: Open Sans; font-size: 1.1em; line-height: 18px">
+<span style="font-family: Open Sans; font-size: 1em; line-height: 18px">
 <span style="font-weight:bold">
-${customer['name']}
-<br>${customer['surname']}
+${customer['name']} ${customer['surname']}
 </span>
 <br>${customer['address']}
 <br><span style="font-weight:bold">CUPS ${customer['cups']}</span>
