@@ -6,14 +6,16 @@ class GiscedataPolissaTarifa(osv.osv):
     _name = 'giscedata.polissa.tarifa'
     _inherit = 'giscedata.polissa.tarifa'
 
-    def __get_all_periods(self, cursor, uid, periodes_tarifa, context):
+    def __get_all_periods(self, cursor, uid, tarifa, context):
         facturador_obj = self.pool.get('giscedata.facturacio.facturador')
         fact_obj = self.pool.get('giscedata.facturacio.factura')
-
+        period_obj = self.pool.get('giscedata.polissa.tarifa.periodes')
         periods = []
-
+        ctx = {'sense_agrupar': True, 'date': False}
+        periodes_tarifa = tarifa.get_periodes(context=ctx).values()
+        periodes_tarifa.extend(tarifa.get_periodes('tp', context=ctx).values())
         # tariff.periodes only contain power (tp) and energy (te) terms
-        for periode in periodes_tarifa:
+        for periode in period_obj.browse(cursor, uid, periodes_tarifa):
             # build a dictionary list with the information needed to
             # calculate prices
             periods.append({
@@ -140,7 +142,7 @@ class GiscedataPolissaTarifa(osv.osv):
 
         pricelist = pricelist[0]
 
-        periods = self.__get_all_periods(cursor, uid, tariff.periodes, context)
+        periods = self.__get_all_periods(cursor, uid, tariff, context)
 
         preus = {}  # dictionary to be returned
         for period in periods:
