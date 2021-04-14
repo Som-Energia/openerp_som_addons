@@ -2,7 +2,7 @@
 {
     "name": "Som Energia facturae extension",
     "description": """SomEnergia facturae extension""",
-    "version": "0-dev",
+    "version": "2.103.13",
     "author": "Som Energia",
     "category": "Master",
     "depends":[
