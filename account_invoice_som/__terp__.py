@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 {
     "name": "Account invoice comer (SomEnergia)",
-    "description": """Este módulo añade las siguientes funcionalidades: 
+    "description": """Este módulo añade las siguientes funcionalidades:
     * Extiende account_invoice""",
-    "version": "0-dev",
+    "version": "2.103.13",
     "author": "GISCE",
     "category": "GISCEMaster",
     "depends":[

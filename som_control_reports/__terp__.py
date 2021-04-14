@@ -6,7 +6,7 @@
         * Report de control de l'estat y creixement de diferents àmbits, com
         socis, contractes, ATR, etc ...
     """,
-    "version": "0-dev",
+    "version": "2.103.13",
     "author": "SOM ENERGIA",
     "category": "SomEnergia",
     "depends":[

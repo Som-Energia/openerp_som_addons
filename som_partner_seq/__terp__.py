@@ -5,7 +5,7 @@
     This module provide :
         * A sequence for partners SXXXXXX.
     """,
-    "version": "0-dev",
+    "version": "2.103.13",
     "author": "GISCE",
     "category": "SomEnergia",
     "depends":[
