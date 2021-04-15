@@ -126,22 +126,15 @@ class RetencionsSobreRendimentGenerationKwh():
         Return email from poweremail template
         """
         ir_model_data = _object.pool.get('ir.model.data')
-        account_obj = _object.pool.get('poweremail.core_accounts')
         power_email_tmpl_obj = _object.pool.get('poweremail.templates')
 
         template_id = ir_model_data.get_object_reference(
             cursor, uid, 'som_generationkwh', 'certificat_retencio_rendiment_generationkwh'
         )[1]
-        template = power_email_tmpl_obj.read(cursor, uid, template_id)
 
-        email_from = False
-        template_name = 'Generation'
-
-        if template.get(template_name):
-            email_from = template.get('enforce_from_account')[0]
-
-        if not email_from:
-            email_from = account_obj.search(cursor, uid, [('name', 'ilike', template_name)])[0]
+        email_from = ir_model_data.get_object_reference(
+            cursor, uid, 'som_generationkwh', 'genertion_mail_account'
+        )[1]
 
         email_params = dict({
             'email_from': email_from,
