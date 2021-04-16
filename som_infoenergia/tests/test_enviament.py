@@ -243,3 +243,73 @@ class EnviamentTests(testing.OOTestCase):
             'email_to': 'test@test.test', 'email_subject': 'Test subject',
             'active_id': enviament_id
         })
+
+    def test_add_info_line__single_env_infoenergia(self):
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        env_obj = self.openerp.pool.get('som.infoenergia.enviament')
+        enviament_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_infoenergia', 'enviament_obert_amb_attach'
+        )[1]
+        enviament = env_obj.browse(self.cursor, self.uid, enviament_id)
+        info_pre = enviament.info
+
+        enviament.add_info_line(u'Test add info line')
+
+        info_post = env_obj.read(self.cursor, self.uid, enviament_id, ['info'])['info']
+        self.assertTrue(u'Test add info line\n{}'.format(info_pre) in info_post)
+
+    def test_add_info_line__two_env_infoenergia(self):
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        env_obj = self.openerp.pool.get('som.infoenergia.enviament')
+        enviaments = []
+        enviaments.append(imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_infoenergia', 'enviament_obert_amb_attach'
+        )[1])
+        enviaments.append(imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_infoenergia', 'enviament_obert'
+        )[1])
+        info_pre_0 = env_obj.read(self.cursor, self.uid, enviaments[0], ['info'])['info']
+        info_pre_1 = env_obj.read(self.cursor, self.uid, enviaments[1], ['info'])['info']
+
+        env_obj.add_info_line(self.cursor, self.uid, enviaments, u'Test add info line')
+
+        info_post_0 = env_obj.read(self.cursor, self.uid, enviaments[0], ['info'])['info']
+        info_post_1 = env_obj.read(self.cursor, self.uid, enviaments[1], ['info'])['info']
+        self.assertTrue(u'Test add info line\n{}'.format(info_pre_0) in info_post_0)
+        self.assertTrue(u'Test add info line\n{}'.format(info_pre_1) in info_post_1)
+
+    def test_add_info_line__single_env_massiu(self):
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        env_obj = self.openerp.pool.get('som.enviament.massiu')
+        enviament_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_infoenergia', 'enviament_obert_tipus_altre'
+        )[1]
+        enviament = env_obj.browse(self.cursor, self.uid, enviament_id)
+        info_pre = enviament.info
+
+        enviament.add_info_line(u'Test add info line')
+
+        info_post = env_obj.read(self.cursor, self.uid, enviament_id, ['info'])['info']
+        self.assertTrue(u'Test add info line\n{}'.format(info_pre) in info_post)
+
+    def test_add_info_line__two_env_massiu(self):
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        env_obj = self.openerp.pool.get('som.enviament.massiu')
+        enviaments = []
+        enviaments.append(imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_infoenergia', 'enviament_obert_tipus_altre'
+        )[1])
+        enviaments.append(imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_infoenergia', 'enviament_enviat_tipus_altre'
+        )[1])
+        info_pre_0 = env_obj.read(self.cursor, self.uid, enviaments[0], ['info'])['info']
+        info_pre_1 = env_obj.read(self.cursor, self.uid, enviaments[1], ['info'])['info']
+
+        env_obj.add_info_line(self.cursor, self.uid, enviaments, u'Test add info line')
+
+        info_post_0 = env_obj.read(self.cursor, self.uid, enviaments[0], ['info'])['info']
+        info_post_1 = env_obj.read(self.cursor, self.uid, enviaments[1], ['info'])['info']
+        self.assertTrue(u'Test add info line\n{}'.format(info_pre_0) in info_post_0)
+        self.assertTrue(u'Test add info line\n{}'.format(info_pre_1) in info_post_1)
+
+
