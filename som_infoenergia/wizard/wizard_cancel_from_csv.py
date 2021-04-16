@@ -39,12 +39,5 @@ class WizardCancelFromCSV(osv.osv_memory):
         lot_obj.cancel_enviaments_from_polissa_names(cursor, uid, lot_id, pol_list, context)
         wiz.write({'state': "finished"})
         return True
-        return {
-            'name': _('Polisses a cancel·lar'),
-            'view_type': 'form',
-            "view_mode": 'tree,form',
-            'res_model': 'som.infoenergia.lot.enviament',
-            'type': 'ir.actions.act_window',
-        }
 
 WizardCancelFromCSV()
