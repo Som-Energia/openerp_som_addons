@@ -99,7 +99,7 @@ class PowersmsSendWizard(osv.osv_memory):
         if isinstance(screen_vals, list): # Solves a bug in v5.0.16
             screen_vals = screen_vals[0]
         report_record_ids = context['src_rec_ids'][:]
-        create_empty_number = context.get('create_empty_number', False)
+        create_empty_number = context.get('create_empty_number', True)
 
         for id in context['src_rec_ids']:
             accounts = self.pool.get('powersms.core_accounts').read(cr, uid, screen_vals['account'], context=context)
