@@ -2541,6 +2541,7 @@ class InvestmentTests(testing.OOTestCase):
             self.Investment.investment_sign_request(cursor, uid, investment_id)
             mocked_sign.assert_called_with(cursor, uid, mock.ANY, context={})
 
+    @unittest.skip("No implemented yet. Keep in mind to mock ResPartnerAddress.write()")
     def test__generationwkwh_investment_sign__withoutMail(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
