@@ -99,6 +99,7 @@ class PowersmsSendWizard(osv.osv_memory):
         if isinstance(screen_vals, list): # Solves a bug in v5.0.16
             screen_vals = screen_vals[0]
         report_record_ids = context['src_rec_ids'][:]
+        create_empty_number = context.get('create_empty_number', True)
 
         for id in context['src_rec_ids']:
             accounts = self.pool.get('powersms.core_accounts').read(cr, uid, screen_vals['account'], context=context)
@@ -111,6 +112,9 @@ class PowersmsSendWizard(osv.osv_memory):
             }
             numbers = list(set(map(str.strip,str(vals['psms_to']).split(','))))
             for number in numbers:
+                if not number and not create_empty_number:
+                    continue
+
                 vals.update({'psms_to': number})
                 #Create partly the mail and later update attachments
                 ctx = context.copy()
