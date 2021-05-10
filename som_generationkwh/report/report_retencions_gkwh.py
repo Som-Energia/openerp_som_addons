@@ -133,7 +133,7 @@ class RetencionsSobreRendimentGenerationKwh():
         )[1]
 
         email_from = ir_model_data.get_object_reference(
-            cursor, uid, 'som_generationkwh', 'genertion_mail_account'
+            cursor, uid, 'som_generationkwh', 'generation_mail_account'
         )[1]
 
         email_params = dict({

@@ -10,7 +10,7 @@ def up(cursor, installed_version):
     xml_content = '''<?xml version="1.0" encoding="UTF-8" ?>
     <openerp>
         <data>
-            <record model="poweremail.core_accounts" id="genertion_mail_account">
+            <record model="poweremail.core_accounts" id="generation_mail_account">
                 <field name="email_id">generationkwh@somenergia.coop</field>
                 <field name="company">yes</field>
                 <field name="smtpserver">smtp.mandrillapp.com</field>

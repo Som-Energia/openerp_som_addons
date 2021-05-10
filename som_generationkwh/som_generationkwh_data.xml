@@ -10,7 +10,7 @@
         <record model="product.category" id="categ_inversions">
             <field name="name">Inversions</field>
         </record>
-        <record model="poweremail.core_accounts" id="genertion_mail_account">
+        <record model="poweremail.core_accounts" id="generation_mail_account">
             <field name="email_id">generationkwh@somenergia.coop</field>
             <field name="company">yes</field>
             <field name="smtpserver">smtp.mandrillapp.com</field>
@@ -1485,7 +1485,7 @@ ${text_legal}
             <field name="lang">${object.partner_id.lang}</field>
             <field name="copyvalue">${object.partner_id.lang}</field>
             <field eval="0" name="send_on_write"/>
-            <field name="enforce_from_account" ref="genertion_mail_account"/>
+            <field name="enforce_from_account" ref="generation_mail_account"/>
             <field name="def_body_text"><![CDATA[
 <!doctype html>
 <html><body>
