@@ -46,17 +46,21 @@ html {
         <th><b>Email</b></th>
         <th><b>Dirección</b></th>
       </tr>
-%for dades_soci in dades.values():
+%for dades_soci in dades:
 %    for dades_apo in dades_soci['inversions']:
       <tr>
+%      if dades_apo['concepte'] == u'Obligatoria' and dades_apo['import'] > 0:
         <td>${dades_soci['num_soci']}</td>
         <td>${dades_soci['nom']}</td>
         <td>${dades_soci['dni']}</td>
         <td>Consumidor</td>
-%      if dades_apo['concepte'] == u'Aportación obligatoria':
         <td>${dades_soci['data_alta']}</td>
         <td>${dades_soci['data_baixa']}</td>
 %      else:
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
         <td></td>
         <td></td>
 %      endif
@@ -64,7 +68,7 @@ html {
         <td>${dades_apo['concepte']}</td>
         <td>${dades_apo['data']}</td>
         <td>${dades_apo['import']}€</td>
-%      if dades_apo['concepte'] == u'Aportación obligatoria':
+%      if dades_apo['concepte'] == u'Obligatoria' and dades_apo['import'] > 0:
         <td>${dades_soci['email']}</td>
         <td>${dades_soci['adreca']} ${dades_soci['cp']} ${dades_soci['municipi']}</td>
 %      else:
