@@ -14,17 +14,16 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
     _name = 'wizard.llibre.registre.socis'
 
     def generate_report(self, cursor, uid, ids, context=None):
-	def chunks(lst, n):
-	    """Yield successive n-sized chunks from lst."""
-	    for i in range(0, len(lst), n):
-		yield lst[i:i + n]
+        def chunks(lst, n):
+        """Yield successive n-sized chunks from lst."""
+            for i in range(0, len(lst), n):
+                yield lst[i:i + n]
 
-	wiz = self.browse(cursor, uid, ids[0])
-	soci_obj = self.pool.get('somenergia.soci')
-	socis = soci_obj.search(cursor, uid, [('active','=',True)])
+        wiz = self.browse(cursor, uid, ids[0])
+        soci_obj = self.pool.get('somenergia.soci')
+        socis = soci_obj.search(cursor, uid, [('active','=',True)])
         socis.sort()
-	for soci in socis:
-	    self.generate_one_report(cursor, uid, ids, [soci])
+        self.generate_one_report(cursor, uid, ids, socis)
 
 
     @job(queue="print_report", timeout=3000)

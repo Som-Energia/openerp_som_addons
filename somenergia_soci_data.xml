@@ -95,14 +95,14 @@ ${text_legal}
             <field name="value">Soci/a de Som Energia</field>
             <field name="description">Nom exacte de la llista de mailchimp on es subscriuen o arxiven automàticament les sòcies en donar-se d'alta o baixa respectivament.</field>
         </record>
-		<record model="ir.header_webkit" id="report_sense_fons">
+		<record model="ir.header_webkit" id="report_sense_fons_apaisat">
 			<field name="format">A4</field>
 			<field name="margin_bottom">10.0</field>
 			<field name="margin_top">10.00</field>
 			<field name="margin_left">0.01</field>
 			<field name="margin_right">0.01</field>
 			<field name="name">Sense fons header</field>
-			<field name="orientation">Portrait</field>
+			<field name="orientation">Landscape</field>
 			<field name="html"><![CDATA[<html>
 					<head>
 						<script></script>
@@ -142,7 +142,7 @@ ${text_legal}
             <field name="name">Llibre Registre Socis</field>
             <field name="report_webkit"
                    eval="'som_generationkwh/report/report_llibre_registre_socis.mako'"/>
-            <field name="webkit_header" ref="report_sense_fons"/>
+            <field name="webkit_header" ref="report_sense_fons_apaisat"/>
             <field name="report_rml" eval="False"/>
         </record>
         <record id="value_report_llibre_registre_socis" model="ir.values">
