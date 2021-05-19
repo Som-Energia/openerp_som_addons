@@ -229,6 +229,6 @@ class WizardAddContractsLot(testing.OOTestCase):
             cursor, uid, {},
             context=context
         )
-        wiz_obj.add_contracts_lot(cursor, uid, [wiz_id], context)
+        wiz_obj.add_contracts_lot(cursor, uid, wiz_id, context)
 
         mocked_create_enviaments_from_object_list.assert_called_with(cursor, uid, lot_enviament_id, expected_ids, {'from_model': 'polissa_id'})
