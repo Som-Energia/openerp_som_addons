@@ -9,11 +9,14 @@
                 <form string="Imprimeix Llibre Registre Socis">
                     <field name="state" invisible="1"/>
                     <group colspan="4" attrs="{}">
+                         <field name="date_from"/>
+                         <field name="date_to"/>
+                    </group>
+                    <group colspan="4" attrs="{}">
                         <button icon="gtk-cancel" special="cancel" string="Cancel·la" type="object"/>
                         <button icon="gtk-print" name="generate_report"
                             string="Imprimeix el Llibre" type="object"/>
                     </group>
-
 		        </form>
 	        </field>
 	    </record>
