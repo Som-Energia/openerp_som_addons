@@ -15,6 +15,7 @@
         "giscedata_polissa",
         "giscedata_facturacio",
         "poweremail_references",
+        "giscedata_polissa_category"
     ],
     "init_xml": [],
     "demo_xml": [

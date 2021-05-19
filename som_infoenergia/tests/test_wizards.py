@@ -142,3 +142,93 @@ class WizardMultipleStateChange(testing.OOTestCase):
         self.assertTrue('Obert -> Esborrany' in env_data['info'])
         self.assertEqual('esborrany', env_data['estat'])
 
+class WizardAddContractsLot(testing.OOTestCase):
+
+    def setUp(self):
+        self.txn = Transaction().start(self.database)
+
+        self.cursor = self.txn.cursor
+        self.uid = self.txn.user
+
+    def tearDown(self):
+        self.txn.stop()
+
+    def test_wizard_invalid_active_id__exception_raises(self):
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        cursor = self.cursor
+        uid = self.uid
+        wiz_obj = self.openerp.pool.get('wizard.infoenergia.add.contracts.lot')
+
+        wiz_id = wiz_obj.create(cursor, uid, {},{})
+        with self.assertRaises(osv.osv.except_osv) as e:
+            wiz_obj.add_contracts_lot(cursor, uid, [wiz_id], {})
+        self.assertEqual(e.exception.value, "S'ha de seleccionar un lot")
+
+        wiz_id = wiz_obj.create(cursor, uid, {},{})
+        with self.assertRaises(osv.osv.except_osv) as e:
+            wiz_obj.add_contracts_lot(cursor, uid, [wiz_id], {'active_ids': [wiz_id, 2]})
+        self.assertEqual(e.exception.value, "S'ha de seleccionar un lot")
+
+
+    @mock.patch('som_infoenergia.som_infoenergia_lot.SomInfoenergiaLotEnviament.create_enviaments_from_object_list')
+    def test_wizard_invalid_active_id__access_fare(self, mocked_create_enviaments_from_object_list):
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        cursor = self.cursor
+        uid = self.uid
+        wiz_obj = self.openerp.pool.get('wizard.infoenergia.add.contracts.lot')
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
+        lot_enviament_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_infoenergia', 'lot_enviament_0001'
+        )[1]
+        expected_ids = pol_obj.search(cursor, uid, [('tarifa','ilike','%2.0%')])
+
+        context = {'active_id': lot_enviament_id, 'active_ids': [lot_enviament_id]}
+        wiz_id = wiz_obj.create(
+            cursor, uid, {'access_fare':'2.0'},
+            context=context
+        )
+        wiz_obj.add_contracts_lot(cursor, uid, [wiz_id], context)
+
+        mocked_create_enviaments_from_object_list.assert_called_with(cursor, uid, lot_enviament_id, expected_ids, {'from_model': 'polissa_id'})
+
+    @mock.patch('som_infoenergia.som_infoenergia_lot.SomInfoenergiaLotEnviament.create_enviaments_from_object_list')
+    def test_wizard_invalid_active_id__invalid_cateogry(self, mocked_create_enviaments_from_object_list):
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        cursor = self.cursor
+        uid = self.uid
+        wiz_obj = self.openerp.pool.get('wizard.infoenergia.add.contracts.lot')
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
+        lot_enviament_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_infoenergia', 'lot_enviament_0001'
+        )[1]
+
+        context = {'active_id': lot_enviament_id, 'active_ids': [lot_enviament_id]}
+        wiz_id = wiz_obj.create(
+            cursor, uid, {'category':'InexistantCategory'},
+            context=context
+        )
+        wiz_obj.add_contracts_lot(cursor, uid, [wiz_id], context)
+
+        mocked_create_enviaments_from_object_list.assert_called_with(cursor, uid, lot_enviament_id, [], {'from_model': 'polissa_id'})
+
+
+    @mock.patch('som_infoenergia.som_infoenergia_lot.SomInfoenergiaLotEnviament.create_enviaments_from_object_list')
+    def test_wizard_invalid_active_id__no_filters(self, mocked_create_enviaments_from_object_list):
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        cursor = self.cursor
+        uid = self.uid
+        wiz_obj = self.openerp.pool.get('wizard.infoenergia.add.contracts.lot')
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
+        lot_enviament_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_infoenergia', 'lot_enviament_0001'
+        )[1]
+        expected_ids = pol_obj.search(cursor, uid, [])
+
+        context = {'active_id': lot_enviament_id, 'active_ids': [lot_enviament_id]}
+        wiz_id = wiz_obj.create(
+            cursor, uid, {},
+            context=context
+        )
+        wiz_obj.add_contracts_lot(cursor, uid, [wiz_id], context)
+
+        mocked_create_enviaments_from_object_list.assert_called_with(cursor, uid, lot_enviament_id, expected_ids, {'from_model': 'polissa_id'})
