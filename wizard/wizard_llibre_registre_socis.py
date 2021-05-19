@@ -15,17 +15,19 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
 
     def generate_report(self, cursor, uid, ids, context=None):
         wiz = self.browse(cursor, uid, ids[0])
-
-        context['date_from'] = '2010-12-01'
-        from datetime import datetime
-        context['date_to'] = datetime.strftime(datetime.today(), '%Y-%m-%d')
+        context['date_from'] = wiz.date_from
+        context['date_to'] = wiz.date_to
         self.generate_one_report(cursor, uid, ids, context)
+        return {}
 
 
     @job(queue="print_report", timeout=3000)
     def generate_one_report(self, cursor, uid, ids, context=None):
         wiz = self.browse(cursor, uid, ids[0])
         dades = self.get_report_data(cursor, uid, ids, context)
+        header = {}
+        header['date_from'] = context['date_from']
+        header['date_to'] = context['date_to']
 
         report_printer = webkit_report.WebKitParser(
             'report.somenergia.soci.report_llibre_registre_socis',
@@ -37,9 +39,10 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
         data = {
             'model': 'giscedata.facturacio.factura',
             'report_type': 'webkit',
-            'dades': dades
+            'dades': dades,
+            'header': header,
         }
-
+        context['webkit_extra_params'] = '--footer-right [page]'
         document_binary = report_printer.create(
             cursor, uid, ids, data,
             context=context
@@ -47,7 +50,7 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
         if not document_binary:
             raise Exception("We can't create the report")
 
-        f = open("/tmp/reports/llibre_registre_socis.pdf", 'wb+' )
+        f = open("/tmp/reports/llibre_registre_socis_" + str(header['date_to'][:4]) + ".pdf", 'wb+' )
         try:
             bits = base64.b64decode(base64.b64encode(document_binary[0]))
             f.write(bits)
@@ -96,12 +99,13 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
         soci_obj = self.pool.get('somenergia.soci')
         data = soci_obj.read(cursor, uid, soci, ['date', 'data_baixa_soci'])
         inversions = []
-        inversions.append({
-            'data': data['date'],
-            'concepte': u'Obligatoria',
-            'import': 100
-        })
-        if data['data_baixa_soci']:
+        if data['date'] >= context['date_from'] and data['date'] <= context['date_to']:
+            inversions.append({
+                'data': data['date'],
+                'concepte': u'Obligatoria',
+                'import': 100
+            })
+        if data['date'] >= context['date_from'] and data['date'] <= context['date_to'] and data['data_baixa_soci']:
             inversions.append({
                 'data': data['data_baixa_soci'],
                 'concepte': u'Obligatoria',
@@ -117,29 +121,33 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
             data = inv_obj.read(cursor, uid, inv, ['purchase_date',
                    'last_effective_date','last_effective_date','nshares',
                    'amortized_amount'])
-            if data['purchase_date']:
-                if data['last_effective_date']:
-                    inversions.append({
-                        'data': data['last_effective_date'],
-                        'concepte': u'Voluntaria',
-                        'import': data['nshares']*100*-1,
-                        'import_amortitzat': data['amortized_amount']*-1
-                })
+            if data['purchase_date'] and data['purchase_date'] >= context['date_from'] and data['purchase_date'] <= context['date_to']:
                 inversions.append({
                     'data': data['purchase_date'],
                     'concepte': u'Voluntaria',
                     'import': data['nshares']*100,
                     'import_amortitzat':  data['amortized_amount']
                 })
+            if data['last_effective_date'] and data['last_effective_date'] >= context['date_from'] and data['last_effective_date'] <= context['date_to']:
+                inversions.append({
+                    'data': data['last_effective_date'],
+                    'concepte': u'Voluntaria',
+                    'import': data['nshares']*100*-1,
+                    'import_amortitzat': data['amortized_amount']*-1
+                })
         return inversions
 
     _columns = {
         'name': fields.char('Nom fitxer', size=32),
         'state': fields.char('State', size=16),
+        'date_to': fields.date('Data final',required=True),
+        'date_from': fields.date('Data inicial',required=True),
     }
 
     _defaults = {
         'state': lambda *a: 'init',
+        'date_to': lambda *a: str(datetime.today()),
+        'date_from': '2010-12-01',
     }
 
 WizardLlibreRegistreSocis()
