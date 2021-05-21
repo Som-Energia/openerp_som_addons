@@ -253,6 +253,22 @@ class SomInfoenergiaLotEnviament(osv.osv):
 
         return env_obj
 
+    def cancel_enviaments_from_polissa_names(self, cursor, uid, ids, polissa_name_list, context=None):
+        if isinstance(ids, (tuple, list)):
+            ids = ids[0]
+
+        tipus = self.read(cursor, uid, ids, ['tipus'])['tipus']
+        if tipus == 'infoenergia':
+            env_obj = self.pool.get('som.infoenergia.enviament')
+            context['from_model'] = 'polissa_id'
+        elif tipus == 'altres':
+            env_obj = self.pool.get('som.enviament.massiu')
+
+        env_ids = env_obj.search(cursor, uid, [('lot_enviament','=', ids), ('polissa_id.name', 'in', polissa_name_list)])
+        env_obj.write(cursor, uid, env_ids, {'estat': 'cancellat'})
+        env_obj.add_info_line(cursor, uid, env_ids, u'Enviament cancel·lat per ' + context['reason'])
+
+
     def _ff_totals(self, cursor, uid, ids, field_name, arg,
                              context=None):
         res = {}

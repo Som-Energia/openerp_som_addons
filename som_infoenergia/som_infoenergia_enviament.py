@@ -91,13 +91,13 @@ class SomInfoenergiaEnviament(osv.osv):
             os.unlink(filepath)
 
     def add_info_line(self, cursor, uid, ids, new_info, context=None):
-        if isinstance(ids, (tuple, list)):
-            ids = ids[0]
-        env = self.browse(cursor, uid, ids)
-
-        now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        info = env.info if env.info else ''
-        env.write({'info': str(now) + ': ' + new_info + '\n' + info})
+        if not isinstance(ids, (tuple, list)):
+            ids = [ids]
+        for env_id in ids:
+            env = self.browse(cursor, uid, env_id)
+            now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            info = env.info if env.info else ''
+            env.write({'info': str(now) + ': ' + new_info + '\n' + info})
 
     @job(queue="infoenergia_download")
     def download_pdf(self, cursor, uid, ids, context):
