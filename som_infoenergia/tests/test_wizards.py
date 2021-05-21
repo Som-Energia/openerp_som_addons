@@ -179,6 +179,10 @@ class WizardCancelFromCSVTests(testing.OOTestCase):
         wiz_obj.cancel_from_file(self.cursor, self.uid, [wiz_id], context=ctx)
 
         mock_cancel.assert_called_with(self.cursor, self.uid, lot_enviament_id, ["0001"], ctx)
+        self.assertTrue(
+            "Cancel·lats enviaments des de CSV amb 1 línies"
+            in lot_env_obj.read(self.cursor, self.uid, lot_enviament_id, ['info'])['info']
+        )
 
     @mock.patch('som_infoenergia.som_infoenergia_lot.SomInfoenergiaLotEnviament.cancel_enviaments_from_polissa_names')
     def test_cancel_from_csv__many(self, mock_cancel):
@@ -204,3 +208,8 @@ class WizardCancelFromCSVTests(testing.OOTestCase):
         wiz_obj.cancel_from_file(self.cursor, self.uid, [wiz_id], context=ctx)
 
         mock_cancel.assert_called_with(self.cursor, self.uid, lot_enviament_id, ["0001", "0002"], ctx)
+
+        self.assertTrue(
+            "Cancel·lats enviaments des de CSV amb 2 línies"
+            in lot_env_obj.read(self.cursor, self.uid, lot_enviament_id, ['info'])['info']
+        )

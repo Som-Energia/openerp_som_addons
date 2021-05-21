@@ -37,6 +37,7 @@ class WizardCancelFromCSV(osv.osv_memory):
 
         lot_id = context.get('active_id', [])
         lot_obj.cancel_enviaments_from_polissa_names(cursor, uid, lot_id, pol_list, context)
+        lot_obj.add_info_line(cursor, uid, lot_id, "Cancel·lats enviaments des de CSV amb {} línies".format(len(pol_list)))
         wiz.write({'state': "finished"})
         return True
 
