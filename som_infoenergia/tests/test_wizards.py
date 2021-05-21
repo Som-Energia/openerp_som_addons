@@ -4,6 +4,7 @@ from destral.transaction import Transaction
 
 from expects import *
 import osv
+import base64
 
 import csv
 import os
@@ -142,3 +143,73 @@ class WizardMultipleStateChange(testing.OOTestCase):
         self.assertTrue('Obert -> Esborrany' in env_data['info'])
         self.assertEqual('esborrany', env_data['estat'])
 
+
+class WizardCancelFromCSVTests(testing.OOTestCase):
+
+    def setUp(self):
+        self.txn = Transaction().start(self.database)
+
+        self.cursor = self.txn.cursor
+        self.uid = self.txn.user
+
+    def tearDown(self):
+        self.txn.stop()
+
+    @mock.patch('som_infoenergia.som_infoenergia_lot.SomInfoenergiaLotEnviament.cancel_enviaments_from_polissa_names')
+    def test_cancel_from_csv__one(self, mock_cancel):
+        wiz_obj = self.openerp.pool.get('wizard.cancel.from.csv')
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        env_obj = self.openerp.pool.get('som.infoenergia.enviament')
+        lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
+        csv_content = "0001"
+        encoded_csv = base64.b64encode(csv_content)
+        vals = {
+            'csv_file': encoded_csv,
+            'reason': 'Test'
+        }
+        lot_enviament_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_infoenergia', 'lot_enviament_0001'
+        )[1]
+        ctx = {
+            'active_id': lot_enviament_id, 'active_ids': [lot_enviament_id],
+        }
+        env_ids = env_obj.search(self.cursor, self.uid, [('lot_enviament', '=', lot_enviament_id), ('polissa_id.name', '=', '0001')])
+        wiz_id = wiz_obj.create(self.cursor, self.uid, vals,context=ctx)
+
+        wiz_obj.cancel_from_file(self.cursor, self.uid, [wiz_id], context=ctx)
+
+        mock_cancel.assert_called_with(self.cursor, self.uid, lot_enviament_id, ["0001"], ctx)
+        self.assertTrue(
+            "Cancel·lats enviaments des de CSV amb 1 línies"
+            in lot_env_obj.read(self.cursor, self.uid, lot_enviament_id, ['info'])['info']
+        )
+
+    @mock.patch('som_infoenergia.som_infoenergia_lot.SomInfoenergiaLotEnviament.cancel_enviaments_from_polissa_names')
+    def test_cancel_from_csv__many(self, mock_cancel):
+        wiz_obj = self.openerp.pool.get('wizard.cancel.from.csv')
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        env_obj = self.openerp.pool.get('som.infoenergia.enviament')
+        lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
+        csv_content = "0001\n0002"
+        encoded_csv = base64.b64encode(csv_content)
+        vals = {
+            'csv_file': encoded_csv,
+            'reason': 'Test'
+        }
+        lot_enviament_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_infoenergia', 'lot_enviament_0001'
+        )[1]
+        ctx = {
+            'active_id': lot_enviament_id, 'active_ids': [lot_enviament_id],
+        }
+        env_ids = env_obj.search(self.cursor, self.uid, [('lot_enviament', '=', lot_enviament_id), ('polissa_id.name', '=', '0001')])
+        wiz_id = wiz_obj.create(self.cursor, self.uid, vals,context=ctx)
+
+        wiz_obj.cancel_from_file(self.cursor, self.uid, [wiz_id], context=ctx)
+
+        mock_cancel.assert_called_with(self.cursor, self.uid, lot_enviament_id, ["0001", "0002"], ctx)
+
+        self.assertTrue(
+            "Cancel·lats enviaments des de CSV amb 2 línies"
+            in lot_env_obj.read(self.cursor, self.uid, lot_enviament_id, ['info'])['info']
+        )

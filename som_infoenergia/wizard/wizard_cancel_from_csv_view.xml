@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_cancel_from_csv_form">
+            <field name="name">wizard.cancel.from.csv.form</field>
+            <field name="model">wizard.cancel.from.csv</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Cancel·la enviaments des de CSV">
+                    <field name="state" invisible="1"/>
+                    <group attrs="{'invisible': [('state', '!=', 'init')]}">
+                        <label string="Cancel·lar enviaments de les pòlisses indicades al CSV" colspan="4"/>
+                        <field name="csv_file" colspan="4" filename="name" string="Arxiu CSV"/>
+                        <field name="reason" string="Motiu" colspan="4" width="500" />
+                        <button name="cancel_from_file" type="object" string="Cancel·lar enviaments" icon="gtk-ok"/>
+                    </group>
+                    <group attrs="{'invisible': [('state', '!=', 'finished')]}">
+                        <button special="cancel" string="Sortir" icon="gtk-ok"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_cancel_from_csv">
+            <field name="name">Cancel·la enviaments des de CSV</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.cancel.from.csv</field>
+            <field name="view_type">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_cancel_from_csv_form"/>
+        </record>
+        <record id="values_infoenergia_cancel_from_csv_form" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Cancel·la enviaments des de CSV</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">som.infoenergia.lot.enviament</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_cancel_from_csv'))"/>
+        </record>
+    </data>
+</openerp>
