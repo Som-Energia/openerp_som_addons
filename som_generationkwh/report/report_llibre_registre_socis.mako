@@ -80,7 +80,7 @@ html {
       </tr>
 %for dades_soci in dades:
     <%
-        mostrar_dades = dades_soci['num_soci'] != soci_anterior
+        mostrar_dades = True
     %>
 %    for dades_apo in dades_soci['inversions']:
       <tr class="keep-together">
@@ -117,7 +117,7 @@ html {
       </tr>
       <tr>
     <%
-        soci_anterior = dades_soci['num_soci']
+        mostrar_dades = False
     %>
 %endfor
 %endfor
