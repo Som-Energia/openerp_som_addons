@@ -11,7 +11,7 @@
   "depends": ['base', 'giscedata_facturacio_indexada'],
   "init_xml": [],
   "demo_xml": ['giscedata_facturacio_indexada_som_demo.xml'],
-  "update_xml": [],
+  "update_xml": ['giscedata_polissa_view.xml'],
   "active": False,
   "installable": True
 }
