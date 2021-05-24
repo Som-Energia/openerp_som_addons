@@ -131,7 +131,7 @@
             <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
             <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
         </record>
-        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p1_e_tarifa_30TD">
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p4_e_tarifa_30TD">
             <field name="product_gkwh_id" ref="p4_gkwh_tarifa_30TD"/>
         </record>
         <record model="product.product" id="p5_gkwh_tarifa_30TD">
@@ -143,7 +143,7 @@
             <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
             <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
         </record>
-        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p2_e_tarifa_30TD">
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p5_e_tarifa_30TD">
             <field name="product_gkwh_id" ref="p5_gkwh_tarifa_30TD"/>
         </record>
         <record model="product.product" id="p6_gkwh_tarifa_30TD">
@@ -155,7 +155,7 @@
             <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
             <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
         </record>
-        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p3_e_tarifa_30TD">
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p6_e_tarifa_30TD">
             <field name="product_gkwh_id" ref="p6_gkwh_tarifa_30TD"/>
         </record>
         <!-- 6.1TD -->
