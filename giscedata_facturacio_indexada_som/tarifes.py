@@ -227,6 +227,30 @@ class TarifaPoolSOM(TarifaPool):
         }
 
 
+class Tarifa20TDPoolSOM(TarifaPoolSOM, Tarifa20TDPool):
+    pass
+
+
+class Tarifa30TDPoolSOM(TarifaPoolSOM, Tarifa30TDPool):
+    pass
+
+
+class Tarifa61TDPoolSOM(TarifaPoolSOM, Tarifa61TDPool):
+    pass
+
+
+class Tarifa62TDPoolSOM(TarifaPoolSOM, Tarifa61TDPool):
+    pass
+
+
+class Tarifa63TDPoolSOM(TarifaPoolSOM, Tarifa63TDPool):
+    pass
+
+
+class Tarifa64TDPoolSOM(TarifaPoolSOM, Tarifa64TDPool):
+    pass
+
+
 class Tarifa20APoolSOM(TarifaPoolSOM, Tarifa20APool):
     pass
 
@@ -268,6 +292,12 @@ class Tarifa62PoolSOM(TarifaPoolSOM, Tarifa62Pool):
 
 
 TARIFFS_FACT = {
+    '2.0TD': Tarifa20TDPoolSOM,
+    '3.0TD': Tarifa30TDPoolSOM,
+    '6.1TD': Tarifa61TDPoolSOM,
+    '6.2TD': Tarifa62TDPoolSOM,
+    '6.3TD': Tarifa63TDPoolSOM,
+    '6.4TD': Tarifa64TDPoolSOM,
     '2.0A': Tarifa20APoolSOM,
     '2.0DHA': Tarifa20DHAPoolSOM,
     '2.1A': Tarifa21APoolSOM,
