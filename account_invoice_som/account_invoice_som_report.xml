@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <openerp>
-    <data noupdate="1">
+    <data>
         <record model="ir.header_webkit" id="invoice_webkit_header">
             <field name="format">A4</field>
             <field name="margin_bottom">10</field>
@@ -32,7 +32,8 @@
             <field name="webkit_header" ref="invoice_webkit_header"/>
             <field name="report_rml" eval="False"/>
         </record>
-
+    </data>
+    <data noupdate="1">
         <!-- Plantilla inscripció per compres col·lectives -->
         <record model="poweremail.templates" id="email_self_consumption_registration">
             <field name="name">Factura Inscripció Compra col·lectiva</field>

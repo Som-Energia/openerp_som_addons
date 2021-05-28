@@ -35,13 +35,13 @@ class SomEnviamentMassiu(osv.osv):
         return super(SomEnviamentMassiu, self).create(cursor, uid, vals, context)
 
     def add_info_line(self, cursor, uid, ids, new_info, context=None):
-        if isinstance(ids, (tuple, list)):
-            ids = ids[0]
-        env = self.browse(cursor, uid, ids)
-
-        now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        info = env.info if env.info else ''
-        env.write({'info': str(now) + ': ' + new_info + '\n' + info})
+        if not isinstance(ids, (tuple, list)):
+            ids = [ids]
+        for env_id in ids:
+            env = self.browse(cursor, uid, env_id)
+            now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            info = env.info if env.info else ''
+            env.write({'info': str(now) + ': ' + new_info + '\n' + info})
 
 
     def send_reports(self, cursor, uid, ids, context=None):
