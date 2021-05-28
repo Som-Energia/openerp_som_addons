@@ -17,6 +17,7 @@
                     <separator string="Dades enviament" colspan="4"/>
                     <group colspan="2" col="3">
                         <field name='estat' select="1"/>
+                        <field name='found_in_search' select="1" readonly="1"/>
                         <field name='lot_enviament' select="1" readonly="1"/>
                         <field name='data_informe' select="1"  readonly="1"/>
                         <field name='data_enviament' select="1" readonly="1"/>
@@ -80,16 +81,27 @@
                         <field name='info' readonly="1"/>
                     </group>
                     <separator string="Quantitats" colspan="4"/>
-                    <group colspan="2" col="3">
-                        <field name='total_preesborrany' select="2"/>
+
+                    <group>
+                        <field name='total_preesborrany' select="2" colspan="4"/>
                         <field name='total_esborrany' select="2"/>
+                        <field name='total_esborrany_in_search' select="2" string="(esborrany) presents en alguna cerca"/>
                         <field name='total_oberts' select="1"/>
+                        <field name='total_oberts_in_search' select="2" string="(oberts) presents en alguna cerca"/>
                         <field name='total_encuats' select="1"/>
+                        <field name='total_encuats_in_search' select="2" string="(encuats) presents en alguna cerca"/>
                         <field name='total_enviats' select="1"/>
+                        <field name='total_enviats_in_search' select="2" string="(enviats) presents en alguna cerca"/>
                         <field name='total_cancelats' select="1"/>
+                        <field name='total_cancelats_in_search' select="2" string="(cancel·lats) presents en alguna cerca"/>
+                        <field name='total_baixa' select="2"/>
+                        <field name='total_baixa_in_search' select="2" string="(baixa) presents en alguna cerca"/>
                         <field name='total_errors' select="2"/>
-                        <field name='total_env_csv' select="2"/>
+                        <field name='total_errors_in_search' select="2" string="(errors) presents en alguna cerca"/>
                         <field name='total_enviaments' select="1"/>
+                        <field name='total_enviaments_in_search' select="2" string="(total) presents en alguna cerca"/>
+                        <field name='total_env_csv' select="2"/>
+                        <field name='total_env_csv_in_search' select="2" string="(en csv) presents en alguna cerca"/>
                     </group>
                     <separator string="Progrés" colspan="4"/>
                     <group colspan="2" col="3">

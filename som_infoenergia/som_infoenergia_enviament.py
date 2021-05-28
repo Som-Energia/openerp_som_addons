@@ -46,18 +46,8 @@ ESTAT_ENVIAT = [
     ('error', 'Error'),
     ('encuat', 'Encuat per enviar'),
     ('enviat', 'Enviat'),
-    ('cancellat', 'Cancel·lat')
-]
-
-QUALITAT = [
-    ('tou', 'TOU'),
-    ('cch', 'CCH')
-]
-
-ANTIGUITAT = [
-    ('1r', 'Primer any'),
-    ('2n', 'Segon any'),
-    ('3r', 'Tercer any'),
+    ('cancellat', 'Cancel·lat'),
+    ('baixa', 'Baixa'),
 ]
 
 
@@ -246,7 +236,7 @@ class SomInfoenergiaEnviament(osv.osv):
             return
         if not polissa.active or polissa.data_baixa:
             message = u"La pòlissa està inactiva o té data de baixa"
-            enviament.write({'estat': 'cancellat'})
+            enviament.write({'estat': 'baixa'})
             self.add_info_line(cursor, uid, _id, message, context)
             return
 
@@ -369,8 +359,7 @@ class SomInfoenergiaEnviament(osv.osv):
             type='char',
             string=_('Tipus d\'informe lot'),
             readonly=True),
-        'antiguitat': fields.selection(ANTIGUITAT, _('Any de l\'informe'), size=256, allow_none=True),
-        'qualitat': fields.selection(QUALITAT, _('Qualitat de les dades'), size=256, allow_none=True),
+        'found_in_search': fields.boolean(_("La pòlissa relacionada estava present a alguna cerca")),
         'data_enviament':  fields.date(_("Data enviament"), allow_none=True),
         'data_informe':  fields.date(_("Data de l'informe"), allow_none=True),
         'pdf_filename': fields.char(_('Nom fitxer PDF'), size=256),
@@ -382,6 +371,7 @@ class SomInfoenergiaEnviament(osv.osv):
 
     _defaults = {
         'estat': lambda *a: 'esborrany',
+        'found_in_search': lambda *a: False,
     }
 
 SomInfoenergiaEnviament()
