@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_wizard_unlink_sms_pending_history" model="ir.ui.view">
+            <field name="name">wizard.unlink.sms.pending.history.form</field>
+            <field name="model">wizard.unlink.sms.pending.history</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+            <form string="Esborrar SMS de factures (impagaments)">
+                <field name="state" invisible="1"/>
+                <group colspan="4" attrs="{'invisible':[('state','!=','init')]}">
+                    <label colspan="4">S'esborrarn els SMS seleccionats i la seva relació amb les factures.</label>
+                    <button string="Cancel·lar" special="cancel" type="object" icon="gtk-cancel"/>
+                    <button name="unlink_sms_pending_history" string="Esborar SMS" type="object" icon="gtk-execute"/>
+                </group>
+                <group colspan="4" attrs="{'invisible':[('state','!=','finished')]}">
+                    <button string="Tancar" special="cancel" type="object" icon="gtk-ok"/>
+                </group>
+            </form>
+            </field>
+        </record>
+        <record id="wizard_unlink_sms_pending_history" model="ir.actions.act_window">
+            <field name="name">Esborrar SMS de factures (impagaments)</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.unlink.sms.pending.history</field>
+            <field name="view_type">form</field>      
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        <record id="action_wizard_unlink_sms_pending_history" model="ir.values">
+            <field name="object" eval="1" />
+            <field name="name">Esborrar SMS de factures (impagaments)</field>
+            <field name="key2">client_action_multi</field>
+            <field name="value" eval="'ir.actions.act_window,' + str(ref('wizard_unlink_sms_pending_history'))"/>
+            <field name="key">action</field>
+            <field name="model">powersms.smsbox</field>
+        </record>
+
+    </data>
+</openerp>
