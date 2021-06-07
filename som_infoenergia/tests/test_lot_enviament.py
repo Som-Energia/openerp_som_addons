@@ -83,7 +83,7 @@ class LotEnviamentTests(testing.OOTestCase):
         lot_enviament.create_single_enviament(env_data, {})
         post_enviaments = env_obj.search(cursor, uid,
             [("lot_enviament", "=", lot_enviament_id),
-            ('estat', "=", 'error')]
+            ('estat', "=", 'error'), ('found_in_search', '=', False)]
         )
         self.assertTrue(len(pre_enviaments) < len(post_enviaments))
         envs_info = env_obj.read(cursor, uid, post_enviaments, ['info','estat'])
@@ -115,11 +115,46 @@ class LotEnviamentTests(testing.OOTestCase):
         lot_enviament.create_single_enviament(csv_updated_data, context={'path_pdf': 'test_path', 'tipus':'infoenergia'})
 
         updated_env = env_obj.search(cursor, uid,
-            [("lot_enviament", "=", lot_enviament_id),
+            [("lot_enviament", "=", lot_enviament_id), ('found_in_search', '=', True),
                 ('pdf_filename','=','test_path/0001.pdf')]
         )
         self.assertEqual(len(updated_env),1)
         self.assertEqual(env_obj.read(cursor, uid, updated_env, ['body_text'])[0]['body_text'], 'Updated Text')
+
+    def test_create_single_enviament_from_object_updateFoundInSearch(self):
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
+        env_obj = self.openerp.pool.get('som.infoenergia.enviament')
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
+        cursor = self.cursor
+        uid = self.uid
+        lot_enviament_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_infoenergia', 'lot_enviament_0001'
+        )[1]
+        pol_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_polissa', 'polissa_0001'
+        )[1]
+        pol_name = pol_obj.read(cursor, uid, pol_id, ['name'])['name']
+        lot_enviament = lot_env_obj.browse(cursor, uid, lot_enviament_id)
+        csv_updated_data = {
+            'contractid': pol_name, 'cups': '1',
+            'potencia':'2', 'tarifa':'2.0A','informe':'M2',
+            'text':'Text', 'valid':'True', 'report':'0001.pdf'
+        }
+        lot_enviament.create_single_enviament(csv_updated_data, context={'path_pdf': 'test_path', 'tipus':'infoenergia'})
+        env_pre = env_obj.search(cursor, uid,
+            [("lot_enviament", "=", lot_enviament_id), ('found_in_search', '=', False),
+                ('pdf_filename','=','test_path/0001.pdf')]
+        )
+        self.assertEqual(len(env_pre), 1)
+
+        lot_enviament.create_single_enviament_from_object(pol_id, context={'tipus': 'infoenergia'})
+
+        updated_env = env_obj.search(cursor, uid,
+            [("lot_enviament", "=", lot_enviament_id), ('found_in_search', '=', True),
+                ('pdf_filename','=','test_path/0001.pdf')]
+        )
+        self.assertEqual(len(updated_env),1)
 
     def test_create_single_enviament_polissaInactive(self):
         imd_obj = self.openerp.pool.get('ir.model.data')
@@ -148,7 +183,7 @@ class LotEnviamentTests(testing.OOTestCase):
         lot_enviament.create_single_enviament(csv_data, {})
         post_enviaments = env_obj.search(cursor, uid,
             [("lot_enviament", "=", lot_enviament_id),
-            ('estat', "=", 'cancellat'), ('polissa_id','=', pol_id),
+            ('estat', "=", 'baixa'), ('polissa_id','=', pol_id), ('found_in_search', '=', False),
             ('info','ilike','La pòlissa {} està donada de baixa'.format(pol_name))
             ])
         self.assertEqual(len(post_enviaments), 1)
@@ -175,7 +210,7 @@ class LotEnviamentTests(testing.OOTestCase):
 
         post_enviaments = env_obj.search(cursor, uid,
             [("lot_enviament", "=", lot_enviament_id),
-            ('estat', "=", 'preesborrany'), ('polissa_id','=', pol_id),
+            ('estat', "=", 'preesborrany'), ('polissa_id','=', pol_id), ('found_in_search', '=', True),
             ('info','ilike','Enviament creat des de polissa_id')
             ])
         self.assertEqual(len(post_enviaments), 1)
@@ -309,13 +344,22 @@ class LotEnviamentTests(testing.OOTestCase):
 
         self.assertEqual(lot_enviament.total_enviaments, 4)
         self.assertEqual(lot_enviament.total_env_csv, 0)
+        self.assertEqual(lot_enviament.total_env_csv_in_search, 0)
         self.assertEqual(lot_enviament.total_enviats, 1)
+        self.assertEqual(lot_enviament.total_enviats_in_search, 0)
         self.assertEqual(lot_enviament.total_encuats, 1)
+        self.assertEqual(lot_enviament.total_encuats_in_search, 0)
         self.assertEqual(lot_enviament.total_oberts, 1)
+        self.assertEqual(lot_enviament.total_oberts_in_search, 0)
         self.assertEqual(lot_enviament.total_esborrany, 0)
+        self.assertEqual(lot_enviament.total_esborrany_in_search, 0)
         self.assertEqual(lot_enviament.total_preesborrany, 0)
         self.assertEqual(lot_enviament.total_cancelats, 1)
+        self.assertEqual(lot_enviament.total_cancelats_in_search, 0)
+        self.assertEqual(lot_enviament.total_baixa, 0)
+        self.assertEqual(lot_enviament.total_baixa_in_search, 0)
         self.assertEqual(lot_enviament.total_errors, 0)
+        self.assertEqual(lot_enviament.total_errors_in_search, 0)
         self.assertEqual(lot_enviament.env_csv_progress, 0)
         self.assertEqual(lot_enviament.pdf_download_progress, 0)
         self.assertEqual(lot_enviament.env_sending_progress, 25)
@@ -332,14 +376,23 @@ class LotEnviamentTests(testing.OOTestCase):
 
         self.assertEqual(lot_enviament.total_preesborrany, 0)
         self.assertEqual(lot_enviament.total_esborrany, 1)
+        self.assertEqual(lot_enviament.total_esborrany_in_search, 0)
         self.assertEqual(lot_enviament.total_oberts, 2)
+        self.assertEqual(lot_enviament.total_oberts_in_search, 1)
         self.assertEqual(lot_enviament.total_enviats, 0)
+        self.assertEqual(lot_enviament.total_enviats_in_search, 0)
         self.assertEqual(lot_enviament.total_cancelats, 0)
+        self.assertEqual(lot_enviament.total_cancelats_in_search, 0)
+        self.assertEqual(lot_enviament.total_baixa, 0)
+        self.assertEqual(lot_enviament.total_baixa_in_search, 0)
         self.assertEqual(lot_enviament.total_errors, 0)
+        self.assertEqual(lot_enviament.total_errors_in_search, 0)
         self.assertEqual(lot_enviament.total_encuats, 0)
+        self.assertEqual(lot_enviament.total_encuats_in_search, 0)
         self.assertEqual(lot_enviament.total_enviaments, 3)
+        self.assertEqual(lot_enviament.total_enviaments_in_search, 1)
         self.assertEqual(lot_enviament.total_env_csv, 2)
+        self.assertEqual(lot_enviament.total_env_csv_in_search, 1)
         self.assertEqual(lot_enviament.env_csv_progress, 66.66666666666666)
         self.assertEqual(lot_enviament.pdf_download_progress, 66.66666666666666)
         self.assertEqual(lot_enviament.env_sending_progress, 0)
-

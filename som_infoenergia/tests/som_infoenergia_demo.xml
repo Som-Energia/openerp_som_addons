@@ -67,6 +67,7 @@
         <record id="enviament_infoenergia_0003_obert" model="som.infoenergia.enviament">
             <field name="polissa_id" ref='giscedata_polissa.polissa_0002'/>
             <field name="estat">obert</field>
+            <field name="found_in_search">True</field>
             <field name="data_informe">2021-01-01</field>
             <field name="pdf_filename">00002.pdf</field>
             <field name="lot_enviament" ref="lot_enviament_0003"/>
