@@ -15,6 +15,7 @@
         "giscedata_polissa",
         "giscedata_facturacio",
         "poweremail_references",
+        "giscedata_polissa_category"
     ],
     "init_xml": [],
     "demo_xml": [
@@ -31,6 +32,7 @@
         "wizard/wizard_send_reports_view.xml",
         "wizard/wizard_create_enviaments_from_object_view.xml",
         "wizard/wizard_multiple_state_change_view.xml",
+        "wizard/wizard_add_contracts_lot_view.xml",
         "wizard/wizard_cancel_from_csv_view.xml",
     ],
     "active": False,
