@@ -132,21 +132,25 @@ class SomInfoenergiaLotEnviament(osv.osv):
         if isinstance(ids, (tuple, list)):
             ids = ids[0]
 
-        if context['tipus'] == 'infoenergia':
-            env_obj = self.pool.get('som.infoenergia.enviament')
-            context['from_model'] = 'polissa_id'
-        elif context['tipus'] == 'altres':
-            env_obj = self.pool.get('som.enviament.massiu')
-
         env_values = {
-            context['from_model']: object_id,
             'lot_enviament': ids,
             'estat': 'preesborrany' if context['tipus'] == 'infoenergia' else 'obert',
         }
+        if context['tipus'] == 'infoenergia':
+            env_obj = self.pool.get('som.infoenergia.enviament')
+            context['from_model'] = 'polissa_id'
+            env_values.update({'found_in_search': True})
+        elif context['tipus'] == 'altres':
+            env_obj = self.pool.get('som.enviament.massiu')
+
+        env_values.update({context['from_model']: object_id})
+
         env_id = env_obj.search(cursor, uid, [('lot_enviament','=', ids), (context['from_model'], '=', object_id)])
         if not env_id:
             env_id = env_obj.create(cursor, uid, env_values, context)
             env_obj.add_info_line(cursor, uid, env_id, u'Enviament creat des de ' + context['from_model'])
+        elif context['tipus'] == 'infoenergia':
+            env_obj.write(cursor, uid, env_id, {'found_in_search': True})
 
     def create_enviaments_from_csv(self, cursor, uid, ids, csv_data, context=None):
         if isinstance(ids, (tuple, list)):
@@ -182,7 +186,7 @@ class SomInfoenergiaLotEnviament(osv.osv):
             pol_inactive_ids = pol_obj.search(cursor, uid, [('name','=',env_data['contractid']), ('active','=',False)]) if env_data['contractid'] != "True" else None
             if pol_inactive_ids:
                 env_values['polissa_id'] = pol_inactive_ids[0]
-                env_values['estat'] = 'cancellat'
+                env_values['estat'] = 'baixa'
                 msg += 'La pòlissa {} està donada de baixa. '.format(env_values['num_polissa_csv'])
             else:
                 env_values['estat'] = 'error'
@@ -272,12 +276,28 @@ class SomInfoenergiaLotEnviament(osv.osv):
     def _ff_totals(self, cursor, uid, ids, field_name, arg,
                              context=None):
         res = {}
+        estats = {
+            'total_preesborrany': 'preesborrany',
+            'total_esborrany': 'esborrany',
+            'total_oberts': 'obert',
+            'total_enviats': 'enviat',
+            'total_cancelats': 'cancellat',
+            'total_baixa': 'baixa',
+            'total_errors': 'error',
+            'total_encuats': 'encuat',
+        }
 
         if field_name == 'total_enviaments':
             for _id in ids:
                 env_obj = self.get_enviament_object(cursor, uid, _id)
                 res[_id] = env_obj.search_count(cursor, uid,
                                         [('lot_enviament.id', '=', _id)])
+        elif field_name == 'total_enviaments_in_search':
+            for _id in ids:
+                env_obj = self.get_enviament_object(cursor, uid, _id)
+                res[_id] = env_obj.search_count(cursor, uid,
+                                        [('lot_enviament.id', '=', _id),
+                                         ('found_in_search','=', True)])
         elif  field_name == 'total_env_csv':
             for _id in ids:
                 tipus = self.read(cursor, uid, _id, ['tipus'])['tipus']
@@ -287,16 +307,28 @@ class SomInfoenergiaLotEnviament(osv.osv):
                                             [('lot_enviament.id', '=', _id), ('pdf_filename','!=','')])
                 else:
                     res[_id] = 0
+        elif  field_name == 'total_env_csv_in_search':
+            for _id in ids:
+                tipus = self.read(cursor, uid, _id, ['tipus'])['tipus']
+                if tipus == 'infoenergia':
+                    env_obj = self.pool.get('som.infoenergia.enviament')
+                    res[_id] = env_obj.search_count(cursor, uid,
+                                            [('lot_enviament.id', '=', _id), ('pdf_filename','!=',''), ('found_in_search','=', True)])
+                else:
+                    res[_id] = 0
+        elif '_in_search' in field_name:
+            for _id in ids:
+                tipus = self.read(cursor, uid, _id, ['tipus'])['tipus']
+                if tipus == 'infoenergia':
+                    field_name = field_name.replace('_in_search','')
+                    env_obj = self.pool.get('som.infoenergia.enviament')
+                    res[_id] = env_obj.search_count(cursor, uid,
+                                            [('lot_enviament.id', '=', _id),
+                                             ('found_in_search','=', True),
+                                             ('estat', '=', estats[field_name])])
+                else:
+                    res[_id] = 0
         else:
-            estats = {
-                'total_preesborrany': 'preesborrany',
-                'total_esborrany': 'esborrany',
-                'total_oberts': 'obert',
-                'total_enviats': 'enviat',
-                'total_cancelats': 'cancellat',
-                'total_errors': 'error',
-                'total_encuats': 'encuat',
-            }
             for _id in ids:
                 env_obj = self.get_enviament_object(cursor, uid, _id)
                 res[_id] = env_obj.search_count(cursor, uid,
@@ -320,7 +352,6 @@ class SomInfoenergiaLotEnviament(osv.osv):
                 total_env_csv = self.read(cursor, uid, _id, ['total_env_csv'])['total_env_csv']
                 res[_id] = (total_env_csv / total_enviaments) * 100
             elif tipus == 'infoenergia' and field_name == 'pdf_download_progress':
-                # TODO: comprovar si el progrés dels PDF es pot fer millor
                 total_env_amb_pdf = env_obj.search_count(cursor, uid,
                                         [('lot_enviament.id', '=', _id), ('data_informe', '!=', False)])
                 res[_id] = (total_env_amb_pdf / total_enviaments) * 100
@@ -366,18 +397,23 @@ class SomInfoenergiaLotEnviament(osv.osv):
             type='integer', method=True, help="Enviaments que tenen el PDF adjunt i encara no s'han enviat"
         ),
         'total_esborrany': fields.function(
-            _ff_totals, string='Enviaments en esborrany (sense PDF)', readonly=True,
+            _ff_totals, string='Enviaments en esborrany', readonly=True,
             type='integer', method=True
         ),
         'total_preesborrany': fields.function(
-            _ff_totals, string='Enviaments en pre-esborrany (creats des de pòlissa)',
+            _ff_totals, string='Enviaments en pre-esborrany',
             help="Enviaments que s'han creat des d'una pòlissa i no s'han descarregat en cap CSV", readonly=True,
             type='integer', method=True
         ),
         'total_cancelats': fields.function(
             _ff_totals, string='Enviaments cancel·lats', readonly=True,
             type='integer', method=True,
-            help="Ja sigui perquè la pòlissa està de baixa, té l'enviament deshabilitat..."
+            help="Ja sigui perquè la pòlissa té l'enviament deshabilitat, s'ha cancel·lat a través d'una acció..."
+        ),
+        'total_baixa': fields.function(
+            _ff_totals, string='Enviaments de baixa', readonly=True,
+            type='integer', method=True,
+            help="Enviaments que tenen associat una pòlissa de baixa o amb data de baixa"
         ),
         'total_errors': fields.function(
             _ff_totals, string='Enviaments amb error', readonly=True,
@@ -394,6 +430,42 @@ class SomInfoenergiaLotEnviament(osv.osv):
         'env_sending_progress': fields.function(
             _ff_progress, string='Enviaments enviats', readonly=True,
             type='float', method=True, help="Indica quants enviaments s'han enviat del total d'enviaments del Lot"
+        ),
+        'total_esborrany_in_search': fields.function(
+            _ff_totals, string='Enviaments en esborrany trobats en cerca', readonly=True,
+            type='integer', method=True
+        ),
+        'total_oberts_in_search': fields.function(
+            _ff_totals, string='Enviaments oberts trobats en cerca', readonly=True,
+            type='integer', method=True
+        ),
+        'total_enviats_in_search': fields.function(
+            _ff_totals, string='Enviaments enviats trobats en cerca', readonly=True,
+            type='integer', method=True
+        ),
+        'total_baixa_in_search': fields.function(
+            _ff_totals, string='Enviaments de baixa trobats en cerca', readonly=True,
+            type='integer', method=True
+        ),
+        'total_encuats_in_search': fields.function(
+            _ff_totals, string='Enviaments encuats per enviar trobats en cerca', readonly=True,
+            type='integer', method=True
+        ),
+        'total_cancelats_in_search': fields.function(
+            _ff_totals, string='Enviaments cancel·lats trobats en cerca', readonly=True,
+            type='integer', method=True
+        ),
+        'total_errors_in_search': fields.function(
+            _ff_totals, string='Enviaments amb error trobats en cerca', readonly=True,
+            type='integer', method=True
+        ),
+        'total_enviaments_in_search': fields.function(
+            _ff_totals, string='Enviaments totals trobats en cerca', readonly=True,
+            type='integer', method=True
+        ),
+        'total_env_csv_in_search': fields.function(
+            _ff_totals, string='Enviaments totals informats en algun CSV descarregat de Beedata trobats en cerca', readonly=True,
+            type='integer', method=True
         ),
     }
 

@@ -94,7 +94,7 @@ class EnviamentTests(testing.OOTestCase):
         enviament.send_single_report()
 
         self.assertEqual(
-            env_obj.read(cursor, uid, enviament_id, ['estat'])['estat'], 'cancellat'
+            env_obj.read(cursor, uid, enviament_id, ['estat'])['estat'], 'baixa'
             )
         mocked_send_mail.assert_not_called()
 
@@ -119,7 +119,7 @@ class EnviamentTests(testing.OOTestCase):
         enviament.send_single_report()
 
         self.assertEqual(
-            env_obj.read(cursor, uid, enviament_id, ['estat'])['estat'], 'cancellat'
+            env_obj.read(cursor, uid, enviament_id, ['estat'])['estat'], 'baixa'
             )
         mocked_send_mail.assert_not_called()
 

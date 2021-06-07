@@ -32,7 +32,8 @@ There are seven possible states:
 * Obert: desanonymized PDF report attatched and ready to send.
 * Encuat: sending on poweremail queue.
 * Enviat: sending sended.
-* Cancel·lat: when the polissa is not active, doesn't allow to recieve this kind of emails or manual action. The email won't be sent.
+* Cancel·lat: when the polissa doesn't allow to recieve this kind of emails or manual action. The email won't be sent.
+* Baixa: when the polissa is not active. The email won't be sent.
 * Error: an error occurred.
 
 ### som.enviament.massiu
@@ -48,7 +49,7 @@ There are four possible states:
 ### Partners
 *  Add action "Add partner to Batch email" (aka "Afegir partners a Lot d'Enviament Massiu"). It creates **som.infoenergia.enviament** objects based on the selected partners.
 ### GiscedataPolissa
-*  Add action "Add contract to Batch email" (aka "Afegir polisses a Lot d'Enviament Massiu"). It creates **som.infoenergia.enviament** or **som.infoenergia.enviament** objects based on the selected contracts and the type of the **Lot**.
+*  Add action "Add contract to Batch email" (aka "Afegir polisses a Lot d'Enviament Massiu"). It creates **som.infoenergia.enviament** or **som.infoenergia.enviament** objects based on the selected contracts and the type of the **Lot**. For **som.infoenergia.enviament** objects, it sets the field *found_in_search* to True.
 
 
 ## Dependencies
