@@ -1,0 +1,3 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_wizard_export_returned_invoices_rcw","wizard.export.returned.invoices","model_wizard_export_returned_invoices","giscedata_facturacio.group_giscedata_facturacio_w",1,1,1,0
+"access_wizard_unlink_sms_pending_history_rcw","wizard.unlink.sms.pending.history","model_wizard_unlink_sms_pending_history","giscedata_facturacio.group_giscedata_facturacio_w",1,1,1,0
