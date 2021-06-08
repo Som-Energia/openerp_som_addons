@@ -166,6 +166,8 @@ class UpdatePendingStates(osv.osv_memory):
         )
         factura_bs_ids = self.get_invoices_with_pending_state(cursor, uid, waiting_48h_bs)
 
+        polisses_factures = {}
+
         for factura_id in factura_bs_ids:
             invoice = fact_obj.read(cursor, uid, factura_id, ['id', 'polissa_id'])
             polissa_id = invoice['polissa_id'][0]
@@ -173,11 +175,19 @@ class UpdatePendingStates(osv.osv_memory):
             if polissa_state == 'baixa':
                 self.update_waiting_for_annex_cancelled_contracts(cursor, uid, factura_id, traspas_advocats_bs, context)
             else:
-                self.update_waiting_for_48h_active_contracts(cursor, uid, factura_id, sent_48h_bs, context)
+                if polissa_id in polisses_factures:
+                    ctx = context.copy()
+                    ctx['related_invoice'] = polisses_factures[polissa_id]
+                    self.update_waiting_for_48h_active_contracts(cursor, uid, factura_id, sent_48h_bs, ctx)
+                else:
+                    polisses_factures[polissa_id] = factura_id
+                    self.update_waiting_for_48h_active_contracts(cursor, uid, factura_id, sent_48h_bs, context)
 
     def update_waiting_for_48h_active_contracts(self, cursor, uid, factura_id, next_state, context=None):
         logger = logging.getLogger('openerp.poweremail')
         fact_obj = self.pool.get('giscedata.facturacio.factura')
+
+        related_invoice = context.get('related_invoice', False)
 
         mail_48h_template_id = self.get_object_id(
             cursor, uid, 'som_account_invoice_pending', 'email_impagats_48h'
@@ -205,7 +215,10 @@ class UpdatePendingStates(osv.osv_memory):
                 )
             )
         else:
-            self.send_sms(cursor, uid, factura_id, sms_48h_template_id, current_state_id, context)
+            if related_invoice:
+                self.send_sms(cursor, uid, factura_id, sms_48h_template_id, current_state_id, context)
+            else:
+                pass #TODO: linia en camp observacions
             fact_obj.set_pending(cursor, uid, [factura_id], next_state)
             logger.info(
                 'Sending 48h email for {factura_id} invoice with result: {ret_value}'.format(
