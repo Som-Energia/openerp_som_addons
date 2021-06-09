@@ -145,6 +145,8 @@ class UpdatePendingStates(osv.osv_memory):
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         pol_obj = self.pool.get('giscedata.polissa')
 
+        polisses_factures = {}
+
         for factura_id in factura_dp_ids:
             invoice = fact_obj.read(cursor, uid, factura_id, ['id', 'polissa_id'])
             polissa_id = invoice['polissa_id'][0]
@@ -152,7 +154,13 @@ class UpdatePendingStates(osv.osv_memory):
             if polissa_state == 'baixa':
                 self.update_waiting_for_annex_cancelled_contracts(cursor, uid, factura_id, traspas_advocats_dp, context)
             else:
-                self.update_waiting_for_48h_active_contracts(cursor, uid, factura_id, sent_48h_dp, context)
+                if polissa_id in polisses_factures:
+                    ctx = context.copy()
+                    ctx['related_invoice'] = polisses_factures[polissa_id]
+                    self.update_waiting_for_48h_active_contracts(cursor, uid, factura_id, sent_48h_dp, ctx)
+                else:
+                    polisses_factures[polissa_id] = factura_id
+                    self.update_waiting_for_48h_active_contracts(cursor, uid, factura_id, sent_48h_dp, context)
 
         # BO SOCIAL
         waiting_48h_bs = self.get_object_id(
@@ -166,7 +174,6 @@ class UpdatePendingStates(osv.osv_memory):
         )
         factura_bs_ids = self.get_invoices_with_pending_state(cursor, uid, waiting_48h_bs)
 
-        polisses_factures = {}
 
         for factura_id in factura_bs_ids:
             invoice = fact_obj.read(cursor, uid, factura_id, ['id', 'polissa_id'])
@@ -216,9 +223,9 @@ class UpdatePendingStates(osv.osv_memory):
             )
         else:
             if related_invoice:
-                self.send_sms(cursor, uid, factura_id, sms_48h_template_id, current_state_id, context)
+                pass
             else:
-                pass #TODO: linia en camp observacions
+                self.send_sms(cursor, uid, factura_id, sms_48h_template_id, current_state_id, context)
             fact_obj.set_pending(cursor, uid, [factura_id], next_state)
             logger.info(
                 'Sending 48h email for {factura_id} invoice with result: {ret_value}'.format(
