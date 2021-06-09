@@ -27,14 +27,10 @@ class TestWizardUnlinkSMSPendingHistory(testing.OOTestCase):
         address_id = rpa_obj.search(cursor, uid, [('partner_id','=', titular_id)])
         rpa_obj.write(cursor, uid, address_id, {'mobile':'600000000'})
 
-        account_obj = self.pool.get('poweremail.core_accounts')
-        self.account_id = account_obj.create(cursor, uid, {
-            'name': 'Gestió de Cobraments',
-            'email_id': 'test@example.com',
-            'company': 'yes',
-            'smtpport': 0,
-            'smtpserver': 'test'
-        })
+        self.account_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_account_invoice_pending', 'cobraments_mail_account'
+        )[1]
+
         invoice_id = self.fact_obj.read(cursor, uid, self.fact_id, ['invoice_id'])['invoice_id'][0]
         self.inv_obj.set_pending(cursor, uid, [invoice_id], waiting_48h_def)
 
@@ -44,6 +40,7 @@ class TestWizardUnlinkSMSPendingHistory(testing.OOTestCase):
             uid = txn.user
 
             wiz_obj = self.pool.get('wizard.unlink.sms.pending.history')
+
             self._load_data_unpaid_invoice(cursor, uid)
             pending_obj = self.pool.get('update.pending.states')
 

@@ -473,7 +473,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
 
     @mock.patch('som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email')
     @mock.patch('som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_sms')
-    def test__update_two_unpaid_invoice_waiting_for_48_same_contract(self, mock_sms, mock_mail):
+    def test__update_two_unpaid_invoice_waiting_for_48_same_contract_single_sms(self, mock_sms, mock_mail):
         cursor = self.txn.cursor
         uid = self.txn.user
         self._load_data_unpaid_invoices(cursor, uid, [self.waiting_48h_def, self.waiting_48h_def])
@@ -492,11 +492,11 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         }
 
         mock_mail.assert_called_with(cursor, uid, self.invoice_1_id, params)
-        mock_sms.assert_called_with(cursor, uid, self.invoice_1_id,
+        mock_sms.assert_called_once_with(cursor, uid, ANY,
                                     self.sms_48h_template_id, self.waiting_48h_def, {})
 
         self.assertEqual(mock_mail.call_count, 2)
-        self.assertEqual(mock_sms.call_count, 2)
+        self.assertEqual(mock_sms.call_count, 1)
 
         inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
         self.assertEqual(inv_data.pending_state.id, self.sent_48h_def)
@@ -529,4 +529,4 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             ('psms_from', 'like', 'Info'),
             ('psms_body_text', 'ilike', '%CORTE LUZ POR IMPAGO EN 48h%'),
         ])
-        self.assertEqual(len(sms_to_send), 2)
+        self.assertEqual(len(sms_to_send), 1)
