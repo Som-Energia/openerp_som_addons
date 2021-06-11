@@ -4,6 +4,9 @@ from destral.transaction import Transaction
 from datetime import date, timedelta
 import mock
 from mock import Mock, ANY
+from ..som_account_invoice_pending_exceptions import UpdateWaitingFor48hException, \
+    UpdateWaitingCancelledContractsException
+
 
 class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
 
@@ -503,6 +506,150 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         inv_data = fact_obj.browse(cursor, uid, self.invoice_2_id)
         self.assertEqual(inv_data.pending_state.id, self.sent_48h_def)
 
+    @mock.patch('som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email')
+    @mock.patch('som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_sms')
+    def test__update_two_unpaid_invoice_bs_waiting_for_48_raisesError(self, mock_sms, mock_mail):
+        cursor = self.txn.cursor
+        uid = self.txn.user
+        self._load_data_unpaid_invoices(cursor, uid, [self.waiting_48h_bs])
+        pending_obj = self.pool.get('update.pending.states')
+        fact_obj = self.pool.get('giscedata.facturacio.factura')
+        inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
+        self.assertEqual(inv_data.pending_state.id, self.waiting_48h_bs)
+
+        with mock.patch('som_account_invoice_pending.update_pending_states.UpdatePendingStates.update_waiting_for_48h_active_contracts') as send_SMSMock:
+            send_SMSMock.side_effect = UpdateWaitingFor48hException('test')
+            with self.assertRaises(UpdateWaitingFor48hException) as context:
+                pending_obj.update_waiting_for_48h_active_contracts(cursor, uid)
+
+            pending_obj.update_waiting_for_48h(cursor, uid)
+
+            self.assertEqual(mock_mail.call_count, 0)
+            self.assertEqual(mock_sms.call_count, 0)
+
+            inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
+            self.assertEqual(inv_data.pending_state.id, self.waiting_48h_bs)
+
+        with mock.patch('som_account_invoice_pending.update_pending_states.UpdatePendingStates.update_waiting_for_48h_active_contracts') as send_SMSMock:
+            send_SMSMock.side_effect = Exception('general exception test')
+            with self.assertRaises(Exception) as context:
+                pending_obj.update_waiting_for_48h_active_contracts(cursor, uid)
+
+            pending_obj.update_waiting_for_48h(cursor, uid)
+
+            self.assertEqual(mock_mail.call_count, 0)
+            self.assertEqual(mock_sms.call_count, 0)
+
+            inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
+            self.assertEqual(inv_data.pending_state.id, self.waiting_48h_bs)
+
+        pending_obj.update_waiting_for_48h(cursor, uid)
+        self.assertEqual(mock_mail.call_count, 1)
+        self.assertEqual(mock_sms.call_count, 1)
+
+        inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
+        self.assertEqual(inv_data.pending_state.id, self.sent_48h_bs)
+
+    @mock.patch('som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email')
+    @mock.patch('som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_sms')
+    def test__update_two_unpaid_invoice_dp_waiting_for_48_raisesError(self, mock_sms, mock_mail):
+        from ..som_account_invoice_pending_exceptions import UpdateWaitingFor48hException, UpdateWaitingCancelledContractsException
+        cursor = self.txn.cursor
+        uid = self.txn.user
+        self._load_data_unpaid_invoices(cursor, uid, [self.waiting_48h_def])
+        pending_obj = self.pool.get('update.pending.states')
+        fact_obj = self.pool.get('giscedata.facturacio.factura')
+        inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
+        self.assertEqual(inv_data.pending_state.id, self.waiting_48h_def)
+
+        with mock.patch('som_account_invoice_pending.update_pending_states.UpdatePendingStates.update_waiting_for_48h_active_contracts') as send_SMSMock:
+            send_SMSMock.side_effect = UpdateWaitingFor48hException('test')
+            with self.assertRaises(UpdateWaitingFor48hException) as context:
+                pending_obj.update_waiting_for_48h_active_contracts(cursor, uid)
+
+            pending_obj.update_waiting_for_48h(cursor, uid)
+
+            self.assertEqual(mock_mail.call_count, 0)
+            self.assertEqual(mock_sms.call_count, 0)
+
+            inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
+            self.assertEqual(inv_data.pending_state.id, self.waiting_48h_def)
+
+        with mock.patch('som_account_invoice_pending.update_pending_states.UpdatePendingStates.update_waiting_for_48h_active_contracts') as send_SMSMock:
+            send_SMSMock.side_effect = Exception('general exception test')
+            with self.assertRaises(Exception) as context:
+                pending_obj.update_waiting_for_48h_active_contracts(cursor, uid)
+
+            pending_obj.update_waiting_for_48h(cursor, uid)
+
+            self.assertEqual(mock_mail.call_count, 0)
+            self.assertEqual(mock_sms.call_count, 0)
+
+            inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
+            self.assertEqual(inv_data.pending_state.id, self.waiting_48h_def)
+
+        pending_obj.update_waiting_for_48h(cursor, uid)
+        self.assertEqual(mock_mail.call_count, 1)
+        self.assertEqual(mock_sms.call_count, 1)
+
+        inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
+        self.assertEqual(inv_data.pending_state.id, self.sent_48h_def)
+
+    @mock.patch('som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email')
+    @mock.patch('som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_sms')
+    def test__update_two_unpaid_invoice_bs_polissa_baixa_raisesError(self, mock_sms, mock_mail):
+        cursor = self.txn.cursor
+        uid = self.txn.user
+        self._load_data_unpaid_invoices(cursor, uid, [self.waiting_48h_bs])
+        pending_obj = self.pool.get('update.pending.states')
+        fact_obj = self.pool.get('giscedata.facturacio.factura')
+        pol_obj = self.pool.get('giscedata.polissa')
+        inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
+        self.assertEqual(inv_data.pending_state.id, self.waiting_48h_bs)
+
+        pol_id = inv_data.polissa_id.id
+        pol_obj.write(cursor, uid, [pol_id], {'state': 'baixa'})
+
+        with mock.patch('som_account_invoice_pending.update_pending_states.UpdatePendingStates.update_waiting_for_annex_cancelled_contracts') as send_SMSMock:
+            send_SMSMock.side_effect = UpdateWaitingCancelledContractsException('test')
+
+            pending_obj.update_waiting_for_48h(cursor, uid)
+
+            self.assertEqual(mock_mail.call_count, 0)
+            self.assertEqual(mock_sms.call_count, 0)
+
+            inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
+            self.assertEqual(inv_data.pending_state.id, self.waiting_48h_bs)
+
+    @mock.patch('som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email')
+    @mock.patch('som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_sms')
+    def test__update_two_unpaid_invoice_dp_polissa_baixa_raisesError(self, mock_sms, mock_mail):
+        from ..som_account_invoice_pending_exceptions import UpdateWaitingFor48hException, \
+            UpdateWaitingCancelledContractsException
+        cursor = self.txn.cursor
+        uid = self.txn.user
+        self._load_data_unpaid_invoices(cursor, uid, [self.waiting_48h_def])
+        pending_obj = self.pool.get('update.pending.states')
+        fact_obj = self.pool.get('giscedata.facturacio.factura')
+        pol_obj = self.pool.get('giscedata.polissa')
+        inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
+        self.assertEqual(inv_data.pending_state.id, self.waiting_48h_def)
+
+        pol_id = inv_data.polissa_id.id
+        pol_obj.write(cursor, uid, [pol_id], {'state': 'baixa'})
+
+        with mock.patch(
+                'som_account_invoice_pending.update_pending_states.UpdatePendingStates.update_waiting_for_annex_cancelled_contracts') as send_SMSMock:
+            send_SMSMock.side_effect = UpdateWaitingCancelledContractsException('test')
+
+            pending_obj.update_waiting_for_48h(cursor, uid)
+
+            self.assertEqual(mock_mail.call_count, 0)
+            self.assertEqual(mock_sms.call_count, 0)
+
+            inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
+            self.assertEqual(inv_data.pending_state.id, self.waiting_48h_def)
+
     def test__integration_send_email(self):
         cursor = self.txn.cursor
         uid = self.txn.user
@@ -530,3 +677,4 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             ('psms_body_text', 'ilike', '%CORTE LUZ POR IMPAGO EN 48h%'),
         ])
         self.assertEqual(len(sms_to_send), 1)
+
