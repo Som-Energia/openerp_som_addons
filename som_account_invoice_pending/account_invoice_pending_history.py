@@ -10,11 +10,17 @@ class AccountInvoicePendingHistory(osv.osv):
     _name = 'account.invoice.pending.history'
     _inherit = 'account.invoice.pending.history'
 
+    def historize(self, cursor, uid, ids, message=None):
+        """sets text to observations field"""
+        data = {'observations': message}
+        return self.write(cursor, uid, ids, data)
+
     _columns = {
         'powersms_id': fields.many2one(
             'powersms.smsbox', u'SMS', required=False
         ),
-        'powersms_sent_date': fields.date(u'SMS sent date', readonly=True)
+        'powersms_sent_date': fields.date(u'SMS sent date', readonly=True),
+        'observations': fields.char(u'Observacions', size=256)
     }
 
 AccountInvoicePendingHistory()
@@ -48,7 +54,6 @@ class GiscedataFacturacioFactura(osv.osv):
     def powersms_write_callback(self, cursor, uid, ids, vals, context=None):
         """Hook que cridarà el powersms quan es modifiqui un sms.
         """
-
         if context is None:
             context = {}
 
