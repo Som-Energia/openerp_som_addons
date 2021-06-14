@@ -50,6 +50,18 @@ class UpdateWaitingFor48hException(SomAccountInvoicePendingError):
     def __str__(self):
         return self.__repr__()
 
+class UpdateWaitingForAnnexIVException(SomAccountInvoicePendingError):
+
+    def __init__(self, msg):
+        super(SomAccountInvoicePendingError, self).__init__(msg)
+        self.msg = msg
+
+    def __repr__(self):
+        return self.msg
+
+    def __str__(self):
+        return self.__repr__()
+
 class UpdateWaitingCancelledContractsException(SomAccountInvoicePendingError):
 
     def __init__(self, msg):
