@@ -39,12 +39,12 @@ class UpdatePendingStates(osv.osv_memory):
         fact_obj = self.pool.get('giscedata.facturacio.factura')
 
         inv_obj = self.pool.get('account.invoice')
-        invoice_ids = inv_obj.search(cursor, uid, [('pending_state.id', '=', pending_state)])
+        invoice_ids = inv_obj.search(cursor, uid, [('pending_state.id', '=', pending_state)], order='id asc')
 
         invoice_numbers = [inv_obj.browse(cursor, uid, inv_id).number for inv_id in invoice_ids]
         factura_ids = []
         if invoice_numbers:
-            factura_ids = fact_obj.search(cursor, uid, [("number", "in", invoice_numbers)])
+            factura_ids = fact_obj.search(cursor, uid, [("number", "in", invoice_numbers)], order='id asc')
 
         return factura_ids
 
@@ -153,7 +153,7 @@ class UpdatePendingStates(osv.osv_memory):
 
         polisses_factures = {}
 
-        for factura_id in factura_dp_ids:
+        for factura_id in sorted(factura_dp_ids):
             invoice = fact_obj.read(cursor, uid, factura_id, ['id', 'polissa_id'])
             polissa_id = invoice['polissa_id'][0]
             polissa_state = pol_obj.read(cursor, uid, polissa_id, ['state'])['state']
@@ -205,7 +205,7 @@ class UpdatePendingStates(osv.osv_memory):
         factura_bs_ids = self.get_invoices_with_pending_state(cursor, uid, waiting_48h_bs)
 
 
-        for factura_id in factura_bs_ids:
+        for factura_id in sorted(factura_bs_ids):
             invoice = fact_obj.read(cursor, uid, factura_id, ['id', 'polissa_id'])
             polissa_id = invoice['polissa_id'][0]
             polissa_state = pol_obj.read(cursor, uid, polissa_id, ['state'])['state']
@@ -281,12 +281,11 @@ class UpdatePendingStates(osv.osv_memory):
                         self.send_sms(cursor, uid, factura_id, sms_48h_template_id, current_state_id, context)
                     except Exception as e:
                         raise SMSException(e)
-                    fact_obj.set_pending(cursor, uid, [factura_id], next_state)
                 else:
-                    fact_obj.set_pending(cursor, uid, [factura_id], next_state)
                     last_peding_id = max(fact_obj.read(cursor, uid, factura_id, ['pending_history_ids'])['pending_history_ids'])
                     last_pending = aiph_obj.browse(cursor, uid, last_peding_id)
-                    last_pending.historize(message=u"Comunicació feta a través de la factura amb id:{}".format(factura_id))
+                    last_pending.historize(message=u"Comunicació feta a través de la factura amb id:{}".format(related_invoice))
+                fact_obj.set_pending(cursor, uid, [factura_id], next_state)
                 logger.info(
                     'Sending 48h email for {factura_id} invoice with result: {ret_value}'.format(
                         factura_id=factura_id,
@@ -324,7 +323,7 @@ class UpdatePendingStates(osv.osv_memory):
 
         polisses_factures = {}
 
-        for factura_id in factura_dp_ids:
+        for factura_id in sorted(factura_dp_ids):
             try:
                 invoice = fact_obj.read(cursor, uid, factura_id, ['id', 'polissa_id'])
                 polissa_id = invoice['polissa_id'][0]
@@ -375,7 +374,7 @@ class UpdatePendingStates(osv.osv_memory):
         )
         factura_bs_ids = self.get_invoices_with_pending_state(cursor, uid, waiting_annexIV_bs)
 
-        for factura_id in factura_bs_ids:
+        for factura_id in sorted(factura_bs_ids):
             invoice = fact_obj.read(cursor, uid, factura_id, ['id', 'polissa_id'])
             polissa_id = invoice['polissa_id'][0]
             polissa_state = pol_obj.read(cursor, uid, polissa_id, ['state'])['state']
@@ -634,12 +633,11 @@ class UpdatePendingStates(osv.osv_memory):
                         self.send_sms(cursor, uid, factura_id, sms_template_id, current_state_id, context)
                     except Exception as e:
                         raise SMSException(e)
-                    fact_obj.set_pending(cursor, uid, [factura_id], next_state)
                 else:
-                    fact_obj.set_pending(cursor, uid, [factura_id], next_state)
                     last_peding_id = max(fact_obj.read(cursor, uid, factura_id, ['pending_history_ids'])['pending_history_ids'])
                     last_pending = aiph_obj.browse(cursor, uid, last_peding_id)
-                    last_pending.historize(message=u"Comunicació feta a través de la factura amb id:{}".format(factura_id))
+                    last_pending.historize(message=u"Comunicació feta a través de la factura amb id:{}".format(related_invoice))
+                fact_obj.set_pending(cursor, uid, [factura_id], next_state)
                 logger.info(
                     'Sending Annex 4 email for {factura_id} invoice with result: {ret_value}'.format(
                         factura_id=factura_id,
