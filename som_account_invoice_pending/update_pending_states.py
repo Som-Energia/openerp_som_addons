@@ -276,6 +276,7 @@ class UpdatePendingStates(osv.osv_memory):
                     )
                 )
             else:
+                fact_obj.set_pending(cursor, uid, [factura_id], next_state)
                 if not related_invoice:
                     try:
                         self.send_sms(cursor, uid, factura_id, sms_48h_template_id, current_state_id, context)
@@ -285,7 +286,6 @@ class UpdatePendingStates(osv.osv_memory):
                     last_peding_id = max(fact_obj.read(cursor, uid, factura_id, ['pending_history_ids'])['pending_history_ids'])
                     last_pending = aiph_obj.browse(cursor, uid, last_peding_id)
                     last_pending.historize(message=u"Comunicació feta a través de la factura amb id:{}".format(related_invoice))
-                fact_obj.set_pending(cursor, uid, [factura_id], next_state)
                 logger.info(
                     'Sending 48h email for {factura_id} invoice with result: {ret_value}'.format(
                         factura_id=factura_id,
@@ -628,6 +628,7 @@ class UpdatePendingStates(osv.osv_memory):
                     )
                 )
             else:
+                fact_obj.set_pending(cursor, uid, [factura_id], next_state)
                 if not related_invoice:
                     try:
                         self.send_sms(cursor, uid, factura_id, sms_template_id, current_state_id, context)
@@ -637,7 +638,6 @@ class UpdatePendingStates(osv.osv_memory):
                     last_peding_id = max(fact_obj.read(cursor, uid, factura_id, ['pending_history_ids'])['pending_history_ids'])
                     last_pending = aiph_obj.browse(cursor, uid, last_peding_id)
                     last_pending.historize(message=u"Comunicació feta a través de la factura amb id:{}".format(related_invoice))
-                fact_obj.set_pending(cursor, uid, [factura_id], next_state)
                 logger.info(
                     'Sending Annex 4 email for {factura_id} invoice with result: {ret_value}'.format(
                         factura_id=factura_id,
