@@ -283,9 +283,10 @@ class UpdatePendingStates(osv.osv_memory):
                     except Exception as e:
                         raise SMSException(e)
                 else:
-                    last_peding_id = max(fact_obj.read(cursor, uid, factura_id, ['pending_history_ids'])['pending_history_ids'])
-                    last_pending = aiph_obj.browse(cursor, uid, last_peding_id)
-                    last_pending.historize(message=u"Comunicació feta a través de la factura amb id:{}".format(related_invoice))
+                    pending_ids = fact_obj.read(cursor, uid, factura_id, ['pending_history_ids'])['pending_history_ids']
+                    current_peding_id = max(aiph_obj.search(cursor, uid, [('id', 'in', pending_ids), ('pending_state_id','=',current_state_id)]))
+                    current_pending = aiph_obj.browse(cursor, uid, current_peding_id)
+                    current_pending.historize(message=u"Comunicació feta a través de la factura amb id:{}".format(related_invoice))
                 logger.info(
                     'Sending 48h email for {factura_id} invoice with result: {ret_value}'.format(
                         factura_id=factura_id,
@@ -635,9 +636,10 @@ class UpdatePendingStates(osv.osv_memory):
                     except Exception as e:
                         raise SMSException(e)
                 else:
-                    last_peding_id = max(fact_obj.read(cursor, uid, factura_id, ['pending_history_ids'])['pending_history_ids'])
-                    last_pending = aiph_obj.browse(cursor, uid, last_peding_id)
-                    last_pending.historize(message=u"Comunicació feta a través de la factura amb id:{}".format(related_invoice))
+                    pending_ids = fact_obj.read(cursor, uid, factura_id, ['pending_history_ids'])['pending_history_ids']
+                    current_peding_id = max(aiph_obj.search(cursor, uid, [('id', 'in', pending_ids), ('pending_state_id','=',current_state_id)]))
+                    current_pending = aiph_obj.browse(cursor, uid, current_peding_id)
+                    current_pending.historize(message=u"Comunicació feta a través de la factura amb id:{}".format(related_invoice))
                 logger.info(
                     'Sending Annex 4 email for {factura_id} invoice with result: {ret_value}'.format(
                         factura_id=factura_id,
