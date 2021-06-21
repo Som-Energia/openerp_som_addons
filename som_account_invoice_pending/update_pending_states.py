@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime, timedelta, date
-
 from osv import osv
-from osv.expression import OOQuery
+from som_account_invoice_pending_exceptions import (
+    UpdateWaitingFor48hException,
+    UpdateWaitingCancelledContractsException,
+    UpdateWaitingForAnnexIVException,
+    MailException,
+    SMSException
+)
 import logging
 
 class UpdatePendingStates(osv.osv_memory):
@@ -35,12 +39,12 @@ class UpdatePendingStates(osv.osv_memory):
         fact_obj = self.pool.get('giscedata.facturacio.factura')
 
         inv_obj = self.pool.get('account.invoice')
-        invoice_ids = inv_obj.search(cursor, uid, [('pending_state.id', '=', pending_state)])
+        invoice_ids = inv_obj.search(cursor, uid, [('pending_state.id', '=', pending_state)], order='id asc')
 
         invoice_numbers = [inv_obj.browse(cursor, uid, inv_id).number for inv_id in invoice_ids]
         factura_ids = []
         if invoice_numbers:
-            factura_ids = fact_obj.search(cursor, uid, [("number", "in", invoice_numbers)])
+            factura_ids = fact_obj.search(cursor, uid, [("number", "in", invoice_numbers)], order='id asc')
 
         return factura_ids
 
@@ -124,9 +128,11 @@ class UpdatePendingStates(osv.osv_memory):
                     exc=e
                 )
             )
-            return -1
+            raise e
 
     def update_waiting_for_48h(self, cursor, uid, context=None):
+        logger = logging.getLogger(__name__)
+
         if context is None:
             context = {}
 
@@ -145,14 +151,46 @@ class UpdatePendingStates(osv.osv_memory):
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         pol_obj = self.pool.get('giscedata.polissa')
 
-        for factura_id in factura_dp_ids:
+        polisses_factures = {}
+
+        for factura_id in sorted(factura_dp_ids):
             invoice = fact_obj.read(cursor, uid, factura_id, ['id', 'polissa_id'])
             polissa_id = invoice['polissa_id'][0]
             polissa_state = pol_obj.read(cursor, uid, polissa_id, ['state'])['state']
-            if polissa_state == 'baixa':
-                self.update_waiting_for_annex_cancelled_contracts(cursor, uid, factura_id, traspas_advocats_dp, context)
-            else:
-                self.update_waiting_for_48h_active_contracts(cursor, uid, factura_id, sent_48h_dp, context)
+
+            try:
+                if polissa_state == 'baixa':
+                    self.update_waiting_for_annex_cancelled_contracts(cursor, uid, factura_id, traspas_advocats_dp, context)
+                else:
+                    if polissa_id in polisses_factures:
+                        ctx = context.copy()
+                        ctx['related_invoice'] = polisses_factures[polissa_id]
+                        self.update_waiting_for_48h_active_contracts(cursor, uid, factura_id, sent_48h_dp, ctx)
+                    else:
+                        polisses_factures[polissa_id] = factura_id
+                        self.update_waiting_for_48h_active_contracts(cursor, uid, factura_id, sent_48h_dp, context)
+            except UpdateWaitingFor48hException as e:
+                logger.info(
+                    'ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}'.format(
+                        factura_id=factura_id,
+                        exc=e.message
+                    )
+                )
+            except UpdateWaitingCancelledContractsException as e:
+                logger.info(
+                    'ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}'.format(
+                        factura_id=factura_id,
+                        exc=e.message
+                    )
+                )
+            except Exception as e:
+                logger.info(
+                    'UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}'.format(
+                        factura_id=factura_id,
+                        exc=e.message
+                    )
+                )
+
 
         # BO SOCIAL
         waiting_48h_bs = self.get_object_id(
@@ -166,53 +204,96 @@ class UpdatePendingStates(osv.osv_memory):
         )
         factura_bs_ids = self.get_invoices_with_pending_state(cursor, uid, waiting_48h_bs)
 
-        for factura_id in factura_bs_ids:
+
+        for factura_id in sorted(factura_bs_ids):
             invoice = fact_obj.read(cursor, uid, factura_id, ['id', 'polissa_id'])
             polissa_id = invoice['polissa_id'][0]
             polissa_state = pol_obj.read(cursor, uid, polissa_id, ['state'])['state']
-            if polissa_state == 'baixa':
-                self.update_waiting_for_annex_cancelled_contracts(cursor, uid, factura_id, traspas_advocats_bs, context)
-            else:
-                self.update_waiting_for_48h_active_contracts(cursor, uid, factura_id, sent_48h_bs, context)
+            try:
+                if polissa_state == 'baixa':
+                    self.update_waiting_for_annex_cancelled_contracts(cursor, uid, factura_id, traspas_advocats_bs, context)
+                else:
+                    if polissa_id in polisses_factures:
+                        ctx = context.copy()
+                        ctx['related_invoice'] = polisses_factures[polissa_id]
+                        self.update_waiting_for_48h_active_contracts(cursor, uid, factura_id, sent_48h_bs, ctx)
+                    else:
+                        polisses_factures[polissa_id] = factura_id
+                        self.update_waiting_for_48h_active_contracts(cursor, uid, factura_id, sent_48h_bs, context)
+            except UpdateWaitingFor48hException as e:
+                logger.info(
+                    'ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}'.format(
+                        factura_id=factura_id,
+                        exc=e.message
+                    )
+                )
+            except UpdateWaitingCancelledContractsException as e:
+                logger.info(
+                    'ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}'.format(
+                        factura_id=factura_id,
+                        exc=e.message
+                    )
+                )
+            except Exception as e:
+                logger.info(
+                    'UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}'.format(
+                        factura_id=factura_id,
+                        exc=e.message
+                    )
+                )
 
     def update_waiting_for_48h_active_contracts(self, cursor, uid, factura_id, next_state, context=None):
         logger = logging.getLogger('openerp.poweremail')
         fact_obj = self.pool.get('giscedata.facturacio.factura')
+        aiph_obj = self.pool.get('account.invoice.pending.history')
 
-        mail_48h_template_id = self.get_object_id(
-            cursor, uid, 'som_account_invoice_pending', 'email_impagats_48h'
-        )
+        try:
+            related_invoice = context.get('related_invoice', False)
 
-        email_from = self.get_from_email(cursor, uid, mail_48h_template_id)
-
-        sms_48h_template_id = self.get_object_id(
-            cursor, uid, 'som_account_invoice_pending', 'sms_template_48h_tall'
-        )
-
-        current_state_id = fact_obj.read(cursor, uid, factura_id, ['pending_state'])['pending_state'][0]
-
-        email_params = dict({
-            'email_from': email_from,
-            'template_id': mail_48h_template_id
-        })
-
-        ret_value = self.send_email(cursor, uid, factura_id, email_params)
-
-        if ret_value == -1:
-            logger.info(
-                'ERROR: Sending 48h email for {factura_id} invoice error.'.format(
-                    factura_id=factura_id,
-                )
+            mail_48h_template_id = self.get_object_id(
+                cursor, uid, 'som_account_invoice_pending', 'email_impagats_48h'
             )
-        else:
-            self.send_sms(cursor, uid, factura_id, sms_48h_template_id, current_state_id, context)
-            fact_obj.set_pending(cursor, uid, [factura_id], next_state)
-            logger.info(
-                'Sending 48h email for {factura_id} invoice with result: {ret_value}'.format(
-                    factura_id=factura_id,
-                    ret_value=ret_value
-                )
+
+            email_from = self.get_from_email(cursor, uid, mail_48h_template_id)
+
+            sms_48h_template_id = self.get_object_id(
+                cursor, uid, 'som_account_invoice_pending', 'sms_template_48h_tall'
             )
+
+            current_state_id = fact_obj.read(cursor, uid, factura_id, ['pending_state'])['pending_state'][0]
+
+            email_params = dict({
+                'email_from': email_from,
+                'template_id': mail_48h_template_id
+            })
+
+            ret_value = self.send_email(cursor, uid, factura_id, email_params)
+
+            if ret_value == -1:
+                logger.info(
+                    'ERROR: Sending 48h email for {factura_id} invoice error.'.format(
+                        factura_id=factura_id,
+                    )
+                )
+            else:
+                fact_obj.set_pending(cursor, uid, [factura_id], next_state)
+                if not related_invoice:
+                    try:
+                        self.send_sms(cursor, uid, factura_id, sms_48h_template_id, current_state_id, context)
+                    except Exception as e:
+                        raise SMSException(e)
+                else:
+                    last_peding_id = max(fact_obj.read(cursor, uid, factura_id, ['pending_history_ids'])['pending_history_ids'])
+                    last_pending = aiph_obj.browse(cursor, uid, last_peding_id)
+                    last_pending.historize(message=u"Comunicació feta a través de la factura amb id:{}".format(related_invoice))
+                logger.info(
+                    'Sending 48h email for {factura_id} invoice with result: {ret_value}'.format(
+                        factura_id=factura_id,
+                        ret_value=ret_value
+                    )
+                )
+        except Exception as e:
+            raise UpdateWaitingFor48hException(e)
 
     def update_waiting_for_annexIV(self, cursor, uid, context=None):
         """
@@ -220,6 +301,8 @@ class UpdatePendingStates(osv.osv_memory):
         automatically will send it's corresponding email and pass to next
         pending state (default_carta_avis_tall_pending_state)
         """
+        logger = logging.getLogger(__name__)
+
         if context is None:
             context = {}
 
@@ -238,14 +321,46 @@ class UpdatePendingStates(osv.osv_memory):
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         pol_obj = self.pool.get('giscedata.polissa')
 
-        for factura_id in factura_dp_ids:
-            invoice = fact_obj.read(cursor, uid, factura_id, ['id', 'polissa_id'])
-            polissa_id = invoice['polissa_id'][0]
-            polissa_state = pol_obj.read(cursor, uid, polissa_id, ['state'])['state']
-            if polissa_state == 'baixa':
-                self.update_waiting_for_annex_cancelled_contracts(cursor, uid, factura_id, traspas_advocats_dp, context)
-            else:
-                self.update_waiting_for_annexIV_active_contracts(cursor, uid, factura_id, sent_annexIV_dp, context)
+        polisses_factures = {}
+
+        for factura_id in sorted(factura_dp_ids):
+            try:
+                invoice = fact_obj.read(cursor, uid, factura_id, ['id', 'polissa_id'])
+                polissa_id = invoice['polissa_id'][0]
+                polissa_state = pol_obj.read(cursor, uid, polissa_id, ['state'])['state']
+                if polissa_state == 'baixa':
+                    self.update_waiting_for_annex_cancelled_contracts(cursor, uid, factura_id, traspas_advocats_dp, context)
+                else:
+                    if polissa_id in polisses_factures:
+                        ctx = context.copy()
+                        ctx['related_invoice'] = polisses_factures[polissa_id]
+                        self.update_waiting_for_annexIV_active_contracts(cursor, uid, factura_id, sent_annexIV_dp, ctx)
+                    else:
+                        polisses_factures[polissa_id] = factura_id
+                        self.update_waiting_for_annexIV_active_contracts(cursor, uid, factura_id, sent_annexIV_dp, context)
+
+            except UpdateWaitingForAnnexIVException as e:
+                logger.info(
+                    'ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}'.format(
+                        factura_id=factura_id,
+                        exc=e
+                    )
+                )
+            except UpdateWaitingCancelledContractsException as e:
+                logger.info(
+                    'ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}'.format(
+                        factura_id=factura_id,
+                        exc=e
+                    )
+                )
+            except Exception as e:
+                logger.info(
+                    'UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}'.format(
+                        factura_id=factura_id,
+                        exc=e
+                    )
+                )
+
 
         # BO SOCIAL
         waiting_annexIV_bs = self.get_object_id(
@@ -259,14 +374,44 @@ class UpdatePendingStates(osv.osv_memory):
         )
         factura_bs_ids = self.get_invoices_with_pending_state(cursor, uid, waiting_annexIV_bs)
 
-        for factura_id in factura_bs_ids:
+        for factura_id in sorted(factura_bs_ids):
             invoice = fact_obj.read(cursor, uid, factura_id, ['id', 'polissa_id'])
             polissa_id = invoice['polissa_id'][0]
             polissa_state = pol_obj.read(cursor, uid, polissa_id, ['state'])['state']
-            if polissa_state == 'baixa':
-                self.update_waiting_for_annex_cancelled_contracts(cursor, uid, factura_id, traspas_advocats_bs, context)
-            else:
-                self.update_waiting_for_annexIV_active_contracts(cursor, uid, factura_id, sent_annexIV_bs, context)
+            try:
+                if polissa_state == 'baixa':
+                    self.update_waiting_for_annex_cancelled_contracts(cursor, uid, factura_id, traspas_advocats_bs, context)
+                else:
+                    if polissa_id in polisses_factures:
+                        ctx = context.copy()
+                        ctx['related_invoice'] = polisses_factures[polissa_id]
+                        self.update_waiting_for_annexIV_active_contracts(cursor, uid, factura_id, sent_annexIV_bs, ctx)
+                    else:
+                        polisses_factures[polissa_id] = factura_id
+                        self.update_waiting_for_annexIV_active_contracts(cursor, uid, factura_id, sent_annexIV_bs, context)
+
+            except UpdateWaitingForAnnexIVException as e:
+                logger.info(
+                    'ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}'.format(
+                        factura_id=factura_id,
+                        exc=e
+                    )
+                )
+            except UpdateWaitingCancelledContractsException as e:
+                logger.info(
+                    'ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}'.format(
+                        factura_id=factura_id,
+                        exc=e
+                    )
+                )
+            except Exception as e:
+                logger.info(
+                    'UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}'.format(
+                        factura_id=factura_id,
+                        exc=e
+                    )
+                )
+
 
     def update_waiting_for_annexIII_first(self, cursor, uid, context=None):
         """
@@ -382,33 +527,36 @@ class UpdatePendingStates(osv.osv_memory):
         logger = logging.getLogger('openerp.poweremail')
         fact_obj = self.pool.get('giscedata.facturacio.factura')
 
-        n57_template_id = self.get_object_id(
-            cursor, uid, 'som_account_invoice_pending', 'email_generic_N57'
-        )
-
-        email_from = self.get_from_email(cursor, uid, n57_template_id)
-
-        email_params = dict({
-            'email_from': email_from,
-            'template_id': n57_template_id
-        })
-
-        ret_value = 1 #self.send_email(cursor, uid, factura_id, email_params)
-
-        if ret_value == -1:
-            logger.info(
-                'ERROR: Sending N57 default payment email for {factura_id} invoice error.'.format(
-                    factura_id=factura_id,
-                )
+        try:
+            n57_template_id = self.get_object_id(
+                cursor, uid, 'som_account_invoice_pending', 'email_generic_N57'
             )
-        else:
-            fact_obj.set_pending(cursor, uid, [factura_id], next_state)
-            logger.info(
-                'Sending N57 default payment email for {factura_id} invoice with result: {ret_value}'.format(
-                    factura_id=factura_id,
-                    ret_value=ret_value
+
+            email_from = self.get_from_email(cursor, uid, n57_template_id)
+
+            email_params = dict({
+                'email_from': email_from,
+                'template_id': n57_template_id
+            })
+
+            ret_value = 1 #self.send_email(cursor, uid, factura_id, email_params)
+
+            if ret_value == -1:
+                logger.info(
+                    'ERROR: Sending N57 default payment email for {factura_id} invoice error.'.format(
+                        factura_id=factura_id,
+                    )
                 )
-            )
+            else:
+                fact_obj.set_pending(cursor, uid, [factura_id], next_state)
+                logger.info(
+                    'Sending N57 default payment email for {factura_id} invoice with result: {ret_value}'.format(
+                        factura_id=factura_id,
+                        ret_value=ret_value
+                    )
+                )
+        except Exception as e:
+            raise UpdateWaitingCancelledContractsException(e)
 
     def update_waiting_for_annexII_active_contracts(self, cursor, uid, factura_id, context=None):
         logger = logging.getLogger('openerp.poweremail')
@@ -449,42 +597,55 @@ class UpdatePendingStates(osv.osv_memory):
     def update_waiting_for_annexIV_active_contracts(self, cursor, uid, factura_id, next_state, context=None):
         logger = logging.getLogger('openerp.poweremail')
         fact_obj = self.pool.get('giscedata.facturacio.factura')
+        aiph_obj = self.pool.get('account.invoice.pending.history')
 
-        annex4_template_id = self.get_object_id(
-            cursor, uid, 'som_account_invoice_pending', 'email_impagats_annex4'
-        )
+        try:
+            related_invoice = context.get('related_invoice', False)
 
-        email_from = self.get_from_email(cursor, uid, annex4_template_id)
-
-        sms_template_id = self.get_object_id(
-            cursor, uid, 'som_account_invoice_pending', 'sms_template_annex4'
-        )
-
-        current_state_id = fact_obj.read(cursor, uid, factura_id, ['pending_state'])['pending_state'][0]
-
-        email_params = dict({
-            'email_from': email_from,
-            'template_id': annex4_template_id
-        })
-
-        ret_value = self.send_email(cursor, uid, factura_id, email_params)
-
-        if ret_value == -1:
-            logger.info(
-                'ERROR: Sending Annex 4 email for {factura_id} invoice error.'.format(
-                    factura_id=factura_id,
-                )
-            )
-        else:
-            self.send_sms(cursor, uid, factura_id, sms_template_id, current_state_id, context)
-            fact_obj.set_pending(cursor, uid, [factura_id], next_state)
-            logger.info(
-                'Sending Annex 4 email for {factura_id} invoice with result: {ret_value}'.format(
-                    factura_id=factura_id,
-                    ret_value=ret_value
-                )
+            annex4_template_id = self.get_object_id(
+                cursor, uid, 'som_account_invoice_pending', 'email_impagats_annex4'
             )
 
+            email_from = self.get_from_email(cursor, uid, annex4_template_id)
+
+            sms_template_id = self.get_object_id(
+                cursor, uid, 'som_account_invoice_pending', 'sms_template_annex4'
+            )
+
+            current_state_id = fact_obj.read(cursor, uid, factura_id, ['pending_state'])['pending_state'][0]
+
+            email_params = dict({
+                'email_from': email_from,
+                'template_id': annex4_template_id
+            })
+
+            ret_value = self.send_email(cursor, uid, factura_id, email_params)
+
+            if ret_value == -1:
+                logger.info(
+                    'ERROR: Sending Annex 4 email for {factura_id} invoice error.'.format(
+                        factura_id=factura_id,
+                    )
+                )
+            else:
+                fact_obj.set_pending(cursor, uid, [factura_id], next_state)
+                if not related_invoice:
+                    try:
+                        self.send_sms(cursor, uid, factura_id, sms_template_id, current_state_id, context)
+                    except Exception as e:
+                        raise SMSException(e)
+                else:
+                    last_peding_id = max(fact_obj.read(cursor, uid, factura_id, ['pending_history_ids'])['pending_history_ids'])
+                    last_pending = aiph_obj.browse(cursor, uid, last_peding_id)
+                    last_pending.historize(message=u"Comunicació feta a través de la factura amb id:{}".format(related_invoice))
+                logger.info(
+                    'Sending Annex 4 email for {factura_id} invoice with result: {ret_value}'.format(
+                        factura_id=factura_id,
+                        ret_value=ret_value
+                    )
+                )
+        except Exception as e:
+            raise UpdateWaitingForAnnexIVException(e)
 
     def update_second_unpaid_invoice(self, cursor, uid, context=None):
 
