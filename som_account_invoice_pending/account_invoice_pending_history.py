@@ -10,10 +10,16 @@ class AccountInvoicePendingHistory(osv.osv):
     _name = 'account.invoice.pending.history'
     _inherit = 'account.invoice.pending.history'
 
-    def historize(self, cursor, uid, ids, message=None):
+    def historize(self, cursor, uid, ids, message=''):
         """sets text to observations field"""
-        data = {'observations': message}
-        return self.write(cursor, uid, ids, data)
+        if not isinstance(ids, (tuple,list)):
+            ids = [ids]
+        for _id in ids:
+            old_observations = self.read(cursor, uid, _id, ['observations'])['observations']
+            old_observations = '\n{}'.format(old_observations) if old_observations else ''
+            data = {'observations': message + old_observations}
+            self.write(cursor, uid, _id, data)
+        return True
 
     _columns = {
         'powersms_id': fields.many2one(
