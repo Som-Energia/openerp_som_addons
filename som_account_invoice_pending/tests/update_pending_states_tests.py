@@ -820,3 +820,29 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
 
         self.assertEqual(last_pending.observations,
                          u'Comunicació feta a través de la factura amb id:{}'.format(first_inv))
+
+    @mock.patch('som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email')
+    @mock.patch('som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_sms')
+    def test__sms_callback_historize_48h_with_previous_observation(self, mock_sms, mock_mail):
+        cursor = self.txn.cursor
+        uid = self.txn.user
+        self._load_data_unpaid_invoices(cursor, uid, [self.waiting_48h_bs, self.waiting_48h_bs])
+        pending_obj = self.pool.get('update.pending.states')
+        fact_obj = self.pool.get('giscedata.facturacio.factura')
+        aiph_obj = self.pool.get('account.invoice.pending.history')
+
+        pending_obj.update_waiting_for_48h(cursor, uid)
+
+        self.assertEqual(mock_mail.call_count, 2)
+        self.assertEqual(mock_sms.call_count, 1)
+
+        first_inv = min(self.invoice_1_id, self.invoice_2_id)
+        last_inv = max(self.invoice_1_id, self.invoice_2_id)
+
+        last_pending_id = min(fact_obj.read(cursor, uid, last_inv, ['pending_history_ids'])['pending_history_ids'])
+        last_pending = aiph_obj.browse(cursor, uid, last_pending_id)
+
+        last_pending.historize(message='New message')
+
+        self.assertEqual(last_pending.observations,
+                         u'New message\nComunicació feta a través de la factura amb id:{}'.format(first_inv))
