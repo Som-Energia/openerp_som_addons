@@ -1,10 +1,14 @@
 ## -*- coding: utf-8 -*-
 <%
 import locale
-locale.setlocale(locale.LC_NUMERIC,'es_ES.utf-8')
+locale.setlocale(locale.LC_NUMERIC,'ca_ES.utf-8')
 
-r_obj = objects[0].pool.get('giscedata.facturacio.factura.report')
-report_data = r_obj.get_report_data(cursor, uid, objects)
+
+obj = objects[0].pool.get('wizard.create.report')
+
+report_data = obj.get_data(cursor, uid, objects[0].id)
+
+data = repr(report_data)
 
 %>
 <!doctype html public "-//w3c//dtd html 4.0 transitional//en">
@@ -14,6 +18,7 @@ report_data = r_obj.get_report_data(cursor, uid, objects)
     test
 </head>
 <body>
+${data} <br>
 % for data_item in report_data:
     % if i.type == 'test':
         <%include file="/som_informe/report/components/test/test.mako" args="data=data_item" />

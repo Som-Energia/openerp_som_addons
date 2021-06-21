@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv
 
-class SomInformeReport(osv.osv):
+class SomInformeReport(osv.osv_memory):
     _name = 'som.informe.report'
 
     def get_report_data(self, cursor, uid):
