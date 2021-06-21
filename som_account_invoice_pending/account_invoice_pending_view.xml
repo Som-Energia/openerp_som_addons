@@ -9,6 +9,7 @@
             <field name="arch" type="xml" >
                 <field name="end_date" position="after">
                     <field name="powersms_sent_date"/>
+                    <field name="observations"/>
                 </field>
             </field>
         </record>
