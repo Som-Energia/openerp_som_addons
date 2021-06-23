@@ -43,13 +43,9 @@ class WizardCreateReport(osv.osv_memory):
         ]
 
     def print_report(self, cursor, uid, ids, context=None):
-        wiz = self.browse(cursor, uid, ids[0])
-
-        if not context:
-            context = {}
         return {
             'type': 'ir.actions.report.xml',
-            'model': 'som.informe.report',
+            'model': 'wizard.create.report',
             'report_name': 'som.informe.report',
             'report_webkit': "'som_informe/report/report_som_informe.mako'",
             'webkit_header': 'som_informe_webkit_header',
@@ -60,7 +56,7 @@ class WizardCreateReport(osv.osv_memory):
             'report_rml': 'False',
         }
 
-
+    """
     def generate_report(self, cursor, uid, ids, context=None):
         wiz = self.browse(cursor, uid, ids[0], context=context)
         active_id = context.get('active_id', 0)
@@ -81,5 +77,6 @@ class WizardCreateReport(osv.osv_memory):
         )
 
         wiz.write({'state': "finished"})
+    """
 
 WizardCreateReport()

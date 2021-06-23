@@ -8,13 +8,11 @@
     "category": "SomEnergia",
     "depends":[
         "base",
-        "giscedata_polissa",
-        "giscedata_facturacio",
+        "c2c_webkit_report",
         "crm",
     ],
     "init_xml": [],
-    "demo_xml": [
-    ],
+    "demo_xml": [],
     "update_xml":[
         "data/som_informe_data.xml",
         "wizard/wizard_create_report_view.xml",

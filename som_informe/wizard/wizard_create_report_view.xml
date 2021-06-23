@@ -9,6 +9,7 @@
                 <form string="Genera Informe Consum" col="2">
                     <field name="state" invisible="1"/>
                     <button type="object" string="Imprimir" name="print_report" icon="gtk-print"/>
+                    <button type="object" string="test" name="test_it" icon="gtk_ok" />
                 </form>
             </field>
         </record>
@@ -30,7 +31,7 @@
             <field name="model">wizard.create.report</field>
             <field name="value" eval="'ir.actions.act_window,'+str(ref('action_som_informe_report'))"/>
         </record>
-        <menuitem action="action_som_informe_report" id="menu_som_informe_report" name="som_informe_report" parent="crm.menu_crm" sequence="10"/>
+        <menuitem action="action_som_informe_report" id="menu_som_informe_report" name="Informe automàtic Som" parent="crm.menu_crm" sequence="10"/>
     </data>
 </openerp>
 

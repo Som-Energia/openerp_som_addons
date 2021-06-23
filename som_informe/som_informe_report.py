@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv
 
+"""
 class SomInformeReport(osv.osv_memory):
     _name = 'som.informe.report'
 
@@ -51,3 +52,4 @@ class SomInformeReport(osv.osv_memory):
 
 
 SomInformeReport()
+"""
