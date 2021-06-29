@@ -353,31 +353,31 @@ class FarePeriodCurveTests(testing.OOTestCaseWithCursor):
             + 13 * other_periods
         )
 
-    def test_get_pre_post_new_fares_periods__endBeforeNewFares(self):
+    def test_equivalentIntervalsForTDFares__endBeforeNewFares(self):
         start = datetime.date(2019,6,1)
         end = datetime.date(2020,6,8)
         p = FarePeriodCurve(
             holidays=HolidaysProvidersMockup([])
         )
-        result = p.get_pre_post_new_fares_periods(start, end)
+        result = p.equivalentIntervalsForTDFares(start, end)
         self.assertEqual(result, [(start, end)])
 
-    def test_get_pre_post_new_fares_periods__startAfterNewFares(self):
+    def test_equivalentIntervalsForTDFares__startAfterNewFares(self):
         start = datetime.date(2021,10,1)
         end = datetime.date(2022,10,8)
         p = FarePeriodCurve(
             holidays=HolidaysProvidersMockup([])
         )
-        result = p.get_pre_post_new_fares_periods(start, end)
+        result = p.equivalentIntervalsForTDFares(start, end)
         self.assertEqual(result, [(start, end)])
 
-    def test_get_pre_post_new_fares_periods__startBeforeEndAfterNewFares(self):
+    def test_equivalentIntervalsForTDFares__startBeforeEndAfterNewFares(self):
         start = datetime.date(2020,6,1)
         end = datetime.date(2021,6,8)
         p = FarePeriodCurve(
             holidays=HolidaysProvidersMockup([])
         )
-        result = p.get_pre_post_new_fares_periods(start, end)
+        result = p.equivalentIntervalsForTDFares(start, end)
 
         expected = [
             (datetime.date(2021,6,1), datetime.date(2022,5,31)),
@@ -385,13 +385,13 @@ class FarePeriodCurveTests(testing.OOTestCaseWithCursor):
                 ]
         self.assertEqual(result, expected)
 
-    def test_get_pre_post_new_fares_periods__onlyOneDayBeforeNewFares(self):
+    def test_equivalentIntervalsForTDFares__onlyOneDayBeforeNewFares(self):
         start = datetime.date(2021,5,31)
         end = datetime.date(2022,6,8)
         p = FarePeriodCurve(
             holidays=HolidaysProvidersMockup([])
         )
-        result = p.get_pre_post_new_fares_periods(start, end)
+        result = p.equivalentIntervalsForTDFares(start, end)
 
         expected = [
             (datetime.date(2022,5,31), datetime.date(2022,5,31)),
@@ -399,26 +399,26 @@ class FarePeriodCurveTests(testing.OOTestCaseWithCursor):
                 ]
         self.assertEqual(result, expected)
 
-    def test_get_pre_post_new_fares_periods__sameDayNewFares(self):
+    def test_equivalentIntervalsForTDFares__sameDayNewFares(self):
         start = datetime.date(2021,6,1)
         end = datetime.date(2022,6,8)
         p = FarePeriodCurve(
             holidays=HolidaysProvidersMockup([])
         )
-        result = p.get_pre_post_new_fares_periods(start, end)
+        result = p.equivalentIntervalsForTDFares(start, end)
 
         expected = [
             (datetime.date(2021,6,1), datetime.date(2022,6,8)),
                 ]
         self.assertEqual(result, expected)
 
-    def test_get_pre_post_new_fares_periods__endSameDayNewFares(self):
+    def test_equivalentIntervalsForTDFares__endSameDayNewFares(self):
         start = datetime.date(2020,6,1)
         end = datetime.date(2021,6,1)
         p = FarePeriodCurve(
             holidays=HolidaysProvidersMockup([])
         )
-        result = p.get_pre_post_new_fares_periods(start, end)
+        result = p.equivalentIntervalsForTDFares(start, end)
 
         expected = [
             (datetime.date(2021,6,1), datetime.date(2022,5,31)),
