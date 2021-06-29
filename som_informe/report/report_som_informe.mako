@@ -1,8 +1,5 @@
 ## -*- coding: utf-8 -*-
 <%
-import locale
-locale.setlocale(locale.LC_NUMERIC,'es_ES.utf-8')
-
 
 obj = objects[0].pool.get('wizard.create.report')
 
@@ -20,6 +17,10 @@ o = repr(objects)
 <body>
 ${data} <br>
 ${o} <br>
+<b>hola</b>
+<h1>test <a href="">rapid</a></h1>
+<img src="https://www.somenergia.coop/wp-content/uploads/2020/12/171x107px_web_10_anys.gif">
+<a href="https://www.somenergia.coop/">aixo es un link</a>
 % if False:
 % for data_item in report_data:
     % if i.type == 'test':
