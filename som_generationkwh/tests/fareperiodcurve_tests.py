@@ -6,7 +6,7 @@ from yamlns import namespace as ns
 from generationkwh.isodates import isodate
 import netsvc
 import time
-
+import datetime
 
 class HolidaysProvidersMockup(object):
     def get(self, start, stop):
@@ -352,5 +352,78 @@ class FarePeriodCurveTests(testing.OOTestCaseWithCursor):
             + 2 * (5 * weekday_low + 2 * other_periods) + weekday_low
             + 13 * other_periods
         )
+
+    def test_equivalentIntervalsForTDFares__endBeforeNewFares(self):
+        start = datetime.date(2019,6,1)
+        end = datetime.date(2020,6,8)
+        p = FarePeriodCurve(
+            holidays=HolidaysProvidersMockup([])
+        )
+        result = p.equivalentIntervalsForTDFares(start, end)
+        self.assertEqual(result, [(start, end)])
+
+    def test_equivalentIntervalsForTDFares__startAfterNewFares(self):
+        start = datetime.date(2021,10,1)
+        end = datetime.date(2022,10,8)
+        p = FarePeriodCurve(
+            holidays=HolidaysProvidersMockup([])
+        )
+        result = p.equivalentIntervalsForTDFares(start, end)
+        self.assertEqual(result, [(start, end)])
+
+    def test_equivalentIntervalsForTDFares__startBeforeEndAfterNewFares(self):
+        start = datetime.date(2020,6,1)
+        end = datetime.date(2021,6,8)
+        p = FarePeriodCurve(
+            holidays=HolidaysProvidersMockup([])
+        )
+        result = p.equivalentIntervalsForTDFares(start, end)
+
+        expected = [
+            (datetime.date(2021,6,1), datetime.date(2022,5,31)),
+            (datetime.date(2021,6,1), datetime.date(2021,6,8)),
+                ]
+        self.assertEqual(result, expected)
+
+    def test_equivalentIntervalsForTDFares__onlyOneDayBeforeNewFares(self):
+        start = datetime.date(2021,5,31)
+        end = datetime.date(2022,6,8)
+        p = FarePeriodCurve(
+            holidays=HolidaysProvidersMockup([])
+        )
+        result = p.equivalentIntervalsForTDFares(start, end)
+
+        expected = [
+            (datetime.date(2022,5,31), datetime.date(2022,5,31)),
+            (datetime.date(2021,6,1), datetime.date(2022,6,8)),
+                ]
+        self.assertEqual(result, expected)
+
+    def test_equivalentIntervalsForTDFares__sameDayNewFares(self):
+        start = datetime.date(2021,6,1)
+        end = datetime.date(2022,6,8)
+        p = FarePeriodCurve(
+            holidays=HolidaysProvidersMockup([])
+        )
+        result = p.equivalentIntervalsForTDFares(start, end)
+
+        expected = [
+            (datetime.date(2021,6,1), datetime.date(2022,6,8)),
+                ]
+        self.assertEqual(result, expected)
+
+    def test_equivalentIntervalsForTDFares__endSameDayNewFares(self):
+        start = datetime.date(2020,6,1)
+        end = datetime.date(2021,6,1)
+        p = FarePeriodCurve(
+            holidays=HolidaysProvidersMockup([])
+        )
+        result = p.equivalentIntervalsForTDFares(start, end)
+
+        expected = [
+            (datetime.date(2021,6,1), datetime.date(2022,5,31)),
+            (datetime.date(2021,6,1), datetime.date(2021,6,1)),
+                ]
+        self.assertEqual(result, expected)
 
 # vim: et ts=4 sw=4
