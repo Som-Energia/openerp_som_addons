@@ -5,14 +5,10 @@ import os.path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
-
 from googleapiclient.http import MediaFileUpload
-import re
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/drive']
-#client_secret_file = 'client_secrets.json'
-#token_file = 'token.pickle'
 APPLICATION_NAME = 'Drive API Python Quickstart'
 
 
@@ -43,15 +39,16 @@ class GoogleDriveManager(osv.osv_memory):
                 pickle.dump(creds, token)
         return creds
 
-    def uploadMediaToDrive(self, cursor, uid, document_name, document_path, folder=None, context=None):
+    def uploadMediaToDrive(self, cursor, uid, document_name, document_path, folder_hash=None, context=None):
         cred = self.getCredentials(cursor, uid)
         file_metadata = {
             'name': document_name,
-            'mimeType': 'application/vnd.google-apps.document'
+            'mimeType': 'application/vnd.google-apps.document',
+            'parents': [folder_hash],
         }
 
         service = build('drive', 'v3', credentials=cred)
         media = MediaFileUpload(document_path,  mimetype='text/html', resumable=True)
-        service.files().create(body=file_metadata, media_body=media).execute()
+        return service.files().create(body=file_metadata, media_body=media).execute()
 
 GoogleDriveManager()

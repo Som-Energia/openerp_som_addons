@@ -36,5 +36,9 @@
           <field name="name">google_drive_client_secret_file</field>
           <field name="value">/path/to/secret/file</field>
         </record>
+        <record model="res.config" id="google_drive_folder_technical_report">
+          <field name="name">google_drive_folder_technical_report</field>
+          <field name="value">folder_hash</field>
+        </record>
     </data>
 </openerp>

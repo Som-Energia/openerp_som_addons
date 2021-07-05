@@ -6,7 +6,6 @@ from report import report_sxw
 from tools import config
 import tempfile
 from datetime import date
-import os
 
 STATES = [
     ('init', 'Estat Inicial'),
@@ -36,22 +35,26 @@ class WizardCreateReport(osv.osv_memory):
     def get_data(self, cursor, uid, ids, context=None):
         return [
             {
-                'type': 'test',
-                'name1': 'aaaa',
-                'name2': 'bbbb',
-                'name3': 'cccc',
-                'name4': 'dddd',
-                'name5': 'eeee',
-                'name6': 'ffff',
+                'type': 'R101',
+                'titol': 'R1 - 01',
+                'data': '2021-01-01',
+                'distribuidora': 'E-Redes',
+                'procediment': 'R1 (reclamacio)',
+                'pas': '01',
+                'tipus_reclamacio': '003 - INCIDENCIA EN EQUIPOS DE MEDIDA',
+                'codi_solicitud': '1564658',
+                'text': 'Titular indica que el EdM esta apagado y no se ve la lectura. Solicita comprobacion.',
             },
             {
-                'type': 'test2',
-                'name1': 'aaaa',
-                'name2': 'bbbb',
-                'name3': 'cccc',
-                'name4': 'dddd',
-                'name5': 'eeee',
-                'name6': 'ffff',
+                'type': 'R102',
+                'titol': 'R1 - 02',
+                'data': '2021-01-10',
+                'distribuidora': 'E-Redes',
+                'procediment': 'R1 (reclamacio)',
+                'pas': '02',
+                'tipus_reclamacio': '003 - INCIDENCIA EN EQUIPOS DE MEDIDA',
+                'codi_solicitud': '1564658',
+                'text': 'La distrbuidora ha recibido la reclamacion',
             },
         ]
 
@@ -71,14 +74,15 @@ class WizardCreateReport(osv.osv_memory):
 
     def generate_report(self, cursor, uid, ids, context=None):
         wiz = self.browse(cursor, uid, ids[0], context=context)
-        active_id = context.get('active_id', 0)
+        erp_config = self.pool.get('res.config')
+        folder_hash = erp_config.get(cursor, uid, 'google_drive_folder_technical_report', 'folder_hash')
+
         data = {
             'model': 'wizard.create.report',
             'id': wiz.id,
             'report_type': 'html2html'
         }
         report_printer = webkit_report.WebKitParser(
-            #'report.wizard.create.report.som.informe.report',
             'report.som.informe.report',
             'wizard.create.report',
             'som_informe/report/report_som_informe.mako',
@@ -89,16 +93,12 @@ class WizardCreateReport(osv.osv_memory):
             context=context
         )
 
-
         gdm_obj = self.pool.get('google.drive.manager')
-
         file_name = '{}_informe_{}_{}'.format(str(date.today()), 'Reclama', 'CAT')
-
         with tempfile.NamedTemporaryFile(suffix='.html') as t:
-            print t.name
             t.write(document_binary[0])
             t.flush()
-            gdm_obj.uploadMediaToDrive(cursor, uid, file_name, t.name)
+            gdm_obj.uploadMediaToDrive(cursor, uid, file_name, t.name, folder_hash)
 
         wiz.write({'state': "finished"})
 
