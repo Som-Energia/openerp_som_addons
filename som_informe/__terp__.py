@@ -15,7 +15,8 @@
     "demo_xml": [],
     "update_xml":[
         "data/som_informe_data.xml",
-        "wizard/wizard_create_report_view.xml",
+        "wizard/wizard_create_technical_report_view.xml",
+        "security/ir.model.access.csv",
     ],
     "active": False,
     "installable": True

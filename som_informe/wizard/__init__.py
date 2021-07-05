@@ -1,1 +1,1 @@
-import wizard_create_report
+import wizard_create_technical_report

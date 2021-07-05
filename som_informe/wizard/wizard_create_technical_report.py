@@ -21,8 +21,8 @@ class report_webkit_html(report_sxw.rml_parse):
             'addons_path': config['addons_path'],
         })
 
-class WizardCreateReport(osv.osv_memory):
-    _name = 'wizard.create.report'
+class WizardCreateTechnicalReport(osv.osv_memory):
+    _name = 'wizard.create.technical.report'
 
     _columns = {
         'state': fields.selection(STATES, _(u'Estat del wizard de imprimir report')),
@@ -61,7 +61,7 @@ class WizardCreateReport(osv.osv_memory):
     def print_report(self, cursor, uid, ids, context=None):
         return {
             'type': 'ir.actions.report.xml',
-            'model': 'wizard.create.report',
+            'model': 'wizard.create.technical.report',
             'report_name': 'som.informe.report',
             'report_webkit': "'som_informe/report/report_som_informe.mako'",
             'webkit_header': 'som_informe_webkit_header',
@@ -84,7 +84,7 @@ class WizardCreateReport(osv.osv_memory):
         }
         report_printer = webkit_report.WebKitParser(
             'report.som.informe.report',
-            'wizard.create.report',
+            'wizard.create.technical.report',
             'som_informe/report/report_som_informe.mako',
             parser=report_webkit_html
         )
@@ -103,4 +103,4 @@ class WizardCreateReport(osv.osv_memory):
         wiz.write({'state': "finished"})
 
 
-WizardCreateReport()
+WizardCreateTechnicalReport()

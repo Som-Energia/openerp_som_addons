@@ -17,7 +17,7 @@
             <field eval="0" name="multi"/>
             <field eval="0" name="auto"/>
             <field eval="0" name="header"/>
-            <field name="model">wizard.create.report</field>
+            <field name="model">wizard.create.technical.report</field>
             <field name="type">ir.actions.report.xml</field>
             <field name="name">Informe Consum</field>
             <field name="report_webkit"

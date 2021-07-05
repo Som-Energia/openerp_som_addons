@@ -14,8 +14,8 @@ class report_webkit_html(report_sxw.rml_parse):
         })
 
 webkit_report.WebKitParser(
-    'report.wizard.create.report.report.som.informe',
-    'wizard.create.report',
+    'report.wizard.create.technical.report.report.som.informe',
+    'wizard.create.technical.report',
     'som_informe/report/report_som_informe.mako',
     parser=report_webkit_html
 )

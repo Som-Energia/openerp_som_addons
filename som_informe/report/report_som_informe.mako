@@ -1,7 +1,7 @@
 ## -*- coding: utf-8 -*-
 <%
 
-obj = objects[0].pool.get('wizard.create.report')
+obj = objects[0].pool.get('wizard.create.technical.report')
 
 report_data = obj.get_data(cursor, uid, objects[0].id)
 
