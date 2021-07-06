@@ -253,7 +253,7 @@ class FarePeriodCurveTests(testing.OOTestCaseWithCursor):
 #TESTOS NNPP
     def test_20TD_singleDay_workday_weekend_P1(self):
 
-        mask = self.setupCurve('2021-05-07', '2021-05-08', '2.0TD', 'P1')
+        mask = self.setupCurve('2021-06-04', '2021-06-05', '2.0TD', 'P1')
 
         self.assertArrayEqual(mask,
                               ([0]*10+[1]*4+[0]*4+[1]*4+[0]*2+[0]) + ([0]*25)
@@ -261,7 +261,7 @@ class FarePeriodCurveTests(testing.OOTestCaseWithCursor):
 
     def test_20TD_singleDay_workday_weekend_P2(self):
 
-        mask = self.setupCurve('2021-05-07', '2021-05-08', '2.0TD', 'P2')
+        mask = self.setupCurve('2021-06-04', '2021-06-05', '2.0TD', 'P2')
 
         self.assertArrayEqual(mask,
                               ([0]*8+[1]*2+[0]*4+[1]*4+[0]*4+[1]*2+[0]) + ([0]*25)
@@ -269,7 +269,7 @@ class FarePeriodCurveTests(testing.OOTestCaseWithCursor):
 
     def test_20TD_singleDay_workday_weekend_P3(self):
 
-        mask = self.setupCurve('2021-05-07', '2021-05-08', '2.0TD', 'P3')
+        mask = self.setupCurve('2021-06-04', '2021-06-05', '2.0TD', 'P3')
 
         self.assertArrayEqual(mask,
                               ([1]*8+[0]*17) + ([1]*24+[0])
@@ -293,27 +293,30 @@ class FarePeriodCurveTests(testing.OOTestCaseWithCursor):
 
     def test_20TD_singleMonth_winterToSummer_P3(self):
 
-        mask = self.setupCurve('2021-03-01', '2021-03-31', '2.0TD', 'P3')
+        mask = self.setupCurve('2022-03-01', '2022-03-31', '2.0TD', 'P3')
 
         self.assertArrayEqual(mask,
-            + 3 * (
+            + 4 * (([1]*8+[0]*17))
+            + 2 * ([1]*24+[0])
+            + 2 * (
                 5*([1]*8+[0]*17)
                 + 2*([1]*24+[0])
                 )
             + 5 * ([1]*8+[0]*17)
             + 1 * ([1]*24+[0])
             + 1 * ([1]*23+2*[0]) #hour change: 2am = 3am
-            + 3 * ([1]*8+[0]*17)
+            + 4 * ([1]*8+[0]*17)
         )
 
     def test_20TD_singleMonth_winterToSummer_P1(self):
 
-        mask = self.setupCurve('2021-03-01', '2021-03-31', '2.0TD', 'P1')
+        mask = self.setupCurve('2022-03-01', '2022-03-31', '2.0TD', 'P1')
         weekday = ([0]*10+[1]*4+[0]*4+[1]*4+[0]*2+[0])
         weekend = ([0]*25)
         self.assertArrayEqual(mask,
-            + 4 * (5 * weekday + 2 * weekend)
-            + 3 * weekday
+            + 4 * weekday + 2 * weekend
+            + 3 * (5 * weekday + 2 * weekend)
+            + 4 * weekday
         )
 
     def test_20TD_singleMonth_with_holidays(self):
@@ -354,13 +357,14 @@ class FarePeriodCurveTests(testing.OOTestCaseWithCursor):
         )
 
     def test_equivalentIntervalsForTDFares__endBeforeNewFares(self):
+        from dateutil.relativedelta import relativedelta
         start = datetime.date(2019,6,1)
         end = datetime.date(2020,6,8)
         p = FarePeriodCurve(
             holidays=HolidaysProvidersMockup([])
         )
         result = p.equivalentIntervalsForTDFares(start, end)
-        self.assertEqual(result, [(start, end)])
+        self.assertEqual(result, [(start+ relativedelta(years=+1), end+ relativedelta(years=+1))])
 
     def test_equivalentIntervalsForTDFares__startAfterNewFares(self):
         start = datetime.date(2021,10,1)
@@ -423,6 +427,21 @@ class FarePeriodCurveTests(testing.OOTestCaseWithCursor):
         expected = [
             (datetime.date(2021,6,1), datetime.date(2022,5,31)),
             (datetime.date(2021,6,1), datetime.date(2021,6,1)),
+                ]
+        self.assertEqual(result, expected)
+
+        self.assertEqual(result, expected)
+
+    def test_equivalentIntervalsForTDFares__fullIntervalBeforeTD(self):
+        start = datetime.date(2020,6,1)
+        end = datetime.date(2021,5,31)
+        p = FarePeriodCurve(
+            holidays=HolidaysProvidersMockup([])
+        )
+        result = p.equivalentIntervalsForTDFares(start, end)
+
+        expected = [
+            (datetime.date(2021,6,1), datetime.date(2022,5,31)),
                 ]
         self.assertEqual(result, expected)
 
