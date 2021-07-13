@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.header_webkit" id="som_informe_webkit_header">
+            <field name="format">A4</field>
+            <field name="margin_bottom">1.0</field>
+            <field name="margin_top">10.0</field>
+            <field name="margin_left">0.01</field>
+            <field name="margin_right">0.01</field>
+            <field name="name">SOM informe header</field>
+            <field name="orientation">Portrait</field>
+        </record>
+        <record id="report_som_informe" model="ir.actions.report.xml">
+            <field name="report_type">webkit</field>
+            <field name="report_name">som.informe.report</field>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field eval="0" name="auto"/>
+            <field eval="0" name="header"/>
+            <field name="model">wizard.create.technical.report</field>
+            <field name="type">ir.actions.report.xml</field>
+            <field name="name">Informe Consum</field>
+            <field name="report_webkit"
+                   eval="'som_informe/report/report_som_informe.mako'"/>
+            <field name="webkit_header" ref="som_informe_webkit_header"/>
+            <field name="report_rml" eval="False"/>
+            <field name="webkit_debug" eval="True"/>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record model="res.config" id="google_drive_token_file">
+          <field name="name">google_drive_token_file</field>
+          <field name="value">/path/to/token/file</field>
+        </record>
+        <record model="res.config" id="google_drive_client_secret_file">
+          <field name="name">google_drive_client_secret_file</field>
+          <field name="value">/path/to/secret/file</field>
+        </record>
+        <record model="res.config" id="google_drive_folder_technical_report">
+          <field name="name">google_drive_folder_technical_report</field>
+          <field name="value">folder_hash</field>
+        </record>
+    </data>
+</openerp>
