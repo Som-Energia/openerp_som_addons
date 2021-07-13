@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- Definim els grups -->
+        <record model="res.groups" id="group_som_inversions_r">
+            <field name="name">GISCEDATA SomInversions / ReadOnly</field>
+        </record>
+        <record model="res.groups" id="group_som_inversions_w">
+            <field name="name">GISCEDATA SomInversions / User</field>
+        </record>
+        <record model="res.groups" id="group_som_inversions_u">
+            <field name="name">GISCEDATA SomInversions / Manager</field>
+        </record>
+     </data>
+</openerp>

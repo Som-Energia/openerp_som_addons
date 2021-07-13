@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record id="view_partner_form_account_fields_bank" model="ir.ui.view">
+            <field name="name">res.partner.som.form.bank.interessos</field>
+            <field name="model">res.partner</field>
+            <field name="type">form</field>
+            <field name="priority">90</field>
+            <field name="inherit_id" ref="som_partner_account.view_partner_form_account_fields"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='property_account_liquidacio']"
+                       position="after">
+                        <field name="bank_inversions" domain="[('partner_id', '=', id)]"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</openerp>

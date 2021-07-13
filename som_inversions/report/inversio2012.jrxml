@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="inversio" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="288"/>
+	<queryString language="xPath">
+		<![CDATA[/data/record]]>
+	</queryString>
+	<field name="La_seva_referencia-name" class="java.lang.String">
+		<fieldDescription><![CDATA[La_seva_referencia-name]]></fieldDescription>
+	</field>
+	<field name="Idioma-lang" class="java.lang.String">
+		<fieldDescription><![CDATA[Empresa-partner_id/Idioma-lang]]></fieldDescription>
+	</field>
+	<field name="Nom-name" class="java.lang.String">
+		<fieldDescription><![CDATA[Empresa-partner_id/Nom-name]]></fieldDescription>
+	</field>
+	<field name="Import_en_la_moneda_de_la_companyia-amount" class="java.lang.Integer">
+		<fieldDescription><![CDATA[Import_en_la_moneda_de_la_companyia-amount]]></fieldDescription>
+	</field>
+	<field name="Data_creacio-date_created" class="java.util.Date">
+		<fieldDescription><![CDATA[Apunt-move_line_id/Data_creacio-date_created]]></fieldDescription>
+	</field>
+	<field name="CIF_NIF-vat" class="java.lang.String">
+		<fieldDescription><![CDATA[Empresa-partner_id/CIF_NIF-vat]]></fieldDescription>
+	</field>
+	<field name="Data-date" class="java.util.Date">
+		<fieldDescription><![CDATA[Assentament_del_pagament-payment_move_id/Data-date]]></fieldDescription>
+	</field>
+	<variable name="L" class="java.util.Locale">
+		<variableExpression><![CDATA[$F{Idioma-lang} != null && $F{Idioma-lang}.length() == 5 ? new Locale( $F{Idioma-lang}.substring(0,2), $F{Idioma-lang}.substring(3,5) ) : ( $F{Idioma-lang} != null && $F{Idioma-lang}.length() == 2 ? new Locale( $F{Idioma-lang}.substring(0,2) ) : $P{REPORT_LOCALE} )]]></variableExpression>
+		<initialValueExpression><![CDATA[$F{Idioma-lang} != null && $F{Idioma-lang}.length() == 5 ? new Locale( $F{Idioma-lang}.substring(0,2), $F{Idioma-lang}.substring(3,5) ) : ( $F{Idioma-lang} != null && $F{Idioma-lang}.length() == 2 ? new Locale( $F{Idioma-lang}.substring(0,2) ) : $P{REPORT_LOCALE} )]]></initialValueExpression>
+	</variable>
+	<detail>
+		<band height="802">
+			<textField>
+				<reportElement x="165" y="119" width="390" height="41"/>
+				<box leftPadding="3" rightPadding="3">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"CONDICIONS GENERALS DE L’APORTACIÓ SOCIAL") + " " + $F{La_seva_referencia-name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="575" width="555" height="51"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"L’aportació està subjecta a les prescripcions relatives al seu règim d’exigibilitat, responsabilitat, actualitzacions, retribució mitjançant interessos, imputació de resultats, transmissibilitat i reemborsalment previstes a la Llei de Cooperatives de Catalunya (Llei 18/2002 de 5 de juliol), als Estatuts socials vigents i als acords de l’Assemblea General.")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="184" width="111" height="20"/>
+				<box leftPadding="3">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Titular:")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="111" y="184" width="207" height="20"/>
+				<box leftPadding="3">
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{Nom-name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="318" y="184" width="237" height="20"/>
+				<box leftPadding="3">
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{CIF_NIF-vat}.substring(2, $F{CIF_NIF-vat}.length())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="224" width="555" height="20"/>
+				<box leftPadding="3" rightPadding="3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Resum condicions de l’aportació social com a soci/a")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="244" width="100" height="20"/>
+				<box leftPadding="3" rightPadding="3">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Import:")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="264" width="100" height="20"/>
+				<box leftPadding="3" rightPadding="3">
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Data d'obertura:")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="284" width="100" height="20"/>
+				<box leftPadding="3" rightPadding="3">
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Remuneració:")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="304" width="100" height="74"/>
+				<box leftPadding="3" rightPadding="3">
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Informació addicional:")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="378" width="100" height="34"/>
+				<box leftPadding="3" rightPadding="3">
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Venciment:")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="412" width="100" height="42"/>
+				<box leftPadding="3" rightPadding="3">
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Fórmula càlcul dels interessos:")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="454" width="100" height="76"/>
+				<box leftPadding="3" rightPadding="3">
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Liquidació:")]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="100" y="244" width="65" height="20"/>
+				<box leftPadding="3" rightPadding="3">
+					<topPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{Import_en_la_moneda_de_la_companyia-amount} * -1]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="284" width="455" height="20"/>
+				<box leftPadding="3" rightPadding="3">
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"3,50% nominal anual (2012, revisable anualment)")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="304" width="455" height="74"/>
+				<box leftPadding="3" rightPadding="3">
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle" markup="html">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"La remuneració de l’aportació social serà durant el primer any la fixada per l’Assemblea General amb data 24/03/2012.<br>A partir del segon i successius l’Assemblea General fixarà la remuneració anual.<br>La reducció de les aportacions, o les noves aportacions que es facin, seran acreditades mitjançant extractes que s’annexaran al final de cada exercici així com per internet atravès de la nostra pàgina web.")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="378" width="455" height="34"/>
+				<box leftPadding="3" rightPadding="3">
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle" markup="html">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Aportació disponible en qualsevol moment amb 3 mesos de pre-avís mitjançant l'enviament de correu electrònic a invertir@somenergia.coop")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="412" width="455" height="42"/>
+				<box leftPadding="3" rightPadding="3">
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle" markup="html">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"I=((A*%I)/365)*D<br>on I = interessos; A = aportació; D = dies")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="454" width="455" height="76"/>
+				<box leftPadding="3" rightPadding="3">
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle" markup="html">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"La liquidació dels interessos meritats durant l'any es percebrà durant els últims 10 dies del mes de gener de l'any següent.<br>En cas de reintegrament parcial de l’aportació els interessos es pagaran a final d'any conjuntament amb els interessos de les imposicions vigents.<br>En cas de reintegrament total de l'aportació els interessos es percebran en el moment de la desinversió conjuntament amb el capital retornat.")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="648" width="555" height="37"/>
+				<box leftPadding="3" rightPadding="3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Pots fer el seguiment dels nostres projectes a l'apartat invertir en projectes del  nostre web www.somenergia.coop o bé consultar-nos qualsevol tema referent a inversions al correu electrònic invertir@somenergia.coop")]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="62" y="737" width="436" height="65"/>
+				<imageExpression class="java.lang.String"><![CDATA[$P{REPORT_PARAMETERS_MAP}.SUBREPORT_DIR + "peu.jpg"]]></imageExpression>
+			</image>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="100" y="264" width="455" height="20"/>
+				<box leftPadding="3" rightPadding="3">
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{Data-date}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="165" y="244" width="390" height="20"/>
+				<box leftPadding="3" rightPadding="3">
+					<topPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["€"]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="0" y="2" width="235" height="117"/>
+				<imageExpression class="java.lang.String"><![CDATA[$P{REPORT_PARAMETERS_MAP}.SUBREPORT_DIR + "logo.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</detail>
+</jasperReport>

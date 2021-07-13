@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="inversio" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="1730"/>
+	<queryString language="xPath">
+		<![CDATA[/data/record]]>
+	</queryString>
+	<field name="La_seva_referencia-name" class="java.lang.String">
+		<fieldDescription><![CDATA[La_seva_referencia-name]]></fieldDescription>
+	</field>
+	<field name="Idioma-lang" class="java.lang.String">
+		<fieldDescription><![CDATA[Empresa-partner_id/Idioma-lang]]></fieldDescription>
+	</field>
+	<field name="Nom-name" class="java.lang.String">
+		<fieldDescription><![CDATA[Empresa-partner_id/Nom-name]]></fieldDescription>
+	</field>
+	<field name="Import_en_la_moneda_de_la_companyia-amount" class="java.lang.Integer">
+		<fieldDescription><![CDATA[Import_en_la_moneda_de_la_companyia-amount]]></fieldDescription>
+	</field>
+	<field name="Data_creacio-date_created" class="java.util.Date">
+		<fieldDescription><![CDATA[Apunt-move_line_id/Data_creacio-date_created]]></fieldDescription>
+	</field>
+	<field name="CIF_NIF-vat" class="java.lang.String">
+		<fieldDescription><![CDATA[Empresa-partner_id/CIF_NIF-vat]]></fieldDescription>
+	</field>
+	<field name="Data-date" class="java.util.Date">
+		<fieldDescription><![CDATA[Assentament_del_pagament-payment_move_id/Data-date]]></fieldDescription>
+	</field>
+	<field name="Carrer-street" class="java.lang.String">
+		<fieldDescription><![CDATA[Empresa-partner_id/Contactes-address/Carrer-street]]></fieldDescription>
+	</field>
+	<field name="Ciutat-city" class="java.lang.String">
+		<fieldDescription><![CDATA[Empresa-partner_id/Contactes-address/Ciutat-city]]></fieldDescription>
+	</field>
+	<field name="Numero_de_compte-acc_number" class="java.lang.String">
+		<fieldDescription><![CDATA[Compte_bancari_desti-bank_id/Numero_de_compte-acc_number]]></fieldDescription>
+	</field>
+	<field name="Data_de_pagament-date" class="java.util.Date">
+		<fieldDescription><![CDATA[Data_de_pagament-date]]></fieldDescription>
+	</field>
+	<variable name="L" class="java.util.Locale">
+		<variableExpression><![CDATA[$F{Idioma-lang} != null && $F{Idioma-lang}.length() == 5 ? new Locale( $F{Idioma-lang}.substring(0,2), $F{Idioma-lang}.substring(3,5) ) : ( $F{Idioma-lang} != null && $F{Idioma-lang}.length() == 2 ? new Locale( $F{Idioma-lang}.substring(0,2) ) : $P{REPORT_LOCALE} )]]></variableExpression>
+		<initialValueExpression><![CDATA[$F{Idioma-lang} != null && $F{Idioma-lang}.length() == 5 ? new Locale( $F{Idioma-lang}.substring(0,2), $F{Idioma-lang}.substring(3,5) ) : ( $F{Idioma-lang} != null && $F{Idioma-lang}.length() == 2 ? new Locale( $F{Idioma-lang}.substring(0,2) ) : $P{REPORT_LOCALE} )]]></initialValueExpression>
+	</variable>
+	<variable name="NOM_SOCI" class="java.lang.String">
+		<variableExpression><![CDATA[$F{Nom-name}.split(", ").reverse().join(" ")]]></variableExpression>
+		<initialValueExpression><![CDATA[""]]></initialValueExpression>
+	</variable>
+	<variable name="APORTACIO_FORMAT" class="java.lang.String">
+		<variableExpression><![CDATA[NumberFormat.getNumberInstance($V{L}).format($F{Import_en_la_moneda_de_la_companyia-amount}*-1)]]></variableExpression>
+	</variable>
+	<pageHeader>
+		<band height="50">
+			<image>
+				<reportElement x="0" y="0" width="106" height="50"/>
+				<imageExpression class="java.lang.String"><![CDATA[$P{REPORT_PARAMETERS_MAP}.SUBREPORT_DIR + "logo.jpg"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="398" y="0" width="157" height="30"/>
+				<box rightPadding="3"/>
+				<textElement textAlignment="Right" lineSpacing="Single">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[Som Energia SCCL
+PCiT UdG - Edifici Jaume Casademont
+C/Pic de Peguera, 15
+17003 Girona]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="440" y="30" width="110" height="20"/>
+				<box rightPadding="0"/>
+				<textElement textAlignment="Right" lineSpacing="Single">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{PAGE_NUMBER}+"/"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="550" y="30" width="5" height="20"/>
+				<box rightPadding="3"/>
+				<textElement lineSpacing="Single">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="696">
+			<printWhenExpression><![CDATA[$V{PAGE_NUMBER} == 1]]></printWhenExpression>
+			<textField>
+				<reportElement x="0" y="11" width="109" height="20"/>
+				<textElement lineSpacing="Single">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{La_seva_referencia-name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="41" width="555" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"CONTRACTE DE SUBSCRIPCIÓ DE TÍTOLS PARTICIPATIUS")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="78" width="555" height="20"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"I- REUNITS")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="111" width="555" height="26"/>
+				<textElement textAlignment="Justified" lineSpacing="Single">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Per una part, en Gijsbert Huijink, amb NIE X6963738M, i domicili als efectes del present contracte a l'Edifici Jaume Casademont, al carrer Pic de Peguera, 15, despatx 16, de Girona.")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="151" width="555" height="26"/>
+				<textElement textAlignment="Justified" lineSpacing="Single">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Per altra part, en/na {0}, soci/a de Som Energia SCCL, amb NIF {1}, i domicili als efectes del present contracte a {2} ({3}).", $V{NOM_SOCI}, $F{CIF_NIF-vat}.substring(2, $F{CIF_NIF-vat}.length()), $F{Carrer-street}, $F{Ciutat-city})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="192" width="555" height="20"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"II.-INTERVENEN")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="223" width="555" height="72"/>
+				<textElement textAlignment="Justified" lineSpacing="Single">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Gijsbert Huijink, en nom i representació de SOM ENERGIA SCCL, amb NIF F550911367, i domiciliada a Girona, a l'Edifici Jaume Casademont, al carrer Pic de Peguera, 15, despatx 16, inscrita al Registre de Cooperatives de Girona amb el número d’assentament 1 en el full 13936. Està especialment facultat per aquest acte per acord del Consell Rector de Som Energia SCCL en data 18 de juny de 2012, en endavant Som Energia SCCL.")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="308" width="385" height="15"/>
+				<textElement lineSpacing="Single">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"{0} actuant en el seu propi nom i interès.", $V{NOM_SOCI})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="334" width="555" height="37"/>
+				<textElement textAlignment="Justified" lineSpacing="Single">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Ambdues parts, en les respectives qualitats amb les que actuen, es reconeixen mútuament capacitat suficient per contractar i obligar-se i")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="384" width="555" height="20"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"III.-MANIFESTEN")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="419" width="555" height="46"/>
+				<textElement textAlignment="Justified" lineSpacing="Single">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"I.- Que SOM ENERGIA SCCL és una Cooperativa de Consumidors/es i Usuaris/es que té per objecte la comercialització i producció d’energia elèctrica i calorífica provinent de fonts renovables, així com la prestació de serveis i distribució de productes relacionats.")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="465" width="555" height="46"/>
+				<textElement textAlignment="Justified" lineSpacing="Single">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"II.- Que en data 23/09/12 SOM ENERGIA SCCL ha fet una emissió de títols participatius a 5 anys per import de 1.500.000 € (títols de 1.000 € cadascun) amb l’objecte de finançar instal·lacions de producció d’energia elèctrica i calorífica provinent de fonts renovables i projectes d’eficiència i estalvi energètic.")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="511" width="555" height="46"/>
+				<textElement textAlignment="Justified" lineSpacing="Single">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"III.- Que {0} està disposat/da a subscriure títols participatius per col·laborar amb SOM ENERGIA SCCL per fer possible el finançament d’instal·lacions de producció d’energia elèctrica i calorífica provinent de fonts renovables i projectes d’eficiència i estalvi energètic.", $V{NOM_SOCI})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="557" width="555" height="46"/>
+				<textElement textAlignment="Justified" lineSpacing="Single">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"IV.- Que SOM ENERGIA SCCL està interessada en rebre i acceptar la subscripció que realitza {0} i li ofereix les condicions de retribució i devolució dels títols subscrits, que són del seu interès, i que es detallen en el present contracte", $V{NOM_SOCI})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="625" width="555" height="27"/>
+				<textElement textAlignment="Justified" lineSpacing="Single">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"En conseqüència, ambdues parts de mutu acord subscriuen el present contracte que es regeix especialment pels següents:")]]></textFieldExpression>
+			</textField>
+			<break>
+				<reportElement x="0" y="685" width="100" height="1"/>
+			</break>
+		</band>
+		<band height="684">
+			<printWhenExpression><![CDATA[$V{PAGE_NUMBER} == 2]]></printWhenExpression>
+			<textField>
+				<reportElement x="0" y="16" width="555" height="20"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"IV.-PACTES")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="48" width="555" height="58"/>
+				<textElement textAlignment="Justified" lineSpacing="Single" markup="html">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"<b>Primer.</b>- {0} lliure en aquest acte a SOM ENERGIA SCCL la quantitat de {1} €. En concepte de subscripció de {2} títols participatius de SOM ENERGIA SCCL, i SOM ENERGIA SCCL els rep i accepta, comprometent-se a retornar-los en les condicions que seguidament s’estableixen.",$V{NOM_SOCI}, $V{APORTACIO_FORMAT}, $F{Import_en_la_moneda_de_la_companyia-amount}*-1/1000)]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="106" width="555" height="43"/>
+				<textElement textAlignment="Justified" lineSpacing="Single" markup="html">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"<b>Segon.</b>- La quantitat prestada meritarà a favor de {0} un interès nominal d’un 5% anual. Els interessos meritats seran pagats a {0}, anualment, durant els deu dies hàbils següents a les dates que seguidament s'indiquen:", $V{NOM_SOCI})]]></textFieldExpression>
+			</textField>
+			<elementGroup>
+				<staticText>
+					<reportElement x="331" y="149" width="100" height="20"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+						<font size="10"/>
+					</textElement>
+					<text><![CDATA[30/06/2016]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="131" y="149" width="100" height="20"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+						<font size="10"/>
+					</textElement>
+					<text><![CDATA[30/06/2014]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="231" y="149" width="100" height="20"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+						<font size="10"/>
+					</textElement>
+					<text><![CDATA[30/06/2015]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="431" y="149" width="100" height="20"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+						<font size="10"/>
+					</textElement>
+					<text><![CDATA[30/06/2017]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="31" y="149" width="100" height="20"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+						<font size="10"/>
+					</textElement>
+					<text><![CDATA[30/06/2013]]></text>
+				</staticText>
+			</elementGroup>
+			<textField>
+				<reportElement x="0" y="180" width="555" height="27"/>
+				<textElement lineSpacing="Single">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Mitjançant ingrés al compte bancari {0}, indicat per {1}.", $F{Numero_de_compte-acc_number}, $V{NOM_SOCI})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="207" width="555" height="43"/>
+				<textElement textAlignment="Justified" lineSpacing="Single" markup="html">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"<b>Tercer.</b>- L’import nominal dels títols participatius serà retornat per SOM ENERGIA SCCL a {0} en un sol termini, dins els deu dies hàbils següents al cumpliment dels 5 anys des de la data de subscripció, mitjançant ingrés al compte bancari, indicat per {0}.", $V{NOM_SOCI})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="250" width="555" height="28"/>
+				<box leftPadding="0"/>
+				<textElement textAlignment="Justified" lineSpacing="Single" markup="html">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"<b>Quart.</b> 4.1.-{0} pot demanar, parcial o totalment, el retorn anticipat dels títols subscrits mitjançant una sol·licitud per e-mail a <u>invertir@somenergia.coop</u></span>", $V{NOM_SOCI})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="277" width="555" height="51"/>
+				<textElement textAlignment="Justified" lineSpacing="Single" markup="html">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + tr($V{L},"4.2.- SOM ENERGIA SCCL oferirà els títols el retorn dels quals hagi estat sol·licitat a nous subscriptors per a que puguin ser recomprats a {0} pel seu import nominal, que es pagarà mitjançant ingrés de la quantitat resultant al compte bancari, indicat per {0}, dins el termini, màxim, de dos mesos des de la data de recepció de sol·licitud de devolució.", $V{NOM_SOCI})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="327" width="555" height="62"/>
+				<textElement textAlignment="Justified" lineSpacing="Single" markup="html">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + tr($V{L},"4.3.- En el cas de que no hi hagi nous subscriptors/es interessats/des, SOM ENERGIA SCCL recomprarà, i fins a un màxim anual del 10 % del total de l’emissió, els títols el retorn dels quals hagi estat sol·licitat a {0} pel seu import nominal, que es pagarà mitjançant ingrés de la quantitat resultant al compte bancari, indicat per {0}, dins el termini, màxim, de dos mesos des de la data de recepció de sol·licitud de devolució", $V{NOM_SOCI})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="390" width="555" height="37"/>
+				<box leftPadding="0"/>
+				<textElement textAlignment="Justified" lineSpacing="Single" markup="html">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"<b>Cinqué.</b>- Les comunicacions entre les parts es dirigiran a les persones i a les adreces que consten a l'encapçalament i s'efectuaran per escrit, per qualsevol mitjà que acrediti la recepció de la comunicació per la part destinatària.")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="427" width="555" height="104"/>
+				<box leftPadding="0"/>
+				<textElement textAlignment="Justified" lineSpacing="Single" markup="html">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"<b>Sisé.</b>- Per a la resolució de tota controvèrsia derivada del present contracte, tant si es relatiu a la seva nterpretació com a la seva aplicació, les parts es sotmeten a un arbitratge d’equitat en els termes previstos a la llei 60/2003 d’arbitratge i normes de desenvolupament, amb les següents especificitats:<br>L’arbitratge es portarà a terme per un àrbitre únic coneixedor de l’economia social i solidària. Les mesures cautelars no podran suspendre l’executivitat del contracte i els seus efectes. El termini per dictar laude arbitral serà de tres mesos des de la data de recepció de la contestació a la demanda. Les parts es comprometen des d’ara al compliment de la resolució arbitral.<br>Es designen els jutjats i els tribunals de Girona per a la resolució de les controvèrsies que puguin derivar-se de l’arbitratge.")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="531" width="555" height="42"/>
+				<textElement textAlignment="Justified" lineSpacing="Single">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Les parts aproven i accepten totes i cadascuna de les estipulacions del contracte, que malgrat sigui privat, volen que tingui tota la força legal d’obligar com si en document públic l’haguessin atorgat, i el signen, en doble exemplar a un sol efecte, a Girona el {0}.", (new SimpleDateFormat("EEEEE, d 'de' MMMMM 'de' yyyy", $V{L}).format($F{Data_de_pagament-date} == null ? new Date() : $F{Data_de_pagament-date})))]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="584" width="273" height="20"/>
+				<box leftPadding="3" rightPadding="3">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle" lineSpacing="Single"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{NOM_SOCI}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="273" y="584" width="282" height="20"/>
+				<box leftPadding="3" rightPadding="3">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle" lineSpacing="Single"/>
+				<text><![CDATA[Gijsbert Huijink, SOM ENERGIA SCCL]]></text>
+			</staticText>
+			<image scaleImage="RealSize">
+				<reportElement x="320" y="608" width="120" height="71"/>
+				<imageExpression class="java.lang.String"><![CDATA[$P{REPORT_PARAMETERS_MAP}.SUBREPORT_DIR + "firma_titol.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="50">
+			<textField>
+				<reportElement x="0" y="17" width="555" height="33"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single" markup="html">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Les dades que ens ha proporcionat a través de la sol·licitud seran incorporades a un fitxer de titularitat de SOM ENERGIA, SCCL creat amb la finalitat de ser utilitzades en la gestió administrativa i comercial de la seva sol·licitud i de la nostra eventual relació contractual. En qualsevol moment pot exercir els seus drets d'accés, rectificació, oposició i cancel·lació dirigint-se a les oficines del carrer Pic de Peguera, 15, despatx 16 del Parc Científic i Tecnològic de la UdG, 17003 - Girona o bé escriure al mail <u>info@somenergia.coop.</u>")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="165" height="17"/>
+				<textElement lineSpacing="Single">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Política de privacitat")]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>
