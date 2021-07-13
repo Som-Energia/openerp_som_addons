@@ -8,15 +8,11 @@
     "author": "GISCE",
     "category": "Master",
     "depends": [
-        "giscedata_atc_electricitat",
-        "giscedata_switching",
+        "giscedata_atc"
     ],
     "init_xml": [],
     "demo_xml": [],
-    "update_xml": [
-        "res_partner_data.xml",
-        "wizard/wizard_create_atc_from_polissa.xml",
-    ],
+    "update_xml": [],
     "active": False,
     "installable": True
 }
