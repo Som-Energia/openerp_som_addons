@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_som_informe_report_form" model="ir.ui.view">
+            <field name="name">wizard.create.technical.report.wizard.form</field>
+            <field name="model">wizard.create.technical.report</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Genera Informe Consum" col="2">
+                    <field name="state" invisible="1"/>
+                    <button type="object" string="Imprimir" name="print_report" icon="gtk-print"/>
+                    <button type="object" string="test" name="generate_report" icon="gtk_ok" />
+                </form>
+            </field>
+        </record>
+        <record id="action_som_informe_report" model="ir.actions.act_window">
+            <field name="name">Wizard creacio informe oficina consum</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.create.technical.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="domain">[]</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_som_informe_report_form"/>
+        </record>
+        <record id="values_wizard_som_informe_report" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Genera Informe Consum</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">wizard.create.technical.report</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_som_informe_report'))"/>
+        </record>
+        <menuitem action="action_som_informe_report" id="menu_som_informe_report" name="Informe automàtic Som" parent="crm.menu_crm" sequence="10"/>
+    </data>
+</openerp>
+
+
