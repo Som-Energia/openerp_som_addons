@@ -10,6 +10,8 @@
         "base",
         "c2c_webkit_report",
         "crm",
+        "giscedata_polissa_comer",
+        "giscedata_switching",
     ],
     "init_xml": [],
     "demo_xml": [],
