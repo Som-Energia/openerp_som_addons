@@ -8,12 +8,14 @@
     "category": "GISCEMaster",
     "depends":[
         "account_invoice_base",
+        "account_payment_extension",
         "poweremail",
     ],
     "init_xml": [],
     "demo_xml": [],
     "update_xml":[
-        "account_invoice_som_report.xml"
+        "account_invoice_som_report.xml",
+        "account_invoice_view.xml"
     ],
     "active": False,
     "installable": True
