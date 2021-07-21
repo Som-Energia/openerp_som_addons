@@ -143,17 +143,46 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         for sw_id in sw_ids:
             sw_data = sw_obj.browse(cursor, uid, sw_id, context=context)
 
-            result.append({
-                'type': 'R101',
-                'titol': sw_data.proces_id.name + " - " + sw_data.step_id.name,
-                'date': sw_data.date,
-                'distribuidora': sw_data.partner_id.name,
-                'pas': sw_data.step_id.name,
-                'tipus_reclamacio': sw_data.case_id.name,
-                'codi_solicitud': sw_data.codi_sollicitud,
-                'text': sw_data.additional_info,
-            })
+            for step in sw_data.step_ids:
+                r_model,r_id = step.pas_id.split(',')
+                model_obj = self.pool.get(r_model)
+                pas = model_obj.browse(cursor, uid, int(r_id))
 
+                extracted_data = self.extract_R1_metadata(cursor, uid, step.step_id.name, pas)
+                if extracted_data:
+                    result.append(extracted_data)
+
+        return result
+
+    def extract_R1_metadata(self, cursor, uid, step_name, step):
+        result = {}
+        result['date'] = step.sw_id.date,
+        result['day'] = step.sw_id.date,
+        result['pas'] = step_name,
+        result['codi_solicitud'] = step.sollicitud_ids,
+        result['titol'] = step.sw_id.proces_id.name + " - " + step.sw_id.step_id.name,
+        result['distribuidora'] = step.sw_id.partner_id.name,
+        if step_name == '01':
+            result['type'] = 'R101',
+            result['tipus_reclamacio'] = step.subtipus_id.name + " - " + step.subtipus_id.desc,
+            result['text'] = step.comentaris
+        if step_name == '02':
+            result['type'] = 'R102',
+            result['rebuig'] = step.rebuig,
+            result['motiu_rebuig'] = step.motiu_rebuig,
+            result['codi_reclamacio_distri'] = step.codi_reclamacio_distri,
+            result['data_acceptacio'] = step.data_acceptacio,
+            result['data_rebuig'] = step.data_rebuig,
+        if step_name == '03':
+            pass
+        if step_name == '04':
+            pass
+        if step_name == '05':
+            pass
+        if step_name == '08':
+            pass
+        if step_name == '09':
+            pass
         return result
 
     def get_columns(self, cursor, uid):
