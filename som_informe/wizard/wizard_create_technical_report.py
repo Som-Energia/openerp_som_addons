@@ -76,28 +76,29 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         with tempfile.NamedTemporaryFile(suffix='.html', delete=False) as t:
             t.write(document_binary[0])
             t.flush()
-            #gdm_obj.uploadMediaToDrive(cursor, uid, file_name, t.name, folder_hash)
+            gdm_obj.uploadMediaToDrive(cursor, uid, file_name, t.name, folder_hash)
 
         wiz.write({'state': "finished"})
 
     # data generation
     def get_data(self, cursor, uid, id, context=None):
         wiz = self.browse(cursor, uid, id, context=context)
-        pol_obj = self.pool.get('giscedata.polissa')
-        pol_data = pol_obj.browse(cursor, uid, wiz.polissa)
 
-        result = self.extract_header_metadata(cursor, uid, wiz.polissa.id)
-
+        result  = []
+        result.extend(self.extract_header_metadata(cursor, uid, wiz.polissa, context))
+        result.extend(self.extract_footer_metadata(cursor, uid, wiz.polissa, context))
         sw_obj = self.pool.get('giscedata.switching')
         if wiz.mostra_reclama:
             search_params = [
-                ('date','>=', wiz.date_from),
-                ('date', '<=', wiz.date_to),
-                ('cups_id','=',pol_data.cups_id),
+                ('cups_id.id', '=', wiz.polissa.cups.id),
                 ('proces_id.name', '=', 'R1'),
                 ]
+            if wiz.date_from:
+                search_params.append(('date', '>=', wiz.date_from))
+            if wiz.date_to:
+                search_params.append(('date', '<=', wiz.date_to))
             sw_ids = sw_obj.search(cursor, uid, search_params)
-            result.extend(self.extract_switching_metadata(cursor, uid, sw_ids))
+            result.extend(self.extract_switching_metadata(cursor, uid, sw_ids, context))
 
         if wiz.mostra_factura:
             pass
@@ -112,9 +113,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         return [ns(item) for item in result]
 
     # data extractors
-    def extract_header_metadata(self, cursor, uid, pol_id):
-        pol_obj = self.pool.get('giscedata.polissa')
-        pol_data = pol_obj.browse(cursor, uid, pol_id)
+    def extract_header_metadata(self, cursor, uid, pol_data, context):
         return [{
             'type': 'header',
             'date': '1970-01-01',
@@ -128,21 +127,27 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             'cups_address': pol_data.cups_direccio,
         }]
 
-    def extract_switching_metadata(self, cursor, uid, sw_ids):
+    def extract_footer_metadata(self, cursor, uid, pol_data, context):
+        return [{
+            'type': 'footer',
+            'date': '2040-01-01',
+            'create_date': date.today().strftime("%d/%m/%Y"),
+        }]
+
+    def extract_switching_metadata(self, cursor, uid, sw_ids, context):
         if not isinstance(sw_ids, list):
             sw_ids = [sw_ids]
         result = []
         sw_obj = self.pool.get('giscedata.switching')
 
-        for _id in sw_ids:
-            sw_data = sw.browse(cursor, uid, _id)
+        for sw_id in sw_ids:
+            sw_data = sw_obj.browse(cursor, uid, sw_id, context=context)
+
             result.append({
-                #'type': sw_data.proces_id.name,
                 'type': 'R101',
                 'titol': sw_data.proces_id.name + " - " + sw_data.step_id.name,
                 'date': sw_data.date,
                 'distribuidora': sw_data.partner_id.name,
-                'procediment': sw_data.procediment,
                 'pas': sw_data.step_id.name,
                 'tipus_reclamacio': sw_data.case_id.name,
                 'codi_solicitud': sw_data.codi_sollicitud,
@@ -151,5 +156,10 @@ class WizardCreateTechnicalReport(osv.osv_memory):
 
         return result
 
+    def get_columns(self, cursor, uid):
+        pol_obj = self.pool.get('giscedata.polissa')
+        no_function_fields = [field for field in pol_obj._columns if not isinstance(pol_obj._columns[field], (fields.function, fields.related, fields.property))]
+        function_fields = [field for field in pol_obj._columns if isinstance(pol_obj._columns[field], (fields.function, fields.related, fields.property))]
+        return function_fields, no_function_fields
 
 WizardCreateTechnicalReport()
