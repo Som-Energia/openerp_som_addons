@@ -7,16 +7,10 @@ report_data = obj.get_data(cursor, uid, objects[0].id)
 <html>
 <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 <head>
-    test
 </head>
 <body>
 % for data_item in report_data:
-    % if data_item.type == 'header':
-        <%include file="/som_informe/report/components/header/header.mako" args="d=data_item" />
-    % endif
-    % if data_item.type == 'R101':
-        <%include file="/som_informe/report/components/test/test.mako" args="d=data_item" />
-    % endif
+    <%include file="/som_informe/report/components/${data_item.type}/${data_item.type}.mako" args="d=data_item" />
 % endfor
 </ul>
 </body>
