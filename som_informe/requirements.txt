@@ -3,3 +3,5 @@ google-api-python-client==1.12.8
 six==1.13
 httplib2==0.15.0
 google-auth-oauthlib
+google-api-core==1.30.0
+oauth2==1.9.0.post1
