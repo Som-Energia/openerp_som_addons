@@ -1,6 +1,6 @@
 <%page args="d" />
 <li>
-    ${_(u"El %s Som Energia presenta una reclamació a la distribuïdora ( %s ):") % (d.date, d.distribuidora) }<br/>
+    ${_(u"El %s Som Energia presenta una reclamació a la distribuïdora ( %s ):") % (d.day, d.distribuidora) }<br/>
     ${_(u"Procediment: R1 (reclamació)")}<br/>
     ${_(u"Pas: 01")}<br/>
     ${_(u"Tipus de reclamació: %s") %(d.tipus_reclamacio)}<br/>
