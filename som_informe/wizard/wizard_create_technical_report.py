@@ -7,11 +7,14 @@ from tools import config
 import tempfile
 from datetime import date
 from yamlns import namespace as ns
+from gestionatr.defs import TABLA_80, TABLA_85
+from gestionatr.utils import get_description
 
 STATES = [
     ('init', 'Estat Inicial'),
     ('finished', 'Estat Final')
 ]
+
 class report_webkit_html(report_sxw.rml_parse):
     def __init__(self, cursor, uid, name, context):
         super(report_webkit_html, self).__init__(cursor, uid, name,
@@ -159,7 +162,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         result['date'] = step.sw_id.date,
         result['day'] = step.sw_id.date,
         result['pas'] = step_name,
-        result['codi_solicitud'] = step.sollicitud_ids,
+        result['codi_solicitud'] = str(','.join(get_description(info.tipus_info_adicional, 'TABLA_85') for info in step.step.sollicitud_ids),
         result['titol'] = step.sw_id.proces_id.name + " - " + step.sw_id.step_id.name,
         result['distribuidora'] = step.sw_id.partner_id.name,
         if step_name == '01':
@@ -174,15 +177,39 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             result['data_acceptacio'] = step.data_acceptacio,
             result['data_rebuig'] = step.data_rebuig,
         if step_name == '03':
-            pass
+            result['type'] = 'R103',
+            result['codi_reclamacio_distri'] = step.codi_reclamacio_distri,
+            result['hi_ha_info_intermitja'] = step.hi_ha_info_intermitja,
+            result['desc_info_intermitja'] = step.desc_info_intermitja,
+            result['hi_ha_retipificacio'] = step.hi_ha_retipificacio,
+            result['tipologia_retifica'] = step.retip_tipus + step.retip_subtipus if step.retip_subtipus else '' + " - " + step.retip_desc,
+            result['hi_ha_sol_info_retip'] = step.hi_ha_sol_info_retip,
+            result['tipologia_sol_retip'] = step.retip_tipus + step.retip_subtipus if step.retip_subtipus else '',
+            result['data_limit_sol_retip'] = step.sol_retip_data_limit,
+            result['hi_ha_solicitud'] = step.hi_ha_solicitud,
+            result['documents_adjunts'] = str(','.join(get_description(info.tipus_info, 'TABLA_85') for info in step.vars_aportacio_info_ids),
+            result['comentaris_distri'] = step.comentaris,
         if step_name == '04':
-            pass
+            result['type'] = 'R104',
+            result['codi_reclamacio_distri'] = step.codi_reclamacio_distri,
+            result['documents_adjunts'] = str(','.join(get_description(info.tipus_info, 'TABLA_85') for info in step.vars_aportacio_info_ids),
+            result['comentaris_distri'] = step.comentaris,
         if step_name == '05':
-            pass
+            result['type'] = 'R105',
+            result['codi_reclamacio_distri'] = step.codi_reclamacio_distri,
+            result['documents_adjunts'] = str(','.join(get_description(info.tipus_info, 'TABLA_85') for info in step.vars_aportacio_info_ids),
+            result['comentaris_distri'] = step.comentaris,
+            result['resultat'] = get_description(step.resultat, 'TABLA_80')
+            result['detall_resultat'] = ''
         if step_name == '08':
-            pass
+            result['type'] = 'R108',
+            result['codi_reclamacio_distri'] = step.codi_reclamacio_distri,
         if step_name == '09':
-            pass
+            result['type'] = 'R109',
+            result['codi_reclamacio_distri'] = step.codi_reclamacio_distri,
+            result['rebuig'] = step.rebuig,
+            result['motiu_rebuig'] = step.motiu_rebuig,
+
         return result
 
     def get_columns(self, cursor, uid):
