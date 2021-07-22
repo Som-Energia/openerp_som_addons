@@ -159,56 +159,56 @@ class WizardCreateTechnicalReport(osv.osv_memory):
 
     def extract_R1_metadata(self, cursor, uid, step_name, step):
         result = {}
-        result['date'] = step.sw_id.date,
-        result['day'] = step.sw_id.date,
-        result['pas'] = step_name,
-        result['codi_solicitud'] = str(','.join(get_description(info.tipus_info_adicional, 'TABLA_85') for info in step.step.sollicitud_ids),
-        result['titol'] = step.sw_id.proces_id.name + " - " + step.sw_id.step_id.name,
-        result['distribuidora'] = step.sw_id.partner_id.name,
+        result['date'] = step.sw_id.date
+        result['day'] = step.sw_id.date
+        result['pas'] = step_name
+        result['codi_solicitud'] = str(','.join(get_description(info.tipus_info_adicional, 'TABLA_85') for info in step.step.sollicitud_ids)
+        result['titol'] = step.sw_id.proces_id.name + " - " + step.sw_id.step_id.name
+        result['distribuidora'] = step.sw_id.partner_id.name
         if step_name == '01':
-            result['type'] = 'R101',
-            result['tipus_reclamacio'] = step.subtipus_id.name + " - " + step.subtipus_id.desc,
+            result['type'] = 'R101'
+            result['tipus_reclamacio'] = step.subtipus_id.name + " - " + step.subtipus_id.desc
             result['text'] = step.comentaris
         if step_name == '02':
-            result['type'] = 'R102',
-            result['rebuig'] = step.rebuig,
-            result['motiu_rebuig'] = step.motiu_rebuig,
-            result['codi_reclamacio_distri'] = step.codi_reclamacio_distri,
-            result['data_acceptacio'] = step.data_acceptacio,
-            result['data_rebuig'] = step.data_rebuig,
+            result['type'] = 'R102'
+            result['rebuig'] = step.rebuig
+            result['motiu_rebuig'] = step.motiu_rebuig
+            result['codi_reclamacio_distri'] = step.codi_reclamacio_distri
+            result['data_acceptacio'] = step.data_acceptacio
+            result['data_rebuig'] = step.data_rebuig
         if step_name == '03':
-            result['type'] = 'R103',
-            result['codi_reclamacio_distri'] = step.codi_reclamacio_distri,
-            result['hi_ha_info_intermitja'] = step.hi_ha_info_intermitja,
-            result['desc_info_intermitja'] = step.desc_info_intermitja,
-            result['hi_ha_retipificacio'] = step.hi_ha_retipificacio,
-            result['tipologia_retifica'] = step.retip_tipus + step.retip_subtipus if step.retip_subtipus else '' + " - " + step.retip_desc,
-            result['hi_ha_sol_info_retip'] = step.hi_ha_sol_info_retip,
-            result['tipologia_sol_retip'] = step.retip_tipus + step.retip_subtipus if step.retip_subtipus else '',
-            result['data_limit_sol_retip'] = step.sol_retip_data_limit,
-            result['hi_ha_solicitud'] = step.hi_ha_solicitud,
-            result['documents_adjunts'] = str(','.join(get_description(info.tipus_info, 'TABLA_85') for info in step.vars_aportacio_info_ids),
-            result['comentaris_distri'] = step.comentaris,
+            result['type'] = 'R103'
+            result['codi_reclamacio_distri'] = step.codi_reclamacio_distri
+            result['hi_ha_info_intermitja'] = step.hi_ha_info_intermitja
+            result['desc_info_intermitja'] = step.desc_info_intermitja
+            result['hi_ha_retipificacio'] = step.hi_ha_retipificacio
+            result['tipologia_retifica'] = step.retip_tipus + step.retip_subtipus if step.retip_subtipus else '' + " - " + step.retip_desc
+            result['hi_ha_sol_info_retip'] = step.hi_ha_sol_info_retip
+            result['tipologia_sol_retip'] = step.retip_tipus + step.retip_subtipus if step.retip_subtipus else ''
+            result['data_limit_sol_retip'] = step.sol_retip_data_limit
+            result['hi_ha_solicitud'] = step.hi_ha_solicitud
+            result['documents_adjunts'] = str(','.join(get_description(info.tipus_info, 'TABLA_85') for info in step.vars_aportacio_info_ids)
+            result['comentaris_distri'] = step.comentaris
         if step_name == '04':
-            result['type'] = 'R104',
-            result['codi_reclamacio_distri'] = step.codi_reclamacio_distri,
-            result['documents_adjunts'] = str(','.join(get_description(info.tipus_info, 'TABLA_85') for info in step.vars_aportacio_info_ids),
-            result['comentaris_distri'] = step.comentaris,
+            result['type'] = 'R104'
+            result['codi_reclamacio_distri'] = step.codi_reclamacio_distri
+            result['documents_adjunts'] = str(','.join(get_description(info.tipus_info, 'TABLA_85') for info in step.vars_aportacio_info_ids)
+            result['comentaris_distri'] = step.comentaris
         if step_name == '05':
-            result['type'] = 'R105',
-            result['codi_reclamacio_distri'] = step.codi_reclamacio_distri,
-            result['documents_adjunts'] = str(','.join(get_description(info.tipus_info, 'TABLA_85') for info in step.vars_aportacio_info_ids),
-            result['comentaris_distri'] = step.comentaris,
+            result['type'] = 'R105'
+            result['codi_reclamacio_distri'] = step.codi_reclamacio_distri
+            result['documents_adjunts'] = str(','.join(get_description(info.tipus_info, 'TABLA_85') for info in step.vars_aportacio_info_ids)
+            result['comentaris_distri'] = step.comentaris
             result['resultat'] = get_description(step.resultat, 'TABLA_80')
             result['detall_resultat'] = ''
         if step_name == '08':
-            result['type'] = 'R108',
-            result['codi_reclamacio_distri'] = step.codi_reclamacio_distri,
+            result['type'] = 'R108'
+            result['codi_reclamacio_distri'] = step.codi_reclamacio_distri
         if step_name == '09':
-            result['type'] = 'R109',
-            result['codi_reclamacio_distri'] = step.codi_reclamacio_distri,
-            result['rebuig'] = step.rebuig,
-            result['motiu_rebuig'] = step.motiu_rebuig,
+            result['type'] = 'R109'
+            result['codi_reclamacio_distri'] = step.codi_reclamacio_distri
+            result['rebuig'] = step.rebuig
+            result['motiu_rebuig'] = step.motiu_rebuig
 
         return result
 
