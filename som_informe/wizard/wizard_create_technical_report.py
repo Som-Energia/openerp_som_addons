@@ -162,7 +162,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         result['date'] = step.sw_id.date
         result['day'] = step.sw_id.date
         result['pas'] = step_name
-        result['codi_solicitud'] = str(','.join(get_description(info.tipus_info_adicional, 'TABLA_85') for info in step.step.sollicitud_ids)
+        result['codi_solicitud'] = ','.join(get_description(info.tipus_info_adicional, 'TABLA_85') for info in step.sollicitud_ids)
         result['titol'] = step.sw_id.proces_id.name + " - " + step.sw_id.step_id.name
         result['distribuidora'] = step.sw_id.partner_id.name
         if step_name == '01':
@@ -187,17 +187,17 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             result['tipologia_sol_retip'] = step.retip_tipus + step.retip_subtipus if step.retip_subtipus else ''
             result['data_limit_sol_retip'] = step.sol_retip_data_limit
             result['hi_ha_solicitud'] = step.hi_ha_solicitud
-            result['documents_adjunts'] = str(','.join(get_description(info.tipus_info, 'TABLA_85') for info in step.vars_aportacio_info_ids)
+            result['documents_adjunts'] = ','.join(get_description(info.tipus_info, 'TABLA_85') for info in step.vars_aportacio_info_ids)
             result['comentaris_distri'] = step.comentaris
         if step_name == '04':
             result['type'] = 'R104'
             result['codi_reclamacio_distri'] = step.codi_reclamacio_distri
-            result['documents_adjunts'] = str(','.join(get_description(info.tipus_info, 'TABLA_85') for info in step.vars_aportacio_info_ids)
+            result['documents_adjunts'] = ','.join(get_description(info.tipus_info, 'TABLA_85') for info in step.vars_aportacio_info_ids)
             result['comentaris_distri'] = step.comentaris
         if step_name == '05':
             result['type'] = 'R105'
             result['codi_reclamacio_distri'] = step.codi_reclamacio_distri
-            result['documents_adjunts'] = str(','.join(get_description(info.tipus_info, 'TABLA_85') for info in step.vars_aportacio_info_ids)
+            result['documents_adjunts'] = ','.join(get_description(info.tipus_info, 'TABLA_85') for info in step.vars_aportacio_info_ids)
             result['comentaris_distri'] = step.comentaris
             result['resultat'] = get_description(step.resultat, 'TABLA_80')
             result['detall_resultat'] = ''
