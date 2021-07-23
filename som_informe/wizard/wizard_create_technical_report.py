@@ -191,17 +191,19 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             result['hi_ha_info_intermitja'] = step.hi_ha_info_intermitja
             result['desc_info_intermitja'] = step.desc_info_intermitja
             result['hi_ha_retipificacio'] = step.hi_ha_retipificacio
-            result['tipologia_retifica'] = step.retip_tipus + step.retip_subtipus if step.retip_subtipus else '' + " - " + step.retip_desc
+            result['tipologia_retifica'] = step.retip_tipus + " - " + step.retip_subtipus_id.desc if step.retip_subtipus_id else ''
             result['hi_ha_sol_info_retip'] = step.hi_ha_sol_info_retip
-            result['tipologia_sol_retip'] = step.retip_tipus + step.retip_subtipus if step.retip_subtipus else ''
-            result['hi_ha_solicitud'] = step.hi_ha_solicitud
+            result['tipologia_sol_retip'] = step.sol_retip_tipus + " - " + step.sol_retip_subtipus_id.desc if step.sol_retip_subtipus_id else ''
+            result['hi_ha_solicitud'] = step.hi_ha_sollicitud
             result['documents_adjunts'] = [(get_description(doc.type, "TABLA_61"), doc.url) for doc in step.document_ids]
             result['comentaris_distri'] = step.comentaris
         if step_name == '04':
             result['type'] = 'R104'
-            result['codi_reclamacio_distri'] = step.codi_reclamacio_distri
             result['documents_adjunts'] = [(get_description(doc.type, "TABLA_61"), doc.url) for doc in step.document_ids]
             result['comentaris_distri'] = step.comentaris
+            result['hi_ha_client'] = step.hi_ha_client
+            result['hi_ha_var_info'] = step.hi_ha_var_info
+            result['hi_ha_var_info_retip'] = step.hi_ha_var_info_retip
         if step_name == '05':
             result['type'] = 'R105'
             result['codi_reclamacio_distri'] = step.codi_reclamacio_distri
