@@ -215,10 +215,8 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             result['detall_resultat'] = details.get(step.detall_resultat, step.detall_resultat)
         if step_name == '08':
             result['type'] = 'R108'
-            result['codi_reclamacio_distri'] = step.codi_reclamacio_distri
         if step_name == '09':
             result['type'] = 'R109'
-            result['codi_reclamacio_distri'] = step.codi_reclamacio_distri
             result['rebuig'] = step.rebuig
             result['motiu_rebuig'] = step.motiu_rebuig
 
