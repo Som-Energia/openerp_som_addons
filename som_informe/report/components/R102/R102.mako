@@ -1,6 +1,6 @@
 <%page args="d" />
 <li>
-    ${_(u"El %s Som Energia presenta una reclamació a la distribuïdora ( %s ):") % (d.day, d.distribuidora) }<br/>
+    ${_(u"El %s la distribuïdora ( %s ) ens dóna l’acceptació/rebuig del cas tramitat:") % (d.day, d.distribuidora) }<br/>
     <br/>
     ${_(u"Procediment: R1 (reclamació)")}<br/>
     ${_(u"Pas: 02")}<br/>
@@ -18,6 +18,5 @@
     % else:
         ${_(u"Data d’acceptació: %s ") % (d.data_acceptacio)}<br/>
     % endif
-
     <br/>
 </li>
