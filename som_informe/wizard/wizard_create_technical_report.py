@@ -5,10 +5,18 @@ from c2c_webkit_report import webkit_report
 from report import report_sxw
 from tools import config
 import tempfile
-from datetime import date
+from datetime import date, datetime
 from yamlns import namespace as ns
-from gestionatr.defs import TABLA_80, TABLA_85
+from gestionatr.defs import TABLA_80, TABLA_61
 from gestionatr.utils import get_description
+
+
+def dateformat(str_date, hours = False):
+    if not str_date:
+        return ""
+    if not hours:
+        return datetime.strptime(str_date[0:10],'%Y-%m-%d').strftime('%d-%m-%Y')
+    return datetime.strptime(str_date,'%Y-%m-%d %H:%M:%S').strftime('%d-%m-%Y %H:%M:%S')
 
 STATES = [
     ('init', 'Estat Inicial'),
@@ -159,23 +167,24 @@ class WizardCreateTechnicalReport(osv.osv_memory):
 
     def extract_R1_metadata(self, cursor, uid, step_name, step):
         result = {}
-        result['date'] = step.sw_id.date
-        result['day'] = step.sw_id.date
+        result['date'] = step.date_created
+        result['day'] = dateformat(step.date_created)
+        result['create'] = dateformat(step.date_created, True)
         result['pas'] = step_name
-        result['codi_solicitud'] = ','.join(get_description(info.tipus_info_adicional, 'TABLA_85') for info in step.sollicitud_ids)
+        result['codi_solicitud'] = step.sw_id.codi_sollicitud
         result['titol'] = step.sw_id.proces_id.name + " - " + step.sw_id.step_id.name
         result['distribuidora'] = step.sw_id.partner_id.name
         if step_name == '01':
             result['type'] = 'R101'
-            result['tipus_reclamacio'] = step.subtipus_id.name + " - " + step.subtipus_id.desc
+            result['tipus_reclamacio'] = step.subtipus_id.name + " - " + step.subtipus_id.desc if step.subtipus_id else ''
             result['text'] = step.comentaris
         if step_name == '02':
             result['type'] = 'R102'
             result['rebuig'] = step.rebuig
             result['motiu_rebuig'] = step.motiu_rebuig
             result['codi_reclamacio_distri'] = step.codi_reclamacio_distri
-            result['data_acceptacio'] = step.data_acceptacio
-            result['data_rebuig'] = step.data_rebuig
+            result['data_acceptacio'] = dateformat(step.data_acceptacio)
+            result['data_rebuig'] = dateformat(step.data_rebuig)
         if step_name == '03':
             result['type'] = 'R103'
             result['codi_reclamacio_distri'] = step.codi_reclamacio_distri
@@ -185,22 +194,25 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             result['tipologia_retifica'] = step.retip_tipus + step.retip_subtipus if step.retip_subtipus else '' + " - " + step.retip_desc
             result['hi_ha_sol_info_retip'] = step.hi_ha_sol_info_retip
             result['tipologia_sol_retip'] = step.retip_tipus + step.retip_subtipus if step.retip_subtipus else ''
-            result['data_limit_sol_retip'] = step.sol_retip_data_limit
             result['hi_ha_solicitud'] = step.hi_ha_solicitud
-            result['documents_adjunts'] = ','.join(get_description(info.tipus_info, 'TABLA_85') for info in step.vars_aportacio_info_ids)
+            result['documents_adjunts'] = [(get_description(doc.type, "TABLA_61"), doc.url) for doc in step.document_ids]
             result['comentaris_distri'] = step.comentaris
         if step_name == '04':
             result['type'] = 'R104'
             result['codi_reclamacio_distri'] = step.codi_reclamacio_distri
-            result['documents_adjunts'] = ','.join(get_description(info.tipus_info, 'TABLA_85') for info in step.vars_aportacio_info_ids)
+            result['documents_adjunts'] = [(get_description(doc.type, "TABLA_61"), doc.url) for doc in step.document_ids]
             result['comentaris_distri'] = step.comentaris
         if step_name == '05':
             result['type'] = 'R105'
             result['codi_reclamacio_distri'] = step.codi_reclamacio_distri
-            result['documents_adjunts'] = ','.join(get_description(info.tipus_info, 'TABLA_85') for info in step.vars_aportacio_info_ids)
+            result['documents_adjunts'] = [(get_description(doc.type, "TABLA_61"), doc.url) for doc in step.document_ids]
             result['comentaris_distri'] = step.comentaris
             result['resultat'] = get_description(step.resultat, 'TABLA_80')
-            result['detall_resultat'] = ''
+            detail_obj = self.pool.get('giscedata.switching.detalle.resultado')
+            ids = detail_obj.search(cursor, uid, [])
+            vals = detail_obj.read(cursor, uid, ids, ['name', 'text'])
+            details = dict([(v['name'], v['text']) for v in vals])
+            result['detall_resultat'] = details.get(step.detall_resultat, step.detall_resultat)
         if step_name == '08':
             result['type'] = 'R108'
             result['codi_reclamacio_distri'] = step.codi_reclamacio_distri
