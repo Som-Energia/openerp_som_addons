@@ -145,6 +145,18 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             'create_date': date.today().strftime("%d/%m/%Y"),
         }]
 
+    def factory_metadata_extractor(self, step):
+        component_name = step.proces_id.name+step.step_id.name
+        exec("from ..report.components."+component_name+" import "+component_name+";extractor = "+component_name+"."+component_name+"()")
+        return extractor
+
+    def metadata_extractor(self, cursor, uid, step, context=None):
+        r_model,r_id = step.pas_id.split(',')
+        model_obj = self.pool.get(r_model)
+        pas = model_obj.browse(cursor, uid, int(r_id), context=context)
+        extractor = self.factory_metadata_extractor(step)
+        return extractor.get_data(cursor, uid, pas)
+
     def extract_switching_metadata(self, cursor, uid, sw_ids, context):
         if not isinstance(sw_ids, list):
             sw_ids = [sw_ids]
@@ -153,74 +165,10 @@ class WizardCreateTechnicalReport(osv.osv_memory):
 
         for sw_id in sw_ids:
             sw_data = sw_obj.browse(cursor, uid, sw_id, context=context)
-
             for step in sw_data.step_ids:
-                r_model,r_id = step.pas_id.split(',')
-                model_obj = self.pool.get(r_model)
-                pas = model_obj.browse(cursor, uid, int(r_id))
-
-                extracted_data = self.extract_R1_metadata(cursor, uid, step.step_id.name, pas)
+                extracted_data = self.metadata_extractor(cursor, uid, step, context)
                 if extracted_data:
                     result.append(extracted_data)
-
-        return result
-
-    def extract_R1_metadata(self, cursor, uid, step_name, step):
-        result = {}
-        result['date'] = step.date_created
-        result['day'] = dateformat(step.date_created)
-        result['create'] = dateformat(step.date_created, True)
-        result['pas'] = step_name
-        result['codi_solicitud'] = step.sw_id.codi_sollicitud
-        result['titol'] = step.sw_id.proces_id.name + " - " + step.sw_id.step_id.name
-        result['distribuidora'] = step.sw_id.partner_id.name
-        if step_name == '01':
-            result['type'] = 'R101'
-            result['tipus_reclamacio'] = step.subtipus_id.name + " - " + step.subtipus_id.desc if step.subtipus_id else ''
-            result['text'] = step.comentaris
-        if step_name == '02':
-            result['type'] = 'R102'
-            result['rebuig'] = step.rebuig
-            result['motiu_rebuig'] = step.motiu_rebuig
-            result['codi_reclamacio_distri'] = step.codi_reclamacio_distri
-            result['data_acceptacio'] = dateformat(step.data_acceptacio)
-            result['data_rebuig'] = dateformat(step.data_rebuig)
-        if step_name == '03':
-            result['type'] = 'R103'
-            result['codi_reclamacio_distri'] = step.codi_reclamacio_distri
-            result['hi_ha_info_intermitja'] = step.hi_ha_info_intermitja
-            result['desc_info_intermitja'] = step.desc_info_intermitja
-            result['hi_ha_retipificacio'] = step.hi_ha_retipificacio
-            result['tipologia_retifica'] = step.retip_tipus + " - " + step.retip_subtipus_id.desc if step.retip_subtipus_id else ''
-            result['hi_ha_sol_info_retip'] = step.hi_ha_sol_info_retip
-            result['tipologia_sol_retip'] = step.sol_retip_tipus + " - " + step.sol_retip_subtipus_id.desc if step.sol_retip_subtipus_id else ''
-            result['hi_ha_solicitud'] = step.hi_ha_sollicitud
-            result['documents_adjunts'] = [(get_description(doc.type, "TABLA_61"), doc.url) for doc in step.document_ids]
-            result['comentaris_distri'] = step.comentaris
-        if step_name == '04':
-            result['type'] = 'R104'
-            result['documents_adjunts'] = [(get_description(doc.type, "TABLA_61"), doc.url) for doc in step.document_ids]
-            result['comentaris_distri'] = step.comentaris
-            result['hi_ha_client'] = step.hi_ha_client
-            result['hi_ha_var_info'] = step.hi_ha_var_info
-            result['hi_ha_var_info_retip'] = step.hi_ha_var_info_retip
-        if step_name == '05':
-            result['type'] = 'R105'
-            result['codi_reclamacio_distri'] = step.codi_reclamacio_distri
-            result['documents_adjunts'] = [(get_description(doc.type, "TABLA_61"), doc.url) for doc in step.document_ids]
-            result['comentaris_distri'] = step.comentaris
-            result['resultat'] = get_description(step.resultat, 'TABLA_80')
-            detail_obj = self.pool.get('giscedata.switching.detalle.resultado')
-            ids = detail_obj.search(cursor, uid, [])
-            vals = detail_obj.read(cursor, uid, ids, ['name', 'text'])
-            details = dict([(v['name'], v['text']) for v in vals])
-            result['detall_resultat'] = details.get(step.detall_resultat, step.detall_resultat)
-        if step_name == '08':
-            result['type'] = 'R108'
-        if step_name == '09':
-            result['type'] = 'R109'
-            result['rebuig'] = step.rebuig
-            result['motiu_rebuig'] = step.motiu_rebuig
 
         return result
 
