@@ -1,10 +1,10 @@
 <%page args="d" />
 <li>
-    ${_(u"El %s aportem informació addicional a la distribuïdora ( %s ):") % (d.day, d.distribuidora) }<br/>
+    ${_(u"El %s aportem informació addicional a la distribuïdora ( %s ) en relació a la reclamació amb codi %s:") % (d.day, d.distribuidora, d.codi_reclamacio_distri) }<br/>
     <br/>
     ${_(u"<b>Procediment:</b> R1 (reclamació)")}<br/>
     ${_(u"<b>Pas:</b> 04")}<br/>
-    ${_(u"<b>Data creació:</b> %s") % (d.date)}<br/>
+    ${_(u"<b>Data creació:</b> %s") % (d.create)}<br/>
     ${_(u"<b>Codi de la sol·licitud:</b> %s") % (d.codi_solicitud)}<br/>
     <%
         tipus = []

@@ -7,8 +7,6 @@ from tools import config
 import tempfile
 from datetime import date, datetime
 from yamlns import namespace as ns
-from gestionatr.defs import TABLA_80, TABLA_61
-from gestionatr.utils import get_description
 
 
 def dateformat(str_date, hours = False):
@@ -155,7 +153,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         model_obj = self.pool.get(r_model)
         pas = model_obj.browse(cursor, uid, int(r_id), context=context)
         extractor = self.factory_metadata_extractor(step)
-        return extractor.get_data(cursor, uid, pas)
+        return extractor.get_data(self, cursor, uid, pas)
 
     def extract_switching_metadata(self, cursor, uid, sw_ids, context):
         if not isinstance(sw_ids, list):

@@ -4,12 +4,12 @@
     <br/>
     ${_(u"<b>Procediment:</b> R1 (reclamació)")}<br/>
     ${_(u"<b>Pas:</b> 03")}<br/>
-    ${_(u"<b>Data creació:</b> %s") % (d.date)}<br/>
+    ${_(u"<b>Data creació:</b> %s") % (d.create)}<br/>
     ${_(u"<b>Codi de la sol·licitud:</b> %s") % (d.codi_solicitud)}<br/>
     ${_(u"<b>Codi de reclamació de la distribuïdora:</b> %s") % (d.codi_reclamacio_distri)}<br/>
 
     % if d.hi_ha_info_intermitja:
-        ${_(u"<b>Tipus de la Comunicació:</b> %s ") % (d.desc_info_intermitja)}<br/>
+        ${_(u"<b>Tipus de la Comunicació:</b> Comunicación de estado intermedia ")}<br/>
     % elif d.hi_ha_retipificacio:
         ${_(u"<b>Tipologia a la que es retipifica:</b> %s") % (d.tipologia_retifica)}<br/>
         ${_(u"<b>Tipus de la Comunicació:</b> Comunicación de retipificación de la reclamación")}<br/>
