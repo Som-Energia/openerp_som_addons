@@ -7,19 +7,11 @@
     ${_(u"<b>Data creació:</b> %s") % (d.create)}<br/>
     ${_(u"<b>Codi de la sol·licitud:</b> %s") % (d.codi_solicitud)}<br/>
     ${_(u"<b>Codi de reclamació de la distribuïdora:</b> %s") % (d.codi_reclamacio_distri)}<br/>
-
-    % if d.hi_ha_info_intermitja:
-        ${_(u"<b>Tipus de la Comunicació:</b> Comunicación de estado intermedia ")}<br/>
-    % elif d.hi_ha_retipificacio:
+    ${_(u"<b>Tipus de la Comunicació:</b> %s") % (d.tipus_comunicacio)}<br/>
+    % if d.hi_ha_retipificacio:
         ${_(u"<b>Tipologia a la que es retipifica:</b> %s") % (d.tipologia_retifica)}<br/>
-        ${_(u"<b>Tipus de la Comunicació:</b> Comunicación de retipificación de la reclamación")}<br/>
     % elif d.hi_ha_sol_info_retip:
         ${_(u"<b>Tipologia a la que es retipifica:</b> %s") % (d.tipologia_sol_retip)}<br/>
-        ${_(u"<b>Tipus de la Comunicació:</b> Solicitud de información necesaria para retipificar")}<br/>
-    % elif d.hi_ha_solicitud:
-        ${_(u"<b>Tipus de la Comunicació:</b> Solicitud de información adicional")}<br/>
-    % else:
-        ${_(u"")}<br/>
     % endif
     % if len(d.documents_adjunts) > 0:
         ${_(u"<b>Documents adjunts:</b> Si")}<br/>

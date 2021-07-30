@@ -27,6 +27,16 @@
     % else:
         ${_(u"<b>Documents adjunts::</b> No")}<br/>
     % endif
+    % if len(d.variables_aportacio):
+        ${_(u"<b>Variables d'aportació:</b> %s variable(s)") % (str(len(d.variables_aportacio)))}<br/>
+        % for var_apo in d.variables_aportacio:
+            % if var_apo['descripcio']:
+                ${_(' - <b>%s:</b> %s  tipus: <i>%s</i>  descripció: <i>%s</i>') % (var_apo['variable'], var_apo['valor'], var_apo['tipus'], var_apo['descripcio'])}<br/>
+            % else:
+                ${_(' - <b>%s:</b> %s  tipus: <i>%s</i>') % (var_apo['variable'], var_apo['valor'], var_apo['tipus'])}<br/>
+            % endif
+        % endfor
+    % endif
     ${_(u"<b>Comentari:</b> <i>%s</i>") % (d.comentaris_distri)}<br/>
     <br/>
 </li>
