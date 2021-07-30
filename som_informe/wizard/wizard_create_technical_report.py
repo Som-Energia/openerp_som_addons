@@ -62,7 +62,6 @@ class WizardCreateTechnicalReport(osv.osv_memory):
     }
 
     def generate_report(self, cursor, uid, ids, context=None):
-        import pudb;pu.db
         if not context: # force use the selected language in the report
             context = {}
 
