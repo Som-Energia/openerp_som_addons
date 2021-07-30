@@ -17,4 +17,5 @@ class R103(ProcesR1.ProcesR1):
         result['hi_ha_solicitud'] = step.hi_ha_sollicitud
         result['documents_adjunts'] = [(get_description(doc.type, "TABLA_61"), doc.url) for doc in step.document_ids]
         result['comentaris_distri'] = step.comentaris
+        result['tipus_comunicacio'] = get_description(step.tipus_comunicacio, 'TABLA_84')
         return result
