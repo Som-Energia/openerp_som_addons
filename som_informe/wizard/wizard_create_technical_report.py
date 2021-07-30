@@ -8,6 +8,10 @@ import tempfile
 from datetime import date, datetime
 from yamlns import namespace as ns
 
+lang_filename = {
+    'ca_ES' : 'CAT',
+    'es_ES' : 'ES',
+}
 
 def dateformat(str_date, hours = False):
     if not str_date:
@@ -58,7 +62,17 @@ class WizardCreateTechnicalReport(osv.osv_memory):
     }
 
     def generate_report(self, cursor, uid, ids, context=None):
+        import pudb;pu.db
+        if not context: # force use the selected language in the report
+            context = {}
+
+        lang_id = self.read(cursor, uid, ids[0],['lang'])[0]['lang']
+        lang_obj = self.pool.get('res.lang')
+        lang_code = lang_obj.read(cursor, uid, lang_id, ['code'])['code']
+        context['lang'] = lang_code
+
         wiz = self.browse(cursor, uid, ids[0], context=context)
+
         erp_config = self.pool.get('res.config')
         folder_hash = erp_config.get(cursor, uid, 'google_drive_folder_technical_report', 'folder_hash')
 
@@ -81,7 +95,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
 
         #Upload document to Drive
         gdm_obj = self.pool.get('google.drive.manager')
-        file_name = '{}_informe_{}_{}'.format(str(date.today()), 'Reclama', 'CAT')
+        file_name = '{}_informe_{}_{}'.format(str(date.today()), 'Reclama', lang_filename[lang_code])
         with tempfile.NamedTemporaryFile(suffix='.html', delete=False) as t:
             t.write(document_binary[0])
             t.flush()
