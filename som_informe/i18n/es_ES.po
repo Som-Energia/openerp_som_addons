@@ -1,0 +1,475 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+# * som_informe
+# 
+# Translators:
+# Som Energia  <itcrowd@somenergia.coop>, 2021.
+msgid ""
+msgstr ""
+"Project-Id-Version: Som Energia\n"
+"Report-Msgid-Bugs-To: support@openerp.com\n"
+"POT-Creation-Date: 2021-07-30 11:31+0000\n"
+"PO-Revision-Date: 2021-07-30 10:18+0000\n"
+"Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
+"Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Generated-By: Babel 2.7.0\n"
+"Language: es_ES\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: som_informe
+#: view:wizard.create.technical.report:0
+msgid "Gestió de cobraments"
+msgstr "Gestión de cobros"
+
+#. module: som_informe
+#: view:wizard.create.technical.report:0
+msgid "Generar Report"
+msgstr "Generar Report"
+
+#. module: som_informe
+#: constraint:ir.model:0
+msgid ""
+"The Object name must start with x_ and not contain any special character !"
+msgstr "The Object name must start with x_ and not contain any special character !"
+
+#. module: som_informe
+#: model:ir.actions.act_window,name:som_informe.action_som_informe_report
+msgid "Wizard creacio informe oficina consum"
+msgstr "Wizard creacion informe oficina consumo"
+
+#. module: som_informe
+#: model:ir.module.module,shortdesc:som_informe.module_meta_information
+msgid "Mòdul per crear informes per Consum"
+msgstr "Módulo para crear informes para Consumo"
+
+#. module: som_informe
+#: view:wizard.create.technical.report:0
+msgid "ATR"
+msgstr "ATR"
+
+#. module: som_informe
+#: constraint:ir.actions.act_window:0
+msgid "Invalid model name in the action definition."
+msgstr "Invalid model name in the action definition."
+
+#. module: som_informe
+#: view:wizard.create.technical.report:0
+msgid "Comptablilitat"
+msgstr "Contabilidad"
+
+#. module: som_informe
+#: model:ir.module.module,description:som_informe.module_meta_information
+msgid ""
+"\n"
+"    "
+msgstr "\n    "
+
+#. module: som_informe
+#: selection:wizard.create.technical.report,state:0
+msgid "Estat Final"
+msgstr "Estado final"
+
+#. module: som_informe
+#: model:ir.actions.report.xml,name:som_informe.report_som_informe
+msgid "Informe Consum"
+msgstr "Informe Consumo"
+
+#. module: som_informe
+#: model:ir.model,name:som_informe.model_wizard_create_technical_report
+msgid "wizard.create.technical.report"
+msgstr "wizard.create.technical.report"
+
+#. module: som_informe
+#: model:ir.ui.menu,name:som_informe.menu_som_informe_report
+msgid "Informe automàtic Som"
+msgstr "Informe automático Som"
+
+#. module: som_informe
+#: selection:wizard.create.technical.report,state:0
+msgid "Estat Inicial"
+msgstr "Estado Inicial"
+
+#. module: som_informe
+#: field:wizard.create.technical.report,mostra_ATR:0
+#: field:wizard.create.technical.report,mostra_cobraments:0
+#: field:wizard.create.technical.report,mostra_comptabilitat:0
+#: field:wizard.create.technical.report,mostra_factura:0
+#: field:wizard.create.technical.report,mostra_reclama:0
+msgid "Mostra bloc de Reclama"
+msgstr "Mostrar bloque de Reclama"
+
+#. module: som_informe
+#: field:wizard.create.technical.report,polissa:0
+msgid "Contracte"
+msgstr "Contrato"
+
+#. module: som_informe
+#: view:wizard.create.technical.report:0
+msgid "Reclamacions"
+msgstr "Reclamaciones"
+
+#. module: som_informe
+#: constraint:ir.ui.view:0
+msgid "Invalid XML for View Architecture!"
+msgstr "Invalid XML for View Architecture!"
+
+#. module: som_informe
+#: field:wizard.create.technical.report,date_from:0
+msgid "Data desde"
+msgstr "Fecha desde"
+
+#. module: som_informe
+#: field:wizard.create.technical.report,lang:0
+msgid "Language"
+msgstr "Lenguaje"
+
+#. module: som_informe
+#: help:wizard.create.technical.report,lang:0
+msgid "Llengua de l'informe tècnic"
+msgstr "Lengua del informe técnico"
+
+#. module: som_informe
+#: view:wizard.create.technical.report:0
+msgid "Genera Informe Consum"
+msgstr "Genera Informe Consumo"
+
+#. module: som_informe
+#: model:ir.model,name:som_informe.model_google_drive_manager
+msgid "google.drive.manager"
+msgstr "google.drive.manager"
+
+#. module: som_informe
+#: code:addons/som_informe/wizard/wizard_create_technical_report.py:39
+#: field:wizard.create.technical.report,state:0
+msgid "Estat del wizard de imprimir report"
+msgstr "Estado del wizard de imprimir report"
+
+#. module: som_informe
+#: view:wizard.create.technical.report:0
+msgid "Dades Informe"
+msgstr "Datos Informe"
+
+#. module: som_informe
+#: view:wizard.create.technical.report:0
+msgid "Factura"
+msgstr "Factura"
+
+#. module: som_informe
+#: field:wizard.create.technical.report,date_to:0
+msgid "Data fins"
+msgstr "Fecha hasta"
+
+#: rml:som_informe/report/components/R101/R101.mako:3
+#, python-format
+msgid "El %s Som Energia presenta una reclamació a la distribuïdora ( %s ):"
+msgstr "El %s Som Energía presenta una reclamación a la distribuidora ( %s ):"
+
+#: rml:som_informe/report/components/R101/R101.mako:5
+#: rml:som_informe/report/components/R102/R102.mako:5
+#: rml:som_informe/report/components/R103/R103.mako:5
+#: rml:som_informe/report/components/R104/R104.mako:5
+#: rml:som_informe/report/components/R105/R105.mako:5
+#: rml:som_informe/report/components/R108/R108.mako:5
+#: rml:som_informe/report/components/R109/R109.mako:5
+msgid "<b>Procediment:</b> R1 (reclamació)"
+msgstr "<b> Procedimiento: </b> R1 (reclamación)"
+
+#: rml:som_informe/report/components/R101/R101.mako:6
+msgid "<b>Pas:</b> 01"
+msgstr "<b>Paso:</b> 01"
+
+#: rml:som_informe/report/components/R101/R101.mako:7
+#, python-format
+msgid "<b>Tipus de reclamació:</b> %s"
+msgstr "<b>Tipo de reclamación:</b> %s"
+
+#: rml:som_informe/report/components/R101/R101.mako:8
+#: rml:som_informe/report/components/R102/R102.mako:7
+#: rml:som_informe/report/components/R103/R103.mako:8
+#: rml:som_informe/report/components/R104/R104.mako:8
+#: rml:som_informe/report/components/R105/R105.mako:8
+#: rml:som_informe/report/components/R108/R108.mako:8
+#: rml:som_informe/report/components/R109/R109.mako:8
+#, python-format
+msgid "<b>Codi de la sol·licitud:</b> %s"
+msgstr "<b>Código de la solicitud:</b> %s"
+
+#: rml:som_informe/report/components/R101/R101.mako:9
+#: rml:som_informe/report/components/R102/R102.mako:8
+#: rml:som_informe/report/components/R103/R103.mako:7
+#: rml:som_informe/report/components/R104/R104.mako:7
+#: rml:som_informe/report/components/R108/R108.mako:7
+#: rml:som_informe/report/components/R109/R109.mako:7
+#, python-format
+msgid "<b>Data creació:</b> %s"
+msgstr "<b>Fecha creación:</b> %s"
+
+#: rml:som_informe/report/components/R101/R101.mako:11
+#: rml:som_informe/report/components/R104/R104.mako:31
+#, python-format
+msgid "<b>Variables d'aportació:</b> %s variable(s)"
+msgstr "<b>Variables de aportación:</b> %s variable(s)"
+
+#: rml:som_informe/report/components/R101/R101.mako:14
+#: rml:som_informe/report/components/R104/R104.mako:34
+#, python-format
+msgid " - <b>%s:</b> %s  tipus: <i>%s</i>  descripció: <i>%s</i>"
+msgstr " - <b>%s:</b> %s  tipo: <i>%s</i>  descripción: <i>%s</i>"
+
+#: rml:som_informe/report/components/R101/R101.mako:16
+#: rml:som_informe/report/components/R104/R104.mako:36
+#, python-format
+msgid " - <b>%s:</b> %s  tipus: <i>%s</i>"
+msgstr " - <b>%s:</b> %s  tipo: <i>%s</i>"
+
+#: rml:som_informe/report/components/R101/R101.mako:21
+#: rml:som_informe/report/components/R103/R103.mako:17
+#: rml:som_informe/report/components/R104/R104.mako:22
+#: rml:som_informe/report/components/R105/R105.mako:15
+msgid "<b>Documents adjunts:</b> Si"
+msgstr "<b>Documentos adjuntos:</b> Si"
+
+#: rml:som_informe/report/components/R101/R101.mako:22
+#: rml:som_informe/report/components/R103/R103.mako:18
+#: rml:som_informe/report/components/R104/R104.mako:23
+#: rml:som_informe/report/components/R105/R105.mako:16
+msgid "<b>Tipus de document:</b>"
+msgstr "<b>Tipo de documento:</b>"
+
+#: rml:som_informe/report/components/R101/R101.mako:24
+#: rml:som_informe/report/components/R103/R103.mako:20
+#: rml:som_informe/report/components/R104/R104.mako:25
+#: rml:som_informe/report/components/R105/R105.mako:18
+#, python-format
+msgid " - %s, <a href=\"%s\">enllaç al document</a>"
+msgstr " - %s, <a href=\"%s\">enlace al documento</a>"
+
+#: rml:som_informe/report/components/R101/R101.mako:27
+#: rml:som_informe/report/components/R103/R103.mako:23
+#: rml:som_informe/report/components/R105/R105.mako:21
+msgid "<b>Documents adjunts:</b> No"
+msgstr "<b>Documentos adjuntos:</b> No"
+
+#: rml:som_informe/report/components/R101/R101.mako:29
+#, python-format
+msgid "<b>Text de la reclamació:</b> <i>%s</i>"
+msgstr "<b>Texto de la reclamación:</b> <i>%s</i>"
+
+#: rml:som_informe/report/components/R102/R102.mako:3
+#, python-format
+msgid ""
+"El %s la distribuïdora ( %s ) ens dóna l’acceptació/rebuig del cas tramitat:"
+msgstr "El %s la distribuidora ( %s ) nos da la aceptación/rechazo del caso tramitado:"
+
+#: rml:som_informe/report/components/R102/R102.mako:6
+msgid "<b>Pas:</b> 02"
+msgstr "<b>Paso:</b> 02"
+
+#: rml:som_informe/report/components/R102/R102.mako:10
+#: rml:som_informe/report/components/R109/R109.mako:11
+msgid "<b>Acceptació o rebuig per part de la distribuïdor:</b> Rebuig"
+msgstr "<b>Aceptación o rechazo por parte de la distribuidora:</b> Rechazo"
+
+#: rml:som_informe/report/components/R102/R102.mako:11
+#, python-format
+msgid "<b>Descripció del Rebuig:</b> %s"
+msgstr "<b>Descripción del Rechazo:</b> %s"
+
+#: rml:som_informe/report/components/R102/R102.mako:13
+#: rml:som_informe/report/components/R109/R109.mako:14
+msgid "<b>Acceptació o rebuig per part de la distribuïdor:</b> Acceptació"
+msgstr "<b>Aceptación o rechazo por parte de la distribuidora:</b> Aceptación"
+
+#: rml:som_informe/report/components/R102/R102.mako:15
+#: rml:som_informe/report/components/R103/R103.mako:9
+#: rml:som_informe/report/components/R108/R108.mako:9
+#: rml:som_informe/report/components/R109/R109.mako:9
+#, python-format
+msgid "<b>Codi de reclamació de la distribuïdora:</b> %s"
+msgstr "<b>Código de reclamación de la distribuidora:</b> %s"
+
+#: rml:som_informe/report/components/R102/R102.mako:17
+#, python-format
+msgid "<b>Data de rebuig:</b> %s"
+msgstr "<b>Fecha de rechazo:</b> %s"
+
+#: rml:som_informe/report/components/R102/R102.mako:19
+#, python-format
+msgid "<b>Data d’acceptació:</b> %s"
+msgstr "<b>Fecha de la aceptación:</b> %s"
+
+#: rml:som_informe/report/components/R103/R103.mako:3
+#, python-format
+msgid ""
+"El %s ens arriba una comunicació per part de la distribuïdora ( %s ) en "
+"relació a la reclamació amb codi %s :"
+msgstr "El %s nos llega una comunicación por parte de la distribuidora ( %s ) en relación a la reclamación con código %s :"
+
+#: rml:som_informe/report/components/R103/R103.mako:6
+msgid "<b>Pas:</b> 03"
+msgstr "<b>Paso:</b> 03"
+
+#: rml:som_informe/report/components/R103/R103.mako:10
+#, python-format
+msgid "<b>Tipus de la Comunicació:</b> %s"
+msgstr "<b>Tipo de la Comunicación:</b> %s"
+
+#: rml:som_informe/report/components/R103/R103.mako:12
+#: rml:som_informe/report/components/R103/R103.mako:14
+#, python-format
+msgid "<b>Tipologia a la que es retipifica:</b> %s"
+msgstr "<b>Tipología a la que se retipifica:</b> %s"
+
+#: rml:som_informe/report/components/R103/R103.mako:25
+#, python-format
+msgid "<b>Comentari distribuïdora:</b> <i>%s</i>"
+msgstr "<b>Comentario distribuidora:</b> <i>%s</i>"
+
+#: rml:som_informe/report/components/R104/R104.mako:3
+#, python-format
+msgid ""
+"El %s aportem informació addicional a la distribuïdora ( %s ) en relació a "
+"la reclamació amb codi %s:"
+msgstr "El %s aportamos información adicional a la distribuidora ( %s ) en relación a la reclamación con código %s:"
+
+#: rml:som_informe/report/components/R104/R104.mako:6
+msgid "<b>Pas:</b> 04"
+msgstr "<b>Paso:</b> 04"
+
+#: rml:som_informe/report/components/R104/R104.mako:12
+msgid "client"
+msgstr "cliente"
+
+#: rml:som_informe/report/components/R104/R104.mako:14
+msgid "variables aportacio informacio"
+msgstr "variables aportación información"
+
+#: rml:som_informe/report/components/R104/R104.mako:16
+msgid "variables aportacio informacio per retipificacio"
+msgstr "variables aportación información para tipificación"
+
+#: rml:som_informe/report/components/R104/R104.mako:19
+#, python-format
+msgid "<b>Tipus:</b> %s"
+msgstr "<b>Tipo:</b> %s"
+
+#: rml:som_informe/report/components/R104/R104.mako:28
+msgid "<b>Documents adjunts::</b> No"
+msgstr "<b>Documentos adjuntos::</b> No"
+
+#: rml:som_informe/report/components/R104/R104.mako:40
+#, python-format
+msgid "<b>Comentari:</b> <i>%s</i>"
+msgstr "<b>Comentario:</b> <i>%s</i>"
+
+#: rml:som_informe/report/components/R105/R105.mako:3
+#, python-format
+msgid "El %s la distribuïdora resol la reclamació amb codi  %s :"
+msgstr "El %s la distribuidora resuelve la reclamación con código %s :"
+
+#: rml:som_informe/report/components/R105/R105.mako:6
+msgid "<b>Pas:</b> 05"
+msgstr "<b>Paso:</b> 05"
+
+#: rml:som_informe/report/components/R105/R105.mako:7
+#, python-format
+msgid "<b>Data tancament de la reclamació:</b> %s"
+msgstr "<b>Fecha cierre de la reclamación:</b> %s"
+
+#: rml:som_informe/report/components/R105/R105.mako:9
+#, python-format
+msgid "<b>Codi de reclamació de la distribuïdora:</b> %s "
+msgstr "<b>Código de reclamación de la distribuidora:</b> %s "
+
+#: rml:som_informe/report/components/R105/R105.mako:10
+#, python-format
+msgid "<b>Resultat de la reclamació:</b> %s "
+msgstr "<b>Resultado de la reclamación:</b> %s"
+
+#: rml:som_informe/report/components/R105/R105.mako:12
+#, python-format
+msgid "<b>Detall Resultat reclamació:</b> %s "
+msgstr "<b>Detalle Resultado reclamación:</b> %s "
+
+#: rml:som_informe/report/components/R105/R105.mako:23
+#, python-format
+msgid "<b>Argumentació per part de la distribuïdora:</b> %s "
+msgstr "<b>Argumentación por parte de la distribuidora:</b> %s "
+
+#: rml:som_informe/report/components/R108/R108.mako:3
+#, python-format
+msgid ""
+"El %s Som Energia sol·licita l'anul·lació de la reclamació en curs amb codi "
+"de sol·licitud %s a la distribuïdora ( %s ):"
+msgstr "El %s Som Energia solicita la anulación de la reclamación en curso con código de solicitud %s en la distribuidora ( %s ):"
+
+#: rml:som_informe/report/components/R108/R108.mako:6
+msgid "<b>Pas:</b> 08"
+msgstr "<b>Paso:</b> 08"
+
+#: rml:som_informe/report/components/R109/R109.mako:3
+#, python-format
+msgid ""
+"El %s la distribuïdora ( %s ) ens dóna l’acceptació/rebuig de la petició "
+"d’anul·lació tramitada:"
+msgstr "El %s la distribuidora ( %s ) nos da la aceptación/rechazo de la petición de anulación tramitada:"
+
+#: rml:som_informe/report/components/R109/R109.mako:6
+msgid "<b>Pas:</b> 09"
+msgstr "<b>Paso:</b> 09"
+
+#: rml:som_informe/report/components/R109/R109.mako:12
+#, python-format
+msgid "<b>Descripció del Rebuig:</b> %s "
+msgstr "<b>Descripción del Rechazo:</b> %s "
+
+#: rml:som_informe/report/components/footer/footer.mako:4
+msgid "Data de generació del document:"
+msgstr "Fecha de generación del documento:"
+
+#: rml:som_informe/report/components/footer/footer.mako:5
+msgid "Informe automàtic generat des de Som Energia"
+msgstr "Informe automático generado desde Som Energia"
+
+#: rml:som_informe/report/components/header/header.mako:3
+msgid "INFORME TÈCNIC"
+msgstr "INFORME TÉCNICO"
+
+#: rml:som_informe/report/components/header/header.mako:5
+msgid "<b>Contracte Som Energia:</b>"
+msgstr "<b>Contrato Som Energia:</b>"
+
+#: rml:som_informe/report/components/header/header.mako:6
+msgid "<b>Empresa distribuïdora:</b>"
+msgstr "<b>Empresa distribuidora:</b>"
+
+#: rml:som_informe/report/components/header/header.mako:7
+msgid "<b>Contracte distribuïdora:</b>"
+msgstr "<b>Contrato distribuidora:</b>"
+
+#: rml:som_informe/report/components/header/header.mako:8
+msgid "<b>CUPS:</b>"
+msgstr "<b>CUPS:</b>"
+
+#: rml:som_informe/report/components/header/header.mako:9
+msgid "<b>Adreça CUPS:</b>"
+msgstr "<b>Dirección CUPS:</b>"
+
+#: rml:som_informe/report/components/header/header.mako:10
+msgid "<b>Data d'alta amb Som Energia:</b>"
+msgstr "<b>Fecha de alta en Som Energia:</b>"
+
+#: rml:som_informe/report/components/header/header.mako:11
+msgid "<b>Titular:</b>"
+msgstr "<b>Titular:</b>"
+
+#: rml:som_informe/report/components/header/header.mako:12
+msgid "<b>NIF Titular:</b>"
+msgstr "<b>NIF Titular:</b>"
+
+#: rml:som_informe/report/components/header/header.mako:14
+msgid "Cronologia:"
+msgstr "Cronología:"
