@@ -7,9 +7,31 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Genera Informe Consum" col="2">
+                    <group string="Dades Informe" colspan="3" col="4">
+                        <field name="polissa" select="1"/>
+                        <field name="lang" />
+                        <field name="date_from" select="1"/>
+                        <field name="date_to" select="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Reclamacions">
+                            <field name="mostra_reclama"/>
+                        </page>
+                        <page string="Factura">
+                            <field name="mostra_factura"/>
+                        </page>
+                        <page string="Comptablilitat">
+                            <field name="mostra_comptabilitat"/>
+                        </page>
+                        <page string="ATR">
+                            <field name="mostra_ATR"/>
+                        </page>
+                        <page string="Gestió de cobraments">
+                            <field name="mostra_cobraments"/>
+                        </page>
+                    </notebook>
                     <field name="state" invisible="1"/>
-                    <button type="object" string="Imprimir" name="print_report" icon="gtk-print"/>
-                    <button type="object" string="test" name="generate_report" icon="gtk_ok" />
+                    <button type="object" string="Generar Report" name="generate_report" icon="gtk-ok"/>
                 </form>
             </field>
         </record>

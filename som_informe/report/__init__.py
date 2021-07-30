@@ -1,1 +1,2 @@
 import report_som_informe
+import components
