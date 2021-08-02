@@ -1,0 +1,15 @@
+body {
+    background-color: #FFFFFF;
+    background-image: url(https://www.somenergia.coop/wp-content/uploads/2014/07/logohdmi.png);
+    background-position: right top;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: black;
+    padding: 1ex;
+}
+a, a:visited, a:active, a:hover {
+    color: #BAC92A;
+}
+h1, h2, h3, h4 {
+    color: #BAC92A;
+}
