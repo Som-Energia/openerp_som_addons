@@ -32,6 +32,9 @@ def generate_report(year, month, agent, sequence):
     with open("/tmp/" + wiz.filename, 'w') as f:
         f.write(base64.b64decode(wiz.file))
 
+    step("Writing {}...".format(wiz.filename_csv))
+    with open("/tmp/" + wiz.filename_csv, 'w') as f:
+        f.write(base64.b64decode(wiz.file_csv))
 
 
 if __name__ == '__main__' :

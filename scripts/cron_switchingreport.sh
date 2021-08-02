@@ -4,12 +4,13 @@
 # in that case generate sthe report of the month containing the date.
 
 
+
 die() {
     [ -z "$1" ] || echo -e '\033[34;1mError: '$*'\033[0m' >&2
     emili.py \
         --subject "ERROR: Informe cambios de comercializador, $year-$month" \
-#        --to itcrowd@somenergia.coop \
-        --to oriol.piera@somenergia.coop \
+        --to itcrowd@somenergia.coop \
+        --to atr@somenergia.coop \
         --from sistemes@somenergia.coop \
         --config $scriptpath/dbconfig.py \
         --format md \
@@ -25,12 +26,6 @@ step() {
 scriptpath=$(dirname $(readlink -f "$0"))
 cd "$scriptpath"
  
-TOOPTIONS=$(
-while read r
-do
-    [ -n "$r" ] &&  echo "--to $r"
-done < recipients-switchingreport
-)
 
 today=$(date -I)
 IFS='-' read -r year month day <<< "$today" # split date
@@ -39,13 +34,13 @@ IFS='-' read -r year month day <<< "${1:-$lastMonthEnd}" # split date
 
 step "Generant resum del $year-$month-$day"
 
-
-# python ./atr_switchingreport $year $month --csv || die No he pogut generar els CSV
-# python ./atr_switchingreport $year $month || die No he pogut generar el XML
 python cron_informe_cnmc_canvi_comer.py $year $month 1
 
-allreports=(SI_R2-???_E_${year}${month}_??.xml)
-lastReport=${allreports[-1]}
+allreports=(/tmp/SI_R2-???_E_${year}${month}_??.xml)
+csvreports=(/tmp/SI_R2-???_E_${year}${month}_??.csv)
+step "allreports: $allreports"
+lastReport=${allreports[*]: -1}
+step "lastReport: $lastReport"
 
 MONTHS=("" Enero Febrero Marzo Abril Mayo Junio Julio Agosto Septiembre Octubre Noviembre Diciembre)
 
@@ -61,26 +56,25 @@ mes de ${MONTHS[$((10#$month))]} de $year para la comercializadora \"Som Energia
 Un saludo.
 "
 
-#emili.py \
-#    --subject "SomEnergia SCCL, informe cambios de comercializador, $year-$month" \
-#    --to atr@somenergia.coop \
-#    --to itcrowd@somenergia.coop \
-#    --to oriol.piera@somenergia.coop \
-#    --from sistemes@somenergia.coop \
-#    --replyto david.garcia@somenergia.coop \
-#    --config $scriptpath/dbconfig.py \
-#    --format md \
-#    --style somenergia.css \
-#    $lastReport \
-#    report-$year$month-*.csv \
-#    --body "$TEXTOK" \
-#    || die "Error enviant fitxers CSV als companys"
+emili.py \
+    --subject "SomEnergia SCCL, informe cambios de comercializador, $year-$month" \
+    --to atr@somenergia.coop \
+    --to itcrowd@somenergia.coop \
+    --from sistemes@somenergia.coop \
+    --replyto itcrowd@somenergia.coop \
+    --config $scriptpath/dbconfig.py \
+    --format md \
+    --style somenergia.css \
+    $lastReport \
+    $csvreports \
+    --body "$TEXTOK" \
+    || die "Error enviant fitxers CSV als companys"
+
 
 emili.py \
     --subject "SomEnergia SCCL, informe cambios de comercializador, $year-$month" \
-#    --to cambiodecomercializador@cnmc.es \
-#    --bcc itcrowd@somenergia.coop \
-    --to oriol.piera@somenergia.coop \
+    --to cambiodecomercializador@cnmc.es \
+    --bcc itcrowd@somenergia.coop \
     --from atr@somenergia.coop \
     --replyto atr@somenergia.coop \
     --config $scriptpath/dbconfig.py \
