@@ -127,7 +127,16 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         if wiz.mostra_cobraments:
             pass
         if wiz.mostra_ATR:
-            pass
+            search_params = [
+                ('cups_id.id', '=', wiz.polissa.cups.id),
+                ('proces_id.name', '=', 'A3'),
+                ]
+            if wiz.date_from:
+                search_params.append(('date', '>=', wiz.date_from))
+            if wiz.date_to:
+                search_params.append(('date', '<=', wiz.date_to))
+            sw_ids = sw_obj.search(cursor, uid, search_params)
+            result.extend(self.extract_switching_metadata(cursor, uid, sw_ids, context))
         if wiz.mostra_comptabilitat:
             pass
 
