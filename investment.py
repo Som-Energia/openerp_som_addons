@@ -155,6 +155,10 @@ class GenerationkwhInvestment(osv.osv):
             #required=True, # TODO to be required
             help="Campanya d'emissió de la que forma part la inversió",
             ),
+        last_interest_payed_date=fields.date(
+            "Darrera data interessos",
+            help="Darrer data fins la que s'han pagat interessos d'aquesta inversió",
+            ),
         )
 
     _defaults = dict(
@@ -1871,6 +1875,81 @@ class GenerationkwhInvestment(osv.osv):
         result.append({'amount': shares * 100,
                        'socis': n_socis})
         return result
+
+    def has_interest_invoice(self, cursor, uid, id, year=None):
+        if not year:
+            today = datetime.today()
+            year = today.year
+        Invoice = self.pool.get('account.invoice')
+        investment_data = self.read(cursor, uid, id)
+        has_invoice = Invoice.search(cursor, uid, [('name','=', investment_data['name']+'-INT'+str(year))])
+        return has_invoice
+
+    def interest(self, cursor, uid, interest_date, interest_rate, ids=None, context=None):
+        User = self.pool.get('res.users')
+        Soci = self.pool.get('somenergia.soci')
+        username = User.read(cursor, uid, uid, ['name'])['name']
+        interest_ids = []
+        interest_errors = []
+
+        investment_ids = ids or self.search(cursor, uid, [('emission_id.type','=','apo')], order='id')
+        investments = self.browse(cursor, uid, investment_ids)
+        for inv in investments:
+            investment_id = inv.id
+            invstate = InvestmentState(username, datetime.now(),
+                actions_log = inv['actions_log'],
+                log = inv['log'],
+                purchase_date = isodate(inv['purchase_date']),
+                nominal_amount = gkwh.shareValue*inv['nshares'],
+                last_interest_payed_date = inv.last_interest_payed_date
+            )
+
+            if self.has_interest_invoice(cursor, uid, investment_id):
+                interest_errors.append('Investment already have interest invoice')
+                continue
+
+            if inv.emission_id.type != 'apo':
+                interest_errors.append('Investment not APO, not interest has to be payed')
+                continue
+
+            interest_id, error = self.create_interest_invoice(cursor, uid,
+                    investment_id = investment_id,
+                    interest_date = interest_date,
+                    interest_rate = interest_rate,
+                    )
+
+            if error:
+                interest_errors.append(error)
+                continue
+            interest_ids.append(interest_id)
+
+            investment_actions = AportacionsActions(self, cursor, uid, 1)
+            to_be_interized = investment_actions.get_to_be_interized(cursor, uid,
+                investment_id, interest_date, interest_rate, context)
+            invstate.interest(
+                date = interest_date,
+                to_be_interized = to_be_interized,
+                )
+            self.write(cursor, uid, investment_id, dict(
+                invstate.erpChanges(),
+            ), context)
+
+            self.open_invoices(cursor, uid, [interest_id])
+            payment_mode = self.investment_actions(cursor, uid, investment_id).get_payment_mode_name(cursor, uid)
+            self.invoices_to_payment_order(cursor, uid,
+                [interest_id], payment_mode)
+            self.send_mail(cursor, uid, interest_id,
+                'account.invoice', '_interest_notification_mail', investment_id)
+
+        return interest_ids, interest_errors
+
+    def create_interest_invoice(self, cursor, uid,
+            investment_id, interest_date, interest_rate, context=None):
+
+        investment_actions = AportacionsActions(self, cursor, uid, 1)
+        investment_id, error = investment_actions.create_interest_invoice(cursor, uid,
+                investment_id, interest_date, interest_rate, context)
+        return investment_id, error
 
 class InvestmentProvider(ErpWrapper):
 

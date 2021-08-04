@@ -160,6 +160,9 @@
             <field name="state">iban</field>
             <field name="partner_id" ref="res_partner_aportacions"></field>
         </record>
+        <record id="res_partner_aportacions" model="res.partner">
+            <field name="bank_inversions" ref="partner_bank_aportacions" />
+        </record>
         <record id="soci_aportacions" model="somenergia.soci">
             <field name="partner_id" ref="res_partner_aportacions"/>
             <field name="baixa">False</field>
@@ -395,6 +398,20 @@
             <field name="account_id" ref="account.a_recv"/>
             <field name="origin_date_invoice">2015-10-09</field>
             <field name="reference">GISCE</field>
-        </record>        
+        </record>
+        <record id="invoice_APO00003_INT2020" model="account.invoice">
+            <field name="name">APO00003-INT2020</field>
+            <field name="number">APO00003-INT2020</field>
+            <field name="origin">APO00003</field>
+            <field name="type">out_invoice</field>
+            <field name="state">paid</field>
+            <field name="date_invoice">2020-06-30</field>
+            <field name="partner_id" ref="res_partner_aportacions"/>
+            <field name="address_invoice_id" ref="res_partner_address_aportacions"/>
+            <field name="period_id" ref="account.period_1"/>
+            <field name="account_id" ref="account.a_recv"/>
+            <field name="origin_date_invoice">2020-06-30</field>
+            <field name="reference">GISCE</field>
+        </record>
     </data>
 </openerp>

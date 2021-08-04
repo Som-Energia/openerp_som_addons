@@ -16,6 +16,7 @@
                     <field name="first_effective_date" readonly="1"/>
                     <field name="amortized_amount" readonly="1"/>
                     <field name="last_effective_date" readonly="1"/>
+                    <field name="last_interest_payed_date" readonly="1" domain="[('emission_id.type','=','apo')]"/>
                     <field name="active" readonly="1"/>
                     <field name="draft" readonly="1"/>
                     <field name="emission_id" readonly="1"/>
@@ -57,6 +58,7 @@
                     <field name="signed_date" select="1"/>
                     <field name="first_effective_date" select="1"/>
                     <field name="last_effective_date" select="1"/>
+                    <field name="last_interest_payed_date" select="1"/>
                     <field name="emission_id" select="1"/>
                 </tree>
             </field>
