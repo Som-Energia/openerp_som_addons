@@ -93,3 +93,6 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 "access_wizard_llibre_registre_socis_rcwd","wizard.llibre.registre.socis","model_wizard_llibre_registre_socis","base_extended.group_base_extended_u",1,1,1,1
 "access_wizard_llibre_registre_socis_rcwd","wizard.llibre.registre.socis","model_wizard_llibre_registre_socis","base_extended.group_base_extended_r",1,1,1,1
 "access_wizard_llibre_registre_socis_rcwd","wizard.llibre.registre.socis","model_wizard_llibre_registre_socis","base_extended.group_base_extended_w",1,1,1,1
+"access_wizard_factures_liquidacio_interessos_rcwd","wizard.factures.liquidacio.interessos","model_wizard_factures_liquidacio_interessos","som_generationkwh.group_som_generationkwh_u",1,1,1,1
+"access_wizard_factures_liquidacio_interessos_rcwd","wizard.factures.liquidacio.interessos","model_wizard_factures_liquidacio_interessos","som_generationkwh.group_som_generationkwh_r",1,1,1,1
+"access_wizard_factures_liquidacio_interessos_rcwd","wizard.factures.liquidacio.interessos","model_wizard_factures_liquidacio_interessos","som_generationkwh.group_som_generationkwh_w",1,1,1,1

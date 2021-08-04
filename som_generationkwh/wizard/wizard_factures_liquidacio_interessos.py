@@ -86,30 +86,18 @@ class WizardFacturesLiquidacioInteressos(osv.osv_memory):
         'date_invoice': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S')
     }
 
-    def all_apos_calc(self, cursor, uid, ids, context=None):
+    def create_invoice(self, cursor, uid, ids, context=None):
         if not context:
             context = {}
-        read_only = context.get('read_only', True)
+        wiz = self.browse(cursor, uid, ids[0], context=context)
 
+        inv_obj = self.pool.get('generationkwh.investment')
+
+        inv_ids, errors = inv_obj.interest(cursor, uid, wiz.date_invoice, wiz.interes, ids=context['active_ids'])
         self.write(cursor, uid, [ids[0]],
-                  {'state': 'all_apos_calc'})
+            {'state': 'all_apos_calc',
+            'calc': 'Inversions sel·leccionades: {}\nFactures creades: {}\nErrors trobats de les factures no creades: {}'.format(
+            len(context['active_ids']), len(inv_ids), errors
+        )})
 
-    def members_selection_calc(self, cursor, uid, ids, context=None):
-        if not context:
-            context = {}
-        read_only = context.get('read_only', True)
-
-        self.write(cursor, uid, [ids[0]],
-                   {'state': 'members_selection_calc'})
-
-        """
-        return {
-            'domain': "[('id','in', %s)]" % str(inv_ids),
-            'name': _('Factures generades'),
-            'view_type': 'form',
-            'view_mode': 'tree,form',
-            'res_model': 'account.invoice',
-            'type': 'ir.actions.act_window'
-        }
-        """
 WizardFacturesLiquidacioInteressos()

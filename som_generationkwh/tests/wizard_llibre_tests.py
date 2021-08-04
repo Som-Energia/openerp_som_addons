@@ -45,10 +45,13 @@ class TestsWizard(testing.OOTestCase):
         wiz_o = pool.get('wizard.llibre.registre.socis')
         soci_id = self.get_object_id('som_generationkwh', 'soci_aportacions')
         soci_o.write(cursor, uid, soci_id, {'date': '2017-01-01'})
+        context = {}
+        context['date_from'] = '2017-01-01'
+        context['date_to'] = '2017-12-31'
 
-        values = wiz_o.get_aportacions_obligatories_values(cursor, uid, soci_id)
+        values = wiz_o.get_aportacions_obligatories_values(cursor, uid, soci_id, context)
 
-        self.assertEqual(values, [{'concepte': u'Aportaci\xf3n obligatoria',
+        self.assertEqual(values, [{'concepte': u'Obligatoria',
              'data': '2017-01-01',
              'import': 100}])
 
@@ -58,10 +61,13 @@ class TestsWizard(testing.OOTestCase):
         soci_o = pool.get('somenergia.soci')
         wiz_o = pool.get('wizard.llibre.registre.socis')
         soci_id = self.get_object_id('som_generationkwh', 'soci_aportacions')
+        context = {}
+        context['date_from'] = '2020-01-01'
+        context['date_to'] = '2020-12-31'
 
-        values = wiz_o.get_aportacions_voluntaries_values(cursor, uid, soci_id)
+        values = wiz_o.get_aportacions_voluntaries_values(cursor, uid, soci_id, context)
 
-        self.assertEqual(values, [{'concepte': u'Aportaci\xf3n voluntaria',
+        self.assertEqual(values, [{'concepte': u'Voluntaria',
         'data': '2020-03-12',
         'import': 1000,
         'import_amortitzat': 0.0}])

@@ -168,6 +168,7 @@ class InvestmentTests(testing.OOTestCase):
                     'first_effective_date': False,
                     'move_line_id': False,
                     'last_effective_date': False,
+                    'last_interest_payed_date': False,
                     'nshares': 10,
                     'signed_date': '2017-01-06',
                     'draft': True,
@@ -215,6 +216,7 @@ class InvestmentTests(testing.OOTestCase):
                     'first_effective_date': False,
                     'move_line_id': False,
                     'last_effective_date': False,
+                    'last_interest_payed_date': False,
                     'nshares': 40,
                     'signed_date': False,
                     'draft': True,
@@ -263,6 +265,7 @@ class InvestmentTests(testing.OOTestCase):
                         'first_effective_date': False,
                         'move_line_id': False,
                         'last_effective_date': False,
+                        'last_interest_payed_date': False,
                         'nshares': 40,
                         'signed_date': False,
                         'draft': True,
@@ -1547,6 +1550,7 @@ class InvestmentTests(testing.OOTestCase):
                     'first_effective_date': '2017-01-06',
                     'move_line_id': False,
                     'last_effective_date': False,
+                    'last_interest_payed_date': False,
                     'nshares': 10,
                     'signed_date': False,
                     'draft': False,
@@ -1593,6 +1597,7 @@ class InvestmentTests(testing.OOTestCase):
                     'first_effective_date': '2018-01-06',
                     'move_line_id': False,
                     'last_effective_date': '2042-01-06',
+                    'last_interest_payed_date': False,
                     'nshares': 10,
                     'signed_date': False,
                     'draft': False,
@@ -2588,5 +2593,90 @@ class InvestmentTests(testing.OOTestCase):
             signed_date = self.Investment.read(cursor, uid, investment_id, ['signed_date'])['signed_date']
             self.assertTrue(signed_date)
 
+
+    def test__has_interest_invoice__False(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            self.MailMockup.activate(cursor, uid)
+            investment_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0003'
+                        )[1]
+
+            inv_id = self.Investment.has_interest_invoice(cursor, uid, investment_id)
+
+            self.assertFalse(inv_id)
+            self.MailMockup.deactivate(cursor, uid)
+
+    def test__has_interest_invoice__True(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            self.MailMockup.activate(cursor, uid)
+            investment_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0003'
+                        )[1]
+
+            inv_id = self.Investment.has_interest_invoice(cursor, uid, investment_id, 2020)
+
+            self.assertTrue(inv_id)
+            self.MailMockup.deactivate(cursor, uid)
+
+    def test__interest__oneInvoiceAPO(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            self.MailMockup.activate(cursor, uid)
+            investment_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0003'
+                        )[1]
+
+            interest_ids, errors = self.Investment.interest(cursor, uid, '2021-10-13', 1.0, [investment_id])
+
+            self.assertEqual(len(interest_ids), 1)
+            self.assertEqual(len(errors), 0)
+            self.assertMailLogEqual(self.MailMockup.log(cursor, uid), """\
+                logs:
+                - model: account.invoice
+                  id: {id}
+                  template: aportacio_interest_notification_mail
+                  from_id: [ {account_id} ]
+                """.format(
+                    id=interest_ids[0],
+                    account_id=self._aportaMailAccount(cursor, uid),
+                ))
+            self.MailMockup.deactivate(cursor, uid)
+
+    def test__interest__tryTwoInterestOnlyOneDone(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            self.MailMockup.activate(cursor, uid)
+            investment_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0003'
+                        )[1]
+
+            interest_ids, errors = self.Investment.interest(cursor, uid, '2021-10-13', 1.0, [investment_id])
+            interest_ids2, errors2 = self.Investment.interest(cursor, uid, '2021-10-13', 1.0, [investment_id])
+
+            self.assertEqual(len(interest_ids), 1)
+            self.assertEqual(len(errors), 0)
+            self.assertEqual(len(interest_ids2), 0)
+            self.MailMockup.deactivate(cursor, uid)
+
+    def test__interest__notCreatedGKWH(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            self.MailMockup.activate(cursor, uid)
+            investment_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'genkwh_0002'
+                        )[1]
+
+            interest_ids, errors = self.Investment.interest(cursor, uid, '2021-10-13', 1.0, [investment_id])
+
+            self.assertEqual(len(interest_ids), 0)
+            self.assertEqual(len(errors), 1)
+            self.MailMockup.deactivate(cursor, uid)
 
 # vim: et ts=4 sw=4

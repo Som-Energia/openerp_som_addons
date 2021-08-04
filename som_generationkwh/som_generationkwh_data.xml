@@ -1748,6 +1748,25 @@ ${text_legal}
 </body>
 </html>]]></field>
         </record>
+        <record model="poweremail.templates" id="aportacio_interest_notification_mail">
+            <field name="name">Liquidació aportació voluntaria</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'account.invoice')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">account.invoice</field>
+            <field eval="0" name="use_filter"/>
+            <field name="def_to">${object.address_invoice_id.email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Liquidació interessos aportació voluntària</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text"><![CDATA[text_to_replace]]></field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('email_id','=', 'aporta@somenergia.coop')]"/> 
+        </record>
     </data>
     <data noupdate="1">
         <record id="genkwh_investment_payment_mode" model="payment.mode">
@@ -1848,7 +1867,15 @@ ${text_legal}
             <field name="name">Aportacions</field>
             <field name="default_code">APO_AE</field>
             <field name="categ_id" model='product.category' search="[('name','=','Inversions')]"/>
+            <field name="property_account_expense" model="account.account" search="[('code','=','163000000000')]"/>
+        </record>
+        <record id="apo_product_int" model="product.product">
+            <field name="name">Interessos Aportacions</field>
+            <field name="default_code">APO_INT</field>
+            <field name="categ_id" model='product.category' search="[('name','=','Inversions')]"/>
             <field name="property_account_expense" model="account.account" search="[('code','=','662000000001')]"/>
+            <field name="taxes_id" model="account.tax" search="[('name','=', 'Retenciones IRPF 19%')]"/>
+            <field name="supplier_taxes_id" model="account.tax" search="[('name','=', 'Retenciones IRPF 19%')]"/>
         </record>
         <record id="apo_investment_payment_mode" model="payment.mode">
             <field name="name">APORTACIONS (Enginyers)</field>
@@ -1941,7 +1968,7 @@ ${text_legal}
 
         <record model="res.config" id="som_aportacions_interest">
             <field name="name">som_aportacions_interest</field>
-            <field name="value"></field>
+            <field name="value">1.0</field>
             <field name="description">
                 Definim l'interes aplicat actualment en les aportacions fetes al capital social.
                 Decimal definit amb punt. Exemple: "1.5"

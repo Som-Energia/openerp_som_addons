@@ -24,24 +24,15 @@ A continuació podràs triar entre les factures només per a les persones sòcie
                         <label string="" colspan="4"/>
                         <label string="" colspan="4"/>
                         <group colspan="4">
-                            <button string="Totes les aportacions" name="all_apos_calc" type="object" icon="gtk-dnd-multiple" context="{'read_only': False}" colspan="3"/>
-                            <button string="Selecciona sòcies" name="members_selection_calc" type="object" icon="gtk-edit" context="{'read_only': True}" colspan="3"/>
+                            <button string="Totes les aportacions" name="create_invoice" type="object" icon="gtk-dnd-multiple" context="{'read_only': False}" colspan="3"/>
                             <button special="cancel" string="Cancel·lar" icon="gtk-cancel" colspan="3"/>
                         </group>
                     </group>
                     <group colspan="4" col="4" attrs="{'invisible':[('state', '!=', 'all_apos_calc')]}">
-                        <field name="calc" nolabel="1" colspan="4" height="150"/>
                         <separator string="Informació" colspan="4" />
-                        <button string="Genera Factures" name="all_apos_calc" type="object" icon="gtk-dnd-multiple" context="{'read_only': False}"/>
-                        <button special="cancel" string="Cancel·lar" icon="gtk-cancel"/>
+                        <field name="calc" nolabel="1" colspan="4" height="150" readonly="1"/>
+                        <button special="cancel" string="Sortir" icon="gtk-close"/>
                     </group>
-                    <group colspan="4" col="4" attrs="{'invisible':[('state', '!=', 'members_selection_calc')]}">
-                        <field name="calc" nolabel="1" colspan="4" height="150"/>
-                        <separator string="Informació" colspan="4" />
-                        <button string="Genera Factures" name="all_apos_calc" type="object" icon="gtk-dnd-multiple" context="{'read_only': False}"/>
-                        <button special="cancel" string="Cancel·lar" icon="gtk-cancel"/>
-                    </group>
-
                 </form>
             </field>
         </record>
@@ -53,6 +44,14 @@ A continuació podràs triar entre les factures només per a les persones sòcie
             <field name="view_mode">form</field>
             <field name="target">new</field>
             <field name="view_id" ref="view_wizard_factures_liquidacio_interessos_form"/>
+        </record>
+        <record id="value_wizard_factures_liquidacio_interessos" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Genera liquidació interessos Aportacions</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">generationkwh.investment</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_factures_liquidacio_interessos_form'))" />
         </record>
         <menuitem id="menu_wizard_factures_liquidacio_interessos"
                   name="Factures liquidacions interessos aportacions"

@@ -462,4 +462,162 @@ class AportacionsActions(InvestmentActions):
         )
         Investment.write(cursor, uid, id, inv.erpChanges())
 
+    def get_to_be_interized(self, cursor, uid,
+        investment_id, interest_date, interest_rate, context=None):
+
+        Investment = self.erp.pool.get('generationkwh.investment')
+        investment = Investment.browse(cursor, uid, investment_id)
+
+        if not investment.purchase_date:
+            raise InvestmentException("Cannot pay interest of an unpaid investment")
+
+        purchase_date_dt = datetime.strptime(investment.purchase_date,'%Y-%m-%d')
+        interest_date_dt = datetime.strptime(interest_date,'%Y-%m-%d')
+        if purchase_date_dt.year <= ( interest_date_dt - relativedelta(years=1)).year:
+            return (investment.nshares * gkwh.shareValue) * interest_rate / 100
+        else:
+            days_of_interest = (interest_date_dt - purchase_date_dt)
+            return ((investment.nshares * gkwh.shareValue) / 365 * days_of_interest) * (interest_rate / 100)
+
+    def create_interest_invoice(self, cursor, uid,
+            investment_id, interest_date, interest_rate,
+            context=None):
+        if isinstance(investment_id, list):
+            investment_id = investment_id[0]
+
+        Partner = self.erp.pool.get('res.partner')
+        Product = self.erp.pool.get('product.product')
+        Invoice = self.erp.pool.get('account.invoice')
+        InvoiceLine = self.erp.pool.get('account.invoice.line')
+        PaymentType = self.erp.pool.get('payment.type')
+        Journal = self.erp.pool.get('account.journal')
+        Investment = self.erp.pool.get('generationkwh.investment')
+
+        investment = Investment.browse(cursor, uid, investment_id)
+
+        date_invoice = str(date.today())
+        year = interest_date.split('-')[0]
+
+        # The partner
+        partner_id = investment.member_id.partner_id.id
+        partner = Partner.browse(cursor, uid, partner_id)
+
+        # Get or create partner specific accounts
+        account_inv_id = self.get_or_create_investment_account(cursor, uid, partner_id)
+
+        # The product
+        product_id = Product.search(cursor, uid, [
+            ('default_code','=', 'APO_INT'),
+            ])[0]
+
+        product = Product.browse(cursor, uid, product_id)
+        product_uom_id = product.uom_id.id
+
+        # The journal
+        journal_id = Journal.search(cursor, uid, [
+            ('code','=','APO_FACT')
+            ])[0]
+
+        # The payment type
+        payment_type_id = PaymentType.search(cursor, uid, [
+            ('code', '=', 'TRANSFERENCIA_CSB'),
+            ])[0]
+
+        errors = []
+        def error(message):
+            errors.append(message)
+        try:
+            to_be_interized = self.get_to_be_interized(cursor, uid,
+                investment_id, interest_date, interest_rate)
+        except InvestmentException as e:
+            error(str(e))
+            return 0, errors
+
+        # Check if exist bank account
+        if not partner.bank_inversions:
+            return 0, u"Aportació {0}: El partner {1} no té informat un compte corrent\n".format(investment.id, partner.name)
+
+        # Memento of mutable data
+        investmentMemento = ns()
+        investmentMemento.interestDate = interest_date
+        investmentMemento.interestRate = interest_rate
+        investmentMemento.investmentId = investment_id
+        investmentMemento.investmentName = investment.name
+        investmentMemento.investmentPurchaseDate = investment.purchase_date
+        investmentMemento.investmentLastEffectiveDate = investment.last_effective_date
+        investmentMemento.investmentInitialAmount = investment.nshares * gkwh.shareValue
+
+        invoice_name = '%s-INT%s' % (
+            # TODO: Remove the GENKWHID stuff when fully migrated, error instead
+            investment.name or 'GENKWHID{}'.format(investment.id),
+            year,
+            )
+        # Ensure unique amortization
+        existingInvoice = Invoice.search(cursor,uid,[
+            ('name','=', invoice_name),
+            ])
+
+        if existingInvoice:
+            return 0, u"Aportació {0}: La factura de interessos {1} ja existeix".format(investment.id, invoice_name)
+
+        # Default invoice fields for given partne
+        vals = {}
+        vals.update(Invoice.onchange_partner_id(
+            cursor, uid, [], 'in_invoice', partner_id,
+        ).get('value', {}))
+
+        vals.update({
+            'partner_id': partner_id,
+            'type': 'in_invoice',
+            'name': invoice_name,
+            'number': invoice_name,
+            'journal_id': journal_id,
+            'account_id': partner.property_account_liquidacio.id,
+            'partner_bank': partner.bank_inversions.id,
+            'payment_type': payment_type_id,
+            #'check_total': to_be_interized + (irpf_amount * -1),
+            # TODO: Remove the GENKWHID stuff when fully migrated, error instead
+            'origin': investment.name or 'GENKWHID{}'.format(investment.id),
+            'reference': invoice_name,
+            'date_invoice': date_invoice,
+        })
+
+        invoice_id = Invoice.create(cursor, uid, vals)
+        Invoice.write(cursor,uid, invoice_id,{'sii_to_send':False})
+
+        line = dict(
+            InvoiceLine.product_id_change(cursor, uid, [],
+                product=product_id,
+                uom=product_uom_id,
+                partner_id=partner_id,
+                type='in_invoice',
+                ).get('value', {}),
+            invoice_id = invoice_id,
+            name = _('Interessos fins a {interest_date:%d/%m/%Y} de {investment} ').format(
+                investment = investment.name,
+                interest_date = datetime.strptime(interest_date,'%Y-%m-%d'),
+                ),
+            note = investmentMemento.dump(),
+            quantity = 1,
+            price_unit = to_be_interized,
+            product_id = product_id,
+            # partner specific account, was generic from product
+            account_id = account_inv_id,
+        )
+
+        # Force apply taxes. Taxes from product doesn't work.
+        line['invoice_line_tax_id'] = [
+            (6, 0, line.get('invoice_line_tax_id', []))
+        ]
+
+        InvoiceLine.create(cursor, uid, line)
+
+        Invoice.button_reset_taxes(cursor, uid, [invoice_id])
+        inv = Invoice.browse(cursor, uid, invoice_id)
+        Invoice.write(cursor,uid, invoice_id, dict(
+            check_total = inv.amount_total,
+        ))
+
+        return invoice_id, errors
+
 # vim: et ts=4 sw=4
