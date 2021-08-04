@@ -48,13 +48,13 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         #Reclama block
         'mostra_reclama': fields.boolean('Mostra bloc de Reclama'),
         #Factura block
-        'mostra_factura': fields.boolean('Mostra bloc de Reclama'),
+        'mostra_factura': fields.boolean('Mostra bloc de Factura'),
         #Comptabilitat block
-        'mostra_comptabilitat': fields.boolean('Mostra bloc de Reclama'),
+        'mostra_comptabilitat': fields.boolean('Mostra bloc de Comptabilitat'),
         #Gestió de Contractes block
-        'mostra_ATR': fields.boolean('Mostra bloc de Reclama'),
+        'mostra_ATR': fields.boolean('Mostra bloc de Gestió de Contractes'),
         #Gestió de cobraments block
-        'mostra_cobraments': fields.boolean('Mostra bloc de Reclama'),
+        'mostra_cobraments': fields.boolean('Mostra bloc de Gestió de Cobraments'),
     }
 
     _defaults = {
@@ -100,7 +100,8 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             t.flush()
             gdm_obj.uploadMediaToDrive(cursor, uid, file_name, t.name, folder_hash)
 
-        wiz.write({'state': "finished"})
+        return {'type': 'ir.actions.act_window_close'}
+
 
     # data generation
     def get_data(self, cursor, uid, id, context=None):
