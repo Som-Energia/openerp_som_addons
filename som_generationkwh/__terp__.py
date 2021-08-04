@@ -43,6 +43,7 @@
     "wizard/wizard_send_retencio_estalvi_to_members.xml",
     "wizard/wizard_baixa_soci.xml",
     "wizard/wizard_contract_sign_signaturit.xml",
+    "wizard/wizard_factures_liquidacio_interessos_view.xml",
     "investment_view.xml",
     "assignment_view.xml",
     "somenergia_soci_view.xml",
