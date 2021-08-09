@@ -5,7 +5,7 @@
     ${_(u"<b>Procediment:</b> A3 (Alta de subministrament)")}<br/>
     ${_(u"<b>Pas:</b> 05")}<br/>
     ${_(u"<b>Codi de la sol·licitud:</b> %s") % (d.codi_solicitud)}<br/>
-    ${_(u"<b>Tipus contracte:</b> %s") % (d.type)}<br/>
+    ${_(u"<b>Tipus contracte:</b> %s") % (d.tipus_contracte)}<br/>
     ${_(u"<b>Codi contracte:</b> %s") % (d.codi_contracte)}<br/>
      ${_(u"<b>Potència: </b>")}
      % for pot in d.potencies[:-1]:
