@@ -8,7 +8,7 @@
     ${_(u"<b>Tipus de contracte:</b> %s") %(d.tipus_contracte)}<br/>
     ${_(u"<b>Potència sol·licitada: </b>")}
     % for pot in d.potencies[:-1]:
-        ${pot['name']} : ${pot['potencia']}, 
+        ${pot['name']} : ${pot['potencia']},
     % endfor
     ${d.potencies[-1]['name']}: ${d.potencies[-1]['potencia']}
     <br/>
