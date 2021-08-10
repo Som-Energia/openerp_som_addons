@@ -295,3 +295,93 @@ class WizardCancelFromCSVTestsAndAddContractsLot(testing.OOTestCase):
             in lot_env_obj.read(self.cursor, self.uid, lot_enviament_id, ['info'])['info']
         )
 
+    @mock.patch('som_infoenergia.som_infoenergia_lot.SomInfoenergiaLotEnviament.create_enviaments_from_object_list')
+    def test_create_enviaments_from_csv__infoenergia_none(self, mock_create):
+        wiz_obj = self.openerp.pool.get('wizard.create.enviaments.from.csv')
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
+        csv_content = ""
+        encoded_csv = base64.b64encode(csv_content)
+        vals = {
+            'csv_file': encoded_csv,
+        }
+        lot_enviament_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_infoenergia', 'lot_enviament_0001'
+        )[1]
+        ctx = {
+            'active_id': lot_enviament_id, 'active_ids': [lot_enviament_id],
+        }
+
+        wiz_id = wiz_obj.create(self.cursor, self.uid, vals, context=ctx)
+
+        wiz_obj.create_from_file(self.cursor, self.uid, [wiz_id], context=ctx)
+
+        mock_create.assert_called_with(self.cursor, self.uid, lot_enviament_id, [], {'from_model': 'polissa_id'})
+        wiz_info = wiz_obj.read(self.cursor, self.uid, [wiz_id], ['info'])[0]['info']
+        self.assertEqual(wiz_info, "Es crearan els enviaments de 0 pòlisses en segon pla")
+
+    @mock.patch('som_infoenergia.som_infoenergia_lot.SomInfoenergiaLotEnviament.create_enviaments_from_object_list')
+    def test_create_enviaments_from_csv__infoenergia_one(self, mock_create):
+        wiz_obj = self.openerp.pool.get('wizard.create.enviaments.from.csv')
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
+        lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
+        lot_enviament_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_infoenergia', 'lot_enviament_0001'
+        )[1]
+        pol_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, 'giscedata_polissa', 'polissa_0002'
+        )[1]
+        pol_name = pol_obj.read(self.cursor, self.uid, pol_id, ['name'])['name']
+        csv_content = "{}".format(pol_name)
+        encoded_csv = base64.b64encode(csv_content)
+        vals = {
+            'csv_file': encoded_csv,
+        }
+
+        ctx = {
+            'active_id': lot_enviament_id, 'active_ids': [lot_enviament_id],
+        }
+
+        wiz_id = wiz_obj.create(self.cursor, self.uid, vals, context=ctx)
+
+        wiz_obj.create_from_file(self.cursor, self.uid, [wiz_id], context=ctx)
+
+        mock_create.assert_called_with(self.cursor, self.uid, lot_enviament_id, [pol_id], {'from_model': 'polissa_id'})
+        wiz_info = wiz_obj.read(self.cursor, self.uid, [wiz_id], ['info'])[0]['info']
+        self.assertEqual(wiz_info, "Es crearan els enviaments de 1 pòlisses en segon pla")
+
+    @mock.patch('som_infoenergia.som_infoenergia_lot.SomInfoenergiaLotEnviament.create_enviaments_from_object_list')
+    def test_create_enviaments_from_csv__infoenergia_many(self, mock_create):
+        wiz_obj = self.openerp.pool.get('wizard.create.enviaments.from.csv')
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
+        lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
+        lot_enviament_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_infoenergia', 'lot_enviament_0001'
+        )[1]
+        pol_id_2 = imd_obj.get_object_reference(
+            self.cursor, self.uid, 'giscedata_polissa', 'polissa_0002'
+        )[1]
+        pol_id_3 = imd_obj.get_object_reference(
+            self.cursor, self.uid, 'giscedata_polissa', 'polissa_0003'
+        )[1]
+        pol_name_2 = pol_obj.read(self.cursor, self.uid, pol_id_2, ['name'])['name']
+        pol_name_3 = pol_obj.read(self.cursor, self.uid, pol_id_3, ['name'])['name']
+        csv_content = "{}\n{}".format(pol_name_2, pol_name_3)
+        encoded_csv = base64.b64encode(csv_content)
+        vals = {
+            'csv_file': encoded_csv,
+        }
+
+        ctx = {
+            'active_id': lot_enviament_id, 'active_ids': [lot_enviament_id],
+        }
+
+        wiz_id = wiz_obj.create(self.cursor, self.uid, vals, context=ctx)
+
+        wiz_obj.create_from_file(self.cursor, self.uid, [wiz_id], context=ctx)
+
+        mock_create.assert_called_with(self.cursor, self.uid, lot_enviament_id, [pol_id_2, pol_id_3], {'from_model': 'polissa_id'})
+        wiz_info = wiz_obj.read(self.cursor, self.uid, [wiz_id], ['info'])[0]['info']
+        self.assertEqual(wiz_info, "Es crearan els enviaments de 2 pòlisses en segon pla")
