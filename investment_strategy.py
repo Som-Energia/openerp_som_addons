@@ -395,7 +395,7 @@ class AportacionsActions(InvestmentActions):
     def get_or_create_investment_account(self, cursor, uid, partner_id):
         Partner = self.erp.pool.get('res.partner')
         partner = Partner.browse(cursor, uid, partner_id)
-        
+
         if not partner.property_account_liquidacio:
             partner.button_assign_acc_410()
             partner = partner.browse()[0]
@@ -462,25 +462,9 @@ class AportacionsActions(InvestmentActions):
         )
         Investment.write(cursor, uid, id, inv.erpChanges())
 
-    def get_to_be_interized(self, cursor, uid,
-        investment_id, interest_date, interest_rate, context=None):
-
-        Investment = self.erp.pool.get('generationkwh.investment')
-        investment = Investment.browse(cursor, uid, investment_id)
-
-        if not investment.purchase_date:
-            raise InvestmentException("Cannot pay interest of an unpaid investment")
-
-        purchase_date_dt = datetime.strptime(investment.purchase_date,'%Y-%m-%d')
-        interest_date_dt = datetime.strptime(interest_date,'%Y-%m-%d')
-        if purchase_date_dt.year <= ( interest_date_dt - relativedelta(years=1)).year:
-            return (investment.nshares * gkwh.shareValue) * interest_rate / 100
-        else:
-            days_of_interest = (interest_date_dt - purchase_date_dt)
-            return ((investment.nshares * gkwh.shareValue) / 365 * days_of_interest) * (interest_rate / 100)
 
     def create_interest_invoice(self, cursor, uid,
-            investment_id, interest_date, interest_rate,
+            investment_id, vals,
             context=None):
         if isinstance(investment_id, list):
             investment_id = investment_id[0]
@@ -494,9 +478,12 @@ class AportacionsActions(InvestmentActions):
         Investment = self.erp.pool.get('generationkwh.investment')
 
         investment = Investment.browse(cursor, uid, investment_id)
+        date_invoice = vals['date_invoice']
+        interest_rate = vals['interest_rate']
+        to_be_interized = vals['to_be_interized']
 
         date_invoice = str(date.today())
-        year = interest_date.split('-')[0]
+        year = date_invoice.split('-')[0]
 
         # The partner
         partner_id = investment.member_id.partner_id.id
@@ -526,12 +513,6 @@ class AportacionsActions(InvestmentActions):
         errors = []
         def error(message):
             errors.append(message)
-        try:
-            to_be_interized = self.get_to_be_interized(cursor, uid,
-                investment_id, interest_date, interest_rate)
-        except InvestmentException as e:
-            error(str(e))
-            return 0, errors
 
         # Check if exist bank account
         if not partner.bank_inversions:
@@ -539,7 +520,7 @@ class AportacionsActions(InvestmentActions):
 
         # Memento of mutable data
         investmentMemento = ns()
-        investmentMemento.interestDate = interest_date
+        investmentMemento.dateInvoice = date_invoice
         investmentMemento.interestRate = interest_rate
         investmentMemento.investmentId = investment_id
         investmentMemento.investmentName = investment.name
@@ -548,17 +529,9 @@ class AportacionsActions(InvestmentActions):
         investmentMemento.investmentInitialAmount = investment.nshares * gkwh.shareValue
 
         invoice_name = '%s-INT%s' % (
-            # TODO: Remove the GENKWHID stuff when fully migrated, error instead
-            investment.name or 'GENKWHID{}'.format(investment.id),
+            investment.name,
             year,
             )
-        # Ensure unique amortization
-        existingInvoice = Invoice.search(cursor,uid,[
-            ('name','=', invoice_name),
-            ])
-
-        if existingInvoice:
-            return 0, u"Aportació {0}: La factura de interessos {1} ja existeix".format(investment.id, invoice_name)
 
         # Default invoice fields for given partne
         vals = {}
@@ -593,9 +566,9 @@ class AportacionsActions(InvestmentActions):
                 type='in_invoice',
                 ).get('value', {}),
             invoice_id = invoice_id,
-            name = _('Interessos fins a {interest_date:%d/%m/%Y} de {investment} ').format(
+            name = _('Interessos fins a {date_invoice:%d/%m/%Y} de {investment} ').format(
                 investment = investment.name,
-                interest_date = datetime.strptime(interest_date,'%Y-%m-%d'),
+                date_invoice = datetime.strptime(date_invoice,'%Y-%m-%d'),
                 ),
             note = investmentMemento.dump(),
             quantity = 1,

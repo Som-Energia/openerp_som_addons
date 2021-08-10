@@ -11,7 +11,9 @@ from datetime import datetime, timedelta, date
 from yamlns import namespace as ns
 import generationkwh.investmentmodel as gkwh
 from osv import osv, fields
-from ..investment_strategy import PartnerException, InvestmentException
+from ..investment_strategy import (
+    PartnerException, InvestmentException,
+    AportacionsActions)
 from freezegun import freeze_time
 import mock
 from osv.osv import except_osv
@@ -40,6 +42,7 @@ class InvestmentTests(testing.OOTestCase):
         self.PaymentLine = self.openerp.pool.get('payment.line')
         self.PaymentOrder = self.openerp.pool.get('payment.order')
         self.Soci = self.openerp.pool.get('somenergia.soci')
+        self.Product = self.openerp.pool.get('product.product')
         self.maxDiff = None
 
     def tearDown(self):
@@ -2630,8 +2633,14 @@ class InvestmentTests(testing.OOTestCase):
             investment_id = self.IrModelData.get_object_reference(
                         cursor, uid, 'som_generationkwh', 'apo_0003'
                         )[1]
-
-            interest_ids, errors = self.Investment.interest(cursor, uid, '2021-10-13', 1.0, [investment_id])
+            vals = {
+                'date_invoice': '2021-06-30',
+                'date_start': '2020-06-30',
+                'date_end': '2021-06-30',
+                'to_be_interized': 8.1,
+                'interest_rate': 1.0
+            }
+            interest_ids, errors = self.Investment.interest(cursor, uid, [investment_id], vals)
 
             self.assertEqual(len(interest_ids), 1)
             self.assertEqual(len(errors), 0)
@@ -2655,9 +2664,15 @@ class InvestmentTests(testing.OOTestCase):
             investment_id = self.IrModelData.get_object_reference(
                         cursor, uid, 'som_generationkwh', 'apo_0003'
                         )[1]
-
-            interest_ids, errors = self.Investment.interest(cursor, uid, '2021-10-13', 1.0, [investment_id])
-            interest_ids2, errors2 = self.Investment.interest(cursor, uid, '2021-10-13', 1.0, [investment_id])
+            vals = {
+                'date_invoice': '2021-06-30',
+                'date_start': '2020-06-30',
+                'date_end': '2021-06-30',
+                'to_be_interized': 8.1,
+                'interest_rate': 1.0
+            }
+            interest_ids, errors = self.Investment.interest(cursor, uid, [investment_id], vals)
+            interest_ids2, errors2 = self.Investment.interest(cursor, uid, [investment_id], vals)
 
             self.assertEqual(len(interest_ids), 1)
             self.assertEqual(len(errors), 0)
@@ -2672,11 +2687,138 @@ class InvestmentTests(testing.OOTestCase):
             investment_id = self.IrModelData.get_object_reference(
                         cursor, uid, 'som_generationkwh', 'genkwh_0002'
                         )[1]
+            vals = {
+                'date_invoice': '2021-06-30',
+                'date_start': '2020-06-30',
+                'date_end': '2021-06-30',
+                'to_be_interized': 8.1,
+                'interest_rate': 1.0
+            }
 
-            interest_ids, errors = self.Investment.interest(cursor, uid, '2021-10-13', 1.0, [investment_id])
+            interest_ids, errors = self.Investment.interest(cursor, uid, [investment_id], vals)
 
             self.assertEqual(len(interest_ids), 0)
             self.assertEqual(len(errors), 1)
             self.MailMockup.deactivate(cursor, uid)
+
+    def test__interest__notPayed(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            self.MailMockup.activate(cursor, uid)
+            investment_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0001'
+                        )[1]
+            vals = {
+                'date_invoice': '2021-06-30',
+                'date_start': '2020-06-30',
+                'date_end': '2021-06-30',
+                'to_be_interized': 8.1,
+                'interest_rate': 1.0
+            }
+            interest_ids, errors = self.Investment.interest(cursor, uid, [investment_id], vals)
+
+            self.assertEqual(len(interest_ids), 0)
+            self.assertEqual(len(errors), 1)
+            self.MailMockup.deactivate(cursor, uid)
+
+    def test__get_to_be_interized__NotPayed(self):
+        with self.assertRaises(InvestmentException) as ctx:
+            with Transaction().start(self.database) as txn:
+                cursor = txn.cursor
+                uid = txn.user
+                product_id = self.Product.search(cursor, uid, [
+                    ('default_code','=', 'APO_INT'),
+                ])[0]
+                inv_id = self.IrModelData.get_object_reference(
+                            cursor, uid, 'som_generationkwh', 'apo_0001'
+                            )[1]
+                inv_obj = self.Investment.browse(cursor, uid, inv_id)
+                current_interest = self.Emission.current_interest(cursor, uid)
+                vals = {
+                    'date_invoice': '2021-06-30',
+                    'date_start': '2020-06-30',
+                    'date_end': '2021-06-30',
+                    'interest_rate': current_interest
+                }
+
+                amount = self.Investment.get_to_be_interized(cursor, uid, inv_id, vals)
+
+    def test__get_to_be_interized__AllYear(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            inv_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0003'
+                        )[1]
+            current_interest = self.Emission.current_interest(cursor, uid)
+            vals = {
+                'date_invoice': '2021-06-30',
+                'date_start': '2020-06-30',
+                'date_end': '2021-06-30',
+                'interest_rate': current_interest
+            }
+
+            to_be_interized = self.Investment.get_to_be_interized(cursor, uid, inv_id, vals, {})
+
+            self.assertEqual(to_be_interized, 10)
+
+    def test__get_to_be_interized__NotInterestAndDivested(self):
+        with self.assertRaises(InvestmentException) as ctx:
+            with Transaction().start(self.database) as txn:
+                cursor = txn.cursor
+                uid = txn.user
+                inv_id = self.IrModelData.get_object_reference(
+                            cursor, uid, 'som_generationkwh', 'apo_0003'
+                            )[1]
+                self.Investment.write(cursor, uid, inv_id, {'last_effective_date' : '2020-06-23'})
+                current_interest = self.Emission.current_interest(cursor, uid)
+                vals = {
+                    'date_invoice': '2021-06-30',
+                    'date_start': '2020-06-30',
+                    'date_end': '2021-06-30',
+                    'interest_rate': current_interest
+                }
+
+                self.Investment.get_to_be_interized(cursor, uid, inv_id, vals, {})
+
+    def test__get_to_be_interized__InterestAndDivested(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            inv_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0003'
+                        )[1]
+            inv_obj = self.Investment.browse(cursor, uid, inv_id)
+            inv_obj.write({'last_effective_date' : '2020-12-31'})
+            current_interest = self.Emission.current_interest(cursor, uid)
+            vals = {
+                'date_invoice': '2021-06-30',
+                'date_start': '2020-06-30',
+                'date_end': '2021-06-30',
+                'interest_rate': current_interest
+            }
+
+            amount = self.Investment.get_to_be_interized(cursor, uid, inv_id, vals, {})
+
+            self.assertEqual(amount, 5.04)
+
+    def test__get_to_be_interized__NotPayed(self):
+        with self.assertRaises(InvestmentException) as ctx:
+            with Transaction().start(self.database) as txn:
+                cursor = txn.cursor
+                uid = txn.user
+                inv_id = self.IrModelData.get_object_reference(
+                            cursor, uid, 'som_generationkwh', 'apo_0001'
+                            )[1]
+                current_interest = self.Emission.current_interest(cursor, uid)
+                vals = {
+                    'date_invoice': '2021-06-30',
+                    'date_start': '2020-06-30',
+                    'date_end': '2021-06-30',
+                    'interest_rate': current_interest
+                }
+                self.Investment.get_to_be_interized(cursor, uid, inv_id, vals, {})
+
 
 # vim: et ts=4 sw=4

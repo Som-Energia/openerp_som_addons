@@ -108,26 +108,6 @@ class InvestmentStrategyTests(testing.OOTestCase):
     def assertMailLogEqual(self, log, expected):
         self.assertNsEqual(log or '{}', expected)
 
-    def test__create_interest_invoices__NotPayed(self):
-        with Transaction().start(self.database) as txn:
-            cursor = txn.cursor
-            uid = txn.user
-            product_id = self.Product.search(cursor, uid, [
-                ('default_code','=', 'APO_INT'),
-            ])[0]
-            taxes_id = self.Product.read(cursor, uid, product_id, ['supplier_taxes_id'])
-            id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0001'
-                        )[1]
-            current_interest = self.Emission.current_interest(cursor, uid)
-
-            invoice_ids, errs =  self.Investment.create_interest_invoice(cursor, uid,
-            [id], '2021-06-30', current_interest)
-
-            self.assertEqual(invoice_ids, 0)
-            self.assertEqual(len(errs), 1)
-
-
     def test__create_interest_invoices__AllOkAPO(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
@@ -140,9 +120,17 @@ class InvestmentStrategyTests(testing.OOTestCase):
                         cursor, uid, 'som_generationkwh', 'apo_0003'
                         )[1]
             current_interest = self.Emission.current_interest(cursor, uid)
+            vals = {
+                'date_invoice': '2021-06-30',
+                'interes': current_interest,
+                'date_start': '2020-06-30',
+                'date_end': '2021-06-30',
+                'to_be_interized': 10,
+                'interest_rate': current_interest
+            }
 
             invoice_ids, errs =  self.Investment.create_interest_invoice(cursor, uid,
-            [id], '2021-06-30', current_interest)
+            [id], vals)
 
             invoice = self.Invoice.browse(cursor, uid, invoice_ids)
             self.assertFalse(errs)
@@ -213,42 +201,3 @@ class InvestmentStrategyTests(testing.OOTestCase):
                 taxes_id=taxes_id,
                 invoice_line_tax_id=invoice.invoice_line[0].invoice_line_tax_id[0].id
                 ))
-
-    def test__get_to_be_interized__NotPayed(self):
-        with self.assertRaises(InvestmentException) as ctx:
-            with Transaction().start(self.database) as txn:
-                cursor = txn.cursor
-                uid = txn.user
-                product_id = self.Product.search(cursor, uid, [
-                    ('default_code','=', 'APO_INT'),
-                ])[0]
-                taxes_id = self.Product.read(cursor, uid, product_id, ['supplier_taxes_id'])
-                inv_id = self.IrModelData.get_object_reference(
-                            cursor, uid, 'som_generationkwh', 'apo_0001'
-                            )[1]
-                inv_obj = self.Investment.browse(cursor, uid, inv_id)
-                current_interest = self.Emission.current_interest(cursor, uid)
-
-                ap = AportacionsActions(inv_obj, cursor, uid, 1)
-                amount = AportacionsActions.get_to_be_interized(ap, cursor, uid, inv_id, '2021-06-30', current_interest, {})
-
-
-    def test__get_to_be_interized__AllYear(self):
-        with Transaction().start(self.database) as txn:
-            cursor = txn.cursor
-            uid = txn.user
-            product_id = self.Product.search(cursor, uid, [
-                ('default_code','=', 'APO_INT'),
-            ])[0]
-            taxes_id = self.Product.read(cursor, uid, product_id, ['supplier_taxes_id'])
-            inv_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0003'
-                        )[1]
-            inv_obj = self.Investment.browse(cursor, uid, inv_id)
-            current_interest = self.Emission.current_interest(cursor, uid)
-
-            ap = AportacionsActions(inv_obj, cursor, uid, 1)
-
-            to_be_interized = AportacionsActions.get_to_be_interized(ap, cursor, uid, inv_id, '2021-06-30', current_interest, {})
-
-            self.assertEqual(to_be_interized, 10)

@@ -63,9 +63,6 @@ class Generationkwh_MailMockup(osv.osv_memory):
     def log(self, cur, uid):
         ids = self.search(cur, uid, [])
         return self.browse(cur, uid, ids[0]).log
-        
-        
-        
 
 
 Generationkwh_MailMockup()
@@ -1824,7 +1821,7 @@ class GenerationkwhInvestment(osv.osv):
             investment_actions.divest(cursor, uid, id, invoice_ids, errors, date_invoice)
 
         return invoice_ids, errors
-        
+
     def create_divestment_invoice(self, cursor, uid,
         investment_id, date_invoice, to_be_divested,
         irpf_amount_current_year=0, irpf_amount=0, context=None):
@@ -1885,10 +1882,37 @@ class GenerationkwhInvestment(osv.osv):
         has_invoice = Invoice.search(cursor, uid, [('name','=', investment_data['name']+'-INT'+str(year))])
         return has_invoice
 
-    def interest(self, cursor, uid, interest_date, interest_rate, ids=None, context=None):
+    def get_to_be_interized(self, cursor, uid, investment_id, vals, context=None):
+        interest_rate = vals['interest_rate']
+        Investment = self.pool.get('generationkwh.investment')
+        investment = Investment.browse(cursor, uid, investment_id)
+
+        if not investment.purchase_date:
+            raise InvestmentException("Cannot pay interest of an unpaid investment")
+        if investment.last_effective_date and investment.last_effective_date < vals['date_start']:
+            raise InvestmentException("Cannot pay interest of a divested investment")
+        if investment.last_interest_payed_date and vals['date_start'] < investment.last_interest_payed_date:
+            raise InvestmentException("Cannot pay interest of a already paid interest")
+
+        start_date_dt = datetime.strptime(vals['date_start'],'%Y-%m-%d')
+        end_date_dt = datetime.strptime(vals['date_end'],'%Y-%m-%d')
+        if investment.last_effective_date:
+             end_date_dt = datetime.strptime(investment.last_effective_date,'%Y-%m-%d')
+
+        days_of_interest = (end_date_dt - start_date_dt).days
+        amount = investment.nshares * gkwh.shareValue
+        daily_interest = (interest_rate/100) / 365
+
+        return round(amount * daily_interest * days_of_interest, 2)
+
+    def interest(self, cursor, uid, ids, vals, context=None):
+        if not context:
+            context = {}
+        open_invoices = context.get('open_invoices', False)
         User = self.pool.get('res.users')
-        Soci = self.pool.get('somenergia.soci')
         username = User.read(cursor, uid, uid, ['name'])['name']
+        date_invoice = vals['date_invoice']
+
         interest_ids = []
         interest_errors = []
 
@@ -1905,50 +1929,54 @@ class GenerationkwhInvestment(osv.osv):
             )
 
             if self.has_interest_invoice(cursor, uid, investment_id):
-                interest_errors.append('Investment already have interest invoice')
+                interest_errors.append('{}: Investment already have interest invoice'.format(inv.name))
                 continue
 
             if inv.emission_id.type != 'apo':
-                interest_errors.append('Investment not APO, not interest has to be payed')
+                interest_errors.append('{}: Investment not APO, not interest has to be payed'.format(inv.name))
                 continue
 
+            try:
+                to_be_interized = self.get_to_be_interized(cursor, uid,
+                    investment_id, vals, context)
+            except InvestmentException as e:
+                interest_errors.append('{}: {}'.format(inv.name, str(e)))
+                continue
+
+            vals['to_be_interized'] = to_be_interized
+
             interest_id, error = self.create_interest_invoice(cursor, uid,
-                    investment_id = investment_id,
-                    interest_date = interest_date,
-                    interest_rate = interest_rate,
-                    )
+                    investment_id, vals)
 
             if error:
-                interest_errors.append(error)
+                interest_errors.append('{}: {}'.format(inv.name, error))
                 continue
             interest_ids.append(interest_id)
 
-            investment_actions = AportacionsActions(self, cursor, uid, 1)
-            to_be_interized = investment_actions.get_to_be_interized(cursor, uid,
-                investment_id, interest_date, interest_rate, context)
             invstate.interest(
-                date = interest_date,
+                date = date_invoice,
                 to_be_interized = to_be_interized,
                 )
             self.write(cursor, uid, investment_id, dict(
                 invstate.erpChanges(),
             ), context)
 
-            self.open_invoices(cursor, uid, [interest_id])
-            payment_mode = self.investment_actions(cursor, uid, investment_id).get_payment_mode_name(cursor, uid)
-            self.invoices_to_payment_order(cursor, uid,
-                [interest_id], payment_mode)
-            self.send_mail(cursor, uid, interest_id,
-                'account.invoice', '_interest_notification_mail', investment_id)
+            if open_invoices:
+                self.open_invoices(cursor, uid, [interest_id])
+                payment_mode = self.investment_actions(cursor, uid, investment_id).get_payment_mode_name(cursor, uid)
+                self.invoices_to_payment_order(cursor, uid,
+                    [interest_id], payment_mode)
+                self.send_mail(cursor, uid, interest_id,
+                    'account.invoice', '_interest_notification_mail', investment_id)
 
         return interest_ids, interest_errors
 
     def create_interest_invoice(self, cursor, uid,
-            investment_id, interest_date, interest_rate, context=None):
+            investment_id, vals, context=None):
 
         investment_actions = AportacionsActions(self, cursor, uid, 1)
         investment_id, error = investment_actions.create_interest_invoice(cursor, uid,
-                investment_id, interest_date, interest_rate, context)
+                investment_id, vals, context)
         return investment_id, error
 
 class InvestmentProvider(ErpWrapper):
