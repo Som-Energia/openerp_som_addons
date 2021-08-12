@@ -1,6 +1,7 @@
 from ..component_utils import dateformat
 
 class ProcesA3:
+
     def __init__(self):
         pass
 
