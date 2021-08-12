@@ -48,13 +48,13 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         #Reclama block
         'mostra_reclama': fields.boolean('Mostra bloc de Reclama'),
         #Factura block
-        'mostra_factura': fields.boolean('Mostra bloc de Reclama'),
+        'mostra_factura': fields.boolean('Mostra bloc de Factura'),
         #Comptabilitat block
-        'mostra_comptabilitat': fields.boolean('Mostra bloc de Reclama'),
+        'mostra_comptabilitat': fields.boolean('Mostra bloc de Comptabilitat'),
         #Gestió de Contractes block
-        'mostra_ATR': fields.boolean('Mostra bloc de Reclama'),
+        'mostra_ATR': fields.boolean('Mostra bloc de Gestió de Contractes'),
         #Gestió de cobraments block
-        'mostra_cobraments': fields.boolean('Mostra bloc de Reclama'),
+        'mostra_cobraments': fields.boolean('Mostra bloc de Gestió de Cobraments'),
     }
 
     _defaults = {
@@ -100,7 +100,8 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             t.flush()
             gdm_obj.uploadMediaToDrive(cursor, uid, file_name, t.name, folder_hash)
 
-        wiz.write({'state': "finished"})
+        return {'type': 'ir.actions.act_window_close'}
+
 
     # data generation
     def get_data(self, cursor, uid, id, context=None):
@@ -127,7 +128,16 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         if wiz.mostra_cobraments:
             pass
         if wiz.mostra_ATR:
-            pass
+            search_params = [
+                ('cups_id.id', '=', wiz.polissa.cups.id),
+                ('proces_id.name', '=', 'A3'),
+                ]
+            if wiz.date_from:
+                search_params.append(('date', '>=', wiz.date_from))
+            if wiz.date_to:
+                search_params.append(('date', '<=', wiz.date_to))
+            sw_ids = sw_obj.search(cursor, uid, search_params)
+            result.extend(self.extract_switching_metadata(cursor, uid, sw_ids, context))
         if wiz.mostra_comptabilitat:
             pass
 
@@ -139,10 +149,10 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         return [{
             'type': 'header',
             'date': '1970-01-01',
-            'data_alta': pol_data.data_alta,
+            'data_alta': dateformat(pol_data.data_alta, False),
             'contract_number': pol_data.name,
             'titular_name': pol_data.titular.name,
-            'titular_nif': pol_data.titular_nif,
+            'titular_nif': pol_data.titular_nif[2:11],
             'distribuidora': pol_data.distribuidora.name,
             'distribuidora_contract_number': pol_data.ref_dist,
             'cups': pol_data.cups.name,
