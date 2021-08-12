@@ -1891,6 +1891,18 @@ ${text_legal}
             <field name="partner_id">1</field>
             <field name="sepa_creditor_code">ES24000F55091367</field>
         </record>
+        <record id="apo_investment_interest_payment_mode" model="payment.mode">
+            <field name="name">APORTACIONS INT</field>
+            <field name="type" search="[('code', '=', 'TRANSFERENCIA_CSB')]"/>
+            <field name="journal" ref="apo_journal"/>
+            <field name="bank_id" search="[('partner_id', '=', 1)]"/>
+            <field name="tipo">sepa34</field>
+            <field name="nombre">Som Energia SCCL</field>
+            <field name="sufijo">000</field>
+            <field name="require_bank_account" eval="True"/>
+            <field name="partner_id">1</field>
+            <field name="sepa_creditor_code">ES24000F55091367</field>
+        </record>
         <record id="emissio_apo" model="generationkwh.emission">
             <field name="name">Aportacions</field>
             <field name="code">APO_202003</field>
