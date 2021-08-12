@@ -19,18 +19,22 @@ class A301(ProcesA3.ProcesA3):
                     'potencia' : pot.potencia
                 })
         result['documents_adjunts'] = [(get_description(doc.type, "TABLA_61"), doc.url) for doc in step.document_ids]
-        import pudb; pu.db
+
         swl_obj = step.pool.get('giscedata.switching.log')
 
-        proces = step.sw_id.codi_sollicitud[:len(step.sw_id.codi_sollicitud)//2]
-        pas = step.sw_id.codi_sollicitud[len(step.sw_id.codi_sollicitud)//2:]
+        search_params = [
+            ('request_code','=',step.sw_id.codi_sollicitud),
+            ('tipus','=','export'),
+            ('proces','=','A3'),
+            ('pas','=', '01'),
+            ('status', '=', 'correcte')
+        ]
+        swl_ids = swl_obj.search(cursor, uid, search_params)
 
-        #swl_ids = swl_obj.search(cursor, uid,[('request_code','=',step.sw_id.codi_sollicitud),('tipus','=','export'),('sw_proces','=',proces), ('sw_pas','=',pas)])
-        swl_ids = swl_obj.search(cursor, uid,[('request_code','=',step.sw_id.codi_sollicitud)])
-
-        if swl_ids != []:
-            swl_obj.browse(swl_ids[0])
-            result['date'] = swl_obj.data
-            result['day'] = dateformat(swl_obj.data)
+        if len(swl_ids) > 0:
+            swl = swl_obj.browse(cursor, uid, swl_ids[0])
+            result['date'] = swl.case_date
+            result['day'] = dateformat(swl.case_date)
+            result['create'] = dateformat(swl.case_date, True)
 
         return result
