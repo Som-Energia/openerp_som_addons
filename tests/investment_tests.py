@@ -2633,6 +2633,8 @@ class InvestmentTests(testing.OOTestCase):
             investment_id = self.IrModelData.get_object_reference(
                         cursor, uid, 'som_generationkwh', 'apo_0003'
                         )[1]
+
+            context = {'open_invoices': True}
             vals = {
                 'date_invoice': '2021-06-30',
                 'date_start': '2020-06-30',
@@ -2640,7 +2642,7 @@ class InvestmentTests(testing.OOTestCase):
                 'to_be_interized': 8.1,
                 'interest_rate': 1.0
             }
-            interest_ids, errors = self.Investment.interest(cursor, uid, [investment_id], vals)
+            interest_ids, errors = self.Investment.interest(cursor, uid, [investment_id], vals, context)
 
             self.assertEqual(len(interest_ids), 1)
             self.assertEqual(len(errors), 0)

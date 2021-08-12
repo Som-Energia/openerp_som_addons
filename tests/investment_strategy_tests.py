@@ -119,9 +119,10 @@ class InvestmentStrategyTests(testing.OOTestCase):
             id = self.IrModelData.get_object_reference(
                         cursor, uid, 'som_generationkwh', 'apo_0003'
                         )[1]
+            today = datetime.now().strftime('%Y-%m-%d')
             current_interest = self.Emission.current_interest(cursor, uid)
             vals = {
-                'date_invoice': '2021-06-30',
+                'date_invoice': today,
                 'interes': current_interest,
                 'date_start': '2020-06-30',
                 'date_end': '2021-06-30',
@@ -163,7 +164,8 @@ class InvestmentStrategyTests(testing.OOTestCase):
                   price_unit: 10.0
                   price_subtotal: 10.0
                   note:
-                    interestDate: '2021-06-30'
+                    dateInvoice: '{invoice_date}'
+                    dateEnd: '2021-06-30'
                     interestRate: 1.0
                     investmentId: {investment_id}
                     investmentInitialAmount: 1000
