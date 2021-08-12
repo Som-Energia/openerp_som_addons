@@ -130,7 +130,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         if wiz.mostra_ATR:
             search_params = [
                 ('cups_id.id', '=', wiz.polissa.cups.id),
-                ('proces_id.name', '=', 'A3'),
+                ('proces_id.name', 'in', ['A3', 'C1']),
                 ]
             if wiz.date_from:
                 search_params.append(('date', '>=', wiz.date_from))
