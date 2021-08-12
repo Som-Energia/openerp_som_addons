@@ -33,8 +33,6 @@ class A301(ProcesA3.ProcesA3):
 
         if len(swl_ids) > 0:
             swl = swl_obj.browse(cursor, uid, swl_ids[0])
-            result['date'] = swl.case_date
             result['day'] = dateformat(swl.case_date)
-            result['create'] = dateformat(swl.case_date, True)
 
         return result
