@@ -1963,7 +1963,7 @@ class GenerationkwhInvestment(osv.osv):
 
             if open_invoices:
                 self.open_invoices(cursor, uid, [interest_id])
-                payment_mode = self.investment_actions(cursor, uid, investment_id).get_payment_mode_name(cursor, uid)
+                payment_mode = self.investment_actions(cursor, uid, investment_id).get_interest_payment_mode_name(cursor, uid)
                 self.invoices_to_payment_order(cursor, uid,
                     [interest_id], payment_mode)
                 self.send_mail(cursor, uid, interest_id,
