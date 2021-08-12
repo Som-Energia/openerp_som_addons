@@ -19,7 +19,7 @@ class InvestmentActions(ErpWrapper):
     @property
     def journalCode(self):
         pass
-    
+
     @property
     def productCode(self):
         pass
@@ -63,14 +63,14 @@ class InvestmentActions(ErpWrapper):
 
     def divest(self, cursor, uid, id, invoice_ids, errors, date_invoice):
         pass
-    
+
     def get_or_create_investment_account(self, cursor, uid, partner_id):
         pass
 
     def create_divestment_invoice(self, cursor, uid,
             investment_id, date_invoice, to_be_divested,
             irpf_amount_current_year=0, irpf_amount=0, context=None):
-        
+
         Partner = self.erp.pool.get('res.partner')
         Product = self.erp.pool.get('product.product')
         Invoice = self.erp.pool.get('account.invoice')
@@ -99,7 +99,7 @@ class InvestmentActions(ErpWrapper):
         journal_id = Journal.search(cursor, uid, [
             ('code','=',self.journalCode),
             ])[0]
-        
+
         # The payment type
         payment_type_id = PaymentType.search(cursor, uid, [
             ('code', '=', 'TRANSFERENCIA_CSB'),
@@ -140,7 +140,7 @@ class InvestmentActions(ErpWrapper):
         vals.update(Invoice.onchange_partner_id(
             cursor, uid, [], 'in_invoice', partner_id,
         ).get('value', {}))
-        
+
 
         vals.update({
             'partner_id': partner_id,
