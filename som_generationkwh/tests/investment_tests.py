@@ -1623,7 +1623,7 @@ class InvestmentTests(testing.OOTestCase):
 
             member1_id = self.IrModelData.get_object_reference(
                 cursor, uid, 'som_generationkwh', 'soci_0001')[1]
-            
+
             member2_id = self.IrModelData.get_object_reference(
                 cursor, uid, 'som_generationkwh', 'soci_generation')[1]
 
@@ -2512,12 +2512,12 @@ class InvestmentTests(testing.OOTestCase):
             )[1]
 
             self.Investment.write(cursor, uid, investment_id, {'member_id': member_id})
-            
+
             self.Investment.divest(cursor, uid, [investment_id])
 
             last_effective_date = self.Investment.read(cursor, uid, investment_id, ['last_effective_date'])['last_effective_date']
             today = datetime.today().strftime("%Y-%m-%d")
-            
+
             self.assertEqual(last_effective_date, today)
 
             #2019-10-01
@@ -2576,7 +2576,7 @@ class InvestmentTests(testing.OOTestCase):
 
             with self.assertRaises(except_osv) as ctx:
                 self.Investment.investment_sign_request(cursor, uid, investment_id)
-            
+
     def test__generationwkwh_investment_sign_callback__ok(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
