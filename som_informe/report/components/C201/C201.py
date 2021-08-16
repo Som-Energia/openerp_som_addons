@@ -31,7 +31,6 @@ class C201(ProcesC2.ProcesC2):
         if len(step.document_ids) == 0:
             result['adjunts'] = False
 
-        """
         swl_obj = step.pool.get('giscedata.switching.log')
 
         search_params = [
@@ -46,6 +45,5 @@ class C201(ProcesC2.ProcesC2):
         if len(swl_ids) > 0:
             swl = swl_obj.browse(cursor, uid, swl_ids[0])
             result['day'] = dateformat(swl.case_date)
-        """
 
         return result
