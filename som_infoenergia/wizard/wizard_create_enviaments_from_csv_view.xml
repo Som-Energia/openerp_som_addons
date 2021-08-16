@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_create_from_csv_form">
+            <field name="name">wizard.create.enviaments.from.csv.form</field>
+            <field name="model">wizard.create.enviaments.from.csv</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Crea enviaments des de CSV">
+                    <field name="state" invisible="1"/>
+                    <group attrs="{'invisible': [('state', '!=', 'init')]}">
+                        <label string="Crear enviaments de les pòlisses indicades al CSV" colspan="4"/>
+                        <label string="Format del CSV: a la primera columna hi ha d'haver els números dels contractes, sense capçalera. Un contracte a cada fila." colspan="4"/>
+                        <field name="csv_file" colspan="4" filename="name" string="Arxiu CSV"/>
+                        <button name="create_from_file" type="object" string="Crear enviaments" icon="gtk-ok"/>
+                    </group>
+                    <group attrs="{'invisible': [('state', '!=', 'finished')]}">
+                        <field name="info" colspan="4"/>
+                        <button special="cancel" string="Sortir" icon="gtk-ok"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_create_from_csv">
+            <field name="name">Crea enviaments des de CSV</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.create.enviaments.from.csv</field>
+            <field name="view_type">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_create_from_csv_form"/>
+        </record>
+        <record id="values_infoenergia_create_from_csv_form" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Crea enviaments des de CSV</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">som.infoenergia.lot.enviament</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_create_from_csv'))"/>
+        </record>
+    </data>
+</openerp>
