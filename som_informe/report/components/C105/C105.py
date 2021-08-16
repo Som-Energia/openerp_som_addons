@@ -22,21 +22,4 @@ class C105(ProcesC1.ProcesC1):
         result['tensio'] = get_description(step.tensio_suministre, "TABLA_64")
         result['data_activacio'] = step.data_activacio
 
-        """
-        swl_obj = step.pool.get('giscedata.switching.log')
-
-        search_params = [
-            ('request_code','=',step.sw_id.codi_sollicitud),
-            ('tipus','=','export'),
-            ('proces','=','C1'),
-            ('pas','=', '01'),
-            ('status', '=', 'correcte')
-        ]
-        swl_ids = swl_obj.search(cursor, uid, search_params)
-
-        if len(swl_ids) > 0:
-            swl = swl_obj.browse(cursor, uid, swl_ids[0])
-            result['day'] = dateformat(swl.case_date)
-        """
-
         return result
