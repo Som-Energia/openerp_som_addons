@@ -2,7 +2,7 @@
 <li>
     ${_(u"El %s Som Energia presenta la sol·licitud següent a la distribuïdora ( %s ):") % (d.day, d.distribuidora) }<br/>
     <br>
-    ${_(u"<b>Procediment:</b> B1 (Alta de subministrament)")}<br/>
+    ${_(u"<b>Procediment:</b> B1 (Baixa de subministrament o suspensió del subministrament)")}<br/>
     ${_(u"<b>Pas:</b> 01")}<br/>
     ${_(u"<b>Codi de la sol·licitud:</b> %s") % (d.codi_solicitud)}<br/>
     %if d.text:
