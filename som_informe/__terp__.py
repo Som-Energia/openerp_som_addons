@@ -12,6 +12,7 @@
         "crm",
         "giscedata_polissa_comer",
         "giscedata_switching",
+        "giscedata_facturacio_comer",
     ],
     "init_xml": [],
     "demo_xml": [],
