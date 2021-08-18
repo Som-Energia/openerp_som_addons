@@ -2,7 +2,7 @@
 <li>
     ${_(u"El %s la distribuïdora ( %s ) ens dóna l’acceptació/rebuig del cas tramitat:") % (d.day, d.distribuidora) }<br/>
     <br>
-    ${_(u"<b>Procediment:</b> B1 (Alta de subministrament)")}<br/>
+    ${_(u"<b>Procediment:</b> B1 (Baixa de subministrament o suspensió del subministrament)")}<br/>
     ${_(u"<b>Pas:</b> 02")}<br/>
     ${_(u"<b>Codi de la sol·licitud:</b> %s") % (d.codi_solicitud)}<br/>
     ${_(u"<b>Acceptació o Rebuig per part de la distribuidora:</b>")}
