@@ -18,7 +18,7 @@ class E101(ProcesE1.ProcesE1):
         search_params = [
             ('request_code','=',step.sw_id.codi_sollicitud),
             ('tipus','=','export'),
-            ('proces','=','C2'),
+            ('proces','=','E1'),
             ('pas','=', '01'),
             ('status', '=', 'correcte')
         ]
