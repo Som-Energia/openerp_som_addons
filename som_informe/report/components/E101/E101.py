@@ -1,4 +1,5 @@
 from gestionatr.utils import get_description
+from ..component_utils import dateformat
 from ..ProcesE1 import ProcesE1
 
 class E101(ProcesE1.ProcesE1):
