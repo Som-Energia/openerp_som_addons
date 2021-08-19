@@ -17,7 +17,7 @@ class D102(ProcesD1.ProcesD1):
                     'descripcio' : rebuig.desc_rebuig
                 })
 
-        '''
+        
         swl_obj = step.pool.get('giscedata.switching.log')
 
         search_params = [
@@ -32,6 +32,6 @@ class D102(ProcesD1.ProcesD1):
         if len(swl_ids) > 0:
             swl = swl_obj.browse(cursor, uid, swl_ids[0])
             result['day'] = dateformat(swl.case_date)
-        '''
+        
 
         return result
