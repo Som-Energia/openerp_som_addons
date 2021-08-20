@@ -12,10 +12,10 @@
     % else:
         ${_(u"<b>Acceptació o rebuig per part de la distribuïdor:</b> Acceptació")}<br/>
     % endif
-    ${_(u"<b>Codi de reclamació de la distribuïdora:</b> %s") % (d.codi_reclamacio_distri)}<br/>
     % if d.rebuig:
         ${_(u"<b>Data de rebuig:</b> %s") % (d.data_rebuig)}<br/>
     % else:
+        ${_(u"<b>Codi de reclamació de la distribuïdora:</b> %s") % (d.codi_reclamacio_distri)}<br/>
         ${_(u"<b>Data d’acceptació:</b> %s") % (d.data_acceptacio)}<br/>
     % endif
     <br/>
