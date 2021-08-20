@@ -1,6 +1,6 @@
 <%page args="d" />
 <li>
-    ${_(u"El %s la distribuïdora ( %s ) ens dóna l’acceptació/rebuig de l’anul·lació sol·licitada com a comercialitzadora entrant o en vigor:") % (d.day, d.distribuidora) }<br/>
+    ${_(u"El %s la distribuïdora (%s) ens dóna l’acceptació/rebuig de l’anul·lació sol·licitada com a comercialitzadora entrant o en vigor:") % (d.day, d.distribuidora) }<br/>
     <br>
     ${_(u"<b>Procediment:</b> E1")}<br/>
     ${_(u"<b>Pas:</b> 09")}<br/>

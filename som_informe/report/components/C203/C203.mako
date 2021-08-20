@@ -1,6 +1,6 @@
 <%page args="d" />
 <li>
-    ${_(u"El %s ens arriba una comunicació per part de la distribuïdora ( %s ) en relació  al canvi de comercialitzadora amb canvis amb codi de sol·licitud [%s]:") % (d.day, d.distribuidora, d.codi_solicitud) }<br/>
+    ${_(u"El %s ens arriba una comunicació per part de la distribuïdora (%s) en relació  al canvi de comercialitzadora amb canvis amb codi de sol·licitud %s:") % (d.day, d.distribuidora, d.codi_solicitud) }<br/>
     <br>
     ${_(u"<b>Procediment:</b> C2 (Alta de subministrament)")}<br/>
     ${_(u"<b>Pas:</b> 03")}<br/>

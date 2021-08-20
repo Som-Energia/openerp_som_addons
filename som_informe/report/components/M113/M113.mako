@@ -1,6 +1,6 @@
 <%page args="d" />
 <li>
-    ${_(u"El %s Som Energia aporta una informació addicional a la distribuïdora ( %s ) en relació amb la modificació en curs:") % (d.day, d.distribuidora) }<br/>
+    ${_(u"El %s Som Energia aporta una informació addicional a la distribuïdora (%s) en relació amb la modificació en curs:") % (d.day, d.distribuidora) }<br/>
     <br>
     ${_(u"<b>Procediment:</b>  M1 (Modificació contractual)")}<br/>
     ${_(u"<b>Pas:</b> 13")}<br/>
