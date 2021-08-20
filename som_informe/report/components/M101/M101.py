@@ -28,8 +28,11 @@ class M101(ProcesM1.ProcesM1):
         result['nom'] = step.nom
         result['cognom1'] = step.cognom_1
         result['cognom2'] = step.cognom_2
-        result['document_identificatiu'] = step.tipus_document
-        result['codi_document'] = step.codi_document
+        result['document_identificatiu'] = get_description(step.tipus_document, "TABLA_6")
+        if step.codi_document[:1] == 'ES':
+            result['codi_document'] = step.codi_document[2:]
+        else:
+            result['codi_document'] = step.codi_document
         result['tipus_autoconsum'] =  get_description(step.tipus_autoconsum, "TABLA_113")
         result['control_potencia'] = step.control_potencia
         result['comentaris'] = step.comentaris
