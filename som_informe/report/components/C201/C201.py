@@ -14,8 +14,11 @@ class C201(ProcesC2.ProcesC2):
         result['nom'] = step.nom
         result['primer_cognom'] = step.cognom_1
         result['segon_cognom'] = step.cognom_2
-        result['document_acreditatiu'] = step.tipus_document
-        result['codi_document'] = step.codi_document
+        result['document_acreditatiu'] = get_description(step.tipus_document, "TABLA_6")
+        if step.codi_document[:1] == 'ES':
+            result['codi_document'] = step.codi_document[2:]
+        else:
+            result['codi_document'] = step.codi_document
         result['tipus_contracte'] =  get_description(step.tipus_contracte, "TABLA_9")
         result['tipus_autoconsum'] =  get_description(step.tipus_autoconsum, "TABLA_113")
         result['control_potencia'] = step.control_potencia
