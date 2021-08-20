@@ -20,6 +20,6 @@ class C205(ProcesC2.ProcesC2):
                 })
         result['tarifa'] =  get_description(step.tarifaATR, "TABLA_17")
         result['tensio'] = get_description(step.tensio_suministre, "TABLA_64")
-        result['data_activacio'] = step.data_activacio
+        result['data_activacio'] = dateformat(step.data_activacio)
 
         return result

@@ -9,5 +9,5 @@ class B105(ProcesB1.ProcesB1):
     def get_data(self, wiz, cursor, uid, step):
         result = ProcesB1.ProcesB1.get_data(self, wiz, cursor, uid, step)
         result['type'] = 'B105'
-        result['data_activacio'] = step.data_activacio
+        result['data_activacio'] = dateformat(step.data_activacio)
         return result

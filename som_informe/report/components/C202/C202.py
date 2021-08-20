@@ -16,6 +16,6 @@ class C202(ProcesC2.ProcesC2):
                     'codi' : rebuig.motiu_rebuig.name,
                     'descripcio' : rebuig.desc_rebuig
                 })
-        result['data_rebuig'] = step.data_rebuig
+        result['data_rebuig'] = dateformat(step.data_rebuig)
 
         return result

@@ -9,5 +9,5 @@ class M106(ProcesM1.ProcesM1):
     def get_data(self, wiz, cursor, uid, step):
         result = ProcesM1.ProcesM1.get_data(self, wiz, cursor, uid, step)
         result['type'] = 'M106'
-        result['data_creacio'] = step.date_created
+        result['data_creacio'] = dateformat(step.date_created)
         return result
