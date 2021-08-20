@@ -1,3 +1,4 @@
+from ..component_utils import dateformat
 from ..ProcesA3 import ProcesA3
 
 class A307(ProcesA3.ProcesA3):
@@ -8,7 +9,7 @@ class A307(ProcesA3.ProcesA3):
         result = ProcesA3.ProcesA3.get_data(self, wiz, cursor, uid, step)
         result['type'] = 'A307'
         result['rebuig'] = step.rebuig
-        result['data_creacio'] = step.date_created
+        result['data_creacio'] = dateformat(step.date_created)
         result['rebutjos'] = []
         for rebuig in step.rebuig_ids:
             result['rebutjos'].append({

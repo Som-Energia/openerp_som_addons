@@ -9,6 +9,6 @@ class E110(ProcesE1.ProcesE1):
     def get_data(self, wiz, cursor, uid, step):
         result = ProcesE1.ProcesE1.get_data(self, wiz, cursor, uid, step)
         result['type'] = 'E110'
-        result['data_acceptacio'] = step.data_acceptacio
+        result['data_acceptacio'] = dateformat(step.data_acceptacio)
 
         return result

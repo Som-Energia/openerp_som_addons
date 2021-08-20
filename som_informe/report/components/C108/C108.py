@@ -9,6 +9,6 @@ class C108(ProcesC1.ProcesC1):
     def get_data(self, wiz, cursor, uid, step):
         result = ProcesC1.ProcesC1.get_data(self, wiz, cursor, uid, step)
         result['type'] = 'C108'
-        result['data_creacio'] = step.date_created
+        result['data_creacio'] = dateformat(step.date_created)
 
         return result

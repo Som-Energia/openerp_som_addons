@@ -9,7 +9,7 @@ class A304(ProcesA3.ProcesA3):
     def get_data(self, wiz, cursor, uid, step):
         result = ProcesA3.ProcesA3.get_data(self, wiz, cursor, uid, step)
         result['type'] = 'A304'
-        result['data_rebuig'] = step.data_rebuig
+        result['data_rebuig'] = dateformat(step.data_rebuig)
         result['rebuigs'] = []
         for rebuig in step.rebuig_ids:
             result['rebuigs'].append({
