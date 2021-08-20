@@ -18,7 +18,7 @@ class M105(ProcesM1.ProcesM1):
                     'potencia' : pot.potencia
                 })
         result['tarifa'] =  get_description(step.tarifaATR, "TABLA_17")
-        result['data_activacio'] = step.data_activacio
+        result['data_activacio'] = dateformat(step.data_activacio)
 
         swl_obj = step.pool.get('giscedata.switching')
 

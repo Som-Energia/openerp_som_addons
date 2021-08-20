@@ -9,11 +9,11 @@ class E101(ProcesE1.ProcesE1):
     def get_data(self, wiz, cursor, uid, step):
         result = ProcesE1.ProcesE1.get_data(self, wiz, cursor, uid, step)
         result['type'] = 'E101'
-        result['tipus_solicitud'] =  get_description(step.tipus_sollicitud, "TABLA_122")
-        result['codi_subjacent'] =step.atr_subjacent.codi_sollicitud
-        result['data_subjacent'] = step.atr_subjacent.data_sollicitud
+        result['tipus_solicitud'] = get_description(step.tipus_sollicitud, "TABLA_122")
+        result['codi_subjacent'] = step.atr_subjacent.codi_sollicitud
+        result['data_subjacent'] = dateformat(step.atr_subjacent.data_sollicitud)
 
-        
+
         swl_obj = step.pool.get('giscedata.switching.log')
 
         search_params = [
@@ -28,6 +28,6 @@ class E101(ProcesE1.ProcesE1):
         if len(swl_ids) > 0:
             swl = swl_obj.browse(cursor, uid, swl_ids[0])
             result['day'] = dateformat(swl.case_date)
-        
+
 
         return result
