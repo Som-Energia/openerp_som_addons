@@ -1,6 +1,6 @@
 <%page args="d" />
 <li>
-    ${_(u"El %s la distribuïdora ( [%s] ) ens comunica l’acceptació d’una sol·licitud de canvi  de companyia amb canvis del contracte en curs. Per tant, ens indica que de forma imminent el contracte canviarà de companyia comercialitzadora amb algun o alguns canvis en el contracte d’accés:") % (d.day, d.distribuidora) }<br/>
+    ${_(u"El %s la distribuïdora (%s) ens comunica l’acceptació d’una sol·licitud de canvi  de companyia amb canvis del contracte en curs. Per tant, ens indica que de forma imminent el contracte canviarà de companyia comercialitzadora amb algun o alguns canvis en el contracte d’accés:") % (d.day, d.distribuidora) }<br/>
     <br>
     ${_(u"<b>Procediment:</b> C2 (Canvi de Comercialitzadora amb modificacions en el contracte d’accés)")}<br/>
     ${_(u"<b>Pas:</b> 11")}<br/>
