@@ -9,11 +9,11 @@
     %if d.tipus_sol == 'A' or d.tipus_sol=='S':
         ${_(u"<b>Canvi de titular:</b> %s") % (d.canvi_titular)}<br/>
         ${_(u"<b>Nom de la persona o societat:</b> %s") % (d.nom)}<br/>
-        ${_(u"<b>Primer cognom:</b> %s") % (d.cognom_1)}<br/>
-        ${_(u"<b>Segon cognom:</b> %s") % (d.cognom_2)}<br/>
+        ${_(u"<b>Primer cognom:</b> %s") % (d.cognom1)}<br/>
+        ${_(u"<b>Segon cognom:</b> %s") % (d.cognom2)}<br/>
         ${_(u"<b>Document identificatiu:</b> %s") % (d.document_identificatiu)}<br/>
         ${_(u"<b>Codi document:</b> %s") % (d.codi_document)}<br/>
-    %endif  
+    %endif
 
     %if d.tipus_sol == 'N' or d.tipus_sol=='A':
         ${_(u"<b>Tipus autoconsum:</b> %s") % (d.tipus_autoconsum)}<br/>
