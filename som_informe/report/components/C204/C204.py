@@ -9,7 +9,7 @@ class C204(ProcesC2.ProcesC2):
     def get_data(self, wiz, cursor, uid, step):
         result = ProcesC2.ProcesC2.get_data(self, wiz, cursor, uid, step)
         result['type'] = 'C204'
-        result['data_rebuig'] = step.data_rebuig
+        result['data_rebuig'] = dateformat(step.data_rebuig)
         result['rebutjos'] = []
         for rebuig in step.rebuig_ids:
             result['rebutjos'].append({

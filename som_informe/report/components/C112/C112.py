@@ -9,7 +9,7 @@ class C112(ProcesC1.ProcesC1):
     def get_data(self, wiz, cursor, uid, step):
         result = ProcesC1.ProcesC1.get_data(self, wiz, cursor, uid, step)
         result['type'] = 'C112'
-        result['data_creacio'] = step.date_created
-        result['data_rebuig'] = step.data_rebuig
+        result['data_creacio'] = dateformat(step.date_created)
+        result['data_rebuig'] = dateformat(step.data_rebuig)
 
         return result

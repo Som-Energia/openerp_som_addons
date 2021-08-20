@@ -9,9 +9,9 @@ class A303(ProcesA3.ProcesA3):
     def get_data(self, wiz, cursor, uid, step):
         result = ProcesA3.ProcesA3.get_data(self, wiz, cursor, uid, step)
         result['type'] = 'A303'
-        result['data_creacio'] = step.date_created
-        result['data_incidencia'] = step.data_incidencia
-        result['data_prevista_accio'] = step.data_prevista_accio
+        result['data_creacio'] = dateformat(step.date_created)
+        result['data_incidencia'] = dateformat(step.data_incidencia)
+        result['data_prevista_accio'] = dateformat(step.data_prevista_accio)
         result['incidencies'] = []
         for incidencia in step.incidencia_ids:
             result['incidencies'].append({

@@ -1,3 +1,4 @@
+from ..component_utils import dateformat
 from gestionatr.utils import get_description
 from ..ProcesE1 import ProcesE1
 
@@ -15,7 +16,7 @@ class E102(ProcesE1.ProcesE1):
                     'codi' : rebuig.motiu_rebuig.name,
                     'descripcio' : rebuig.desc_rebuig
                 })
-        result['data_rebuig'] = step.data_rebuig
+        result['data_rebuig'] = dateformat(step.data_rebuig)
 
 
         return result

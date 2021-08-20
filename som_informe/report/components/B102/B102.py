@@ -16,6 +16,6 @@ class B102(ProcesB1.ProcesB1):
                     'codi' : rebuig.motiu_rebuig.name,
                     'descripcio' : rebuig.desc_rebuig
                 })
-        result['data_rebuig'] = step.data_rebuig
-        result['data_activacio'] = step.data_ult_lect
+        result['data_rebuig'] = dateformat(step.data_rebuig)
+        result['data_activacio'] = dateformat(step.data_ult_lect)
         return result
