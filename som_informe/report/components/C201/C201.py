@@ -29,11 +29,13 @@ class C201(ProcesC2.ProcesC2):
                     'potencia' : pot.potencia
                 })
         result['tarifa'] =  get_description(step.tarifaATR, "TABLA_17")
-        result['tensio'] = get_description(step.tensio_solicitada, "TABLA_64")
+        if step.tensio_solicitada:
+            result['tensio'] = get_description(step.tensio_solicitada, "TABLA_64")
         result['comentaris'] = step.comentaris
         if len(step.document_ids) == 0:
             result['adjunts'] = False
 
+        '''
         swl_obj = step.pool.get('giscedata.switching.log')
 
         search_params = [
