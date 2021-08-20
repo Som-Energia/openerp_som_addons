@@ -1,6 +1,6 @@
 <%page args="d" />
 <li>
-    ${_(u"El %s la distribuïdora ( %s )  ens comunica el rebuig de la baixa després d’actuacions en camp, per concòrrer al mateix temps o bé un canvi de comercialitzadora vigent o bé una incidència en camp:") % (d.day, d.distribuidora) }<br/>
+    ${_(u"El %s la distribuïdora (%s)  ens comunica el rebuig de la baixa després d’actuacions en camp, per concòrrer al mateix temps o bé un canvi de comercialitzadora vigent o bé una incidència en camp:") % (d.day, d.distribuidora) }<br/>
     <br>
     ${_(u"<b>Procediment:</b> B1")}<br/>
     ${_(u"<b>Pas:</b> 07")}<br/>
