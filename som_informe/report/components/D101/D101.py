@@ -15,6 +15,10 @@ class D101(ProcesD1.ProcesD1):
         result['CUPS'] = step.cups
         result['generadors'] = []
         for gen in step.generadors:
+            if gen.identificador[:1] == 'ES':
+                aux = gen.identificador[2:]
+            else:
+                aux = gen.identificador
             result['generadors'].append({
                     'potencia_instalada' : gen.pot_installada_gen,
                     'tec_generador' : gen.tec_generador,
@@ -25,8 +29,8 @@ class D101(ProcesD1.ProcesD1):
                     'cognom1' : gen.cognom_1,
                     'cognom2' : gen.cognom_2,
                     'email_contacte' : gen.email,
-                    'tipus_document' : gen.tipus_identificador,
-                    'document' : gen.identificador
+                    'tipus_document' : get_description(gen.tipus_identificador, "TABLA_6"),
+                    'document' : aux
                 })
         result['comentaris'] = step.comentaris
         return result
