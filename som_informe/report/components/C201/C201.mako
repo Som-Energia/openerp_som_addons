@@ -22,7 +22,8 @@
         % endfor
         ${d.potencies[-1]['name']}: ${d.potencies[-1]['potencia']} <br/>
         ${_(u"<b>Tarifa:</b> %s") % (d.tarifa)}<br/>
-        ${_(u"<b>Tensió:</b> %s") % (d.tensio)}<br/>
+        %if d.tensio:
+            ${_(u"<b>Tensió:</b> %s") % (d.tensio)}<br/>
         ${_(u"<b>Comentaris:</b> %s") % (d.comentaris)}<br/>
         %if d.adjunts:
             ${_(u"<b>Documentació adjunta:</b> Sí")}<br/>
