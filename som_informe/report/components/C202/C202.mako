@@ -1,6 +1,6 @@
 <%page args="d" />
 <li>
-    ${_(u"El %s la distribuïdora ( [%s] ) ens dóna l'acceptació/rebuig del cas tramitat:") % (d.day, d.distribuidora) }<br/>
+    ${_(u"El %s la distribuïdora (%s) ens dóna l'acceptació/rebuig del cas tramitat:") % (d.day, d.distribuidora) }<br/>
     <br>
     ${_(u"<b>Procediment:</b> C2 (Canvi de Comercialitzadora amb modificacions en el contracte d’accés)")}<br/>
     ${_(u"<b>Pas:</b> 02")}<br/>

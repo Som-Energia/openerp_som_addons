@@ -1,6 +1,6 @@
 <%page args="d" />
 <li>
-    ${_(u"El %s Som Energia sol·licita l'anul·lació de l’alta en curs amb codi de sol·licitud [ %s ] a la distribuïdora ( [%s] ):") % (d.day, d.codi_solicitud, d.distribuidora) }<br/>
+    ${_(u"El %s Som Energia sol·licita l'anul·lació de l’alta en curs amb codi de sol·licitud %s a la distribuïdora (%s):") % (d.day, d.codi_solicitud, d.distribuidora) }<br/>
     <br>
     ${_(u"<b>Procediment:</b> A3 (Alta de subministrament)")}<br/>
     ${_(u"<b>Pas:</b> 06")}<br/>
