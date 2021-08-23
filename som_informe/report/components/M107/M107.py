@@ -10,10 +10,5 @@ class M107(ProcesM1.ProcesM1):
         result['type'] = 'M107'
         result['rebuig'] = step.rebuig
         result['data_creacio'] = dateformat(step.date_created)
-        result['rebutjos'] = []
-        for rebuig in step.rebuig_ids:
-            result['rebutjos'].append({
-                    'descripcio' : rebuig.desc_rebuig
-                })
-
+        result['rebutjos'] = [{'codi':rebuig.motiu_rebuig.name, 'descripcio' : rebuig.desc_rebuig} for rebuig in step.rebuig_ids]
         return result
