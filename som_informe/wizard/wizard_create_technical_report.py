@@ -100,18 +100,14 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         )
 
         #Upload document to Drive
-        #gdm_obj = self.pool.get('google.drive.manager')
-        file_name = '{}informe{}_{}'.format(str(date.today()), 'Reclama', lang_filename[lang_code])
-        #with tempfile.NamedTemporaryFile(suffix='.html', delete=False) as t:
-        with open('/home/somenergia/Documents/resultat.html', 'w') as t:
+        gdm_obj = self.pool.get('google.drive.manager')
+        file_name = '{}_informe_{}_{}'.format(str(date.today()), 'Reclama', lang_filename[lang_code])
+        with tempfile.NamedTemporaryFile(suffix='.html', delete=False) as t:
             t.write(document_binary[0])
             t.flush()
-            #gdm_obj.uploadMediaToDrive(cursor, uid, file_name, t.name, folder_hash)
+            gdm_obj.uploadMediaToDrive(cursor, uid, file_name, t.name, folder_hash)
 
         return {'type': 'ir.actions.act_window_close'}
-
-
-
 
     # data generation
     def get_data(self, cursor, uid, id, context=None):
@@ -122,7 +118,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         result.extend(self.extract_header_metadata(cursor, uid, wiz.polissa, context))
         result.extend(self.extract_footer_metadata(cursor, uid, wiz.polissa, context))
         sw_obj = self.pool.get('giscedata.switching')
-        
+
         if wiz.mostra_reclama:
             seleccionats.append('R1')
         if wiz.mostra_A3:
@@ -141,7 +137,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             seleccionats.append('E1')
         if wiz.mostra_M1:
             seleccionats.append('M1')
-        import pudb;pu.db
+
         if len(seleccionats) > 0:
             generar_informes = True
 
@@ -156,36 +152,6 @@ class WizardCreateTechnicalReport(osv.osv_memory):
                 search_params.append(('date', '<=', wiz.date_to))
             sw_ids = sw_obj.search(cursor, uid, search_params)
             result.extend(self.extract_switching_metadata(cursor, uid, sw_ids, context))
-        '''
-        if wiz.mostra_reclama:
-            search_params = [
-                ('cups_id.id', '=', wiz.polissa.cups.id),
-                ('proces_id.name', '=', 'R1'),
-                ]
-            if wiz.date_from:
-                search_params.append(('date', '>=', wiz.date_from))
-            if wiz.date_to:
-                search_params.append(('date', '<=', wiz.date_to))
-            sw_ids = sw_obj.search(cursor, uid, search_params)
-            result.extend(self.extract_switching_metadata(cursor, uid, sw_ids, context))
-
-        if wiz.mostra_factura:
-            pass
-        if wiz.mostra_cobraments:
-            pass
-        if wiz.mostra_ATR:
-            search_params = [
-                ('cups_id.id', '=', wiz.polissa.cups.id),
-                ('proces_id.name', 'in', ['A3', 'C1', 'C2', 'M1', 'B1', 'B2', 'E1', 'D1']),
-                ]
-            if wiz.date_from:
-                search_params.append(('date', '>=', wiz.date_from))
-            if wiz.date_to:
-                search_params.append(('date', '<=', wiz.date_to))
-            sw_ids = sw_obj.search(cursor, uid, search_params)
-            result.extend(self.extract_switching_metadata(cursor, uid, sw_ids, context))
-        if wiz.mostra_comptabilitat:
-            pass
 
         result = sorted(result, key=lambda k: k['date'])
         return [ns(item) for item in result]
