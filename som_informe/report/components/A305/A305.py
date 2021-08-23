@@ -13,6 +13,7 @@ class A305(ProcesA3.ProcesA3):
         result['codi_contracte'] = step.contracte_atr
         result['potencies'] = [{'name':pot.name, 'potencia':pot.potencia} for pot in step.pot_ids if pot.potencia != 0]
         result['tarifa'] =  get_description(step.tarifaATR, "TABLA_17")
-        result['tensio'] = get_description(step.tensio_suministre, "TABLA_64")
+        if step.tensio_solicitada:
+            result['tensio'] = get_description(step.tensio_suministre, "TABLA_64")
         result['data_activacio'] = dateformat(step.data_activacio)
         return result
