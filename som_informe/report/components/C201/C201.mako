@@ -24,6 +24,7 @@
         ${_(u"<b>Tarifa:</b> %s") % (d.tarifa)}<br/>
         %if d.tensio:
             ${_(u"<b>Tensió:</b> %s") % (d.tensio)}<br/>
+        %endif
         ${_(u"<b>Comentaris:</b> %s") % (d.comentaris)}<br/>
         %if d.adjunts:
             ${_(u"<b>Documentació adjunta:</b> Sí")}<br/>
