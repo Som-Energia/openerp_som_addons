@@ -8,13 +8,13 @@
     ${_(u"<b>Acceptació o Rebuig per part de la distribuidora:</b>")}
     % if d.rebuig:
         ${_(u"Rebuig")}<br/>
+        % for rebuig in d.rebutjos:
+            ${_(u"<b>Codi Motiu de Rebuig:</b> %s") % (rebuig['codi'])}<br/>
+            ${_(u"<b>Descripció del Rebuig:</b> %s") % (rebuig['descripcio'])}<br/>
+        % endfor
+        ${_(u"<b>Data rebuig:</b> %s") % (d.data_rebuig)}<br/>
     % else:
         ${_(u"Acceptació")}<br/>
     % endif
-    % for rebuig in d.rebutjos:
-        ${_(u"<b>Codi Motiu de Rebuig:</b> %s") % (rebuig['codi'])}<br/>
-        ${_(u"<b>Descripció del Rebuig:</b> %s") % (rebuig['descripcio'])}<br/>
-    % endfor
-    ${_(u"<b>Data rebuig:</b> %s") % (d.data_rebuig)}<br/>
     <br/>
 </li>

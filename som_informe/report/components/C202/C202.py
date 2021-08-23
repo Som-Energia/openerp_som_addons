@@ -10,12 +10,6 @@ class C202(ProcesC2.ProcesC2):
         result = ProcesC2.ProcesC2.get_data(self, wiz, cursor, uid, step)
         result['type'] = 'C202'
         result['rebuig'] = step.rebuig
-        result['rebutjos'] = []
-        for rebuig in step.rebuig_ids:
-            result['rebutjos'].append({
-                    'codi' : rebuig.motiu_rebuig.name,
-                    'descripcio' : rebuig.desc_rebuig
-                })
+        result['rebutjos'] = [{'codi':rebuig.motiu_rebuig.name, 'descripcio' : rebuig.desc_rebuig} for rebuig in step.rebuig_ids]
         result['data_rebuig'] = dateformat(step.data_rebuig)
-
         return result
