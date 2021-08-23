@@ -7,8 +7,8 @@
     ${_(u"<b>Codi de la sol·licitud:</b> %s") % (d.codi_solicitud)}<br/>
     ${_(u"<b>Data Rebuig:</b> %s") % (d.data_rebuig)}<br/>
     % for rebuig in d.rebutjos:
-        ${_(u"<b>Codi Motiu  Rebuig:</b> %s") % (rebuig['codi_rebuig'])}<br/>
-        ${_(u"<b>Descripció del Rebuig:</b> %s") % (rebuig['comentari'])}<br/>
+        ${_(u"<b>Codi Motiu  Rebuig:</b> %s") % (rebuig['codi'])}<br/>
+        ${_(u"<b>Descripció del Rebuig:</b> %s") % (rebuig['descripcio'])}<br/>
         <br/>
     % endfor
 </li>
