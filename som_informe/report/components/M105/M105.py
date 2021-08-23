@@ -13,10 +13,11 @@ class M105(ProcesM1.ProcesM1):
         result['control_potencia'] =  get_description(step.control_potencia, "TABLA_51")
         result['potencies'] = []
         for pot in step.pot_ids:
-            result['potencies'].append({
-                    'name' : pot.name,
-                    'potencia' : pot.potencia
-                })
+            if pot.potencia != 0:
+                result['potencies'].append({
+                        'name' : pot.name,
+                        'potencia' : pot.potencia
+                    })
         result['tarifa'] =  get_description(step.tarifaATR, "TABLA_17")
         result['data_activacio'] = dateformat(step.data_activacio)
 

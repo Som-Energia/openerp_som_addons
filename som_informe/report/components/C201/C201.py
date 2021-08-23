@@ -24,10 +24,11 @@ class C201(ProcesC2.ProcesC2):
         result['control_potencia'] = step.control_potencia
         result ['potencies'] = []
         for pot in step.pot_ids:
-            result['potencies'].append({
-                    'name' : pot.name,
-                    'potencia' : pot.potencia
-                })
+            if pot.potencia != 0:
+                result['potencies'].append({
+                        'name' : pot.name,
+                        'potencia' : pot.potencia
+                    })
         result['tarifa'] =  get_description(step.tarifaATR, "TABLA_17")
         if step.tensio_solicitada:
             result['tensio'] = get_description(step.tensio_solicitada, "TABLA_64")
@@ -35,7 +36,7 @@ class C201(ProcesC2.ProcesC2):
         if len(step.document_ids) == 0:
             result['adjunts'] = False
 
-        '''
+
         swl_obj = step.pool.get('giscedata.switching.log')
 
         search_params = [
