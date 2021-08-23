@@ -12,10 +12,7 @@ class E103(ProcesE1.ProcesE1):
         result['data_creacio'] = dateformat(step.date_created)
         result['data_incidencia'] = dateformat(step.data_incidencia)
         result['data_prevista_accio'] = dateformat(step.data_prevista_accio)
-        result['incidencies'] = []
-        for incidencia in step.incidencia_ids:
-            result['incidencies'].append({
-                    'tipus' : incidencia.motiu_incidencia,
-                    'comentari' : incidencia.desc_incidencia
-            })
+        result['incidencies'] = [{'tipus':incidencia.motiu_incidencia,
+                                'comentari':incidencia.desc_incidencia}
+                                for incidencia in step.incidencia_ids]
         return result

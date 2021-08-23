@@ -12,19 +12,9 @@ class M101(ProcesM1.ProcesM1):
         result['sol_tensio'] = step.solicitud_tensio
         result['tensio_sol'] = step.tensio_solicitada
         result['tipus_sol'] = step.sollicitudadm
-        result['potencies'] = []
-        for pot in step.pot_ids:
-            if pot.potencia != 0:
-                result['potencies'].append({
-                        'name' : pot.name,
-                        'potencia' : pot.potencia
-                    })
+        result['potencies'] = [{'name':pot.name, 'potencia':pot.potencia} for pot in step.pot_ids if pot.potencia != 0]
         result['tarifa'] =  get_description(step.tarifaATR, "TABLA_17")
-        result['telefons'] = []
-        for tel in step.telefons:
-            result['telefons'].append({
-                    'numero' : tel.numero
-                })
+        result['telefons'] = [{'numero':telefon.numero} for telefon in step.telefons]
         result['canvi_titular'] = step.canvi_titular
         result['nom'] = step.nom
         result['cognom1'] = step.cognom_1
