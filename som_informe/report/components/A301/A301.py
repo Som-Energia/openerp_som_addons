@@ -14,10 +14,11 @@ class A301(ProcesA3.ProcesA3):
         result['tarifa'] =  get_description(step.tarifaATR, "TABLA_17")
         result['potencies'] = []
         for pot in step.pot_ids:
-            result['potencies'].append({
-                    'name' : pot.name,
-                    'potencia' : pot.potencia
-                })
+            if pot.potencia != 0:
+                result['potencies'].append({
+                        'name' : pot.name,
+                        'potencia' : pot.potencia
+                    })
         result['documents_adjunts'] = [(get_description(doc.type, "TABLA_61"), doc.url) for doc in step.document_ids]
 
         swl_obj = step.pool.get('giscedata.switching.log')
