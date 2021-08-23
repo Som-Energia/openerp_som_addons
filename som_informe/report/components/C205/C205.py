@@ -14,10 +14,11 @@ class C205(ProcesC2.ProcesC2):
         result['codi_contracte'] = step.contracte_atr
         result ['potencies'] = []
         for pot in step.pot_ids:
-            result['potencies'].append({
-                    'name' : pot.name,
-                    'potencia' : pot.potencia
-                })
+            if pot.potencia != 0:
+                result['potencies'].append({
+                        'name' : pot.name,
+                        'potencia' : pot.potencia
+                    })
         result['tarifa'] =  get_description(step.tarifaATR, "TABLA_17")
         result['tensio'] = get_description(step.tensio_suministre, "TABLA_64")
         result['data_activacio'] = dateformat(step.data_activacio)

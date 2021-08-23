@@ -14,10 +14,11 @@ class M101(ProcesM1.ProcesM1):
         result['tipus_sol'] = step.sollicitudadm
         result['potencies'] = []
         for pot in step.pot_ids:
-            result['potencies'].append({
-                    'name' : pot.name,
-                    'potencia' : pot.potencia
-                })
+            if pot.potencia != 0:
+                result['potencies'].append({
+                        'name' : pot.name,
+                        'potencia' : pot.potencia
+                    })
         result['tarifa'] =  get_description(step.tarifaATR, "TABLA_17")
         result['telefons'] = []
         for tel in step.telefons:
