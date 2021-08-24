@@ -528,5 +528,59 @@ SOM ENERGIA. CORTE LUZ POR IMPAGO EN 48h. Importe pendiente: ${import_pendent}�
                 </html>
                 ]]></field>
         </record>
+        <record model="powersms.templates" id="sms_template_recordatori_pendent">
+            <field name="name">Enviament SMS Recordatori factura pendent</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.facturacio.factura')]"/>
+            <field name="def_from">Info</field>
+            <field name="model_int_name">giscedata.facturacio.factura</field>
+            <field name="def_to">${object.partner_id.www_phone}, ${object.partner_id.www_mobile}</field>
+            <field eval="0" name="auto_sms"/>
+            <field eval="0" name="certificate"/>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.invoice_id.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="enforce_from_account" model="powersms.core_accounts" search="[('name','=', 'SMS Account')]"/>
+            <field name="def_body_text"><![CDATA[
+<%
+md_obj = object.pool.get('ir.model.data')
+fact_obj = object.pool.get('giscedata.facturacio.factura')
+
+exclosos = [('giscedata_facturacio_comer_bono_social', 'correct_bono_social_pending_state'),
+('account_invoice_pending', 'default_invoice_pending_state'),
+('som_account_invoice_pending', 'pacte_fraccio_pending_state'),
+('som_account_invoice_pending', 'default_pacte_fraccio_pending_state'),
+('som_account_invoice_pending', 'probresa_energetica_certificada_pending_state'),
+('som_account_invoice_pending', 'no_reclamable_pending_state'),
+('som_account_invoice_pending', 'paymefy_default_pending_state'),
+('som_account_invoice_pending', 'paymefy_bo_social_pending_state'),
+('som_account_invoice_pending', 'fracc_manual_bo_social_pending_state'),
+('som_account_invoice_pending', 'fracc_manual_default_pending_state'),
+('som_account_invoice_pending', 'electrodependencia_bo_social_pending_state'),
+('som_account_invoice_pending', 'default_fraccionament_covid'),
+('som_account_invoice_pending', 'bo_social_fraccionament_covid')]
+
+ids_exclosos = []
+for module, sem_id in exclosos:
+    ids_exclosos.append(md_obj.get_object_reference(object._cr, object._uid, module, sem_id)[1])
+
+polissa = object.polissa_id.name
+
+factures_pendents = fact_obj.search(object._cr, object._uid, [
+    ('polissa_id', '=', object.polissa_id.id),
+    ('type', 'in', ['out_invoice', 'out_refund']),
+    ('pending_state', '!=', False),
+    ('pending_state', 'not in', ids_exclosos)])
+
+import_factura = sum([item['amount_total'] for item in fact_obj.read(object._cr, object._uid, factures_pendents, ['amount_total'])])
+%>
+
+% if object.invoice_id.partner_id.lang == "ca_ES":
+SOM ENERGIA. Hola, et recordem que tens 1 FACTURA PENDENT DE PAGAMENT. Import pendent: ${import_factura} €. Contracte: ${polissa}. Per contactar: 900.103.605
+% else:
+SOM ENERGIA. Hola, te recordamos que tienes 1 FACTURA PENDIENTE DE PAGO. Importe pendiente: ${import_factura} €. Contrato: ${polissa}. Para contactar: 900.103.605
+% endif
+]]>
+            </field>
+        </record>
     </data>
 </openerp>
