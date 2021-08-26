@@ -4,7 +4,7 @@
     <br>
     ${_(u"<b>Procediment:</b> M1 (Alta de subministrament)")}<br/>
     ${_(u"<b>Pas:</b> 07")}<br/>
-    ${_(u"<b>Data creacio:</b> %s") % (d.data_creacio)}<br/>
+    ${_(u"<b>Data creacio:</b> %s") % (d.create)}<br/>
     ${_(u"<b>Codi de la sol·licitud:</b> %s") % (d.codi_solicitud)}<br/>
     ${_(u"<b>Acceptació o Rebuig per part de la distribuidora:</b>")}
     % if d.rebuig:

@@ -4,7 +4,7 @@
     <br>
     ${_(u"<b>Procediment:</b> B1 (Baixa de subministrament o suspensió del subministrament)")}<br/>
     ${_(u"<b>Pas:</b> 16")}<br/>
-    ${_(u"<b>Data creació:</b> %s") % (d.data_creacio)}<br/>
+    ${_(u"<b>Data creació:</b> %s") % (d.create)}<br/>
     ${_(u"<b>Codi de la sol·licitud:</b> %s") % (d.codi_solicitud)}<br/>
     ${_(u"<b>Contestació incidència:</b> %s") % (d.contestacio_incidencia)}<br/>
     ${_(u"<b>Nom de Contacte:</b> %s") % (d.nom_contacte)}<br/>
