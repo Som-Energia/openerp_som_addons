@@ -9,5 +9,4 @@ class A306(ProcesA3.ProcesA3):
     def get_data(self, wiz, cursor, uid, step):
         result = ProcesA3.ProcesA3.get_data(self, wiz, cursor, uid, step)
         result['type'] = 'A306'
-        result['data_creacio'] = dateformat(step.date_created)
         return result
