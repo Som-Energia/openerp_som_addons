@@ -9,6 +9,5 @@ class M107(ProcesM1.ProcesM1):
         result = ProcesM1.ProcesM1.get_data(self, wiz, cursor, uid, step)
         result['type'] = 'M107'
         result['rebuig'] = step.rebuig
-        result['data_creacio'] = dateformat(step.date_created)
         result['rebutjos'] = [{'codi':rebuig.motiu_rebuig.name, 'descripcio' : rebuig.desc_rebuig} for rebuig in step.rebuig_ids]
         return result
