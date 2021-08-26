@@ -4,7 +4,7 @@
     <br>
     ${_(u"<b>Procediment:</b> C1 (Canvi de Comercialitzadora sense modificacions en el contracte d’accés)")}<br/>
     ${_(u"<b>Pas:</b> 08")}<br/>
-    ${_(u"<b>Data creació -completa-:</b> %s") % (d.data_creacio)}<br/>
+    ${_(u"<b>Data creació -completa-:</b> %s") % (d.create)}<br/>
     ${_(u"<b>Codi de la sol·licitud:</b> %s") % (d.codi_solicitud)}<br/>
     <br/>
 </li>

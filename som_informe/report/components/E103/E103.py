@@ -9,7 +9,6 @@ class E103(ProcesE1.ProcesE1):
     def get_data(self, wiz, cursor, uid, step):
         result = ProcesE1.ProcesE1.get_data(self, wiz, cursor, uid, step)
         result['type'] = 'E103'
-        result['data_creacio'] = dateformat(step.date_created)
         result['data_incidencia'] = dateformat(step.data_incidencia)
         result['data_prevista_accio'] = dateformat(step.data_prevista_accio)
         result['incidencies'] = [{'tipus':incidencia.motiu_incidencia,
