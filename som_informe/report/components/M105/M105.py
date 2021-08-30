@@ -21,5 +21,6 @@ class M105(ProcesM1.ProcesM1):
         model_obj = step.pool.get(swl_ids.step_ids[0].pas_id.split(',')[0])
 
         result['tipus_sol'] =  model_obj.read(cursor, uid, (swl_ids.step_ids[0].pas_id).split(',')[1])[0]['sollicitudadm']
-        result['tensio_sol'] = get_description(model_obj.read(cursor, uid, (swl_ids.step_ids[0].pas_id).split(',')[1])[0]['tensio_solicitada'], "TABLA_64")
+        if model_obj.read(cursor, uid, (swl_ids.step_ids[0].pas_id).split(',')[1])[0]['tensio_solicitada']:
+            result['tensio_sol'] = get_description(model_obj.read(cursor, uid, (swl_ids.step_ids[0].pas_id).split(',')[1])[0]['tensio_solicitada'], "TABLA_64")
         return result

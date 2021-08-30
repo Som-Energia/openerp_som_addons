@@ -15,7 +15,9 @@
         % endfor
         ${d.potencies[-1]['name']}: ${d.potencies[-1]['potencia']}<br/>
         ${_(u"<b>Tarifa:</b> %s") % (d.tarifa)}<br/>
-        ${_(u"<b>Tensió sol·licitada:</b> %s")% (d.tensio_sol)}<br/>
+        %if d.tensio_sol:
+            ${_(u"<b>Tensió sol·licitada:</b> %s")% (d.tensio_sol)}<br/>
+        %endif
     %endif
 
     ${_(u"<b>Data activació:</b> %s")% (d.data_activacio)}<br/>
