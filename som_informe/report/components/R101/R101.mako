@@ -17,6 +17,20 @@
             % endif
         % endfor
     % endif
+    % for reclama in d.reclamacions:
+        ${_(u"<b>Detalls Reclamació:</b>")}<br/>
+        % for key,value in reclama.items():
+            % if key != 'Lectures':
+                ${' - <b>%s:</b> %s' % (key, value)}<br/>
+            % else:
+                %for lect in value:
+                    %for keyL,valueL in lect.items():
+                        ${' - <b>%s:</b> %s' % (keyL, valueL)}<br/>
+                    %endfor
+                %endfor
+            % endif
+        % endfor
+    % endfor
     % if len(d.documents_adjunts) > 0:
         ${_(u"<b>Documents adjunts:</b> Si")}<br/>
         ${_(u"<b>Tipus de document:</b>")}<br/>
@@ -26,7 +40,9 @@
     % else:
         ${_(u"<b>Documents adjunts:</b> No")}<br/>
     % endif
-    ${_(u"<b>Text de la reclamació:</b> <i>%s</i>") % (d.text)}<br/>
-    <br/>
+    % if d.text:
+        ${_(u"<b>Text de la reclamació:</b> <i>%s</i>") % (d.text)}<br/>
+    %endif
+     <br/>
 </li>
 
