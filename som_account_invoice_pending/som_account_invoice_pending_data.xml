@@ -544,40 +544,23 @@ SOM ENERGIA. CORTE LUZ POR IMPAGO EN 48h. Importe pendiente: ${import_pendent}�
 <%
 md_obj = object.pool.get('ir.model.data')
 fact_obj = object.pool.get('giscedata.facturacio.factura')
-
-exclosos = [('giscedata_facturacio_comer_bono_social', 'correct_bono_social_pending_state'),
-('account_invoice_pending', 'default_invoice_pending_state'),
-('som_account_invoice_pending', 'pacte_fraccio_pending_state'),
-('som_account_invoice_pending', 'default_pacte_fraccio_pending_state'),
-('som_account_invoice_pending', 'probresa_energetica_certificada_pending_state'),
-('som_account_invoice_pending', 'no_reclamable_pending_state'),
-('som_account_invoice_pending', 'paymefy_default_pending_state'),
-('som_account_invoice_pending', 'paymefy_bo_social_pending_state'),
-('som_account_invoice_pending', 'fracc_manual_bo_social_pending_state'),
-('som_account_invoice_pending', 'fracc_manual_default_pending_state'),
-('som_account_invoice_pending', 'electrodependencia_bo_social_pending_state'),
-('som_account_invoice_pending', 'default_fraccionament_covid'),
-('som_account_invoice_pending', 'bo_social_fraccionament_covid')]
-
-ids_exclosos = []
-for module, sem_id in exclosos:
-    ids_exclosos.append(md_obj.get_object_reference(object._cr, object._uid, module, sem_id)[1])
-
-polissa = object.polissa_id.name
-
-factures_pendents = fact_obj.search(object._cr, object._uid, [
-    ('polissa_id', '=', object.polissa_id.id),
-    ('type', 'in', ['out_invoice', 'out_refund']),
-    ('pending_state', '!=', False),
-    ('pending_state', 'not in', ids_exclosos)])
-
-import_factura = sum([item['amount_total'] for item in fact_obj.read(object._cr, object._uid, factures_pendents, ['amount_total'])])
+inv_line_obj = object.pool.get('account.invoice.line')
+num_factura = object.number
+# Forcem l'update del camp residual
+try:
+    inv_line = object.invoice_id.invoice_line[0]
+    inv_line_quantity = inv_line.quantity
+    inv_line_obj.write(inv_line.id, {'quantity': inv_line_quantity})
+except:
+    pass
+finally:
+    import_factura = object.residual
 %>
 
 % if object.invoice_id.partner_id.lang == "ca_ES":
-SOM ENERGIA. Hola, et recordem que tens 1 FACTURA PENDENT DE PAGAMENT. Import pendent: ${import_factura} €. Contracte: ${polissa}. Per contactar: 900.103.605
+		    SOM ENERGIA. Hola, et recordem que la factura ${num_factura} està PENDENT DE PAGAMENT. Import pendent: ${import_factura} €. Contracte: ${polissa}. Per contactar: 900.103.605
 % else:
-SOM ENERGIA. Hola, te recordamos que tienes 1 FACTURA PENDIENTE DE PAGO. Importe pendiente: ${import_factura} €. Contrato: ${polissa}. Para contactar: 900.103.605
+		    SOM ENERGIA. Hola, te recordamos que la factura ${num_factura} está PENDIENTE DE PAGO. Importe pendiente: ${import_factura} €. Contrato: ${polissa}. Para contactar: 900.103.605
 % endif
 ]]>
             </field>
