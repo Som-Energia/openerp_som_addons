@@ -11,4 +11,5 @@
         ${_(u"<b>Descripció del Rebuig:</b> %s") % (rebuig['descripcio'])}<br/>
         <br/>
     % endfor
+    <br><br>
 </li>

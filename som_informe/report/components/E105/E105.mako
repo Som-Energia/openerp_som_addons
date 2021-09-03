@@ -7,5 +7,5 @@
     ${_(u"<b>Codi de la sol·licitud:</b> %s") % (d.codi_solicitud)}<br/>
     ${_(u"<b>Data d'activació:</b> %s") % (d.data_activacio)}<br/>
     ${_(u"<b>Resultat activació:</b> %s") % (d.resultat_activacio)}<br/>
-    <br>
+    <br><br>
 </li>

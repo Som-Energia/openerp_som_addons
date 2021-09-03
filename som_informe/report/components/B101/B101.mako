@@ -9,5 +9,5 @@
         ${_(u"<b>Comentaris:</b> %s") % (d.text)}<br/>
     %endif
     ${_(u"<b>Motiu de la baixa:</b> %s") % (d.motiu_baixa)}<br/>
-    <br/>
+    <br><br>
 </li>

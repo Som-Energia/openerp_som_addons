@@ -25,6 +25,6 @@
     % else:
         ${_(u"<b>Documents adjunts:</b> No")}<br/>
     % endif
-    <br/>
+    <br><br>
 </li>
 

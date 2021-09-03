@@ -23,5 +23,5 @@
         ${_(u"<b>Documents adjunts:</b> No")}<br/>
     % endif
     ${_(u"<b>Comentari distribuïdora:</b> <i>%s</i>") % (d.comentaris_distri)}<br/>
-    <br/>
+    <br><br>
 </li>

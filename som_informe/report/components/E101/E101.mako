@@ -9,5 +9,5 @@
     ${_(u"<b>Cas ATR subjacent:</b>")}<br/>
     &nbsp;&nbsp;&nbsp;&nbsp;${_(u"Codi sol·licitud: %s") % (d.codi_subjacent)}<br/>
     &nbsp;&nbsp;&nbsp;&nbsp;${_(u"Data sol·licitud: %s") % (d.data_subjacent)}<br/>
-    <br/>
+    <br><br>
 </li>
