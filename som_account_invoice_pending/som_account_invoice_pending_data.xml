@@ -546,6 +546,8 @@ md_obj = object.pool.get('ir.model.data')
 fact_obj = object.pool.get('giscedata.facturacio.factura')
 inv_line_obj = object.pool.get('account.invoice.line')
 num_factura = object.number
+import_factura = False
+polissa = object.polissa_id.name
 # Forcem l'update del camp residual
 try:
     inv_line = object.invoice_id.invoice_line[0]
