@@ -12,5 +12,5 @@
     % endfor
     ${_(u"<b>Data d'incidència:</b> %s") % (d.data_incidencia)}<br/>
     ${_(u"<b>Data prevista acció:</b> %s") % (d.data_prevista_accio)}<br/>
-    <br/>
+    <br><br>
 </li>

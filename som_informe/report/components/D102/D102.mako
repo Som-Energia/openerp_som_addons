@@ -15,5 +15,5 @@
     % else:
         ${_(u"Acceptació")}<br/>
     % endif
-    <br/>
+    <br><br>
 </li>

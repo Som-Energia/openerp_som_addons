@@ -10,6 +10,6 @@
         ${_(u"<b>Codi Motiu de Rebuig:</b> %s") % (rebuig['codi'])}<br/>
         ${_(u"<b>Descripció del Rebuig:</b> %s") % (rebuig['descripcio'])}<br/>
     % endfor
-    <br/>
+    <br><br>
 </li>
 

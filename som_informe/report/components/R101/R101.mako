@@ -27,6 +27,6 @@
         ${_(u"<b>Documents adjunts:</b> No")}<br/>
     % endif
     ${_(u"<b>Text de la reclamació:</b> <i>%s</i>") % (d.text)}<br/>
-    <br/>
+    <br><br>
 </li>
 

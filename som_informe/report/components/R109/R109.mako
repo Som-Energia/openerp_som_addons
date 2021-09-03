@@ -13,5 +13,5 @@
     % else:
         ${_(u"<b>Acceptació o rebuig per part de la distribuïdor:</b> Acceptació")}<br/>
     % endif
-    <br/>
+    <br><br>
 </li>

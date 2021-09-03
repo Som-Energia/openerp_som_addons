@@ -19,4 +19,5 @@
     %endif
 
     ${_(u"<b>Data activació:</b> %s")% (d.data_activacio)}<br/>
+    <br><br>
 </li>
