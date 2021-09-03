@@ -10,7 +10,8 @@ class D101(ProcesD1.ProcesD1):
         result['type'] = 'D101'
         result['motiu_canvi'] = get_description(step.motiu_canvi, "TABLA_109"),
         result['CAU'] = step.cau
-        result['seccio_registre'] = get_description(step.seccio_registre, "TABLA_127")
+        if step.seccio_registre:
+            result['seccio_registre'] = get_description(step.seccio_registre, "TABLA_127")
         result['subseccio'] = step.subseccio
         result['CUPS'] = step.cups
         result['generadors'] = []
