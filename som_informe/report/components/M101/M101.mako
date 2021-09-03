@@ -17,7 +17,9 @@
 
     %if d.tipus_sol == 'N' or d.tipus_sol=='A':
         ${_(u"<b>Tipus autoconsum:</b> %s") % (d.tipus_autoconsum)}<br/>
-        ${_(u"<b>Control de potència:</b> %s")% (d.control_potencia)}<br/>
+        %if d.control_potencia:
+            ${_(u"<b>Control de potència:</b> %s")% (d.control_potencia)}<br/>
+        %endif
         ${_(u"<b>Solicitud Tensió:</b>")}
         %if d.sol_tensio == 'S':
             ${_(u"Sí")}<br/>
