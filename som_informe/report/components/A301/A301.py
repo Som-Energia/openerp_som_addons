@@ -17,7 +17,7 @@ class A301(ProcesA3.ProcesA3):
 
         swl_obj = step.pool.get('giscedata.switching.log')
 
-        '''
+
         search_params = [
             ('request_code','=',step.sw_id.codi_sollicitud),
             ('tipus','=','export'),
