@@ -10,7 +10,8 @@ class M101(ProcesM1.ProcesM1):
         result = ProcesM1.ProcesM1.get_data(self, wiz, cursor, uid, step)
         result['type'] = 'M101'
         result['sol_tensio'] = step.solicitud_tensio
-        result['tensio_sol'] = step.tensio_solicitada
+        if step.tensio_solicitada:
+            result['tensio_sol'] = step.tensio_solicitada
         result['tipus_sol'] = step.sollicitudadm
         result['potencies'] = [{'name':pot.name, 'potencia':pot.potencia} for pot in step.pot_ids if pot.potencia != 0]
         result['tarifa'] =  get_description(step.tarifaATR, "TABLA_17")

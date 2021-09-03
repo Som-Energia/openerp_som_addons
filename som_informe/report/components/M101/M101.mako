@@ -26,7 +26,9 @@
         %else:
             ${_(u"No")}<br/>
         %endif
-        ${_(u"<b>Tensió sol·licitada:</b> %s")% (d.tensio_sol)}<br/>
+        %if d.tensio_sol:
+            ${_(u"<b>Tensió sol·licitada:</b> %s")% (d.tensio_sol)}<br/>
+        %endif
         ${_(u"<b>Potència: </b>")}
         % for pot in d.potencies[:-1]:
             ${pot['name']} : ${pot['potencia']},
