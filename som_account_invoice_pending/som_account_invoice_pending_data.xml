@@ -560,9 +560,9 @@ finally:
 %>
 
 % if object.invoice_id.partner_id.lang == "ca_ES":
-		    SOM ENERGIA. Hola, et recordem que la factura ${num_factura} està PENDENT DE PAGAMENT. Import pendent: ${import_factura} €. Contracte: ${polissa}. Per contactar: 900.103.605
+      SOM ENERGIA. Factura ${num_factura} PENDENT DE PAGAMENT. Import pendent: ${import_factura} €. Contracte: ${polissa}. Per contactar: 900.103.605 / cobraments@somenergia.coop
 % else:
-		    SOM ENERGIA. Hola, te recordamos que la factura ${num_factura} está PENDIENTE DE PAGO. Importe pendiente: ${import_factura} €. Contrato: ${polissa}. Para contactar: 900.103.605
+      SOM ENERGIA. Factura ${num_factura} PENDIENTE DE PAGO. Importe pendiente: ${import_factura} €. Contrato: ${polissa}. Para contactar: 900.103.605 / cobros@somenergia.coop
 % endif
 ]]>
             </field>
