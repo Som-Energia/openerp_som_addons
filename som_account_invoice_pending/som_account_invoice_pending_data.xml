@@ -542,21 +542,10 @@ SOM ENERGIA. CORTE LUZ POR IMPAGO EN 48h. Importe pendiente: ${import_pendent}â‚
             <field name="enforce_from_account" model="powersms.core_accounts" search="[('name','=', 'SMS Account')]"/>
             <field name="def_body_text"><![CDATA[
 <%
-md_obj = object.pool.get('ir.model.data')
-fact_obj = object.pool.get('giscedata.facturacio.factura')
-inv_line_obj = object.pool.get('account.invoice.line')
 num_factura = object.number
 import_factura = False
 polissa = object.polissa_id.name
-# Forcem l'update del camp residual
-try:
-    inv_line = object.invoice_id.invoice_line[0]
-    inv_line_quantity = inv_line.quantity
-    inv_line_obj.write(inv_line.id, {'quantity': inv_line_quantity})
-except:
-    pass
-finally:
-    import_factura = object.residual
+import_factura = object.residual
 %>
 
 % if object.invoice_id.partner_id.lang == "ca_ES":
