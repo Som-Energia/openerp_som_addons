@@ -287,6 +287,31 @@ class GiscedataFacturacioFactura(osv.osv):
             res = [(str(k), v) for k, v in res.items()]
         return res
 
+    def get_lines_in_extralines(self, cursor, uid, inv_id, pol_id):
+        extra_obj = self.pool.get('giscedata.facturacio.extra')
+        extra_ids = extra_obj.search(cursor, uid,[
+                ('polissa_id', '=', pol_id),
+                ('factura_ids', 'in', inv_id),
+            ])
+        extra_linia_datas = extra_obj.read(cursor, uid,
+                extra_ids,
+                ['factura_linia_ids']
+            )
+
+        factura_linia_ids = []
+
+        for eld in extra_linia_datas:
+            factura_linia_ids.extend(eld['factura_linia_ids'])
+        return factura_linia_ids
+
+    def get_real_energy_lines(self, cursor, uid, inv_id, pol_id, linies_energia_ids):
+        real_energy = []
+        lines_extra_ids = self.get_lines_in_extralines(cursor, uid, inv_id, pol_id)
+        for l_id in linies_energia_ids:
+            if l_id not in lines_extra_ids:
+                real_energy.append(l_id)
+        return real_energy
+
     def apply_gkwh(self, cursor, uid, ids, context=None):
         """Apply gkwh transform"""
         if context is None:
@@ -330,7 +355,10 @@ class GiscedataFacturacioFactura(osv.osv):
                 return
 
             # Get energy periods
-            for line_id in inv_data['linies_energia']:
+            real_energy_lines_ids = self.get_real_energy_lines(
+                cursor, uid, inv_id, contract_id, inv_data['linies_energia']
+            )
+            for line_id in real_energy_lines_ids:
                 line_vals = False
                 line_vals = invlines_obj.read(
                     cursor, uid, line_id, line_fields, context=context
