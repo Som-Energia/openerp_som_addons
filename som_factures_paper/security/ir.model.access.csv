@@ -1,0 +1,2 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_wizard_paper_invoice_som_rcwd","wizard.paper.invoice_som","model_wizard_paper_invoice_som","base.group_user",1,1,1,1
