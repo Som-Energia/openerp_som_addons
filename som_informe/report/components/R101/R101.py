@@ -30,9 +30,9 @@ class R101(ProcesR1.ProcesR1):
             lectures = []
             for lect in reclama.lect_ids:
                 lectures.append({
-                    'Lectura': lect.lectura,
-                    'Magnitud': lect.magnitud,
-                    'Nom': lect.name,
+                    'lectura': lect.lectura,
+                    'magnitud': lect.magnitud,
+                    'nom': lect.name,
                     })
             aten_incorr = False
             concept_facturat = False
@@ -44,32 +44,32 @@ class R101(ProcesR1.ProcesR1):
             if reclama.parametre_contractacio:
                 par_contr=get_description(reclama.parametre_contractacio, "TABLA_79")
             result['reclamacions'].append({
-                _(u'Codi dh'): reclama.codi_dh,
-                _(u'Codi incidència'): reclama.codi_incidencia,
-                _(u'Codi postal'): reclama.codi_postal,
-                _(u'Codi sol·licitud'): reclama.codi_sollicitud,
-                _(u'Codi sol·licitud reclamació'): reclama.codi_sollicitud_reclamacio,
-                _(u'Concepte disconformitat'): reclama.concepte_disconformitat,
-                _(u'Cont email'): reclama.cont_email,
-                _(u'Cont nom'): reclama.cont_nom,
-                _(u'Cont prefix'): reclama.cont_prefix,
-                _(u'Cont telèfon'): reclama.cont_telefon,
-                _(u'Data fins'): reclama.data_fins,
-                _(u'Data incident'): reclama.data_incident,
-                _(u'Data inici'): reclama.data_inici,
-                _(u'Data lectura'): reclama.data_lectura,
-                _(u'Descripció ubicació'): reclama.desc_ubicacio,
-                _(u'IBAN'): reclama.iban,
-                _(u'Import reclamat'): reclama.import_reclamat,
-                _(u'Municipi'): reclama.municipi,
-                _(u'Número expedient escomesa'): reclama.num_expedient_escomesa,
-                _(u'Número expedient frau'): reclama.num_expedient_frau,
-                _(u'Número factura'): reclama.num_factura,
-                _(u'Paràmetre contractació'): par_contr,
-                _(u'Població'): reclama.poblacio,
-                _(u'Província'): reclama.provincia,
-                _(u'Tipus atenció incorrecte'): aten_incorr,
-                _(u'Tipus concepte facturat'): concept_facturat,
-                _(u'Lectures'): lectures
+                'codi_dh': reclama.codi_dh,
+                'codi_incidencia': reclama.codi_incidencia,
+                'codi_postal': reclama.codi_postal,
+                'codi_solicitud': reclama.codi_sollicitud,
+                'codi_solicitud_reclamacio': reclama.codi_sollicitud_reclamacio,
+                'concepte_disconformitat': reclama.concepte_disconformitat,
+                'cont_email': reclama.cont_email,
+                'cont_nom': reclama.cont_nom,
+                'cont_prefix': reclama.cont_prefix,
+                'cont_telefon': reclama.cont_telefon,
+                'data_fins': reclama.data_fins,
+                'data_incident': reclama.data_incident,
+                'data_inici': reclama.data_inici,
+                'data_lectura': reclama.data_lectura,
+                'descripcio_ubicacio': reclama.desc_ubicacio,
+                'IBAN': reclama.iban,
+                'import_reclamat': reclama.import_reclamat,
+                'municipi': reclama.municipi,
+                'numero_expedient_escomesa': reclama.num_expedient_escomesa,
+                'numero_expedient_frau': reclama.num_expedient_frau,
+                'numero_factura': reclama.num_factura,
+                'parametre_contractacio': par_contr,
+                'poblacio': reclama.poblacio,
+                'provincia': reclama.provincia,
+                'tipus_atencio_incorrecte': aten_incorr,
+                'tipus_concepte_facturat': concept_facturat,
+                'lectures': lectures
             })
         return result
