@@ -235,6 +235,83 @@
         <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p6_e_tarifa_61TD">
             <field name="product_gkwh_id" ref="p6_gkwh_tarifa_61TD"/>
         </record>
+        <!-- 3.0TDVE -->
+        <record model="product.category" id="categ_gkwh_t30TDVE">
+            <field name="name">Generation kWh</field>
+            <field name="parent_id" ref="giscedata_polissa.categ_t30TDVE"/>
+        </record>
+        <record model="product.product" id="p1_gkwh_tarifa_30TDVE">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="categ_gkwh_t30TDVE"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p1_e_tarifa_30TDVE">
+            <field name="product_gkwh_id" ref="p1_gkwh_tarifa_30TDVE"/>
+        </record>
+        <record model="product.product" id="p2_gkwh_tarifa_30TDVE">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="categ_gkwh_t30TDVE"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p2_e_tarifa_30TDVE">
+            <field name="product_gkwh_id" ref="p2_gkwh_tarifa_30TDVE"/>
+        </record>
+        <record model="product.product" id="p3_gkwh_tarifa_30TDVE">
+            <field name="name">P3</field>
+            <field name="categ_id" ref="categ_gkwh_t30TDVE"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p3_e_tarifa_30TDVE">
+            <field name="product_gkwh_id" ref="p3_gkwh_tarifa_30TDVE"/>
+        </record>
+        <record model="product.product" id="p4_gkwh_tarifa_30TDVE">
+            <field name="name">P4</field>
+            <field name="categ_id" ref="categ_gkwh_t30TDVE"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p4_e_tarifa_30TDVE">
+            <field name="product_gkwh_id" ref="p4_gkwh_tarifa_30TDVE"/>
+        </record>
+        <record model="product.product" id="p5_gkwh_tarifa_30TDVE">
+            <field name="name">P5</field>
+            <field name="categ_id" ref="categ_gkwh_t30TDVE"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p5_e_tarifa_30TDVE">
+            <field name="product_gkwh_id" ref="p5_gkwh_tarifa_30TDVE"/>
+        </record>
+        <record model="product.product" id="p6_gkwh_tarifa_30TDVE">
+            <field name="name">P6</field>
+            <field name="categ_id" ref="categ_gkwh_t30TDVE"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p6_e_tarifa_30TDVE">
+            <field name="product_gkwh_id" ref="p6_gkwh_tarifa_30TDVE"/>
+        </record>
     </data>
     <data>
         <!-- GKWH Products-->
