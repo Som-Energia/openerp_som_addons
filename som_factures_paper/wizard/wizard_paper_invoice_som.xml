@@ -19,6 +19,10 @@
                     <group colspan="4" col="4" attrs="{'invisible':[('state', '!=', 'info')]}">
                         <button type="object" string="Imprimir factures" name="generate_invoices" icon="gtk-ok" />
                     </group>
+                    <group colspan="4" col="4" attrs="{'invisible': [('state', '!=', 'working')]}">
+                        <field name="progress" widget="progressbar" colspan="3"/>
+                          <button type="object" name="read" string="Actualitzar" icon="gtk-refresh"/>
+                    </group>
                     <group colspan="4" col="4" attrs="{'invisible':[('state', '!=', 'done')]}">
                         <field name="file_name" readonly="1" invisible="1" />
                         <field name="file" readonly="1" filename="file_name" />
