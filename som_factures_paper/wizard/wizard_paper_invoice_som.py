@@ -139,13 +139,10 @@ class WizardPaperInvoiceSom(osv.osv_memory):
             'info': wiz.info + "\n" + info,
         })
 
-    """
-    @job(queue=config.get('invoice_render_queue', 'invoice_render'),
+    @job(queue=config.get('som_factures_paper_render_queue', 'poweremail_render'),
          result_ttl=24 * 3600)
-    """
-    @job(queue="import_xml", result_ttl=24 * 3600)
     def render_to_file(self, cursor, uid, fids, report, dirname, file_name, context=None):
-        """Return a tuple of status (0: OK, 1: Failed) and the invoice path.
+        """Return a tuple of status (True: OK, False: Failed) and the invoice path.
         """
         if context is None:
             context = {}
