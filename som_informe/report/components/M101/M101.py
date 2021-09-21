@@ -10,7 +10,8 @@ class M101(ProcesM1.ProcesM1):
         result = ProcesM1.ProcesM1.get_data(self, wiz, cursor, uid, step)
         result['type'] = 'M101'
         result['sol_tensio'] = step.solicitud_tensio
-        result['tensio_sol'] = step.tensio_solicitada
+        if step.tensio_solicitada:
+            result['tensio_sol'] = step.tensio_solicitada
         result['tipus_sol'] = step.sollicitudadm
         result['potencies'] = [{'name':pot.name, 'potencia':pot.potencia} for pot in step.pot_ids if pot.potencia != 0]
         result['tarifa'] =  get_description(step.tarifaATR, "TABLA_17")
@@ -25,11 +26,12 @@ class M101(ProcesM1.ProcesM1):
         else:
             result['codi_document'] = step.codi_document
         result['tipus_autoconsum'] =  get_description(step.tipus_autoconsum, "TABLA_113")
-        result['control_potencia'] = step.control_potencia
+        if step.control_potencia:
+            result['control_potencia'] =  get_description(step.control_potencia, "TABLA_51")
         result['comentaris'] = step.comentaris
         if len(step.document_ids) == 0:
             result['adjunts'] = False
-        '''
+        
         swl_obj = step.pool.get('giscedata.switching.log')
 
         search_params = [
@@ -44,6 +46,6 @@ class M101(ProcesM1.ProcesM1):
         if len(swl_ids) > 0:
             swl = swl_obj.browse(cursor, uid, swl_ids[0])
             result['day'] = dateformat(swl.case_date)
-        '''
+        
 
         return result
