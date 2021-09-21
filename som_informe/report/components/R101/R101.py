@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
+
 from gestionatr.utils import get_description
 from ..component_utils import dateformat
 from ..ProcesR1 import ProcesR1
+from tools.translate import _
 
 class R101(ProcesR1.ProcesR1):
     def __init__(self):
@@ -20,4 +23,53 @@ class R101(ProcesR1.ProcesR1):
                     'descripcio': var_apo.desc_peticio_info,
                     'tipus': get_description(var_apo.tipus_info, "TABLA_85"),
                 })
+
+        result['reclamacions'] = []
+
+        for reclama in step.reclamacio_ids:
+            lectures = []
+            for lect in reclama.lect_ids:
+                lectures.append({
+                    'lectura': lect.lectura,
+                    'magnitud': lect.magnitud,
+                    'nom': lect.name,
+                    })
+            aten_incorr = False
+            concept_facturat = False
+            par_contr = False
+            if reclama.tipus_atencio_incorrecte:
+                aten_incorr=get_description(reclama.tipus_atencio_incorrecte, "TABLA_87_simple")
+            if reclama.tipus_concepte_facturat:
+                concept_facturat=get_description(reclama.tipus_concepte_facturat, "TABLA_77")
+            if reclama.parametre_contractacio:
+                par_contr=get_description(reclama.parametre_contractacio, "TABLA_79")
+            result['reclamacions'].append({
+                'codi_dh': reclama.codi_dh,
+                'codi_incidencia': reclama.codi_incidencia,
+                'codi_postal': reclama.codi_postal,
+                'codi_solicitud': reclama.codi_sollicitud,
+                'codi_solicitud_reclamacio': reclama.codi_sollicitud_reclamacio,
+                'concepte_disconformitat': reclama.concepte_disconformitat,
+                'cont_email': reclama.cont_email,
+                'cont_nom': reclama.cont_nom,
+                'cont_prefix': reclama.cont_prefix,
+                'cont_telefon': reclama.cont_telefon,
+                'data_fins': reclama.data_fins,
+                'data_incident': reclama.data_incident,
+                'data_inici': reclama.data_inici,
+                'data_lectura': reclama.data_lectura,
+                'descripcio_ubicacio': reclama.desc_ubicacio,
+                'IBAN': reclama.iban,
+                'import_reclamat': reclama.import_reclamat,
+                'municipi': reclama.municipi,
+                'numero_expedient_escomesa': reclama.num_expedient_escomesa,
+                'numero_expedient_frau': reclama.num_expedient_frau,
+                'numero_factura': reclama.num_factura,
+                'parametre_contractacio': par_contr,
+                'poblacio': reclama.poblacio,
+                'provincia': reclama.provincia,
+                'tipus_atencio_incorrecte': aten_incorr,
+                'tipus_concepte_facturat': concept_facturat,
+                'lectures': lectures
+            })
         return result
