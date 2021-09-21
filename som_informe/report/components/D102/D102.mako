@@ -1,6 +1,6 @@
 <%page args="d" />
 <li>
-    ${_(u"El %s la distribuïdora (%s) ens envia el cas ATR D1 01 amb la següent informació:") % (d.day, d.distribuidora) }<br/>
+    ${_(u"El %s Som Energia, atenent al que ens indica la persona titular, presenta a  la distribuïdora (%s) la següent resposta d’acceptació o rebuig a la informació del D1 01:") % (d.day, d.distribuidora) }<br/>
     <br>
     ${_(u"<b>Procediment:</b> D1 (Autoconsum)")}<br/>
     ${_(u"<b>Pas:</b> 02")}<br/>
