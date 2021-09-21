@@ -9,12 +9,9 @@ class B106(ProcesB1.ProcesB1):
     def get_data(self, wiz, cursor, uid, step):
         result = ProcesB1.ProcesB1.get_data(self, wiz, cursor, uid, step)
         result['type'] = 'B106'
-        result['data_incidencia'] = step.data_incidencia
-        result['data_prevista_accio'] = step.data_prevista_accio
-        result['incidencies'] = []
-        for incidencia in step.incidencia_ids:
-            result['incidencies'].append({
-                    'tipus' : incidencia.motiu_incidencia,
-                    'comentari' : incidencia.desc_incidencia
-            })
+        result['data_incidencia'] = dateformat(step.data_incidencia)
+        result['data_prevista_accio'] = dateformat(step.data_prevista_accio)
+        result['incidencies'] = [{'tipus':incidencia.motiu_incidencia,
+                                'comentari':incidencia.desc_incidencia}
+                                for incidencia in step.incidencia_ids]
         return result

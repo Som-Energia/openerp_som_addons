@@ -9,6 +9,6 @@ class E105(ProcesE1.ProcesE1):
     def get_data(self, wiz, cursor, uid, step):
         result = ProcesE1.ProcesE1.get_data(self, wiz, cursor, uid, step)
         result['type'] = 'E105'
-        result['data_activacio'] = step.data_activacio
+        result['data_activacio'] = dateformat(step.data_activacio)
         result['resultat_activacio'] =  get_description(step.resultat_activacio, "TABLA_118")
         return result

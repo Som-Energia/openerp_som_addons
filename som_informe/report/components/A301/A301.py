@@ -12,12 +12,7 @@ class A301(ProcesA3.ProcesA3):
         result['text'] = step.comentaris
         result['tipus_contracte'] =  get_description(step.tipus_contracte, "TABLA_9")
         result['tarifa'] =  get_description(step.tarifaATR, "TABLA_17")
-        result['potencies'] = []
-        for pot in step.pot_ids:
-            result['potencies'].append({
-                    'name' : pot.name,
-                    'potencia' : pot.potencia
-                })
+        result['potencies'] = [{'name':pot.name, 'potencia':pot.potencia} for pot in step.pot_ids if pot.potencia != 0]
         result['documents_adjunts'] = [(get_description(doc.type, "TABLA_61"), doc.url) for doc in step.document_ids]
 
         swl_obj = step.pool.get('giscedata.switching.log')

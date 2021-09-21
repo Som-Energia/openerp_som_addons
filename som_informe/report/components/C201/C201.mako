@@ -1,6 +1,6 @@
  <%page args="d" />
 <li>
-    ${_(u"El %s Som Energia presenta la sol·licitud següent a la distribuïdora ([%s]):") % (d.day, d.distribuidora) }<br/>
+    ${_(u"El %s Som Energia presenta la sol·licitud següent a la distribuïdora (%s):") % (d.day, d.distribuidora) }<br/>
     <br>
     ${_(u"<b>Procediment:</b> C2 (Canvi de Comercialitzadora amb modificacions en el contracte d’accés)")}<br/>
     ${_(u"<b>Pas:</b> 01")}<br/>
@@ -22,7 +22,9 @@
         % endfor
         ${d.potencies[-1]['name']}: ${d.potencies[-1]['potencia']} <br/>
         ${_(u"<b>Tarifa:</b> %s") % (d.tarifa)}<br/>
-        ${_(u"<b>Tensió:</b> %s") % (d.tensio)}<br/>
+        %if d.tensio:
+            ${_(u"<b>Tensió:</b> %s") % (d.tensio)}<br/>
+        %endif
         ${_(u"<b>Comentaris:</b> %s") % (d.comentaris)}<br/>
         %if d.adjunts:
             ${_(u"<b>Documentació adjunta:</b> Sí")}<br/>
