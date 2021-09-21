@@ -61,7 +61,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            sudo apt-get update
+            sudo apt-get update --allow-releaseinfo-change
             sudo apt-get install python-dev libxml2-dev libxmlsec1 libxmlsec1-dev -y
             export ROOT_DIR_SRC=~/src
             cd $ROOT_DIR_SRC
