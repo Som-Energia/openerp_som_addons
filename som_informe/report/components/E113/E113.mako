@@ -14,5 +14,5 @@
     % endfor
     <br/>
     ${_(u"<b>E-mail de Contacte:</b> %s") % (d.email_contacte)}<br/>
-    <br/>
+    <br><br>
 </li>

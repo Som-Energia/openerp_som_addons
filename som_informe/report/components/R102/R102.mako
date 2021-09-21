@@ -18,5 +18,5 @@
         ${_(u"<b>Codi de reclamació de la distribuïdora:</b> %s") % (d.codi_reclamacio_distri)}<br/>
         ${_(u"<b>Data d’acceptació:</b> %s") % (d.data_acceptacio)}<br/>
     % endif
-    <br/>
+    <br><br>
 </li>

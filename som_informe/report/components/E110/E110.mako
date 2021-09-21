@@ -5,6 +5,6 @@
     ${_(u"<b>Procediment:</b> E1 (Desistiment)")}<br/>
     ${_(u"<b>Pas:</b> 10")}<br/>
     ${_(u"<b>Data d'acceptació:</b> %s") % (d.data_acceptacio)}<br/>
-    <br/>
+    <br><br>
 </li>
 

@@ -5,5 +5,5 @@
     ${_(u"<b>Procediment:</b> E1")}<br/>
     ${_(u"<b>Pas:</b> 06")}<br/>
     ${_(u"<b>Data d'activació':</b> %s") % (d.data_alta)}<br/>
-    <br>
+    <br><br>
 </li>

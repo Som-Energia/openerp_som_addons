@@ -15,6 +15,6 @@
     % for rebuig in d.rebutjos:
         ${_(u"<b>Descripció del Rebuig:</b> %s") % (rebuig['descripcio'])}<br/>
     % endfor
-    <br/>
+    <br><br>
 </li>
 

@@ -7,6 +7,6 @@
     ${_(u"<b>Data creació -completa-:</b> %s") % (d.create)}<br/>
     ${_(u"<b>Data d'acceptació:</b> %s") % (d.data_acceptacio)}<br/>
     ${_(u"<b>Codi de la sol·licitud:</b> %s") % (d.codi_solicitud)}<br/>
-    <br/>
+    <br><br>
 </li>
 

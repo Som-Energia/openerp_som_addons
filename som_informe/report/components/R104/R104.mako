@@ -38,5 +38,5 @@
         % endfor
     % endif
     ${_(u"<b>Comentari:</b> <i>%s</i>") % (d.comentaris_distri)}<br/>
-    <br/>
+    <br><br>
 </li>

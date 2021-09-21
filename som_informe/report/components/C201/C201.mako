@@ -33,7 +33,7 @@
         %else:
             ${_(u"<b>Documentació adjunta:</b> No")}<br/>
         %endif
-        <br/>
     %endif
+    <br><br>
 </li>
 

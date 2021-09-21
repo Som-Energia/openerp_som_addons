@@ -5,5 +5,5 @@
     ${_(u"<b>Procediment:</b> E1 (Desistiment)")}<br/>
     ${_(u"<b>Pas:</b> 08")}<br/>
     ${_(u"<b>Codi de la sol·licitud:</b> %s") % (d.codi_solicitud)}<br/>
-    <br/>
+    <br><br>
 </li>

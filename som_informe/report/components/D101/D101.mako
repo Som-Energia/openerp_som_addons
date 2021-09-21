@@ -32,5 +32,5 @@
     % if d.comentaris != '':
         ${_(u"<b>Comentaris:</b> %s") % (d.comentaris)}<br/>
     %endif
-    <br/>
+    <br><br>
 </li>
