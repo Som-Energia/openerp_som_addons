@@ -7,7 +7,10 @@
     ${_(u"<b>Motiu canvi:</b> %s") % (d.motiu_canvi)}<br/>
     ${_(u"<b>Codi de la sol·licitud:</b> %s") % (d.codi_solicitud)}<br/>
     ${_(u"<b>CAU:</b> %s") % (d.CAU)}<br/>
-    ${_(u"<b>Secció Registre:</b> %s") % (d.seccio_registre)}<br/>
+    %if d.seccio_registre:
+        ${_(u"<b>Secció Registre:</b> %s") % (d.seccio_registre)}<br/>
+    %endif
+    ${_(u"<b>Subsecció:</b> %s") % (d.subseccio)}<br/>
     ${_(u"<b>CUPS:</b> %s") % (d.CUPS)}<br/>
     % for gen in d.generadors:
         ${_("<b>Potència instal·lada: </b> %s") % (gen['potencia_instalada'])} <br/>
