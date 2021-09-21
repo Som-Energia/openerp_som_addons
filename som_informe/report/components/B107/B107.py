@@ -9,11 +9,6 @@ class B107(ProcesB1.ProcesB1):
     def get_data(self, wiz, cursor, uid, step):
         result = ProcesB1.ProcesB1.get_data(self, wiz, cursor, uid, step)
         result['type'] = 'B107'
-        result['data_rebuig'] = step.data_rebuig
-        result['rebuigs'] = []
-        for rebuig in step.rebuig_ids:
-            result['rebuigs'].append({
-                    'codi_rebuig' : rebuig.id,
-                    'comentari' : rebuig.desc_rebuig
-            })
+        result['data_rebuig'] = dateformat(step.data_rebuig)
+        result['rebutjos'] = [{'codi':rebuig.motiu_rebuig.name, 'descripcio' : rebuig.desc_rebuig} for rebuig in step.rebuig_ids]
         return result

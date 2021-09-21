@@ -8,15 +8,8 @@ class C213(ProcesC2.ProcesC2):
     def get_data(self, wiz, cursor, uid, step):
         result = ProcesC2.ProcesC2.get_data(self, wiz, cursor, uid, step)
         result['type'] = 'C213'
-        result['data_creacio'] = step.date_created
         result['contestacio_incidencia'] = get_description(step.tipus_contestacio, "TABLA_121")
         result['nom_contacte'] = step.nom_contacte
         result['email_contacte'] = step.email
-        result['telefons'] = []
-        for telefon in step.telefons:
-            result['telefons'].append({
-                'numero' : telefon.numero
-            })
-
-
+        result['telefons'] = [{'numero':telefon.numero} for telefon in step.telefons]
         return result

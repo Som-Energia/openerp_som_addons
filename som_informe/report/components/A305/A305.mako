@@ -1,6 +1,6 @@
 <%page args="d" />
 <li>
-    ${_(u"El %s la distribuïdora ( %s ) ens dóna l’activació del cas tramitat:") % (d.day, d.distribuidora) }<br/>
+    ${_(u"El %s la distribuïdora (%s) ens dóna l’activació del cas tramitat:") % (d.day, d.distribuidora) }<br/>
     <br>
     ${_(u"<b>Procediment:</b> A3 (Alta de subministrament)")}<br/>
     ${_(u"<b>Pas:</b> 05")}<br/>
@@ -13,6 +13,8 @@
     % endfor
     ${d.potencies[-1]['name']}: ${d.potencies[-1]['potencia']} <br/>
     ${_(u"<b>Tarifa:</b> %s") % (d.tarifa)}<br/>
-    ${_(u"<b>Tensio:</b> %s") % (d.tensio)}<br/>
+    %if d.tensio:
+        ${_(u"<b>Tensió:</b> %s") % (d.tensio)}<br/>
+    %endif
     ${_(u"<b>Data activacio:</b> %s") % (d.data_activacio)}<br/> <br/>
 </li>

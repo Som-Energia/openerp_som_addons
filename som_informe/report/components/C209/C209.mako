@@ -1,10 +1,10 @@
 <%page args="d" />
 <li>
-    ${_(u"El %s la distribuïdora ( [%s] ) ens dóna l’acceptació/rebuig de la petició d’anul·lació tramitada:") % (d.day, d.distribuidora) }<br/>
+    ${_(u"El %s la distribuïdora (%s) ens dóna l’acceptació/rebuig de la petició d’anul·lació tramitada:") % (d.day, d.distribuidora) }<br/>
     <br>
     ${_(u"<b>Procediment:</b> C2 (Canvi de Comercialitzadora amb modificacions en el contracte d’accés)")}<br/>
     ${_(u"<b>Pas:</b> 09")}<br/>
-    ${_(u"<b>Data creació -completa-:</b> %s") % (d.data_creacio)}<br/>
+    ${_(u"<b>Data creació -completa-:</b> %s") % (d.create)}<br/>
     ${_(u"<b>Codi de la sol·licitud:</b> %s") % (d.codi_solicitud)}<br/>
     ${_(u"<b>Acceptació o Rebuig per part de la distribuïdora:</b>")}
     % if d.rebuig:

@@ -52,7 +52,14 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         #Comptabilitat block
         'mostra_comptabilitat': fields.boolean('Mostra bloc de Comptabilitat'),
         #Gestió de Contractes block
-        'mostra_ATR': fields.boolean('Mostra bloc de Gestió de Contractes'),
+        'mostra_A3': fields.boolean('A3'),
+        'mostra_B1': fields.boolean('B1'),
+        'mostra_B2': fields.boolean('B2'),
+        'mostra_C1': fields.boolean('C1'),
+        'mostra_C2': fields.boolean('C2'),
+        'mostra_D1': fields.boolean('D1'),
+        'mostra_E1': fields.boolean('E1'),
+        'mostra_M1': fields.boolean('M1'),
         #Gestió de cobraments block
         'mostra_cobraments': fields.boolean('Mostra bloc de Gestió de Cobraments'),
     }
@@ -102,15 +109,51 @@ class WizardCreateTechnicalReport(osv.osv_memory):
 
         return {'type': 'ir.actions.act_window_close'}
 
-
     # data generation
     def get_data(self, cursor, uid, id, context=None):
         wiz = self.browse(cursor, uid, id, context=context)
-
+        seleccionats = []
+        generar_informes = False
         result  = []
         result.extend(self.extract_header_metadata(cursor, uid, wiz.polissa, context))
         result.extend(self.extract_footer_metadata(cursor, uid, wiz.polissa, context))
         sw_obj = self.pool.get('giscedata.switching')
+
+        if wiz.mostra_reclama:
+            seleccionats.append('R1')
+        if wiz.mostra_A3:
+            seleccionats.append('A3')
+        if wiz.mostra_B1:
+            seleccionats.append('B1')
+        if wiz.mostra_B2:
+            seleccionats.append('B2')
+        if wiz.mostra_C1:
+            seleccionats.append('C1')
+        if wiz.mostra_C2:
+            seleccionats.append('C2')
+        if wiz.mostra_D1:
+            seleccionats.append('D1')
+        if wiz.mostra_E1:
+            seleccionats.append('E1')
+        if wiz.mostra_M1:
+            seleccionats.append('M1')
+
+        if len(seleccionats) > 0:
+            generar_informes = True
+
+        if generar_informes:
+            search_params = [
+                ('cups_id.id', '=', wiz.polissa.cups.id),
+                ('proces_id.name', 'in', seleccionats),
+                ]
+            if wiz.date_from:
+                search_params.append(('date', '>=', wiz.date_from))
+            if wiz.date_to:
+                search_params.append(('date', '<=', wiz.date_to))
+            sw_ids = sw_obj.search(cursor, uid, search_params)
+            result.extend(self.extract_switching_metadata(cursor, uid, sw_ids, context))
+
+
         if wiz.mostra_reclama:
             search_params = [
                 ('cups_id.id', '=', wiz.polissa.cups.id),
@@ -127,17 +170,6 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             pass
         if wiz.mostra_cobraments:
             pass
-        if wiz.mostra_ATR:
-            search_params = [
-                ('cups_id.id', '=', wiz.polissa.cups.id),
-                ('proces_id.name', 'in', ['A3', 'C1', 'C2', 'M1', 'B1', 'B2', 'E1', 'D1']),
-                ]
-            if wiz.date_from:
-                search_params.append(('date', '>=', wiz.date_from))
-            if wiz.date_to:
-                search_params.append(('date', '<=', wiz.date_to))
-            sw_ids = sw_obj.search(cursor, uid, search_params)
-            result.extend(self.extract_switching_metadata(cursor, uid, sw_ids, context))
         if wiz.mostra_comptabilitat:
             pass
 

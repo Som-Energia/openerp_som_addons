@@ -24,7 +24,15 @@
                             <field name="mostra_comptabilitat"/>
                         </page>
                         <page string="ATR">
-                            <field name="mostra_ATR"/>
+                            <!-- Informes a generar -->
+                            <field name="mostra_A3"/>
+                            <field name="mostra_B1"/>
+                            <field name="mostra_B2"/>
+                            <field name="mostra_C1"/>
+                            <field name="mostra_C2"/>
+                            <field name="mostra_D1"/>
+                            <field name="mostra_E1"/>
+                            <field name="mostra_M1"/>
                         </page>
                         <page string="Gestió de cobraments">
                             <field name="mostra_cobraments"/>
@@ -56,5 +64,3 @@
         <menuitem action="action_som_informe_report" id="menu_som_informe_report" name="Informe automàtic Som" parent="crm.menu_crm" sequence="10"/>
     </data>
 </openerp>
-
-

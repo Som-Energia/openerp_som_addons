@@ -9,12 +9,6 @@ class M104(ProcesM1.ProcesM1):
     def get_data(self, wiz, cursor, uid, step):
         result = ProcesM1.ProcesM1.get_data(self, wiz, cursor, uid, step)
         result['type'] = 'M104'
-        result['data_rebuig'] = step.data_rebuig
-        result['rebutjos'] = []
-        for rebuig in step.rebuig_ids:
-            result['rebutjos'].append({
-                    'codi' : rebuig.motiu_rebuig.name,
-                    'descripcio' : rebuig.desc_rebuig
-                })
-
+        result['data_rebuig'] = dateformat(step.data_rebuig)
+        result['rebutjos'] = [{'codi':rebuig.motiu_rebuig.name, 'descripcio' : rebuig.desc_rebuig} for rebuig in step.rebuig_ids]
         return result

@@ -11,14 +11,9 @@ class M105(ProcesM1.ProcesM1):
         result['type'] = 'M105'
         result['tipus_autoconsum'] =  get_description(step.tipus_autoconsum, "TABLA_113")
         result['control_potencia'] =  get_description(step.control_potencia, "TABLA_51")
-        result['potencies'] = []
-        for pot in step.pot_ids:
-            result['potencies'].append({
-                    'name' : pot.name,
-                    'potencia' : pot.potencia
-                })
+        result['potencies'] = [{'name':pot.name, 'potencia':pot.potencia} for pot in step.pot_ids if pot.potencia != 0]
         result['tarifa'] =  get_description(step.tarifaATR, "TABLA_17")
-        result['data_activacio'] = step.data_activacio
+        result['data_activacio'] = dateformat(step.data_activacio)
 
         swl_obj = step.pool.get('giscedata.switching')
 

@@ -1,6 +1,6 @@
 <%page args="d" />
 <li>
-    ${_(u"El %s la distribuïdora ( %s ) ens envia el cas ATR D1 01 amb la següent informació:") % (d.day, d.distribuidora) }<br/>
+    ${_(u"El %s la distribuïdora (%s) ens envia el cas ATR D1 01 amb la següent informació:") % (d.day, d.distribuidora) }<br/>
     <br>
     ${_(u"<b>Procediment:</b> D1 (Autoconsum)")}<br/>
     ${_(u"<b>Pas:</b> 02")}<br/>
