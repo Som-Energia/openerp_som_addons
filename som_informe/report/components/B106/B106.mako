@@ -8,7 +8,6 @@
     % for incidencia in d.incidencies:
         ${_(u"<b>Tipus d'incidència:</b> %s") % (incidencia['tipus'])}<br/>
         ${_(u"<b>Comentaris sobre la incidència:</b> %s") % (incidencia['comentari'])}<br/>
-        <br/>
     % endfor
     ${_(u"<b>Data d'incidència:</b> %s") % (d.data_incidencia)}<br/>
     ${_(u"<b>Data prevista acció:</b> %s") % (d.data_prevista_accio)}<br/>
