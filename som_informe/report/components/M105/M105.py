@@ -16,12 +16,7 @@ class M105(ProcesM1.ProcesM1):
         result['tarifa'] =  get_description(step.tarifaATR, "TABLA_17")
         result['data_activacio'] = dateformat(step.data_activacio)
 
-        swl_obj = step.pool.get('giscedata.switching')
-
-        swl_ids = swl_obj.browse(cursor, uid, step.sw_id.id)
-        model_obj = step.pool.get(swl_ids.step_ids[0].pas_id.split(',')[0])
-
-        result['tipus_sol'] =  model_obj.read(cursor, uid, (swl_ids.step_ids[0].pas_id).split(',')[1])[0]['sollicitudadm']
-        if model_obj.read(cursor, uid, (swl_ids.step_ids[0].pas_id).split(',')[1])[0]['tensio_solicitada']:
-            result['tensio_sol'] = get_description(model_obj.read(cursor, uid, (swl_ids.step_ids[0].pas_id).split(',')[1])[0]['tensio_solicitada'], "TABLA_64")
+        step01 = self.get_step_01(wiz, cursor, uid, step)
+        result['tipus_sol'] =  step01.sollicitudadm
+        result['tensio_sol'] = step01.tensio_solicitada
         return result
