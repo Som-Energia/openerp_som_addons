@@ -6,4 +6,5 @@
     ${_(u"<b>Pas:</b> 04")}<br/>
     ${_(u"<b>Codi de sol·licitud:</b> %s") % (d.codi_solicitud)}<br/>
     ${_(u"<b>Data d'acceptació/rebuig:</b> %s") % (d.data_rebuig)}<br/>
+    <br><br>
 </li>

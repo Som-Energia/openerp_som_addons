@@ -14,6 +14,6 @@
     % else:
         ${_(u"No")}<br/>
     % endif
-    <br/>
+    <br><br>
 </li>
 

@@ -13,5 +13,5 @@
         ${_(u"<b>Comentaris sobre la incidència:</b> %s") % (incidencia['comentari'])}<br/>
         <br/>
     % endfor
-    <br/>
+    <br><br>
 </li>
