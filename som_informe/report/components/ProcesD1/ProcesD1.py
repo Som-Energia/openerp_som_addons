@@ -1,12 +1,16 @@
 from ..component_utils import dateformat
+from ..ProcesATR import ProcesATR
 
-class ProcesD1:
+class ProcesD1(ProcesATR.ProcesATR):
 
     def __init__(self):
         pass
 
+    def proces_name(self):
+        return 'D1'
+
     def get_data(self, wiz, cursor, uid, step):
-        result = {}
+        result = ProcesATR.ProcesATR.get_data(self, wiz, cursor, uid, step)
         result['date'] = step.date_created
         result['day'] = dateformat(step.date_created)
         result['create'] = dateformat(step.date_created, True)
