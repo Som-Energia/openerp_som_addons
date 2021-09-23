@@ -14,8 +14,10 @@ class R105(ProcesR1.ProcesR1):
         result['comentaris_distri'] = step.comentaris
         result['resultat'] = get_description(step.resultat, 'TABLA_80')
         detail_obj = wiz.pool.get('giscedata.switching.detalle.resultado')
-        ids = detail_obj.search(cursor, uid, [])
-        vals = detail_obj.read(cursor, uid, ids, ['name', 'text'])
-        details = dict([(v['name'], v['text']) for v in vals])
-        result['detall_resultat'] = details.get(step.detall_resultat, step.detall_resultat)
+        ids = detail_obj.search(cursor, uid, [('name', '=', step.detall_resultat)])
+        if ids:
+            detall = detail_obj.read(cursor, uid, ids[0], ['text'])['text']
+            result['detall_resultat'] = detall
+        else:
+            result['detall_resultat'] = step.detall_resultat
         return result
