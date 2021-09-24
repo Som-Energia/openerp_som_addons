@@ -40,5 +40,21 @@
           <field name="name">google_drive_folder_technical_report</field>
           <field name="value">folder_hash</field>
         </record>
+        <record model="res.config" id="google_drive_folder_technical_report_R1">
+          <field name="name">google_drive_folder_technical_report_R1</field>
+          <field name="value">subfolder_R1_hash</field>
+        </record>
+        <record model="res.config" id="google_drive_folder_technical_report_ATR">
+          <field name="name">google_drive_folder_technical_report_ATR</field>
+          <field name="value">subfolder_ATR_hash</field>
+        </record>
+        <record model="res.config" id="google_drive_folder_technical_report_FACT">
+          <field name="name">google_drive_folder_technical_report_FACT</field>
+          <field name="value">subfolder_FACT_hash</field>
+        </record>
+        <record model="res.config" id="google_drive_folder_technical_report_COBR">
+          <field name="name">google_drive_folder_technical_report_COBR</field>
+          <field name="value">subfolder_COBR_hash</field>
+        </record>
     </data>
 </openerp>
