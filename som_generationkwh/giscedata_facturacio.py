@@ -577,6 +577,9 @@ class GiscedataFacturacioFacturaLinia(osv.osv):
 
     def unlink(self, cursor, uid, ids, context=None):
         """Return gkwh rights to owner when gkwh invoice line is droped"""
+        if not context:
+            context = {}
+
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         gkwh_lineowner_obj = self.pool.get('generationkwh.invoice.line.owner')
         gkwh_dealer_obj = self.pool.get('generationkwh.dealer')
