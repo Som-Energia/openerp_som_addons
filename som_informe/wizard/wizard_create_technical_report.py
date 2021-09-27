@@ -13,6 +13,25 @@ lang_filename = {
     'es_ES' : 'ES',
 }
 
+folder_data = {
+    'R1' : {
+        'config_id' : 'google_drive_folder_technical_report_R1',
+        'config_value' : 'subfolder_R1_hash',
+        'folder_name' : 'Informes de Reclamacions'},
+    'ATR' : {
+        'config_id' : 'google_drive_folder_technical_report_ATR',
+        'config_value' : 'subfolder_ATR_hash',
+        'folder_name' : "Informes d'ATR"},
+    'FACT' : {
+        'config_id' : 'google_drive_folder_technical_report_FACT',
+        'config_value' : 'subfolder_FACT_hash',
+        'folder_name' : 'Informes de Facturació'},
+    'COBR' : {
+        'config_id' : 'google_drive_folder_technical_report_COBR',
+        'config_value' : 'subfolder_COBR_hash',
+        'folder_name' : 'Informes de Cobraments'},
+}
+
 def dateformat(str_date, hours = False):
     if not str_date:
         return ""
@@ -68,6 +87,32 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         'state': 'init'
     }
 
+    def get_folder_data(self, cursor, uid, wiz, erp_config):
+        subfolder = ''
+        name = ''
+
+        atr_seleccionat = False
+        if wiz.mostra_A3 or wiz.mostra_B1 or wiz.mostra_B2 or wiz.mostra_C1 or \
+           wiz.mostra_C2 or wiz.mostra_D1 or wiz.mostra_E1 or wiz.mostra_M1 :
+            atr_seleccionat = True
+
+        if wiz.mostra_reclama and not atr_seleccionat:
+            subfolder = 'R1'
+        if atr_seleccionat:
+            subfolder = 'ATR'
+        if wiz.mostra_factura:
+            subfolder = 'FACT'
+        if wiz.cobraments:
+            subfolder = 'COBR'
+
+        if subfolder == '':
+            folder_hash = erp_config.get(cursor, uid, 'google_drive_folder_technical_report', 'folder_hash')
+        else:
+            folder_hash = erp_config.get(cursor, uid, folder_data[subfolder]['config_id'], folder_data[subfolder]['config_value'])
+            folder_name = folder_data[subfolder]['folder_name']
+
+        return folder_hash, folder_name
+
     def generate_report(self, cursor, uid, ids, context=None):
         if not context: # force use the selected language in the report
             context = {}
@@ -78,9 +123,6 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         context['lang'] = lang_code
 
         wiz = self.browse(cursor, uid, ids[0], context=context)
-
-        erp_config = self.pool.get('res.config')
-        folder_hash = erp_config.get(cursor, uid, 'google_drive_folder_technical_report', 'folder_hash')
 
         data = {
             'model': 'wizard.create.report',
@@ -101,7 +143,13 @@ class WizardCreateTechnicalReport(osv.osv_memory):
 
         #Upload document to Drive
         gdm_obj = self.pool.get('google.drive.manager')
-        file_name = '{}_informe_{}_{}'.format(str(date.today()), 'Reclama', lang_filename[lang_code])
+        wiz = self.browse(cursor, uid, ids[0], context=context)
+
+        erp_config = self.pool.get('res.config')
+        folder_hash, folder_name = self.get_folder_data(cursor, uid, wiz, erp_config)
+
+        file_name = '{}_informe_{}_{}'.format(str(date.today()), folder_name, lang_filename[lang_code])
+
         with tempfile.NamedTemporaryFile(suffix='.html', delete=False) as t:
             t.write(document_binary[0])
             t.flush()
@@ -117,6 +165,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         result  = []
         result.extend(self.extract_header_metadata(cursor, uid, wiz.polissa, context))
         result.extend(self.extract_footer_metadata(cursor, uid, wiz.polissa, context))
+
         sw_obj = self.pool.get('giscedata.switching')
 
         if wiz.mostra_reclama:
@@ -160,6 +209,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         if wiz.mostra_comptabilitat:
             pass
 
+        self.write(cursor, uid, id, {'result_type':result_type})
         result = sorted(result, key=lambda k: k['date'])
         return [ns(item) for item in result]
 
