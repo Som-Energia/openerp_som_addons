@@ -209,7 +209,6 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         if wiz.mostra_comptabilitat:
             pass
 
-        self.write(cursor, uid, id, {'result_type':result_type})
         result = sorted(result, key=lambda k: k['date'])
         return [ns(item) for item in result]
 
