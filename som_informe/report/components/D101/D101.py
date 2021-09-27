@@ -12,6 +12,8 @@ class D101(ProcesD1.ProcesD1):
         result['CAU'] = step.cau
         if step.seccio_registre:
             result['seccio_registre'] = get_description(step.seccio_registre, "TABLA_127")
+        else:
+            result['seccio_registre'] = False
         result['subseccio'] = step.subseccio
         result['CUPS'] = step.cups
         result['generadors'] = []
