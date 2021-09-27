@@ -91,7 +91,6 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         subfolder = ''
         name = ''
 
-        import pudb; pu.db
         atr_seleccionat = False
         if wiz.mostra_A3 or wiz.mostra_B1 or wiz.mostra_B2 or wiz.mostra_C1 or \
            wiz.mostra_C2 or wiz.mostra_D1 or wiz.mostra_E1 or wiz.mostra_M1 :
