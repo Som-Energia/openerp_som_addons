@@ -153,7 +153,15 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         with tempfile.NamedTemporaryFile(suffix='.html', delete=False) as t:
             t.write(document_binary[0])
             t.flush()
-            gdm_obj.uploadMediaToDrive(cursor, uid, file_name, t.name, folder_hash)
+            g_response = gdm_obj.uploadMediaToDrive(cursor, uid, file_name, t.name, folder_hash)
+
+        attach_obj = self.pool.get('ir.attachment')
+        attach_obj.create(cursor, uid, {
+            'res_model':'giscedata.polissa',
+            'res_id': wiz.polissa.id,
+            'name': g_response['name'],
+            'link': 'https://docs.google.com/document/d/' + g_response['id'],
+            }, context=context)
 
         return {'type': 'ir.actions.act_window_close'}
 
