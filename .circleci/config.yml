@@ -50,8 +50,6 @@ jobs:
             curl -H "Authorization: token $GITHUB_TOKEN" -L https://api.github.com/repos/gisce/pandapower_erp/tarball > /tmp/pandapower_erp.tar.gz
             curl -H "Authorization: token $GITHUB_TOKEN" -L https://api.github.com/repos/gisce/pandapower_validator/tarball > /tmp/pandapower_validator.tar.gz
             curl -H "Authorization: token $GITHUB_TOKEN" -L https://api.github.com/repos/gisce/ooop/tarball > /tmp/ooop.tar.gz
-            wget -O /tmp/egenix-mx-base-3.2.9.tar.gz http://downloads.egenix.com/python/egenix-mx-base-3.2.9.tar.gz
-            tar -xzvf /tmp/egenix-mx-base-3.2.9.tar.gz --directory /tmp
 
       # Download and cache dependencies
       - restore_cache:
@@ -75,9 +73,6 @@ jobs:
             pip install -r $ROOT_DIR_SRC/erp/requirements.txt
             test -x $ROOT_DIR_SRC/$TESTING_REPO/requirements.txt && pip install -r $ROOT_DIR_SRC/$TESTING_REPO/requirements.txt
             pip install face-lib
-            cd /tmp/egenix-mx-base-3.2.9
-            python setup.py install
-            cd -
 
       - run:
           name: Install somenenergia-generation depencencies
@@ -98,6 +93,7 @@ jobs:
           name: link addons
           command: |
             export ROOT_DIR_SRC=~/src
+            . ~/src/venv/bin/activate
             cd $ROOT_DIR_SRC/erp && ./tools/link_addons.sh
 
       # run tests!
@@ -145,5 +141,5 @@ jobs:
           destination: destral
 
       - store_artifacts:
-          path: ~/src/somenergia-generationkwh/htmlcov
+          path: ~/src/openerp_som_addons/htmlcov
           destination: coverage
