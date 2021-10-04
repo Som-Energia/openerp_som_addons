@@ -594,7 +594,7 @@ class GiscedataFacturacioFacturador(osv.osv):
             if ctx.get('base_pricelist_list', False):
                 ctx.update({'base_pricelist_list': {}})
 
-            periodes_energia = [l.product_id for l in factura.linia_ids if l.tipus == 'energia' and not l.is_gkwh()]
+            periodes_energia = [l.product_id for l in factura.linia_ids if l.tipus == 'energia' and not l.is_gkwh()[l.id]]
             num_periodes = len(list(set(periodes_energia)))
             llista_preus = factura.llista_preu
             mode_facturacio = factura.polissa_id.mode_facturacio
@@ -605,7 +605,7 @@ class GiscedataFacturacioFacturador(osv.osv):
                 if line.tipus in ('energia', 'potencia') and line.data_desde >= "2021-06-01":
                     # let's get the price in order to get the base_pricelist_lit for his product
                     product_id = line.product_id.id
-                    if line.is_gkwh():
+                    if line.is_gkwh()[line.id]:
                         product_id = fact_obj.get_energy_product_from_gkwh(cursor, uid, product_id)
 
                     ctx.update({'date': line.data_desde, 'uom': line.uos_id.id, 'base_pricelist_list': {}})
