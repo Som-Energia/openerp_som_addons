@@ -195,6 +195,29 @@ class GiscedataFacturacioFactura(osv.osv):
 
         return refund_ids
 
+    def get_energy_product_from_gkwh(self, cursor, uid, gkwh_product_id, context=None):
+        """" Get's atr product from Generation kWh product
+            product_id: product.product id
+        """
+        res = None
+        per_obj = self.pool.get('giscedata.polissa.tarifa.periodes')
+
+        if isinstance(gkwh_product_id, (tuple, list)):
+            gkwh_product_id = gkwh_product_id[0]
+
+        search_vals = [
+            ('product_gkwh_id', '=', gkwh_product_id)
+        ]
+
+        per_ids = per_obj.search(
+            cursor, uid, search_vals, context=context
+        )
+
+        if per_ids:
+            res = per_obj.read(cursor, uid, per_ids[0], ['product_id'])['product_id'][0]
+
+        return res
+
     def get_gkwh_period(self, cursor, uid, product_id, context=None):
         """" Get's linked Generation kWh period
             product_id: product.product id
@@ -538,6 +561,128 @@ class GiscedataFacturacioFacturador(osv.osv):
         self.reaplica_ajustar_saldo_excedents_autoconsum(cursor, uid, factures, context)
         factura_obj.button_reset_taxes(cursor, uid, factures, context=context)
         return factures
+
+    def create_discount_lines_for_rd_17_2021(self, cursor, uid, fact_ids, context=None):
+        if context is None:
+            context = {}
+
+        fact_obj = self.pool.get('giscedata.facturacio.factura')
+        line_obj = self.pool.get('giscedata.facturacio.factura.linia')
+        pricelist_obj = self.pool.get('product.pricelist')
+        product_obj = self.pool.get('product.product')
+        imd_obj = self.pool.get('ir.model.data')
+
+        tarifes_elec_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_facturacio', 'pricelist_tarifas_electricidad'
+        )[1]
+        cargos_pricelist_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_facturacio', 'pricelist_tarifas_cargos_electricidad'
+        )[1]
+        discount_pricelist_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_facturacio_comer', 'pricelist_precios_descuento_rd_17_2021'
+        )[1]
+        discount_product_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_facturacio_comer', 'descompte_rd_17_2012'
+        )[1]
+        discount_product = product_obj.browse(cursor, uid, discount_product_id)
+
+        ctx = context.copy()
+        for factura_id in fact_ids:
+            factura = fact_obj.browse(cursor, uid, factura_id, context=ctx)
+
+            # IF there's a previous base_pricelist_lit where delete it
+            if ctx.get('base_pricelist_list', False):
+                ctx.update({'base_pricelist_list': {}})
+
+            periodes_energia = [l.product_id for l in factura.linia_ids if l.tipus == 'energia' and not l.is_gkwh()[l.id]]
+            num_periodes = len(list(set(periodes_energia)))
+            llista_preus = factura.llista_preu
+            mode_facturacio = factura.polissa_id.mode_facturacio
+            is_indexada_and_uses_cargos = self.is_indexada_and_uses_cargos(cursor, uid, factura, context=context)
+            if mode_facturacio == 'pvpc':
+                ctx['pricelist_base_price'] = 0.0  # Dummy base price to avoid error
+            for line in factura.linia_ids:
+                if line.tipus in ('energia', 'potencia') and line.data_desde >= "2021-06-01":
+                    # let's get the price in order to get the base_pricelist_lit for his product
+                    product_id = line.product_id.id
+                    if line.is_gkwh()[line.id]:
+                        product_id = fact_obj.get_energy_product_from_gkwh(cursor, uid, product_id)
+
+                    ctx.update({'date': line.data_desde, 'uom': line.uos_id.id, 'base_pricelist_list': {}})
+                    price = pricelist_obj.price_get(
+                        cursor, uid, [llista_preus.id],
+                        line.product_id.id, line.quantity, context=ctx
+                    )
+                    discount_to_apply = 0.0
+
+                    if line.tipus == 'energia' and (
+                            mode_facturacio == 'pvpc' or (
+                            mode_facturacio == 'index' and is_indexada_and_uses_cargos)):
+                        discount_to_apply = 1.0
+                    else:
+                        # List of pricelist referenced in the price list item recursively
+                        base_pricelist_list = ctx.get('base_pricelist_list', False)
+                        if base_pricelist_list and base_pricelist_list.get(tarifes_elec_id, False):
+                            discount_to_apply = 1 + base_pricelist_list[tarifes_elec_id][0]
+
+                    total_discount = 0.0
+                    if line.tipus == 'energia' and num_periodes == 1 and line.data_desde >= '2021-09-16':
+                        try:
+                            discount_price = pricelist_obj.price_get(
+                                cursor, uid, [discount_pricelist_id],
+                                product_id, 1, context=ctx
+                            )
+                        except:
+                            raise NotImplementedError(
+                                _(u"Cálcul del preu de descompte segons RD 17/2021 no implementat "
+                                  u"per a la tarifa {}").format(factura.polissa_id.tarifa.name))
+                        if discount_price:
+                            total_discount = discount_price[discount_pricelist_id]
+                    elif line.tipus == 'energia' and num_periodes == 2:
+                        raise NotImplementedError(_(u"Cálcul del preu de descompte segons RD 17/2021 "
+                                                    u"per a 2 periodes no implementat"))
+                    else:
+                        new_cargos_price = pricelist_obj.price_get(
+                            cursor, uid, [cargos_pricelist_id],
+                            product_id, 1, context=ctx
+                        )
+
+                        ctx2 = ctx.copy()
+                        ctx2.update({'date': '2021-09-01'})
+                        old_cargos_price = pricelist_obj.price_get(
+                            cursor, uid, [cargos_pricelist_id],
+                            product_id, 1, context=ctx2
+                        )
+
+                        if old_cargos_price.get(cargos_pricelist_id, False) and \
+                                new_cargos_price.get(cargos_pricelist_id, False):
+                            total_discount = new_cargos_price[cargos_pricelist_id] - \
+                                             old_cargos_price[cargos_pricelist_id]
+
+                    if total_discount:
+                        line_desc = "{} {} {}".format(discount_product.description, line.product_id.name, line.tipus)
+                        vals = {
+                            'data_desde': line.data_desde,
+                            'data_fins': line.data_fins,
+                            'uos_id': line.product_id.uom_id.id,
+                            'quantity': line.quantity,
+                            'multi': line.multi,
+                            'product_id': discount_product_id,
+                            'tipus': 'altres',
+                            'name': line_desc,
+                            'force_price': total_discount,
+                        }
+
+                        if discount_to_apply:
+                            vals.update({'discount': discount_to_apply * 100.0})
+
+                        ctx_crear_linia = context.copy()
+                        ctx_crear_linia.update({'force_not_showing_discount': True})
+                        line_id = self.crear_linia(cursor, uid, factura.id, vals, context=ctx_crear_linia)
+                        tax_ids = [x.id for x in line.invoice_line_tax_id]
+                        line_obj.write(cursor, uid, line_id, {'invoice_line_tax_id': [(6, 0, tax_ids)]})
+
+            factura.button_reset_taxes()
 
 
 GiscedataFacturacioFacturador()
