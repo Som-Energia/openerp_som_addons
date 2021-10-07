@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="giscedata.switching.notify" id="notification_atr_C102_38">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_c1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_c1_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+       L'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la zona (que gestiona aquest procediment) ens comunica que la sol·licitud ha sigut denegada indicant que <b>existeix una altra sol·licitud de canvi de comercialitzadora en curs</b>.
+    </p>
+    <p>
+        Per poder tirar endavant amb la sol·licitud necessitaríem que, una vegada realitzada la contractació amb l'altra companyia, ens respongueu aquest missatge i llavors podrem iniciar el tràmit.
+    </p>
+</%def>
+
+
+<%def name="correu_es()">
+    <p>
+        La <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">empresa distribuidora</a> de tu zona (que gestiona este procedimiento) nos comunica que la solicitud ha sido rechazada indicando que <b>existe otra solicitud de cambio de comercializadora en curso</b>.  
+    </p>
+    <p>
+        Para poder seguir adelante con la solicitud necesitaríamos que, una vez realizada la contratación con la otra compañía, nos lo indiques para iniciar el trámite.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <!-- <field name="rebuig_ids">[(4,[38])]</field> -->
+        </record>
+    </data>
+</openerp>
