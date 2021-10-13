@@ -177,7 +177,7 @@
         Este procedimiento suele requerir la presentación de documentación que certifique la adecuación de la instalación eléctrica, lo cual tiene un coste variable (dependiendo de la potencia a contratar y del tiempo que hace que no hay suministro). Podréis encontrar más información en este enlace:
     </p>
     <p>
-        <a href="https://es.support.somenergia.coop/article/245-no-tengo-luz-actualmente-puedo-solicitar-un-nuevo-punto-de-consumo"Actualmente no hay luz. Cómo solicitar un nuevo punto de suministro>
+        <a href="https://es.support.somenergia.coop/article/245-no-tengo-luz-actualmente-puedo-solicitar-un-nuevo-punto-de-consumo">Actualmente no hay luz. Cómo solicitar un nuevo punto de suministro</a>
     </p>
     <p>
         Cuando nos lo confirméis, procederemos a iniciar el trámite del alta del suministro, que una vez aceptada la solicitud.
@@ -224,7 +224,7 @@
         Este procedimiento suele requerir la presentación de documentación que certifique la adecuación de la instalación eléctrica, lo cual tiene un coste variable (dependiendo de la potencia a contratar y del tiempo que hace que no hay suministro). Podréis encontrar más información en este enlace:
     </p>
     <p>
-        <a href="https://es.support.somenergia.coop/article/245-no-tengo-luz-actualmente-puedo-solicitar-un-nuevo-punto-de-consumo"Actualmente no hay luz. Cómo solicitar un nuevo punto de suministro>
+        <a href="https://es.support.somenergia.coop/article/245-no-tengo-luz-actualmente-puedo-solicitar-un-nuevo-punto-de-consumo">Actualmente no hay luz. Cómo solicitar un nuevo punto de suministro</a>
     </p>
     <p>
         Cuando nos lo confirméis, procederemos a iniciar el trámite del alta del suministro, que una vez aceptada la solicitud.
@@ -413,7 +413,7 @@
 
 <%def name="correu_cat()">
     <p>
-       L'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la zona (que gestiona aquest procediment) ens comunica que la sol·licitud ha sigut denegada indicant el següent motiu:
+       L'empresa distribuïdora de la zona (que gestiona aquest procediment) ens comunica que la sol·licitud ha sigut denegada indicant el següent motiu:
     </p>
     <p>
         <b>Existencia de solicitud previa en curso B1 (motivo 04)</b>
@@ -429,7 +429,7 @@
 
 <%def name="correu_es()">
     <p>
-        La <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">empresa distribuidora</a> de tu zona (que gestiona este procedimiento) nos comunica que la solicitud ha sido rechazada indicando el siguiente motivo:
+        La empresa distribuidora de tu zona (que gestiona este procedimiento) nos comunica que la solicitud ha sido rechazada indicando el siguiente motivo:
     </p>
     <p>
         <b>Existencia de solicitud previa curso B1 (motivo 04)</b>
@@ -438,7 +438,7 @@
         Esto significa que se les consta que hay una baja de corte por impago en este punto de suministro y un cambio de comercializadora no es posible. Será necesario que contactes con <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">la empresa de distribución</a> de tu zona.
     </p>
     <p>
-        Puedes consultar en este enlace el teléfono de <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">las principales empresas distribuidoras. </a>
+        Puedes consultar en este enlace el teléfono de <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">las principales empresas distribuidoras.</a>
     </p>
 </%def>
                 ]]>
@@ -459,7 +459,7 @@
 % endif
 <%def name="correu_cat()">
     <p>
-       L'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la zona (que gestiona aquest procediment) ens comunica que la sol·licitud ha sigut denegada indicant el següent motiu:
+       L'empresa distribuïdora de la zona (que gestiona aquest procediment) ens comunica que la sol·licitud ha sigut denegada indicant el següent motiu:
     </p>
     <p>
         <b>Existencia de solicitud previa en curso B1 (motivo 04)</b>
@@ -475,7 +475,7 @@
 
 <%def name="correu_es()">
     <p>
-        La <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">empresa distribuidora</a> de tu zona (que gestiona este procedimiento) nos comunica que la solicitud ha sido rechazada indicando el siguiente motivo:
+        La empresa distribuidora de tu zona (que gestiona este procedimiento) nos comunica que la solicitud ha sido rechazada indicando el siguiente motivo:
     </p>
     <p>
         <b>Existencia de solicitud previa curso B1 (motivo 04)</b>
@@ -484,7 +484,7 @@
         Esto significa que se les consta que hay una baja de corte por impago en este punto de suministro y un cambio de comercializadora no es posible. Será necesario que contactes con <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">la empresa de distribución</a> de tu zona.
     </p>
     <p>
-        Puedes consultar en este enlace el teléfono de <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">las principales empresas distribuidoras. </a>
+        Puedes consultar en este enlace el teléfono de <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">las principales empresas distribuidoras.</a>
     </p>
 </%def>
         ]]>
@@ -506,7 +506,7 @@
 
 <%def name="correu_cat()">
     <p>
-       L'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la zona (que gestiona aquest procediment) ens comunica que la sol·licitud ha sigut denegada indicant que <b>"És necessari presentar la cèdula d'habitabilitat per a procedir amb el canvi".</b>
+       L'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la zona (que gestiona aquest procediment) ens comunica que la sol·licitud ha sigut denegada indicant que <b>És necessari presentar la cèdula d'habitabilitat per a procedir amb el canvi.</b>
     </p>
     <p>
         <b>En cas que sigui una contractació per uns CUPS provisional d’obres, la documentació a presentar és la llicència d’obres.</b>
@@ -519,7 +519,7 @@
 
 <%def name="correu_es()">
     <p>
-        La <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">empresa distribuidora</a> de tu zona (que gestiona este procedimiento) nos comunica que la solicitud ha sido rechazada indicando que <b>“Es necesario presentar la cédula de habitabilidad para proceder con el cambio”.</b>
+        La <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">empresa distribuidora</a> de tu zona (que gestiona este procedimiento) nos comunica que la solicitud ha sido rechazada indicando que <b>Es necesario presentar la cédula de habitabilidad para proceder con el cambio.</b>
     </p>
     <p>
         <b>En caso que sea una contratación para un CUPS de obras, la documentación a presentar es la licencia de obras.</b>
@@ -547,7 +547,7 @@
 
 <%def name="correu_cat()">
     <p>
-       L'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la zona (que gestiona aquest procediment) ens comunica que la sol·licitud ha sigut denegada indicant que <b>"És necessari presentar la cèdula d'habitabilitat per a procedir amb el canvi".</b>
+       L'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la zona (que gestiona aquest procediment) ens comunica que la sol·licitud ha sigut denegada indicant que <b>És necessari presentar la cèdula d'habitabilitat per a procedir amb el canvi.</b>
     </p>
     <p>
         <b>En cas que sigui una contractació per uns CUPS provisional d’obres, la documentació a presentar és la llicència d’obres.</b>
@@ -560,7 +560,7 @@
 
 <%def name="correu_es()">
     <p>
-        La <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">empresa distribuidora</a> de tu zona (que gestiona este procedimiento) nos comunica que la solicitud ha sido rechazada indicando que <b>“Es necesario presentar la cédula de habitabilidad para proceder con el cambio”.</b>
+        La <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">empresa distribuidora</a> de tu zona (que gestiona este procedimiento) nos comunica que la solicitud ha sido rechazada indicando que <b>Es necesario presentar la cédula de habitabilidad para proceder con el cambio.</b>
     </p>
     <p>
         <b>En caso que sea una contratación para un CUPS de obras, la documentación a presentar es la licencia de obras.</b>
@@ -588,7 +588,7 @@
 
 <%def name="correu_cat()">
     <p>
-       L'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la zona (que gestiona aquest procediment) ens comunica el següent:
+       L'empresa distribuïdora de la zona (que gestiona aquest procediment) ens comunica el següent:
     </p>
     <p>
         <b>Contrato cortado por el distribuidor.</b>
@@ -616,7 +616,7 @@
 
 <%def name="correu_es()">
     <p>
-        La <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">empresa distribuidora</a> de tu zona (que gestiona este procedimiento) nos comunica lo siguiente:
+        La empresa distribuidora de tu zona (que gestiona este procedimiento) nos comunica lo siguiente:
     </p>
     <p>
         <b>Contrato cortado por el distribuidor.</b>
@@ -714,6 +714,83 @@
                 ]]>
             </field>
             <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_A2')])]" />
+        </record>
+
+        <record model="giscedata.switching.notify" id="notification_atr_C102_03">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_c1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_c1_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+        La sol·licitud ens ha estat rebutjada per part de <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">l’empresa distribuïdora</a> indicant que no ets l’actual titular d’aquest contracte.
+    </p>
+
+    <p>
+        Per poder tirar endavant amb el canvi de comercialitzadora necessitaríem que ens feu arribar:
+        <ul>
+            <li>
+                Una factura recent.
+            </li>
+            <li>
+                Indicar qui voleu que sigui la persona titular amb Som Energia.
+            </li>
+            <li>
+                Confirmar el compte IBAN de la persona titular on voleu domiciliar les factures.
+            </li>
+            <li>
+                En cas que vulgueu conservar la titularitat del contracte, ens farà falta una còpia escanejada del seu DNI, correu electrònic i telèfon de contacte.
+            </li>
+        </ul>
+    </p>
+
+    <p>
+        En quan tinguem aquestes dades podrem continuar gestionant el canvi.
+    </p>
+    <p>
+        Recorda que el titular del contracte de subministrament ha de ser l’usuari efectiu de l’electricitat contractada i que ha de tenir un just títol (contracte d’arrendament, etc.) sobre el punt de subministrament.
+    </p>
+</%def>
+
+<%def name="correu_es()">
+    <p>
+        La solicitud nos ha sido rechazada por parte de <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">la empresa distribuidora</a> indicando que no eres el actual titular del contrato.
+    </p>
+
+    <p>
+        Para poder continuar con la solicitud necesitaremos:
+        <ul>
+            <li>
+                Una factura reciente.
+            </li>
+            <li>
+                Saber quién quieres que sea la persona titular con Som Energia.
+            </li>
+            <li>
+                Confirmar la cuenta IBAN del titular donde queréis domiciliar las facturas.
+            </li>
+            <li>
+                En caso de que desees conservar la titularidad, bastará con enviarnos una copia escaneada de su DNI, correo electrónico y teléfono de contacto.
+            </li>
+        </ul>
+    </p>
+
+    <p>
+        En cuanto tengamos estos datos podremos continuar gestionando el cambio.
+    </p>
+    <p>
+        Recuerda que el titular del contrato de suministro tiene que ser el usuario efectivo de la electricidad contratada y que tiene que tener un justo título (contrato de arrendamiento, etc.) sobre el punto de suministro.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_3')])]" />
         </record>
     </data>
 </openerp>
