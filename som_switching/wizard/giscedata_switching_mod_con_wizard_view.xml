@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_wizard_switching_mod_con_form" model="ir.ui.view">
+            <field name="name">giscedata.switching.mod.con.wizard.form</field>
+            <field name="model">giscedata.switching.mod.con.wizard</field>
+			<field name="inherit_id" ref="giscedata_switching.view_wizard_switching_mod_con_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@string='M1 - Modificació contractual']" position="replace">
+                    <field name="necessita_documentacio_tecnica" invisible="1"/>
+                    <!-- Boto que es mostra quan es necessita documentacio i ja n'hi ha-->
+                    <group colspan="4" col="4" attrs="{'invisible':[('necessita_documentacio_tecnica', '!=', True)]}">
+                        <group colspan="4" col="4" attrs="{'invisible':[('dt_add','!=',True)]}">
+                            <group colspan="4" col="4" attrs="{'invisible':[('doc_add', '!=', True)]}">
+                                <button name="genera_casos_atr" string="M1 - Modificació contractual" type="object" icon="gtk-execute"
+                                        attrs="{'readonly': [('change_adm','=',False),('change_atr','=',False)]}"/>
+                            </group>
+                        </group>
+                    </group>
+                    <!-- Boto que es mostra quan es necessita documentacio i NO n'hi ha-->
+                    <group colspan="4" col="4" attrs="{'invisible':[('necessita_documentacio_tecnica', '!=', True)]}">
+                        <group colspan="4" col="4" attrs="{'invisible':[('change_atr', '=', False)]}">
+                            <group colspan="4" col="4" attrs="{'invisible':[('dt_add','=',True), ('doc_add', '=', True)]}">
+                                <button name="genera_casos_atr" string="M1 - Modificació contractual" type="object" icon="gtk-execute"
+                                            attrs="{'readonly': [('change_adm','=',False),('change_atr','=',False)]}" confirm="Estàs segur que vols generar el cas ATR sense completar ambdós apartats Documentació Tècnica i Documentació Adjunta?"/>
+                            </group>
+                        </group>
+                        <group colspan="4" col="4" attrs="{'invisible':[('change_atr', '=', True)]}">
+                            <group colspan="4" col="4" attrs="{'invisible':[('dt_add','=',True), ('doc_add', '=', True)]}">
+                                <button name="genera_casos_atr" string="M1 - Modificació contractual" type="object" icon="gtk-execute"
+                                            attrs="{'readonly': [('change_adm','=',False),('change_atr','=',False)]}"/>
+                            </group>
+                        </group>
+                    </group>
+                    <!-- Boto que es mostra quan NO es necessita documentacio-->
+                    <group colspan="4" col="4" attrs="{'invisible':[('necessita_documentacio_tecnica', '=', True)]}">
+                        <button name="genera_casos_atr" string="M1 - Modificació contractual" type="object" icon="gtk-execute"
+                                        attrs="{'readonly': [('change_adm','=',False),('change_atr','=',False)]}"/>
+                    </group>
+                </xpath>
+                <xpath expr="//button[@string='C2 - Canvi de comercialitzadora amb canvis']" position="replace">
+                    <!-- Boto que es mostra quan es necessita documentacio i ja n'hi ha-->
+                    <group colspan="4" col="4" attrs="{'invisible':[('necessita_documentacio_tecnica', '!=', True)]}">
+                        <group colspan="4" col="4" attrs="{'invisible':[('dt_add','!=',True)]}">
+                            <group colspan="4" col="4" attrs="{'invisible':[('doc_add', '!=', True)]}">
+                                <button name="genera_casos_atr" string="C2 - Canvi de comercialitzadora amb canvis" type="object" icon="gtk-execute"
+                                        attrs="{'readonly': [('change_adm','=',False),('change_atr','=',False)]}"/>
+                            </group>
+                        </group>
+                    </group>
+                    <!-- Boto que es mostra quan es necessita documentacio i NO n'hi ha-->
+                    <group colspan="4" col="4" attrs="{'invisible':[('necessita_documentacio_tecnica', '!=', True)]}">
+                        <group colspan="4" col="4" attrs="{'invisible':[('change_atr', '=', False)]}">
+                            <group colspan="4" col="4" attrs="{'invisible':[('dt_add','=',True), ('doc_add', '=', True)]}">
+                                <button name="genera_casos_atr" string="C2 - Canvi de comercialitzadora amb canvis" type="object" icon="gtk-execute"
+                                        attrs="{'readonly': [('change_adm','=',False),('change_atr','=',False)]}" confirm="Estàs segur que vols generar el cas ATR sense completar ambdós apartats Documentació Tècnica i Documentació Adjunta?"/>
+                            </group>
+                        </group>
+                        <group colspan="4" col="4" attrs="{'invisible':[('change_atr', '=', True)]}">
+                            <group colspan="4" col="4" attrs="{'invisible':[('dt_add','=',True), ('doc_add', '=', True)]}">
+                                <button name="genera_casos_atr" string="C2 - Canvi de comercialitzadora amb canvis" type="object" icon="gtk-execute"
+                                        attrs="{'readonly': [('change_adm','=',False),('change_atr','=',False)]}"/>
+                            </group>
+                        </group>
+                    </group>
+                    <!-- Boto que es mostra quan NO es necessita documentacio-->
+                    <group colspan="4" col="4" attrs="{'invisible':[('necessita_documentacio_tecnica', '=', True)]}">
+                        <button name="genera_casos_atr" string="C2 - Canvi de comercialitzadora amb canvis" type="object" icon="gtk-execute"
+                                        attrs="{'readonly': [('change_adm','=',False),('change_atr','=',False)]}"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</openerp>

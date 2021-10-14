@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_generate_r1_from_f1_som">
+            <field name="name">wizard.r1.from.f1.erroni.form</field>
+            <field name="model">wizard.r1.from.f1.erroni</field>
+            <field name="inherit_id" ref="giscedata_facturacio_switching.view_wizard_generate_r1_from_f1"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <separator string="Comentaris" position="before">
+                    <field name="doc_add"/>
+                    <group colspan="2" string=" " attrs="{'invisible': [('doc_add', '=', False)]}">
+                        <field name="doc_ids" nolabel="1"/>
+                    </group>
+                </separator>
+            </field>
+        </record>
+    </data>
+</openerp>
