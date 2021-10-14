@@ -1,0 +1,295 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="1">
+        <record model="res.config" id="treure_facturacio_suspesa_on_cac_close" forcecreate="1">
+            <field name="name">treure_facturacio_suspesa_on_cac_close</field>
+            <field name="value">0</field>
+            <field name="description">Si s'activa (1) al tancar qualsevol cas d'Atencio al Client es treu la facturacio suspesa del contracte relacionat. Valor per defecte: 0 (desactivat)</field>
+        </record>
+    </data>
+    <data noupdate="1">
+<!--        Creem les seccions filles de atc-->
+        <record model="crm.case.section" id="atc_section_info">
+            <field name="name">INFO</field>
+            <field name="code">ATCI</field>
+            <field name="sequence">90</field>
+            <field name="parent_id" ref="giscedata_atc.atc_section"/>
+        </record>
+        <record model="crm.case.section" id="atc_section_factura">
+            <field name="name">FACTURA</field>
+            <field name="code">ATCF</field>
+            <field name="sequence">90</field>
+            <field name="parent_id" ref="giscedata_atc.atc_section"/>
+        </record>
+        <record model="crm.case.section" id="atc_section_contractes">
+            <field name="name">CONTRACTES</field>
+            <field name="code">ATCC</field>
+            <field name="sequence">90</field>
+            <field name="parent_id" ref="giscedata_atc.atc_section"/>
+        </record>
+        <record model="crm.case.section" id="atc_section_reclamacions">
+            <field name="name">RECLAMACIONS</field>
+            <field name="code">ATCR</field>
+            <field name="sequence">90</field>
+            <field name="parent_id" ref="giscedata_atc.atc_section"/>
+        </record>
+        <record model="crm.case.section" id="atc_section_cobraments">
+            <field name="name">COBRAMENTS</field>
+            <field name="code">ATCCB</field>
+            <field name="sequence">90</field>
+            <field name="parent_id" ref="giscedata_atc.atc_section"/>
+        </record>
+        <record model="crm.case.section" id="atc_section_contractes_a">
+            <field name="name">CONTRACTES - A</field>
+            <field name="code">ATCC-A</field>
+            <field name="sequence">90</field>
+            <field name="parent_id" ref="atc_section_contractes"/>
+        </record>
+        <record model="crm.case.section" id="atc_section_contractes_b">
+            <field name="name">CONTRACTES - B</field>
+            <field name="code">ATCC-B</field>
+            <field name="sequence">90</field>
+            <field name="parent_id" ref="atc_section_contractes"/>
+        </record>
+        <record model="crm.case.section" id="atc_section_contractes_c">
+            <field name="name">CONTRACTES - C</field>
+            <field name="code">ATCC-C</field>
+            <field name="sequence">90</field>
+            <field name="parent_id" ref="atc_section_contractes"/>
+        </record>
+        <record model="crm.case.section" id="atc_section_contractes_m">
+            <field name="name">CONTRACTES - M</field>
+            <field name="code">ATCC-M</field>
+            <field name="sequence">90</field>
+            <field name="parent_id" ref="atc_section_contractes"/>
+        </record>
+    </data>
+<!--    Assignem seccions als subtipus-->
+    <data noupdate="1">
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_001">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_002">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_003">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_004">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_005">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_006">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_007">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_008">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_009">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_010">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_011">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_012">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_013">
+            <field name="default_section" ref="atc_section_contractes_c"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_014">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_015">
+            <field name="default_section" ref="atc_section_contractes_b"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_018">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_019">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_020">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_021">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_022">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_023">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_024">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_025">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_026">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_027">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_028">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_029">
+            <field name="default_section" eval="None"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_030">
+            <field name="default_section" ref="atc_section_contractes_a"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_031">
+            <field name="default_section" ref="atc_section_contractes_a"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_032">
+            <field name="default_section" ref="atc_section_contractes_b"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_034">
+            <field name="default_section" ref="atc_section_contractes_c"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_035">
+            <field name="default_section" eval="None"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_036">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_037">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_038">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_039">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_040">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_041">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_042">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_043">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_044">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_045">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_046">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_047">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_048">
+            <field name="default_section" eval="None"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_049">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_055">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_056">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_057">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_058">
+            <field name="default_section" ref="atc_section_contractes_c"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_059">
+            <field name="default_section" ref="atc_section_contractes_c"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_060">
+            <field name="default_section" ref="atc_section_contractes_m"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_061">
+            <field name="default_section" ref="atc_section_contractes_m"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_062">
+            <field name="default_section" ref="atc_section_contractes_a"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_063">
+            <field name="default_section" ref="atc_section_contractes_a"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_064">
+            <field name="default_section" ref="atc_section_contractes_b"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_065">
+            <field name="default_section" ref="atc_section_contractes_b"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_066">
+            <field name="default_section" eval="None"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_067">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_070">
+            <field name="default_section" eval="None"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_100">
+            <field name="default_section" ref="atc_section_contractes_c"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_101">
+            <field name="default_section" ref="atc_section_cobraments"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_102">
+            <field name="default_section" ref="atc_section_cobraments"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_103">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_104">
+            <field name="default_section" ref="atc_section_cobraments"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_105">
+            <field name="default_section" ref="atc_section_cobraments"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_106">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_107">
+            <field name="default_section" ref="atc_section_contractes_c"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_108">
+            <field name="default_section" ref="atc_section_contractes_c"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_109">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_110">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_111">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_112">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_113">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_114">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+    </data>
+</openerp>

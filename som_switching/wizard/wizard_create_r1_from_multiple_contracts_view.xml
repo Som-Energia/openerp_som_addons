@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_wizard_create_r1_multiple_contracts_form" model="ir.ui.view">
+            <field name="name">wizard.create.r1.from.multiple.contracts.form</field>
+            <field name="model">wizard.r101.from.multiple.contracts</field>
+            <field name="inherit_id" ref="giscedata_switching.view_wizard_create_r1_multiple_contracts_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <field name="comentarios" position="after">
+                    <label string="" colspan="8"/>
+                    <group colspan="8" col="8" string="Gestió Facturació del Contracte">
+                        <separator string="Marcar facturacio suspesa: " colspan="4"/>
+                        <field name="facturacio_suspesa" colspan="4" nolabel="1"/>
+                        <separator string="Marcar refacturacio pendent: " colspan="4"/>
+                        <field name="refacturacio_pendent" colspan="4" nolabel="1"/>
+                    </group>
+                    <label string="" colspan="8"/>
+				</field>
+                <button name="create_r1_from_contracts" position="replace">
+                    <button icon="gtk-ok" name="create_r1_from_contracts" string="Continuar" type="object"
+                    confirm="Aquesta acció generarà casos R1. Has revisat l'estat de la facturació suspesa i la refacturació pendent abans de continuar?"/>
+                </button>
+            </field>
+        </record>
+    </data>
+</openerp>
