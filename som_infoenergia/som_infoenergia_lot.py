@@ -107,6 +107,16 @@ class SomInfoenergiaLotEnviament(osv.osv):
         lot_info = self.read(cursor, uid, ids, ['name','tipus'])
         context['tipus'] = lot_info['tipus']
         job_ids = []
+
+        #Remove already created
+        print "Abans " + str(len(object_ids))
+        env_obj = self.get_enviament_object(cursor, uid, ids)
+        for env in env_obj.search(cursor, uid, [('lot_enviament','=',ids)]):
+            pol = env_obj.read(cursor, uid, env, ['polissa_id'])
+            if pol['polissa_id'] and pol['polissa_id'][0] in object_ids:
+                object_ids.remove(pol['polissa_id'][0])
+        print "Després " + str(len(object_ids))
+
         for obj_id in object_ids:
             job = self.create_single_enviament_from_object_async(cursor, uid, ids, obj_id, context=context)
             job_ids.append(job.id)
