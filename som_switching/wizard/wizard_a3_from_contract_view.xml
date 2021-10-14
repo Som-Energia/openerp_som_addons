@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_giscedata_switching_a301_wizard_form" model="ir.ui.view">
+            <field name="name">giscedata.switching.a301.wizard.form</field>
+            <field name="model">giscedata.switching.a301.wizard</field>
+			<field name="inherit_id" ref="giscedata_switching.view_giscedata_switching_a301_wizard_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='genera_casos_atr']" position="replace">
+                    <field name="necessita_documentacio_tecnica" invisible="1"/>
+                    <!-- Boto que es mostra quan es necessita documentacio i ja n'hi ha-->
+                    <group colspan="4" col="4" attrs="{'invisible':[('necessita_documentacio_tecnica', '!=', True)]}">
+                        <group colspan="4" col="4" attrs="{'invisible':[('dt_add','!=',True)]}">
+                            <group colspan="4" col="4" attrs="{'invisible':[('doc_add', '!=', True)]}">
+                                <button name="genera_casos_atr" string="A3 - Alta" type="object" icon="gtk-execute" context="{'proces': 'A3'}" colspan="4"/>
+                            </group>
+                        </group>
+                    </group>
+                    <!-- Boto que es mostra quan es necessita documentacio i NO n'hi ha-->
+                    <group colspan="4" col="4" attrs="{'invisible':[('necessita_documentacio_tecnica', '!=', True)]}">
+                        <group colspan="4" col="4" attrs="{'invisible':[('dt_add','=',True), ('doc_add', '=', True)]}">
+                            <button name="genera_casos_atr" string="A3 - Alta" type="object" icon="gtk-execute" context="{'proces': 'A3'}" colspan="4" confirm="Estàs segur que vols generar el cas ATR sense completar ambdós apartats Documentació Tècnica i Documentació Adjunta?"/>
+                        </group>
+                    </group>
+                    <!-- Boto que es mostra quan NO es necessita documentacio-->
+                    <group colspan="4" col="4" attrs="{'invisible':[('necessita_documentacio_tecnica', '=', True)]}">
+                        <button name="genera_casos_atr" string="A3 - Alta" type="object" icon="gtk-execute" context="{'proces': 'A3'}" colspan="4"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</openerp>
