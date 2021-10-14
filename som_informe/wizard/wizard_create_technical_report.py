@@ -169,10 +169,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
     def get_data(self, cursor, uid, id, context=None):
         wiz = self.browse(cursor, uid, id, context=context)
         seleccionats = []
-        generar_informes = False
         result  = []
-        result.extend(self.extract_header_metadata(cursor, uid, wiz.polissa, context))
-        result.extend(self.extract_footer_metadata(cursor, uid, wiz.polissa, context))
 
         sw_obj = self.pool.get('giscedata.switching')
 
@@ -196,9 +193,6 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             seleccionats.append('M1')
 
         if len(seleccionats) > 0:
-            generar_informes = True
-
-        if generar_informes:
             search_params = [
                 ('cups_id.id', '=', wiz.polissa.cups.id),
                 ('proces_id.name', 'in', seleccionats),
@@ -216,6 +210,9 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             pass
         if wiz.mostra_comptabilitat:
             pass
+
+        result.extend(self.extract_header_metadata(cursor, uid, wiz.polissa, context))
+        result.extend(self.extract_footer_metadata(cursor, uid, wiz.polissa, len(seleccionats) > 0, context))
 
         result = sorted(result, key=lambda k: k['date'])
         return [ns(item) for item in result]
@@ -235,8 +232,9 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             'cups_address': pol_data.cups_direccio,
         }]
 
-    def extract_footer_metadata(self, cursor, uid, pol_data, context):
+    def extract_footer_metadata(self, cursor, uid, pol_data, has_atr, context):
         return [{
+            'show_atr_disclaimer': has_atr,
             'type': 'footer',
             'date': '2040-01-01',
             'create_date': date.today().strftime("%d/%m/%Y"),
