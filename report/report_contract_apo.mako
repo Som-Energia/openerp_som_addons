@@ -264,12 +264,12 @@ ${_(u"Adreça electrònica: aporta@somenergia.coop")}
     </div>
     <div class="fila">
       <div class="CaixaDadesTitular">
-    <p class="ContingutDades"><b>${_(u"Titular:")}</b> ${data.ownerName}<br><b>${_(u"DNI/NIE/CIF:")}</b> ${data.ownerNif}<br><b>${_(u"Adreça fiscal:")}</b> ${data.partnerAddress}<br><b>${_(u"Correu electrònic:")}</b> ${data.partnerEmail}</p>
+    <p class="ContingutDades"><b>${_(u"Titular:")}</b> ${data.ownerName}<br><b>${_(u"DNI/NIE:")}</b> ${data.ownerNif}<br><b>${_(u"Adreça fiscal:")}</b> ${data.partnerAddress}<br><b>${_(u"Correu electrònic:")}</b> ${data.partnerEmail}</p>
   </div>
       <div class="CaixaEspai">
       </div>
       <div class="CaixaDadesAportacio">
-         <p class="ContingutDades"><b>${_(u"Data d'aportació:")}</b> ${data.inversionOrderDate}<br><b>${_(u"Venciment:")}</b> ${_(u"Indefinit.")}<br><b>${_(u"Sol·licitud de cancel·lació:")}</b> ${_(u"En qualsevol moment.")}<br><b>${_(u"Import:")}</b> ${data.inversionInitialAmount} €<br><b>${_(u"Remuneració:")}</b> ${_(u"1,75% interès nominal anual (revisable anualment per l'Assemblea general).")}<br><b>${_(u"Meritació d’interessos:")}</b> ${_(u"Anual, de l’1 de gener al 31 de desembre.")}<br><b>${_(u"Pagament:")}</b> ${_(u"Anual, durant el mes de gener de l’any següent.")}</p>
+         <p class="ContingutDades"><b>${_(u"Data d'aportació:")}</b> ${data.inversionOrderDate}<br><b>${_(u"Venciment:")}</b> ${_(u"Indefinit.")}<br><b>${_(u"Sol·licitud de cancel·lació:")}</b> ${_(u"En qualsevol moment.")}<br><b>${_(u"Import:")}</b> ${data.inversionInitialAmount} €<br><b>${_(u"Remuneració:")}</b> ${_(u"1% interès nominal anual (revisable anualment per l'Assemblea general).")}<br><b>${_(u"Meritació d’interessos:")}</b> ${_(u"Anual, de l’1 de juliol al 30 de juny.")}<br><b>${_(u"Pagament:")}</b> ${_(u"Anual, durant el mes de juliol de l’any següent.")}</p>
 </div>
     </div>
   </div>
@@ -307,7 +307,7 @@ ${_(u"Adreça electrònica: aporta@somenergia.coop")}
 <p class="sagnia">${_(u"2.2 Les aportacions s’acrediten mitjançant títols nominatius, llibretes, fitxes o relació nominal de socis amb el seu import corresponent, diferents per a unes o altres aportacions, i no tenen en cap cas la consideració de títols valors.")}</p>
   <p class="TitolCondicions">${_(u"3. INTERESSOS")}</p>
   <p class="sagnia">${_(u"3.1 Les aportacions voluntàries al capital social de SOM ENERGIA SCCL generaran els interessos que determini de forma anual l’Assemblea sense que s’hagi preestablert cap interès mínim, encara que en cap cas podran superar l’interès legal del diner.")}</p>
-  <p class="sagnia">${_(u"3.2 La data a partir de la qual començaran a meritar els interessos a favor de la persona sòcia serà la del dia següent al desemborsament efectiu de l’import corresponent a les aportacions subscrites. Per “desemborsament efectiu” s’entén el dia de l’abonament del capital voluntari al compte de SOM ENERGIA, SCCL.")}</p>
+  <p class="sagnia">${_(u"3.2 La data a partir de la qual començaran a meritar els interessos a favor de la persona sòcia serà la del dia següent al desemborsament efectiu de l’import corresponent a les aportacions subscrites. Per “desemborsament efectiu” s’entén el dia de l’abonament del capital voluntari al compte de SOM ENERGIA SCCL.")}</p>
   <p class="TitolCondicions">${_(u"4. TRASPÀS")}</p>
   <p class="sagnia">${_(u"4.1 La persona sòcia pot traspassar les aportacions voluntàries per les causes següents, d’acord amb el que s’estableix a la Llei 18/2015 de cooperatives de Catalunya:")}</p>
 <ol class="alpha">
@@ -320,8 +320,8 @@ ${_(u"Adreça electrònica: aporta@somenergia.coop")}
 <p class="sagnia">${_(u"5.3 D’acord amb els Estatuts de SOM ENERGIA, SCCL, que en qualsevol cas prevaldran sobre aquestes clàusules, el Consell Rector estarà obligat a acordar el reemborsament de les aportacions voluntàries fins al límit del 10% del capital social existent a la data d’inici de l’exercici econòmic en cas que se sol·liciti el reemborsament, i sempre amb el límit anual d‘1.350.000 euros, en els terminis establerts al punt 5.6. En els casos que les sol·licituds excedeixin aquest límit, els nous reemborsaments estan condicionats a l’acord favorable del Consell Rector que, conforme als Estatuts de la cooperativa, serà lliure per refusar-los incondicionalment.")}</p>
 <p class="sagnia">${_(u"5.4 En cas de baixa d’una persona sòcia, aquesta té el dret de sol·licitar el reemborsament de les seves aportacions voluntàries, sens perjudici del que la llei i els estatuts socials estableixen. En aquest cas els criteris que s’aplicaran de conformitat amb els Estatuts socials seran els següents:")}</p>
 <ol class="alpha">
-<li>${_(u"En el termini d'un mes de l'aprovació dels comptes anuals de l'exercici en què causi baixa la persona sòcia, s'ha de procedir a fixar l'import definitiu del reemborsament de les seves aportacions al capital social, sobre la base de l'exercici econòmic en què es produeixi la baixa i, si escau, de la imputació de resultats que li sigui atribuïble. El Consell Rector pot fixar un import provisional abans de l'aprovació dels comptes i, si convé, autoritzar un reemborsament a compte del definitiu.")}</li>
-<li>${_(u"De l'import definitiu del reemborsament resultant, d'acord amb el paràgraf anterior, s'han de fer les deduccions següents, quan convingui:")}<br>
+<li>${_(u"a) En el termini d'un mes de l'aprovació dels comptes anuals de l'exercici en què causi baixa la persona sòcia, s'ha de procedir a fixar l'import definitiu del reemborsament de les seves aportacions al capital social, sobre la base de l'exercici econòmic en què es produeixi la baixa i, si escau, de la imputació de resultats que li sigui atribuïble. El Consell Rector pot fixar un import provisional abans de l'aprovació dels comptes i, si convé, autoritzar un reemborsament a compte del definitiu.")}</li>
+<li>${_(u"b) De l'import definitiu del reemborsament resultant, d'acord amb el paràgraf anterior, s'han de fer les deduccions següents, quan convingui:")}<br>
 <ul style="list-style-type: disc;">
   <li>${_(u"Totes les quantitats que la persona sòcia degui a la cooperativa, per qualsevol concepte.")}</li>
   <li>${_(u"Les procedents per baixa no justificada o expulsió.")}</li>
@@ -330,8 +330,8 @@ ${_(u"Adreça electrònica: aporta@somenergia.coop")}
 </ol>
 <p class="sagnia">${_(u"5.5 A més del que preveuen els paràgrafs precedents, es poden fer les deduccions següents:")}</p>
 <ol class="alpha">
-  <li>${_(u"Si la baixa és justificada no es fa cap deducció.")}</li>
-  <li>${_(u"No hi pot haver deduccions sobre les aportacions voluntàries.")}</li>
+  <li>${_(u"a) Si la baixa és justificada no es fa cap deducció.")}</li>
+  <li>${_(u"b) No hi pot haver deduccions sobre les aportacions voluntàries.")}</li>
 </ol>
 <p class="sagnia">${_(u"5.6 La cooperativa ha d’efectuar el pagament de les aportacions socials en el termini pactat per mutu acord amb la persona sòcia i, en defecte, en el termini que assenyali el Consell Rector i que no pot ser superior als cinc anys comptats des de la baixa de la persona sòcia o bé des de la data en que el Consell Rector hagi acordat el reemborsament segons l’article 35.4 de la Llei 12/2015 de cooperatives de Catalunya. Durant aquest temps, la persona sòcia que causa la baixa té dret a percebre l'interès legal del diner per la quantia pendent de reemborsament.")}</p>
 <p class="TitolCondicions">${_(u"6. RESPONSABILITAT")}</p>
