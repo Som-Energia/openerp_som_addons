@@ -14,6 +14,9 @@ class B101(ProcesB1.ProcesB1):
         result['type'] = 'B101'
         result['text'] = step.comentaris
         result['motiu_baixa'] = get_description(step.motiu, "TABLA_10")
-        result['day'] = self.get_log_date(wiz, cursor, uid, step)
+        start_date = self.get_log_date(wiz, cursor, uid, step)
+        if start_date:
+            result['day'] = dateformat(start_date)
+            result['date'] = start_date
         
         return result

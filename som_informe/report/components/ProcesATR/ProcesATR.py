@@ -1,5 +1,3 @@
-from ..component_utils import dateformat
-
 class ProcesATR():
     def __init__(self):
         pass
@@ -35,9 +33,9 @@ class ProcesATR():
             swl_ids = swl_obj.search(cursor, uid, search_params)
             if len(swl_ids) > 0:
                 swl = swl_obj.browse(cursor, uid, swl_ids[0])
-                day = dateformat(swl.case_date)
+                day = swl.case_date
             else:
-                day = u"Not Found"
+                day = None
         except Exception as e:
-            day = u"Access Error"
+            day = step.date_created
         return day
