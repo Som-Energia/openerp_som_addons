@@ -30,6 +30,10 @@ folder_data = {
         'config_id' : 'google_drive_folder_technical_report_COBR',
         'config_value' : 'subfolder_COBR_hash',
         'folder_name' : 'Informes de Cobraments'},
+    'ERROR':{
+        'config_id' : 'google_drive_folder_technical_report',
+        'config_value' : 'folder_hash',
+        'folder_name' : 'Informes ERROR'},
 }
 
 def dateformat(str_date, hours = False):
@@ -88,8 +92,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
     }
 
     def get_folder_data(self, cursor, uid, wiz, erp_config):
-        subfolder = ''
-        name = ''
+        subfolder = 'ERROR'
 
         atr_seleccionat = False
         if wiz.mostra_A3 or wiz.mostra_B1 or wiz.mostra_B2 or wiz.mostra_C1 or \
@@ -105,11 +108,11 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         if wiz.mostra_cobraments:
             subfolder = 'COBR'
 
-        if subfolder == '':
-            folder_hash = erp_config.get(cursor, uid, 'google_drive_folder_technical_report', 'folder_hash')
-        else:
-            folder_hash = erp_config.get(cursor, uid, folder_data[subfolder]['config_id'], folder_data[subfolder]['config_value'])
-            folder_name = folder_data[subfolder]['folder_name']
+        if subfolder not in folder_data.keys():
+            subfolder = 'ERROR'
+
+        folder_hash = erp_config.get(cursor, uid, folder_data[subfolder]['config_id'], folder_data[subfolder]['config_value'])
+        folder_name = folder_data[subfolder]['folder_name']
 
         return folder_hash, folder_name
 
