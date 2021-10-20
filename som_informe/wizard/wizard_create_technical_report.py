@@ -198,9 +198,9 @@ class WizardCreateTechnicalReport(osv.osv_memory):
                 ('proces_id.name', 'in', seleccionats),
                 ]
             if wiz.date_from:
-                search_params.append(('date', '>=', wiz.date_from))
+                search_params.append(('data_sollicitud', '>=', wiz.date_from))
             if wiz.date_to:
-                search_params.append(('date', '<=', wiz.date_to))
+                search_params.append(('data_sollicitud', '<=', wiz.date_to))
             sw_ids = sw_obj.search(cursor, uid, search_params)
             result.extend(self.extract_switching_metadata(cursor, uid, sw_ids, context))
 
