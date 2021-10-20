@@ -2565,7 +2565,7 @@ msgstr "Remuneración:"
 #, python-format
 msgid ""
 "1% interès nominal anual (revisable anualment per l'Assemblea general)."
-msgstr "1% interés nominal anual (revisable anualmente per la Asamblea general)."
+msgstr "1% interés nominal anual (revisable anualmente por la Asamblea general)."
 
 #: rml:som_generationkwh/report/report_contract_apo.mako:272
 msgid "Meritació d’interessos:"
