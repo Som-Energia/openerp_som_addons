@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2021-09-27 11:28+0000\n"
-"PO-Revision-Date: 2021-09-27 10:46+0000\n"
+"POT-Creation-Date: 2021-10-20 13:04+0000\n"
+"PO-Revision-Date: 2021-10-20 11:15+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -168,7 +168,7 @@ msgid "google.drive.manager"
 msgstr "google.drive.manager"
 
 #. module: som_informe
-#: code:addons/som_informe/wizard/wizard_create_technical_report.py:43
+#: code:addons/som_informe/wizard/wizard_create_technical_report.py:66
 #: field:wizard.create.technical.report,state:0
 msgid "Estat del wizard de imprimir report"
 msgstr "Estado del wizard de imprimir report"
@@ -577,6 +577,7 @@ msgid "<b>Codi Motiu  Rebuig:</b> %s"
 msgstr "<b>Código Motivo Rechazo:</b> %s"
 
 #: rml:som_informe/report/components/A305/A305.mako:3
+#: rml:som_informe/report/components/M105/M105.mako:3
 #, python-format
 msgid "El %s la distribuïdora (%s) ens dóna l’activació del cas tramitat:"
 msgstr "El %s la distribuidora (%s) nos da la activación del caso tramitado:"
@@ -1357,7 +1358,6 @@ msgid ""
 msgstr "El %s Som Energia aporta una información adicional a la distribuidora (%s) en relación con el desistimiento:"
 
 #: rml:som_informe/report/components/M101/M101.mako:3
-#: rml:som_informe/report/components/M105/M105.mako:3
 #, python-format
 msgid ""
 "El %s Som Energia presenta la sol·licitud següent a la distribuïdora (%s)"
@@ -1493,152 +1493,152 @@ msgstr "<b>Detalles Reclamación:</b>"
 
 #: rml:som_informe/report/components/R101/R101.mako:24
 #, python-format
-msgid "<b>Codi dh:</b> %s"
-msgstr "<b>Código dh:</b> %s"
+msgid "&nbsp;&nbsp;Codi dh: %s"
+msgstr "&nbsp;&nbsp;Código dh: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:27
 #, python-format
-msgid "<b>Codi incidència:</b> %s"
-msgstr "<b>Código incidencia:</b> %s"
+msgid "&nbsp;&nbsp;Codi incidència: %s"
+msgstr "&nbsp;&nbsp;Código incidencia: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:30
 #, python-format
-msgid "<b>Codi postal:</b> %s"
-msgstr "<b>Código postal:</b> %s"
+msgid "&nbsp;&nbsp;Codi postal: %s"
+msgstr "&nbsp;&nbsp;Código postal: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:33
 #, python-format
-msgid "<b>Codi sol·licitud:</b> %s"
-msgstr "<b>Código solicitud:</b> %s"
+msgid "&nbsp;&nbsp;Codi sol·licitud: %s"
+msgstr "&nbsp;&nbsp;Código solicitud: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:36
 #, python-format
-msgid "<b>Codi sol·licitud reclamació:</b> %s"
-msgstr "<b>Código solicitud reclamación:</b> %s"
+msgid "&nbsp;&nbsp;Codi sol·licitud reclamació: %s"
+msgstr "&nbsp;&nbsp;Código solicitud reclamación: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:39
 #, python-format
-msgid "<b>Concepte disconformitat:</b> %s"
-msgstr "<b>Concepto disconformidad:</b> %s"
+msgid "&nbsp;&nbsp;Concepte disconformitat: %s"
+msgstr "&nbsp;&nbsp;Concepto disconformidad: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:42
 #, python-format
-msgid "<b>Cont email:</b> %s"
-msgstr "<b>Cont email:</b> %s"
+msgid "&nbsp;&nbsp;Cont email: %s"
+msgstr "&nbsp;&nbsp;Cont email: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:45
 #, python-format
-msgid "<b>Cont nom:</b> %s"
-msgstr "<b>Cont nombre:</b> %s"
+msgid "&nbsp;&nbsp;Cont nom: %s"
+msgstr "&nbsp;&nbsp;Cont nombre: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:48
 #, python-format
-msgid "<b>Cont prefix:</b> %s"
-msgstr "<b>Cont prefijo:</b> %s"
+msgid "&nbsp;&nbsp;Cont prefix: %s"
+msgstr "&nbsp;&nbsp;Cont prefijo: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:51
 #, python-format
-msgid "<b>Cont telèfon:</b> %s"
-msgstr "<b>Cont teléfono:</b> %s"
+msgid "&nbsp;&nbsp;Cont telèfon: %s"
+msgstr "&nbsp;&nbsp;Cont teléfono: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:54
 #, python-format
-msgid "<b>Data fins:</b> %s"
-msgstr "<b>Fecha hasta:</b> %s"
+msgid "&nbsp;&nbsp;Data fins: %s"
+msgstr "&nbsp;&nbsp;Fecha hasta: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:57
 #, python-format
-msgid "<b>Data incident:</b> %s"
-msgstr "<b>Fecha incidente:</b> %s"
+msgid "&nbsp;&nbsp;Data incident: %s"
+msgstr "&nbsp;&nbsp;Fecha incidente: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:60
 #, python-format
-msgid "<b>Data inici:</b> %s"
-msgstr "<b>Fecha inicio:</b> %s"
+msgid "&nbsp;&nbsp;Data inici: %s"
+msgstr "&nbsp;&nbsp;Fecha de inicio: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:63
 #, python-format
-msgid "<b>Data lectura:</b> %s"
-msgstr "<b>Fecha lectura:</b> %s"
+msgid "&nbsp;&nbsp;Data lectura: %s"
+msgstr "&nbsp;&nbsp;Fecha lectura: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:66
 #, python-format
-msgid "<b>Descripció ubicació:</b> %s"
-msgstr "<b>Descripción ubicación:</b> %s"
+msgid "&nbsp;&nbsp;Descripció ubicació: %s"
+msgstr "&nbsp;&nbsp;Descripción ubicación: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:69
 #, python-format
-msgid "<b>IBAN:</b> %s"
-msgstr "<b>IBAN:</b> %s"
+msgid "&nbsp;&nbsp;IBAN: %s"
+msgstr "&nbsp;&nbsp;IBAN: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:72
 #, python-format
-msgid "<b>Import reclamat:</b> %s"
-msgstr "<b>Importe reclamado:</b> %s"
+msgid "&nbsp;&nbsp;Import reclamat: %s"
+msgstr "&nbsp;&nbsp;Importe reclamado: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:75
 #, python-format
-msgid "<b>Municipi:</b> %s"
-msgstr "<b>Municipio:</b> %s"
+msgid "&nbsp;&nbsp;Municipi: %s"
+msgstr "&nbsp;&nbsp;Municipio: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:78
 #, python-format
-msgid "<b>Número expedient escomesa:</b> %s"
-msgstr "<b>Número expediente acometida:</b> %s"
+msgid "&nbsp;&nbsp;Número expedient escomesa: %s"
+msgstr "&nbsp;&nbsp;Número expediente acometida: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:81
 #, python-format
-msgid "<b>Número expedient frau:</b> %s"
-msgstr "<b>Número expediente fraude:</b> %s"
+msgid "&nbsp;&nbsp;Número expedient frau: %s"
+msgstr "&nbsp;&nbsp;Número expediente fraude: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:84
 #, python-format
-msgid "<b>Número factura:</b> %s"
-msgstr "<b>Número factura:</b> %s"
+msgid "&nbsp;&nbsp;Número factura: %s"
+msgstr "&nbsp;&nbsp;Número factura: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:87
 #, python-format
-msgid "<b>Paràmetre contractació:</b> %s"
-msgstr "<b>Parámetro contratación:</b> %s"
+msgid "&nbsp;&nbsp;Paràmetre contractació: %s"
+msgstr "&nbsp;&nbsp;Parámetro contratación: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:90
 #, python-format
-msgid "<b>Població:</b> %s"
-msgstr "<b>Población:</b> %s"
+msgid "&nbsp;&nbsp;Població: %s"
+msgstr "&nbsp;&nbsp;Población: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:93
 #, python-format
-msgid "<b>Província:</b> %s"
-msgstr "<b>Provincia:</b> %s"
+msgid "&nbsp;&nbsp;Província: %s"
+msgstr "&nbsp;&nbsp;Provincia: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:96
 #, python-format
-msgid "<b>Tipus atenció incorrecte:</b> %s"
-msgstr "<b>Tipo atención incorrecto:</b> %s"
+msgid "&nbsp;&nbsp;Tipus atenció incorrecte: %s"
+msgstr "&nbsp;&nbsp;Tipo atención incorrecto: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:99
 #, python-format
-msgid "<b>Tipus concepte facturat:</b> %s"
-msgstr "<b>Tipo concepto facturado:</b> %s"
+msgid "&nbsp;&nbsp;Tipus concepte facturat: %s"
+msgstr "&nbsp;&nbsp;Tipo concepto facturado: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:102
-msgid "<b>Lectures:</b>"
-msgstr "<b>Lecturas:</b>"
+msgid "&nbsp;&nbsp;Lectures:"
+msgstr "&nbsp;&nbsp;Lecturas:"
 
 #: rml:som_informe/report/components/R101/R101.mako:104
 #, python-format
-msgid "<b>lectura:</b> %s"
-msgstr "<b>lectura:</b> %s"
+msgid "&nbsp;&nbsp;lectura: %s"
+msgstr "&nbsp;&nbsp;lectura: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:105
 #, python-format
-msgid "<b>magnitud:</b> %s"
-msgstr "<b>magnitud:</b> %s"
+msgid "&nbsp;&nbsp;magnitud: %s"
+msgstr "&nbsp;&nbsp;magnitud: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:106
 #, python-format
-msgid "<b>nom:</b> %s"
-msgstr "<b>nombre:</b> %s"
+msgid "&nbsp;&nbsp;nom: %s"
+msgstr "&nbsp;&nbsp;nombre: %s"
 
 #: rml:som_informe/report/components/R101/R101.mako:120
 #, python-format
@@ -1766,11 +1766,17 @@ msgstr "El %s Som Energia solicita la anulación de la reclamación en curso con
 msgid "<b>Descripció del Rebuig:</b> %s "
 msgstr "<b>Descripción del Rechazo:</b> %s "
 
-#: rml:som_informe/report/components/footer/footer.mako:4
+#: rml:som_informe/report/components/footer/footer.mako:5
+msgid ""
+"<b>Informació adicional: Si ho requereix aquest organisme, SOM ENERGIA SCCL "
+"s’ofereix a entregar els arxius .xml en format original.</b>"
+msgstr "<b>Información adicional: Si lo requiere este organismo, SOM ENERGIA SCCL se ofrece a entregar los archivos .xml en formato original.</b>"
+
+#: rml:som_informe/report/components/footer/footer.mako:8
 msgid "Data de generació del document:"
 msgstr "Fecha de generación del documento:"
 
-#: rml:som_informe/report/components/footer/footer.mako:5
+#: rml:som_informe/report/components/footer/footer.mako:9
 msgid "Informe automàtic generat des de Som Energia"
 msgstr "Informe automático generado desde Som Energia"
 
