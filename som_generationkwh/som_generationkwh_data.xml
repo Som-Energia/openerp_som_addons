@@ -1358,7 +1358,7 @@
             <field name="def_subject">Generation kWh Som Enegia Ref. ${object.name}</field>
             <field name="template_language">mako</field>
             <field eval="0" name="send_on_create"/>
-            <field name="lang"></field>
+            <field name="lang">${object.partner_id.lang}</field>
             <field name="copyvalue">${object.partner_id.lang}</field>
             <field eval="0" name="send_on_write"/>
             <field name="def_body_text"><![CDATA[text_to_replace]]></field>
@@ -1419,7 +1419,7 @@
             <field name="template_language">mako</field>
             <field name="report_template" ref="report_amortization_gkwh"/>
             <field eval="0" name="send_on_create"/>
-            <field name="lang"></field>
+            <field name="lang">${object.partner_id.lang}</field>
             <field name="copyvalue"></field>
             <field eval="0" name="send_on_write"/>
             <field name="def_body_text"><![CDATA[text_to_replace]]></field>
@@ -1530,7 +1530,7 @@ ${text_legal}
             <field name="def_subject">Aportació / Aportación al capital social Som Enegia Ref. ${object.name}</field>
             <field name="template_language">mako</field>
             <field eval="0" name="send_on_create"/>
-            <field name="lang"></field>
+            <field name="lang">${object.partner_id.lang}</field>
             <field name="copyvalue">${object.partner_id.lang}</field>
             <field eval="0" name="send_on_write"/>
 	    <field name="def_body_text"><![CDATA[
