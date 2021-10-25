@@ -21,7 +21,7 @@
         %else:
             ${_("<b>SSAA: </b>No")} <br/>
         %endif
-        ${_("<b>Ref cadestre Instal·lació: </b> %s") % (gen['ref_cadastre'])} <br/>
+        ${_("<b>Ref cadastre Instal·lació: </b> %s") % (gen['ref_cadastre'])} <br/>
         ${_("<b>Nom de la persona o societat: </b> %s") % (gen['nom'])} <br/>
         ${_("<b>Primer cognom: </b> %s") % (gen['cognom1'])} <br/>
         ${_("<b>Segon cognom: </b> %s") % (gen['cognom2'])} <br/>
