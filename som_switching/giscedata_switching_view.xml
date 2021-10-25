@@ -81,6 +81,10 @@
                 <xpath expr="//field[@name='codi_sollicitud']" position="before">
                     <field name="last_observation_line"/>
                 </xpath>
+                <xpath expr="//field[@name='invoice_number_text']" position="after">
+                    <field name="fecha_factura_desde"/>
+                    <field name="fecha_factura_hasta"/>
+                </xpath>
             </field>
         </record>
 
