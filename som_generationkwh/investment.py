@@ -1279,7 +1279,7 @@ class GenerationkwhInvestment(osv.osv):
         }
         return PaymentMandate.create(cursor, uid, vals)
 
-    def get_or_create_open_payment_order(self, cursor, uid,  mode_name, use_invoice = False):
+    def get_or_create_open_payment_order(self, cursor, uid,  payment_mode_name, use_invoice = False):
         """
         Searches an existing payment order (remesa)
         with the proper payment mode and still in draft.
@@ -1287,7 +1287,7 @@ class GenerationkwhInvestment(osv.osv):
         """
         PaymentMode = self.pool.get('payment.mode')
         payment_mode_ids = PaymentMode.search(cursor, uid, [
-            ('name', '=', mode_name),
+            ('name', '=', payment_mode_name),
             ])
 
         if not payment_mode_ids: return False
@@ -1584,13 +1584,13 @@ class GenerationkwhInvestment(osv.osv):
                     inv_id, 'invoice_open', cursor)
         return openOK
 
-    def invoices_to_payment_order(self,cursor,uid,invoice_ids, model_name):
+    def invoices_to_payment_order(self,cursor,uid,invoice_ids, payment_mode_name):
         """
         Add the invoices to the currently open payment order having the
-        specified model name. If none is open, then creates a new one.
+        specified payment_mode name. If none is open, then creates a new one.
         """
         Invoice = self.pool.get('account.invoice')
-        order_id = self.get_or_create_open_payment_order(cursor, uid, model_name,
+        order_id = self.get_or_create_open_payment_order(cursor, uid, payment_mode_name,
                     True)
         Invoice.afegeix_a_remesa(cursor,uid,invoice_ids, order_id)
 
