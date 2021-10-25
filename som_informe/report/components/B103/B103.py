@@ -12,5 +12,8 @@ class B103(ProcesB1.ProcesB1):
     def get_data(self, wiz, cursor, uid, step):
         result = ProcesB1.ProcesB1.get_data(self, wiz, cursor, uid, step)
         result['type'] = 'B103'
-        result['day'] = self.get_log_date(wiz, cursor, uid, step)
+        start_date = self.get_log_date(wiz, cursor, uid, step)
+        if start_date:
+            result['day'] = dateformat(start_date)
+            result['date'] = start_date
         return result

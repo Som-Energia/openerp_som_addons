@@ -5,7 +5,15 @@ class ProcesATR():
         pass
 
     def get_data(self, wiz, cursor, uid, step):
-        return {}
+        result = {}
+        result['date'] = step.date_created
+        result['day'] = dateformat(step.date_created)
+        result['create'] = dateformat(step.date_created, True)
+        result['pas'] = step.sw_id.step_id.name
+        result['codi_solicitud'] = step.sw_id.codi_sollicitud
+        result['titol'] = step.sw_id.proces_id.name + " - " + step.sw_id.step_id.name
+        result['distribuidora'] = step.sw_id.partner_id.name
+        return result
 
     def get_step_01(self, wiz, cursor, uid, step):
         return self.get_step(wiz, cursor, uid, step, '01')
@@ -35,9 +43,9 @@ class ProcesATR():
             swl_ids = swl_obj.search(cursor, uid, search_params)
             if len(swl_ids) > 0:
                 swl = swl_obj.browse(cursor, uid, swl_ids[0])
-                day = dateformat(swl.case_date)
+                day = swl.case_date
             else:
-                day = u"Not Found"
+                day = None
         except Exception as e:
-            day = u"Access Error"
+            day = step.date_created
         return day
