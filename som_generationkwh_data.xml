@@ -1939,6 +1939,34 @@ ${text_legal}
             <field name="partner_id">1</field>
             <field name="sepa_creditor_code">ES24000F55091367</field>
         </record>
+        <record id="apo_divestment_payment_mode" model="payment.mode">
+            <field name="name">RETORN APORTACIONS (Enginyers)</field>
+            <field name="type" search="[('code', '=', 'RECIBO_CSB')]"/>
+            <field name="journal" ref="apo_fact_journal"/>
+            <field name="bank_id" search="[('partner_id', '=', 1)]"/>
+            <field name="tipo">sepa34</field>
+            <field name="nombre">Som Energia SCCL</field>
+            <field name="sufijo">000</field>
+            <field name="require_bank_account" eval="True"/>
+            <field name="partner_id">1</field>
+            <field name="sepa_creditor_code">ES24000F55091367</field>
+        </record>
+        <record id="emissio_apo_2021" model="generationkwh.emission">
+            <field name="name">Aportacions</field>
+            <field name="code">APO_202110</field>
+            <field name="start_date">2021-10-21-</field>
+            <field name="amount_emission">15000000</field>
+            <field name="state">draft</field>
+            <field name="type">apo</field>
+            <field name="grace_period">1</field>
+            <field name="expiration_years">0</field>
+            <field name="waiting_days">0</field>
+            <field name="mandate_name">PRESTEC Aportacions</field>
+            <field name="journal_id" ref="apo_fact_journal"/>
+            <field name="investment_product_id" ref="apo_product_ae" />
+            <field name="investment_payment_mode_id" ref="apo_investment_payment_mode" />
+            <field name="bridge_account_payments_id" ref="pgc_555000000011" />
+        </record>
         <record id="emissio_apo" model="generationkwh.emission">
             <field name="name">Aportacions</field>
             <field name="code">APO_202003</field>
