@@ -1,5 +1,3 @@
-from gestionatr.utils import get_description
-from ..component_utils import dateformat
 from ..ProcesC1 import ProcesC1
 
 class C109(ProcesC1.ProcesC1):

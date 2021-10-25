@@ -1,5 +1,4 @@
-from gestionatr.utils import get_description
-from ..component_utils import dateformat
+from ..component_utils import dateformat, get_description
 from ..ProcesB1 import ProcesB1
 
 class B101(ProcesB1.ProcesB1):

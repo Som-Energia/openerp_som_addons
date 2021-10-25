@@ -1,4 +1,3 @@
-from gestionatr.utils import get_description
 from ..component_utils import dateformat
 from ..ProcesM1 import ProcesM1
 
