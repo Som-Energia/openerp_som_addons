@@ -300,73 +300,9 @@ class GenerationkwhInvestment(osv.osv):
         investment_ids = self.search(cursor, uid, search_params)
 
         amount = 0
-        #New investments
+
         for id in investment_ids:
             amount += self.read(cursor, uid, id, ['nshares'])['nshares'] * gkwh.shareValue
-
-        if emission_id: #Avoid old investments amount
-            return amount
-
-        #START Old investments (remove when migrated)
-        Member = self.pool.get('somenergia.soci')
-        MoveLine = self.pool.get('account.move.line')
-        Account = self.pool.get('account.account')
-        aportacionsAccountPrefix = '163000'
-
-        if member_id is None:
-            accountDomain = [('code','ilike',aportacionsAccountPrefix+'%')]
-        else:
-            memberCodes = Member.read(cursor, uid, member_id, ['ref'])
-            accountCodes = aportacionsAccountPrefix + memberCodes['ref'][1:]
-            accountDomain = [ ('code','ilike',accountCodes)]
-        accountId = Account.search(cursor, uid, accountDomain)
-
-        if not accountId: #No Old investments
-            return amount
-
-        movelinefilter = [
-            ('account_id', 'in', accountId),
-            ('period_id.special', '=', False),
-            ]
-
-        movelinesids = MoveLine.search(
-            cursor, uid, movelinefilter,
-            order='date_created asc, id asc',
-            )
-
-        investment_ids = []
-
-        contextWithInactives = dict({}, active_test=False)
-
-        for line in MoveLine.browse(cursor, uid, movelinesids):
-            # Filter out already converted move lines
-            if self.search(cursor, uid,
-                [('move_line_id','=',line.id)],
-                context=dict({}, active_test=False),
-            ):
-                continue
-
-            partnerid = line.partner_id.id
-            if not partnerid:
-                # Handle cases with no partner_id
-                membercode = int(line.account_id.code[4:])
-                domain = [('ref', 'ilike', '%'+str(membercode).zfill(6))]
-            else:
-                domain = [('partner_id', '=', partnerid)]
-
-            members = Member.search(cursor, uid, domain, context=contextWithInactives)
-            if not members:
-                print (
-                    "No existeix el soci de la linia comptable "
-                    "id {l.id} {l.date_created} partner {l.partner_id.name} "
-                    "ac {l.account_id.name}, {l.credit} -{l.debit}  {d}"
-                    .format(l=line, d=domain))
-                continue
-
-            member_id = members[0]
-
-            amount += line.credit-line.debit
-        #END Old investments (remove when migrated)
 
         return amount
 
