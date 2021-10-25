@@ -15,5 +15,8 @@ class E101(ProcesE1.ProcesE1):
         result['tipus_solicitud'] = get_description(step.tipus_sollicitud, "TABLA_122")
         result['codi_subjacent'] = step.atr_subjacent.codi_sollicitud
         result['data_subjacent'] = dateformat(step.atr_subjacent.data_sollicitud)
-        result['day'] = self.get_log_date(wiz, cursor, uid, step)
+        start_date = self.get_log_date(wiz, cursor, uid, step)
+        if start_date:
+            result['day'] = dateformat(start_date)
+            result['date'] = start_date
         return result

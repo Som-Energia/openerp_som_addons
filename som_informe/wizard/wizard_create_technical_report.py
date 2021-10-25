@@ -30,6 +30,10 @@ folder_data = {
         'config_id' : 'google_drive_folder_technical_report_COBR',
         'config_value' : 'subfolder_COBR_hash',
         'folder_name' : 'Informes de Cobraments'},
+    'ERROR':{
+        'config_id' : 'google_drive_folder_technical_report',
+        'config_value' : 'folder_hash',
+        'folder_name' : 'Informes ERROR'},
 }
 
 def dateformat(str_date, hours = False):
@@ -88,8 +92,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
     }
 
     def get_folder_data(self, cursor, uid, wiz, erp_config):
-        subfolder = ''
-        name = ''
+        subfolder = 'ERROR'
 
         atr_seleccionat = False
         if wiz.mostra_A3 or wiz.mostra_B1 or wiz.mostra_B2 or wiz.mostra_C1 or \
@@ -102,14 +105,14 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             subfolder = 'ATR'
         if wiz.mostra_factura:
             subfolder = 'FACT'
-        if wiz.cobraments:
+        if wiz.mostra_cobraments:
             subfolder = 'COBR'
 
-        if subfolder == '':
-            folder_hash = erp_config.get(cursor, uid, 'google_drive_folder_technical_report', 'folder_hash')
-        else:
-            folder_hash = erp_config.get(cursor, uid, folder_data[subfolder]['config_id'], folder_data[subfolder]['config_value'])
-            folder_name = folder_data[subfolder]['folder_name']
+        if subfolder not in folder_data.keys():
+            subfolder = 'ERROR'
+
+        folder_hash = erp_config.get(cursor, uid, folder_data[subfolder]['config_id'], folder_data[subfolder]['config_value'])
+        folder_name = folder_data[subfolder]['folder_name']
 
         return folder_hash, folder_name
 
@@ -169,10 +172,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
     def get_data(self, cursor, uid, id, context=None):
         wiz = self.browse(cursor, uid, id, context=context)
         seleccionats = []
-        generar_informes = False
         result  = []
-        result.extend(self.extract_header_metadata(cursor, uid, wiz.polissa, context))
-        result.extend(self.extract_footer_metadata(cursor, uid, wiz.polissa, context))
 
         sw_obj = self.pool.get('giscedata.switching')
 
@@ -196,17 +196,14 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             seleccionats.append('M1')
 
         if len(seleccionats) > 0:
-            generar_informes = True
-
-        if generar_informes:
             search_params = [
                 ('cups_id.id', '=', wiz.polissa.cups.id),
                 ('proces_id.name', 'in', seleccionats),
                 ]
             if wiz.date_from:
-                search_params.append(('date', '>=', wiz.date_from))
+                search_params.append(('data_sollicitud', '>=', wiz.date_from))
             if wiz.date_to:
-                search_params.append(('date', '<=', wiz.date_to))
+                search_params.append(('data_sollicitud', '<=', wiz.date_to))
             sw_ids = sw_obj.search(cursor, uid, search_params)
             result.extend(self.extract_switching_metadata(cursor, uid, sw_ids, context))
 
@@ -216,6 +213,9 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             pass
         if wiz.mostra_comptabilitat:
             pass
+
+        result.extend(self.extract_header_metadata(cursor, uid, wiz.polissa, context))
+        result.extend(self.extract_footer_metadata(cursor, uid, wiz.polissa, len(seleccionats) > 0, context))
 
         result = sorted(result, key=lambda k: k['date'])
         return [ns(item) for item in result]
@@ -235,8 +235,9 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             'cups_address': pol_data.cups_direccio,
         }]
 
-    def extract_footer_metadata(self, cursor, uid, pol_data, context):
+    def extract_footer_metadata(self, cursor, uid, pol_data, has_atr, context):
         return [{
+            'show_atr_disclaimer': has_atr,
             'type': 'footer',
             'date': '2040-01-01',
             'create_date': date.today().strftime("%d/%m/%Y"),

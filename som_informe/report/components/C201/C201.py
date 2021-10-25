@@ -33,6 +33,9 @@ class C201(ProcesC2.ProcesC2):
         result['comentaris'] = step.comentaris
         if len(step.document_ids) == 0:
             result['adjunts'] = False
-        result['day'] = self.get_log_date(wiz, cursor, uid, step)
+        start_date = self.get_log_date(wiz, cursor, uid, step)
+        if start_date:
+            result['day'] = dateformat(start_date)
+            result['date'] = start_date
 
         return result

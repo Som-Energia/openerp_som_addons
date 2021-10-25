@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <form string="Genera Informe Consum" col="2">
                     <group string="Dades Informe" colspan="3" col="4">
-                        <field name="polissa" select="1"/>
+                        <field name="polissa" select="1" context="{'active_test': False}"/>
                         <field name="lang" />
                         <field name="date_from" select="1"/>
                         <field name="date_to" select="1"/>
