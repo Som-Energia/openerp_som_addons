@@ -252,6 +252,14 @@ class GenerationkwhActions(InvestmentActions):
         PaymentMode = self.erp.pool.get('payment.mode')
         return PaymentMode.read(cursor, uid, payment_mode_id, ['name'])['name']
 
+    def get_divest_payment_mode(self, cursor, uid):
+        imd_model = self.erp.pool.get('ir.model.data')
+        payment_mode_id = imd_model.get_object_reference(
+            cursor, uid, 'som_generationkwh', 'genkwh_amortization_payment_mode'
+        )[1]
+        PaymentMode = self.erp.pool.get('payment.mode')
+        return PaymentMode.read(cursor, uid, payment_mode_id, ['name'])['name']
+
     def get_or_create_investment_account(self, cursor, uid, partner_id):
         Partner = self.erp.pool.get('res.partner')
         partner = Partner.browse(cursor, uid, partner_id)
@@ -303,7 +311,7 @@ class GenerationkwhActions(InvestmentActions):
 
         Investment.open_invoices(cursor, uid, [invoice_id])
         Investment.invoices_to_payment_order(cursor, uid,
-                [invoice_id], gkwh.amortizationPaymentMode)
+                [invoice_id], self.get_divest_payment_mode(cursor, uid))
         invoice_ids.append(invoice_id)
 
         #Get moveline id
@@ -392,6 +400,15 @@ class AportacionsActions(InvestmentActions):
         PaymentMode = self.erp.pool.get('payment.mode')
         return PaymentMode.read(cursor, uid, payment_mode_id, ['name'])['name']
 
+    def get_divest_payment_mode(self, cursor, uid):
+        imd_model = self.erp.pool.get('ir.model.data')
+        payment_mode_id = imd_model.get_object_reference(
+            cursor, uid, 'som_generationkwh', 'apo_divestment_payment_mode'
+        )[1]
+        PaymentMode = self.erp.pool.get('payment.mode')
+        return PaymentMode.read(cursor, uid, payment_mode_id, ['name'])['name']
+
+
     def get_or_create_investment_account(self, cursor, uid, partner_id):
         Partner = self.erp.pool.get('res.partner')
         partner = Partner.browse(cursor, uid, partner_id)
@@ -437,7 +454,7 @@ class AportacionsActions(InvestmentActions):
 
         Investment.open_invoices(cursor, uid, [invoice_id])
         Investment.invoices_to_payment_order(cursor, uid,
-                [invoice_id], gkwh.amortizationPaymentMode)
+                [invoice_id], self.get_divest_payment_mode(cursor, uid))
         invoice_ids.append(invoice_id)
 
         #Get moveline id
