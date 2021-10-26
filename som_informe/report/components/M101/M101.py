@@ -27,8 +27,7 @@ class M101(ProcesM1.ProcesM1):
         else:
             result['codi_document'] = step.codi_document
         result['tipus_autoconsum'] =  get_description(step.tipus_autoconsum, "TABLA_113")
-        if step.control_potencia:
-            result['control_potencia'] =  get_description(step.control_potencia, "TABLA_51")
+        result['control_potencia'] =  get_description(step.control_potencia, "TABLA_51", True)
         result['comentaris'] = step.comentaris
         if len(step.document_ids) == 0:
             result['adjunts'] = False
