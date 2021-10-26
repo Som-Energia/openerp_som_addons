@@ -197,7 +197,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
 
         if len(seleccionats) > 0:
             search_params = [
-                ('cups_id.id', '=', wiz.polissa.cups.id),
+                ('cups_polissa_id.id', '=' , wiz.polissa.id),
                 ('proces_id.name', 'in', seleccionats),
                 ]
             if wiz.date_from:
