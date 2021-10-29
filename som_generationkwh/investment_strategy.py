@@ -67,6 +67,9 @@ class InvestmentActions(ErpWrapper):
     def get_or_create_investment_account(self, cursor, uid, partner_id):
         pass
 
+    def get_investment_legal_attachment(self, cursor, uid, partner_id, emission_id):
+        return False
+
     def create_divestment_invoice(self, cursor, uid,
             investment_id, date_invoice, to_be_divested,
             irpf_amount_current_year=0, irpf_amount=0, context=None):
@@ -217,7 +220,7 @@ class GenerationkwhActions(InvestmentActions):
         ResUser = self.erp.pool.get('res.users')                            
         user = ResUser.read(cursor, uid, uid, ['name'])                 
         IrSequence = self.erp.pool.get('ir.sequence')                       
-        name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')    
+        name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')
                                                                         
         inv = InvestmentState(user['name'], datetime.now())             
         inv.order(                                                      
@@ -235,7 +238,7 @@ class GenerationkwhActions(InvestmentActions):
                                                                         
         GenerationkwhInvestment.get_or_create_payment_mandate(cursor, uid,                 
             partner_id, iban, gkwh.mandateName, gkwh.creditorCode)      
-                                                                        
+
         GenerationkwhInvestment.send_mail(cursor, uid, investment_id,                      
             'generationkwh.investment', '_mail_creacio')
 
@@ -328,7 +331,6 @@ class GenerationkwhActions(InvestmentActions):
         )
         Investment.write(cursor, uid, id, inv.erpChanges())
 
-
 class AportacionsActions(InvestmentActions):
 
     @property
@@ -342,6 +344,7 @@ class AportacionsActions(InvestmentActions):
     def create_from_form(self, cursor, uid, partner_id, order_date, amount_in_euros, ip, iban, emission=None, context=None):
         member_ids, emission_id = super(AportacionsActions, self).create_from_form(cursor, uid, partner_id, order_date, amount_in_euros, ip, iban,emission, context)
         GenerationkwhInvestment = self.erp.pool.get('generationkwh.investment')
+
 
         Emission = self.erp.pool.get('generationkwh.emission')
         emi_obj = Emission.read(cursor, uid, emission_id, ['mandate_name','code'])
@@ -376,10 +379,31 @@ class AportacionsActions(InvestmentActions):
         GenerationkwhInvestment.get_or_create_payment_mandate(cursor, uid,
             partner_id, iban, emi_obj['mandate_name'], gkwh.creditorCode)
 
+        total_amount_in_emission = GenerationkwhInvestment.get_investments_amount(cursor, uid, member_ids[0], emission_id=emission_id)
+
+        mail_context = {}
+        if total_amount_in_emission > gkwh.amountForlegalAtt:
+            attachment_id = self.get_investment_legal_attachment(cursor, uid, partner_id, emission_id)
+            if attachment_id:
+                mail_context.update({'attachment_ids': [(6, 0, [attachment_id])]})
+
         GenerationkwhInvestment.send_mail(cursor, uid, investment_id,
-            'generationkwh.investment', '_mail_creacio')
+            'generationkwh.investment', '_mail_creacio', context=mail_context)
 
         return investment_id
+
+    def get_investment_legal_attachment(self, cursor, uid, partner_id, emission_id):
+        ResPartner = self.erp.pool.get('res.partner')
+        IrAttachment = self.erp.pool.get('ir.attachment')
+        partner_lang = ResPartner.read(cursor, uid, partner_id, ['lang'])['lang']
+        # Attaching legal docs for higher than 5k APOS
+        search_params = [('res_model', '=', 'generationkwh.emission'),
+                         ('res_id', '=', emission_id),
+                         ('name', 'ilike', '%_{}'.format('CA' if partner_lang == 'ca_ES' else 'ES'))]
+        attachment_id = IrAttachment.search(cursor, uid, search_params)
+        if attachment_id:
+            return attachment_id[0]
+        return False
 
     def get_prefix_semantic_id(self):
         return 'aportacio'

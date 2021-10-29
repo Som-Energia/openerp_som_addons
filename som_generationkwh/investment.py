@@ -1540,23 +1540,38 @@ class GenerationkwhInvestment(osv.osv):
         invoice_ids, errors = self.create_initial_invoices(cursor,uid, investment_ids)
         if invoice_ids:
             self.open_invoices(cursor, uid, invoice_ids)
-            payment_mode = self.investment_actions(cursor, uid, investment_ids[0]).get_payment_mode_name(cursor, uid)
+            InvestmentActions = self.investment_actions(cursor, uid, investment_ids[0])
+            payment_mode = InvestmentActions.get_payment_mode_name(cursor, uid)
             self.invoices_to_payment_order(cursor, uid,
                 invoice_ids, payment_mode)
+
+            investment =  self.browse(cursor, uid, investment_ids[0])
+            emission_id = investment.emission_id.id
+            member_id = investment.member_id.id
             for invoice_id in invoice_ids:
-                invoice_data = Invoice.read(cursor, uid, invoice_id, ['origin'])
+                invoice_data = Invoice.read(cursor, uid, invoice_id, ['origin','partner_id'])
                 investment_ids = self.search(cursor, uid,[
                     ('name','=',invoice_data['origin'])])
+                partner_id = invoice_data['partner_id'][0]
+                total_amount_in_emission = self.get_investments_amount(cursor, uid, member_id, emission_id=emission_id)
+
+                mail_context = {}
+                if total_amount_in_emission > gkwh.amountForlegalAtt:
+                    attachment_id = InvestmentActions.get_investment_legal_attachment(cursor, uid, partner_id, emission_id)
+                    if attachment_id:
+                        mail_context.update({'attachment_ids': [(6, 0, [attachment_id])]})
+
                 self.send_mail(cursor, uid, invoice_id,
-                    'account.invoice', '_mail_pagament', investment_ids[0])
+                    'account.invoice', '_mail_pagament', investment_ids[0], context=mail_context)
         return invoice_ids, errors
 
-    def send_mail(self, cursor, uid, id, model, template, investment_id=None):
+    def send_mail(self, cursor, uid, id, model, template, investment_id=None, context={}):
 
         PEAccounts = self.pool.get('poweremail.core_accounts')
         WizardInvoiceOpenAndSend = self.pool.get('wizard.invoice.open.and.send')
         MailMockup = self.pool.get('generationkwh.mailmockup')
         IrModelData = self.pool.get('ir.model.data')
+
         if not investment_id:
             investment_id = id
         prefix = self.investment_actions(cursor, uid, investment_id).get_prefix_semantic_id()
@@ -1572,7 +1587,9 @@ class GenerationkwhInvestment(osv.osv):
                 ])
         else:
             from_id = from_id[:1]
-        ctx = {
+
+        ctx = context.copy()
+        ctx.update({
             'active_ids': [id],
             'active_id': id,
             'src_rec_ids': [id],
@@ -1580,7 +1597,8 @@ class GenerationkwhInvestment(osv.osv):
             'from': from_id,
             'state': 'single',
             'priority': '0',
-            }
+            })
+
         with AsyncMode('sync') as asmode:
             if MailMockup.isActive(cursor, uid):
                 MailMockup.send_mail(cursor, uid, ns(
