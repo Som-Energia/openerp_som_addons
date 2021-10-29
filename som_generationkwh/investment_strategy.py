@@ -220,7 +220,7 @@ class GenerationkwhActions(InvestmentActions):
         ResUser = self.erp.pool.get('res.users')                            
         user = ResUser.read(cursor, uid, uid, ['name'])                 
         IrSequence = self.erp.pool.get('ir.sequence')                       
-        name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')    
+        name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')
                                                                         
         inv = InvestmentState(user['name'], datetime.now())             
         inv.order(                                                      
@@ -238,7 +238,7 @@ class GenerationkwhActions(InvestmentActions):
                                                                         
         GenerationkwhInvestment.get_or_create_payment_mandate(cursor, uid,                 
             partner_id, iban, gkwh.mandateName, gkwh.creditorCode)      
-                                                                        
+
         GenerationkwhInvestment.send_mail(cursor, uid, investment_id,                      
             'generationkwh.investment', '_mail_creacio')
 
@@ -331,7 +331,6 @@ class GenerationkwhActions(InvestmentActions):
         )
         Investment.write(cursor, uid, id, inv.erpChanges())
 
-
 class AportacionsActions(InvestmentActions):
 
     @property
@@ -345,6 +344,7 @@ class AportacionsActions(InvestmentActions):
     def create_from_form(self, cursor, uid, partner_id, order_date, amount_in_euros, ip, iban, emission=None, context=None):
         member_ids, emission_id = super(AportacionsActions, self).create_from_form(cursor, uid, partner_id, order_date, amount_in_euros, ip, iban,emission, context)
         GenerationkwhInvestment = self.erp.pool.get('generationkwh.investment')
+
 
         Emission = self.erp.pool.get('generationkwh.emission')
         emi_obj = Emission.read(cursor, uid, emission_id, ['mandate_name','code'])
