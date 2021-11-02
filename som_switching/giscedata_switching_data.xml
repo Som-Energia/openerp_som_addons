@@ -1319,19 +1319,17 @@
         L'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la zona, que gestiona aquest procediment, ens comunica que la sol·licitud ha estat denegada amb el motiu següent:
     </p>
     <p>
-        <b>Potencia solicitada mayor que la potencia máxima autorizada en baja tensión.</b>
+        <b>Instalación incompleta o con elementos no válidos.</b>
     </p>
     <p>
-        Això vol dir que a la documentació que té registrada l’empresa distribuïdora per aquest CUPS, hi consta una potència màxima admissible inferior a la que vols contractar.
+        S'ha posat en contacte amb tu personal tècnic de l'empresa de distribució elèctrica? T'han explicat quina és la deficiència present a la teva instal·lació, i com solucionar-ho?    </p>
+    <p>
+        Si no és així, pots contactar amb l'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la teva zona, per tal que et facilitin aquesta informació. En cas que no hi puguis contactar, nosaltres podem enviar-los una reclamació, sol·licitant més informació.    </p>
+    <p>
+        Pots consultar en aquest enllaç <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">el telèfon de les principals empreses distribuïdores</a>
     </p>
     <p>
-        Per poder tramitar l’alta de subministrament amb la potència que sol·licites, serà necessari que personal electricista autoritzat, emeti un <a href="https://ca.support.somenergia.coop/article/500-que-es-el-butlleti-electric"> butlletí elèctric</a>, o bé un Certificat de la instal·lació elèctrica (CIE), en el que consti que la potència màxima admissible de la teva instal·lació és igual o superior a la potència que vols contractar. En el moment que ens facis arribar aquesta documentació, podrem iniciar de nou el tràmit.
-    </p>
-    <p>
-        Si ho prefereixes, també podríem tramitar l’alta de subministrament amb una potència igual o inferior a la potència màxima que ja té registrada l’empresa distribuïdora, i en aquest cas, no ens haurien de demanar nova documentació. Serà necessari que ens confirmis quina potència vols contractar.
-    </p>
-    <p>
-        Quedem a l’espera que ens indiquis com vols procedir
+        Un cop hagis corregit la teva instal·lació necessitaríem que, ens ho indiquis responent a aquest missatge, i sol·licitarem de nou l’alta de subministrament.
     </p>
 </%def>
 
@@ -1340,19 +1338,17 @@
         <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora </a> de tu zona, que gestiona este procedimiento, nos comunica que la solicitud ha sido rechazada por el siguiente motivo:
     </p>
     <p>
-        <b>Potencia solicitada mayor que la potencia máxima autorizada en baja tensión.</b>
+        <b>Instalación incompleta o con elementos no válidos</b>
     </p>
     <p>
-        Esto quiere decir que en la documentación que tiene registrada la empresa distribuidora para este CUPS, consta una potencia máxima admisible inferior a la potencia que quieres contratar.
+        ¿Se ha puesto en contacto contigo personal técnico de la empresa de distribución eléctrica? ¿Te han explicado cuál es la deficiencia presente en tu instalación, y cómo solucionarla?    </p>
+    <p>
+        Si no es así, puedes contactar directamente con la empresa de distribución eléctrica de tu zona, para que te faciliten esta información. En el caso que no consigas contactar con ellos, nosotras podemos enviarles una reclamación, solicitando más información.    </p>
+    <p>
+        Puedes consultar en el siguiente enlace <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">el teléfono de las principales empresas distribuidoras.</a>
     </p>
     <p>
-        Para poder tramitar el alta de suministro con la potencia que solicitas, será necesario que personal electricista autorizado, emita un <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">boletín eléctrico</a> o bién un Certificado de la Instalación Eléctrica (CIE), en el que conste que la potencia máxima admisible de tu instalación es igual o superior a la potencia que quieres contratar. Cuando nos envías esta documentación, podremos iniciar de nuevo el trámite.
-    </p>
-    <p>
-        Si lo prefieres, también podemos tramitar el alta de suministro con una potencia igual o inferior a la que ya tiene registrada la empresa distribuidora, y en este caso no deberían solicitarnos nueva documentación. Será necesario que nos confirmes qué potencia quieres contratar.
-    </p>
-    <p>
-        Quedamos a la espera que nos indiques cómo quieres proceder.
+        Una vez hayas corregido tu instalación necesitaríamos que nos lo indiques respondiendo a este mensaje, y solicitaremos de nuevo el alta de suministro.
     </p>
 </%def>
                 ]]>
