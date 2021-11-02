@@ -1044,7 +1044,7 @@
 
             <record model="giscedata.switching.notify" id="notification_atr_A302_22">
             <field name="proces_id" ref="giscedata_switching.sw_proces_a3"/>
-            <field name="step_id" ref="giscedata_switching.sw_step_A3_02"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_a3_02"/>
             <field name="active" eval="1"/>
             <field name="notify_text"><![CDATA[<!doctype html>
 % if cas.cups_polissa_id.titular.lang == "ca_ES":
@@ -1104,7 +1104,7 @@
 
         <record model="giscedata.switching.notify" id="notification_atr_A302_21">
             <field name="proces_id" ref="giscedata_switching.sw_proces_a3"/>
-            <field name="step_id" ref="giscedata_switching.sw_step_A3_02"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_a3_02"/>
             <field name="active" eval="1"/>
             <field name="notify_text"><![CDATA[<!doctype html>
 % if cas.cups_polissa_id.titular.lang == "ca_ES":
@@ -1151,7 +1151,7 @@
 
             <record model="giscedata.switching.notify" id="notification_atr_A302_14">
             <field name="proces_id" ref="giscedata_switching.sw_proces_a3"/>
-            <field name="step_id" ref="giscedata_switching.sw_step_A3_02"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_a3_02"/>
             <field name="active" eval="1"/>
             <field name="notify_text"><![CDATA[<!doctype html>
 % if cas.cups_polissa_id.titular.lang == "ca_ES":
@@ -1208,7 +1208,7 @@
 
                 <record model="giscedata.switching.notify" id="notification_atr_A302_37">
             <field name="proces_id" ref="giscedata_switching.sw_proces_a3"/>
-            <field name="step_id" ref="giscedata_switching.sw_step_A3_02"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_a3_02"/>
             <field name="active" eval="1"/>
             <field name="notify_text"><![CDATA[<!doctype html>
 % if cas.cups_polissa_id.titular.lang == "ca_ES":
@@ -1260,7 +1260,7 @@
 
                     <record model="giscedata.switching.notify" id="notification_atr_A302_20">
             <field name="proces_id" ref="giscedata_switching.sw_proces_a3"/>
-            <field name="step_id" ref="giscedata_switching.sw_step_A3_02"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_a3_02"/>
             <field name="active" eval="1"/>
             <field name="notify_text"><![CDATA[<!doctype html>
 % if cas.cups_polissa_id.titular.lang == "ca_ES":
@@ -1305,7 +1305,7 @@
 
             <record model="giscedata.switching.notify" id="notification_atr_A304_60">
             <field name="proces_id" ref="giscedata_switching.sw_proces_a3"/>
-            <field name="step_id" ref="giscedata_switching.sw_step_A3_04"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_a3_04"/>
             <field name="active" eval="1"/>
             <field name="notify_text"><![CDATA[<!doctype html>
 % if cas.cups_polissa_id.titular.lang == "ca_ES":
@@ -1362,7 +1362,7 @@
 
              <record model="giscedata.switching.notify" id="notification_atr_A304_62">
             <field name="proces_id" ref="giscedata_switching.sw_proces_a3"/>
-            <field name="step_id" ref="giscedata_switching.sw_step_A3_04"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_a3_04"/>
             <field name="active" eval="1"/>
             <field name="notify_text"><![CDATA[<!doctype html>
 % if cas.cups_polissa_id.titular.lang == "ca_ES":
@@ -1419,7 +1419,7 @@
 
             <record model="giscedata.switching.notify" id="notification_atr_A304_A1">
             <field name="proces_id" ref="giscedata_switching.sw_proces_a3"/>
-            <field name="step_id" ref="giscedata_switching.sw_step_A3_04"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_a3_04"/>
             <field name="active" eval="1"/>
             <field name="notify_text"><![CDATA[<!doctype html>
 % if cas.cups_polissa_id.titular.lang == "ca_ES":
@@ -1476,7 +1476,7 @@
 
             <record model="giscedata.switching.notify" id="notification_atr_A304_31">
             <field name="proces_id" ref="giscedata_switching.sw_proces_a3"/>
-            <field name="step_id" ref="giscedata_switching.sw_step_A3_04"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_a3_04"/>
             <field name="active" eval="1"/>
             <field name="notify_text"><![CDATA[<!doctype html>
 % if cas.cups_polissa_id.titular.lang == "ca_ES":
@@ -1521,7 +1521,7 @@
 
             <record model="giscedata.switching.notify" id="notification_atr_A302_B7">
             <field name="proces_id" ref="giscedata_switching.sw_proces_a3"/>
-            <field name="step_id" ref="giscedata_switching.sw_step_A3_02"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_a3_02"/>
             <field name="active" eval="1"/>
             <field name="notify_text"><![CDATA[<!doctype html>
 % if cas.cups_polissa_id.titular.lang == "ca_ES":
@@ -1566,7 +1566,7 @@
 
             <record model="giscedata.switching.notify" id="notification_atr_A302_02">
             <field name="proces_id" ref="giscedata_switching.sw_proces_a3"/>
-            <field name="step_id" ref="giscedata_switching.sw_step_A3_02"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_a3_02"/>
             <field name="active" eval="1"/>
             <field name="notify_text"><![CDATA[<!doctype html>
 % if cas.cups_polissa_id.titular.lang == "ca_ES":
@@ -1617,7 +1617,7 @@
 
             <record model="giscedata.switching.notify" id="notification_atr_A304_18">
             <field name="proces_id" ref="giscedata_switching.sw_proces_a3"/>
-            <field name="step_id" ref="giscedata_switching.sw_step_A3_04"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_a3_04"/>
             <field name="active" eval="1"/>
             <field name="notify_text"><![CDATA[<!doctype html>
 % if cas.cups_polissa_id.titular.lang == "ca_ES":
