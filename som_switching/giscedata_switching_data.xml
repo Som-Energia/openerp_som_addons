@@ -1664,5 +1664,158 @@
             </field>
             <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_18')])]" />
         </record>
+
+        <record model="giscedata.switching.notify" id="notification_atr_A302_53">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_a3"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_a3_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+        L'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la zona, que gestiona aquest procediment, ens comunica que la sol·licitud ha estat denegada indicant el motiu següent:
+    </p>
+    <p>
+        <b>Necesidad de abrir expediente de acometida.</b>
+    </p>
+    <p>
+        Caldrà que contactis amb el departament de Nous Subministraments de l’empresa distribuïdora de la teva zona, perquè obrin un expedient d’escomesa, i t’indiquin què et cal solucionar, per tal que puguis continuar amb l’alta de subministrament.    </p>
+    </P>
+    <p>
+        Pots consultar en aquest enllaç <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">el telèfon de les principals empreses distribuïdores.</a>
+    </p>
+    <p>
+        Un cop resolt el requeriment, la distribuïdora tancarà l'expedient, i aleshores ens podràs avisar perquè tornem a iniciar el tràmit.
+    </p>
+</%def>
+
+<%def name="correu_es()">
+    <p>
+        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora </a> de tu zona, que gestiona este procedimiento, nos comunica que la solicitud ha sido rechazada por el siguiente motivo:
+    </p>
+    <p>
+        <b>Necesidad de abrir expediente de acometida.</b>
+    </p>
+    <p>
+        Será necesario que contactes con el departamento de Nuevos Suministros de la empresa distribuidora de tu zona, para que abran un expediente de acometida, y te indiquen qué debes solucionar para poder continuar con el alta de suministro.
+    </p>
+    <p>
+        Puedes consultar en el siguiente enlace <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">el teléfono de las principales empresas distribuidoras.</a>
+    </p>
+    <p>
+        Una vez resuelto el requerimiento, la distribuidora cerrará el expediente. Entonces nos podrás avisar para que volvamos a iniciar el trámite.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_53')])]" />
+        </record>
+
+        <record model="giscedata.switching.notify" id="notification_atr_A304_26">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_a3"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_a3_04"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+        L'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la zona, que gestiona aquest procediment, ens comunica que la sol·licitud ha estat denegada indicant el motiu següent:
+    </p>
+    <p>
+        <b>Acceso imposibilitado más de dos veces por causas ajenas a la Distribuidora.</b>
+    </p>
+    <p>
+        Això vol dir que el personal tècnic de l’empresa distribuïdora ha intentat realitzar l’alta, però no ha pogut contactar amb tu, o bé no ha pogut accedir a l’edifici.
+    </p>
+    <p>
+        Vols que tornem a sol·licitar l’alta de subministrament a l’empresa distribuïdora?
+    </p>
+    <p>
+        Si ho desitges, pots donar-nos un número de telèfon addicional i l’afegirem a la nova sol·licitud.
+    </p>
+</%def>
+
+<%def name="correu_es()">
+    <p>
+        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora </a> de tu zona, que gestiona este procedimiento, nos comunica que la solicitud ha sido rechazada por el siguiente motivo:
+    </p>
+    <p>
+        <b>Acceso imposibilitado más de dos veces por causas ajenas a la Distribuidora.</b>
+    </p>
+    <p>
+        Esto quiere decir que el personal  de la distribuidora ha intentado realizar el alta, pero o bien no ha podido contactar contigo o no le ha sido posible acceder al edificio.
+    </p>
+    <p>
+        ¿Quieres que volvamos a solicitar el alta de suministro a la empresa distribuidora?
+    </p>
+    <p>
+        Si lo deseas, puedes facilitarnos un número de teléfono adicional para añadirlo a la nueva solicitud.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_26')])]" />
+        </record>
+
+        <record model="giscedata.switching.notify" id="notification_atr_A302_57">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_a3"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_a3_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+        L'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la zona, que gestiona aquest procediment, ens comunica que la sol·licitud ha estat denegada indicant el motiu següent:
+    </p>
+    <p>
+        <b>Falta documentación técnica de baja tensión.</b>
+    </p>
+    <p>
+        Així doncs, per continuar amb el tràmit, serà necessari presentar el <b>Certificat de la Instal·lació Elèctrica (CIE)</b>. Aquest document el pot emetre personal electricista autoritzat.
+    </P>
+    <p>
+        En cas que el teu punt de subministrament estigui situat a Catalunya, també caldrà adjuntar el Document Acreditatiu d'Inscripció Tècnica de Seguretat Industrial de Catalunya (<b>RITSIC</b>).
+    </p>
+    <p>
+        <b>Si ja ens vas facilitar aquesta documentació</b>, i has revisat que estigui degudament signada/segellada, i les dades siguin correctes; ens pots respondre aquest mateix correu, i enviarem una reclamació cap a l’empresa distribuïdora sol·licitant més informació sobre aquest rebuig.
+    </p>
+</%def>
+
+<%def name="correu_es()">
+    <p>
+        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora </a> de tu zona, que gestiona este procedimiento, nos comunica que la solicitud ha sido rechazada por el siguiente motivo:
+    </p>
+    <p>
+        <b>Falta documentación técnica de baja tensión.</b>
+    </p>
+    <p>
+        Por lo tanto, para continuar con el trámite, será necesario presentar el <b>Certificado de la instalación eléctrica (CIE)</b>. Este documento lo puede emitir personal electricista autorizado.
+    </p>
+    <p>
+        Si tu punto de suministro esté situado en Cataluña, también será necesario adjuntar el Documento Acreditativo de Inscripción Técnica de Seguridad Industrial de Catalunya <b>(RITSIC)</b>.
+    </p>
+    <p>
+        <b>Si ya nos has facilitado esta documentación</b>, y has revisado que esté debidamente firmada/sellada, y los datos sean correctos; nos puedes responder este mismo correo, y enviaremos una reclamación a la empresa distribuidora solicitando más información sobre el este rechazo.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_57')])]" />
+        </record>
     </data>
 </openerp>
