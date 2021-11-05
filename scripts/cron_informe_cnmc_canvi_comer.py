@@ -14,6 +14,12 @@ def generate_report(year, month, agent, sequence):
         month,
         sequence,
     )
+    report_name_csv = 'SI_{}_{}_{}{}_{}.csv'.format(
+        agent, 'E',
+        year,
+        month,
+        sequence,
+    )
 
     date_time_start = datetime.strptime(str(year) + '-' + str(month) + '-01', '%Y-%m-%d')
     last_day_month = str(calendar.monthrange(int(year), int(month))[1])
@@ -28,12 +34,12 @@ def generate_report(year, month, agent, sequence):
     })
     wiz.action_generate_file()
 
-    step("Writing {}...".format(wiz.filename))
-    with open("/tmp/" + wiz.filename, 'w') as f:
+    step("Writing {}...".format(report_name))
+    with open("/tmp/" + report_name, 'w') as f:
         f.write(base64.b64decode(wiz.file))
 
-    step("Writing {}...".format(wiz.filename_csv))
-    with open("/tmp/" + wiz.filename_csv, 'w') as f:
+    step("Writing {}...".format(report_name_csv))
+    with open("/tmp/" + report_name_csv, 'w') as f:
         f.write(base64.b64decode(wiz.file_csv))
 
 
