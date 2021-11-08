@@ -72,8 +72,6 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         'mostra_reclama': fields.boolean('Mostra bloc de Reclama'),
         #Factura block
         'mostra_factura': fields.boolean('Mostra bloc de Factura'),
-        #Comptabilitat block
-        'mostra_comptabilitat': fields.boolean('Mostra bloc de Comptabilitat'),
         #Gestió de Contractes block
         'mostra_A3': fields.boolean('A3'),
         'mostra_B1': fields.boolean('B1'),
@@ -219,8 +217,6 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         if wiz.mostra_factura:
             pass
         if wiz.mostra_cobraments:
-            pass
-        if wiz.mostra_comptabilitat:
             pass
 
         result.extend(self.extract_header_metadata(cursor, uid, wiz.polissa, context))
