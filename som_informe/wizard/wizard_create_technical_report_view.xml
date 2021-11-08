@@ -20,9 +20,6 @@
                         <page string="Factura">
                             <field name="mostra_factura"/>
                         </page>
-                        <page string="Comptablilitat">
-                            <field name="mostra_comptabilitat"/>
-                        </page>
                         <page string="ATR">
                             <!-- Informes a generar -->
                             <field name="mostra_A3"/>
