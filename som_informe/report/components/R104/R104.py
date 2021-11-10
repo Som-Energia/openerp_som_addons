@@ -14,7 +14,7 @@ class R104(ProcesR1.ProcesR1):
         result['hi_ha_var_info'] = step.hi_ha_var_info
         result['hi_ha_var_info_retip'] = step.hi_ha_var_info_retip
         step02 = self.get_step_02(wiz, cursor, uid, step)
-        result['codi_reclamacio_distri'] = step02.codi_reclamacio_distri
+        result['codi_reclamacio_distri'] = step02.codi_reclamacio_distri if step02 else "ERROR sense pas 02!!"
         result['variables_aportacio'] = []
         for var_apo in step.vars_aportacio_info_ids:
             result['variables_aportacio'].append({

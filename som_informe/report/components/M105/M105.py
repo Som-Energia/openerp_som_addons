@@ -15,6 +15,6 @@ class M105(ProcesM1.ProcesM1):
         result['data_activacio'] = dateformat(step.data_activacio)
 
         step01 = self.get_step_01(wiz, cursor, uid, step)
-        result['tipus_sol'] =  step01.sollicitudadm
-        result['tensio_sol'] = step01.tensio_solicitada
+        result['tipus_sol'] =  step01.sollicitudadm if step01 else "ERROR sense pas 01!!"
+        result['tensio_sol'] = step01.tensio_solicitada if step01 else "ERROR sense pas 01!!"
         return result
