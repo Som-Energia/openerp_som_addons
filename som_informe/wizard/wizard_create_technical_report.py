@@ -177,7 +177,11 @@ class WizardCreateTechnicalReport(osv.osv_memory):
 
     # data generation
     def get_data(self, cursor, uid, id, context=None):
+        if not context:
+            context = {}
+
         wiz = self.browse(cursor, uid, id, context=context)
+        general_components = ['header','footer']
         seleccionats = []
         result  = []
 
@@ -217,39 +221,17 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         if wiz.mostra_factura:
             pass
         if wiz.mostra_cobraments:
+            #general_components.append('cobra_header')
             pass
 
-        result.extend(self.extract_header_metadata(cursor, uid, wiz.polissa, context))
-        result.extend(self.extract_footer_metadata(cursor, uid, wiz.polissa, len(seleccionats) > 0, context))
+        context['has_atr'] = len(seleccionats) > 0
+        result.extend(self.extract_components_metadata(cursor, uid, wiz, general_components, context))
 
         result = sorted(result, key=lambda k: k['date'])
         return [ns(item) for item in result]
 
     # data extractors
-    def extract_header_metadata(self, cursor, uid, pol_data, context):
-        return [{
-            'type': 'header',
-            'date': '1970-01-01',
-            'data_alta': dateformat(pol_data.data_alta, False),
-            'contract_number': pol_data.name,
-            'titular_name': pol_data.titular.name,
-            'titular_nif': pol_data.titular_nif[2:11],
-            'distribuidora': pol_data.distribuidora.name,
-            'distribuidora_contract_number': pol_data.ref_dist,
-            'cups': pol_data.cups.name,
-            'cups_address': pol_data.cups_direccio,
-        }]
-
-    def extract_footer_metadata(self, cursor, uid, pol_data, has_atr, context):
-        return [{
-            'show_atr_disclaimer': has_atr,
-            'type': 'footer',
-            'date': '2040-01-01',
-            'create_date': date.today().strftime("%d/%m/%Y"),
-        }]
-
-    def factory_metadata_extractor(self, step):
-        component_name = step.proces_id.name+step.step_id.name
+    def factory_metadata_extractor(self, component_name):
         exec("from ..report.components."+component_name+" import "+component_name+";extractor = "+component_name+"."+component_name+"()")
         return extractor
 
@@ -257,7 +239,8 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         r_model,r_id = step.pas_id.split(',')
         model_obj = self.pool.get(r_model)
         pas = model_obj.browse(cursor, uid, int(r_id), context=context)
-        extractor = self.factory_metadata_extractor(step)
+        component_name = step.proces_id.name+step.step_id.name
+        extractor = self.factory_metadata_extractor(component_name)
         return extractor.get_data(self, cursor, uid, pas)
 
     def extract_switching_metadata(self, cursor, uid, sw_ids, context):
@@ -272,6 +255,16 @@ class WizardCreateTechnicalReport(osv.osv_memory):
                 extracted_data = self.metadata_extractor(cursor, uid, step, context)
                 if extracted_data:
                     result.append(extracted_data)
+
+        return result
+
+    def extract_components_metadata(self, cursor, uid, wiz, components_names, context):
+        result = []
+        for component_name in components_names:
+            extractor = self.factory_metadata_extractor(component_name)
+            extracted_data = extractor.get_data(self, cursor, uid, wiz, context)
+            if extracted_data:
+                result.append(extracted_data)
 
         return result
 
