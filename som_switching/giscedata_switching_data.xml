@@ -1599,5 +1599,106 @@
             </field>
             <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_62')])]" />
         </record>
+        <record model="giscedata.switching.notify" id="notification_atr_M104_26">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_04"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%
+    if len(cas.step_ids[0].pas_id.cont_telefons) > 0:
+        tel_cont =  "+" cas.step_ids[0].pas_id.cont_telefons[0].prefix + " " + cas.step_ids[0].pas_id.cont_telefons[0].numero
+    else:
+        tel_cont = "-"
+%>
+
+<%def name="correu_cat()">
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada d'aplicar aquestes modificacions, ha rebutjat la teva sol·licitud amb el següent motiu:
+    </p>
+    <p>
+        <b>Acceso imposibilitado más de dos veces por causas ajenas a la Distribuidora.</b>
+    </p>
+    <p>
+        Entenem que el personal tècnic de l’empresa distribuïdora, que ha de fer l’actuació al vostre comptador, no ha pogut contactar amb vosaltres. El telèfon que vas indicar a la sol·licitud és <b>${tel_cont}</b>.
+    </p>
+    <p>
+        Si vols que tornem a tramitar la modificació, caldrà que tornis a fer una nova sol·licitud a través de la teva <a href="https://oficinavirtual.somenergia.coop/ca/">Oficina Virtual</a>.
+    </p>
+    <p>
+        Un cop hagis fet la nova sol·licitud, et recomanem que estiguis atent a les trucades que puguis rebre al telèfon de contacte que ens indiquis a través d’aquesta nova sol·licitud.
+    </p>
+</%def>
+
+<%def name="correu_es()">
+    <p>
+        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora</a> de tu zona, la encargada de aplicar estas modificaciones, ha rechazado tu solicitud con el siguiente motivo:
+    </p>
+    <p>
+        <b>Acceso imposibilitado más de dos veces por causas ajenas a la Distribuidora.</b>
+    </p>
+    <p>
+        Entendemos que el personal técnico de la empresa distribuidora, que debe modificar vuestro contador, no ha podido contactar con vosotros. El teléfono de contacto que indicaste en la solicitud es: <b>${tel_cont}</b>
+    </p>
+    <p>
+        Si quieres que volvamos a tramitar la modificación, debes solicitarla de nuevo a través de tu <a href="https://oficinavirtual.somenergia.coop/es/">Oficina Virtual</a>.
+    </p>
+    <p>
+        Una vez hayas tramitado la nueva solicitud, te recomendamos que estés atento a las llamadas que puedas recibir al teléfono de contacto que hayas indicado en la nueva solicitud.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_26')])]" />
+        </record>
+        <record model="giscedata.switching.notify" id="notification_atr_M102_14">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada d'aplicar aquestes modificacions, ha rebutjat la teva sol·licitud amb el següent motiu:
+    </p>
+    <p>
+        <b>Potencia Solicitada mayor que la Potencia Máxima Autorizada en baja tensión.</b>
+    </p>
+    <p>
+        Per poder tirar endavant aquest augment de potència caldrà que personal electricista autoritzat emeti un nou <a href="https://ca.support.somenergia.coop/article/500-que-es-el-butlleti-electric">butlletí o certificat elèctric</a> de la teva instal·lació on consti que la potència màxima admissible és igual o superior a la potència que desitges contractar.
+    </p>
+    <p>
+        Un cop el tingueu, podeu tornar a omplir el formulari de modificació contractual i adjuntar la documentació a través de l'<a href="https://oficinavirtual.somenergia.coop/ca/">Oficina Virtual</a>.
+    </p>
+</%def>
+
+<%def name="correu_es()">
+    <p>
+        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora</a> de tu zona, la encargada de aplicar estas modificaciones, ha rechazado tu solicitud con el siguiente motivo:
+    </p>
+    <p>
+        <b>Potencia Solicitada mayor que la Potencia Máxima Autorizada en baja tensión.</b>
+    </p>
+    <p>
+        Para poder llevar a cabo este aumento de potencia será necesario que personal electricista autorizado emita un nuevo <a href="https://es.support.somenergia.coop/article/505-que-es-el-boletin-electrico">boletín o certificado eléctrico</a> de tu instalación donde conste que la potencia máxima admisible es igual o superior a la potencia que deseas contratar.
+    </p>
+    <p>
+        Una vez lo tengas, puedes volver a solicitar la modificación contractual y adjuntar el documento a través de tu <a href="https://oficinavirtual.somenergia.coop/es/">Oficina Virtual</a>.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_14')])]" />
+        </record>
     </data>
 </openerp>
