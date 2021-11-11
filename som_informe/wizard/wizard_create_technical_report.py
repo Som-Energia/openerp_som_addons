@@ -91,6 +91,15 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         'state': 'init'
     }
 
+    def default_get(self, cr, uid, fields, context={}):
+        res = {'state': 'init'}
+
+        origin_model = context.get('origin')
+        if origin_model == 'giscedata.polissa':
+            res['polissa'] = context.get('active_id')
+
+        return res
+
     def get_folder_data(self, cursor, uid, wiz, erp_config):
         subfolder = 'ERROR'
 
