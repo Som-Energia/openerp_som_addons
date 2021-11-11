@@ -221,8 +221,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         if wiz.mostra_factura:
             pass
         if wiz.mostra_cobraments:
-            #general_components.append('cobra_header')
-            pass
+            general_components.append('CollectHeader')
 
         context['has_atr'] = len(seleccionats) > 0
         result.extend(self.extract_components_metadata(cursor, uid, wiz, general_components, context))
