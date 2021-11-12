@@ -2,6 +2,7 @@
 Al servidor de testing treballem sobre la branca Rolling. Per aplicar una PR, cal fer:
 *  git pull origin
 *  git checkout NOM_BRANCA
+*  git pull
 *  git checkout rolling
 *  git merge NOM_BRANCA
 
