@@ -1,5 +1,4 @@
 <%page args="d" />
-</ul>
     <table style="width:100%;font-size:14px">
         <tr style="text-align:center;font-weight:bold">
             <td style="width:16%">${_(u"Número Factura")}</td>
@@ -24,3 +23,4 @@
             </tr>
         % endfor
     </table>
+    <br />

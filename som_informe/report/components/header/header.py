@@ -8,7 +8,6 @@ class header:
         pol_data = wiz.polissa
         return {
             'type': 'header',
-            'date': '1970-01-01',
             'data_alta': dateformat(pol_data.data_alta, False),
             'contract_number': pol_data.name,
             'titular_name': pol_data.titular.name,

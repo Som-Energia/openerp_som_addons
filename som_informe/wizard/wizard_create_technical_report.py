@@ -181,12 +181,8 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             context = {}
 
         wiz = self.browse(cursor, uid, id, context=context)
-        general_components = ['header','footer']
+
         seleccionats = []
-        result  = []
-
-        sw_obj = self.pool.get('giscedata.switching')
-
         if wiz.mostra_reclama:
             seleccionats.append('R1')
         if wiz.mostra_A3:
@@ -206,7 +202,9 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         if wiz.mostra_M1:
             seleccionats.append('M1')
 
-        if len(seleccionats) > 0:
+        result_crono = []
+        context['has_atr'] = len(seleccionats) > 0
+        if seleccionats:
             search_params = [
                 ('cups_polissa_id.id', '=' , wiz.polissa.id),
                 ('proces_id.name', 'in', seleccionats),
@@ -215,19 +213,28 @@ class WizardCreateTechnicalReport(osv.osv_memory):
                 search_params.append(('data_sollicitud', '>=', wiz.date_from))
             if wiz.date_to:
                 search_params.append(('data_sollicitud', '<=', wiz.date_to))
+            sw_obj = self.pool.get('giscedata.switching')
             sw_ids = sw_obj.search(cursor, uid, search_params)
-            result.extend(self.extract_switching_metadata(cursor, uid, sw_ids, context))
+            result_atr = self.extract_switching_metadata(cursor, uid, sw_ids, context)
+            result_atr = sorted(result_atr, key=lambda k: k['date'])
 
+            result_atr_head = self.extract_components_metadata(cursor, uid, wiz, ['atrHeader'], context)
+            result_atr_foot = self.extract_components_metadata(cursor, uid, wiz, ['atrFooter'], context)
+            result_crono = result_atr_head + result_atr + result_atr_foot
+
+        result_factura = []
         if wiz.mostra_factura:
-            pass
+            result_factura = []
+
+        result_cobra = []
         if wiz.mostra_cobraments:
-            general_components.append('CollectHeader')
-            general_components.append('CollectDetailsInvoices')
+            components_cobra = ['CollectHeader', 'CollectDetailsInvoices']
+            result_cobra = self.extract_components_metadata(cursor, uid, wiz, components_cobra, context)
 
-        context['has_atr'] = len(seleccionats) > 0
-        result.extend(self.extract_components_metadata(cursor, uid, wiz, general_components, context))
+        result_ini = self.extract_components_metadata(cursor, uid, wiz, ['header'], context)
+        result_end = self.extract_components_metadata(cursor, uid, wiz, ['footer'], context)
 
-        result = sorted(result, key=lambda k: k['date'])
+        result = result_ini + result_crono + result_factura + result_cobra + result_end
         return [ns(item) for item in result]
 
     # data extractors
