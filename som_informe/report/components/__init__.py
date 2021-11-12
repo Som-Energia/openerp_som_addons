@@ -52,3 +52,4 @@ import B116
 import header
 import footer
 import CollectHeader
+import CollectDetailsInvoices

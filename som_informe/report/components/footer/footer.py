@@ -10,7 +10,7 @@ class footer:
         return {
             'show_atr_disclaimer': has_atr,
             'type': 'footer',
-            'date': '2040-01-01',
+            'date': '4000-01-01',
             'create_date': date.today().strftime("%d/%m/%Y"),
         }
 
