@@ -48,7 +48,6 @@ class GiscedataPolissa(osv.osv):
 
 
     _columns = {
-        'data_alta_autoconsum': fields.date('Data alta autoconsum'),
         'te_assignacio_gkwh': fields.function(
             _ff_get_assignacio_gkwh, method=True, type='boolean',
             string='Té assignacions GWKH', readonly=True, help="El contracte té assignacions de GKWH, sense tenir en compte la prioritat ni data fi.",
@@ -59,46 +58,5 @@ class GiscedataPolissa(osv.osv):
             }),
     }
 
-    _defaults = {
-        'data_alta_autoconsum': lambda *a: False,
-    }
 
 GiscedataPolissa()
-
-
-class GiscedataPolissaModcontractual(osv.osv):
-    """Modificació Contractual d'una Pòlissa."""
-    _name = 'giscedata.polissa.modcontractual'
-    _inherit = 'giscedata.polissa.modcontractual'
-
-
-    def create(self, cursor, uid, vals, context=None):
-        res = super(GiscedataPolissaModcontractual, self).create(cursor, uid, vals, context)
-        self.update_data_alta_autoconsum(cursor, uid, res, context=context)
-        return res
-
-    def write(self, cursor, uid, ids, vals, context=None):
-        res = super(GiscedataPolissaModcontractual, self).write(cursor, uid, ids, vals, context)
-        self.update_data_alta_autoconsum(cursor, uid, ids, context=context)
-        return res
-
-    def update_data_alta_autoconsum(self, cursor, uid, mod_id, context=None):
-        """Escriu la data d'alta de l'autoconsum a la polissa, si en té"""
-        import pudb; pu.db
-
-        polissa_obj = self.pool.get('giscedata.polissa')
-        fields_to_read = ['autoconsumo', 'autoconsum_id', 'data_inici']
-
-        modcon_info = self.read(cursor, uid, [mod_id], fields_to_read)[0]
-
-        if modcon_info['autoconsumo'] != '00' or modcon_info['autoconsum_id']:
-
-            polissa_id = self.browse(cursor, uid, mod_id).polissa_id.id
-
-            pol_data_alta_autoconsum = polissa_obj.read(cursor, uid, polissa_id, ['data_alta_autoconsum'])
-            if not pol_data_alta_autoconsum:
-                polissa_obj.write(cursor, uid, [polissa_id],
-                {'data_alta_autoconsum': modcon_info['data_inici']},
-                context={'skip_cnt_llista_preu_compatible': True})
-
-        return True
