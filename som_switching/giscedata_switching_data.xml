@@ -1611,8 +1611,15 @@
 % endif
 
 <%
-    if len(cas.step_ids[0].pas_id.cont_telefons) > 0:
-        tel_cont =  "+" cas.step_ids[0].pas_id.cont_telefons[0].prefix + " " + cas.step_ids[0].pas_id.cont_telefons[0].numero
+    r_model,r_id = cas.step_ids[0].pas_id.split(',')
+    cas_obj = cas.pool.get(r_model)
+    llista_telefons = cas_obj.read(cas._cr, cas._uid, int(r_id), ['cont_telefons'])['cont_telefons']
+    print llista_telefons
+    print cas_obj
+    if len(llista_telefons) > 0:
+        tel_obj = cas.pool.get('giscedata.switching.telefon')
+        telefon = tel_obj.read(cas._cr, cas._uid, llista_telefons[0])
+        tel_cont =  "+" + telefon['prefix'] + " " + telefon['numero']
     else:
         tel_cont = "-"
 %>
@@ -1707,9 +1714,13 @@
             <field name="notify_text"><![CDATA[<!doctype html>
 <%
 r_model,r_id = cas.step_ids[0].pas_id.split(',')
-cas_obj = object.pool.get(r_model)
-tarifa_cas = cas_obj.read(r_id, ['tarifaATR'])
-tarifa_pol = cas.ref_polissa_id.tarifa_codi
+cas_obj = cas.pool.get(r_model)
+tarifa_cas_dict = cas_obj.read(cas._cr, cas._uid, int(r_id), ['tarifaATR'])
+tarifa_pol = cas.polissa_ref_id.tarifa_codi
+pas01 = cas_obj.browse(cas._cr, cas._uid, r_id)
+diccionari = cas_obj.fields_get(cas._cr, cas._uid)
+mapaTarifes = dict(diccionari['tarifaATR']['selection'])
+tarifa_cas = mapaTarifes[tarifa_cas_dict['tarifaATR']]
 %>
 % if cas.cups_polissa_id.titular.lang == "ca_ES":
 %     if tarifa_cas == tarifa_pol:
