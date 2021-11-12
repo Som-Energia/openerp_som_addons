@@ -1700,5 +1700,123 @@
             </field>
             <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_14')])]" />
         </record>
+        <record model="giscedata.switching.notify" id="notification_atr_M102_17">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+<%
+r_model,r_id = cas.step_ids[0].pas_id.split(',')
+cas_obj = object.pool.get(r_model)
+tarifa_cas = cas_obj.read(r_id, ['tarifaATR'])
+tarifa_pol = cas.ref_polissa_id.tarifa_codi
+%>
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+%     if tarifa_cas == tarifa_pol:
+          ${correu_cat_20()}
+%     else:
+          ${correu_cat_30_20()}
+%     endif
+% else:
+%     if tarifa_cas == tarifa_pol:
+          ${correu_es_20()}
+%     else:
+          ${correu_es_30_20()}
+%     endif
+% endif
+
+<%def name="correu_cat_20()">
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada d'aplicar aquestes modificacions, ha rebutjat la teva sol·licitud amb el següent motiu:
+    </p>
+    <p>
+        <b>Tarifa no válida para la Tensión de Suministro.</b>
+    </p>
+    <p>
+        És possible que l'empresa distribuïdora tingui registrat un element no interrompible en aquest punt de subministrament.
+    </p>
+    <p>
+        Segons la normativa vigent, en les instal·lacions amb elements no interrompibles (ascensor, extractor d'incendis, etc.) amb una potència inferior a 15 kW han de passar a <a href="https://ca.support.somenergia.coop/article/261-que-es-el-maximetre">facturació per maxímetre</a> perquè no salti la llum en els moments d'activitat de l'aparell en qüestió.
+    </p>
+    <p>
+        En aquests casos, la potència mínima a contractar ha de ser la potència nominal de l'element no interrompible. Així doncs, per a poder continuar amb el tràmit, s'ha de presentar un butlletí elèctric o Certificat de la instal·lació elèctrica del punt de subministrament, on es deixi constància dels elements no interrompibles i les seves potències nominals.
+    </p>
+    <p>
+        Si ens confirmeu, que tal com se'ns indica, teniu un element no interrompible com pot ser un ascensor, i ens envieu aquesta documentació, tornarem a tramitar la sol·licitud per al canvi corresponent, amb les condicions indicades.
+    </p>
+</%def>
+
+<%def name="correu_es_20()">
+    <p>
+        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora</a> de tu zona, la encargada de aplicar estas modificaciones, ha rechazado tu solicitud con el siguiente motivo:
+    </p>
+    <p>
+        <b>Tarifa no válida para la Tensión de Suministro.</b>
+    </p>
+    <p>
+        Es posible que la empresa distribuidora tenga registrado un elemento no interrumpible en este punto de suministro.
+    </p>
+    <p>
+        Según la normativa vigente, en las instalaciones con elementos no interrumpibles (ascensor, extractor de incendios, etc.) con una potencia inferior a 15 kW han de pasar a facturación por <a href="https://es.support.somenergia.coop/article/187-que-es-el-maximetro">maxímetro</a> para que no salte la luz en los momentos de actividad del aparato en cuestión.
+    </p>
+    <p>
+        En estos casos, la potencia mínima a contratar tiene que ser la potencia nominal del elemento no interrumpible. Para poder continuar con el trámite, se debe presentar un boletín eléctrico o Certificado de la instalación eléctrica del punto de suministro, donde se deje constancia de los elementos no interrumpibles y sus potencias nominales.
+    </p>
+    <p>
+        Si nos confirmáis, que tal y como se nos indica, tenéis un elemento no interrumpible como puede ser un ascensor, y nos enviáis esta documentación, volveremos a tramitar la solicitud para el cambio correspondiente con las condiciones indicadas.
+    </p>
+</%def>
+
+<%def name="correu_cat_30_20()">
+    <p>
+        Has de tenir en compte que reduir la potència per sota de 15kW, comporta un canvi de tarifa <a href="https://ca.support.somenergia.coop/category/1095-la-tarifa-30td">3.0TD</a> a tarifa domèstica <a href="https://ca.support.somenergia.coop/article/1003-la-tarifa-2-0td">2.0TD</a>.
+    </p>
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada d'aplicar aquestes modificacions, ha rebutjat la teva sol·licitud amb el següent motiu:
+    </p>
+    <p>
+        <b>Tarifa no válida para la Tensión de Suministro.</b>
+    </p>
+    <p>
+        Volem informar-te que per normativa, la tarifa 3.0TD porta per defecte, <a href="https://ca.support.somenergia.coop/article/261-que-es-el-maximetre">facturació per maxímetre</a>. En canvi, si contractes una potència inferior a 15kW, al passar-te a la tarifa 2.0TD, la teva facturació passarà a ser per <a href="https://ca.support.somenergia.coop/article/172-que-es-l-icp-i-el-quadre-d-interruptors">Control de Potència</a>.
+    </p>
+    <p>
+        <b>Necessitem que ens confirmis si vols que continuem amb la modificació de potència i canvi a facturació per control de potència (ICP)</b>.
+    </p>
+    <p>
+        Excepcionalment, en cas de tenir un element no interrompible en la teva instal·lació, com pot ser un ascensor, podries mantenir el maxímetre amb la tarifa 2.0TD. Si és el teu cas, necessitem que ens facilitis un butlletí o un certificat de la instal·lació elèctric en el qual consti la potència nominal de l’element no interrompible. Aquí tens més informació: <a href="https://ca.support.somenergia.coop/article/695-punts-de-subministrament-amb-ascensor">Punts de subministrament amb ascensor</a>.
+    </p>
+    <p>
+        Quan ens confirmis com vols que procedim, iniciem el tràmit.
+    </p>
+</%def>
+
+<%def name="correu_es_30_20()">
+    <p>
+        Debes tener en cuenta que reducir la potencia por debajo de 15kW, comporta un cambio de <a href="https://es.support.somenergia.coop/category/1099-la-tarifa-30td">tarifa 3.0TD</a> a tarifa doméstica <a href="https://ca.support.somenergia.coop/article/1003-la-tarifa-2-0td">2.0TD</a>.
+    </p>
+    <p>
+        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora</a> de tu zona, la encargada de aplicar estas modificaciones, ha rechazado tu solicitud con el siguiente motivo:
+    </p>
+    <p>
+        <b>Tarifa no válida para la Tensión de Suministro.</b>
+    </p>
+    <p>
+        Queremos informarte que por normativa, la tarifa 3.0 tiene por defecto <a href="https://es.support.somenergia.coop/article/187-que-es-el-maximetro">facturación por maxímetro</a>. Si contratas una potencia inferior a 15kW, al cambiar a tarifa 2.0TD, tu facturación pasará a ser por <a href="https://es.support.somenergia.coop/article/209-el-interruptor-de-control-de-potencia-o-icp">Control de Potencia</a>.
+    </p>
+    <p>
+        <b>Necesitamos que nos confirmes si quieres que continuemos con la modificación de potencia y cambio a facturación por control de potencia (ICP).</b>
+    </p>
+    <p>
+        Excepcionalmente, en caso de tener un elemento no interrumpible en tu instalación, como puede ser un ascensor, podrías mantener el maxímetro con contrato la tarifa 2.0TD. Si es tu caso, necesitamos que nos facilites un boletín o Certificado de la instalación eléctrica en el que conste la potencia nominal del elemento no interrumpible. Aquí tenso más información: <a href="https://es.support.somenergia.coop/article/696-puntos-de-suministro-con-ascensor">Puntos de suministro con ascensor</a>.
+    </p>
+    <p>
+        En cuanto nos confirmes cómo quieres proceder, iniciamos el trámite.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_17')])]" />
+        </record>
     </data>
 </openerp>
