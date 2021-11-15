@@ -62,5 +62,23 @@
             <field name="value" eval="'ir.actions.act_window,'+str(ref('action_som_informe_report'))"/>
         </record>
         <menuitem action="action_som_informe_report" id="menu_som_informe_report" name="Informe automàtic Som" parent="crm.menu_crm" sequence="10"/>
+        <record id="action_som_informe_report_from_polissa" model="ir.actions.act_window">
+            <field name="name">Generar informe automàtic Som</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.create.technical.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_som_informe_report_form"/>
+            <field name="context">{'origin': 'giscedata.polissa'}</field>
+        </record>
+        <record id="values_wizard_som_informe_report_from_polissa" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Generar informe automàtic Som</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_som_informe_report_from_polissa'))"/>
+        </record>
     </data>
 </openerp>

@@ -91,6 +91,15 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         'state': 'init'
     }
 
+    def default_get(self, cr, uid, fields, context={}):
+        res = {'state': 'init'}
+
+        origin_model = context.get('origin')
+        if origin_model == 'giscedata.polissa':
+            res['polissa'] = context.get('active_id')
+
+        return res
+
     def get_folder_data(self, cursor, uid, wiz, erp_config):
         subfolder = 'ERROR'
 
@@ -197,7 +206,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
 
         if len(seleccionats) > 0:
             search_params = [
-                ('cups_id.id', '=', wiz.polissa.cups.id),
+                ('cups_polissa_id.id', '=' , wiz.polissa.id),
                 ('proces_id.name', 'in', seleccionats),
                 ]
             if wiz.date_from:
