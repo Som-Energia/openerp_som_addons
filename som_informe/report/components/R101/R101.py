@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
-
-from gestionatr.utils import get_description
-from ..component_utils import dateformat
+from ..component_utils import get_description
 from ..ProcesR1 import ProcesR1
-from tools.translate import _
 
 class R101(ProcesR1.ProcesR1):
     def __init__(self):

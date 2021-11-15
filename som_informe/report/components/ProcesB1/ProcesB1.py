@@ -1,4 +1,3 @@
-from ..component_utils import dateformat
 from ..ProcesATR import ProcesATR
 
 class ProcesB1(ProcesATR.ProcesATR):
