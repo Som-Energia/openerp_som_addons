@@ -24,8 +24,8 @@ class GiscedataPolissa(osv.osv):
     _inherit = 'giscedata.polissa'
 
     def get_polisses_from_assignments(self, cursor, uid, ids, context=None):
-        """ rep llista de assigmetns que han sigut modificats"""
-        """ha de retornar un allista de ids de pòlisses per les quals cal modificar el càlcul"""
+        """ ids és la llista de 'generationkwh.assignment' que han sigut modificats
+        retorna una llista de ids de 'giscedata.polissa' per les quals cal modificar el càlcul"""
 
         assig_obj = self.pool.get('generationkwh.assignment')
 
