@@ -89,7 +89,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         'state': 'init'
     }
 
-    def default_get(self, cr, uid, fields, context={}):
+    def default_get(self, cursor, uid, fields, context={}):
         res = {'state': 'init'}
 
         origin_model = context.get('origin')
@@ -98,9 +98,8 @@ class WizardCreateTechnicalReport(osv.osv_memory):
 
         return res
 
-    def get_folder_data(self, cursor, uid, wiz, erp_config):
+    def get_folder_data(self, cursor, uid, wiz):
         subfolder = 'ERROR'
-
         atr_seleccionat = False
         if wiz.mostra_A3 or wiz.mostra_B1 or wiz.mostra_B2 or wiz.mostra_C1 or \
            wiz.mostra_C2 or wiz.mostra_D1 or wiz.mostra_E1 or wiz.mostra_M1 :
@@ -118,6 +117,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         if subfolder not in folder_data.keys():
             subfolder = 'ERROR'
 
+        erp_config = self.pool.get('res.config')
         folder_hash = erp_config.get(cursor, uid, folder_data[subfolder]['config_id'], folder_data[subfolder]['config_value'])
         folder_name = folder_data[subfolder]['folder_name']
 
@@ -155,8 +155,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         gdm_obj = self.pool.get('google.drive.manager')
         wiz = self.browse(cursor, uid, ids[0], context=context)
 
-        erp_config = self.pool.get('res.config')
-        folder_hash, folder_name = self.get_folder_data(cursor, uid, wiz, erp_config)
+        folder_hash, folder_name = self.get_folder_data(cursor, uid, wiz)
 
         file_name = '{}_informe_{}_{}'.format(str(date.today()), folder_name, lang_filename[lang_code])
 
