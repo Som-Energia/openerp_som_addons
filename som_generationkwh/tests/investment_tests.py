@@ -223,7 +223,7 @@ class InvestmentTests(testing.OOTestCase):
                     'active': True,
                     'order_date': '2020-06-06',
                     'amortized_amount': 0.0,
-                    'name': u'APO005000'
+                    'name': u'APO000001'
                 })
             self.MailMockup.deactivate(cursor, uid)
 
@@ -271,7 +271,7 @@ class InvestmentTests(testing.OOTestCase):
                         'active': True,
                         'order_date': '2020-06-06',
                         'amortized_amount': 0.0,
-                        'name': u'APO005000'
+                        'name': u'APO000001'
                     })
                 self.MailMockup.deactivate(cursor, uid)
         self.assertEqual(str(ctx.exception),'Emission not open yet')
