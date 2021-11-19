@@ -1,3 +1,6 @@
+from ..component_utils import is_enterprise
+
+
 class CollectHeader:
     def __init__(self):
         pass
@@ -9,4 +12,5 @@ class CollectHeader:
             'contract_number': pol.name,
             'unpaid_invoices': pol.unpaid_invoices,
             'unpaid_amount': pol.debt_amount,
+            'is_enterprise': is_enterprise(pol),
         }
