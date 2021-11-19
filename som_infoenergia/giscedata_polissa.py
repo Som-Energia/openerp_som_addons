@@ -47,10 +47,11 @@ class GiscedataPolissaInfoenergia(osv.osv):
             ('tipus', '=', 'A'),
         ]
         lect_ids = lectures_obj.search(
-            cursor, uid, search_params, order='name asc', context={'active_test': False}
+            cursor, uid, search_params, context={'active_test': False}
         )
 
         lect_info = lectures_obj.read(cursor, uid, lect_ids, ['consum', 'name'])
+        lect_info.sort(key=lambda x: x['name'])
         if not lect_ids or lect_info[0]['name'] > limit_date:
             return False
 
