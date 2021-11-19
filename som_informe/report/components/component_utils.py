@@ -15,3 +15,12 @@ def get_description(key, table_name, on_error_return_false = False):
         if on_error_return_false:
             return False
         return "ERROR {} no trobat a {}.".format(key, table_name)
+
+def is_domestic(pol):
+    for cat in pol.category_id:
+        if cat.code == 'DOM':
+            return True
+    return False
+
+def is_enterprise(pol):
+    return not is_domestic(pol)
