@@ -2,6 +2,7 @@
 from osv import osv, fields
 import re
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from tools.translate import _
 
 class GiscedataPolissaInfoenergia(osv.osv):
@@ -29,16 +30,17 @@ class GiscedataPolissaInfoenergia(osv.osv):
         res = super(GiscedataPolissaInfoenergia, self).write(cursor, uid, ids, vals, context)
         return res
 
-    def get_consum_anual_lectures(self, cursor, uid, polissa_id, context=None):
-        """Calculem el consum anual a partir del consum diari"""
+    def get_consum_anual_consum_lectures(self, cursor, uid, polissa_id, context=None):
+        """Calculem el consum anual a partir del consum de les lectures"""
 
         if isinstance(polissa_id, (tuple, list)):
             polissa_id = polissa_id[0]
 
         lectures_obj = self.pool.get('giscedata.lectures.lectura')
-        limit_date = datetime.today() - timedelta(122)
+        limit_date = (datetime.today() - timedelta(122)).strftime('%Y-%m-%d')
 
-        from_date = datetime.today() - timedelta(month=14)
+        from_date = (datetime.today() - relativedelta(months=14)).strftime('%Y-%m-%d')
+
         search_params = [
             ('comptador.polissa', '=', polissa_id),
             ('name', '>', from_date),
