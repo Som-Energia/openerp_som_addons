@@ -8,7 +8,7 @@ class GiscedataCupsPs(osv.osv):
     _name = 'giscedata.cups.ps'
     _inherit = 'giscedata.cups.ps'
 
-    NEW_ORIGENS_CONANY = [
+    _NEW_ORIGENS_CONANY = [
         ('consums', _(u'Historic consums')),
     ]
 
