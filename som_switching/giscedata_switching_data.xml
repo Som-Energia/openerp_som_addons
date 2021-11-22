@@ -1042,6 +1042,13 @@
             <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_3')])]" />
         </record>
 
+
+
+
+                        <!-- Rebutjos B1-->
+
+
+
         <record model="giscedata.switching.notify" id="notification_atr_B107_C7">
             <field name="proces_id" ref="giscedata_switching.sw_proces_b1"/>
             <field name="step_id" ref="giscedata_switching.sw_step_b1_07"/>
@@ -1136,9 +1143,9 @@
             <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_C1')])]" />
         </record>
 
-        <record model="giscedata.switching.notify" id="notification_atr_B107_39">
+        <record model="giscedata.switching.notify" id="notification_atr_B102_39">
             <field name="proces_id" ref="giscedata_switching.sw_proces_b1"/>
-            <field name="step_id" ref="giscedata_switching.sw_step_b1_07"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_b1_02"/>
             <field name="active" eval="1"/>
             <field name="notify_text"><![CDATA[<!doctype html>
 
