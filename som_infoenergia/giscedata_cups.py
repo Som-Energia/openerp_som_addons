@@ -10,6 +10,7 @@ class GiscedataCupsPs(osv.osv):
 
     _NEW_ORIGENS_CONANY = [
         ('consums', _(u'Historic consums')),
+        ('factures', _(u'Historic factures')),
     ]
 
     def __init__(self, pool, cursor):
@@ -30,11 +31,22 @@ class GiscedataCupsPs(osv.osv):
         llista = super(GiscedataCupsPs, self).get_fonts_consums_anuals(
             cursor, uid, context=context)
 
-        vals = {'priority': 5,
-                'model': 'giscedata.polissa',
-                'func': 'get_consum_anual_consum_lectures',
-                'origen': 'consums'}
-        llista.append(vals)
+        for i in range(len(llista)):
+            if llista[i]['func'] == 'get_consum_anual_lectures':
+                del llista[i]
+                break
+
+        vals = [
+            {'priority': 5,
+            'model': 'giscedata.polissa',
+            'func': 'get_consum_anual_consum_lectures',
+            'origen': 'consums'},
+            {'priority': 4,
+            'model': 'giscedata.polissa',
+            'func': 'get_consum_anual_factures',
+            'origen': 'factures'}
+        ]
+        llista+=vals
 
         return llista
 

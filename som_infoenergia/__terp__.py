@@ -12,6 +12,7 @@
     "category": "SomEnergia",
     "depends":[
         "base",
+        "giscedata_cups",
         "giscedata_facturacio",
         "poweremail_references",
         "som_polissa_soci",
