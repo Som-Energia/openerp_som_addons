@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <!--b1-07-->
+        <record model="giscedata.switching.notificacio.config" id="giscedata_switching.sw_not_b107">
+            <field name="conditions">[('01', 'motiu', '==', '01')]</field>
+        </record>
+        <!--b1-02-->
+        <record model="giscedata.switching.notificacio.config" id="giscedata_switching.sw_not_b102">
+            <field name="conditions">[('01', 'motiu', '==', '01')]</field>
+        </record>
+    </data>
+</openerp>
