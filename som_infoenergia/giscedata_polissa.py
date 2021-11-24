@@ -63,7 +63,7 @@ class GiscedataPolissaInfoenergia(osv.osv):
         consum = sum([x['consum'] for x in lect_info])
         n_dies = datetime.strptime(lect_info[-1]['name'], '%Y-%m-%d') - datetime.strptime(lect_info[0]['name'], '%Y-%m-%d')
         n_dies = n_dies.days
-        if not n_dies:
+        if n_dies < self.MINIM_DIES_CONSUM:
             return False
 
         consum_anual = consum*365/n_dies
@@ -95,6 +95,7 @@ class GiscedataPolissaInfoenergia(osv.osv):
         fact_infos = fact_obj.read(cursor, uid, fact_ids, ['energia_kwh', 'type', 'data_inici', 'data_final'])
         fact_infos.sort(key=lambda x: x['data_inici'])
         n_dies = datetime.strptime(fact_infos[-1]['data_final'], '%Y-%m-%d') - datetime.strptime(fact_infos[0]['data_inici'], '%Y-%m-%d')
+        n_dies = n_dies.days
         if n_dies < self.MINIM_DIES_CONSUM:
             return False
 
@@ -104,6 +105,9 @@ class GiscedataPolissaInfoenergia(osv.osv):
                 consum_anual += fact_info['energia_kwh']
             else:
                 consum_anual -= fact_info['energia_kwh']
+
+        if consum_anual < 0 or consum_anual > 10000000:
+            return False
 
         return consum_anual*365/n_dies
 
