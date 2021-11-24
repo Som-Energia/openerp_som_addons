@@ -4,7 +4,7 @@ class CollectDetailsInvoices:
     def __init__(self):
         pass
 
-    def get_data(self, w, cursor, uid, wiz, context):
+    def get_data(self, cursor, uid, wiz, context):
         fact_obj = wiz.pool.get('giscedata.facturacio.factura')
         search_parameters = [
             ('polissa_id', '=', wiz.polissa.id),

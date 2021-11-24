@@ -274,7 +274,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         result = []
         for component_name in components_names:
             extractor = self.factory_metadata_extractor(component_name)
-            extracted_data = extractor.get_data(self, cursor, uid, wiz, context)
+            extracted_data = extractor.get_data(cursor, uid, wiz, context)
             if extracted_data:
                 result.append(extracted_data)
 
