@@ -275,6 +275,7 @@
                         <field name='lot_enviament' readonly="1"/>
                         <field name='data_enviament' readonly="1"/>
                         <field name='info' readonly="1"/>
+                        <field name='extra_text'/>
                         <field name='mail_id' readonly="1"/>
                     </group>
                 </form>
@@ -295,6 +296,7 @@
                         <field name='estat' select="1"/>
                         <field name='info'/>
                         <field name='lang'  select="1"/>
+                        <field name="extra_text" select="1"/>
                         <field name='mail_id' select="1"/>
                 </tree>
             </field>
