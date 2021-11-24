@@ -8,6 +8,11 @@ import tempfile
 from datetime import date, datetime
 from yamlns import namespace as ns
 
+COLLECT_INVOICE_SELECTION = [
+    ('debt', u'Amb deute del periode'),
+    ('all', u'Totes dels del periode'),
+]
+
 lang_filename = {
     'ca_ES' : 'CAT',
     'es_ES' : 'ES',
@@ -82,7 +87,8 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         'mostra_E1': fields.boolean('E1'),
         'mostra_M1': fields.boolean('M1'),
         #Gestió de cobraments block
-        'mostra_cobraments': fields.boolean('Mostra bloc de Gestió de Cobraments'),
+        'mostra_cobraments': fields.boolean(u'Mostra bloc de Gestió de Cobraments'),
+        'mostrar_cobraments_factures': fields.selection(COLLECT_INVOICE_SELECTION, string=u'Factures a mostrar'),
     }
 
     _defaults = {
@@ -227,7 +233,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
 
         result_cobra = []
         if wiz.mostra_cobraments:
-            components_cobra = ['CollectHeader', 'CollectDetailsInvoices']
+            components_cobra = ['CollectHeader', 'CollectDetailsInvoices', 'CollectExpectedCutOffDate']
             result_cobra = self.extract_components_metadata(cursor, uid, wiz, components_cobra, context)
 
         result_ini = self.extract_components_metadata(cursor, uid, wiz, ['header'], context)

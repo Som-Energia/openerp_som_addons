@@ -5,17 +5,17 @@ class CollectDetailsInvoices:
         pass
 
     def get_data(self, w, cursor, uid, wiz, context):
-        pol = wiz.polissa
         fact_obj = wiz.pool.get('giscedata.facturacio.factura')
         search_parameters = [
-            ('polissa_id', '=', pol.id),
+            ('polissa_id', '=', wiz.polissa.id),
             ('type', 'in', ('out_invoice', 'out_refund')),
-            ('residual', '>', 0),
         ]
         if wiz.date_from:
             search_parameters.append(('data_inici', '>=', wiz.date_from))
         if wiz.date_to:
             search_parameters.append(('data_final', '<=', wiz.date_to))
+        if wiz.mostrar_cobraments_factures == 'debt':
+            search_parameters.append(('residual', '>', 0))
         facts = fact_obj.search(cursor, uid, search_parameters)
 
         invoices_data = []
