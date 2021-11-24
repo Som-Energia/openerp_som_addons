@@ -171,14 +171,22 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             g_response = gdm_obj.uploadMediaToDrive(cursor, uid, file_name, t.name, folder_hash)
 
         attach_obj = self.pool.get('ir.attachment')
-        attach_obj.create(cursor, uid, {
+
+        doc_id = attach_obj.create(cursor, uid, {
             'res_model':'giscedata.polissa',
             'res_id': wiz.polissa.id,
             'name': g_response['name'],
             'link': 'https://docs.google.com/document/d/' + g_response['id'],
             }, context=context)
 
-        return {'type': 'ir.actions.act_window_close'}
+        return {
+            'domain': "[('id','=', %s)]" % str(doc_id),
+            'name': _('Informe generat'),
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'ir.attachment',
+            'type': 'ir.actions.act_window',
+        }
 
     # data generation
     def get_data(self, cursor, uid, id, context=None):
