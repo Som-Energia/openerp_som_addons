@@ -4,7 +4,7 @@ class footer:
     def __init__(self):
         pass
 
-    def get_data(self, w, cursor, uid, wiz, context):
+    def get_data(self, cursor, uid, wiz, context):
         pol_data = wiz.polissa
         has_atr = context.get('has_atr', False)
         return {
