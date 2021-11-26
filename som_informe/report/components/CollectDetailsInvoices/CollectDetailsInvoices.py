@@ -1,5 +1,7 @@
 from ..component_utils import dateformat
 
+ESTAT_PENDENT_INPAGAT_MIN = 33
+
 class CollectDetailsInvoices:
     def __init__(self):
         pass
@@ -16,6 +18,8 @@ class CollectDetailsInvoices:
             search_parameters.append(('data_final', '<=', wiz.date_to))
         if wiz.mostrar_cobraments_factures == 'debt':
             search_parameters.append(('residual', '>', 0))
+            search_parameters.append(('pending_state', '>', ESTAT_PENDENT_INPAGAT_MIN))
+
         facts = fact_obj.search(cursor, uid, search_parameters)
 
         invoices_data = []

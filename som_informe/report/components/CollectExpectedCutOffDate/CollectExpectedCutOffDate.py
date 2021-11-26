@@ -1,5 +1,5 @@
 from datetime import timedelta
-from ..component_utils import to_date, to_string
+from ..component_utils import to_date, to_string, has_category
 
 ESTAT_PENDENT_INPAGAT_MIN = 33
 ANNEX_4_IDS = [41, 65]
@@ -10,6 +10,9 @@ class CollectExpectedCutOffDate:
         pass
 
     def get_data(self,cursor, uid, wiz, context):
+        if has_category(wiz.polissa, [11, 27]):
+            return {'type': 'Empty'}
+
         fact_obj = wiz.pool.get('giscedata.facturacio.factura')
         search_parameters = [
             ('polissa_id', '=', wiz.polissa.id),
