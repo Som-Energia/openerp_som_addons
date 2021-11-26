@@ -1019,7 +1019,7 @@ class GenerationkwhInvestment(osv.osv):
         self.write(cursor, uid, id, inv.erpChanges())
 
     def move_line_when_tranfer(self, cursor, uid, partner_id_from, partner_id_to,
-            account_id_from, account_id_to, amount):
+            account_id_from, account_id_to, amount, transmission_date):
         ResPartner = self.pool.get('res.partner')
         AccountMove = self.pool.get('account.move')
         AccountMoveLine = self.pool.get('account.move.line')
@@ -1041,7 +1041,7 @@ class GenerationkwhInvestment(osv.osv):
 
         id_move = AccountMove.create(cursor, uid, {
             'journal_id': journal_id,
-            'date': today,
+            'date': transmission_date,
             'amount': amount,
             'name': 'Transfer',
             'period_id': period_id,
@@ -1050,6 +1050,7 @@ class GenerationkwhInvestment(osv.osv):
             'type': 'journal_voucher',
         })
         id_moveline_debit = AccountMoveLine.create(cursor, uid, {
+            'date': transmission_date,
             'journal_id': journal_id,
             'period_id': period_id,
             'account_id': account_id_from,
@@ -1065,6 +1066,7 @@ class GenerationkwhInvestment(osv.osv):
             'move_id': id_move,
         })
         id_moveline_credit = AccountMoveLine.create(cursor, uid, {
+            'date': transmission_date,
             'journal_id': journal_id,
             'period_id': period_id,
             'account_id': account_id_to,

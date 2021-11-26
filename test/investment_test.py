@@ -2435,7 +2435,9 @@ class Investment_Test(unittest.TestCase):
             newMember.partner_id,
             partner.property_account_gkwh.id,
             newMember.property_account_gkwh[0],
-            1000)
+            1000,
+            '2017-01-01'
+            )
 
         period_name = datetime.today().strftime('%m/%Y')
         period_id = self.AccountPeriod.search([
