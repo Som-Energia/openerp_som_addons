@@ -38,3 +38,9 @@ def is_domestic(pol):
 
 def is_enterprise(pol):
     return not is_domestic(pol)
+
+def has_category(pol, category_ids):
+    for cat in pol.category_id:
+        if cat.id in category_ids:
+            return True
+    return False

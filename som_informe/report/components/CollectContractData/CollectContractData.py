@@ -1,9 +1,4 @@
-
-def has_category(pol, category_ids):
-    for cat in pol.category_id:
-        if cat.id in category_ids:
-            return True
-    return False
+from ..component_utils import has_category
 
 class CollectContractData:
     def __init__(self):
