@@ -8,6 +8,12 @@ class WizardInvestmentTransfer(osv.osv):
 
     _name = 'wizard.generationkwh.investment.transfer'
 
+
+    def _check_transmission_date(self, cursor, uid, ids):
+        wiz = self.browse(cursor, uid, ids[0])
+        transmission_date = datetime.strptime(wiz.transmission_date, "%Y-%m-%d").date()
+        return transmission_date >= date.today()
+
     _columns = {
         'state': fields.char('State', size=16),
         'info': fields.text('Info'),
@@ -39,11 +45,6 @@ class WizardInvestmentTransfer(osv.osv):
     _constraints = [
         (_check_transmission_date, 'Error! Aquest wizard no permet dates anteriors a avui.', ['transmission_date'])
     ]
-
-    def _check_transmission_date(self, cr, uid, ids):
-        wiz = self.browse(cursor, uid, ids[0])
-        transmission_date = datetime.strptime(wiz.transmission_date, "%Y-%m-%d").date()
-        return transmission_date >= date.today()
 
     def do_transfer(self, cursor, uid, ids, context=None):
 
