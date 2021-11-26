@@ -12,7 +12,8 @@
                     <field name="info" nolabel="1" size="300" width="300" height ="200" colspan="4" readonly="1"/>
                     <group colspan="4" col="4" attrs="{}">
                         <field name="partner_id_alt" colspan="4" readonly="0"/>
-			<field name="iban" colspan="4" readonly="0" />
+                        <field name="iban" colspan="4" readonly="0"/>
+                        <field name="transmission_date" colspan="4"/>
                     </group>
                     <button name="do_transfer" string="Transferir" type="object" icon="gtk-execute" colspan="4" attrs="{'invisible':[('state', '=', 'Done')]}"/>
                     <button special="cancel" string="Tancar" icon="gtk-no" colspan="4" attrs="{'invisible':[('state', '!=', 'Done')]}"/>
