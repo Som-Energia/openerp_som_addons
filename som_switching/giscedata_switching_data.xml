@@ -1149,9 +1149,9 @@
             </field>
             <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_53')])]" />
         </record>
-        <record model="giscedata.switching.notify" id="notification_atr_M102_60">
+        <record model="giscedata.switching.notify" id="notification_atr_M104_60">
             <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
-            <field name="step_id" ref="giscedata_switching.sw_step_m1_02"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_04"/>
             <field name="active" eval="1"/>
             <field name="notify_text"><![CDATA[<!doctype html>
 % if cas.cups_polissa_id.titular.lang == "ca_ES":
