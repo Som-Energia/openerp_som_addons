@@ -346,8 +346,7 @@ class GenerationkwhActions(InvestmentActions):
         #Crear moviment 1635old 1635new
         old_partner = Soci.read(cursor, uid, old_investment['member_id'][0])
 
-        #Cal tocar res a nivell comptable?
-        #GenerationkwhInvestment.move_line_when_tranfer(cursor, uid, old_partner['id'], new_partner_id, old_partner['property_account_gkwh'][0], new_partner.property_account_gkwh.id, amount)
+        GenerationkwhInvestment.move_line_when_tranfer(cursor, uid, old_partner['id'], new_partner_id, old_partner['property_account_gkwh'][0], new_partner.property_account_gkwh.id, amount, transmission_date)
 
         #Enviar correu cofirmació?
         return new_investment_id
@@ -598,7 +597,7 @@ class AportacionsActions(InvestmentActions):
         self.mark_as_invoiced(cursor, uid, new_investment_id)
         #Crear moviment 1635old 1635new
         old_partner = Soci.read(cursor, uid, old_investment['member_id'][0])
-        self.move_line_when_tranfer(cursor, uid, old_partner['id'], new_partner_id, old_partner['property_account_gkwh'][0], new_partner.property_account_gkwh.id, amount)
+        self.move_line_when_tranfer(cursor, uid, old_partner['id'], new_partner_id, old_partner['property_account_gkwh'][0], new_partner.property_account_gkwh.id, amount, transmission_date)
 
         #Enviar correu cofirmació?
         return new_investment_id

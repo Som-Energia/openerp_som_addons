@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import date
+from datetime import date, datetime
 from osv import osv, fields
 from tools.translate import _
 import pickle
@@ -36,7 +36,17 @@ class WizardInvestmentTransfer(osv.osv):
         'transmission_date': lambda *a: date.today().strftime('%Y-%m-%d')
     }
 
+    _constraints = [
+        (_check_transmission_date, 'Error! Aquest wizard no permet dates anteriors a avui.', ['transmission_date'])
+    ]
+
+    def _check_transmission_date(self, cr, uid, ids):
+        wiz = self.browse(cursor, uid, ids[0])
+        transmission_date = datetime.strptime(wiz.transmission_date, "%Y-%m-%d").date()
+        return transmission_date >= date.today()
+
     def do_transfer(self, cursor, uid, ids, context=None):
+
         if context is None:
             context = {}
 
