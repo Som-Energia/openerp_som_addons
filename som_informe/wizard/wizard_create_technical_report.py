@@ -234,7 +234,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
 
         result_cobra = []
         if wiz.mostra_cobraments:
-            components_cobra = ['CollectHeader', 'CollectDetailsInvoices', 'CollectExpectedCutOffDate']
+            components_cobra = ['CollectHeader', 'CollectDetailsInvoices', 'CollectExpectedCutOffDate', 'CollectContractData']
             result_cobra = self.extract_components_metadata(cursor, uid, wiz, components_cobra, context)
 
         result_ini = self.extract_components_metadata(cursor, uid, wiz, ['header'], context)

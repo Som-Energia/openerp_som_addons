@@ -55,3 +55,4 @@ import CollectHeader
 import CollectDetailsInvoices
 import atrHeader
 import atrFooter
+import CollectContractData
