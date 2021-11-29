@@ -63,6 +63,14 @@ class PowersmsSendWizard(osv.osv_memory):
         else: # Simple Mail: Gets computed template values
             return self.get_value(cr, uid, template, getattr(template, field), context)
 
+    def _get_template_to_value(self, cr, uid, field, context=None):
+        template = self._get_template(cr, uid, context)
+        if not template:
+            return False
+        if len(context['src_rec_ids']) > 1: # Multiple Mail: Gets original template values for multiple email change
+            return ', '.join([self.get_value(cr, uid, template, getattr(template, field), context, id) for id in context['src_rec_ids']])
+        else: # Simple Mail: Gets computed template values
+            return self.get_value(cr, uid, template, getattr(template, field), context)
 
     def send_sms(self, cursor, uid, ids, context=None):
         if context is None:
@@ -87,6 +95,7 @@ class PowersmsSendWizard(osv.osv_memory):
         model_obj = self.pool.get('ir.model')
         if context is None:
             context = {}
+
         def get_end_value(id, value):
             if len(context['src_rec_ids']) > 1: # Multiple Mail: Gets value from the template
                 return self.get_value(cr, uid, template, value, context, id)
@@ -146,7 +155,7 @@ class PowersmsSendWizard(osv.osv_memory):
 
     _defaults = {
         'rel_model': lambda self,cr,uid,ctx: self.pool.get('ir.model').search(cr,uid,[('model','=',ctx['src_model'])],context=ctx)[0],
-        'to': lambda self,cr,uid,ctx: self.pool.get('powersms.core_accounts').filter_send_sms(cr, uid, self._get_template_value(cr, uid, 'def_to', ctx)),
+        'to': lambda self,cr,uid,ctx: self.pool.get('powersms.core_accounts').filter_send_sms(cr, uid, self._get_template_to_value(cr, uid, 'def_to', ctx)),
         'from': lambda self,cr,uid,ctx: self._get_template_value(cr, uid, 'def_from', ctx),
         'body_text':lambda self,cr,uid,ctx: self._get_template_value(cr, uid, 'def_body_text', ctx),
         'ref_template':lambda self,cr,uid,ctx: self._get_template(cr, uid, ctx).id,
