@@ -1041,5 +1041,153 @@
             </field>
             <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_3')])]" />
         </record>
+
+
+
+
+                        <!-- Rebutjos B1-->
+
+
+
+        <record model="giscedata.switching.notify" id="notification_atr_B107_C7">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_b1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_b1_07"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada de fer efectiva la baixa, ha rebutjat la teva sol·licitud amb el següent motiu:
+    </p>
+    <p>
+        <b>Impedimento del Titular.</b>
+    </p>
+    <p>
+        Segons ens indiquen, entenem que heu parlat amb el personal tècnic de l’empresa distribuïdora, i els heu indicat que no voleu continuar amb la baixa sol·licitada. Així doncs, et confirmem que la baixa no es durà a terme.
+    </p>
+    <p>
+        Si el rebuig que ens ha notificat l’empresa distribuïdora no és correcte, ens ho pots comunicar responent a aquest mateix missatge, i els hi enviarem una reclamació.
+    </p>
+</%def>
+
+
+<%def name="correu_es()">
+    <p>
+        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora</a> de tu zona, la encargada hacer efectiva la baja, ha rechazado tu solicitud con el siguiente motivo:
+    </p>
+     <p>
+        <b>Impedimento del Titular.</b>
+     </p>
+     <p>
+        Según nos indican, entendemos habéis hablado con personal técnico de la empresa distribuidora, y les habéis indicado que no queréis continuar con la baja solicitada. De este modo, te confirmamos que la baja con corte de suministro, no se hará efectiva.
+     </p>
+     <p>
+        Si el rechazo que nos ha enviado la empresa distribuidora no es correcto, nos lo puedes comunicar respondiendo a este mismo mensaje, y les enviaremos una reclamación.
+     </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_C7')])]" />
+        </record>
+
+        <record model="giscedata.switching.notify" id="notification_atr_B107_C1">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_b1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_b1_07"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada de fer efectiva la baixa, ha rebutjat la teva sol·licitud amb el següent motiu:
+    </p>
+    <p>
+        <b>Concurrencia con cambio de comercializador/Traspaso a la COR. Se prioriza la activación del cambio sobre la baja.</b>
+    </p>
+    <p>
+        Això vol dir, que per aquest punt de subministrament, també s’ha sol·licitat un canvi de comercialitzadora. En aquest cas, l’empresa distribuïdora no tramitarà la baixa de subministrament, ja que es prioritza el canvi de companyia.
+    </p>
+    <p>
+        Ben aviat, rebràs un correu electrònic en el qual t’indicarem la data efectiva del canvi de comercialitzadora.
+    </p>
+</%def>
+
+
+<%def name="correu_es()">
+    <p>
+        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora</a> de tu zona, la encargada hacer efectiva la baja, ha rechazado tu solicitud con el siguiente motivo:
+    </p>
+     <p>
+        <b>Concurrencia con cambio de comercializador/Traspaso a la COR. Se prioriza la activación del cambio sobre la baja.</b>
+     </p>
+     <p>
+        Esto quiere decir, que para este punto de suministro, también se ha solicitado un cambio de comercializadora. En este caso, la empresa distribuidora no tramitará la baja de suministro, ya que se prioriza el cambio de compañía.
+     </p>
+     <p>
+        En los próximos días, recibirás un correo electrónico en el que te indicaremos la fecha efectiva del cambio de comercializadora.
+     </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_C1')])]" />
+        </record>
+
+        <record model="giscedata.switching.notify" id="notification_atr_B102_39">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_b1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_b1_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada de fer efectiva la baixa, ha rebutjat la teva sol·licitud amb el següent motiu:
+    </p>
+    <p>
+        <b>Existencia de Solicitud previa en curso C2</b>
+    </p>
+    <p>
+        Això vol dir, que per aquest punt de subministrament, també s’ha sol·licitat un canvi de comercialitzadora amb modificacions contractuals (el més probable és que es tracti d’un canvi de comercialitzadora amb canvi de titularitat). En aquest cas, l’empresa distribuïdora no tramitarà la baixa de subministrament, ja que es prioritza el canvi de companyia.
+    </p>
+    <p>
+        Ben aviat, rebràs un correu electrònic en el qual t’indicarem la data efectiva del canvi de comercialitzadora.
+    </p>
+</%def>
+
+
+<%def name="correu_es()">
+    <p>
+        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora</a> de tu zona, la encargada hacer efectiva la baja, ha rechazado tu solicitud con el siguiente motivo:
+    </p>
+     <p>
+        <b>Existencia de Solicitud previa en curso C2</b>
+     </p>
+     <p>
+        Esto quiere decir, que para este punto de suministro, también se ha solicitado un cambio de comercializadora con modificaciones contractuales (lo más probable es que se trate de un cambio de comercializadora con cambio de titularidad). En este caso, la empresa distribuidora no tramitará la baja de suministro, ya que se prioriza el cambio de compañía.
+     </p>
+     <p>
+        En los próximos días, recibirás un correo electrónico en el que te indicaremos la fecha efectiva del cambio de comercializadora.
+     </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_39')])]" />
+        </record>
     </data>
 </openerp>
