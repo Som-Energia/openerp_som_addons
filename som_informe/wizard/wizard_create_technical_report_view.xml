@@ -20,9 +20,6 @@
                         <page string="Factura">
                             <field name="mostra_factura"/>
                         </page>
-                        <page string="Comptablilitat">
-                            <field name="mostra_comptabilitat"/>
-                        </page>
                         <page string="ATR">
                             <!-- Informes a generar -->
                             <field name="mostra_A3"/>
@@ -36,6 +33,7 @@
                         </page>
                         <page string="Gestió de cobraments">
                             <field name="mostra_cobraments"/>
+                            <field name="mostrar_cobraments_factures" attrs="{'readonly':[('mostra_cobraments','!=',True)] , 'required':[('mostra_cobraments','=',True)]}"/>
                         </page>
                     </notebook>
                     <field name="state" invisible="1"/>
