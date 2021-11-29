@@ -109,18 +109,24 @@ class PowersmsSendWizard(osv.osv_memory):
             screen_vals = screen_vals[0]
         report_record_ids = context['src_rec_ids'][:]
         create_empty_number = context.get('create_empty_number', True)
+        pca_obj = self.pool.get('powersms.core_accounts')
 
-        for id in context['src_rec_ids']:
-            accounts = self.pool.get('powersms.core_accounts').read(cr, uid, screen_vals['account'], context=context)
+        for id in report_record_ids:
+            accounts = pca_obj.read(cr, uid, screen_vals['account'], context=context)
+            psms_to = []
+            phone_numbers = self.get_value(cr, uid, template, getattr(template, 'def_to'), context, id)
+            for number in list(set(map(str.strip,str(phone_numbers).split(',')))):
+                if pca_obj.check_numbers(cr, uid, id, number):
+                    psms_to.append(number)
+
             vals = {
                 'psms_from': screen_vals['from'],
-                'psms_to': get_end_value(id, screen_vals['to']),
+                'psms_to': psms_to,
                 'psms_body_text': get_end_value(id, screen_vals['body_text']),
                 'psms_account_id': screen_vals['account'],
                 'state':'na',
             }
-            numbers = list(set(map(str.strip,str(vals['psms_to']).split(','))))
-            for number in numbers:
+            for number in vals['psms_to']:
                 if not number and not create_empty_number:
                     continue
 
