@@ -88,7 +88,7 @@ class GiscedataPolissaTarifa(osv.osv):
 
     def get_tariff_prices(self, cursor, uid, tariff_id, municipi_id,
                           fiscal_position_id=None, with_taxes=False,
-                          date=None, context=None):
+                          date=False, context=None):
         """
             Returns a dictionary with the prices of the given tariff.
             Example of return value:
@@ -138,8 +138,8 @@ class GiscedataPolissaTarifa(osv.osv):
                 for version in versions:
                     date_start = version.date_start
                     date_end = version.date_end
-                    if not date_start or date_start <= date and \
-                        not date_end or date_end >= date:
+                    if (not date_start or date_start <= date) and \
+                        (not date_end or date_end >= date):
                         pricelist.append(item)
 
         fiscal_position = None
