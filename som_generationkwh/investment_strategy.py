@@ -19,7 +19,7 @@ class InvestmentActions(ErpWrapper):
     @property
     def journalCode(self):
         pass
-    
+
     @property
     def productCode(self):
         pass
@@ -76,7 +76,7 @@ class InvestmentActions(ErpWrapper):
     def create_divestment_invoice(self, cursor, uid,
             investment_id, date_invoice, to_be_divested,
             irpf_amount_current_year=0, irpf_amount=0, context=None):
-        
+
         Partner = self.erp.pool.get('res.partner')
         Product = self.erp.pool.get('product.product')
         Invoice = self.erp.pool.get('account.invoice')
@@ -105,7 +105,7 @@ class InvestmentActions(ErpWrapper):
         journal_id = Journal.search(cursor, uid, [
             ('code','=',self.journalCode),
             ])[0]
-        
+
         # The payment type
         payment_type_id = PaymentType.search(cursor, uid, [
             ('code', '=', 'TRANSFERENCIA_CSB'),
@@ -146,7 +146,7 @@ class InvestmentActions(ErpWrapper):
         vals.update(Invoice.onchange_partner_id(
             cursor, uid, [], 'in_invoice', partner_id,
         ).get('value', {}))
-        
+
 
         vals.update({
             'partner_id': partner_id,
@@ -272,9 +272,9 @@ class GenerationkwhActions(InvestmentActions):
         if not new_partner.property_account_gkwh.id:
             new_partner.button_assign_acc_1635()
             new_partner = ResPartner.browse(cursor, uid, new_partner_id)
-            print "Nou partner: Creat compte comptable de Generation: ", new_partner.property_account_gkwh
+            print("Nou partner: Creat compte comptable de Generation: {}".format(new_partner.property_account_gkwh.code))
         if not new_partner.bank_inversions:
-            print "Nou banc per aquest partner: Cal definir un IBAN de banc inversions"
+            print("Nou banc per aquest partner: Cal definir un IBAN de banc inversions")
             bank_id = GenerationkwhInvestment.get_or_create_partner_bank(cursor, uid,
                         new_partner_id, iban)
             ResPartner.write(cursor, uid, new_partner_id, dict(
@@ -285,7 +285,6 @@ class GenerationkwhActions(InvestmentActions):
         user = ResUser.read(cursor, uid, uid, ['name'])
         IrSequence = self.erp.pool.get('ir.sequence')
 
-        # TODO: This has to be the sequence of the kind of investment!!!! (APO, GKWH...)
         name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')
 
         inv = InvestmentState(user['name'], datetime.now(),
@@ -341,14 +340,11 @@ class GenerationkwhActions(InvestmentActions):
         )
         GenerationkwhInvestment.write(cursor, uid, investment_id, inv_old.erpChanges())
 
-        #Modificar dates
         GenerationkwhInvestment.mark_as_invoiced(cursor, uid, new_investment_id)
-        #Crear moviment 1635old 1635new
         old_partner = Soci.read(cursor, uid, old_investment['member_id'][0])
 
         GenerationkwhInvestment.move_line_when_tranfer(cursor, uid, old_partner['id'], new_partner_id, old_partner['property_account_gkwh'][0], new_partner.property_account_gkwh.id, amount, transmission_date)
 
-        #Enviar correu cofirmació?
         return new_investment_id
 
     def get_prefix_semantic_id(self):
@@ -380,7 +376,7 @@ class GenerationkwhActions(InvestmentActions):
         Invoice = self.erp.pool.get('account.invoice')
         MoveLine = self.erp.pool.get('account.move.line')
         Investment = self.erp.pool.get('generationkwh.investment')
-        
+
         inversio = Investment.read(cursor, uid, id, [
             'log',
             'nshares',
@@ -524,9 +520,9 @@ class AportacionsActions(InvestmentActions):
         if not new_partner.property_account_aportacions.id:
             new_partner.button_assign_acc_163()
             new_partner = ResPartner.browse(cursor, uid, new_partner_id)
-            print "Nou partner: Creat compte comptable de Generation: ", new_partner.property_account_gkwh
+            print("Nou partner: Creat/assignat compte comptable d'aportacions {}".format(new_partner.property_account_aportacions.code))
         if not new_partner.bank_inversions:
-            print "Nou banc per aquest partner: Cal definir un IBAN de banc inversions"
+            print("Nou banc per aquest partner: Cal definir un IBAN de banc inversions")
             bank_id = GenerationkwhInvestment.get_or_create_partner_bank(cursor, uid,
                         new_partner_id, iban)
             ResPartner.write(cursor, uid, new_partner_id, dict(
@@ -537,8 +533,7 @@ class AportacionsActions(InvestmentActions):
         user = ResUser.read(cursor, uid, uid, ['name'])
         IrSequence = self.erp.pool.get('ir.sequence')
 
-        # TODO: This has to be the sequence of the kind of investment!!!! (APO, GKWH...)
-        name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')
+        name = IrSequence.get_next(cursor,uid,'seq.som.aportacions')
 
         inv = InvestmentState(user['name'], datetime.now(),
                 name = old_investment['name'],
@@ -593,14 +588,10 @@ class AportacionsActions(InvestmentActions):
         )
         GenerationkwhInvestment.write(cursor, uid, investment_id, inv_old.erpChanges())
 
-        #Modificar dates
         GenerationkwhInvestment.mark_as_invoiced(cursor, uid, new_investment_id)
-        #Crear moviment 1635old 1635new
         old_partner = Soci.read(cursor, uid, old_investment['member_id'][0])
-        #TODO: move_line_when_transfer cridat amb els paràmetres per APO's
         GenerationkwhInvestment.move_line_when_tranfer(cursor, uid, old_partner['id'], new_partner_id, old_partner['property_account_aportacions'][0], new_partner.property_account_aportacions.id, amount, transmission_date)
 
-        #Enviar correu cofirmació?
         return new_investment_id
 
     def get_investment_legal_attachment(self, cursor, uid, partner_id, emission_id):
