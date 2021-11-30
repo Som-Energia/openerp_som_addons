@@ -29,7 +29,7 @@ class wizard_comment_to_F1(osv.osv_memory):
         return {}
 
     _columns = {
-        'comment': fields.text(_(u"Comentari"), readonly=False, invisible=True),
+        'comment': fields.text(_(u"Comentari"), readonly=False),
         'option': fields.selection([ ('afegir', 'Afegir'),('substituir', 'Substituir'),('eliminar', 'Eliminar'),], 'Accio', required=True),
     }
 
