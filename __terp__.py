@@ -22,6 +22,7 @@
     'account_invoice_som',
     'www_som',
     'c2c_webkit_report',
+    'async_reports',
     ],
   "init_xml": [],
   "demo_xml": [
