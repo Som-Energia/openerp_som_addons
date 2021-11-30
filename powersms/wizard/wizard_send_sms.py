@@ -126,10 +126,11 @@ class PowersmsSendWizard(osv.osv_memory):
                 'psms_account_id': screen_vals['account'],
                 'state':'na',
             }
-            for number in vals['psms_to']:
-                if not number and not create_empty_number:
-                    continue
 
+            if len(vals['psms_to']) == 0 and create_empty_number:
+                vals['psms_to'] = ['']
+
+            for number in vals['psms_to']:
                 vals.update({'psms_to': number})
                 #Create partly the mail and later update attachments
                 ctx = context.copy()
