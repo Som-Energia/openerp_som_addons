@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
+from autoworker import AutoWorker
 import base64
 from c2c_webkit_report import webkit_report
 from datetime import datetime
 from oorq.decorators import job
+from oorq.oorq import ProgressJobsPool
+import os
 from osv import osv, fields
 from report import report_sxw
-import tools
 
 
 class WizardLlibreRegistreSocis(osv.osv_memory):
@@ -17,7 +19,10 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
         wiz = self.browse(cursor, uid, ids[0])
         context['date_from'] = wiz.date_from
         context['date_to'] = wiz.date_to
-        self.generate_one_report(cursor, uid, ids, context)
+        j_pool = ProgressJobsPool(logger_description="print_report")
+        aw = AutoWorker(queue="print_report", default_result_ttl=24 * 3600, max_procs=1)
+        j_pool.add_job(self.generate_one_report(cursor, uid, ids, context))
+        aw.work()
         return {}
 
 
@@ -49,13 +54,23 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
         )
         if not document_binary:
             raise Exception("We can't create the report")
-
-        f = open("/tmp/reports/llibre_registre_socis_" + str(header['date_to'][:4]) + ".pdf", 'wb+' )
+        path = "/tmp/reports"
+        if not os.path.exists(path):
+            try:
+                os.mkdir(path)
+            except OSError:
+                print ("Creation of the directory %s failed" % path)
+        filename = path + "/llibre_registre_socis_" + str(header['date_to'][:4]) + ".pdf"
+        f = open(filename, 'wb+' )
         try:
             bits = base64.b64decode(base64.b64encode(document_binary[0]))
             f.write(bits)
         finally:
             f.close()
+
+        ar_obj = self.pool.get('async.reports')
+        datas = ar_obj.get_datas_email_params(cursor, uid, {}, context)
+        ar_obj.send_mail(cursor, uid, datas['from'], filename, datas['email_to'], filename.split("/")[-1])
 
     def get_report_data(self, cursor, uid, ids, context=None):
         soci_obj = self.pool.get('somenergia.soci')
