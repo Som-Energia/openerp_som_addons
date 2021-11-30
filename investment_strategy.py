@@ -512,14 +512,14 @@ class AportacionsActions(InvestmentActions):
             raise Exception("Amount to return = 0, not transferible")
 
         #Comprovar dades del partner al qual es vol tranferir (existeix, soci, iban, compte inversions..)
-        Soci = self.pool.get('somenergia.soci')
+        Soci = self.erp.pool.get('somenergia.soci')
         member_ids = Soci.search(cursor, uid, [
                 ('partner_id','=', new_partner_id)
                 ])
         if not member_ids:
             raise Exception("Destination partner is not a member")
 
-        ResPartner = self.pool.get('res.partner')
+        ResPartner = self.erp.pool.get('res.partner')
         new_partner = ResPartner.browse(cursor, uid, new_partner_id)
         if not new_partner.property_account_aportacions.id:
             new_partner.button_assign_acc_163()
@@ -533,9 +533,9 @@ class AportacionsActions(InvestmentActions):
                 bank_inversions = bank_id,),context)
 
         #Crear inversio
-        ResUser = self.pool.get('res.users')
+        ResUser = self.erp.pool.get('res.users')
         user = ResUser.read(cursor, uid, uid, ['name'])
-        IrSequence = self.pool.get('ir.sequence')
+        IrSequence = self.erp.pool.get('ir.sequence')
 
         # TODO: This has to be the sequence of the kind of investment!!!! (APO, GKWH...)
         name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')
