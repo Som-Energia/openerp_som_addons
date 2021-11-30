@@ -598,7 +598,7 @@ class AportacionsActions(InvestmentActions):
         #Crear moviment 1635old 1635new
         old_partner = Soci.read(cursor, uid, old_investment['member_id'][0])
         #TODO: move_line_when_transfer cridat amb els paràmetres per APO's
-        GenerationkwhInvestment.move_line_when_tranfer(cursor, uid, old_partner['id'], new_partner_id, old_partner['property_account_gkwh'][0], new_partner.property_account_gkwh.id, amount, transmission_date)
+        GenerationkwhInvestment.move_line_when_tranfer(cursor, uid, old_partner['id'], new_partner_id, old_partner['property_account_aportacions'][0], new_partner.property_account_aportacions.id, amount, transmission_date)
 
         #Enviar correu cofirmació?
         return new_investment_id
