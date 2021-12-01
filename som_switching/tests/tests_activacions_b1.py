@@ -21,15 +21,18 @@ class TestActivacioB1(TestSwitchingImport):
         self.ResConfig = self.openerp.pool.get('res.config')
         self.IrModelData = self.openerp.pool.get('ir.model.data')
 
-    def get_b1_01(self, txn, contract_id):
+    def get_b1_01(self, txn, contract_id, context=None):
+        if not context:
+            context={}
         uid = txn.user
         cursor = txn.cursor
         self.switch(txn, 'comer')
+        context['extra_vals'] = {'data_alta': "2017-01-31", "lot_facturacio": False, 'data_baixa': False}
 
         # create step 01
         self.change_polissa_comer(txn)
         self.update_polissa_distri(txn)
-        self.activar_polissa_CUPS(txn)
+        self.activar_polissa_CUPS(txn, context)
         step_id = self.create_case_and_step(
             cursor, uid, contract_id, 'B1', '01'
         )
@@ -44,24 +47,30 @@ class TestActivacioB1(TestSwitchingImport):
         b1 = self.get_b1_01(txn, contract_id)
 
         self.create_step(
-            cursor, uid, b1, 'B1', '02', context=None
+            cursor, uid, b1, 'B1', '02', {'whereiam': 'distri'}
         )
         b1 = self.Switching.browse(cursor, uid, b1.id, {"browse_reference": True})
         b102 = b1.step_ids[-1].pas_id
-        b102.write({"data_activacio": "2016-08-01"})
+        b102.write({"data_activacio": "2021-08-01"})
 
         return b1
 
-    def get_b1_05(self, txn, contract_id):
+    def get_b1_05(self, txn, contract_id, context=None):
+        if not context:
+            context={}
         uid = txn.user
         cursor = txn.cursor
+        context['extra_vals'] = {'data_alta': "2017-01-31", "lot_facturacio": False, 'data_baixa': False}
+
         b1 = self.get_b1_02(txn, contract_id)
+        self.assertEqual(b1.step_id.name, '02')
+
         self.create_step(
-            cursor, uid, b1, 'B1', '05', context=None
+            cursor, uid, b1, 'B1', '05', {'whereiam': 'distri'}
         )
         b1 = self.Switching.browse(cursor, uid, b1.id, {"browse_reference": True})
         b105 = b1.step_ids[-1].pas_id
-        b105.write({"data_activacio": "2016-08-05"})
+        b105.write({"data_activacio": "2021-08-01"})
 
         return b1
 
@@ -103,9 +112,9 @@ class TestActivacioB1(TestSwitchingImport):
 
             self.ResConfig.set(cursor, uid, 'sw_allow_baixa_polissa_from_cn_without_invoice', '1')
 
-            contract_id = self.get_contract_id(txn)
+            contract_id = self.get_contract_id(txn, 'polissa_tarifa_018')
 
-            b1 = self.get_b1_05(txn, contract_id)
+            b1 = self.get_b1_05(txn, contract_id, {'polissa_xml_id': 'polissa_tarifa_018'})
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, b1)
 
@@ -127,6 +136,7 @@ class TestActivacioB1(TestSwitchingImport):
             self.ResConfig.set(cursor, uid, 'sw_allow_baixa_polissa_from_cn_without_invoice', '0')
 
             contract_id = self.get_contract_id(txn)
+            #import pudb;pu.db
             # remove all other contracts
             old_partner_id = self.Polissa.read(cursor, uid, contract_id, ['titular'])['titular'][0]
             pol_ids = self.Polissa.search(cursor, uid,
