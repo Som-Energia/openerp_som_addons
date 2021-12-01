@@ -18,15 +18,18 @@ class TestActivacioM1(TestSwitchingImport):
         self.ResConfig = self.openerp.pool.get('res.config')
         self.IrModelData = self.openerp.pool.get('ir.model.data')
 
-    def get_m1_01_ct(self, txn, contract_id, tipus):
+    def get_m1_01_ct(self, txn, contract_id, tipus, context=None):
+        if not context:
+            context={}
         uid = txn.user
         cursor = txn.cursor
         self.switch(txn, 'comer')
+        context['extra_vals'] = {'data_alta': "2017-01-31", "lot_facturacio": False, 'data_baixa': False}
 
         # create step 01
         self.change_polissa_comer(txn)
         self.update_polissa_distri(txn)
-        self.activar_polissa_CUPS(txn)
+        self.activar_polissa_CUPS(txn, context)
         step_id = self.create_case_and_step(
             cursor, uid, contract_id, 'M1', '01'
         )
@@ -55,7 +58,7 @@ class TestActivacioM1(TestSwitchingImport):
         self.Switching.write(cursor, uid, m101.sw_id.id, {'ref': 'giscedata.polissa,{}'.format(other_polissa_id)})
         return self.Switching.browse(cursor, uid, m101.sw_id.id, {"browse_reference": True})
 
-    def get_m1_02_ct(self, txn, contract_id, tipus):
+    def get_m1_02_ct(self, txn, contract_id, tipus, context=None):
         uid = txn.user
         cursor = txn.cursor
         m1 = self.get_m1_01_ct(txn, contract_id, tipus)
@@ -65,15 +68,15 @@ class TestActivacioM1(TestSwitchingImport):
         self.ResConfig.set(cursor, uid, 'sw_m1_S_with_service_order', '0')
         self.ResConfig.set(cursor, uid, 'sw_m1_owner_change_subrogacio_new_contract', '0')
         self.create_step(
-            cursor, uid, m1, 'M1', '02', context=None
+            cursor, uid, m1, 'M1', '02', {'whereiam': 'distri'}
         )
         m1 = self.Switching.browse(cursor, uid, m1.id, {"browse_reference": True})
         m102 = m1.step_ids[-1].pas_id
-        m102.write({"data_activacio": "2016-08-01"})
+        m102.write({"data_activacio": "2021-08-01"})
 
         return m1
 
-    def get_m1_05_traspas(self, txn, contract_id):
+    def get_m1_05_traspas(self, txn, contract_id, context=None):
         uid = txn.user
         cursor = txn.cursor
         m1 = self.get_m1_02_ct(txn, contract_id, 'T')
@@ -83,7 +86,7 @@ class TestActivacioM1(TestSwitchingImport):
         )
         m1 = self.Switching.browse(cursor, uid, m1.id, {"browse_reference": True})
         m105 = m1.step_ids[-1].pas_id
-        m105.write({"data_activacio": "2016-08-05"})
+        m105.write({"data_activacio": "2021-08-05"})
 
         return m1
 
@@ -120,9 +123,9 @@ class TestActivacioM1(TestSwitchingImport):
             cursor = txn.cursor
             uid = txn.user
 
-            contract_id = self.get_contract_id(txn)
+            contract_id = self.get_contract_id(txn, 'polissa_tarifa_018')
 
-            m1 = self.get_m1_02_ct(txn, contract_id, 'S')
+            m1 = self.get_m1_02_ct(txn, contract_id, 'S', {'polissa_xml_id': 'polissa_tarifa_018'})
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, m1)
 
@@ -173,9 +176,9 @@ class TestActivacioM1(TestSwitchingImport):
 
             mock_lectures.return_value = []
 
-            contract_id = self.get_contract_id(txn)
+            contract_id = self.get_contract_id(txn, 'polissa_tarifa_018')
 
-            m1 = self.get_m1_05_traspas(txn, contract_id)
+            m1 = self.get_m1_05_traspas(txn, contract_id, {'polissa_xml_id': 'polissa_tarifa_018'})
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, m1)
 
