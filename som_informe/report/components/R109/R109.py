@@ -10,5 +10,5 @@ class R109(ProcesR1.ProcesR1):
         result['rebuig'] = step.rebuig
         result['motiu_rebuig'] = step.motiu_rebuig
         step02 = self.get_step_02(wiz, cursor, uid, step)
-        result['codi_reclamacio_distri'] = step02.codi_reclamacio_distri
+        result['codi_reclamacio_distri'] = step02.codi_reclamacio_distri if step02 else "ERROR sense pas 02!!"
         return result

@@ -1,5 +1,4 @@
-from ..component_utils import dateformat
-from gestionatr.utils import get_description
+from ..component_utils import get_description
 from ..ProcesA3 import ProcesA3
 
 class A313(ProcesA3.ProcesA3):
