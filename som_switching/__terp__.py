@@ -31,6 +31,8 @@
         'giscedata_facturacio_switching_error_data.xml',
         'wizard/wizard_comment_to_F1_view.xml',
         'security/ir.model.access.csv',
+        'giscedata_switching_rebuitjos_c.xml',
+        'giscedata_switching_rebuitjos_a.xml',
         'giscedata_polissa_view.xml',
         'giscedata_switching_notification_data.xml',
     ],
