@@ -1825,6 +1825,31 @@ ${text_legal}
 </body>
 </html>]]></field>
         </record>
+
+        <record model="poweremail.templates" id="aportacio_mail_transmissio">
+            <field name="name">Aportacions - Transmissió</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'generationkwh.investment')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">generationkwh.investment</field>
+            <field name="file_name">${object.name}</field>
+            <field eval="1" name="use_filter"/>
+            <field name="def_to">${object.member_id.partner_id.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Transmissió d'aportació / Transmisión de aportación al capital social Som Enegia Ref. ${object.name}</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="copyvalue">${object.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="enforce_from_account" ref="aportacions_mail_account"/>
+	        <field name="def_body_text"><![CDATA[
+<!doctype html>
+<html><body>Text per defecte</body>
+</html>]]></field>
+        </record>
     </data>
     <data noupdate="1">
         <record id="genkwh_investment_payment_mode" model="payment.mode">
