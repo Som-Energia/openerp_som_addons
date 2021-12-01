@@ -68,7 +68,7 @@ jobs:
             file /tmp/libFacturacioATR.tar.gz | grep -q 'gzip' && pip install /tmp/libFacturacioATR.tar.gz || echo "Not installing libFacturacioATR library"
             file /tmp/pandapower_erp.tar.gz | grep -q 'gzip' && pip install /tmp/pandapower_erp.tar.gz || echo "Not installing pandapower_erp library"
             file /tmp/pandapower_validator.tar.gz | grep -q 'gzip' && pip install /tmp/pandapower_validator.tar.gz || echo "Not installing pandapower_validator library"
-            pip install /tmp/ooop.tar.gz
+            file /tmp/pandapower_validator.tar.gz | grep -q 'gzip' && pip install /tmp/ooop.tar.gz  || echo "Not installing ooop library"
             pip install -r $ROOT_DIR_SRC/erp/requirements-dev.txt
             pip install -r $ROOT_DIR_SRC/erp/requirements.txt
             test -x $ROOT_DIR_SRC/$TESTING_REPO/requirements.txt && pip install -r $ROOT_DIR_SRC/$TESTING_REPO/requirements.txt

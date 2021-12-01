@@ -1,5 +1,6 @@
 <%page args="d" />
-</ul>
+    <br />
+    <br />
     <br />
     % if d.show_atr_disclaimer:
         ${_("<b>Informació adicional: Si ho requereix aquest organisme, SOM ENERGIA SCCL s’ofereix a entregar els arxius .xml en format original.</b>")}<br />

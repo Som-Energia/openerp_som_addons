@@ -33,6 +33,8 @@
         'security/ir.model.access.csv',
         'giscedata_switching_rebuitjos_c.xml',
         'giscedata_switching_rebuitjos_a.xml',
+        'giscedata_polissa_view.xml',
+        'giscedata_switching_notification_data.xml',
     ],
     "active": False,
     "installable": True

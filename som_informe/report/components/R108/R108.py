@@ -8,5 +8,5 @@ class R108(ProcesR1.ProcesR1):
         result = ProcesR1.ProcesR1.get_data(self, wiz, cursor, uid, step)
         result['type'] = 'R108'
         step02 = self.get_step_02(wiz, cursor, uid, step)
-        result['codi_reclamacio_distri'] = step02.codi_reclamacio_distri
+        result['codi_reclamacio_distri'] = step02.codi_reclamacio_distri if step02 else "ERROR sense pas 02!!"
         return result

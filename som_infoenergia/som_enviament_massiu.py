@@ -165,6 +165,8 @@ class SomEnviamentMassiu(osv.osv):
         'data_enviament':  fields.date(_("Data enviament"), allow_none=True),
         'info': fields.text(_(u'Informació Adicional'),
             help=_(u"Inclou qualsevol informació adicional, com els errors del Shera")),
+        'extra_text': fields.text(_(u"Informació Extra"),
+            help=_("Missatge que es vol afegir al correu"))
     }
 
     _defaults = {
