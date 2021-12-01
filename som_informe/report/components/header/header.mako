@@ -16,5 +16,3 @@
     ${_(u"<b>Titular:</b>")} ${d.titular_name}<br />
     ${_(u"<b>NIF Titular:</b>")} ${d.titular_nif} <br />
     <br />
-<h2>${_(u"Cronologia:")}</h2>
-    <ul>

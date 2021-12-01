@@ -1,4 +1,4 @@
-from gestionatr.utils import get_description
+from ..component_utils import get_description
 from ..ProcesD1 import ProcesD1
 
 class D101(ProcesD1.ProcesD1):

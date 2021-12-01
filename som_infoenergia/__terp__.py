@@ -12,10 +12,10 @@
     "category": "SomEnergia",
     "depends":[
         "base",
-        "giscedata_polissa",
+        "giscedata_cups",
         "giscedata_facturacio",
         "poweremail_references",
-        "giscedata_polissa_category"
+        "som_polissa_soci",
     ],
     "init_xml": [],
     "demo_xml": [
