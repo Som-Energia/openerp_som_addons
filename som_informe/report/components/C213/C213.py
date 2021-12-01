@@ -1,4 +1,4 @@
-from gestionatr.utils import get_description
+from ..component_utils import get_description
 from ..ProcesC2 import ProcesC2
 
 class C213(ProcesC2.ProcesC2):

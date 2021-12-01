@@ -8,6 +8,11 @@ import tempfile
 from datetime import date, datetime
 from yamlns import namespace as ns
 
+COLLECT_INVOICE_SELECTION = [
+    ('debt', u'Amb deute del periode'),
+    ('all', u'Totes dels del periode'),
+]
+
 lang_filename = {
     'ca_ES' : 'CAT',
     'es_ES' : 'ES',
@@ -35,13 +40,6 @@ folder_data = {
         'config_value' : 'folder_hash',
         'folder_name' : 'Informes ERROR'},
 }
-
-def dateformat(str_date, hours = False):
-    if not str_date:
-        return ""
-    if not hours:
-        return datetime.strptime(str_date[0:10],'%Y-%m-%d').strftime('%d-%m-%Y')
-    return datetime.strptime(str_date,'%Y-%m-%d %H:%M:%S').strftime('%d-%m-%Y %H:%M:%S')
 
 STATES = [
     ('init', 'Estat Inicial'),
@@ -72,8 +70,6 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         'mostra_reclama': fields.boolean('Mostra bloc de Reclama'),
         #Factura block
         'mostra_factura': fields.boolean('Mostra bloc de Factura'),
-        #Comptabilitat block
-        'mostra_comptabilitat': fields.boolean('Mostra bloc de Comptabilitat'),
         #Gestió de Contractes block
         'mostra_A3': fields.boolean('A3'),
         'mostra_B1': fields.boolean('B1'),
@@ -84,16 +80,25 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         'mostra_E1': fields.boolean('E1'),
         'mostra_M1': fields.boolean('M1'),
         #Gestió de cobraments block
-        'mostra_cobraments': fields.boolean('Mostra bloc de Gestió de Cobraments'),
+        'mostra_cobraments': fields.boolean(u'Mostra bloc de Gestió de Cobraments'),
+        'mostrar_cobraments_factures': fields.selection(COLLECT_INVOICE_SELECTION, string=u'Factures a mostrar'),
     }
 
     _defaults = {
         'state': 'init'
     }
 
-    def get_folder_data(self, cursor, uid, wiz, erp_config):
-        subfolder = 'ERROR'
+    def default_get(self, cursor, uid, fields, context={}):
+        res = {'state': 'init'}
 
+        origin_model = context.get('origin')
+        if origin_model == 'giscedata.polissa':
+            res['polissa'] = context.get('active_id')
+
+        return res
+
+    def get_folder_data(self, cursor, uid, wiz):
+        subfolder = 'ERROR'
         atr_seleccionat = False
         if wiz.mostra_A3 or wiz.mostra_B1 or wiz.mostra_B2 or wiz.mostra_C1 or \
            wiz.mostra_C2 or wiz.mostra_D1 or wiz.mostra_E1 or wiz.mostra_M1 :
@@ -111,6 +116,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         if subfolder not in folder_data.keys():
             subfolder = 'ERROR'
 
+        erp_config = self.pool.get('res.config')
         folder_hash = erp_config.get(cursor, uid, folder_data[subfolder]['config_id'], folder_data[subfolder]['config_value'])
         folder_name = folder_data[subfolder]['folder_name']
 
@@ -148,8 +154,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         gdm_obj = self.pool.get('google.drive.manager')
         wiz = self.browse(cursor, uid, ids[0], context=context)
 
-        erp_config = self.pool.get('res.config')
-        folder_hash, folder_name = self.get_folder_data(cursor, uid, wiz, erp_config)
+        folder_hash, folder_name = self.get_folder_data(cursor, uid, wiz)
 
         file_name = '{}_informe_{}_{}'.format(str(date.today()), folder_name, lang_filename[lang_code])
 
@@ -159,23 +164,31 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             g_response = gdm_obj.uploadMediaToDrive(cursor, uid, file_name, t.name, folder_hash)
 
         attach_obj = self.pool.get('ir.attachment')
-        attach_obj.create(cursor, uid, {
+
+        doc_id = attach_obj.create(cursor, uid, {
             'res_model':'giscedata.polissa',
             'res_id': wiz.polissa.id,
             'name': g_response['name'],
             'link': 'https://docs.google.com/document/d/' + g_response['id'],
             }, context=context)
 
-        return {'type': 'ir.actions.act_window_close'}
+        return {
+            'domain': "[('id','=', %s)]" % str(doc_id),
+            'name': _('Informe generat'),
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'ir.attachment',
+            'type': 'ir.actions.act_window',
+        }
 
     # data generation
     def get_data(self, cursor, uid, id, context=None):
+        if not context:
+            context = {}
+
         wiz = self.browse(cursor, uid, id, context=context)
+
         seleccionats = []
-        result  = []
-
-        sw_obj = self.pool.get('giscedata.switching')
-
         if wiz.mostra_reclama:
             seleccionats.append('R1')
         if wiz.mostra_A3:
@@ -195,56 +208,43 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         if wiz.mostra_M1:
             seleccionats.append('M1')
 
-        if len(seleccionats) > 0:
+        result_crono = []
+        context['has_atr'] = len(seleccionats) > 0
+        if seleccionats:
             search_params = [
-                ('cups_id.id', '=', wiz.polissa.cups.id),
+                ('cups_polissa_id', '=' , wiz.polissa.id),
                 ('proces_id.name', 'in', seleccionats),
                 ]
             if wiz.date_from:
                 search_params.append(('data_sollicitud', '>=', wiz.date_from))
             if wiz.date_to:
                 search_params.append(('data_sollicitud', '<=', wiz.date_to))
+            sw_obj = self.pool.get('giscedata.switching')
             sw_ids = sw_obj.search(cursor, uid, search_params)
-            result.extend(self.extract_switching_metadata(cursor, uid, sw_ids, context))
+            result_atr = self.extract_switching_metadata(cursor, uid, sw_ids, context)
+            result_atr = sorted(result_atr, key=lambda k: k['date'])
 
+            result_atr_head = self.extract_components_metadata(cursor, uid, wiz, ['atrHeader'], context)
+            result_atr_foot = self.extract_components_metadata(cursor, uid, wiz, ['atrFooter'], context)
+            result_crono = result_atr_head + result_atr + result_atr_foot
+
+        result_factura = []
         if wiz.mostra_factura:
-            pass
+            result_factura = []
+
+        result_cobra = []
         if wiz.mostra_cobraments:
-            pass
-        if wiz.mostra_comptabilitat:
-            pass
+            components_cobra = ['CollectHeader', 'CollectDetailsInvoices', 'CollectExpectedCutOffDate', 'CollectContractData']
+            result_cobra = self.extract_components_metadata(cursor, uid, wiz, components_cobra, context)
 
-        result.extend(self.extract_header_metadata(cursor, uid, wiz.polissa, context))
-        result.extend(self.extract_footer_metadata(cursor, uid, wiz.polissa, len(seleccionats) > 0, context))
+        result_ini = self.extract_components_metadata(cursor, uid, wiz, ['header'], context)
+        result_end = self.extract_components_metadata(cursor, uid, wiz, ['footer'], context)
 
-        result = sorted(result, key=lambda k: k['date'])
+        result = result_ini + result_crono + result_factura + result_cobra + result_end
         return [ns(item) for item in result]
 
     # data extractors
-    def extract_header_metadata(self, cursor, uid, pol_data, context):
-        return [{
-            'type': 'header',
-            'date': '1970-01-01',
-            'data_alta': dateformat(pol_data.data_alta, False),
-            'contract_number': pol_data.name,
-            'titular_name': pol_data.titular.name,
-            'titular_nif': pol_data.titular_nif[2:11],
-            'distribuidora': pol_data.distribuidora.name,
-            'distribuidora_contract_number': pol_data.ref_dist,
-            'cups': pol_data.cups.name,
-            'cups_address': pol_data.cups_direccio,
-        }]
-
-    def extract_footer_metadata(self, cursor, uid, pol_data, has_atr, context):
-        return [{
-            'show_atr_disclaimer': has_atr,
-            'type': 'footer',
-            'date': '2040-01-01',
-            'create_date': date.today().strftime("%d/%m/%Y"),
-        }]
-
-    def factory_metadata_extractor(self, step):
-        component_name = step.proces_id.name+step.step_id.name
+    def factory_metadata_extractor(self, component_name):
         exec("from ..report.components."+component_name+" import "+component_name+";extractor = "+component_name+"."+component_name+"()")
         return extractor
 
@@ -252,7 +252,8 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         r_model,r_id = step.pas_id.split(',')
         model_obj = self.pool.get(r_model)
         pas = model_obj.browse(cursor, uid, int(r_id), context=context)
-        extractor = self.factory_metadata_extractor(step)
+        component_name = step.proces_id.name+step.step_id.name
+        extractor = self.factory_metadata_extractor(component_name)
         return extractor.get_data(self, cursor, uid, pas)
 
     def extract_switching_metadata(self, cursor, uid, sw_ids, context):
@@ -267,6 +268,16 @@ class WizardCreateTechnicalReport(osv.osv_memory):
                 extracted_data = self.metadata_extractor(cursor, uid, step, context)
                 if extracted_data:
                     result.append(extracted_data)
+
+        return result
+
+    def extract_components_metadata(self, cursor, uid, wiz, components_names, context):
+        result = []
+        for component_name in components_names:
+            extractor = self.factory_metadata_extractor(component_name)
+            extracted_data = extractor.get_data(cursor, uid, wiz, context)
+            if extracted_data:
+                result.append(extracted_data)
 
         return result
 
