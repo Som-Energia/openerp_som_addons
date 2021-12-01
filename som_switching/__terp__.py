@@ -30,7 +30,9 @@
         'giscedata_switching_activation_data.xml',
         'giscedata_facturacio_switching_error_data.xml',
         'wizard/wizard_comment_to_F1_view.xml',
-        'security/ir.model.access.csv'
+        'security/ir.model.access.csv',
+        'giscedata_switching_rebuitjos_c.xml',
+        'giscedata_switching_rebuitjos_a.xml',
     ],
     "active": False,
     "installable": True
