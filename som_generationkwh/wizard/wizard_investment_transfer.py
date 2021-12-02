@@ -11,16 +11,13 @@ class WizardInvestmentTransfer(osv.osv):
 
     def _check_transmission_date(self, cursor, uid, ids):
         wiz = self.browse(cursor, uid, ids[0])
-        transmission_date = datetime.strptime(wiz.transmission_date, "%Y-%m-%d").date()
-        return transmission_date >= date.today()
+        transfer_date = datetime.strptime(wiz.transfer_date, "%Y-%m-%d").date()
+        return transfer_date >= date.today()
 
     _columns = {
         'state': fields.char('State', size=16),
         'info': fields.text('Info'),
-        'invoices': fields.text(
-            'test',
-        ),
-        'transmission_date': fields.date('Transmission Date', required=True),
+        'transfer_date': fields.date('Transfer Date', required=True),
         'partner_id_alt': fields.many2one(
             'res.partner',
             'Titular',
@@ -36,10 +33,10 @@ class WizardInvestmentTransfer(osv.osv):
 
     _defaults = {
         'state': lambda *a: 'init',
-        'info': lambda *a: 'Aquesta acció transferirà la inversió.\n'
+        'info': lambda *a: 'Aquesta acció transferirà l\'aportació.\n'
                            'Condicions:\n'
-                           '  - Les inversions han d"estar pagades \n',
-        'transmission_date': lambda *a: date.today().strftime('%Y-%m-%d')
+                           '  - L\'aportació ha d\'estar pagada\n',
+        'transfer_date': lambda *a: date.today().strftime('%Y-%m-%d')
     }
 
     _constraints = [
@@ -56,16 +53,16 @@ class WizardInvestmentTransfer(osv.osv):
         investment_ids = context.get('active_ids', [])
         new_partner_id = int(wiz.partner_id_alt.id)
         iban = wiz.iban.iban
-        transmission_date = wiz.transmission_date
+        transfer_date = wiz.transfer_date
 
-        new_investment_id = Investment.create_from_transfer(cursor, uid, investment_ids[0], new_partner_id, transmission_date, iban, context=None)
+        new_investment_id = Investment.create_from_transfer(cursor, uid, investment_ids[0], new_partner_id, transfer_date, iban, context=None)
         old = Investment.read(cursor, uid, investment_ids[0],['name'])
         new = Investment.read(cursor, uid, new_investment_id,['name'])
 
         info = "RESULTAT: \n"
         info += "================\n"
-        info += "Investment vell: %s" % (old['name'] if old else "Error")
-        info += "\nInvestment nou: %s" % (new['name'] if new else "Error")
+        info += "Aportació antiga: %s" % (old['name'] if old else "Error")
+        info += "\nAportació nova: %s" % (new['name'] if new else "Error")
         wiz.write(dict(
             info= info,
             state = 'Done',
