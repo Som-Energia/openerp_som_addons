@@ -8,7 +8,6 @@
             <field name="arch" type="xml">
                 <form string="Transferir aportació">
                     <field name="state" invisible="1"/>
-                    <field name="invoices" invisible="1"/>
                     <field name="info" nolabel="1" size="300" width="300" height ="200" colspan="4" readonly="1"/>
                     <group colspan="4" col="4" attrs="{}">
                         <field name="partner_id_alt" colspan="4" readonly="0"/>

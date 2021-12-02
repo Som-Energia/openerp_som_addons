@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2021-12-01 15:57+0000\n"
-"PO-Revision-Date: 2021-12-02 09:32+0000\n"
+"POT-Creation-Date: 2021-12-02 10:44+0000\n"
+"PO-Revision-Date: 2021-12-02 09:45+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -1309,6 +1309,13 @@ msgid "Info"
 msgstr "Info"
 
 #. module: som_generationkwh
+#: help:generationkwh.emission,state:0
+msgid ""
+"Gives the state of the emission. Only emission in open state accepts new "
+"investments."
+msgstr "Gives the state of the emission. Only emission in open state accepts new investments."
+
+#. module: som_generationkwh
 #: model:poweremail.templates,def_body_text:som_generationkwh.aportacio_mail_pagament
 #, python-format
 msgid ""
@@ -1582,11 +1589,6 @@ msgstr "Previsualitzación de resultados"
 #: view:wizard.generationkwh.investment.payment:0
 msgid "Mostra factures"
 msgstr "Muestra facturas"
-
-#. module: som_generationkwh
-#: field:wizard.generationkwh.investment.transfer,transfer_date:0
-msgid "Transfer Date"
-msgstr "Fecha de transferecia"
 
 #. module: som_generationkwh
 #: constraint:product.template:0
@@ -1904,11 +1906,9 @@ msgid "Aportacions al capital social"
 msgstr "Aportaciones al capital social"
 
 #. module: som_generationkwh
-#: help:generationkwh.emission,state:0
-msgid ""
-"Gives the state of the emission. Only emission in open state accepts new "
-"investments."
-msgstr "Gives the state of the emission. Only emission in open state accepts new investments."
+#: field:wizard.generationkwh.investment.transfer,transfer_date:0
+msgid "Data de transferència"
+msgstr "Fecha de transferencia"
 
 #. module: som_generationkwh
 #: field:generationkwh.emission,end_date:0
