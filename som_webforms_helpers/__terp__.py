@@ -12,7 +12,9 @@
         "som_generationkwh"
     ],
     "init_xml": [],
-    "demo_xml": [],
+    "demo_xml": [
+        "tests/tarifes_demo.xml",
+    ],
     "update_xml":[
     ],
     "active": False,
