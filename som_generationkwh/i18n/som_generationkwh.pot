@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2021-10-18 16:43+0000\n"
-"PO-Revision-Date: 2021-10-18 16:43+0000\n"
+"POT-Creation-Date: 2021-12-01 15:57+0000\n"
+"PO-Revision-Date: 2021-12-01 15:57+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -34,8 +34,8 @@ msgid "Set to draft"
 msgstr ""
 
 #. module: som_generationkwh
-#: model:ir.actions.act_window,name:som_generationkwh.action_wizard_confirm_soci_baixa
-msgid "Baixa de sòcia"
+#: field:giscedata.polissa,te_assignacio_gkwh:0
+msgid "Té assignacions GWKH"
 msgstr ""
 
 #. module: som_generationkwh
@@ -44,7 +44,7 @@ msgid "Invalid model name in the action definition."
 msgstr ""
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/investment.py:874
+#: code:addons/som_generationkwh/investment.py:810
 #, python-format
 msgid "Amortització fins a {amortization_date:%d/%m/%Y} de {investment} "
 msgstr ""
@@ -207,7 +207,7 @@ msgid "Error: UOS must be in a different category than the UOM"
 msgstr ""
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/investment_strategy.py:172
+#: code:addons/som_generationkwh/investment_strategy.py:178
 msgid "Desinversió total de {investment} a {date} "
 msgstr ""
 
@@ -338,6 +338,11 @@ msgid "generationkwh.remainder"
 msgstr ""
 
 #. module: som_generationkwh
+#: model:ir.actions.act_window,name:som_generationkwh.action_wizard_confirm_soci_baixa
+msgid "Baixa de sòcia"
+msgstr ""
+
+#. module: som_generationkwh
 #: field:somenergia.soci,estimated_anual_kwh:0
 msgid "Previsió de kWh anual"
 msgstr ""
@@ -425,8 +430,8 @@ msgid ""
 msgstr ""
 
 #. module: som_generationkwh
-#: model:ir.model,name:som_generationkwh.model_wizard_generationkwh_investment_transfer
-msgid "wizard.generationkwh.investment.transfer"
+#: selection:generationkwh.emission,type:0
+msgid "GenerationkWh"
 msgstr ""
 
 #. module: som_generationkwh
@@ -515,6 +520,11 @@ msgstr ""
 #. module: som_generationkwh
 #: view:wizard.generationkwh.investment.amortization:0
 msgid "Resultats"
+msgstr ""
+
+#. module: som_generationkwh
+#: model:ir.model,name:som_generationkwh.model_wizard_generationkwh_investment_transfer
+msgid "wizard.generationkwh.investment.transfer"
 msgstr ""
 
 #. module: som_generationkwh
@@ -683,6 +693,11 @@ msgstr ""
 #. module: som_generationkwh
 #: model:ir.model,name:som_generationkwh.model_wizard_llibre_registre_socis
 msgid "wizard.llibre.registre.socis"
+msgstr ""
+
+#. module: som_generationkwh
+#: view:wizard.generationkwh.investment.transfer:0
+msgid "Transferir aportació"
 msgstr ""
 
 #. module: som_generationkwh
@@ -1047,7 +1062,7 @@ msgid "Contracte"
 msgstr ""
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/investment.py:1557
+#: code:addons/som_generationkwh/investment.py:1402
 msgid "Inversió {investment} "
 msgstr ""
 
@@ -1067,12 +1082,12 @@ msgid "Ip d'origen"
 msgstr ""
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/investment.py:559
+#: code:addons/som_generationkwh/investment.py:495
 msgid "S'ha {0} la inversió {1}"
 msgstr ""
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/giscedata_facturacio.py:642
+#: code:addons/som_generationkwh/giscedata_facturacio.py:636
 msgid ""
 "Cálcul del preu de descompte segons RD 17/2021 per a 2 periodes no "
 "implementat"
@@ -1093,11 +1108,6 @@ msgstr ""
 #. module: som_generationkwh
 #: model:poweremail.templates,def_subject:som_generationkwh.generationkwh_assignment_notification_mail
 msgid "Generation kWh: Comencem a rebre energia! [${object.ref[1:]}]"
-msgstr ""
-
-#. module: som_generationkwh
-#: selection:generationkwh.emission,type:0
-msgid "GenerationkWh"
 msgstr ""
 
 #. module: som_generationkwh
@@ -1328,7 +1338,7 @@ msgid "Llibre Registre Socis"
 msgstr ""
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/giscedata_facturacio.py:637
+#: code:addons/som_generationkwh/giscedata_facturacio.py:631
 msgid ""
 "Cálcul del preu de descompte segons RD 17/2021 no implementat per a la "
 "tarifa {}"
@@ -1649,6 +1659,7 @@ msgstr ""
 
 #. module: som_generationkwh
 #: view:generationkwh.emission:0
+#: view:wizard.generationkwh.investment.transfer:0
 msgid "Cancel"
 msgstr ""
 
@@ -1673,6 +1684,11 @@ msgstr ""
 #: view:wizard.generationkwh.investment.divest:0
 #: view:wizard.generationkwh.investment.payment:0
 msgid "Mostra factures"
+msgstr ""
+
+#. module: som_generationkwh
+#: field:wizard.generationkwh.investment.transfer,transfer_date:0
+msgid "Transfer Date"
 msgstr ""
 
 #. module: som_generationkwh
@@ -1741,6 +1757,13 @@ msgstr ""
 #. module: som_generationkwh
 #: view:send.retencio.estalvi.to.members.wizard:0
 msgid "E-mails enviats correctament"
+msgstr ""
+
+#. module: som_generationkwh
+#: help:giscedata.polissa,te_assignacio_gkwh:0
+msgid ""
+"El contracte té assignacions de GKWH, sense tenir en compte la prioritat "
+"ni data fi."
 msgstr ""
 
 #. module: som_generationkwh
@@ -1825,7 +1848,6 @@ msgstr ""
 #: view:wizard.aeat193.from.gkwh.invoices:0
 #: view:wizard.baixa.soci:0
 #: view:wizard.generationkwh.investment.activation:0
-#: view:wizard.generationkwh.investment.transfer:0
 msgid "Tancar"
 msgstr ""
 
@@ -1930,7 +1952,6 @@ msgstr ""
 
 #. module: som_generationkwh
 #: view:wizard.generationkwh.investment.divest:0
-#: view:wizard.generationkwh.investment.transfer:0
 msgid "Generar factura de desinversió i remesar"
 msgstr ""
 
@@ -1949,7 +1970,6 @@ msgstr ""
 #. module: som_generationkwh
 #: view:wizard.generationkwh.investment.divest:0
 #: view:wizard.generationkwh.investment.payment:0
-#: view:wizard.generationkwh.investment.transfer:0
 msgid "Cancelar"
 msgstr ""
 
@@ -2363,6 +2383,11 @@ msgid "Producte de la línia de l'amortització dins la factura de la inversió"
 msgstr ""
 
 #. module: som_generationkwh
+#: view:wizard.generationkwh.investment.transfer:0
+msgid "Close"
+msgstr ""
+
+#. module: som_generationkwh
 #: help:generationkwh.emission,investment_product_id:0
 msgid "Producte de la línia del capital dins la factura de la inversió"
 msgstr ""
@@ -2405,7 +2430,7 @@ msgid "Renunciar"
 msgstr ""
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/investment.py:923
+#: code:addons/som_generationkwh/investment.py:859
 msgid ""
 "Retenció IRPF sobre l'estalvi del Generationkwh de {retention_date:%Y} de"
 " {investment} "
@@ -2416,7 +2441,6 @@ msgstr ""
 #: field:wizard.generationkwh.investment.cancel.or.resign,invoices:0
 #: field:wizard.generationkwh.investment.divest,invoices:0
 #: field:wizard.generationkwh.investment.payment,invoices:0
-#: field:wizard.generationkwh.investment.transfer,invoices:0
 msgid "test"
 msgstr ""
 
