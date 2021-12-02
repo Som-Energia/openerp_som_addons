@@ -17,7 +17,7 @@ class WizardInvestmentTransfer(osv.osv):
     _columns = {
         'state': fields.char('State', size=16),
         'info': fields.text('Info'),
-        'transfer_date': fields.date('Transfer Date', required=True),
+        'transfer_date': fields.date('Data de transferència', required=True),
         'partner_id_alt': fields.many2one(
             'res.partner',
             'Titular',

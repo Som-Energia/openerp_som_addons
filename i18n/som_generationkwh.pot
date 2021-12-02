@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2021-12-01 15:57+0000\n"
-"PO-Revision-Date: 2021-12-01 15:57+0000\n"
+"POT-Creation-Date: 2021-12-02 10:44+0000\n"
+"PO-Revision-Date: 2021-12-02 10:44+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1385,6 +1385,13 @@ msgid "Info"
 msgstr ""
 
 #. module: som_generationkwh
+#: help:generationkwh.emission,state:0
+msgid ""
+"Gives the state of the emission. Only emission in open state accepts new "
+"investments."
+msgstr ""
+
+#. module: som_generationkwh
 #: model:poweremail.templates,def_body_text:som_generationkwh.aportacio_mail_pagament
 #, python-format
 msgid ""
@@ -1684,11 +1691,6 @@ msgstr ""
 #: view:wizard.generationkwh.investment.divest:0
 #: view:wizard.generationkwh.investment.payment:0
 msgid "Mostra factures"
-msgstr ""
-
-#. module: som_generationkwh
-#: field:wizard.generationkwh.investment.transfer,transfer_date:0
-msgid "Transfer Date"
 msgstr ""
 
 #. module: som_generationkwh
@@ -2021,10 +2023,8 @@ msgid "Aportacions al capital social"
 msgstr ""
 
 #. module: som_generationkwh
-#: help:generationkwh.emission,state:0
-msgid ""
-"Gives the state of the emission. Only emission in open state accepts new "
-"investments."
+#: field:wizard.generationkwh.investment.transfer,transfer_date:0
+msgid "Data de transferència"
 msgstr ""
 
 #. module: som_generationkwh
