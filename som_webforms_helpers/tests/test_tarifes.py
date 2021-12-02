@@ -24,7 +24,6 @@ class tarifes_tests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user    
             
-            import pudb; pu.db
             model = self.pool.get('giscedata.polissa.tarifa')
             tariff_id = self.imd_obj.get_object_reference(
                 cursor, uid, 'giscedata_polissa', 'tarifa_20A_test')[1] 
