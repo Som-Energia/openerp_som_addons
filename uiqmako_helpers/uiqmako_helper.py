@@ -1,21 +1,18 @@
 # -*- coding: utf-8 -*-
-
+from mako.template import Template
 from osv import osv, fields
 from tools import config
-from mako.template import Template
+
 
 class UiqmakoHelper(osv.osv_memory):
     _name = 'som.uiqmako.helper'
 
     def render_mako_text(self, cursor, uid, id, message, model, recid, context={}):
         context.update({'browse_reference': True})
-        object = self.pool.get(
-            model
-        ).browse(cursor, uid, recid, context)
+        object = self.pool.get(model).browse(cursor, uid, recid, context)
         env = context.copy()
         env.update({
-            'user': self.pool.get('res.users').browse(cursor, uid, uid,
-                                                context),
+            'user': self.pool.get('res.users').browse(cursor, uid, uid, context),
             'db': cursor.dbname
         })
 
@@ -30,7 +27,6 @@ class UiqmakoHelper(osv.osv_memory):
         values.update(extra_render_values)
         reply = templ.render_unicode(**values)
         return reply
-
 
 
 UiqmakoHelper()
