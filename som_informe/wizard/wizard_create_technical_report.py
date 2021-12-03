@@ -221,16 +221,25 @@ class WizardCreateTechnicalReport(osv.osv_memory):
                 search_params.append(('data_sollicitud', '<=', wiz.date_to))
             sw_obj = self.pool.get('giscedata.switching')
             sw_ids = sw_obj.search(cursor, uid, search_params)
-            result_atr = self.extract_switching_metadata(cursor, uid, sw_ids, context)
-            result_atr = sorted(result_atr, key=lambda k: k['date'])
+            result_crono.extend(self.extract_switching_metadata(cursor, uid, sw_ids, context))
 
+        if wiz.mostra_factura:
+            fact_obj = wiz.pool.get('giscedata.facturacio.factura')
+            search_parameters = [
+                ('polissa_id', '=', wiz.polissa.id),
+            ]
+            if wiz.date_from:
+                search_parameters.append(('data_inici', '>=', wiz.date_from))
+            if wiz.date_to:
+                search_parameters.append(('data_final', '<=', wiz.date_to))
+            invoice_ids = fact_obj.search(cursor, uid, search_parameters)
+            result_crono.extend(self.extract_invoice_metadata(cursor, uid, invoice_ids, context))
+
+        if result_crono:
             result_atr_head = self.extract_components_metadata(cursor, uid, wiz, ['atrHeader'], context)
             result_atr_foot = self.extract_components_metadata(cursor, uid, wiz, ['atrFooter'], context)
-            result_crono = result_atr_head + result_atr + result_atr_foot
-
-        result_factura = []
-        if wiz.mostra_factura:
-            result_factura = []
+            result_crono = sorted(result_crono, key=lambda k: k['date'])
+            result_crono = result_atr_head + result_crono + result_atr_foot
 
         result_cobra = []
         if wiz.mostra_cobraments:
@@ -240,7 +249,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         result_ini = self.extract_components_metadata(cursor, uid, wiz, ['header'], context)
         result_end = self.extract_components_metadata(cursor, uid, wiz, ['footer'], context)
 
-        result = result_ini + result_crono + result_factura + result_cobra + result_end
+        result = result_ini + result_crono + result_cobra + result_end
         return [ns(item) for item in result]
 
     # data extractors
@@ -266,6 +275,37 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             sw_data = sw_obj.browse(cursor, uid, sw_id, context=context)
             for step in sw_data.step_ids:
                 extracted_data = self.metadata_extractor(cursor, uid, step, context)
+                if extracted_data:
+                    result.append(extracted_data)
+
+        return result
+
+    def extract_invoice_metadata(self, cursor, uid, invoice_ids, context):
+        if not isinstance(invoice_ids, list):
+            invoice_ids = [invoice_ids]
+
+        result = []
+        for invoice_id in invoice_ids:
+            fact_obj = self.pool.get('giscedata.facturacio.factura')
+            invoice = fact_obj.browse(cursor, uid, invoice_id, context=context)
+
+            component_name = None
+            if invoice.type in ('out_invoice', 'out_refund'):
+                component_name = 'InvoiceFE'
+            """
+            else:
+                if invoice.tipo_rectificadora in ('N', 'G'):
+                    component_name = 'InvoiceF1NG'
+                elif invoice.tipo_rectificadora in ('R', 'A'):
+                    component_name = 'InvoiceF1RA'
+                elif invoice.tipo_rectificadora in ('C'):
+                    component_name = 'InvoiceF1C'
+                else: # B RA BRA
+                    component_name = 'InvoiceF1Unsuported'
+            """
+            if component_name:
+                extractor = self.factory_metadata_extractor(component_name)
+                extracted_data = extractor.get_data(cursor, uid, invoice, context)
                 if extracted_data:
                     result.append(extracted_data)
 
