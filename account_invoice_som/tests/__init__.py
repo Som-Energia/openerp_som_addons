@@ -18,41 +18,41 @@ class TestAccountInvoiceSom(testing.OOTestCaseWithCursor):
     def test_search_withPercentage_active(self):
         self.set_account_invoice_number_cerca_exacte(self.cursor, self.uid, '1')
 
-        gff_ids = self.ai_obj.search(self.cursor, self.uid, [('number', 'ilike', '00%')])
+        gff_ids = self.ai_obj.search(self.cursor, self.uid, [('number', 'ilike', 'FE%')])
 
         self.assertGreater(len(gff_ids), 1)
 
     def test_search_exactExist_active(self):
         self.set_account_invoice_number_cerca_exacte(self.cursor, self.uid, '1')
 
-        gff_ids = self.ai_obj.search(self.cursor, self.uid, [('number', 'ilike', '0046/F')])
+        gff_ids = self.ai_obj.search(self.cursor, self.uid, [('number', 'ilike', 'FE210001')])
 
         self.assertEqual(len(gff_ids), 1)
 
     def test_search_exactNotExist_active(self):
         self.set_account_invoice_number_cerca_exacte(self.cursor, self.uid, '1')
 
-        gff_ids = self.ai_obj.search(self.cursor, self.uid, [('number', 'ilike', '00')])
+        gff_ids = self.ai_obj.search(self.cursor, self.uid, [('number', 'ilike', 'FE')])
 
         self.assertEqual(len(gff_ids), 0)
 
     def test_search_withPercentage_disabled(self):
         self.set_account_invoice_number_cerca_exacte(self.cursor, self.uid, '0')
 
-        gff_ids = self.ai_obj.search(self.cursor, self.uid, [('number', 'ilike', '00%')])
+        gff_ids = self.ai_obj.search(self.cursor, self.uid, [('number', 'ilike', 'FE%')])
 
         self.assertGreater(len(gff_ids), 1)
 
     def test_search_exactExist_disabled(self):
         self.set_account_invoice_number_cerca_exacte(self.cursor, self.uid, '0')
 
-        gff_ids = self.ai_obj.search(self.cursor, self.uid, [('number', 'ilike', '0046/F')])
+        gff_ids = self.ai_obj.search(self.cursor, self.uid, [('number', 'ilike', 'FE210001')])
 
         self.assertEqual(len(gff_ids), 1)
 
     def test_search_exactNotExist_disabled(self):
         self.set_account_invoice_number_cerca_exacte(self.cursor, self.uid, '0')
 
-        gff_ids = self.ai_obj.search(self.cursor, self.uid, [('number', 'ilike', '00')])
+        gff_ids = self.ai_obj.search(self.cursor, self.uid, [('number', 'ilike', 'FE')])
 
         self.assertGreater(len(gff_ids), 1)
