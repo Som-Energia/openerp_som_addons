@@ -57,3 +57,4 @@ import atrHeader
 import atrFooter
 import CollectContractData
 import InvoicingF1Table
+import InvoicingFeTable

@@ -230,7 +230,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
 
         result_factura = []
         if wiz.mostra_factura:
-            components_factura = ['InvoicingF1Table']
+            components_factura = ['InvoicingF1Table', 'InvoicingFeTable']
             result_factura = self.extract_components_metadata(cursor, uid, wiz, components_factura, context)
 
         result_cobra = []
