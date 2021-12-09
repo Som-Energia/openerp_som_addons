@@ -556,10 +556,16 @@ class GiscedataFacturacioFacturador(osv.osv):
         factures = super(GiscedataFacturacioFacturador,
                          self).fact_via_lectures(cursor, uid, polissa_id,
                                                  lot_id, context)
+        if isinstance(polissa_id, (tuple, list)):
+            polissa_id = polissa_id[0]
+
         factura_obj = self.pool.get('giscedata.facturacio.factura')
-        factura_obj.apply_gkwh(cursor, uid, factures, context)
-        self.reaplica_ajustar_saldo_excedents_autoconsum(cursor, uid, factures, context)
-        factura_obj.button_reset_taxes(cursor, uid, factures, context=context)
+        polissa_obj = self.pool.get('giscedata.polissa')
+        can_have_gkwh = polissa_obj.read(cursor, uid, polissa_id, ['te_assignacio_gkwh'])['te_assignacio_gkwh']
+        if can_have_gkwh:
+            factura_obj.apply_gkwh(cursor, uid, factures, context)
+            self.reaplica_ajustar_saldo_excedents_autoconsum(cursor, uid, factures, context)
+            factura_obj.button_reset_taxes(cursor, uid, factures, context=context)
         return factures
 
     def create_discount_lines_for_rd_17_2021(self, cursor, uid, fact_ids, context=None):
