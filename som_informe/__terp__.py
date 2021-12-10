@@ -13,6 +13,8 @@
         "giscedata_polissa_comer",
         "giscedata_switching",
         "giscedata_facturacio_comer",
+        "som_facturacio_switching",
+        "giscedata_facturacio",
     ],
     "init_xml": [],
     "demo_xml": [],
