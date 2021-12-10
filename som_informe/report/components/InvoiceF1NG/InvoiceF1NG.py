@@ -6,7 +6,6 @@ class InvoiceF1NG:
 
     def get_data(self, cursor, uid, wiz, invoice, context={}):
         result = {}
-        import pudb; pu.db
         f1_obj = wiz.pool.get('giscedata.facturacio.importacio.linia')
         search_params = [
             ('invoice_number_text', '=', invoice.origin),
