@@ -34,7 +34,7 @@
             <field name="facturacio" eval="1"/>
             <field name="currency_id">1</field>
             <field name="address_invoice_id" ref="base.res_partner_address_8"/>
-            <field name="potencia">6.0</field>
+            <field name="potencia">15.0</field>
             <field name="tarifa_acces_id" ref="giscedata_polissa.tarifa_20A_new"/>
             <field name="llista_preu" ref="giscedata_facturacio.pricelist_tarifas_electricidad"/>
             <field name="partner_id" ref="base.res_partner_agrolait"/>

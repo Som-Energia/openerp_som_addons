@@ -12,16 +12,39 @@ class InvoiceF1NG:
         ]
         f1_id = f1_obj.search(cursor,uid,search_params)
         f1 = f1_obj.browse(cursor, uid, f1_id[0])
+
         #for linia in f1.importacio_lectures_ids:
         result['numero_edm'] = f1.importacio_lectures_ids[0].comptador
 
+        #camps obligats per estructura
         result['type'] = 'InvoiceF1NG'
         result['date'] = invoice.date_invoice
-        result['invoice_number'] = invoice.origin
+
+        result['distribuidora'] = f1.distribuidora_id.name
         result['invoice_type'] = invoice.rectificative_type
         result['invoice_date'] = dateformat(invoice.date_invoice)
+        result['invoice_number'] = invoice.origin
         result['date_from'] = dateformat(invoice.data_inici)
         result['date_to'] = dateformat(invoice.data_final)
+        #taula
+        result['linies'] = []
+        for linia in f1.importacio_lectures_ids:
+            dict_linia={}
+            dict_linia['origen_lectures'] = linia.origen_actual
+            dict_linia['magnitud'] = linia.magnitud
+            dict_linia['periode'] = linia.periode
+            dict_linia['lectura_inicial'] = linia.lectura_desde
+            dict_linia['lectura_final'] = linia.lectura_actual
+            #el consum entre s'ha de calcular?
+            dict_linia['consum_entre'] = linia.lectura_actual - linia.lectura_desde
+            dict_linia['ajust'] = linia.ajust
+            # total facturats s'ha de calcular?
+            dict_linia['total_facturat'] = linia.lectura_actual - linia.lectura_desde
+            # compensats?
+            dict_linia['compensats'] = linia.ajust
+            result['linies'].append(dict_linia)
+
+
         result['invoiced_days'] = invoice.dies
         result['invoiced_energy'] = invoice.energia_kwh
         result['amount_base'] = invoice.amount_untaxed
@@ -34,7 +57,6 @@ class InvoiceF1NG:
         id3 = f1_obj.search([('invoice_number_text','=',fact_3.origin)] id 8228697
         f1_obj.browse(id3).importacio_lectures_ids[0].read()
         f1_obj.browse(id3).importacio_lectures_ids[0][0].comptador
-
         '''
 
 
