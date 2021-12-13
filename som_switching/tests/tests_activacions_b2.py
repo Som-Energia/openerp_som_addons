@@ -21,22 +21,25 @@ class TestActivacioB2(TestSwitchingImport):
         self.ResConfig = self.openerp.pool.get('res.config')
         self.IrModelData = self.openerp.pool.get('ir.model.data')
 
-    def get_b2_05(self, txn, contract_id):
+    def get_b2_05(self, txn, contract_id, context=None):
+        if not context:
+            context={}
         uid = txn.user
         cursor = txn.cursor
         self.switch(txn, 'distri')
+        context['extra_vals'] = {'data_alta': "2017-01-31", "lot_facturacio": False, 'data_baixa': False}
 
         # create step 05
         self.change_polissa_comer(txn)
         self.update_polissa_distri(txn)
-        self.activar_polissa_CUPS(txn)
+        self.activar_polissa_CUPS(txn, context)
         step_id = self.create_case_and_step(
-            cursor, uid, contract_id, 'B2', '05'
+            cursor, uid, contract_id, 'B2', '05', {'whereiam': 'distri'}
         )
 
         b205 = self.B205.browse(cursor, uid, step_id)
 
-        b205.write({"data_activacio": "2016-08-01"})
+        b205.write({"data_activacio": "2021-08-01"})
 
         # switch to comer and recalculate whereiam field
         company_id = self.User.read(cursor, uid, uid, ['company_id'])['company_id'][0]
@@ -87,9 +90,9 @@ class TestActivacioB2(TestSwitchingImport):
 
             self.ResConfig.set(cursor, uid, 'sw_allow_baixa_polissa_from_cn_without_invoice', '1')
 
-            contract_id = self.get_contract_id(txn)
+            contract_id = self.get_contract_id(txn, 'polissa_tarifa_018')
 
-            b2 = self.get_b2_05(txn, contract_id)
+            b2 = self.get_b2_05(txn, contract_id, {'polissa_xml_id': 'polissa_tarifa_018'})
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, b2)
 
