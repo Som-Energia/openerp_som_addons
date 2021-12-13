@@ -29,17 +29,12 @@ class WizardInvestmentCreation(osv.osv):
         start = datetime.now()
 
         try:
-            imd_model = self.pool.get('ir.model.data')
-            imd_emission_id = imd_model.search(cursor, uid, [('module','=', 'som_generationkwh'),('res_id','=',emission_id)])
             emission_code = Emission.read(cursor, uid, emission_id, ['code'])['code']
             #Compatibility 'emissio_apo'
-            if imd_emission_id:
-                emission_code = imd_model.read(cursor, uid, imd_emission_id[0])['name']
-
             investment_id = Investment.create_from_form(cursor, uid,
                    partner_id, wiz.order_date, amount_in_e, ip, iban, emission_code,
                 context)
-        except Exception, e:
+        except Exception as e:
             creation_errors = str(e)
 
         end = datetime.now()
@@ -76,7 +71,7 @@ class WizardInvestmentCreation(osv.osv):
         'partner_id_alt': fields.many2one(
             'res.partner',
             'Titular',
-            domain=[('category_id','=',8)],
+            domain=[('category_id.name','=','Soci')],
             required=True,
             ),
         'amount_in_euros': fields.float(
