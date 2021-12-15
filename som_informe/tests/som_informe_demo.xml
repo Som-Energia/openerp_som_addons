@@ -192,13 +192,59 @@
             <field name="origin">12345679</field>
         </record>
         <!--Linies Factures-->
-        <record id="linia_factura_0068_30TD" model="giscedata.facturacio.factura.linia">
-            <field name="name">Linia 1</field>
+        <record id="linia_01_factura_0068_30TD" model="giscedata.facturacio.factura.linia">
+            <field name="name">P1</field>
             <field name="product_id" eval="False"/>
             <field name="account_id" search="[('code', '=', '700000')]" model="account.account"/>
             <field name="tipus">energia</field>
             <field name="price_unit_multi" eval="10.0"/>
             <field name="multi" eval="1"/>
+            <field name="quantity" eval="100"/>
+            <!--<field name="uom_multi_id"></field>-->
+            <field name="factura_id" ref="factura_0068_30TD"/>
+            <!--<field name="invoice_line_id"></field>-->
+            <!--<field name="cosfi"></field>-->
+            <field name="data_desde">2021-08-15</field>
+            <!--<field name="data_fins"></field>-->
+        </record>
+        <record id="linia_02_factura_0068_30TD" model="giscedata.facturacio.factura.linia">
+            <field name="name">P1</field>
+            <field name="product_id" eval="False"/>
+            <field name="account_id" search="[('code', '=', '700000')]" model="account.account"/>
+            <field name="tipus">generacio</field>
+            <field name="price_unit_multi" eval="10.0"/>
+            <field name="multi" eval="1"/>
+            <field name="quantity" eval="50.0"/>
+            <!--<field name="uom_multi_id"></field>-->
+            <field name="factura_id" ref="factura_0068_30TD"/>
+            <!--<field name="invoice_line_id"></field>-->
+            <!--<field name="cosfi"></field>-->
+            <field name="data_desde">2021-08-15</field>
+            <!--<field name="data_fins"></field>-->
+        </record>
+        <record id="linia_03_factura_0068_30TD" model="giscedata.facturacio.factura.linia">
+            <field name="name">P1</field>
+            <field name="product_id" eval="False"/>
+            <field name="account_id" search="[('code', '=', '700000')]" model="account.account"/>
+            <field name="tipus">potencia</field>
+            <field name="price_unit_multi" eval="10.0"/>
+            <field name="multi" eval="31"/>
+            <field name="quantity" eval="15.0"/>
+            <!--<field name="uom_multi_id"></field>-->
+            <field name="factura_id" ref="factura_0068_30TD"/>
+            <!--<field name="invoice_line_id"></field>-->
+            <!--<field name="cosfi"></field>-->
+            <field name="data_desde">2021-08-15</field>
+            <!--<field name="data_fins"></field>-->
+        </record>
+        <record id="linia_04_factura_0068_30TD" model="giscedata.facturacio.factura.linia">
+            <field name="name">P1</field>
+            <field name="product_id" eval="False"/>
+            <field name="account_id" search="[('code', '=', '700000')]" model="account.account"/>
+            <field name="tipus">reactiva</field>
+            <field name="price_unit_multi" eval="10.0"/>
+            <field name="multi" eval="1"/>
+            <field name="quantity" eval="5.0"/>
             <!--<field name="uom_multi_id"></field>-->
             <field name="factura_id" ref="factura_0068_30TD"/>
             <!--<field name="invoice_line_id"></field>-->
