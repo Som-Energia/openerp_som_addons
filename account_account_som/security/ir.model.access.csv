@@ -1,0 +1,3 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_wizard_account_balance_report_rcwd","wizard.account.balance.report","model_wizard_account_balance_report","account.group_account_manager",1,1,1,1
+"access_wizard_account_balance_report_r","wizard.account.balance.report","model_wizard_account_balance_report","account.group_account_user",1,0,0,0

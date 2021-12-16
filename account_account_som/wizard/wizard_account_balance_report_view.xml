@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_account_balance_report_som">
+            <field name="name">wizard.account.balance.report.form</field>
+            <field name="type">form</field>
+            <field name="model">wizard.account.balance.report</field>
+            <field name="arch" type="xml">
+                <form string="Full Account Balance">
+                    <field name="company_id"/>
+                    <newline/>
+                    <group colspan="4">
+                        <separator string="Accounts to include" colspan="4"/>
+                        <field name="all_accounts" colspan="4"/>
+                        <group colspan="4" attrs="{'invisible': [('all_accounts', '=', True)]}">
+                            <field name="account_list" nolabel="1" colspan="4"  domain="[('company_id','=',company_id)]"/>
+                        </group>
+                        <field name="display_account" required="True"/>
+                        <field name="display_account_level" required="True" />
+                    </group>
+                    <group colspan="4">
+                        <separator string="Period" colspan="4"/>
+                        <field name="fiscalyear"/>
+                        <newline/>
+                        <field name="state" required="True"/>
+                        <newline/>
+                        <group attrs="{'invisible':[('state','=','none')]}" colspan="4">
+                            <group attrs="{'invisible':[('state','=','byperiod')]}" colspan="4">
+                                <separator string="Date Filter" colspan="4"/>
+                                <field name="date_from"/>
+                                <field name="date_to"/>
+                            </group>
+                            <group attrs="{'invisible':[('state','=','bydate')]}" colspan="4">
+                                <separator string="Filter on Periods" colspan="4"/>
+                                <field name="periods" colspan="4" nolabel="1" domain="[('fiscalyear_id','=',fiscalyear)]"/>
+                            </group>
+                        </group>
+                    </group>
+                    <button special="cancel" string="Cancelar" icon="gtk-cancel"/>
+                    <button name="_report_async" type="object" string="Send by email" icon="gtk-home"/>
+                    <button name="_check_state" type="object" string="Print" icon="gtk-print"/>
+                    <button name="_excel_create" type="object" string="Excel" icon="gtk-save"/>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_account_balance_report_som">
+            <field name="name">wizard.account.balance.report.form</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.account.balance.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_account_balance_report_som"/>
+        </record>
+
+        <menuitem id="menu_account_balance_full_report_som"
+            name="Full Balance Report Som"
+            action="action_account_balance_report_som"
+            parent="account.menu_generic_report"
+			icon="STOCK_PRINT"
+        />
+    </data>
+</openerp>
