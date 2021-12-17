@@ -25,6 +25,21 @@
             <field name="sequence">999</field>
             <field name="product_id" eval="1"/>
         </record>  
+        <record model="product.pricelist.version" id="version_pricelist_tarifas_electricidad_test">
+            <field name="name">Versio 1</field>
+            <field name="active">True</field>
+            <field name="date_start">2020-06-01</field>
+            <field name="date_end" eval="False"/>
+            <field name="pricelist_id" ref="giscedata_facturacio.pricelist_tarifas_electricidad_test"/>
+        </record>
+        <record model="product.pricelist.item" id="item_version_pricelist_tarifas_electricidad_test">
+            <field name="name">Test</field>
+            <field name="price_version_id" ref="version_pricelist_tarifas_electricidad_test"/>
+            <field name="base" eval="-1"/>
+            <field name="price_surcharge">12.0</field>
+            <field name="sequence">999</field>
+            <field name="product_id" eval="1"/>
+        </record>  
         <record model="giscedata.polissa.tarifa.periodes" id="p1_test">
             <field name="tarifa" ref="giscedata_polissa.tarifa_20A_test"/>
             <field name="tipus">tp</field>
