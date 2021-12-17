@@ -563,18 +563,10 @@
             <field name="step_id" ref="giscedata_switching.sw_step_m1_04"/>
             <field name="active" eval="1"/>
             <field name="notify_text"><![CDATA[<!doctype html>
-% if cas.cups_polissa_id.titular.lang == "ca_ES":
-    ${correu_cat()}
-% else:
-    ${correu_es()}
-% endif
-
 <%
     r_model,r_id = cas.step_ids[0].pas_id.split(',')
     cas_obj = cas.pool.get(r_model)
     llista_telefons = cas_obj.read(cas._cr, cas._uid, int(r_id), ['cont_telefons'])['cont_telefons']
-    print llista_telefons
-    print cas_obj
     if len(llista_telefons) > 0:
         tel_obj = cas.pool.get('giscedata.switching.telefon')
         telefon = tel_obj.read(cas._cr, cas._uid, llista_telefons[0])
@@ -582,7 +574,11 @@
     else:
         tel_cont = "-"
 %>
-
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
 <%def name="correu_cat()">
     <p>
         <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada d'aplicar aquestes modificacions, ha rebutjat la teva sol·licitud amb el següent motiu:
