@@ -6,17 +6,22 @@
             <field name="model">wizard.comment.to.F1</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <form string="Add a comment">
+                <form string="Modifica les observacions">
                     <group colspan="4" >
-                        <field colspan="4" name="comment" width="500" height="200"/>
+                        <field name="option"/>
+                    </group>
+                    <group colspan="4"  attrs="{'invisible': [('option', '=', 'eliminar')]}">
+                        <field colspan="4" name="comment" width="500" height="200" />
+                    </group>
+                    <group colspan="4">
                         <button string="Cancel·lar" special="cancel" type="object" icon="gtk-cancel"/>
-                        <button string="Acceptar" type="object" name="add_comment_to_F1" icon="gtk-yes"/>
+                        <button string="Acceptar" name="modify_text_F1" type="object" icon="gtk-yes"/>
                     </group>
                 </form>
             </field>
         </record>
         <record model="ir.actions.act_window" id="action_wizard_comment_F1">
-            <field name="name">Afegir una observació a fitxers F1</field>
+            <field name="name">Afegir/modificar una observació a fitxers F1</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wizard.comment.to.F1</field>
             <field name="view_type">form</field>
@@ -26,7 +31,7 @@
         </record>
         <record id="value_wizard_comment_F1" model="ir.values">
             <field name="object" eval="1"/>
-            <field name="name">Afegir una observació a fitxers F1</field>
+            <field name="name">Afegir/modificar una observació a fitxers F1</field>
             <field name="key2">client_action_multi</field>
             <field name="key">action</field>
             <field name="model">giscedata.facturacio.importacio.linia</field>
