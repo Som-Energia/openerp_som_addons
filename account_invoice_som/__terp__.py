@@ -12,10 +12,13 @@
         "poweremail",
     ],
     "init_xml": [],
-    "demo_xml": [],
+    "demo_xml": [
+        "tests/account_invoice_demo.xml",
+    ],
     "update_xml":[
         "account_invoice_som_report.xml",
-        "account_invoice_view.xml"
+        "account_invoice_view.xml",
+        "account_invoice_data.xml",
     ],
     "active": False,
     "installable": True
