@@ -38,6 +38,8 @@ class InvoiceF1NG:
             dict_linia['origen_lectures'] = linia.origen_actual
             dict_linia['magnitud'] = linia.magnitud
             dict_linia['periode'] = linia.periode
+            dict_linia['magnitud_desc'] = get_description(linia.magnitud, "TABLA_43")
+            dict_linia['periode_desc'] = get_description(linia.periode, "TABLA_42")
             dict_linia['lectura_inicial'] = linia.lectura_desde
             dict_linia['lectura_final'] = linia.lectura_actual
             #el consum entre s'ha de calcular?
