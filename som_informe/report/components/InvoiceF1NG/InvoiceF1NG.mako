@@ -29,5 +29,6 @@
             </tr>
         % endfor
     </table>
-    <br />
 </li>
+<br>
+<br>
