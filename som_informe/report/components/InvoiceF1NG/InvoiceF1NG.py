@@ -1,5 +1,6 @@
 from datetime import date
-from ..component_utils import dateformat
+from ..component_utils import dateformat, get_description, get_invoice_line
+
 class InvoiceF1NG:
     def __init__(self):
         pass
@@ -8,6 +9,7 @@ class InvoiceF1NG:
         result = {}
         f1_obj = wiz.pool.get('giscedata.facturacio.importacio.linia')
         search_params = [
+            ('cups_id.id', '=', invoice.cups_id.id),
             ('invoice_number_text', '=', invoice.origin),
         ]
         f1_id = f1_obj.search(cursor,uid,search_params)
@@ -26,10 +28,13 @@ class InvoiceF1NG:
         result['invoice_number'] = invoice.origin
         result['date_from'] = dateformat(invoice.data_inici)
         result['date_to'] = dateformat(invoice.data_final)
+
         #taula
+
         result['linies'] = []
         for linia in f1.importacio_lectures_ids:
             dict_linia={}
+            dict_linia['description_lectures'] = get_description(linia.origen_actual,"TABLA_44")
             dict_linia['origen_lectures'] = linia.origen_actual
             dict_linia['magnitud'] = linia.magnitud
             dict_linia['periode'] = linia.periode
@@ -38,10 +43,9 @@ class InvoiceF1NG:
             #el consum entre s'ha de calcular?
             dict_linia['consum_entre'] = linia.lectura_actual - linia.lectura_desde
             dict_linia['ajust'] = linia.ajust
-            # total facturats s'ha de calcular?
-            dict_linia['total_facturat'] = linia.lectura_actual - linia.lectura_desde
-            # compensats?
-            dict_linia['compensats'] = linia.ajust
+            i_line = get_invoice_line(invoice, linia.magnitud, linia.periode)
+            dict_linia['total_facturat'] = i_line.quantity if i_line else ""
+
             result['linies'].append(dict_linia)
 
 

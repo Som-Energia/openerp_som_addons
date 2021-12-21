@@ -1,6 +1,44 @@
 from gestionatr.utils import get_description as gestion_atr_get_description
 from datetime import datetime
 
+magnitud_a_tipus = {
+    'AE': 'energia',
+    'AS': 'generacio',
+    'PM': 'potencia',
+    'EP': 'exces_potencia',
+    'R1': 'reactiva',
+    'R2': 'reactiva',
+    'R3': 'reactiva',
+    'R4': 'reactiva',
+}
+
+periode_a_name = {
+    '91': 'P1',
+    '92': 'P2',
+    '93': 'P3',
+    '9392': 'P2',
+    'A1': 'P1',
+    'A2': 'P2',
+    'A3': 'P3',
+    'A4': 'P4',
+    'A5': 'P5',
+    'A6': 'P6',
+}
+
+def get_invoice_line(invoice, magnitud, periode):
+    if magnitud == 'PM' and periode == '93':
+        periode = '9392'
+
+    tipus = magnitud_a_tipus.get(magnitud, None)
+    name = periode_a_name.get(periode, None)
+    if not name or not tipus:
+        return None
+
+    for l in invoice.linia_ids:
+        if l.name == name and l.tipus == tipus:
+            return l
+    return None
+
 def to_date(str_date, hours = False):
     if not str_date:
         return None
