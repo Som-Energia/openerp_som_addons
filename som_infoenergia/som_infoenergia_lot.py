@@ -85,11 +85,8 @@ class SomInfoenergiaLotEnviament(osv.osv):
             os.unlink(filepath)
         return attachment_id
 
-    def create_enviaments_from_attached_csv(self, cursor, uid, ids, attach_id, context=None):
-
-            attachment_obj = self.pool.get('ir.attachment')
-            attach_data = attachment_obj.read(cursor,uid, attach_id, ['datas'])['datas']
-            csv_file = StringIO(base64.b64decode(attach_data))
+    def create_enviaments_from_csv_file(self, cursor, uid, ids, filename, context=None):
+        with open(filename, 'rb') as csv_file:
             headers = [
                 h.lower()
                 for h in csv.reader(csv_file, delimiter=';', quotechar='"').next()
@@ -237,8 +234,8 @@ class SomInfoenergiaLotEnviament(osv.osv):
             scp = SCPClient(ssh.get_transport())
             scp.get(csv_path_file, output_filepath)
 
-            attachment_id = self._attach_csv(cursor, uid, ids, output_filepath)
-            lot.create_enviaments_from_attached_csv(attachment_id, context)
+            self._attach_csv(cursor, uid, ids, output_filepath)
+            lot.create_enviaments_from_csv_file(output_filepath, context)
 
             self.add_info_line(cursor, uid, ids, 'CSV descarregat correctament')
         except Exception as e:
