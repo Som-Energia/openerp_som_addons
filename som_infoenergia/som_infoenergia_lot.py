@@ -234,8 +234,8 @@ class SomInfoenergiaLotEnviament(osv.osv):
             scp = SCPClient(ssh.get_transport())
             scp.get(csv_path_file, output_filepath)
 
-            self._attach_csv(cursor, uid, ids, output_filepath)
             lot.create_enviaments_from_csv_file(output_filepath, context)
+            self._attach_csv(cursor, uid, ids, output_filepath)
 
             self.add_info_line(cursor, uid, ids, 'CSV descarregat correctament')
         except Exception as e:
