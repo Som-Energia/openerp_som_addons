@@ -35,7 +35,7 @@ class LotEnviamentTests(testing.OOTestCase):
         return results
 
     @mock.patch('som_infoenergia.som_infoenergia_lot.SomInfoenergiaLotEnviament.create_enviaments_from_csv')
-    def test_create_enviaments_from_attached_csv(self, mocked_create_enviaments_from_csv):
+    def test_create_enviaments_from_csv_file(self, mocked_create_enviaments_from_csv):
         imd_obj = self.openerp.pool.get('ir.model.data')
         lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
         env_obj = self.openerp.pool.get('som.infoenergia.enviament')
@@ -53,9 +53,7 @@ class LotEnviamentTests(testing.OOTestCase):
         rel_path = 'T1_2020_minimal.csv'
         abs_file_path = os.path.join(script_dir, rel_path)
 
-        attach_id = self._attach_csv(cursor, uid, lot_enviament_id, abs_file_path)
-
-        lot_enviament.create_enviaments_from_attached_csv(attach_id, {})
+        lot_enviament.create_enviaments_from_csv_file(abs_file_path, {})
 
         mocked_create_enviaments_from_csv.assert_called_with(cursor, uid, [lot_enviament_id], [{'report': '0001.pdf','text': 'First;Text', 'contractid': '0001'}],{})
 
@@ -305,7 +303,7 @@ class LotEnviamentTests(testing.OOTestCase):
         lot_enviament = lot_env_obj.browse(cursor, uid, lot_enviament_id)
         cancellats_pre = lot_enviament.total_cancelats
 
-        lot_enviament.cancel_enviaments_from_polissa_names(['0001','0002'], {'reason': 'Test cancel from polissa list'})
+        lot_enviament.cancel_enviaments_from_polissa_names(['0001C','0002'], {'reason': 'Test cancel from polissa list'})
 
         lot_enviament = lot_env_obj.browse(cursor, uid, lot_enviament_id)
         cancellats_post = lot_enviament.total_cancelats
@@ -325,7 +323,7 @@ class LotEnviamentTests(testing.OOTestCase):
         lot_enviament = lot_env_obj.browse(cursor, uid, lot_enviament_id)
         cancellats_pre = lot_enviament.total_cancelats
 
-        lot_enviament.cancel_enviaments_from_polissa_names(['0001','0002'], {'reason': 'Test cancel from polissa list'})
+        lot_enviament.cancel_enviaments_from_polissa_names(['0001C','0002'], {'reason': 'Test cancel from polissa list'})
 
         lot_enviament = lot_env_obj.browse(cursor, uid, lot_enviament_id)
         cancellats_post = lot_enviament.total_cancelats
