@@ -14,7 +14,7 @@ jobs:
       - name: ERP va ràpid!
         run: echo "Ei, que l'ERP va ràpid des de ${{ github.workflow }} llençat per ${{ github.event_name }} fet "
 
-      - name: Clone gisce/erp
+      - uses: actions/checkout@v1
         with:
           repository: gisce/erp@developer
           token: ${{ secrets.ACCESS_TOKEN }}
