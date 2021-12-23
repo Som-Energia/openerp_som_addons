@@ -2,7 +2,7 @@ name: CI
 
 # pull_request, merge, issue
 # Al repo gisce/erp ha d'haver-hi el pull_request
-on: [push, pull_request, label]
+on: [push, pull_request, label, workflow_dispatch]
 # Exemple python: https://github.com/actions/setup-python
 # Editar a Github aquest fitxer: https://github.com/Som-Energia/openerp_som_addons/edit/ADD_github_actions/.github/workflows/ci.yml
 jobs:
