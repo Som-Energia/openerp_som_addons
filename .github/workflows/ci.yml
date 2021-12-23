@@ -2,7 +2,7 @@ name: CI
 
 # pull_request, merge, issue
 # Al repo gisce/erp ha d'haver-hi el pull_request
-on: [push]
+on: [push, pull_request, label]
 # Exemple python: https://github.com/actions/setup-python
 # Editar a Github aquest fitxer: https://github.com/Som-Energia/openerp_som_addons/edit/ADD_github_actions/.github/workflows/ci.yml
 jobs:
@@ -33,10 +33,10 @@ jobs:
             git clone --depth 1 https://github.com/gisce/poweremail_oorq.git $ROOT_DIR_SRC/poweremail_oorq
             git clone https://github.com/Som-Energia/plantmeter.git $ROOT_DIR_SRC/plantmeter
             git clone https://github.com/Som-Energia/somenergia-generationkwh.git $ROOT_DIR_SRC/somenergia-generationkwh
-            curl -H "Authorization: token $GITHUB_TOKEN" -L https://api.github.com/repos/gisce/libFacturacioATR/tarball > /tmp/libFacturacioATR.tar.gz
-            curl -H "Authorization: token $GITHUB_TOKEN" -L https://api.github.com/repos/gisce/pandapower_erp/tarball > /tmp/pandapower_erp.tar.gz
-            curl -H "Authorization: token $GITHUB_TOKEN" -L https://api.github.com/repos/gisce/pandapower_validator/tarball > /tmp/pandapower_validator.tar.gz
-            curl -H "Authorization: token $GITHUB_TOKEN" -L https://api.github.com/repos/gisce/ooop/tarball > /tmp/ooop.tar.gz
+            curl -H "Authorization: token $ACCESS_TOKEN" -L https://api.github.com/repos/gisce/libFacturacioATR/tarball > /tmp/libFacturacioATR.tar.gz
+            curl -H "Authorization: token $ACCESS_TOKEN" -L https://api.github.com/repos/gisce/pandapower_erp/tarball > /tmp/pandapower_erp.tar.gz
+            curl -H "Authorization: token $ACCESS_TOKEN" -L https://api.github.com/repos/gisce/pandapower_validator/tarball > /tmp/pandapower_validator.tar.gz
+            curl -H "Authorization: token $ACCESS_TOKEN" -L https://api.github.com/repos/gisce/ooop/tarball > /tmp/ooop.tar.gz
 
       - name: Instal·lar dependencies Ubuntu
         run: |
