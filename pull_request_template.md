@@ -12,8 +12,8 @@
 
 ## Comprovacions
 
-[] Hi ha testos
-[] Reiniciar serveis
-[] Actualitzar mòdul
-[] Script de migració
-[] Modifica traduccions
+- [ ] Hi ha testos
+- [ ] Reiniciar serveis
+- [ ] Actualitzar mòdul
+- [ ] Script de migració
+- [ ] Modifica traduccions
