@@ -1,8 +1,10 @@
 name: CI
 
-# pullrequest, merge, issue
+# pull_request, merge, issue
+# Al repo gisce/erp ha d'haver-hi el pull_request
 on: [push]
 # Exemple python: https://github.com/actions/setup-python
+# Editar a Github aquest fitxer: https://github.com/Som-Energia/openerp_som_addons/edit/ADD_github_actions/.github/workflows/ci.yml
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -11,4 +13,43 @@ jobs:
       - uses: actions/checkout@v1
       - name: ERP va ràpid!
         run: echo "Ei, que l'ERP va ràpid des de ${{ github.workflow }} llençat per ${{ github.event_name }} fet "
-  
+
+      - uses: actions/checkout@v1
+      - name: Clone gisce/erp
+        with:
+          repository: gisce/erp@developer
+          token: ${{ secrets.ACCESS_TOKEN }}
+
+      - name: Baixar repos
+        run: |
+            export ROOT_DIR_SRC=~/src
+            git clone --depth 1 https://github.com/gisce/oorq.git -b api_v5 $ROOT_DIR_SRC/oorq
+            git clone --depth 1 https://github.com/gisce/spawn_oop.git $ROOT_DIR_SRC/spawn_oop
+            git clone --depth 1 https://github.com/gisce/poweremail.git $ROOT_DIR_SRC/poweremail2
+            git clone --depth 1 https://github.com/gisce/openerp-sentry.git -b v5_legacy $ROOT_DIR_SRC/openerp-sentry
+            git clone --depth 1 https://github.com/gisce/ws_transactions.git $ROOT_DIR_SRC/ws_transactions
+            git clone --depth 1 https://github.com/gisce/ir_attachment_mongodb.git $ROOT_DIR_SRC/ir_attachment_mongodb
+            git clone --depth 1 https://github.com/gisce/mongodb_backend.git -b gisce $ROOT_DIR_SRC/mongodb_backend
+            git clone --depth 1 https://github.com/gisce/poweremail_oorq.git $ROOT_DIR_SRC/poweremail_oorq
+            git clone https://github.com/Som-Energia/plantmeter.git $ROOT_DIR_SRC/plantmeter
+            git clone https://github.com/Som-Energia/somenergia-generationkwh.git $ROOT_DIR_SRC/somenergia-generationkwh
+            curl -H "Authorization: token $GITHUB_TOKEN" -L https://api.github.com/repos/gisce/libFacturacioATR/tarball > /tmp/libFacturacioATR.tar.gz
+            curl -H "Authorization: token $GITHUB_TOKEN" -L https://api.github.com/repos/gisce/pandapower_erp/tarball > /tmp/pandapower_erp.tar.gz
+            curl -H "Authorization: token $GITHUB_TOKEN" -L https://api.github.com/repos/gisce/pandapower_validator/tarball > /tmp/pandapower_validator.tar.gz
+            curl -H "Authorization: token $GITHUB_TOKEN" -L https://api.github.com/repos/gisce/ooop/tarball > /tmp/ooop.tar.gz
+
+      - name: Instal·lar dependencies Ubuntu
+        run: |
+          sudo apt-get update --allow-releaseinfo-change
+          sudo apt-get install python-dev libxml2-dev libxmlsec1 libxmlsec1-dev -y
+
+      - name: Instal·lar dependències de python
+        run: |
+            export ROOT_DIR_SRC=~/src
+            cd $ROOT_DIR_SRC
+            virtualenv venv
+            . $ROOT_DIR_SRC/venv/bin/activate
+            file /tmp/libFacturacioATR.tar.gz | grep -q 'gzip' && pip install /tmp/libFacturacioATR.tar.gz || echo "Not installing libFacturacioATR library"
+            file /tmp/pandapower_erp.tar.gz | grep -q 'gzip' && pip install /tmp/pandapower_erp.tar.gz || echo "Not installing pandapower_erp library"
+            file /tmp/pandapower_validator.tar.gz | grep -q 'gzip' && pip install /tmp/pandapower_validator.tar.gz || echo "Not installing pandapower_validator library"
+            file /tmp/pandapower_validator.tar.gz | grep -q 'gzip' && pip install /tmp/ooop.tar.gz  || echo "Not installing ooop library"
