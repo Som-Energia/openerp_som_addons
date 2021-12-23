@@ -1,0 +1,14 @@
+name: CI
+
+# pullrequest, merge, issue
+on: [push]
+# Exemple python: https://github.com/actions/setup-python
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: "Hola món! Tests a openerp_som_addons"
+    steps:
+      - uses: actions/checkout@v1
+      - name: ERP va ràpid!
+        run: echo "Ei, que l'ERP va ràpid des de ${{ github.workflow }} llençat per ${{ github.event_name }} fet "
+  
