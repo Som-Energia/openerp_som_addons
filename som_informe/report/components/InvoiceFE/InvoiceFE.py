@@ -11,7 +11,7 @@ class InvoiceFE:
     def __init__(self):
         pass
 
-    def get_data(self, cursor, uid, invoice, context):
+    def get_data(self, cursor, uid, wiz, invoice, context):
         #fact_obj = wiz.pool.get('giscedata.facturacio.factura')
         '''search_parameters = [
             ('polissa_id', '=', wiz.polissa.id),

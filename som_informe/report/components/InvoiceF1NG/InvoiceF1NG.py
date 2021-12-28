@@ -15,8 +15,7 @@ class InvoiceF1NG:
         f1_id = f1_obj.search(cursor,uid,search_params)
         f1 = f1_obj.browse(cursor, uid, f1_id[0])
 
-        #for linia in f1.importacio_lectures_ids:
-        result['numero_edm'] = f1.importacio_lectures_ids[0].comptador
+        result['numero_edm'] = f1.importacio_lectures_ids[0].comptador if f1.importacio_lectures_ids else ""
 
         #camps obligats per estructura
         result['type'] = 'InvoiceF1NG'
