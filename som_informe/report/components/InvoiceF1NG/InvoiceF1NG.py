@@ -1,5 +1,5 @@
 from datetime import date
-from ..component_utils import dateformat, get_description, get_invoice_line
+from ..component_utils import dateformat, get_description, get_invoice_line, get_unit_magnitude
 
 class InvoiceF1NG:
     def __init__(self):
@@ -47,6 +47,7 @@ class InvoiceF1NG:
             dict_linia['ajust'] = linia.ajust
             i_line = get_invoice_line(invoice, linia.magnitud, linia.periode)
             dict_linia['total_facturat'] = i_line.quantity if i_line else ""
+            dict_linia['unit'] = get_unit_magnitude(linia.magnitud)
 
             result['linies'].append(dict_linia)
 

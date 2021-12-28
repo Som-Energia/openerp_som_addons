@@ -12,6 +12,17 @@ magnitud_a_tipus = {
     'R4': 'reactiva',
 }
 
+magnitud_a_unit = {
+    'AE': 'kWh',
+    'AS': 'kWh',
+    'PM': 'kW',
+    'EP': 'kW',
+    'R1': 'kVarh',
+    'R2': 'kVarh',
+    'R3': 'kVarh',
+    'R4': 'kVarh',
+}
+
 periode_a_name = {
     '91': 'P1',
     '92': 'P2',
@@ -24,6 +35,9 @@ periode_a_name = {
     'A5': 'P5',
     'A6': 'P6',
 }
+
+def get_unit_magnitude(magnitud):
+    return magnitud_a_unit.get(magnitud, 'eV')
 
 def get_invoice_line(invoice, magnitud, periode):
     if magnitud == 'PM' and periode == '93':

@@ -21,11 +21,11 @@
             <tr style="text-align:right">
                 <td style="width:10%;text-align:center">${_(u"%s (%s)") % (linia['description_lectures'],linia['origen_lectures'])}</td>
                 <td style="width:16%;text-align:center">${_(u"%s (%s) %s (%s)") %(linia['magnitud_desc'],linia['magnitud'], linia['periode_desc'],linia['periode'])}</td>
-                <td style="width:12%">${_(u"%s kWh") % (formatLang(linia['lectura_inicial'], digits=2))}</td>
-                <td style="width:12%">${_(u"%s kWh") % (formatLang(linia['lectura_final'], digits=2))}</td>
-                <td style="width:12%">${_(u"%s kWh") % (formatLang(linia['consum_entre'], digits=2))}</td>
-                <td style="width:12%">${_(u"%s kWh") % (formatLang(linia['ajust'], digits=2))}</td>
-                <td style="width:13%">${_(u"%s kWh") % (formatLang(linia['total_facturat'], digits=2))}</td>
+                <td style="width:12%">${_(u"%s %s") % (formatLang(linia['lectura_inicial'], digits=2), linia['unit'])}</td>
+                <td style="width:12%">${_(u"%s %s") % (formatLang(linia['lectura_final'], digits=2), linia['unit'])}</td>
+                <td style="width:12%">${_(u"%s %s") % (formatLang(linia['consum_entre'], digits=2), linia['unit'])}</td>
+                <td style="width:12%">${_(u"%s %s") % (formatLang(linia['ajust'], digits=2), linia['unit'])}</td>
+                <td style="width:13%">${_(u"%s %s") % (formatLang(linia['total_facturat'], digits=2), linia['unit'])}</td>
             </tr>
         % endfor
     </table>
