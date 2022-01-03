@@ -56,3 +56,8 @@ import CollectDetailsInvoices
 import atrHeader
 import atrFooter
 import CollectContractData
+import InvoiceFE
+import InvoiceF1NG
+import InvoiceF1RA
+import InvoiceF1C
+import InvoiceF1Unsupported
