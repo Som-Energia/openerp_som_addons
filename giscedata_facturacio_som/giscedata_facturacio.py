@@ -8,7 +8,7 @@ class GiscedataFacturacio(osv.osv):
 
 
     @cache(timeout=5 * 60)
-    def exact_search(self, cursor, uid, context=None):
+    def exact_number_search(self, cursor, uid, context=None):
         if context is None:
             context = {}
         exact = int(self.pool.get('res.config').get(
@@ -16,15 +16,29 @@ class GiscedataFacturacio(osv.osv):
         )
         return exact
 
+    @cache(timeout=5 * 60)
+    def exact_origin_search(self, cursor, uid, context=None):
+        if context is None:
+            context = {}
+        exact = int(self.pool.get('res.config').get(
+            cursor, uid, 'invoice_origin_cerca_exacte', '0')
+        )
+        return exact
+
     def search(self, cr, user, args, offset=0, limit=None, order=None, context=None, count=False):
         """Funció per fer cerques per number exacte, enlloc d'amb 'ilike'.
         """
-        exact = self.exact_search(cr, user, context=context)
-        if exact:
+        exact_number = self.exact_number_search(cr, user, context=context)
+        exact_origin = self.exact_origin_search(cr, user, context=context)
+        if exact_number or exact_origin:
             for idx, arg in enumerate(args):
                 if len(arg) == 3:
                     field, operator, match = arg
-                    if field == 'number' and isinstance(match,(unicode,str)):
+                    if exact_number and field == 'number' and isinstance(match,(unicode,str)):
+                        if not '%' in match:
+                            operator = '='
+                        args[idx] = (field, operator, match)
+                    if exact_origin and field == 'origin' and isinstance(match,(unicode,str)):
                         if not '%' in match:
                             operator = '='
                         args[idx] = (field, operator, match)
