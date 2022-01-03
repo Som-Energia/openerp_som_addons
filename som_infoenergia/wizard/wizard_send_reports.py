@@ -47,6 +47,9 @@ class WizardSendReports(osv.osv_memory):
         env_obj = self.pool.get(context.get('from_model'))
 
         ctx = {'allow_reenviar': wiz.allow_reenviar}
+        allowed_states = ['obert']
+        if wiz.allow_reenviar:
+            allowed_states.append('enviat')
         if wiz.is_test:
             if not wiz.email_to:
                 raise osv.except_osv(_(u'ERROR'), "Cal indicar l'email destinatari de l'enviament")
@@ -64,7 +67,7 @@ class WizardSendReports(osv.osv_memory):
                 env_obj = self.pool.get('som.enviament.massiu')
             else:
                 raise osv.except_osv(_(u'ERROR'), "Tipus de lot desconegut")
-            env_ids = env_obj.search(cursor, uid, [('lot_enviament', '=', lot_id)])
+            env_ids = env_obj.search(cursor, uid, [('lot_enviament', '=', lot_id), ('estat','in', allowed_states)])
         elif context.get('from_model') in ['som.infoenergia.enviament', 'som.enviament.massiu']:
             env_ids = context.get('active_ids', [])
 
