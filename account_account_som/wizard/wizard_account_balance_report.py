@@ -22,7 +22,6 @@
 #
 ##############################################################################
 import base64
-import wizard
 import time
 from account_financial_report.utils import account_balance_utils as utils
 from tools.translate import _
@@ -71,15 +70,36 @@ class WizardAccountBalanceReport(osv.osv_memory):
         res = cr.dictfetchall()
         if res:
             if (data['form']['date_to'] > res[0]['date_stop'] or data['form']['date_to'] < res[0]['date_start']):
-                raise  wizard.except_wizard(_('UserError'),_('Date to must be set between %s and %s') % (res[0]['date_start'], res[0]['date_stop']))
+                 raise osv.except_osv(_('UserError'), _('Date to must be set between %s and %s') % (res[0]['date_start'], res[0]['date_stop']))
             else:
                 return 'report'
         else:
-            raise wizard.except_wizard(_('UserError'),_('Date not in a defined fiscal year'))
+             raise osv.except_osv(_('UserError'),_('Date not in a defined fiscal year'))
 
-    def _excel_create(self, cr, uid, data, context={}):
-        form = data['form']
+    def get_account_balance_wiz_data(self, cr, uid, ids, context=None):
+        if isinstance(ids, list):
+            ids = ids[0]
 
+        wiz = self.browse(cr, uid, ids, context)
+        datas = {
+            'form': {
+                'date_from': wiz.date_from,
+                'display_account_level': wiz.display_account_level,
+                'company_id': wiz.company_id.id,
+                'state': wiz.state,
+                'account_list': [(6, 0, [item.id for item in wiz.account_list])],
+                'periods': [(6, 0, wiz.periods)],
+                'date_to':  wiz.date_to,
+                'display_account': wiz.display_account,
+                'fiscalyear': wiz.fiscalyear.id,
+                'context': context,
+                'all_accounts': wiz.all_accounts,
+            },
+        }
+        self.check_all_accounts(cr, uid, datas, context)
+        return datas
+
+    def _excel_create(self, cr, uid, ids, context={}):
         account_ids = form['account_list'][0][2]
         fiscal_year_label = utils.get_fiscalyear_text(cr, uid, form)
         periods_label = utils.get_periods_and_date_text(cr, uid, form)
@@ -116,39 +136,19 @@ class WizardAccountBalanceReport(osv.osv_memory):
 
         return data['form']
 
-    def _report_async(self, cr, uid, datas, context={}):
-        datas = {
-            'form': {
-                'date_from': '2021-01-01',
-                'display_account_level': 0,
-                'company_id': 1,
-                'state': 'none',
-                'account_list': [[6, 0, [8, 9, 1, 2, 3, 7, 4, 5, 6]]],
-                'periods': [[6, 0, []]],
-                'context': {'lang': False, 'tz': False},
-                'date_to': '2021-12-16',
-                'display_account': 'bal_all',
-                'fiscalyear': 1
-            }, 
-            
-            'ids': [285],
-            'report_type': 'pdf',
-            'model': 'ir.ui.menu',
-            'id': 285
-        }
-
-        AsyncReports = self.pool.get('async.reports').browse(cr, uid, uid, context=context)
-        report_id = AsyncReports.async_report_report(cr, uid, [], 'account.balance.full', {}, context)
-        return datas['form']
+    def _report_async(self, cr, uid, ids, context={}):
+        datas = self.get_account_balance_wiz_data(cr, uid, ids, context)
+        async_obj = self.pool.get('async.reports')
+        async_obj.async_report_report(cr, uid, ids, 'account.balance.full', datas, context)
+        return True
 
     def check_all_accounts(self, cr, uid, data, context={}):
         if data['form']['all_accounts']:
             all_accounts = self.pool.get('account.account').search(cr, uid, [])
             data['form']['account_list'][0] = [6, 0, all_accounts]
         elif data['form']['account_list'][0] == [6,0, []]:
-            raise wizard.except_wizard(_("Error"), _("Account list or 'all accounts' check required"))
-        return data['form']
-
+             raise osv.except_osv(_("Error"), _("Account list or 'all accounts' check required"))
+        return True
 
     """
     states = {
@@ -194,6 +194,7 @@ class WizardAccountBalanceReport(osv.osv_memory):
         'date_from': fields.date(u"Start date", required=True),
         'date_to': fields.date(u"End date", required=True),
     }
+
     _defaults = {
         'state': lambda *a:'none',
         'all_accounts': lambda *a: False,
