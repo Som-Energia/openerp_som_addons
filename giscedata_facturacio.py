@@ -602,7 +602,7 @@ class GiscedataFacturacioFacturador(osv.osv):
             if mode_facturacio == 'pvpc':
                 ctx['pricelist_base_price'] = 0.0  # Dummy base price to avoid error
             for line in factura.linia_ids:
-                if line.tipus in ('energia', 'potencia') and line.data_desde >= "2021-06-01":
+                if line.tipus in ('energia', 'potencia') and line.data_desde >= "2021-06-01" and line.data_fins <= "2021-12-31" and not line.isdiscount:
                     # let's get the price in order to get the base_pricelist_lit for his product
                     product_id = line.product_id.id
                     if line.is_gkwh()[line.id]:
@@ -626,7 +626,7 @@ class GiscedataFacturacioFacturador(osv.osv):
                             discount_to_apply = 1 + base_pricelist_list[tarifes_elec_id][0]
 
                     total_discount = 0.0
-                    if line.tipus == 'energia' and num_periodes == 1 and line.data_desde >= '2021-09-16':
+                    if line.tipus == 'energia' and num_periodes == 1 and line.data_desde >= "2021-09-16" and line.data_fins <= '2021-12-31':
                         try:
                             discount_price = pricelist_obj.price_get(
                                 cursor, uid, [discount_pricelist_id],
