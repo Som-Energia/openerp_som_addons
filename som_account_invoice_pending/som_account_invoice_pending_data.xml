@@ -75,7 +75,7 @@
             <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
         </record>
         <record model="account.invoice.pending.state" id="som_account_invoice_pending.pacte_fraccio_pending_state">
-            <field name="name">PACTE FRACCIO</field>
+            <field name="name">Fraccionament Extralines</field>
             <field name="weight">1003</field>
             <field name="pending_days">0</field>
             <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
@@ -169,7 +169,7 @@
             <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
         </record>
         <record model="account.invoice.pending.state" id="som_account_invoice_pending.default_pacte_fraccio_pending_state">
-            <field name="name">PACTE FRACCIO</field>
+            <field name="name">Fraccionament Extralines</field>
             <field name="weight">1102</field>
             <field name="pending_days">0</field>
             <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
