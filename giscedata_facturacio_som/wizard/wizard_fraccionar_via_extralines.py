@@ -20,7 +20,7 @@ class WizardFraccionarViaExtralines(osv.osv_memory):
 
         factura_ids = context.get("active_ids")
         factura_o = self.pool.get("giscedata.facturacio.factura")
-
+        user_o = self.pool.get("res.users")
         data_final = (datetime.strptime(wiz.data_inici, "%Y-%m-%d") + timedelta(days=365*10)).strftime("%Y-%m-%d")
 
         msgs = []
@@ -39,6 +39,13 @@ class WizardFraccionarViaExtralines(osv.osv_memory):
                     data_final, journal_id=wiz.journal_id.id,
                     amount=amount, context=context
                 )
+                other_info_head = '{} ({}): Fraccionament extralines en {} quotes.\n'.format(
+                    datetime.now().strftime("%Y-%m-%d"),
+                    [word[0] for word in user_o.read(cursor, uid, uid, ['name'])['name'].split(' ')],
+                    wiz.ntermes
+                )
+                new_other_info = other_info_head + factura.other_info
+                factura.other_info = new_other_info
 
             except Exception as e:
                 has_errors = True
@@ -66,6 +73,7 @@ class WizardFraccionarViaExtralines(osv.osv_memory):
 
     _defaults = {
         'first_term_payment': lambda *a: True,
+        'data_inici': lambda *a: (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d"),
     }
 
 
