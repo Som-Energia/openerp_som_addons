@@ -11,7 +11,9 @@
     ],
     "init_xml": [],
     "demo_xml": [],
-    "update_xml":[],
+    "update_xml":[
+        "wizard/wizard_fraccionar_via_extralines_view.xml",
+    ],
     "active": False,
     "installable": True
 }
