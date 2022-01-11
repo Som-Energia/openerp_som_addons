@@ -39,13 +39,14 @@ class WizardFraccionarViaExtralines(osv.osv_memory):
                     data_final, journal_id=wiz.journal_id.id,
                     amount=amount, context=context
                 )
-                other_info_head = '{} ({}): Fraccionament extralines en {} quotes.\n'.format(
+                comment_head = '{} ({}): Fraccionament extralines en {} quotes.\n'.format(
                     datetime.now().strftime("%Y-%m-%d"),
-                    [word[0] for word in user_o.read(cursor, uid, uid, ['name'])['name'].split(' ')],
+                    ''.join([word[0] for word in user_o.read(cursor, uid, uid, ['name'])['name'].split(' ')]),
                     wiz.ntermes
                 )
-                new_other_info = other_info_head + factura.other_info
-                factura.other_info = new_other_info
+                old_comment = factura.comment or ''
+                new_comment = comment_head + old_comment
+                factura_teo.write(info['id'], {'comment': new_comment})
 
             except Exception as e:
                 has_errors = True
