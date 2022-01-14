@@ -1,0 +1,2 @@
+import report
+import giscedata_facturacio_report

@@ -1,0 +1,85 @@
+.environment_impact {
+    background-color: #f7f7f7;
+    text-align: left;
+    width: 100%;
+    margin: 1em 0px 0px 0px;
+    float: left;
+    font-size: .9em;
+    page-break-inside: avoid;
+}
+
+.env_imp_desc {
+    line-height: 1.0;
+    margin-bottom: 0px;
+}
+
+.env_imp {
+    margin: 10px 10px 0px 10px;
+    font-size: .8em;
+}
+
+.env_imp_carbo,
+.env_imp_nuclear{
+    margin: 0px;
+    width: 47%;
+    float: left;
+    border-top: 1px solid #4c4c4c;
+    padding: 0px;
+}
+
+.env_imp_nuclear{
+    float: right;
+}
+
+.env_titol {
+    font-size: .9em;
+    width: 30%;
+    clear:right;
+    margin-left: 0;
+}
+
+.env_titol p {
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.env_img_lleg {
+    clear: both;
+    font-size: .7em;
+}
+
+.env_img {
+    width: 150px;
+    float: left;
+    margin-bottom: 5px;
+}
+
+.a_g {
+    width: 150px;
+    height: 150px;
+    padding:0px;
+}
+
+.env_mitjana {
+    width: 75px;
+    height: 150px;
+    float:left;
+    text-align: center;
+    display:table;
+}
+
+.env_mitjana p {
+    display:table-cell;
+    vertical-align: middle;
+    text-align: left;
+}
+
+.env_marc {
+    width: 75px;
+    height: 45px;
+    float:left;
+    text-align: center;
+    padding: 5px;
+    border: 1px solid #4c4c4c;
+    border-radius: 5px;
+}

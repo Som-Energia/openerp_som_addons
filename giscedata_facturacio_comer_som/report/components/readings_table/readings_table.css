@@ -1,0 +1,20 @@
+.lectures,
+.lectures30 {
+    float: left;
+    border: 1px solid #e2e2e2;
+    background-color: #f7f7f7;
+    margin: 2em 2em .05em 2em;
+    font-size: .8em;
+}
+.lectures30 {
+    width: 95%;
+    margin-top: 0px;
+    margin-bottom: 5px;
+    margin-left: 2em;
+    margin-right: 0px;
+}
+.despesa_diaria {
+    text-align: center;
+    font-size: .9em;
+    margin-top: 0em;
+}

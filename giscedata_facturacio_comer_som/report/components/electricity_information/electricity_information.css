@@ -1,0 +1,74 @@
+.elect_information{
+    background-color: #f7f7f7;
+    text-align: left;
+    width: 100%;
+    margin: 0px;
+    float: left;
+    font-size: .8em;
+}
+
+.mix{
+    background-color: #f7f7f7;
+    text-align: center;
+    width: 100%;
+    margin: 1em 0px 1em 0px;
+    float: left;
+    font-size: .8em;
+    clear: both;
+}
+
+.mix_som,
+.mix_esp{
+    margin: 10px;
+    font-size: 1.2em;
+    font-weight: 900;
+}
+
+.mix_som {
+    float: left;
+    width: 45%;
+}
+
+.mix_esp{
+    float: right;
+    width: 45%;
+}
+.mix .graf {
+    height: 170px;
+}
+
+.mix img {
+    max-height: 100%;
+}
+
+.mix p {
+    font-size: 1em;
+    font-weight: 100;
+}
+
+.mix_taula {
+    background-color: #f7f7f7;
+    text-align: left;
+    width: 100%;
+    margin: 1em 50px 1em 0px;
+    font-size: 1em;
+}
+
+.mix_taula th{
+    font-size: .8em;
+    border: 0px;
+}
+
+.mix_taula table {
+    margin: 10px;
+    width: 98%;
+}
+
+.mix_taula tbody tr {
+    border-bottom: 1px solid #000000;
+}
+
+.mix_taula tr:nth-child(odd),
+.mix_taula tr:nth-child(even){
+    background-color: #f7f7f7;
+}
