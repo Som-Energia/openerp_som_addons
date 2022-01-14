@@ -1,0 +1,40 @@
+    /* DADES CONTRACTE */
+    .contract_data,
+    .contract_data_small {
+        background-color: #f7f7f7;
+        text-align: left;
+        width: 100%;
+        margin: 0px 0px 1em 0px;
+        float: left;
+    }
+    .contract_data_small {
+        margin: 0px 0px .05em 0px;
+        font-size: 8px;
+    }
+    /* CONTENIDOR DADES DE CONTRACTE */
+    .contract_data_container {
+        position: relative;
+    }
+    /* DADES DE CONTRACTE NO AUTOPRODUCCIO */
+    .contract_data_main {
+        text-align: left;
+        width: 50%;
+        white-space: nowrap;
+        text-overflow: clip;
+    }
+    /* DADES AUTOPRODUCCIO */
+    .contract_data_auto {
+        width: 50%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin: 0px 0px 1em 0px;
+    }
+    .contract_data_auto p {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        padding: 0px 0px 0.5em 0px;
+        margin: 0;
+    }

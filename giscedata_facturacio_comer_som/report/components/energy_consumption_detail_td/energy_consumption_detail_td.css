@@ -1,0 +1,50 @@
+.energy_consumption_detail_td_block
+{
+    page-break-inside: avoid;
+}
+
+#energy_consumption_detail_td {
+    width: 100%;
+    text-align: center;
+}
+
+#energy_consumption_detail_td th {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    background-color: #bdc83f;
+    color: white;
+    font-size: 10px;
+}
+
+#energy_consumption_detail_td .concepte_td {
+    text-align: left;
+    width: 50px;
+}
+
+#energy_consumption_detail_td .detall_td{
+    text-align: left;
+    font-weight: bold;
+}
+
+#energy_consumption_detail_td .periods_td{
+    text-align: center;
+}
+
+.last_row {
+    border-bottom: 1.8px solid black;
+}
+
+.td_first {
+    background-color: #7a7a7a;
+    color: white;
+    font-weight: bold;
+    width: 50px;
+}
+
+.tr_bold {
+    font-weight: bold;
+}
+
+.sup_bold {
+    font-weight: bold;
+}

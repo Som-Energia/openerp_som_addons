@@ -1,0 +1,34 @@
+.emergency_td {
+    background-color: #f7f7f7;
+    text-align: left;
+    width: 32%;
+    margin: 0px 1.4em 0em 0em;
+    float: left;
+    height: 120px;
+    page-break-inside: avoid;
+}
+
+.complaints_td {
+    background-color: #f7f7f7;
+    text-align: left;
+    width: 66.3%;
+    float: left;
+    height: 120px;
+}
+
+.complaint_text {
+    font-size: 9px;
+}
+
+.padding_bold {
+    padding-left: 15px;
+    font-weight: bold;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.font_size_distri {
+    font-size: 9px;
+}
