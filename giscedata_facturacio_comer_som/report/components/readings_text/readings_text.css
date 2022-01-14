@@ -1,0 +1,15 @@
+.lectures_text,
+.lectures_text30 {
+    float: left;
+    background-color: #f7f7f7;
+    margin: .05em 2em .05em 4em;
+    font-size: .8em;
+}
+.lectures_text30 {
+    width: 95%;
+    text-align: center;
+    margin-top: 0px;
+    margin-bottom: 5px;
+    margin-left: 2em;
+    margin-right: 0px;
+}

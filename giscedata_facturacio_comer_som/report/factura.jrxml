@@ -1,0 +1,2665 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="factura_ng" language="groovy" pageWidth="595" pageHeight="842" whenNoDataType="BlankPage" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="10">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="647"/>
+	<style name="Crosstab Data Text" hAlign="Center"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#FFBFBF">
+		<box>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="LiniesActiva">
+		<parameter name="FACTURA_ID" class="java.lang.Integer" isForPrompting="false">
+			<parameterDescription><![CDATA[]]></parameterDescription>
+			<defaultValueExpression><![CDATA[12143]]></defaultValueExpression>
+		</parameter>
+		<parameter name="TIPUS" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="L" class="java.util.Locale"/>
+		<queryString>
+			<![CDATA[SELECT
+     giscedata_facturacio_factura_linia."price_unit_multi" AS giscedata_facturacio_factura_linia_price_unit_multi,
+     giscedata_facturacio_factura_linia."factura_id" AS giscedata_facturacio_factura_linia_factura_id,
+     giscedata_facturacio_factura_linia.tipus AS giscedata_facturacio_factura_linia_tipus,
+     giscedata_facturacio_factura_linia.multi AS giscedata_facturacio_factura_linia_multi,
+     account_invoice_line."name" AS account_invoice_line_name,
+     account_invoice_line."quantity" AS account_invoice_line_quantity,
+     coalesce(product_uom."name",'') AS product_uom_name,
+     account_invoice_line."price_subtotal" AS account_invoice_line_price_subtotal,
+     coalesce(multi_uom.name, '') AS multi_uom_name,
+     giscedata_facturacio_factura_linia.data_desde AS data_desde,
+     giscedata_facturacio_factura_linia.data_fins AS data_fins
+FROM
+     "public"."account_invoice_line" account_invoice_line
+      INNER JOIN "public"."giscedata_facturacio_factura_linia" giscedata_facturacio_factura_linia ON account_invoice_line."id" = giscedata_facturacio_factura_linia."invoice_line_id"
+     LEFT JOIN "public"."product_uom" product_uom ON account_invoice_line."uos_id" = product_uom."id"
+     LEFT JOIN product_uom multi_uom ON giscedata_facturacio_factura_linia.uom_multi_id = product_uom.id
+WHERE
+     giscedata_facturacio_factura_linia.factura_id = $P!{FACTURA_ID}
+ORDER BY
+     giscedata_facturacio_factura_linia.tipus,account_invoice_line.name,
+     giscedata_facturacio_factura_linia.data_desde asc,
+     giscedata_facturacio_factura_linia.data_fins asc]]>
+		</queryString>
+		<field name="giscedata_facturacio_factura_linia_price_unit_multi" class="java.math.BigDecimal"/>
+		<field name="giscedata_facturacio_factura_linia_factura_id" class="java.lang.Integer"/>
+		<field name="giscedata_facturacio_factura_linia_tipus" class="java.lang.String"/>
+		<field name="giscedata_facturacio_factura_linia_multi" class="java.lang.Double"/>
+		<field name="account_invoice_line_name" class="java.lang.String"/>
+		<field name="account_invoice_line_quantity" class="java.math.BigDecimal"/>
+		<field name="product_uom_name" class="java.lang.String"/>
+		<field name="account_invoice_line_price_subtotal" class="java.math.BigDecimal"/>
+		<field name="multi_uom_name" class="java.lang.String"/>
+		<field name="data_desde" class="java.util.Date"/>
+		<field name="data_fins" class="java.util.Date"/>
+		<variable name="L" class="java.util.Locale">
+			<variableExpression><![CDATA[$P{L}]]></variableExpression>
+		</variable>
+		<filterExpression><![CDATA[$F{giscedata_facturacio_factura_linia_factura_id} == $P{FACTURA_ID} && $P{TIPUS}.contains($F{giscedata_facturacio_factura_linia_tipus})]]></filterExpression>
+	</subDataset>
+	<subDataset name="dataset2">
+		<parameter name="FACTURA_ID" class="java.lang.Integer" isForPrompting="false">
+			<defaultValueExpression><![CDATA[130048]]></defaultValueExpression>
+		</parameter>
+		<parameter name="TIPO" class="java.lang.String" isForPrompting="false">
+			<defaultValueExpression><![CDATA["activa"]]></defaultValueExpression>
+		</parameter>
+		<parameter name="L" class="java.util.Locale">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<queryString>
+			<![CDATA[SELECT
+     giscedata_facturacio_lectures_energia.factura_id AS giscedata_facturacio_lectures_energia_factura_id,
+     giscedata_facturacio_lectures_energia.name AS giscedata_facturacio_lectures_energia_name,
+     giscedata_facturacio_lectures_energia.lect_actual AS giscedata_facturacio_lectures_energia_lect_actual,
+     giscedata_facturacio_lectures_energia.consum AS giscedata_facturacio_lectures_energia_consum,
+     giscedata_facturacio_lectures_energia.tipus AS giscedata_facturacio_lectures_energia_tipus,
+     giscedata_facturacio_lectures_energia.lect_anterior AS giscedata_facturacio_lectures_energia_lect_anterior,
+     giscedata_facturacio_lectures_energia.comptador_id AS giscedata_facturacio_lectures_energia_comptador_id,
+giscedata_lectures_comptador.giro AS giscedata_lectures_comptador_giro,
+     case
+	when giscedata_facturacio_lectures_energia.lect_actual > giscedata_facturacio_lectures_energia.lect_anterior
+	then giscedata_facturacio_lectures_energia.lect_actual - giscedata_facturacio_lectures_energia.lect_anterior
+	when giscedata_facturacio_lectures_energia.lect_actual < giscedata_facturacio_lectures_energia.lect_anterior
+	then (giscedata_lectures_comptador.giro - giscedata_facturacio_lectures_energia.lect_anterior) + giscedata_facturacio_lectures_energia.lect_actual
+	else 0
+     end as consumo
+FROM
+     giscedata_facturacio_lectures_energia giscedata_facturacio_lectures_energia
+     INNER JOIN
+     giscedata_lectures_comptador
+     ON
+     giscedata_facturacio_lectures_energia.comptador_id = giscedata_lectures_comptador.id
+WHERE
+     giscedata_facturacio_lectures_energia.factura_id = $P!{FACTURA_ID}
+     and giscedata_facturacio_lectures_energia.tipus = $P{TIPO}
+ORDER BY
+     giscedata_facturacio_lectures_energia.data_anterior,
+     giscedata_facturacio_lectures_energia.tipus,
+     giscedata_facturacio_lectures_energia.name,
+     giscedata_facturacio_lectures_energia.comptador_id]]>
+		</queryString>
+		<field name="giscedata_facturacio_lectures_energia_factura_id" class="java.lang.Integer"/>
+		<field name="giscedata_facturacio_lectures_energia_name" class="java.lang.String"/>
+		<field name="giscedata_facturacio_lectures_energia_lect_actual" class="java.lang.Integer"/>
+		<field name="giscedata_facturacio_lectures_energia_consum" class="java.lang.Integer"/>
+		<field name="giscedata_facturacio_lectures_energia_tipus" class="java.lang.String"/>
+		<field name="giscedata_facturacio_lectures_energia_lect_anterior" class="java.lang.Integer"/>
+		<field name="giscedata_facturacio_lectures_energia_comptador_id" class="java.lang.Integer"/>
+		<field name="giscedata_lectures_comptador_giro" class="java.lang.Integer"/>
+		<field name="consumo" class="java.lang.Integer"/>
+		<variable name="L" class="java.util.Locale">
+			<variableExpression><![CDATA[$P{L}]]></variableExpression>
+		</variable>
+	</subDataset>
+	<subDataset name="dataset3">
+		<parameter name="INVOICE_ID" class="java.lang.Integer"/>
+		<parameter name="NAME" class="java.lang.String"/>
+		<parameter name="L" class="java.util.Locale"/>
+		<queryString>
+			<![CDATA[SELECT
+	account_invoice_tax.invoice_id AS account_invoice_tax_invoice_id,
+	account_invoice_tax.name AS account_invoice_tax_name,
+	account_invoice_tax.base AS account_invoice_tax_base,
+	account_invoice_tax.amount AS account_invoice_tax_amount,
+	account_invoice_tax.sequence AS account_invoice_tax_sequence
+FROM
+	account_invoice_tax account_invoice_tax
+WHERE
+	account_invoice_tax.invoice_id = $P!{INVOICE_ID}
+--	AND account_invoice_tax.name LIKE '$P!{NAME}']]>
+		</queryString>
+		<field name="account_invoice_tax_invoice_id" class="java.lang.Integer">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="account_invoice_tax_name" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="account_invoice_tax_base" class="java.math.BigDecimal">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="account_invoice_tax_amount" class="java.math.BigDecimal">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="account_invoice_tax_sequence" class="java.lang.Integer">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<sortField name="account_invoice_tax_sequence"/>
+		<variable name="L" class="java.util.Locale">
+			<variableExpression><![CDATA[$P{L}]]></variableExpression>
+		</variable>
+		<filterExpression><![CDATA[$F{account_invoice_tax_invoice_id} == $P{INVOICE_ID} && $F{account_invoice_tax_name} == $P{NAME}]]></filterExpression>
+	</subDataset>
+	<subDataset name="ContactoEmpresa">
+		<parameter name="COMPANY_ID" class="java.lang.Integer">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="L" class="java.util.Locale"/>
+		<queryString>
+			<![CDATA[SELECT
+     res_company.id AS res_company_id,
+     res_partner_address.name AS res_partner_address_name,
+     res_partner.website AS res_partner_website,
+     res_partner_address.email AS res_partner_address_email,
+     res_partner_address.phone AS res_partner_address_phone,
+     res_partner.vat AS res_partner_vat,
+     res_partner_address.street AS res_partner_address_street,
+     res_partner_address.zip AS res_partner_address_zip,
+     res_partner_address.city AS res_partner_address_city
+
+FROM res_company
+     LEFT JOIN res_partner ON res_company.partner_id = res_partner.id
+     LEFT JOIN res_partner_address ON res_partner.id = res_partner_address.partner_id
+WHERE
+     res_partner_address.type = 'contact' and
+     res_company.id = $P!{COMPANY_ID}]]>
+		</queryString>
+		<field name="res_company_id" class="java.lang.Integer"/>
+		<field name="res_partner_address_name" class="java.lang.String"/>
+		<field name="res_partner_website" class="java.lang.String"/>
+		<field name="res_partner_address_email" class="java.lang.String"/>
+		<field name="res_partner_address_phone" class="java.lang.String"/>
+		<field name="res_partner_address_zip" class="java.lang.String"/>
+		<field name="res_partner_address_city" class="java.lang.String"/>
+		<field name="res_partner_vat" class="java.lang.String"/>
+		<field name="res_partner_address_street" class="java.lang.String"/>
+		<variable name="L" class="java.util.Locale">
+			<variableExpression><![CDATA[$P{L}]]></variableExpression>
+		</variable>
+		<filterExpression><![CDATA[$F{res_company_id} == $P{COMPANY_ID}]]></filterExpression>
+	</subDataset>
+	<subDataset name="ContactoAverias">
+		<parameter name="PARTNER_ID" class="java.lang.Integer">
+			<parameterDescription><![CDATA[]]></parameterDescription>
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="L" class="java.util.Locale"/>
+		<queryString>
+			<![CDATA[SELECT
+     res_partner.id AS res_partner_id,
+     res_partner_address.name AS res_partner_address_name,
+     res_partner_address.phone AS res_partner_address_phone,
+     coalesce(res_partner_address.mobile,'') AS res_partner_address_mobile
+FROM res_partner
+     INNER JOIN res_partner_address ON res_partner.id = res_partner_address.partner_id
+WHERE
+     res_partner_address.type = 'contact' and
+     res_partner.id = $P!{PARTNER_ID}]]>
+		</queryString>
+		<field name="res_partner_id" class="java.lang.Integer"/>
+		<field name="res_partner_address_name" class="java.lang.String"/>
+		<field name="res_partner_address_phone" class="java.lang.String"/>
+		<field name="res_partner_address_mobile" class="java.lang.String"/>
+		<variable name="L" class="java.util.Locale">
+			<variableExpression><![CDATA[$P{L}]]></variableExpression>
+		</variable>
+		<filterExpression><![CDATA[$F{res_partner_id} == $P{PARTNER_ID}]]></filterExpression>
+	</subDataset>
+	<subDataset name="Fechaslectura">
+		<parameter name="FACTURA_ID" class="java.lang.Integer">
+			<defaultValueExpression><![CDATA[130047]]></defaultValueExpression>
+		</parameter>
+		<parameter name="L" class="java.util.Locale"/>
+		<queryString>
+			<![CDATA[SELECT
+     giscedata_facturacio_lectures_energia.factura_id AS giscedata_facturacio_lectures_energia_factura_id,
+     giscedata_facturacio_lectures_energia.comptador AS giscedata_facturacio_lectures_energia_comptador,
+     giscedata_facturacio_lectures_energia.data_actual AS giscedata_facturacio_lectures_energia_data_actual,
+     giscedata_facturacio_lectures_energia.data_anterior AS giscedata_facturacio_lectures_energia_data_anterior
+FROM
+     giscedata_facturacio_lectures_energia giscedata_facturacio_lectures_energia
+WHERE
+     giscedata_facturacio_lectures_energia.factura_id = $P!{FACTURA_ID}
+GROUP BY
+     giscedata_facturacio_lectures_energia.factura_id,giscedata_facturacio_lectures_energia.comptador,giscedata_facturacio_lectures_energia.data_actual,giscedata_facturacio_lectures_energia.data_anterior
+ORDER BY giscedata_facturacio_lectures_energia_data_anterior]]>
+		</queryString>
+		<field name="giscedata_facturacio_lectures_energia_factura_id" class="java.lang.Integer"/>
+		<field name="giscedata_facturacio_lectures_energia_comptador" class="java.lang.String"/>
+		<field name="giscedata_facturacio_lectures_energia_data_actual" class="java.sql.Date"/>
+		<field name="giscedata_facturacio_lectures_energia_data_anterior" class="java.sql.Date"/>
+		<variable name="L" class="java.util.Locale">
+			<variableExpression><![CDATA[$P{L}]]></variableExpression>
+		</variable>
+		<filterExpression><![CDATA[$F{giscedata_facturacio_lectures_energia_factura_id} == $P{FACTURA_ID}]]></filterExpression>
+	</subDataset>
+	<subDataset name="HistoricoConsumo">
+		<parameter name="POLISSA_ID" class="java.lang.Integer">
+			<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+		</parameter>
+		<parameter name="DATE_INVOICE" class="java.util.Date">
+			<defaultValueExpression><![CDATA[2011-05-30]]></defaultValueExpression>
+		</parameter>
+		<parameter name="L" class="java.util.Locale"/>
+		<queryString>
+			<![CDATA[SELECT
+     giscedata_facturacio_factura.polissa_id AS giscedata_facturacio_factura_polissa_id,
+     giscedata_facturacio_factura.id AS giscedata_facturacio_factura_id,
+     giscedata_facturacio_factura.data_inici AS giscedata_facturacio_factura_inici,
+     giscedata_facturacio_factura.data_final AS giscedata_facturacio_factura_final,
+     account_invoice.date_invoice AS account_invoice_data_invoice,
+     giscedata_facturacio_factura.total_energia AS total_energia_euros,
+     round(sum(invoice_line.quantity),0) as total_energia_kw
+FROM
+     giscedata_facturacio_factura
+     INNER JOIN account_invoice ON
+     giscedata_facturacio_factura.invoice_id = account_invoice.id
+     INNER JOIN account_journal journal on journal.id = account_invoice.journal_id
+     INNER JOIN giscedata_facturacio_factura_linia factura_linia
+     on factura_linia.factura_id = giscedata_facturacio_factura.id
+     INNER JOIN account_invoice_line invoice_line
+     on invoice_line.id = factura_linia.invoice_line_id
+     -- busquem les anuladores relacionades per treure-les
+     LEFT JOIN giscedata_facturacio_factura an on
+     (giscedata_facturacio_factura.id=an.ref AND an.tipo_rectificadora IN ('A','B','BRA'))
+WHERE
+    journal.code = 'ENERGIA' AND
+    factura_linia.tipus = 'energia' AND
+    giscedata_facturacio_factura.polissa_id = $P!{POLISSA_ID} AND
+    account_invoice.date_invoice BETWEEN '2011-01-01' AND '$P!{DATE_INVOICE}' AND
+    an.id IS NULL
+GROUP BY
+    giscedata_facturacio_factura_polissa_id, account_invoice_data_invoice,
+    total_energia_euros, giscedata_facturacio_factura.id,
+    giscedata_facturacio_factura.data_inici, giscedata_facturacio_factura.data_final
+ORDER BY date_invoice DESC LIMIT 6]]>
+		</queryString>
+		<field name="giscedata_facturacio_factura_polissa_id" class="java.lang.Integer"/>
+		<field name="giscedata_facturacio_factura_id" class="java.lang.Integer"/>
+		<field name="account_invoice_data_invoice" class="java.sql.Date"/>
+		<field name="total_energia_euros" class="java.math.BigDecimal"/>
+		<field name="total_energia_kw" class="java.math.BigDecimal"/>
+		<field name="giscedata_facturacio_factura_inici" class="java.util.Date"/>
+		<field name="giscedata_facturacio_factura_final" class="java.util.Date"/>
+		<variable name="L" class="java.util.Locale">
+			<variableExpression><![CDATA[$P{L}]]></variableExpression>
+		</variable>
+	</subDataset>
+	<subDataset name="Maximetro">
+		<parameter name="FACTURA_ID" class="java.lang.Integer">
+			<defaultValueExpression><![CDATA[10255]]></defaultValueExpression>
+		</parameter>
+		<parameter name="TARIFA_ACCES" class="java.lang.String">
+			<defaultValueExpression><![CDATA["3.0A"]]></defaultValueExpression>
+		</parameter>
+		<parameter name="L" class="java.util.Locale"/>
+		<queryString>
+			<![CDATA[SELECT
+     giscedata_facturacio_lectures_potencia.factura_id AS giscedata_facturacio_lectures_potencia_factura_id,
+     giscedata_facturacio_lectures_potencia.name AS giscedata_facturacio_lectures_potencia_name,
+     giscedata_facturacio_lectures_potencia.pot_contract AS giscedata_facturacio_lectures_potencia_pot_contract,
+     giscedata_facturacio_lectures_potencia.pot_maximetre AS giscedata_facturacio_lectures_potencia_pot_maximetre,
+     giscedata_facturacio_lectures_potencia.exces AS giscedata_facturacio_lectures_potencia_exces
+FROM
+     giscedata_facturacio_lectures_potencia
+WHERE
+     giscedata_facturacio_lectures_potencia.factura_id = $P!{FACTURA_ID}
+ORDER BY giscedata_facturacio_lectures_potencia.name]]>
+		</queryString>
+		<field name="giscedata_facturacio_lectures_potencia_factura_id" class="java.lang.Integer"/>
+		<field name="giscedata_facturacio_lectures_potencia_name" class="java.lang.String"/>
+		<field name="giscedata_facturacio_lectures_potencia_pot_contract" class="java.math.BigDecimal"/>
+		<field name="giscedata_facturacio_lectures_potencia_pot_maximetre" class="java.math.BigDecimal"/>
+		<field name="giscedata_facturacio_lectures_potencia_exces" class="java.math.BigDecimal"/>
+		<variable name="L" class="java.util.Locale">
+			<variableExpression><![CDATA[$P{L}]]></variableExpression>
+		</variable>
+	</subDataset>
+	<subDataset name="dataset4">
+		<parameter name="L" class="java.util.Locale"/>
+		<variable name="L" class="java.util.Locale">
+			<variableExpression><![CDATA[$P{L}]]></variableExpression>
+		</variable>
+	</subDataset>
+	<subDataset name="dataset5">
+		<parameter name="L" class="java.util.Locale"/>
+		<variable name="L" class="java.util.Locale">
+			<variableExpression><![CDATA[$P{L}]]></variableExpression>
+		</variable>
+	</subDataset>
+	<subDataset name="dataset6">
+		<parameter name="L" class="java.util.Locale"/>
+		<variable name="L" class="java.util.Locale">
+			<variableExpression><![CDATA[$P{L}]]></variableExpression>
+		</variable>
+	</subDataset>
+	<subDataset name="Table Dataset 1"/>
+	<subDataset name="IVA&apos;s">
+		<parameter name="INVOICE_ID" class="java.lang.Integer"/>
+		<parameter name="NAME" class="java.lang.String"/>
+		<parameter name="L" class="java.util.Locale"/>
+		<queryString>
+			<![CDATA[SELECT
+	account_invoice_tax.invoice_id AS account_invoice_tax_invoice_id,
+	account_invoice_tax.name AS account_invoice_tax_name,
+	account_invoice_tax.base AS account_invoice_tax_base,
+	account_invoice_tax.amount AS account_invoice_tax_amount,
+	account_invoice_tax.sequence AS account_invoice_tax_sequence
+FROM
+	account_invoice_tax account_invoice_tax
+WHERE
+	account_invoice_tax.invoice_id = $P!{INVOICE_ID}
+	AND account_invoice_tax.name LIKE '%IVA%']]>
+		</queryString>
+		<field name="account_invoice_tax_invoice_id" class="java.lang.Integer"/>
+		<field name="account_invoice_tax_name" class="java.lang.String"/>
+		<field name="account_invoice_tax_base" class="java.math.BigDecimal"/>
+		<field name="account_invoice_tax_amount" class="java.math.BigDecimal"/>
+		<field name="account_invoice_tax_sequence" class="java.lang.Integer"/>
+	</subDataset>
+	<subDataset name="dataset7"/>
+	<subDataset name="dataset8"/>
+	<parameter name="IDS2" class="java.lang.String">
+		<defaultValueExpression><![CDATA[$P{REPORT_PARAMETERS_MAP}.IDS.toString().replace("{","(").replace("}",")")]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+     giscedata_cups_ps.name AS giscedata_cups_ps_name,
+     coalesce(res_tipovia.name, '') AS giscedata_cups_ps_tv,
+     coalesce(giscedata_cups_ps.nv, '') AS giscedata_cups_ps_nv,
+     coalesce(giscedata_cups_ps.pnp, '') AS giscedata_cups_ps_pnp,
+     coalesce(giscedata_cups_ps.es, '') AS giscedata_cups_ps_es,
+     coalesce(giscedata_cups_ps.pt, '') AS giscedata_cups_ps_pt,
+     coalesce(giscedata_cups_ps.pu, '') AS giscedata_cups_ps_pu,
+     coalesce(giscedata_cups_ps.cpo, '') AS giscedata_cups_ps_cpo,
+     coalesce(giscedata_cups_ps.cpa, '') AS giscedata_cups_ps_cpa,
+     coalesce(giscedata_cups_ps.aclarador, '') AS giscedata_cups_ps_aclarador,
+     res_municipi_cups.name AS res_municipi_cups_name,
+     res_poblacio_cups.name AS res_poblacio_cups_name,
+     account_invoice.number AS account_invoice_number,
+     account_invoice_rectificada.number AS account_invoice_rectificada_number,
+     account_invoice.id AS account_invoice_id,
+     account_invoice.date_invoice AS account_invoice_date_invoice,
+     account_invoice.type AS account_invoice_type,
+     giscedata_facturacio_factura.tipo_rectificadora AS giscedata_facturacio_factura_rectificadora,
+     account_invoice.name AS account_invoice_description,
+     giscedata_facturacio_factura.data_inici AS giscedata_facturacio_factura_data_inici,
+     giscedata_facturacio_factura.data_final AS giscedata_facturacio_factura_data_final,
+     giscedata_facturacio_factura.potencia AS giscedata_facturacio_factura_potencia,
+     CASE
+          WHEN account_invoice.type = 'out_refund' THEN account_invoice.amount_total*(-1)
+          ELSE account_invoice.amount_total
+     END as account_invoice_amount_total,
+     giscedata_facturacio_factura.id AS giscedata_facturacio_factura_id,
+     product_pricelist.name AS product_pricelist_name,
+     giscedata_polissa_tarifa.name AS tarifa_acces,
+     giscedata_polissa.name AS giscedata_polissa_name,
+     giscedata_polissa.ref_dist AS giscedata_polissa_ref_dist,
+     res_partner.name AS res_partner_name,
+     res_partner.vat AS res_partner_vat,
+     res_partner.lang AS res_partner_lang,
+     res_bank.name AS res_bank_name,
+     res_partner_titular_cc.name AS res_partner_titular_cc_name,
+     payment_type.name AS payment_type_name,
+     payment_mode.name AS payment_mode_name,
+     res_partner_bank.acc_number AS res_partner_bank_acc_number,
+     account_invoice.date_due AS account_invoice_date_due,
+     invoice_address.name AS invoice_address_name,
+     invoice_address.street AS invoice_address_street,
+     coalesce(invoice_address.street2,'') AS invoice_address_street2,
+     invoice_address.city AS invoice_address_city,
+     invoice_address.zip AS invoice_address_zip,
+     invoice_state.name AS invoice_state_name,
+     invoice_country.name AS invoice_country_name,
+     account_invoice.company_id AS account_invoice_company_id,
+     giscedata_polissa.distribuidora AS giscedata_polissa_distribuidora,
+     giscedata_polissa.id AS giscedata_polissa_id,
+     res_partner_pagador.vat AS res_partner_pagador_vat,
+     gpm.data_inici AS gpm_data_inici,
+     gpm.data_final AS gpm_data_final,
+     coalesce(account_invoice.comment,'') as account_invoice_observacions,
+     giscemisc_cnae.name AS giscemisc_cnae_name,
+     giscedata_polissa.facturacio_potencia AS giscedata_polissa_fpotencia,
+     partner_soci.name AS nom_soci,
+     lectures_reactiva.num_lectures AS num_lectures_reactiva,
+     linies_reactiva.num_linies AS num_linies_reactiva
+FROM
+     giscedata_facturacio_factura giscedata_facturacio_factura
+     LEFT JOIN giscedata_facturacio_factura giscedata_facturacio_factura_rectificada ON giscedata_facturacio_factura.ref = giscedata_facturacio_factura_rectificada.id
+     LEFT JOIN account_invoice account_invoice_rectificada ON giscedata_facturacio_factura_rectificada.invoice_id = account_invoice_rectificada.id
+     LEFT JOIN giscedata_cups_ps giscedata_cups_ps ON  giscedata_cups_ps.id = giscedata_facturacio_factura.cups_id
+     LEFT JOIN res_municipi res_municipi_cups ON giscedata_cups_ps.id_municipi = res_municipi_cups.id
+     LEFT JOIN res_poblacio res_poblacio_cups ON giscedata_cups_ps.id_poblacio = res_poblacio_cups.id
+     LEFT JOIN account_invoice account_invoice ON giscedata_facturacio_factura.invoice_id = account_invoice.id
+     LEFT JOIN product_pricelist product_pricelist ON giscedata_facturacio_factura.llista_preu = product_pricelist.id
+     LEFT JOIN giscedata_polissa giscedata_polissa ON giscedata_facturacio_factura.polissa_id = giscedata_polissa.id
+     LEFT JOIN giscedata_polissa_tarifa ON giscedata_polissa_tarifa.id = giscedata_facturacio_factura.tarifa_acces_id
+     LEFT JOIN res_partner res_partner ON giscedata_polissa.titular = res_partner.id
+     LEFT JOIN res_partner_bank ON account_invoice.partner_bank = res_partner_bank.id
+     LEFT JOIN res_partner res_partner_titular_cc ON res_partner_bank.partner_id = res_partner_titular_cc.id
+     LEFT JOIN res_bank ON res_partner_bank.bank = res_bank.id
+     LEFT JOIN res_partner_address invoice_address ON account_invoice.address_invoice_id = invoice_address.id
+     LEFT JOIN res_country_state invoice_state ON invoice_address.state_id = invoice_state.id
+     LEFT JOIN res_country invoice_country ON invoice_address.country_id = invoice_country.id
+     LEFT JOIN payment_type ON account_invoice.payment_type = payment_type.id
+     LEFT JOIN payment_mode ON giscedata_facturacio_factura.payment_mode_id = payment_mode.id
+     LEFT JOIN res_partner res_partner_pagador ON res_partner_pagador.id = account_invoice.partner_id
+     LEFT JOIN giscedata_polissa_modcontractual gpm ON gpm.id = giscedata_polissa.modcontractual_activa
+     LEFT JOIN res_tipovia ON giscedata_cups_ps.tv = res_tipovia.id
+     LEFT JOIN giscemisc_cnae ON giscedata_polissa.cnae = giscemisc_cnae.id
+     LEFT JOIN giscedata_facturacio_factura_linia ON (giscedata_facturacio_factura_linia.factura_id = giscedata_facturacio_factura.id AND giscedata_facturacio_factura_linia.tipus = 'reactiva')
+     LEFT JOIN res_partner partner_soci ON (partner_soci.id=giscedata_polissa.soci)
+     LEFT JOIN (
+	SELECT factura_id, count(*) AS num_lectures
+	FROM giscedata_facturacio_lectures_energia
+	WHERE tipus='reactiva'
+	GROUP BY factura_id
+	) AS lectures_reactiva ON (giscedata_facturacio_factura.id=lectures_reactiva.factura_id)
+     LEFT JOIN (
+	SELECT factura_id, count(*) AS num_linies
+	FROM giscedata_facturacio_factura_linia
+	WHERE tipus='reactiva'
+	GROUP BY factura_id
+	) AS linies_reactiva ON (giscedata_facturacio_factura.id=linies_reactiva.factura_id)
+WHERE
+     giscedata_facturacio_factura.id in $P!{IDS2}
+ORDER BY
+      invoice_address.zip, invoice_address.street]]>
+	</queryString>
+	<field name="giscedata_cups_ps_name" class="java.lang.String"/>
+	<field name="giscedata_cups_ps_tv" class="java.lang.String"/>
+	<field name="giscedata_cups_ps_nv" class="java.lang.String"/>
+	<field name="giscedata_cups_ps_pnp" class="java.lang.String"/>
+	<field name="giscedata_cups_ps_es" class="java.lang.String"/>
+	<field name="giscedata_cups_ps_pt" class="java.lang.String"/>
+	<field name="giscedata_cups_ps_pu" class="java.lang.String"/>
+	<field name="giscedata_cups_ps_cpo" class="java.lang.String"/>
+	<field name="giscedata_cups_ps_cpa" class="java.lang.String"/>
+	<field name="giscedata_cups_ps_aclarador" class="java.lang.String"/>
+	<field name="res_municipi_cups_name" class="java.lang.String"/>
+	<field name="res_poblacio_cups_name" class="java.lang.String"/>
+	<field name="account_invoice_number" class="java.lang.String"/>
+	<field name="account_invoice_rectificada_number" class="java.lang.String"/>
+	<field name="account_invoice_id" class="java.lang.Integer"/>
+	<field name="account_invoice_date_invoice" class="java.sql.Date"/>
+	<field name="account_invoice_type" class="java.lang.String"/>
+	<field name="giscedata_facturacio_factura_rectificadora" class="java.lang.String"/>
+	<field name="account_invoice_description" class="java.lang.String"/>
+	<field name="giscedata_facturacio_factura_data_inici" class="java.sql.Date"/>
+	<field name="giscedata_facturacio_factura_data_final" class="java.sql.Date"/>
+	<field name="giscedata_facturacio_factura_potencia" class="java.math.BigDecimal"/>
+	<field name="account_invoice_amount_total" class="java.math.BigDecimal"/>
+	<field name="giscedata_facturacio_factura_id" class="java.lang.Integer"/>
+	<field name="product_pricelist_name" class="java.lang.String"/>
+	<field name="tarifa_acces" class="java.lang.String"/>
+	<field name="giscedata_polissa_name" class="java.lang.String"/>
+	<field name="giscedata_polissa_ref_dist" class="java.lang.String"/>
+	<field name="res_partner_name" class="java.lang.String"/>
+	<field name="res_partner_vat" class="java.lang.String"/>
+	<field name="res_partner_lang" class="java.lang.String"/>
+	<field name="res_bank_name" class="java.lang.String"/>
+	<field name="payment_type_name" class="java.lang.String"/>
+	<field name="payment_mode_name" class="java.lang.String"/>
+	<field name="res_partner_bank_acc_number" class="java.lang.String"/>
+	<field name="account_invoice_date_due" class="java.sql.Date"/>
+	<field name="invoice_address_name" class="java.lang.String"/>
+	<field name="invoice_address_street" class="java.lang.String"/>
+	<field name="invoice_address_street2" class="java.lang.String"/>
+	<field name="invoice_address_city" class="java.lang.String"/>
+	<field name="invoice_address_zip" class="java.lang.String"/>
+	<field name="invoice_state_name" class="java.lang.String"/>
+	<field name="invoice_country_name" class="java.lang.String"/>
+	<field name="account_invoice_company_id" class="java.lang.Integer"/>
+	<field name="giscedata_polissa_distribuidora" class="java.lang.Integer"/>
+	<field name="giscedata_polissa_id" class="java.lang.Integer"/>
+	<field name="res_partner_pagador_vat" class="java.lang.String"/>
+	<field name="gpm_data_inici" class="java.sql.Date"/>
+	<field name="gpm_data_final" class="java.sql.Date"/>
+	<field name="account_invoice_observacions" class="java.lang.String"/>
+	<field name="giscemisc_cnae_name" class="java.lang.String"/>
+	<field name="giscedata_polissa_fpotencia" class="java.lang.String"/>
+	<field name="num_linies_reactiva" class="java.lang.Integer"/>
+	<field name="nom_soci" class="java.lang.String"/>
+	<field name="num_lectures_reactiva" class="java.lang.Integer"/>
+	<field name="res_partner_titular_cc_name" class="java.lang.String"/>
+	<variable name="L" class="java.util.Locale">
+		<variableExpression><![CDATA[$F{res_partner_lang} != null && $F{res_partner_lang}.length() == 5 ? new Locale( $F{res_partner_lang}.substring(0,2), $F{res_partner_lang}.substring(3,5) ) : ( $F{res_partner_lang} != null && $F{res_partner_lang}.length() == 2 ? new Locale( $F{res_partner_lang}.substring(0,2) ) : $P{REPORT_LOCALE} )]]></variableExpression>
+		<initialValueExpression><![CDATA[$F{res_partner_lang} != null && $F{res_partner_lang}.length() == 5 ? new Locale( $F{res_partner_lang}.substring(0,2), $F{res_partner_lang}.substring(3,5) ) : ( $F{res_partner_lang} != null && $F{res_partner_lang}.length() == 2 ? new Locale( $F{res_partner_lang}.substring(0,2) ) : $P{REPORT_LOCALE} )]]></initialValueExpression>
+	</variable>
+	<background>
+		<band height="551">
+			<textField isStretchWithOverflow="true">
+				<reportElement x="-1" y="229" width="555" height="108" forecolor="#EDECEB">
+					<printWhenExpression><![CDATA[$F{account_invoice_type} == "out_refund"]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center" markup="none">
+					<font size="78" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"ABONAMENT")]]></textFieldExpression>
+			</textField>
+		</band>
+	</background>
+	<detail>
+		<band height="465">
+			<rectangle>
+				<reportElement mode="Transparent" x="288" y="3" width="257" height="119"/>
+			</rectangle>
+			<componentElement>
+				<reportElement positionType="Float" x="241" y="388" width="300" height="12"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="LiniesActiva">
+						<datasetParameter name="FACTURA_ID">
+							<datasetParameterExpression><![CDATA[$F{giscedata_facturacio_factura_id}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="TIPUS">
+							<datasetParameterExpression><![CDATA["lloguer"]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="L">
+							<datasetParameterExpression><![CDATA[$F{res_partner_lang} != null && $F{res_partner_lang}.length() == 5 ? new Locale( $F{res_partner_lang}.substring(0,2), $F{res_partner_lang}.substring(3,5) ) : ( $F{res_partner_lang} != null && $F{res_partner_lang}.length() == 2 ? new Locale( $F{res_partner_lang}.substring(0,2) ) : $P{REPORT_LOCALE} )]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="12" width="300">
+						<textField isStretchWithOverflow="true">
+							<reportElement positionType="Float" x="4" y="0" width="102" height="10"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},$F{account_invoice_line_name})]]></textFieldExpression>
+						</textField>
+						<textField pattern="###0.##">
+							<reportElement positionType="Float" x="106" y="0" width="41" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{account_invoice_line_quantity}*$F{giscedata_facturacio_factura_linia_multi}]]></textFieldExpression>
+						</textField>
+						<textField pattern="###0.00####">
+							<reportElement positionType="Float" x="178" y="0" width="43" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{giscedata_facturacio_factura_linia_price_unit_multi}]]></textFieldExpression>
+						</textField>
+						<textField pattern="#,##0.00 ¤ ">
+							<reportElement positionType="Float" x="252" y="0" width="47" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{account_invoice_line_price_subtotal}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="147" y="0" width="31" height="10"/>
+							<box leftPadding="2"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$F{product_uom_name}.indexOf("/") > 0 ? $F{product_uom_name}.split("/")[1].replace("dia", tr($V{L},"dies")) : tr($V{L},"any")]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="221" y="0" width="31" height="10"/>
+							<box leftPadding="2"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$F{product_uom_name}.indexOf("/") > 0 ? "€/" + tr($V{L},$F{product_uom_name}.split("/")[1]) : tr($V{L},"€/any")]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<componentElement>
+				<reportElement positionType="Float" isPrintRepeatedValues="false" mode="Transparent" x="240" y="250" width="300" height="12"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="LiniesActiva">
+						<datasetParameter name="FACTURA_ID">
+							<datasetParameterExpression><![CDATA[$F{giscedata_facturacio_factura_id}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="TIPUS">
+							<datasetParameterExpression><![CDATA["potencia"]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="L">
+							<datasetParameterExpression><![CDATA[$F{res_partner_lang} != null && $F{res_partner_lang}.length() == 5 ? new Locale( $F{res_partner_lang}.substring(0,2), $F{res_partner_lang}.substring(3,5) ) : ( $F{res_partner_lang} != null && $F{res_partner_lang}.length() == 2 ? new Locale( $F{res_partner_lang}.substring(0,2) ) : $P{REPORT_LOCALE} )]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="12" width="300">
+						<textField pattern="###0.000">
+							<reportElement positionType="Float" x="28" y="0" width="41" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{account_invoice_line_quantity}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement positionType="Float" x="4" y="0" width="24" height="10"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$F{account_invoice_line_name}]]></textFieldExpression>
+						</textField>
+						<textField pattern="#,##0.00 ¤ ">
+							<reportElement positionType="Float" x="252" y="0" width="48" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{account_invoice_line_price_subtotal}]]></textFieldExpression>
+						</textField>
+						<textField pattern="###0.000000" isBlankWhenNull="false">
+							<reportElement mode="Transparent" x="170" y="0" width="43" height="10" forecolor="#000000" backcolor="#FFFFFF"/>
+							<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+								<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+							</textElement>
+							<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{giscedata_facturacio_factura_linia_price_unit_multi}]]></textFieldExpression>
+						</textField>
+						<textField pattern="###0.##" isBlankWhenNull="false">
+							<reportElement mode="Transparent" x="117" y="0" width="23" height="10" forecolor="#000000" backcolor="#FFFFFF"/>
+							<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+								<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+							</textElement>
+							<textFieldExpression class="java.lang.Double"><![CDATA[$F{giscedata_facturacio_factura_linia_multi}]]></textFieldExpression>
+						</textField>
+						<textField isStretchWithOverflow="true">
+							<reportElement x="69" y="0" width="48" height="10"/>
+							<box leftPadding="5"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[($F{product_uom_name}.indexOf("/") > 0) ? $F{product_uom_name}.split("/")[0] : $F{product_uom_name}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="139" y="0" width="32" height="10"/>
+							<box leftPadding="3"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[($F{product_uom_name}.indexOf("/") > 0) ? $F{product_uom_name}.split("/")[1].replace("dia", tr($V{L},"dies")) : ""]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="212" y="0" width="40" height="10" isPrintWhenDetailOverflows="true"/>
+							<box leftPadding="2"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[($F{product_uom_name}.indexOf("/") > 0) ? "€/kW " + tr($V{L},$F{product_uom_name}.split("/")[1]) : tr($V{L},"€/kW any")]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<componentElement>
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="7" y="292" width="228" height="10">
+					<printWhenExpression><![CDATA[$F{num_lectures_reactiva} > 0]]></printWhenExpression>
+				</reportElement>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="dataset2">
+						<datasetParameter name="FACTURA_ID">
+							<datasetParameterExpression><![CDATA[$F{giscedata_facturacio_factura_id}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="TIPO">
+							<datasetParameterExpression><![CDATA["reactiva"]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="L">
+							<datasetParameterExpression><![CDATA[$F{res_partner_lang} != null && $F{res_partner_lang}.length() == 5 ? new Locale( $F{res_partner_lang}.substring(0,2), $F{res_partner_lang}.substring(3,5) ) : ( $F{res_partner_lang} != null && $F{res_partner_lang}.length() == 2 ? new Locale( $F{res_partner_lang}.substring(0,2) ) : $P{REPORT_LOCALE} )]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="10" width="228">
+						<textField>
+							<reportElement positionType="Float" x="0" y="0" width="48" height="10"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$F{giscedata_facturacio_lectures_energia_name} + " " + $F{giscedata_facturacio_lectures_energia_tipus}.toUpperCase()]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement positionType="Float" x="55" y="0" width="40" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.Integer"><![CDATA[$F{giscedata_facturacio_lectures_energia_lect_anterior}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement positionType="Float" x="95" y="0" width="46" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.Integer"><![CDATA[$F{giscedata_facturacio_lectures_energia_lect_actual}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement positionType="Float" x="141" y="0" width="44" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.Integer"><![CDATA[$F{consumo}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement positionType="Float" mode="Transparent" x="347" y="97" width="143" height="10" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+					<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{product_pricelist_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="292" y="1" width="200" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single" markup="none">
+					<font fontName="SansSerif" size="8" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Dades titular i punt de consum")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="330" y="20" width="160" height="10"/>
+				<box topPadding="0"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="332" y="42" width="209" height="10"/>
+				<box topPadding="0"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[[ $F{giscedata_cups_ps_tv}, $F{giscedata_cups_ps_nv}, [$F{giscedata_cups_ps_pnp}, $F{giscedata_cups_ps_es}, $F{giscedata_cups_ps_pt}, $F{giscedata_cups_ps_pu}, $F{giscedata_cups_ps_cpo}, $F{giscedata_cups_ps_cpa}, $F{giscedata_cups_ps_aclarador}].join(' ')].join(', ')]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="292" y="75" width="35" height="10"/>
+				<textElement markup="none">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"CUPS:")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="328" y="75" width="162" height="10"/>
+				<box topPadding="0"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{giscedata_cups_ps_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="8" y="212" width="227" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single" markup="none">
+					<font fontName="SansSerif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Lectura Consum")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="60" y="229" width="43" height="10"/>
+				<textElement textAlignment="Right" markup="none">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Anterior")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="102" y="229" width="46" height="10"/>
+				<textElement textAlignment="Right" markup="none">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Actual")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="148" y="229" width="43" height="10"/>
+				<textElement textAlignment="Right" markup="none">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Consum")]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement positionType="Float" mode="Transparent" x="240" y="345" width="300" height="13"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="dataset3">
+						<datasetParameter name="INVOICE_ID">
+							<datasetParameterExpression><![CDATA[$F{account_invoice_id}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="NAME">
+							<datasetParameterExpression><![CDATA["Impuesto especial sobre la electricidad"]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="L">
+							<datasetParameterExpression><![CDATA[$F{res_partner_lang} != null && $F{res_partner_lang}.length() == 5 ? new Locale( $F{res_partner_lang}.substring(0,2), $F{res_partner_lang}.substring(3,5) ) : ( $F{res_partner_lang} != null && $F{res_partner_lang}.length() == 2 ? new Locale( $F{res_partner_lang}.substring(0,2) ) : $P{REPORT_LOCALE} )]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="13" width="300">
+						<textField isStretchWithOverflow="true">
+							<reportElement positionType="Float" x="3" y="0" width="78" height="10"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Impost electricitat")]]></textFieldExpression>
+						</textField>
+						<textField pattern="#,##0.00">
+							<reportElement positionType="Float" x="81" y="0" width="65" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{account_invoice_tax_base}]]></textFieldExpression>
+						</textField>
+						<textField pattern="#,##0.00 ¤ ">
+							<reportElement positionType="Float" x="252" y="0" width="48" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{account_invoice_tax_amount}]]></textFieldExpression>
+						</textField>
+						<staticText>
+							<reportElement x="156" y="0" width="96" height="10"/>
+							<textElement textAlignment="Center">
+								<font size="8"/>
+							</textElement>
+							<text><![CDATA[1,05113 x 0,04864]]></text>
+						</staticText>
+						<staticText>
+							<reportElement x="146" y="0" width="10" height="10"/>
+							<textElement textAlignment="Center">
+								<font size="8"/>
+							</textElement>
+							<text><![CDATA[€]]></text>
+						</staticText>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<textField>
+				<reportElement mode="Transparent" x="240" y="216" width="300" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single" markup="none">
+					<font fontName="SansSerif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Facturació")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="292" y="452" width="121" height="13"/>
+				<textElement textAlignment="Right" markup="none">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Total factura")]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00 ¤ ">
+				<reportElement positionType="Float" x="458" y="452" width="83" height="13"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{account_invoice_amount_total}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="292" y="86" width="133" height="10"/>
+				<textElement markup="none">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Potència contractada (kW):")]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement positionType="Float" x="293" y="143" width="235" height="16"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="1" width="235" height="12" isRemoveLineWhenBlank="true"/>
+					<textElement>
+						<font size="8" isBold="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{nom_soci}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<textField pattern="###0.000" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="425" y="86" width="65" height="10" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+					<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{giscedata_facturacio_factura_potencia}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="350" y="108" width="139" height="10" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+					<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{giscedata_polissa_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="240" y="233" width="300" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single" markup="none">
+					<font fontName="SansSerif" size="8" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Terme de potència")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="240" y="264" width="300" height="14"/>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="8" isBold="true" pdfFontName="Helvetica"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Terme d'energia activa")]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="336" y="53" width="154" height="10" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+					<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{res_poblacio_cups_name}==null)?$F{res_municipi_cups_name}.toUpperCase():$F{res_poblacio_cups_name}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="292" y="53" width="43" height="10" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+					<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Població:")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="292" y="108" width="56" height="10" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+					<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Nº Contracte:")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="292" y="64" width="130" height="10" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+					<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Activitat econòmica (CNAE):")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="292" y="97" width="53" height="10"/>
+				<textElement markup="none">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Tarifa:")]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement positionType="Float" isPrintRepeatedValues="false" mode="Transparent" x="240" y="281" width="300" height="12" backcolor="#FFFFFF"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="LiniesActiva">
+						<datasetParameter name="FACTURA_ID">
+							<datasetParameterExpression><![CDATA[$F{giscedata_facturacio_factura_id}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="TIPUS">
+							<datasetParameterExpression><![CDATA["energia"]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="L">
+							<datasetParameterExpression><![CDATA[$F{res_partner_lang} != null && $F{res_partner_lang}.length() == 5 ? new Locale( $F{res_partner_lang}.substring(0,2), $F{res_partner_lang}.substring(3,5) ) : ( $F{res_partner_lang} != null && $F{res_partner_lang}.length() == 2 ? new Locale( $F{res_partner_lang}.substring(0,2) ) : $P{REPORT_LOCALE} )]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="12" width="300">
+						<textField pattern="###0.000000">
+							<reportElement positionType="Float" x="187" y="0" width="35" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{giscedata_facturacio_factura_linia_price_unit_multi}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement positionType="Float" mode="Transparent" x="4" y="0" width="12" height="10" backcolor="#FFFFFF"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$F{account_invoice_line_name}]]></textFieldExpression>
+						</textField>
+						<textField pattern="###0.###">
+							<reportElement positionType="Float" x="16" y="0" width="38" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{account_invoice_line_quantity}]]></textFieldExpression>
+						</textField>
+						<textField pattern="#,##0.00 ¤ ">
+							<reportElement positionType="Float" x="249" y="0" width="51" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{account_invoice_line_price_subtotal}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="54" y="0" width="27" height="10"/>
+							<box leftPadding="2"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$F{product_uom_name}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="221" y="0" width="28" height="10" isPrintWhenDetailOverflows="true"/>
+							<box leftPadding="2"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA["€/"+$F{product_uom_name}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="81" y="0" width="106" height="10" backcolor="#FF0000"/>
+							<textElement textAlignment="Center" markup="none">
+								<font size="8" pdfFontName="Helvetica" isPdfEmbedded="false"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{data_desde}) + tr($V{L}," a ") + new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{data_fins})]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<textField>
+				<reportElement positionType="Float" x="240" y="361" width="300" height="14"/>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="8" isBold="true" pdfFontName="Helvetica"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Altres conceptes")]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement positionType="Float" x="241" y="446" width="300" height="1"/>
+			</line>
+			<textField>
+				<reportElement positionType="Float" x="240" y="403" width="300" height="14"/>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="8" isBold="true" pdfFontName="Helvetica"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Impostos")]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00 ¤ ">
+				<reportElement positionType="Float" x="422" y="420" width="67" height="10"/>
+				<textElement textAlignment="Right" markup="none">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"BASE")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="490" y="420" width="50" height="10"/>
+				<textElement textAlignment="Right" markup="none">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"TOTAL")]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement x="7" y="240" width="228" height="10"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="Fechaslectura">
+						<datasetParameter name="FACTURA_ID">
+							<datasetParameterExpression><![CDATA[$F{giscedata_facturacio_factura_id}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="L">
+							<datasetParameterExpression><![CDATA[$F{res_partner_lang} != null && $F{res_partner_lang}.length() == 5 ? new Locale( $F{res_partner_lang}.substring(0,2), $F{res_partner_lang}.substring(3,5) ) : ( $F{res_partner_lang} != null && $F{res_partner_lang}.length() == 2 ? new Locale( $F{res_partner_lang}.substring(0,2) ) : $P{REPORT_LOCALE} )]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="10" width="228">
+						<textField>
+							<reportElement x="0" y="0" width="53" height="10"/>
+							<textElement textAlignment="Center">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$F{giscedata_facturacio_lectures_energia_comptador}]]></textFieldExpression>
+						</textField>
+						<textField pattern="dd/MM/yy">
+							<reportElement x="53" y="0" width="42" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.util.Date"><![CDATA[$F{giscedata_facturacio_lectures_energia_data_anterior}]]></textFieldExpression>
+						</textField>
+						<textField pattern="dd/MM/yy">
+							<reportElement x="95" y="0" width="46" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.util.Date"><![CDATA[$F{giscedata_facturacio_lectures_energia_data_actual}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<textField>
+				<reportElement positionType="Float" x="7" y="229" width="53" height="10"/>
+				<textElement markup="none">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Nº Comptador")]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="422" y="64" width="68" height="10"/>
+				<box leftPadding="3"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{giscemisc_cnae_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" mode="Opaque" x="7" y="255" width="200" height="9" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single" markup="none">
+					<font fontName="SansSerif" size="7" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Energia Activa [kWh]")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" mode="Transparent" x="7" y="281" width="200" height="9" forecolor="#000000" backcolor="#FFFFFF">
+					<printWhenExpression><![CDATA[$F{num_lectures_reactiva} > 0]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single" markup="none">
+					<font fontName="SansSerif" size="7" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Energia Reactiva [kVArh]")]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement positionType="Float" x="7" y="330" width="228" height="11">
+					<printWhenExpression><![CDATA[$F{giscedata_polissa_fpotencia} == 'max']]></printWhenExpression>
+				</reportElement>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="Maximetro">
+						<datasetParameter name="FACTURA_ID">
+							<datasetParameterExpression><![CDATA[$F{giscedata_facturacio_factura_id}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="TARIFA_ACCES">
+							<datasetParameterExpression><![CDATA[$F{tarifa_acces}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="L">
+							<datasetParameterExpression><![CDATA[$F{res_partner_lang} != null && $F{res_partner_lang}.length() == 5 ? new Locale( $F{res_partner_lang}.substring(0,2), $F{res_partner_lang}.substring(3,5) ) : ( $F{res_partner_lang} != null && $F{res_partner_lang}.length() == 2 ? new Locale( $F{res_partner_lang}.substring(0,2) ) : $P{REPORT_LOCALE} )]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="11" width="228">
+						<textField>
+							<reportElement x="0" y="0" width="48" height="10"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$F{giscedata_facturacio_lectures_potencia_name}]]></textFieldExpression>
+						</textField>
+						<textField pattern="###0.000">
+							<reportElement x="55" y="0" width="40" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{giscedata_facturacio_lectures_potencia_pot_contract}]]></textFieldExpression>
+						</textField>
+						<textField pattern="###0">
+							<reportElement x="95" y="0" width="46" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{giscedata_facturacio_lectures_potencia_pot_maximetre}]]></textFieldExpression>
+						</textField>
+						<textField pattern="###0">
+							<reportElement x="141" y="0" width="44" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{giscedata_facturacio_lectures_potencia_exces}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<textField>
+				<reportElement positionType="Float" x="149" y="319" width="43" height="10">
+					<printWhenExpression><![CDATA[$F{giscedata_polissa_fpotencia} == 'max']]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" markup="none">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Excés")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="49" y="319" width="54" height="10">
+					<printWhenExpression><![CDATA[$F{giscedata_polissa_fpotencia} == 'max']]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" markup="none">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Contractada")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="7" y="319" width="42" height="10">
+					<printWhenExpression><![CDATA[$F{giscedata_polissa_fpotencia} == 'max']]></printWhenExpression>
+				</reportElement>
+				<textElement markup="none">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Període")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="103" y="319" width="45" height="10">
+					<printWhenExpression><![CDATA[$F{giscedata_polissa_fpotencia} == 'max']]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" markup="none">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Max")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="240" y="296" width="300" height="14">
+					<printWhenExpression><![CDATA[$F{num_linies_reactiva} > 0]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="8" isBold="true" pdfFontName="Helvetica"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Terme d'energia reactiva")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="240" y="328" width="300" height="14"/>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="8" isBold="true" pdfFontName="Helvetica"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Impost sobre l'electricitat")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" mode="Opaque" x="7" y="308" width="200" height="9" forecolor="#000000" backcolor="#FFFFFF">
+					<printWhenExpression><![CDATA[$F{giscedata_polissa_fpotencia} == 'max']]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single" markup="none">
+					<font fontName="SansSerif" size="7" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Potència [kW]")]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement positionType="Float" x="241" y="376" width="300" height="12" isRemoveLineWhenBlank="true"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="LiniesActiva">
+						<datasetParameter name="L">
+							<datasetParameterExpression><![CDATA[$F{res_partner_lang} != null && $F{res_partner_lang}.length() == 5 ? new Locale( $F{res_partner_lang}.substring(0,2), $F{res_partner_lang}.substring(3,5) ) : ( $F{res_partner_lang} != null && $F{res_partner_lang}.length() == 2 ? new Locale( $F{res_partner_lang}.substring(0,2) ) : $P{REPORT_LOCALE} )]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="FACTURA_ID">
+							<datasetParameterExpression><![CDATA[$F{giscedata_facturacio_factura_id}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="TIPUS">
+							<datasetParameterExpression><![CDATA["altres"]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="12" width="300">
+						<textField isStretchWithOverflow="true">
+							<reportElement positionType="Float" x="3" y="0" width="250" height="10"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},$F{account_invoice_line_name})]]></textFieldExpression>
+						</textField>
+						<textField pattern="#,##0.00 ¤ ">
+							<reportElement positionType="Float" x="253" y="0" width="46" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{account_invoice_line_price_subtotal}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<componentElement>
+				<reportElement positionType="Float" isPrintRepeatedValues="false" mode="Transparent" x="240" y="313" width="300" height="12" backcolor="#FFFFFF">
+					<printWhenExpression><![CDATA[$F{num_linies_reactiva} > 0]]></printWhenExpression>
+				</reportElement>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="LiniesActiva">
+						<datasetParameter name="FACTURA_ID">
+							<datasetParameterExpression><![CDATA[$F{giscedata_facturacio_factura_id}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="TIPUS">
+							<datasetParameterExpression><![CDATA["reactiva"]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="L">
+							<datasetParameterExpression><![CDATA[$F{res_partner_lang} != null && $F{res_partner_lang}.length() == 5 ? new Locale( $F{res_partner_lang}.substring(0,2), $F{res_partner_lang}.substring(3,5) ) : ( $F{res_partner_lang} != null && $F{res_partner_lang}.length() == 2 ? new Locale( $F{res_partner_lang}.substring(0,2) ) : $P{REPORT_LOCALE} )]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="12" width="300">
+						<textField pattern="###0.000000">
+							<reportElement positionType="Float" x="187" y="0" width="35" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{giscedata_facturacio_factura_linia_price_unit_multi}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement positionType="Float" mode="Transparent" x="4" y="0" width="12" height="10" backcolor="#FFFFFF"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$F{account_invoice_line_name} + " " + $F{giscedata_facturacio_factura_linia_tipus} + " (" + $F{product_uom_name} + ")"]]></textFieldExpression>
+						</textField>
+						<textField pattern="###0.##">
+							<reportElement positionType="Float" x="16" y="0" width="38" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{account_invoice_line_quantity}]]></textFieldExpression>
+						</textField>
+						<textField pattern="#,##0.00 ¤ ">
+							<reportElement positionType="Float" x="252" y="0" width="48" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{account_invoice_line_price_subtotal}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="54" y="0" width="27" height="10"/>
+							<box leftPadding="2"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$F{product_uom_name}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="222" y="0" width="30" height="10"/>
+							<box leftPadding="2"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA["€/"+$F{product_uom_name}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="81" y="0" width="106" height="10"/>
+							<textElement textAlignment="Center" markup="none">
+								<font size="8" pdfFontName="Helvetica" isPdfEmbedded="false"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{data_desde}) + tr($V{L}," a ") + new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{data_fins})]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<image>
+				<reportElement x="17" y="2" width="151" height="70"/>
+				<imageExpression class="java.lang.String"><![CDATA[$P{REPORT_PARAMETERS_MAP}.SUBREPORT_DIR + "logo_som.jpg"]]></imageExpression>
+			</image>
+			<componentElement>
+				<reportElement mode="Transparent" x="6" y="150" width="239" height="27" isPrintWhenDetailOverflows="true" forecolor="#000000" backcolor="#FFFFFF"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="ContactoAverias">
+						<datasetParameter name="PARTNER_ID">
+							<datasetParameterExpression><![CDATA[$F{giscedata_polissa_distribuidora}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="L">
+							<datasetParameterExpression><![CDATA[$F{res_partner_lang} != null && $F{res_partner_lang}.length() == 5 ? new Locale( $F{res_partner_lang}.substring(0,2), $F{res_partner_lang}.substring(3,5) ) : ( $F{res_partner_lang} != null && $F{res_partner_lang}.length() == 2 ? new Locale( $F{res_partner_lang}.substring(0,2) ) : $P{REPORT_LOCALE} )]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="27" width="239">
+						<textField>
+							<reportElement x="101" y="2" width="138" height="10">
+								<printWhenExpression><![CDATA[$F{res_partner_address_name}]]></printWhenExpression>
+							</reportElement>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_name}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="1" y="2" width="100" height="10">
+								<printWhenExpression><![CDATA[$F{res_partner_address_name}]]></printWhenExpression>
+							</reportElement>
+							<textElement markup="none">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Empresa distribuïdora:")]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="1" y="14" width="100" height="10">
+								<printWhenExpression><![CDATA[$F{res_partner_address_phone}]]></printWhenExpression>
+							</reportElement>
+							<textElement markup="none">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Telèfon avaries")]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="101" y="14" width="138" height="10">
+								<printWhenExpression><![CDATA[$F{res_partner_address_phone}]]></printWhenExpression>
+							</reportElement>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_phone}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<textField>
+				<reportElement positionType="Float" x="292" y="20" width="37" height="10"/>
+				<textElement markup="none">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Titular:")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="292" y="42" width="39" height="10"/>
+				<textElement markup="none">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Adreça:")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="293" y="128" width="200" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single" markup="none">
+					<font fontName="SansSerif" size="8" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Soci/a de Som Energia")]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement mode="Transparent" x="3" y="148" width="244" height="39"/>
+			</rectangle>
+			<rectangle>
+				<reportElement mode="Transparent" x="3" y="76" width="244" height="68"/>
+			</rectangle>
+			<componentElement>
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="7" y="266" width="228" height="10"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="dataset2">
+						<datasetParameter name="FACTURA_ID">
+							<datasetParameterExpression><![CDATA[$F{giscedata_facturacio_factura_id}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="TIPO">
+							<datasetParameterExpression><![CDATA["activa"]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="L">
+							<datasetParameterExpression><![CDATA[$F{res_partner_lang} != null && $F{res_partner_lang}.length() == 5 ? new Locale( $F{res_partner_lang}.substring(0,2), $F{res_partner_lang}.substring(3,5) ) : ( $F{res_partner_lang} != null && $F{res_partner_lang}.length() == 2 ? new Locale( $F{res_partner_lang}.substring(0,2) ) : $P{REPORT_LOCALE} )]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="10" width="228">
+						<textField>
+							<reportElement positionType="Float" x="0" y="0" width="48" height="10"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$F{giscedata_facturacio_lectures_energia_name} + " " + $F{giscedata_facturacio_lectures_energia_tipus}.toUpperCase()]]></textFieldExpression>
+						</textField>
+						<textField pattern="###0">
+							<reportElement positionType="Float" x="55" y="0" width="40" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.Integer"><![CDATA[$F{giscedata_facturacio_lectures_energia_lect_anterior}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement positionType="Float" x="95" y="0" width="46" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.Integer"><![CDATA[$F{giscedata_facturacio_lectures_energia_lect_actual}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement positionType="Float" x="141" y="0" width="44" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.Integer"><![CDATA[$F{consumo}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<textField>
+				<reportElement positionType="Float" x="295" y="169" width="53" height="10"/>
+				<textElement markup="none">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Factura nº:")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="372" y="169" width="116" height="10"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{account_invoice_number}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="424" y="188" width="12" height="10"/>
+				<textElement textAlignment="Center" markup="none">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["a"]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement positionType="Float" x="436" y="188" width="52" height="10"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{giscedata_facturacio_factura_data_final}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement positionType="Float" x="372" y="188" width="52" height="10"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{giscedata_facturacio_factura_data_inici}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement positionType="Float" x="372" y="178" width="116" height="10"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{account_invoice_date_invoice}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="295" y="188" width="77" height="10"/>
+				<textElement markup="none">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Període facturat:")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="295" y="178" width="59" height="10"/>
+				<textElement markup="none">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Data factura:")]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement mode="Transparent" x="288" y="129" width="257" height="30"/>
+			</rectangle>
+			<rectangle>
+				<reportElement mode="Transparent" x="288" y="165" width="257" height="35"/>
+			</rectangle>
+			<componentElement>
+				<reportElement x="4" y="76" width="242" height="69"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="ContactoEmpresa">
+						<datasetParameter name="COMPANY_ID">
+							<datasetParameterExpression><![CDATA[$F{account_invoice_company_id}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="L">
+							<datasetParameterExpression><![CDATA[$F{res_partner_lang} != null && $F{res_partner_lang}.length() == 5 ? new Locale( $F{res_partner_lang}.substring(0,2), $F{res_partner_lang}.substring(3,5) ) : ( $F{res_partner_lang} != null && $F{res_partner_lang}.length() == 2 ? new Locale( $F{res_partner_lang}.substring(0,2) ) : $P{REPORT_LOCALE} )]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="69" width="242">
+						<textField>
+							<reportElement x="3" y="3" width="237" height="10"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_name}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="23" y="13" width="217" height="11"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_vat}[2..-1]]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="3" y="24" width="237" height="11"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_street}]]></textFieldExpression>
+						</textField>
+						<staticText>
+							<reportElement x="3" y="13" width="19" height="11"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<text><![CDATA[CIF:]]></text>
+						</staticText>
+						<textField>
+							<reportElement x="3" y="35" width="42" height="11"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_zip}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="44" y="35" width="196" height="11"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_city}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="3" y="46" width="41" height="10"/>
+							<textElement markup="none">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Telèfon:")]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="44" y="46" width="196" height="10"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_phone}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="3" y="56" width="41" height="10"/>
+							<textElement markup="none">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Correu:")]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="44" y="56" width="196" height="10"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA["factura@somenergia.coop"]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<textField>
+				<reportElement positionType="Float" x="292" y="31" width="37" height="10"/>
+				<textElement markup="none">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"NIF:")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="330" y="31" width="160" height="10"/>
+				<box topPadding="0"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_vat}[2..-1]]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement positionType="Float" x="241" y="430" width="299" height="14"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="IVA&apos;s">
+						<datasetParameter name="INVOICE_ID">
+							<datasetParameterExpression><![CDATA[$F{account_invoice_id}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="L">
+							<datasetParameterExpression><![CDATA[$F{res_partner_lang} != null && $F{res_partner_lang}.length() == 5 ? new Locale( $F{res_partner_lang}.substring(0,2), $F{res_partner_lang}.substring(3,5) ) : ( $F{res_partner_lang} != null && $F{res_partner_lang}.length() == 2 ? new Locale( $F{res_partner_lang}.substring(0,2) ) : $P{REPORT_LOCALE} )]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="14" width="299">
+						<textField>
+							<reportElement x="3" y="0" width="167" height="10"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$F{account_invoice_tax_name}]]></textFieldExpression>
+						</textField>
+						<textField pattern="#,##0.00 ¤ ">
+							<reportElement x="181" y="0" width="67" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{account_invoice_tax_base}]]></textFieldExpression>
+						</textField>
+						<textField pattern="#,##0.00 ¤ ">
+							<reportElement x="249" y="0" width="50" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{account_invoice_tax_amount}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<textField>
+				<reportElement x="7" y="176" width="100" height="10">
+					<printWhenExpression><![CDATA[$F{giscedata_polissa_ref_dist}]]></printWhenExpression>
+				</reportElement>
+				<textElement markup="none">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Contracte distribuïdora")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="107" y="176" width="138" height="10">
+					<printWhenExpression><![CDATA[$F{giscedata_polissa_ref_dist}]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{giscedata_polissa_ref_dist}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="88">
+			<textField>
+				<reportElement positionType="Float" mode="Transparent" x="348" y="1" width="200" height="9" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single" markup="none">
+					<font fontName="SansSerif" size="7" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Historial de consum")]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement positionType="Float" x="348" y="12" width="202" height="12"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="HistoricoConsumo">
+						<datasetParameter name="POLISSA_ID">
+							<datasetParameterExpression><![CDATA[$F{giscedata_polissa_id}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="DATE_INVOICE">
+							<datasetParameterExpression><![CDATA[$F{account_invoice_date_invoice}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="12" width="202">
+						<textField pattern="dd/MM/yyyy">
+							<reportElement x="0" y="0" width="56" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.util.Date"><![CDATA[$F{giscedata_facturacio_factura_inici}]]></textFieldExpression>
+						</textField>
+						<textField pattern="###0 kWh">
+							<reportElement x="128" y="0" width="71" height="10"/>
+							<textElement textAlignment="Right">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{total_energia_kw}]]></textFieldExpression>
+						</textField>
+						<textField pattern="dd/MM/yyyy">
+							<reportElement x="68" y="0" width="56" height="10"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.util.Date"><![CDATA[$F{giscedata_facturacio_factura_final}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="56" y="0" width="12" height="10"/>
+							<textElement textAlignment="Center">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"a")]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<rectangle>
+				<reportElement mode="Transparent" x="2" y="1" width="228" height="85"/>
+			</rectangle>
+			<textField>
+				<reportElement positionType="Float" mode="Transparent" x="3" y="2" width="226" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single" markup="none">
+					<font fontName="SansSerif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Dades Pagament")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="4" y="19" width="78" height="10">
+					<printWhenExpression><![CDATA[$F{res_bank_name}!=null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Entitat bancària:")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="83" y="19" width="146" height="10"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_bank_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="4" y="31" width="78" height="10">
+					<printWhenExpression><![CDATA[$F{res_partner_bank_acc_number}!=null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Compte corrent:")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="83" y="31" width="146" height="10"/>
+				<box leftPadding="0" rightPadding="0"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_bank_acc_number}.substring(0,18)+"*****"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="4" y="43" width="78" height="10">
+					<printWhenExpression><![CDATA[$F{res_partner_bank_acc_number}!=null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Titular compte:")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="83" y="43" width="146" height="20"/>
+				<box leftPadding="0" rightPadding="0"/>
+				<textElement verticalAlignment="Top">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_titular_cc_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="3" y="63" width="225" height="23"/>
+				<textElement markup="none">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"L'import d'aquesta factura serà carregat al seu compte. El seu pagament queda justificat amb el corresponent apunt bancari.")]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<lastPageFooter>
+		<band height="812">
+			<image hAlign="Center" vAlign="Middle">
+				<reportElement x="1" y="141" width="326" height="139"/>
+				<imageExpression class="java.lang.String"><![CDATA[$P{REPORT_PARAMETERS_MAP}.SUBREPORT_DIR + "graf1.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="0" y="33" width="555" height="40"/>
+				<textElement>
+					<font size="10" isItalic="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Si bé l'energia elèctrica que arriba a les nostres llars és indistingible de la que consumeixen els nostres veïns o altres consumidors connectats al mateix sistema elèctric, sí és possible garantir l'origen de la producció d'energia elèctrica que vostè consumeix.")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="73" width="555" height="38"/>
+				<textElement>
+					<font size="10" isItalic="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"A aquest efecte es proporciona el desglossament de la barreja de tecnologies de producció nacional per així comparar els percentatges de la mitjana nacional amb els corresponents a l'energia venuda per la seva comercialitzadora")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="0" y="112" width="555" height="20" forecolor="#FFFFFF" backcolor="#026633"/>
+				<box leftPadding="3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Origen de l'electricitat")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="0" y="132" width="327" height="18" backcolor="#C5C5C5"/>
+				<box leftPadding="3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Mix producció en el sistema elèctric espanyol 2013")]]></textFieldExpression>
+			</textField>
+			<elementGroup>
+				<textField>
+					<reportElement x="55" y="248" width="68" height="30"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"CC Gas Natural 10.1%")]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="229" y="168" width="53" height="20"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Renovable 40.6%")]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="142" y="249" width="41" height="30"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Cogeneració 9.0%")]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="21" y="187" width="41" height="30"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Fuel/Gas 3.5%")]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="137" y="161" width="53" height="20"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Altres 1.2%")]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="16" y="221" width="41" height="30"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Carbó 14.1%")]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="64" y="162" width="53" height="20"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Nuclear 19.7%")]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="197" y="245" width="86" height="30"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Cogeneració Alta Eficiència 1.8%")]]></textFieldExpression>
+				</textField>
+			</elementGroup>
+			<elementGroup>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="64" y="288" width="193" height="130"/>
+					<imageExpression class="java.lang.String"><![CDATA[$P{REPORT_PARAMETERS_MAP}.SUBREPORT_DIR + "graf2.png"]]></imageExpression>
+				</image>
+				<image hAlign="Center">
+					<reportElement x="336" y="680" width="168" height="116"/>
+					<imageExpression class="java.lang.String"><![CDATA[$P{REPORT_PARAMETERS_MAP}.SUBREPORT_DIR + "graf3.png"]]></imageExpression>
+				</image>
+				<textField>
+					<reportElement x="119" y="347" width="85" height="20"/>
+					<textElement textAlignment="Center">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L}, "Renovable 100%")]]></textFieldExpression>
+				</textField>
+			</elementGroup>
+			<textField>
+				<reportElement x="351" y="141" width="65" height="47"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Origen")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="416" y="141" width="63" height="47"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Som Energia SCCL")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="479" y="141" width="75" height="47"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"barreja de producció en el sistema elèctric espanyol 2013")]]></textFieldExpression>
+			</textField>
+			<elementGroup>
+				<staticText>
+					<reportElement x="479" y="188" width="75" height="20"/>
+					<box>
+						<topPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[40.6%]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="351" y="188" width="65" height="20"/>
+					<box>
+						<topPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Renovable")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="416" y="188" width="63" height="20"/>
+					<box>
+						<topPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[100.0%]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="351" y="240" width="65" height="20"/>
+					<box>
+						<topPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Cogeneració")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="416" y="240" width="63" height="20"/>
+					<box>
+						<topPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[0.0%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="479" y="240" width="75" height="20"/>
+					<box>
+						<topPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[9.0%]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="351" y="260" width="65" height="20"/>
+					<box>
+						<topPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"CC Gas Natural")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="416" y="260" width="63" height="20"/>
+					<box>
+						<topPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[0.0%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="479" y="260" width="75" height="20"/>
+					<box>
+						<topPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[10.1%]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="351" y="280" width="65" height="20"/>
+					<box>
+						<topPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Carbó")]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="351" y="300" width="65" height="20"/>
+					<box>
+						<topPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Fuel/Gas")]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="351" y="320" width="65" height="20"/>
+					<box>
+						<topPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Nuclear")]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="351" y="340" width="65" height="20"/>
+					<box>
+						<topPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Altres")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="416" y="280" width="63" height="20"/>
+					<box>
+						<topPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[0.0%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="416" y="300" width="63" height="20"/>
+					<box>
+						<topPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[0.0%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="416" y="320" width="63" height="20"/>
+					<box>
+						<topPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[0.0%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="479" y="280" width="75" height="20"/>
+					<box>
+						<topPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[14.1%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="479" y="300" width="75" height="20"/>
+					<box>
+						<topPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[3.5%]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="0" y="772" width="190" height="14"/>
+					<box leftPadding="2">
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"TOTAL")]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="190" y="772" width="88" height="14"/>
+					<box>
+						<topPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA["33.948"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="226" y="789" width="52" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[18.476]]></text>
+				</staticText>
+			</elementGroup>
+			<elementGroup>
+				<textField>
+					<reportElement x="351" y="208" width="65" height="32"/>
+					<box>
+						<topPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Cogeneració Alta Eficiencia")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="479" y="208" width="75" height="32"/>
+					<box>
+						<topPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[1.8%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="416" y="208" width="63" height="32"/>
+					<box>
+						<topPen lineWidth="0.75"/>
+						<bottomPen lineWidth="0.75"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[0.0%]]></text>
+				</staticText>
+			</elementGroup>
+			<staticText>
+				<reportElement x="416" y="340" width="63" height="20"/>
+				<box>
+					<topPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[0.0%]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="479" y="320" width="75" height="20"/>
+				<box>
+					<topPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[19.7%]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="479" y="340" width="75" height="20"/>
+				<box>
+					<topPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[1.2%]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="39" y="403" width="450" height="20"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"El sistema elèctric espanyol ha exportat un 2,5% de producció neta total")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="-1" y="418" width="555" height="16" forecolor="#FFFFFF" backcolor="#026633"/>
+				<box leftPadding="3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Impacte mediambiental")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="11" width="365" height="20"/>
+				<textElement>
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Informació de l'electricitat")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="435" width="553" height="28"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"L'impacte ambiental de la seva electricitat depèn de les fonts energètiques utilitzades per a la seva generació.")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="448" width="555" height="31"/>
+				<textElement markup="html">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"En una escala de la A a la G (on A indica el mínim impacte ambiental i G el màxim), i on el valor mitjà nacional correspon al nivell D, l'energia comercialitzada per <b>Som Energia SCCL</b> té els següents valors:")]]></textFieldExpression>
+			</textField>
+			<image scaleImage="RealHeight">
+				<reportElement x="74" y="474" width="156" height="175"/>
+				<imageExpression class="java.lang.String"><![CDATA[$P{REPORT_PARAMETERS_MAP}.SUBREPORT_DIR + "graella.jpg"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="77" y="477" width="153" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Emissions de diòxid de carboni")]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="91" y="489" width="100" height="14"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Som Energia SCCL]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="79" y="510" width="112" height="12"/>
+				<textElement>
+					<font size="5"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Menys diòxid de carboni")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="79" y="609" width="112" height="12"/>
+				<textElement>
+					<font size="5"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Més diòxid de carboni")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="79" y="621" width="112" height="12"/>
+				<textElement>
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Contingut de carboni")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="79" y="633" width="118" height="12"/>
+				<textElement>
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Quilogram diòxid de carboni per kWh")]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="26" y="562" width="75" height="1"/>
+			</line>
+			<textField>
+				<reportElement x="26" y="552" width="100" height="11"/>
+				<textElement>
+					<font size="5"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Mitjana Nacional")]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="38" y="565" width="24" height="10"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[0,27]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="361" y="489" width="100" height="14"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Som Energia SCCL]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="296" y="552" width="100" height="11"/>
+				<textElement>
+					<font size="5"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Mitjana Nacional")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="349" y="609" width="112" height="12"/>
+				<textElement>
+					<font size="5"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Més diòxid de carboni")]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="308" y="565" width="24" height="10"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[0,56]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="349" y="633" width="118" height="12"/>
+				<textElement>
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Quilogram diòxid de carboni per kWh")]]></textFieldExpression>
+			</textField>
+			<image scaleImage="RealHeight">
+				<reportElement x="344" y="474" width="156" height="175"/>
+				<imageExpression class="java.lang.String"><![CDATA[$P{REPORT_PARAMETERS_MAP}.SUBREPORT_DIR + "graella.jpg"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="349" y="621" width="112" height="12"/>
+				<textElement>
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Residus radioactius")]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="296" y="562" width="75" height="1"/>
+			</line>
+			<textField>
+				<reportElement x="347" y="477" width="153" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Residus radioactius Alta Activitat")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="349" y="510" width="112" height="12"/>
+				<textElement>
+					<font size="5"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Menys residus radioactius")]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="358" y="489" width="100" height="14"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Som Energia SCCL]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="348" y="609" width="112" height="12"/>
+				<textElement>
+					<font size="5"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Més residus radioactius")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="368" y="633" width="95" height="12"/>
+				<textElement>
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Miligrams per kWh")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="0" y="652" width="555" height="16" forecolor="#FFFFFF" backcolor="#026633"/>
+				<box leftPadding="3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Detall Som Energia 2013")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="671" width="277" height="24"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Les certificacions de garantia d'origen s'han obtingut de les següents col·laboracions ")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="1" y="697" width="109" height="15" forecolor="#FFFFFF" backcolor="#808080"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Tecnologia")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="109" y="697" width="82" height="15" forecolor="#FFFFFF" backcolor="#808080"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Empresa")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="190" y="697" width="86" height="15" forecolor="#FFFFFF" backcolor="#808080"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Energia MWh")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="712" width="109" height="10"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Solar Fotovoltaica")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="721" width="109" height="10"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Solar Fotovoltaica")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="731" width="109" height="10"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Solar Fotovoltaica")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="741" width="109" height="10"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Eòlica")]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="109" y="712" width="82" height="10"/>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[Som Energia]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="109" y="721" width="82" height="10"/>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[ECOOO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="109" y="731" width="82" height="10"/>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[AE3000]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="109" y="741" width="82" height="10"/>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[Eòlica del Perelló]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="190" y="712" width="86" height="10"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[610]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="190" y="721" width="86" height="10"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[2.362]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="190" y="731" width="86" height="10"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[9.872]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="190" y="741" width="86" height="10"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[3.910]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="791" width="226" height="10"/>
+				<textElement>
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Energia comercialitzada per Som Energia")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="481" y="724" width="78" height="14"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Fotovoltaica")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="347" y="682" width="92" height="14"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Biogàs")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="354" y="759" width="60" height="14"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Eòlica")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="0" y="278" width="327" height="18" backcolor="#C5C5C5"/>
+				<box leftPadding="3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Mix Som Energia SCCL")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="750" width="109" height="10"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Eòlica")]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="109" y="750" width="82" height="10"/>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[Electra Mestral]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="190" y="750" width="86" height="10"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[12.317]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="1" y="759" width="109" height="10"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Biogàs")]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="109" y="759" width="82" height="10"/>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[APERGAS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="190" y="759" width="86" height="10"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[4.878]]></text>
+			</staticText>
+		</band>
+	</lastPageFooter>
+</jasperReport>

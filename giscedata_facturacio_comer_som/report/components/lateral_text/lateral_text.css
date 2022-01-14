@@ -1,0 +1,14 @@
+.lateral_container {
+    position: relative;
+    height: 3075;
+    float:left;
+}
+
+.lateral {
+    -webkit-writing-mode: vertical-lr;
+    font-size: .7em;
+    color: #bdc83f;
+    position: absolute;
+    left: 20px;
+    -webkit-transform: rotate(-180deg);
+}

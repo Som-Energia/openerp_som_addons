@@ -1,0 +1,31 @@
+.lectures_max,
+.lectures_max30 {
+    width: 47%;
+    float: left;
+    border: 1px solid #e2e2e2;
+    background-color: #f7f7f7;
+    margin: 2em;
+    font-size: .8em;
+    font-weight: 100;
+}
+.lectures_max,
+.lectures_max30 {
+    width: 95%;
+    margin-top: 0px;
+    margin-bottom: 5px;
+    margin-left:0px;
+    margin-right: 0px;
+}
+.lectures_max table {
+    font-weight: 100;
+}
+
+.lectures_max table,
+.lectures_max30 table{
+    border: 1px solid #e2e2e2;
+    width: 95%;
+}
+
+.lectures_max30 table{
+    width: 98%;
+}

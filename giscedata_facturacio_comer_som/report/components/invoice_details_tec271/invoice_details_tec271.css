@@ -1,0 +1,17 @@
+.destination {
+    page-break-inside: avoid;
+}
+div.supl {
+    position: relative;
+    float: right;
+    margin-bottom: 2em;
+    font-size: 7px;
+    overflow:hidden;
+    font-style: italic; !important
+}
+div.supl h1{
+    font-style: normal; !important
+}
+table.supl {
+    margin-bottom: 10px;
+}

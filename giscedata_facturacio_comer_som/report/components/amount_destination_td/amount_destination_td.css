@@ -1,0 +1,83 @@
+.destination {
+    background-color: #f7f7f7;
+    text-align: left;
+    width: 100%;
+    margin: 1em 0px 0px 0px;
+    float: left;
+    page-break-inside: avoid;
+}
+
+.chart_desti svg{
+    font-size: .6em;
+}
+
+
+.chart_desti p {
+    text-align: center;
+    line-height: 1;
+    margin: .3em;
+}
+
+.FONS {
+    fill: #ffffff;
+}
+
+.CHAR {
+    fill: #444242;
+}
+
+.RENT {
+    fill: #8742a4;
+}
+
+.TAX {
+    fill: #006bce;
+}
+
+.TOLL {
+    fill: #84c4e4;
+}
+
+.ENER {
+    fill: #bdc83f;
+}
+
+.bar_r {
+    fill: #373837;
+}
+
+.bar_d {
+    fill: #6a6a6b;
+}
+
+.bar_t {
+    fill: #a5a4a4;
+}
+
+.bar_o {
+    fill: #131212;
+}
+
+
+.bar_f {
+    fill: #ffffff;
+}
+
+.etiqueta,
+.etiqueta_reparto{
+    background-color: #ffffff;
+    line-height: 1;
+    padding: .2em;
+    display: inline-block;
+    font-size: .6em;
+    box-shadow: 1px 1px 1px #000000;
+}
+
+.etiqueta p {
+    padding: 0px;
+}
+.etiqueta_reparto p {
+    margin: .2em;
+    padding: .5em;
+    text-align: left;
+}
