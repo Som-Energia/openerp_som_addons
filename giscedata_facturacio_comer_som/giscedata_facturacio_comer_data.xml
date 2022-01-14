@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record model="ir.header_webkit" id="factura_som_webkit_header">
+            <field name="format">A4</field>
+            <field name="margin_bottom">1.0</field>
+            <field name="margin_top">10.0</field>
+            <field name="margin_left">0.01</field>
+            <field name="margin_right">0.01</field>
+            <field name="name">Factura SOM header</field>
+            <field name="orientation">Portrait</field>
+        </record>
+        <record model="ir.header_webkit" id="rebut_header_sense_fons">
+            <field name="format">A4</field>
+            <field name="margin_bottom">1.0</field>
+            <field name="margin_top">0.01</field>
+            <field name="margin_left">0.01</field>
+            <field name="margin_right">0.01</field>
+            <field name="name">Rebut sense fons header</field>
+            <field name="orientation">Portrait</field>
+            <field name="html"><![CDATA[<html>
+                    <head>
+                        <script>
+                        </script>
+                       <style type="text/css">
+                            ${css}
+                       </style>
+                    </head>
+                        <body >
+                        <br/>
+                        ${_debug or ''}
+                        <br/>
+                    </body>
+                </html>]]>
+            </field>
+            <field name="css" ><![CDATA[
+div.background {
+    display:none;
+}
+.new_page img{
+    display:none;
+}
+div.back{
+    background: none !important;
+}
+.new_page {page-break-after: avoid; display:none;}
+.new_page img {display:none;}
+.last_page { display: none;}
+                ]]>
+            </field>
+        </record>
+    </data>
+        <data noupdate="1">
+        <record model="res.config" id="first_date_qr_pot_max">
+            <field name="name">first_date_qr_pot_max</field>
+            <field name="description">Data d'emisió de la factura a partir de la qual ha d'aparèixer el codi QR i potències màximes demandades a la factura</field>
+            <field name="value">2021-09-01</field>
+        </record>
+    </data>
+</openerp>
