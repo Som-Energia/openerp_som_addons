@@ -23,6 +23,7 @@ BOE17_2021_dates = {
 }
 
 factors_kp_change_calculation_date = '2021-10-18'
+factors_kp_change_calculation_BOE_date = '2022-01-01'
 
 # -----------------------------------
 # helper functions
@@ -2166,6 +2167,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 lines_data[l.name].update({
                     'price_unit_multi': l.price_unit_multi,
                     'quantity': l.quantity,
+                    'end_date': l.data_fins,
                 })
             else:
                 lines_data[l.name] += l_count
@@ -2179,6 +2181,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 'price_unit_multi': v['price_unit_multi'],
                 'extra': v['extra'],
                 'days': v['days'],
+                'end_date': v['end_date'],
             }
             days = v['days']
 
@@ -2199,7 +2202,6 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         tariff = get_tariff_from_libfacturacioatr(pol.tarifa.name)
         replace_kp = tariff and fact.date_invoice > factors_kp_change_calculation_date
-        replace_kp = True
         # before this date the kp was right, the calculation was wrong
         # after this date has a 31/30 factor depending on month lenght and must be corrected
 
@@ -2211,15 +2213,16 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 item['power_excess'] = excess_lines_data[p]['quantity']
                 item['price_excess'] = excess_lines_data[p]['price_unit_multi']
                 item['price_subtotal'] = excess_lines_data[p]['price_subtotal']
+                item['visible_days_month'] = replace_kp and excess_lines_date[p]['end_date'] < factors_kp_change_calculation_BOE_date
                 excess_data[p] = item
 
         data = {
             'showing_periods': showing_periods,
             'total': excess_lines_data['total'],
             'days': excess_lines_data['days'],
-            'visible_days_month': replace_kp,
             'excess_data': excess_data,
             'is_visible': True,
+            'header_multi':4*(len(excess_lines_data)),
         }
         return data
 
