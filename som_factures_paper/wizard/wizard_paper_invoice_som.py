@@ -15,6 +15,7 @@ from oorq.decorators import job
 from oorq.oorq import JobsPool
 import threading
 import pooler
+import csv
 
 
 STATES = [
@@ -134,6 +135,8 @@ class WizardPaperInvoiceSom(osv.osv_memory):
         else:
             info = "fitxers generats correctament."
 
+        self.generate_csv(cursor, uid, list(set(fact_ids)-set(failed_invoice)), tmp_dir, 'Adreces.csv', context)
+
         wiz.write({
             'state': 'done',
             'file': self.get_zip_from_directory(tmp_dir, True),
@@ -167,6 +170,44 @@ class WizardPaperInvoiceSom(osv.osv_memory):
             if sentry is not None:
                 sentry.client.captureException()
             return False, fids
+
+    def generate_csv(self, cursor, uid, fact_ids, dirname, file_name, context=None):
+        output = StringIO()
+        writer = csv.writer(output, delimiter=';',)
+        writer.writerow([
+            u'Polissa',
+            u'Factura',
+            u'Ciutat',
+            u'Ciutat',
+            u'CP',
+            u'Carrer',
+            u'Carrer alt',
+            u'Apartat correus',
+        ])
+
+        fact_obj = self.pool.get('giscedata.facturacio.factura')
+        for fact_id in fact_ids:
+            fact = fact_obj.browse(cursor, uid, fact_id, context=context)
+            writer.writerow([
+                fact.polissa_id.name,
+                fact.number,
+                fact.polissa_id.direccio_notificacio.city,
+                fact.polissa_id.direccio_notificacio.zip,
+                fact.polissa_id.direccio_notificacio.street,
+                fact.polissa_id.direccio_notificacio.street2,
+                fact.polissa_id.direccio_notificacio.apartat_correus,
+            ])
+
+        try:
+            fitxer_name = '{}/{}'.format(dirname, file_name)
+            with open(fitxer_name, 'wb') as f:
+                f.write(output.getvalue())
+        except Exception:
+            import traceback
+            traceback.print_exc()
+            sentry = self.pool.get('sentry.setup')
+            if sentry is not None:
+                sentry.client.captureException()
 
     def get_zip_from_directory(self, directory, b64enc=True):
 
