@@ -65,16 +65,13 @@ class WizardPaperInvoiceSom(osv.osv_memory):
         wiz = self.browse(cursor, uid, ids[0], context=context)
 
         pol_ids = pol_obj.search(cursor, uid, [('enviament', '!=', 'email')], context=context)
-        fact_ids = []
-        for pol_id in pol_ids:
-            p_f_ids = fact_obj.search(cursor, uid, [
-                ('polissa_id', '=', pol_id),
-                ('date_invoice', '>=', wiz.date_from),
-                ('date_invoice', '<=', wiz.date_to),
-                ('state', 'in', ('open', 'paid')),
-                ('type', 'in', ('out_refund', 'out_invoice')),
-                ], context=context)
-            fact_ids.extend(p_f_ids)
+        fact_ids = fact_obj.search(cursor, uid, [
+            ('polissa_id', 'in', pol_ids),
+            ('date_invoice', '>=', wiz.date_from),
+            ('date_invoice', '<=', wiz.date_to),
+            ('state', 'in', ('open', 'paid')),
+            ('type', 'in', ('out_refund', 'out_invoice')),
+            ], context=context)
 
         fact_datas = fact_obj.read(cursor, uid, fact_ids, ['number'])
         fact_names = ', '.join([f['number'] for f in fact_datas])
