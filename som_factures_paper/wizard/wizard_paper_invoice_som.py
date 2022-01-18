@@ -112,7 +112,11 @@ class WizardPaperInvoiceSom(osv.osv_memory):
 
         for factura_done, fact_id in enumerate(fact_ids):
             fact = fact_obj.browse(cursor, uid, fact_id, context=context)
-            file_name = "{}-{}.pdf".format(fact.polissa_id.direccio_notificacio.name, fact.number)
+            file_name = "{} {} {}.pdf".format(
+                fact.polissa_id.name,
+                fact.number,
+                fact.polissa_id.direccio_notificacio.name,
+            )
             j_pool.add_job(self.render_to_file(cursor, uid, [fact_id], report, tmp_dir, file_name, context))
             wiz.write({'progress': (float(factura_done) / len(fact_ids)) * 100})
 
