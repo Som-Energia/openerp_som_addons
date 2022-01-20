@@ -172,6 +172,21 @@ class WizardPaperInvoiceSom(osv.osv_memory):
             return False, fids
 
     def generate_csv(self, cursor, uid, fact_ids, dirname, file_name, context=None):
+        to_sort = {}
+        fact_obj = self.pool.get('giscedata.facturacio.factura')
+        for fact_id in fact_ids:
+            fact = fact_obj.browse(cursor, uid, fact_id, context=context)
+            name = "{} {}".format(fact.polissa_id.name, fact.number)
+            to_sort[name] = (
+                fact.polissa_id.name,
+                fact.number,
+                fact.polissa_id.direccio_notificacio.city,
+                fact.polissa_id.direccio_notificacio.zip,
+                fact.polissa_id.direccio_notificacio.street,
+                fact.polissa_id.direccio_notificacio.street2,
+                fact.polissa_id.direccio_notificacio.apartat_correus,
+            )
+
         output = StringIO()
         writer = csv.writer(output, delimiter=';',)
         writer.writerow([
@@ -184,19 +199,8 @@ class WizardPaperInvoiceSom(osv.osv_memory):
             u'Carrer alt',
             u'Apartat correus',
         ])
-
-        fact_obj = self.pool.get('giscedata.facturacio.factura')
-        for fact_id in fact_ids:
-            fact = fact_obj.browse(cursor, uid, fact_id, context=context)
-            writer.writerow([
-                fact.polissa_id.name,
-                fact.number,
-                fact.polissa_id.direccio_notificacio.city,
-                fact.polissa_id.direccio_notificacio.zip,
-                fact.polissa_id.direccio_notificacio.street,
-                fact.polissa_id.direccio_notificacio.street2,
-                fact.polissa_id.direccio_notificacio.apartat_correus,
-            ])
+        for k in sorted(to_sort.keys()):
+            writer.writerow(to_sort[k])
 
         try:
             fitxer_name = '{}/{}'.format(dirname, file_name)
