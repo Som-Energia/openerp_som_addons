@@ -65,7 +65,9 @@ class WizardPaperInvoiceSom(osv.osv_memory):
 
         wiz = self.browse(cursor, uid, ids[0], context=context)
 
-        pol_ids = pol_obj.search(cursor, uid, [('enviament', '!=', 'email')], context=context)
+        ctxt = context.copy()
+        ctxt['active_test'] = False
+        pol_ids = pol_obj.search(cursor, uid, [('enviament', '!=', 'email')], context=ctxt)
         fact_ids = fact_obj.search(cursor, uid, [
             ('polissa_id', 'in', pol_ids),
             ('date_invoice', '>=', wiz.date_from),
