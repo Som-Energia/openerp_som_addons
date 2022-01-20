@@ -101,14 +101,26 @@ class WizardPaperInvoiceSom(osv.osv_memory):
         if not context:
             context = {}
 
-        fact_obj = self.pool.get('giscedata.facturacio.factura')
-
         cursor = pooler.get_db(cr.dbname).cursor()
 
         wiz = self.browse(cursor, uid, ids[0], context=context)
         fact_ids = json.loads(wiz.invoice_ids)
-        report = 'report.giscedata.facturacio.factura'
         tmp_dir = tempfile.mkdtemp()
+
+        failed_invoices, info = self.generate_inv(cursor, uid, wiz, fact_ids, tmp_dir, context)
+        clean_invoices = list(set(fact_ids)-set(failed_invoices))
+        self.generate_csv(cursor, uid, clean_invoices, tmp_dir, 'Adreces.csv', context)
+        self.generate_reb(cursor, uid, clean_invoices, tmp_dir, context)
+
+        wiz.write({
+            'state': 'done',
+            'file': self.get_zip_from_directory(tmp_dir, True),
+            'info': wiz.info + "\n" + info,
+        })
+
+    def generate_inv(self, cursor, uid, wiz, fact_ids, dirname, context=None):
+        fact_obj = self.pool.get('giscedata.facturacio.factura')
+        report = 'report.giscedata.facturacio.factura'
         j_pool = ProgressJobsPool(wiz)
 
         for factura_done, fact_id in enumerate(fact_ids):
@@ -118,8 +130,8 @@ class WizardPaperInvoiceSom(osv.osv_memory):
                 fact.number,
                 fact.polissa_id.direccio_notificacio.name,
             )
-            j_pool.add_job(self.render_to_file(cursor, uid, [fact_id], report, tmp_dir, file_name, context))
-            wiz.write({'progress': (float(factura_done) / len(fact_ids)) * 100})
+            j_pool.add_job(self.render_to_file(cursor, uid, [fact_id], report, dirname, file_name, context))
+            wiz.write({'progress': (float(factura_done+1) / len(fact_ids)) * 100})
 
         j_pool.join()
 
@@ -135,13 +147,7 @@ class WizardPaperInvoiceSom(osv.osv_memory):
         else:
             info = "fitxers generats correctament."
 
-        self.generate_csv(cursor, uid, list(set(fact_ids)-set(failed_invoice)), tmp_dir, 'Adreces.csv', context)
-
-        wiz.write({
-            'state': 'done',
-            'file': self.get_zip_from_directory(tmp_dir, True),
-            'info': wiz.info + "\n" + info,
-        })
+        return failed_invoice, info
 
     @job(queue=config.get('som_factures_paper_render_queue', 'poweremail_render'),
          result_ttl=24 * 3600)
@@ -212,6 +218,12 @@ class WizardPaperInvoiceSom(osv.osv_memory):
             sentry = self.pool.get('sentry.setup')
             if sentry is not None:
                 sentry.client.captureException()
+
+
+    def generate_reb(self, cursor, uid, fact_ids, dirname, context=None):
+        pass
+
+
 
     def get_zip_from_directory(self, directory, b64enc=True):
 
