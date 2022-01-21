@@ -109,15 +109,15 @@ class WizardPaperInvoiceSom(osv.osv_memory):
         fact_ids = json.loads(wiz.invoice_ids)
         tmp_dir = tempfile.mkdtemp()
 
-        failed_invoices, info = self.generate_inv(cursor, uid, wiz, fact_ids, tmp_dir, context)
+        failed_invoices, info_inv = self.generate_inv(cursor, uid, wiz, fact_ids, tmp_dir, context)
         clean_invoices = list(set(fact_ids)-set(failed_invoices))
-        self.generate_csv(cursor, uid, clean_invoices, tmp_dir, 'Adreces.csv', context)
-        self.generate_reb(cursor, uid, clean_invoices, tmp_dir, context)
+        info_csv = self.generate_csv(cursor, uid, wiz, clean_invoices, tmp_dir, 'Adreces.csv', context)
+        info_reb = self.generate_reb(cursor, uid, wiz, clean_invoices, tmp_dir, context)
 
         wiz.write({
             'state': 'done',
             'file': self.get_zip_from_directory(tmp_dir, True),
-            'info': wiz.info + "\n" + info,
+            'info': wiz.info + "\n" + info_inv + "\n" + info_csv + "\n" + info_reb,
         })
 
     def generate_inv(self, cursor, uid, wiz, fact_ids, dirname, context=None):
@@ -133,7 +133,7 @@ class WizardPaperInvoiceSom(osv.osv_memory):
                 fact.polissa_id.direccio_notificacio.name,
             )
             j_pool.add_job(self.render_to_file(cursor, uid, [fact_id], report, dirname, file_name, context))
-            wiz.write({'progress': (float(factura_done+1) / len(fact_ids)) * 100})
+            wiz.write({'progress': (float(factura_done+1) / len(fact_ids)) * 98})
 
         j_pool.join()
 
@@ -145,9 +145,9 @@ class WizardPaperInvoiceSom(osv.osv_memory):
         if failed_invoice:
             fact_data = fact_obj.read(cursor, uid, failed_invoice, ["number"])
             facts = ', '.join([f['number'] for f in fact_data])
-            info = 'Les següents {} factures han tingut error: {}'.format(len(failed_invoice), facts)
+            info = u'Les següents {} factures han tingut error: {}'.format(len(failed_invoice), facts)
         else:
-            info = "fitxers generats correctament."
+            info = u"{} factures generades correctament.".format(len(fact_ids))
 
         return failed_invoice, info
 
@@ -179,7 +179,7 @@ class WizardPaperInvoiceSom(osv.osv_memory):
                 sentry.client.captureException()
             return False, fids
 
-    def generate_csv(self, cursor, uid, fact_ids, dirname, file_name, context=None):
+    def generate_csv(self, cursor, uid, wiz, fact_ids, dirname, file_name, context=None):
         def blank(thing):
             return thing if thing else ""
 
@@ -207,7 +207,7 @@ class WizardPaperInvoiceSom(osv.osv_memory):
             u'CP',
             u'Ciutat',
             u'Carrer alt',
-            u'Apartat correus', #TODO: seleccionar els camps
+            u'Apartat correus',
         ])
         for k in sorted(to_sort.keys()):
             writer.writerow(to_sort[k])
@@ -223,11 +223,49 @@ class WizardPaperInvoiceSom(osv.osv_memory):
             if sentry is not None:
                 sentry.client.captureException()
 
+        wiz.write({'progress': 99})
+        return u"Generat csv amb {} files.".format(len(fact_ids))
 
-    def generate_reb(self, cursor, uid, fact_ids, dirname, context=None):
-        pass
+    def generate_reb(self, cursor, uid, wiz, fact_ids, dirname, context=None):
+        fact_obj = self.pool.get('giscedata.facturacio.factura')
+        report = 'report.giscedata.facturacio.factura.rebut'
 
+        facts_with_rebs_ids = []
+        for fact_id in fact_ids:
+            fact = fact_obj.browse(cursor, uid, fact_id, context=context)
+            if fact.payment_type.code == 'N57':
+                facts_with_rebs_ids.append(fact_id)
 
+        if not facts_with_rebs_ids:
+            return u"Cap rebut generat."
+
+        j_pool = ProgressJobsPool(wiz)
+
+        for fact_id in facts_with_rebs_ids:
+            fact = fact_obj.browse(cursor, uid, fact_id, context=context)
+            file_name = "{} {} {} rebut.pdf".format(
+                fact.polissa_id.name,
+                fact.number,
+                fact.polissa_id.direccio_notificacio.name,
+            )
+            j_pool.add_job(self.render_to_file(cursor, uid, [fact_id], report, dirname, file_name, context))
+
+        wiz.write({'progress': 100})
+        j_pool.join()
+
+        failed_invoice = []
+        for status, result in j_pool.results.values():
+            if not status:
+                failed_invoice.extend(result)
+
+        if failed_invoice:
+            fact_data = fact_obj.read(cursor, uid, failed_invoice, ["number"])
+            facts = ', '.join([f['number'] for f in fact_data])
+            info = u'Els següents {} rebuts han tingut error: {}'.format(len(failed_invoice), facts)
+        else:
+            info = u"{} Rebuts generats correctament.".format(len(facts_with_rebs_ids))
+
+        return info
 
     def get_zip_from_directory(self, directory, b64enc=True):
 
