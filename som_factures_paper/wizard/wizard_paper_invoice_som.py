@@ -180,32 +180,34 @@ class WizardPaperInvoiceSom(osv.osv_memory):
             return False, fids
 
     def generate_csv(self, cursor, uid, fact_ids, dirname, file_name, context=None):
+        def blank(thing):
+            return thing if thing else ""
+
         to_sort = {}
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         for fact_id in fact_ids:
             fact = fact_obj.browse(cursor, uid, fact_id, context=context)
-            name = "{} {}".format(fact.polissa_id.name, fact.number)
+            name = "{}".format(fact.polissa_id.name)
             to_sort[name] = (
+                fact.polissa_id.direccio_notificacio.name,
                 fact.polissa_id.name,
-                fact.number,
-                fact.polissa_id.direccio_notificacio.city,
-                fact.polissa_id.direccio_notificacio.zip,
                 fact.polissa_id.direccio_notificacio.street,
-                fact.polissa_id.direccio_notificacio.street2,
-                fact.polissa_id.direccio_notificacio.apartat_correus,
+                fact.polissa_id.direccio_notificacio.zip,
+                fact.polissa_id.direccio_notificacio.city,
+                blank(fact.polissa_id.direccio_notificacio.street2),
+                blank(fact.polissa_id.direccio_notificacio.apartat_correus),
             )
 
         output = StringIO()
         writer = csv.writer(output, delimiter=';',)
         writer.writerow([
+            u'Persona notificacio',
             u'Polissa',
-            u'Factura',
-            u'Ciutat',
-            u'Ciutat',
-            u'CP',
             u'Carrer',
+            u'CP',
+            u'Ciutat',
             u'Carrer alt',
-            u'Apartat correus',
+            u'Apartat correus', #TODO: seleccionar els camps
         ])
         for k in sorted(to_sort.keys()):
             writer.writerow(to_sort[k])
