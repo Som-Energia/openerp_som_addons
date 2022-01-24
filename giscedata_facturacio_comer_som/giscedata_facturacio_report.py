@@ -1799,6 +1799,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             lines_data[block]['total'] += l.price_subtotal
             lines_data[block]['origin'] = readings[l.data_desde] if l.data_desde in readings else _(u'sense lectura')
             lines_data[block]['data'] = data_desde
+            lines_data[block]['days'] = (datetime.strptime(l.data_fins,'%Y-%m-%d') - datetime.strptime(l.data_desde,'%Y-%m-%d')).days + 1
 
         lines_data = [lines_data[k] for k in sorted(lines_data.keys())]
         return lines_data
@@ -2167,11 +2168,11 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 lines_data[l.name].update({
                     'price_unit_multi': l.price_unit_multi,
                     'quantity': l.quantity,
-                    'end_date': l.data_fins,
                 })
             else:
                 lines_data[l.name] += l_count
 
+            lines_data[l.name]['end_date'] = l.data_fins,
             total += l.price_subtotal
 
         for k,v in lines_data.items():
@@ -2197,7 +2198,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         if not te_quartihoraria(pol):
             return {'is_visible': False}
 
-        excess_lines_data = self.get_sub_component_invoice_details_td_excess_power_quarterhours_accumulative(fact, pol, excess_lines)
+        excess_lines_data = self.get_sub_component_invoice_details_td(fact, pol, excess_lines)
         showing_periods = self.get_matrix_show_periods(pol)
 
         tariff = get_tariff_from_libfacturacioatr(pol.tarifa.name)
@@ -2205,24 +2206,26 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         # before this date the kp was right, the calculation was wrong
         # after this date has a 31/30 factor depending on month lenght and must be corrected
 
-        excess_data = {}
-        for p in showing_periods:
-            if p in excess_lines_data:
-                item = {}
-                item['kp'] = tariff.factors_k[p] if replace_kp else excess_lines_data[p]['extra']
-                item['power_excess'] = excess_lines_data[p]['quantity']
-                item['price_excess'] = excess_lines_data[p]['price_unit_multi']
-                item['price_subtotal'] = excess_lines_data[p]['price_subtotal']
-                item['visible_days_month'] = replace_kp and excess_lines_date[p]['end_date'] < factors_kp_change_calculation_BOE_date
-                excess_data[p] = item
-
+        excess_data = []
+        for excess_lines in excess_lines_data:
+            items = {}
+            for p in showing_periods:
+                if p in excess_lines:
+                    item = {}
+                    item['kp'] = tariff.factors_k[p] if replace_kp else excess_lines[p]['extra']
+                    item['power_excess'] = excess_lines[p]['quantity']
+                    item['price_excess'] = excess_lines[p]['price_unit_multi']
+                    item['price_subtotal'] = excess_lines[p]['price_subtotal']
+                    items[p] = item
+                items['visible_days_month'] = replace_kp and excess_lines['data'] < factors_kp_change_calculation_BOE_date
+                items['days'] = excess_lines['days']
+                items['total'] = excess_lines['total']
+            excess_data.append(items)
         data = {
             'showing_periods': showing_periods,
-            'total': excess_lines_data['total'],
-            'days': excess_lines_data['days'],
             'excess_data': excess_data,
             'is_visible': True,
-            'header_multi':4*(len(excess_lines_data)),
+            'header_multi':4*(len(excess_data)),
         }
         return data
 
