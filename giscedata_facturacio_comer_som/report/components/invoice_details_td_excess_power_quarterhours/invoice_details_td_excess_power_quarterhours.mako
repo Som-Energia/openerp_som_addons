@@ -1,59 +1,75 @@
 <%page args="id" />
 <%import locale
 first_pass = True
+count = 1
 %>
 
 % if id.is_visible:
+    % for excess_data in id.excess_data:
     <tr>
         % if first_pass:
-            <td class="td_first concepte_td" rowspan="4">${_(u"Facturacio per excés de potència")}</td>
+            <td class="td_first concepte_td" rowspan="${id.header_multi}">${_(u"Facturacio per excés de potència")}</td>
             <%first_pass = False%>
         % endif
         <td class="td_bold detall_td">${_(u"Potència excés [kW]")}</td>
         % for p in id.showing_periods:
-            % if p in id.excess_data:
-                <td>${_(u"%s") %(locale.str(locale.atof(formatLang(id.excess_data[p]["power_excess"], digits=3))))}</td>
+            % if p in excess_data:
+                <td>${_(u"%s") %(locale.str(locale.atof(formatLang(excess_data[p]["power_excess"], digits=3))))}</td>
             % else:
                 <td></td>
             % endif
         % endfor
         <td></td>
+        <%count += 1%>
     </tr>
     <tr>
-        <td class="td_bold detall_td">${_(u"Preu potència excés [€/kW i mes]")}</td>
+
+        % if excess_data['visible_days_month']:
+            <td class="td_bold detall_td">${_(u"Preu potència excés [€/kW i mes]")}</td>
+        % else:
+            <td class="td_bold detall_td">${_(u"Preu potència excés [€/kW]")}</td>
+        % endif
         % for p in id.showing_periods:
-            % if p in id.excess_data:
-                <td>${_(u"%s") %(locale.str(locale.atof(formatLang(id.excess_data[p]["price_excess"], digits=6))))}</td>
+            % if p in excess_data:
+                <td>${_(u"%s") %(locale.str(locale.atof(formatLang(excess_data[p]["price_excess"], digits=6))))}</td>
             % else:
                 <td></td>
             % endif
         % endfor
         <td></td>
+        <%count += 1%>
     </tr>
     <tr>
         <td class="td_bold detall_td">${_(u"Coeficient kp")}</td>
         % for p in id.showing_periods:
-            % if p in id.excess_data:
-                <td>${_(u"%s") %(locale.str(locale.atof(formatLang(id.excess_data[p]["kp"], digits=6))))}</td>
+            % if p in excess_data:
+                <td>${_(u"%s") %(locale.str(locale.atof(formatLang(excess_data[p]["kp"], digits=6))))}</td>
             % else:
                 <td></td>
             % endif
         % endfor
         <td></td>
+        <%count += 1%>
     </tr>
+    % if count < id.header_multi:
+    <tr class="tr_bold">
+    % else:
     <tr class="tr_bold last_row">
-        % if id.visible_days_month:
-            <td class="detall_td">${_(u"kW excés x €/kW excés x kp x (%.f/30) dies") %(int(id.days))}</td>
+    % endif
+        % if excess_data['visible_days_month']:
+            <td class="detall_td">${_(u"kW excés x €/kW excés x kp x (%.f/30) dies") %(excess_data['days'])}</td>
         % else:
             <td class="detall_td">${_(u"kW excés x €/kW excés x kp")}</td>
         % endif
         % for p in id.showing_periods:
-            % if p in id.excess_data:
-                <td>${_(u"%s €") %(formatLang(id.excess_data[p]["price_subtotal"]))}</td>
+            % if p in excess_data:
+                <td>${_(u"%s €") %(formatLang(excess_data[p]["price_subtotal"]))}</td>
             % else:
                 <td></td>
             % endif
         % endfor
-        <td><span class="subtotal">${_(u"%s €") %(formatLang(id.total))}</span></td>
+        <td><span class="subtotal">${_(u"%s €") %(formatLang(excess_data['total']))}</span></td>
+        <%count += 1%>
     </tr>
+    %endfor
 % endif
