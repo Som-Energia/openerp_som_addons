@@ -42,7 +42,7 @@ class GiscedataSwitchingModConWizard(osv.osv_memory):
                 'enviament': 'email',
             })
             context.update({
-                'new_contract_extra_vals' = new_vals
+                'new_contract_extra_vals': new_vals,
             })
 
         res = super(GiscedataSwitchingModConWizard, self).genera_casos_atr(cursor, uid, ids, context=context)
