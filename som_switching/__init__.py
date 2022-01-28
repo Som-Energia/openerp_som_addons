@@ -1,6 +1,5 @@
 import giscedata_switching_r1
 import giscedata_switching_helpers
-import giscedata_switching_mod_con_wizard
 import wizard
 import giscedata_switching
 import giscedata_atc

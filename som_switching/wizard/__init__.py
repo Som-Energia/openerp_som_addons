@@ -5,3 +5,4 @@ import wizard_create_r1_from_multiple_contracts
 import giscedata_switching_wizard_r1_invoice
 import wizard_a3_from_contract
 import wizard_comment_to_F1
+import giscedata_switching_mod_con_wizard
