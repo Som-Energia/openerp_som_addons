@@ -38,9 +38,12 @@ class GiscedataSwitchingModConWizard(osv.osv_memory):
                 'empowering_channels_log': [(6, 0, [])],
                 'empowering_profile': False,
                 'empowering_service': False,
-                'etag': False
+                'etag': False,
+                'enviament': 'email',
             })
-            context['new_contract_extra_vals'] = new_vals
+            context.update({
+                'new_contract_extra_vals' = new_vals
+            })
 
         res = super(GiscedataSwitchingModConWizard, self).genera_casos_atr(cursor, uid, ids, context=context)
 
