@@ -30,6 +30,7 @@
             <field name="name">account.account.fast.tree</field>
             <field name="model">account.account</field>
             <field name="type">tree</field>
+            <field name="priority">1</field>
             <field name="arch" type="xml">
                 <tree string="Account" toolbar="1" colors="blue:type=='view'">
                     <field name="code"/>
