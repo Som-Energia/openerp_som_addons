@@ -127,11 +127,11 @@ class WizardPaperInvoiceSom(osv.osv_memory):
 
         for factura_done, fact_id in enumerate(fact_ids):
             fact = fact_obj.browse(cursor, uid, fact_id, context=context)
-            file_name = "{} {} {}.pdf".format(
+            file_name = u"{} {} {}.pdf".format(
                 fact.polissa_id.name,
                 fact.number,
                 fact.polissa_id.direccio_notificacio.name,
-            )
+            ).encode('latin-1')
             j_pool.add_job(self.render_to_file(cursor, uid, [fact_id], report, dirname, file_name, context))
             wiz.write({'progress': (float(factura_done+1) / len(fact_ids)) * 98})
 
@@ -167,7 +167,7 @@ class WizardPaperInvoiceSom(osv.osv_memory):
             }
             content = report.create(cursor, uid, fids, values, context)[0]
             # Escriure report a "fitxer"
-            fitxer_name = '{}/{}'.format(dirname, file_name)
+            fitxer_name = os.path.join(dirname, file_name)
             with open(fitxer_name, 'wb') as f:
                 f.write(content)
             return True, fids
