@@ -38,6 +38,6 @@
                     <a href="https://es.support.somenergia.coop/article/1079-que-debo-hacer-para-presentar-una-reclamacion">${_(u"article.")}</a> 
                 %endif
                 ${_(u"Som Energia està adherida al Sistema Arbitral de Consum. Pots fer arribar la teva reclamació a la Junta Arbitral de Consum més propera: ")}
-                    <a href="http://bit.ly/SistemaArbitral">aqui.</a>
+                    <a href="https://www.consumo.gob.es/es/consumo/juntasArbitrales/autonomica">aqui.</a>
             </p>
         </div>
