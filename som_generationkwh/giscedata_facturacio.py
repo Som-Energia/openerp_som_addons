@@ -349,6 +349,7 @@ class GiscedataFacturacioFactura(osv.osv):
         invlines_obj = self.pool.get('giscedata.facturacio.factura.linia')
         pricelist_obj = self.pool.get('product.pricelist')
         partner_obj = self.pool.get('res.partner')
+        gkwh_rightusage_obj = self.pool.get('generationkwh.right.usage.line')
 
         gkwh_lineowner_obj = self.pool.get('generationkwh.invoice.line.owner')
         gkwh_dealer_obj = self.pool.get('generationkwh.dealer')
@@ -460,13 +461,20 @@ class GiscedataFacturacioFactura(osv.osv):
                     ctx['group_line'] = False
                     iline_id = invlines_obj.create(cursor, uid, vals, context=ctx)
                     # owner line object creation
-                    gkwh_lineowner_obj.create(
+                    lineowner_id = gkwh_lineowner_obj.create(
                         cursor, uid, {
                             'factura_id': inv_id,
                             'factura_line_id': iline_id,
                             'owner_id': gkwh_owner_id
                         }
                     )
+                    for k,v in gkwh_line['usage']:
+                        gkwh_rightusage_obj.create(
+                            ursor, uid, {
+                                'datetime': k, 'quantity': v,
+                                'line_owner': lineowner_id
+                            }
+                        )
 
             self.button_reset_taxes(cursor, uid, [inv_id], context=context)
 
