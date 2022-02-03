@@ -11,6 +11,8 @@
                     <field name="factura_number"/>
                     <field name="factura_line_id"/>
                     <field name="owner_id"/>
+                    <field name="saving_gkw_amount"/>
+                    <field name="line_owner"/>
                 </form>
             </field>
         </record>

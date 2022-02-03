@@ -155,6 +155,7 @@ class GenerationkWhDealer(osv.osv):
             dict(
                 member_id = soci2partner(line['member_id']),
                 kwh = line['kwh'],
+                usage=line['usage']
                 )
             for line in res
         ]
@@ -574,8 +575,34 @@ class GenerationkWhInvoiceLineOwner(osv.osv):
             method=True, type='float',
             digits=(16, int(config['price_accuracy'])), store=True,
         ),
+        'right_usage_lines': fields.one2many(
+            'generationkwh.right.usage.line', 'line_owner',
+            'Drets emprats', readonly=True
+        )
     }
 
 GenerationkWhInvoiceLineOwner()
+
+
+class GenerationkWhRightUsageLine(osv.osv):
+    """ Class with the relation between generation invoice line and rights owner
+    """
+
+    _name = 'generationkwh.right.usage.line'
+
+    _columns = {
+        'datetime': fields.datetime(
+            'Data generació drets',required=True, readonly=True
+        ),
+        'quantity': fields.integer(
+            'KWh utilitzats', required=True, readonly=True
+        ),
+        'line_owner': fields.many2one(
+            'generationkwh.invoice.line.owner', 'Propietari drets GkWh factura',
+            required=True, readonly=True,
+        )
+    }
+
+GenerationkWhRightUsageLine()
 
 # vim: ts=4 sw=4 et
