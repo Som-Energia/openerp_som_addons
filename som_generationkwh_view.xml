@@ -12,7 +12,7 @@
                     <field name="factura_line_id"/>
                     <field name="owner_id"/>
                     <field name="saving_gkw_amount"/>
-                    <field name="line_owner"/>
+                    <field name="right_usage_lines"/>
                 </form>
             </field>
         </record>
@@ -37,5 +37,29 @@
             <field name="view_id" ref="view_gkwh_invoice_line_owner_tree"/>
         </record>
         <menuitem action="action_gkwh_invoice_line_owner_tree" id="menu_gkwh_invoice_line_owner_tree" parent="giscedata_facturacio.menu_facturacio_base"/>
+        <record model="ir.ui.view" id="view_gkwh_right_usage_line_form">
+            <field name="name">generationkwh.right.usage.line.form</field>
+            <field name="model">generationkwh.right.usage.line</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Drets usats a una linia de factura">
+                    <field name="datetime"/>
+                    <field name="quantity"/>
+                    <field name="line_owner"/>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_gkwh_right_usage_line_tree">
+            <field name="name">generationkwh.right.usage.line.tree</field>
+            <field name="model">generationkwh.right.usage.line</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Drets usats a una linia de factura">
+                    <field name="datetime"/>
+                    <field name="quantity"/>
+                    <field name="line_owner"/>
+                </tree>
+            </field>
+        </record>
     </data>
 </openerp>
