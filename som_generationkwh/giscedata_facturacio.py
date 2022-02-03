@@ -468,9 +468,9 @@ class GiscedataFacturacioFactura(osv.osv):
                             'owner_id': gkwh_owner_id
                         }
                     )
-                    for k,v in gkwh_line['usage']:
+                    for k,v in gkwh_line['usage'].items():
                         gkwh_rightusage_obj.create(
-                            ursor, uid, {
+                            cursor, uid, {
                                 'datetime': k, 'quantity': v,
                                 'line_owner': lineowner_id
                             }
