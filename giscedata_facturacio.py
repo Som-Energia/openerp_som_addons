@@ -452,6 +452,7 @@ class GiscedataFacturacioFactura(osv.osv):
                         'quantity': gkwh_quantity,
                         'name': _(u'{0} GkWh').format(line_vals['name']),
                     })
+                    context['group_line'] = False
                     iline_id = invlines_obj.create(cursor, uid, vals, context)
                     # owner line object creation
                     gkwh_lineowner_obj.create(
