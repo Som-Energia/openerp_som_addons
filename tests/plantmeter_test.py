@@ -5,7 +5,7 @@ import os
 import datetime
 import pytz
 from plantmeter.mongotimecurve import MongoTimeCurve
-from plantmeter.isodates import naiveisodate, localisodate, parseLocalTime, asUtc
+from somutils.isodates import naiveisodate, localisodate, parseLocalTime, asUtc
 from plantmeter.testutils import destructiveTest
 from yamlns import namespace as ns
 

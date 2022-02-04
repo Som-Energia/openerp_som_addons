@@ -10,7 +10,7 @@ from yamlns import namespace as ns
 from datetime import datetime
 from plantmeter.resource import ProductionAggregator, ProductionPlant, ProductionMeter 
 from plantmeter.mongotimecurve import MongoTimeCurve, toLocal, asUtc
-from plantmeter.isodates import isodate, naiveisodatetime, localisodate
+from somutils.isodates import isodate, naiveisodatetime, localisodate
 
 class GenerationkwhProductionAggregator(osv.osv):
     """
