@@ -577,7 +577,7 @@ class GenerationkWhInvoiceLineOwner(osv.osv):
         ),
         'right_usage_lines': fields.one2many(
             'generationkwh.right.usage.line', 'line_owner',
-            'Drets emprats', readonly=True
+            'Drets emprats', readonly=True, ondelete='cascade'
         )
     }
 
@@ -599,7 +599,7 @@ class GenerationkWhRightUsageLine(osv.osv):
         ),
         'line_owner': fields.many2one(
             'generationkwh.invoice.line.owner', 'Propietari drets GkWh factura',
-            required=True, readonly=True,
+            required=True, readonly=True, ondelete='cascade'
         )
     }
 
