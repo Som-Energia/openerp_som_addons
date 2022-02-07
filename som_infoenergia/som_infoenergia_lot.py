@@ -104,8 +104,15 @@ class SomInfoenergiaLotEnviament(osv.osv):
         lot_info = self.read(cursor, uid, ids, ['name','tipus'])
         context['tipus'] = lot_info['tipus']
         job_ids = []
+
         for obj_id in object_ids:
-            job = self.create_single_enviament_from_object_async(cursor, uid, ids, obj_id, context=context)
+            if context.get('extra_text', False):
+                env_obj = self.pool.get('som.enviament.massiu')
+                env_data = env_obj.read(cursor, uid, obj_id, ['name'])
+                contexte = context
+                contexte['extra_text'] = context['extra_text'][env_data['name']]
+
+            job = self.create_single_enviament_from_object_async(cursor, uid, ids, obj_id, context=contexte)
             job_ids.append(job.id)
             # Create a jobs_group to see the status of the operation
         create_jobs_group(
@@ -141,6 +148,8 @@ class SomInfoenergiaLotEnviament(osv.osv):
             env_obj = self.pool.get('som.enviament.massiu')
 
         env_values.update({context['from_model']: object_id})
+        if 'extra_text' in context:
+            env_values.update({'extra_text': context['extra_text']})
 
         env_id = env_obj.search(cursor, uid, [('lot_enviament','=', ids), (context['from_model'], '=', object_id)])
         if not env_id:

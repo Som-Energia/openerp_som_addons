@@ -30,14 +30,34 @@ class WizardCancelFromCSV(osv.osv_memory):
         lot_obj = self.pool.get('som.infoenergia.lot.enviament')
         pol_obj = self.pool.get('giscedata.polissa')
         wiz = self.browse(cursor, uid, ids[0], context=context)
-
+        vals = {'from_model': 'polissa_id'}
         csv_file = StringIO(base64.b64decode(wiz.csv_file))
         reader = csv.reader(csv_file)
-        pol_list = [line[0] for line in list(reader)]
+        linies= list(reader)
+        n_linies = len(linies)
+        start = 0
+        if n_linies>0 and not linies[0][0].isdigit():
+            header = linies[0]
+            start=1
+
+        pol_list= []
+        result = {}
+        for line in linies[start:]:
+            i = 1
+            result_extra_info = {}
+            for column in line[1:]:
+                result_extra_info[header[i]] = column #TODO header without value
+                i += 1
+            if result_extra_info:
+                result[line[0]] = result_extra_info
+            pol_list.append(line[0])
+        if result:
+            vals['extra_text'] =  result
+            #pol_list = [pol for pol in result.keys()]
 
         lot_id = context.get('active_id', [])
         pol_ids = pol_obj.search(cursor, uid, [('name','in', pol_list)])
-        lot_obj.create_enviaments_from_object_list(cursor, uid, lot_id, pol_ids, {'from_model': 'polissa_id'})
+        lot_obj.create_enviaments_from_object_list(cursor, uid, lot_id, pol_ids, vals)
         msg = "Es crearan els enviaments de {} pòlisses en segon pla".format(len(pol_ids))
         wiz.write({'state': "finished", 'info': msg})
         return True
