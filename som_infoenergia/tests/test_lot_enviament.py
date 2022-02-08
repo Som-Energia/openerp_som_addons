@@ -55,7 +55,29 @@ class LotEnviamentTests(testing.OOTestCase):
 
         lot_enviament.create_enviaments_from_csv_file(abs_file_path, {})
 
-        mocked_create_enviaments_from_csv.assert_called_with(cursor, uid, [lot_enviament_id], [{'report': '0001.pdf','text': 'First;Text', 'contractid': '0001'}],{})
+        mocked_create_enviaments_from_csv.assert_called_with(cursor, uid, [lot_enviament_id],
+            [{'report': '0001.pdf','text': 'First;Text', 'contractid': '0001'}],{})
+
+    @mock.patch('som_infoenergia.som_infoenergia_lot.SomInfoenergiaLotEnviament.create_enviaments_from_csv')
+    def test_create_enviaments_from_csv_file(self, mocked_create_enviaments_from_csv):
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
+        env_obj = self.openerp.pool.get('som.enviament.massiu')
+        cursor = self.cursor
+        uid = self.uid
+        lot_enviament_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_infoenergia', 'lot_enviament_0002'
+        )[1]
+        lot_enviament = lot_env_obj.browse(cursor, uid, lot_enviament_id)
+        script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
+        rel_path = 'EiE_extra_info.csv'
+        abs_file_path = os.path.join(script_dir, rel_path)
+
+        lot_enviament.create_enviaments_from_csv_file(abs_file_path, {})
+
+        mocked_create_enviaments_from_csv.assert_called_with(cursor, uid, [lot_enviament_id],
+            [{' codi_oferta': ' OFERTA1', 'polissa': '0001', 'import_garantia': '1000',
+            'consum_anual': ' 1400', 'marge': ' 1'}],{})
 
     def test_create_single_enviament_polissaNotFound(self):
         imd_obj = self.openerp.pool.get('ir.model.data')
@@ -290,6 +312,34 @@ class LotEnviamentTests(testing.OOTestCase):
             ('estat', "=", 'enviat'), ('partner_id','=', partner_id),
             ])
         self.assertEqual(len(post_enviaments), 1)
+
+    def test_create_single_enviament_from_object_extra_info(self):
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
+        env_obj = self.openerp.pool.get('som.enviament.massiu')
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
+        cursor = self.cursor
+        uid = self.uid
+        lot_enviament_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_infoenergia', 'lot_enviament_0002'
+        )[1]
+        lot_enviament = lot_env_obj.browse(cursor, uid, lot_enviament_id)
+        pol_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_polissa', 'polissa_0005'
+        )[1]
+        enviaments_in_lot = env_obj.search(cursor, uid, [('lot_enviament','=',lot_enviament_id),('polissa_id','=',pol_id)])
+        self.assertEqual(len(enviaments_in_lot), 0)
+
+        lot_enviament.create_single_enviament_from_object(pol_id, context={'tipus': 'altres',
+            'from_model': 'polissa_id', 'extra_text': {'k': '234', 'extra_info': 'Info 1'}})
+
+        post_enviaments = env_obj.search(cursor, uid,
+            [("lot_enviament", "=", lot_enviament_id),
+            ('estat', "=", 'obert'),  ('polissa_id','=', pol_id),
+            ])
+        self.assertEqual(len(post_enviaments), 1)
+        env_data = env_obj.read(cursor, uid, post_enviaments[0])
+        self.assertEqual(env_data['extra_text'], "{'k': '234', 'extra_info': 'Info 1'}")
 
     @mock.patch('som_infoenergia.som_enviament_massiu.SomEnviamentMassiu.add_info_line')
     def test_cancel_enviaments_from_polissa_names_altres(self, mock_add_info):
