@@ -35,6 +35,7 @@
         "wizard/wizard_add_contracts_lot_view.xml",
         "wizard/wizard_cancel_from_csv_view.xml",
         "wizard/wizard_create_enviaments_from_csv_view.xml",
+        "som_infoenergia_report.xml",
     ],
     "active": False,
     "installable": True
