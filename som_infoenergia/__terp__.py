@@ -24,6 +24,7 @@
     "update_xml":[
         "som_infoenergia_data.xml",
         "som_infoenergia_view.xml",
+        "som_infoenergia_report.xml",
         "giscedata_polissa_view.xml",
         "security/infoenergia_security.xml",
         "security/ir.model.access.csv",
@@ -35,7 +36,6 @@
         "wizard/wizard_add_contracts_lot_view.xml",
         "wizard/wizard_cancel_from_csv_view.xml",
         "wizard/wizard_create_enviaments_from_csv_view.xml",
-        "som_infoenergia_report.xml",
     ],
     "active": False,
     "installable": True
