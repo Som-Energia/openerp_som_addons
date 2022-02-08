@@ -1,0 +1,1 @@
+import report_indexed_offer_template_pdf
