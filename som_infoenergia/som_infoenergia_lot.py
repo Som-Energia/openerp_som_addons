@@ -105,12 +105,12 @@ class SomInfoenergiaLotEnviament(osv.osv):
         context['tipus'] = lot_info['tipus']
         job_ids = []
 
+        contexte = context.copy()
         for obj_id in object_ids:
             if context.get('extra_text', False):
-                env_obj = self.pool.get('som.enviament.massiu')
-                env_data = env_obj.read(cursor, uid, obj_id, ['name'])
-                contexte = context
-                contexte['extra_text'] = context['extra_text'][env_data['name']]
+                pol_obj = self.pool.get('giscedata.polissa')
+                pol_data = pol_obj.read(cursor, uid, obj_id, ['name'])
+                contexte['extra_text'] = context['extra_text'][pol_data['name']]
 
             job = self.create_single_enviament_from_object_async(cursor, uid, ids, obj_id, context=contexte)
             job_ids.append(job.id)
