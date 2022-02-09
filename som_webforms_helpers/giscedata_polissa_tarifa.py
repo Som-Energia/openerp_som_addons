@@ -145,7 +145,7 @@ class GiscedataPolissaTarifa(osv.osv):
 
         fiscal_position = None
         if not fiscal_position_id:
-            prop_id = prop_obj.search(cursors,uid,[('name','=','property_account_position'),('res_id','=',False)])
+            prop_id = prop_obj.search(cursor,uid,[('name','=','property_account_position'),('res_id','=',False)])
             if isinstance(prop_id,list):
                 prop_id = prop_id[0]
             prop=prop_obj.browse(cursor, uid, prop_id)
