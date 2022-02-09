@@ -5,7 +5,7 @@ from report import report_sxw
 from tools import config
 from osv import osv
 from yamlns import namespace as ns
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class report_webkit_html(report_sxw.rml_parse):
@@ -39,6 +39,12 @@ class ReportIndexedOffer(osv.osv_memory):
         data['first_page'] = self.get_component_first_page_data(cursor, uid, object, extra_text, context)
         data['header'] = self.get_component_header_data(cursor, uid, object, extra_text, context)
         data['antecedents'] = self.get_component_antecedents_data(cursor, uid, object, extra_text, context)
+        data['objecte'] = self.get_component_objecte_data(cursor, uid, object, extra_text, context)
+        data['cond_contr'] = self.get_component_cond_contr_data(cursor, uid, object, extra_text, context)
+        data['power_prices'] = self.get_component_power_prices_data(cursor, uid, object, extra_text, context)
+        data['energy_prices'] = self.get_component_energy_prices_data(cursor, uid, object, extra_text, context)
+        data['tail_text'] = self.get_component_tail_text_data(cursor, uid, object, extra_text, context)
+        data['conclusions'] = self.get_component_conclusions_data(cursor, uid, object, extra_text, context)
 
         return ns.loads(ns(data).dump())
 
@@ -60,6 +66,40 @@ class ReportIndexedOffer(osv.osv_memory):
             'direccio': object.polissa_id.cups_direccio if object.polissa_id else "ERROR no polissa",
             'cups': object.polissa_id.cups.name if object.polissa_id else "ERROR no polissa",
             'consum_anual': extra_text.get("consum_anual", "ERROR EXTRA TEXT: sense consum anual"),
+        }
+
+    def get_component_objecte_data(self, cursor, uid, object, extra_text, context):
+        return {
+        }
+
+    def get_component_cond_contr_data(self, cursor, uid, object, extra_text, context):
+        return {
+        }
+
+    def get_component_power_prices_data(self, cursor, uid, object, extra_text, context):
+        return {
+        }
+
+    def get_component_energy_prices_data(self, cursor, uid, object, extra_text, context):
+        return {
+        }
+
+    def get_component_tail_text_data(self, cursor, uid, object, extra_text, context):
+        if object.polissa_id:
+            if object.polissa_id.modcontractual_activa:
+                data_limit_ingres = datetime.strptime(object.polissa_id.modcontractual_activa.data_final,"%Y-%m-%d") - timedelta(days=7)
+                data_limit_ingres = data_limit_ingres.strftime("%d-%m-%Y")
+            else:
+                data_limit_ingres = "ERROR no mod con activa"
+        else:
+            data_limit_ingres = "ERROR no polissa"
+        return {
+            'data_limit_ingres': data_limit_ingres,
+            'import_garantia': extra_text.get("import_garantia", "ERROR EXTRA TEXT: sense import garantia"),
+        }
+
+    def get_component_conclusions_data(self, cursor, uid, object, extra_text, context):
+        return {
         }
 
     _columns = {}
