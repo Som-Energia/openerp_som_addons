@@ -45,13 +45,10 @@ class ReportIndexedOffer(osv.osv_memory):
         data['energy_prices'] = self.get_component_energy_prices_data(cursor, uid, object, extra_text, context)
         data['tail_text'] = self.get_component_tail_text_data(cursor, uid, object, extra_text, context)
         data['conclusions'] = self.get_component_conclusions_data(cursor, uid, object, extra_text, context)
-
         return ns.loads(ns(data).dump())
 
     def get_component_first_page_data(self, cursor, uid, object, extra_text, context):
-        return {
-            'nom_titular': object.partner_id.name,
-        }
+        return {'nom_titular': object.partner_id.name}
 
     def get_component_header_data(self, cursor, uid, object, extra_text, context):
         return {
@@ -69,12 +66,13 @@ class ReportIndexedOffer(osv.osv_memory):
         }
 
     def get_component_objecte_data(self, cursor, uid, object, extra_text, context):
-        return {
-        }
+        return {}
 
     def get_component_cond_contr_data(self, cursor, uid, object, extra_text, context):
-        return {
-        }
+        if object.lang == 'es_ES':
+            return {'link': 'https://es.support.somenergia.coop/article/144-cuales-son-las-ventajas-de-ser-socio-a-de-som-energia'}
+        else:
+            return {'link': 'https://ca.support.somenergia.coop/article/186-quins-son-els-avantatges-de-ser-soci-a-de-som-energia'}
 
     def get_component_power_prices_data(self, cursor, uid, object, extra_text, context):
         return {
@@ -99,8 +97,7 @@ class ReportIndexedOffer(osv.osv_memory):
         }
 
     def get_component_conclusions_data(self, cursor, uid, object, extra_text, context):
-        return {
-        }
+        return {}
 
     _columns = {}
     _defaults = {}
