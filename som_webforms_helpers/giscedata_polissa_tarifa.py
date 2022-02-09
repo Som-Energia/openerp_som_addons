@@ -149,7 +149,7 @@ class GiscedataPolissaTarifa(osv.osv):
             if isinstance(prop_id,list):
                 prop_id = prop_id[0]
             prop=prop_obj.browse(cursor, uid, prop_id)
-            fiscal_position = prop.value
+            fiscal_position = fp_obj.browse(cursor, uid, prop.value)
         elif fiscal_position_id:
             fiscal_position = fp_obj.browse(cursor, uid, fiscal_position_id)
 
