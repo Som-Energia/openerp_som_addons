@@ -87,6 +87,40 @@
                 </xpath>
             </field>
         </record>
+        <!-- llistat de F1ns sense data carrega-->
+        <record id="view_importacio_linia_fast" model="ir.ui.view">
+            <field name="name">giscedata.facturacio.importacio.linia.fast.tree</field>
+            <field name="model">giscedata.facturacio.importacio.linia</field>
+            <field name="type">tree</field>
+            <field name="priority">1</field>
+            <field name="arch" type="xml">
+                <tree string="Línies d'importació" colors="red:state!='valid';">
+                    <field name="importacio_id"/>
+                    <field name="distribuidora"/>
+                    <field name="f1_date"/>
+                    <field name="name"/>
+                    <field name="import_phase"/>
+                    <field name="lectures_processades"/>
+                    <field name="cups_id"/>
+                    <field name="invoice_number_text"/>
+                    <field name="fecha_factura_desde"/>
+                    <field name="fecha_factura_hasta"/>
+                    <field name="state"/>
+                    <field name="critical_info"/>
+                    <field name="type_factura"/>
+                    <field name="fecha_factura"/>
+                    <field name="tipo_factura_f1"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_importacio_linia_fast_tree" model="ir.actions.act_window">
+            <field name="name">Fitxers F1 ràpid</field>
+            <field name="res_model">giscedata.facturacio.importacio.linia</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_importacio_linia_fast"/>
+        </record>
+        <menuitem id="menu_importacio_linia_fast" action="action_importacio_linia_fast_tree" parent="menu_gestio_f1"/>
 
         <!-- Menu de atr pendents de enviar en pas 01-->
         <record id="sw_crm_case_pendents_enviar_01_act_tree" model="ir.actions.act_window">
