@@ -15,5 +15,13 @@ data = r_obj.get_report_data(cursor, uid, objects[0])
 <p style="page-break-after:always"></p>
   <%include file="/som_infoenergia/report/components/header/header.mako" args="d=data.header" />
   <%include file="/som_infoenergia/report/components/antecedents/antecedents.mako" args="d=data.antecedents" />
+  <%include file="/som_infoenergia/report/components/objecte/objecte.mako" args="d=data.objecte" />
+  <%include file="/som_infoenergia/report/components/cond_contr/cond_contr.mako" args="d=data.cond_contr" />
+<p style="page-break-after:always"></p>
+  <%include file="/som_infoenergia/report/components/power_prices/power_prices.mako" args="d=data.power_prices" />
+  <%include file="/som_infoenergia/report/components/energy_prices/energy_prices.mako" args="d=data.energy_prices" />
+<p style="page-break-after:always"></p>
+  <%include file="/som_infoenergia/report/components/tail_text/tail_text.mako" args="d=data.tail_text" />
+  <%include file="/som_infoenergia/report/components/conclusions/conclusions.mako" args="d=data.conclusions" />
 </body>
 </html>
