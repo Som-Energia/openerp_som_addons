@@ -120,7 +120,7 @@
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="view_importacio_linia_fast"/>
         </record>
-        <menuitem id="menu_importacio_linia_fast" action="action_importacio_linia_fast_tree" parent="menu_gestio_f1"/>
+        <menuitem id="menu_importacio_linia_fast" action="action_importacio_linia_fast_tree" parent="giscedata_facturacio_switching.menu_gestio_f1"/>
 
         <!-- Menu de atr pendents de enviar en pas 01-->
         <record id="sw_crm_case_pendents_enviar_01_act_tree" model="ir.actions.act_window">
