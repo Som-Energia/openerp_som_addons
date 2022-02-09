@@ -75,12 +75,16 @@ class ReportIndexedOffer(osv.osv_memory):
             return {'link': 'https://ca.support.somenergia.coop/article/186-quins-son-els-avantatges-de-ser-soci-a-de-som-energia'}
 
     def get_component_power_prices_data(self, cursor, uid, object, extra_text, context):
-        return {
-        }
+        tariff = 'error'
+        if object.polissa_id:
+            if object.polissa_id.tarifa.codi_ocsum in ('020', '021', '022', '023', '025'):
+                tariff = '6xTD'
+            elif object.polissa_id.tarifa.codi_ocsum in ('019', '024'):
+                tariff = '3xTD'
+        return {'tariff': tariff}
 
     def get_component_energy_prices_data(self, cursor, uid, object, extra_text, context):
-        return {
-        }
+        return {'k_plus_D': extra_text.get("marge", "ERROR EXTRA TEXT: sense marge")}
 
     def get_component_tail_text_data(self, cursor, uid, object, extra_text, context):
         if object.polissa_id:
