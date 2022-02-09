@@ -9,6 +9,7 @@ data = r_obj.get_report_data(cursor, uid, objects[0])
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<link rel="stylesheet" href="${addons_path}/som_infoenergia/report/report_indexed_offer.css">
 </head>
 <body>
   <%include file="/som_infoenergia/report/components/first_page/first_page.mako" args="d=data.first_page" />

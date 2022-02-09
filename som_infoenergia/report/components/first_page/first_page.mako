@@ -1,4 +1,7 @@
 <%page args="d" />
+<style>
+<%include file="first_page.css" />
+</style>
 <div class="logo" style="margin-bottom: 15px; ">
     <img src="${addons_path}/som_infoenergia/report/components/first_page/logo_som.png"/>
 </div>
