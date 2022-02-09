@@ -1,29 +1,19 @@
 ## -*- coding: utf-8 -*-
+<%
+import locale
+locale.setlocale(locale.LC_NUMERIC,'es_ES.utf-8')
+r_obj = objects[0].pool.get('report.indexed.offer')
+data = r_obj.get_report_data(cursor, uid, objects[0])
+%>
+<!doctype html>
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 </head>
 <body>
-<style>
-.absolute {
-  position: absolute;
-  top: 98px;
-  left: 349px;
-  right: 0;
-  width: 600px;
-  height: 120px;
-  color: #3F3F3F;
-}
-</style>
-<div class="absolute">
-<span style="font-family: Open Sans; font-size: 1em; line-height: 18px">
-<span style="font-weight:bold">
-${customer['name']} ${customer['surname']}
-</span>
-<br>${customer['address']}
-<br><span style="font-weight:bold">CUPS ${customer['cups']}</span>
-</span>
-</div>
-HOLA!!!!!!
+  <%include file="/som_infoenergia/report/components/first_page/first_page.mako" args="d=data.first_page" />
+<p style="page-break-after:always"></p>
+  <%include file="/som_infoenergia/report/components/header/header.mako" args="d=data.header" />
+  <%include file="/som_infoenergia/report/components/antecedents/antecedents.mako" args="d=data.antecedents" />
 </body>
 </html>
