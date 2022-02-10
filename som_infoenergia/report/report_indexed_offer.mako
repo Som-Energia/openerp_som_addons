@@ -3,7 +3,7 @@
 import locale
 locale.setlocale(locale.LC_NUMERIC,'es_ES.utf-8')
 r_obj = objects[0].pool.get('report.indexed.offer')
-data = r_obj.get_report_data(cursor, uid, objects[0])
+datas = r_obj.get_report_data(cursor, uid, objects)
 %>
 <!doctype html>
 <html>
@@ -12,6 +12,7 @@ data = r_obj.get_report_data(cursor, uid, objects[0])
 <link rel="stylesheet" href="${addons_path}/som_infoenergia/report/report_indexed_offer.css">
 </head>
 <body>
+% for data in datas:
   <%include file="/som_infoenergia/report/components/first_page/first_page.mako" args="d=data.first_page" />
 <p style="page-break-after:always"></p>
   <%include file="/som_infoenergia/report/components/header/header.mako" args="d=data.header" />
@@ -24,5 +25,7 @@ data = r_obj.get_report_data(cursor, uid, objects[0])
 <p style="page-break-after:always"></p>
   <%include file="/som_infoenergia/report/components/tail_text/tail_text.mako" args="d=data.tail_text" />
   <%include file="/som_infoenergia/report/components/conclusions/conclusions.mako" args="d=data.conclusions" />
+<p style="page-break-after:always"></p>
+% endfor
 </body>
 </html>
