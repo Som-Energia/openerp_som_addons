@@ -121,6 +121,7 @@ class GiscedataPolissaTarifa(osv.osv):
         fp_obj = self.pool.get('account.fiscal.position')
         uom_obj = self.pool.get('product.uom')
         prod_obj = self.pool.get('product.product')
+        prop_obj = self.pool.get('ir.property')
 
         # get default pricelist for this tariff
         tariff = tariff_obj.browse(cursor, uid, tariff_id)
@@ -143,7 +144,14 @@ class GiscedataPolissaTarifa(osv.osv):
                         pricelist.append(item)
 
         fiscal_position = None
-        if fiscal_position_id is not None:
+        if not fiscal_position_id:
+            prop_id = prop_obj.search(cursor,uid,[('name','=','property_account_position'),('res_id','=',False)])
+            if isinstance(prop_id,list):
+                prop_id = prop_id[0]
+            prop=prop_obj.browse(cursor, uid, prop_id)
+            if prop.value:
+                fiscal_position_id = int(prop.value.split(',')[1])
+        if fiscal_position_id:
             fiscal_position = fp_obj.browse(cursor, uid, fiscal_position_id)
 
         if not pricelist:
