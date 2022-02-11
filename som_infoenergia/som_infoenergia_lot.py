@@ -114,7 +114,11 @@ class SomInfoenergiaLotEnviament(osv.osv):
 
             job = self.create_single_enviament_from_object_async(cursor, uid, ids, obj_id, context=contexte)
             job_ids.append(job.id)
-            # Create a jobs_group to see the status of the operation
+
+        if not job_ids:
+            return False
+
+        # Create a jobs_group to see the status of the operation
         create_jobs_group(
             cursor.dbname, uid,
             _('Crear Enviaments al lot {0} a partir de {1} {2}.').format(lot_info['name'], len(job_ids), context['from_model']),
