@@ -1,7 +1,7 @@
 ## -*- encoding: utf-8 -*-
 <%
-report = objects[0]
-data = report.sepa_particulars_data()
+r_obj = objects[0].pool.get('payment.mandate')
+datas = report.get_report_data(cursor, uid, objects)
 %>
 
 <!doctype html public "-//w3c//dtd html 4.0 transitional//en">
