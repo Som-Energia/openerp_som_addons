@@ -21,7 +21,7 @@ class report_webkit_html(report_sxw.rml_parse):
 webkit_report.WebKitParser(
     'report.som.enviament.massiu',
     'som.enviament.massiu',
-    'som_infoenergia/report/sepa.mako',
+    'som_infoenergia/sepa_template/sepa.mako',
     parser=report_webkit_html
 )
 
@@ -51,9 +51,8 @@ class OnDemandDataGenerator:
 
         return self.cache[name]
 
-class PaymentMandate(osv.osv):
-    _name = 'payment.mandate'
-    _inherit = 'payment.mandate'
+class SepaReport(osv.osv_memory):
+    _name = 'sepa.report'
 
     def get_report_data(self, cursor, uid, objects, context=None):
         datas = []
@@ -68,4 +67,4 @@ class PaymentMandate(osv.osv):
     _columns = {}
     _defaults = {}
 
-PaymentMandate()
+SepaReport()

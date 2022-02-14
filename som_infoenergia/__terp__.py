@@ -25,6 +25,7 @@
         "som_infoenergia_data.xml",
         "som_infoenergia_view.xml",
         "som_infoenergia_report.xml",
+        "som_infoenergia_sepa.xml",
         "giscedata_polissa_view.xml",
         "security/infoenergia_security.xml",
         "security/ir.model.access.csv",
