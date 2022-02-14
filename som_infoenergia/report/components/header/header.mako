@@ -1,7 +1,13 @@
 <%page args="d" />
-<p>${_(u'%s') % d.data_oferta}</p>
-<p>${_(u'%s') % d.codi_oferta}</p>
-<div style="background-color: green; display: flex; justify-content: space-between;">
-    <p style="color: white;">${_(u'%s') % d.nom_titular}</p>
-    <p style="color: white;">${_(u'%s') % d.data_oferta}</p>
-</div>
+<p class="data-oferta">${_(u'%s') % d.data_oferta}</p>
+<p class="codi-oferta">${_(u'%s') % d.codi_oferta}</p>
+<table class="header-oferta">
+    <tr>
+        <td style="text-align: left;">
+            ${_(u'%s') % d.nom_titular}
+        </td>
+        <td style="text-align: right;">
+            ${_(u'%s') % d.data_oferta}
+        </td>
+    </tr>
+</table>

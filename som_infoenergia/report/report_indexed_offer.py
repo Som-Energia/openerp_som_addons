@@ -60,6 +60,9 @@ class ReportIndexedOffer(osv.osv_memory):
         for object in objects:
             if object.extra_text:
                 extra_text = eval(object.extra_text)
+                for k in extra_text.keys():
+                    if k.strip() not in extra_text:
+                        extra_text[k.strip()] = extra_text[k]
             else:
                 extra_text = {}
             datas.append(OnDemandDataGenerator(cursor, uid, object, extra_text, context))

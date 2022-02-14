@@ -1,7 +1,7 @@
 <%page args="d" />
-<h3>${_(u"Preus del terme d’energia")}</h3>
+<h4>${_(u"Preus del terme d’energia")}</h4>
 <p>${_(u"En el terme d’energia es presenta una oferta indexada en relació amb els preus de mercat diari. La tarifa indexada es calcula mitjançant la següent fórmula:")}</p>
-<p><b>${_(u"PH = 1,015 * [(PrmDiari + Pc + SobrecostosREE + Interrump + P<sub>OsOm</sub>) (1 + Perd) + FE + K] + PA + CA")}</b></p>
+<p class="center"><b>${_(u"PH = 1,015 * [(PrmDiari + Pc + SobrecostosREE + Interrump + P<sub>OsOm</sub>) (1 + Perd) + FE + K] + PA + CA")}</b></p>
 <p>${_(u"On:")}</p>
 <ul>
     <li>${_(u"<b>PH</b> = Preu horari de l’energia")}</li>
@@ -17,5 +17,5 @@
     <li>${_("<b>CA</b> = Càrrecs del sistema definits pel Ministeri corresponent.")}</li>
 </ul>
 <p>${_(u"El marge de comercialització inclòs els costos de desviament pel punt de subministrament resulta:")}</p>
-<p>${_(u"<b>%s Euros/MWh</b>" % d.k_plus_D)}</p>
-<p>${_(u"En cas de procedir a la contractació, aquest marge es podrà revisar anualment en funció del volum total d’energia utilitzada. Podeu ampliar la informació de la tarifa indexada en aquest document.")}</p>
+<p class="center">${_(u"<b>%s Euros/MWh</b>" % d.k_plus_D)}</p>
+<p>${_(u"En cas de procedir a la contractació, aquest marge es podrà revisar anualment en funció del volum total d’energia utilitzada. Podeu ampliar la informació de la <b>tarifa indexada</b> en aquest <a href=\"%s\">document</a>." % d.link)}</p>
