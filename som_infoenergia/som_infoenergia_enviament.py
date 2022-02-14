@@ -190,6 +190,10 @@ class SomInfoenergiaEnviament(osv.osv):
                 cursor, uid, _id, context
             )
             job_ids.append(j.id)
+
+        if not job_ids:
+            return False
+
         create_jobs_group(
             cursor.dbname, uid, _('Enviament Infoenergia Lot {} - {} enviaments').format(
                 lot_name, len(ids)
