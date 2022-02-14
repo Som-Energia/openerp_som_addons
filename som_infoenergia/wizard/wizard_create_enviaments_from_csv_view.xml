@@ -10,13 +10,14 @@
                     <field name="state" invisible="1"/>
                     <group attrs="{'invisible': [('state', '!=', 'init')]}">
                         <label string="Crear enviaments de les pòlisses indicades al CSV" colspan="4"/>
-                        <label string="Format del CSV: a la primera columna hi ha d'haver els números dels contractes, sense capçalera. Un contracte a cada fila." colspan="4"/>
+                        <label string="Format del CSV: a la primera columna hi ha d'haver els números dels contractes, un contracte a cada fila. Les següents columnes que hi hagi, les guardarà en un diccionari de dades al camp 'Informació Extra'" colspan="4"/>
                         <field name="csv_file" colspan="4" filename="name" string="Arxiu CSV"/>
-                        <button name="create_from_file" type="object" string="Crear enviaments" icon="gtk-ok"/>
+                            <button special="cancel" string="Sortir" icon="gtk-cancel"/>
+                            <button name="create_from_file" type="object" string="Crear enviaments" icon="gtk-execute"/>
                     </group>
                     <group attrs="{'invisible': [('state', '!=', 'finished')]}">
-                        <field name="info" colspan="4"/>
-                        <button special="cancel" string="Sortir" icon="gtk-ok"/>
+                            <field name="info" colspan="4"/>
+                            <button special="cancel" string="Sortir" icon="gtk-ok"/>
                     </group>
                 </form>
             </field>

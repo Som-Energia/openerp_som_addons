@@ -104,10 +104,21 @@ class SomInfoenergiaLotEnviament(osv.osv):
         lot_info = self.read(cursor, uid, ids, ['name','tipus'])
         context['tipus'] = lot_info['tipus']
         job_ids = []
+
+        contexte = context.copy()
         for obj_id in object_ids:
-            job = self.create_single_enviament_from_object_async(cursor, uid, ids, obj_id, context=context)
+            if context.get('extra_text', False):
+                pol_obj = self.pool.get('giscedata.polissa')
+                pol_data = pol_obj.read(cursor, uid, obj_id, ['name'])
+                contexte['extra_text'] = context['extra_text'][pol_data['name']]
+
+            job = self.create_single_enviament_from_object_async(cursor, uid, ids, obj_id, context=contexte)
             job_ids.append(job.id)
-            # Create a jobs_group to see the status of the operation
+
+        if not job_ids:
+            return False
+
+        # Create a jobs_group to see the status of the operation
         create_jobs_group(
             cursor.dbname, uid,
             _('Crear Enviaments al lot {0} a partir de {1} {2}.').format(lot_info['name'], len(job_ids), context['from_model']),
@@ -141,6 +152,8 @@ class SomInfoenergiaLotEnviament(osv.osv):
             env_obj = self.pool.get('som.enviament.massiu')
 
         env_values.update({context['from_model']: object_id})
+        if 'extra_text' in context:
+            env_values.update({'extra_text': context['extra_text']})
 
         env_id = env_obj.search(cursor, uid, [('lot_enviament','=', ids), (context['from_model'], '=', object_id)])
         if not env_id:
