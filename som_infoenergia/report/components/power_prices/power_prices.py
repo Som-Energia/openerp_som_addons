@@ -7,4 +7,6 @@ class power_prices():
                 tariff = '6xTD'
             elif object.polissa_id.tarifa.codi_ocsum in ('019', '024'):
                 tariff = '3xTD'
+
+        #return {'tariff': '3xTD'}
         return {'tariff': tariff}
