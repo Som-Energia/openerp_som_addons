@@ -195,7 +195,7 @@ class GenerationkWhDealer(osv.osv):
             isodate(first_date),
             isodate(last_date),
             fare, period, kwh, member_id)
-        return int(res)
+        return res
 
     def _createTracker(self, cursor, uid, context):
 

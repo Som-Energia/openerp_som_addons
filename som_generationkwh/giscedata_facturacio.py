@@ -116,7 +116,7 @@ class GiscedataFacturacioFactura(osv.osv):
                         owner_id,
                         context=context
                     )
-                    refunded_dict[gkwh_lineowner.factura_line_id.id] = refunded_dates
+                    refunded_dict[gkwh_lineowner.factura_line_id.id] = refunded_dates['unusage']
             # refund invoice creation
             refund_id = super(GiscedataFacturacioFactura, self).anullar(
                 cursor, uid, [inv_id], tipus, context=context
