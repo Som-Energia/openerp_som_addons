@@ -48,12 +48,12 @@ class SomenergiaSociTests(testing.OOTestCase):
 
     def test_cancel_member_with_active_apo__notAllowed(self):
         invest_id = self.IrModelData.get_object_reference(
-            self.cursor, self.uid, 'som_generationkwh', 'apo_0001'
+            self.cursor, self.uid, 'som_generationkwh', 'apo_0003'
             )[1]
         investment = self.Investment.browse(self.cursor, self.uid, invest_id)
         member_id = investment.member_id.id
         self.Soci.write(self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
-        investment.write({'last_effective_date': False})
+        investment.write({'last_effective_date': False, 'draft': False})
         generation_invs = self.Investment.search(self.cursor, self.uid, [('member_id','=', member_id),('emission_id','=',1)])
         self.Investment.write(self.cursor, self.uid, generation_invs, {'active':False})
 
