@@ -168,8 +168,11 @@ class GiscedataFacturacioFactura(osv.osv):
                     'product_id': line_vals['product_id'][0],
                     'uos_id': line_vals['uos_id'][0],
                 })
+                #No group gkwh lines
+                ctx = context.copy()
+                ctx['group_line'] = False
                 refund_line_id = fact_line_obj.create(
-                    cursor, uid, line_vals, context
+                    cursor, uid, line_vals, context=ctx
                 )
 
                 # creates new owner_line
@@ -452,8 +455,10 @@ class GiscedataFacturacioFactura(osv.osv):
                         'quantity': gkwh_quantity,
                         'name': _(u'{0} GkWh').format(line_vals['name']),
                     })
-                    context['group_line'] = False
-                    iline_id = invlines_obj.create(cursor, uid, vals, context)
+                    #No group gkwh lines
+                    ctx = context.copy()
+                    ctx['group_line'] = False
+                    iline_id = invlines_obj.create(cursor, uid, vals, context=ctx)
                     # owner line object creation
                     gkwh_lineowner_obj.create(
                         cursor, uid, {
