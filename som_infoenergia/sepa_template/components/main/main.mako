@@ -1,9 +1,9 @@
-<%page args="data" />
+<%page args="d" />
 <div class="extern margin50">
     <div>
         <img id="logo" width='105px' src="https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png">
         <div class="centered title">
-            % if data['is_business']:
+            % if d['is_business']:
             <h1>Orden de domiciliación de adeudo directo SEPA B2B</h1>
             <h2>SEPA Business-to-Business Direct Debit Mandate</h2>
             % else:
@@ -18,21 +18,21 @@
         </div>
         <div class="intern margin50 full-width">
             <div class="parella"><p class="label">Referencia de la orden de domiciliación / <span class="english">Mandate reference</span></p>
-            <p class="entrada">${data['order_reference']}</p></div>
+            <p class="entrada">${d['order_reference']}</p></div>
             <div class="parella"><p class="label">Identificador del acreedor / <span class="english">Creditor identifier</span></p>
-            <p class="entrada">${data['creditor_code']}</p></div>
+            <p class="entrada">${d['creditor_code']}</p></div>
             <div class="parella"><p class="label">Nombre del acreedor / <span class="english">Creditor´s name</span></p>
-            <p class="entrada">${data['creditor_name']}</p></div>
+            <p class="entrada">${d['creditor_name']}</p></div>
             <div class="parella"><p class="label">Dirección /<span class="english">Address</span></p>
-            <p class="entrada">${data['creditor_address']}</p></div>
+            <p class="entrada">${d['creditor_address']}</p></div>
             <div class="parella"><p class="label">Provincia / <span class="english">Province </span></p>
-            <p class="entrada">${data['creditor_province']}</p></div>
+            <p class="entrada">${d['creditor_province']}</p></div>
             <div class="parella"><p class="label">País / <span class="english">Country</span></p>
-            <p class="entrada">${data['creditor_country']}</p></div>
+            <p class="entrada">${d['creditor_country']}</p></div>
         </div>
     </div>
     <div>
-        % if data['is_business']:
+        % if d['is_business']:
         <p class="margin20 spanish">
         Mediante la firma de esta orden de domiciliación, el deudor autoriza (A) al acreedor a enviar instrucciones a la entidad del deudor para adeudar su cuenta y (B) a la entidad para efectuar los adeudos en su cuenta siguiendo las instrucciones del acreedor. Esta orden de domiciliación está prevista para operaciones exclusivamente entre empresas y/o autónomos. El deudor no tiene derecho a que su entidad le reembolse una vez que se haya realizado el cargo en cuenta, pero puede solicitar a su entidad que no efectúe el adeudo en la cuenta hasta la fecha debida. Podrá obtener información detallada del procedimiento en su entidad financiera.
         </p>
@@ -54,35 +54,35 @@
         </div>
         <div class="intern margin50 full-width">
             <div class="parella"><p class="label">Nombre del deudor/es (titular/es de la cuenta de cargo) / <span class="english">Debtor’s name</span></p>
-            <p class="entrada">${data['debtor_name']}</p></div>
+            <p class="entrada">${d['debtor_name']}</p></div>
             <div class="parella"><p class="label">Dirección del deudor / <span class="english">Address of the debtor</span></p>
-            <p class="entrada">${data['debtor_address']}</p></div>
+            <p class="entrada">${d['debtor_address']}</p></div>
             <div class="parella"><p class="label">Provincia / <span class="english">Province</span></p>
-            <p class="entrada">${data['debtor_province']}</p></div>
+            <p class="entrada">${d['debtor_province']}</p></div>
             <div class="parella"><p class="label">País del deudor / <span class="english">Country of the debtor</span></p>
-            <p class="entrada">${data['debtor_country']}</p></div>
+            <p class="entrada">${d['debtor_country']}</p></div>
             <div class="parella"><p class="label">Swift BIC / <span class="english">Swift BIC (puede contener 8 u 11 posiciones) / Swift BIC (up to 8 or 11 characters)</span></p>
-            <p class="entrada entrada-alta">${data['swift']}</p></div>
+            <p class="entrada entrada-alta">${d['swift']}</p></div>
             <div class="parella"><p class="label">Número de cuenta - IBAN / <span class="english">Account number - IBAN</span></p>
-            <p class="entrada entrada-alta">${data['debtor_iban_print']}</p></div>
+            <p class="entrada entrada-alta">${d['debtor_iban_print']}</p></div>
             <p class="english">En España el IBAN consta de 24 posiciones comenzando siempre por ES / Spanish IBAN of 24 positions always starting ES</p>
             <div>
                 <div class="parella"><p class="label">Tipo de pago / <span class="english">Type of payment</span>:</p>
                 <label class="entrada-label">
-                    <input type="checkbox" name="optradio" ${data['recurring']}>Pago recurrente / <span class="english">Recurrent payment</span>
+                    <input type="checkbox" name="optradio" ${d['recurring']}>Pago recurrente / <span class="english">Recurrent payment</span>
                 </label>
                 <label  class="entrada-label">
-                    <input type="checkbox" name="optradio" ${data['single_payment']}>Pago único / <span class="english">One-off payment</span>
+                    <input type="checkbox" name="optradio" ${d['single_payment']}>Pago único / <span class="english">One-off payment</span>
                 </label>
             </div>
             <div class="parella"><p class="label">Fecha - Localidad / <span class="english">Date - location in which you are signing</span>:</p>
-            <p class="entrada">${data['sign_date']} - ${data['creditor_city']}</p></div>
+            <p class="entrada">${d['sign_date']} - ${d['creditor_city']}</p></div>
             <div class="parella"><p class="label">Firma del deudor / <span class="english">Signature of the debtor</span>:</p>
             <p class="entrada entrada-molt-alta"></p></div>
         </div>
     </div>
     <div class="last">
-        % if data['is_business']:
+        % if d['is_business']:
         <p class="spanish centered">
             TODOS LOS CAMPOS HAN DE SER CUMPLIMENTADOS OBLIGATORIAMENTE.
             UNA VEZ FIRMADA ESTA ORDEN DE DOMICILIACIÓN DEBE SER ENVIADA AL ACREEDOR PARA SU CUSTODIA.
