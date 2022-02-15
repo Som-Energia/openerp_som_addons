@@ -25,7 +25,9 @@ datas = r_obj.get_report_data(cursor, uid, objects)
 <p style="page-break-after:always"></p>
   <%include file="/som_infoenergia/report/components/tail_text/tail_text.mako" args="d=data.tail_text" />
   <%include file="/som_infoenergia/report/components/conclusions/conclusions.mako" args="d=data.conclusions" />
-<p style="page-break-after:always"></p>
+% if len(datas) > 0 and id(data) != id(datas[-1]):
+  <p style="page-break-after:always"></p>
+% endif
 % endfor
 </body>
 </html>
