@@ -37,14 +37,9 @@ class main():
         return vat_is_company or not cnae_is_domestic
 
     def get_data(self, cursor, uid, object, extra_text, context):
-        if not ids: raise Exception("No payment object id provided")
-
-        if isinstance(ids, (list, tuple)):
-            ids = ids[0]
-
-        object = self.browse(cursor, uid, ids)
         data = {}
 
+        """
         # creditor data
         data['creditor_code'] = object.creditor_code
         data['order_reference'] = object.name
@@ -64,5 +59,26 @@ class main():
         data_firma = datetime.strptime(object.date, '%Y-%m-%d') if object.date else datetime.now()
         data['sign_date'] = babel.dates.format_datetime(data_firma, "d LLLL 'de' YYYY", locale='es_ES')
         data['is_business'] = self._is_business(cursor, uid, object)
+        """
+        par_obj = object.pool.get('res.partner')
+        som_par = par_obj.browse(cursor, uid, 1)
+
+        # creditor data
+        data['creditor_code'] = "ES24000F55091367" #object.creditor_code
+        data['order_reference'] = ""#object.name
+        data['creditor_name'] = "SOM ENERGIA SCCL" #object.creditor_id.name
+        data.update(self._get_formatted_address(cursor, uid, som_par.address[0]))
+
+        # debtor data
+        data['debtor_name'] = ""
+        data['debtor_address'] = ""
+        data['debtor_province'] = ""
+        data['debtor_country'] = ""
+        data['debtor_iban_print'] = ""
+        data['recurring'] = "checked"
+        data['single_payment'] = ''
+        data['swift'] = ""
+        data['sign_date'] = ""
+        data['is_business'] = True
 
         return data
