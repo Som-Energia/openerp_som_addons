@@ -30,10 +30,8 @@ class WizardFraccionarViaExtralines(osv.osv_memory):
             try:
                 factura_teo = TransactionExecute(cursor.dbname, uid, 'giscedata.facturacio.factura')
                 factura = factura_o.browse(cursor, uid, info['id'])
-                if factura.residual != factura.amount_total:
-                    raise Exception("La factura té un pagament parcial")
                 ntermes = wiz.ntermes-1
-                amount = (factura.amount_total / wiz.ntermes) * ntermes
+                amount = (factura.residual / wiz.ntermes) * ntermes
                 factura_teo.fraccionar_via_extralines(
                     info['id'], ntermes, wiz.data_inici,
                     data_final, journal_id=wiz.journal_id.id,
