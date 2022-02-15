@@ -179,6 +179,7 @@ class SomenergiaSoci(osv.osv):
 
         imd_obj = self.pool.get('ir.model.data')
         invest_obj = self.pool.get('generationkwh.investment')
+        emi_obj = self.pool.get('generationkwh.emission')
         pol_obj = self.pool.get('giscedata.polissa')
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         soci_obj = self.pool.get('somenergia.soci')
@@ -192,15 +193,17 @@ class SomenergiaSoci(osv.osv):
             raise osv.except_osv(_('El soci no pot ser donat de baixa!'),
                                  _('Ja ha estat donat de baixa anteriorment!'))
 
+        genkwh_emission_ids = emi_obj.search(cursor, uid, [('type','=','genkwh')])
         gen_invest = invest_obj.search(cursor, uid, [('member_id', '=', member_id),
-                                                     ('emission_id', '=', 1),
+                                                     ('emission_id', 'in', genkwh_emission_ids),
                                                      ('last_effective_date', '>=', today)])
         if gen_invest:
             raise osv.except_osv(_('El soci no pot ser donat de baixa!'),
                                  _('El soci té inversions de generation actives.'))
 
+        aportacions_ids = emi_obj.search(cursor, uid, [('type','=','apo')])
         apo_invest = invest_obj.search(cursor, uid, [('member_id', '=', member_id),
-                                                     ('emission_id', '=', 2),
+                                                     ('emission_id', 'in', aportacions_ids),
                                                      '|', ('last_effective_date', '=', False),
                                                      ('last_effective_date', '>=', today)])
         if apo_invest:
