@@ -1,7 +1,7 @@
 ## -*- encoding: utf-8 -*-
 <%
-r_obj = objects[0].pool.get('payment.mandate')
-datas = report.get_report_data(cursor, uid, objects)
+r_obj = objects[0].pool.get('sepa.report')
+datas = r_obj.get_report_data(cursor, uid, objects)
 %>
 
 <!doctype html public "-//w3c//dtd html 4.0 transitional//en">
@@ -11,6 +11,8 @@ datas = report.get_report_data(cursor, uid, objects)
     <link rel="stylesheet" href="${addons_path}/som_infoenergia/sepa_template/sepa.css"/>
 </head>
 <body>
-    <%include file="/som_infoenergia/sepa_template/components/main/main.mako" args="d=data.main" />
+% for data in datas:
+    <%include file="/som_infoenergia/sepa_template/components/main/main.mako" args="data=data.main" />
+% endfor
 </body>
 </html>

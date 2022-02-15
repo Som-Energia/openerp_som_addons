@@ -1,4 +1,4 @@
-<%page args="d" />
+<%page args="data" />
 <div class="extern margin50">
     <div>
         <img id="logo" width='105px' src="https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png">
