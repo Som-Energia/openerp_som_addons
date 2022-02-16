@@ -10,7 +10,7 @@
                 <tree string="Pending states">
                     <field name="priority"/>
                     <field name="name"/>
-                    <field name="worflow_id"/>
+                    <field name="workflow_id"/>
                     <field name="active"/>
                     <field name="is_last"/>
                     <field name="subtype_id"/>
@@ -27,8 +27,7 @@
                     <group colspan="4">
                         <field name="priority" select="1"/>
                         <field name="name" select="1"/>
-                        <field name="worflow_id" select="1"/>
-                        <field name="pending_days_ids"/>
+                        <field name="workflow_id" select="1"/>
                         <field name="active" select="1"/>
                         <field name="is_last" select="2"/>
                         <field name="parameters_text" select="2" on_change="check_correct_json(parameters_text)" height="500" />

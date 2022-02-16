@@ -15,7 +15,7 @@
             <field name="parameters">{}</field>
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_029"/>
         </record>
-        <record model="som.autoreclama.pending.state.workflow" id="workflow_r1_no_response">
+        <record model="som.autoreclama.pending.state.days" id="days_correct_workflow_r1_no_response">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_001"/>
             <field name="days">30</field>
             <field name="pending_state_id" ref="correct_workflow_r1_no_response"/>

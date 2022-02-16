@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
-
+import json
 
 class SomAutoreclamaPendingStateWorkflow(osv.osv):
 
@@ -22,25 +22,7 @@ class SomAutoreclamaPendingStateWorkflow(osv.osv):
 SomAutoreclamaPendingStateWorkflow()
 
 
-class SomAutoreclamaPendingStateDays(osv.osv):
 
-    _name = 'som.autoreclama.pending.state.days'
-    _rec_name = 'subtype_id'
-
-    _columns = {
-        'subtype_id': fields.many2one("giscedata.subtipus.reclamacio",
-            u"Subtype", required=True),
-        'days': fields.integer(_('Days'), required=True),
-        'pending_state_id': fields.many2one(
-            'som.autoreclama.pending.state', u'Pending State',
-            required=True
-        ),
-    }
-
-
-    _defaults = {}
-
-SomAutoreclamaPendingStateDays()
 
 class SomAutoreclamaPendingState(osv.osv):
 
@@ -96,11 +78,11 @@ class SomAutoreclamaPendingState(osv.osv):
             string=_(u'Is last'),
             help=_(u'Indicates if the pending state is an ending state')
         ),
-        'pending_days_ids': fields.one2many(
-            'som.autoreclama.pending.state.days',
-            'pending_state_id',
-            u'Days in state',
-        ),
+        # 'pending_days_ids': fields.one2many(
+        #     'som.autoreclama.pending.state.days',
+        #     'pending_state_id',
+        #     u'Days in state',
+        # ),
         'workflow_id': fields.many2one(
             'som.autoreclama.pending.state.workflow', u'Workfow',
             required=True
@@ -125,5 +107,24 @@ class SomAutoreclamaPendingState(osv.osv):
 
 SomAutoreclamaPendingState()
 
+class SomAutoreclamaPendingStateDays(osv.osv):
+
+    _name = 'som.autoreclama.pending.state.days'
+    _rec_name = 'subtype_id'
+
+    _columns = {
+        'subtype_id': fields.many2one("giscedata.subtipus.reclamacio",
+            u"Subtype", required=True),
+        'days': fields.integer(_('Days'), required=True),
+        'pending_state_id': fields.many2one(
+            'som.autoreclama.pending.state', u'Pending State',
+            required=True
+        ),
+    }
+
+
+    _defaults = {}
+
+SomAutoreclamaPendingStateDays()
 
 

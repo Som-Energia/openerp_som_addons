@@ -16,8 +16,8 @@
     "init_xml": [],
     "demo_xml": [],
     "update_xml":[
-        "som_autoreclama_pending_state_data.xml"
-        "som_autoreclama_pending_state_view.xml"
+        "som_autoreclama_pending_state_data.xml",
+        "som_autoreclama_pending_state_view.xml",
     ],
     "active": False,
     "installable": True
