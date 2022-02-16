@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data noupdate="1">
+        <!-- SomEnergia autoreclama pending states -->
+        <record model="som.autoreclama.pending.state.workflow" id="workflow_r1_no_response">
+            <field name="name">Reclamació per no resposta</field>
+            <field name="model">r1</field>
+        </record>
+        <record model="som.autoreclama.pending.state" id="correct_workflow_r1_no_response">
+            <field name="name">Correcte</field>
+            <field name="priority">1</field>
+            <field name="is_last">False</field>
+            <field name="workflow_id" ref="workflow_r1_no_response"/>
+            <field name="active">True</field>
+            <field name="parameters">{}</field>
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_029"/>
+        </record>
+        <record model="som.autoreclama.pending.state.workflow" id="workflow_r1_no_response">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_001"/>
+            <field name="days">30</field>
+            <field name="pending_state_id" ref="correct_workflow_r1_no_response"/>
+        </record>
+    </data>
+</openerp>

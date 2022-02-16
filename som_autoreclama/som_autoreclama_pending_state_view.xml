@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_som_autoreclama_pending_state_tree">
+            <field name="name">som.autoreclama.pending.state.tree</field>
+            <field name="model">som.autoreclama.pending.state</field>
+            <field name="type">tree</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <tree string="Pending states">
+                    <field name="priority"/>
+                    <field name="name"/>
+                    <field name="worflow_id"/>
+                    <field name="active"/>
+                    <field name="is_last"/>
+                    <field name="subtype_id"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_som_autoreclama_pending_state_form">
+            <field name="name">som.autoreclama.pending.state.form</field>
+            <field name="model">som.autoreclama.pending.state</field>
+            <field name="type">form</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <form string="Pending states">
+                    <group colspan="4">
+                        <field name="priority" select="1"/>
+                        <field name="name" select="1"/>
+                        <field name="worflow_id" select="1"/>
+                        <field name="pending_days_ids"/>
+                        <field name="active" select="1"/>
+                        <field name="is_last" select="2"/>
+                        <field name="parameters_text" select="2" on_change="check_correct_json(parameters_text)" height="500" />
+                        <field name="subtype_id"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_som_autoreclama_pending_state_tree" model="ir.actions.act_window">
+            <field name="name">Pending states</field>
+            <field name="res_model">som.autoreclama.pending.state</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'active_test': False}</field>
+        </record>
+        <menuitem id="menu_folder_autoreclama" parent="crm.menu_crm_configuration" name="Autoreclamacions" sequence="1"/>
+        <menuitem id="menu_autoreclama_pending_state_config" action="action_som_autoreclama_pending_state_tree" parent="menu_folder_autoreclama"/>
+    </data>
+</openerp>
