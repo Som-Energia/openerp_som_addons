@@ -233,7 +233,7 @@ class WizardPaperInvoiceSom(osv.osv_memory):
         facts_with_rebs_ids = []
         for fact_id in fact_ids:
             fact = fact_obj.browse(cursor, uid, fact_id, context=context)
-            if fact.payment_type.code == 'N57':
+            if fact.polissa_id.postal_rebut:
                 facts_with_rebs_ids.append(fact_id)
 
         if not facts_with_rebs_ids:
