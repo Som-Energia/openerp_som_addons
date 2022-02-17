@@ -25,8 +25,8 @@
             <p class="entrada">${d['creditor_name']}</p></div>
             <div class="parella"><p class="label">Dirección /<span class="english">Address</span></p>
             <p class="entrada">${d['creditor_address']}</p></div>
-            <div class="parella"><p class="label">Provincia / <span class="english">Province </span></p>
-            <p class="entrada">${d['creditor_province']}</p></div>
+            <div class="parella"><p class="label">Código postal - Población - Provincia / <span class="english">Postal code - City - Town  </span></p>
+            <p class="entrada">${d['creditor_zip']} - ${d['creditor_city']} - ${d['creditor_province']}</p></div>
             <div class="parella"><p class="label">País / <span class="english">Country</span></p>
             <p class="entrada">${d['creditor_country']}</p></div>
         </div>
@@ -57,7 +57,7 @@
             <p class="entrada">${d['debtor_name']}</p></div>
             <div class="parella"><p class="label">Dirección del deudor / <span class="english">Address of the debtor</span></p>
             <p class="entrada">${d['debtor_address']}</p></div>
-            <div class="parella"><p class="label">Provincia / <span class="english">Province</span></p>
+            <div class="parella"><p class="label">Código postal - Población - Provincia / <span class="english">Postal code - City - Town</span></p>
             <p class="entrada">${d['debtor_province']}</p></div>
             <div class="parella"><p class="label">País del deudor / <span class="english">Country of the debtor</span></p>
             <p class="entrada">${d['debtor_country']}</p></div>
@@ -76,7 +76,7 @@
                 </label>
             </div>
             <div class="parella"><p class="label">Fecha - Localidad / <span class="english">Date - location in which you are signing</span>:</p>
-            <p class="entrada">${d['sign_date']} - ${d['creditor_city']}</p></div>
+            <p class="entrada">${d['sign_date']} - ${d['debtor_city']}</p></div>
             <div class="parella"><p class="label">Firma del deudor / <span class="english">Signature of the debtor</span>:</p>
             <p class="entrada entrada-molt-alta"></p></div>
         </div>

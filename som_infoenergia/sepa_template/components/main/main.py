@@ -2,14 +2,12 @@ class main():
     def _get_formatted_address(self, cursor, uid, address):
         data = {}
         data['creditor_address'] = " ".join([
-            str(address.street) if address.street else '',
-            str(address.zip) if address.zip else '',
-            str(address.city) if address.city else '',
+            str(address.street) if address.street else ''
         ])
         data['creditor_province'] = str(address.state_id.name) if address.state_id else ''
         data['creditor_country'] = address.country_id.name
         data['creditor_city'] = address.city
-
+        data['creditor_zip'] = str(address.zip)
         return data
 
     def _get_swift_code(self, cursor, uid, iban):
@@ -75,6 +73,7 @@ class main():
         data['debtor_province'] = ""
         data['debtor_country'] = ""
         data['debtor_iban_print'] = ""
+        data['debtor_city'] = ""
         data['recurring'] = "checked"
         data['single_payment'] = ''
         data['swift'] = ""
