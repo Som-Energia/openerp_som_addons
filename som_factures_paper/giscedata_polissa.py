@@ -9,8 +9,25 @@ class GiscedataPolissa(osv.osv):
 
 
     _columns = {
-        'postal_rebut': fields.boolean(string=u"Adjuntar rebut C. postal"),
-        'postal_observacions': fields.char(string=u"Observacions C. postal", size=170)
+        'postal_rebut': fields.boolean(
+            string=u"Adjuntar rebut C. postal",
+            readonly=True,
+            states={
+                'esborrany': [('readonly', False)],
+                'validar': [('readonly', False)],
+                'modcontractual': [('readonly', False), ('required', True)]
+            }
+        ),
+        'postal_observacions': fields.char(
+            string=u"Observacions C. postal",
+            size=170,
+            readonly=True,
+            states={
+                'esborrany': [('readonly', False)],
+                'validar': [('readonly', False)],
+                'modcontractual': [('readonly', False), ('required', True)]
+            }
+        ),
     }
 
     _defaults = {
@@ -19,3 +36,15 @@ class GiscedataPolissa(osv.osv):
 
 GiscedataPolissa()
 
+class GiscedataPolissaModcontractual(osv.osv):
+    """Modificació Contractual d'una Pòlissa."""
+    _name = 'giscedata.polissa.modcontractual'
+    _inherit = 'giscedata.polissa.modcontractual'
+
+    _columns = {
+        'postal_rebut': fields.boolean(string=u"Adjuntar rebut C. postal"),
+        'postal_observacions': fields.char(string=u"Observacions C. postal", size=170)
+    }
+
+
+GiscedataPolissaModcontractual()
