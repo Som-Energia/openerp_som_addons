@@ -589,6 +589,7 @@ class GenerationkWhRightUsageLine(osv.osv):
     """
 
     _name = 'generationkwh.right.usage.line'
+    _order = 'datetime'
 
     _columns = {
         'datetime': fields.datetime(
@@ -600,7 +601,15 @@ class GenerationkWhRightUsageLine(osv.osv):
         'line_owner': fields.many2one(
             'generationkwh.invoice.line.owner', 'Propietari drets GkWh factura',
             required=True, readonly=True, ondelete='cascade'
-        )
+        ),
+        'owner_id' : fields.related(
+            'line_owner', 'owner_id', type='many2one', relation='res.partner',
+            string="Propietari", readonly=True
+        ),
+        'factura_id' : fields.related(
+            'line_owner', 'factura_id', type='many2one',
+            relation='giscedata.facturacio.factura', string="Factura", readonly=True
+        ),
     }
 
 GenerationkWhRightUsageLine()
