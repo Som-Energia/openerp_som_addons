@@ -1,7 +1,7 @@
 <%page args="d" />
-<style>
-<%include file="first_page.css" />
-</style>
+<%
+    setLang(d.lang)
+%>
 <div class="logo">
     <img src="${addons_path}/som_infoenergia/report/components/first_page/logo_som.png"/>
 </div>
