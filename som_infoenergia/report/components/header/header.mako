@@ -1,6 +1,4 @@
 <%page args="d" />
-<p class="data-oferta">${_(u'%s') % d.data_oferta}</p>
-<p class="codi-oferta">${_(u'%s') % d.codi_oferta}</p>
 <table class="header-oferta">
     <tr>
         <td style="text-align: left;">
