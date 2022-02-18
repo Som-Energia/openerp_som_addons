@@ -4,25 +4,9 @@
 #
 version: 2
 jobs:
-  build:
-    branches:
-      ignore:
-        - /feature-.*/
+  test-template: &test-template
     docker:
-      # specify the version you desire here
-      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
       - image: circleci/python:2.7
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
-      - image: redis:2.8
-      - image: mongo:3.0
-      - image: timescale/timescaledb-postgis:latest-pg11
-        environment:
-          POSTGRES_USER: erp
-          POSTGRES_PASSWORD: erp
 
     working_directory: ~/src
 
@@ -43,6 +27,7 @@ jobs:
             git clone --depth 1 https://github.com/gisce/ir_attachment_mongodb.git $ROOT_DIR_SRC/ir_attachment_mongodb
             git clone --depth 1 https://github.com/gisce/mongodb_backend.git -b gisce $ROOT_DIR_SRC/mongodb_backend
             git clone --depth 1 https://github.com/gisce/poweremail_oorq.git $ROOT_DIR_SRC/poweremail_oorq
+
             git clone https://github.com/Som-Energia/plantmeter.git $ROOT_DIR_SRC/plantmeter
             git clone https://github.com/Som-Energia/somenergia-generationkwh.git $ROOT_DIR_SRC/somenergia-generationkwh
 
@@ -50,6 +35,7 @@ jobs:
             curl -H "Authorization: token $GITHUB_TOKEN" -L https://api.github.com/repos/gisce/pandapower_erp/tarball > /tmp/pandapower_erp.tar.gz
             curl -H "Authorization: token $GITHUB_TOKEN" -L https://api.github.com/repos/gisce/pandapower_validator/tarball > /tmp/pandapower_validator.tar.gz
             curl -H "Authorization: token $GITHUB_TOKEN" -L https://api.github.com/repos/gisce/ooop/tarball > /tmp/ooop.tar.gz
+            curl -H "Authorization: token $GITHUB_TOKEN" -L https://api.github.com/repos/gisce/datadis/tarball > /tmp/datadis.tar.gz
 
       # Download and cache dependencies
       - restore_cache:
@@ -69,8 +55,10 @@ jobs:
             file /tmp/pandapower_erp.tar.gz | grep -q 'gzip' && pip install /tmp/pandapower_erp.tar.gz || echo "Not installing pandapower_erp library"
             file /tmp/pandapower_validator.tar.gz | grep -q 'gzip' && pip install /tmp/pandapower_validator.tar.gz || echo "Not installing pandapower_validator library"
             file /tmp/pandapower_validator.tar.gz | grep -q 'gzip' && pip install /tmp/ooop.tar.gz  || echo "Not installing ooop library"
+            file /tmp/datadis.tar.gz | grep -q 'gzip' && pip install /tmp/datadis.tar.gz || echo "Not installing datadis library"
             pip install -r $ROOT_DIR_SRC/erp/requirements-dev.txt
             pip install -r $ROOT_DIR_SRC/erp/requirements.txt
+            pip install --upgrade --force-reinstall https://github.com/gisce/destral/archive/master.zip
             test -x $ROOT_DIR_SRC/$TESTING_REPO/requirements.txt && pip install -r $ROOT_DIR_SRC/$TESTING_REPO/requirements.txt
             pip install face-lib
 
@@ -94,7 +82,7 @@ jobs:
           command: |
             export ROOT_DIR_SRC=~/src
             . ~/src/venv/bin/activate
-            cd $ROOT_DIR_SRC/erp && ./tools/link_addons.sh
+            cd $ROOT_DIR_SRC/erp && ./tools/link_addons.sh -v
 
       # run tests!
       # this example uses Django's built-in test-runner
@@ -143,3 +131,32 @@ jobs:
       - store_artifacts:
           path: ~/src/openerp_som_addons/htmlcov
           destination: coverage
+
+  test-py27:
+    <<: *test-template
+    docker:
+      - image: circleci/python:2.7
+      - image: redis:5.0
+      - image: mongo:3.0
+      - image: timescale/timescaledb-postgis:latest-pg11
+        environment:
+          POSTGRES_USER: erp
+          POSTGRES_PASSWORD: erp
+
+  test-py37:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.7
+      - image: redis:5.0
+      - image: mongo:3.0
+      - image: timescale/timescaledb-postgis:latest-pg11
+        environment:
+          POSTGRES_USER: erp
+          POSTGRES_PASSWORD: erp
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test-py27
+      - test-py37
