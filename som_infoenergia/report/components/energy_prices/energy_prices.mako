@@ -18,4 +18,4 @@
 </ul>
 <p>${_(u"El marge de comercialització inclòs els costos de desviament pel punt de subministrament resulta:")}</p>
 <p class="center">${_(u"<b>%s Euros/MWh</b>" % d.k_plus_D)}</p>
-<p>${_(u"En cas de procedir a la contractació, aquest marge es podrà revisar anualment en funció del volum total d’energia utilitzada. Podeu ampliar la informació de la <b>tarifa indexada</b> en aquest <a href=\"%s\">document</a>." % d.link)}</p>
+<p>${_(u"En cas de procedir a la contractació, aquest marge es podrà revisar anualment en funció del volum total d’energia utilitzada. Podeu ampliar la informació de la <b>tarifa indexada</b> en aquest <a href=\"%s\">document</a>.") % d.link}</p>
