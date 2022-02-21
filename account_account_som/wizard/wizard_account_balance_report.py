@@ -160,8 +160,7 @@ class WizardAccountBalanceReport(osv.osv_memory):
             'report': base64.b64encode(result['file']),
         })
 
-    @job(queue='waiting_reports')
-    def report_csv_send_async(self, cr, uid, ids, context={}):
+    def report_csv_send(self, cr, uid, ids, context={}):
         wizard = self.browse(cr, uid, ids, context)
 
         user_obj = self.pool.get('res.users')
@@ -173,9 +172,10 @@ class WizardAccountBalanceReport(osv.osv_memory):
             'wiz_state':'send',
             'info': info
         })
-        self.report_csv_send(cr, uid, ids, context)
+        self.report_csv_send_async(cr, uid, ids, context)
 
-    def report_csv_send(self, cr, uid, ids, context={}):
+    @job(queue='waiting_reports')
+    def report_csv_send_async(self, cr, uid, ids, context={}):
         if isinstance(ids, list):
             ids = ids[0]
 
@@ -221,6 +221,16 @@ class WizardAccountBalanceReport(osv.osv_memory):
     def report_pdf_send_async(self, cr, uid, ids, context={}):
         if isinstance(ids, list):
             ids = ids[0]
+        datas = self.get_account_balance_wiz_data(cr, uid, ids, context)
+        self._get_defaults(cr, uid, ids, datas, context)
+        self.check_all_accounts(cr, uid, ids, datas, context)
+        async_obj = self.pool.get('async.reports')
+        async_obj.async_report_report(cr, uid, ids, 'account.balance.full', datas, context)
+
+    def report_pdf_send(self, cr, uid, ids, context):
+        if isinstance(ids, list):
+            ids = ids[0]
+
         wizard = self.browse(cr, uid, ids, context)
         user_obj = self.pool.get('res.users')
         user = user_obj.browse(cr, uid, uid, context)
@@ -231,16 +241,7 @@ class WizardAccountBalanceReport(osv.osv_memory):
             'wiz_state':'send',
             'info': info
         })
-
-    def report_pdf_send(self, cr, uid, ids, context):
-        if isinstance(ids, list):
-            ids = ids[0]
-
-        datas = self.get_account_balance_wiz_data(cr, uid, ids, context)
-        self._get_defaults(cr, uid, ids, datas, context)
-        self.check_all_accounts(cr, uid, ids, datas, context)
-        async_obj = self.pool.get('async.reports')
-        async_obj.async_report_report(cr, uid, ids, 'account.balance.full', datas, context)
+        self.report_pdf_send_async(cr, uid, ids, context)
 
 
     _columns = {
