@@ -22,45 +22,45 @@
 #
 ##############################################################################
 import base64
-import time
+import queue
+import time, netsvc
 from account_financial_report.utils import account_balance_utils as utils
+from datetime import datetime
 from tools.translate import _
 from osv import osv, fields
+from oorq.decorators import job
 
-
-
-excel_fields = {
-    'name': {'string': 'Fitxer Excel', 'type': 'char'},
-    'file': {'string': 'Fitxer Excel', 'type': 'binary'}
-}
-
-excel_form = '''<?xml version="1.0"?>
-<form string="Excel">
-    <field name="file" colspan="4"/>
-</form>'''
 
 class WizardAccountBalanceReport(osv.osv_memory):
 
     _name = 'wizard.account.balance.report'
 
-    def _get_defaults(self, cr, uid, data, context={}):
+    def _get_defaults(self, cr, uid, ids, datas, context={}):
+        if not context:
+            context = {}
+        if isinstance(ids, list):
+            ids = ids[0]
         user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
         if user.company_id:
             company_id = user.company_id.id
         else:
             company_id = self.pool.get('res.company').search(cr, uid, [('parent_id', '=', False)])[0]
-        data['form']['company_id'] = company_id
         fiscalyear_obj = self.pool.get('account.fiscalyear')
-        data['form']['fiscalyear'] = fiscalyear_obj.find(cr, uid)
-        data['form']['context'] = context
-        return data['form']
+        form = {}
+        form['company_id'] = company_id
+        form['fiscalyear'] = fiscalyear_obj.find(cr, uid)
+        datas['form'].update(**form)
+        return True
 
-
-    def _check_state(self, cr, uid, data, context):
-        if data['form']['state'] == 'bydate':
-            self._check_date(cr, uid, data, context)
-        return data['form']
-
+    def _check_state(self, cr, uid, ids, context):
+        if not context:
+            context = {}
+        if isinstance(ids, list):
+            ids = ids[0]
+        report = self.browse(cr, uid, ids)
+        if report.state and report.state == 'bydate':
+            self._check_date(cr, uid, ids, context)
+        return True
 
     def _check_date(self, cr, uid, data, context):
         sql = """SELECT f.id, f.date_start, f.date_stop
@@ -94,12 +94,13 @@ class WizardAccountBalanceReport(osv.osv_memory):
                 'fiscalyear': wiz.fiscalyear.id,
                 'context': context,
                 'all_accounts': wiz.all_accounts,
-            },
+            }
         }
-        self.check_all_accounts(cr, uid, datas, context)
+        self.check_all_accounts(cr, uid, ids, datas, context)
         return datas
 
-    def _excel_create(self, cr, uid, ids, context={}):
+    def _excel_create(self, cr, uid, ids, datas, context={}):
+        form = datas['form']
         account_ids = form['account_list'][0][2]
         fiscal_year_label = utils.get_fiscalyear_text(cr, uid, form)
         periods_label = utils.get_periods_and_date_text(cr, uid, form)
@@ -131,46 +132,116 @@ class WizardAccountBalanceReport(osv.osv_memory):
             fy_balance = utils.float_string(line['balance_fy'])
             csv_file += '{};{};{};{}\n'.format(fy_init,fy_debit, fy_credit, fy_balance)
 
-        data['form']['file'] = base64.b64encode(csv_file)
-        data['form']['name'] = 'Account balance.csv'
+        datas['form']['file'] = csv_file
+        datas['form']['name'] = 'Account balance.csv'
 
-        return data['form']
+        return datas['form']
 
-    def _report_async(self, cr, uid, ids, context={}):
+    def check_all_accounts(self, cr, uid, ids, datas, context={}):
+        if datas['form']['all_accounts']:
+            all_accounts = self.pool.get('account.account').search(cr, uid, [])
+            datas['form']['account_list'][0] = [6, 0, all_accounts]
+        elif datas['form']['account_list'][0] == [6,0, []]:
+             raise osv.except_osv(_("Error"), _("Account list or 'all accounts' check required"))
+
+    def report_csv_print(self, cr, uid, ids, context={}):
+        if isinstance(ids, list):
+            ids = ids[0]
+
+        wizard = self.browse(cr, uid, ids, context)
         datas = self.get_account_balance_wiz_data(cr, uid, ids, context)
+        self._get_defaults(cr, uid, ids, datas, context)
+        self.check_all_accounts(cr, uid, ids, datas, context)
+        result = self._excel_create(cr, uid, ids, datas, context)
+
+        wizard.write({
+            'wiz_state':'done',
+            'filename_report': 'account_balance.csv',
+            'report': base64.b64encode(result['file']),
+        })
+
+    @job(queue='waiting_reports')
+    def report_csv_send_async(self, cr, uid, ids, context={}):
+        wizard = self.browse(cr, uid, ids, context)
+
+        user_obj = self.pool.get('res.users')
+        user = user_obj.browse(cr, uid, uid, context)
+        info = ''
+        if user.address_id and user.address_id.email:
+            info = "S'enviarà el resultat al correu associat a l'usuaria {}: ({})".format(user.login, user.address_id.email)
+        wizard.write({
+            'wiz_state':'send',
+            'info': info
+        })
+        self.report_csv_send(cr, uid, ids, context)
+
+    def report_csv_send(self, cr, uid, ids, context={}):
+        if isinstance(ids, list):
+            ids = ids[0]
+
+        datas = self.get_account_balance_wiz_data(cr, uid, ids, context)
+        self._get_defaults(cr, uid, ids, datas, context)
+        self.check_all_accounts(cr, uid, ids, datas, context)
+        result = self._excel_create(cr, uid, ids, datas, context)
+
+        #TODO: Save file to MongoDB to support workers in different server of main instance
+        timestamp =  datetime.today().strftime('%Y-%m-%d-%H:%M:%S')
+        filename = '/tmp/account_balance_' + timestamp
+        file = open(filename, "wr")
+        file.write(result['file'])
+        file.close()
+
+        async_obj = self.pool.get('async.reports')
+        mail_data = async_obj.get_datas_email_params(cr, uid, datas, context)
+        async_obj.send_mail(cr, uid, mail_data['from'],
+            filename, mail_data['email_to'], "account_balance.csv")
+
+
+
+    def report_pdf_print(self, cr, uid, ids, context={}): #DONE
+        if isinstance(ids, list):
+            ids = ids[0]
+
+        wizard = self.browse(cr, uid, ids, context)
+        datas = self.get_account_balance_wiz_data(cr, uid, ids, context)
+        self._get_defaults(cr, uid, ids, datas, context)
+        self.check_all_accounts(cr, uid, ids, datas, context)
+        self._check_state(cr, uid, ids, context)
+        report_name = 'report.account.balance.full'
+        obj = netsvc.LocalService(report_name)
+        result, format = obj.create(cr, uid, ids, datas, context)
+
+        wizard.write({
+            'wiz_state':'done',
+            'filename_report': 'account_balance.pdf',
+            'report': base64.b64encode(result),
+        })
+
+    @job(queue='waiting_reports')
+    def report_pdf_send_async(self, cr, uid, ids, context={}):
+        if isinstance(ids, list):
+            ids = ids[0]
+        wizard = self.browse(cr, uid, ids, context)
+        user_obj = self.pool.get('res.users')
+        user = user_obj.browse(cr, uid, uid, context)
+        info = ''
+        if user.address_id and user.address_id.email:
+            info = "S'enviarà el resultat al correu associat a l'usuaria {}: ({})".format(user.login, user.address_id.email)
+        wizard.write({
+            'wiz_state':'send',
+            'info': info
+        })
+
+    def report_pdf_send(self, cr, uid, ids, context):
+        if isinstance(ids, list):
+            ids = ids[0]
+
+        datas = self.get_account_balance_wiz_data(cr, uid, ids, context)
+        self._get_defaults(cr, uid, ids, datas, context)
+        self.check_all_accounts(cr, uid, ids, datas, context)
         async_obj = self.pool.get('async.reports')
         async_obj.async_report_report(cr, uid, ids, 'account.balance.full', datas, context)
-        return True
 
-    def check_all_accounts(self, cr, uid, data, context={}):
-        if data['form']['all_accounts']:
-            all_accounts = self.pool.get('account.account').search(cr, uid, [])
-            data['form']['account_list'][0] = [6, 0, all_accounts]
-        elif data['form']['account_list'][0] == [6,0, []]:
-             raise osv.except_osv(_("Error"), _("Account list or 'all accounts' check required"))
-        return True
-
-    """
-    states = {
-
-        'init': {
-            'actions': [_get_defaults],
-            'result': {'type':'form', 'arch': options_form, 'fields': options_fields, 'state':[('end','Cancel','gtk-cancel'),('report','Print','gtk-print'),
-                ('report_async', 'Send by email', 'gtk-home'), ('excelFile', 'Excel', 'gtk-save')]}
-        },
-        'excelFile': {
-            'actions':[_excel_create, check_all_accounts],
-            'result': {'type':'form', 'arch':excel_form, 'fields':excel_fields, 'state':[('end', 'Sortir', 'gtk-close')]}
-        },
-        'report': {
-            'actions': [_check_state, check_all_accounts],
-            'result': {'type':'print', 'report':'account.balance.full', 'state':'end'}
-        },
-        'report_async': {
-            'actions': [_report_async, check_all_accounts],
-            'result': {'type':'state', 'state': 'end'}
-        }
-    }"""
 
     _columns = {
         'company_id': fields.many2one('res.company', 'Company', required=True),
@@ -180,7 +251,8 @@ class WizardAccountBalanceReport(osv.osv_memory):
             domain=[]
         ),
         'all_accounts': fields.boolean(u"All accounts", help=u'This check will include all accounts'),
-        'state': fields.selection([('bydate','By Date'),('byperiod','By Period'),('all','By Date and Period'),('none','No Filter')], _(u'Date/Period Filter')),
+        'state': fields.selection([('bydate','By Date'), ('byperiod','By Period'),
+            ('all','By Date and Period'), ('none','No Filter')], _(u'Date/Period Filter')),
         'fiscalyear': fields.many2one('account.fiscalyear', 'Fiscal year', help=u'Keep empty to use all open fiscal years to compute the balance'),
         'periods': fields.many2many(
             'account.period', 'sw_wiz_account_period_ref',
@@ -193,10 +265,15 @@ class WizardAccountBalanceReport(osv.osv_memory):
         'display_account_level': fields.integer(_(u"Up to level"), help=u'Display accounts up to this level (0 to show all)'),
         'date_from': fields.date(u"Start date", required=True),
         'date_to': fields.date(u"End date", required=True),
+        'filename_report': fields.char('Nom fitxer exportat', size=256),
+        'report': fields.binary('Report Result'),
+        'info': fields.text('Description'),
+        'wiz_state': fields.selection([('done','Done'), ('send','Send')], "wizard state")
     }
 
     _defaults = {
-        'state': lambda *a:'none',
+        'wiz_state': lambda *a: 'filter',
+        'state': lambda *a: 'none',
         'all_accounts': lambda *a: False,
         'display_account_level': lambda *a: 0,
         'date_from': lambda *a: time.strftime('%Y-01-01'),
