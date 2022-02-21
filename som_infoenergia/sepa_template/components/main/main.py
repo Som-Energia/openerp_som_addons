@@ -79,5 +79,6 @@ class main():
         data['swift'] = ""
         data['sign_date'] = ""
         data['is_business'] = True
+        data['lang'] = object.lang
 
         return data
