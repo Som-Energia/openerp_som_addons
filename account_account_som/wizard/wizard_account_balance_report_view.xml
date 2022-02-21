@@ -6,10 +6,18 @@
             <field name="type">form</field>
             <field name="model">wizard.account.balance.report</field>
             <field name="arch" type="xml">
-                <form string="Full Account Balance">
-                    <field name="company_id"/>
+                <form string="Sumes i Saldos Som">
+                    <field name="wiz_state" invisible="True"/>
+                    <group attrs="{'invisible': [('wiz_state', 'not in', ('send','done'))]}" colspan="4">
+                        <separator string="Resultat" colspan="4" />
+                        <label string="" colspan="4"/>
+                    </group>
+
+                    <group colspan="4" attrs="{'invisible': [('wiz_state', 'in', ('done','send'))]}">
+                        <field name="company_id"/>
+                    </group>
                     <newline/>
-                    <group colspan="4">
+                    <group colspan="4" attrs="{'invisible': [('wiz_state', 'in', ('done','send'))]}">
                         <separator string="Accounts to include" colspan="4"/>
                         <field name="all_accounts" colspan="4"/>
                         <group colspan="4" attrs="{'invisible': [('all_accounts', '=', True)]}">
@@ -18,7 +26,7 @@
                         <field name="display_account" required="True"/>
                         <field name="display_account_level" required="True" />
                     </group>
-                    <group colspan="4">
+                    <group colspan="4" attrs="{'invisible': [('wiz_state', 'in',('done','send'))]}">
                         <separator string="Period" colspan="4"/>
                         <field name="fiscalyear"/>
                         <newline/>
@@ -36,10 +44,29 @@
                             </group>
                         </group>
                     </group>
-                    <button special="cancel" string="Cancelar" icon="gtk-cancel"/>
-                    <button name="_report_async" type="object" string="Send by email" icon="gtk-home"/>
-                    <button name="_check_state" type="object" string="Print" icon="gtk-print"/>
-                    <button name="_excel_create" type="object" string="Excel" icon="gtk-save"/>
+                    <group colspan="4" attrs="{'invisible': [('wiz_state', 'in',('done','send'))]}">
+                        <button name="report_pdf_print" type="object" string="PDF" icon="gtk-execute" colspan="2"/>
+                        <button name="report_csv_print" type="object" string="CSV" icon="gtk-execute" colspan="2"/>
+                        <button name="report_pdf_send" type="object" string="PDF (per correu)" icon="gtk-go-up" colspan="2"/>
+                        <button name="report_csv_send" type="object" string="CSV (per correu)" icon="gtk-go-up" colspan="2"/>
+                        <button special="cancel" string="Cancelar" icon="gtk-cancel" colspan="4"/>
+                    </group>
+
+                    <group attrs="{'invisible': [('wiz_state', '!=', 'done')]}" colspan="4">
+                        <field name="report" filename="filename_report" colspan="4" readonly="1"/>
+                        <field name="filename_report" colspan="4" readonly="1" nolabel="1"/>
+                        <label string="" colspan="4"/>
+                    </group>
+
+                    <group attrs="{'invisible': [('wiz_state', '!=', 'send')]}" colspan="4">
+                        <field name="info" colspan="4" readonly="1" nolabel="1"/>
+                    </group>
+
+                    <group attrs="{'invisible': [('wiz_state', 'not in', ('send','done'))]}" colspan="4">
+                        <label string="" colspan="4"/>
+                        <button special="cancel" string="Tanca" icon="gtk-ok" colspan="4"/>
+                    </group>
+
                 </form>
             </field>
         </record>
@@ -54,7 +81,7 @@
         </record>
 
         <menuitem id="menu_account_balance_full_report_som"
-            name="Full Balance Report Som"
+            name="Sumes i Saldos Som"
             action="action_account_balance_report_som"
             parent="account.menu_generic_report"
 			icon="STOCK_PRINT"
