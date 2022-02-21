@@ -341,9 +341,8 @@ class GenerationkwhActions(InvestmentActions):
         GenerationkwhInvestment.write(cursor, uid, investment_id, inv_old.erpChanges())
 
         GenerationkwhInvestment.mark_as_invoiced(cursor, uid, new_investment_id)
-        old_partner = Soci.read(cursor, uid, old_investment['member_id'][0])
-
-        GenerationkwhInvestment.move_line_when_tranfer(cursor, uid, old_partner['id'], new_partner_id, old_partner['property_account_gkwh'][0], new_partner.property_account_gkwh.id, amount, transmission_date)
+        old_partner = Soci.browse(cursor, uid, old_investment['member_id']).partner_id
+        GenerationkwhInvestment.move_line_when_tranfer(cursor, uid, old_partner.id, new_partner_id, old_partner.property_account_gkwh.id , new_partner.property_account_gkwh.id, amount, transmission_date)
 
         return new_investment_id
 
@@ -597,8 +596,8 @@ class AportacionsActions(InvestmentActions):
         GenerationkwhInvestment.write(cursor, uid, investment_id, inv_old.erpChanges())
 
         GenerationkwhInvestment.mark_as_invoiced(cursor, uid, new_investment_id)
-        old_partner = Soci.read(cursor, uid, old_investment['member_id'][0])
-        GenerationkwhInvestment.move_line_when_tranfer(cursor, uid, old_partner['id'], new_partner_id, old_partner['property_account_aportacions'][0], new_partner.property_account_aportacions.id, amount, transmission_date)
+        old_partner = Soci.browse(cursor, uid, old_investment['member_id']).partner_id
+        GenerationkwhInvestment.move_line_when_tranfer(cursor, uid, old_partner.id, new_partner_id, old_partner.property_account_aportacions.id, new_partner.property_account_aportacions.id, amount, transmission_date)
 
         return new_investment_id
 
