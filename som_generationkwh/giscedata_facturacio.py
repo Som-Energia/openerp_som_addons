@@ -80,12 +80,14 @@ class GiscedataFacturacioFactura(osv.osv):
     def anullar(self, cursor, uid, ids, tipus='A', context=None):
         """ Returns gkwh rights on invoice refund """
         gkwh_lineowner_obj = self.pool.get('generationkwh.invoice.line.owner')
+        gkwh_rightusage_obj = self.pool.get('generationkwh.right.usage.line')
         gkwh_dealer_obj = self.pool.get('generationkwh.dealer')
         fact_line_obj = self.pool.get('giscedata.facturacio.factura.linia')
 
         fields_to_read = ['is_gkwh', 'gkwh_linia_ids', 'type', 'polissa_id',
                           'tarifa_acces_id']
         refund_ids = []
+        refunded_dict = {}
         for inv_vals in self.read(cursor, uid, ids, fields_to_read, context):
             inv_id = inv_vals['id']
             if inv_vals['is_gkwh']:
@@ -102,7 +104,7 @@ class GiscedataFacturacioFactura(osv.osv):
                         cursor, uid, line.product_id.id, context=context
                     )
                     # returns rights through dealer
-                    gkwh_dealer_obj.refund_kwh(
+                    refunded_dates = gkwh_dealer_obj.refund_kwh(
                         cursor,
                         uid,
                         contract_id,
@@ -114,6 +116,7 @@ class GiscedataFacturacioFactura(osv.osv):
                         owner_id,
                         context=context
                     )
+                    refunded_dict[gkwh_lineowner.factura_line_id.id] = refunded_dates['unusage']
             # refund invoice creation
             refund_id = super(GiscedataFacturacioFactura, self).anullar(
                 cursor, uid, [inv_id], tipus, context=context
@@ -155,6 +158,7 @@ class GiscedataFacturacioFactura(osv.osv):
                 line_vals = fact_line_obj.read(
                     cursor, uid, original_line_id, line_fields, context=context
                 )
+                original_factura_line_id = line_vals['id']
                 if 'id' in line_vals:
                     del line_vals['id']
 
@@ -192,9 +196,17 @@ class GiscedataFacturacioFactura(osv.osv):
                     'factura_id': refund_id,
                     'factura_line_id': refund_line_id,
                 }
-                gkwh_lineowner_obj.create(
+                lineowner_id = gkwh_lineowner_obj.create(
                     cursor, uid, refund_owner_vals, context=context
                 )
+
+                for k,v in refunded_dict[original_factura_line_id].items():
+                    gkwh_rightusage_obj.create(
+                        cursor, uid, {
+                            'datetime': k, 'quantity': v,
+                            'line_owner': lineowner_id
+                        }
+                    )
 
         return refund_ids
 
@@ -349,6 +361,7 @@ class GiscedataFacturacioFactura(osv.osv):
         invlines_obj = self.pool.get('giscedata.facturacio.factura.linia')
         pricelist_obj = self.pool.get('product.pricelist')
         partner_obj = self.pool.get('res.partner')
+        gkwh_rightusage_obj = self.pool.get('generationkwh.right.usage.line')
 
         gkwh_lineowner_obj = self.pool.get('generationkwh.invoice.line.owner')
         gkwh_dealer_obj = self.pool.get('generationkwh.dealer')
@@ -460,13 +473,20 @@ class GiscedataFacturacioFactura(osv.osv):
                     ctx['group_line'] = False
                     iline_id = invlines_obj.create(cursor, uid, vals, context=ctx)
                     # owner line object creation
-                    gkwh_lineowner_obj.create(
+                    lineowner_id = gkwh_lineowner_obj.create(
                         cursor, uid, {
                             'factura_id': inv_id,
                             'factura_line_id': iline_id,
                             'owner_id': gkwh_owner_id
                         }
                     )
+                    for k,v in gkwh_line['usage'].items():
+                        gkwh_rightusage_obj.create(
+                            cursor, uid, {
+                                'datetime': k, 'quantity': v,
+                                'line_owner': lineowner_id
+                            }
+                        )
 
             self.button_reset_taxes(cursor, uid, [inv_id], context=context)
 
