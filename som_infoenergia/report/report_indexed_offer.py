@@ -20,7 +20,7 @@ class report_webkit_html(report_sxw.rml_parse):
 webkit_report.WebKitParser(
     'report.som.enviament.massiu',
     'som.enviament.massiu',
-    'som_infoenergia/report/report_indexed_offer_template_pdf.mako',
+    'som_infoenergia/report/report_indexed_offer.mako',
     parser=report_webkit_html
 )
 

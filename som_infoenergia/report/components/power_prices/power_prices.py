@@ -9,4 +9,5 @@ class power_prices():
                 tariff = '3xTD'
 
         #return {'tariff': '3xTD'}
+        #return {'tariff': '6xTD'}
         return {'tariff': tariff}
