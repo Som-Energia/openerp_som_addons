@@ -24,6 +24,7 @@
             <field eval="0" name="use_sign"/>
             <field name="def_subject">[IMPORTANT] Finalització del contracte ${object.polissa_id.name} i proposta de renovació</field>
             <field name="template_language">mako</field>
+	    <field name="enforce_from_account" model="poweremail.core_accounts" search="[('email_id','=', 'empresa@somenergia.coop')]" />
             <field eval="0" name="send_on_create"/>
             <field name="lang">${object.polissa_id.titular.lang}</field>
             <field eval="0" name="send_on_write"/>
@@ -46,6 +47,7 @@
             <field eval="0" name="use_filter"/>
             <field name="def_to">${object.polissa_id.titular.address[0].email}</field>
             <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+	    <field name="enforce_from_account" model="poweremail.core_accounts" search="[('email_id','=', 'empresa@somenergia.coop')]" />
             <field eval="0" name="auto_email"/>
             <field eval="0" name="use_sign"/>
             <field name="def_subject">[IMPORTANT] Condicions per a la renovació del contracte ${object.polissa_id.name} amb tarifa indexada</field>
@@ -73,6 +75,7 @@
             <field eval="0" name="use_filter"/>
             <field name="def_to">${object.polissa_id.titular.address[0].email}</field>
             <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+	    <field name="enforce_from_account" model="poweremail.core_accounts" search="[('email_id','=', 'empresa@somenergia.coop')]" />
             <field eval="0" name="auto_email"/>
             <field eval="0" name="use_sign"/>
             <field name="def_subject">[IMPORTANT] Finalització del contracte ${object.polissa_id.name} el ${object.polissa_id.modcontractual_activa.data_final}</field>
