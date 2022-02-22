@@ -9,11 +9,11 @@ dades = r_obj.get_report_data(cursor, uid, objects)
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-    <link rel="stylesheet" href="${addons_path}/som_infoenergia/sepa_template/sepa.css"/>
+    <link rel="stylesheet" href="${addons_path}/som_infoenergia/report/sepa.css"/>
 </head>
 <body>
 % for dada in dades:
-    <%include file="/som_infoenergia/sepa_template/components/main/main.mako" args="d=dada.main" />
+    <%include file="/som_infoenergia/report/components/main/main.mako" args="d=dada.main" />
 % endfor
 </body>
 </html>

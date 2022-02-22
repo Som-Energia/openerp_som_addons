@@ -28,7 +28,7 @@
             <field name="type">ir.actions.report.xml</field>
             <field name="name">SEPA Report</field>
             <field name="report_webkit"
-                    eval="'som_infoenergia/sepa_template/sepa.mako'"/>
+                    eval="'som_infoenergia/report/sepa.mako'"/>
             <field name="webkit_header" ref="som_sepa_report_webkit_header"/>
             <field name="report_rml" eval="False"/>
         </record>

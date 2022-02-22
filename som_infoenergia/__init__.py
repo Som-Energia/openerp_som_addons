@@ -6,4 +6,3 @@ import wizard
 import giscedata_polissa
 import giscedata_cups
 import report
-import sepa_template

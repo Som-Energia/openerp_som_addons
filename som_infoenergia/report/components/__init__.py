@@ -7,3 +7,4 @@ import power_prices
 import energy_prices
 import tail_text
 import conclusions
+import main
