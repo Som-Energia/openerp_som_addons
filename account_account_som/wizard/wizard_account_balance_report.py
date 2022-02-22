@@ -35,7 +35,7 @@ class WizardAccountBalanceReport(osv.osv_memory):
 
     _name = 'wizard.account.balance.report'
 
-    def _get_defaults(self, cr, uid, ids, datas, context={}):
+    def _get_defaults(self, cr, uid, ids, datas, context=None):
         if not context:
             context = {}
         if isinstance(ids, list):
@@ -52,7 +52,7 @@ class WizardAccountBalanceReport(osv.osv_memory):
         datas['form'].update(**form)
         return True
 
-    def _check_state(self, cr, uid, ids, context):
+    def _check_state(self, cr, uid, ids, context=None):
         if not context:
             context = {}
         if isinstance(ids, list):
@@ -62,7 +62,7 @@ class WizardAccountBalanceReport(osv.osv_memory):
             self._check_date(cr, uid, ids, context)
         return True
 
-    def _check_date(self, cr, uid, data, context):
+    def _check_date(self, cr, uid, data, context=None):
         sql = """SELECT f.id, f.date_start, f.date_stop
             FROM account_fiscalyear f
             WHERE '%s' between f.date_start and f.date_stop """%(data['form']['date_from'])
@@ -77,6 +77,8 @@ class WizardAccountBalanceReport(osv.osv_memory):
              raise osv.except_osv(_('UserError'),_('Date not in a defined fiscal year'))
 
     def get_account_balance_wiz_data(self, cr, uid, ids, context=None):
+        if not context:
+            context = {}
         if isinstance(ids, list):
             ids = ids[0]
 
@@ -99,7 +101,11 @@ class WizardAccountBalanceReport(osv.osv_memory):
         self.check_all_accounts(cr, uid, ids, datas, context)
         return datas
 
-    def _excel_create(self, cr, uid, ids, datas, context={}):
+    def _excel_create(self, cr, uid, ids, datas, context=None):
+        if not context:
+            context = {}
+        if isinstance(ids, list):
+            ids = ids[0]
         form = datas['form']
         account_ids = form['account_list'][0][2]
         fiscal_year_label = utils.get_fiscalyear_text(cr, uid, form)
@@ -137,17 +143,22 @@ class WizardAccountBalanceReport(osv.osv_memory):
 
         return datas['form']
 
-    def check_all_accounts(self, cr, uid, ids, datas, context={}):
+    def check_all_accounts(self, cr, uid, ids, datas, context=None):
+        if not context:
+            context = {}
+        if isinstance(ids, list):
+            ids = ids[0]
         if datas['form']['all_accounts']:
             all_accounts = self.pool.get('account.account').search(cr, uid, [])
             datas['form']['account_list'][0] = [6, 0, all_accounts]
         elif datas['form']['account_list'][0] == [6,0, []]:
              raise osv.except_osv(_("Error"), _("Account list or 'all accounts' check required"))
 
-    def report_csv_print(self, cr, uid, ids, context={}):
+    def report_csv_print(self, cr, uid, ids, context=None):
+        if not context:
+            context = {}
         if isinstance(ids, list):
             ids = ids[0]
-
         wizard = self.browse(cr, uid, ids, context)
         datas = self.get_account_balance_wiz_data(cr, uid, ids, context)
         self._get_defaults(cr, uid, ids, datas, context)
@@ -160,26 +171,12 @@ class WizardAccountBalanceReport(osv.osv_memory):
             'report': base64.b64encode(result['file']),
         })
 
-    def report_csv_send(self, cr, uid, ids, context={}):
-        wizard = self.browse(cr, uid, ids, context)
-
-        user_obj = self.pool.get('res.users')
-        user = user_obj.browse(cr, uid, uid, context)
-        info = ''
-        if user.address_id and user.address_id.email:
-            info = "S'enviarà el resultat al correu associat a l'usuaria {}: ({})".format(user.login, user.address_id.email)
-        wizard.write({
-            'wiz_state':'send',
-            'info': info
-        })
-        self.report_csv_send_async(cr, uid, ids, context)
-
     @job(queue='waiting_reports')
-    def report_csv_send_async(self, cr, uid, ids, context={}):
+    def report_csv_send_async(self, cr, uid, ids, datas, context=None):
+        if not context:
+            context = {}
         if isinstance(ids, list):
             ids = ids[0]
-
-        datas = self.get_account_balance_wiz_data(cr, uid, ids, context)
         self._get_defaults(cr, uid, ids, datas, context)
         self.check_all_accounts(cr, uid, ids, datas, context)
         result = self._excel_create(cr, uid, ids, datas, context)
@@ -196,12 +193,29 @@ class WizardAccountBalanceReport(osv.osv_memory):
         async_obj.send_mail(cr, uid, mail_data['from'],
             filename, mail_data['email_to'], "account_balance.csv")
 
-
-
-    def report_pdf_print(self, cr, uid, ids, context={}): #DONE
+    def report_csv_send(self, cr, uid, ids, context=None):
+        if not context:
+            context = {}
         if isinstance(ids, list):
             ids = ids[0]
+        wizard = self.browse(cr, uid, ids, context)
+        user_obj = self.pool.get('res.users')
+        user = user_obj.browse(cr, uid, uid, context)
+        info = ''
+        if user.address_id and user.address_id.email:
+            info = "S'enviarà el resultat al correu associat a l'usuaria {}: ({})".format(user.login, user.address_id.email)
+        wizard.write({
+            'wiz_state':'send',
+            'info': info
+        })
+        datas = self.get_account_balance_wiz_data(cr, uid, ids, context)
+        self.report_csv_send_async(cr, uid, ids, datas, context)
 
+    def report_pdf_print(self, cr, uid, ids, context=None):
+        if not context:
+            context = {}
+        if isinstance(ids, list):
+            ids = ids[0]
         wizard = self.browse(cr, uid, ids, context)
         datas = self.get_account_balance_wiz_data(cr, uid, ids, context)
         self._get_defaults(cr, uid, ids, datas, context)
@@ -218,19 +232,21 @@ class WizardAccountBalanceReport(osv.osv_memory):
         })
 
     @job(queue='waiting_reports')
-    def report_pdf_send_async(self, cr, uid, ids, context={}):
+    def report_pdf_send_async(self, cr, uid, ids, datas, context=None):
+        if not context:
+            context = {}
         if isinstance(ids, list):
             ids = ids[0]
-        datas = self.get_account_balance_wiz_data(cr, uid, ids, context)
         self._get_defaults(cr, uid, ids, datas, context)
         self.check_all_accounts(cr, uid, ids, datas, context)
         async_obj = self.pool.get('async.reports')
         async_obj.async_report_report(cr, uid, ids, 'account.balance.full', datas, context)
 
-    def report_pdf_send(self, cr, uid, ids, context):
+    def report_pdf_send(self, cr, uid, ids, context=None):
+        if not context:
+            context = {}
         if isinstance(ids, list):
             ids = ids[0]
-
         wizard = self.browse(cr, uid, ids, context)
         user_obj = self.pool.get('res.users')
         user = user_obj.browse(cr, uid, uid, context)
@@ -241,7 +257,8 @@ class WizardAccountBalanceReport(osv.osv_memory):
             'wiz_state':'send',
             'info': info
         })
-        self.report_pdf_send_async(cr, uid, ids, context)
+        datas = self.get_account_balance_wiz_data(cr, uid, ids, context)
+        self.report_pdf_send_async(cr, uid, ids, datas, context)
 
 
     _columns = {
