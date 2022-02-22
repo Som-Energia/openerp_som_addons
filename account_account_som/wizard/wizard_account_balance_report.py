@@ -22,7 +22,6 @@
 #
 ##############################################################################
 import base64
-import queue
 import time, netsvc
 from account_financial_report.utils import account_balance_utils as utils
 from datetime import datetime
