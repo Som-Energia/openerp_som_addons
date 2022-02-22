@@ -22,10 +22,10 @@
         "tests/som_infoenergia_demo.xml"
     ],
     "update_xml":[
-        "som_infoenergia_data.xml",
-        "som_infoenergia_view.xml",
         "som_infoenergia_report.xml",
         "som_infoenergia_sepa.xml",
+        "som_infoenergia_data.xml",
+        "som_infoenergia_view.xml",
         "giscedata_polissa_view.xml",
         "security/infoenergia_security.xml",
         "security/ir.model.access.csv",
