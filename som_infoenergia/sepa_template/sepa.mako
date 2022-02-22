@@ -1,13 +1,14 @@
 ## -*- encoding: utf-8 -*-
 <%
+import locale
+locale.setlocale(locale.LC_NUMERIC,'es_ES.utf-8')
 r_obj = objects[0].pool.get('sepa.report')
 dades = r_obj.get_report_data(cursor, uid, objects)
 %>
-
 <!doctype html public "-//w3c//dtd html 4.0 transitional//en">
 <html>
-<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="${addons_path}/som_infoenergia/sepa_template/sepa.css"/>
 </head>
 <body>

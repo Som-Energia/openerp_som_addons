@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
-from osv import osv, fields
+from osv import osv
 from c2c_webkit_report import webkit_report
 from report import report_sxw
 from tools import config
-import babel
-from datetime import datetime
-import time
 from yamlns import namespace as ns
 
 class report_webkit_html(report_sxw.rml_parse):
