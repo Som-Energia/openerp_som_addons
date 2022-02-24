@@ -8,7 +8,6 @@
     "category": "SomEnergia",
     "depends":[
         "base",
-        "giscedata_facturacio_comer",
     ],
     "init_xml": [],
     "demo_xml": [],
@@ -16,7 +15,6 @@
         "som_factures_paper.xml",
         "wizard/wizard_paper_invoice_som.xml",
         "security/ir.model.access.csv",
-        "giscedata_polissa_view.xml",
     ],
     "active": False,
     "installable": True
