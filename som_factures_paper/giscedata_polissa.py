@@ -15,7 +15,7 @@ class GiscedataPolissa(osv.osv):
             states={
                 'esborrany': [('readonly', False)],
                 'validar': [('readonly', False)],
-                'modcontractual': [('readonly', False), ('required', True)]
+                'modcontractual': [('readonly', False)]
             }
         ),
         'postal_observacions': fields.char(
@@ -25,7 +25,7 @@ class GiscedataPolissa(osv.osv):
             states={
                 'esborrany': [('readonly', False)],
                 'validar': [('readonly', False)],
-                'modcontractual': [('readonly', False), ('required', True)]
+                'modcontractual': [('readonly', False)]
             }
         ),
     }
