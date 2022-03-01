@@ -17,7 +17,6 @@
             <field name="is_last">False</field>
             <field name="workflow_id" ref="workflow_atc"/>
             <field name="active">True</field>
-            <field name="activation_parameters">{}</field>
             <field name="generate_atc_parameters">{}</field>
         </record>
         <record model="som.autoreclama.pending.state" id="first_state_workflow_atc">
@@ -27,7 +26,6 @@
             <field name="is_last">False</field>
             <field name="workflow_id" ref="workflow_atc"/>
             <field name="active">True</field>
-            <field name="activation_parameters">{}</field>
             <field name="generate_atc_parameters">{'subtype':'029'}</field>
         </record>
         <record model="som.autoreclama.pending.state" id="second_state_workflow_atc">
@@ -37,7 +35,6 @@
             <field name="is_last">False</field>
             <field name="workflow_id" ref="workflow_atc"/>
             <field name="active">True</field>
-            <field name="activation_parameters">{}</field>
             <field name="generate_atc_parameters">{'subtype':'029'}</field>
         </record>
         <record model="som.autoreclama.pending.state" id="third_state_workflow_atc">
@@ -47,7 +44,6 @@
             <field name="is_last">True</field>
             <field name="workflow_id" ref="workflow_atc"/>
             <field name="active">True</field>
-            <field name="activation_parameters">{}</field>
             <field name="generate_atc_parameters">{'subtype':'029'}</field>
         </record>
         <record model="som.autoreclama.pending.state.condition" id="conditions_001_correct_state_workflow_atc">
