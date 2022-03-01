@@ -2,23 +2,73 @@
 <openerp>
     <data noupdate="1">
         <!-- SomEnergia autoreclama pending states -->
-        <record model="som.autoreclama.pending.state.workflow" id="workflow_r1_no_response">
-            <field name="name">Reclamació per no resposta</field>
-            <field name="model">r1</field>
+        <record model="som.autoreclama.pending.state.workflow" id="workflow_atc">
+            <field name="name">Reclamació per no resposta cas ATC</field>
+            <field name="model">ATC</field>
         </record>
-        <record model="som.autoreclama.pending.state" id="correct_workflow_r1_no_response">
+        <record model="som.autoreclama.pending.state.workflow" id="workflow_F1">
+            <field name="name">Reclamació per no resposta F1</field>
+            <field name="model">F1</field>
+        </record>
+        <record model="som.autoreclama.pending.state" id="correct_state_workflow_atc">
             <field name="name">Correcte</field>
-            <field name="priority">1</field>
+            <field name="priority">10</field>
+            <filed name='conditions_ids' model="som.autoreclama.pending.state.condition" search="[('pending_state_id','=',ref('correct_state_workflow_atc'))]"/>
             <field name="is_last">False</field>
-            <field name="workflow_id" ref="workflow_r1_no_response"/>
+            <field name="workflow_id" ref="workflow_atc"/>
             <field name="active">True</field>
-            <field name="parameters">{}</field>
-            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_029"/>
+            <field name="activation_parameters">{}</field>
+            <field name="generate_atc_parameters">{}</field>
         </record>
-        <record model="som.autoreclama.pending.state.days" id="days_correct_workflow_r1_no_response">
+        <record model="som.autoreclama.pending.state" id="first_state_workflow_atc">
+            <field name="name">Primera reclamacio</field>
+            <field name="priority">20</field>
+            <filed name='conditions_ids' model="som.autoreclama.pending.state.condition" search="[('pending_state_id','=',ref('first_state_workflow_atc'))]"/>
+            <field name="is_last">False</field>
+            <field name="workflow_id" ref="workflow_atc"/>
+            <field name="active">True</field>
+            <field name="activation_parameters">{}</field>
+            <field name="generate_atc_parameters">{'subtype':'029'}</field>
+        </record>
+        <record model="som.autoreclama.pending.state" id="second_state_workflow_atc">
+            <field name="name">Segona reclamacio</field>
+            <field name="priority">30</field>
+            <filed name='conditions_ids' model="som.autoreclama.pending.state.condition" search="[('pending_state_id','=',ref('second_state_workflow_atc'))]"/>
+            <field name="is_last">False</field>
+            <field name="workflow_id" ref="workflow_atc"/>
+            <field name="active">True</field>
+            <field name="activation_parameters">{}</field>
+            <field name="generate_atc_parameters">{'subtype':'029'}</field>
+        </record>
+        <record model="som.autoreclama.pending.state" id="third_state_workflow_atc">
+            <field name="name">Tercera reclamacio</field>
+            <field name="priority">40</field>
+            <filed name='conditions_ids' model="som.autoreclama.pending.state.condition" search="[('pending_state_id','=',ref('third_state_workflow_atc'))]"/>
+            <field name="is_last">True</field>
+            <field name="workflow_id" ref="workflow_atc"/>
+            <field name="active">True</field>
+            <field name="activation_parameters">{}</field>
+            <field name="generate_atc_parameters">{'subtype':'029'}</field>
+        </record>
+        <record model="som.autoreclama.pending.state.condition" id="conditions_001_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_001"/>
             <field name="days">30</field>
-            <field name="pending_state_id" ref="correct_workflow_r1_no_response"/>
+            <field name="pending_state_id" ref="first_state_workflow_atc"/>
+        </record>
+        <record model="som.autoreclama.pending.state.condition" id="conditions_001_first_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_001"/>
+            <field name="days">45</field>
+            <field name="pending_state_id" ref="second_state_workflow_atc"/>
+        </record>
+        <record model="som.autoreclama.pending.state.condition" id="conditions_001_second_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_001"/>
+            <field name="days">60</field>
+            <field name="pending_state_id" ref="third_state_workflow_atc"/>
+        </record>
+        <record model="som.autoreclama.pending.state.condition" id="conditions_038_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_038"/>
+            <field name="days">30</field>
+            <field name="pending_state_id" ref="first_state_workflow_atc"/>
         </record>
     </data>
 </openerp>

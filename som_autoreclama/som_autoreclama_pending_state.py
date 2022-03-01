@@ -1,28 +1,8 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
+import som_autoreclama_pending_state_condition
 import json
-
-class SomAutoreclamaPendingStateWorkflow(osv.osv):
-
-    _name = 'som.autoreclama.pending.state.workflow'
-
-    WORKFLOW_MODELS = [
-        ('r1', 'R1')
-    ]
-    _columns = {
-        'name': fields.char(_('Name'), size=64, required=True),
-        'model': fields.selection(WORKFLOW_MODELS, 'Model', required=True),
-    }
-
-    _defaults = {
-
-    }
-
-SomAutoreclamaPendingStateWorkflow()
-
-
-
 
 class SomAutoreclamaPendingState(osv.osv):
 
@@ -30,30 +10,30 @@ class SomAutoreclamaPendingState(osv.osv):
     _order = 'priority'
 
 
-    def _ff_parameters(self, cursor, uid, ids, field_name, arg, context=None):
+    def _ff_generate_atc_parameters(self, cursor, uid, ids, field_name, arg, context=None):
         if not context:
             context = {}
 
         res = {}
-        for import_vals in self.read(cursor, uid, ids, ['parameters']):
+        for import_vals in self.read(cursor, uid, ids, ['generate_atc_parameters']):
             res[import_vals['id']] = json.dumps(
                 import_vals['parameters'], indent=4
             )
         return res
 
-    def _fi_parameters(self, cursor, uid, ids, name, value, arg, context=None):
+    def _fi_generate_atc_parameters(self, cursor, uid, ids, name, value, arg, context=None):
         if not context:
             context = {}
 
         try:
             parameters = json.loads(value)
-            self.write(cursor, uid, ids, {'parameters': parameters})
+            self.write(cursor, uid, ids, {'generate_atc_parameters': parameters})
         except ValueError as e:
             pass
 
-    def check_correct_json(self, cursor, uid, ids, parameters_text):
+    def check_correct_json(self, cursor, uid, ids, generate_atc_parameters_text):
         try:
-            parameters = json.loads(parameters_text)
+            generate_atc_parameters = json.loads(generate_atc_parameters_text)
         except ValueError as e:
             return {
                 'warning': {
@@ -62,7 +42,7 @@ class SomAutoreclamaPendingState(osv.osv):
                                  'correcte de JSON')
                 }
             }
-        if not isinstance(parameters, dict):
+        if not isinstance(generate_atc_parameters, dict):
             return {
                 'warning': {
                     'title': _(u'Atenció'),
@@ -72,32 +52,39 @@ class SomAutoreclamaPendingState(osv.osv):
         return {}
 
     _columns = {
-        'name': fields.char(_('Name'), size=64, required=True),
-        'priority': fields.integer('Order', required=True),
-        'is_last': fields.boolean(
-            string=_(u'Is last'),
-            help=_(u'Indicates if the pending state is an ending state')
+        'name': fields.char(
+            _('Name'),
+            size=64,
+            required=True
         ),
-        # 'pending_days_ids': fields.one2many(
-        #     'som.autoreclama.pending.state.days',
-        #     'pending_state_id',
-        #     u'Days in state',
-        # ),
+        'priority': fields.integer(
+            _('Order'),
+            required=True
+        ),
+        'is_last': fields.boolean(
+            string=_(u'Últim'),
+            help=_(u"Indica si es l'utim estat")
+        ),
+        'conditions_ids': fields.one2many(
+            'som.autoreclama.pending.state.condition',
+            _(u"Condicions per canviar d'estat"),
+        ),
         'workflow_id': fields.many2one(
-            'som.autoreclama.pending.state.workflow', u'Workfow',
+            'som.autoreclama.pending.state.workflow',
+            _(u'Workflow'),
             required=True
         ),
         'active': fields.boolean(
-            string=u'Active',
-            help=u'Indicates if the pending state is active and can be searched'
+            string=_(u'Actiu'),
+            help=_(u"Indica si l'estat està actiu i pot ser cercat")
         ),
-        'parameters': fields.json('Parametres'),
-        'parameters_text': fields.function(
-            _ff_parameters, type='text', method=True, string='Parametres',
-            fnct_inv=_fi_parameters
+        'generate_atc_parameters': fields.json("Parametres de generació d'ATC"),
+        'generate_atc_parameters_text': fields.function(
+            _ff_generate_atc_parameters, type='text',
+            method=True,
+            string=_("Parametres de generació d'ATC"),
+            fnct_inv=_fi_generate_atc_parameters
         ),
-        'subtype_id': fields.many2one('giscedata.subtipus.reclamacio',
-            u"Subtype", required=True),
     }
 
     _defaults = {
@@ -106,25 +93,4 @@ class SomAutoreclamaPendingState(osv.osv):
     }
 
 SomAutoreclamaPendingState()
-
-class SomAutoreclamaPendingStateDays(osv.osv):
-
-    _name = 'som.autoreclama.pending.state.days'
-    _rec_name = 'subtype_id'
-
-    _columns = {
-        'subtype_id': fields.many2one("giscedata.subtipus.reclamacio",
-            u"Subtype", required=True),
-        'days': fields.integer(_('Days'), required=True),
-        'pending_state_id': fields.many2one(
-            'som.autoreclama.pending.state', u'Pending State',
-            required=True
-        ),
-    }
-
-
-    _defaults = {}
-
-SomAutoreclamaPendingStateDays()
-
 
