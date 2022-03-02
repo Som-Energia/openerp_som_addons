@@ -15,7 +15,7 @@ class SomAutoreclamaPendingStateCondition(osv.osv):
             required=True
         ),
         'days': fields.integer(
-            _('Days'),
+            _(u'Dies'),
             required=True
         ),
         'pending_state_id': fields.many2one(

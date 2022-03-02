@@ -33,7 +33,7 @@ class SomAutoreclamaPendingState(osv.osv):
 
     def check_correct_json(self, cursor, uid, ids, generate_atc_parameters_text):
         try:
-            generate_atc_parameters = json.loads(generate_atc_parameters_text)
+            params = json.loads(generate_atc_parameters_text)
         except ValueError as e:
             return {
                 'warning': {
@@ -42,7 +42,7 @@ class SomAutoreclamaPendingState(osv.osv):
                                  'correcte de JSON')
                 }
             }
-        if not isinstance(generate_atc_parameters, dict):
+        if not isinstance(params, dict):
             return {
                 'warning': {
                     'title': _(u'Atenció'),
@@ -81,7 +81,8 @@ class SomAutoreclamaPendingState(osv.osv):
         ),
         'generate_atc_parameters': fields.json("Parametres de generació d'ATC"),
         'generate_atc_parameters_text': fields.function(
-            _ff_generate_atc_parameters, type='text',
+            _ff_generate_atc_parameters,
+            type='text',
             method=True,
             string=_("Parametres de generació d'ATC"),
             fnct_inv=_fi_generate_atc_parameters
@@ -91,7 +92,6 @@ class SomAutoreclamaPendingState(osv.osv):
     _defaults = {
         'is_last': lambda *a: False,
         'active': lambda *a: True,
-        'generate_atc_parameters_text': lambda *a:'',
     }
 
 SomAutoreclamaPendingState()
