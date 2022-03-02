@@ -62,19 +62,17 @@
             <field name="days">30</field>
             <field name="pending_state_id" ref="correct_state_workflow_atc"/>
         </record>
-        <!--
-        <record id="ir_cron_pending_states" model="ir.cron" forcecreate="1">
-            <field name="name">Assign next pending state to invoices if the pending days have passed</field>
+        <record id="ir_cron_autoreclama_states_updater" model="ir.cron" forcecreate="1">
+            <field name="name">Apply autoreclama automations</field>
             <field name="user_id" ref="base.user_root"/>
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
             <field name="numbercall">-1</field>
-            <field eval="False" name="doall"/>
-            <field eval="False" name="active"/>
-            <field eval="'update.pending.states'" name="model"/>
-            <field eval="'update_invoices'" name="function"/>
-            <field eval="'([],)'" name="args"/>
+            <field name="doall" eval="False"/>
+            <field name="active" eval="False"/>
+            <field name="model" eval="'som.autoreclama.state.updater'"/>
+            <field name="function" eval="'state_updater'"/>
+            <field name="args" eval="'([],)'"/>
         </record>
-        -->
     </data>
 </openerp>

@@ -11,7 +11,8 @@
     "author": "SOM ENERGIA",
     "category": "SomEnergia",
     "depends":[
-        "giscedata_switching"
+        "base",
+        "giscedata_atc_switching",
     ],
     "init_xml": [],
     "demo_xml": [],
