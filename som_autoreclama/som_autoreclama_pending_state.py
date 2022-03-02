@@ -17,7 +17,7 @@ class SomAutoreclamaPendingState(osv.osv):
         res = {}
         for import_vals in self.read(cursor, uid, ids, ['generate_atc_parameters']):
             res[import_vals['id']] = json.dumps(
-                import_vals['parameters'], indent=4
+                import_vals['generate_atc_parameters'], indent=4
             )
         return res
 
@@ -67,7 +67,8 @@ class SomAutoreclamaPendingState(osv.osv):
         ),
         'conditions_ids': fields.one2many(
             'som.autoreclama.pending.state.condition',
-            _(u"Condicions per canviar d'estat"),
+            'pending_state_id',
+            u"Condicions per canviar d'estat",
         ),
         'workflow_id': fields.many2one(
             'som.autoreclama.pending.state.workflow',
@@ -90,7 +91,7 @@ class SomAutoreclamaPendingState(osv.osv):
     _defaults = {
         'is_last': lambda *a: False,
         'active': lambda *a: True,
+        'generate_atc_parameters_text': lambda *a:'',
     }
 
 SomAutoreclamaPendingState()
-

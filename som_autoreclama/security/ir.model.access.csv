@@ -1,0 +1,5 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_som_autoreclama_pending_state_workflow_rcw","som.autoreclama.pending.state.workflow","model_som_autoreclama_pending_state_workflow","base_extended.group_base_extended_w",1,1,1,0
+"access_som_autoreclama_pending_state_rcw","som.autoreclama.pending.state","model_som_autoreclama_pending_state","base_extended.group_base_extended_w",1,1,1,0
+"access_som_autoreclama_pending_state_condition_rcw","som.autoreclama.pending.state.condition","model_som_autoreclama_pending_state_condition","base_extended.group_base_extended_w",1,1,1,0
+"access_som_autoreclama_pending_state_history_rcw","som.autoreclama.pending.state.history","model_som_autoreclama_pending_state_history","base_extended.group_base_extended_w",1,1,1,0

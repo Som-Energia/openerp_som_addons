@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
-
+import som_autoreclama_pending_state
 
 class SomAutoreclamaPendingStateCondition(osv.osv):
 

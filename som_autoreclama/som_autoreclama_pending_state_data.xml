@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <openerp>
-    <data noupdate="1">
+    <data noupdate="0">
         <!-- SomEnergia autoreclama pending states -->
         <record model="som.autoreclama.pending.state.workflow" id="workflow_atc">
             <field name="name">Reclamació per no resposta cas ATC</field>
@@ -13,58 +13,68 @@
         <record model="som.autoreclama.pending.state" id="correct_state_workflow_atc">
             <field name="name">Correcte</field>
             <field name="priority">10</field>
-            <filed name='conditions_ids' model="som.autoreclama.pending.state.condition" search="[('pending_state_id','=',ref('correct_state_workflow_atc'))]"/>
-            <field name="is_last">False</field>
+            <field name="is_last" eval="False"/>
             <field name="workflow_id" ref="workflow_atc"/>
-            <field name="active">True</field>
-            <field name="generate_atc_parameters">{}</field>
+            <field name="active" eval="True"/>
+            <field name="generate_atc_parameters_text">{}</field>
         </record>
         <record model="som.autoreclama.pending.state" id="first_state_workflow_atc">
             <field name="name">Primera reclamacio</field>
             <field name="priority">20</field>
-            <filed name='conditions_ids' model="som.autoreclama.pending.state.condition" search="[('pending_state_id','=',ref('first_state_workflow_atc'))]"/>
-            <field name="is_last">False</field>
+            <field name="is_last" eval="False"/>
             <field name="workflow_id" ref="workflow_atc"/>
-            <field name="active">True</field>
-            <field name="generate_atc_parameters">{'subtype':'029'}</field>
+            <field name="active" eval="True"/>
+            <field name="generate_atc_parameters_text">{'subtype':'029'}</field>
         </record>
         <record model="som.autoreclama.pending.state" id="second_state_workflow_atc">
             <field name="name">Segona reclamacio</field>
             <field name="priority">30</field>
-            <filed name='conditions_ids' model="som.autoreclama.pending.state.condition" search="[('pending_state_id','=',ref('second_state_workflow_atc'))]"/>
-            <field name="is_last">False</field>
+            <field name="is_last" eval="False"/>
             <field name="workflow_id" ref="workflow_atc"/>
-            <field name="active">True</field>
-            <field name="generate_atc_parameters">{'subtype':'029'}</field>
+            <field name="active" eval="True"/>
+            <field name="generate_atc_parameters_text">{'subtype':'029'}</field>
         </record>
         <record model="som.autoreclama.pending.state" id="third_state_workflow_atc">
             <field name="name">Tercera reclamacio</field>
             <field name="priority">40</field>
-            <filed name='conditions_ids' model="som.autoreclama.pending.state.condition" search="[('pending_state_id','=',ref('third_state_workflow_atc'))]"/>
-            <field name="is_last">True</field>
+            <field name="is_last" eval="True"/>
             <field name="workflow_id" ref="workflow_atc"/>
-            <field name="active">True</field>
-            <field name="generate_atc_parameters">{'subtype':'029'}</field>
+            <field name="active" eval="True"/>
+            <field name="generate_atc_parameters_text">{'subtype':'029'}</field>
         </record>
         <record model="som.autoreclama.pending.state.condition" id="conditions_001_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_001"/>
             <field name="days">30</field>
-            <field name="pending_state_id" ref="first_state_workflow_atc"/>
+            <field name="pending_state_id" ref="correct_state_workflow_atc"/>
         </record>
         <record model="som.autoreclama.pending.state.condition" id="conditions_001_first_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_001"/>
             <field name="days">45</field>
-            <field name="pending_state_id" ref="second_state_workflow_atc"/>
+            <field name="pending_state_id" ref="first_state_workflow_atc"/>
         </record>
         <record model="som.autoreclama.pending.state.condition" id="conditions_001_second_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_001"/>
             <field name="days">60</field>
-            <field name="pending_state_id" ref="third_state_workflow_atc"/>
+            <field name="pending_state_id" ref="second_state_workflow_atc"/>
         </record>
         <record model="som.autoreclama.pending.state.condition" id="conditions_038_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_038"/>
             <field name="days">30</field>
-            <field name="pending_state_id" ref="first_state_workflow_atc"/>
+            <field name="pending_state_id" ref="correct_state_workflow_atc"/>
         </record>
+        <!--
+        <record id="ir_cron_pending_states" model="ir.cron" forcecreate="1">
+            <field name="name">Assign next pending state to invoices if the pending days have passed</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field eval="False" name="doall"/>
+            <field eval="False" name="active"/>
+            <field eval="'update.pending.states'" name="model"/>
+            <field eval="'update_invoices'" name="function"/>
+            <field eval="'([],)'" name="args"/>
+        </record>
+        -->
     </data>
 </openerp>

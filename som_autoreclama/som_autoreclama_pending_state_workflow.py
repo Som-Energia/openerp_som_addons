@@ -8,7 +8,8 @@ class SomAutoreclamaPendingStateWorkflow(osv.osv):
     _name = 'som.autoreclama.pending.state.workflow'
 
     WORKFLOW_MODELS = [
-        ('r1', 'R1')
+        ('ATC', 'Cas ATC'),
+        ('F1', 'F1'),
     ]
     _columns = {
         'name': fields.char(_('Name'), size=64, required=True),
