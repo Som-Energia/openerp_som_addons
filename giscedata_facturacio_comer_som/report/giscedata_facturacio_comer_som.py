@@ -45,30 +45,31 @@ class FacturaReportSomWebkitParserHTML(webkit_report.WebKitParser):
             context = {}
         pool = pooler.get_pool(cursor.dbname)
         factura_o = pool.get('giscedata.facturacio.factura')
-        to_join = []
+        imd_o = pool.get('ir.model.data')
 
-        factura_f = ['tarifa_acces_id.name']
-        dmn = [('id', 'in', ids)]
-        factura_vs = factura_o.q(cursor, uid).read(factura_f).where(dmn)
+        sign_rp_id = imd_o.get_object_reference(cursor, uid,
+            'giscedata_facturacio_comer_som', 'cat_rp_factura_sign'
+        )[1]
+        sign_gp_id = imd_o.get_object_reference(cursor, uid,
+            'giscedata_facturacio_comer_som', 'cat_gp_factura_sign'
+        )[1]
 
-        file_type = 'pdf'
+        for f_id in ids:
+            f = factura_o.browse(cursor, uid, f_id, context)
+            if sign_rp_id in [c.id for c in f.partner_id.category_id] \
+                or sign_gp_id in [c.id for c in f.polissa_id.category_id]:
 
-        for factura_v in factura_vs:
-            # TODO s'ha de validar aquest IF
-            if 'TD' in factura_v['tarifa_acces_id.name']:
                 ctx = context.copy()
                 ctx['webkit_signed_pdf'] = True
                 ctx['extra_commands'] = ['-V','--l2-text "Firma digital a {}"'.format(datetime.today().strftime('%d/%m/%Y')),'-llx 320','-lly 1030']
                 res = super(FacturaReportSomWebkitParserHTML, self).create(
-                    cursor, uid, [factura_v['id']], data, context=ctx
+                    cursor, uid, [f_id], data, context=ctx
                 )
             else:
                 res = super(FacturaReportSomWebkitParserHTML, self).create(
-                    cursor, uid, [factura_v['id']], data, context=context
+                    cursor, uid, [f_id], data, context=context
                 )
-
         return res
-
 
 FacturaReportSomWebkitParserHTML(
     'report.giscedata.facturacio.factura',
