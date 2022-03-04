@@ -4,7 +4,7 @@ from c2c_webkit_report import webkit_report
 from report import report_sxw
 from tools import config
 import pooler
-
+from datetime import datetime
 
 class report_webkit_html(report_sxw.rml_parse):
     def __init__(self, cursor, uid, name, context):
@@ -58,6 +58,7 @@ class FacturaReportSomWebkitParserHTML(webkit_report.WebKitParser):
             if 'TD' in factura_v['tarifa_acces_id.name']:
                 ctx = context.copy()
                 ctx['webkit_signed_pdf'] = True
+                ctx['extra_commands'] = ['-V','--l2-text "Firma digital a {}"'.format(datetime.today().strftime('%d/%m/%Y')),'-llx 320','-lly 1030']
                 res = super(FacturaReportSomWebkitParserHTML, self).create(
                     cursor, uid, [factura_v['id']], data, context=ctx
                 )
