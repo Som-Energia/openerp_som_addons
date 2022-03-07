@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_som_autoreclama_state_history_atc_form">
+            <field name="name">giscedata.atc.autoreclama.form</field>
+            <field name="model">giscedata.atc</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="giscedata_atc.giscedata_atc-view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="Accions Autoreclama">
+                        <field name="autoreclama_state"/>
+                        <field name="autoreclama_state_date"/>
+                        <field name="autoreclama_history_ids" nolabel="1" colspan="4"/>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

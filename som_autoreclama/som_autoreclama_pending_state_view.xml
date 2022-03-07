@@ -63,5 +63,18 @@
                 </tree>
             </field>
         </record>
+        <record model="ir.ui.view" id="view_som_autoreclam_pending_state_history_atc_tree">
+            <field name="name">som.autoreclama.pending.state.history.atc.tree</field>
+            <field name="model">som.autoreclama.pending.state.history.atc</field>
+            <field name="type">tree</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <tree string="Accions realitzades per autoreclama">
+                    <field name="autoreclama_state_id"/>
+                    <field name="change_date"/>
+                    <field name="end_date"/>
+                </tree>
+            </field>
+        </record>
     </data>
 </openerp>

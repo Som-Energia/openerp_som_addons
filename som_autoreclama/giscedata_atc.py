@@ -9,7 +9,7 @@ class GiscedataAtc(osv.osv):
     _inherit = 'giscedata.atc'
     _order = 'id desc'
 
-    def get_current_pending_state_info(self, cursor, uid, ids, context=None):
+    def get_current_autoreclama_state_info(self, cursor, uid, ids, context=None):
         """
             Get the info of the last history line by atc id.
         :return: a dict containing the info of the last history line of the
@@ -45,17 +45,16 @@ class GiscedataAtc(osv.osv):
                 result[id] = False
         return result
 
-    def _get_last_pending_state_from_history(self, cursor, uid, ids,
-                                             field_name, arg, context=None):
+    def _get_last_autoreclama_state_from_history(self, cursor, uid, ids, field_name, arg, context=None):
         result = {k: {} for k in ids}
-        last_lines = self.get_current_pending_state_info(cursor, uid, ids)
+        last_lines = self.get_current_autoreclama_state_info(cursor, uid, ids)
         for id in ids:
             if last_lines[id]:
-                result[id]['pending_state'] = last_lines[id]['pending_state_id']
-                result[id]['pending_state_date'] = last_lines[id]['change_date']
+                result[id]['autoreclama_state'] = last_lines[id]['pending_state_id']
+                result[id]['autoreclama_state_date'] = last_lines[id]['change_date']
             else:
-                result[id]['pending_state'] = False
-                result[id]['pending_state_date'] = False
+                result[id]['autoreclama_state'] = False
+                result[id]['autoreclama_state_date'] = False
         return result
 
     def change_state(self, cursor, uid, ids, context):
@@ -69,26 +68,26 @@ class GiscedataAtc(osv.osv):
     }
 
     _columns = {
-        'pending_state': fields.function(
-            _get_last_pending_state_from_history,
+        'autoreclama_state': fields.function(
+            _get_last_autoreclama_state_from_history,
             method=True,
             type='many2one',
             obj='som.autoreclama.pending.state',
-            string=u'Pending State',
+            string=_(u'Estat autoreclama'),
             required=False,
             readonly=True,
             store=_STORE_PENDING_STATE,
-            multi='pending'
+            multi='autoreclama'
         ),
-        'pending_state_date': fields.function(
-            _get_last_pending_state_from_history,
+        'autoreclama_state_date': fields.function(
+            _get_last_autoreclama_state_from_history,
             method=True,
             type='datetime',
             store=_STORE_PENDING_STATE,
-            string=u'Pending State Date',
-            multi='pending'
+            string=_(u"última data d'autoreclama"),
+            multi='autoreclama'
         ),
-        'pending_history_ids': fields.one2many(
+        'autoreclama_history_ids': fields.one2many(
             'som.autoreclama.pending.state.history.atc',
             'atc_id',
             _(u"Historic d'autoreclama"),

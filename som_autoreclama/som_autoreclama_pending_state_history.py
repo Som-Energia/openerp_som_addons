@@ -18,7 +18,7 @@ class SomAutoreclamaPendingStateHistoryAtc(SomAutoreclamaPendingStateHistory):
     _namespace = 'atc'
 
     _columns = {
-        'pending_state_id': fields.many2one(
+        'autoreclama_state_id': fields.many2one(
             'som.autoreclama.pending.state',
             u'Pending State',
             required=False

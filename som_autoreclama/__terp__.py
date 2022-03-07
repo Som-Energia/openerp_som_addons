@@ -19,6 +19,7 @@
     "update_xml":[
         "som_autoreclama_pending_state_data.xml",
         "som_autoreclama_pending_state_view.xml",
+        "giscedata_atc_view.xml",
         "security/som_autoreclama.xml",
         "security/ir.model.access.csv",
     ],
