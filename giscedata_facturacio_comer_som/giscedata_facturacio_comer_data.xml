@@ -49,6 +49,14 @@ div.back{
                 ]]>
             </field>
         </record>
+    <record model="res.partner.category" id="cat_rp_factura_sign">
+        <field name="name">Signar Factures</field>
+        <field name="active">True</field>
+    </record>
+    <record model="giscedata.polissa.category" id="cat_gp_factura_sign">
+        <field name="name">Signar Factures</field>
+        <field name="active">True</field>
+    </record>
     </data>
         <data noupdate="1">
         <record model="res.config" id="first_date_qr_pot_max">
