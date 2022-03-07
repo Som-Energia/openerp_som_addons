@@ -42,6 +42,14 @@
             <field name="active" eval="True"/>
             <field name="generate_atc_parameters_text">{'subtype':'029'}</field>
         </record>
+        <record model="som.autoreclama.pending.state" id="disabled_state_workflow_atc">
+            <field name="name">Desactivat</field>
+            <field name="priority">99</field>
+            <field name="is_last" eval="True"/>
+            <field name="workflow_id" ref="workflow_atc"/>
+            <field name="active" eval="True"/>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
         <record model="som.autoreclama.pending.state.condition" id="conditions_001_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_001"/>
             <field name="days">30</field>

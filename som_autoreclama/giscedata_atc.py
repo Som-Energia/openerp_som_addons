@@ -9,6 +9,10 @@ class GiscedataAtc(osv.osv):
     _inherit = 'giscedata.atc'
     _order = 'id desc'
 
+
+    def set_autoreclama_history_deactivate(self, cursor, uid, ids, context=None):
+        pass
+
     def get_current_autoreclama_state_info(self, cursor, uid, ids, context=None):
         """
             Get the info of the last history line by atc id.
@@ -26,7 +30,7 @@ class GiscedataAtc(osv.osv):
             ids = [ids]
         pending_history_obj = self.pool.get('som.autoreclama.pending.state.history.atc')
         result = dict.fromkeys(ids, False)
-        fields_to_read = ['pending_state_id', 'change_date', 'atc_id']
+        fields_to_read = ['autoreclama_state_id', 'change_date', 'atc_id']
         for id in ids:
             res = pending_history_obj.search(
                 cursor, uid, [('atc_id', '=', id)]
@@ -38,7 +42,7 @@ class GiscedataAtc(osv.osv):
                     cursor, uid, res[0], fields_to_read)
                 result[id] = {
                     'id': values['id'],
-                    'pending_state_id': values['pending_state_id'][0],
+                    'autoreclama_state_id': values['autoreclama_state_id'][0],
                     'change_date': values['change_date'],
                 }
             else:
@@ -50,7 +54,7 @@ class GiscedataAtc(osv.osv):
         last_lines = self.get_current_autoreclama_state_info(cursor, uid, ids)
         for id in ids:
             if last_lines[id]:
-                result[id]['autoreclama_state'] = last_lines[id]['pending_state_id']
+                result[id]['autoreclama_state'] = last_lines[id]['autoreclama_state_id']
                 result[id]['autoreclama_state_date'] = last_lines[id]['change_date']
             else:
                 result[id]['autoreclama_state'] = False
@@ -82,9 +86,11 @@ class GiscedataAtc(osv.osv):
         'autoreclama_state_date': fields.function(
             _get_last_autoreclama_state_from_history,
             method=True,
-            type='datetime',
-            store=_STORE_PENDING_STATE,
+            type='date',
             string=_(u"última data d'autoreclama"),
+            required=False,
+            readonly=True,
+            store=_STORE_PENDING_STATE,
             multi='autoreclama'
         ),
         'autoreclama_history_ids': fields.one2many(

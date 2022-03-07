@@ -11,6 +11,9 @@
                     <page string="Accions Autoreclama">
                         <field name="autoreclama_state"/>
                         <field name="autoreclama_state_date"/>
+                        <group colspan="4" string="Eines debug">
+                            <button string="Gestió Manual" type="object" icon="gtk-cancel" name="set_autoreclama_history_deactivate"/>
+                        </group>
                         <field name="autoreclama_history_ids" nolabel="1" colspan="4"/>
                     </page>
                 </xpath>
