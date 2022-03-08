@@ -556,5 +556,13 @@ import_factura = object.residual
 ]]>
             </field>
         </record>
+
+        <data noupdate="1">
+            <record model="res.config" id="forced_first_pending_state">
+                <field name="name">forced_first_pending_state</field>
+                <field name="value">'0'</field>
+                <field name="description">Estat pendent per defecte en iniciar el procés de tall.</field>
+            </record>
+        </data>
     </data>
 </openerp>
