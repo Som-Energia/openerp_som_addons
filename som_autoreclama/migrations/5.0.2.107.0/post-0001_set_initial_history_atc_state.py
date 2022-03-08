@@ -4,6 +4,7 @@ from gettext import dgettext
 import logging
 import pooler
 from datetime import date
+from tqdm import tqdm
 
 def up(cursor, installed_version):
     if not installed_version:
@@ -19,14 +20,14 @@ def up(cursor, installed_version):
 
     imd_obj = pool.get('ir.model.data')
     correct_state_id = imd_obj.get_object_reference(
-            cursor, uid, 'som_autoreclama_pending_state', 'correct_state_workflow_atc'
+            cursor, uid, 'som_autoreclama', 'correct_state_workflow_atc'
     )[1]
 
     atc_obj = pool.get('giscedata.atc')
     atch_obj = pool.get('som.autoreclama.pending.state.history.atc')
     search_params = [('active','=',True),('state','not in', ['cancel', 'done'])]
     atc_ids = atc_obj.search(cursor, uid, search_params)
-    for atc_id in atc_ids:
+    for atc_id in tqdm(atc_ids):
         atch_obj.create(
             cursor,
             uid,
@@ -36,7 +37,7 @@ def up(cursor, installed_version):
                 'change_date': date.today().strftime("%d-%m-%Y"),
             }
         )
-    logger.info("Estast inicials creats")
+    logger.info("Estats inicials per els giscedata_atc actius creats")
 
 
 def down(cursor, installed_version):

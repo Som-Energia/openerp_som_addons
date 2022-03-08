@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
-
+from datetime import date
 
 class GiscedataAtc(osv.osv):
 
@@ -13,6 +13,25 @@ class GiscedataAtc(osv.osv):
     def set_autoreclama_history_deactivate(self, cursor, uid, ids, context=None):
         pass
 
+    def create(self, cursor, uid, ids, context=None):
+        super(GiscedataAtc, self).create(cursor, uid, ids, context=context)
+        imd_obj = self.get('ir.model.data')
+        correct_state_id = imd_obj.get_object_reference(
+                cursor, uid, 'som_autoreclama', 'correct_state_workflow_atc'
+        )[1]
+
+        atch_obj = self.get('som.autoreclama.pending.state.history.atc')
+        for atc_id in ids:
+            atch_obj.create(
+                cursor,
+                uid,
+                {
+                    'atc_id': atc_id,
+                    'autoreclama_state_id': correct_state_id,
+                    'change_date': date.today().strftime("%d-%m-%Y"),
+                }
+            )
+
     def get_current_autoreclama_state_info(self, cursor, uid, ids, context=None):
         """
             Get the info of the last history line by atc id.
@@ -20,7 +39,7 @@ class GiscedataAtc(osv.osv):
                  atc indexed by its id.
                  ==== Fields of the dict for each atc ===
                  'id': if of the last som.autoreclama.pending.state.history.atc
-                 'pending_state_id': id of its pending_state
+                 'autoreclama_state_id': id of its pending_state
                  'change_date': date of change (also, date of the creation of
                                 the line)
         """

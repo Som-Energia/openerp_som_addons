@@ -6,14 +6,18 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
 
     _name = 'som.autoreclama.state.updater'
 
+    def get_cacs_to_update(self, cursor, uid, context=None):
+
+        pass
+
     def state_updater(self, cursor, uid, context=None):
 
         if context is None:
             context = {}
 
-
         """
         cacs_ids = self.get_cacs_to_update(cursor,uid)
+
 
         inv_obj = self.pool.get('account.invoice')
         invoice_ids = self.get_invoices_to_update(cursor, uid)
