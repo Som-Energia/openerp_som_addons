@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
-import som_autoreclama_pending_state_condition
+import som_autoreclama_state_condition
 import json
 
-class SomAutoreclamaPendingState(osv.osv):
+class SomAutoreclamaState(osv.osv):
 
-    _name = 'som.autoreclama.pending.state'
+    _name = 'som.autoreclama.state'
     _order = 'priority'
 
 
@@ -66,12 +66,12 @@ class SomAutoreclamaPendingState(osv.osv):
             help=_(u"Indica si es l'utim estat")
         ),
         'conditions_ids': fields.one2many(
-            'som.autoreclama.pending.state.condition',
-            'pending_state_id',
+            'som.autoreclama.state.condition',
+            'state_id',
             u"Condicions per canviar d'estat",
         ),
         'workflow_id': fields.many2one(
-            'som.autoreclama.pending.state.workflow',
+            'som.autoreclama.state.workflow',
             _(u'Workflow'),
             required=True
         ),
@@ -94,4 +94,4 @@ class SomAutoreclamaPendingState(osv.osv):
         'active': lambda *a: True,
     }
 
-SomAutoreclamaPendingState()
+SomAutoreclamaState()

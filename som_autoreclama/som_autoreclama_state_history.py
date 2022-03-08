@@ -2,25 +2,25 @@
 from osv import osv, fields
 from tools.translate import _
 
-class SomAutoreclamaPendingStateHistory(osv.osv):
+class SomAutoreclamaStateHistory(osv.osv):
 
-    _name = 'som.autoreclama.pending.state.history'
+    _name = 'som.autoreclama.state.history'
 
     def get_this_model(self, cursor, uid, context=None):
-        return self.pool.get('som.autoreclama.pending.state.history.{}'.format(self._namespace))
+        return self.pool.get('som.autoreclama.state.history.{}'.format(self._namespace))
 
-SomAutoreclamaPendingStateHistory()
+SomAutoreclamaStateHistory()
 
 
-class SomAutoreclamaPendingStateHistoryAtc(SomAutoreclamaPendingStateHistory):
+class SomAutoreclamaStateHistoryAtc(SomAutoreclamaStateHistory):
 
-    _name = 'som.autoreclama.pending.state.history.atc'
+    _name = 'som.autoreclama.state.history.atc'
     _namespace = 'atc'
 
     _columns = {
         'autoreclama_state_id': fields.many2one(
-            'som.autoreclama.pending.state',
-            u'Pending State',
+            'som.autoreclama.state',
+            u'State',
             required=False
         ),
         'change_date': fields.date(
@@ -42,4 +42,4 @@ class SomAutoreclamaPendingStateHistoryAtc(SomAutoreclamaPendingStateHistory):
     }
     _order = 'end_date desc, id desc'
 
-SomAutoreclamaPendingStateHistoryAtc()
+SomAutoreclamaStateHistoryAtc()

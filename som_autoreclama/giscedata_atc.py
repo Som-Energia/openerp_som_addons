@@ -20,7 +20,7 @@ class GiscedataAtc(osv.osv):
                 cursor, uid, 'som_autoreclama', 'correct_state_workflow_atc'
         )[1]
 
-        atch_obj = self.get('som.autoreclama.pending.state.history.atc')
+        atch_obj = self.get('som.autoreclama.state.history.atc')
         for atc_id in ids:
             atch_obj.create(
                 cursor,
@@ -38,8 +38,8 @@ class GiscedataAtc(osv.osv):
         :return: a dict containing the info of the last history line of the
                  atc indexed by its id.
                  ==== Fields of the dict for each atc ===
-                 'id': if of the last som.autoreclama.pending.state.history.atc
-                 'autoreclama_state_id': id of its pending_state
+                 'id': if of the last som.autoreclama.state.history.atc
+                 'autoreclama_state_id': id of its state
                  'change_date': date of change (also, date of the creation of
                                 the line)
         """
@@ -47,17 +47,17 @@ class GiscedataAtc(osv.osv):
             context = {}
         if not isinstance(ids, list):
             ids = [ids]
-        pending_history_obj = self.pool.get('som.autoreclama.pending.state.history.atc')
+        history_obj = self.pool.get('som.autoreclama.state.history.atc')
         result = dict.fromkeys(ids, False)
         fields_to_read = ['autoreclama_state_id', 'change_date', 'atc_id']
         for id in ids:
-            res = pending_history_obj.search(
+            res = history_obj.search(
                 cursor, uid, [('atc_id', '=', id)]
             )
             if res:
                 # We consider the last record the first one due to order
                 # statement in the model definition.
-                values = pending_history_obj.read(
+                values = history_obj.read(
                     cursor, uid, res[0], fields_to_read)
                 result[id] = {
                     'id': values['id'],
@@ -84,8 +84,8 @@ class GiscedataAtc(osv.osv):
         values = self.read(cursor, uid, ids, ['atc_id'])
         return [value['atc_id'][0] for value in values]
 
-    _STORE_PENDING_STATE = {
-        'som.autoreclama.pending.state.history.atc': (
+    _STORE_STATE = {
+        'som.autoreclama.state.history.atc': (
             change_state, ['change_date'], 10
         )
     }
@@ -95,11 +95,11 @@ class GiscedataAtc(osv.osv):
             _get_last_autoreclama_state_from_history,
             method=True,
             type='many2one',
-            obj='som.autoreclama.pending.state',
+            obj='som.autoreclama.state',
             string=_(u'Estat autoreclama'),
             required=False,
             readonly=True,
-            store=_STORE_PENDING_STATE,
+            store=_STORE_STATE,
             multi='autoreclama'
         ),
         'autoreclama_state_date': fields.function(
@@ -109,11 +109,11 @@ class GiscedataAtc(osv.osv):
             string=_(u"última data d'autoreclama"),
             required=False,
             readonly=True,
-            store=_STORE_PENDING_STATE,
+            store=_STORE_STATE,
             multi='autoreclama'
         ),
         'autoreclama_history_ids': fields.one2many(
-            'som.autoreclama.pending.state.history.atc',
+            'som.autoreclama.state.history.atc',
             'atc_id',
             _(u"Historic d'autoreclama"),
             readonly=True

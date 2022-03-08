@@ -22,7 +22,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         inv_obj = self.pool.get('account.invoice')
         invoice_ids = self.get_invoices_to_update(cursor, uid)
 
-        last_lines_by_invoice = inv_obj.get_current_pending_state_info(
+        last_lines_by_invoice = inv_obj.get_current_state_info(
             cursor, uid, invoice_ids
         )
 

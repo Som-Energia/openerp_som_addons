@@ -24,7 +24,7 @@ def up(cursor, installed_version):
     )[1]
 
     atc_obj = pool.get('giscedata.atc')
-    atch_obj = pool.get('som.autoreclama.pending.state.history.atc')
+    atch_obj = pool.get('som.autoreclama.state.history.atc')
     search_params = [('active','=',True),('state','not in', ['cancel', 'done'])]
     atc_ids = atc_obj.search(cursor, uid, search_params)
     for atc_id in tqdm(atc_ids):

@@ -7,7 +7,7 @@
         * Model d'historització
         * Vistes associades
     """,
-    "version": "0-dev",
+    "version": "5.0.2.107",
     "author": "SOM ENERGIA",
     "category": "SomEnergia",
     "depends":[
@@ -17,8 +17,8 @@
     "init_xml": [],
     "demo_xml": [],
     "update_xml":[
-        "som_autoreclama_pending_state_data.xml",
-        "som_autoreclama_pending_state_view.xml",
+        "som_autoreclama_state_data.xml",
+        "som_autoreclama_state_view.xml",
         "giscedata_atc_view.xml",
         "security/som_autoreclama.xml",
         "security/ir.model.access.csv",

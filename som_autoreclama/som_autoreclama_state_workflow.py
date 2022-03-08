@@ -3,9 +3,9 @@ from osv import osv, fields
 from tools.translate import _
 
 
-class SomAutoreclamaPendingStateWorkflow(osv.osv):
+class SomAutoreclamaStateWorkflow(osv.osv):
 
-    _name = 'som.autoreclama.pending.state.workflow'
+    _name = 'som.autoreclama.state.workflow'
 
     WORKFLOW_MODELS = [
         ('ATC', 'Cas ATC'),
@@ -20,4 +20,4 @@ class SomAutoreclamaPendingStateWorkflow(osv.osv):
 
     }
 
-SomAutoreclamaPendingStateWorkflow()
+SomAutoreclamaStateWorkflow()

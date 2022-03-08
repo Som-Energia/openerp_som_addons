@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
-import som_autoreclama_pending_state
+import som_autoreclama_state
 
-class SomAutoreclamaPendingStateCondition(osv.osv):
+class SomAutoreclamaStateCondition(osv.osv):
 
-    _name = 'som.autoreclama.pending.state.condition'
+    _name = 'som.autoreclama.state.condition'
     _rec_name = 'subtype_id'
 
     _columns = {
@@ -18,13 +18,13 @@ class SomAutoreclamaPendingStateCondition(osv.osv):
             _(u'Dies'),
             required=True
         ),
-        'pending_state_id': fields.many2one(
-           'som.autoreclama.pending.state',
-           _(u'Estat pendent'),
+        'state_id': fields.many2one(
+           'som.autoreclama.state',
+           _(u'Estat'),
            required=True
         ),
     }
 
     _defaults = {}
 
-SomAutoreclamaPendingStateCondition()
+SomAutoreclamaStateCondition()

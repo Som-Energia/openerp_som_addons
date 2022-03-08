@@ -20,6 +20,6 @@ class SomAutoreclamaStatesTest(testing.OOTestCase):
         return self.openerp.pool.get(model_name)
 
     def test_first_state_correct_dummy(self):
-        sas_obj = self.get_model('som.autoreclama.pending.state')
+        sas_obj = self.get_model('som.autoreclama.state')
         first = sas_obj.browse(self.cursor, self.uid, 1)
         self.assertEqual(first.name, 'Correcte')
