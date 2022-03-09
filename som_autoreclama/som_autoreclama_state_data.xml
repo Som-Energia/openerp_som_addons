@@ -54,21 +54,25 @@
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_001"/>
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_001_first_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_001"/>
             <field name="days">45</field>
             <field name="state_id" ref="first_state_workflow_atc"/>
+            <field name="next_state_id" ref="second_state_workflow_atc"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_001_second_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_001"/>
             <field name="days">60</field>
             <field name="state_id" ref="second_state_workflow_atc"/>
+            <field name="next_state_id" ref="third_state_workflow_atc"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_038_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_038"/>
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
         </record>
         <record id="ir_cron_autoreclama_states_updater" model="ir.cron" forcecreate="1">
             <field name="name">Apply autoreclama automations</field>
