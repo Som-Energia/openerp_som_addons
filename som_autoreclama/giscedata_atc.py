@@ -13,24 +13,31 @@ class GiscedataAtc(osv.osv):
     def set_autoreclama_history_deactivate(self, cursor, uid, ids, context=None):
         pass
 
-    def create(self, cursor, uid, ids, context=None):
-        super(GiscedataAtc, self).create(cursor, uid, ids, context=context)
-        imd_obj = self.get('ir.model.data')
+    def get_autoreclama_data(self, cursor, uid, id, context=None):
+        data = self.read(cursor, uid, id, ['business_days_with_same_agent','subtipus_id','agent_actual'], context)
+        # agent_actual = '10' is ditri
+        return {
+            'distri_days': data['business_days_with_same_agent'] if data['agent_actual'] == '10' else 0,
+            'subtipus_id': data['subtipus_id'],
+            }
+
+    def create(self, cursor, uid, vals, context=None):
+        atc_id = super(GiscedataAtc, self).create(cursor, uid, vals, context=context)
+        imd_obj = self.pool.get('ir.model.data')
         correct_state_id = imd_obj.get_object_reference(
                 cursor, uid, 'som_autoreclama', 'correct_state_workflow_atc'
         )[1]
 
-        atch_obj = self.get('som.autoreclama.state.history.atc')
-        for atc_id in ids:
-            atch_obj.create(
-                cursor,
-                uid,
-                {
-                    'atc_id': atc_id,
-                    'autoreclama_state_id': correct_state_id,
-                    'change_date': date.today().strftime("%d-%m-%Y"),
-                }
-            )
+        atch_obj = self.pool.get('som.autoreclama.state.history.atc')
+        atch_obj.create(
+            cursor,
+            uid,
+            {
+                'atc_id': atc_id,
+                'autoreclama_state_id': correct_state_id,
+                'change_date': date.today().strftime("%d-%m-%Y"),
+            }
+        )
 
     def get_current_autoreclama_state_info(self, cursor, uid, ids, context=None):
         """
