@@ -38,6 +38,65 @@ class GiscedataAtc(osv.osv):
                 'change_date': date.today().strftime("%d-%m-%Y"),
             }
         )
+        return atc_id
+
+    def create_related_atc_r1_case_via_wizard(self, cursor, uid, atc_id, context=None):
+        channel_obj = self.pool.get('res.partner.canal')
+        canal_id = channel_obj.search(cursor, uid, [('name','ilike','intercambi')], context)[0]
+
+        subtr_obj = self.pool.get('giscedata.subtipus.reclamacio')
+        subtr_id = subtr_obj.search(cursor, uid, [('name','=','029')], context)[0]
+
+        atc = self.browse(cursor, uid, atc_id, context)
+        new_case_data = {
+            'polissa_id': atc.polissa_id.id,
+            'descripcio': u'Reclamació per retràs automàtica',
+            'canal_id': canal_id,
+            'section_id': atc.section_id.id,
+            'subtipus_reclamacio_id': subtr_id,
+            'comentaris': u'',
+            'sense_responsable': True,
+            'tanca_al_finalitzar_r1': True,
+            'crear_cas_r1': True,
+        }
+        return self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
+
+    def create_general_atc_r1_case_via_wizard(self, cursor, uid, case_data, context=None):
+        atcw_obj = self.pool.get('wizard.create.atc.from.polissa')
+
+        ctx = {
+            'from_model': 'giscedata.polissa',      # model gas o electricitat
+            'polissa_field': 'id',                  # camp per llegir
+            'active_ids': [case_data['polissa_id']],# id de la polissa
+        }
+        params = {
+            'canal_id': case_data['canal_id'],
+            'subtipus_id': case_data['subtipus_reclamacio_id'],
+            'comments': case_data['comentaris'],
+            'multi': False,
+            'name': case_data['descripcio'],
+            'section_id': case_data['section_id'],
+            'open_case': True,
+            'no_responsible': case_data.get('sense_responsable', False),
+            'tancar_cac_al_finalitzar_r1': case_data.get('tanca_al_finalitzar_r1', False),
+        }
+
+        wiz_id = atcw_obj.create(cursor, uid, params, ctx)
+        atcw_obj.create_atc_case_from_view(cursor, uid, [wiz_id], ctx)
+
+        if case_data.get('crear_cas_r1', False):
+            inner_wiz = atcw_obj.open_r1_wizard(cursor, uid, [wiz_id], ctx)
+            r1atcw_obj = self.pool.get(inner_wiz['res_model']) # wizard.generate.r1.from.atc.case
+            inner_params = {
+                #TODO: set the params
+            }
+            r1atcw_id = r1atcw_obj.create(cursor, uid, inner_params, inner_wiz['context'])
+            #TODO: search the whatever function
+            r1atcw_obj.whatever(cursor, uid, [r1atcw_id], inner_wiz['context'])
+
+        gen_cases = atcw_obj.read(cursor, uid, wiz_id, ['generated_cases'], ctx)[0]
+        atc_ids = gen_cases['generated_cases']
+        return atc_ids
 
     def get_current_autoreclama_state_info(self, cursor, uid, ids, context=None):
         """
