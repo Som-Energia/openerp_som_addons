@@ -71,7 +71,7 @@ def te_gkwh(fact):
     return fact.is_gkwh
 
 def te_quartihoraria(pol):
-    return pol.agree_tipus in ['01', '02', '03']
+    return pol.tipo_medida in ['01', '02', '03']
 
 def is_6X(pol):
     return pol.tarifa.codi_ocsum in ('012', '013', '014', '015', '016', '017')
