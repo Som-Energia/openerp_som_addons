@@ -15,10 +15,4 @@
         <br/>
         ${_(u"Els preus dels termes de peatge d'accés són els publicats a ORDRE IET/107/2014.")}<br />
         ${_(u"Els preus del lloguer dels comptadors són els establerts a ORDRE ITC/3860/2007.")}<br />
-        ${_(u"L'any 2020, Som Energia ha contribuït amb 397.408,41 euros al finançament del bo social. Totes les comercialitzadores estan obligades a finançar el bo social, que només poden oferir les comercialitzadores de referència")}
-        %if id_comments.language == 'ca_ES':
-            <a href="https://ca.support.somenergia.coop/article/171-que-es-el-bo-social">${_(u"(més informació).")}</a>
-        %else:
-            <a href="https://es.support.somenergia.coop/article/208-que-es-el-bono-social">${_(u"(més informació).")}</a>
-        %endif
     </p>
