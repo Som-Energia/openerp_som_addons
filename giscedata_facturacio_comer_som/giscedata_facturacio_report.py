@@ -23,7 +23,6 @@ BOE17_2021_dates = {
 }
 
 factors_kp_change_calculation_date = '2021-10-18'
-factors_kp_change_calculation_BOE_date = '2022-01-01'
 
 # -----------------------------------
 # helper functions
@@ -71,7 +70,7 @@ def te_gkwh(fact):
     return fact.is_gkwh
 
 def te_quartihoraria(pol):
-    return pol.agree_tipus in ['01', '02', '03']
+    return pol.tipo_medida in ['01', '02', '03']
 
 def is_6X(pol):
     return pol.tarifa.codi_ocsum in ('012', '013', '014', '015', '016', '017')
@@ -2217,7 +2216,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     item['price_excess'] = excess_lines[p]['price_unit_multi']
                     item['price_subtotal'] = excess_lines[p]['price_subtotal']
                     items[p] = item
-                items['visible_days_month'] = replace_kp and excess_lines['data'] < factors_kp_change_calculation_BOE_date
+                items['visible_days_month'] = replace_kp and excess_lines['data']
                 items['days'] = excess_lines['days']
                 items['total'] = excess_lines['total']
             excess_data.append(items)
