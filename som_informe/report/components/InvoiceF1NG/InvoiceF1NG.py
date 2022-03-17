@@ -29,8 +29,8 @@ class InvoiceF1NG:
         result['distribuidora'] = f1.distribuidora_id.name if f1 else "Sense F1 relacionat"
         result['invoice_type'] = invoice.rectificative_type
         #result['invoice_date'] = dateformat(invoice.date_invoice) old
+        #result['invoice_date'] = dateformat(f1.fecha_factura)
         result['invoice_date'] = dateformat(f1.f1_date) #un dels dos
-        result['invoice_date'] = dateformat(f1.fecha_factura)
         result['invoice_number'] = invoice.origin
         result['date_from'] = dateformat(invoice.data_inici)
         result['date_to'] = dateformat(invoice.data_final)
@@ -41,11 +41,11 @@ class InvoiceF1NG:
         f_imp_lin = facturacio_imp_linia_obj.browse(f1.liniafactura_id)
         for linia in f_imp_lin.linia_ids:
             if linia.tipus == 'generacio':
-                linia.quantity
-                linia.name
+                linia.quantity #kwh
+                linia.name #periode
             elif linia.tipus == 'energia':
-                linia.quantity
-                linia.name
+                linia.quantity #kwh
+                linia.name #periode
 
         result['linies'] = []
         if f1:
