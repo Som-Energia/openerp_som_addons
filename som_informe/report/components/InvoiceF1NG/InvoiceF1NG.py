@@ -8,6 +8,8 @@ class InvoiceF1NG:
     def get_data(self, cursor, uid, wiz, invoice, context={}):
         result = {}
         f1_obj = wiz.pool.get('giscedata.facturacio.importacio.linia')
+        facturacio_imp_linia_obj= wiz.pool.get('giscedata.facturacio.importacio.linia.factura')
+
         search_params = [
             ('cups_id.id', '=', invoice.cups_id.id),
             ('invoice_number_text', '=', invoice.origin),
@@ -26,12 +28,24 @@ class InvoiceF1NG:
 
         result['distribuidora'] = f1.distribuidora_id.name if f1 else "Sense F1 relacionat"
         result['invoice_type'] = invoice.rectificative_type
-        result['invoice_date'] = dateformat(invoice.date_invoice)
+        #result['invoice_date'] = dateformat(invoice.date_invoice) old
+        result['invoice_date'] = dateformat(f1.f1_date) #un dels dos
+        result['invoice_date'] = dateformat(f1.fecha_factura)
         result['invoice_number'] = invoice.origin
         result['date_from'] = dateformat(invoice.data_inici)
         result['date_to'] = dateformat(invoice.data_final)
 
         #taula
+
+        #
+        f_imp_lin = facturacio_imp_linia_obj.browse(f1.liniafactura_id)
+        for linia in f_imp_lin.linia_ids:
+            if linia.tipus == 'generacio':
+                linia.quantity
+                linia.name
+            elif linia.tipus == 'energia':
+                linia.quantity
+                linia.name
 
         result['linies'] = []
         if f1:
@@ -68,6 +82,8 @@ class InvoiceF1NG:
         f1_obj.browse(id3).importacio_lectures_ids[0].read()
         f1_obj.browse(id3).importacio_lectures_ids[0][0].comptador
         '''
+
+        #75774004, 75774010, 75774017, 75774023, 75774028, 75774031, 75774036, 75774041, 75774045, 75774050, 75774055, 75774059, 75774075
 
 
         return result

@@ -353,8 +353,8 @@ class WizardCreateTechnicalReport(osv.osv_memory):
                     component_name = 'InvoiceF1C'
                 else: # B RA BRA
                     component_name = 'InvoiceF1Unsupported'
-            #else:
-                #component_name = 'InvoiceFE'
+            else:
+                component_name = 'InvoiceFE'
             if component_name:
                 extractor = self.factory_metadata_extractor(component_name)
                 extracted_data = extractor.get_data(cursor, uid, wiz, invoice, context)
