@@ -32,28 +32,10 @@ class InvoiceF1C:
         result['concept'] = dict(TIPO_FACTURA_SELECTION).get(invoice.tipo_factura, "")
         result['complement_invoice'] = invoice.ref.origin
         result['num_expedient'] = f1_obj.num_expedient
+        result['comentaris'] =f1_obj.comentari
 
         #taula
-
-        result['linies'] = []
-        if f1:
-            for linia in f1.importacio_lectures_ids:
-                dict_linia={}
-                dict_linia['description_lectures'] = get_description(linia.origen_actual,"TABLA_44")
-                dict_linia['origen_lectures'] = linia.origen_actual
-                dict_linia['magnitud'] = linia.magnitud
-                dict_linia['periode'] = linia.periode
-                dict_linia['magnitud_desc'] = get_description(linia.magnitud, "TABLA_43")
-                dict_linia['periode_desc'] = get_description(linia.periode, "TABLA_42")
-                dict_linia['lectura_inicial'] = linia.lectura_desde
-                dict_linia['lectura_final'] = linia.lectura_actual
-                #el consum entre s'ha de calcular?
-                dict_linia['consum_entre'] = linia.lectura_actual - linia.lectura_desde
-                dict_linia['ajust'] = linia.ajust
-                i_line = get_invoice_line(invoice, linia.magnitud, linia.periode)
-                dict_linia['total_facturat'] = i_line.quantity if i_line else ""
-                dict_linia['unit'] = get_unit_magnitude(linia.magnitud)
-
-                result['linies'].append(dict_linia)
+        #F1 tipus C no tenen lectures per tant
+        #taula de linies de factura en comptes de lectures?
 
         return result
