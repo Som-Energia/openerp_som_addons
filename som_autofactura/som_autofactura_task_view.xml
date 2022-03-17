@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_som_autofactura_task_tree">
+            <field name="name">som.autofactura.task.tree</field>
+            <field name="model">som.autofactura.task</field>
+            <field name="type">tree</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <tree string="Som autofactura tasks">
+                    <field name="name"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_som_autofactura_task_form">
+            <field name="name">som.autofactura.task.form</field>
+            <field name="model">som.autofactura.task</field>
+            <field name="type">form</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <form string="Som autofactura tasks">
+                    <group colspan="2" col="6">
+                        <field name="name" select="1" colspan="4"/>
+                        <field name="active" select="1"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_som_autofactura_task_tree" model="ir.actions.act_window">
+            <field name="name">Procesos automàtics</field>
+            <field name="res_model">som.autofactura.task</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'active_test': False}</field>
+        </record>
+        <menuitem id="menu_autofactura_task" action="action_som_autofactura_task_tree" parent="giscedata_facturacio.menu_facturacio_base_config"/>
+
+
+
+        <record model="ir.ui.view" id="view_som_autofactura_task_step_tree">
+            <field name="name">som.autofatura.task.step.tree</field>
+            <field name="model">som.autofatura.task.step</field>
+            <field name="type">tree</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <tree string="Autofactura tasks steps">
+                    <field name="name"  select="1"/>
+                    <field name="sequence"  select="1"/>
+                    <field name="active" select="1"/>
+                    <field name="object_name" select="1"/>
+                    <field name="function" select="1"/>
+                    <field name="params" select="1"/>
+                    <field name="end_condition" select="1"/>
+                    <field name="task_id"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_som_autofactura_task_step_form">
+            <field name="name">som.autofactura.task.step.form</field>
+            <field name="model">som.autofactura.task.step</field>
+            <field name="type">form</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <form string="Autofactura tasks steps">
+                    <group>
+                        <field name="name" select="1"/>
+                        <field name="sequence" select="2"/>
+                        <field name="active" select="1"/>
+                        <field name="object_name" select="1"/>
+                        <field name="function" select="1"/>
+                        <field name="params" select="2"/>
+                        <field name="end_condition" select="1"/>
+                        <field name="task_id" select="1"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_som_autofactura_task_step_tree" model="ir.actions.act_window">
+            <field name="name">Tasques dels procesos automàtics</field>
+            <field name="res_model">som.autofactura.task.step</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'active_test': False}</field>
+        </record>
+        <menuitem id="menu_autofactura_task_step" action="action_som_autofactura_task_step_tree" parent="giscedata_facturacio.menu_facturacio_base_config"/>
+    </data>
+</openerp>
+
