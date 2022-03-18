@@ -14,15 +14,17 @@ class WizardCrearLecuresCalculades(osv.osv_memory):
     def crear_lectures_moure_lot(self, cursor, uid, ids, context=None):
         pol_o = self.pool.get('giscedata.polissa')
         pol_ids = context.get('active_ids', [])
-        pol_o.crear_lectures_calculades(cursor, uid, pol_ids, context)
-        self.write(cursor, uid, ids, {'state': 'finished'})
+        result = pol_o.crear_lectures_calculades(cursor, uid, pol_ids, context)
+        self.write(cursor, uid, ids, {'state': 'finished', 'info': "\n".join(result)})
 
     _columns = {
         'state': fields.selection(STATES, _(u'Estat del wizard')),
+        'info': fields.text(u"Informació", readonly=True),
     }
 
     _defaults = {
-        'state': 'init'
+        'state': 'init',
+        'info': lambda *a: ""
     }
 
 WizardCrearLecuresCalculades()
