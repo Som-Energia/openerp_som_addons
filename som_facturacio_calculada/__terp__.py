@@ -13,6 +13,8 @@
     "demo_xml": [],
     "update_xml":[
         "som_facturacio_calculada_data.xml",
+        "security/ir.model.access.csv",
+        "wizard/wizard_crear_lectures_calculades_view",
     ],
     "active": False,
     "installable": True

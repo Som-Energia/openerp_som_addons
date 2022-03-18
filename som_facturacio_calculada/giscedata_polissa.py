@@ -8,18 +8,26 @@ from oorq.decorators import job
 
 class GiscedataPolissaCalculada(osv.osv):
     """
-        Pòlissa per afegir els camps relacionats amb infoenergia
+        Pòlissa per afegir les funcions per a la facturació calculada
     """
     _name = 'giscedata.polissa'
     _inherit = 'giscedata.polissa'
 
     def retrocedir_lot(self, cursor, uid, ids, context=None):
-        #TODO: check if necessary retrocedir
+        lot_o = self.pool.get('giscedata.facturacio.lot')
+
+        last_lot_id = lot_o.search(cursor, uid, [
+            ('state', '=', 'obert')
+        ])[0]
+
         wiz_retrocedir_o = self.pool.get('wizard.move.contracts.prev.lot')
         ctx = {'incrementar_n_retrocedir': False}
         for _id in ids:
-            wiz_id = wiz_retrocedir_o.create(cursor, uid, {}, context=context)
-            wiz_retrocedir_o.move_one_contract_to_prev_lot(cursor, uid, [wiz_id], _id, context=ctx)
+
+            lot_id = self.read(cursor, uid, _id, ['lot_facturacio'], context)['lot_facturacio'][0]
+            if lot_id > last_lot_id:
+                wiz_id = wiz_retrocedir_o.create(cursor, uid, {}, context=context)
+                wiz_retrocedir_o.move_one_contract_to_prev_lot(cursor, uid, [wiz_id], _id, context=ctx)
 
     def crear_lectures_calculades(self, cursor, uid, ids, context=None):
         imd_o = self.pool.get('ir.model.data')
@@ -72,8 +80,10 @@ class GiscedataPolissaCalculada(osv.osv):
                 'active_ids': [mtr_id], 'active_id': mtr_id
             }
             wiz_id = wiz_measures_curve_o.create(cursor, uid, vals, context=ctx)
+
             wiz_measures_curve_o.load_measures(cursor, uid, [wiz_id], context=ctx)
             wiz_measures_curve_o.create_measures(cursor, uid, [wiz_id], context=ctx)
+            self.write(cursor, uid, _id, {'data_ultima_lectura_estimada': data_seguent_lect})
 
         self.retrocedir_lot(cursor, uid, ids, context=context)
 
