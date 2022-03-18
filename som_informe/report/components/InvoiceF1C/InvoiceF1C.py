@@ -20,11 +20,11 @@ class InvoiceF1C:
 
         #camps obligats per estructura
         result['type'] = 'InvoiceF1C'
-        result['date'] = invoice.date_invoice
+        result['date'] = f1.f1_date
 
         result['distribuidora'] = f1.distribuidora_id.name
         result['invoice_type'] = invoice.rectificative_type
-        result['invoice_date'] = dateformat(invoice.date_invoice)
+        result['invoice_date'] = dateformat(f1.f1_date)
         result['invoice_number'] = invoice.origin
         result['date_from'] = dateformat(invoice.data_inici)
         result['date_to'] = dateformat(invoice.data_final)
@@ -35,7 +35,18 @@ class InvoiceF1C:
         result['comentaris'] =f1_obj.comentari
 
         #taula
-        #F1 tipus C no tenen lectures per tant
-        #taula de linies de factura en comptes de lectures?
+        result['linies'] = []
+        for linia in invoice.linia_ids:
+            dict_linia={}
+            dict_linia['name'] = linia.name
+            dict_linia['tipus'] = linia.tipus
+            dict_linia['quantity'] = linia.quantity
+            dict_linia['uom'] = linia.uos_id.name
+            dict_linia['price'] = linia.price_unit_multi
+            dict_linia['extra_op'] = linia.multi
+            dict_linia['discount'] = linia.discount
+            dict_linia['subtotal'] = linia.price_subtotal
+
+            result['linies'].append(dict_linia)
 
         return result
