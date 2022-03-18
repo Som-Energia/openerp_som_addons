@@ -14,6 +14,7 @@
                     </group>
                     <group colspan="4" attrs="{'invisible': [('state', '!=', 'finished')]}">
                         <label string="Fet" colspan="4"/>
+                        <field name="info"/>
                         <button special="cancel" string="Sortir" icon="gtk-ok" colspan="4"/>
                     </group>
                 </form>
