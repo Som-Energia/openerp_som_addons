@@ -83,7 +83,6 @@ class GiscedataPolissaCalculada(osv.osv):
 
             wiz_measures_curve_o.load_measures(cursor, uid, [wiz_id], context=ctx)
             wiz_measures_curve_o.create_measures(cursor, uid, [wiz_id], context=ctx)
-            self.write(cursor, uid, _id, {'data_ultima_lectura_estimada': data_seguent_lect})
 
         self.retrocedir_lot(cursor, uid, ids, context=context)
 

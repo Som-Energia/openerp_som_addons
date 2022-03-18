@@ -6,7 +6,7 @@
             <field name="model">wizard.crear.lectures.calculades</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <form string="Crear lecures calculades per les polisses">
+                <form string="Crear lectures calculades a partir de CCH">
                     <field name="state" invisible="1"/>
                     <group attrs="{'invisible': [('state', '=', 'finished')]}">
                         <button special="cancel" string="Cancelar" icon="gtk-cancel"/>
@@ -20,7 +20,7 @@
             </field>
         </record>
         <record model="ir.actions.act_window" id="action_crear_lectures_calculades_form">
-            <field name="name">Crear lecures calculades per les polisses</field>
+            <field name="name">Crear lectures calculades a partir de CCH</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wizard.crear.lectures.calculades</field>
             <field name="view_type">form</field>
@@ -30,7 +30,7 @@
         </record>
         <record id="values_crear_lectures_calculades" model="ir.values">
             <field name="object" eval="1"/>
-            <field name="name">Crear lecures calculades per les polisses</field>
+            <field name="name">Crear lectures calculades a partir de CCH</field>
             <field name="key2">client_action_multi</field>
             <field name="key">action</field>
             <field name="model">giscedata.polissa</field>
