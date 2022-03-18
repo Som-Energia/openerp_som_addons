@@ -62,8 +62,7 @@ class GiscedataAtc(osv.osv):
         return self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
 
     def create_general_atc_r1_case_via_wizard(self, cursor, uid, case_data, context=None):
-        atcw_obj = self.pool.get('wizard.create.atc.from.polissa')
-
+        import pudb;pu.db
         ctx = {
             'from_model': 'giscedata.polissa',      # model gas o electricitat
             'polissa_field': 'id',                  # camp per llegir
@@ -81,18 +80,27 @@ class GiscedataAtc(osv.osv):
             'tancar_cac_al_finalitzar_r1': case_data.get('tanca_al_finalitzar_r1', False),
         }
 
+        atcw_obj = self.pool.get('wizard.create.atc.from.polissa')
         wiz_id = atcw_obj.create(cursor, uid, params, ctx)
         atcw_obj.create_atc_case_from_view(cursor, uid, [wiz_id], ctx)
 
         if case_data.get('crear_cas_r1', False):
-            inner_wiz = atcw_obj.open_r1_wizard(cursor, uid, [wiz_id], ctx)
-            r1atcw_obj = self.pool.get(inner_wiz['res_model']) # wizard.generate.r1.from.atc.case
-            inner_params = {
-                #TODO: set the params
-            }
-            r1atcw_id = r1atcw_obj.create(cursor, uid, inner_params, inner_wiz['context'])
-            #TODO: search the whatever function
-            r1atcw_obj.whatever(cursor, uid, [r1atcw_id], inner_wiz['context'])
+            open_r1_wiz = atcw_obj.open_r1_wizard(cursor, uid, [wiz_id], ctx)
+
+            r1atcw_ctx = open_r1_wiz['context']
+            r1atcw_obj = self.pool.get(open_r1_wiz['res_model']) # wizard.generate.r1.from.atc.case
+            r1atcw_id = r1atcw_obj.create(cursor, uid, {}, r1atcw_ctx)
+            generate_r1_wiz = r1atcw_obj.generate_r1(cursor, uid, [r1atcw_id], r1atcw_ctx)
+
+            r1w_ctx = eval(generate_r1_wiz['context'])
+            r1w_obj = self.pool.get(generate_r1_wiz['res_model']) # "wizard.create.r1"
+            r1w_id = r1w_obj.create(cursor, uid, {}, r1w_ctx)
+            subtype_r1_wiz = r1w_obj.action_subtype_fields_view(cursor, uid, [r1w_id], r1w_ctx)
+
+            sr1w_ctx = eval(subtype_r1_wiz['context'])
+            sr1w_obj = self.pool.get(subtype_r1_wiz['res_model']) # wizard.subtype.r1"
+            sr1w_id = sr1w_obj.create(cursor, uid, {}, sr1w_ctx)
+            sr1w_obj.action_create_r1_case(cursor, uid, [sr1w_id], sr1w_ctx)
 
         gen_cases = atcw_obj.read(cursor, uid, wiz_id, ['generated_cases'], ctx)[0]
         atc_ids = gen_cases['generated_cases']

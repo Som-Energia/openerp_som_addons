@@ -10,6 +10,9 @@ class SomAutoreclamaState(osv.osv):
     _order = 'priority'
 
 
+    def do_action(self, cursor, uid, id, context=None):
+        print "generem un cas atc+r1 amb les dades de generate_atc_parameters"
+
     def _ff_generate_atc_parameters(self, cursor, uid, ids, field_name, arg, context=None):
         if not context:
             context = {}
