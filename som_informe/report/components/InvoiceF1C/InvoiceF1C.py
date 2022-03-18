@@ -16,8 +16,6 @@ class InvoiceF1C:
         f1_id = f1_obj.search(cursor,uid,search_params)
         f1 = f1_obj.browse(cursor, uid, f1_id[0])
 
-        result['numero_edm'] = f1.importacio_lectures_ids[0].comptador if f1.importacio_lectures_ids else ""
-
         #camps obligats per estructura
         result['type'] = 'InvoiceF1C'
         result['date'] = f1.f1_date
@@ -30,7 +28,6 @@ class InvoiceF1C:
         result['date_to'] = dateformat(invoice.data_final)
 
         result['concept'] = dict(TIPO_FACTURA_SELECTION).get(invoice.tipo_factura, "")
-        result['complement_invoice'] = invoice.ref.origin
         result['num_expedient'] = f1_obj.num_expedient
         result['comentaris'] =f1_obj.comentari
 
