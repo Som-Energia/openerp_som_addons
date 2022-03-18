@@ -7,7 +7,6 @@
     "author": "SomEnergia",
     "category": "SomEnergia",
     "depends":[
-        "base",
         "som_facturacio_comer",
     ],
     "init_xml": [],
