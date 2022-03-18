@@ -24,7 +24,7 @@ class InvoiceF1NG:
 
         #camps obligats per estructura
         result['type'] = 'InvoiceF1NG'
-        result['date'] = invoice.date_invoice
+        result['date'] = f1.f1_date
 
         result['distribuidora'] = f1.distribuidora_id.name if f1 else "Sense F1 relacionat"
         result['invoice_type'] = invoice.rectificative_type
@@ -36,16 +36,6 @@ class InvoiceF1NG:
         result['date_to'] = dateformat(invoice.data_final)
 
         #taula
-
-        #
-        f_imp_lin = facturacio_imp_linia_obj.browse(f1.liniafactura_id)
-        for linia in f_imp_lin.linia_ids:
-            if linia.tipus == 'generacio':
-                linia.quantity #kwh
-                linia.name #periode
-            elif linia.tipus == 'energia':
-                linia.quantity #kwh
-                linia.name #periode
 
         result['linies'] = []
         if f1:
@@ -63,9 +53,12 @@ class InvoiceF1NG:
                 dict_linia['consum_entre'] = linia.lectura_actual - linia.lectura_desde
                 dict_linia['ajust'] = linia.ajust
                 i_line = get_invoice_line(invoice, linia.magnitud, linia.periode)
-                dict_linia['total_facturat'] = i_line.quantity if i_line else ""
-                dict_linia['unit'] = get_unit_magnitude(linia.magnitud)
-
+                if linia.magnitud != 'EP':
+                    dict_linia['total_facturat'] = i_line.quantity if i_line else ""
+                    dict_linia['unit'] = get_unit_magnitude(linia.magnitud)
+                else:
+                    dict_linia['total_facturat'] = i_line.price_unit if i_line else ""
+                    dict_linia['unit'] = '€'
                 result['linies'].append(dict_linia)
 
 
