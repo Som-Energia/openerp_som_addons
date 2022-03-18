@@ -347,8 +347,10 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             if invoice.type in ('in_invoice', 'in_refund'):
                 if invoice.tipo_rectificadora in ('N', 'G'):
                     component_name = 'InvoiceF1NG'
-                elif invoice.tipo_rectificadora in ('R', 'A'):
-                    component_name = 'InvoiceF1RA'
+                elif invoice.tipo_rectificadora in ('R'):
+                    component_name = 'InvoiceF1R'
+                elif invoice.tipo_rectificadora in ('A'):
+                    component_name = 'InvoiceF1A'
                 elif invoice.tipo_rectificadora in ('C'):
                     component_name = 'InvoiceF1C'
                 else: # B RA BRA
