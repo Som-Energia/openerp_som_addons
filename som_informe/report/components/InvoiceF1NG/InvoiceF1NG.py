@@ -28,38 +28,46 @@ class InvoiceF1NG:
 
         result['distribuidora'] = f1.distribuidora_id.name if f1 else "Sense F1 relacionat"
         result['invoice_type'] = invoice.rectificative_type
-        #result['invoice_date'] = dateformat(invoice.date_invoice) old
-        #result['invoice_date'] = dateformat(f1.fecha_factura)
-        result['invoice_date'] = dateformat(f1.f1_date) #un dels dos
+        result['invoice_date'] = dateformat(f1.f1_date)
         result['invoice_number'] = invoice.origin
         result['date_from'] = dateformat(invoice.data_inici)
         result['date_to'] = dateformat(invoice.data_final)
+        result['type_f1'] = f1.tipo_factura_f1
 
         #taula
-
         result['linies'] = []
+        result['linies_extra'] = []
         if f1:
-            for linia in f1.importacio_lectures_ids:
-                dict_linia={}
-                dict_linia['description_lectures'] = get_description(linia.origen_actual,"TABLA_44")
-                dict_linia['origen_lectures'] = linia.origen_actual
-                dict_linia['magnitud'] = linia.magnitud
-                dict_linia['periode'] = linia.periode
-                dict_linia['magnitud_desc'] = get_description(linia.magnitud, "TABLA_43")
-                dict_linia['periode_desc'] = get_description(linia.periode, "TABLA_42")
-                dict_linia['lectura_inicial'] = linia.lectura_desde
-                dict_linia['lectura_final'] = linia.lectura_actual
-                #el consum entre s'ha de calcular?
-                dict_linia['consum_entre'] = linia.lectura_actual - linia.lectura_desde
-                dict_linia['ajust'] = linia.ajust
-                i_line = get_invoice_line(invoice, linia.magnitud, linia.periode)
-                if linia.magnitud != 'EP':
-                    dict_linia['total_facturat'] = i_line.quantity if i_line else ""
-                    dict_linia['unit'] = get_unit_magnitude(linia.magnitud)
-                else:
-                    dict_linia['total_facturat'] = i_line.price_unit if i_line else ""
-                    dict_linia['unit'] = '€'
-                result['linies'].append(dict_linia)
+            if f1.tipo_factura_f1 == 'atr':
+                for linia in f1.importacio_lectures_ids:
+                    dict_linia={}
+                    dict_linia['description_lectures'] = get_description(linia.origen_actual,"TABLA_44")
+                    dict_linia['origen_lectures'] = linia.origen_actual
+                    dict_linia['magnitud'] = linia.magnitud
+                    dict_linia['periode'] = linia.periode
+                    dict_linia['magnitud_desc'] = get_description(linia.magnitud, "TABLA_43")
+                    dict_linia['periode_desc'] = get_description(linia.periode, "TABLA_42")
+                    dict_linia['lectura_inicial'] = linia.lectura_desde
+                    dict_linia['lectura_final'] = linia.lectura_actual
+                    dict_linia['consum_entre'] = linia.lectura_actual - linia.lectura_desde
+                    dict_linia['ajust'] = linia.ajust
+                    i_line = get_invoice_line(invoice, linia.magnitud, linia.periode)
+                    if linia.magnitud != 'EP':
+                        dict_linia['total_facturat'] = i_line.quantity if i_line else ""
+                        dict_linia['unit'] = get_unit_magnitude(linia.magnitud)
+                    else:
+                        dict_linia['total_facturat'] = i_line.price_unit if i_line else ""
+                        dict_linia['unit'] = '€'
+                    result['linies'].append(dict_linia)
+            elif f1.tipo_factura_f1 == 'otros':
+                for linia_extra in f1.liniaextra_id:
+                    dict_linia={}
+                    dict_linia['name'] = linia_extra.name
+                    dict_linia['total'] = linia_extra.total_amount_pending
+                    result['linies_extra'].append(dict_linia)
+                #buscar extralines?
+
+
 
 
         result['invoiced_days'] = invoice.dies
