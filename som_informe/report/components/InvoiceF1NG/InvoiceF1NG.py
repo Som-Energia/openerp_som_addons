@@ -53,12 +53,8 @@ class InvoiceF1NG:
                     dict_linia['consum_entre'] = linia.lectura_actual - linia.lectura_desde
                     dict_linia['ajust'] = linia.ajust
                     i_line = get_invoice_line(invoice, linia.magnitud, linia.periode)
-                    if linia.magnitud != 'EP':
-                        dict_linia['total_facturat'] = i_line.quantity if i_line else ""
-                        dict_linia['unit'] = get_unit_magnitude(linia.magnitud)
-                    else:
-                        dict_linia['total_facturat'] = i_line.price_unit if i_line else ""
-                        dict_linia['unit'] = '€'
+                    dict_linia['total_facturat'] = i_line.quantity if i_line else ""
+                    dict_linia['unit'] = get_unit_magnitude(linia.magnitud)
                     result['linies'].append(dict_linia)
             elif f1.tipo_factura_f1 == 'otros':
                 for linia_extra in f1.liniaextra_id:

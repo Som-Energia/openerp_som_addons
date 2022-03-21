@@ -41,10 +41,8 @@ class InvoiceF1C:
 
         result['concept'] = dict(TIPO_FACTURA_SELECTION).get(invoice.tipo_factura, "")
 
-        if 'num_expedient' in self.env['giscedata.facturacio.importacio.linia']._fields:
-            result['num_expedient'] = f1_obj.num_expedient
-        if 'comentari' in self.env['giscedata.facturacio.importacio.linia']._fields:
-            result['comentaris'] =f1_obj.comentari
+        result['num_expedient'] = f1.num_expedient
+        result['comentaris'] =f1.comentari
 
         #taula
         result['linies'] = []
