@@ -40,9 +40,10 @@ class InvoiceF1C:
         result['date_to'] = dateformat(invoice.data_final)
 
         result['concept'] = dict(TIPO_FACTURA_SELECTION).get(invoice.tipo_factura, "")
-        if f1_obj.num_expedient:
+
+        if 'num_expedient' in self.env['giscedata.facturacio.importacio.linia']._fields:
             result['num_expedient'] = f1_obj.num_expedient
-        if f1_obj.comentari:
+        if 'comentari' in self.env['giscedata.facturacio.importacio.linia']._fields:
             result['comentaris'] =f1_obj.comentari
 
         #taula
