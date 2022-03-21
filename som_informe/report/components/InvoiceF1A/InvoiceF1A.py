@@ -1,6 +1,6 @@
 from ..component_utils import dateformat
 
-class InvoiceF1RA:
+class InvoiceF1A:
     def __init__(self):
         pass
 

@@ -1,6 +1,6 @@
 from ..component_utils import dateformat, get_description, get_invoice_line, get_unit_magnitude
 
-class InvoiceF1RA:
+class InvoiceF1R:
     def __init__(self):
         pass
 
