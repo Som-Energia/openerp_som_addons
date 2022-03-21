@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 from datetime import date
 from ..component_utils import dateformat, get_description, get_invoice_line, get_unit_magnitude
 
