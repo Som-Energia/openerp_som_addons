@@ -40,8 +40,10 @@ class InvoiceF1C:
         result['date_to'] = dateformat(invoice.data_final)
 
         result['concept'] = dict(TIPO_FACTURA_SELECTION).get(invoice.tipo_factura, "")
-        result['num_expedient'] = f1_obj.num_expedient
-        result['comentaris'] =f1_obj.comentari
+        if f1_obj.num_expedient:
+            result['num_expedient'] = f1_obj.num_expedient
+        if f1_obj.comentari:
+            result['comentaris'] =f1_obj.comentari
 
         #taula
         result['linies'] = []
