@@ -110,7 +110,7 @@ class GiscedataPolissaCalculada(osv.osv):
             start_date = (datetime.strptime(data_ultima_lect,'%Y-%m-%d') + timedelta(days=1)).strftime("%Y-%m-%d")
             cups_text = pol_data['cups'][1]
             tg_ids = tg_val_o.search(cursor, uid, [
-                ('name', 'ilike', '{}%'.format(cups_text[20:])),
+                ('name', 'ilike', '{}%'.format(cups_text[:20])),
                 ('datetime', '>', data_seguent_lect),
             ], limit=1)
             if not tg_ids:

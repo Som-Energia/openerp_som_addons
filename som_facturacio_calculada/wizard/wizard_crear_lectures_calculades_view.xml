@@ -13,8 +13,9 @@
                         <button name="crear_lectures_moure_lot" type="object" icon="gtk-ok" string="Crear lectures"/>
                     </group>
                     <group colspan="4" attrs="{'invisible': [('state', '!=', 'finished')]}">
-                        <label string="Fet" colspan="4"/>
-                        <field name="info"/>
+                        <group string="Informació" colspan="4">
+                            <field name="info" width="600" height="400" colspan="4" nolabel="1"/>
+                        </group>
                         <button special="cancel" string="Sortir" icon="gtk-ok" colspan="4"/>
                     </group>
                 </form>
