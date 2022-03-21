@@ -109,10 +109,7 @@ class GiscedataPolissaCalculada(osv.osv):
             data_seguent_lect = (datetime.strptime(data_ultima_lect,'%Y-%m-%d') + timedelta(days=7)).strftime("%Y-%m-%d")
             start_date = (datetime.strptime(data_ultima_lect,'%Y-%m-%d') + timedelta(days=1)).strftime("%Y-%m-%d")
             cups_text = pol_data['cups'][1]
-            tg_ids = tg_val_o.search(cursor, uid, [
-                ('name', 'ilike', '{}%'.format(cups_text[:20])),
-                ('datetime', '>', data_seguent_lect),
-            ], limit=1)
+            tg_ids = tg_val_o.get_curve(cursor, uid, cups_text, data_ultima_lect, data_seguent_lect)
             if not tg_ids:
                 msgs.append(u"Pòlissa {} amb data última {} sense corbes en la data {}".format(pol_name, data_ultima_lect, data_seguent_lect))
                 continue
