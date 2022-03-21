@@ -1,11 +1,23 @@
+# -*- encoding: utf-8 -*-
 from ..component_utils import dateformat, get_description, get_invoice_line, get_unit_magnitude
-from .. .. ..erp.addons.gisce.GISCEMaster.giscedata_facturacio.defs import TIPO_FACTURA_SELECTION
+#from .. .. ..erp.addons.gisce.GISCEMaster.giscedata_facturacio.defs import TIPO_FACTURA_SELECTION
 
 class InvoiceF1C:
     def __init__(self):
         pass
 
     def get_data(self, cursor, uid, wiz, invoice, context):
+        TIPO_FACTURA_SELECTION = [('01', 'Normal'),
+                          ('02', 'Modificación de Contrato'),
+                          ('03', 'Baja de Contrato'),
+                          ('04', 'Derechos de Contratacion'),
+                          ('05', 'Deposito de garantía'),
+                          ('06', 'Inspección - Anomalia'),
+                          ('07', 'Atenciones (verificaciones, )'),
+                          ('08', 'Indemnizacion'),
+                          ('09', 'Intereses de demora'),
+                          ('10', 'Servicios'),
+                          ('11', 'Inspección - Fraude')]
 
         result = {}
         f1_obj = wiz.pool.get('giscedata.facturacio.importacio.linia')
