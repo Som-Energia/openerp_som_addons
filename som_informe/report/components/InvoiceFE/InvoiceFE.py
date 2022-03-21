@@ -22,13 +22,13 @@ class InvoiceFE:
         result['type'] = 'InvoiceFE'
         result['date'] = invoice.date_invoice
 
-        result['invoice_date'] = dateformat(invoice.date_invoice)
-        result['invoice_number'] = invoice.number
-        result['numero_edm'] = invoice.cups_id.comptador.polissa_comptador
-        result['invoiced_days'] = invoice.dies
-        result['amount_total'] = invoice.amount_total
-        result['date_from'] = dateformat(invoice.data_inici)
-        result['date_to'] = dateformat(invoice.data_final)
+        # result['invoice_date'] = dateformat(invoice.date_invoice)
+        # result['invoice_number'] = invoice.number
+        # result['numero_edm'] = invoice.cups_id.comptador.polissa_comptador #error bool
+        # result['invoiced_days'] = invoice.dies
+        # result['amount_total'] = invoice.amount_total
+        # result['date_from'] = dateformat(invoice.data_inici)
+        # result['date_to'] = dateformat(invoice.data_final)
         #otros conceptos?
 
         return result
