@@ -49,8 +49,6 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
         if not context.get('active_id', False) or len(context.get('active_ids', False)) > 1:
             raise osv.except_osv(_('Error!'), _('S\'ha de seleccionar una remesa'))
 
-        order_id = context.get('active_id')
-        po_obj = self.pool.get('payment.order')
         inv_obj = self.pool.get('account.invoice')
 
         wiz = self.browse(cursor, uid, ids[0])
@@ -58,8 +56,8 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
 
         search_params_relation =  {
             'invoice_state': [('state', '=', wiz.invoice_state)],
-            'init_date': [('data_alta', '>=', wiz.init_date)],
-            'end_date': [('data_alta', '<=', wiz.end_date)],
+            'init_date': [('date_due', '>=', wiz.init_date)],
+            'end_date': [('date_due', '<=', wiz.end_date)],
             'invoice_type': [('type', '=', wiz.invoice_type)],
             'fiscal_position': [('fiscal_position', '=', wiz.fiscal_position.id)],
             'payment_type': [('payment_type','=', wiz.payment_type.id)],
@@ -71,19 +69,19 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
                 search_params += (search_params_relation[field])
 
         res_ids = inv_obj.search(cursor, uid, search_params)
-
-        self.write(cursor, uid, [wiz.id], {
-            'state':'step',
+        values = {
             'len_result': 'La cerca ha trobat {} resultats'.format(len(res_ids)),
+            'state':'step',
             'total_facts_to_add': len(res_ids),
             'res_ids': res_ids
-        })
+        }
+        self.write(cursor, uid, ids, values)
 
     def add_invoices_with_limit(self, cursor, uid, ids, context=None):
         wiz = self.browse(cursor, uid, ids[0])
 
         self.write(cursor, uid, ids, {
-            'len_result': 'La tasca s\'ha encuat de forma asíncrona',
+            'len_result': u'La tasca s\'ha encuat de forma asíncrona',
             'state': 'finished',
         })
 
@@ -124,7 +122,7 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
     _columns = {
         'state': fields.selection(STATES, _(u'Estat del wizard')),
         'order': fields.many2one('payment.order', 'Remesa', select=True),
-        'len_result': fields.text('Resultat de la cerca', readonly=True),
+        'len_result': fields.char('Resultat de la cerca', size=256),
         'total_facts_to_add': fields.integer(_('Num. de factures a incloure'),
             help='Numero de factures per afegir a la remesa'),
         'res_ids': fields.json("Dades d\'us per l\'assistent"),
@@ -144,6 +142,7 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
         'init_date': lambda *a: time.strftime('%Y-%m-%d'),
         'end_date': lambda *a: time.strftime('%Y-%m-%d'),
         'invoice_type': 'out_invoice',
+        'len_result': lambda *a: ''
     }
 
 WizardPaymentOrderAddInvoices()
