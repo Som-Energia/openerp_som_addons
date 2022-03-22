@@ -7,6 +7,18 @@ class InvoiceF1NG:
         pass
 
     def get_data(self, cursor, uid, wiz, invoice, context={}):
+        TIPO_FACTURA_SELECTION = [('01', 'Normal'),
+                          ('02', 'Modificación de Contrato'),
+                          ('03', 'Baja de Contrato'),
+                          ('04', 'Derechos de Contratacion'),
+                          ('05', 'Deposito de garantía'),
+                          ('06', 'Inspección - Anomalia'),
+                          ('07', 'Atenciones (verificaciones, )'),
+                          ('08', 'Indemnizacion'),
+                          ('09', 'Intereses de demora'),
+                          ('10', 'Servicios'),
+                          ('11', 'Inspección - Fraude')]
+
         result = {}
         f1_obj = wiz.pool.get('giscedata.facturacio.importacio.linia')
         facturacio_imp_linia_obj= wiz.pool.get('giscedata.facturacio.importacio.linia.factura')
@@ -34,6 +46,7 @@ class InvoiceF1NG:
         result['date_from'] = dateformat(invoice.data_inici)
         result['date_to'] = dateformat(invoice.data_final)
         result['type_f1'] = f1.tipo_factura_f1
+        result['concept'] = dict(TIPO_FACTURA_SELECTION).get(invoice.tipo_factura, "")
 
         #taula
         result['linies'] = []
