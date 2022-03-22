@@ -17,12 +17,12 @@ class InvoiceF1A:
 
         #camps obligats per estructura
         result['type'] = 'InvoiceF1A'
-        result['date'] = f1.f1_date
+        result['date'] = f1.f1_date if f1 else invoice.date_invoice
         result['date_to'] = dateformat(invoice.data_final) #conservem pel futur possible desempat
 
         result['distribuidora'] = f1.distribuidora_id.name
         result['invoice_type'] = invoice.rectificative_type
-        result['invoice_date'] = dateformat(f1.f1_date)
+        result['invoice_date'] = dateformat(f1.f1_date) if f1 else dateformat(invoice.date_invoice)
         result['invoice_number'] = invoice.origin
         result['cancel_invoice'] = invoice.ref.origin #a testing F.Origen Rectificada/Anulada esta buit a totes :)
 
