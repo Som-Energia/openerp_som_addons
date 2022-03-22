@@ -63,6 +63,9 @@ class GiscedataPolissaCalculada(osv.osv):
         return True, _(u"ok")
 
     def crear_lectures_calculades(self, cursor, uid, ids, context=None):
+        def add_days(the_date, d):
+            return (datetime.strptime(the_date, '%Y-%m-%d') + timedelta(days=d)).strftime("%Y-%m-%d")
+
         imd_o = self.pool.get('ir.model.data')
         mtr_o = self.pool.get('giscedata.lectures.comptador')
         tg_val_o = self.pool.get('tg.cchval')
@@ -83,16 +86,15 @@ class GiscedataPolissaCalculada(osv.osv):
             data_ultima_lectura_f1 = pol_data['data_ultima_lectura_f1']
 
             if not data_ultima_lect:
-                msgs.append(u"Pòlissa {} sense data ultima lectura".format(pol_name))
+                msgs.append(u"La pòlissa {} sense data ultima lectura".format(pol_name))
                 continue
             if data_ultima_lect < data_ultima_lectura_f1:
                 self.retrocedir_lot(cursor, uid, _id, context)
-                self.write(cursor, uid, _id, {'n_lect_calc': 0})
-                msgs.append(u"Pòlissa {} té lectura F1 amb data {} i data última factura {} i núm lectures calc successives = {}".format(
-                    pol_name, data_ultima_lectura_f1, data_ultima_lect, pol_data['n_lect_calc']))
-                continue
-            if pol_data['n_lect_calc'] == 3:
-                msgs.append(u"Pòlissa {} té 3 lectures calculades successives".format(pol_name))
+                msgs.append(u"La pòlissa {} té lectura F1 amb data {} i data última factura {}.".format(
+                    pol_name,
+                    data_ultima_lectura_f1,
+                    data_ultima_lect)
+                )
                 continue
 
             mtr_ids = mtr_o.search(cursor, uid, [
@@ -100,18 +102,36 @@ class GiscedataPolissaCalculada(osv.osv):
                 ('active', '=', True)
             ])
             if not mtr_ids:
-                msgs.append(u"No s'ha trobat comptador actiu per la pòlissa {}".format(pol_name))
+                msgs.append(u"La pòlissa {} no té comptador actiu".format(pol_name))
                 continue
             if len(mtr_ids) != 1:
-                msgs.append(u"Multiples comptadors actius per la pòlissa {}".format(pol_name))
+                msgs.append(u"La pòlissa {} té multiples comptadors actius".format(pol_name))
                 continue
             mtr_id = mtr_ids[0]
-            data_seguent_lect = (datetime.strptime(data_ultima_lect,'%Y-%m-%d') + timedelta(days=7)).strftime("%Y-%m-%d")
-            start_date = (datetime.strptime(data_ultima_lect,'%Y-%m-%d') + timedelta(days=1)).strftime("%Y-%m-%d")
+            mtr = mtr_o.browse(mtr_id)
+            data_ultima_lectura_lectures = mtr.lectures[0].name
+            data_ultima_lectura_f1_21 = add_days(data_ultima_lectura_f1 ,21)
+            if  data_ultima_lectura_lectures > data_ultima_lectura_f1_21:
+                msgs.append(
+                    u"La pòlissa {}, data de lectura calculada ({}) mes enllà de data f1 + 21 ({})".format(
+                        pol_name,
+                        data_ultima_lectura_lectures,
+                        data_ultima_lectura_f1_21)
+                )
+                continue
+
+            data_seguent_lect = add_days(data_ultima_lect, 7)
+            start_date = add_days(data_ultima_lect, 1)
+
             cups_text = pol_data['cups'][1]
             tg_ids = tg_val_o.get_curve(cursor, uid, cups_text, data_ultima_lect, data_seguent_lect)
             if not tg_ids:
-                msgs.append(u"Pòlissa {} amb data última {} sense corbes en la data {}".format(pol_name, data_ultima_lect, data_seguent_lect))
+                msgs.append(
+                    u"La pòlissa {} amb data última lectura {} sense corbes en la data {}".format(
+                        pol_name,
+                        data_ultima_lect,
+                        data_seguent_lect)
+                )
                 continue
             vals = {
                 'measure_origin': lc_origin,
@@ -129,8 +149,7 @@ class GiscedataPolissaCalculada(osv.osv):
 
             wiz_measures_curve_o.load_measures(cursor, uid, [wiz_id], context=ctx)
             wiz_measures_curve_o.create_measures(cursor, uid, [wiz_id], context=ctx)
-            self.write(cursor, uid, _id, {'n_lect_calc': pol_data['n_lect_calc'] + 1})
-            msgs.append(u"Lectures creades en data {} per la polissa {}".format(data_seguent_lect, pol_name))
+            msgs.append(u"La polissa {} té lectures creades en data {}".format(pol_name, data_seguent_lect))
         self.retrocedir_lot(cursor, uid, ids, context=context)
         return msgs
 
@@ -143,12 +162,9 @@ class GiscedataPolissaCalculada(osv.osv):
     """
 
     _columns = {
-        'n_lect_calc':fields.integer(string='Num lectures calculades consecutives',
-            help="Número de lectures calculades a partir de CCH consecutives", readonly=True),
     }
 
     _defaults = {
-        'n_lect_calc': lambda *a: 0,
     }
 
 GiscedataPolissaCalculada()
