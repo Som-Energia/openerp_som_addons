@@ -113,14 +113,14 @@ class GiscedataPolissaCalculada(osv.osv):
 
             data_ultima_lectura_factura = data_ultima_lectura_f1
             for lect in mtr.lectures:
-                if lect.origin_id.id != lc_origin:
+                if lect.origen_id.id != lc_origin:
                     data_ultima_lectura_factura = lect.name
                     break
 
             data_ultima_lectura_factura_21 = add_days(data_ultima_lectura_factura, 21)
             if  data_ultima_lectura_lectures >= data_ultima_lectura_factura_21:
                 msgs.append(
-                    u"La pòlissa {}, data de lectura calculada ({}) mes enllà de data f1 + 21 ({})".format(
+                    u"La pòlissa {}, data de lectura calculada ({}) igual o major a data d'ultima factura no calculada + 21 ({})".format(
                         pol_name,
                         data_ultima_lectura_lectures,
                         data_ultima_lectura_factura_21)
