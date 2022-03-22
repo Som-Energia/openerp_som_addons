@@ -310,8 +310,8 @@ class WizardCreateTechnicalReport(osv.osv_memory):
                         ('invoice_number_text', '=', invoice.origin),
                     ]
                     f1_id = f1_obj.search(cursor,uid,search_params)
-                    f1 = f1_obj.browse(cursor, uid, f1_id[0])
-                    if f1: #factura amb F1
+                    if f1_id: #factura amb F1
+                        f1 = f1_obj.browse(cursor, uid, f1_id[0])
                         if f1.type_factura == 'R' and invoice.ref.rectificative_type in ('N','G'): # F1 tipus R que rectifica una factura tipus N o G
                             component_name = 'InvoiceF1R'
                         else:
