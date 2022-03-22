@@ -6,6 +6,10 @@
     ${_(u"Energia Reactiva Inductiva (kVArh)")}
     ${_(u"Energia Reactiva Capacitiva (kVArh)")}
     ${_(u"Maxímetre (kW)")}
+    ${_(u"real")}
+    ${_(u"calculada per Som Energia")}
+    ${_(u"calculada segons CCH")}
+    ${_(u"estimada distribuïdora")}
 % endif
 % if meter.is_visible:
     <tr>
