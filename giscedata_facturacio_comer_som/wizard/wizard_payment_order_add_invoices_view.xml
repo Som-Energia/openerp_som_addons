@@ -9,6 +9,11 @@
                 <form string="Seleccionar factures per afegir a la remesa">
                     <field name="state" invisible="1"/>
 
+                    <group attrs="{'invisible': [('state', '=', 'init')]}">
+                        <separator string="" colspan="4"/>
+                        <field name="len_result" readonly="1" colspan="4"/>
+                    </group>
+
                     <group attrs="{'invisible': [('state', '!=', 'init')]}">
                         <label string="Filtra factures per afegir a la remesa:" colspan="2"/>
                         <field name="order" string="Remesa" colspan="2"/>
@@ -17,7 +22,6 @@
                         <separator string="" colspan="4"/>
                         <field name="pending_state_text" colspan="4"/>
                         <field name="fiscal_position" colspan="4"/>
-
                         <field name="payment_type" />
                         <field name="invoice_state" />
                         <field name="invoice_type" />
@@ -26,18 +30,15 @@
                         <button special="cancel" string="Cancelar" icon="gtk-cancel"/>
                         <button name="add_invoices_to_payment_order" type="object" icon="gtk-ok" string="Afegeix"/>
                     </group>
+
                     <group colspan="4" attrs="{'invisible': [('state', '!=', 'step')]}">
-                        <label string="Resultat de la cerca:" colspan="4"/>
-                        <field name="len_result" readonly="1" colspan="4" nolabel="1"/>
-                        <field name="total_facts_to_add" readonly="0" colspan="4" nolabel="1"/>
-                        <label string=" "/>
-                        <label string=" "/>
-                        <button special="cancel" string="Sortir" icon="gtk-ok" colspan="4"/>
-                        <button name="add_invoices_with_limit" type="object" icon="gtk-ok" string="Afegeix"/>
+                        <label string="Nombre màxim per afegir:" colspan="2"/>
+                        <field name="total_facts_to_add" readonly="0" colspan="2" nolabel="1"/>
+                        <button special="cancel" string="Sortir" icon="gtk-cancel" colspan="2"/>
+                        <button name="add_invoices_with_limit" type="object" icon="gtk-ok" string="Afegeix" colspan="2"/>
                     </group>
                     <group colspan="4" attrs="{'invisible': [('state', '!=', 'finished')]}">
                         <label string="Gràcies!" colspan="4"/>
-                        <field name="len_result" readonly="1" colspan="4" nolabel="1"/>
                         <label string=" "/>
                         <label string=" "/>
                         <button special="cancel" string="Sortir" icon="gtk-ok" colspan="4"/>
