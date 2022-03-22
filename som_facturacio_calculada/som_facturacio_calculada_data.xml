@@ -5,6 +5,11 @@
         <field name="name">Facturacio Calculada</field>
         <field name="active">True</field>
         </record>
+        <record model="giscedata.lectures.origen" id="origen_lect_calculada">
+            <field name="codi">LC</field>
+            <field name="subcodi">00</field>
+            <field name="name">Calculada segons CCH</field>
+        </record>
     </data>
 </openerp>
 
