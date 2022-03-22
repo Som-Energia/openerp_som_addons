@@ -8,10 +8,10 @@
     %endif
     ${_(u"<b>Data factura:</b> %s") % (d.invoice_date)}<br/>
     ${_(u"<b>Número factura:</b> %s") % (d.invoice_number)}<br/>
-    ${_(u"<b>Núm. de serie del EDM (Equipo de medida):</b> %s") % (d.numero_edm)}<br/>
-    ${_(u"<b>Inici període:</b> %s") % (d.date_from)}<br/>
-    ${_(u"<b>Fi període:</b> %s") % (d.date_to)}<br/>
     %if d.type_f1 == 'atr':
+        ${_(u"<b>Núm. de serie del EDM (Equipo de medida):</b> %s") % (d.numero_edm)}<br/>
+        ${_(u"<b>Inici període:</b> %s") % (d.date_from)}<br/>
+        ${_(u"<b>Fi període:</b> %s") % (d.date_to)}<br/>
         <table style="width:100%;font-size:14px">
             <tr style="text-align:center;font-weight:bold">
                 <td style="width:10%">${_(u"Orígen lectures")}</td>
@@ -39,6 +39,7 @@
             % endfor
         </table>
     %else:
+        ${_(u"<b>Tipus de factura:</b> %s") % (d.concept)}<br/>
         <table style="width:100%;font-size:14px">
             <tr style="text-align:center;font-weight:bold">
                 <td style="width:50%">${_(u"Descripció")}</td>

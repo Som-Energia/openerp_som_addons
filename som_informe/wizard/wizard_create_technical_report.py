@@ -229,9 +229,13 @@ class WizardCreateTechnicalReport(osv.osv_memory):
                 ('polissa_id', '=', wiz.polissa.id),
             ]
             if wiz.date_from:
+                search_parameters.append('|')
                 search_parameters.append(('data_inici', '>=', wiz.date_from))
+                search_parameters.append(('date_invoice','>=',wiz.date_from))
             if wiz.date_to:
+                search_parameters.append('|')
                 search_parameters.append(('data_final', '<=', wiz.date_to))
+                search_parameters.append(('date_invoice','<=',wiz.date_to))
             invoice_ids = fact_obj.search(cursor, uid, search_parameters)
             result_crono.extend(self.extract_invoice_metadata(cursor, uid, wiz, invoice_ids, context))
 
