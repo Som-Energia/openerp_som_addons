@@ -44,13 +44,13 @@
                 <td style="width:50%">${_(u"Descripció")}</td>
                 <td style="width:56%">${_(u"Total")}</td>
             </tr>
-        </table>
         % for linia_extra in d.linies_extra:
             <tr style="text-align:right">
                 <td style="width:50%">${_(u"%s") % (linia_extra['name'])}</td>
                 <td style="width:50%">${_(u"%s €") %(linia_extra['total'])}</td>
             </tr>
         % endfor
+        </table>
     %endif
 </li>
 <br>

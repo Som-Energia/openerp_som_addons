@@ -19,11 +19,11 @@ class InvoiceF1R:
 
         #camps obligats per estructura
         result['type'] = 'InvoiceF1R'
-        result['date'] = f1.f1_date
+        result['date'] = f1.f1_date if f1 else invoice.date_invoice
 
         result['distribuidora'] = f1.distribuidora_id.name
         result['invoice_type'] = invoice.rectificative_type
-        result['invoice_date'] = dateformat(f1.f1_date)
+        result['invoice_date'] = dateformat(f1.f1_date) if f1 else dateformat(invoice.date_invoice)
         result['invoice_number'] = invoice.origin
         result['date_from'] = dateformat(invoice.data_inici)
         result['date_to'] = dateformat(invoice.data_final)
