@@ -108,15 +108,22 @@ class GiscedataPolissaCalculada(osv.osv):
                 msgs.append(u"La pòlissa {} té multiples comptadors actius".format(pol_name))
                 continue
             mtr_id = mtr_ids[0]
-            mtr = mtr_o.browse(mtr_id)
+            mtr = mtr_o.browse(cursor, uid, mtr_id)
             data_ultima_lectura_lectures = mtr.lectures[0].name
-            data_ultima_lectura_f1_21 = add_days(data_ultima_lectura_f1 ,21)
-            if  data_ultima_lectura_lectures > data_ultima_lectura_f1_21:
+
+            data_ultima_lectura_factura = data_ultima_lectura_f1
+            for lect in mtr.lectures:
+                if lect.origin_id.id != lc_origin:
+                    data_ultima_lectura_factura = lect.name
+                    break
+
+            data_ultima_lectura_factura_21 = add_days(data_ultima_lectura_factura, 21)
+            if  data_ultima_lectura_lectures >= data_ultima_lectura_factura_21:
                 msgs.append(
                     u"La pòlissa {}, data de lectura calculada ({}) mes enllà de data f1 + 21 ({})".format(
                         pol_name,
                         data_ultima_lectura_lectures,
-                        data_ultima_lectura_f1_21)
+                        data_ultima_lectura_factura_21)
                 )
                 continue
 
