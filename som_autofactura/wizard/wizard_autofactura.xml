@@ -31,7 +31,7 @@
             <field name="model">giscedata.facturacio.lot</field>
             <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_autofactura'))"/>
         </record>
-        <menuitem id="menu_wizard_autofactura" name="Facturar automàtciament"
+        <menuitem id="menu_wizard_autofactura" name="Facturar automàticament"
             parent="giscedata_facturacio.menu_facturacio_accions" action="action_wizard_autofactura"/>
     </data>
 </openerp>
