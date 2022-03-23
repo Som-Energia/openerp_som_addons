@@ -5,26 +5,26 @@ import pooler
 from tools.translate import _
 from time import sleep
 from base_extended.base_extended import MultiprocessBackground
+import ast
 
-SECONDS_SLEEP = 1
+SECONDS_SLEEP = 300
 
 class SomAutofacturaTask(osv.osv):
 
     _name = 'som.autofactura.task'
 
-    @MultiprocessBackground.background()
+    @MultiprocessBackground.background(queue='background_somenergia')
     def action_execute_task(self, cursor, uid, ids, context):
         if isinstance(ids, list):
             ids = ids[0]
         step_obj = self.pool.get('som.autofactura.task.step')
 
         for step_id in step_obj.search(cursor, uid, [('task_id', '=' , ids), ('active','=', True)], order="sequence"):
-            import pudb;pu.db
             step = step_obj.browse(cursor, uid, step_id, context)
             step._execute_task(context=context)
             step._wait_until_task_done(context=context)
 
-        return True
+        return {'type': 'ir.actions.act_window_close'}
 
     _columns = {
         'name': fields.text(
@@ -56,9 +56,10 @@ class SomAutofacturaTaskStep(osv.osv):
         logger.notifyChannel("som_autofactura", netsvc.LOG_INFO, "executing {}.{}".format(task.object_name.model, task.function))
         if 'wizard' in task.object_name.model:
             wiz_obj = self.pool.get(task.object_name.model)
-            wiz = wiz_obj.create(cursor, uid, task.params, context)
-            function = getattr(wiz, wiz.function)
-            function(cursor, uid, [wiz.id], context)
+            wiz_id = wiz_obj.create(cursor, uid, ast.literal_eval(task.params), context)
+            wiz = wiz_obj.browse(cursor, uid, wiz_id)
+            function = getattr(wiz, task.function)
+            result = function(context=context)
             logger.notifyChannel("som_autofactura", netsvc.LOG_INFO, "executed {}.{}".format(task.object_name.model, task.function))
 
         elif '_button' in task.function:

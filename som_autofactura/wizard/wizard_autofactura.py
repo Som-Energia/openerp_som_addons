@@ -14,6 +14,7 @@ class WizardAutofactura(osv.osv_memory):
         )[1]
 
         task_obj.action_execute_task(cursor, uid, autofact_id, context)
-        pass
+
+        return {'type': 'ir.actions.act_window_close'}
 
 WizardAutofactura()
