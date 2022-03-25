@@ -65,10 +65,22 @@
             <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_payment_order_add_invoices'))"/>
         </record>
 
-        <!--menuitem id="menu_wizard_payment_order_add_invoices"
-            parent="account_payment.menu_main"
-            name="Afegir factures a remeses"
-            action="action_wizard_payment_order_add_invoices"
-            groups="account.group_account_manager"/-->
+
+        <record model="ir.actions.act_window" id="action_payment_order_add_invoices_jobs_group_list">
+            <field name="name">Tasques de comptabilitat</field>
+            <field name="res_model">oorq.jobs.group</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('internal','like','invoicing.%')]</field>
+            <field name="auto_refresh">5</field>
+            <field name="view_id" ref="oorq.view_oorq_jobs_group_tree"/>
+        </record>
+
+        <menuitem id="wizard_payment_order_add_invoices_jobs_groups"
+            action="action_payment_order_add_invoices_jobs_group_list"
+            parent="account.menu_finance"
+            icon="terp-project"
+            name="Tasques de comptabilitat"
+            groups="account.group_account_manager"/>
     </data>
 </openerp>
