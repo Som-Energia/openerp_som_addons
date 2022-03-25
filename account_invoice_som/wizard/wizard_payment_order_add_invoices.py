@@ -67,17 +67,6 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
         })
         self.async_add_invoices_with_limit(cursor, uid, ids, context)
 
-        action= {
-            'name': 'Tasques de comptabilitat',
-            'view_type': 'form',
-            'view_mode': 'form,tree',
-            'res_model': 'oorq.jobs.group',
-            'type': 'ir.actions.act_window',
-            'auto_refresh': 5,
-            'domain': "[('internal','like','accounting.%')]"
-        }
-        return action
-
     def async_add_invoices_with_limit(self, cursor, uid, ids, context=None):
 
         wiz = self.browse(cursor, uid, ids[0])
@@ -105,6 +94,17 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
 
         aw = AutoWorker(queue='add_invoices_to_remesa')
         aw.work()
+
+    def show_job_groups_progress(self, cursor, uid, ids, context=None):
+        return {
+            'name': 'Tasques de comptabilitat',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'oorq.jobs.group',
+            'type': 'ir.actions.act_window',
+            'auto_refresh': 5,
+            'domain': "[('internal','like','accounting.%')]",
+        }
 
     _columns = {
         'state': fields.selection(STATES, _(u'Estat del wizard')),
