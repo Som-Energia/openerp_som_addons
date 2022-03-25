@@ -33,6 +33,7 @@ class WizardDownloadPdf(osv.osv_memory):
             env_ids = context.get('active_ids', [])
         context.update({'force_download_pdf': wiz.force_download_pdf})
         wiz.write({'state': "finished"})
+        del context['active_ids']
         for env_id in env_ids:
             env = env_obj.browse(cursor, uid, env_id)
             env.download_pdf(context)
