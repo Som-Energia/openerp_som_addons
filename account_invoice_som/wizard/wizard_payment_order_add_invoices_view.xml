@@ -65,13 +65,12 @@
             <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_payment_order_add_invoices'))"/>
         </record>
 
-
         <record model="ir.actions.act_window" id="action_payment_order_add_invoices_jobs_group_list">
             <field name="name">Tasques de comptabilitat</field>
             <field name="res_model">oorq.jobs.group</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('internal','like','invoicing.%')]</field>
+            <field name="domain">[('internal','like','accounting.%')]</field>
             <field name="auto_refresh">5</field>
             <field name="view_id" ref="oorq.view_oorq_jobs_group_tree"/>
         </record>

@@ -67,6 +67,17 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
         })
         self.async_add_invoices_with_limit(cursor, uid, ids, context)
 
+        action= {
+            'name': 'Tasques de comptabilitat',
+            'view_type': 'form',
+            'view_mode': 'form,tree',
+            'res_model': 'oorq.jobs.group',
+            'type': 'ir.actions.act_window',
+            'auto_refresh': 5,
+            'domain': "[('internal','like','accounting.%')]"
+        }
+        return action
+
     def async_add_invoices_with_limit(self, cursor, uid, ids, context=None):
 
         wiz = self.browse(cursor, uid, ids[0])
@@ -89,7 +100,7 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
             cursor.dbname, uid,
             _(u'Remesa {} - afegint {} factures a la remesa').format(
                 order.name, len(inv_ids)
-            ), 'invoicing.add_invoices_to_remesa', jobs_ids
+            ), 'accounting.add_invoices_to_remesa', jobs_ids
         )
 
         aw = AutoWorker(queue='add_invoices_to_remesa')
