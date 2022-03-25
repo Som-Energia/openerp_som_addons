@@ -1,3 +1,3 @@
 import report
 import account_invoice
-import wizard
+from . import wizard
