@@ -19,7 +19,7 @@ class WizardCreateEnviamentsFromObject(osv.osv_memory):
 
         pol_ids = context.get('active_ids',[])
         wiz.write({'state': "finished"})
-
+        del context['active_ids']
         lot_obj.create_enviaments_from_object_list(cursor, uid, lot_id, pol_ids, context)
 
 
