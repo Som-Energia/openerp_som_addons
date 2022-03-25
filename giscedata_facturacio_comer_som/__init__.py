@@ -1,3 +1,2 @@
-import wizard
 import report
 import giscedata_facturacio_report
