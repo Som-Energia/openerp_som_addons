@@ -1,1 +1,1 @@
-from wizard_payment_order_add_invoices import *
+import wizard_payment_order_add_invoices
