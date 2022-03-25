@@ -31,7 +31,7 @@ class WizardSendReportsTests(testing.OOTestCase):
         lot_enviament_id = imd_obj.get_object_reference(
             cursor, uid, 'som_infoenergia', 'lot_enviament_0001'
         )[1]
-        env_ids = env_obj.search(cursor, uid, [('lot_enviament','=', lot_enviament_id)])
+        env_ids = env_obj.search(cursor, uid, [('lot_enviament','=', lot_enviament_id), ('estat', '=', 'obert')])
         wiz_obj = self.openerp.pool.get('wizard.infoenergia.send.reports')
         ctx = {
             'active_id': lot_enviament_id, 'active_ids': [lot_enviament_id],
@@ -96,7 +96,7 @@ class WizardSendReportsTests(testing.OOTestCase):
         )[1]
         lot_env_obj.write(cursor, uid, lot_enviament_id, {'is_test': True})
 
-        env_ids = env_obj.search(cursor, uid, [('lot_enviament','=', lot_enviament_id)])
+        env_ids = env_obj.search(cursor, uid, [('lot_enviament','=', lot_enviament_id), ('estat', '=', 'obert')])
         wiz_obj = self.openerp.pool.get('wizard.infoenergia.send.reports')
         ctx = {
             'active_id': lot_enviament_id, 'active_ids': [lot_enviament_id],
