@@ -18,8 +18,7 @@
     "demo_xml": [],
     "update_xml":[
         "giscedata_facturacio_comer_data.xml",
-        "giscedata_facturacio_comer_report.xml",
-        "wizard/wizard_payment_order_add_invoices_view.xml"
+        "giscedata_facturacio_comer_report.xml"
     ],
     "active": False,
     "installable": True

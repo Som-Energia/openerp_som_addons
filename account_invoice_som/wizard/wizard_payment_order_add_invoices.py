@@ -2,12 +2,9 @@
 
 from osv import osv, fields
 from tools.translate import _
-from giscedata_polissa.giscedata_polissa import CONTRACT_STATES
-from base_extended.base_extended import MultiprocessBackground, NoDependency
-from oorq.decorators import job, create_jobs_group
+from oorq.decorators import create_jobs_group
 from autoworker import AutoWorker
-import json, time
-
+import time
 
 
 STATES = [
@@ -29,25 +26,10 @@ INVOICES_STATES = [
     ('all', _('Totes'))
 ]
 
-
-class AccountInvoice(osv.osv):
-    _name = 'account.invoice'
-    _inherit = 'account.invoice'
-
-    @job(queue='add_invoices_to_remesa')
-    def afegeix_a_remesa_async(self, cursor, uid, ids, order_id, context=None):
-        self.afegeix_a_remesa(cursor, uid, ids, order_id, context=context)
-
-AccountInvoice()
-
-
 class WizardPaymentOrderAddInvoices(osv.osv_memory):
     _name = 'wizard.payment.order.add.invoices'
 
     def add_invoices_to_payment_order(self, cursor, uid, ids, context=None):
-
-        if not context.get('active_id', False) or len(context.get('active_ids', False)) > 1:
-            raise osv.except_osv(_('Error!'), _('S\'ha de seleccionar una remesa'))
 
         inv_obj = self.pool.get('account.invoice')
 
@@ -67,8 +49,7 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
         for field in search_params_relation.keys():
             if getattr(wiz, field):
                 search_params += (search_params_relation[field])
-
-        res_ids = inv_obj.search(cursor, uid, search_params)
+        res_ids = inv_obj.search(cursor, uid, search_params + [('payment_order_id','=',False)])
         values = {
             'len_result': 'La cerca ha trobat {} resultats'.format(len(res_ids)),
             'state':'step',
@@ -84,7 +65,6 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
             'len_result': u'La tasca s\'ha encuat de forma asíncrona',
             'state': 'finished',
         })
-
         self.async_add_invoices_with_limit(cursor, uid, ids, context)
 
     def async_add_invoices_with_limit(self, cursor, uid, ids, context=None):
@@ -92,32 +72,28 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
         wiz = self.browse(cursor, uid, ids[0])
         inv_ids = wiz.res_ids
         order_id = wiz.order.id
-        limit = wiz.total_facts_to_add
+        if len(inv_ids) > wiz.total_facts_to_add:
+            inv_ids = inv_ids[:wiz.total_facts_to_add]
 
         order_obj = self.pool.get('payment.order')
         inv_obj = self.pool.get('account.invoice')
-        oder = order_obj.browse(cursor, uid, order_id)
+        order = order_obj.browse(cursor, uid, order_id)
         jobs_ids = []
-        with NoDependency():
-            for inv_id in inv_ids:
-                j = inv_obj.afegeix_a_remesa_async(cursor, uid, [inv_id], order_id,
-                                                   context)
-                jobs_ids.append(j.id)
+        
+        for inv_id in inv_ids:
+            j = inv_obj.afegeix_a_remesa_async(cursor, uid, [inv_id], order_id,
+                                                context)
+            jobs_ids.append(j.id)
+        
         create_jobs_group(
             cursor.dbname, uid,
             _(u'Remesa {} - afegint {} factures a la remesa').format(
-                oder.name, len(inv_ids)
+                order.name, len(inv_ids)
             ), 'invoicing.add_invoices_to_remesa', jobs_ids
         )
+
         aw = AutoWorker(queue='add_invoices_to_remesa')
         aw.work()
-
-    def _get_default_fiscal_position(self, cursor, uid, context):
-        irmd_obj = self.pool.get('ir.model.data')
-        default_id = irmd_obj.search(cursor, uid, [('name','=','fp_nacional_2012')])
-        if default_id:
-            return irmd_obj.browse(cursor, uid, default_id[0]).res_id
-        return False
 
     _columns = {
         'state': fields.selection(STATES, _(u'Estat del wizard')),
