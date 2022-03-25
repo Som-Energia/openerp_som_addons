@@ -38,10 +38,9 @@
                         <button name="add_invoices_with_limit" type="object" icon="gtk-ok" string="Afegeix" colspan="2"/>
                     </group>
                     <group colspan="4" attrs="{'invisible': [('state', '!=', 'finished')]}">
-                        <label string="Gràcies!" colspan="4"/>
-                        <label string=" "/>
-                        <label string=" "/>
-                        <button special="cancel" string="Sortir" icon="gtk-ok" colspan="4"/>
+                        <separator string="" colspan="4"/>
+                        <button special="cancel" string="Sortir" icon="gtk-ok" colspan="2"/>
+                        <button name="show_job_groups_progress" type="object" icon="terp-project" string="Mostra progrés" colspan="2"/>
                     </group>
                 </form>
             </field>
