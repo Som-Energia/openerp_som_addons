@@ -2,9 +2,9 @@
 <li>
     ${_(u"<b>Emissor:</b> %s") % (d.distribuidora)}<br/>
     %if d.invoice_type == 'N':
-    ${_(u"<b>Tipo factura:</b> Normal (%s)") % (d.invoice_type)}<br/>
+    ${_(u"<b>Tipus factura:</b> Normal (%s)") % (d.invoice_type)}<br/>
     %else:
-    ${_(u"<b>Tipo factura:</b> Regularitzadora (%s)") % (d.invoice_type)}<br/>
+    ${_(u"<b>Tipus factura:</b> Regularitzadora (%s)") % (d.invoice_type)}<br/>
     %endif
     ${_(u"<b>Data factura:</b> %s") % (d.invoice_date)}<br/>
     ${_(u"<b>Número factura:</b> %s") % (d.invoice_number)}<br/>
