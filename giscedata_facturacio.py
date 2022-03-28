@@ -311,7 +311,7 @@ class GiscedataFacturacioFactura(osv.osv):
         periods = [(v[0], dict(zip(fields, v[1:]))) for v in vals]
 
         uniq_product_ids = set([p[0] for p in periods])
-        product_res = {}.fromkeys(uniq_product_ids, [])
+        product_res = {k: [] for k in uniq_product_ids}
 
         for p in periods:
             product_res[p[0]].append(p[1])
