@@ -264,6 +264,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         estimada_id = origen_obj.search(self.cursor, self.uid, [('codi', '=', '40')])[0]
         sin_lectura_id = origen_obj.search(self.cursor, self.uid, [('codi', '=', '99')])[0]
         estimada_som_id = origen_comer_obj.search(self.cursor, self.uid, [('codi', '=', 'ES')])[0]
+        calculada_som_id = origen_obj.search(self.cursor, self.uid, [('codi', '=', 'LC')])
+        calculada_som_id = calculada_som_id[0] if calculada_som_id else None
 
         #Busquem la tarifa
         tarifa_id = tarifa_obj.search(self.cursor, self.uid, [('name', '=', lectura.name[:-5])])
@@ -290,7 +292,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                         origen_txt = _(u"calculada per Som Energia")
                     else:
                         origen_txt = _(u"estimada distribuïdora")
-
+                if lect['origen_id'][0] == calculada_som_id:
+                    origen_txt = _(u"calculada segons CCH")
                 res[lect['name']] = "%s" % (origen_txt)
 
         return res
