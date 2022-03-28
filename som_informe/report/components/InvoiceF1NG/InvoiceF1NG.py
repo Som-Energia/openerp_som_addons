@@ -56,9 +56,9 @@ class InvoiceF1NG:
                 for linia in f1.importacio_lectures_ids:
                     dict_linia={}
                     dict_linia['description_lectures'] = get_description(linia.origen_actual,"TABLA_44")
-                    dict_linia['origen_lectures'] = linia.origen_actual
-                    dict_linia['magnitud'] = linia.magnitud
-                    dict_linia['periode'] = linia.periode
+                    #dict_linia['origen_lectures'] = linia.origen_actual
+                    #dict_linia['magnitud'] = linia.magnitud
+                    #dict_linia['periode'] = linia.periode
                     dict_linia['magnitud_desc'] = get_description(linia.magnitud, "TABLA_43")
                     dict_linia['periode_desc'] = get_description(linia.periode, "TABLA_42")
                     dict_linia['lectura_inicial'] = linia.lectura_desde
@@ -75,27 +75,14 @@ class InvoiceF1NG:
                     dict_linia['name'] = linia_extra.name
                     dict_linia['total'] = linia_extra.total_amount_pending
                     result['linies_extra'].append(dict_linia)
-                #buscar extralines?
 
 
 
-
-        result['invoiced_days'] = invoice.dies
-        result['invoiced_energy'] = invoice.energia_kwh
-        result['amount_base'] = invoice.amount_untaxed
-        result['amount_total'] = invoice.amount_total
-
-        '''
-        fact_ob = fact.search([('type','=','in_invoice')],limit=1) id 13803452
-        fact_3 = fact.browse(fact_ob[0])
-        f1_obj = O_testing.model('giscedata.facturacio.importacio.linia')
-        id3 = f1_obj.search([('invoice_number_text','=',fact_3.origin)] id 8228697
-        f1_obj.browse(id3).importacio_lectures_ids[0].read()
-        f1_obj.browse(id3).importacio_lectures_ids[0][0].comptador
-        '''
-
-        #75774004, 75774010, 75774017, 75774023, 75774028, 75774031, 75774036, 75774041, 75774045, 75774050, 75774055, 75774059, 75774075
-
+        #estaven aqui però no al mako
+        # result['invoiced_days'] = invoice.dies
+        # result['invoiced_energy'] = invoice.energia_kwh
+        # result['amount_base'] = invoice.amount_untaxed
+        # result['amount_total'] = invoice.amount_total
 
         return result
 
