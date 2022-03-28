@@ -2614,4 +2614,10 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         }
         return data
 
+    def get_component_simplified_enviromental_impact_data(self, fact, pol):
+        return {
+            'is_visible': True,
+            'mix_image_som_energia': 'electricity_information_mix_som.png',
+            }
+
 GiscedataFacturacioFacturaReport()
