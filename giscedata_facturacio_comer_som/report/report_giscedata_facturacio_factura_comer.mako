@@ -73,8 +73,9 @@ report_data = r_obj.get_report_data(cursor, uid, objects)
     <%include file="/giscedata_facturacio_comer_som/report/components/cnmc_comparator_qr_link/cnmc_comparator_qr_link.mako" args="comparator=factura_data.cnmc_comparator_qr_link" />
     <%include file="/giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako" args="ad=factura_data.amount_destination_td" />
     <p style="page-break-after:always"></p>
-    <%include file="/giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako" args="elec_info=factura_data.electricity_information" />
-    <%include file="/giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako" args="ei=factura_data.environmental_impact" />
+    <%include file="/giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako" args="d=factura_data.simplified_enviromental_impact" />
+    ##<%include file="/giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako" args="elec_info=factura_data.electricity_information" />
+    ##<%include file="/giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako" args="ei=factura_data.environmental_impact" />
     <%include file="/giscedata_facturacio_comer_som/report/components/gdo/gdo.mako" args="gdo=factura_data.gdo" />
     <p style="font-size: .8em; float: right">
     ${_(u"Informació sobre protecció de dades: Les dades personals tractades per gestionar la relació contractual i, si s'escau, remetre informació comercial per mitjans electrònics, es conservaran fins a la fi de la relació, baixa comercial o els terminis de retenció legals. Pots exercir els teus drets a l'adreça postal de Som Energia com a responsable o a somenergia@delegado-datos.com .")}<br />
