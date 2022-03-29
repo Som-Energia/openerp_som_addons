@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="wizard.model.list.from.file.filter" id="model_list_wizard_filter_extraline_id">
+            <field name="model">giscedata.facturacio.extra</field>
+            <field name="name">Id. de Extraline</field>
+            <field name="column">id</field>
+        </record>
+    </data>
+</openerp>
