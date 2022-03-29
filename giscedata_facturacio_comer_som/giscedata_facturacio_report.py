@@ -1422,7 +1422,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
     def get_component_environmental_impact_data(self, fact, pol):
         data = {
-            'is_visible': datetime.today() < datetime.strptime(environment_impact_BOE_A2021_20574, '%Y-%m-%d'),
+            'is_visible': fact.date_invoice < environment_impact_BOE_A2021_20574,
             'c02_emissions': {
                     'national_average': '0,15',
                     'som_energia': '0,00',
@@ -1435,7 +1435,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
     def get_component_electricity_information_data(self, fact, pol):
         data = {
-            'is_visible': datetime.today() < datetime.strptime(environment_impact_BOE_A2021_20574, '%Y-%m-%d'),
+            'is_visible': fact.date_invoice < environment_impact_BOE_A2021_20574,
             'year_graph': 2020,
             'is_inport': True,
             'inport_export_value': 1.3,
@@ -2642,7 +2642,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'residuRadio': 0,
             'year': '2021'}"""
 
-        data = {'is_visible': datetime.today() >= datetime.strptime(environment_impact_BOE_A2021_20574, '%Y-%m-%d')}
+        data = {'is_visible': fact.date_invoice >= environment_impact_BOE_A2021_20574}
         conf_obj = fact.pool.get('res.config')
         seid_som = conf_obj.get(self.cursor, self.uid, 'som_environmental_impact_data', example_som_2021)
         try:
