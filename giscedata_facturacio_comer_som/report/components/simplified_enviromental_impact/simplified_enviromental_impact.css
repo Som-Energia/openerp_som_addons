@@ -1,21 +1,8 @@
- 
   .sei_box {
     float: left;
     width: 49%;
-    padding: 1px;
+    padding: 4px;
   }
-  
-  .box2 {
-    float:left;
-    width:40%;
-  }
-  .title{
-      background-color: #f7f7f7;
-      color: white;
-      font-weight: bold;
-      text-align: center;
-  }
-  
   .sei_subtitle{
     background-color: lightgrey;
     color: black;
@@ -42,9 +29,8 @@
   }
   .sei_renewable_img {
     text-align: center;
-    padding: 10px 0px 10px 0px;
+    padding: 0px 0px 0px 0px;
   }
-
   .sei_table_l td{
     border: 1px solid;
     width: 33%;
@@ -82,7 +68,6 @@
   .sei_box_noborder td:nth-child(odd){
     width: 80%
   }
-
   .sei_box_noborder td:nth-child(even){
     width: 20%
   }
