@@ -77,16 +77,36 @@
         </tr>
         <tr>
         <td>
-        <div>${_(u'Emisions CO<sub>2</sub> eq. (g/kWh)')}<b>145</b></div>
-        <div>${_(u"Mitjana Nacional (g/kWh)")} <b>204</b></div>
+          <div class="sei_box_noborder">
+            <table>
+              <tr>
+                <td>${_(u'Emisions CO<sub>2</sub> eq. (g/kWh)')}</td>
+                <td class="alignright">145</td>
+              </tr>
+              <tr>
+                <td>${_(u"Mitjana Nacional (g/kWh)")} </td>
+                <td class="alignright">204</td>
+              </tr>
+            </table>
+          </div>
         </td>
         <td>
-        <div>${_(u"Residus radioactius (&micro;g/kWh)")} <strong>483</strong></div>
-        <div>${_(u"Mitjana Nacional (&micro;g/kWh)")} <strong>530</strong></div> 
+          <div class="sei_box_noborder">
+            <table>
+              <tr>
+                <td>${_(u"Residus radioactius (&micro;g/kWh)")}</td>
+                <td class="alignright">483</td>
+              </tr>
+              <tr>
+                <td>${_(u"Mitjana Nacional (&micro;g/kWh)")}</td>
+                <td class="alignright">530</td> 
+              </tr>
+            </table>
+          </div>
         </td>
-        </tr>
+      </tr>
     </table>
-    <p class="sei_info">${_(u"Més informació sobre l'origen de la seva electricitat a ")} <a href="https://gdo.cnmc.es/"></a>https://gdo.cnmc.es</p>
+    <p class="sei_info">${_(u"Més informació sobre l'origen de la seva electricitat a ")} <a href="https://gdo.cnmc.es/">https://gdo.cnmc.es</a></p>
   </div>
 
 
