@@ -1,7 +1,8 @@
 <%page args="elec_info" />
-<style>
-<%include file="electricity_information.css" />
-</style>
+% if elec_info.is_visible:
+    <style>
+    <%include file="electricity_information.css" />
+    </style>
     <div class="elect_information">
         <h1>${_(u"INFORMACIÓ DE L'ELECTRICITAT")}</h1>
         <p style="line-height: 1.0;">
@@ -73,3 +74,4 @@
             </table>
         </div>
     </div>
+% endif
