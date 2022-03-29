@@ -25,6 +25,8 @@ BOE17_2021_dates = {
 
 factors_kp_change_calculation_date = '2021-10-18'
 
+environment_impact_BOE_A2021_20574 = '2022-04-01'
+
 # -----------------------------------
 # helper functions
 # -----------------------------------
@@ -1420,6 +1422,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
     def get_component_environmental_impact_data(self, fact, pol):
         data = {
+            'is_visible': datetime.today() < datetime.strptime(environment_impact_BOE_A2021_20574, '%Y-%m-%d'),
             'c02_emissions': {
                     'national_average': '0,15',
                     'som_energia': '0,00',
@@ -1427,12 +1430,12 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'radioactive_waste': {
                     'national_average': '0,49',
                     'som_energia': '0,00',
-                },
-        }
+                },        }
         return data
 
     def get_component_electricity_information_data(self, fact, pol):
         data = {
+            'is_visible': datetime.today() < datetime.strptime(environment_impact_BOE_A2021_20574, '%Y-%m-%d'),
             'year_graph': 2020,
             'is_inport': True,
             'inport_export_value': 1.3,
@@ -2638,7 +2641,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'emisionCo2': 0,
             'residuRadio': 0,
             'year': '2021'}"""
-        data = {'is_visible': True}
+
+        data = {'is_visible': datetime.today() >= datetime.strptime(environment_impact_BOE_A2021_20574, '%Y-%m-%d')}
         conf_obj = fact.pool.get('res.config')
         seid_som = conf_obj.get(self.cursor, self.uid, 'som_environmental_impact_data', example_som_2021)
         try:
