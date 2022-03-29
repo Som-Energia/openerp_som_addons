@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
 from osv import osv
 from tools import cache
+from oorq.decorators import job
 
 
 class AccountInvoice(osv.osv):
 
     _name = 'account.invoice'
     _inherit = 'account.invoice'
+
+    @job(queue='add_invoices_to_remesa')
+    def afegeix_a_remesa_async(self, cursor, uid, ids, order_id, context=None):
+        self.afegeix_a_remesa(cursor, uid, ids, order_id, context=context)
 
     @cache(timeout=5 * 60)
     def exact_number_search(self, cursor, uid, context=None):
