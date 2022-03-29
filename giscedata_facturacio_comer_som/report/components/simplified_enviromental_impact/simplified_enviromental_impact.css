@@ -66,3 +66,23 @@
     padding: 0px 50px 0px 0px;
     text-align: right;
   }
+  .alignright {
+    text-align: right;
+    font-weight: bold;
+  }
+  .sei_box_noborder table{
+    border-collapse: separate;
+    padding: 0px;
+    border: 0px;
+  }
+  .sei_box_noborder td{
+    padding: 0px;
+    border: 0px;
+  }
+  .sei_box_noborder td:nth-child(odd){
+    width: 80%
+  }
+
+  .sei_box_noborder td:nth-child(even){
+    width: 20%
+  }
