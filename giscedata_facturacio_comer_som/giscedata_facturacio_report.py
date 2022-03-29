@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from logging import exception
 from osv import osv
 from yamlns import namespace as ns
 from datetime import datetime,timedelta
@@ -2615,9 +2616,48 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return data
 
     def get_component_simplified_enviromental_impact_data(self, fact, pol):
-        return {
-            'is_visible': True,
-            'mix_image_som_energia': 'electricity_information_mix_som.png',
-            }
+        example_mitjana_2021 = """{
+            'renovable': 4.9,
+            'cae': 4.9,
+            'gasNatural': 21.5,
+            'carbo': 1.9,
+            'fuelGas': 2.2,
+            'nuclear': 21.8,
+            'altres': 7.7,
+            'emisionCo2': 204,
+            'residuRadio': 530,
+            'year': '2021'}"""
+        example_som_2021 = """{
+            'renovable': 100.0,
+            'cae': 0.0,
+            'gasNatural': 0.0,
+            'carbo': 0.0,
+            'fuelGas': 0.0,
+            'nuclear': 0.0,
+            'altres': 0.0,
+            'emisionCo2': 0,
+            'residuRadio': 0,
+            'year': '2021'}"""
+        data = {'is_visible': True}
+        conf_obj = fact.pool.get('res.config')
+        seid_som = conf_obj.get(self.cursor, self.uid, 'som_environmental_impact_data', example_som_2021)
+        try:
+            seid_som = eval(seid_som)
+            seid_som = json.dumps(seid_som)
+            data['som'] = json.loads(seid_som)
+        except Exception as e:
+            data['som'] = json.loads(example_som_2021)
+
+        seid_mit = conf_obj.get(self.cursor, self.uid, 'mitjana_environmental_impact_data', example_mitjana_2021)
+        try:
+            seid_mit = eval(seid_mit)
+            seid_mit = json.dumps(seid_mit)
+            data['mitjana'] = json.loads(seid_mit)
+        except Exception as e:
+            data['mitjana'] = json.loads(example_mitjana_2021)
+
+        return data
+
+
 
 GiscedataFacturacioFacturaReport()
