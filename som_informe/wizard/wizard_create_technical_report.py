@@ -242,7 +242,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         if result_crono:
             result_atr_head = self.extract_components_metadata(cursor, uid, wiz, ['atrHeader'], context)
             result_atr_foot = self.extract_components_metadata(cursor, uid, wiz, ['atrFooter'], context)
-            result_crono = sorted(result_crono, key=lambda k: k['date'])
+            result_crono = sorted(result_crono, key=lambda k: k['date']) #llista_sorted = sorted(llista_dicts, key=lambda k: (k['date'],k['date_final']))
             result_crono = result_atr_head + result_crono + result_atr_foot
 
         result_cobra = []

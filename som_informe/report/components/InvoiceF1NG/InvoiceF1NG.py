@@ -7,6 +7,8 @@ class InvoiceF1NG:
         pass
 
     def get_data(self, cursor, uid, wiz, invoice, context={}):
+
+        #giscedata_facturacio.defs.TIPO_FACTURA_SELECTION
         TIPO_FACTURA_SELECTION = [('01', 'Normal'),
                           ('02', 'Modificación de Contrato'),
                           ('03', 'Baja de Contrato'),
