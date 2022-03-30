@@ -73,10 +73,8 @@ class InvoiceF1NG:
                 for linia_extra in f1.liniaextra_id:
                     dict_linia={}
                     dict_linia['name'] = linia_extra.name
-                    dict_linia['total'] = linia_extra.total_amount_pending
+                    dict_linia['total'] = linia_extra.price_subtotal
                     result['linies_extra'].append(dict_linia)
-
-
 
         #estaven aqui però no al mako
         # result['invoiced_days'] = invoice.dies
