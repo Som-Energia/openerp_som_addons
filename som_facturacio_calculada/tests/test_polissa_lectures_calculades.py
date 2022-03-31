@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 from destral import testing
 from destral.transaction import Transaction
-
 from expects import *
 import osv
-
 from .. import giscedata_polissa
-
 import mock
 
 class PolissaLecturesCalculadesTest(testing.OOTestCase):
@@ -33,15 +30,17 @@ class PolissaLecturesCalculadesTest(testing.OOTestCase):
             self.cursor, self.uid, 'giscedata_polissa', 'polissa_0001'
         )[1]
 
+        check_conditions_values = [(False,u'no té categoria'),(False,u'no es 2.0TD')]
         def check_conditions_lectures_calculades(cursor, uid, polissa_id, context={}):
-            return (False,u'no té categoria')
+            return check_conditions_values.pop()
         mock_check_conditions_lectures_calculades.side_effect = check_conditions_lectures_calculades
         mock_retrocedir_lot.return_value = None
 
-        result = pol_obj.crear_lectures_calculades(self.cursor, self.uid, [polissa_id], {})
+        result = pol_obj.crear_lectures_calculades(self.cursor, self.uid, [polissa_id, polissa_id], {})
 
-        self.assertEqual(result[0], u'La pòlissa 0001C no compleix les condicions per que no té categoria')
-        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0], u'La pòlissa 0001C no compleix les condicions per que no es 2.0TD')
+        self.assertEqual(result[1], u'La pòlissa 0001C no compleix les condicions per que no té categoria')
+        self.assertEqual(len(result), 2)
 
 
     @mock.patch.object(giscedata_polissa.GiscedataPolissaCalculada, "retrocedir_lot")
@@ -54,9 +53,7 @@ class PolissaLecturesCalculadesTest(testing.OOTestCase):
             self.cursor, self.uid, 'giscedata_polissa', 'polissa_0001'
         )[1]
 
-        def check_conditions_lectures_calculades(cursor, uid, polissa_id, context={}):
-            return (True,u'Ok')
-        mock_check_conditions_lectures_calculades.side_effect = check_conditions_lectures_calculades
+        mock_check_conditions_lectures_calculades.return_value = (True,u'Ok')
         mock_retrocedir_lot.return_value = None
 
         pol_obj.write(self.cursor, self.uid, polissa_id, {'data_ultima_lectura': None})
@@ -77,9 +74,7 @@ class PolissaLecturesCalculadesTest(testing.OOTestCase):
             self.cursor, self.uid, 'giscedata_polissa', 'polissa_0001'
         )[1]
 
-        def check_conditions_lectures_calculades(cursor, uid, polissa_id, context={}):
-            return (True,u'Ok')
-        mock_check_conditions_lectures_calculades.side_effect = check_conditions_lectures_calculades
+        mock_check_conditions_lectures_calculades.return_value = (True,u'Ok')
         mock_retrocedir_lot.return_value = None
 
         pol_obj.write(self.cursor, self.uid, polissa_id, {'data_ultima_lectura': '2022-03-01', 'data_ultima_lectura_f1':  '2022-03-02' })
