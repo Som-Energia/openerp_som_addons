@@ -1764,19 +1764,19 @@ class GiscedataFacturacioFacturaReport(osv.osv):
     def get_sub_component_invoice_details_td(self, fact, pol, linies, lectures = None):
         readings = {}
         if lectures != None:
-            for key,comptador in lectures.items():
-                estimada = False
-                num_lectures = len(comptador)
-                while not estimada and num_lectures > 0:
-                    num_lectures -= 1
-                    lectura = comptador[num_lectures]
-                    data = str(datetime.strptime(lectura[4], '%d/%m/%Y').date() + timedelta(days=1))
-                    if lectura[6] != 'real' or lectura[7] !='real':
+            for comptador_name, lectures_comptador in lectures.items():
+                for lectura in lectures_comptador:
+                    if lectura[0] == u'P1':
+                        data = str(datetime.strptime(lectura[4], '%d/%m/%Y').date() + timedelta(days=1))
                         origin = _(u'estimada')
-                        estimada = True
-                    else:
-                        origin = _(u'real')
-                    readings[data] = origin
+                        if lectura[6] == 'real' and lectura[7] =='real':
+                            origin = _(u'real')
+                        elif (lectura[6] == 'estimada distribuïdora' or lectura[6] == 'real') and lectura[7] == 'calculada segons CCH':
+                            origin = _(u'calculada')
+                        elif lectura[6] == 'calculada segons CCH' and (lectura[7] =='calculada segons CCH' or lectura[7] == 'real'):
+                            origin = _(u'calculada')
+
+                        readings[data] = origin
 
         lines_data = {}
         block = 0
