@@ -8,7 +8,6 @@ from base_extended.base_extended import MultiprocessBackground
 import ast
 import json
 
-SECONDS_SLEEP = 300
 
 class SomAutofacturaTask(osv.osv):
 
@@ -19,11 +18,16 @@ class SomAutofacturaTask(osv.osv):
         if isinstance(ids, list):
             ids = ids[0]
         step_obj = self.pool.get('som.autofactura.task.step')
-
-        for step_id in step_obj.search(cursor, uid, [('task_id', '=' , ids), ('active','=', True)], order="sequence"):
+        some_task_done = False
+        for step_id in step_obj.search(cursor, uid, [('task_id', '=' , ids)], order="sequence"):
             step = step_obj.browse(cursor, uid, step_id, context)
+            if step.active == False and some_task_done:
+                break
+            if step.active == False:
+                continue
             step._execute_task(context=context)
             step._wait_until_task_done(context=context)
+            some_task_done = True
 
         return {'type': 'ir.actions.act_window_close'}
 
@@ -84,6 +88,9 @@ class SomAutofacturaTaskStep(osv.osv):
         return result
 
     def _wait_until_task_done(self, cursor, uid, ids, context):
+        conf_obj = self.pool.get('res.config')
+        seconds_sleep = conf_obj.get(cursor, uid, 'som_autofactura_wait_time_task', 300)
+
         task = self.browse(cursor, uid, ids[0])
         logger = netsvc.Logger()
         logger.notifyChannel("som_autofactura", netsvc.LOG_INFO, "waiting for {}.{}".format(task.object_name.model, task.function))
@@ -92,7 +99,7 @@ class SomAutofacturaTaskStep(osv.osv):
         prev_work_not_finish = True
         while(prev_work_not_finish):
             prev_work_not_finish = oorq_obj.search(cursor, uid, [('active','=',True), ('name', 'ilike', task.autoworker_task_name)])
-            sleep(SECONDS_SLEEP)
+            sleep(seconds_sleep)
 
         if 'obrir_factures_button' in task.function:
             gff_obj = self.pool.get('giscedata.facturacio.factura')
@@ -100,7 +107,7 @@ class SomAutofacturaTaskStep(osv.osv):
             gff_draft_old = gff_draft + 1
             while(gff_draft != gff_draft_old):
                 gff_draft_old = gff_draft
-                sleep(SECONDS_SLEEP)
+                sleep(seconds_sleep)
                 gff_draft = gff_obj.search(cursor, uid, [('state','=','draft')])
 
         logger.notifyChannel("som_autofactura", netsvc.LOG_INFO, "done {}.{}".format(task.object_name.model, task.function))

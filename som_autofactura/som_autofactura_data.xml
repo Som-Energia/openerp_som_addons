@@ -1,6 +1,11 @@
 <?xml version="1.0"?>
 <openerp>
     <data noupdate="1">
+        <record id="som_autofactura_wait_time_task" model="res.config">
+            <field name="name">som_autofactura_wait_time_task</field>
+            <field name="value">300</field>
+            <field name="description">Temps (en segons) d'espera entre comprovacions sobre si la tasca d'Autofactura ha acabat.</field>
+        </record>
         <record model="som.autofactura.task" id='som_autofactura_task_facturacio'>
             <field name='name'>Procés de facturació</field>
             <field name='active'>True</field>
