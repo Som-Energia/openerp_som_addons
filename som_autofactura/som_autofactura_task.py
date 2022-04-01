@@ -6,6 +6,7 @@ from tools.translate import _
 from time import sleep
 from base_extended.base_extended import MultiprocessBackground
 import ast
+import json
 
 SECONDS_SLEEP = 300
 
@@ -27,13 +28,20 @@ class SomAutofacturaTask(osv.osv):
         return {'type': 'ir.actions.act_window_close'}
 
     _columns = {
-        'name': fields.text(
+        'name': fields.char(
             _(u"Nom"),
-            help=_("Nom del pas")
+            size=128,
+            help=_("Nom de la tasca"),
+            required=True,
         ),
         'active': fields.boolean(
             string=_(u'Actiu'),
             help=_(u"Indica si la tasca està activa o no")
+        ),
+        'task_step_ids': fields.one2many(
+            'som.autofactura.task.step',
+            'task_id',
+            u"Passos de la tasca"
         ),
     }
 
@@ -99,9 +107,11 @@ class SomAutofacturaTaskStep(osv.osv):
         return True
 
     _columns = {
-        'name': fields.text(
+        'name': fields.char(
             _(u"Nom"),
-            help=_("Nom del pas")
+            help=_("Nom del pas"),
+            size=128,
+            required=True,
         ),
         'sequence': fields.integer(
             _(u'Ordre'),
@@ -110,17 +120,33 @@ class SomAutofacturaTaskStep(osv.osv):
         'active': fields.boolean(
             string=_(u'Actiu'),
             help=_(u"Indica si la tasca està activa o no"),
-            required=True,
+            required=True
         ),
-        'object_name': fields.many2one('ir.model', 'Model'),
-        'function': fields.text(
+        'object_name': fields.many2one(
+            'ir.model',
+            'Model',
+            help=_("Model per a executar"),
+        ),
+        'function': fields.char(
             _(u'Funció'),
+            help=_("Funció del model a executar"),
+            size=256,
             required=True,
         ),
-        'params': fields.text(_(u"Paràmetres")),
-        'autoworker_task_name': fields.text(_(u"Condicio d'acabar")),
-        'task_id': fields.many2one('som.autofactura.task', _('Tasca'),
-            select=True),
+        'params': fields.text(
+            _(u"Paràmetres"),
+            help=_("Parametres a passar a la funció del model a executar"),
+        ),
+        'autoworker_task_name': fields.text(
+            _(u"Condicio d'acabar"),
+            help=_("Cua o procés que fa la tasca i al que hem d'esperar que acabi"),
+        ),
+        'task_id': fields.many2one(
+            'som.autofactura.task',
+            _('Tasca'),
+            help=_("Tasca englobant"),
+            select=True,
+        ),
     }
 
     _defaults = {

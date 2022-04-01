@@ -21,8 +21,12 @@
             <field name="arch" type="xml">
                 <form string="Som autofactura tasks">
                     <group colspan="2" col="6">
-                        <field name="name" select="1" colspan="4"/>
+                        <field name="name" select="1"/>
                         <field name="active" select="1"/>
+                        <separator colspan="6"/>
+                        <group colspan="6" col="2" string="Passos de la tasca">
+                            <field name="task_step_ids" select="2" height="300" nolabel="1" widget="one2many_list"/>
+                        </group>
                     </group>
                 </form>
             </field>
@@ -43,14 +47,14 @@
             <field name="priority">16</field>
             <field name="arch" type="xml">
                 <tree string="Autofactura tasks steps">
-                    <field name="name"  select="1"/>
-                    <field name="sequence"  select="1"/>
-                    <field name="active" select="1"/>
-                    <field name="object_name" select="1"/>
-                    <field name="function" select="1"/>
-                    <field name="params" select="1"/>
-                    <field name="autoworker_task_name" select="1"/>
                     <field name="task_id"/>
+                    <field name="name"/>
+                    <field name="sequence"/>
+                    <field name="active"/>
+                    <field name="object_name"/>
+                    <field name="function"/>
+                    <field name="params"/>
+                    <field name="autoworker_task_name"/>
                 </tree>
             </field>
         </record>
@@ -61,15 +65,19 @@
             <field name="priority">16</field>
             <field name="arch" type="xml">
                 <form string="Autofactura tasks steps">
-                    <group>
+                    <group colspan="2" col="8">
                         <field name="name" select="1"/>
-                        <field name="sequence" select="2"/>
-                        <field name="active" select="1"/>
-                        <field name="object_name" select="1"/>
-                        <field name="function" select="1"/>
-                        <field name="params" select="2"/>
-                        <field name="autoworker_task_name" select="1"/>
+                        <field name="sequence" select="1"/>
                         <field name="task_id" select="1"/>
+                        <field name="active" select="1"/>
+                        <group colspan="8" col="4" string="Execució la tasca">
+                            <field name="object_name" select="1" />
+                            <field name="function" select="1" />
+                            <field name="params" colspan="4" height="200" select="2"/>
+                        </group>
+                        <group colspan="8" col="2" string="Control de finalització">
+                            <field name="autoworker_task_name" select="1" colspan="8" />
+                        </group>
                     </group>
                 </form>
             </field>
