@@ -762,15 +762,28 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return a dictionary with all GdO clock data needs, data from 2020
         """
         lang = fact.lang_partner.lower()[0:2]
-        data = {
+
+        example_data_2021 = """{
                 'wind_power': 359390,
                 'photovoltaic': 75672,
                 'hydraulics': 30034,
                 'biogas': 7194,
                 'total': 472290,
                 'lang': lang,
-                'graph': 'gdo_graf_{}.png'.format(lang),
-                }
+                'graph': 'gdo_graf_{}_2021.png'.format(lang),
+                'year': 2021}"""
+
+        conf_obj = fact.pool.get('res.config')
+        gdo_som = conf_obj.get(self.cursor, self.uid, 'component_gdo_data', example_data_2021)
+        try:
+            gdo_som = eval(gdo_som)
+            gdo_som = json.dumps(gdo_som)
+            data = json.loads(gdo_som)
+            data['lang'] = lang
+            data['graph'] = 'gdo_graf_{}_{}.png'.format(lang, data['year'])
+        except Exception as e:
+            data = json.loads(example_data_2021)
+
         return data
 
     def get_component_flags_data(self, fact, pol):
