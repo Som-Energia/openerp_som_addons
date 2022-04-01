@@ -33,10 +33,8 @@ class InvoiceF1R:
         if f1:
             for linia in f1.importacio_lectures_ids:
                 dict_linia={}
-                dict_linia['description_lectures'] = get_description(linia.origen_actual,"TABLA_44")
-                #dict_linia['origen_lectures'] = linia.origen_actual
-                #dict_linia['magnitud'] = linia.magnitud
-                #dict_linia['periode'] = linia.periode
+                dict_linia['origen_lectura_final'] = get_description(linia.origen_actual,"TABLA_44")
+                dict_linia['origen_lectura_inicial'] = get_description(linia.origen_desde,"TABLA_44")
                 dict_linia['magnitud_desc'] = get_description(linia.magnitud, "TABLA_43")
                 dict_linia['periode_desc'] = get_description(linia.periode, "TABLA_42")
                 dict_linia['lectura_inicial'] = linia.lectura_desde

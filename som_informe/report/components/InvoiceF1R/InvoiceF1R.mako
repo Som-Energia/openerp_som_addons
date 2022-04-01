@@ -10,23 +10,29 @@
     ${_(u"<b>Factura que rectifica:</b> %s") % (d.rectifies_invoice)}<br/>
     <table style="width:100%;font-size:14px">
         <tr style="text-align:center;font-weight:bold">
-            <td style="width:10%">${_(u"Orígen lectures")}</td>
-            <td style="width:16%">${_(u"Tipus d'energia")}</td>
-            <td style="width:12%">${_(u"Lectura Inicial")}</td>
-            <td style="width:12%">${_(u"Lectura final")}</td>
+            <td style="width:12%">${_(u"Tipus d'energia")}</td>
+            <td style="width:9%">${_(u"Orígen lectura inicial")}</td>
+            <td style="width:10%">${_(u"Lectura Inicial")}</td>
+            <td style="width:9%">${_(u"Orígen lectura final")}</td>
+            <td style="width:10%">${_(u"Lectura final")}</td>
             <td style="width:12%">${_(u"Consum entre lectures")}</td>
-            <td style="width:12%">${_(u"Ajustes consumo")}</td> <!-- perquè els dos ultims en castella? xd-->
+            <td style="width:12%">${_(u"Ajustes consumo")}</td>
             <td style="width:13%">${_(u"TOTAL facturado")}</td>
         </tr>
         % for linia in d.linies:
             <tr style="text-align:right">
-                <td style="width:10%;text-align:center">${_(u"%s ") % (linia['description_lectures'])}</td>
-                <td style="width:16%;text-align:center">${_(u"%s %s ") %(linia['magnitud_desc'], linia['periode_desc'])}</td>
-                <td style="width:12%">${_(u"%s %s") % (formatLang(linia['lectura_inicial'], digits=2), linia['unit'])}</td>
-                <td style="width:12%">${_(u"%s %s") % (formatLang(linia['lectura_final'], digits=2), linia['unit'])}</td>
+                <td style="width:12%;text-align:center">${_(u"%s %s") %(linia['magnitud_desc'],linia['periode_desc'])}</td>
+                <td style="width:9%;text-align:center">${_(u"%s") % (linia['origen_lectura_inicial'])}</td>
+                <td style="width:10%">${_(u"%s %s") % (formatLang(linia['lectura_inicial'], digits=2), linia['unit'])}</td>
+                <td style="width:9%;text-align:center">${_(u"%s") % (linia['origen_lectura_final'])}</td>
+                <td style="width:10%">${_(u"%s %s") % (formatLang(linia['lectura_final'], digits=2), linia['unit'])}</td>
                 <td style="width:12%">${_(u"%s %s") % (formatLang(linia['consum_entre'], digits=2), linia['unit'])}</td>
                 <td style="width:12%">${_(u"%s %s") % (formatLang(linia['ajust'], digits=2), linia['unit'])}</td>
-                <td style="width:13%">${_(u"%s %s") % (formatLang(linia['total_facturat'], digits=2), linia['unit'])}</td>
+                %if linia['magnitud'] != 'EP':
+                    <td style="width:13%">${_(u"%s %s") % (formatLang(linia['total_facturat'], digits=2), linia['unit'])}</td>
+                %else:
+                    <td style="width:13%">${_(u"%s %s") % (formatLang(linia['total_facturat'], digits=2), '€')}</td>
+                %endif
             </tr>
         % endfor
     </table>
