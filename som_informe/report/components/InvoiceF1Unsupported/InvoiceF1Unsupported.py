@@ -11,6 +11,7 @@ class InvoiceF1Unsupported:
         #camps obligats per estructura
         result['type'] = 'InvoiceF1Unsupported'
         result['date'] = invoice.date_invoice
+        result['date_final'] = invoice.data_final
 
         result['invoice_type'] = invoice.rectificative_type
         result['invoice_date'] = dateformat(invoice.date_invoice)

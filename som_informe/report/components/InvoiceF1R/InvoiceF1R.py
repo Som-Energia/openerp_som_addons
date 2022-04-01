@@ -20,6 +20,7 @@ class InvoiceF1R:
         #camps obligats per estructura
         result['type'] = 'InvoiceF1R'
         result['date'] = f1.f1_date if f1 else invoice.date_invoice
+        result['date_final'] = f1.fecha_factura_hasta if f1 else invoice.data_final
 
         result['distribuidora'] = f1.distribuidora_id.name
         result['invoice_type'] = invoice.rectificative_type

@@ -7,6 +7,7 @@ class ProcesATR():
     def get_data(self, wiz, cursor, uid, step):
         result = {}
         result['date'] = step.date_created
+        result['date_final'] = step.date_created
         result['day'] = dateformat(step.date_created)
         result['create'] = dateformat(step.date_created, True)
         result['pas'] = step.sw_id.step_id.name
