@@ -67,14 +67,17 @@ div.back{
         <record model="res.config" id="som_environmental_impact_data">
             <field name="name">som_environmental_impact_data</field>
             <field name="description">Valors de la taula d'impacto ambiental de Som Energia</field>
-            <field name="value">{'renovable':100.0,'cae':0.0,'gasNatural':0.0,'carbo':0.0,'fuelGas': 0.0,'nuclear': 0.0,'altres': 0.0,'emisionCo2': 0.0,'residuRadio': 0.0,'year': '2021'}
-            </field>
+            <field name="value">{'renovable':100.0,'cae':0.0,'gasNatural':0.0,'carbo':0.0,'fuelGas': 0.0,'nuclear': 0.0,'altres': 0.0,'emisionCo2': 0.0,'residuRadio': 0.0,'year': '2021'}</field>
         </record>
         <record model="res.config" id="mitjana_environmental_impact_data">
             <field name="name">mitjana_environmental_impact_data</field>
             <field name="description">Valors de la taula d'impacto ambiental mitjana nacional</field>
-            <field name="value">{'renovable':4.9,'cae':4.9,'gasNatural':21.5,'carbo':1.9,'fuelGas': 2.2,'nuclear': 21.8,'altres': 7.7,'emisionCo2': 204,'residuRadio': 530,'year': '2021'}
-            </field>
+            <field name="value">{'renovable':4.9,'cae':4.9,'gasNatural':21.5,'carbo':1.9,'fuelGas': 2.2,'nuclear': 21.8,'altres': 7.7,'emisionCo2': 204,'residuRadio': 530,'year': '2021'}</field>
+        </record>
+        <record model="res.config" id="component_gdo_data">
+            <field name="name">component_gdo_data</field>
+            <field name="description">Valors de la taula de Grantia d'Origen (gdo)</field>
+            <field name="value">{'wind_power':350207,'photovoltaic':167755,'hydraulics':4959,'biogas':3555,'total': 526476,'year': '2022'}</field>
         </record>
     </data>
 </openerp>
