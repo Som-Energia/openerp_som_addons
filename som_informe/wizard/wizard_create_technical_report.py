@@ -70,6 +70,8 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         'mostra_reclama': fields.boolean('Mostra bloc de Reclama'),
         #Factura block
         'mostra_factura': fields.boolean('Mostra bloc de Factura'),
+        'mostra_quadre_resum_lectures': fields.boolean('Mostra quadre resum lectures'),
+        'mostra_quadre_resum_factures': fields.boolean('Mostra quadre resum factures'),
         #Gestió de Contractes block
         'mostra_A3': fields.boolean('A3'),
         'mostra_B1': fields.boolean('B1'),
@@ -243,6 +245,12 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             result_atr_head = self.extract_components_metadata(cursor, uid, wiz, ['atrHeader'], context)
             result_atr_foot = self.extract_components_metadata(cursor, uid, wiz, ['atrFooter'], context)
             result_crono = sorted(result_crono, key=lambda k: k['date']) #llista_sorted = sorted(llista_dicts, key=lambda k: (k['date'],k['date_final']))
+            if wiz.mostra_quadre_resum_lectures:
+                quadre_lectures = self.extract_readings_table_metadata(cursor, uid, wiz, invoice_ids, context)
+                result_crono.append(quadre_lectures)
+            # if wiz.mostra_quadre_resum_factures:
+            #     quadre_factures = extract_invoice_table_metadata
+            #     result_crono.append(quadre_factures)
             result_crono = result_atr_head + result_crono + result_atr_foot
 
         result_cobra = []
@@ -283,6 +291,30 @@ class WizardCreateTechnicalReport(osv.osv_memory):
                     result.append(extracted_data)
 
         return result
+
+    def extract_readings_table_metadata(self, cursor, uid, wiz, invoice_ids, context):
+        if not isinstance(invoice_ids, list):
+            invoice_ids = [invoice_ids]
+        result = []
+        component_name = 'TableReadings'
+        extractor = self.factory_metadata_extractor(component_name)
+        extracted_data = extractor.get_data(cursor, uid, wiz, invoice_ids, context)
+        if extracted_data:
+            result.append(extracted_data)
+
+        return result
+
+    # def extract_invoice_table_metadata(self, cursor, uid, wiz, invoice_ids, context):
+    #     if not isinstance(invoice_ids, list):
+    #         invoice_ids = [invoice_ids]
+    #     result = []
+    #     component_name = 'TableInvoices'
+    #     extractor = self.factory_metadata_extractor(component_name)
+    #     extracted_data = extractor.get_data(cursor, uid, wiz, invoice_ids, context)
+    #     if extracted_data:
+    #         result.append(extracted_data)
+
+    #     return result
 
     def extract_invoice_metadata(self, cursor, uid, wiz, invoice_ids, context):
         if not isinstance(invoice_ids, list):
