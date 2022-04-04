@@ -130,7 +130,7 @@ class GiscedataPolissaCalculada(osv.osv):
             data_seguent_lect = add_days(data_ultima_lect, 7)
             start_date = add_days(data_ultima_lect, 1)
 
-            cups_text = pol_data['cups'][1]
+            cups_text = pol_data['cups'][1][:20]
             tg_ids = tg_val_o.get_curve(cursor, uid, cups_text, data_ultima_lect, data_seguent_lect)
             if not tg_ids:
                 msgs.append(
