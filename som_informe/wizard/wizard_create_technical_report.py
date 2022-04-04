@@ -241,17 +241,19 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             invoice_ids = fact_obj.search(cursor, uid, search_parameters)
             result_crono.extend(self.extract_invoice_metadata(cursor, uid, wiz, invoice_ids, context))
 
+
+        quadre_lectures = []
+        #quadre_factures = {}
         if result_crono:
             result_atr_head = self.extract_components_metadata(cursor, uid, wiz, ['atrHeader'], context)
             result_atr_foot = self.extract_components_metadata(cursor, uid, wiz, ['atrFooter'], context)
-            result_crono = sorted(result_crono, key=lambda k: k['date']) #llista_sorted = sorted(llista_dicts, key=lambda k: (k['date'],k['date_final']))
+            result_crono = sorted(result_crono, key=lambda k: (k['date'], k['date_final']))
             if wiz.mostra_quadre_resum_lectures:
-                quadre_lectures = self.extract_readings_table_metadata(cursor, uid, wiz, invoice_ids, context)
-                result_crono.append(quadre_lectures)
+                quadre_lectures.extend(self.extract_readings_table_metadata(cursor, uid, wiz, invoice_ids, context))
             # if wiz.mostra_quadre_resum_factures:
             #     quadre_factures = extract_invoice_table_metadata
             #     result_crono.append(quadre_factures)
-            result_crono = result_atr_head + result_crono + result_atr_foot
+            result_crono = result_atr_head + result_crono + quadre_lectures + result_atr_foot
 
         result_cobra = []
         if wiz.mostra_cobraments:
