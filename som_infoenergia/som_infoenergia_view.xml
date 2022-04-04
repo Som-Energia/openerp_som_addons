@@ -122,14 +122,6 @@
                         <field name="name" select="1"/>
                         <field name="estat" select="1"/>
                         <field name="tipus_informe" select="1"/>
-                        <field name="total_preesborrany" select="1"/>
-                        <field name="total_esborrany" select="1"/>
-                        <field name="total_oberts" select="1"/>
-                        <field name="total_enviats" select="1"/>
-                        <field name="total_cancelats" select="1"/>
-                        <field name="total_errors" select="1"/>
-                        <field name='total_env_csv' select="1"/>
-                        <field name="total_enviaments" select="1"/>
                         <field name="info" select="1"/>
                 </tree>
             </field>
@@ -177,8 +169,6 @@
                         <field name="name" select="1"/>
                         <field name="estat" select="1"/>
                         <field name="total_oberts" select="1"/>
-                        <field name="total_enviats" select="1"/>
-                        <field name="total_cancelats" select="1"/>
                         <field name="total_enviaments" select="1"/>
                         <field name="info" select="1"/>
                 </tree>
@@ -189,7 +179,7 @@
             <field name="res_model">som.infoenergia.lot.enviament</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('tipus','=','infoenergia')]</field>
+            <field name="domain">[('tipus','=','infoenergia'),('estat','=','obert')]</field>
         </record>
 
         <record model="ir.actions.act_window.view" id="action_som_infoenergia_lot_tree">
@@ -208,7 +198,7 @@
             <field name="res_model">som.infoenergia.lot.enviament</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('tipus','=','altres')]</field>
+            <field name="domain">[('tipus','=','altres'),('estat','=','obert')]</field>
         </record>
         <record model="ir.actions.act_window.view" id="action_som_enviament_massiu_lot_tree">
             <field name="view_mode">tree</field>
