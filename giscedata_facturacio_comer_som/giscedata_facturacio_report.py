@@ -25,8 +25,6 @@ BOE17_2021_dates = {
 
 factors_kp_change_calculation_date = '2021-10-18'
 
-environment_impact_BOE_A2021_20574 = '2022-04-01'
-
 # -----------------------------------
 # helper functions
 # -----------------------------------
@@ -763,26 +761,32 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         """
         lang = fact.lang_partner.lower()[0:2]
 
-        example_data_2021 = """{
+        example_data_2020 = """{
                 'wind_power': 359390,
                 'photovoltaic': 75672,
                 'hydraulics': 30034,
                 'biogas': 7194,
                 'total': 472290,
                 'lang': lang,
-                'graph': 'gdo_graf_{}_2021.png'.format(lang),
-                'year': 2021}"""
+                'graph': 'gdo_graf_{}_2020.png'.format(lang),
+                'year': 2020}"""
 
         conf_obj = fact.pool.get('res.config')
-        gdo_som = conf_obj.get(self.cursor, self.uid, 'component_gdo_data', example_data_2021)
-        try:
-            gdo_som = eval(gdo_som)
-            gdo_som = json.dumps(gdo_som)
-            data = json.loads(gdo_som)
-            data['lang'] = lang
-            data['graph'] = 'gdo_graf_{}_{}.png'.format(lang, data['year'])
-        except Exception as e:
-            data = json.loads(example_data_2021)
+
+        swich_date = conf_obj.get(self.cursor, self.uid, 'gdo_and_impact_yearly_switch_date', '2099-05-01')
+
+        if fact.date_invoice < swich_date:
+            data = json.loads(example_data_2020)
+        else:
+            gdo_som = conf_obj.get(self.cursor, self.uid, 'component_gdo_data', example_data_2020)
+            try:
+                gdo_som = eval(gdo_som)
+                gdo_som = json.dumps(gdo_som)
+                data = json.loads(gdo_som)
+                data['lang'] = lang
+                data['graph'] = 'gdo_graf_{}_{}.png'.format(lang, data['year'])
+            except Exception as e:
+                data = json.loads(example_data_2020)
 
         return data
 
@@ -1434,8 +1438,12 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return data
 
     def get_component_environmental_impact_data(self, fact, pol):
+
+        conf_obj = fact.pool.get('res.config')
+        swich_date = conf_obj.get(self.cursor, self.uid, 'gdo_and_impact_yearly_switch_date', '2099-05-01')
+
         data = {
-            'is_visible': fact.date_invoice < environment_impact_BOE_A2021_20574,
+            'is_visible': fact.date_invoice < swich_date,
             'c02_emissions': {
                     'national_average': '0,15',
                     'som_energia': '0,00',
@@ -1447,8 +1455,12 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return data
 
     def get_component_electricity_information_data(self, fact, pol):
+
+        conf_obj = fact.pool.get('res.config')
+        swich_date = conf_obj.get(self.cursor, self.uid, 'gdo_and_impact_yearly_switch_date', '2099-05-01')
+
         data = {
-            'is_visible': fact.date_invoice < environment_impact_BOE_A2021_20574,
+            'is_visible': fact.date_invoice < swich_date,
             'year_graph': 2020,
             'is_inport': True,
             'inport_export_value': 1.3,
@@ -2632,7 +2644,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return data
 
     def get_component_simplified_enviromental_impact_data(self, fact, pol):
-        example_mitjana_2021 = """{
+        example_mitjana_2020 = """{
             'renovable': 4.9,
             'cae': 4.9,
             'gasNatural': 21.5,
@@ -2642,8 +2654,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'altres': 7.7,
             'emisionCo2': 204,
             'residuRadio': 530,
-            'year': '2021'}"""
-        example_som_2021 = """{
+            'year': '2020'}"""
+        example_som_2020 = """{
             'renovable': 100.0,
             'cae': 0.0,
             'gasNatural': 0.0,
@@ -2653,25 +2665,29 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'altres': 0.0,
             'emisionCo2': 0,
             'residuRadio': 0,
-            'year': '2021'}"""
+            'year': '2020'}"""
 
-        data = {'is_visible': fact.date_invoice >= environment_impact_BOE_A2021_20574}
+
         conf_obj = fact.pool.get('res.config')
-        seid_som = conf_obj.get(self.cursor, self.uid, 'som_environmental_impact_data', example_som_2021)
+        swich_date = conf_obj.get(self.cursor, self.uid, 'gdo_and_impact_yearly_switch_date', '2099-05-01')
+
+        data = {'is_visible': fact.date_invoice >= swich_date}
+
+        seid_som = conf_obj.get(self.cursor, self.uid, 'som_environmental_impact_data', example_som_2020)
         try:
             seid_som = eval(seid_som)
             seid_som = json.dumps(seid_som)
             data['som'] = json.loads(seid_som)
         except Exception as e:
-            data['som'] = json.loads(example_som_2021)
+            data['som'] = json.loads(example_som_2020)
 
-        seid_mit = conf_obj.get(self.cursor, self.uid, 'mitjana_environmental_impact_data', example_mitjana_2021)
+        seid_mit = conf_obj.get(self.cursor, self.uid, 'mitjana_environmental_impact_data', example_mitjana_2020)
         try:
             seid_mit = eval(seid_mit)
             seid_mit = json.dumps(seid_mit)
             data['mitjana'] = json.loads(seid_mit)
         except Exception as e:
-            data['mitjana'] = json.loads(example_mitjana_2021)
+            data['mitjana'] = json.loads(example_mitjana_2020)
 
         return data
 
