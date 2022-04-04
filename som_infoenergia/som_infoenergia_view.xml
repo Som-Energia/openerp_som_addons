@@ -179,9 +179,15 @@
             <field name="res_model">som.infoenergia.lot.enviament</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
+            <field name="domain">[('tipus','=','infoenergia')]</field>
+        </record>
+        <record model="ir.actions.act_window" id="action_som_infoenergia_lot_oberts">
+            <field name="name">Lots Infoenergia</field>
+            <field name="res_model">som.infoenergia.lot.enviament</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
             <field name="domain">[('tipus','=','infoenergia'),('estat','=','obert')]</field>
         </record>
-
         <record model="ir.actions.act_window.view" id="action_som_infoenergia_lot_tree">
             <field name="view_mode">tree</field>
             <field name="view_id" ref="view_som_infoenergia_lot_tree"/>
@@ -193,12 +199,19 @@
             <field name="act_window_id" ref="action_som_infoenergia_lot"/>
         </record>
 
-        <record model="ir.actions.act_window" id="action_som_enviament_massiu_lot">
+        <record model="ir.actions.act_window" id="action_som_enviament_massiu_lot_oberts">
             <field name="name">Lots enviaments massius</field>
             <field name="res_model">som.infoenergia.lot.enviament</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="domain">[('tipus','=','altres'),('estat','=','obert')]</field>
+        </record>
+        <record model="ir.actions.act_window" id="action_som_enviament_massiu_lot">
+            <field name="name">Lots enviaments massius</field>
+            <field name="res_model">som.infoenergia.lot.enviament</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('tipus','=','altres')]</field>
         </record>
         <record model="ir.actions.act_window.view" id="action_som_enviament_massiu_lot_tree">
             <field name="view_mode">tree</field>
@@ -233,8 +246,10 @@
 			<field name="value" eval="'ir.actions.act_window,'+str(ref('action_obrir_enviament_lot'))" />
 		</record>
 
-        <menuitem action="action_som_infoenergia_lot" id="menu_som_infoenergia_lot_tree"  parent="menu_carpeta_infoenergia" name="Lots enviament infoenergia" sequence="1"/>
-        <menuitem action="action_som_enviament_massiu_lot" id="menu_som_enviament_massiu_lot_altres_tree"  parent="menu_carpeta_massius" name="Lots enviaments massius" sequence="1"/>
+        <menuitem action="action_som_infoenergia_lot_oberts" id="menu_som_infoenergia_lot_tree"  parent="menu_carpeta_infoenergia" name="Lots enviament infoenergia Oberts" sequence="1"/>
+        <menuitem action="action_som_infoenergia_lot" id="menu_som_infoenergia_lot_tree"  parent="menu_carpeta_infoenergia" name="Lots enviament infoenergia" sequence="2"/>
+        <menuitem action="action_som_enviament_massiu_lot_oberts" id="menu_som_enviament_massiu_lot_altres_tree"  parent="menu_carpeta_massius" name="Lots enviaments massius Oberts" sequence="1"/>
+        <menuitem action="action_som_enviament_massiu_lot" id="menu_som_enviament_massiu_lot_altres_tree"  parent="menu_carpeta_massius" name="Lots enviaments massius" sequence="2"/>
 
         <record model="ir.actions.act_window" id="action_enviament_jobs_group_list">
             <field name="name">Tasques d'enviament</field>
