@@ -8,6 +8,7 @@ class TableReadings:
     def get_data(self, cursor, uid, wiz, invoice_ids, context={}):
 
         result = {}
+        result['type'] = 'TableReadings'
         result['taula'] = []
         fact_obj = wiz.pool.get('giscedata.facturacio.factura')
         f1_obj = wiz.pool.get('giscedata.facturacio.importacio.linia')
