@@ -761,22 +761,24 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         """
         lang = fact.lang_partner.lower()[0:2]
 
-        example_data_2020 = """{
+        example_data_2020 = """{{
                 'wind_power': 359390,
                 'photovoltaic': 75672,
                 'hydraulics': 30034,
                 'biogas': 7194,
                 'total': 472290,
-                'lang': lang,
-                'graph': 'gdo_graf_{}_2020.png'.format(lang),
-                'year': 2020}"""
+                'lang': '{}',
+                'graph': 'gdo_graf_{}_2020.png',
+                'year': 2020}}""".format(lang,lang)
 
         conf_obj = fact.pool.get('res.config')
 
         swich_date = conf_obj.get(self.cursor, self.uid, 'gdo_and_impact_yearly_switch_date', '2099-05-01')
 
         if fact.date_invoice < swich_date:
-            data = json.loads(example_data_2020)
+            data = eval(example_data_2020)
+            data = json.dumps(data)
+            data = json.loads(data)
         else:
             gdo_som = conf_obj.get(self.cursor, self.uid, 'component_gdo_data', example_data_2020)
             try:
@@ -786,7 +788,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 data['lang'] = lang
                 data['graph'] = 'gdo_graf_{}_{}.png'.format(lang, data['year'])
             except Exception as e:
-                data = json.loads(example_data_2020)
+                data = eval(example_data_2020)
+                data = json.dumps(data)
+                data = json.loads(data)
 
         return data
 
@@ -2679,7 +2683,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             seid_som = json.dumps(seid_som)
             data['som'] = json.loads(seid_som)
         except Exception as e:
-            data['som'] = json.loads(example_som_2020)
+            som = eval(example_som_2020)
+            som = json.dumps(som)
+            data['som'] = json.loads(som)
 
         seid_mit = conf_obj.get(self.cursor, self.uid, 'mitjana_environmental_impact_data', example_mitjana_2020)
         try:
@@ -2687,7 +2693,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             seid_mit = json.dumps(seid_mit)
             data['mitjana'] = json.loads(seid_mit)
         except Exception as e:
-            data['mitjana'] = json.loads(example_mitjana_2020)
+            mitjana = eval(example_mitjana_2020)
+            mitjana = json.dumps(mitjana)
+            data['mitjana'] = json.loads(mitjana)
 
         return data
 
