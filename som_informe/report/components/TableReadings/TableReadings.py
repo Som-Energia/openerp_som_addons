@@ -8,10 +8,12 @@ class TableReadings:
     def get_data(self, cursor, uid, wiz, invoice_ids, context={}):
 
         result = []
+        fact_obj = wiz.pool.get('giscedata.facturacio.factura')
         f1_obj = wiz.pool.get('giscedata.facturacio.importacio.linia')
 
-        for invoice in invoice_ids:
+        for invoice_id in invoice_ids:
             linia_taula = {}
+            invoice = fact_obj.browse(cursor, uid, invoice_id)
             search_params = [
                 ('cups_id.id', '=', invoice.cups_id.id),
                 ('invoice_number_text', '=', invoice.origin),
