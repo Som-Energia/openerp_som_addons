@@ -130,16 +130,6 @@ class GiscedataPolissaCalculada(osv.osv):
             data_seguent_lect = add_days(data_ultima_lect, 7)
             start_date = add_days(data_ultima_lect, 1)
 
-            cups_text = pol_data['cups'][1][:20]
-            tg_ids = tg_val_o.get_curve(cursor, uid, cups_text, data_ultima_lect, data_seguent_lect)
-            if not tg_ids:
-                msgs.append(
-                    u"La pòlissa {} amb data última lectura {} sense corbes en la data {}".format(
-                        pol_name,
-                        data_ultima_lect,
-                        data_seguent_lect)
-                )
-                continue
             vals = {
                 'measure_origin': lc_origin,
                 'insert_reactive': False,
@@ -157,7 +147,7 @@ class GiscedataPolissaCalculada(osv.osv):
                 wiz_measures_curve_o.load_measures(cursor, uid, [wiz_id], context=ctx)
             except Exception as e:
                 if isinstance(e, osv.orm.except_orm):
-                    msgs.append(u"La pòlissa {} no pot generar lectures per falta de corva.".format(pol_name))
+                    msgs.append(u"La pòlissa {} no pot generar lectures per falta de corba.".format(pol_name))
                 else:
                     msgs.append(u"La pòlissa {} no pot generar lectures per error inesperat de wizard {}.".format(pol_name,str(e)))
                 continue
