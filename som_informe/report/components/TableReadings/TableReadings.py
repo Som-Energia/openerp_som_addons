@@ -7,7 +7,8 @@ class TableReadings:
 
     def get_data(self, cursor, uid, wiz, invoice_ids, context={}):
 
-        result = []
+        result = {}
+        result['taula'] = []
         fact_obj = wiz.pool.get('giscedata.facturacio.factura')
         f1_obj = wiz.pool.get('giscedata.facturacio.importacio.linia')
 
@@ -32,6 +33,6 @@ class TableReadings:
             linia_taula['exported_energy'] = invoice.generacio_kwh or 0
             linia_taula['invoiced_days'] = invoice.dies
 
-            result.append(linia_taula)
+            result['taula'].append(linia_taula)
 
         return result
