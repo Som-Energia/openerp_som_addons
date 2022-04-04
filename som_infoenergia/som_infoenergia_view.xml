@@ -246,10 +246,10 @@
 			<field name="value" eval="'ir.actions.act_window,'+str(ref('action_obrir_enviament_lot'))" />
 		</record>
 
-        <menuitem action="action_som_infoenergia_lot_oberts" id="menu_som_infoenergia_lot_tree"  parent="menu_carpeta_infoenergia" name="Lots enviament infoenergia Oberts" sequence="1"/>
-        <menuitem action="action_som_infoenergia_lot" id="menu_som_infoenergia_lot_tree"  parent="menu_carpeta_infoenergia" name="Lots enviament infoenergia" sequence="2"/>
-        <menuitem action="action_som_enviament_massiu_lot_oberts" id="menu_som_enviament_massiu_lot_altres_tree"  parent="menu_carpeta_massius" name="Lots enviaments massius Oberts" sequence="1"/>
-        <menuitem action="action_som_enviament_massiu_lot" id="menu_som_enviament_massiu_lot_altres_tree"  parent="menu_carpeta_massius" name="Lots enviaments massius" sequence="2"/>
+        <menuitem action="action_som_infoenergia_lot_oberts" id="menu_som_infoenergia_lot_oberts_tree"  parent="menu_carpeta_infoenergia" name="Lots enviament infoenergia Oberts" sequence="1"/>
+        <menuitem action="action_som_infoenergia_lot" id="menu_som_infoenergia_lot_tree"  parent="menu_carpeta_infoenergia" name="Tots els lots enviament infoenergia" sequence="2"/>
+        <menuitem action="action_som_enviament_massiu_lot_oberts" id="menu_som_enviament_massiu_lot_altres_oberts_tree"  parent="menu_carpeta_massius" name="Lots enviaments massius Oberts" sequence="1"/>
+        <menuitem action="action_som_enviament_massiu_lot" id="menu_som_enviament_massiu_lot_altres_tree"  parent="menu_carpeta_massius" name="Tots els lots enviaments massius" sequence="2"/>
 
         <record model="ir.actions.act_window" id="action_enviament_jobs_group_list">
             <field name="name">Tasques d'enviament</field>
