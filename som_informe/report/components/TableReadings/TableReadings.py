@@ -28,7 +28,7 @@ class TableReadings:
                     f1 = f1_obj.browse(cursor, uid, f1_id[0])
                 else:
                     f1 = None
-                if invoice.tipo_rectificadora in ('N', 'G', 'R', 'A', 'C') or (f1.type_factura == 'R' and invoice.ref.rectificative_type in ('N','G') and invoice.type == 'in_invoice'): # F1 tipus R que rectifica una factura tipus N o G
+                if invoice.tipo_rectificadora in ('N', 'G', 'R', 'A', 'C') or (f1.type_factura == 'R' if f1 else False and invoice.ref.rectificative_type in ('N','G') and invoice.type == 'in_invoice'): # F1 tipus R que rectifica una factura tipus N o G
                     if result['distribuidora'] == "Sense F1 relacionat":
                         result['distribuidora'] = f1.distribuidora_id.name if f1 else "Sense F1 relacionat"
                     linia_taula['invoice_number'] = invoice.origin
