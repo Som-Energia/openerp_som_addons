@@ -249,7 +249,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             result_atr_foot = self.extract_components_metadata(cursor, uid, wiz, ['atrFooter'], context)
             result_crono = sorted(result_crono, key=lambda k: (k['date'], k['date_final']))
             if wiz.mostra_quadre_resum_lectures:
-                quadre_lectures.extend(self.extract_readings_table_metadata(cursor, uid, wiz, invoice_ids, context))
+                quadre_lectures.extend(self.extract_readings_table_metadata(cursor, uid, wiz, invoice_ids , context))
             # if wiz.mostra_quadre_resum_factures:
             #     quadre_factures = extract_invoice_table_metadata
             #     result_crono.append(quadre_factures)
