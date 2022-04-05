@@ -10,30 +10,40 @@ class TableReadings:
         result = {}
         result['type'] = 'TableReadings'
         result['taula'] = []
+        result['distribuidora'] = "Sense F1 relacionat"
+        result['date_from'] = False
         fact_obj = wiz.pool.get('giscedata.facturacio.factura')
         f1_obj = wiz.pool.get('giscedata.facturacio.importacio.linia')
 
         for invoice_id in invoice_ids:
             linia_taula = {}
             invoice = fact_obj.browse(cursor, uid, invoice_id)
-            search_params = [
-                ('cups_id.id', '=', invoice.cups_id.id),
-                ('invoice_number_text', '=', invoice.origin),
-            ]
-            f1_id = f1_obj.search(cursor,uid,search_params)
-            if f1_id:
-                f1 = f1_obj.browse(cursor, uid, f1_id[0])
-            else:
-                f1 = None
-            linia_taula['invoice_number'] = invoice.number
-            linia_taula['invoice_code'] = invoice.origin
-            linia_taula['date_from'] = dateformat(invoice.data_inici)
-            linia_taula['date_to'] = dateformat(invoice.data_final)
-            linia_taula['date'] = dateformat(f1.f1_date) if f1 else invoice.date_invoice
-            linia_taula['invoiced_energy'] = invoice.energia_kwh
-            linia_taula['exported_energy'] = invoice.generacio_kwh or 0
-            linia_taula['invoiced_days'] = invoice.dies
+            if invoice.type in ('in_invoice', 'in_refund'):
+                search_params = [
+                    ('cups_id.id', '=', invoice.cups_id.id),
+                    ('invoice_number_text', '=', invoice.origin),
+                ]
+                f1_id = f1_obj.search(cursor,uid,search_params)
+                if f1_id:
+                    f1 = f1_obj.browse(cursor, uid, f1_id[0])
+                else:
+                    f1 = None
+                if invoice.tipo_rectificadora in ('N', 'G', 'R', 'A', 'C') or (f1.type_factura == 'R' and invoice.ref.rectificative_type in ('N','G') and invoice.type == 'in_invoice'): # F1 tipus R que rectifica una factura tipus N o G
+                    if result['distribuidora'] == "Sense F1 relacionat":
+                        result['distribuidora'] = f1.distribuidora_id.name if f1 else "Sense F1 relacionat"
+                    linia_taula['invoice_number'] = invoice.origin
+                    linia_taula['date'] = dateformat(f1.f1_date) if f1 else invoice.date_invoice
+                    linia_taula['tipus_factura'] = invoice.tipo_rectificadora
+                    linia_taula['date_from'] = dateformat(invoice.data_inici)
+                    if not result['date_from']:
+                        result['date_from'] = dateformat(invoice.data_inici)
+                    linia_taula['date_to'] = dateformat(invoice.data_final)
+                    result['date_to'] = dateformat(invoice.data_final)
 
-            result['taula'].append(linia_taula)
+                    linia_taula['invoiced_energy'] = invoice.energia_kwh
+                    linia_taula['exported_energy'] = invoice.generacio_kwh or 0
+                    linia_taula['invoiced_days'] = invoice.dies
+
+                result['taula'].append(linia_taula)
 
         return result
