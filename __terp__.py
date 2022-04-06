@@ -23,6 +23,7 @@
     'www_som',
     'c2c_webkit_report',
     'async_reports',
+    'custom_search',
     ],
   "init_xml": [],
   "demo_xml": [
