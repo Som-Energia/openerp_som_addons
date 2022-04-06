@@ -3,7 +3,7 @@ import sys
 import click
 from erppeek import Client
 import logging
-
+import dbconfig
 
 def setup_log(instance, filename):
     log_file = filename
@@ -25,22 +25,10 @@ def get_lots(c):
     )
 
 @click.command()
-@click.option('-s', '--server', default='http://localhost',
-              help=u'ERP server address')
-@click.option('-p', '--port', default=8069, help='ERP server port',
-              type=click.INT)
-@click.option('-u', '--user', default='admin', help='ERP server user')
-@click.option('-w', '--password', help='ERP password' )
-@click.option('-d', '--database', help='Nom de la base de dades')
-def send_emails(**kwargs):
+def send_emails():
     setup_log('send_emails', '/tmp/send_emails.log')
-    logger = logging.getLogger('send_emails'); print kwargs
-    c = Client(
-        '{0}:{1}'.format(kwargs['server'], kwargs['port']),
-        kwargs['database'],
-        kwargs['user'],
-        kwargs['password']
-    )
+    logger = logging.getLogger('send_emails')
+    c = Client(**dbconfig.erppeek)
     if not c:
         logger.error('Bad ERP connection')
         return
@@ -64,4 +52,4 @@ def send_emails(**kwargs):
 
 
 if __name__=='__main__':
-    send_emails(auto_envvar_prefix='OPENERP')
+    send_emails()
