@@ -66,8 +66,8 @@
     border: 0px;
   }
   .sei_box_noborder td:nth-child(odd){
-    width: 80%
+    width: 85%
   }
   .sei_box_noborder td:nth-child(even){
-    width: 20%
+    width: 15%
   }
