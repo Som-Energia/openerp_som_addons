@@ -2671,6 +2671,10 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'residuRadio': 0,
             'year': '2020'}"""
 
+        def eval_and_json(text):
+            text_eval = eval(text)
+            text_json = json.dumps(text_eval)
+            return json.loads(text_json)
 
         conf_obj = fact.pool.get('res.config')
         swich_date = conf_obj.get(self.cursor, self.uid, 'gdo_and_impact_yearly_switch_date', '2099-05-01')
@@ -2679,23 +2683,15 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         seid_som = conf_obj.get(self.cursor, self.uid, 'som_environmental_impact_data', example_som_2020)
         try:
-            seid_som = eval(seid_som)
-            seid_som = json.dumps(seid_som)
-            data['som'] = json.loads(seid_som)
+            data['som'] = eval_and_json(seid_som)
         except Exception as e:
-            som = eval(example_som_2020)
-            som = json.dumps(som)
-            data['som'] = json.loads(som)
+            data['som'] = eval_and_json(example_som_2020)
 
         seid_mit = conf_obj.get(self.cursor, self.uid, 'mitjana_environmental_impact_data', example_mitjana_2020)
         try:
-            seid_mit = eval(seid_mit)
-            seid_mit = json.dumps(seid_mit)
-            data['mitjana'] = json.loads(seid_mit)
+            data['mitjana'] = eval_and_json(seid_mit)
         except Exception as e:
-            mitjana = eval(example_mitjana_2020)
-            mitjana = json.dumps(mitjana)
-            data['mitjana'] = json.loads(mitjana)
+            data['mitjana'] = eval_and_json(example_mitjana_2020)
 
         return data
 

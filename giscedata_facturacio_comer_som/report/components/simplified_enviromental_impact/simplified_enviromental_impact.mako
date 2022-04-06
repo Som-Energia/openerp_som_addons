@@ -81,7 +81,7 @@
             <div class="sei_box_noborder">
               <table>
                 <tr>
-                  <td>${_(u'Emisions CO<sub>2</sub> eq. (g/kWh)')}</td>
+                  <td>${_(u'Emissions CO<sub>2</sub> eq. (g/kWh)')}</td>
                   <td class="alignright">${_(u"%s") %(formatLang(d.som.emisionCo2, digits=0))}</td>
                 </tr>
                 <tr>
