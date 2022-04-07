@@ -95,12 +95,6 @@ class SomAutofacturaTaskStep(osv.osv):
         logger = netsvc.Logger()
         logger.notifyChannel("som_autofactura", netsvc.LOG_INFO, "waiting for {}.{}".format(task.object_name.model, task.function))
 
-        oorq_obj = self.pool.get('oorq.jobs.group')
-        prev_work_not_finish = True
-        while(prev_work_not_finish):
-            prev_work_not_finish = oorq_obj.search(cursor, uid, [('active','=',True), ('name', 'ilike', task.autoworker_task_name)])
-            sleep(seconds_sleep)
-
         if 'obrir_factures_button' in task.function:
             gff_obj = self.pool.get('giscedata.facturacio.factura')
             gff_draft = gff_obj.search(cursor, uid, [('state','=','draft')])
@@ -109,6 +103,12 @@ class SomAutofacturaTaskStep(osv.osv):
                 gff_draft_old = gff_draft
                 sleep(seconds_sleep)
                 gff_draft = gff_obj.search(cursor, uid, [('state','=','draft')])
+        else:
+            oorq_obj = self.pool.get('oorq.jobs.group')
+            prev_work_not_finish = True
+            while(prev_work_not_finish):
+                sleep(seconds_sleep)
+                prev_work_not_finish = oorq_obj.search(cursor, uid, [('active','=',True), ('name', 'ilike', task.autoworker_task_name)])
 
         logger.notifyChannel("som_autofactura", netsvc.LOG_INFO, "done {}.{}".format(task.object_name.model, task.function))
         return True
