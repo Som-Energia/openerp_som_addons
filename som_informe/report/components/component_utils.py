@@ -1,3 +1,5 @@
+
+# -*- encoding: utf-8 -*-
 from gestionatr.utils import get_description as gestion_atr_get_description
 from datetime import datetime
 
@@ -96,3 +98,50 @@ def has_category(pol, category_ids):
         if cat.id in category_ids:
             return True
     return False
+
+def get_origen_lectura(self, lectura):
+    """Busquem l'origen de la lectura cercant-la a les lectures de facturació"""
+    res = {lectura.data_actual: '',
+        lectura.data_anterior: ''}
+
+    lectura_obj = lectura.pool.get('giscedata.lectures.lectura')
+    tarifa_obj = lectura.pool.get('giscedata.polissa.tarifa')
+    origen_obj = lectura.pool.get('giscedata.lectures.origen')
+    origen_comer_obj = lectura.pool.get('giscedata.lectures.origen_comer')
+
+    estimada_id = origen_obj.search(self.cursor, self.uid, [('codi', '=', '40')])[0]
+    sin_lectura_id = origen_obj.search(self.cursor, self.uid, [('codi', '=', '99')])[0]
+    estimada_som_id = origen_comer_obj.search(self.cursor, self.uid, [('codi', '=', 'ES')])[0]
+    calculada_som_id = origen_obj.search(self.cursor, self.uid, [('codi', '=', 'LC')])
+    calculada_som_id = calculada_som_id[0] if calculada_som_id else None
+
+    #Busquem la tarifa
+    tarifa_id = tarifa_obj.search(self.cursor, self.uid, [('name', '=', lectura.name[:-5])])
+    if tarifa_id:
+        tipus = lectura.tipus == 'activa' and 'A' or 'R'
+
+        search_vals = [('comptador', '=', lectura.comptador),
+                    ('periode.name', '=', lectura.name[-3:-1]),
+                    ('periode.tarifa', '=', tarifa_id[0]),
+                    ('tipus', '=', tipus),
+                    ('name', 'in', [lectura.data_actual,
+                                    lectura.data_anterior])]
+        lect_ids = lectura_obj.search(self.cursor, self.uid, search_vals)
+        lect_vals = lectura_obj.read(self.cursor, self.uid, lect_ids,
+                                    ['name', 'origen_comer_id', 'origen_id'])
+        for lect in lect_vals:
+            # En funció dels origens, escrivim el text
+            # Si Estimada (40) o Sin Lectura (99) i Estimada (ES): Estimada Somenergia
+            # Si Estimada (40) o Sin Lectura (99) i F1/Q1/etc...(!ES): Estimada distribuïdora
+            # La resta: Real
+            origen_txt = _(u"real")
+            if lect['origen_id'][0] in [ estimada_id, sin_lectura_id ]:
+                if lect['origen_comer_id'][0] == estimada_som_id:
+                    origen_txt = _(u"calculada per Som Energia")
+                else:
+                    origen_txt = _(u"estimada distribuïdora")
+            if lect['origen_id'][0] == calculada_som_id:
+                origen_txt = _(u"calculada segons CCH")
+            res[lect['name']] = "%s" % (origen_txt)
+
+    return res
