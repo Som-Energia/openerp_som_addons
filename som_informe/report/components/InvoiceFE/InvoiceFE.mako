@@ -9,7 +9,7 @@
     ${_(u"<b>Potència:</b>")}
     %if len(d.potencies) == 2:
         ${_(u"Punta: %s; Vall %s") % (d.potencies[0].potencia,d.potencies[1].potencia)}<br/>
-    %else:
+    %elif d.potencies:
         % for pot in d.potencies[:-1]:
             ${_(u"%s : %s;") % (pot.periode, pot.potencia)}
         %endfor
