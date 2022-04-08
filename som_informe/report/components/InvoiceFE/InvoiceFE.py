@@ -12,6 +12,53 @@ class InvoiceFE:
     def __init__(self):
         pass
 
+    def get_origen_lectura(self, cursor, uid, lectura):
+        """Busquem l'origen de la lectura cercant-la a les lectures de facturació"""
+        res = {lectura.data_actual: '',
+            lectura.data_anterior: ''}
+
+        lectura_obj = lectura.pool.get('giscedata.lectures.lectura')
+        tarifa_obj = lectura.pool.get('giscedata.polissa.tarifa')
+        origen_obj = lectura.pool.get('giscedata.lectures.origen')
+        origen_comer_obj = lectura.pool.get('giscedata.lectures.origen_comer')
+
+        estimada_id = origen_obj.search(cursor, uid, [('codi', '=', '40')])[0]
+        sin_lectura_id = origen_obj.search(cursor, uid, [('codi', '=', '99')])[0]
+        estimada_som_id = origen_comer_obj.search(cursor, uid, [('codi', '=', 'ES')])[0]
+        calculada_som_id = origen_obj.search(cursor, uid, [('codi', '=', 'LC')])
+        calculada_som_id = calculada_som_id[0] if calculada_som_id else None
+
+        #Busquem la tarifa
+        tarifa_id = tarifa_obj.search(cursor, uid, [('name', '=', lectura.name[:-5])])
+        if tarifa_id:
+            tipus = lectura.tipus == 'activa' and 'A' or 'R'
+
+            search_vals = [('comptador', '=', lectura.comptador),
+                        ('periode.name', '=', lectura.name[-3:-1]),
+                        ('periode.tarifa', '=', tarifa_id[0]),
+                        ('tipus', '=', tipus),
+                        ('name', 'in', [lectura.data_actual,
+                                        lectura.data_anterior])]
+            lect_ids = lectura_obj.search(cursor, uid, search_vals)
+            lect_vals = lectura_obj.read(cursor, uid, lect_ids,
+                                        ['name', 'origen_comer_id', 'origen_id'])
+            for lect in lect_vals:
+                # En funció dels origens, escrivim el text
+                # Si Estimada (40) o Sin Lectura (99) i Estimada (ES): Estimada Somenergia
+                # Si Estimada (40) o Sin Lectura (99) i F1/Q1/etc...(!ES): Estimada distribuïdora
+                # La resta: Real
+                origen_txt = "real"
+                if lect['origen_id'][0] in [ estimada_id, sin_lectura_id ]:
+                    if lect['origen_comer_id'][0] == estimada_som_id:
+                        origen_txt = "calculada per Som Energia"
+                    else:
+                        origen_txt = "estimada distribuïdora"
+                if lect['origen_id'][0] == calculada_som_id:
+                    origen_txt = "calculada segons CCH"
+                res[lect['name']] = "%s" % (origen_txt)
+
+        return res
+
     def get_data(self, cursor, uid, wiz, invoice, context):
         #fact_obj = wiz.pool.get('giscedata.facturacio.factura')
 
@@ -29,7 +76,7 @@ class InvoiceFE:
             result['tipo_factura'] = 'Factura rectificativa (abono) de cliente'
         result['invoice_date'] = dateformat(invoice.date_invoice)
         result['invoice_number'] = invoice.number
-        result['numero_edm'] = invoice.comptador[0].name if invoice.comptador else "Factura sense comptador associat"
+        result['numero_edm'] = invoice.comptadors[0].name if invoice.comptadors else "Factura sense comptador associat"
         result['invoiced_days'] = invoice.dies
         result['potencies'] = []
         for periode in invoice.polissa_id.potencies_periode:
@@ -50,12 +97,12 @@ class InvoiceFE:
             dict_altres['price'] = altra_linia.price_subtotal
             result['other_concepts'].append(dict_altres)
 
-        result['lectures'] = {}
+        result['lectures'] = []
         for lectura in invoice.lectures_energia_ids:
-            origens = get_origen_lectura(lectura)
+            origens = self.get_origen_lectura(cursor, uid, lectura)
             dict_lectura = {}
             dict_lectura['magnitud_desc'] = get_description(lectura.magnitud, "TABLA_43")
-            dict_lectura['periode_desc'] = get_description(lectura.periode, "TABLA_42")
+            dict_lectura['periode_desc'] = lectura.name[lectura.name.find("(")+1:lectura.name.find(")")]
             dict_lectura['origen_lectura_inicial'] = lectura.origen_anterior_id.name
             dict_lectura['lectura_inicial'] = lectura.lect_anterior
             dict_lectura['origen_lectura_final'] = lectura.origen_id.name
@@ -63,8 +110,8 @@ class InvoiceFE:
             dict_lectura['consum_entre'] = lectura.lect_actual-lectura.lect_anterior #lect.consum
             #origen consum
             origin = 'estimada'
-            lectura_origen_anterior = origens(lectura.data_anterior)
-            lectura_origen_actual = origens(lectura.data_actual)
+            lectura_origen_anterior = origens[lectura.data_anterior]
+            lectura_origen_actual = origens[lectura.data_actual]
             if lectura_origen_anterior == 'real' and lectura_origen_actual =='real':
                 origin = 'real'
             elif (lectura_origen_anterior == 'estimada distribuïdora' or lectura_origen_anterior == 'real') and lectura_origen_actual == 'calculada segons CCH':
