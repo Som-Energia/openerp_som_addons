@@ -21,7 +21,7 @@
     %if d.other_concepts:
         ${_(u"<b>Otros conceptos facturados:</b>")}<br/>
         % for concept in d.other_concepts:
-            ${_(u"%s %s €") % (concept.name, concept.price)}<br/>
+            ${_(u"%s %s €") % (concept['name'], concept['price'])}<br/>
         %endfor
     %endif
      <table style="width:100%;font-size:14px">
