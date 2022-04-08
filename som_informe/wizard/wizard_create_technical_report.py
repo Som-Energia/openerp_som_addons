@@ -225,7 +225,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             sw_ids = sw_obj.search(cursor, uid, search_params)
             result_crono.extend(self.extract_switching_metadata(cursor, uid, sw_ids, context))
 
-        if wiz.mostra_factura:
+        if wiz.mostra_factura or wiz.mostra_quadre_resum_lectures or wiz.mostra_quadre_resum_factures:
             fact_obj = wiz.pool.get('giscedata.facturacio.factura')
             search_parameters = [
                 ('polissa_id', '=', wiz.polissa.id),
@@ -239,7 +239,8 @@ class WizardCreateTechnicalReport(osv.osv_memory):
                 search_parameters.append(('data_final', '<=', wiz.date_to))
                 search_parameters.append(('date_invoice','<=',wiz.date_to))
             invoice_ids = fact_obj.search(cursor, uid, search_parameters)
-            result_crono.extend(self.extract_invoice_metadata(cursor, uid, wiz, invoice_ids, context))
+            if wiz.mostra_factura:
+                result_crono.extend(self.extract_invoice_metadata(cursor, uid, wiz, invoice_ids, context))
 
 
         quadre_lectures = []
@@ -338,7 +339,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
                 elif invoice.tipo_rectificadora in ('C'):
                     component_name = 'InvoiceF1C'
                 elif invoice.tipo_rectificadora in ('BRA'): #BRA invent ERP que no es vol que apareixi
-                    continue
+                    component_name = None
                 else: # B RA
                     f1_obj = wiz.pool.get('giscedata.facturacio.importacio.linia')
                     search_params = [
