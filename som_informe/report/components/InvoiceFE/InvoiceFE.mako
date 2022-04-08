@@ -19,7 +19,7 @@
     ${_(u"<b>Inici període:</b> %s") % (d.date_from)}<br/>
     ${_(u"<b>Fi període:</b> %s") % (d.date_to)}<br/>
     %if d.other_concepts:
-        ${_(u"<b>Otros conceptos facturados:</b>")}<br/>
+        ${_(u"<b>Altres conceptes facturats:</b>")}<br/>
         % for concept in d.other_concepts:
             ${_(u"%s %s €") % (concept['name'], concept['price'])}<br/>
         %endfor
@@ -45,6 +45,24 @@
             <td style="width:12%">${_(u"%s") % (formatLang(lectura['consum_entre'], digits=2))}</td>
             <td style="width:12%;text-align:center">${_(u"%s") % (lectura['origen'])}</td>
             <td style="width:13%">${_(u"%s") % (formatLang(lectura['total_facturat'], digits=2))}</td>
+        </tr>
+    %endfor
+    </table>
+    <br>
+    <br>
+    <table style="width:100%;font-size:14px">
+        <tr style="text-align:center;font-weight:bold">
+            <td style="width:15%">${_(u"Periode maxímetre")}</td>
+            <td style="width:12%">${_(u"Potència contractada")}</td>
+            <td style="width:12%">${_(u"Potència maxímetre")}</td>
+            <td style="width:12%">${_(u"Potència excedida")}</td>
+        </tr>
+    % for lectura_maximetre in d.lectures_maximetre:
+        <tr style="text-align:right">
+            <td style="width:15%;text-align:center">${_(u"%s") %(lectura_maximetre['periode'])}</td>
+            <td style="width:12%">${_(u"%s") % (formatLang(lectura_maximetre['pot_contracta'], digits=2))}</td>
+            <td style="width:12%">${_(u"%s") % (formatLang(lectura_maximetre['pot_maximetre'], digits=2))} </td>
+            <td style="width:12%">${_(u"%s") % (formatLang(lectura_maximetre['exces'], digits=2))}</td>
         </tr>
     %endfor
     </table>
