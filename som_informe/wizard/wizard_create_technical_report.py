@@ -245,7 +245,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
 
         quadre_lectures = []
         if wiz.mostra_quadre_resum_lectures:
-            quadre_lectures.extend(self.extract_readings_table_metadata(cursor, uid, wiz, invoice_ids , context))
+            quadre_lectures.extend(self.extract_readings_table_metadata(cursor, uid, wiz, reversed(invoice_ids) , context))
         quadre_factures = []
         # if wiz.mostra_quadre_resum_factures:
         #     quadre_factures.extend(self.extract_invoices_table_metadata(cursor, uid, wiz, invoice_ids , context))

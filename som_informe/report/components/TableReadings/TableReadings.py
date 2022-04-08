@@ -42,7 +42,7 @@ class TableReadings:
 
                     linia_taula['invoiced_energy'] = invoice.energia_kwh
                     linia_taula['exported_energy'] = invoice.generacio_kwh or 0
-                    linia_taula['invoiced_days'] = invoice.dies
+                    linia_taula['invoiced_days'] = invoice.dies or 0
 
                     result['taula'].append(linia_taula)
 

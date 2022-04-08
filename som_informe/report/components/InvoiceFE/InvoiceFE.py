@@ -2,6 +2,17 @@
 from datetime import date
 from ..component_utils import dateformat, get_description, get_invoice_line, get_unit_magnitude
 
+magnitud_description = {
+    'AE' : 'Energía activa entrante',
+    'AS' : 'Energía activa saliente',
+    'EP' : 'Excesos de potencia',
+    'PM' : 'Potencia máxima',
+    'R1' : 'Energía reactiva inductiva',
+    'R2' : 'Energía reactiva en cuadrante 2',
+    'R3' : 'Energía reactiva en cuadrante 3',
+    'R4' : 'Energía reactiva capcitiva',
+}
+
 
 def get_reading(invoice, date):
     reading = dateformat(date) + "Real"
@@ -101,7 +112,7 @@ class InvoiceFE:
         for lectura in invoice.lectures_energia_ids:
             origens = self.get_origen_lectura(cursor, uid, lectura)
             dict_lectura = {}
-            dict_lectura['magnitud_desc'] = get_description(lectura.magnitud, "TABLA_43")
+            dict_lectura['magnitud_desc'] = magnitud_description[lectura.magnitud]
             dict_lectura['periode_desc'] = lectura.name[lectura.name.find("(")+1:lectura.name.find(")")]
             dict_lectura['origen_lectura_inicial'] = lectura.origen_anterior_id.name
             dict_lectura['lectura_inicial'] = lectura.lect_anterior
@@ -122,6 +133,19 @@ class InvoiceFE:
 
             dict_lectura['total_facturat'] = 0.0 # esperant aclariment de ET (KWh o EUR ?)
             result['lectures'].append(dict_lectura)
+
+        excess_lines = {'P1':0, 'P2':0, 'P3': 0, 'P4':0, 'P5':0, 'P6': 0}
+        lines = [l for l in invoice.linia_ids if l.tipus == 'exces_potencia']
+        for linia in lines:
+            excess_lines[linia.name] = linia.quantity
+        result['lectures_maximetre'] = []
+        for lectura_maximetre in invoice.lectures_potencia_ids:
+            lectures_m = {}
+            lectures_m['periode'] = lectura_maximetre.name
+            lectures_m['pot_contractada'] = lectura_maximetre.pot_contract
+            lectures_m['pot_maximetre'] = lectura_maximetre.pot_maximetre
+            lectures_m['exces'] = excess_lines[lectura_maximetre.name]
+            result['lectures_maximetre'].append(lectures_m)
 
         return result
 
