@@ -243,17 +243,17 @@ class WizardCreateTechnicalReport(osv.osv_memory):
 
 
         quadre_lectures = []
-        #quadre_factures = {}
+        if wiz.mostra_quadre_resum_lectures:
+            quadre_lectures.extend(self.extract_readings_table_metadata(cursor, uid, wiz, invoice_ids , context))
+        quadre_factures = []
+        # if wiz.mostra_quadre_resum_factures:
+        #     quadre_factures.extend(self.extract_invoices_table_metadata(cursor, uid, wiz, invoice_ids , context))
+
         if result_crono:
             result_atr_head = self.extract_components_metadata(cursor, uid, wiz, ['atrHeader'], context)
             result_atr_foot = self.extract_components_metadata(cursor, uid, wiz, ['atrFooter'], context)
             result_crono = sorted(result_crono, key=lambda k: (k['date'], k['date_final']))
-            if wiz.mostra_quadre_resum_lectures:
-                quadre_lectures.extend(self.extract_readings_table_metadata(cursor, uid, wiz, invoice_ids , context))
-            # if wiz.mostra_quadre_resum_factures:
-            #     quadre_factures = extract_invoice_table_metadata
-            #     result_crono.append(quadre_factures)
-            result_crono = result_atr_head + result_crono + quadre_lectures + result_atr_foot
+            result_crono = result_atr_head + result_crono + result_atr_foot
 
         result_cobra = []
         if wiz.mostra_cobraments:
@@ -263,7 +263,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         result_ini = self.extract_components_metadata(cursor, uid, wiz, ['header'], context)
         result_end = self.extract_components_metadata(cursor, uid, wiz, ['footer'], context)
 
-        result = result_ini + result_crono + result_cobra + result_end
+        result = result_ini + result_crono + result_cobra + quadre_lectures + quadre_factures + result_end
         return [ns(item) for item in result]
 
     # data extractors
@@ -306,7 +306,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
 
         return result
 
-    # def extract_invoice_table_metadata(self, cursor, uid, wiz, invoice_ids, context):
+    # def extract_invoices_table_metadata(self, cursor, uid, wiz, invoice_ids, context):
     #     if not isinstance(invoice_ids, list):
     #         invoice_ids = [invoice_ids]
     #     result = []
@@ -337,7 +337,9 @@ class WizardCreateTechnicalReport(osv.osv_memory):
                     component_name = 'InvoiceF1A'
                 elif invoice.tipo_rectificadora in ('C'):
                     component_name = 'InvoiceF1C'
-                else: # B RA BRA
+                elif invoice.tipo_rectificadora in ('BRA'): #BRA invent ERP que no es vol que apareixi
+                    continue
+                else: # B RA
                     f1_obj = wiz.pool.get('giscedata.facturacio.importacio.linia')
                     search_params = [
                         ('cups_id.id', '=', invoice.cups_id.id),
