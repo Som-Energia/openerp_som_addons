@@ -8,12 +8,12 @@
     ${_(u"<b>Dies facturats:</b> %s") % (d.invoiced_days)}<br/>
     ${_(u"<b>Potència:</b>")}
     %if len(d.potencies) == 2:
-        ${_(u"Punta: %s; Vall %s") % (d.potencies[0].potencia,d.potencies[1].potencia)}<br/>
+        ${_(u"Punta: %s; Vall %s") % (d.potencies[0]['potencia'],d.potencies[1]['potencia'])}<br/>
     %elif d.potencies:
         % for pot in d.potencies[:-1]:
-            ${_(u"%s : %s;") % (pot.periode, pot.potencia)}
+            ${_(u"%s : %s;") % (pot['periode'], pot['potencia']}
         %endfor
-        ${_(u"%s : %s") % (potencies[-1].periode, potencies[-1].potencia)}<br/>
+        ${_(u"%s : %s") % (potencies[-1]['periode'], potencies[-1]['potencia'])}<br/>
     %endif
     ${_(u"<b>Import total:</b> %s") % (d.amount_total)}<br/>
     ${_(u"<b>Inici període:</b> %s") % (d.date_from)}<br/>
