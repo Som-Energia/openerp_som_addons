@@ -60,7 +60,7 @@
       <table class="sei_table_r">
         <tr>
           <td>
-          <div>${_(u'Emisions de CO<sub>2</sub> equivalents')}</div>
+          <div>${_(u'Emissions de CO<sub>2</sub> equivalents')}</div>
           <div><strong>${_(u'Som Energia')}</strong></div>
           </td>
           <td>
