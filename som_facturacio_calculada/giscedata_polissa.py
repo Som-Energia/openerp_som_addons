@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from osv import osv, orm
-import re
 from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
 from tools.translate import _
 from oorq.decorators import job
 
@@ -63,13 +61,25 @@ class GiscedataPolissaCalculada(osv.osv):
         return True, _(u"ok")
 
     def _check_conditions_lectures_calculades(self, cursor, uid, _id, context):
+        def add_days(the_date, d):
+            return (datetime.strptime(the_date, '%Y-%m-%d') + timedelta(days=d)).strftime("%Y-%m-%d")
+
+        def today_str():
+            return datetime.today().strftime("%Y-%m-%d")
         mtr_o = self.pool.get('giscedata.lectures.comptador')
         sw_o = self.pool.get('giscedata.switching')
+        imd_o = self.pool.get('ir.model.data')
+        lc_origin = imd_o.get_object_reference(
+            cursor, uid, 'som_facturacio_calculada', 'origen_lect_calculada'
+        )[1]
 
         if isinstance(_id, (tuple, list)):
             _id = _id[0]
 
         pol = self.browse(cursor, uid, _id, context)
+
+        if add_days(pol.data_ultima_lectura, 7) > today_str():
+            return False, _(u"lectures a futur")
 
         if not pol.data_ultima_lectura:
             return False, _(u"sense data ultima lectura")
@@ -112,24 +122,53 @@ class GiscedataPolissaCalculada(osv.osv):
         if sw_ids:
             return False, _(u" te algun cas ATR no finalitzat")
 
-        return True
+        return True, _(u" ok")
 
+
+    def crear_lectura_data(self, cursor, uid, _id, measure_date, start_date, mtr_id, lc_origin, context=None):
+        wiz_measures_curve_o = self.pool.get('wizard.measures.from.curve')
+
+        vals = {
+            'measure_origin': lc_origin,
+            'insert_reactive': False,
+            'insert_maximeters': False,
+            'measure_date': measure_date,
+            'start_date': start_date,
+            'meter_id': mtr_id,
+        }
+        ctx = {
+            'from_model': 'giscedata.lectures.comptador',
+            'active_ids': [mtr_id], 'active_id': mtr_id
+        }
+        wiz_id = wiz_measures_curve_o.create(cursor, uid, vals, context=ctx)
+        try:
+            wiz_measures_curve_o.load_measures(cursor, uid, [wiz_id], context=ctx)
+        except Exception as e:
+            if isinstance(e, osv.orm.except_orm):
+                return False, 'sense_corbes'
+            else:
+                return False, 'error'
+
+        wiz_measures_curve_o.create_measures(cursor, uid, [wiz_id], context=ctx)
+        return True, 'ok'
 
     def crear_lectura_calculada(self, cursor, uid, _id, context=None):
         def add_days(the_date, d):
             return (datetime.strptime(the_date, '%Y-%m-%d') + timedelta(days=d)).strftime("%Y-%m-%d")
+
+        def today_str():
+            return datetime.today().strftime("%Y-%m-%d")
 
         imd_o = self.pool.get('ir.model.data')
         lc_origin = imd_o.get_object_reference(
             cursor, uid, 'som_facturacio_calculada', 'origen_lect_calculada'
         )[1]
         mtr_o = self.pool.get('giscedata.lectures.comptador')
-        wiz_measures_curve_o = self.pool.get('wizard.measures.from.curve')
         pol_name = self.read(cursor, uid, _id, ['name'], context)['name']
 
         crear_lectures, text = self._check_conditions_polissa_calculades(cursor, uid, _id, context=context)
         if not crear_lectures:
-            return _(u"La pòlissa {} no compleix les condicions per que {}".format(pol_name, text))
+            return _(u"La pòlissa {} no compleix les condicions perquè {}".format(pol_name, text))
 
         pol_data = self.read(cursor, uid, _id, ['data_ultima_lectura','cups', 'data_ultima_lectura_f1'])
         data_ultima_lect = pol_data['data_ultima_lectura']
@@ -151,35 +190,26 @@ class GiscedataPolissaCalculada(osv.osv):
             ('polissa.id', '=', _id),
             ('active', '=', True)
         ])[0]
-        data_seguent_lect = add_days(data_ultima_lect, 7)
         start_date = add_days(data_ultima_lect, 1)
+        data_seguent_lect_7 = add_days(data_ultima_lect, 7)
+        data_seguent_lect_14 = add_days(data_ultima_lect, 14)
+        data_seguent_lect_21 = add_days(data_ultima_lect, 21)
 
-        vals = {
-            'measure_origin': lc_origin,
-            'insert_reactive': False,
-            'insert_maximeters': False,
-            'measure_date': data_seguent_lect,
-            'start_date': start_date,
-            'meter_id': mtr_id,
-        }
-        ctx = {
-            'from_model': 'giscedata.lectures.comptador',
-            'active_ids': [mtr_id], 'active_id': mtr_id
-        }
-        wiz_id = wiz_measures_curve_o.create(cursor, uid, vals, context=ctx)
-        try:
-            wiz_measures_curve_o.load_measures(cursor, uid, [wiz_id], context=ctx)
-        except Exception as e:
-            if isinstance(e, osv.orm.except_orm):
-                return _(u"La pòlissa {} no pot generar lectures per falta de corba.".format(pol_name))
-            elif context.get('raise_error', True):
+        today = datetime.today().strftime("%Y-%m-%d")
+
+        for _date in [data_seguent_lect_21, data_seguent_lect_14, data_seguent_lect_7]:
+            if _date > today_str():
+                continue
+            lect_created, msg = self.crear_lectura_data(cursor, uid, _id, _date, start_date, mtr_id, lc_origin, context)
+            if lect_created:
+                self.retrocedir_lot(cursor, uid, [_id], context=context)
+                return _(u"La polissa {} té lectures creades en data {}".format(pol_name, _date))
+            elif msg == 'error' and context.get('raise_error', True):
                 raise osv.except_osv(_('Error'), _(u"La pòlissa {} no pot generar lectures per error inesperat de wizard {}.".format(pol_name,str(e))))
-            else:
+            elif msg == 'error':
                 return _(u"La pòlissa {} no pot generar lectures per error inesperat de wizard {}.".format(pol_name,str(e)))
 
-        wiz_measures_curve_o.create_measures(cursor, uid, [wiz_id], context=ctx)
-        self.retrocedir_lot(cursor, uid, [_id], context=context)
-        return _(u"La polissa {} té lectures creades en data {}".format(pol_name, data_seguent_lect))
+        return _(u"La pòlissa {} no pot generar lectures per falta de corba.".format(pol_name))
 
 
     def crear_lectures_calculades(self, cursor, uid, ids, context=None):
