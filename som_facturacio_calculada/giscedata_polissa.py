@@ -164,15 +164,15 @@ class GiscedataPolissaCalculada(osv.osv):
             cursor, uid, 'som_facturacio_calculada', 'origen_lect_calculada'
         )[1]
         mtr_o = self.pool.get('giscedata.lectures.comptador')
-        pol_name = self.read(cursor, uid, _id, ['name'], context)['name']
+
+        pol_data = self.read(cursor, uid, _id, ['name', 'data_ultima_lectura', 'data_ultima_lectura_f1'])
+        pol_name = pol_data['name']
+        data_ultima_lect = pol_data['data_ultima_lectura']
+        data_ultima_lectura_f1 = pol_data['data_ultima_lectura_f1']
 
         crear_lectures, text = self._check_conditions_polissa_calculades(cursor, uid, _id, context=context)
         if not crear_lectures:
             return _(u"La pòlissa {} no compleix les condicions perquè {}".format(pol_name, text))
-
-        pol_data = self.read(cursor, uid, _id, ['data_ultima_lectura','cups', 'data_ultima_lectura_f1'])
-        data_ultima_lect = pol_data['data_ultima_lectura']
-        data_ultima_lectura_f1 = pol_data['data_ultima_lectura_f1']
 
         if data_ultima_lect and data_ultima_lect < data_ultima_lectura_f1:
             self.retrocedir_lot(cursor, uid, _id, context)
@@ -198,7 +198,7 @@ class GiscedataPolissaCalculada(osv.osv):
         today = datetime.today().strftime("%Y-%m-%d")
 
         for _date in [data_seguent_lect_21, data_seguent_lect_14, data_seguent_lect_7]:
-            if _date > today_str():
+            if _date > today_str() or _date > add_days(data_ultima_lectura_f1, 21):
                 continue
             lect_created, msg = self.crear_lectura_data(cursor, uid, _id, _date, start_date, mtr_id, lc_origin, context)
             if lect_created:
