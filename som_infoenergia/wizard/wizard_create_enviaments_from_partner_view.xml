@@ -2,8 +2,8 @@
 <openerp>
     <data>
         <record model="ir.ui.view" id="view_wizard_add_partners_lot_form">
-            <field name="name">wizard.infoenergia.add.partners.lot.form</field>
-            <field name="model">wizard.infoenergia.add.partners.lot</field>
+            <field name="name">wizard.add.partners.lot.form</field>
+            <field name="model">wizard.add.partners.lot</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Seleccionar partners per afegir al lot d'enviament">
@@ -36,13 +36,13 @@
         <record model="ir.actions.act_window" id="action_wizard_add_partners_lot">
             <field name="name">Seleccionar partners per afegir al lot</field>
             <field name="type">ir.actions.act_window</field>
-            <field name="res_model">wizard.infoenergia.add.partners.lot</field>
+            <field name="res_model">wizard.add.partners.lot</field>
             <field name="view_type">form</field>
             <field name="view_mode">form</field>
             <field name="target">new</field>
             <field name="view_id" ref="view_wizard_add_partners_lot_form"/>
         </record>
-        <record id="values_infoenergia_add_partners_lot_form" model="ir.values">
+        <record id="values_add_partners_lot_form" model="ir.values">
             <field name="object" eval="1"/>
             <field name="name">Seleccionar partners per afegir al lot</field>
             <field name="key2">client_action_multi</field>

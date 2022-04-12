@@ -38,3 +38,6 @@
 "access_sepa_report_rcwd","sepa.report","model_sepa_report","base_extended.group_base_extended_u",1,1,1,1
 "access_sepa_report_rcwd","sepa.report","model_sepa_report","base_extended.group_base_extended_w",1,1,1,0
 "access_sepa_report_rcwd","sepa.report","model_sepa_report","base_extended.group_base_extended_r",1,0,0,0
+"access_wizard_add_partners_lot_rcwd","wizard.add.partners.lot","model_wizard_add_partners_lot","som_infoenergia.group_infoenergia_u",1,1,1,1
+"access_wizard_add_partners_lot_rcw","wizard.add.partners.lot","model_wizard_add_partners_lot","som_infoenergia.group_infoenergia_w",1,1,1,0
+"access_wizard_add_partners_lot_r","wizard.add.partners.lot","model_wizard_add_partners_lot","som_infoenergia.group_infoenergia_r",1,0,0,0
