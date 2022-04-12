@@ -12,7 +12,7 @@
     "category": "SomEnergia",
     "depends":[
         "base",
-        "giscedata_atc_switching",
+        "som_switching",
     ],
     "init_xml": [],
     "demo_xml": [],
