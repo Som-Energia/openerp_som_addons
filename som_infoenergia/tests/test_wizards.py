@@ -535,3 +535,40 @@ class WizardCancelFromCSVTestsAndAddContractsLot(testing.OOTestCase):
              '0003': {'k': '213', 'extra_info': 'Info 2'}}})
         wiz_info = wiz_obj.read(self.cursor, self.uid, [wiz_id], ['info'])[0]['info']
         self.assertEqual(wiz_info, "Es crearan els enviaments de 2 pòlisses en segon pla")
+
+
+
+
+class WizardCreateEnviamentsFromPartner(testing.OOTestCase):
+
+    def setUp(self):
+        self.txn = Transaction().start(self.database)
+
+        self.cursor = self.txn.cursor
+        self.uid = self.txn.user
+
+    def tearDown(self):
+        self.txn.stop()
+
+    @mock.patch('som_infoenergia.som_infoenergia_lot.SomInfoenergiaLotEnviament.create_enviaments_from_object_list')
+    def test_wizard_create_enviaments_from_partner(self, mock_add_partners):
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        cursor = self.cursor
+        uid = self.uid
+        wiz_obj = self.openerp.pool.get('wizard.infoenergia.add.partners.lot')
+        lot_enviament_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_infoenergia', 'lot_enviament_0002'
+        )[1]
+        partner_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_polissa_soci', 'res_partner_soci'
+        )[1]
+        vals = {'vat':'ES97053918J'}
+        ctx = {
+            'active_id': lot_enviament_id, 'active_ids': [lot_enviament_id],
+        }
+        wiz_id = wiz_obj.create(self.cursor, self.uid, vals, context=ctx)
+
+        wiz_obj.add_partners_lot(self.cursor, self.uid, [wiz_id], context=ctx)
+
+        mock_add_partners.assert_called_with(self.cursor, self.uid, lot_enviament_id, [partner_id],
+            {'from_model': 'partner_id'})
