@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
-
 from osv import osv, fields
 from tools.translate import _
-from giscedata_polissa.giscedata_polissa import CONTRACT_STATES
-from gestionatr.defs import TABLA_113
 
 STATES = [
     ('init', 'Estat Inicial'),
@@ -11,7 +8,7 @@ STATES = [
 ]
 
 class WizardAddPartnersLot(osv.osv_memory):
-    _name = 'wizard.infoenergia.add.partners.lot'
+    _name = 'wizard.add.partners.lot'
 
 
     def add_partners_lot(self, cursor, uid, ids, context=None):
