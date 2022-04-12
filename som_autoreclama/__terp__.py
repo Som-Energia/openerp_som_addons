@@ -22,6 +22,7 @@
         "giscedata_atc_view.xml",
         "security/som_autoreclama.xml",
         "security/ir.model.access.csv",
+        "wizard/wizard_massive_create_r1029_view.xml",
     ],
     "active": False,
     "installable": True

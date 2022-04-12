@@ -42,10 +42,10 @@ class GiscedataAtc(osv.osv):
 
     def create_related_atc_r1_case_via_wizard(self, cursor, uid, atc_id, context=None):
         channel_obj = self.pool.get('res.partner.canal')
-        canal_id = channel_obj.search(cursor, uid, [('name','ilike','intercambi')], context)[0]
+        canal_id = channel_obj.search(cursor, uid, [('name','ilike','intercambi')], context=context)[0]
 
         subtr_obj = self.pool.get('giscedata.subtipus.reclamacio')
-        subtr_id = subtr_obj.search(cursor, uid, [('name','=','029')], context)[0]
+        subtr_id = subtr_obj.search(cursor, uid, [('name','=','029')], context=context)[0]
 
         atc = self.browse(cursor, uid, atc_id, context)
         new_case_data = {
@@ -62,7 +62,6 @@ class GiscedataAtc(osv.osv):
         return self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
 
     def create_general_atc_r1_case_via_wizard(self, cursor, uid, case_data, context=None):
-        import pudb;pu.db
         ctx = {
             'from_model': 'giscedata.polissa',      # model gas o electricitat
             'polissa_field': 'id',                  # camp per llegir
@@ -82,7 +81,10 @@ class GiscedataAtc(osv.osv):
 
         atcw_obj = self.pool.get('wizard.create.atc.from.polissa')
         wiz_id = atcw_obj.create(cursor, uid, params, ctx)
-        atcw_obj.create_atc_case_from_view(cursor, uid, [wiz_id], ctx)
+        atcw_obj.create_atc_case_from_view(cursor, uid, [wiz_id], ctx)  # creates the ATC case
+
+        gen_cases = atcw_obj.read(cursor, uid, wiz_id, ['generated_cases'], ctx)[0]
+        atc_id = gen_cases['generated_cases'][0]                        # gets the new ATC case id
 
         if case_data.get('crear_cas_r1', False):
             open_r1_wiz = atcw_obj.open_r1_wizard(cursor, uid, [wiz_id], ctx)
@@ -90,21 +92,25 @@ class GiscedataAtc(osv.osv):
             r1atcw_ctx = open_r1_wiz['context']
             r1atcw_obj = self.pool.get(open_r1_wiz['res_model']) # wizard.generate.r1.from.atc.case
             r1atcw_id = r1atcw_obj.create(cursor, uid, {}, r1atcw_ctx)
-            generate_r1_wiz = r1atcw_obj.generate_r1(cursor, uid, [r1atcw_id], r1atcw_ctx)
+            generate_r1_wiz = r1atcw_obj.generate_r1(cursor, uid, [r1atcw_id], r1atcw_ctx) #Generates the R1 for the ATC case
 
             r1w_ctx = eval(generate_r1_wiz['context'])
             r1w_obj = self.pool.get(generate_r1_wiz['res_model']) # "wizard.create.r1"
             r1w_id = r1w_obj.create(cursor, uid, {}, r1w_ctx)
-            subtype_r1_wiz = r1w_obj.action_subtype_fields_view(cursor, uid, [r1w_id], r1w_ctx)
+            subtype_r1_wiz = r1w_obj.action_subtype_fields_view(cursor, uid, [r1w_id], r1w_ctx) #obtain subtype wizard R1
 
             sr1w_ctx = eval(subtype_r1_wiz['context'])
-            sr1w_obj = self.pool.get(subtype_r1_wiz['res_model']) # wizard.subtype.r1"
+            sr1w_obj = self.pool.get(subtype_r1_wiz['res_model']) # "wizard.subtype.r1"
             sr1w_id = sr1w_obj.create(cursor, uid, {}, sr1w_ctx)
-            sr1w_obj.action_create_r1_case(cursor, uid, [sr1w_id], sr1w_ctx)
+            r1_result = sr1w_obj.action_create_r1_case(cursor, uid, [sr1w_id], sr1w_ctx) #create subtype R1 for example:029
 
-        gen_cases = atcw_obj.read(cursor, uid, wiz_id, ['generated_cases'], ctx)[0]
-        atc_ids = gen_cases['generated_cases']
-        return atc_ids
+            r1_to_atc_ref = '{},{}'.format(
+                r1_result.get('res_model','giscedata.switching'),
+                r1_result['domain'][0][2]
+                )
+            self.write(cursor, uid, atc_id, {'ref': r1_to_atc_ref}) # link the ATc case with the newly generated R1
+
+        return atc_id
 
     def get_current_autoreclama_state_info(self, cursor, uid, ids, context=None):
         """

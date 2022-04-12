@@ -4,3 +4,4 @@ import som_autoreclama_state
 import som_autoreclama_state_history
 import som_autoreclama_state_updater
 import giscedata_atc
+import wizard
