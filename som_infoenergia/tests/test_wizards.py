@@ -555,7 +555,7 @@ class WizardCreateEnviamentsFromPartner(testing.OOTestCase):
         imd_obj = self.openerp.pool.get('ir.model.data')
         cursor = self.cursor
         uid = self.uid
-        wiz_obj = self.openerp.pool.get('wizard.infoenergia.add.partners.lot')
+        wiz_obj = self.openerp.pool.get('wizard.add.partners.lot')
         lot_enviament_id = imd_obj.get_object_reference(
             self.cursor, self.uid, 'som_infoenergia', 'lot_enviament_0002'
         )[1]
