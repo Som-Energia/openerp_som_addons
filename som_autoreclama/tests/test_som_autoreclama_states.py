@@ -61,20 +61,6 @@ class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
 
 class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
 
-    """
-    def test_create_atc_R1029_from_atc(self):
-        atc_obj = self.get_model('giscedata.atc')
-
-        old_atc_id = 1
-        new_atc_id = atc_obj.create_related_atc_r1_case_via_wizard(self.cursor, self.uid, old_atc_id, {})
-
-        self.assertEqual(new_atc_id, 2)
-        atc = atc_obj.browse(self.cursor, self.uid, new_atc_id)
-
-        # fer un bwose i comprobar coses
-    """
-
-
     def test_create_general_atc_r1_case_via_wizard__atr_wihtout_r1_type_a(self):
         atc_obj = self.get_model('giscedata.atc')
 
@@ -181,9 +167,11 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
         ir_obj = self.get_model('ir.model.data')
         polissa_id = ir_obj.get_object_reference(self.cursor, self.uid, 'giscedata_polissa', 'polissa_0002')[1]
 
-        par_id = self.search_in('res.partner.canal', [('name','ilike','Tiny sprl')])
+        par1_id = self.search_in('res.partner', [('name','ilike','Tiny sprl')])
+        par2_id = self.search_in('res.partner', [('name','ilike','ASUStek')])
         par_obj = self.get_model('res.partner')
-        par_obj.write(self.cursor, self.uid, par_id, {'ref':'58264'})
+        par_obj.write(self.cursor, self.uid, par1_id, {'ref':'58264'})
+        par_obj.write(self.cursor, self.uid, par2_id, {'ref':'58265'})
 
         channel_id = self.search_in('res.partner.canal', [('name','ilike','intercambi')])
         section_id = self.search_in('crm.case.section', [('name','ilike','client')])
@@ -229,9 +217,11 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
         ir_obj = self.get_model('ir.model.data')
         polissa_id = ir_obj.get_object_reference(self.cursor, self.uid, 'giscedata_polissa', 'polissa_0002')[1]
 
-        par_id = self.search_in('res.partner.canal', [('name','ilike','Tiny sprl')])
+        par1_id = self.search_in('res.partner', [('name','ilike','Tiny sprl')])
+        par2_id = self.search_in('res.partner', [('name','ilike','ASUStek')])
         par_obj = self.get_model('res.partner')
-        par_obj.write(self.cursor, self.uid, par_id, {'ref':'58264'})
+        par_obj.write(self.cursor, self.uid, par1_id, {'ref':'58264'})
+        par_obj.write(self.cursor, self.uid, par2_id, {'ref':'58265'})
 
         channel_id = self.search_in('res.partner.canal', [('name','ilike','intercambi')])
         section_id = self.search_in('crm.case.section', [('name','ilike','client')])
