@@ -48,24 +48,26 @@
         </tr>
     %endfor
     </table>
-    <br>
-    <br>
-    <table style="width:100%;font-size:14px">
-        <tr style="text-align:center;font-weight:bold">
-            <td style="width:15%">${_(u"Periode maxímetre")}</td>
-            <td style="width:15%">${_(u"Potència contractada")}</td>
-            <td style="width:15%">${_(u"Potència maxímetre")}</td>
-            <td style="width:15%">${_(u"Potència excedida")}</td>
-        </tr>
-    % for lectura_maximetre in d.lectures_maximetre:
-        <tr style="text-align:right">
-            <td style="width:15%;text-align:center">${_(u"%s") %(lectura_maximetre['periode'])}</td>
-            <td style="width:15%">${_(u"%s") % (formatLang(lectura_maximetre['pot_contractada'], digits=2))}</td>
-            <td style="width:15%">${_(u"%s") % (formatLang(lectura_maximetre['pot_maximetre'], digits=2))} </td>
-            <td style="width:15%">${_(u"%s") % (formatLang(lectura_maximetre['exces'], digits=2))}</td>
-        </tr>
-    %endfor
-    </table>
+    %if d.maximetre:
+        <br>
+        <br>
+        <table style="width:100%;font-size:14px">
+            <tr style="text-align:center;font-weight:bold">
+                <td style="width:15%">${_(u"Periode maxímetre")}</td>
+                <td style="width:15%">${_(u"Potència contractada")}</td>
+                <td style="width:15%">${_(u"Potència maxímetre")}</td>
+                <td style="width:15%">${_(u"Potència excedida")}</td>
+            </tr>
+        % for lectura_maximetre in d.lectures_maximetre:
+            <tr style="text-align:right">
+                <td style="width:15%;text-align:center">${_(u"%s") %(lectura_maximetre['periode'])}</td>
+                <td style="width:15%">${_(u"%s") % (formatLang(lectura_maximetre['pot_contractada'], digits=2))}</td>
+                <td style="width:15%">${_(u"%s") % (formatLang(lectura_maximetre['pot_maximetre'], digits=2))} </td>
+                <td style="width:15%">${_(u"%s") % (formatLang(lectura_maximetre['exces'], digits=2))}</td>
+            </tr>
+        %endfor
+        </table>
+    %endif
 </li>
 <br>
 <br>

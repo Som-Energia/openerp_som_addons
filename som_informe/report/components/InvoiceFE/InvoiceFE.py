@@ -118,7 +118,7 @@ class InvoiceFE:
             dict_lectura['lectura_inicial'] = lectura.lect_anterior
             dict_lectura['origen_lectura_final'] = lectura.origen_id.name
             dict_lectura['lectura_final'] = lectura.lect_actual
-            dict_lectura['consum_entre'] = lectura.lect_actual-lectura.lect_anterior #lect.consum
+            dict_lectura['consum_entre'] = lectura.lect_actual-lectura.lect_anterior #lectura.consum
             #origen consum
             origin = 'estimada'
             lectura_origen_anterior = origens[lectura.data_anterior]
@@ -131,11 +131,14 @@ class InvoiceFE:
                 origin = 'calculada'
             dict_lectura['origen'] = origin
 
-            dict_lectura['total_facturat'] = 0.0 # esperant aclariment de ET (KWh o EUR ?)
+            dict_lectura['total_facturat'] = lectura.consum
             result['lectures'].append(dict_lectura)
 
         excess_lines = {'P1':0, 'P2':0, 'P3': 0, 'P4':0, 'P5':0, 'P6': 0}
         lines = [l for l in invoice.linia_ids if l.tipus == 'exces_potencia']
+        result['maximetre'] = False
+        if lines:
+            result['maximetre'] = True
         for linia in lines:
             excess_lines[linia.name] = linia.quantity
         result['lectures_maximetre'] = []
