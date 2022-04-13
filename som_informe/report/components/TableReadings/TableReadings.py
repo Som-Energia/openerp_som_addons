@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 from ..component_utils import dateformat
+from datetime import datetime
 
 class TableReadings:
     def __init__(self):
@@ -12,6 +13,7 @@ class TableReadings:
         result['taula'] = []
         result['distribuidora'] = "Sense F1 relacionat"
         result['date_from'] = False
+        result['date_to'] = dateformat(datetime.today()) #en cas de no tenir cap data de factura avui
         fact_obj = wiz.pool.get('giscedata.facturacio.factura')
         f1_obj = wiz.pool.get('giscedata.facturacio.importacio.linia')
 
@@ -38,7 +40,8 @@ class TableReadings:
                     if not result['date_from']:
                         result['date_from'] = dateformat(invoice.data_inici)
                     linia_taula['date_to'] = dateformat(invoice.data_final)
-                    result['date_to'] = dateformat(invoice.data_final)
+                    if invoice.data_final:
+                        result['date_to'] = dateformat(invoice.data_final)
 
                     linia_taula['invoiced_energy'] = invoice.energia_kwh
                     linia_taula['exported_energy'] = invoice.generacio_kwh or 0
