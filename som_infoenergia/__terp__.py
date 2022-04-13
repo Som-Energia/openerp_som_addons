@@ -16,6 +16,7 @@
         "giscedata_facturacio",
         "poweremail_references",
         "som_polissa_soci",
+        "som_generationkwh",
     ],
     "init_xml": [],
     "demo_xml": [

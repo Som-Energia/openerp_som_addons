@@ -572,3 +572,55 @@ class WizardCreateEnviamentsFromPartner(testing.OOTestCase):
 
         mock_add_partners.assert_called_with(self.cursor, self.uid, lot_enviament_id, [partner_id],
             {'from_model': 'partner_id'})
+
+    @mock.patch('som_infoenergia.som_infoenergia_lot.SomInfoenergiaLotEnviament.create_enviaments_from_object_list')
+    def test_wizard_create_enviaments_from_partner_esSocia(self, mock_add_partners):
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        cursor = self.cursor
+        uid = self.uid
+        wiz_obj = self.openerp.pool.get('wizard.add.partners.lot')
+        lot_enviament_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_infoenergia', 'lot_enviament_0002'
+        )[1]
+        soci_obj = self.openerp.pool.get('somenergia.soci')
+        soci_ids = soci_obj.search(self.cursor, self.uid, [('data_baixa_soci','=',False)])
+        partner_ids = [ x['partner_id'][0] for x in soci_obj.read(cursor, uid, soci_ids, ['partner_id']) ]
+        vals = {'es_soci': True}
+        ctx = {
+            'active_id': lot_enviament_id, 'active_ids': [lot_enviament_id],
+        }
+        wiz_id = wiz_obj.create(self.cursor, self.uid, vals, context=ctx)
+
+        wiz_obj.add_partners_lot(self.cursor, self.uid, [wiz_id], context=ctx)
+
+        args, kwargs = mock_add_partners.call_args
+        self.assertEqual(args[2], lot_enviament_id)
+        self.assertEqual(sorted(args[3]), sorted(partner_ids))
+        self.assertEqual(args[4], {'from_model': 'partner_id'})
+
+    @mock.patch('som_infoenergia.som_infoenergia_lot.SomInfoenergiaLotEnviament.create_enviaments_from_object_list')
+    def test_wizard_create_enviaments_from_partner_teaportacions(self, mock_add_partners):
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        cursor = self.cursor
+        uid = self.uid
+        wiz_obj = self.openerp.pool.get('wizard.add.partners.lot')
+        lot_enviament_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_infoenergia', 'lot_enviament_0002'
+        )[1]
+        gen_obj = self.openerp.pool.get('generationkwh.investment')
+        gen_ids = gen_obj.search(self.cursor, self.uid, [('emission_id.type','=','apo')])
+        member_ids = [x['member_id'][0] for x in gen_obj.read(self.cursor, self.uid, gen_ids, ['member_id']) ]
+        soci_obj = self.openerp.pool.get('somenergia.soci')
+        partner_ids = [ x['partner_id'][0] for x in soci_obj.read(cursor, uid, member_ids, ['partner_id']) ]
+        vals = {'te_aportacions': True}
+        ctx = {
+            'active_id': lot_enviament_id, 'active_ids': [lot_enviament_id],
+        }
+        wiz_id = wiz_obj.create(self.cursor, self.uid, vals, context=ctx)
+
+        wiz_obj.add_partners_lot(self.cursor, self.uid, [wiz_id], context=ctx)
+
+        args, kwargs = mock_add_partners.call_args
+        self.assertEqual(args[2], lot_enviament_id)
+        self.assertEqual(sorted(args[3]), sorted(partner_ids))
+        self.assertEqual(args[4], {'from_model': 'partner_id'})
