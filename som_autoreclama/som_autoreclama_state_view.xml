@@ -62,6 +62,7 @@
                     <field name="active"/>
                     <field name="subtype_id"/>
                     <field name="days"/>
+                    <field name="next_state_id"/>
                 </tree>
             </field>
         </record>
