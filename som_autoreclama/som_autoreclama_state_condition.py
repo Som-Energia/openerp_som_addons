@@ -7,26 +7,37 @@ class SomAutoreclamaStateCondition(osv.osv):
 
     _name = 'som.autoreclama.state.condition'
     _rec_name = 'subtype_id'
+    _order = 'priority'
 
 
-    def fit_atc_condition(self, cursor, uid, data, context=None):
-        return data['subtype_id'] == self.subtype_id and data['distri_days'] >= self.days
+    def fit_atc_condition(self, cursor, uid, id, data, context=None):
+        cond_data = self.read(cursor, uid, id, ['subtype_id', 'days'], context=context)
+        return data['subtipus_id'] == cond_data['subtype_id'][0] and data['distri_days'] >= cond_data['days']
 
 
     _columns = {
-
+        'priority': fields.integer(
+            _('Order'),
+            required=True
+        ),
+        'active': fields.boolean(
+            string=_(u'Activa'),
+            help=_(u"Indica si la condició esta activa")
+        ),
         'subtype_id': fields.many2one(
             "giscedata.subtipus.reclamacio",
             _(u"Subtipus"),
-            required=True
+            required=True,
+            help=_(u'Subtipus de la reclamació associada al cas ATC')
         ),
         'days': fields.integer(
-            _(u'Dies'),
-            required=True
+            _(u"Dies d'espera"),
+            required=True,
+            help=_(u'Dies sense resposta de la distribuïdora')
         ),
         'state_id': fields.many2one(
            'som.autoreclama.state',
-           _(u'Estat'),
+           _(u'Estat actual'),
            required=True
         ),
         'next_state_id': fields.many2one(

@@ -13,33 +13,24 @@ class GiscedataAtc(osv.osv):
     def set_autoreclama_history_deactivate(self, cursor, uid, ids, context=None):
         pass
 
+
+
+
     def get_autoreclama_data(self, cursor, uid, id, context=None):
         data = self.read(cursor, uid, id, ['business_days_with_same_agent','subtipus_id','agent_actual'], context)
         # agent_actual = '10' is ditri
         return {
             'distri_days': data['business_days_with_same_agent'] if data['agent_actual'] == '10' else 0,
-            'subtipus_id': data['subtipus_id'],
+            'subtipus_id': data['subtipus_id'][0],
             }
 
-    def create(self, cursor, uid, vals, context=None):
-        atc_id = super(GiscedataAtc, self).create(cursor, uid, vals, context=context)
-        imd_obj = self.pool.get('ir.model.data')
-        correct_state_id = imd_obj.get_object_reference(
-                cursor, uid, 'som_autoreclama', 'correct_state_workflow_atc'
-        )[1]
 
-        atch_obj = self.pool.get('som.autoreclama.state.history.atc')
-        atch_obj.create(
-            cursor,
-            uid,
-            {
-                'atc_id': atc_id,
-                'autoreclama_state_id': correct_state_id,
-                'change_date': date.today().strftime("%d-%m-%Y"),
-            }
-        )
-        return atc_id
+    def update_autoreclama_state(self, cursor, uid, ids, context=None):
+        updater_obj = self.pool.get('som.autoreclama.state.updater')
+        return updater_obj.update_atcs_if_possible(cursor, uid, ids, context)
 
+
+    # Automatic ATC + R1-029 from existing ATC / Entry poiut
     def create_related_atc_r1_case_via_wizard(self, cursor, uid, atc_id, context=None):
         channel_obj = self.pool.get('res.partner.canal')
         canal_id = channel_obj.search(cursor, uid, [('name','ilike','intercambi')], context=context)[0]
@@ -61,6 +52,7 @@ class GiscedataAtc(osv.osv):
         }
         return self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
 
+    # Automatic ATC + [R1] from dictonary / Entry poiut
     def create_general_atc_r1_case_via_wizard(self, cursor, uid, case_data, context=None):
         ctx = {
             'from_model': 'giscedata.polissa',      # model gas o electricitat
@@ -116,6 +108,28 @@ class GiscedataAtc(osv.osv):
 
         return atc_id
 
+
+    # Create and setup autoreclama history to the new created ATC object
+    def create(self, cursor, uid, vals, context=None):
+        atc_id = super(GiscedataAtc, self).create(cursor, uid, vals, context=context)
+        imd_obj = self.pool.get('ir.model.data')
+        correct_state_id = imd_obj.get_object_reference(
+                cursor, uid, 'som_autoreclama', 'correct_state_workflow_atc'
+        )[1]
+
+        atch_obj = self.pool.get('som.autoreclama.state.history.atc')
+        atch_obj.create(
+            cursor,
+            uid,
+            {
+                'atc_id': atc_id,
+                'autoreclama_state_id': correct_state_id,
+                'change_date': date.today().strftime("%d-%m-%Y"),
+            }
+        )
+        return atc_id
+
+    # Autoreclama history management functions
     def get_current_autoreclama_state_info(self, cursor, uid, ids, context=None):
         """
             Get the info of the last history line by atc id.
@@ -152,6 +166,7 @@ class GiscedataAtc(osv.osv):
                 result[id] = False
         return result
 
+    # Autoreclama history management functions
     def _get_last_autoreclama_state_from_history(self, cursor, uid, ids, field_name, arg, context=None):
         result = {k: {} for k in ids}
         last_lines = self.get_current_autoreclama_state_info(cursor, uid, ids)
@@ -164,6 +179,7 @@ class GiscedataAtc(osv.osv):
                 result[id]['autoreclama_state_date'] = False
         return result
 
+    # Autoreclama history management functions
     def change_state(self, cursor, uid, ids, context):
         values = self.read(cursor, uid, ids, ['atc_id'])
         return [value['atc_id'][0] for value in values]

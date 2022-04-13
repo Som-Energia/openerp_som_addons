@@ -10,8 +10,18 @@ class SomAutoreclamaState(osv.osv):
     _order = 'priority'
 
 
-    def do_action(self, cursor, uid, id, context=None):
-        print "generem un cas atc+r1 amb les dades de generate_atc_parameters"
+    def do_action(self, cursor, uid, state_id, atc_id, context=None):
+        state_data = self.read(cursor, uid, state_id, ['name', 'active'])
+        state_actv = state_data['active']
+        state_name = state_data['name']
+
+        if not state_actv:
+            print u"[DESACTIVADA] Acció canvi d'estat per cas ATC {}, estat {}".format(atc_id, state_name)
+            return False
+
+        print "Acció canvi d'estat per cas ATC {}, estat {}".format(atc_id, state_name)
+        return True
+
 
     def _ff_generate_atc_parameters(self, cursor, uid, ids, field_name, arg, context=None):
         if not context:
@@ -80,7 +90,7 @@ class SomAutoreclamaState(osv.osv):
         ),
         'active': fields.boolean(
             string=_(u'Actiu'),
-            help=_(u"Indica si l'estat està actiu i pot ser cercat")
+            help=_(u"Indica si l'estat està actiu i pot executar la tasca")
         ),
         'generate_atc_parameters': fields.json("Parametres de generació d'ATC"),
         'generate_atc_parameters_text': fields.function(

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from osv import osv
-from datetime import date
 
 class SomAutoreclamaStateUpdater(osv.osv_memory):
 
@@ -16,61 +15,47 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         return atc_obj.search(cursor, uid, search_params)
 
     def update_atcs_if_possible(self, cursor, uid, ids, context=None):
-        for atc_id in ids:
-            self.update_atc_if_possible(cursor, uid, atc_id, context)
+        updated = []
+        not_updated = []
 
+        for atc_id in ids:
+            if self.update_atc_if_possible(cursor, uid, atc_id, context):
+                updated.append(atc_id)
+            else:
+                not_updated.append(atc_id)
+
+        return updated, not_updated
 
     def update_atc_if_possible(self, cursor, uid, atc_id, context=None):
-
-
-        # per el cas atc
-        # comprovem si compleix alguna condició
-        # si la compleix obtenim nou estat 
-        # executar acció del nou estat
-        # si no hi ha cap error
-        # canviem l'estat al nou estat gravant l'historic
-
-
         atc_obj = self.pool.get("giscedata.atc")
-        ash_obj = self.pool.get("som_autoreclama_state_history_atc")
+        history_obj = self.pool.get("som.autoreclama.state.history.atc")
+        state_obj = self.pool.get("som.autoreclama.state")
+        cond_obj = self.pool.get("som.autoreclama.state.condition")
         atc_data = atc_obj.get_autoreclama_data(cursor, uid, atc_id, context)
-        atc = atc_obj.browse(cursor, uid, atc_id)
 
-        for condition in atc.autoreclama_state.conditions_ids:
-            if condition.fit_atc_condition(cursor, uid, atc_data):
+        autoreclama_state_id = atc_obj.read(cursor, uid, atc_id, ['autoreclama_state'], context)['autoreclama_state'][0]
+        cond_ids = cond_obj.search(cursor, uid,[
+            ('state_id', '=', autoreclama_state_id),
+            ('active', '=', True),
+        ], order='priority', context=context)
+        for cond_id in cond_ids:
+            if cond_obj.fit_atc_condition(cursor, uid, cond_id, atc_data):
                 try:
-                    next_state = condition.next_state
-                    next_state.go_action(cursor, uid, atc_id)
-                except:
-                    pass
-                ash_id = atc.autoreclama_history_ids[0]
-                current_date = date.today().strftime("%d-%m-%Y")
-                ash_obj.write(
-                    cursor, 
-                    uid, 
-                    ash_id, 
-                    {
-                        'end_date': current_date
-                    }
-                )
-                ash_obj.create(
-                    cursor,
-                    uid,
-                    {
-                        'atc_id': atc_id,
-                        'autoreclama_state_id': next_state,
-                        'change_date': current_date,
-                    }
-                )
+                    next_state_id = cond_obj.read(cursor, uid, cond_id, ['next_state_id'], context=context)['next_state_id'][0]
+                    if state_obj.do_action(cursor, uid, next_state_id, atc_id, context):
+                        history_obj.historize(cursor, uid, atc_id, next_state_id, None, context)
+                        return True
+                except Exception as e:
+                    pass # TODO: handle this exception better and do nothing if error
+
+        return False
+
 
     def state_updater(self, cursor, uid, context=None):
-
         if context is None:
             context = {}
 
-        ids = self.get_atc_candidates_to_update(cursor, uid, context)
-        self.update_atcs_if_possible(cursor, uid, ids, context)
-
-        return True
+        atc_ids = self.get_atc_candidates_to_update(cursor, uid, context)
+        return self.update_atcs_if_possible(cursor, uid, atc_ids, context)
 
 SomAutoreclamaStateUpdater()

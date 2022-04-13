@@ -58,9 +58,35 @@
             <field name="priority">16</field>
             <field name="arch" type="xml">
                 <tree string="Condicions Autoreclama">
+                    <field name="priority"/>
+                    <field name="active"/>
                     <field name="subtype_id"/>
                     <field name="days"/>
                 </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_som_autoreclama_state_condition_form">
+            <field name="name">som.autoreclama.state.condition.form</field>
+            <field name="model">som.autoreclama.state.condition</field>
+            <field name="type">form</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <form string="Condicions autoreclama">
+                    <group colspan="2" col="4">
+                        <group colspan="4" col="2" string="Ordre i activació">
+                            <field name="priority" select="2"/>
+                            <field name="active" select="1"/>
+                        </group>
+                        <group colspan="4" col="2" string="Condicions d'activació">
+                            <field name="subtype_id" select="1"/>
+                            <field name="days" select="1"/>
+                        </group>
+                        <group colspan="4" col="2" string="Estats">
+                            <field name="state_id" select="1"/>
+                            <field name="next_state_id" select="1"/>
+                        </group>
+                    </group>
+                </form>
             </field>
         </record>
         <record model="ir.ui.view" id="view_som_autoreclam_state_history_atc_tree">
@@ -74,6 +100,24 @@
                     <field name="change_date"/>
                     <field name="end_date"/>
                 </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_som_autoreclam_state_history_atc_form">
+            <field name="name">som.autoreclama.state.history.atc.form</field>
+            <field name="model">som.autoreclama.state.history.atc</field>
+            <field name="type">form</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <form string="Historic d'autoreclama">
+                    <group colspan="2" col="4">
+                        <field name="autoreclama_state_id" colspan="4" select="1"/>
+                        <field name="atc_id" colspan="4" select="1"/>
+                        <group colspan="4" col="2" string="Dates">
+                            <field name="change_date" select="1"/>
+                            <field name="end_date" select="2"/>
+                        </group>
+                    </group>
+                </form>
             </field>
         </record>
     </data>
