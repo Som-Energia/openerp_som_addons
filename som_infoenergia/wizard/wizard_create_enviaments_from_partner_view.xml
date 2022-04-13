@@ -12,9 +12,11 @@
                         <label string="Seleccionar partners per afegir al lot" colspan="4"/>
                         <field name="init_date" string="Data baixa sòcia" />
                         <field name="end_date" string="-" nolabel="1"/>
+                        <field name="es_soci" />
                         <separator string="" colspan="4"/>
                         <field name="baixa" />
                         <field name="has_gkwh" />
+                        <field name="te_aportacions" />
                         <field name="vat" />
                         <field name="active" />
                         <field name="category" />
