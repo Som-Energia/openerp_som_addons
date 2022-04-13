@@ -26,6 +26,12 @@ class SomAutoreclamaBaseTests(testing.OOTestCase):
         found_ids = model_obj.search(self.cursor, self.uid, params)
         return found_ids[0] if found_ids else None
 
+    def browse_referenced(self, reference):
+        model, id = reference.split(',')
+        model_obj = self.get_model(model)
+        return model_obj.browse(self.cursor, self.uid, int(id))
+
+
 class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
 
     def test_first_state_correct_dummy(self):
@@ -199,16 +205,14 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
         self.assertEqual(atc.polissa_id.id , polissa_id)
         self.assertEqual(atc.tancar_cac_al_finalitzar_r1 , new_case_data['tanca_al_finalitzar_r1'])
 
-        model, id = atc.ref.split(",")
-        self.assertEqual(model, 'giscedata.switching')
-        model_obj = self.get_model(model)
-        ref = model_obj.browse(self.cursor, self.uid, int(id))
+        atr = self.browse_referenced(atc.ref)
 
-        self.assertEqual(ref.proces_id.name, u'R1')
-        self.assertEqual(ref.step_id.name, u'01')
-        self.assertEqual(ref.section_id.name, u'Switching')
-        self.assertEqual(ref.cups_polissa_id.id, polissa_id)
-        self.assertEqual(ref.state, u'open')
+        self.assertEqual(atr.proces_id.name, u'R1')
+        self.assertEqual(atr.step_id.name, u'01')
+        self.assertEqual(atr.section_id.name, u'Switching')
+        self.assertEqual(atr.cups_polissa_id.id, polissa_id)
+        self.assertEqual(atr.state, u'open')
+        self.assertEqual(atr.ref, u'giscedata.atc,{}'.format(atc.id))
 
 
     def test_create_related_atc_r1_case_via_wizard__from_atr(self):
@@ -243,6 +247,7 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
         new_atc_id = atc_obj.create_related_atc_r1_case_via_wizard(self.cursor, self.uid, old_atc_id, {})
 
         atc = atc_obj.browse(self.cursor, self.uid, new_atc_id)
+        atc_old = atc_obj.browse(self.cursor, self.uid, old_atc_id)
 
         self.assertEqual(atc.name , new_case_data['descripcio'])
         self.assertEqual(atc.canal_id.id , channel_id)
@@ -261,3 +266,11 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
         self.assertEqual(ref.section_id.name, u'Switching')
         self.assertEqual(ref.cups_polissa_id.id, polissa_id)
         self.assertEqual(ref.state, u'open')
+        self.assertEqual(ref.ref, u'giscedata.atc,{}'.format(atc.id))
+
+        codi_solicitud_old =  self.browse_referenced(atc_old.ref).codi_sollicitud
+        cas_atr = self.browse_referenced(atc.ref)
+        pas_atr_id = cas_atr.step_ids[0].pas_id
+        pas_atr = self.browse_referenced(pas_atr_id)
+        codi_solicitud_ref = pas_atr.reclamacio_ids[0].codi_sollicitud_reclamacio
+        self.assertEqual(codi_solicitud_old, codi_solicitud_ref)
