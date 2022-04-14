@@ -59,6 +59,8 @@ class GiscedataAtc(osv.osv):
             'polissa_field': 'id',                  # camp per llegir
             'active_ids': [case_data['polissa_id']],# id de la polissa
         }
+        if context:
+            ctx.update(context)
         params = {
             'canal_id': case_data['canal_id'],
             'subtipus_id': case_data['subtipus_reclamacio_id'],
@@ -112,10 +114,17 @@ class GiscedataAtc(osv.osv):
     # Create and setup autoreclama history to the new created ATC object
     def create(self, cursor, uid, vals, context=None):
         atc_id = super(GiscedataAtc, self).create(cursor, uid, vals, context=context)
+
+        if not context:
+            context = {}
+
         imd_obj = self.pool.get('ir.model.data')
-        correct_state_id = imd_obj.get_object_reference(
+        initial_state_id = imd_obj.get_object_reference(
                 cursor, uid, 'som_autoreclama', 'correct_state_workflow_atc'
         )[1]
+
+        initial_state_id = context.get('autoreclama_history_initial_state_id', initial_state_id)
+        initial_date = context.get('autoreclama_history_initial_date', date.today().strftime("%d-%m-%Y"))
 
         atch_obj = self.pool.get('som.autoreclama.state.history.atc')
         atch_obj.create(
@@ -123,8 +132,8 @@ class GiscedataAtc(osv.osv):
             uid,
             {
                 'atc_id': atc_id,
-                'autoreclama_state_id': correct_state_id,
-                'change_date': date.today().strftime("%d-%m-%Y"),
+                'autoreclama_state_id': initial_state_id,
+                'change_date': initial_date,
             }
         )
         return atc_id

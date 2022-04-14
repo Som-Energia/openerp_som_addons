@@ -7,6 +7,9 @@ import mock
 
 from .. import giscedata_atc, som_autoreclama_state_history
 
+def today_str():
+    return date.today().strftime("%Y-%m-%d")
+
 class SomAutoreclamaBaseTests(testing.OOTestCase):
 
     def setUp(self):
@@ -45,7 +48,7 @@ class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
 
     @mock.patch.object(som_autoreclama_state_history.SomAutoreclamaStateHistoryAtc, "create")
     @mock.patch.object(giscedata_atc.GiscedataAtc, "create")
-    def test_create_atc__state_correct_in_history(self, mock_create_atc, mock_create_history):
+    def _test_create_atc__state_correct_in_history(self, mock_create_atc, mock_create_history):
         sash_obj = self.get_model('som.autoreclama.state.history.atc')
         mock_create_atc.return_value = 1
 
@@ -60,9 +63,171 @@ class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
         vals = {
             'atc_id': 1,
             'autoreclama_state_id':1,
-            'change_date': date.today().strftime("%d-%m-%Y")
+            'change_date': today_str()
         }
         sash_obj.create.assert_called_once_with(self.cursor, self.uid, vals)
+
+    def test_create_atc__first_state_correct_in_history_indirectly(self):
+        atc_obj = self.get_model('giscedata.atc')
+
+        ir_obj = self.get_model('ir.model.data')
+        polissa_id = ir_obj.get_object_reference(self.cursor, self.uid, 'giscedata_polissa', 'polissa_0001')[1]
+
+        channel_id = self.search_in('res.partner.canal', [('name','ilike','intercambi')])
+        section_id = self.search_in('crm.case.section', [('name','ilike','client')])
+        subtipus_id = self.search_in('giscedata.subtipus.reclamacio', [('name','=','029')])
+
+        new_case_data = {
+            'polissa_id': polissa_id,
+            'descripcio': u'Reclamació per retràs automàtica',
+            'canal_id': channel_id,
+            'section_id': section_id,
+            'subtipus_reclamacio_id': subtipus_id,
+            'comentaris': u'test test test',
+            'sense_responsable': True,
+            'tanca_al_finalitzar_r1': False,
+            'crear_cas_r1': False,
+        }
+        new_atc_id = atc_obj.create_general_atc_r1_case_via_wizard(self.cursor, self.uid, new_case_data, {})
+
+        atc = atc_obj.browse(self.cursor, self.uid, new_atc_id)
+
+        self.assertEqual(atc.autoreclama_state.name, 'Correcte')
+        self.assertEqual(atc.autoreclama_state_date, today_str())
+        self.assertEqual(len(atc.autoreclama_history_ids), 1)
+
+    def test_create_atc__first_state_correct_in_history_indirectly_a(self):
+        atc_obj = self.get_model('giscedata.atc')
+
+        ir_obj = self.get_model('ir.model.data')
+        polissa_id = ir_obj.get_object_reference(self.cursor, self.uid, 'giscedata_polissa', 'polissa_0001')[1]
+
+        channel_id = self.search_in('res.partner.canal', [('name','ilike','intercambi')])
+        section_id = self.search_in('crm.case.section', [('name','ilike','client')])
+        subtipus_id = self.search_in('giscedata.subtipus.reclamacio', [('name','=','029')])
+
+        state_0_id = self.search_in('som.autoreclama.state', [('name','ilike','correc')])
+        state_0_dt = '2022-01-02'
+
+        new_case_data = {
+            'polissa_id': polissa_id,
+            'descripcio': u'Reclamació per retràs automàtica',
+            'canal_id': channel_id,
+            'section_id': section_id,
+            'subtipus_reclamacio_id': subtipus_id,
+            'comentaris': u'test test test',
+            'sense_responsable': True,
+            'tanca_al_finalitzar_r1': False,
+            'crear_cas_r1': False,
+        }
+        ctxt = {
+            'autoreclama_history_initial_state_id':state_0_id,
+            'autoreclama_history_initial_date': state_0_dt,
+        }
+        new_atc_id = atc_obj.create_general_atc_r1_case_via_wizard(self.cursor, self.uid, new_case_data, ctxt)
+
+        atc = atc_obj.browse(self.cursor, self.uid, new_atc_id)
+
+        self.assertEqual(atc.autoreclama_state.id, state_0_id)
+        self.assertEqual(atc.autoreclama_state_date, state_0_dt)
+        self.assertEqual(len(atc.autoreclama_history_ids), 1)
+
+    def test_historize__second_state_correct_in_history_indirectly(self):
+        atc_obj = self.get_model('giscedata.atc')
+        history_obj = self.get_model('som.autoreclama.state.history.atc')
+
+        ir_obj = self.get_model('ir.model.data')
+        polissa_id = ir_obj.get_object_reference(self.cursor, self.uid, 'giscedata_polissa', 'polissa_0001')[1]
+
+        channel_id = self.search_in('res.partner.canal', [('name','ilike','intercambi')])
+        section_id = self.search_in('crm.case.section', [('name','ilike','client')])
+        subtipus_id = self.search_in('giscedata.subtipus.reclamacio', [('name','=','029')])
+
+        state_0_id = self.search_in('som.autoreclama.state', [('name','ilike','correc')])
+        state_0_dt = '2022-01-02'
+        state_1_id = self.search_in('som.autoreclama.state', [('name','ilike','desact')])
+        state_1_dt = '2022-02-15'
+
+        new_case_data = {
+            'polissa_id': polissa_id,
+            'descripcio': u'Reclamació per retràs automàtica',
+            'canal_id': channel_id,
+            'section_id': section_id,
+            'subtipus_reclamacio_id': subtipus_id,
+            'comentaris': u'test test test',
+            'sense_responsable': True,
+            'tanca_al_finalitzar_r1': False,
+            'crear_cas_r1': False,
+        }
+        ctxt = {
+            'autoreclama_history_initial_state_id':state_0_id,
+            'autoreclama_history_initial_date': state_0_dt,
+        }
+        new_atc_id = atc_obj.create_general_atc_r1_case_via_wizard(self.cursor, self.uid, new_case_data, ctxt)
+        history_obj.historize(self.cursor, self.uid, new_atc_id, state_1_id, state_1_dt)
+
+        atc = atc_obj.browse(self.cursor, self.uid, new_atc_id)
+
+        self.assertEqual(atc.autoreclama_state.id, state_1_id )
+        self.assertEqual(atc.autoreclama_state_date, state_1_dt )
+        self.assertEqual(len(atc.autoreclama_history_ids), 2)
+
+        self.assertEqual(atc.autoreclama_history_ids[1].autoreclama_state_id.id, state_0_id )
+        self.assertEqual(atc.autoreclama_history_ids[1].change_date, state_0_dt )
+        self.assertEqual(atc.autoreclama_history_ids[1].end_date, state_1_dt )
+        self.assertEqual(atc.autoreclama_history_ids[1].atc_id.id, new_atc_id )
+
+    def test_historize__third_state_correct_in_history_indirectly(self):
+        atc_obj = self.get_model('giscedata.atc')
+        history_obj = self.get_model('som.autoreclama.state.history.atc')
+
+        ir_obj = self.get_model('ir.model.data')
+        polissa_id = ir_obj.get_object_reference(self.cursor, self.uid, 'giscedata_polissa', 'polissa_0001')[1]
+
+        channel_id = self.search_in('res.partner.canal', [('name','ilike','intercambi')])
+        section_id = self.search_in('crm.case.section', [('name','ilike','client')])
+        subtipus_id = self.search_in('giscedata.subtipus.reclamacio', [('name','=','029')])
+        state_0_id = self.search_in('som.autoreclama.state', [('name','ilike','correc')])
+        state_0_dt = '2022-01-02'
+        state_1_id = self.search_in('som.autoreclama.state', [('name','ilike','reclam')])
+        state_1_dt = '2022-02-15'
+        state_2_id = self.search_in('som.autoreclama.state', [('name','ilike','desact')])
+        state_2_dt = '2022-04-16'
+
+        new_case_data = {
+            'polissa_id': polissa_id,
+            'descripcio': u'Reclamació per retràs automàtica',
+            'canal_id': channel_id,
+            'section_id': section_id,
+            'subtipus_reclamacio_id': subtipus_id,
+            'comentaris': u'test test test',
+            'sense_responsable': True,
+            'tanca_al_finalitzar_r1': False,
+            'crear_cas_r1': False,
+        }
+        ctxt = {
+            'autoreclama_history_initial_state_id':state_0_id,
+            'autoreclama_history_initial_date': state_0_dt,
+        }
+        new_atc_id = atc_obj.create_general_atc_r1_case_via_wizard(self.cursor, self.uid, new_case_data, ctxt)
+        history_obj.historize(self.cursor, self.uid, new_atc_id, state_1_id, state_1_dt)
+        history_obj.historize(self.cursor, self.uid, new_atc_id, state_2_id, state_2_dt)
+
+        atc = atc_obj.browse(self.cursor, self.uid, new_atc_id)
+
+        self.assertEqual(atc.autoreclama_state.id, state_2_id )
+        self.assertEqual(atc.autoreclama_state_date, state_2_dt )
+        self.assertEqual(len(atc.autoreclama_history_ids), 3)
+
+        self.assertEqual(atc.autoreclama_history_ids[1].autoreclama_state_id.id, state_1_id )
+        self.assertEqual(atc.autoreclama_history_ids[1].change_date, state_1_dt )
+        self.assertEqual(atc.autoreclama_history_ids[1].end_date, state_2_dt )
+        self.assertEqual(atc.autoreclama_history_ids[1].atc_id.id, new_atc_id )
+
+        self.assertEqual(atc.autoreclama_history_ids[2].autoreclama_state_id.id, state_0_id )
+        self.assertEqual(atc.autoreclama_history_ids[2].change_date, state_0_dt )
+        self.assertEqual(atc.autoreclama_history_ids[2].end_date, state_1_dt )
+        self.assertEqual(atc.autoreclama_history_ids[2].atc_id.id, new_atc_id )
 
 
 class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):

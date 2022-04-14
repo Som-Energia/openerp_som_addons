@@ -18,7 +18,7 @@ class SomAutoreclamaStateHistoryAtc(SomAutoreclamaStateHistory):
     _name = 'som.autoreclama.state.history.atc'
     _namespace = 'atc'
 
-    def historize(self, cursor, uid, atc_id, next_state_id, current_date, context):
+    def historize(self, cursor, uid, atc_id, next_state_id, current_date, context=None):
         if not current_date:
             current_date = date.today().strftime("%Y-%m-%d")
 
