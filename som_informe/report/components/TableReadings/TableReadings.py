@@ -13,7 +13,7 @@ class TableReadings:
         result['taula'] = []
         result['distribuidora'] = "Sense F1 relacionat"
         result['date_from'] = False
-        result['date_to'] = dateformat(datetime.today()) #en cas de no tenir cap data de factura avui
+        result['date_to'] = False
         fact_obj = wiz.pool.get('giscedata.facturacio.factura')
         f1_obj = wiz.pool.get('giscedata.facturacio.importacio.linia')
 
