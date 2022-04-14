@@ -245,7 +245,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
 
         quadre_lectures = []
         if wiz.mostra_quadre_resum_lectures:
-            quadre_lectures.extend(self.extract_readings_table_metadata(cursor, uid, wiz, reversed(invoice_ids) , context))
+            quadre_lectures.extend(self.extract_readings_table_metadata(cursor, uid, wiz, invoice_ids , context))
         quadre_factures = []
         # if wiz.mostra_quadre_resum_factures:
         #     quadre_factures.extend(self.extract_invoices_table_metadata(cursor, uid, wiz, invoice_ids , context))
@@ -298,6 +298,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
     def extract_readings_table_metadata(self, cursor, uid, wiz, invoice_ids, context):
         if not isinstance(invoice_ids, list):
             invoice_ids = [invoice_ids]
+        invoice_ids.reverse()
         result = []
         component_name = 'TableReadings'
         extractor = self.factory_metadata_extractor(component_name)
@@ -338,7 +339,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
                     component_name = 'InvoiceF1A'
                 elif invoice.tipo_rectificadora in ('C'):
                     component_name = 'InvoiceF1C'
-                elif invoice.tipo_rectificadora in ('BRA'): #BRA invent ERP que no es vol que apareixi
+                elif invoice.tipo_rectificadora == 'BRA': #BRA invent ERP que no es vol que apareixi
                     component_name = None
                 else: # B RA
                     f1_obj = wiz.pool.get('giscedata.facturacio.importacio.linia')
