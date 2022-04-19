@@ -241,14 +241,12 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             invoice_ids = fact_obj.search(cursor, uid, search_parameters)
             if wiz.mostra_factura:
                 result_crono.extend(self.extract_invoice_metadata(cursor, uid, wiz, invoice_ids, context))
-
-
-        quadre_lectures = []
-        if wiz.mostra_quadre_resum_lectures:
-            quadre_lectures.extend(self.extract_readings_table_metadata(cursor, uid, wiz, invoice_ids , context))
-        quadre_factures = []
-        # if wiz.mostra_quadre_resum_factures:
-        #     quadre_factures.extend(self.extract_invoices_table_metadata(cursor, uid, wiz, invoice_ids , context))
+            quadre_lectures = []
+            if wiz.mostra_quadre_resum_lectures:
+                quadre_lectures.extend(self.extract_readings_table_metadata(cursor, uid, wiz, invoice_ids , context))
+            quadre_factures = []
+            if wiz.mostra_quadre_resum_factures:
+                quadre_factures.extend(self.extract_invoices_table_metadata(cursor, uid, wiz, invoice_ids , context))
 
         if result_crono:
             result_atr_head = self.extract_components_metadata(cursor, uid, wiz, ['atrHeader'], context)
@@ -308,17 +306,18 @@ class WizardCreateTechnicalReport(osv.osv_memory):
 
         return result
 
-    # def extract_invoices_table_metadata(self, cursor, uid, wiz, invoice_ids, context):
-    #     if not isinstance(invoice_ids, list):
-    #         invoice_ids = [invoice_ids]
-    #     result = []
-    #     component_name = 'TableInvoices'
-    #     extractor = self.factory_metadata_extractor(component_name)
-    #     extracted_data = extractor.get_data(cursor, uid, wiz, invoice_ids, context)
-    #     if extracted_data:
-    #         result.append(extracted_data)
+    def extract_invoices_table_metadata(self, cursor, uid, wiz, invoice_ids, context):
+        if not isinstance(invoice_ids, list):
+            invoice_ids = [invoice_ids]
+        invoice_ids.reverse()
+        result = []
+        component_name = 'TableInvoices'
+        extractor = self.factory_metadata_extractor(component_name)
+        extracted_data = extractor.get_data(cursor, uid, wiz, invoice_ids, context)
+        if extracted_data:
+            result.append(extracted_data)
 
-    #     return result
+        return result
 
     def extract_invoice_metadata(self, cursor, uid, wiz, invoice_ids, context):
         if not isinstance(invoice_ids, list):
