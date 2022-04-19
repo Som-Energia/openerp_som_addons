@@ -65,29 +65,33 @@ class TableInvoices:
             linia_taula = {}
             invoice = fact_obj.browse(cursor, uid, invoice_id)
             linia_taula['invoice_number'] = invoice.number
-            linia_taula['date'] = invoice.date_invoice
+            linia_taula['date'] = dateformat(invoice.date_invoice)
             if invoice.type in ('out_invoice', 'out_refund'):
-                if not result['date_from'] or result['date_from'] > datetime.strptime(result['date_from'],'%d-%m-%Y'):
+                linia_taula['date_from'] = dateformat(invoice.data_inici)
+                if not result['date_from'] or datetime.strptime(invoice.data_inici,'%Y-%m-%d') < datetime.strptime(result['date_from'],'%d-%m-%Y'):
                     result['date_from'] = dateformat(invoice.data_inici)
                 linia_taula['date_to'] = dateformat(invoice.data_final)
-                if not result['date_to'] or invoice.data_final > datetime.strptime(result['date_to'],'%d-%m-%Y'):
+                if not result['date_to'] or  datetime.strptime(invoice.data_final,'%Y-%m-%d') > datetime.strptime(result['date_to'],'%d-%m-%Y'):
                     result['date_to'] = dateformat(invoice.data_final)
-            linia_taula['max_power'] = invoice.potencia_max
-            linia_taula['invoiced_energy'] = invoice.energia_kwh
-            linia_taula['exported_energy'] = invoice.generacio_kwh
-            linia_taula['origin'] = self.get_invoice_origin(cursor, uid, invoice)
-            linia_taula['total'] = invoice.signed_amount_total
+                linia_taula['max_power'] = invoice.potencia_max or 0
+                linia_taula['invoiced_energy'] = invoice.energia_kwh or 0
+                linia_taula['exported_energy'] = invoice.generacio_kwh or 0
+                linia_taula['origin'] = self.get_invoice_origin(cursor, uid, invoice)
+                linia_taula['invoiced_days'] = invoice.dies or 0
+                linia_taula['total'] = invoice.signed_amount_total
+                result['taula'].append(linia_taula)
+        return result
 
 
 
     def get_invoice_origin(self, cursor, uid, invoice):
         readings = {}
-        lectures = invoice.lectura_energia_ids
+        lectures = invoice.lectures_energia_ids
         if lectures != None:
             for lectura in lectures:
                 origens = self.get_origen_lectura(cursor, uid,lectura)
                 if '(P1)' in lectura.name:
-                    data = str(datetime.strptime(lectura.data_anterior, '%d/%m/%Y').date() + timedelta(days=1))
+                    data = str(datetime.strptime(lectura.data_anterior, '%Y-%m-%d').date() + timedelta(days=1))
                     origin = (u'estimada')
                     if origens[lectura.data_anterior] == 'real' and origens[lectura.data_actual] =='real':
                         origin = (u'real')
@@ -98,4 +102,4 @@ class TableInvoices:
 
                     readings[data] = origin
 
-            return readings[invoice.data_desde] if invoice.data_desde in readings else (u'sense lectura')
+            return readings[invoice.data_inici] if invoice.data_inici in readings else (u'sense lectura')
