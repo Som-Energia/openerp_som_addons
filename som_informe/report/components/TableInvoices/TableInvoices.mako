@@ -24,7 +24,7 @@ ${_(u"<b>A continuació es mostra un resum de les factures emeses per Som Energi
             <td style="width:10%">${_(u"%s") % (formatLang(linia['max_power'], digits=3))}</td>
             <td style="width:10%">${_(u"%s") % (formatLang(linia['invoiced_energy'], digits=2))}</td>
             <td style="width:10%">${_(u"%s") % (formatLang(linia['exported_energy'], digits=2))}</td>
-            <td style="width:10%">${_(u"%s") % (formatLang(linia['origin'], digits=2))}</td>
+            <td style="width:10%">${_(u"%s") % (linia['origin'])}</td>
             <td style="width:10%">${_(u"%s") % (linia['invoiced_days'])}</td>
             <td style="width:10%">${_(u"%s") % (linia['total'])}</td>
         </tr>
