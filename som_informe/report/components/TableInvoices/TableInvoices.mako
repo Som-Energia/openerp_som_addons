@@ -1,4 +1,7 @@
 <%page args="d" />
+% if False:
+    ${_(u"sense lectura")}
+% endif
 ${_(u"<b>A continuació es mostra un resum de les factures emeses per Som Energia al titular de contracte pel període (%s - %s): </b>") % (d.date_from , d.date_to)}<br/>
 <br>
 <br>
