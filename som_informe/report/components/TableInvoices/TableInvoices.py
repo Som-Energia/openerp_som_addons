@@ -60,13 +60,12 @@ class TableInvoices:
         result['date_from'] = False
         result['date_to'] = False
         fact_obj = wiz.pool.get('giscedata.facturacio.factura')
-
         for invoice_id in invoice_ids:
-            linia_taula = {}
             invoice = fact_obj.browse(cursor, uid, invoice_id)
-            linia_taula['invoice_number'] = invoice.number
-            linia_taula['date'] = dateformat(invoice.date_invoice)
             if invoice.type in ('out_invoice', 'out_refund'):
+                linia_taula = {}
+                linia_taula['invoice_number'] = invoice.number
+                linia_taula['date'] = dateformat(invoice.date_invoice)
                 linia_taula['date_from'] = dateformat(invoice.data_inici)
                 if not result['date_from'] or datetime.strptime(invoice.data_inici,'%Y-%m-%d') < datetime.strptime(result['date_from'],'%d-%m-%Y'):
                     result['date_from'] = dateformat(invoice.data_inici)
