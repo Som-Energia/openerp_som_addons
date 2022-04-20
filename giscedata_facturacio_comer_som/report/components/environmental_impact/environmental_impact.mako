@@ -1,7 +1,8 @@
 <%page args="ei" />
-<style>
-<%include file="environmental_impact.css" />
-</style>
+% if ei.is_visible:
+    <style>
+    <%include file="environmental_impact.css" />
+    </style>
     <div class="environment_impact">
         <h1>${_(u"IMPACTE AMBIENTAL")}</h1>
         <p class="env_imp_desc">
@@ -37,3 +38,4 @@
             </div>
         </div>
     </div>
+% endif
