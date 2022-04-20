@@ -21,9 +21,9 @@ class PolissaLecturesCalculadesTest(testing.OOTestCase):
         self.txn.stop()
 
     @mock.patch.object(giscedata_polissa.GiscedataPolissaCalculada, "retrocedir_lot")
-    @mock.patch.object(giscedata_polissa.GiscedataPolissaCalculada, "check_conditions_lectures_calculades")
-    def test_crear_lectures_calculades__sense_lectures(self, mock_check_conditions_lectures_calculades, mock_retrocedir_lot):
-        
+    @mock.patch.object(giscedata_polissa.GiscedataPolissaCalculada, "_check_conditions_polissa_calculades")
+    def test_crear_lectures_calculades__sense_lectures(self, mock_check_conditions_polissa_calculades, mock_retrocedir_lot):
+
         imd_obj = self.model('ir.model.data')
         pol_obj = self.model('giscedata.polissa')
         polissa_id = imd_obj.get_object_reference(
@@ -31,9 +31,9 @@ class PolissaLecturesCalculadesTest(testing.OOTestCase):
         )[1]
 
         check_conditions_values = [(False,u'no té categoria'),(False,u'no es 2.0TD')]
-        def check_conditions_lectures_calculades(cursor, uid, polissa_id, context={}):
+        def check_conditions_polissa_calculades(cursor, uid, polissa_id, context={}):
             return check_conditions_values.pop()
-        mock_check_conditions_lectures_calculades.side_effect = check_conditions_lectures_calculades
+        mock_check_conditions_polissa_calculades.side_effect = check_conditions_polissa_calculades
         mock_retrocedir_lot.return_value = None
 
         result = pol_obj.crear_lectures_calculades(self.cursor, self.uid, [polissa_id, polissa_id], {})
@@ -44,16 +44,16 @@ class PolissaLecturesCalculadesTest(testing.OOTestCase):
 
 
     @mock.patch.object(giscedata_polissa.GiscedataPolissaCalculada, "retrocedir_lot")
-    @mock.patch.object(giscedata_polissa.GiscedataPolissaCalculada, "check_conditions_lectures_calculades")
-    def test_crear_lectures_calculades__sense_data_ultima_lectura(self, mock_check_conditions_lectures_calculades, mock_retrocedir_lot):
-        
+    @mock.patch.object(giscedata_polissa.GiscedataPolissaCalculada, "_check_conditions_polissa_calculades")
+    def test_crear_lectures_calculades__sense_data_ultima_lectura(self, mock_check_conditions_polissa_calculades, mock_retrocedir_lot):
+
         imd_obj = self.model('ir.model.data')
         pol_obj = self.model('giscedata.polissa')
         polissa_id = imd_obj.get_object_reference(
             self.cursor, self.uid, 'giscedata_polissa', 'polissa_0001'
         )[1]
 
-        mock_check_conditions_lectures_calculades.return_value = (True,u'Ok')
+        mock_check_conditions_polissa_calculades.return_value = (True,u'Ok')
         mock_retrocedir_lot.return_value = None
 
         pol_obj.write(self.cursor, self.uid, polissa_id, {'data_ultima_lectura': None})
@@ -65,16 +65,16 @@ class PolissaLecturesCalculadesTest(testing.OOTestCase):
 
 
     @mock.patch.object(giscedata_polissa.GiscedataPolissaCalculada, "retrocedir_lot")
-    @mock.patch.object(giscedata_polissa.GiscedataPolissaCalculada, "check_conditions_lectures_calculades")
-    def test_crear_lectures_calculades__data_fi_menor_inicial(self, mock_check_conditions_lectures_calculades, mock_retrocedir_lot):
-        
+    @mock.patch.object(giscedata_polissa.GiscedataPolissaCalculada, "_check_conditions_polissa_calculades")
+    def test_crear_lectures_calculades__data_fi_menor_inicial(self, mock_check_conditions_polissa_calculades, mock_retrocedir_lot):
+
         imd_obj = self.model('ir.model.data')
         pol_obj = self.model('giscedata.polissa')
         polissa_id = imd_obj.get_object_reference(
             self.cursor, self.uid, 'giscedata_polissa', 'polissa_0001'
         )[1]
 
-        mock_check_conditions_lectures_calculades.return_value = (True,u'Ok')
+        mock_check_conditions_polissa_calculades.return_value = (True,u'Ok')
         mock_retrocedir_lot.return_value = None
 
         pol_obj.write(self.cursor, self.uid, polissa_id, {'data_ultima_lectura': '2022-03-01', 'data_ultima_lectura_f1':  '2022-03-02' })
