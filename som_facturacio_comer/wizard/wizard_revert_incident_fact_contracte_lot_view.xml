@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_revert_incident_fact_c_lot">
+            <field name="name">wizard.revert.incident.fact.c_lot.form</field>
+            <field name="model">wizard.revert.incident.fact.c_lot</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Reobrir la pòlissa en lot (eliminar factures i lectures)">
+                    <field name="state" invisible="1"/>
+                    <group colspan="4" col="4" attrs="{'invisible': [('state', '!=', 'init')]}">
+                        <group colspan="4" col="4">
+                            <label string="S'eliminaran les factures en esborrany generades (si n'hi ha), i es reobrirà la pòlissa en el lot" colspan="4"/>
+                            <label string=" " colspan="4"/>
+                            <label string=" " colspan="4"/>
+                            <label string=" " colspan="4"/>
+                            <field name="delete_lectures" string="Eliminar les lectures i maxímetres de comptador posteriors a la data última factura?" colspan="2"/>
+                        </group>
+                        <button name="do_action" string="Acceptar" icon="gtk-ok" type="object"/>
+                        <button special="cancel" string="Cancel·lar" icon="gtk-close"/>
+                    </group>
+                    <group colspan="4" col="4" attrs="{'invisible': [('state', '!=', 'end')]}">
+                        <label string="S'executaran les tasques en segon pla" colspan="4"/>
+                        <field name="info" nolabel="1" colspan="4" height="100" width="300"/>
+                        <button special="cancel" string="Finalizar" icon="gtk-close" />
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_wizard_revert_incident_fact_c_lot_form">
+            <field name="name">Reobrir la pòlissa en lot (eliminar factures i lectures)</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.revert.incident.fact.c_lot</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="context">{'model': 'giscedata.facturacio.contracte_lot'}</field>
+            <field name="view_id" ref="view_wizard_revert_incident_fact_c_lot"/>
+            <field name="target">new</field>
+        </record>
+
+        <record id="value_wizard_revert_incident_fact_c_lot_form" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Reobrir la pòlissa en lot (eliminar factures i lectures)</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.facturacio.contracte_lot</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_revert_incident_fact_c_lot_form'))"/>
+        </record>
+    </data>
+</openerp>
