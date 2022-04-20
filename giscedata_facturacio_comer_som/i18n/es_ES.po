@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2022-03-23 15:16+0000\n"
-"PO-Revision-Date: 2022-03-23 14:14+0000\n"
+"POT-Creation-Date: 2022-04-07 10:23+0000\n"
+"PO-Revision-Date: 2022-04-07 08:24+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -23,50 +23,50 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:289
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:1774
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:290
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:1802
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:9
 msgid "real"
 msgstr "real"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2526
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2559
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:7
 msgid "Energia Reactiva Capacitiva (kVArh)"
 msgstr "Energía Reactiva Capacitiva (kVArh)"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:1564
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:1597
 msgid " (Som Energia, SCCL)"
 msgstr "(Som Energia, SCCL)"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:294
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:295
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:12
 msgid "estimada distribuïdora"
 msgstr "estimada distribuidora"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2556
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2589
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:8
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_maximetre/energy_consumption_detail_td_maximetre.mako:7
 msgid "Maxímetre (kW)"
 msgstr "Maxímetro (kW)"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2468
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2501
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:5
 msgid "Energia Excedentària (kWh)"
 msgstr "Energía Excedentaria (kWh)"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:296
-#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:11
-msgid "calculada segons CCH"
-msgstr "calculada según CCH"
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:1804
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:1806
+msgid "calculada"
+msgstr "calculada"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:1617
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:1650
 msgid "(estimada)"
 msgstr "(estimada)"
 
@@ -82,7 +82,7 @@ msgid "Signar Factures"
 msgstr "Signar Facuras"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2497
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2530
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:6
 msgid "Energia Reactiva Inductiva (kVArh)"
 msgstr "Energía Reactiva Inductiva (kVArh)"
@@ -94,18 +94,18 @@ msgid "Reports Facturació SOM (Comercialitzadora)"
 msgstr "Reports Facturación SOM (Comercializadora)"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:1565
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:1598
 msgid "TRANSFERÈNCIA"
 msgstr "TRANSFERENCIA"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:292
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:293
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:10
 msgid "calculada per Som Energia"
 msgstr "calculada por Som Energía"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:1802
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:1835
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy/invoice_details_td_energy.mako:7
 msgid "sense lectura"
 msgstr "sin lectura"
@@ -116,23 +116,29 @@ msgid "Error ! No pots crear categories recursives."
 msgstr "Error ! You can not create recursive categories."
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:1771
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:1800
 msgid "estimada"
 msgstr "estimada"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2438
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:297
+#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:11
+msgid "calculada segons CCH"
+msgstr "calculada según CCH"
+
+#. module: giscedata_facturacio_comer_som
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2471
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:4
 msgid "Energia Activa (kWh)"
 msgstr "Energía Activa (kWh)"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:1621
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:1654
 msgid "(real)"
 msgstr "(real)"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:1619
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:1652
 msgid "(sense lectura)"
 msgstr "(sin lectura)"
 
@@ -141,12 +147,12 @@ msgid "INFORMACIÓ DE L'ELECTRICITAT UTILITZADA"
 msgstr "INFORMACIÓN DE LA ELECTRICIDAD UTILIZADA"
 
 #: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_factura_comer.mako:69
-#: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_factura_comer.mako:140
+#: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_factura_comer.mako:141
 msgid "DETALL DE LA FACTURA"
 msgstr "DETALLE DE LA FACTURA"
 
-#: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_factura_comer.mako:80
-#: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_factura_comer.mako:166
+#: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_factura_comer.mako:81
+#: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_factura_comer.mako:167
 msgid ""
 "Informació sobre protecció de dades: Les dades personals tractades per "
 "gestionar la relació contractual i, si s'escau, remetre informació comercial"
@@ -156,7 +162,7 @@ msgid ""
 "datos.com ."
 msgstr "Información sobre protección de datos: Los datos personales tratados para gestionar la relación contractual y, en su caso, remitir información comercial por medios electrónicos, se conservarán hasta el fin de la relación, baja comercial o los plazos de retención legales. Puedes ejercer tus derechos en la dirección postal de Som Energia como responsable o en somenergia@delegado-datos.com ."
 
-#: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_factura_comer.mako:98
+#: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_factura_comer.mako:99
 msgid "INFORMACIÓ DEL CONSUM ELÈCTRIC"
 msgstr "INFORMACIÓN DEL CONSUMO ELÉCTRICO"
 
@@ -633,11 +639,11 @@ msgstr "prórroga automática por periodos de un año"
 msgid "CAU (Codi d'autoconsum unificat):"
 msgstr "CAU (Código de autoconsumo unificado):"
 
-#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:6
+#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:7
 msgid "INFORMACIÓ DE L'ELECTRICITAT"
 msgstr "INFORMACIÓN DE LA ELECTRICIDAD"
 
-#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:8
+#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:9
 #, python-format
 msgid ""
 "L'electricitat que entra a les nostres llars ens arriba a través de la xarxa"
@@ -647,7 +653,7 @@ msgid ""
 "comercialitzem prové 100% de fonts renovables."
 msgstr "La electricidad que entra en nuestros hogares nos llega a través de la red de distribución, la electricidad que circula proviene de diferentes fuentes, pero utilizando el sistema de certificados de garantía de origen que emite la CNMC, en Som Energía podemos garantizar que el volumen de electricidad que comercializamos proviene 100% de fuentes renovables."
 
-#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:13
+#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:14
 msgid ""
 "En el gràfic següent mostrem el desglossament de la barreja de tecnologies "
 "de producció nacional per poder comparar el percentatge de l'energia "
@@ -655,64 +661,68 @@ msgid ""
 "la nostra cooperativa."
 msgstr "En el gráfico siguiente se muestra el desglose de la mezcla de tecnologías de producción nacional para poder comparar el porcentaje de la energía producida a escala nacional con el porcentaje de energía vendida a través de nuestra cooperativa."
 
-#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:18
+#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:19
 msgid "ORIGEN DE L'ELECTRICITAT"
 msgstr "ORIGEN DE LA ELECTRICIDAD"
 
-#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:22
+#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:23
 msgid "Mix Som Energia, SCCL"
 msgstr "Mix Som Energia, SCCL"
 
-#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:29
-#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:44
+#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:30
+#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:45
 msgid "Mix producció en el sistema elèctric espanyol {year}"
 msgstr "Mix producción en el sistema eléctrico español {year}"
 
-#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:34
+#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:35
 #, python-format
 msgid ""
 "El sistema elèctric espanyol ha importat un {}% de producció neta total"
 msgstr "El sistema eléctrico español ha importado un {}% de producción neta total"
 
-#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:36
+#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:37
 #, python-format
 msgid ""
 "El sistema elèctric espanyol ha exportat un {}% de producció neta total"
 msgstr "El sistema eléctrico español ha exportado un {}% de producción neta total"
 
-#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:44
+#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:45
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:15
 msgid "Origen"
 msgstr "Origen"
 
-#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:49
+#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:50
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:20
 msgid "Renovable"
 msgstr "Renovable"
 
-#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:52
+#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:53
 msgid "Cogeneració alta eficiència"
 msgstr "Cogeneración alta eficiencia"
 
-#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:55
+#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:56
 msgid "Cogeneració"
 msgstr "Cogeneración"
 
-#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:58
+#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:59
 msgid "CC Gas natural"
 msgstr "CC Gas natural"
 
-#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:61
+#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:62
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:35
 msgid "Carbó"
 msgstr "Carbón"
 
-#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:64
+#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:65
 msgid "Fuel/Gas"
 msgstr "Fuel/Gas"
 
-#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:67
+#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:68
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:45
 msgid "Nuclear"
 msgstr "Nuclear"
 
-#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:70
+#: rml:giscedata_facturacio_comer_som/report/components/electricity_information/electricity_information.mako:71
 msgid "Altres"
 msgstr "Otras"
 
@@ -902,6 +912,10 @@ msgstr "Valle"
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:10
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:13
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:22
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:85
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:89
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:99
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:103
 #, python-format
 msgid "%s"
 msgstr "%s"
@@ -1020,57 +1034,57 @@ msgid ""
 "aquestes dades)."
 msgstr "Potencia máxima demandada: (lo sentimos, %s aún no nos ha facilitado este dato)."
 
-#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:6
+#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:7
 msgid "IMPACTE AMBIENTAL"
 msgstr "IMPACTO MEDIOAMBIENTAL"
 
-#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:8
+#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:9
 msgid ""
 "L'impacte ambiental de l'electricitat que utilitzem depèn de les fonts de "
 "generació que s'utilitzen per a la seva producció."
 msgstr "El impacto ambiental de la electricidad que utilizamos depende de las fuentes de generación que se utilizan para su producción."
 
-#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:10
+#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:11
 msgid ""
 "En una escala de A a G (on A indica el mínim impacte ambiental i G el "
 "màxim), i tenint en compte que el valor mitjà nacional correspon al nivell "
 "D, l'energia comercialitzada per Som Energia, SCCL, té els valors següents:"
 msgstr "En una escala de A a G (donde A indica el mínimo impacto ambiental y G el máximo), y teniendo en cuenta que el valor medio nacional corresponde al nivel D, la energía comercializada por <b>Som Energia, SCCL</b>, tiene los siguientes valores:"
 
-#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:15
+#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:16
 msgid "Emissions de diòxid de carboni "
 msgstr "Emisiones de dióxido de carbono "
 
-#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:16
+#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:17
 msgid "Menys diòxid de carboni"
 msgstr "Menos dióxido de carbono"
 
-#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:21
-#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:33
+#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:22
+#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:34
 msgid "Mitjana nacional"
 msgstr "Media nacional"
 
-#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:23
+#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:24
 msgid "Contingut de carboni<br />Quilograms de diòxid de carboni per kWh"
 msgstr "Contenido de carbono<br />Kilogramos de dióxido de carbono por kWh"
 
-#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:24
+#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:25
 msgid "Més diòxid de carboni"
 msgstr "Más dióxido de carbono"
 
-#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:27
+#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:28
 msgid "Residus radioactius d'alta activitat "
 msgstr "Residuos radiactivos de alta actividad "
 
-#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:28
+#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:29
 msgid "Menys residus radioactius"
 msgstr "Menos residuos radiactivos"
 
-#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:35
+#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:36
 msgid "Residus radioactius<br />Mil·ligrams per kWh"
 msgstr "Residuos radioactivos<br />Miligramos por kWh"
 
-#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:36
+#: rml:giscedata_facturacio_comer_som/report/components/environmental_impact/environmental_impact.mako:37
 msgid "Més residus radioactius"
 msgstr "Más residuos radiactivos"
 
@@ -1939,3 +1953,95 @@ msgid ""
 "imposable i anulació de la quota repercutida conforme art. 80 Llei 24 RD "
 "162/1992 IVA. Quota anulada: %s €"
 msgstr "Factura rectificativa de %s de fecha %s por causa de modificación de base imponible y anulación de la cuota repercutida conforme art. 80 Ley 24 RD 162/1992 IVA. Cuota anulada: %s €"
+
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:7
+#, python-format
+msgid "Origen de l'electricitat de la comercialitzadora. %s"
+msgstr "Origen de la electricidad de la comercializadora. %s"
+
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:8
+msgid "Som Energia SCCL"
+msgstr "Som Energia SCCL"
+
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:16
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:64
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:68
+msgid "Som Energia"
+msgstr "Som Energia"
+
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:17
+msgid "Mix generació<br>nacional"
+msgstr "Mix generación<br>nacional"
+
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:21
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:22
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:26
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:27
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:31
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:32
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:36
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:37
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:41
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:42
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:46
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:47
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:51
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:52
+#, python-format
+msgid "%s %%"
+msgstr "%s %%"
+
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:25
+msgid "Cogen Alta Eficiència"
+msgstr "Cogen Alta Eficiencia"
+
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:30
+msgid "CC Gas Natural"
+msgstr "CC Gas Natural"
+
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:40
+msgid "Fuel Gas"
+msgstr "Fuel Gas"
+
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:50
+msgid "Altres no renovables"
+msgstr "Otras no renovables"
+
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:58
+#, python-format
+msgid "Impacte ambiental de la seva comercialitzadora. %s"
+msgstr "Impacto ambiental de su comercializadora. %s"
+
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:59
+msgid ""
+"La lletra 'A' correspon al mínim impacte ambiental, la lletra 'D' a la "
+"mitjana de generació nacional i la 'G' al màxim impacte ambiental."
+msgstr "La letra 'A' corresponde al mínimo impacto ambiental, la letra 'D' a la media de generación nacional y la 'G' al máximo impacto ambiental."
+
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:63
+msgid "Emissions de CO<sub>2</sub> equivalents"
+msgstr "Emisiones de CO<sub>2</sub> equivalentes"
+
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:67
+msgid "Residus Radioactius Alta Activitat"
+msgstr "Residuos Radioactivos Alta Actividad"
+
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:84
+msgid "Emissions CO<sub>2</sub> eq. (g/kWh)"
+msgstr "Emisiones CO<sub>2</sub> eq. (g/kWh)"
+
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:88
+msgid "Mitjana Nacional (g/kWh)"
+msgstr "Media Nacional (g/kWh)"
+
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:98
+msgid "Residus radioactius (&micro;g/kWh)"
+msgstr "Residuos radioactivos (&micro;g/kWh)"
+
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:102
+msgid "Mitjana Nacional (&micro;g/kWh)"
+msgstr "Media Nacional (&micro;g/kWh)"
+
+#: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:110
+msgid "Més informació sobre l'origen de la seva electricitat a "
+msgstr "Más información sobre el origen de su electricidad en"
