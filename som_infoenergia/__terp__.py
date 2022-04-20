@@ -16,6 +16,7 @@
         "giscedata_facturacio",
         "poweremail_references",
         "som_polissa_soci",
+        "som_generationkwh",
     ],
     "init_xml": [],
     "demo_xml": [
@@ -37,6 +38,7 @@
         "wizard/wizard_add_contracts_lot_view.xml",
         "wizard/wizard_cancel_from_csv_view.xml",
         "wizard/wizard_create_enviaments_from_csv_view.xml",
+        "wizard/wizard_create_enviaments_from_partner_view.xml",
     ],
     "active": False,
     "installable": True
