@@ -77,7 +77,7 @@ div.back{
         <record model="res.config" id="mitjana_environmental_impact_data">
             <field name="name">mitjana_environmental_impact_data</field>
             <field name="description">Valors de la taula d'impacto ambiental mitjana nacional</field>
-            <field name="value">{'renovable':4.9,'cae':4.9,'gasNatural':21.5,'carbo':1.9,'fuelGas': 2.2,'nuclear': 21.8,'altres': 7.7,'emisionCo2': 204,'residuRadio': 530,'year': '2021'}</field>
+            <field name="value">{'renovable':46.7,'cae':3.5,'gasNatural':17.9,'carbo':2.0,'fuelGas': 1.1,'nuclear': 21.2,'altres': 7.6,'emisionCo2': 136,'residuRadio': 535,'year': '2021'}</field>
         </record>
         <record model="res.config" id="component_gdo_data">
             <field name="name">component_gdo_data</field>
