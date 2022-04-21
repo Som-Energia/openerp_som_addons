@@ -10,6 +10,27 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
     _name = 'wizard.refund.rectify.from.origin'
 
 
+    def send_polissa_mail(self, cursor, uid, ids, pol_id, plantilla, context):
+        pem_send_wo = self.pool.get('poweremail.send.wizard')
+        ctx = {
+            'active_ids': [pol_id],
+            'active_id': pol_id,
+            'template_id': plantilla.id,
+            'src_model': 'giscedata.polissa',
+            'src_rec_ids': [pol_id],
+            'from': plantilla.enforce_from_account.id,
+            'state': 'single',
+            'priority': 0,
+        }
+        params = {
+            'state': 'single',
+            'priority': 0,
+            'from': plantilla.enforce_from_account.id,
+        }
+
+        wz_id = pem_send_wo.create(cursor, uid, params, ctx)
+        result = pem_send_wo.send_mail(cursor, uid, [wz_id], ctx)
+
     def get_factures_client_by_dates(self, cursor, uid, ids, pol_id, data_inici, data_final, context={}):
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         msg = ''
@@ -150,13 +171,14 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         wiz = self.browse(cursor, uid, ids[0])
         if wiz.send_mail and not wiz.email_template:
             raise osv.except_osv(_('Error'), _('Per enviar el correu cal indicar una plantilla'))
-
+        if wiz.email_template and not wiz.email_template.enforce_from_account:
+            raise osv.except_osv(_('Error'), _('La plantilla no té indicat el compte des del qual enviar'))
         if wiz.open_invoices and not wiz.order:
             raise osv.except_osv(_('Error'), _('Per remesar les factures a pagar cal una ordre de pagament'))
 
         active_ids = context.get('active_ids', [])
         msg = []
-        facts_over_amount = []
+        facts_generades = []
 
         for _id in active_ids:
             try:
@@ -184,22 +206,32 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
 
                 msg.append("S'han esborrat {} lectures de la pòlissa {}".format(n_lect_del, pol_name))
                 facts_created, msg_rr = self.refund_rectify_if_needed(cursor, uid, ids, facts_cli_ids, context)
+                facts_generades += facts_created
                 msg += msg_rr
                 if wiz.max_amount:
                     facts_over_limit = self.check_max_amount(cursor, uid, ids, facts_created, wiz.max_amount, context)
                     if facts_over_limit:
-                        facts_over_amount += facts_created
                         msg.append("La pòlissa {} té alguna factura d'import superior al límit, cal revisar les factures. No continua el procés.". format(pol_name))
                         continue
-                self.write(cursor, uid, ids, {'facts_generades': [(4,_id) for _id in facts_created]})
                 if wiz.open_invoices:
                     self.open_group_invoices(cursor, uid, ids, facts_created, wiz.order.id, context)
                 if wiz.send_mail:
-                    self.send_polissa_mail(cursor, uid, ids, pol_id, context)
+                    self.send_polissa_mail(cursor, uid, ids, pol_id, wiz.email_template, context)
             except Exception as e:
                 msg.append("Error processant la factura amb origen {}: {}".format(origen, str(e)))
-        self.write(cursor, uid, ids, {'info': '\n'.join(msg), 'state': 'end'})
+        self.write(cursor, uid, ids, {'info': '\n'.join(msg), 'state': 'end', 'facts_generades': json.dumps(facts_generades)})
 
+    def _show_invoices(self, cursor, uid, ids, context=None):
+        fact_ids = self.read(cursor, uid, ids[0], ['facts_generades'])['facts_generades']
+        fact_ids = json.loads(fact_ids)
+        return {
+            'domain': "[('id','in', %s)]" % str(fact_ids),
+            'name': 'Factures',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'giscedata.facturacio.factura',
+            'type': 'ir.actions.act_window'
+        }
 
     _columns = {
         'state': fields.selection(
@@ -209,11 +241,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         'open_invoices': fields.boolean(_("Obrir, agrupar i remesar (si són a pagar) les factures")),
         'send_mail': fields.boolean(_("Enviar el correu de pòlissa")),
         'info': fields.text(_('Informació'), readonly=True),
-        'facts_generades': fields.many2many(
-            'giscedata.facturacio.factura', 'sw_wiz_rrfo',
-            'wiz_fact_id', 'fact_id', string='Factures generades',
-            readonly=True
-        ),
+        'facts_generades': fields.text(),
         'max_amount': fields.float("Import màxim"),
         'email_template': fields.many2one(
             'poweremail.templates', 'Plantilla del correu',
