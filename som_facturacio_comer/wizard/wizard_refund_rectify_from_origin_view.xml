@@ -26,9 +26,8 @@
                     <group colspan="4" col="4" attrs="{'invisible': [('state', '!=', 'end')]}" height="1000">
                         <label string="Informació del procés" colspan="4"/>
                         <field name="info" nolabel="1" colspan="4" height="100" width="300"/>
-                        <label string="Factures generades" colspan="4"/>
-                        <field name="facts_generades" nolabel="1" colspan="4" height="500" width="300"/>
                         <button special="cancel" string="Finalizar" icon="gtk-close" />
+                        <button name="_show_invoices" string="Veure factures generades" icon="gtk-ok" type="object"/>
                     </group>
                 </form>
             </field>
