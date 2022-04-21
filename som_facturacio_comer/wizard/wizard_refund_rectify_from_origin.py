@@ -5,21 +5,6 @@ from datetime import datetime, timedelta
 from tools.translate import _
 
 
-class WizardRefundRectifyFromOriginFactures(osv.osv_memory):
-    """Factures generades pel Wizard
-    """
-    _name = "wizard.refund.rectify.from.origin.factures"
-
-    _columns = {
-        'factura': fields.many2one('giscedata.facturacio.factura', 'Factura'),
-        'rrfo_id': fields.many2one('wizard.refund.rectify.from.origin', 'Wizard'),
-    }
-
-
-WizardRefundRectifyFromOriginFactures()
-
-
-
 class WizardRefundRectifyFromOrigin(osv.osv_memory):
 
     _name = 'wizard.refund.rectify.from.origin'
@@ -224,8 +209,11 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         'open_invoices': fields.boolean(_("Obrir, agrupar i remesar (si són a pagar) les factures")),
         'send_mail': fields.boolean(_("Enviar el correu de pòlissa")),
         'info': fields.text(_('Informació'), readonly=True),
-        'fact_generades': fields.one2many('wizard.refund.rectify.from.origin.factures', 'rrfo_id',
-                                          'Factures generades'),
+        'facts_generades': fields.many2many(
+            'giscedata.facturacio.factura', 'sw_wiz_rrfo',
+            'wiz_fact_id', 'fact_id', string='Factures generades',
+            readonly=True
+        ),
         'max_amount': fields.float("Import màxim"),
         'email_template': fields.many2one(
             'poweremail.templates', 'Plantilla del correu',
