@@ -4,11 +4,11 @@ from tools.translate import _
 import som_autoreclama_state_condition
 import json
 
+
 class SomAutoreclamaState(osv.osv):
 
     _name = 'som.autoreclama.state'
     _order = 'priority'
-
 
     def do_action(self, cursor, uid, state_id, atc_id, context=None):
         state_data = self.read(cursor, uid, state_id, ['name', 'active'])
@@ -21,7 +21,6 @@ class SomAutoreclamaState(osv.osv):
 
         print "Acció canvi d'estat per cas ATC {}, estat {}".format(atc_id, state_name)
         return True
-
 
     def _ff_generate_atc_parameters(self, cursor, uid, ids, field_name, arg, context=None):
         if not context:
@@ -106,5 +105,6 @@ class SomAutoreclamaState(osv.osv):
         'is_last': lambda *a: False,
         'active': lambda *a: True,
     }
+
 
 SomAutoreclamaState()

@@ -18,8 +18,8 @@ class WizardMassiveCreateR1029(osv.osv_memory):
         msg = u""
         case_ids = context.get('active_ids', [])
         for case_id in reversed(case_ids):
-            atc_id = atc_obj.create_related_atc_r1_case_via_wizard(cursor, uid, case_id, context)
-            msg += "Creat el cas ATC amb id {} amb r1 029 associada a partir del cas ATC amb id {}\n".format(atc_id, case_id)
+            atc_id = atc_obj.create_ATC_R1_029_from_atc_via_wizard(cursor, uid, case_id, context)
+            msg += _("Creat el cas ATC amb id {} amb R1 029 associada a partir del cas ATC amb id {}\n").format(atc_id, case_id)
 
         self.write(cursor, uid, ids, {'state': 'end', 'info': msg})
 

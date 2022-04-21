@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv
 
+
 class SomAutoreclamaStateUpdater(osv.osv_memory):
 
     _name = 'som.autoreclama.state.updater'
@@ -34,7 +35,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         atc_data = atc_obj.get_autoreclama_data(cursor, uid, atc_id, context)
 
         autoreclama_state_id = atc_obj.read(cursor, uid, atc_id, ['autoreclama_state'], context)['autoreclama_state'][0]
-        cond_ids = cond_obj.search(cursor, uid,[
+        cond_ids = cond_obj.search(cursor, uid, [
             ('state_id', '=', autoreclama_state_id),
             ('active', '=', True),
         ], order='priority', context=context)
@@ -46,10 +47,9 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                         history_obj.historize(cursor, uid, atc_id, next_state_id, None, context)
                         return True
                 except Exception as e:
-                    pass # TODO: handle this exception better and do nothing if error
+                    pass  # TODO: handle this exception better and do nothing if error
 
         return False
-
 
     def state_updater(self, cursor, uid, context=None):
         if context is None:
@@ -57,5 +57,6 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
 
         atc_ids = self.get_atc_candidates_to_update(cursor, uid, context)
         return self.update_atcs_if_possible(cursor, uid, atc_ids, context)
+
 
 SomAutoreclamaStateUpdater()

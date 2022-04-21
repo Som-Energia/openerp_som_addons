@@ -3,12 +3,14 @@ from osv import osv, fields
 from tools.translate import _
 from datetime import date
 
+
 class SomAutoreclamaStateHistory(osv.osv):
 
     _name = 'som.autoreclama.state.history'
 
     def get_this_model(self, cursor, uid, context=None):
         return self.pool.get('som.autoreclama.state.history.{}'.format(self._namespace))
+
 
 SomAutoreclamaStateHistory()
 
@@ -44,30 +46,30 @@ class SomAutoreclamaStateHistoryAtc(SomAutoreclamaStateHistory):
             context=context
         )
 
-
     _columns = {
         'state_id': fields.many2one(
             'som.autoreclama.state',
-            u'State',
+            _(u'State'),
             required=False
         ),
         'change_date': fields.date(
-            u'Change Date',
+            _(u'Change Date'),
             select=True,
             readonly=True
         ),
         'end_date': fields.date(
-            u'End Date',
+            _(u'End Date'),
             select=True,
             readonly=True
         ),
         'atc_id': fields.many2one(
             'giscedata.atc',
-            u'ATC',
+            _(u'ATC'),
             readonly=True,
             ondelete="set null"
         )
     }
     _order = 'end_date desc, id desc'
+
 
 SomAutoreclamaStateHistoryAtc()

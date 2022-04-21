@@ -20,4 +20,5 @@ class SomAutoreclamaStateWorkflow(osv.osv):
 
     }
 
+
 SomAutoreclamaStateWorkflow()

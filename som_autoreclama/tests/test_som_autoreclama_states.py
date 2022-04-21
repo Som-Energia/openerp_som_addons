@@ -380,7 +380,7 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
         self.assertEqual(atr.ref, u'giscedata.atc,{}'.format(atc.id))
 
 
-    def test_create_related_atc_r1_case_via_wizard__from_atr(self):
+    def test_create_ATC_R1_029_from_atc_via_wizard__from_atr(self):
         atc_obj = self.get_model('giscedata.atc')
 
         ir_obj = self.get_model('ir.model.data')
@@ -409,7 +409,7 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
         }
         old_atc_id = atc_obj.create_general_atc_r1_case_via_wizard(self.cursor, self.uid, new_case_data, {})
 
-        new_atc_id = atc_obj.create_related_atc_r1_case_via_wizard(self.cursor, self.uid, old_atc_id, {})
+        new_atc_id = atc_obj.create_ATC_R1_029_from_atc_via_wizard(self.cursor, self.uid, old_atc_id, {})
 
         atc = atc_obj.browse(self.cursor, self.uid, new_atc_id)
         atc_old = atc_obj.browse(self.cursor, self.uid, old_atc_id)

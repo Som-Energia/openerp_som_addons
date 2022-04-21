@@ -3,40 +3,35 @@ from osv import osv, fields
 from tools.translate import _
 from datetime import date
 
+
 class GiscedataAtc(osv.osv):
 
     _name = 'giscedata.atc'
     _inherit = 'giscedata.atc'
     _order = 'id desc'
 
-
     def set_autoreclama_history_deactivate(self, cursor, uid, ids, context=None):
         pass
 
-
-
-
     def get_autoreclama_data(self, cursor, uid, id, context=None):
-        data = self.read(cursor, uid, id, ['business_days_with_same_agent','subtipus_id','agent_actual'], context)
+        data = self.read(cursor, uid, id, ['business_days_with_same_agent', 'subtipus_id', 'agent_actual'], context)
         # agent_actual = '10' is ditri
         return {
             'distri_days': data['business_days_with_same_agent'] if data['agent_actual'] == '10' else 0,
             'subtipus_id': data['subtipus_id'][0],
             }
 
-
     def update_autoreclama_state(self, cursor, uid, ids, context=None):
         updater_obj = self.pool.get('som.autoreclama.state.updater')
         return updater_obj.update_atcs_if_possible(cursor, uid, ids, context)
 
-
     # Automatic ATC + R1-029 from existing ATC / Entry poiut
-    def create_related_atc_r1_case_via_wizard(self, cursor, uid, atc_id, context=None):
+    def create_ATC_R1_029_from_atc_via_wizard(self, cursor, uid, atc_id, context=None):
         channel_obj = self.pool.get('res.partner.canal')
-        canal_id = channel_obj.search(cursor, uid, [('name','ilike','intercambi')], context=context)[0]
+        canal_id = channel_obj.search(cursor, uid, [('name', 'ilike', 'intercambi')], context=context)[0]
 
         subtr_obj = self.pool.get('giscedata.subtipus.reclamacio')
-        subtr_id = subtr_obj.search(cursor, uid, [('name','=','029')], context=context)[0]
+        subtr_id = subtr_obj.search(cursor, uid, [('name', '=', '029')], context=context)[0]
 
         atc = self.browse(cursor, uid, atc_id, context)
         new_case_data = {
@@ -55,9 +50,9 @@ class GiscedataAtc(osv.osv):
     # Automatic ATC + [R1] from dictonary / Entry poiut
     def create_general_atc_r1_case_via_wizard(self, cursor, uid, case_data, context=None):
         ctx = {
-            'from_model': 'giscedata.polissa',      # model gas o electricitat
-            'polissa_field': 'id',                  # camp per llegir
-            'active_ids': [case_data['polissa_id']],# id de la polissa
+            'from_model': 'giscedata.polissa',        # model gas o electricitat
+            'polissa_field': 'id',                    # camp per llegir
+            'active_ids': [case_data['polissa_id']],  # id de la polissa
         }
         if context:
             ctx.update(context)
@@ -84,32 +79,31 @@ class GiscedataAtc(osv.osv):
             open_r1_wiz = atcw_obj.open_r1_wizard(cursor, uid, [wiz_id], ctx)
 
             r1atcw_ctx = open_r1_wiz['context']
-            r1atcw_obj = self.pool.get(open_r1_wiz['res_model']) # wizard.generate.r1.from.atc.case
+            r1atcw_obj = self.pool.get(open_r1_wiz['res_model'])  # wizard.generate.r1.from.atc.case
             r1atcw_id = r1atcw_obj.create(cursor, uid, {}, r1atcw_ctx)
-            generate_r1_wiz = r1atcw_obj.generate_r1(cursor, uid, [r1atcw_id], r1atcw_ctx) #Generates the R1 for the ATC case
+            generate_r1_wiz = r1atcw_obj.generate_r1(cursor, uid, [r1atcw_id], r1atcw_ctx)  # Generates the R1 for the ATC case
 
             r1w_ctx = eval(generate_r1_wiz['context'])
-            r1w_obj = self.pool.get(generate_r1_wiz['res_model']) # "wizard.create.r1"
+            r1w_obj = self.pool.get(generate_r1_wiz['res_model'])  # "wizard.create.r1"
             r1w_id = r1w_obj.create(cursor, uid, {}, r1w_ctx)
-            subtype_r1_wiz = r1w_obj.action_subtype_fields_view(cursor, uid, [r1w_id], r1w_ctx) #obtain subtype wizard R1
+            subtype_r1_wiz = r1w_obj.action_subtype_fields_view(cursor, uid, [r1w_id], r1w_ctx)  # obtain subtype wizard R1
 
             sr1w_ctx = eval(subtype_r1_wiz['context'])
-            sr1w_obj = self.pool.get(subtype_r1_wiz['res_model']) # "wizard.subtype.r1"
+            sr1w_obj = self.pool.get(subtype_r1_wiz['res_model'])  # "wizard.subtype.r1"
             sr1w_id = sr1w_obj.create(cursor, uid, {}, sr1w_ctx)
-            r1_result = sr1w_obj.action_create_r1_case(cursor, uid, [sr1w_id], sr1w_ctx) #create subtype R1 for example:029
+            r1_result = sr1w_obj.action_create_r1_case(cursor, uid, [sr1w_id], sr1w_ctx)  # create subtype R1 for example:029
 
             atr_id = r1_result['domain'][0][2]
-            atr_model = r1_result.get('res_model','giscedata.switching')
+            atr_model = r1_result.get('res_model', 'giscedata.switching')
 
             r1_to_atc_ref = '{},{}'.format(atr_model, atr_id)
-            self.write(cursor, uid, atc_id, {'ref': r1_to_atc_ref}) # link the ATc case with the newly generated R1
+            self.write(cursor, uid, atc_id, {'ref': r1_to_atc_ref})  # link the ATc case with the newly generated R1
 
             atc_to_r1_ref = '{},{}'.format('giscedata.atc', atc_id)
             atr_obj = self.pool.get(atr_model)
-            atr_obj.write(cursor, uid, atr_id, {'ref': atc_to_r1_ref}) # link the R1 with the atc
+            atr_obj.write(cursor, uid, atr_id, {'ref': atc_to_r1_ref})  # link the R1 with the atc
 
         return atc_id
-
 
     # Create and setup autoreclama history to the new created ATC object
     def create(self, cursor, uid, vals, context=None):
@@ -228,5 +222,6 @@ class GiscedataAtc(osv.osv):
             readonly=True
         ),
     }
+
 
 GiscedataAtc()
