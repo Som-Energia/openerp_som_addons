@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from expects import expect
 from expects import contain
 from destral import testing
@@ -315,3 +316,72 @@ class TestsFacturesValidation(testing.OOTestCase):
         self.crear_modcon(pol_id, 5, '2017-02-18', '2018-02-17')
         warnings = self.validation_warnings(inv_id)
         expect(warnings).to(contain('SF03'))
+
+    def test_check_gkwh_G_invoices__contract_without_generationkWh(self):
+        pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
+        meter_id  = self.prepare_contract(pol_id,'2017-01-01','2017-02-18')
+        self.crear_modcon(pol_id, 5, '2017-02-18', '2018-02-17')
+        warnings = self.validation_warnings(inv_id)
+        expect(warnings).not_to(contain('SV01'))
+
+
+    def test_validation_V008_lot(self):
+        cursor = self.cursor
+        uid = self.user
+
+        _, periode_id = self.imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_polissa', 'p1_e_tarifa_20A_new'
+        )
+
+        _, origen_id = self.imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_lectures', 'origen10'
+        )
+
+        _, cnt_lot_id = self.imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_facturacio', 'cont_lot_0002'
+        )
+        _, demo_contract_id = self.imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_polissa', 'polissa_0002'
+        )
+        # Ens assegurem de que l'unic comptador de la polissa tingui
+        # lectures. Per forçar la validació, fem que sigui zero totes dues.
+        polissa = self.pol_obj.browse(cursor, uid, demo_contract_id)
+
+        if len(polissa.comptadors) != 1:
+            raise NotImplementedError
+
+        comptador = polissa.comptadors[0]
+        origen_id = self.imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_lectures', 'origen10'
+        )[1]
+        lectura_cv = {
+            'periode': periode_id,              'name': '2016-01-02',
+            'comptador': comptador.id,          'origen_id': origen_id,
+            'tipus': 'A',                       'lectura': 0,
+        }
+        self.lectures_obj.create(cursor, uid, lectura_cv)
+        lectura_cv['name'] = '2016-01-25'
+        self.lectures_obj.create(cursor, uid, lectura_cv)
+
+        # We remove other lot_contracts associated with out invoicing lot
+        lot_id = self.cnt_lot_obj.read(
+            cursor, uid, cnt_lot_id, ['lot_id']
+        )['lot_id'][0]
+        cnt_lot_to_remove = self.lot_obj.read(
+            cursor, uid, lot_id, ['contracte_lot_ids']
+        )['contracte_lot_ids']
+
+        cnt_lot_to_remove.remove(cnt_lot_id)
+        self.cnt_lot_obj.unlink(cursor, uid, cnt_lot_to_remove)
+
+        # Let's validate the contract
+        self.pol_obj.send_signal(
+            cursor, uid, [demo_contract_id], ['validar', 'contracte']
+        )
+
+        # Next step, we want to validate the lot and the V008 should pop
+        self.cnt_lot_obj.validate_individual(cursor, uid, [cnt_lot_id])
+        lot_status = self.cnt_lot_obj.read(
+            cursor, uid, cnt_lot_id, ['status']
+        )['status']
+        expect(lot_status).not_to(contain('SV01'))
