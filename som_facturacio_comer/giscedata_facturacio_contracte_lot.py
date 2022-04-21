@@ -15,36 +15,36 @@ class GiscedataFacturacioContracteLot(osv.osv):
     _name = 'giscedata.facturacio.contracte_lot'
     _inherit = 'giscedata.facturacio.contracte_lot'
 
-    def _ff_total_incidencies(self, cr, uid, ids, name, args, context=None):
-        """ Retorna nombre d'incidències en contracte_lot """
-        res = dict.fromkeys(ids, 0)
-        for id in ids:
-            status = self.read(cr, uid, id, ['status'])['status']
-            if status:
-                r1 = re.findall(r"(\[[a-zA-Z]{1,2}[\d]{2,3}\])", status)
-                res[id] = len(set(r1))
-            else:
-                res[id] = 0
-        return res
+    _STORE_WHEN_INVOICE_ADDED = {
+        'giscedata.facturacio.contracte_lot': (
+            lambda self, cr, uid, ids, context=None: ids,
+            ['factures_ids'],
+            10
+        )
+    }
 
-    def _ff_date_invoice(self, cr, uid, ids, name, args, context=None):
+    def total_incidencies(self, cr, uid, id, context=None):
+        status = self.read(cr, uid, id, ['status'])['status']
+        if status:
+            r1 = re.findall(r"(\[[a-zA-Z]{1,2}[\d]{2,3}\])", status)
+            return len(set(r1))
+        return 0
+
+    def date_invoice(self, cr, uid, id, context=None):
         """ Retorna la data de les factures """
-        res = dict.fromkeys(ids, False)
         fact_obj = self.pool.get('giscedata.facturacio.factura')
-        for id in ids:
-            contracte_lot_data = self.read(cr, uid, id, ['lot_id','polissa_id'])
-            date_invoice = 0
-            try:
-                lot_id = contracte_lot_data['lot_id'][0]
-                pol_id = contracte_lot_data['polissa_id'][0]
-                fact_ids = fact_obj.search(cr, uid, [('lot_facturacio','=', lot_id), ('polissa_id','=', pol_id)])
-                if fact_ids:
-                    date_invoice = fact_obj.read(cr, uid, fact_ids[0],
-                            ['date_invoice'])['date_invoice']
-            except Exception:
-                pass
-            res[id] = date_invoice
-        return res
+        contracte_lot_data = self.read(cr, uid, id, ['lot_id','polissa_id'])
+        date_invoice = 0
+        try:
+            lot_id = contracte_lot_data['lot_id'][0]
+            pol_id = contracte_lot_data['polissa_id'][0]
+            fact_ids = fact_obj.search(cr, uid, [('lot_facturacio','=', lot_id), ('polissa_id','=', pol_id)])
+            if fact_ids:
+                date_invoice = fact_obj.read(cr, uid, fact_ids[0],
+                        ['date_invoice'])['date_invoice']
+        except Exception:
+            pass
+        return date_invoice
 
     def _get_fact_origen(self, cr, uid, id, context=None):
         if isinstance(id, list):
@@ -76,32 +76,26 @@ class GiscedataFacturacioContracteLot(osv.osv):
             return 'Real'
         return 'Sense Factures'
 
-    def _ff_consum_facturat(self, cr, uid, ids, name, args, context=None):
-        res = dict.fromkeys(ids, 'Sense Factures')
-        for id in ids:
-            n_factures = self.read(cr, uid, id, ['n_factures'])['n_factures']
-            if n_factures:
-                origen = self._get_fact_origen(cr, uid, id)
-                res[id] = origen
-        return res
+    def consum_facturat(self, cr, uid, ids, name, args, context=None):
+        n_factures = self.read(cr, uid, id, ['n_factures'])['n_factures']
+        if n_factures:
+            origen = self._get_fact_origen(cr, uid, id)
+            return origen
+        return 'Sense Factures'
 
-    def _ff_te_generation(self, cr, uid, ids, name, args, context=None):
-        res = dict.fromkeys(ids, False)
+    def te_generation(self, cr, uid, id, context=None):
         fact_obj = self.pool.get('giscedata.facturacio.factura')
-        for id in ids:
-            contracte_lot_data = self.read(cr, uid, id, ['lot_id','polissa_id'])
-            linies_generacio = None
-            try:
-                lot_id = contracte_lot_data['lot_id'][0]
-                pol_id = contracte_lot_data['polissa_id'][0]
-                fact_ids = fact_obj.search(cr, uid, [('lot_facturacio','=', lot_id), ('polissa_id','=', pol_id)])
-                for fact_id in fact_ids:
-                    te_generation = fact_obj.read(cr, uid, fact_id, ['is_gkwh'])['is_gkwh']
-                    if te_generation:
-                        res[id] = True
-            except Exception:
-                pass
-        return res
+        contracte_lot_data = self.read(cr, uid, id, ['lot_id','polissa_id'])
+        try:
+            lot_id = contracte_lot_data['lot_id'][0]
+            pol_id = contracte_lot_data['polissa_id'][0]
+            fact_ids = fact_obj.search(cr, uid, [('lot_facturacio','=', lot_id), ('polissa_id','=', pol_id)])
+            for fact_id in fact_ids:
+                te_generation = fact_obj.read(cr, uid, fact_id, ['is_gkwh'])['is_gkwh']
+                if te_generation:
+                    return True
+        except Exception:
+            pass
 
     def _ff_gran_contracte(self, cr, uid, ids, name, args, context=None):
         res = dict.fromkeys(ids, False)
@@ -119,27 +113,36 @@ class GiscedataFacturacioContracteLot(osv.osv):
         cl_obj = self.pool.get('giscedata.facturacio.contracte_lot')
         return cl_obj.search(cr, uid,[('polissa_id', 'in', ids)])
 
-    def _ff_data_final(self, cr, uid, ids, name, args, context=None):
-        res = dict.fromkeys(ids, False)
+    def data_final(self, cr, uid, id, context=None):
         fact_obj = self.pool.get('giscedata.facturacio.factura')
+        contracte_lot_data = self.read(cr, uid, id, ['lot_id','polissa_id'])
+        try:
+            lot_id = contracte_lot_data['lot_id'][0]
+            pol_id = contracte_lot_data['polissa_id'][0]
+            fact_ids = fact_obj.search(cr, uid, [('lot_facturacio','=', lot_id), ('polissa_id','=', pol_id)])
+
+            data_final = datetime.strptime('1970-01-30','%Y-%m-%d')
+            for fact_id in fact_ids:
+                data_final_factura = fact_obj.read(cr, uid, fact_id, ['data_final'])['data_final']
+                if data_final_factura > data_final:
+                    data_final = data_final_factura
+
+            if(data_final.strftime("%d-%m-%Y") != '30-01-1970'):
+                return data_final
+        except Exception:
+            pass
+
+    def _ff_update_fields(self, cr, uid, ids, name, args, context=None):
+        fields_to_update = {
+            'total_incidencies': 0
+        }
+        res = dict.fromkeys(ids, fields_to_update)
         for id in ids:
-            contracte_lot_data = self.read(cr, uid, id, ['lot_id','polissa_id'])
-            try:
-                lot_id = contracte_lot_data['lot_id'][0]
-                pol_id = contracte_lot_data['polissa_id'][0]
-                fact_ids = fact_obj.search(cr, uid, [('lot_facturacio','=', lot_id), ('polissa_id','=', pol_id)])
-
-                data_final = datetime.strptime('1970-01-30','%Y-%m-%d')
-                for fact_id in fact_ids:
-                    data_final_factura = fact_obj.read(cr, uid, fact_id, ['data_final'])['data_final']
-                    if data_final_factura > data_final:
-                        data_final = data_final_factura
-
-                if(data_final.strftime("%d-%m-%Y") != '30-01-1970'):
-                    res[id] = data_final
-
-            except Exception:
-                pass
+            res[id]['total_incidencies'] = self.total_incidencies(cr, uid, id)
+            res[id]['date_invoice'] = self.date_invoice(cr, uid, id)
+            res[id]['te_generation'] = self.te_generation(cr, uid, id)
+            res[id]['data_final'] = self.data_final(cr, uid, id)
+            res[id]['consum_facturat'] = self.consum_facturat(cr, uid, id)
         return res
 
     _columns = {
@@ -152,17 +155,17 @@ class GiscedataFacturacioContracteLot(osv.osv):
         'llista_preu': fields.related('polissa_id', 'llista_preu', 'name',
                                 type='char', string=_('Tarifa Comercialitzadora'), readonly=True),
         'total_incidencies': fields.function(
-                                _ff_total_incidencies,
+                                _ff_update_fields, multi='totals',
                                 string='Nombre total dincidencies',
-                                type='integer', store=True, method=True),
+                                type='integer', store=_STORE_WHEN_INVOICE_ADDED, method=True),
         'date_invoice': fields.function(
-                                _ff_date_invoice,
+                                _ff_update_fields, multi='totals',
                                 string='Data de la factura',
-                                type='date', size=12, store=True, method=True),
+                                type='date', size=12, store=_STORE_WHEN_INVOICE_ADDED, method=True),
         'consum_facturat': fields.function(
-                                _ff_consum_facturat,
+                                _ff_update_fields, multi='totals',
                                 string='Origen consum facturat',
-                                type='char', size=32, store=True, method=True),
+                                type='char', size=32, store=_STORE_WHEN_INVOICE_ADDED, method=True),
         'data_alta_contracte': fields.related('polissa_id', 'data_alta', type='date',
                                 string=_('Data alta contracte'), readonly=True),
         'data_ultima_lectura': fields.related('polissa_id', 'data_ultima_lectura', type='date',
@@ -174,9 +177,9 @@ class GiscedataFacturacioContracteLot(osv.osv):
         'canal_enviament': fields.related('polissa_id', 'enviament', type='char',
                                 string='Canal enviament', readonly=True),
         'te_generation': fields.function(
-                                _ff_te_generation,
+                                _ff_update_fields, multi='totals',
                                 string='Factura té generation',
-                                type='boolean', store=True, method=True),
+                                type='boolean', store=_STORE_WHEN_INVOICE_ADDED, method=True),
         'gran_contracte': fields.function(
                                 _ff_gran_contracte, string='Gran Contract',
                                 method=True, type='boolean',
@@ -193,8 +196,8 @@ class GiscedataFacturacioContracteLot(osv.osv):
                                     )
                                 }),
         'data_final': fields.function(
-                                _ff_data_final, string='Data final factura',
-                                type='date', method=True, store=True),
+                                 _ff_update_fields, multi='totals', string='Data final factura',
+                                type='date', method=True, store=_STORE_WHEN_INVOICE_ADDED),
         'te_generation_polissa': fields.related('polissa_id', 'te_assignacio_gkwh', type='boolean', relation='giscedata.polissa',
                                 string=_('Pòlissa té generation'), readonly=True),
         'data_alta_auto': fields.related('polissa_id', 'data_alta_autoconsum', type='date', relation='giscedata.polissa',
