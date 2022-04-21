@@ -37,7 +37,7 @@ class SomAutoreclamaStateHistoryAtc(SomAutoreclamaStateHistory):
         return self.create(cursor, uid,
             {
                 'atc_id': atc_id,
-                'autoreclama_state_id': next_state_id,
+                'state_id': next_state_id,
                 'change_date': current_date,
                 'end_date': False,
             },
@@ -46,7 +46,7 @@ class SomAutoreclamaStateHistoryAtc(SomAutoreclamaStateHistory):
 
 
     _columns = {
-        'autoreclama_state_id': fields.many2one(
+        'state_id': fields.many2one(
             'som.autoreclama.state',
             u'State',
             required=False

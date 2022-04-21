@@ -132,7 +132,7 @@ class GiscedataAtc(osv.osv):
             uid,
             {
                 'atc_id': atc_id,
-                'autoreclama_state_id': initial_state_id,
+                'state_id': initial_state_id,
                 'change_date': initial_date,
             }
         )
@@ -146,7 +146,7 @@ class GiscedataAtc(osv.osv):
                  atc indexed by its id.
                  ==== Fields of the dict for each atc ===
                  'id': if of the last som.autoreclama.state.history.atc
-                 'autoreclama_state_id': id of its state
+                 'state_id': id of its state
                  'change_date': date of change (also, date of the creation of
                                 the line)
         """
@@ -156,7 +156,7 @@ class GiscedataAtc(osv.osv):
             ids = [ids]
         history_obj = self.pool.get('som.autoreclama.state.history.atc')
         result = dict.fromkeys(ids, False)
-        fields_to_read = ['autoreclama_state_id', 'change_date', 'atc_id']
+        fields_to_read = ['state_id', 'change_date', 'atc_id']
         for id in ids:
             res = history_obj.search(
                 cursor, uid, [('atc_id', '=', id)]
@@ -168,7 +168,7 @@ class GiscedataAtc(osv.osv):
                     cursor, uid, res[0], fields_to_read)
                 result[id] = {
                     'id': values['id'],
-                    'autoreclama_state_id': values['autoreclama_state_id'][0],
+                    'state_id': values['state_id'][0],
                     'change_date': values['change_date'],
                 }
             else:
@@ -181,7 +181,7 @@ class GiscedataAtc(osv.osv):
         last_lines = self.get_current_autoreclama_state_info(cursor, uid, ids)
         for id in ids:
             if last_lines[id]:
-                result[id]['autoreclama_state'] = last_lines[id]['autoreclama_state_id']
+                result[id]['autoreclama_state'] = last_lines[id]['state_id']
                 result[id]['autoreclama_state_date'] = last_lines[id]['change_date']
             else:
                 result[id]['autoreclama_state'] = False

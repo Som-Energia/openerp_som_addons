@@ -33,7 +33,7 @@ def up(cursor, installed_version):
             uid,
             {
                 'atc_id': atc_id,
-                'autoreclama_state_id': correct_state_id,
+                'state_id': correct_state_id,
                 'change_date': date.today().strftime("%d-%m-%Y"),
             }
         )

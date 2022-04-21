@@ -62,7 +62,7 @@ class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
 
         vals = {
             'atc_id': 1,
-            'autoreclama_state_id':1,
+            'state_id':1,
             'change_date': today_str()
         }
         sash_obj.create.assert_called_once_with(self.cursor, self.uid, vals)
@@ -172,7 +172,7 @@ class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
         self.assertEqual(atc.autoreclama_state_date, state_1_dt )
         self.assertEqual(len(atc.autoreclama_history_ids), 2)
 
-        self.assertEqual(atc.autoreclama_history_ids[1].autoreclama_state_id.id, state_0_id )
+        self.assertEqual(atc.autoreclama_history_ids[1].state_id.id, state_0_id )
         self.assertEqual(atc.autoreclama_history_ids[1].change_date, state_0_dt )
         self.assertEqual(atc.autoreclama_history_ids[1].end_date, state_1_dt )
         self.assertEqual(atc.autoreclama_history_ids[1].atc_id.id, new_atc_id )
@@ -219,12 +219,12 @@ class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
         self.assertEqual(atc.autoreclama_state_date, state_2_dt )
         self.assertEqual(len(atc.autoreclama_history_ids), 3)
 
-        self.assertEqual(atc.autoreclama_history_ids[1].autoreclama_state_id.id, state_1_id )
+        self.assertEqual(atc.autoreclama_history_ids[1].state_id.id, state_1_id )
         self.assertEqual(atc.autoreclama_history_ids[1].change_date, state_1_dt )
         self.assertEqual(atc.autoreclama_history_ids[1].end_date, state_2_dt )
         self.assertEqual(atc.autoreclama_history_ids[1].atc_id.id, new_atc_id )
 
-        self.assertEqual(atc.autoreclama_history_ids[2].autoreclama_state_id.id, state_0_id )
+        self.assertEqual(atc.autoreclama_history_ids[2].state_id.id, state_0_id )
         self.assertEqual(atc.autoreclama_history_ids[2].change_date, state_0_dt )
         self.assertEqual(atc.autoreclama_history_ids[2].end_date, state_1_dt )
         self.assertEqual(atc.autoreclama_history_ids[2].atc_id.id, new_atc_id )

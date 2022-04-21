@@ -97,7 +97,7 @@
             <field name="priority">16</field>
             <field name="arch" type="xml">
                 <tree string="Accions realitzades per autoreclama">
-                    <field name="autoreclama_state_id"/>
+                    <field name="state_id"/>
                     <field name="change_date"/>
                     <field name="end_date"/>
                 </tree>
@@ -111,7 +111,7 @@
             <field name="arch" type="xml">
                 <form string="Historic d'autoreclama">
                     <group colspan="2" col="4">
-                        <field name="autoreclama_state_id" colspan="4" select="1"/>
+                        <field name="state_id" colspan="4" select="1"/>
                         <field name="atc_id" colspan="4" select="1"/>
                         <group colspan="4" col="2" string="Dates">
                             <field name="change_date" select="1"/>
