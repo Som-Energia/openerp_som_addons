@@ -5,6 +5,21 @@ from datetime import datetime, timedelta
 from tools.translate import _
 
 
+class WizardRefundRectifyFromOriginFactures(osv.osv_memory):
+    """Factures generades pel Wizard
+    """
+    _name = "wizard.refund.rectify.from.origin.factures"
+
+    _columns = {
+        'factura': fields.many2one('giscedata.facturacio.factura', 'Factura'),
+        'rrfo_id': fields.many2one('wizard.refund.rectify.from.origin', 'Wizard'),
+    }
+
+
+WizardRefundRectifyFromOriginFactures()
+
+
+
 class WizardRefundRectifyFromOrigin(osv.osv_memory):
 
     _name = 'wizard.refund.rectify.from.origin'
@@ -82,9 +97,9 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
 
         #Eliminem les que no cal rectificar (import AB == import RE)
         for initial_id in f_ids:
-            inv_id = fact_obj.read(cursor, uid, initial_id, ('invoice_id'))['invoice_id'][0]
+            inv_id = fact_obj.read(cursor, uid, initial_id, ['invoice_id'])['invoice_id'][0]
             rectifying_amounts = filter(lambda x: x['rectifying_id'][0] == inv_id, f_res_info)
-            if len(set([x['amount_total'] for x in rectifying_amounts])) == 0:
+            if len(set([x['amount_total'] for x in rectifying_amounts])) == 1:
                 ab_re_ids = [x['id'] for x in rectifying_amounts]
                 fact_obj.unlink(cursor, uid, ab_re_ids)
                 msg.append("Per la factura origen {} les factures AB i RE tenen mateix import, s'esborren")
@@ -209,11 +224,8 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         'open_invoices': fields.boolean(_("Obrir, agrupar i remesar (si són a pagar) les factures")),
         'send_mail': fields.boolean(_("Enviar el correu de pòlissa")),
         'info': fields.text(_('Informació'), readonly=True),
-        'facts_generades': fields.many2many(
-            'giscedata.facturacio.factura', 'sw_wiz_rrfo',
-            'wiz_fact_id', 'fact_id', string='Factures generades',
-            readonly=True
-        ),
+        'fact_generades': fields.one2many('wizard.refund.rectify.from.origin.factures', 'rrfo_id',
+                                          'Factures generades'),
         'max_amount': fields.float("Import màxim"),
         'email_template': fields.many2one(
             'poweremail.templates', 'Plantilla del correu',
