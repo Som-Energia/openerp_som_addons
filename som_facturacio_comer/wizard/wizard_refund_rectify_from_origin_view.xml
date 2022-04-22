@@ -7,18 +7,22 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Anuŀlar i rectificar factures client a partir de factures proveidor" >
-                    <field name="state" invisible="1" height="500"/>
+                    <field name="state" invisible="1" height="600"/>
                     <group colspan="4" col="4" attrs="{'invisible': [('state', '!=', 'init')]}">
                         <group colspan="4" col="4">
                             <label string="Anuŀlar i rectificar factures client a partir de factures proveidor" colspan="4"/>
+                            <label string="Es rectifiquen i anuŀlen les factures client que comprenguin algun període de la factura seleccionada" colspan="4"/>
+                            <label string="En cas que s'indiqui, s'obren i agrupen les factures, es remesen les que són a pagar" colspan="4"/>
                             <label string=" " colspan="4"/>
                             <label string=" " colspan="4"/>
                             <label string=" " colspan="4"/>
                             <field name="max_amount" colspan="2"/>
-                            <field name="email_template" colspan="2"/>
-                            <field name="send_mail" colspan="2"/>
                             <field name="open_invoices" colspan="2"/>
                             <field name="order" domain="[('type','=','payable')]" colspan="2"/>
+                            <group colspan="4" col="4" attrs="{'invisible': [('open_invoices', '!=', True)]}">
+                                <field name="send_mail" colspan="2"/>
+                                <field name="email_template" colspan="2"/>
+                            </group>
                         </group>
                         <button special="cancel" string="Cancel·lar" icon="gtk-close"/>
                         <button name="refund_rectify_by_origin" string="Acceptar" icon="gtk-ok" type="object"/>
@@ -26,6 +30,7 @@
                     <group colspan="4" col="4" attrs="{'invisible': [('state', '!=', 'end')]}" height="1000">
                         <label string="Informació del procés" colspan="4"/>
                         <field name="info" nolabel="1" colspan="4" height="100" width="300"/>
+                        <field name="report_file" filename="report_filename" colspan="4" readonly="1"/>
                         <button special="cancel" string="Finalizar" icon="gtk-close" />
                         <button name="_show_invoices" string="Veure factures generades" icon="gtk-ok" type="object"/>
                     </group>
