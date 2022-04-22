@@ -13,6 +13,24 @@ class GiscedataAtc(osv.osv):
     def set_autoreclama_history_deactivate(self, cursor, uid, ids, context=None):
         pass
 
+    def get_autoreclama_generated_cases_tree_view(self, cursor, uid, ids, context=None):
+        h_obj = self.pool.get('')
+        h_ids = self.read(cursor, uid, ids[0], ['autoreclama_history_ids'], context=context)['autoreclama_history_ids']
+        generated_atc_ids = []
+        for h_id in h_ids:
+            generated_atc_id = h_obj.read(cursor, uid, h_id, ['generated_atc_id'], context=context)['generated_atc_id']
+            if generated_atc_id:
+                generated_atc_ids.append(generated_atc_id)
+        return {
+            'domain': "[('id','in', {0})]".format(str(generated_atc_ids)),
+            'name': _('Casos ATC automatics creats'),
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'giscedata.atc',
+            'type': 'ir.actions.act_window',
+            'context': context
+        }
+
     def get_autoreclama_data(self, cursor, uid, id, context=None):
         data = self.read(cursor, uid, id, ['business_days_with_same_agent', 'subtipus_id', 'agent_actual'], context)
         # agent_actual = '10' is ditri

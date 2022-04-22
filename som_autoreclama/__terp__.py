@@ -19,6 +19,8 @@
     "update_xml":[
         "som_autoreclama_state_data.xml",
         "som_autoreclama_state_view.xml",
+        "wizard/wizard_som_autoreclama_execute_step_view.xml",
+        "wizard/wizard_som_autoreclama_set_manual_state_view.xml",
         "giscedata_atc_view.xml",
         "security/som_autoreclama.xml",
         "security/ir.model.access.csv",

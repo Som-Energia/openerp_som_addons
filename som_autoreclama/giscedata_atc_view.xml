@@ -23,7 +23,9 @@
                         <field name="autoreclama_state"/>
                         <field name="autoreclama_state_date"/>
                         <group colspan="4" string="Eines debug">
-                            <button string="Gestió Manual" type="object" icon="gtk-cancel" name="set_autoreclama_history_deactivate"/>
+                            <button string="Executa pas d'autoreclama" type="action" icon="gtk-execute" name="%(action_wizard_som_autoreclama_execute_step)d"/>
+                            <button string="Selecció manual d'estat" type="action" icon="gtk-convert" name="%(action_wizard_som_autoreclama_set_manual_state)d"/>
+                            <button string="Casos ATC generats" type="object" icon="gtk-find" name="get_autoreclama_generated_cases_tree_view"/>
                         </group>
                         <field name="autoreclama_history_ids" nolabel="1" colspan="4"/>
                     </page>
