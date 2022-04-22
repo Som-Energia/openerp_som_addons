@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from osv import osv
+from tqdm import tqdm
 
 
 class SomAutoreclamaStateUpdater(osv.osv_memory):
@@ -19,7 +20,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         updated = []
         not_updated = []
 
-        for atc_id in ids:
+        for atc_id in tqdm(ids):
             if self.update_atc_if_possible(cursor, uid, atc_id, context):
                 updated.append(atc_id)
             else:
@@ -39,15 +40,14 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             ('state_id', '=', autoreclama_state_id),
             ('active', '=', True),
         ], order='priority', context=context)
+
         for cond_id in cond_ids:
             if cond_obj.fit_atc_condition(cursor, uid, cond_id, atc_data):
-                try:
-                    next_state_id = cond_obj.read(cursor, uid, cond_id, ['next_state_id'], context=context)['next_state_id'][0]
-                    if state_obj.do_action(cursor, uid, next_state_id, atc_id, context):
-                        history_obj.historize(cursor, uid, atc_id, next_state_id, None, context)
-                        return True
-                except Exception as e:
-                    pass  # TODO: handle this exception better and do nothing if error
+                next_state_id = cond_obj.read(cursor, uid, cond_id, ['next_state_id'], context=context)['next_state_id'][0]
+                action_result = state_obj.do_action(cursor, uid, next_state_id, atc_id, context)
+                if action_result['status']:
+                    history_obj.historize(cursor, uid, atc_id, next_state_id, None, action_result['created_atc'], context)
+                return True
 
         return False
 

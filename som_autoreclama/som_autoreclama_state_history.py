@@ -20,7 +20,7 @@ class SomAutoreclamaStateHistoryAtc(SomAutoreclamaStateHistory):
     _name = 'som.autoreclama.state.history.atc'
     _namespace = 'atc'
 
-    def historize(self, cursor, uid, atc_id, next_state_id, current_date, context=None):
+    def historize(self, cursor, uid, atc_id, next_state_id, current_date, generated_atc_id, context=None):
         if not current_date:
             current_date = date.today().strftime("%Y-%m-%d")
 
@@ -36,15 +36,16 @@ class SomAutoreclamaStateHistoryAtc(SomAutoreclamaStateHistory):
                 context=context
             )
 
-        return self.create(cursor, uid,
-            {
-                'atc_id': atc_id,
-                'state_id': next_state_id,
-                'change_date': current_date,
-                'end_date': False,
-            },
-            context=context
-        )
+        new_atc = {
+            'atc_id': atc_id,
+            'state_id': next_state_id,
+            'change_date': current_date,
+            'end_date': False,
+        }
+        if generated_atc_id:
+            new_atc['generated_atc_id'] = generated_atc_id
+
+        return self.create(cursor, uid, new_atc, context=context)
 
     _columns = {
         'state_id': fields.many2one(
@@ -65,6 +66,12 @@ class SomAutoreclamaStateHistoryAtc(SomAutoreclamaStateHistory):
         'atc_id': fields.many2one(
             'giscedata.atc',
             _(u'ATC'),
+            readonly=True,
+            ondelete="set null"
+        ),
+        'generated_atc_id': fields.many2one(
+            'giscedata.atc',
+            _(u'Cas ATC generat'),
             readonly=True,
             ondelete="set null"
         )
