@@ -253,7 +253,9 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                 if wiz.send_mail:
                     self.send_polissa_mail(cursor, uid, ids, pol_id, wiz.email_template, context)
                     msg.append("S'ha enviat el correu a la pòlissa {}.". format(pol_name))
-                fact_csv_result.append([origen, pol_name, "Ha arribat al final del procés (obrir factures: {}, enviar correu: {}).".format(wiz.open_invoices, wiz.send_mail)])
+                fact_csv_result.append([origen, pol_name, "Ha arribat al final del procés (obrir factures: {}, enviar correu: {}).".format(
+                    'Sí' if wiz.open_invoices else 'No', 'Sí' if wiz.send_mail else 'No')
+                ])
             except Exception as e:
                 msg.append("Error processant la factura amb origen {}: {}".format(origen, str(e)))
                 fact_csv_result.append([origen, pol_name, "Hi ha hagut algun problema, cal revisar."])
@@ -287,7 +289,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             'poweremail.templates', 'Plantilla del correu',
             domain="[('object_name.model', '=', 'giscedata.polissa')]"
         ),
-        'report_file': fields.binary('Resultat', help="Report file"),
+        'report_file': fields.binary('Resultat', help="CSV amb el resultat"),
     }
 
     _defaults = {
