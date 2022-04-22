@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
+       <record model="ir.ui.view" id="giscedata_atc_autoreclama_tree-view">
+            <field name="name">giscedata.atc.autoreclama.tree</field>
+            <field name="model">giscedata.atc</field>
+            <field name="type">tree</field>
+            <field name="inherit_id" ref="giscedata_atc.giscedata_atc_tree-view"/>
+            <field name="arch" type="xml">
+                <field name="business_days_with_same_agent" position="after" >
+                    <field name="autoreclama_state" select="2"/>
+                </field>
+            </field>
+        </record>
         <record model="ir.ui.view" id="view_som_autoreclama_state_history_atc_form">
             <field name="name">giscedata.atc.autoreclama.form</field>
             <field name="model">giscedata.atc</field>
