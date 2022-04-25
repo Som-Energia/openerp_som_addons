@@ -38,6 +38,7 @@
         'giscedata_switching_notification_data.xml',
         'wizard/wizard_create_atc_from_polissa.xml',
         'giscedata_atc_view.xml',
+        'wizard/giscedata_switching_wizard_b1.xml',
     ],
     "active": False,
     "installable": True
