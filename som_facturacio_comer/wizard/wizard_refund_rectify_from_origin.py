@@ -294,6 +294,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
 
     _defaults = {
         'state': lambda *a: 'init',
+        'max_amount': lambda *a: 2000,
     }
 
 WizardRefundRectifyFromOrigin()

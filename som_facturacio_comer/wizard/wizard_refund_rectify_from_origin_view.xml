@@ -18,10 +18,14 @@
                             <label string=" " colspan="4"/>
                             <field name="max_amount" colspan="2"/>
                             <field name="open_invoices" colspan="2"/>
-                            <field name="order" domain="[('type','=','payable')]" colspan="2"/>
+                            <group colspan="4" col="4" attrs="{'invisible': [('open_invoices', '!=', True)]}">
+                                <field name="order" domain="[('type','=','payable')]" colspan="2"/>
+                            </group>
                             <group colspan="4" col="4" attrs="{'invisible': [('open_invoices', '!=', True)]}">
                                 <field name="send_mail" colspan="2"/>
-                                <field name="email_template" colspan="2"/>
+                                <group colspan="4" col="4" attrs="{'invisible': [('send_mail', '!=', True)]}">
+                                    <field name="email_template" colspan="2"/>
+                                </group>
                             </group>
                         </group>
                         <button special="cancel" string="Cancel·lar" icon="gtk-close"/>
