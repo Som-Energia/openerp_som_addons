@@ -174,7 +174,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             remesar_ctx = res['context']
             wiz_remesar_o = self.pool.get(res['res_model'])
             wiz_remesa_id = wiz_remesar_o.create(cursor, uid, {'tipus': 'payable', 'order': payment_order_id}, context=remesar_ctx)
-            wiz_remesar_o.action_afegir_factures(wiz_remesa_id, context=remesar_ctx)
+            wiz_remesar_o.action_afegir_factures(cursor, uid, wiz_remesa_id, context=remesar_ctx)
             return True, "S'han agrupat les factures i s'han remesat, ja que l'import agrupat és {}".format(total_import)
         else:
             wiz_ag_o.group_invoices(cursor, uid, [wiz.id], context=agrupar_ctx)
