@@ -4,6 +4,7 @@ from tools.translate import _
 import som_autoreclama_state_condition
 import json
 import logging
+import traceback
 
 
 class SomAutoreclamaState(osv.osv):
@@ -13,31 +14,24 @@ class SomAutoreclamaState(osv.osv):
 
     def do_action(self, cursor, uid, state_id, atc_id, context=None):
         logger = logging.getLogger('openerp.som_autoreclama')
+        msg_head = _(u"Acció canvi d'estat per cas ATC {}, ").format(atc_id)
 
         state_data = self.read(cursor, uid, state_id, ['name', 'active', 'generate_atc_parameters'])
         state_actv = state_data['active']
         state_name = state_data['name']
         if not state_actv:
-            logger.warning(
-                u"Acció canvi d'estat per cas ATC {}, estat {} --> DESACTIVADA".format(
-                    atc_id,
-                    state_name
-                )
-            )
-            return {'status': False, 'error': 'Disabled'}
+            msg = _(u'Estat {} desactivat!').format(state_name)
+            logger.warning(msg_head + msg)
+            return {'do_change': False, 'message': msg}
 
         state_action_params = state_data['generate_atc_parameters']
         model = state_action_params.get('model', None)
         method = state_action_params.get('method', None)
         params = state_action_params.get('params', {})
         if not state_action_params or not model or not method:
-            logger.info(
-                u"Acció canvi d'estat per cas ATC {}, estat {} --> sense acció determinada".format(
-                    atc_id,
-                    state_name
-                )
-            )
-            return {'status': True, 'created_atc': None}
+            msg = _(u'Estat {} sense acció --> Ok').format(state_name)
+            logger.info(msg_head + msg)
+            return {'do_change': True, 'message': msg}
 
         try:
             model_obj = self.pool.get(model)
@@ -47,28 +41,14 @@ class SomAutoreclamaState(osv.osv):
             else:
                 new_atc_id = model_method(cursor, uid, atc_id, context)
         except Exception as e:
-            logger.error(
-                u"Acció canvi d'estat per cas ATC {}, estat {} --> ERROR {}.{} {} : <{}>".format(
-                    atc_id,
-                    state_name,
-                    model,
-                    method,
-                    params,
-                    e.message
-                )
-            )
-            return {'status': False, 'error': e.message}
+            tb = traceback.format_exc()
+            msg = _(u'Estat {} amb ERROR {}').format(state_name, e.message)
+            logger.error(msg_head + msg + tb)
+            return {'do_change': False, 'message': msg}
 
-        logger.info(
-            u"Acció canvi d'estat per cas ATC {}, estat {} --> EXECUTADA {}.{} {}".format(
-                atc_id,
-                state_name,
-                model,
-                method,
-                params
-            )
-        )
-        return {'status': True, 'created_atc': new_atc_id}
+        msg = _(u'Estat {} executat, nou atc creat amb id {}').format(state_name, new_atc_id)
+        logger.info(msg_head + msg)
+        return {'do_change': True, 'message': msg, 'created_atc': new_atc_id}
 
     def _ff_generate_atc_parameters(self, cursor, uid, ids, field_name, arg, context=None):
         if not context:
