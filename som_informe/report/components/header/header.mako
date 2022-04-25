@@ -13,6 +13,9 @@
     ${_(u"<b>CUPS:</b>")} ${d.cups}<br />
     ${_(u"<b>Adreça CUPS:</b>")} ${d.cups_address}<br />
     ${_(u"<b>Data d'alta amb Som Energia:</b>")} ${d.data_alta}<br />
+    %if d.data_baixa:
+        ${_(u"<b>Data de baixa amb Som Energia:</b>")} ${d.data_baixa}<br />
+    %endif
     ${_(u"<b>Titular:</b>")} ${d.titular_name}<br />
     ${_(u"<b>NIF Titular:</b>")} ${d.titular_nif} <br />
     <br />
