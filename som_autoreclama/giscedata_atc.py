@@ -67,13 +67,12 @@ class GiscedataAtc(osv.osv):
 
     # Automatic ATC + [R1] from dictonary / Entry poiut
     def create_general_atc_r1_case_via_wizard(self, cursor, uid, case_data, context=None):
-        ctx = {
-            'from_model': 'giscedata.polissa',        # model gas o electricitat
-            'polissa_field': 'id',                    # camp per llegir
-            'active_ids': [case_data['polissa_id']],  # id de la polissa
-        }
-        if context:
-            ctx.update(context)
+        ctx = context.copy()
+        ctx['from_model'] = 'giscedata.polissa'        # model gas o electricitat
+        ctx['polissa_field'] = 'id'                    # camp per llegir
+        ctx['active_ids'] = [case_data['polissa_id']]  # id de la polissa
+        ctx['active_id'] = case_data['polissa_id']     # id de la polissa
+
         params = {
             'canal_id': case_data['canal_id'],
             'subtipus_id': case_data['subtipus_reclamacio_id'],
