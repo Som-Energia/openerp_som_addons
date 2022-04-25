@@ -349,13 +349,13 @@ class WizardCreateTechnicalReport(osv.osv_memory):
                     f1_id = f1_obj.search(cursor,uid,search_params)
                     if f1_id: #factura amb F1
                         f1 = f1_obj.browse(cursor, uid, f1_id[0])
-                        if f1.type_factura == 'R' and invoice.ref.rectificative_type in ('N','G'): # F1 tipus R que rectifica una factura tipus N o G
+                        if f1.type_factura == 'R': #and invoice.ref.rectificative_type in ('N','G'): # F1 tipus R que rectifica una factura tipus N o G
                             component_name = 'InvoiceF1R'
                         else:
                             component_name = 'InvoiceF1Unsupported'
                     else:
                         component_name = 'InvoiceF1Unsupported'
-            elif invoice.type in ('out_invoice', 'out_refund'):
+            elif invoice.type in ('out_invoice', 'out_refund') and invoice.state in ('paid', 'open'):
                 component_name = 'InvoiceFE'
             if component_name:
                 extractor = self.factory_metadata_extractor(component_name)

@@ -37,13 +37,15 @@ class TableReadings:
                     linia_taula['date'] = dateformat(f1.f1_date) if f1 else dateformat(invoice.date_invoice)
                     linia_taula['tipus_factura'] = invoice.tipo_rectificadora
                     linia_taula['date_from'] = dateformat(invoice.data_inici)
-                    if not result['date_from'] or datetime.strptime(invoice.data_inici,'%Y-%m-%d') < datetime.strptime(result['date_from'],'%d-%m-%Y'):
-                        result['date_from'] = dateformat(invoice.data_inici)
+                    if invoice.data_inici:
+                        if not result['date_from'] or datetime.strptime(invoice.data_inici,'%Y-%m-%d') < datetime.strptime(result['date_from'],'%d-%m-%Y'):
+                            result['date_from'] = dateformat(invoice.data_inici)
                     linia_taula['date_to'] = dateformat(invoice.data_final)
-                    if not result['date_to'] or  datetime.strptime(invoice.data_final,'%Y-%m-%d') > datetime.strptime(result['date_to'],'%d-%m-%Y'):
-                        result['date_to'] = dateformat(invoice.data_final)
+                    if invoice.data_final:
+                        if not result['date_to'] or  datetime.strptime(invoice.data_final,'%Y-%m-%d') > datetime.strptime(result['date_to'],'%d-%m-%Y'):
+                            result['date_to'] = dateformat(invoice.data_final)
 
-                    linia_taula['invoiced_energy'] = invoice.energia_kwh
+                    linia_taula['invoiced_energy'] = invoice.energia_kwh or 0
                     linia_taula['exported_energy'] = invoice.generacio_kwh or 0
                     linia_taula['invoiced_days'] = invoice.dies or 0
 

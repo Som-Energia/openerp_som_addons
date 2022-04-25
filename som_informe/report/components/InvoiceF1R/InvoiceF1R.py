@@ -26,8 +26,8 @@ class InvoiceF1R:
         result['invoice_type'] = invoice.rectificative_type
         result['invoice_date'] = dateformat(f1.f1_date) if f1 else dateformat(invoice.date_invoice)
         result['invoice_number'] = invoice.origin
-        result['date_from'] = dateformat(invoice.data_inici)
-        result['date_to'] = dateformat(invoice.data_final)
+        result['date_from'] = dateformat(invoice.data_inici) if invoice.data_inici else dateformat(invoice.date_invoice)
+        result['date_to'] = dateformat(invoice.data_final) if invoice.data_final else dateformat(invoice.date_invoice)
         result['rectifies_invoice'] = invoice.ref.origin #a testing F.Origen Rectificada/Anulada esta buit a totes :)
 
         result['linies'] = []

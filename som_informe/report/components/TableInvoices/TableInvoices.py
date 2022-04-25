@@ -62,16 +62,18 @@ class TableInvoices:
         fact_obj = wiz.pool.get('giscedata.facturacio.factura')
         for invoice_id in invoice_ids:
             invoice = fact_obj.browse(cursor, uid, invoice_id)
-            if invoice.type in ('out_invoice', 'out_refund'):
+            if invoice.type in ('out_invoice', 'out_refund') and invoice.state in ('paid', 'open'):
                 linia_taula = {}
                 linia_taula['invoice_number'] = invoice.number
                 linia_taula['date'] = dateformat(invoice.date_invoice)
                 linia_taula['date_from'] = dateformat(invoice.data_inici)
-                if not result['date_from'] or datetime.strptime(invoice.data_inici,'%Y-%m-%d') < datetime.strptime(result['date_from'],'%d-%m-%Y'):
-                    result['date_from'] = dateformat(invoice.data_inici)
+                if invoice.data_inici:
+                    if not result['date_from'] or datetime.strptime(invoice.data_inici,'%Y-%m-%d') < datetime.strptime(result['date_from'],'%d-%m-%Y'):
+                        result['date_from'] = dateformat(invoice.data_inici)
                 linia_taula['date_to'] = dateformat(invoice.data_final)
-                if not result['date_to'] or  datetime.strptime(invoice.data_final,'%Y-%m-%d') > datetime.strptime(result['date_to'],'%d-%m-%Y'):
-                    result['date_to'] = dateformat(invoice.data_final)
+                if invoice.data_final:
+                    if not result['date_to'] or  datetime.strptime(invoice.data_final,'%Y-%m-%d') > datetime.strptime(result['date_to'],'%d-%m-%Y'):
+                        result['date_to'] = dateformat(invoice.data_final)
                 linia_taula['max_power'] = invoice.potencia_max or 0
                 linia_taula['invoiced_energy'] = invoice.energia_kwh or 0
                 linia_taula['exported_energy'] = invoice.generacio_kwh or 0
