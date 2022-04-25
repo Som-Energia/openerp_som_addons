@@ -18,7 +18,7 @@ class GiscedataFacturacioContracteLot(osv.osv):
     _STORE_WHEN_INVOICE_ADDED = {
         'giscedata.facturacio.contracte_lot': (
             lambda self, cr, uid, ids, context=None: ids,
-            ['factures_ids'],
+            ['n_factures'],
             10
         )
     }
