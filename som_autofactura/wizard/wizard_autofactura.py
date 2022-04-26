@@ -18,12 +18,16 @@ class WizardAutofactura(osv.osv_memory):
         return {'type': 'ir.actions.act_window_close'}
 
     def view_tasks(self, cursor, uid, ids, context=None):
+        imd_obj = self.pool.get('ir.model.data')
+        task_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_autofactura', 'som_autofactura_task_facturacio'
+        )[1]
         return {
-            'domain': "[('name','like', 'factura')]",
+            'domain': "[('task_id','=', {})]".format(task_id),
             'name': _('Tasques de procés automàtic de facturació'),
             'view_type': 'form',
             'view_mode': 'tree,form',
-            'res_model': 'som.autofactura.task',
+            'res_model': 'som.autofactura.task.step',
             'type': 'ir.actions.act_window',
         }
 
