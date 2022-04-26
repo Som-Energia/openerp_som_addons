@@ -17,6 +17,8 @@ class SomAutofacturaTask(osv.osv):
     def action_execute_task(self, cursor, uid, ids, context):
         if isinstance(ids, list):
             ids = ids[0]
+        del context['active_id']
+        del context['active_ids']
         step_obj = self.pool.get('som.autofactura.task.step')
         some_task_done = False
         for step_id in step_obj.search(cursor, uid, [('task_id', '=' , ids)], order="sequence"):
