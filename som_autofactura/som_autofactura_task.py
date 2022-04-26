@@ -89,7 +89,7 @@ class SomAutofacturaTaskStep(osv.osv):
 
     def _wait_until_task_done(self, cursor, uid, ids, context):
         conf_obj = self.pool.get('res.config')
-        seconds_sleep = conf_obj.get(cursor, uid, 'som_autofactura_wait_time_task', 300)
+        seconds_sleep = int(conf_obj.get(cursor, uid, 'som_autofactura_wait_time_task', 300))
 
         task = self.browse(cursor, uid, ids[0])
         logger = netsvc.Logger()
