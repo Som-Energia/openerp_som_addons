@@ -8,8 +8,13 @@
             <field name="arch" type="xml">
                 <form string="Procés de factura automàtic">
                     <group colspan="6">
+                        <group colspan="4">
+                            <label string="Recorda revisar els checks de les tasques de facturació automatiques abans de començar!!" colspan="4"/>
+                            <button name="view_tasks" type="object" string="Tasques de procés automàtic de facturació" icon="gtk-ok"/>
+                        </group>
+                        <separator colspan="4"/>
                         <button special="cancel" string="Cancelar" icon="gtk-cancel"/>
-                        <button name="do" type="object" icon="gtk-ok" string="Factura"/>
+                        <button name="do" type="object" icon="gtk-ok" string="Iniciar el procés automàtic de facturació"/>
                     </group>
                 </form>
             </field>
