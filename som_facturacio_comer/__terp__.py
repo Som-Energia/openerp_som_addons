@@ -24,6 +24,7 @@
         "security/ir.model.access.csv",
         "wizard/wizard_revert_incident_fact_contracte_lot_view.xml",
         "wizard/wizard_open_factures_send_mail_view.xml",
+        "wizard/wizard_refund_rectify_from_origin_view.xml",
         "giscedata_facturacio_contracte_lot_view.xml",
         "giscedata_facturacio_factura_view.xml",
         "giscedata_polissa_view.xml",
