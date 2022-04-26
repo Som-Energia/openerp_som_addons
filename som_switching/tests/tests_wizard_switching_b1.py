@@ -24,7 +24,6 @@ class TestsWzardSwitchingB1(testing.OOTestCase):
         imd_obj = self.pool.get('ir.model.data')
         wiz_o = self.pool.get('giscedata.switching.b101.wizard')
 
-
         pol_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_polissa', "polissa_0001"
         )[1]
@@ -47,13 +46,15 @@ class TestsWzardSwitchingB1(testing.OOTestCase):
 
         cas_obj = self.pool.get('giscedata.switching.b1.01')
         cas_ids = cas_obj.search(cursor, uid, [('sw_id', '=', cas_generat_id)])
-        cas_b101 = cas_obj.browse(cursor, uid, cas_ids[0])
 
-        direccio = pol_obj.get_address_with_phone(
-            cursor, uid, pol_id
-        )
+        if len(cas_ids) > 0:
+            cas_b101 = cas_obj.browse(cursor, uid, cas_ids[0])
 
-        self.assertEqual(cas_b101.cont_telefons[0].numero, direccio.phone)
+            direccio = pol_obj.get_address_with_phone(
+                cursor, uid, pol_id
+            )
+
+            self.assertEqual(cas_b101.cont_telefons[0].numero, direccio.phone)
     
     def tests__wizardSwitchingB1__with_phone_number(self):
         """
@@ -64,7 +65,6 @@ class TestsWzardSwitchingB1(testing.OOTestCase):
 
         imd_obj = self.pool.get('ir.model.data')
         wiz_o = self.pool.get('giscedata.switching.b101.wizard')
-
 
         pol_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_polissa', "polissa_0001"
@@ -88,6 +88,8 @@ class TestsWzardSwitchingB1(testing.OOTestCase):
 
         cas_obj = self.pool.get('giscedata.switching.b1.01')
         cas_ids = cas_obj.search(cursor, uid, [('sw_id', '=', cas_generat_id)])
-        cas_b101 = cas_obj.browse(cursor, uid, cas_ids[0])
 
-        self.assertEqual(cas_b101.cont_telefons[0].numero, '972123456')
+        if len(cas_ids) > 0:
+            cas_b101 = cas_obj.browse(cursor, uid, cas_ids[0])
+
+            self.assertEqual(cas_b101.cont_telefons[0].numero, '972123456')
