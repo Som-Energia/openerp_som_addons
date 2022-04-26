@@ -99,12 +99,12 @@ class SomAutofacturaTaskStep(osv.osv):
 
         if 'obrir_factures_button' in task.function:
             gff_obj = self.pool.get('giscedata.facturacio.factura')
-            gff_draft = gff_obj.search(cursor, uid, [('state','=','draft')])
+            gff_draft = len(gff_obj.search(cursor, uid, [('state','=','draft')]))
             gff_draft_old = gff_draft + 1
             while(gff_draft != gff_draft_old):
                 gff_draft_old = gff_draft
                 sleep(seconds_sleep)
-                gff_draft = gff_obj.search(cursor, uid, [('state','=','draft')])
+                gff_draft = len(gff_obj.search(cursor, uid, [('state','=','draft')]))
         else:
             oorq_obj = self.pool.get('oorq.jobs.group')
             prev_work_not_finish = True
