@@ -7,8 +7,12 @@ class GiscedataSwitchingWizardB101(osv.osv_memory):
     _name = 'giscedata.switching.b101.wizard'
     _inherit = 'giscedata.switching.b101.wizard'
 
-    def get_config_vals(self, wizard):
-        config_vals = super(GiscedataSwitchingWizardB101, self).get_config_vals(wizard)
+    def get_config_vals(self, cursor, uid, ids, context=None):
+        if not context:
+            context = {}
+        wizard = self.browse(cursor, uid, ids[0], context)
+
+        config_vals = super(GiscedataSwitchingWizardB101, self).get_config_vals(cursor, uid, ids, context)
         config_vals['phone_pre'] = wizard.phone_pre
         config_vals['phone_num'] = wizard.phone_num
         return config_vals
