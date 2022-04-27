@@ -259,10 +259,11 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             components_cobra = ['CollectHeader', 'CollectDetailsInvoices', 'CollectExpectedCutOffDate', 'CollectContractData']
             result_cobra = self.extract_components_metadata(cursor, uid, wiz, components_cobra, context)
 
+        result_note = self.extract_components_metadata(cursor, uid, wiz, ['note'], context)
         result_ini = self.extract_components_metadata(cursor, uid, wiz, ['header'], context)
         result_end = self.extract_components_metadata(cursor, uid, wiz, ['footer'], context)
 
-        result = result_ini + result_crono + result_cobra + quadre_lectures + quadre_factures + result_end
+        result = result_note + result_ini + result_crono + result_cobra + quadre_lectures + quadre_factures + result_end
         return [ns(item) for item in result]
 
     # data extractors
