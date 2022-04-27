@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+	<data>
+        <record id="view_wizard_som_autoreclama_generated_atc_form" model="ir.ui.view">
+            <field name="name">wizard.som.autoreclama.generated.atc.form</field>
+            <field name="model">wizard.som.autoreclama.generated.atc</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Veure cassos generats automàticament">
+                    <button icon="gtk-execute" name="view_generated_atc" string="Obre llista d'ATC generats" type="object"/>
+                </form>
+            </field>
+        </record>
+        <record id="action_wizard_som_autoreclama_generated_atc" model="ir.actions.act_window">
+            <field name="name">Veure cassos generats automàticament</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.som.autoreclama.generated.atc</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_wizard_som_autoreclama_generated_atc_form"/>
+            <field name="target">new</field>
+        </record>
+    </data>
+</openerp> 
