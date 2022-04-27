@@ -17,8 +17,11 @@ class SomAutofacturaTask(osv.osv):
     def action_execute_task(self, cursor, uid, ids, context):
         if isinstance(ids, list):
             ids = ids[0]
-        del context['active_id']
-        del context['active_ids']
+        lot_obj = self.pool.get('giscedata.facturacio.lot')
+        lot_ids = lot_obj.search(cursor, uid, [('state', '=', 'obert')])
+        context['model'] = 'giscedata.facturacio.lot'
+        context['active_id'] = lot_ids[0]
+        context['active_ids'] = lot_ids
         step_obj = self.pool.get('som.autofactura.task.step')
         some_task_done = False
         for step_id in step_obj.search(cursor, uid, [('task_id', '=' , ids)], order="sequence"):
