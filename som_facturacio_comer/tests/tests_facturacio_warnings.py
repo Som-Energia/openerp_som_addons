@@ -17,8 +17,15 @@ class TestsFacturesValidation(testing.OOTestCase):
         warn_obj = self.openerp.pool.get(
             'giscedata.facturacio.validation.warning.template'
         )
-        self.txn = Transaction().start(self.database)
+        self.imd_obj = self.openerp.pool.get('ir.model.data')
+        self.pol_obj = self.openerp.pool.get('giscedata.polissa')
+        self.lectures_obj = self.openerp.pool.get('giscedata.lectures.lectura')
+        self.cnt_lot_obj = self.openerp.pool.get('giscedata.facturacio.contracte_lot')
+        self.lot_obj = self.openerp.pool.get('giscedata.facturacio.lot')
+        self.vali_obj = self.openerp.pool.get('giscedata.facturacio.validation.validator')
+        self.origen_comer_obj = self.openerp.pool.get('giscedata.lectures.origen_comer')
 
+        self.txn = Transaction().start(self.database)
         cursor = self.txn.cursor
         uid = self.txn.user
 
@@ -187,6 +194,19 @@ class TestsFacturesValidation(testing.OOTestCase):
             'quantity': quantity,
         })
 
+    def assign_gkwh(self, polissa):
+        cursor = self.txn.cursor
+        uid = self.txn.user
+
+        assign_obj = self.model('generationkwh.assignment')
+        soci_obj = self.model('somenergia.soci')
+        soci_id = soci_obj.search(cursor, uid, [], limit=1)[0]
+        assign_obj.create(cursor, uid, {
+            'contract_id': polissa.id,
+            'member_id': soci_id,
+            'priority': 0
+        })
+
     def test_check_origin_readings_by_contract_category__contract_without_category(self):
         pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
         meter_id  = self.prepare_contract(pol_id,'2017-01-01','2017-02-18')
@@ -318,24 +338,73 @@ class TestsFacturesValidation(testing.OOTestCase):
         expect(warnings).to(contain('SF03'))
 
     def test_check_gkwh_G_invoices__contract_without_generationkWh(self):
-        pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
-        meter_id  = self.prepare_contract(pol_id,'2017-01-01','2017-02-18')
-        self.crear_modcon(pol_id, 5, '2017-02-18', '2018-02-17')
-        warnings = self.validation_warnings(inv_id)
-        expect(warnings).not_to(contain('SV01'))
+        cursor = self.txn.cursor
+        uid = self.txn.user
 
-
-    def test_validation_V008_lot(self):
-        cursor = self.cursor
-        uid = self.user
-
-        _, periode_id = self.imd_obj.get_object_reference(
-            cursor, uid, 'giscedata_polissa', 'p1_e_tarifa_20A_new'
+        _, demo_contract_id = self.imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_polissa', 'polissa_0002'
         )
-
-        _, origen_id = self.imd_obj.get_object_reference(
-            cursor, uid, 'giscedata_lectures', 'origen10'
+        _, cnt_lot_id = self.imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_facturacio', 'cont_lot_0002'
         )
+        lot_id = self.cnt_lot_obj.read(
+            cursor, uid, cnt_lot_id, ['lot_id']
+        )['lot_id'][0]
+        polissa = self.pol_obj.browse(cursor, uid, demo_contract_id)
+        comptador = polissa.comptadors[0]
+
+        self.create_measure(comptador.id,'2016-01-02',5,'40','F1')
+        self.create_measure(comptador.id,'2016-01-25',8,'40','FG')
+
+        # We remove other lot_contracts associated with out invoicing lot
+        lot_dates = self.lot_obj.read(
+            cursor, uid, lot_id, ['data_inici', 'data_final']
+        )
+        # Let's validate the contract
+        self.pol_obj.send_signal(
+            cursor, uid, [demo_contract_id], ['validar', 'contracte']
+        )
+        clot = self.cnt_lot_obj.browse(cursor, uid, cnt_lot_id)
+
+        result = self.vali_obj.check_gkwh_G_invoices(cursor, uid, clot, lot_dates['data_inici'], lot_dates['data_final'])
+        expect(result).to(equal(None))
+
+    def test_check_gkwh_G_invoices__contract_with_gkWh_f1r(self):
+        cursor = self.txn.cursor
+        uid = self.txn.user
+
+        _, demo_contract_id = self.imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_polissa', 'polissa_0002'
+        )
+        _, cnt_lot_id = self.imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_facturacio', 'cont_lot_0002'
+        )
+        lot_id = self.cnt_lot_obj.read(
+            cursor, uid, cnt_lot_id, ['lot_id']
+        )['lot_id'][0]
+        polissa = self.pol_obj.browse(cursor, uid, demo_contract_id)
+        comptador = polissa.comptadors[0]
+
+        self.create_measure(comptador.id,'2016-01-02',5,'40','F1')
+        self.create_measure(comptador.id,'2016-01-25',8,'40','FG')
+
+        # We remove other lot_contracts associated with out invoicing lot
+        lot_dates = self.lot_obj.read(
+            cursor, uid, lot_id, ['data_inici', 'data_final']
+        )
+        # Let's validate the contract
+        self.pol_obj.send_signal(
+            cursor, uid, [demo_contract_id], ['validar', 'contracte']
+        )
+        self.assign_gkwh(polissa)
+        clot = self.cnt_lot_obj.browse(cursor, uid, cnt_lot_id)
+
+        result = self.vali_obj.check_gkwh_G_invoices(cursor, uid, clot, lot_dates['data_inici'], lot_dates['data_final'])
+        expect(result).to(equal(True))
+
+    def test_check_gkwh_G_invoices__contract_with_gkWh_other_origen_comer(self):
+        cursor = self.txn.cursor
+        uid = self.txn.user
 
         _, cnt_lot_id = self.imd_obj.get_object_reference(
             cursor, uid, 'giscedata_facturacio', 'cont_lot_0002'
@@ -343,45 +412,59 @@ class TestsFacturesValidation(testing.OOTestCase):
         _, demo_contract_id = self.imd_obj.get_object_reference(
             cursor, uid, 'giscedata_polissa', 'polissa_0002'
         )
-        # Ens assegurem de que l'unic comptador de la polissa tingui
-        # lectures. Per forçar la validació, fem que sigui zero totes dues.
         polissa = self.pol_obj.browse(cursor, uid, demo_contract_id)
-
-        if len(polissa.comptadors) != 1:
-            raise NotImplementedError
-
         comptador = polissa.comptadors[0]
-        origen_id = self.imd_obj.get_object_reference(
-            cursor, uid, 'giscedata_lectures', 'origen10'
-        )[1]
-        lectura_cv = {
-            'periode': periode_id,              'name': '2016-01-02',
-            'comptador': comptador.id,          'origen_id': origen_id,
-            'tipus': 'A',                       'lectura': 0,
-        }
-        self.lectures_obj.create(cursor, uid, lectura_cv)
-        lectura_cv['name'] = '2016-01-25'
-        self.lectures_obj.create(cursor, uid, lectura_cv)
 
-        # We remove other lot_contracts associated with out invoicing lot
+        self.create_measure(comptador.id,'2016-01-02',5,'40','F1')
+        self.create_measure(comptador.id,'2016-01-25',8,'40','F1')
+
         lot_id = self.cnt_lot_obj.read(
             cursor, uid, cnt_lot_id, ['lot_id']
         )['lot_id'][0]
-        cnt_lot_to_remove = self.lot_obj.read(
-            cursor, uid, lot_id, ['contracte_lot_ids']
-        )['contracte_lot_ids']
-
-        cnt_lot_to_remove.remove(cnt_lot_id)
-        self.cnt_lot_obj.unlink(cursor, uid, cnt_lot_to_remove)
+        lot_dates = self.lot_obj.read(
+            cursor, uid, lot_id, ['data_inici', 'data_final']
+        )
 
         # Let's validate the contract
         self.pol_obj.send_signal(
             cursor, uid, [demo_contract_id], ['validar', 'contracte']
         )
+        self.assign_gkwh(polissa)
+        clot = self.cnt_lot_obj.browse(cursor, uid, cnt_lot_id)
 
-        # Next step, we want to validate the lot and the V008 should pop
-        self.cnt_lot_obj.validate_individual(cursor, uid, [cnt_lot_id])
-        lot_status = self.cnt_lot_obj.read(
-            cursor, uid, cnt_lot_id, ['status']
-        )['status']
-        expect(lot_status).not_to(contain('SV01'))
+        result = self.vali_obj.check_gkwh_G_invoices(cursor, uid, clot, lot_dates['data_inici'], lot_dates['data_final'])
+        expect(result).to(equal(None))
+
+    def test_check_gkwh_G_invoices__without_gkwh_other_origen_comer_id(self):
+        cursor = self.txn.cursor
+        uid = self.txn.user
+
+        _, cnt_lot_id = self.imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_facturacio', 'cont_lot_0002'
+        )
+        _, demo_contract_id = self.imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_polissa', 'polissa_0002'
+        )
+
+        # Ens assegurem de que l'unic comptador de la polissa tingui
+        # lectures. Per forçar la validació, fem que sigui zero totes dues.
+        polissa = self.pol_obj.browse(cursor, uid, demo_contract_id)
+        comptador = polissa.comptadors[0]
+
+        lot_id = self.cnt_lot_obj.read(
+            cursor, uid, cnt_lot_id, ['lot_id']
+        )['lot_id'][0]
+        lot_dates = self.lot_obj.read(
+            cursor, uid, lot_id, ['data_inici', 'data_final']
+        )
+        self.create_measure(comptador.id,'2016-01-02',5,'40','F1')
+        self.create_measure(comptador.id,'2016-01-25',8,'40','F1')
+
+        # Let's validate the contract
+        self.pol_obj.send_signal(
+            cursor, uid, [demo_contract_id], ['validar', 'contracte']
+        )
+        clot = self.cnt_lot_obj.browse(cursor, uid, cnt_lot_id)
+        # Next step, we want to validate the lot and the SV01 should not pop
+        result = self.vali_obj.check_gkwh_G_invoices(cursor, uid, clot, lot_dates['data_inici'], lot_dates['data_final'])
+        expect(result).to(equal(None))

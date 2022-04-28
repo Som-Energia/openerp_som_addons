@@ -184,8 +184,10 @@ class GiscedataFacturacioValidationValidator(osv.osv):
             self).check_consume_by_amount(cursor, uid, fact, parameters)
 
     def check_gkwh_G_invoices(self, cursor, uid, clot, data_inici,
-                                    data_fi, parametres):
+                                    data_fi, parametres={}):
         modcon_obj = self.pool.get('giscedata.polissa.modcontractual')
+        compta_obj = self.pool.get('giscedata.lectures.comptador')
+        facturador_obj = self.pool.get('giscedata.facturacio.facturador')
         imd_obj = self.pool.get('ir.model.data')
         origen_comer_f1g_id = imd_obj.get_object_reference(cursor, uid, 'giscedata_facturacio_switching', 'origen_comer_f1_g')[1]
         polissa = clot.polissa_id
@@ -203,12 +205,12 @@ class GiscedataFacturacioValidationValidator(osv.osv):
             mod_ids.append(mod_id)
             mod_dates[mod_id] = intervals[mod_data]['dates']
 
-        for modcontractual in modcon_obj.browse(cursor, uid, mod_ids, context):
+        for modcontractual in modcon_obj.browse(cursor, uid, mod_ids):
             mod_id = modcontractual.id
             tid = modcontractual.tarifa.id
             data_inici_periode_f = max(data_inici, mod_dates[mod_id][0])
             data_final_periode_f = min(data_final, mod_dates[mod_id][1])
-
+            reparto_real = facturador_obj.reparto_real(cursor, uid, modcontractual.tarifa.name)
             if modcontractual.polissa_id.active and len(mod_ids) == 1:
                 data_final_periode_f = data_final
             c_actius = polissa.comptadors_actius(data_inici_periode_f,
@@ -220,20 +222,21 @@ class GiscedataFacturacioValidationValidator(osv.osv):
                 # l'activació. Per tant ara restem 1 dia a les dates que estem
                 # utilitzant
                 data_inici_periode_f2 = (datetime.strptime(data_inici_periode_f, "%Y-%m-%d") - timedelta( days=1)).strftime("%Y-%m-%d")
-                ctx.update({
+                ctx = {
                     'fins_lectura_fact': data_final,
                     'ult_lectura_fact': data_inici_periode_f2
-                })
+                }
                 if reparto_real:
                     lectures_activa = compt.get_lectures_month_per_facturar(
-                        tid, 'A', context=context
+                        tid, 'A', context=ctx
                     )
                 else:
                     lectures_activa = compt.get_lectures_per_facturar(
                         tid, 'A', context=ctx
                     )
+
                 for periode, lectura in lectures_activa.items():
-                    if lectura['origen_comer_id'][0] == origen_comer_f1g_id:
+                    if lectura['actual']['origen_comer_id'][0] == origen_comer_f1g_id:
                         return True
 
         return None
