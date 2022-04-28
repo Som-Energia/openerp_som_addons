@@ -10,7 +10,7 @@
     "category": "SomEnergia",
     "depends":[
         "base_extended",
-        "giscedata_lectures_pool",
+        #"giscedata_facturacio_comer_som",
     ],
     "init_xml": [],
     "demo_xml": [],

@@ -46,15 +46,15 @@
             <field name="type">tree</field>
             <field name="priority">16</field>
             <field name="arch" type="xml">
-                <tree string="Autofactura tasks steps">
-                    <field name="task_id"/>
-                    <field name="name"/>
-                    <field name="sequence"/>
-                    <field name="active"/>
-                    <field name="object_name"/>
-                    <field name="function"/>
-                    <field name="params"/>
-                    <field name="autoworker_task_name"/>
+                <tree string="Autofactura tasks steps" editable="bottom">
+                    <field name="task_id" editable='no'/>
+                    <field name="name" editable='no'/>
+                    <field name="sequence" editable='no'/>
+                    <field name="active" />
+                    <field name="object_name" editable='no'/>
+                    <field name="function" editable='no'/>
+                    <field name="params" editable='no'/>
+                    <field name="autoworker_task_name" editable='no'/>
                 </tree>
             </field>
         </record>
