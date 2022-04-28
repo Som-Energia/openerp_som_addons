@@ -164,6 +164,8 @@ class SomAutofacturaTaskStep(osv.osv):
     _defaults = {
         'sequence': lambda *a: 99,
         'active': lambda *a: False,
+        'function': lambda *a: '',
+        'name': lambda *a: 'nom_per_defecte',
     }
 
 

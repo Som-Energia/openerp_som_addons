@@ -10,11 +10,19 @@
                     <group colspan="6">
                         <group colspan="4">
                             <label string="Recorda revisar els checks de les tasques de facturació automatiques abans de començar!!" colspan="4"/>
-                            <button name="view_tasks" type="object" string="Tasques de procés automàtic de facturació" icon="gtk-ok"/>
+                            <button name="view_tasks" type="object" string="Tasques de procés automàtic de facturació" icon="gtk-ok" colspan="4"/>
+                            <field name="tasks_steps" colspan="4" nolabel="1" height="300">
+                                <tree  editable="bottom">
+                                    <field name="id" />
+                                    <field name="name" />
+                                    <field name="active" />
+                                </tree>
+                            </field>
                         </group>
                         <separator colspan="4"/>
                         <button special="cancel" string="Cancelar" icon="gtk-cancel"/>
                         <button name="do" type="object" icon="gtk-ok" string="Iniciar el procés automàtic de facturació"/>
+                        <button name="popular" type="object" icon="gtk-ok" string="pupulate"/>
                     </group>
                 </form>
             </field>
