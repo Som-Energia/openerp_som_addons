@@ -3,6 +3,9 @@ Al servidor de testing treballem sobre la branca Rolling. Per aplicar una PR, ca
 *  git pull origin
 *  git merge origin/NOM_BRANCA
 
+Si has fet merge de la branca **prèviament**, pots fer:
+*  git pull origin NOM_BRANCA
+
 Si hi ha conflictes, cal arreglar els conflictes
 
 *  git status
