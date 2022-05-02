@@ -6,7 +6,7 @@
             <field name="name">Id. de Extraline</field>
             <field name="column">id</field>
         </record>
-        <record model="wizard.model.list.from.file.filter" id="model_list_wizard_filter_extraline_id">
+        <record model="wizard.model.list.from.file.filter" id="model_list_wizard_filter_extraline_pol_name">
             <field name="model">giscedata.facturacio.extra</field>
             <field name="name">Num de pòlissa</field>
             <field name="column">polissa_id.name</field>
