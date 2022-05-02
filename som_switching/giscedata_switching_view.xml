@@ -88,6 +88,10 @@
             </field>
         </record>
 
+        <record id="giscedata_facturacio_switching.view_importacio_linia_general_tree" model="ir.ui.view">
+            <field name="priority">10</field>
+        </record>
+
         <!-- Menu de atr pendents de enviar en pas 01-->
         <record id="sw_crm_case_pendents_enviar_01_act_tree" model="ir.actions.act_window">
             <field name="name">Solicituds obertes pendents d'enviar</field>
