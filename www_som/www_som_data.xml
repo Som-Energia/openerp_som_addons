@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+	    <!-- origen autolectura -->
+        <record model="giscedata.lectures.origen_comer" id="origen_comer_oficina_virtual">
+	        <field name="codi">OV</field>
+	        <field name="name">Oficina Virtual</field>
+	    </record>
+    </data>
+    <data noupdate="1">
+        <!-- Configuració limit lectures per l'oficina virtual-->
+        <record model="res.config" id="www_limit_lectures">
+            <field name="name">www_limit_lectures</field>
+            <field name="value">5</field>
+        </record>
+        <!-- Configuració interval de venciment per l'oficina virtual-->
+        <record model="res.config" id="www_interval_venciment">
+            <field name="name">www_interval_venciment</field>
+            <field name="value">10</field>
+        </record>
+    </data>
+</openerp>
