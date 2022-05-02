@@ -28,12 +28,12 @@
         <tr style="text-align:center;font-weight:bold">
             <td style="width:15%">${_(u"Tipus d'energia")}</td>
             <td style="width:12%">${_(u"Orígen lectura inicial")}</td>
-            <td style="width:12%">${_(u"Lectura Inicial")}</td>
+            <td style="width:12%">${_(u"Lectura Inicial (kWh)")}</td>
             <td style="width:12%">${_(u"Orígen lectura final")}</td>
-            <td style="width:12%">${_(u"Lectura final")}</td>
-            <td style="width:12%">${_(u"Consum entre lectures")}</td>
+            <td style="width:12%">${_(u"Lectura final (kWh)")}</td>
+            <td style="width:12%">${_(u"Consum entre lectures (kWh)")}</td>
             <td style="width:12%">${_(u"Origen consum facturat")}</td>
-            <td style="width:13%">${_(u"TOTAL facturat")}</td>
+            <td style="width:13%">${_(u"TOTAL facturat (kWh)")}</td>
         </tr>
     % for lectura in d.lectures:
         <tr style="text-align:right">
