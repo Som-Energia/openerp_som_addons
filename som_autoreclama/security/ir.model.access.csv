@@ -20,3 +20,12 @@
 "access_wizard_massive_create_r1029_r","wizard.massive.create.r1029","model_wizard_massive_create_r1029","som_autoreclama.group_som_autoreclama_u",1,1,1,1
 "access_wizard_massive_create_r1029_rw","wizard.massive.create.r1029","model_wizard_massive_create_r1029","som_autoreclama.group_som_autoreclama_w",1,1,1,0
 "access_wizard_massive_create_r1029_rcwd","wizard.massive.create.r1029","model_wizard_massive_create_r1029","som_autoreclama.group_som_autoreclama_r",1,0,0,0
+"access_wizard_som_autoreclama_execute_step_r","wizard.som.autoreclama.execute.step","model_wizard_som_autoreclama_execute_step","som_autoreclama.group_som_autoreclama_r",1,0,0,0
+"access_wizard_som_autoreclama_execute_step_rw","wizard.som.autoreclama.execute.step","model_wizard_som_autoreclama_execute_step","som_autoreclama.group_som_autoreclama_w",1,1,0,0
+"access_wizard_som_autoreclama_execute_step_rcwd","wizard.som.autoreclama.execute.step","model_wizard_som_autoreclama_execute_step","som_autoreclama.group_som_autoreclama_u",1,1,1,1
+"access_wizard_som_autoreclama_generated_atc_r","wizard.som.autoreclama.generated.atc","model_wizard_som_autoreclama_generated_atc","som_autoreclama.group_som_autoreclama_r",1,0,0,0
+"access_wizard_som_autoreclama_generated_atc_rw","wizard.som.autoreclama.generated.atc","model_wizard_som_autoreclama_generated_atc","som_autoreclama.group_som_autoreclama_w",1,1,0,0
+"access_wizard_som_autoreclama_generated_atc_rcwd","wizard.som.autoreclama.generated.atc","model_wizard_som_autoreclama_generated_atc","som_autoreclama.group_som_autoreclama_u",1,1,1,1
+"access_wizard_som_autoreclama_set_manual_state_r","wizard.som.autoreclama.set.manual.state","model_wizard_som_autoreclama_set_manual_state","som_autoreclama.group_som_autoreclama_r",1,0,0,0
+"access_wizard_som_autoreclama_set_manual_state_rw","wizard.som.autoreclama.set.manual.state","model_wizard_som_autoreclama_set_manual_state","som_autoreclama.group_som_autoreclama_w",1,1,0,0
+"access_wizard_som_autoreclama_set_manual_state_rcwd","wizard.som.autoreclama.set.manual.state","model_wizard_som_autoreclama_set_manual_state","som_autoreclama.group_som_autoreclama_u",1,1,1,1

@@ -10,9 +10,6 @@ class GiscedataAtc(osv.osv):
     _inherit = 'giscedata.atc'
     _order = 'id desc'
 
-    def set_autoreclama_history_deactivate(self, cursor, uid, ids, context=None):
-        pass
-
     def get_autoreclama_data(self, cursor, uid, id, context=None):
         data = self.read(cursor, uid, id, ['business_days_with_same_agent', 'subtipus_id', 'agent_actual'], context)
         # agent_actual = '10' is ditri
@@ -33,6 +30,11 @@ class GiscedataAtc(osv.osv):
         subtr_obj = self.pool.get('giscedata.subtipus.reclamacio')
         subtr_id = subtr_obj.search(cursor, uid, [('name', '=', '029')], context=context)[0]
 
+        imd_obj = self.pool.get('ir.model.data')
+        initial_state_id = imd_obj.get_object_reference(
+                cursor, uid, 'som_autoreclama', 'correct_state_workflow_atc'
+        )[1]
+
         atc = self.browse(cursor, uid, atc_id, context)
         new_case_data = {
             'polissa_id': atc.polissa_id.id,
@@ -44,16 +46,24 @@ class GiscedataAtc(osv.osv):
             'sense_responsable': True,
             'tanca_al_finalitzar_r1': True,
             'crear_cas_r1': True,
+            'autoreclama_history_initial_state_id': initial_state_id,
         }
         return self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
 
     # Automatic ATC + [R1] from dictonary / Entry poiut
     def create_general_atc_r1_case_via_wizard(self, cursor, uid, case_data, context=None):
-        ctx = context.copy()
+        if not context:
+            ctx = {}
+        else:
+            ctx = context.copy()
         ctx['from_model'] = 'giscedata.polissa'        # model gas o electricitat
         ctx['polissa_field'] = 'id'                    # camp per llegir
         ctx['active_ids'] = [case_data['polissa_id']]  # id de la polissa
         ctx['active_id'] = case_data['polissa_id']     # id de la polissa
+        if case_data.get('autoreclama_history_initial_state_id', False):
+            ctx['autoreclama_history_initial_state_id'] = case_data['autoreclama_history_initial_state_id']
+        if case_data.get('autoreclama_history_initial_date', False):
+            ctx['autoreclama_history_initial_date'] = case_data['autoreclama_history_initial_date']
 
         params = {
             'canal_id': case_data['canal_id'],
