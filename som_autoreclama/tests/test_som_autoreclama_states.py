@@ -147,6 +147,7 @@ class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
         state_0_dt = '2022-01-02'
         state_1_id = self.search_in('som.autoreclama.state', [('name','ilike','desact')])
         state_1_dt = '2022-02-15'
+        state_1_st = 2
 
         new_case_data = {
             'polissa_id': polissa_id,
@@ -164,7 +165,8 @@ class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
             'autoreclama_history_initial_date': state_0_dt,
         }
         new_atc_id = atc_obj.create_general_atc_r1_case_via_wizard(self.cursor, self.uid, new_case_data, ctxt)
-        history_obj.historize(self.cursor, self.uid, new_atc_id, state_1_id, state_1_dt)
+        state_1_st = new_atc_id
+        history_obj.historize(self.cursor, self.uid, new_atc_id, state_1_id, state_1_dt, state_1_st)
 
         atc = atc_obj.browse(self.cursor, self.uid, new_atc_id)
 
@@ -176,6 +178,7 @@ class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
         self.assertEqual(atc.autoreclama_history_ids[1].change_date, state_0_dt )
         self.assertEqual(atc.autoreclama_history_ids[1].end_date, state_1_dt )
         self.assertEqual(atc.autoreclama_history_ids[1].atc_id.id, new_atc_id )
+        self.assertEqual(atc.autoreclama_history_ids[1].generated_atc_id.id, False )
 
     def test_historize__third_state_correct_in_history_indirectly(self):
         atc_obj = self.get_model('giscedata.atc')
@@ -191,8 +194,10 @@ class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
         state_0_dt = '2022-01-02'
         state_1_id = self.search_in('som.autoreclama.state', [('name','ilike','reclam')])
         state_1_dt = '2022-02-15'
+        state_1_st = 3
         state_2_id = self.search_in('som.autoreclama.state', [('name','ilike','desact')])
         state_2_dt = '2022-04-16'
+        state_2_st = 4
 
         new_case_data = {
             'polissa_id': polissa_id,
@@ -210,8 +215,10 @@ class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
             'autoreclama_history_initial_date': state_0_dt,
         }
         new_atc_id = atc_obj.create_general_atc_r1_case_via_wizard(self.cursor, self.uid, new_case_data, ctxt)
-        history_obj.historize(self.cursor, self.uid, new_atc_id, state_1_id, state_1_dt)
-        history_obj.historize(self.cursor, self.uid, new_atc_id, state_2_id, state_2_dt)
+
+        state_1_st = state_2_st = new_atc_id
+        history_obj.historize(self.cursor, self.uid, new_atc_id, state_1_id, state_1_dt, state_1_st)
+        history_obj.historize(self.cursor, self.uid, new_atc_id, state_2_id, state_2_dt, state_2_st)
 
         atc = atc_obj.browse(self.cursor, self.uid, new_atc_id)
 
@@ -223,11 +230,13 @@ class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
         self.assertEqual(atc.autoreclama_history_ids[1].change_date, state_1_dt )
         self.assertEqual(atc.autoreclama_history_ids[1].end_date, state_2_dt )
         self.assertEqual(atc.autoreclama_history_ids[1].atc_id.id, new_atc_id )
+        self.assertEqual(atc.autoreclama_history_ids[1].generated_atc_id.id, state_1_st )
 
         self.assertEqual(atc.autoreclama_history_ids[2].state_id.id, state_0_id )
         self.assertEqual(atc.autoreclama_history_ids[2].change_date, state_0_dt )
         self.assertEqual(atc.autoreclama_history_ids[2].end_date, state_1_dt )
         self.assertEqual(atc.autoreclama_history_ids[2].atc_id.id, new_atc_id )
+        self.assertEqual(atc.autoreclama_history_ids[2].generated_atc_id.id, False )
 
 
 class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
