@@ -116,7 +116,7 @@ class WizardExportTugestoInvoices(osv.osv_memory):
 
         self.write(cursor, uid, ids, {
                 'state': 'pending',
-                'file_name': filename,
+                'name': filename,
                 'file': mfile,
                 'info': u"Vols moure les factures al següent estat pendent ?.",
                 'fact_ids': context.get('active_ids',[])
@@ -162,8 +162,8 @@ class WizardExportTugestoInvoices(osv.osv_memory):
     _columns = {
         'name': fields.char('Nom fitxer', size=32),
         'state': fields.char('State', size=16),
-        'file_name': fields.binary('Fitxer'),
-        'info': fields.text(u'Informació'),
+        'file': fields.binary('Fitxer'),
+        'info': fields.text(u'Informació',readonly=True),
         'fact_ids': fields.text(),
     }
     _defaults = {
