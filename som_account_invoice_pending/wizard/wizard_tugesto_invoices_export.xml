@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_wizard_tugesto_invoices_export" model="ir.ui.view">
+            <field name="name">wizard.export.tugesto.invoices.form</field>
+            <field name="model">wizard.export.tugesto.invoices</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+            <form string="Exportació de factures retornades">
+                <field name="state" invisible="1"/>
+                <field name="flie_name" invisible="1"/>
+                <group colspan="4">
+                    <label>Tugesto - Generació Excel Expedients/Factures.</label>
+                </group>
+                <group colspan="4" attrs="{'readonly': [('state', '!=', 'done')]}">
+                    <field name="file_name" editable="False"/>
+                </group>
+                <button name="tugesto_invoices_export" string="Generar el fitxer" type="object" icon="gtk-execute"/>
+                <button string="Tanca" special="cancel" type="object" icon="gtk-cancel"/>
+            </form>
+            </field>
+        </record>
+        <record id="wizard_tugesto_invoices_export" model="ir.actions.act_window">
+            <field name="name">Tugesto - Generació Excel Expedients/Factures</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.export.tugesto.invoices</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        <record id="action_wizard_tugesto_invoices_export" model="ir.values">
+            <field name="object" eval="1" />
+            <field name="name">Tugesto - Generació Excel Expedients/Factures</field>
+            <field name="key2">client_action_multi</field>
+            <field name="value" eval="'ir.actions.act_window,' + str(ref('wizard_tugesto_invoices_export'))"/>
+            <field name="key">action</field>
+            <field name="model">giscedata.facturacio.factura</field>
+        </record>
+
+    </data>
+</openerp>
