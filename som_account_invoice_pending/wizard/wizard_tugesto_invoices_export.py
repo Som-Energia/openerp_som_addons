@@ -5,6 +5,7 @@ import StringIO
 import re
 from tqdm import tqdm
 import pandas as pd
+import json
 
 from osv import osv, fields
 from datetime import datetime, timedelta, date
@@ -114,19 +115,60 @@ class WizardExportTugestoInvoices(osv.osv_memory):
         mfile = base64.b64encode(output.getvalue())
 
         self.write(cursor, uid, ids, {
-                'state': 'done',
+                'state': 'pending',
                 'file_name': filename,
-                'file': mfile
+                'file': mfile,
+                'info': u"Vols moure les factures al següent estat pendent ?.",
+                'fact_ids': context.get('active_ids',[])
             })
+
+    def tugesto_invoices_update_pending_state(self, cursor, uid, ids, context=None):
+
+        wizard = self.browse(cursor, uid, ids[0], context)
+        fact_ids = context['active_ids']
+
+
+        fact_obj = self.pool.get('giscedata.facturacio.factura')
+        res_partner_obj = self.pool.get('res.partner')
+        imd_obj = self.pool.get('ir.model.data')
+        default_process = imd_obj.get_object_reference(cursor, uid,
+                    'account_invoice_pending',
+                    'default_pending_state_process')[1]
+
+        info = u'Hem passat al següent estat {} factures'.format(len(fact_ids))
+        try:
+            fact_obj.go_on_pending(cursor, uid, fact_ids)
+        except Exception as ex:
+            info = u'Hi ha hagut un error en intentar passar de estat {} factures: {}'.format(len(fact_ids, str(ex)))
+
+        self.write(cursor, uid, ids, {
+                'state': 'done',
+                'info': info,
+            })
+
+    def tugesto_list_invoices(self, cursor, uid, ids, context=None):
+        wizard = self.browse(cursor, uid, ids[0], context)
+        fact_ids = json.loads(fact_ids)
+        return {
+            'domain': "[('id','in', %s)]" % str(wizard.fact_ids),
+            'name': 'Factures',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'giscedata.facturacio.factura',
+            'type': 'ir.actions.act_window'
+        }
 
 
     _columns = {
         'name': fields.char('Nom fitxer', size=32),
         'state': fields.char('State', size=16),
         'file_name': fields.binary('Fitxer'),
+        'info': fields.text(u'Informació'),
+        'fact_ids': fields.text(),
     }
     _defaults = {
         'state': lambda *a: 'init',
+        'info': '',
     }
 
 WizardExportTugestoInvoices()
