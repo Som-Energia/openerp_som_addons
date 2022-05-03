@@ -6,17 +6,28 @@
             <field name="model">wizard.export.tugesto.invoices</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
-            <form string="Exportació de factures retornades">
+            <form string="Tugesto - Generació Excel Expedients/Factures">
                 <field name="state" invisible="1"/>
-                <field name="flie_name" invisible="1"/>
+                <field name="name" invisible="1"/>
+
                 <group colspan="4">
                     <label>Tugesto - Generació Excel Expedients/Factures.</label>
                 </group>
-                <group colspan="4" attrs="{'readonly': [('state', '!=', 'done')]}">
-                    <field name="file_name" editable="False"/>
+                <group colspan="4" attrs="{'invisible':[('state','!=','init')]}">
+                    <button name="tugesto_invoices_export" string="Generar el fitxer" type="object" icon="gtk-execute"/>
                 </group>
-                <button name="tugesto_invoices_export" string="Generar el fitxer" type="object" icon="gtk-execute"/>
-                <button string="Tanca" special="cancel" type="object" icon="gtk-cancel"/>
+                <group colspan="4" attrs="{'invisible':[('state','!=','pending')]}">
+                    <field name="file" editable="False" />
+                    <button name="tugesto_invoices_update_pending_state" string="Canviar estat factures" type="object" icon="gtk-execute"/>
+                </group>
+                <group colspan="4" attrs="{'invisible':[('state','!=','done')]}">
+                    <button string="Sortir" special="cancel" type="object" icon="gtk-ok"/>
+                    <button name="tugesto_list_invoices" string="Veure factures implicades" icon="gtk-ok" type="object"/>
+                </group>
+                <group colspan="4" >
+                    <field name="info"/>
+                </group>
+                <button string="Tanca" special="cancel" type="object" icon="gtk-cancel" attrs="{'invisible':[('state','=','done')]}"/>
             </form>
             </field>
         </record>
