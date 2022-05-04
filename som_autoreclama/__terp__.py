@@ -12,6 +12,7 @@
     "category": "SomEnergia",
     "depends":[
         "base",
+        "giscedata_subtipus_reclamacio",
         "som_switching",
     ],
     "init_xml": [],
