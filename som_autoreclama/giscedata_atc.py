@@ -32,7 +32,7 @@ class GiscedataAtc(osv.osv):
 
         imd_obj = self.pool.get('ir.model.data')
         initial_state_id = imd_obj.get_object_reference(
-                cursor, uid, 'som_autoreclama', 'correct_state_workflow_atc'
+                cursor, uid, 'som_autoreclama', 'automated_state_workflow_atc'
         )[1]
 
         atc = self.browse(cursor, uid, atc_id, context)
