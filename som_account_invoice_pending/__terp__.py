@@ -17,7 +17,7 @@
    ],
     "init_xml": [],
     "demo_xml": [
-        "som_account_invoice_pending_demo.xml",
+        "demo/som_account_invoice_pending_demo_data.xml",
     ],
     "update_xml":[
         "som_account_invoice_pending_data.xml",
