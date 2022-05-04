@@ -3,8 +3,10 @@
 from gettext import dgettext
 import logging
 import pooler
-from datetime import date
+from datetime import date,timedelta
 from tqdm import tqdm
+
+date_format = "%Y-%m-%d"
 
 def up(cursor, installed_version):
     if not installed_version:
@@ -25,18 +27,21 @@ def up(cursor, installed_version):
 
     atc_obj = pool.get('giscedata.atc')
     atch_obj = pool.get('som.autoreclama.state.history.atc')
-    search_params = [('active','=',True),('state','not in', ['cancel', 'done'])]
+
+
+    cut_date = (date.today() - timedelta(days=15)).strftime(date_format)
+    search_params = [
+        ('active','=',True),
+        ('state','not in', ['cancel', 'done']),
+        ('date','>',cut_date)
+        ]
+
     atc_ids = atc_obj.search(cursor, uid, search_params)
     for atc_id in tqdm(atc_ids):
-        atch_obj.create(
-            cursor,
-            uid,
-            {
-                'atc_id': atc_id,
-                'state_id': correct_state_id,
-                'change_date': date.today().strftime("%d-%m-%Y"),
-            }
-        )
+        atc_data = atc_obj.read(cursor, uid, atc_id,['autoreclama_state'])
+        if not atc_data.get('autoreclama_state', False):
+            atch_obj.historize(cursor, uid, atc_id, correct_state_id, None, False)
+
     logger.info("Estats inicials per els giscedata_atc actius creats")
 
 
