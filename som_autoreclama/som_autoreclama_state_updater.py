@@ -13,6 +13,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         search_params = [
             ('active', '=', True),
             ('state', '=', 'pending'),
+            ('agent_actual', '=', '10'), # Distri
             ('autoreclama_state.is_last', '=', False),
             ]
         return atc_obj.search(cursor, uid, search_params)
