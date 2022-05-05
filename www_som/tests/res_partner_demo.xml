@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+      <record id="base.res_partner_asus" model="res.partner">
+        <field name="ref">0001</field>
+	<field name="ref2">R1-001</field>
+      </record>
+    </data>
+</openerp>
