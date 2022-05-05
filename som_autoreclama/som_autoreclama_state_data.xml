@@ -95,7 +95,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">30</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_002_correct_state_workflow_atc">
@@ -103,7 +103,7 @@
             <field name="days">2</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">40</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_027_correct_state_workflow_atc">
@@ -111,7 +111,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">50</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_028_correct_state_workflow_atc">
@@ -119,7 +119,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">60</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_029_correct_state_workflow_atc">
@@ -127,7 +127,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">70</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_030_correct_state_workflow_atc">
@@ -135,7 +135,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">80</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_031_correct_state_workflow_atc">
@@ -143,7 +143,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">90</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_032_correct_state_workflow_atc">
@@ -151,7 +151,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">100</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_039_correct_state_workflow_atc">
@@ -159,7 +159,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">110</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_020_correct_state_workflow_atc">
@@ -167,7 +167,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">120</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_021_correct_state_workflow_atc">
@@ -175,7 +175,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">130</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_022_correct_state_workflow_atc">
@@ -183,7 +183,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">140</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_023_correct_state_workflow_atc">
@@ -191,7 +191,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">150</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_114_correct_state_workflow_atc">
@@ -199,7 +199,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">160</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_013_correct_state_workflow_atc">
@@ -207,7 +207,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">170</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_014_correct_state_workflow_atc">
@@ -215,7 +215,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">180</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_015_correct_state_workflow_atc">
@@ -223,7 +223,7 @@
             <field name="days">15</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">190</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_045_correct_state_workflow_atc">
@@ -231,7 +231,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">200</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_048_correct_state_workflow_atc">
@@ -239,7 +239,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">210</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_066_correct_state_workflow_atc">
@@ -247,7 +247,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">220</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_034_correct_state_workflow_atc">
@@ -255,7 +255,7 @@
             <field name="days">15</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">230</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_035_correct_state_workflow_atc">
@@ -263,7 +263,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">240</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_058_correct_state_workflow_atc">
@@ -271,7 +271,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">250</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_059_correct_state_workflow_atc">
@@ -279,7 +279,7 @@
             <field name="days">25</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">260</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_060_correct_state_workflow_atc">
@@ -287,7 +287,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">270</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_061_correct_state_workflow_atc">
@@ -295,7 +295,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">280</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_062_correct_state_workflow_atc">
@@ -303,7 +303,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">290</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_063_correct_state_workflow_atc">
@@ -311,7 +311,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">300</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_064_correct_state_workflow_atc">
@@ -319,7 +319,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">310</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_065_correct_state_workflow_atc">
@@ -327,7 +327,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">320</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_003_correct_state_workflow_atc">
@@ -335,7 +335,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">330</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_004_correct_state_workflow_atc">
@@ -343,7 +343,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">340</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_005_correct_state_workflow_atc">
@@ -351,7 +351,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">350</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_006_correct_state_workflow_atc">
@@ -359,7 +359,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">360</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_007_correct_state_workflow_atc">
@@ -367,7 +367,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">370</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_008_correct_state_workflow_atc">
@@ -375,7 +375,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">380</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_009_correct_state_workflow_atc">
@@ -383,7 +383,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">390</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_010_correct_state_workflow_atc">
@@ -391,7 +391,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">400</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_011_correct_state_workflow_atc">
@@ -399,7 +399,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">410</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_012_correct_state_workflow_atc">
@@ -407,7 +407,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">420</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_037_correct_state_workflow_atc">
@@ -415,7 +415,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">430</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_047_correct_state_workflow_atc">
@@ -423,7 +423,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">440</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_055_correct_state_workflow_atc">
@@ -431,7 +431,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">450</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_036_correct_state_workflow_atc">
@@ -439,7 +439,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">460</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_057_correct_state_workflow_atc">
@@ -447,7 +447,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">470</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_040_correct_state_workflow_atc">
@@ -455,7 +455,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">480</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_046_correct_state_workflow_atc">
@@ -463,7 +463,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">490</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_056_correct_state_workflow_atc">
@@ -471,7 +471,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">500</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_067_correct_state_workflow_atc">
@@ -479,7 +479,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">510</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_018_correct_state_workflow_atc">
@@ -487,7 +487,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">520</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_019_correct_state_workflow_atc">
@@ -495,7 +495,7 @@
             <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">530</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_024_correct_state_workflow_atc">
@@ -503,7 +503,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">540</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_025_correct_state_workflow_atc">
@@ -511,7 +511,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">550</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_026_correct_state_workflow_atc">
@@ -519,7 +519,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">560</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_041_correct_state_workflow_atc">
@@ -527,7 +527,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">570</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_042_correct_state_workflow_atc">
@@ -535,7 +535,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">580</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_043_correct_state_workflow_atc">
@@ -543,7 +543,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">590</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_044_correct_state_workflow_atc">
@@ -551,7 +551,7 @@
             <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
-            <field name="priority">20</field>
+            <field name="priority">600</field>
             <field name="active" eval="True"/>
         </record>
         <record id="ir_cron_autoreclama_states_updater" model="ir.cron" forcecreate="1">
