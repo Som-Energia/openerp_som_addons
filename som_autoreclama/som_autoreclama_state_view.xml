@@ -32,11 +32,11 @@
                         <field name="is_last" select="2"/>
                         <separator colspan="6"/>
                         <group colspan="6" col="2" string="Condicions per canvi d'estat">
-                            <field name="conditions_ids" select="2" height="300" nolabel="1" widget="one2many_list"/>
+                            <field name="conditions_ids" select="2" height="500" nolabel="1" widget="one2many_list"/>
                         </group>
                         <separator colspan="6"/>
                         <group colspan="6" col="2" string="Parametres del cas ATC a crear">
-                            <field name="generate_atc_parameters_text" select="2" on_change="check_correct_json(generate_atc_parameters_text)" height="250"  nolabel="1" />
+                            <field name="generate_atc_parameters_text" select="2" on_change="check_correct_json(generate_atc_parameters_text)" height="100"  nolabel="1" />
                         </group>
                     </group>
                 </form>
