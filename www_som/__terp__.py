@@ -16,7 +16,9 @@ Mòdul per la integració de l'oficina virtual
         "giscedata_facturacio_impagat",
     ],
     "init_xml": [],
-    "demo_xml": [],
+    "demo_xml": [
+        "tests/res_partner_demo.xml",
+    ],
     "update_xml":[
         "www_som_data.xml",
         "res_partner_view.xml",
