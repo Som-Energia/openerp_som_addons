@@ -15,11 +15,7 @@ class WizardExportTugestoInvoices(osv.osv_memory):
     _name = 'wizard.export.tugesto.invoices'
 
     def tugesto_invoices_export(self, cursor, uid, ids, context=None):
-        wizard = self.browse(cursor, uid, ids[0], context)
         fact_ids = context['active_ids']
-        if not fact_ids:
-            raise osv.except_osv(_('Error'), _("No s'ha seleccionat cap factura"))
-        
         if not fact_ids:
             raise osv.except_osv(_('Error'), _("No s'ha seleccionat cap factura"))
 
@@ -31,6 +27,22 @@ class WizardExportTugestoInvoices(osv.osv_memory):
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         res_partner_obj = self.pool.get('res.partner')
         imd_obj = self.pool.get('ir.model.data')
+
+        dp_pending_tugesto_id =  imd_obj.get_object_reference(
+            cursor, uid, 'som_account_invoice_pending', 'pending_tugesto_default_pending_state')[1]
+        bs_pending_tugesto_id =  imd_obj.get_object_reference(
+            cursor, uid, 'som_account_invoice_pending', 'pending_tugesto_bo_social_pending_state')[1]
+
+        factures = fact_obj.browse(cursor, uid, fact_ids)
+        pending_states_facts = list(set([fact.pending_state.id for fact in factures]))
+
+        for ps in pending_states_facts:
+            if ps not in [dp_pending_tugesto_id, bs_pending_tugesto_id]:
+                raise osv.except_osv(_('Error'), _("L'estat pendent d'alguna de les factures no és l'esperat"))
+
+        bo_social = imd_obj.get_object_reference(cursor, uid,
+                'giscedata_facturacio_comer_bono_social',
+                'bono_social_pending_state_process')[1]
         default_process = imd_obj.get_object_reference(cursor, uid,
                 'account_invoice_pending',
                 'default_pending_state_process')[1]
@@ -40,12 +52,16 @@ class WizardExportTugestoInvoices(osv.osv_memory):
         for fact_id in fact_ids:
             factura = fact_obj.browse(cursor, uid, fact_id)
             partner = factura.partner_id
-            #nom_sencer = factura.partner_id.name
             identificador_expediente = "{}-{}".format(partner.vat,datetime.strftime(date.today(),'%Y-%m-%d'))
             Id_tipo = 2 # Expediente Prejudicial
             importe_pagare = 0.0 
+            cnae = factura.polissa_id.cnae.name
+            tipo_deudor = False
 
-            tipo_deudor = 2 if factura.pending_state.process_id.id == default_process else 1 # 'Comunidad de Bienes' ha de ser 3
+            if factura.pending_state.process_id.id == bo_social or cnae == '6820':
+                tipo_deudor = 1
+            else:
+                tipo_deudor = 2
 
             nif_cif = partner.vat.replace('ES','') if partner.vat else ''
             try:
@@ -126,14 +142,12 @@ class WizardExportTugestoInvoices(osv.osv_memory):
 
     def tugesto_invoices_update_pending_state(self, cursor, uid, ids, context=None):
         wizard = self.browse(cursor, uid, ids[0], context)
-        fact_ids = wizard.fact_ids
         fact_obj = self.pool.get('giscedata.facturacio.factura')
-        info = u'Hem passat al següent estat pendent {} factures'.format(len(fact_ids))
+        info = u'Hem passat al següent estat pendent {} factures'.format(len(wizard.fact_ids))
         try:
-            import pudb;pu.db
-            fact_obj.go_on_pending(cursor, uid, fact_ids)
+            fact_obj.go_on_pending(cursor, uid, wizard.fact_ids)
         except Exception as ex:
-            info = u"Hi ha hagut un error en intentar passar de estat {} factures. Aquest és l'error: {}.".format(len(fact_ids), ex.message)
+            info = u"Hi ha hagut un error en intentar passar de estat {} factures. Aquest és l'error: {}.".format(len(wizard.fact_ids), ex.message)
 
         self.write(cursor, uid, ids, {
                 'state': 'done',
@@ -143,7 +157,7 @@ class WizardExportTugestoInvoices(osv.osv_memory):
     def tugesto_list_invoices(self, cursor, uid, ids, context=None):
 
         wizard = self.browse(cursor, uid, ids[0], context)
-        fact_ids = list(wizard.fact_ids) #json.loads(wizard.fact_ids)
+        fact_ids = list(wizard.fact_ids)
         return {
             'domain': "[('id','in', %s)]" % str(fact_ids),
             'name': 'Factures',
