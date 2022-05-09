@@ -14,6 +14,7 @@ Mòdul per la integració de l'oficina virtual
         "giscedata_lectures_comer",
         "giscedata_lectures_pool",
         "giscedata_facturacio_impagat",
+        "giscedata_atc_switching",
     ],
     "init_xml": [],
     "demo_xml": [
