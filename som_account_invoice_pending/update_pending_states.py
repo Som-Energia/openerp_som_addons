@@ -37,15 +37,7 @@ class UpdatePendingStates(osv.osv_memory):
         Return invoices (giscedata factura) with the given pending state
         """
         fact_obj = self.pool.get('giscedata.facturacio.factura')
-
-        inv_obj = self.pool.get('account.invoice')
-        invoice_ids = inv_obj.search(cursor, uid, [('pending_state.id', '=', pending_state)], order='id asc')
-
-        invoice_numbers = [inv_obj.browse(cursor, uid, inv_id).number for inv_id in invoice_ids]
-        factura_ids = []
-        if invoice_numbers:
-            factura_ids = fact_obj.search(cursor, uid, [("number", "in", invoice_numbers)], order='id asc')
-
+        factura_ids = fact_obj.search(cursor, uid, [('pending_state', '=', pending_state)])
         return factura_ids
 
     def get_from_email(self, cursor, uid, template_id):
