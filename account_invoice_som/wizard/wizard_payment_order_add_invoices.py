@@ -49,6 +49,11 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
         for field in search_params_relation.keys():
             if getattr(wiz, field):
                 search_params += (search_params_relation[field])
+        if not wiz.allow_grouped:
+            search_params += [('group_move_id', '=', False)]
+        if not wiz.allow_re:
+            search_params += [('rectificative_type', '!=', 'R')]
+
         res_ids = inv_obj.search(cursor, uid, search_params + [('payment_order_id','=',False)])
         values = {
             'len_result': 'La cerca ha trobat {} resultats'.format(len(res_ids)),
@@ -120,6 +125,10 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
         'invoice_type': fields.selection([(False, '')]+ INVOICE_TYPES, _('Tipus')),
         'fiscal_position': fields.many2one('account.fiscal.position', 'Posició Fiscal'),
         'payment_type': fields.many2one('payment.type', 'Tipus de pagament'),
+        'allow_grouped': fields.boolean('Permetre agrupacions',
+            help='Activar aquesta opció admet factures agrupades'),
+        'allow_re': fields.boolean('Permetre rectificadores',
+            help='Activar aquesta opció admet factures rectificadores')
     }
 
     _defaults = {
@@ -129,7 +138,9 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
         'init_date': lambda *a: time.strftime('%Y-%m-%d'),
         'end_date': lambda *a: time.strftime('%Y-%m-%d'),
         'invoice_type': 'out_invoice',
-        'len_result': lambda *a: ''
+        'len_result': lambda *a: '',
+        'allow_grouped': False,
+        'allow_re': False
     }
 
 WizardPaymentOrderAddInvoices()

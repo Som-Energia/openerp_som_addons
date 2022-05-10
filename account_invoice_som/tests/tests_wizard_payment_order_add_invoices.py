@@ -85,8 +85,15 @@ class TestsWizardPaymentOrderAddInvoices(testing.OOTestCaseWithCursor):
             self.cursor, self.uid, 'account_invoice_som', 'remesa_0002'
         )[1]
         search_params = [('date_due','<=', '2021-04-30'), ('date_due','>=', '2021-01-01'),
-            ('state','=', 'open'), ('type','=','in_invoice')]
-        inv_ids = inv_obj.search(cursor, uid, search_params)
+            ('type','=','in_invoice')]
+        inv_ids = inv_obj.search(cursor, uid, search_params+[('state','=', 'draft')])
+        wf_service = netsvc.LocalService('workflow')
+        for inv_id in inv_ids:
+            inv = inv_obj.browse(cursor, uid, inv_id)
+            inv.write({'check_total': inv.amount_total})
+        for inv_id in inv_ids:
+            wf_service.trg_validate(uid, 'account.invoice', inv_id, 'invoice_open', cursor)
+        inv_ids = inv_obj.search(cursor, uid, search_params+[('state','=', 'open')])
         wiz_id = wiz_obj.create(cursor, uid, {}) 
         wizard = wiz_obj.browse(cursor, uid, wiz_id)
         values = {'init_date': '2021-01-01',
@@ -102,3 +109,39 @@ class TestsWizardPaymentOrderAddInvoices(testing.OOTestCaseWithCursor):
         
         self.assertTrue(len(inv_ids) ==  len(order.line_ids) )
 
+    def test_add_invoices_to_payment_order__ag_invoices_ok(self):
+        wiz_obj = self.openerp.pool.get('wizard.payment.order.add.invoices')
+        inv_obj = self.openerp.pool.get('account.invoice')
+        po_obj = self.openerp.pool.get('payment.order')
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        cursor = self.cursor
+        uid = self.uid
+        order_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, 'account_invoice_som', 'remesa_0001'
+        )[1]
+        search_params = [('date_due','<=', '2021-04-30'), ('date_due','>=', '2021-01-01'),
+            ('type','=','out_invoice')]
+        inv_ids = inv_obj.search(cursor, uid, search_params+[('state','=', 'draft')])
+        wf_service = netsvc.LocalService('workflow')
+        for inv_id in inv_ids:
+            wf_service.trg_validate(uid, 'account.invoice', inv_id, 'invoice_open', cursor)
+        inv_ids = inv_obj.search(cursor, uid, search_params+[('state','=', 'open')])
+        inv = inv_obj.browse(cursor, uid, inv_ids[0])
+        inv.write({'group_move_id': 1})
+        wiz_id = wiz_obj.create(cursor, uid, {})
+        wizard = wiz_obj.browse(cursor, uid, wiz_id)
+        values = {'init_date': '2021-01-01',
+                  'end_date': '2021-04-30',
+                  'order': order_id,
+                  'invoice_type': 'out_invoice',
+                  'allow_grouped': False
+                  }
+        wizard.write(values)
+        wizard.add_invoices_to_payment_order()
+        self.assertTrue(len(wizard.res_ids) < len(inv_ids))
+
+        values.update({'allow_grouped': True})
+        wizard.write(values)
+        wizard = wiz_obj.browse(cursor, uid, wiz_id)
+        wizard.add_invoices_to_payment_order()
+        self.assertEqual(len(wizard.res_ids), len(inv_ids))
