@@ -126,7 +126,7 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
         'fiscal_position': fields.many2one('account.fiscal.position', 'Posició Fiscal'),
         'payment_type': fields.many2one('payment.type', 'Tipus de pagament'),
         'allow_grouped': fields.boolean('Permetre agrupacions',
-            help='Activar aquesta opció admet factures agrupades')
+            help='Activar aquesta opció admet factures agrupades'),
         'allow_re': fields.boolean('Permetre rectificadores',
             help='Activar aquesta opció admet factures rectificadores')
     }
@@ -139,7 +139,7 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
         'end_date': lambda *a: time.strftime('%Y-%m-%d'),
         'invoice_type': 'out_invoice',
         'len_result': lambda *a: '',
-        'allow_grouped': False
+        'allow_grouped': False,
         'allow_re': False
     }
 
