@@ -17,12 +17,13 @@
    ],
     "init_xml": [],
     "demo_xml": [
-        "som_account_invoice_pending_demo.xml",
+        "demo/som_account_invoice_pending_demo_data.xml",
     ],
     "update_xml":[
         "som_account_invoice_pending_data.xml",
         "wizard/wizard_returned_invoices_export.xml",
         "wizard/wizard_unlink_sms_pending_history_view.xml",
+        "wizard/wizard_tugesto_invoices_export.xml",
         "security/ir.model.access.csv",
         "account_invoice_pending_view.xml",
     ],
