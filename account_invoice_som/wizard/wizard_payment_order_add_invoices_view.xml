@@ -25,6 +25,9 @@
                         <field name="payment_type" />
                         <field name="invoice_state" />
                         <field name="invoice_type" />
+                        <separator string="" colspan="4"/>
+                        <field name="allow_grouped"/>
+                        <field name="allow_re"/>
                     </group>
                     <group colspan="6" attrs="{'invisible': [('state', '!=', 'init')]}">
                         <button special="cancel" string="Cancelar" icon="gtk-cancel"/>
