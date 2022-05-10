@@ -51,6 +51,8 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
                 search_params += (search_params_relation[field])
         if not wiz.allow_grouped:
             search_params += [('group_move_id', '=', False)]
+        if not wiz.allow_re:
+            search_params += [('rectificative_type', '!=', 'R')]
 
         res_ids = inv_obj.search(cursor, uid, search_params + [('payment_order_id','=',False)])
         values = {
@@ -125,6 +127,8 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
         'payment_type': fields.many2one('payment.type', 'Tipus de pagament'),
         'allow_grouped': fields.boolean('Permetre agrupacions',
             help='Activar aquesta opció admet factures agrupades')
+        'allow_re': fields.boolean('Permetre rectificadores',
+            help='Activar aquesta opció admet factures rectificadores')
     }
 
     _defaults = {
@@ -136,6 +140,7 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
         'invoice_type': 'out_invoice',
         'len_result': lambda *a: '',
         'allow_grouped': False
+        'allow_re': False
     }
 
 WizardPaymentOrderAddInvoices()
