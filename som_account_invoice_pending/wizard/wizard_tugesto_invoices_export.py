@@ -72,7 +72,7 @@ class WizardExportTugestoInvoices(osv.osv_memory):
 
             razon_social = partner.name if factura.pending_state.process_id.id == default_process else ''
             nombre = '' if factura.pending_state.process_id.id == default_process else res_partner_obj.separa_cognoms(cursor,uid, partner.name)['nom']
-            apellidos = '' if factura.pending_state.process_id.id == default_process else res_partner_obj.separa_cognoms(cursor,uid, partner.name)['cognoms'] 
+            apellidos = '' if factura.pending_state.process_id.id == default_process else ' '.join(res_partner_obj.separa_cognoms(cursor,uid, partner.name)['cognoms'])
             
             direccion = ''
 
