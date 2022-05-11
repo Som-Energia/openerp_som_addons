@@ -2,7 +2,7 @@
 from destral import testing
 from destral.transaction import Transaction
 from expects import *
-from datetime import date
+from datetime import date, timedelta
 import mock
 
 from .. import giscedata_atc, som_autoreclama_state_history
@@ -448,3 +448,96 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
         pas_atr = self.browse_referenced(pas_atr_id)
         codi_solicitud_ref = pas_atr.reclamacio_ids[0].codi_sollicitud_reclamacio
         self.assertEqual(codi_solicitud_old, codi_solicitud_ref)
+
+
+class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
+
+
+    def build_atc(self, subtype='029', r1=False, channel='intercambi', section='client', log_days=3, agent_actual='10' ):
+        def today_minus(d):
+            return (date.today() - timedelta(days=d)).strftime("%Y-%m-%d")
+
+        atc_obj = self.get_model('giscedata.atc')
+        ir_obj = self.get_model('ir.model.data')
+        polissa_id = ir_obj.get_object_reference(self.cursor, self.uid, 'giscedata_polissa', 'polissa_0002')[1]
+
+        par1_id = self.search_in('res.partner', [('name','ilike','Tiny sprl')])
+        par2_id = self.search_in('res.partner', [('name','ilike','ASUStek')])
+        par_obj = self.get_model('res.partner')
+        par_obj.write(self.cursor, self.uid, par1_id, {'ref':'58264'})
+        par_obj.write(self.cursor, self.uid, par2_id, {'ref':'58265'})
+
+        channel_id = self.search_in('res.partner.canal', [('name','ilike',channel)])
+        section_id = self.search_in('crm.case.section', [('name','ilike',section)])
+        subtipus_id = self.search_in('giscedata.subtipus.reclamacio', [('name','=',subtype)])
+
+        new_case_data = {
+            'polissa_id': polissa_id,
+            'descripcio': u'Reclamació per retràs automàtica',
+            'canal_id': channel_id,
+            'section_id': section_id,
+            'subtipus_reclamacio_id': subtipus_id,
+            'comentaris': u'test test test',
+            'sense_responsable': True,
+            'tanca_al_finalitzar_r1': r1,
+            'crear_cas_r1': r1,
+        }
+        atc_id = atc_obj.create_general_atc_r1_case_via_wizard(self.cursor, self.uid, new_case_data, {})
+
+        atc_obj.write(self.cursor, self.uid, atc_id, {'agent_actual':agent_actual})
+        atc = atc_obj.browse(self.cursor, self.uid, atc_id)
+        log_obj = self.get_model('crm.case.log')
+        log_obj.write(self.cursor, self.uid, atc.log_ids[-1].id, {'date':today_minus(log_days)})
+
+        return atc_id
+
+    def test_fit_atc_condition__001_c_no(self):
+        ir_obj = self.get_model('ir.model.data')
+        atc_obj = self.get_model('giscedata.atc')
+        cond_obj = self.get_model('som.autoreclama.state.condition')
+
+        atc_id = self.build_atc(subtype='001', log_days=10)
+        atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
+
+        cond_id = ir_obj.get_object_reference(self.cursor, self.uid, 'som_autoreclama', 'conditions_001_correct_state_workflow_atc')[1]
+
+        ok = cond_obj.fit_atc_condition(self.cursor, self.uid, cond_id, atc_data, {})
+        self.assertEqual(ok, False)
+
+    def test_fit_atc_condition__001_c_yes(self):
+        ir_obj = self.get_model('ir.model.data')
+        atc_obj = self.get_model('giscedata.atc')
+        cond_obj = self.get_model('som.autoreclama.state.condition')
+
+        atc_id = self.build_atc(subtype='001', log_days=50)
+        atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
+
+        cond_id = ir_obj.get_object_reference(self.cursor, self.uid, 'som_autoreclama', 'conditions_001_correct_state_workflow_atc')[1]
+
+        ok = cond_obj.fit_atc_condition(self.cursor, self.uid, cond_id, atc_data, {})
+        self.assertEqual(ok, True)
+
+    def test_fit_atc_condition__all(self):
+        ir_obj = self.get_model('ir.model.data')
+        atc_obj = self.get_model('giscedata.atc')
+        cond_obj = self.get_model('som.autoreclama.state.condition')
+
+        test_datas = [
+            {'subtype':'001', 'log_days':30/2, 'result':False ,'cond':'conditions_001_correct_state_workflow_atc'},
+            {'subtype':'001', 'log_days':30*2, 'result':True  ,'cond':'conditions_001_correct_state_workflow_atc'},
+            {'subtype':'038', 'log_days':30/2, 'result':False ,'cond':'conditions_038_correct_state_workflow_atc'},
+            {'subtype':'038', 'log_days':30*2, 'result':True  ,'cond':'conditions_038_correct_state_workflow_atc'},
+            {'subtype':'027', 'log_days':10/2, 'result':False ,'cond':'conditions_027_correct_state_workflow_atc'},
+            {'subtype':'027', 'log_days':10*2, 'result':True  ,'cond':'conditions_027_correct_state_workflow_atc'},
+            {'subtype':'039', 'log_days':30/2, 'result':False ,'cond':'conditions_039_correct_state_workflow_atc'},
+            {'subtype':'039', 'log_days':30*2, 'result':True  ,'cond':'conditions_039_correct_state_workflow_atc'},
+        ]
+
+        for test_data in test_datas:
+            atc_id = self.build_atc(subtype=test_data['subtype'], log_days=test_data['log_days'])
+            atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
+
+            cond_id = ir_obj.get_object_reference(self.cursor, self.uid, 'som_autoreclama', test_data['cond'])[1]
+
+            ok = cond_obj.fit_atc_condition(self.cursor, self.uid, cond_id, atc_data, {})
+            self.assertEqual(ok, test_data['result'])
