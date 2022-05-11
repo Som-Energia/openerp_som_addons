@@ -623,5 +623,54 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         self.assertEqual(set(atc_ids[2:]) & set(atcs), set())
         self.assertTrue(len(atcs) >= 2)
 
-    def test_update_atc_if_possible__(self):
-        pass
+    def test_update_atc_if_possible__no_condition_meet(self):
+        atc_id = self.build_atc()
+
+        updtr_obj = self.get_model('som.autoreclama.state.updater')
+        status, message = updtr_obj.update_atc_if_possible(self.cursor, self.uid, atc_id, {})
+
+        self.assertEqual(status, False)
+        self.assertTrue(message.startswith(u'No compleix cap condici\xf3 activa, examinades '))
+        self.assertTrue(message.endswith(u'condicions.'))
+        self.assertTrue(int(message[44:46]) >= 60)
+
+    def test_update_atc_if_possible__do_action_test(self):
+        atc_obj = self.get_model('giscedata.atc')
+
+        atc_id = self.build_atc(log_days=60, subtype='001')
+
+        updtr_obj = self.get_model('som.autoreclama.state.updater')
+        status, message = updtr_obj.update_atc_if_possible(self.cursor, self.uid, atc_id, {'search_only':True})
+
+        self.assertEqual(status, True)
+        self.assertEqual(message, u"Testing")
+
+    def test_update_atc_if_possible__do_action_full(self):
+        atc_obj = self.get_model('giscedata.atc')
+
+        atc_id = self.build_atc(log_days=60, subtype='001')
+
+        updtr_obj = self.get_model('som.autoreclama.state.updater')
+        status, message = updtr_obj.update_atc_if_possible(self.cursor, self.uid, atc_id, {})
+
+        self.assertEqual(status, True)
+        self.assertTrue(message.startswith(u'Estat Primera reclamacio executat, nou atc creat amb id '))
+
+        atc = atc_obj.browse(self.cursor, self.uid, atc_id)
+        self.assertGreaterEqual(atc.business_days_with_same_agent, 30)
+        self.assertEqual(atc.agent_actual, u'10')
+        self.assertEqual(atc.autoreclama_state.name, u'Primera reclamacio')
+        self.assertEqual(atc.autoreclama_state_date, today_str())
+        self.assertGreaterEqual(len(atc.autoreclama_history_ids), 2)
+
+    def test_update_atcs_if_possible__some_consitions(self):
+        atc_n_id = self.build_atc()
+        atc_y_id = self.build_atc(log_days=60, subtype='001')
+
+        updtr_obj = self.get_model('som.autoreclama.state.updater')
+        up, not_up, error = updtr_obj.update_atcs_if_possible(self.cursor, self.uid, [atc_y_id, atc_n_id], {})
+
+        self.assertEqual(up, [atc_y_id])
+        self.assertEqual(not_up, [atc_n_id])
+        self.assertEqual(error, [])
+
