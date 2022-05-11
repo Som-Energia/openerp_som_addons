@@ -454,7 +454,7 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
 
 class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
 
-    def build_atc(self, subtype='029', r1=False, channel='intercambi', section='client', log_days=3, agent_actual='10' ):
+    def build_atc(self, subtype='029', r1=False, channel='intercambi', section='client', log_days=3, agent_actual='10', state='pending', active=True):
         atc_obj = self.get_model('giscedata.atc')
         ir_obj = self.get_model('ir.model.data')
         polissa_id = ir_obj.get_object_reference(self.cursor, self.uid, 'giscedata_polissa', 'polissa_0002')[1]
@@ -482,7 +482,11 @@ class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
         }
         atc_id = atc_obj.create_general_atc_r1_case_via_wizard(self.cursor, self.uid, new_case_data, {})
 
-        atc_obj.write(self.cursor, self.uid, atc_id, {'agent_actual':agent_actual})
+        atc_obj.write(self.cursor, self.uid, atc_id, {
+                'agent_actual':agent_actual,
+                'state': state,
+                'active': active,
+            })
         atc = atc_obj.browse(self.cursor, self.uid, atc_id)
         log_obj = self.get_model('crm.case.log')
         log_obj.write(self.cursor, self.uid, atc.log_ids[-1].id, {'date':today_minus_str(log_days)})
@@ -562,3 +566,62 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
             atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
             ok = cond_obj.fit_atc_condition(self.cursor, self.uid, cond_id, atc_data, {})
             self.assertEqual(ok, False, "Error on Less than for condition id {}".format(cond_id))
+
+
+class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
+
+    def test_get_atc_candidates_to_update__all(self):
+        atc_ids = []
+
+        atc_ids.append(self.build_atc())
+        atc_ids.append(self.build_atc())
+        atc_ids.append(self.build_atc())
+        atc_ids.append(self.build_atc())
+        atc_ids.append(self.build_atc())
+        atc_ids.append(self.build_atc())
+        atc_ids.append(self.build_atc())
+
+        updtr_obj = self.get_model('som.autoreclama.state.updater')
+        atcs = updtr_obj.get_atc_candidates_to_update(self.cursor, self.uid)
+
+        self.assertEqual(set(atc_ids) & set(atcs), set(atc_ids))
+        self.assertTrue(len(atcs) >= 7)
+
+    def test_get_atc_candidates_to_update__none(self):
+        atc_ids = []
+
+        atc_ids.append(self.build_atc(active=False))
+        atc_ids.append(self.build_atc(state='open'))
+        atc_ids.append(self.build_atc(agent_actual='06'))
+        atc_ids.append(self.build_atc())
+        state_d_id = self.search_in('som.autoreclama.state', [('name','ilike','desact')])
+        history_obj = self.get_model('som.autoreclama.state.history.atc')
+        history_obj.historize(self.cursor, self.uid, atc_ids[-1], state_d_id, today_str(), False)
+
+        updtr_obj = self.get_model('som.autoreclama.state.updater')
+        atcs = updtr_obj.get_atc_candidates_to_update(self.cursor, self.uid)
+
+        self.assertEqual(set(atcs), set())
+
+    def test_get_atc_candidates_to_update__some(self):
+        atc_ids = []
+
+        atc_ids.append(self.build_atc())
+        atc_ids.append(self.build_atc())
+        atc_ids.append(self.build_atc(active=False))
+        atc_ids.append(self.build_atc(state='open'))
+        atc_ids.append(self.build_atc(agent_actual='06'))
+        atc_ids.append(self.build_atc())
+        state_d_id = self.search_in('som.autoreclama.state', [('name','ilike','desact')])
+        history_obj = self.get_model('som.autoreclama.state.history.atc')
+        history_obj.historize(self.cursor, self.uid, atc_ids[-1], state_d_id, today_str(), False)
+
+        updtr_obj = self.get_model('som.autoreclama.state.updater')
+        atcs = updtr_obj.get_atc_candidates_to_update(self.cursor, self.uid)
+
+        self.assertEqual(set(atc_ids[:2]) & set(atcs), set(atc_ids[:2]))
+        self.assertEqual(set(atc_ids[2:]) & set(atcs), set())
+        self.assertTrue(len(atcs) >= 2)
+
+    def test_update_atc_if_possible__(self):
+        pass
