@@ -10,6 +10,10 @@ from .. import giscedata_atc, som_autoreclama_state_history
 def today_str():
     return date.today().strftime("%Y-%m-%d")
 
+def today_minus_str(d):
+    return (date.today() - timedelta(days=d)).strftime("%Y-%m-%d")
+
+
 class SomAutoreclamaBaseTests(testing.OOTestCase):
 
     def setUp(self):
@@ -340,7 +344,6 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
         self.assertEqual(atc.tancar_cac_al_finalitzar_r1 , new_case_data['tanca_al_finalitzar_r1'])
         self.assertEqual(atc.ref, False )
 
-
     def test_create_general_atc_r1_case_via_wizard__atr_with_r1_type_a(self):
         atc_obj = self.get_model('giscedata.atc')
 
@@ -387,7 +390,6 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
         self.assertEqual(atr.cups_polissa_id.id, polissa_id)
         self.assertEqual(atr.state, u'open')
         self.assertEqual(atr.ref, u'giscedata.atc,{}'.format(atc.id))
-
 
     def test_create_ATC_R1_029_from_atc_via_wizard__from_atr(self):
         atc_obj = self.get_model('giscedata.atc')
@@ -450,13 +452,9 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
         self.assertEqual(codi_solicitud_old, codi_solicitud_ref)
 
 
-class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
-
+class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
 
     def build_atc(self, subtype='029', r1=False, channel='intercambi', section='client', log_days=3, agent_actual='10' ):
-        def today_minus(d):
-            return (date.today() - timedelta(days=d)).strftime("%Y-%m-%d")
-
         atc_obj = self.get_model('giscedata.atc')
         ir_obj = self.get_model('ir.model.data')
         polissa_id = ir_obj.get_object_reference(self.cursor, self.uid, 'giscedata_polissa', 'polissa_0002')[1]
@@ -487,9 +485,12 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
         atc_obj.write(self.cursor, self.uid, atc_id, {'agent_actual':agent_actual})
         atc = atc_obj.browse(self.cursor, self.uid, atc_id)
         log_obj = self.get_model('crm.case.log')
-        log_obj.write(self.cursor, self.uid, atc.log_ids[-1].id, {'date':today_minus(log_days)})
+        log_obj.write(self.cursor, self.uid, atc.log_ids[-1].id, {'date':today_minus_str(log_days)})
 
         return atc_id
+
+
+class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
 
     def test_fit_atc_condition__001_c_no(self):
         ir_obj = self.get_model('ir.model.data')
@@ -517,7 +518,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
         ok = cond_obj.fit_atc_condition(self.cursor, self.uid, cond_id, atc_data, {})
         self.assertEqual(ok, True)
 
-    def test_fit_atc_condition__all(self):
+    def test_fit_atc_condition__some(self):
         ir_obj = self.get_model('ir.model.data')
         atc_obj = self.get_model('giscedata.atc')
         cond_obj = self.get_model('som.autoreclama.state.condition')
@@ -541,3 +542,23 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
 
             ok = cond_obj.fit_atc_condition(self.cursor, self.uid, cond_id, atc_data, {})
             self.assertEqual(ok, test_data['result'])
+
+    def test_fit_atc_condition__all(self):
+        atc_obj = self.get_model('giscedata.atc')
+        cond_obj = self.get_model('som.autoreclama.state.condition')
+
+        cond_ids = cond_obj.search(self.cursor, self.uid, [])
+        for cond_id in cond_ids:
+            cond = cond_obj.browse(self.cursor, self.uid, cond_id)
+
+            # test more
+            atc_id = self.build_atc(subtype=cond.subtype_id.name, log_days=cond.days * 2)
+            atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
+            ok = cond_obj.fit_atc_condition(self.cursor, self.uid, cond_id, atc_data, {})
+            self.assertEqual(ok, True, "Error on More than for condition id {}".format(cond_id))
+
+            # test less
+            atc_id = self.build_atc(subtype=cond.subtype_id.name, log_days=cond.days / 2)
+            atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
+            ok = cond_obj.fit_atc_condition(self.cursor, self.uid, cond_id, atc_data, {})
+            self.assertEqual(ok, False, "Error on Less than for condition id {}".format(cond_id))
