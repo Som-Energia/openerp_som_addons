@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_payment_order_add_invoices">
+            <field name="name">wizard.payment.order.add.invoices.form</field>
+            <field name="model">wizard.payment.order.add.invoices</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Seleccionar factures per afegir a la remesa">
+                    <field name="state" invisible="1"/>
+
+                    <group attrs="{'invisible': [('state', '=', 'init')]}">
+                        <separator string="" colspan="4"/>
+                        <field name="len_result" readonly="1" colspan="4"/>
+                    </group>
+
+                    <group attrs="{'invisible': [('state', '!=', 'init')]}">
+                        <label string="Filtra factures per afegir a la remesa:" colspan="2"/>
+                        <field name="order" string="Remesa" colspan="2"/>
+                        <field name="init_date" string="Data" colspan="2"/>
+                        <field name="end_date" string="--" nolabel="1" colspan="2"/>
+                        <separator string="" colspan="4"/>
+                        <field name="pending_state_text" colspan="4"/>
+                        <field name="fiscal_position" colspan="4"/>
+                        <field name="payment_type" />
+                        <field name="invoice_state" />
+                        <field name="invoice_type" />
+                        <separator string="" colspan="4"/>
+                        <field name="allow_grouped"/>
+                        <field name="allow_re"/>
+                    </group>
+                    <group colspan="6" attrs="{'invisible': [('state', '!=', 'init')]}">
+                        <button special="cancel" string="Cancelar" icon="gtk-cancel"/>
+                        <button name="add_invoices_to_payment_order" type="object" icon="gtk-ok" string="Afegeix"/>
+                    </group>
+
+                    <group colspan="4" attrs="{'invisible': [('state', '!=', 'step')]}">
+                        <label string="Nombre màxim per afegir:" colspan="2"/>
+                        <field name="total_facts_to_add" readonly="0" colspan="2" nolabel="1"/>
+                        <button special="cancel" string="Sortir" icon="gtk-cancel" colspan="2"/>
+                        <button name="add_invoices_with_limit" type="object" icon="gtk-ok" string="Afegeix" colspan="2"/>
+                    </group>
+                    <group colspan="4" attrs="{'invisible': [('state', '!=', 'finished')]}">
+                        <separator string="" colspan="4"/>
+                        <button special="cancel" string="Sortir" icon="gtk-ok" colspan="2"/>
+                        <button name="show_job_groups_progress" type="object" icon="terp-project" string="Mostra progrés" colspan="2"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_payment_order_add_invoices">
+            <field name="name">Seleccionar factures per afegir a remeses</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.payment.order.add.invoices</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_payment_order_add_invoices"/>
+        </record>
+
+        <record id="values_wizard_payment_order_add_invoices" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Seleccionar factures per afegir a la remesa</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">payment.order</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_payment_order_add_invoices'))"/>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_payment_order_add_invoices_jobs_group_list">
+            <field name="name">Tasques de comptabilitat</field>
+            <field name="res_model">oorq.jobs.group</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('internal','like','accounting.%')]</field>
+            <field name="auto_refresh">5</field>
+            <field name="view_id" ref="oorq.view_oorq_jobs_group_tree"/>
+        </record>
+
+        <menuitem id="wizard_payment_order_add_invoices_jobs_groups"
+            action="action_payment_order_add_invoices_jobs_group_list"
+            parent="account.menu_finance"
+            icon="terp-project"
+            name="Tasques de comptabilitat"
+            groups="account.group_account_manager"/>
+    </data>
+</openerp>

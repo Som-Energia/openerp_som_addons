@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from logging import exception
 from osv import osv
 from yamlns import namespace as ns
 from datetime import datetime,timedelta
@@ -23,7 +24,6 @@ BOE17_2021_dates = {
 }
 
 factors_kp_change_calculation_date = '2021-10-18'
-factors_kp_change_calculation_BOE_date = '2022-01-01'
 
 # -----------------------------------
 # helper functions
@@ -71,7 +71,7 @@ def te_gkwh(fact):
     return fact.is_gkwh
 
 def te_quartihoraria(pol):
-    return pol.agree_tipus in ['01', '02', '03']
+    return pol.tipo_medida in ['01', '02', '03']
 
 def is_6X(pol):
     return pol.tarifa.codi_ocsum in ('012', '013', '014', '015', '016', '017')
@@ -265,6 +265,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         estimada_id = origen_obj.search(self.cursor, self.uid, [('codi', '=', '40')])[0]
         sin_lectura_id = origen_obj.search(self.cursor, self.uid, [('codi', '=', '99')])[0]
         estimada_som_id = origen_comer_obj.search(self.cursor, self.uid, [('codi', '=', 'ES')])[0]
+        calculada_som_id = origen_obj.search(self.cursor, self.uid, [('codi', '=', 'LC')])
+        calculada_som_id = calculada_som_id[0] if calculada_som_id else None
 
         #Busquem la tarifa
         tarifa_id = tarifa_obj.search(self.cursor, self.uid, [('name', '=', lectura.name[:-5])])
@@ -291,7 +293,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                         origen_txt = _(u"calculada per Som Energia")
                     else:
                         origen_txt = _(u"estimada distribuïdora")
-
+                if lect['origen_id'][0] == calculada_som_id:
+                    origen_txt = _(u"calculada segons CCH")
                 res[lect['name']] = "%s" % (origen_txt)
 
         return res
@@ -757,15 +760,38 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return a dictionary with all GdO clock data needs, data from 2020
         """
         lang = fact.lang_partner.lower()[0:2]
-        data = {
+
+        example_data_2020 = """{{
                 'wind_power': 359390,
                 'photovoltaic': 75672,
                 'hydraulics': 30034,
                 'biogas': 7194,
                 'total': 472290,
-                'lang': lang,
-                'graph': 'gdo_graf_{}.png'.format(lang),
-                }
+                'lang': '{}',
+                'graph': 'gdo_graf_{}_2020.png',
+                'year': 2020}}""".format(lang,lang)
+
+        conf_obj = fact.pool.get('res.config')
+
+        swich_date = conf_obj.get(self.cursor, self.uid, 'gdo_and_impact_yearly_switch_date', '2099-05-01')
+
+        if fact.date_invoice < swich_date:
+            data = eval(example_data_2020)
+            data = json.dumps(data)
+            data = json.loads(data)
+        else:
+            gdo_som = conf_obj.get(self.cursor, self.uid, 'component_gdo_data', example_data_2020)
+            try:
+                gdo_som = eval(gdo_som)
+                gdo_som = json.dumps(gdo_som)
+                data = json.loads(gdo_som)
+                data['lang'] = lang
+                data['graph'] = 'gdo_graf_{}_{}.png'.format(lang, data['year'])
+            except Exception as e:
+                data = eval(example_data_2020)
+                data = json.dumps(data)
+                data = json.loads(data)
+
         return data
 
     def get_component_flags_data(self, fact, pol):
@@ -1416,7 +1442,12 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return data
 
     def get_component_environmental_impact_data(self, fact, pol):
+
+        conf_obj = fact.pool.get('res.config')
+        swich_date = conf_obj.get(self.cursor, self.uid, 'gdo_and_impact_yearly_switch_date', '2099-05-01')
+
         data = {
+            'is_visible': fact.date_invoice < swich_date,
             'c02_emissions': {
                     'national_average': '0,15',
                     'som_energia': '0,00',
@@ -1424,12 +1455,16 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'radioactive_waste': {
                     'national_average': '0,49',
                     'som_energia': '0,00',
-                },
-        }
+                },        }
         return data
 
     def get_component_electricity_information_data(self, fact, pol):
+
+        conf_obj = fact.pool.get('res.config')
+        swich_date = conf_obj.get(self.cursor, self.uid, 'gdo_and_impact_yearly_switch_date', '2099-05-01')
+
         data = {
+            'is_visible': fact.date_invoice < swich_date,
             'year_graph': 2020,
             'is_inport': True,
             'inport_export_value': 1.3,
@@ -1758,19 +1793,19 @@ class GiscedataFacturacioFacturaReport(osv.osv):
     def get_sub_component_invoice_details_td(self, fact, pol, linies, lectures = None):
         readings = {}
         if lectures != None:
-            for key,comptador in lectures.items():
-                estimada = False
-                num_lectures = len(comptador)
-                while not estimada and num_lectures > 0:
-                    num_lectures -= 1
-                    lectura = comptador[num_lectures]
-                    data = str(datetime.strptime(lectura[4], '%d/%m/%Y').date() + timedelta(days=1))
-                    if lectura[6] != 'real' or lectura[7] !='real':
+            for comptador_name, lectures_comptador in lectures.items():
+                for lectura in lectures_comptador:
+                    if lectura[0] == u'P1':
+                        data = str(datetime.strptime(lectura[4], '%d/%m/%Y').date() + timedelta(days=1))
                         origin = _(u'estimada')
-                        estimada = True
-                    else:
-                        origin = _(u'real')
-                    readings[data] = origin
+                        if lectura[6] == 'real' and lectura[7] =='real':
+                            origin = _(u'real')
+                        elif (lectura[6] == 'estimada distribuïdora' or lectura[6] == 'real') and lectura[7] == 'calculada segons CCH':
+                            origin = _(u'calculada')
+                        elif lectura[6] == 'calculada segons CCH' and (lectura[7] =='calculada segons CCH' or lectura[7] == 'real'):
+                            origin = _(u'calculada')
+
+                        readings[data] = origin
 
         lines_data = {}
         block = 0
@@ -2217,7 +2252,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     item['price_excess'] = excess_lines[p]['price_unit_multi']
                     item['price_subtotal'] = excess_lines[p]['price_subtotal']
                     items[p] = item
-                items['visible_days_month'] = replace_kp and excess_lines['data'] < factors_kp_change_calculation_BOE_date
+                items['visible_days_month'] = replace_kp and excess_lines['data']
                 items['days'] = excess_lines['days']
                 items['total'] = excess_lines['total']
             excess_data.append(items)
@@ -2611,5 +2646,55 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'qr_image': qr_data['qr'] if max_potencies_demandades else '',
         }
         return data
+
+    def get_component_simplified_enviromental_impact_data(self, fact, pol):
+        example_mitjana_2020 = """{
+            'renovable': 4.9,
+            'cae': 4.9,
+            'gasNatural': 21.5,
+            'carbo': 1.9,
+            'fuelGas': 2.2,
+            'nuclear': 21.8,
+            'altres': 7.7,
+            'emisionCo2': 204,
+            'residuRadio': 530,
+            'year': '2020'}"""
+        example_som_2020 = """{
+            'renovable': 100.0,
+            'cae': 0.0,
+            'gasNatural': 0.0,
+            'carbo': 0.0,
+            'fuelGas': 0.0,
+            'nuclear': 0.0,
+            'altres': 0.0,
+            'emisionCo2': 0,
+            'residuRadio': 0,
+            'year': '2020'}"""
+
+        def eval_and_json(text):
+            text_eval = eval(text)
+            text_json = json.dumps(text_eval)
+            return json.loads(text_json)
+
+        conf_obj = fact.pool.get('res.config')
+        swich_date = conf_obj.get(self.cursor, self.uid, 'gdo_and_impact_yearly_switch_date', '2099-05-01')
+
+        data = {'is_visible': fact.date_invoice >= swich_date}
+
+        seid_som = conf_obj.get(self.cursor, self.uid, 'som_environmental_impact_data', example_som_2020)
+        try:
+            data['som'] = eval_and_json(seid_som)
+        except Exception as e:
+            data['som'] = eval_and_json(example_som_2020)
+
+        seid_mit = conf_obj.get(self.cursor, self.uid, 'mitjana_environmental_impact_data', example_mitjana_2020)
+        try:
+            data['mitjana'] = eval_and_json(seid_mit)
+        except Exception as e:
+            data['mitjana'] = eval_and_json(example_mitjana_2020)
+
+        return data
+
+
 
 GiscedataFacturacioFacturaReport()

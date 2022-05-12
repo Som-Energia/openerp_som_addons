@@ -11,6 +11,8 @@ die() {
         --subject "ERROR: Informe cambios de comercializador, $year-$month" \
         --to itcrowd@somenergia.coop \
         --to atr@somenergia.coop \
+        --to mar.burguera@somenergia.coop \
+        --to carme.baques@somenergia.coop \
         --from sistemes@somenergia.coop \
         --config $scriptpath/dbconfig.py \
         --format md \
@@ -66,6 +68,8 @@ Un saludo.
 emili.py \
     --subject "SomEnergia SCCL, informe cambios de comercializador, $year-$month" \
     --to atr@somenergia.coop \
+    --to mar.burguera@somenergia.coop \
+    --to carme.baques@somenergia.coop \
     --to itcrowd@somenergia.coop \
     --from sistemes@somenergia.coop \
     --replyto itcrowd@somenergia.coop \
@@ -81,7 +85,8 @@ emili.py \
 
 emili.py \
     --subject "SomEnergia SCCL, informe cambios de comercializador, $year-$month" \
-    --to cambiodecomercializador@cnmc.es \
+    --to mar.burguera@somenergia.coop \
+    --to carme.baques@somenergia.coop \
     --bcc itcrowd@somenergia.coop \
     --from atr@somenergia.coop \
     --replyto atr@somenergia.coop \

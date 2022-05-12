@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="1">
+        <record model="res.config" id="facturacio_tasks_delete_invoices_tasks_max_procs" forcecreate="1">
+            <field name="name">facturacio_tasks_delete_invoices_tasks_max_procs</field>
+            <field name="value">0</field>
+            <field name="description">Numero màxim de workers dedicats a eliminar factures en incidènica en paral·lel. Si s'indica '0' (per defecte), no hi ha limit.</field>
+        </record>
+    </data>
+</openerp>

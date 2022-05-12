@@ -1,0 +1,34 @@
+# -*- coding: utf-8 -*-
+{
+    "name": "Funcions de suport a facturació comer per SOM",
+    "description": """
+    This module provide :
+        * Validació propia a giscedata_facturacio_comer
+    """,
+    "version": "0-dev",
+    "author": "GISCE",
+    "category": "SomEnergia",
+    "depends":[
+        "base",
+        "giscedata_facturacio_comer",
+        "giscedata_polissa_category",
+        "som_polissa",
+        "som_switching",
+        "som_generationkwh",
+    ],
+    "init_xml": [],
+    "demo_xml": [],
+    "update_xml": [
+        "giscedata_facturacio_validation_data.xml",
+        "giscedata_facturacio_contracte_lot_view.xml",
+        "security/ir.model.access.csv",
+        "wizard/wizard_revert_incident_fact_contracte_lot_view.xml",
+        "wizard/wizard_open_factures_send_mail_view.xml",
+        "wizard/wizard_refund_rectify_from_origin_view.xml",
+        "giscedata_facturacio_contracte_lot_view.xml",
+        "giscedata_facturacio_factura_view.xml",
+        "giscedata_polissa_view.xml",
+    ],
+    "active": False,
+    "installable": True
+}

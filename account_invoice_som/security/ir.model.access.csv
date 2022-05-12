@@ -1,0 +1,4 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_wizard_payment_order_add_invoices_rcwd","wizard.payment.order.add.invoices","model_wizard_payment_order_add_invoices","account.group_account_invoice",1,1,1,1
+"access_wizard_payment_order_add_invoices_rcw","wizard.payment.order.add.invoices","model_wizard_payment_order_add_invoices","account.group_account_manager",1,1,1,0
+"access_wizard_payment_order_add_invoices_r","wizard.payment.order.add.invoices","model_wizard_payment_order_add_invoices","account.group_account_user",1,0,0,0
