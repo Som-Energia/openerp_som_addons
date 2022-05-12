@@ -674,3 +674,117 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         self.assertEqual(not_up, [atc_n_id])
         self.assertEqual(error, [])
 
+
+class SomAutoreclamaDoActionTest(SomAutoreclamaEzATC_Test):
+
+    def test_do_action__deactivated(self):
+        atc_obj = self.get_model('giscedata.atc')
+        state_obj = self.get_model('som.autoreclama.state')
+
+        atc_id = self.build_atc(log_days=60, subtype='001')
+
+        ir_obj = self.get_model('ir.model.data')
+        state_id = ir_obj.get_object_reference(self.cursor, self.uid, 'som_autoreclama', 'third_state_workflow_atc')[1]
+        state_obj.write(self.cursor, self.uid, state_id, {'active':False})
+        state = state_obj.browse(self.cursor, self.uid, state_id)
+
+        atc = atc_obj.browse(self.cursor, self.uid, atc_id)
+        pre_atc_history_len = len(atc.autoreclama_history_ids)
+        pre_atc_state_name = atc.autoreclama_state.name
+        pre_atc_data = str(atc.read())
+
+        result = state_obj.do_action(self.cursor, self.uid, state_id, atc_id, {})
+
+        self.assertEqual(result['do_change'], False)
+        self.assertEqual(result['message'], u'Estat {} desactivat!'.format(state.name))
+        self.assertTrue('created_atc' not in result)
+
+        atc = atc_obj.browse(self.cursor, self.uid, atc_id) # no changes
+        self.assertEqual(pre_atc_history_len, len(atc.autoreclama_history_ids))
+        self.assertEqual(pre_atc_state_name, atc.autoreclama_state.name)
+        self.assertEqual(pre_atc_data, str(atc.read()))
+
+    def test_do_action__no_action(self):
+        atc_obj = self.get_model('giscedata.atc')
+        state_obj = self.get_model('som.autoreclama.state')
+
+        atc_id = self.build_atc(log_days=60, subtype='001')
+
+        ir_obj = self.get_model('ir.model.data')
+        state_id = ir_obj.get_object_reference(self.cursor, self.uid, 'som_autoreclama', 'correct_state_workflow_atc')[1]
+        state = state_obj.browse(self.cursor, self.uid, state_id)
+
+        atc = atc_obj.browse(self.cursor, self.uid, atc_id)
+        pre_atc_history_len = len(atc.autoreclama_history_ids)
+        pre_atc_state_name = atc.autoreclama_state.name
+        pre_atc_data = str(atc.read())
+
+        result = state_obj.do_action(self.cursor, self.uid, state_id, atc_id, {})
+
+        self.assertEqual(result['do_change'], True)
+        self.assertEqual(result['message'], u'Estat {} sense acció --> Ok'.format(state.name))
+        self.assertTrue('created_atc' not in result)
+
+        atc = atc_obj.browse(self.cursor, self.uid, atc_id) # no changes
+        self.assertEqual(pre_atc_history_len, len(atc.autoreclama_history_ids))
+        self.assertEqual(pre_atc_state_name, atc.autoreclama_state.name)
+        self.assertEqual(pre_atc_data, str(atc.read()))
+
+    def test_do_action__ok(self):
+        atc_obj = self.get_model('giscedata.atc')
+        state_obj = self.get_model('som.autoreclama.state')
+
+        atc_id = self.build_atc(log_days=60, subtype='001')
+
+        ir_obj = self.get_model('ir.model.data')
+        state_id = ir_obj.get_object_reference(self.cursor, self.uid, 'som_autoreclama', 'third_state_workflow_atc')[1]
+        state = state_obj.browse(self.cursor, self.uid, state_id)
+
+        atc = atc_obj.browse(self.cursor, self.uid, atc_id)
+        pre_atc_history_len = len(atc.autoreclama_history_ids)
+        pre_atc_state_name = atc.autoreclama_state.name
+        pre_atc_data = str(atc.read())
+
+        result = state_obj.do_action(self.cursor, self.uid, state_id, atc_id, {})
+
+        self.assertEqual(result['do_change'], True)
+        self.assertEqual(result['message'], u'Estat {} executat, nou atc creat amb id {}'.format(state.name, result['created_atc']))
+        self.assertGreaterEqual(result['created_atc'], atc_id)
+        new_atc_id = result['created_atc']
+
+        atc = atc_obj.browse(self.cursor, self.uid, atc_id) # no changes
+        self.assertEqual(pre_atc_history_len, len(atc.autoreclama_history_ids))
+        self.assertEqual(pre_atc_state_name, atc.autoreclama_state.name)
+        self.assertEqual(pre_atc_data, str(atc.read()))
+
+        new_atc = atc_obj.browse(self.cursor, self.uid, new_atc_id)
+        # automated atc creation covered by test_create_ATC_R1_029_from_atc_via_wizard__from_atr
+
+    def test_do_action__error(self):
+        atc_obj = self.get_model('giscedata.atc')
+        state_obj = self.get_model('som.autoreclama.state')
+
+        atc_id = self.build_atc(log_days=60, subtype='001')
+
+        ir_obj = self.get_model('ir.model.data')
+        state_id = ir_obj.get_object_reference(self.cursor, self.uid, 'som_autoreclama', 'first_state_workflow_atc')[1]
+        state_obj.write(self.cursor, self.uid, state_id, {
+            'generate_atc_parameters_text':'{"model": "giscedata.atc", "method": "create_ATC_R1_029_from_atc_via_wizard_ERROR"}',
+        })
+        error_message = u"'crm.case' object has no attribute 'create_ATC_R1_029_from_atc_via_wizard_ERROR'"
+        state = state_obj.browse(self.cursor, self.uid, state_id)
+
+        atc = atc_obj.browse(self.cursor, self.uid, atc_id)
+        pre_atc_history_len = len(atc.autoreclama_history_ids)
+        pre_atc_state_name = atc.autoreclama_state.name
+        pre_atc_data = str(atc.read())
+
+        result = state_obj.do_action(self.cursor, self.uid, state_id, atc_id, {})
+
+        self.assertEqual(result['do_change'], False)
+        self.assertEqual(result['message'], u'Estat {} amb ERROR {}'.format(state.name, error_message))
+
+        atc = atc_obj.browse(self.cursor, self.uid, atc_id) # no changes
+        self.assertEqual(pre_atc_history_len, len(atc.autoreclama_history_ids))
+        self.assertEqual(pre_atc_state_name, atc.autoreclama_state.name)
+        self.assertEqual(pre_atc_data, str(atc.read()))
