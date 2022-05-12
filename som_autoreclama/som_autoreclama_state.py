@@ -43,7 +43,10 @@ class SomAutoreclamaState(osv.osv):
         except Exception as e:
             tb = traceback.format_exc()
             msg = _(u'Estat {} amb ERROR {}').format(state_name, e.message)
-            logger.error(msg_head + msg + tb)
+            logger.info('**** CAPTURED '+'*'*45)
+            logger.info(msg_head + msg)
+            logger.info(tb)
+            logger.info('**** CAPTURED '+'*'*45)
             return {'do_change': False, 'message': msg}
 
         msg = _(u'Estat {} executat, nou atc creat amb id {}').format(state_name, new_atc_id)

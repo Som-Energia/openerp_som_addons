@@ -18,10 +18,6 @@ class GiscedataAtc(osv.osv):
             'subtipus_id': data['subtipus_id'][0],
             }
 
-    def update_autoreclama_state(self, cursor, uid, ids, context=None):
-        updater_obj = self.pool.get('som.autoreclama.state.updater')
-        return updater_obj.update_atcs_if_possible(cursor, uid, ids, context)
-
     # Automatic ATC + R1-029 from existing ATC / Entry poiut
     def create_ATC_R1_029_from_atc_via_wizard(self, cursor, uid, atc_id, context=None):
         channel_obj = self.pool.get('res.partner.canal')
