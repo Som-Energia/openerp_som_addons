@@ -20,8 +20,8 @@
                 <td style="width:9%">${_(u"Orígen lectura final")}</td>
                 <td style="width:10%">${_(u"Lectura final")}</td>
                 <td style="width:12%">${_(u"Consum entre lectures")}</td>
-                <td style="width:12%">${_(u"Ajustes consumo")}</td>
-                <td style="width:13%">${_(u"TOTAL facturado")}</td>
+                <td style="width:12%">${_(u"Ajustos consum")}</td>
+                <td style="width:13%">${_(u"TOTAL facturat")}</td>
             </tr>
             % for linia in d.linies:
                 <tr style="text-align:right">
