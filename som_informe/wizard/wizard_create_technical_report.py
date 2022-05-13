@@ -110,7 +110,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             subfolder = 'R1'
         if atr_seleccionat:
             subfolder = 'ATR'
-        if wiz.mostra_factura:
+        if wiz.mostra_factura or wiz.mostra_quadre_resum_lectures or wiz.mostra_quadre_resum_factures:
             subfolder = 'FACT'
         if wiz.mostra_cobraments:
             subfolder = 'COBR'
