@@ -3,19 +3,19 @@
 # * som_informe
 # 
 # Translators:
-# Som Energia  <itcrowd@somenergia.coop>, 2021.
+# Som Energia  <itcrowd@somenergia.coop>, 2021, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2021-12-28 15:37+0000\n"
-"PO-Revision-Date: 2021-12-28 15:12+0000\n"
+"POT-Creation-Date: 2022-05-13 11:18+0000\n"
+"PO-Revision-Date: 2022-05-13 09:31+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Generated-By: Babel 2.7.0\n"
+"Generated-By: Babel 2.9.1\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
@@ -163,6 +163,11 @@ msgid "Language"
 msgstr "Lenguaje"
 
 #. module: som_informe
+#: field:wizard.create.technical.report,mostra_quadre_resum_factures:0
+msgid "Mostra quadre resum factures"
+msgstr "Muestra cuadro resumen facturas"
+
+#. module: som_informe
 #: help:wizard.create.technical.report,lang:0
 msgid "Llengua de l'informe tècnic"
 msgstr "Lengua del informe técnico"
@@ -189,7 +194,7 @@ msgid "Dades Informe"
 msgstr "Datos Informe"
 
 #. module: som_informe
-#: code:addons/som_informe/wizard/wizard_create_technical_report.py:177
+#: code:addons/som_informe/wizard/wizard_create_technical_report.py:179
 msgid "Informe generat"
 msgstr "Informe generado"
 
@@ -212,6 +217,11 @@ msgstr "B1"
 #: model:ir.actions.act_window,name:som_informe.action_som_informe_report_from_polissa
 msgid "Generar informe automàtic Som"
 msgstr "Generar informe automático Som"
+
+#. module: som_informe
+#: field:wizard.create.technical.report,mostra_quadre_resum_lectures:0
+msgid "Mostra quadre resum lectures"
+msgstr "Muestra cuadro resumen lecturas"
 
 #. module: som_informe
 #: field:wizard.create.technical.report,mostra_M1:0
@@ -388,6 +398,7 @@ msgstr " - %s, <a href=\"%s\">enlace al documento</a>"
 #: rml:som_informe/report/components/A301/A301.mako:26
 #: rml:som_informe/report/components/R101/R101.mako:117
 #: rml:som_informe/report/components/R103/R103.mako:23
+#: rml:som_informe/report/components/R104/R104.mako:28
 #: rml:som_informe/report/components/R105/R105.mako:21
 msgid "<b>Documents adjunts:</b> No"
 msgstr "<b>Documentos adjuntos:</b> No"
@@ -765,6 +776,7 @@ msgstr "<b>Procedimiento:</b> B1 (Baja de suministro o suspensión del suministr
 #: rml:som_informe/report/components/B101/B101.mako:9
 #: rml:som_informe/report/components/C201/C201.mako:30
 #: rml:som_informe/report/components/D101/D101.mako:33
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:11
 #, python-format
 msgid "<b>Comentaris:</b> %s"
 msgstr "<b>Comentarios:</b> %s"
@@ -1174,20 +1186,22 @@ msgid ""
 msgstr "Tal como se nos comunicó desde los Servicios Sociales correspondientes, una de las personas que viven en el punto de suministro afectado dispone de un certificado de vulnerabilidad energética / electrodependéncia. Este certificado impide que se pueda producir un corte de suministro por impago, pero no exime del pago de la deuda que se acumule."
 
 #: rml:som_informe/report/components/CollectDetailsInvoices/CollectDetailsInvoices.mako:4
-#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:7
 msgid "Número Factura"
 msgstr "Número Factura"
 
 #: rml:som_informe/report/components/CollectDetailsInvoices/CollectDetailsInvoices.mako:5
+#: rml:som_informe/report/components/TableInvoices/TableInvoices.mako:12
+#: rml:som_informe/report/components/TableReadings/TableReadings.mako:10
 msgid "Data inici període facturat"
 msgstr "Fecha inicio período facturado"
 
 #: rml:som_informe/report/components/CollectDetailsInvoices/CollectDetailsInvoices.mako:6
+#: rml:som_informe/report/components/TableInvoices/TableInvoices.mako:13
+#: rml:som_informe/report/components/TableReadings/TableReadings.mako:11
 msgid "Data final període facturat"
 msgstr "Fecha final período facturado"
 
 #: rml:som_informe/report/components/CollectDetailsInvoices/CollectDetailsInvoices.mako:7
-#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:13
 msgid "Data Factura"
 msgstr "Fecha Factura"
 
@@ -1200,7 +1214,6 @@ msgid "Data de la devolució"
 msgstr "Fecha de la devolución"
 
 #: rml:som_informe/report/components/CollectDetailsInvoices/CollectDetailsInvoices.mako:10
-#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:12
 msgid "Total import"
 msgstr "Total importe"
 
@@ -1210,8 +1223,7 @@ msgstr "Importe pendiente"
 
 #: rml:som_informe/report/components/CollectDetailsInvoices/CollectDetailsInvoices.mako:21
 #: rml:som_informe/report/components/CollectDetailsInvoices/CollectDetailsInvoices.mako:22
-#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:25
-#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:26
+#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:53
 #, python-format
 msgid "%s €"
 msgstr "%s €"
@@ -1461,149 +1473,265 @@ msgid ""
 "en relació amb el desestiment:"
 msgstr "El %s Som Energia aporta una información adicional a la distribuidora (%s) en relación con el desistimiento:"
 
+#: rml:som_informe/report/components/InvoiceF1A/InvoiceF1A.mako:3
 #: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:3
 #: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:3
-#: rml:som_informe/report/components/InvoiceF1RA/InvoiceF1RA.mako:3
+#: rml:som_informe/report/components/InvoiceF1R/InvoiceF1R.mako:3
 #, python-format
 msgid "<b>Emissor:</b> %s"
 msgstr "<b>Emisor:</b> %s"
 
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:4
+#: rml:som_informe/report/components/InvoiceF1A/InvoiceF1A.mako:4
 #, python-format
-msgid "<b>Tipo factura:</b> Complementària (%s)"
-msgstr "<b>Tipo factura:</b> Complementaria (%s)"
+msgid "<b>Tipus factura:</b> Anul·ladora (%s)"
+msgstr "<b>Tipo factura:</b> Anuladora (%s)"
 
+#: rml:som_informe/report/components/InvoiceF1A/InvoiceF1A.mako:5
 #: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:5
 #: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:9
-#: rml:som_informe/report/components/InvoiceF1RA/InvoiceF1RA.mako:10
+#: rml:som_informe/report/components/InvoiceF1R/InvoiceF1R.mako:5
 #: rml:som_informe/report/components/InvoiceF1Unsupported/InvoiceF1Unsupported.mako:5
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:5
 #, python-format
 msgid "<b>Data factura:</b> %s"
 msgstr "<b>Fecha factura:</b> %s"
 
+#: rml:som_informe/report/components/InvoiceF1A/InvoiceF1A.mako:6
 #: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:6
 #: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:10
-#: rml:som_informe/report/components/InvoiceF1RA/InvoiceF1RA.mako:11
+#: rml:som_informe/report/components/InvoiceF1R/InvoiceF1R.mako:6
 #: rml:som_informe/report/components/InvoiceF1Unsupported/InvoiceF1Unsupported.mako:6
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:6
 #, python-format
 msgid "<b>Número factura:</b> %s"
 msgstr "<b>Número factura:</b> %s"
 
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:7
-#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:11
-#: rml:som_informe/report/components/InvoiceF1RA/InvoiceF1RA.mako:12
+#: rml:som_informe/report/components/InvoiceF1A/InvoiceF1A.mako:7
 #, python-format
-msgid "<b>Núm. de serie del EDM (Equipo de medida):</b> %s"
-msgstr "<b>Núm. de serie del EDM (Equipo de medida):</b> %s"
+msgid "<b>Factura que anul·la:</b> %s"
+msgstr "<b>Factura que anula:</b> %s"
 
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:8
-#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:12
-#: rml:som_informe/report/components/InvoiceF1RA/InvoiceF1RA.mako:13
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:4
+#, python-format
+msgid "<b>Tipus factura:</b> Complementària (%s)"
+msgstr "<b>Tipo factura:</b> Complementaria (%s)"
+
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:7
+#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:13
+#: rml:som_informe/report/components/InvoiceF1R/InvoiceF1R.mako:8
 #: rml:som_informe/report/components/InvoiceF1Unsupported/InvoiceF1Unsupported.mako:8
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:19
 #, python-format
 msgid "<b>Inici període:</b> %s"
 msgstr "<b>Inicio período:</b> %s"
 
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:9
-#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:13
-#: rml:som_informe/report/components/InvoiceF1RA/InvoiceF1RA.mako:14
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:8
+#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:14
+#: rml:som_informe/report/components/InvoiceF1R/InvoiceF1R.mako:9
 #: rml:som_informe/report/components/InvoiceF1Unsupported/InvoiceF1Unsupported.mako:9
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:20
 #, python-format
 msgid "<b>Fi període:</b> %s"
 msgstr "<b>Fin período:</b> %s"
 
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:10
-#: rml:som_informe/report/components/InvoiceF1RA/InvoiceF1RA.mako:15
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:9
+#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:44
 #, python-format
-msgid "<b>Concepte facturat:</b> %s"
-msgstr "<b>Concepto facturado:</b> %s"
+msgid "<b>Tipus de factura:</b> %s"
+msgstr "<b>Tipo de factura:</b> %s"
 
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:11
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:10
 #, python-format
-msgid "<b>Factura que complementa:</b> %s"
-msgstr "<b>Factura que complementa:</b> %s"
+msgid "<b>Número expedient:</b> %s"
+msgstr "<b>Número de expediente:</b> %s"
+
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:14
+#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:47
+msgid "Descripció"
+msgstr "Descripción"
+
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:15
+msgid "Tipus"
+msgstr "Tipo"
+
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:16
+msgid "Quantitat"
+msgstr "Cantidad"
+
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:17
+msgid "Unitat de mesura"
+msgstr "Unidad de medida"
+
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:18
+msgid "Preu"
+msgstr "Precio"
+
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:19
+msgid "Extra per operacions"
+msgstr "Extra por operaciones"
+
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:20
+msgid "Descompte"
+msgstr "Descuento"
+
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:21
+msgid "Subtotal"
+msgstr "Subtotal"
+
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:25
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:26
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:27
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:28
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:29
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:30
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:31
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:32
+#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:29
+#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:31
+#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:52
+#: rml:som_informe/report/components/InvoiceF1R/InvoiceF1R.mako:25
+#: rml:som_informe/report/components/InvoiceF1R/InvoiceF1R.mako:27
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:41
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:42
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:43
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:44
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:45
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:46
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:47
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:63
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:64
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:65
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:66
+#: rml:som_informe/report/components/TableInvoices/TableInvoices.mako:23
+#: rml:som_informe/report/components/TableInvoices/TableInvoices.mako:24
+#: rml:som_informe/report/components/TableInvoices/TableInvoices.mako:25
+#: rml:som_informe/report/components/TableInvoices/TableInvoices.mako:26
+#: rml:som_informe/report/components/TableInvoices/TableInvoices.mako:27
+#: rml:som_informe/report/components/TableInvoices/TableInvoices.mako:28
+#: rml:som_informe/report/components/TableInvoices/TableInvoices.mako:29
+#: rml:som_informe/report/components/TableInvoices/TableInvoices.mako:30
+#: rml:som_informe/report/components/TableInvoices/TableInvoices.mako:31
+#: rml:som_informe/report/components/TableInvoices/TableInvoices.mako:32
+#: rml:som_informe/report/components/TableReadings/TableReadings.mako:18
+#: rml:som_informe/report/components/TableReadings/TableReadings.mako:19
+#: rml:som_informe/report/components/TableReadings/TableReadings.mako:20
+#: rml:som_informe/report/components/TableReadings/TableReadings.mako:21
+#: rml:som_informe/report/components/TableReadings/TableReadings.mako:22
+#: rml:som_informe/report/components/TableReadings/TableReadings.mako:23
+#: rml:som_informe/report/components/TableReadings/TableReadings.mako:24
+#: rml:som_informe/report/components/TableReadings/TableReadings.mako:25
+#, python-format
+msgid "%s"
+msgstr "%s"
 
 #: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:5
 #, python-format
-msgid "<b>Tipo factura:</b> Normal (%s)"
+msgid "<b>Tipus factura:</b> Normal (%s)"
 msgstr "<b>Tipo factura:</b> Normal (%s)"
 
 #: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:7
 #, python-format
-msgid "<b>Tipo factura:</b> Regularitzadora (%s)"
+msgid "<b>Tipus factura:</b> Regularitzadora (%s)"
 msgstr "<b>Tipo factura:</b> Regularizadora (%s)"
 
-#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:16
-msgid "Orígen lectures"
-msgstr "Orígen lecturas"
+#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:12
+#: rml:som_informe/report/components/InvoiceF1R/InvoiceF1R.mako:7
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:7
+#, python-format
+msgid "<b>Núm. de sèrie del EdM (Equip de Mesura):</b> %s"
+msgstr "<b>Núm. de serie de EdM (Equipo de Medida):</b> %s"
 
 #: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:17
+#: rml:som_informe/report/components/InvoiceF1R/InvoiceF1R.mako:13
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:29
 msgid "Tipus d'energia"
 msgstr "Tipo de energía"
 
 #: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:18
+#: rml:som_informe/report/components/InvoiceF1R/InvoiceF1R.mako:14
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:30
+msgid "Orígen lectura inicial"
+msgstr "Orígen lectura inicial"
+
+#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:19
+#: rml:som_informe/report/components/InvoiceF1R/InvoiceF1R.mako:15
 msgid "Lectura Inicial"
 msgstr "Lectura Inicial"
 
-#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:19
+#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:20
+#: rml:som_informe/report/components/InvoiceF1R/InvoiceF1R.mako:16
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:32
+msgid "Orígen lectura final"
+msgstr "Orígen lectura final"
+
+#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:21
+#: rml:som_informe/report/components/InvoiceF1R/InvoiceF1R.mako:17
 msgid "Lectura final"
 msgstr "Lectura final"
 
-#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:20
+#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:22
+#: rml:som_informe/report/components/InvoiceF1R/InvoiceF1R.mako:18
 msgid "Consum entre lectures"
 msgstr "Consumo entre lecturas"
 
-#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:21
-msgid "Ajustes consumo"
+#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:23
+msgid "Ajustos consum"
 msgstr "Ajustes consumo"
 
-#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:22
-msgid "TOTAL kWh facturados"
-msgstr "TOTAL kWh facturados"
-
-#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:26
-#, python-format
-msgid "%s (%s)"
-msgstr "%s (%s)"
-
-#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:27
-#, python-format
-msgid "%s (%s) %s (%s)"
-msgstr "%s (%s) %s (%s)"
+#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:24
+msgid "TOTAL facturat"
+msgstr "TOTAL facturado"
 
 #: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:28
-#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:29
 #: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:30
-#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:31
 #: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:32
+#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:33
+#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:34
+#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:36
+#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:38
+#: rml:som_informe/report/components/InvoiceF1R/InvoiceF1R.mako:24
+#: rml:som_informe/report/components/InvoiceF1R/InvoiceF1R.mako:26
+#: rml:som_informe/report/components/InvoiceF1R/InvoiceF1R.mako:28
+#: rml:som_informe/report/components/InvoiceF1R/InvoiceF1R.mako:29
+#: rml:som_informe/report/components/InvoiceF1R/InvoiceF1R.mako:30
+#: rml:som_informe/report/components/InvoiceF1R/InvoiceF1R.mako:32
+#: rml:som_informe/report/components/InvoiceF1R/InvoiceF1R.mako:34
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:40
 #, python-format
 msgid "%s %s"
 msgstr "%s %s"
 
-#: rml:som_informe/report/components/InvoiceF1RA/InvoiceF1RA.mako:5
-#, python-format
-msgid "<b>Tipo factura:</b> Rectificativa (%s)"
-msgstr "<b>Tipo factura:</b> Rectificativa (%s)"
+#: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:48
+msgid "Total"
+msgstr "Total"
 
-#: rml:som_informe/report/components/InvoiceF1RA/InvoiceF1RA.mako:7
+#: rml:som_informe/report/components/InvoiceF1R/InvoiceF1R.mako:4
 #, python-format
-msgid "<b>Tipo factura:</b> Anul·ladora (%s)"
-msgstr "<b>Tipo factura:</b> Anuladora (%s)"
+msgid "<b>Tipus factura:</b> Rectificadora (%s)"
+msgstr "<b>Tipo factura:</b> Rectificadora (%s)"
 
-#: rml:som_informe/report/components/InvoiceF1RA/InvoiceF1RA.mako:9
-#: rml:som_informe/report/components/InvoiceF1Unsupported/InvoiceF1Unsupported.mako:4
+#: rml:som_informe/report/components/InvoiceF1R/InvoiceF1R.mako:10
 #, python-format
-msgid "<b>Tipo factura:</b> %s"
-msgstr "<b>Tipo factura:</b> %s"
+msgid "<b>Factura que rectifica:</b> %s"
+msgstr "<b>Factura que rectifica:</b> %s"
 
-#: rml:som_informe/report/components/InvoiceF1RA/InvoiceF1RA.mako:16
-#, python-format
-msgid "<b>Factura que anula o rectifica:</b> %s"
-msgstr "<b>Factura que anula o rectifica:</b> %s"
+#: rml:som_informe/report/components/InvoiceF1R/InvoiceF1R.mako:19
+msgid "Ajustes consumo"
+msgstr "Ajustes consumo"
+
+#: rml:som_informe/report/components/InvoiceF1R/InvoiceF1R.mako:20
+msgid "TOTAL facturado"
+msgstr "TOTAL facturado"
 
 #: rml:som_informe/report/components/InvoiceF1Unsupported/InvoiceF1Unsupported.mako:3
 msgid "<b>Tipus de factura no suportat</b>"
 msgstr "<b>Tipo de factura no soportado</b>"
+
+#: rml:som_informe/report/components/InvoiceF1Unsupported/InvoiceF1Unsupported.mako:4
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:4
+#, python-format
+msgid "<b>Tipus factura:</b> %s"
+msgstr "<b>Tipo factura:</b> %s"
 
 #: rml:som_informe/report/components/InvoiceF1Unsupported/InvoiceF1Unsupported.mako:7
 #, python-format
@@ -1611,46 +1739,82 @@ msgid "<b>Id factura:</b> %s"
 msgstr "<b>Id factura:</b> %s"
 
 #: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:3
-#, python-format
-msgid "Factura emesa per Som Energia relativa al CUPS %s:"
-msgstr "Factura emitida por Som Energia relativa al CUPS %s:"
-
-#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:4
-#, python-format
-msgid "Data Factura: %s"
-msgstr "Fecha Factura: %s"
+msgid "<b>Emissor:</b> Som Energia"
+msgstr "<b>Emisor:</b> Somos Energía"
 
 #: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:8
-msgid "Origen lectures"
-msgstr "Origen lecturas"
+#, python-format
+msgid "<b>Dies facturats:</b> %s"
+msgstr "<b>Días facturados:</b> %s"
 
 #: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:9
-msgid "Data inici i lectures"
-msgstr "Fecha inicio y lecturas"
-
-#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:10
-msgid "Data final i lectures"
-msgstr "Fecha final y lecturas"
+msgid "<b>Potència:</b>"
+msgstr "<b>Potencia:</b>"
 
 #: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:11
-msgid "Base import"
-msgstr "Base importe"
+#, python-format
+msgid "Punta: %s; Vall %s"
+msgstr "Punta: %s; Valle %s"
 
 #: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:14
-msgid "Data venciment"
-msgstr "Fecha vencimiento"
-
-#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:15
-msgid "Potència contractada (kW)"
-msgstr "Potencia contratada (kW)"
+#, python-format
+msgid "%s : %s;"
+msgstr "%s : %s;"
 
 #: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:16
-msgid "Energia facturada (kWh)"
-msgstr "Energía facturada (kWh)"
+#, python-format
+msgid "%s : %s"
+msgstr "%s : %s"
 
-#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:17
-msgid "Dies facturats"
-msgstr "Días facturados"
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:18
+#, python-format
+msgid "<b>Import total:</b> %s €"
+msgstr "<b>Importe total:</b> %s €"
+
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:22
+msgid "<b>Altres conceptes facturats:</b>"
+msgstr "<b>Otros conceptos facturados:</b>"
+
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:24
+#, python-format
+msgid "%s %s €"
+msgstr "%s %s €"
+
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:31
+msgid "Lectura Inicial (kWh)"
+msgstr "Lectura Inicial (kWh)"
+
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:33
+msgid "Lectura final (kWh)"
+msgstr "Lectura final (kWh)"
+
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:34
+msgid "Consum entre lectures (kWh)"
+msgstr "Consumo entre lecturas (kWh)"
+
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:35
+msgid "Origen consum facturat"
+msgstr "Origen consumo facturado"
+
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:36
+msgid "TOTAL facturat (kWh)"
+msgstr "TOTAL facturado (kWh)"
+
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:56
+msgid "Periode maxímetre"
+msgstr "Periodo maxímetro"
+
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:57
+msgid "Potència contractada"
+msgstr "Potencia contratada"
+
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:58
+msgid "Potència maxímetre"
+msgstr "Potencia maxímetro"
+
+#: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:59
+msgid "Potència excedida"
+msgstr "Potencia excedida"
 
 #: rml:som_informe/report/components/M101/M101.mako:3
 #, python-format
@@ -1999,10 +2163,6 @@ msgstr "variables aportación información para tipificación"
 msgid "<b>Tipus:</b> %s"
 msgstr "<b>Tipo:</b> %s"
 
-#: rml:som_informe/report/components/R104/R104.mako:28
-msgid "<b>Documents adjunts::</b> No"
-msgstr "<b>Documentos adjuntos::</b> No"
-
 #: rml:som_informe/report/components/R104/R104.mako:40
 #, python-format
 msgid "<b>Comentari:</b> <i>%s</i>"
@@ -2050,6 +2210,101 @@ msgstr "El %s Som Energia solicita la anulación de la reclamación en curso con
 msgid "<b>Descripció del Rebuig:</b> %s "
 msgstr "<b>Descripción del Rechazo:</b> %s "
 
+#: rml:som_informe/report/components/TableInvoices/TableInvoices.mako:3
+msgid "sense lectura"
+msgstr "sin lectura"
+
+#: rml:som_informe/report/components/TableInvoices/TableInvoices.mako:5
+#, python-format
+msgid ""
+"<b>A continuació es mostra un resum de les factures emeses per Som Energia "
+"al titular de contracte pel període (%s - %s): </b>"
+msgstr "<b>A continuación se muestra un resumen de las facturas emitidas por Som Energia al titular de contrato por el período (%s - %s): </b>"
+
+#: rml:som_informe/report/components/TableInvoices/TableInvoices.mako:10
+#: rml:som_informe/report/components/TableReadings/TableReadings.mako:7
+msgid "Número factura"
+msgstr "Número factura"
+
+#: rml:som_informe/report/components/TableInvoices/TableInvoices.mako:11
+#: rml:som_informe/report/components/TableReadings/TableReadings.mako:9
+msgid "Data factura"
+msgstr "Fecha factura"
+
+#: rml:som_informe/report/components/TableInvoices/TableInvoices.mako:14
+msgid "Màxima potència contractada (kW)"
+msgstr "Máxima potencia contratada (kW)"
+
+#: rml:som_informe/report/components/TableInvoices/TableInvoices.mako:15
+#: rml:som_informe/report/components/TableReadings/TableReadings.mako:12
+msgid "Energia facturada (kWh)"
+msgstr "Energía facturada (kWh)"
+
+#: rml:som_informe/report/components/TableInvoices/TableInvoices.mako:16
+#: rml:som_informe/report/components/TableReadings/TableReadings.mako:13
+msgid "Energia exportada -excedents- (kWh)"
+msgstr "Energía exportada -excedentes- (kWh)"
+
+#: rml:som_informe/report/components/TableInvoices/TableInvoices.mako:17
+msgid "Origen consum"
+msgstr "Origen consumo"
+
+#: rml:som_informe/report/components/TableInvoices/TableInvoices.mako:18
+#: rml:som_informe/report/components/TableReadings/TableReadings.mako:14
+msgid "Dies facturats"
+msgstr "Días facturados"
+
+#: rml:som_informe/report/components/TableInvoices/TableInvoices.mako:19
+msgid "Import total (€)"
+msgstr "Importe total (€)"
+
+#: rml:som_informe/report/components/TableReadings/TableReadings.mako:2
+#, python-format
+msgid ""
+"<b>A continuació es mostra un resum de les factures emeses per %s (fitxers "
+"F1) a Som Energia pel període (%s - %s): </b>"
+msgstr "<b>A continuación se muestra un resumen de las facturas emitidas por %s (archivos F1) a Som Energia para el período (%s - %s): </b>"
+
+#: rml:som_informe/report/components/TableReadings/TableReadings.mako:8
+msgid "Tipus de factura"
+msgstr "Tipo de factura"
+
+#: rml:som_informe/report/components/TableReadings/TableReadings.mako:30
+msgid ""
+"Informació sobre els possibles tipus de factura que envia l’empresa "
+"distribuïdora:"
+msgstr "Información sobre los posibles tipos de factura que envía la empresa distribuidora:"
+
+#: rml:som_informe/report/components/TableReadings/TableReadings.mako:31
+msgid ""
+"<b>Factura Normal:</b> document per facturar un cicle de facturació típic."
+msgstr "<b>Factura Normal:</b> documento para facturar un ciclo de facturación típico."
+
+#: rml:som_informe/report/components/TableReadings/TableReadings.mako:32
+msgid ""
+"<b>Factura Anul·ladora (A):</b> anul·la una factura que mai s’hauria d'haver"
+" emès."
+msgstr "<b>Factura Anuladora (A):</b> anula una factura que nunca debería haberse emitido."
+
+#: rml:som_informe/report/components/TableReadings/TableReadings.mako:33
+msgid ""
+"<b>Factura Rectificadora (R):</b> substitueix una factura ja emesa "
+"(correctament emesa) per al mateix període de facturació motivada per un "
+"millor valor d'algun concepte a facturar."
+msgstr "<b>Factura Rectificadora (R):</b> sustituye una factura ya emitida (correctamente emitida) para el mismo período de facturación motivada por un mejor valor de algún concepto a facturar."
+
+#: rml:som_informe/report/components/TableReadings/TableReadings.mako:34
+msgid ""
+"<b>Factura Complementària (C):</b> Complementa una altra/es factura/es que "
+"no s'anul·la/en motivada per l'incorrecte registre de la mesura."
+msgstr "<b>Factura Complementaria (C):</b> Complementa otra/s factura/s que no se anula/en motivada por el incorrecto registro de la medida."
+
+#: rml:som_informe/report/components/TableReadings/TableReadings.mako:35
+msgid ""
+"<b>Factura Regularitzadora (G):</b> modifica una o diverses factures ja "
+"emeses que no s'anul·len."
+msgstr "<b>Factura Regularizadora (G):</b> modifica una o varias facturas ya emitidas que no se anulan."
+
 #: rml:som_informe/report/components/atrHeader/atrHeader.mako:2
 msgid "Cronologia:"
 msgstr "Cronología:"
@@ -2096,10 +2351,14 @@ msgstr "<b>Dirección CUPS:</b>"
 msgid "<b>Data d'alta amb Som Energia:</b>"
 msgstr "<b>Fecha de alta en Som Energia:</b>"
 
-#: rml:som_informe/report/components/header/header.mako:16
+#: rml:som_informe/report/components/header/header.mako:17
+msgid "<b>Data de baixa amb Som Energia:</b>"
+msgstr "<b>Fecha de baja con Som Energia:</b>"
+
+#: rml:som_informe/report/components/header/header.mako:19
 msgid "<b>Titular:</b>"
 msgstr "<b>Titular:</b>"
 
-#: rml:som_informe/report/components/header/header.mako:17
+#: rml:som_informe/report/components/header/header.mako:20
 msgid "<b>NIF Titular:</b>"
 msgstr "<b>NIF Titular:</b>"
