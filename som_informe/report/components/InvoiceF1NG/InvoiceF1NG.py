@@ -39,7 +39,7 @@ class InvoiceF1NG:
 
         #camps obligats per estructura
         result['type'] = 'InvoiceF1NG'
-        result['date'] = f1.f1_date if f1 else invoice.date_invoice
+        result['date'] = (f1.f1_date if f1 else invoice.date_invoice)[:10]
         result['date_final'] = f1.fecha_factura_hasta if f1 else invoice.data_final
 
         result['distribuidora'] = f1.distribuidora_id.name if f1 else "Sense F1 relacionat"
