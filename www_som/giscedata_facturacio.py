@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv
+from tools import cache
+
 
 _WWW_TIPUS_FACTURA = {
     0: 'ORDINARIA',
@@ -31,27 +33,88 @@ _PENDING_STATE_WITH_GROUPMOVE = [
     u'R1 RECLAMACIÓ'
 ]
 
-
 class GiscedataFacturacioFactura(osv.osv):
 
     _name = 'giscedata.facturacio.factura'
     _inherit = 'giscedata.facturacio.factura'
 
+    @cache(timeout=1800)
+    def _pending_state_with_doing_by_id(self, cursor, uid):
+        irmd_obj = self.pool.get('ir.model.data')
+
+        pending_states = [
+            # Correct bs i dp
+            ('giscedata_facturacio_comer_bono_social', 'correct_bono_social_pending_state'),
+            ('account_invoice_pending', 'default_invoice_pending_state'),
+            # R1 Reclamació
+            ('som_account_invoice_pending', 'reclamacio_en_curs_pending_state'),
+            ('som_account_invoice_pending', 'default_reclamacio_en_curs_pending_state'),
+        ]
+
+        ps_list = []
+        for module, name in pending_states:
+            ps_id = irmd_obj.get_object_reference( cursor, uid, module, name)[1]
+            if ps_id:
+                ps_list.append[ps_id]
+        return ps_list
+
+    @cache(timeout=1800)
+    def _pending_state_with_groupmove_by_id(self, cursor, uid):
+        irmd_obj = self.pool.get('ir.model.data')
+
+        pending_states = [
+            # Impagaments bs i dp
+            ('giscedata_facturacio_comer_bono_social', 'avis_impagament_pending_state'),
+            ('som_account_invoice_pending', 'default_avis_impagament_pending_state'),
+            # Darrer avís bs i dp
+            ('som_account_invoice_pending', 'notificacio_tall_imminent_enviada_pending_state'),
+            ('som_account_invoice_pending', 'default_pendent_notificacio_tall_imminent_pending_state'),
+            # Tall bs i dp
+            ('som_account_invoice_pending', 'default_tall_pending_state'),
+            ('giscedata_facturacio_comer_bono_social','tall_pending_state'),
+            # Advocats bs i dp
+            ('som_account_invoice_pending', 'tugesto_bo_social_pending_state'),
+            ('som_account_invoice_pending', 'traspassat_advocats_pending_state'),
+            ('som_account_invoice_pending', 'tugesto_default_pending_state'),
+            ('som_account_invoice_pending.default_traspassat_advocats_pending_state'),
+            # Fraccionament bs i dp
+            ('som_account_invoice_pending', 'pacte_fraccio_pending_state'),
+            ('som_account_invoice_pending', 'default_pacte_fraccio_pending_state'),
+            ('som_account_invoice_pending', 'fracc_manual_bo_social_pending_state'),
+            ('som_account_invoice_pending', 'fracc_manual_default_pending_state'),
+            # Pacte transfer bs i dp
+            ('som_account_invoice_pending', 'pacte_transferencia_pending_state')
+            ('som_account_invoice_pending', 'default_pacte_transferencia_pending_state'),
+            # Pobresa bs
+            ('som_account_invoice_pending', 'probresa_energetica_certificada_pending_state'),
+            # R1 Reclamació
+            ('som_account_invoice_pending', 'reclamacio_en_curs_pending_state'),
+            ('som_account_invoice_pending', 'default_reclamacio_en_curs_pending_state'),
+        ]
+
+        ps_list = []
+        for module, name in pending_states:
+            ps_id = irmd_obj.get_object_reference( cursor, uid, module, name)[1]
+            if ps_id:
+                ps_list.append[ps_id]
+        return ps_list
+
+
     def www_estat_pagament_ov(self, cursor, uid, inv_id):
         inv_obj = self.pool.get('giscedata.facturacio.factura')
         inv_data = inv_obj.browse(cursor, uid, inv_id)
-        return self._www_estat_pagament_ov(inv_data)
+        return self._www_estat_pagament_ov(cursor, uid, inv_data)
 
-    def _www_estat_pagament_ov(self, invoice):
+    def _www_estat_pagament_ov(self, cursor, uid, invoice):
         if invoice.state == 'open':
             if invoice.pending_state and \
-               invoice.pending_state.name in _PENDING_STATE_DOING:
+               invoice.pending_state.id in self._pending_state_with_doing_by_id(cursor, uid):
                 return _WWW_ESTAT_PAGAMENT[2]
             return _WWW_ESTAT_PAGAMENT[1]
         if invoice.state == 'paid':
             if invoice.group_move_id and \
                invoice.pending_state and \
-               invoice.pending_state.name in _PENDING_STATE_WITH_GROUPMOVE:
+               invoice.pending_state.id in self._pending_state_with_groupmove_by_id(cursor, uid):
                 return _WWW_ESTAT_PAGAMENT[2]
             return _WWW_ESTAT_PAGAMENT[0]
         return _WWW_ESTAT_PAGAMENT[3]
@@ -102,7 +165,7 @@ class GiscedataFacturacioFactura(osv.osv):
             inv['data_inici'] = inv_data.data_inici
             inv['data_final'] = inv_data.data_final
             inv['tipus'] = inv_type
-            inv['estat_pagament'] = self._www_estat_pagament_ov(inv_data)
+            inv['estat_pagament'] = self._www_estat_pagament_ov(cursor, uid, inv_data)
             inv['enviat'] = inv_data.enviat
             inv['visible'] = inv_data.visible_ov
             result.append(inv)

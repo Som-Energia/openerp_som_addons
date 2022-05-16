@@ -18,6 +18,21 @@ def remove_from(results, to_remove):
 
 class TestFacturaWwwUltimesFactures(testing.OOTestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        """ To avoid calling it for each test
+        """
+        super(TestFacturaWwwUltimesFactures, cls).setUpClass()
+        cls.openerp.install_module(
+            'giscedata_tarifas_pagos_capacidad_20170101'
+        )
+        cls.openerp.install_module(
+            'giscedata_tarifas_peajes_20170101'
+        )
+        cls.openerp.install_module(
+            'som_account_invoice_pending'
+        )
+
     def setUp(self):
         self.imd_obj = self.model('ir.model.data')
         self.par_obj = self.model('res.partner')
@@ -29,13 +44,6 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
         self.wz_mi_obj = self.model('wizard.manual.invoice')
         self.journal_obj = self.model('account.journal')
         self.am_obj = self.model('account.move')
-
-        self.openerp.install_module(
-            'giscedata_tarifas_pagos_capacidad_20170101'
-        )
-        self.openerp.install_module(
-            'giscedata_tarifas_peajes_20170101'
-        )
 
         self.txn = Transaction().start(self.database)
 
