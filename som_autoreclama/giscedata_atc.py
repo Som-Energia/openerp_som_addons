@@ -43,6 +43,10 @@ class GiscedataAtc(osv.osv):
             'tanca_al_finalitzar_r1': True,
             'crear_cas_r1': True,
             'autoreclama_history_initial_state_id': initial_state_id,
+            'overwrite': {
+                'agent_actual': '10',
+                'state': 'pending',
+            },
         }
         return self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
 
@@ -108,6 +112,9 @@ class GiscedataAtc(osv.osv):
             atr_obj = self.pool.get(atr_model)
             atr_obj.write(cursor, uid, atr_id, {'ref': atc_to_r1_ref})  # link the R1 with the atc
 
+        if 'overwrite' in case_data and type(case_data['overwrite']) == dict and case_data['overwrite'].keys():
+            self.write(cursor, uid, atc_id, case_data['overwrite'], context=ctx)
+
         return atc_id
 
     # Create and setup autoreclama history to the new created ATC object
@@ -123,7 +130,7 @@ class GiscedataAtc(osv.osv):
         )[1]
 
         initial_state_id = context.get('autoreclama_history_initial_state_id', initial_state_id)
-        initial_date = context.get('autoreclama_history_initial_date', date.today().strftime("%d-%m-%Y"))
+        initial_date = context.get('autoreclama_history_initial_date', date.today().strftime("%Y-%m-%d"))
 
         atch_obj = self.pool.get('som.autoreclama.state.history.atc')
         atch_obj.create(
