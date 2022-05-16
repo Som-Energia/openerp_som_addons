@@ -6,7 +6,7 @@
             <field name="model">giscedata.polissa</field>
             <field name="inherit_id" ref="som_polissa_soci.view_giscedata_polissa_form_donatiu"/>
             <field name="type">form</field>
-            <field name="priority">99</field>
+            <field name="priority">100</field>
             <field name="arch" type="xml">
                 <field name="donatiu" position="after">
                     <field name="te_assignacio_gkwh" readonly="1"/>
