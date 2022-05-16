@@ -15,10 +15,6 @@
             <td style="width:16%">${_(u"Tipus")}</td>
             <td style="width:12%">${_(u"Quantitat")}</td>
             <td style="width:10%">${_(u"Unitat de mesura")}</td>
-            <td style="width:10%">${_(u"Preu")}</td>
-            <td style="width:10%">${_(u"Extra per operacions")}</td>
-            <td style="width:14%">${_(u"Descompte")}</td>
-            <td style="width:14%">${_(u"Subtotal")}</td>
         </tr>
         % for linia in d.linies:
             <tr style="text-align:right">
@@ -26,10 +22,6 @@
                 <td style="width:16%">${_(u"%s") % (linia['tipus'])}</td>
                 <td style="width:12%">${_(u"%s") % (formatLang(linia['quantity'], digits=3))}</td>
                 <td style="width:10%">${_(u"%s") % (linia['uom'])}</td>
-                <td style="width:10%">${_(u"%s") % (formatLang(linia['price'], digits=2))}</td>
-                <td style="width:10%">${_(u"%s") % (formatLang(linia['extra_op'], digits=1))}</td>
-                <td style="width:14%">${_(u"%s") % (formatLang(linia['discount'], digits=2))}</td>
-                <td style="width:14%">${_(u"%s") % (formatLang(linia['subtotal'], digits=2))}</td>
             </tr>
         % endfor
     </table>

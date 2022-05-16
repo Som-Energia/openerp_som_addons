@@ -31,7 +31,7 @@ class InvoiceF1C:
 
         #camps obligats per estructura
         result['type'] = 'InvoiceF1C'
-        result['date'] = f1.f1_date if f1 else invoice.date_invoice
+        result['date'] = (f1.f1_date if f1 else invoice.date_invoice)[:10]
         result['date_final'] = f1.fecha_factura_hasta if f1 else invoice.data_final
 
         result['distribuidora'] = f1.distribuidora_id.name
@@ -50,14 +50,12 @@ class InvoiceF1C:
         result['linies'] = []
         for linia in invoice.linia_ids:
             dict_linia={}
+            if 'Total' in linia.name:
+                continue
             dict_linia['name'] = linia.name
             dict_linia['tipus'] = linia.tipus
             dict_linia['quantity'] = linia.quantity
             dict_linia['uom'] = linia.uos_id.name
-            dict_linia['price'] = linia.price_unit_multi
-            dict_linia['extra_op'] = linia.multi
-            dict_linia['discount'] = linia.discount
-            dict_linia['subtotal'] = linia.price_subtotal
 
             result['linies'].append(dict_linia)
 
