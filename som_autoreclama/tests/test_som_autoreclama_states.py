@@ -431,6 +431,8 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
         self.assertEqual(atc.subtipus_id.id , subtipus_id)
         self.assertEqual(atc.polissa_id.id , polissa_id)
         self.assertEqual(atc.tancar_cac_al_finalitzar_r1 , new_case_data['tanca_al_finalitzar_r1'])
+        self.assertEqual(atc.state , 'pending')
+        self.assertEqual(atc.agent_actual, '10')
 
         model, id = atc.ref.split(",")
         self.assertEqual(model, 'giscedata.switching')
