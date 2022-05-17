@@ -85,7 +85,7 @@ class WizardExportTugestoInvoices(osv.osv_memory):
 
             direccion = aux_addr.street or ''
             provincia = aux_addr.id_poblacio.municipi_id.state.code if (aux_addr.id_poblacio and aux_addr.id_poblacio.municipi_id.state) else ''
-            poblacion_pais = aux_addr.id_poblacio.id_municipi_id.name if (aux_addr.id_poblacio and aux_addr.id_poblacio.municipi_id) else ''
+            poblacion_pais = aux_addr.id_poblacio.municipi_id.name if (aux_addr.id_poblacio and aux_addr.id_poblacio.municipi_id) else ''
 
             # fem el mapeig per obtenir el ID específic de Tugesto per al municipi
             aux_ine_code = aux_addr.id_poblacio.municipi_id.ine if (aux_addr.id_poblacio and aux_addr.id_poblacio.municipi_id and aux_addr.id_poblacio.municipi_id.ine) else None
