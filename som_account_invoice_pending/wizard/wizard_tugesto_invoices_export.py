@@ -6,6 +6,7 @@ import re
 from tqdm import tqdm
 import pandas as pd
 import json
+from ine_tugesto_somenergia import ine_maping_tugesto as imtug
 
 from osv import osv, fields
 from datetime import datetime, timedelta, date
@@ -83,10 +84,14 @@ class WizardExportTugestoInvoices(osv.osv_memory):
                 aux_addr = addr_objs[0] if addr_objs else partner.address[0]
 
             direccion = aux_addr.street or ''
-            provincia = aux_addr.id_municipi.state.code if aux_addr.id_municipi.state else ''
-            poblacion = aux_addr.id_municipi.ine if aux_addr.id_municipi else ''
+            provincia = aux_addr.id_poblacio.municipi_id.state.code if (aux_addr.id_poblacio and aux_addr.id_poblacio.municipi_id.state) else ''
+            poblacion_pais = aux_addr.id_poblacio.municipi_id.name if (aux_addr.id_poblacio and aux_addr.id_poblacio.municipi_id) else ''
+
+            # fem el mapeig per obtenir el ID específic de Tugesto per al municipi
+            aux_ine_code = aux_addr.id_poblacio.municipi_id.ine if (aux_addr.id_poblacio and aux_addr.id_poblacio.municipi_id and aux_addr.id_poblacio.municipi_id.ine) else None
+            poblacion = imtug.INEMapingTugesto().get_tugesto_id(poblacion_pais or 'unknown', provincia or None, aux_ine_code)
+            
             pais = 9 # Codi propi de Tugesto per a 'Espanya'
-            poblacion_pais =  aux_addr.id_municipi.name
             codigo_postal = aux_addr.zip or ''
             telefono = aux_addr.phone or ''
             movil = aux_addr.mobile or ''
