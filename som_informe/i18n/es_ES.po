@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2022-05-13 11:18+0000\n"
-"PO-Revision-Date: 2022-05-13 09:31+0000\n"
+"POT-Creation-Date: 2022-05-17 10:21+0000\n"
+"PO-Revision-Date: 2022-05-17 08:24+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -1562,30 +1562,10 @@ msgstr "Cantidad"
 msgid "Unitat de mesura"
 msgstr "Unidad de medida"
 
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:18
-msgid "Preu"
-msgstr "Precio"
-
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:19
-msgid "Extra per operacions"
-msgstr "Extra por operaciones"
-
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:20
-msgid "Descompte"
-msgstr "Descuento"
-
 #: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:21
-msgid "Subtotal"
-msgstr "Subtotal"
-
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:25
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:26
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:27
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:28
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:29
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:30
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:31
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:32
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:22
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:23
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:24
 #: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:29
 #: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:31
 #: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:52
@@ -1740,7 +1720,7 @@ msgstr "<b>Id factura:</b> %s"
 
 #: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:3
 msgid "<b>Emissor:</b> Som Energia"
-msgstr "<b>Emisor:</b> Somos Energía"
+msgstr "<b>Emisor:</b> Som Energia"
 
 #: rml:som_informe/report/components/InvoiceFE/InvoiceFE.mako:8
 #, python-format
