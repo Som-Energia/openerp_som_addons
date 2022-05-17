@@ -38,7 +38,7 @@ class GiscedataFacturacioFactura(osv.osv):
     _name = 'giscedata.facturacio.factura'
     _inherit = 'giscedata.facturacio.factura'
 
-    @cache(timeout=1800)
+    @cache(timeout=3600)
     def _pending_state_with_doing_by_id(self, cursor, uid):
         irmd_obj = self.pool.get('ir.model.data')
 
@@ -55,10 +55,10 @@ class GiscedataFacturacioFactura(osv.osv):
         for module, name in pending_states:
             ps_id = irmd_obj.get_object_reference( cursor, uid, module, name)[1]
             if ps_id:
-                ps_list.append[ps_id]
+                ps_list.append(ps_id)
         return ps_list
 
-    @cache(timeout=1800)
+    @cache(timeout=3600)
     def _pending_state_with_groupmove_by_id(self, cursor, uid):
         irmd_obj = self.pool.get('ir.model.data')
 
@@ -76,14 +76,14 @@ class GiscedataFacturacioFactura(osv.osv):
             ('som_account_invoice_pending', 'tugesto_bo_social_pending_state'),
             ('som_account_invoice_pending', 'traspassat_advocats_pending_state'),
             ('som_account_invoice_pending', 'tugesto_default_pending_state'),
-            ('som_account_invoice_pending.default_traspassat_advocats_pending_state'),
+            ('som_account_invoice_pending', 'default_traspassat_advocats_pending_state'),
             # Fraccionament bs i dp
             ('som_account_invoice_pending', 'pacte_fraccio_pending_state'),
             ('som_account_invoice_pending', 'default_pacte_fraccio_pending_state'),
             ('som_account_invoice_pending', 'fracc_manual_bo_social_pending_state'),
             ('som_account_invoice_pending', 'fracc_manual_default_pending_state'),
             # Pacte transfer bs i dp
-            ('som_account_invoice_pending', 'pacte_transferencia_pending_state')
+            ('som_account_invoice_pending', 'pacte_transferencia_pending_state'),
             ('som_account_invoice_pending', 'default_pacte_transferencia_pending_state'),
             # Pobresa bs
             ('som_account_invoice_pending', 'probresa_energetica_certificada_pending_state'),
@@ -96,7 +96,7 @@ class GiscedataFacturacioFactura(osv.osv):
         for module, name in pending_states:
             ps_id = irmd_obj.get_object_reference( cursor, uid, module, name)[1]
             if ps_id:
-                ps_list.append[ps_id]
+                ps_list.append(ps_id)
         return ps_list
 
 
