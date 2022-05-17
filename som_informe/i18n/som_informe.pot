@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2022-05-13 11:18+0000\n"
-"PO-Revision-Date: 2022-05-13 11:18+0000\n"
+"POT-Creation-Date: 2022-05-17 10:21+0000\n"
+"PO-Revision-Date: 2022-05-17 10:21+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1555,30 +1555,10 @@ msgstr ""
 msgid "Unitat de mesura"
 msgstr ""
 
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:18
-msgid "Preu"
-msgstr ""
-
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:19
-msgid "Extra per operacions"
-msgstr ""
-
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:20
-msgid "Descompte"
-msgstr ""
-
 #: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:21
-msgid "Subtotal"
-msgstr ""
-
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:25
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:26
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:27
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:28
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:29
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:30
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:31
-#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:32
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:22
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:23
+#: rml:som_informe/report/components/InvoiceF1C/InvoiceF1C.mako:24
 #: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:29
 #: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:31
 #: rml:som_informe/report/components/InvoiceF1NG/InvoiceF1NG.mako:52
