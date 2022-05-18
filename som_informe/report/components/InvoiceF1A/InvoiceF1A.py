@@ -1,6 +1,6 @@
 from ..component_utils import dateformat
 
-class InvoiceF1RA:
+class InvoiceF1A:
     def __init__(self):
         pass
 
@@ -15,20 +15,15 @@ class InvoiceF1RA:
         f1_id = f1_obj.search(cursor,uid,search_params)
         f1 = f1_obj.browse(cursor, uid, f1_id[0])
 
-        result['numero_edm'] = f1.importacio_lectures_ids[0].comptador if f1.importacio_lectures_ids else ""
-
         #camps obligats per estructura
-        result['type'] = 'InvoiceF1RA'
-        result['date'] = invoice.date_invoice
+        result['type'] = 'InvoiceF1A'
+        result['date'] = (f1.f1_date if f1 else invoice.date_invoice)[:10]
+        result['date_final'] = f1.fecha_factura_hasta if f1 else invoice.data_final
 
         result['distribuidora'] = f1.distribuidora_id.name
         result['invoice_type'] = invoice.rectificative_type
-        result['invoice_date'] = dateformat(invoice.date_invoice)
+        result['invoice_date'] = dateformat(f1.f1_date) if f1 else dateformat(invoice.date_invoice)
         result['invoice_number'] = invoice.origin
-        result['date_from'] = dateformat(invoice.data_inici)
-        result['date_to'] = dateformat(invoice.data_final)
-
-        result['concept'] = "ERROR no concept"
-        result['rectifies_invoice'] = invoice.ref.origin
+        result['cancel_invoice'] = invoice.ref.origin #a testing F.Origen Rectificada/Anulada esta buit a totes :)
 
         return result

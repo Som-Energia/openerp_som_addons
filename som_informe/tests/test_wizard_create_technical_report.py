@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from destral import testing
+import unittest
 from destral.transaction import Transaction
 from expects import *
 
@@ -15,6 +16,7 @@ class WizardCreateTechnicalReportTests(testing.OOTestCase):
     def tearDown(self):
         self.txn.stop()
 
+    @unittest.skip(reason='WIP')
     def test__get_data__InvoiceF1NG_invoice20TD(self):
         imd_obj = self.openerp.pool.get('ir.model.data')
         fact_obj = self.openerp.pool.get('giscedata.facturacio.factura')
@@ -45,6 +47,7 @@ class WizardCreateTechnicalReportTests(testing.OOTestCase):
             'type': 'InvoiceF1NG', 'invoiced_energy': 1.0,
             'amount_total': 10.0})
 
+    @unittest.skip(reason='WIP')
     def test__get_data__InvoiceF1NG_invoice30TD(self):
         imd_obj = self.openerp.pool.get('ir.model.data')
         fact_obj = self.openerp.pool.get('giscedata.facturacio.factura')

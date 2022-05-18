@@ -70,6 +70,8 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         'mostra_reclama': fields.boolean('Mostra bloc de Reclama'),
         #Factura block
         'mostra_factura': fields.boolean('Mostra bloc de Factura'),
+        'mostra_quadre_resum_lectures': fields.boolean('Mostra quadre resum lectures'),
+        'mostra_quadre_resum_factures': fields.boolean('Mostra quadre resum factures'),
         #Gestió de Contractes block
         'mostra_A3': fields.boolean('A3'),
         'mostra_B1': fields.boolean('B1'),
@@ -108,7 +110,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             subfolder = 'R1'
         if atr_seleccionat:
             subfolder = 'ATR'
-        if wiz.mostra_factura:
+        if wiz.mostra_factura or wiz.mostra_quadre_resum_lectures or wiz.mostra_quadre_resum_factures:
             subfolder = 'FACT'
         if wiz.mostra_cobraments:
             subfolder = 'COBR'
@@ -223,22 +225,33 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             sw_ids = sw_obj.search(cursor, uid, search_params)
             result_crono.extend(self.extract_switching_metadata(cursor, uid, sw_ids, context))
 
-        if wiz.mostra_factura:
+        if wiz.mostra_factura or wiz.mostra_quadre_resum_lectures or wiz.mostra_quadre_resum_factures:
             fact_obj = wiz.pool.get('giscedata.facturacio.factura')
             search_parameters = [
                 ('polissa_id', '=', wiz.polissa.id),
             ]
             if wiz.date_from:
+                search_parameters.append('|')
                 search_parameters.append(('data_inici', '>=', wiz.date_from))
+                search_parameters.append(('date_invoice','>=',wiz.date_from))
             if wiz.date_to:
+                search_parameters.append('|')
                 search_parameters.append(('data_final', '<=', wiz.date_to))
+                search_parameters.append(('date_invoice','<=',wiz.date_to))
             invoice_ids = fact_obj.search(cursor, uid, search_parameters)
-            result_crono.extend(self.extract_invoice_metadata(cursor, uid, wiz, invoice_ids, context))
+            if wiz.mostra_factura:
+                result_crono.extend(self.extract_invoice_metadata(cursor, uid, wiz, invoice_ids, context))
+            quadre_lectures = []
+            if wiz.mostra_quadre_resum_lectures:
+                quadre_lectures.extend(self.extract_readings_table_metadata(cursor, uid, wiz, invoice_ids , context))
+            quadre_factures = []
+            if wiz.mostra_quadre_resum_factures:
+                quadre_factures.extend(self.extract_invoices_table_metadata(cursor, uid, wiz, invoice_ids , context))
 
         if result_crono:
             result_atr_head = self.extract_components_metadata(cursor, uid, wiz, ['atrHeader'], context)
             result_atr_foot = self.extract_components_metadata(cursor, uid, wiz, ['atrFooter'], context)
-            result_crono = sorted(result_crono, key=lambda k: k['date'])
+            result_crono = sorted(result_crono, key=lambda k: (k['date'], k['date_final']))
             result_crono = result_atr_head + result_crono + result_atr_foot
 
         result_cobra = []
@@ -246,10 +259,11 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             components_cobra = ['CollectHeader', 'CollectDetailsInvoices', 'CollectExpectedCutOffDate', 'CollectContractData']
             result_cobra = self.extract_components_metadata(cursor, uid, wiz, components_cobra, context)
 
+        result_note = self.extract_components_metadata(cursor, uid, wiz, ['note'], context)
         result_ini = self.extract_components_metadata(cursor, uid, wiz, ['header'], context)
         result_end = self.extract_components_metadata(cursor, uid, wiz, ['footer'], context)
 
-        result = result_ini + result_crono + result_cobra + result_end
+        result = result_note + result_ini + result_crono + result_cobra + quadre_lectures + quadre_factures + result_end
         return [ns(item) for item in result]
 
     # data extractors
@@ -280,6 +294,32 @@ class WizardCreateTechnicalReport(osv.osv_memory):
 
         return result
 
+    def extract_readings_table_metadata(self, cursor, uid, wiz, invoice_ids, context):
+        if not isinstance(invoice_ids, list):
+            invoice_ids = [invoice_ids]
+        invoice_ids.reverse()
+        result = []
+        component_name = 'TableReadings'
+        extractor = self.factory_metadata_extractor(component_name)
+        extracted_data = extractor.get_data(cursor, uid, wiz, invoice_ids, context)
+        if extracted_data:
+            result.append(extracted_data)
+
+        return result
+
+    def extract_invoices_table_metadata(self, cursor, uid, wiz, invoice_ids, context):
+        if not isinstance(invoice_ids, list):
+            invoice_ids = [invoice_ids]
+        invoice_ids.reverse()
+        result = []
+        component_name = 'TableInvoices'
+        extractor = self.factory_metadata_extractor(component_name)
+        extracted_data = extractor.get_data(cursor, uid, wiz, invoice_ids, context)
+        if extracted_data:
+            result.append(extracted_data)
+
+        return result
+
     def extract_invoice_metadata(self, cursor, uid, wiz, invoice_ids, context):
         if not isinstance(invoice_ids, list):
             invoice_ids = [invoice_ids]
@@ -290,71 +330,34 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             invoice = fact_obj.browse(cursor, uid, invoice_id, context=context)
 
             component_name = None
-            #nomes 3 F1NG
-            '''if invoice.type in ('out_invoice', 'out_refund'):
-                component_name = 'InvoiceFE'
-            else:
-                if invoice.tipo_rectificadora in ('N', 'G'):
-                    component_name = 'InvoiceF1NG'
-                elif invoice.tipo_rectificadora in ('R', 'A'):
-                    component_name = 'InvoiceF1RA'
-                elif invoice.tipo_rectificadora in ('C'):
-                    component_name = 'InvoiceF1C'
-                else: # B RA BRA
-                    component_name = 'InvoiceF1Unsupported'
-
-                if component_name:
-                    extractor = self.factory_metadata_extractor(component_name)
-                    extracted_data = extractor.get_data(cursor, uid, invoice, context)
-                    if extracted_data:
-                        result.append(extracted_data)
-            '''
-            #6F1NG,1UN,11RA,1UN,10F1NG
-            '''
-            if invoice.tipo_rectificadora in ('N', 'G'):
-                component_name = 'InvoiceF1NG'
-            elif invoice.tipo_rectificadora in ('R', 'A'):
-                component_name = 'InvoiceF1RA'
-            elif invoice.tipo_rectificadora in ('C'):
-                component_name = 'InvoiceF1C'
-            else: # B RA BRA
-                component_name = 'InvoiceF1Unsupported'
-
-            if component_name:
-                extractor = self.factory_metadata_extractor(component_name)
-                extracted_data = extractor.get_data(cursor, uid, invoice, context)
-                if extracted_data:
-                    result.append(extracted_data)
-            '''
-            #2FE,2F1NG,12FE,1F1NG,2FE
-            '''if invoice.type in ('out_invoice', 'out_refund'):
-                component_name = 'InvoiceFE'
-            else:
-                if invoice.tipo_rectificadora in ('N', 'G'):
-                    component_name = 'InvoiceF1NG'
-                elif invoice.tipo_rectificadora in ('R', 'A'):
-                    component_name = 'InvoiceF1RA'
-                elif invoice.tipo_rectificadora in ('C'):
-                    component_name = 'InvoiceF1C'
-                else: # B RA BRA
-                    component_name = 'InvoiceF1Unsupported'
-            if component_name:
-                extractor = self.factory_metadata_extractor(component_name)
-                extracted_data = extractor.get_data(cursor, uid, invoice, context)
-                if extracted_data:
-                    result.append(extracted_data)
-            '''
             if invoice.type in ('in_invoice', 'in_refund'):
                 if invoice.tipo_rectificadora in ('N', 'G'):
                     component_name = 'InvoiceF1NG'
-                elif invoice.tipo_rectificadora in ('R', 'A'):
-                    component_name = 'InvoiceF1RA'
+                elif invoice.tipo_rectificadora in ('R'):
+                    component_name = 'InvoiceF1R'
+                elif invoice.tipo_rectificadora in ('A'):
+                    component_name = 'InvoiceF1A'
                 elif invoice.tipo_rectificadora in ('C'):
                     component_name = 'InvoiceF1C'
-                else: # B RA BRA
-                    component_name = 'InvoiceF1Unsupported'
-            #else:
-                #component_name = 'InvoiceFE'
+                elif invoice.tipo_rectificadora == 'BRA': #BRA invent ERP que no es vol que apareixi
+                    component_name = None
+                else: # B RA
+                    f1_obj = wiz.pool.get('giscedata.facturacio.importacio.linia')
+                    search_params = [
+                        ('cups_id.id', '=', invoice.cups_id.id),
+                        ('invoice_number_text', '=', invoice.origin),
+                    ]
+                    f1_id = f1_obj.search(cursor,uid,search_params)
+                    if f1_id: #factura amb F1
+                        f1 = f1_obj.browse(cursor, uid, f1_id[0])
+                        if f1.type_factura == 'R': #and invoice.ref.rectificative_type in ('N','G'): # F1 tipus R que rectifica una factura tipus N o G
+                            component_name = 'InvoiceF1R'
+                        else:
+                            component_name = 'InvoiceF1Unsupported'
+                    else:
+                        component_name = 'InvoiceF1Unsupported'
+            elif invoice.type in ('out_invoice', 'out_refund') and invoice.state in ('paid', 'open'):
+                component_name = 'InvoiceFE'
             if component_name:
                 extractor = self.factory_metadata_extractor(component_name)
                 extracted_data = extractor.get_data(cursor, uid, wiz, invoice, context)
