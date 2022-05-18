@@ -19,6 +19,8 @@
                         </page>
                         <page string="Factura">
                             <field name="mostra_factura"/>
+                            <field name="mostra_quadre_resum_lectures"/>
+                            <field name="mostra_quadre_resum_factures"/>
                         </page>
                         <page string="ATR">
                             <!-- Informes a generar -->

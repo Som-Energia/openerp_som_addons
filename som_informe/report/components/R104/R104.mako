@@ -25,7 +25,7 @@
              ${_(' - %s, <a href="%s">enllaç al document</a>') % (doc[0], doc[1])}<br/>
         % endfor
     % else:
-        ${_(u"<b>Documents adjunts::</b> No")}<br/>
+        ${_(u"<b>Documents adjunts:</b> No")}<br/>
     % endif
     % if len(d.variables_aportacio):
         ${_(u"<b>Variables d'aportació:</b> %s variable(s)") % (str(len(d.variables_aportacio)))}<br/>

@@ -1,3 +1,5 @@
+
+# -*- encoding: utf-8 -*-
 from gestionatr.utils import get_description as gestion_atr_get_description
 from datetime import datetime
 
@@ -96,3 +98,5 @@ def has_category(pol, category_ids):
         if cat.id in category_ids:
             return True
     return False
+
+
