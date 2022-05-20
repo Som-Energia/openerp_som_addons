@@ -400,7 +400,7 @@ class TestsFacturesValidation(testing.OOTestCase):
         clot = self.cnt_lot_obj.browse(cursor, uid, cnt_lot_id)
 
         result = self.vali_obj.check_gkwh_G_invoices(cursor, uid, clot, lot_dates['data_inici'], lot_dates['data_final'])
-        expect(result).to(equal(True))
+        expect(result).to(equal({}))
 
     def test_check_gkwh_G_invoices__contract_with_gkWh_other_origen_comer(self):
         cursor = self.txn.cursor
