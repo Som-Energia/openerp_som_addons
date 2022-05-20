@@ -54,7 +54,7 @@
         </record>
         <record model="giscedata.facturacio.validation.warning.template" id="warning_SV01" forcecreate="1">
             <field name="code">SV01</field>
-            <field name="description">La pòlissa té lectures tipus "F1 regularitzadora" i GenerationKwH</field>
+            <field name="description">La pòlissa té lectures tipus "F1 regularitzadora" i GenerationkWh</field>
             <field name="observation">Comprovacio de que les lectures a facturar són de tipus "F1 regularitzadora" i la pòlissa té GenerationkWh</field>
             <field name="method">check_gkwh_G_invoices</field>
             <field name="type">lot</field>
