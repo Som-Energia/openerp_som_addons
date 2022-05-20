@@ -5,6 +5,7 @@ from tools.translate import _
 from gestionatr.defs import TABLA_113
 from datetime import datetime
 import re
+import logging
 
 TIPO_AUTOCONSUMO_SEL = [(ac[0], '[{}] - {}'.format(ac[0], ac[1])) for ac in TABLA_113]
 
@@ -42,8 +43,10 @@ class GiscedataFacturacioContracteLot(osv.osv):
             if fact_ids:
                 date_invoice = fact_obj.read(cr, uid, fact_ids[0],
                         ['date_invoice'])['date_invoice']
-        except Exception:
-            pass
+        except Exception as e:
+            logger = logging.getLogger('openerp' + __name__)
+            logger.error("Error calculant el camp funcio date_invoice del contracte_lot ID {}. {}".format(id, e))
+
         return date_invoice
 
     def _get_fact_origen(self, cr, uid, id, context=None):
@@ -76,7 +79,7 @@ class GiscedataFacturacioContracteLot(osv.osv):
             return 'Real'
         return 'Sense Factures'
 
-    def consum_facturat(self, cr, uid, ids, name, args, context=None):
+    def consum_facturat(self, cr, uid, id, context=None):
         n_factures = self.read(cr, uid, id, ['n_factures'])['n_factures']
         if n_factures:
             origen = self._get_fact_origen(cr, uid, id)
@@ -94,8 +97,9 @@ class GiscedataFacturacioContracteLot(osv.osv):
                 te_generation = fact_obj.read(cr, uid, fact_id, ['is_gkwh'])['is_gkwh']
                 if te_generation:
                     return True
-        except Exception:
-            pass
+        except Exception as e:
+            logger = logging.getLogger('openerp' + __name__)
+            logger.error("Error calculant el camp funcio te_generation del contracte_lot ID {}. {}".format(id, e))
 
     def _ff_gran_contracte(self, cr, uid, ids, name, args, context=None):
         res = dict.fromkeys(ids, False)
@@ -119,24 +123,15 @@ class GiscedataFacturacioContracteLot(osv.osv):
         try:
             lot_id = contracte_lot_data['lot_id'][0]
             pol_id = contracte_lot_data['polissa_id'][0]
-            fact_ids = fact_obj.search(cr, uid, [('lot_facturacio','=', lot_id), ('polissa_id','=', pol_id)])
-
-            data_final = datetime.strptime('1970-01-30','%Y-%m-%d')
-            for fact_id in fact_ids:
-                data_final_factura = fact_obj.read(cr, uid, fact_id, ['data_final'])['data_final']
-                if data_final_factura > data_final:
-                    data_final = data_final_factura
-
-            if(data_final.strftime("%d-%m-%Y") != '30-01-1970'):
-                return data_final
-        except Exception:
-            pass
+            fact_ids = fact_obj.search(cr, uid, [('lot_facturacio','=', lot_id), ('polissa_id','=', pol_id)], order='data_final desc', limit=1)
+            if fact_ids:
+                return fact_obj.read(cr, uid, fact_ids[0], ['data_final'])['data_final']
+        except Exception as e:
+            logger = logging.getLogger('openerp' + __name__)
+            logger.error("Error calculant el camp funcio te_generation del contracte_lot ID %s: %s ", id, e)
 
     def _ff_update_fields(self, cr, uid, ids, name, args, context=None):
-        fields_to_update = {
-            'total_incidencies': 0
-        }
-        res = dict.fromkeys(ids, fields_to_update)
+        res = {id: {'total_incidencies': 0} for id in ids}
         for id in ids:
             res[id]['total_incidencies'] = self.total_incidencies(cr, uid, id)
             res[id]['date_invoice'] = self.date_invoice(cr, uid, id)
