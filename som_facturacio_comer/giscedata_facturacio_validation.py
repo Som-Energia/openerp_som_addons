@@ -194,10 +194,7 @@ class GiscedataFacturacioValidationValidator(osv.osv):
         if not polissa.te_assignacio_gkwh:
             return None
 
-        data_inici, data_final = polissa.get_inici_final_a_facturar(
-            use_lot=clot.lot_id.id, context={'validacio': True}
-        )
-        intervals = polissa.get_modcontractual_intervals(data_inici, data_final)
+        intervals = polissa.get_modcontractual_intervals(data_inici, data_fi)
         mod_ids = []
         mod_dates = {}
         for mod_data in sorted(intervals.keys()):
@@ -209,10 +206,10 @@ class GiscedataFacturacioValidationValidator(osv.osv):
             mod_id = modcontractual.id
             tid = modcontractual.tarifa.id
             data_inici_periode_f = max(data_inici, mod_dates[mod_id][0])
-            data_final_periode_f = min(data_final, mod_dates[mod_id][1])
+            data_final_periode_f = min(data_fi, mod_dates[mod_id][1])
             reparto_real = facturador_obj.reparto_real(cursor, uid, modcontractual.tarifa.name)
             if modcontractual.polissa_id.active and len(mod_ids) == 1:
-                data_final_periode_f = data_final
+                data_final_periode_f = data_fi
             c_actius = polissa.comptadors_actius(data_inici_periode_f,
                 data_final_periode_f, order='data_alta asc')
 
@@ -223,7 +220,7 @@ class GiscedataFacturacioValidationValidator(osv.osv):
                 # utilitzant
                 data_inici_periode_f2 = (datetime.strptime(data_inici_periode_f, "%Y-%m-%d") - timedelta( days=1)).strftime("%Y-%m-%d")
                 ctx = {
-                    'fins_lectura_fact': data_final,
+                    'fins_lectura_fact': data_fi,
                     'ult_lectura_fact': data_inici_periode_f2
                 }
                 if reparto_real:
@@ -237,7 +234,7 @@ class GiscedataFacturacioValidationValidator(osv.osv):
 
                 for periode, lectura in lectures_activa.items():
                     if lectura['actual']['origen_comer_id'][0] == origen_comer_f1g_id:
-                        return True
+                        return {}
 
         return None
 
