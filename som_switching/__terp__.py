@@ -36,6 +36,7 @@
         'giscedata_switching_rebutjos_a.xml',
         'giscedata_polissa_view.xml',
         'giscedata_switching_notification_data.xml',
+        'wizard/wizard_create_atc_from_polissa.xml',
     ],
     "active": False,
     "installable": True

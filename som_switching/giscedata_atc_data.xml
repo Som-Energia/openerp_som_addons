@@ -292,4 +292,20 @@
             <field name="default_section" ref="atc_section_factura"/>
         </record>
     </data>
+    <data noupdate="0">
+         <record model="giscedata.atc.tag" id="3_0_estimades">
+            <field name="name">3.0 estimades 33% jurídic</field>
+            <field name="titol">Estimacions (3.0TD) en què s'aplica càlcul del 33% sobre potència pel càlcul de l'energia. També ho podem fer servir amb sobreestimades recurrents</field>
+            <field name="description">https://docs.google.com/document/d/1Nd3r0XgGuK-CU440H7g7WWWUQ94y80EGwspwVDWhlmY/edit?usp=sharing</field>
+            <field name="creation_date">2021-10-21</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="altress">
+            <field name="name">Altres</field>
+            <field name="titol">Altres</field>
+            <field name="description">Altres</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+    </data>
 </openerp>
