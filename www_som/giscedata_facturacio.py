@@ -16,23 +16,6 @@ _WWW_ESTAT_PAGAMENT = {
     3: 'ERROR',
 }
 
-_PENDING_STATE_DOING = [
-    u'Correct',
-    u'R1 RECLAMACIÓ'
-]
-
-_PENDING_STATE_WITH_GROUPMOVE = [
-    u'1F DEVOLUCIÓ',
-    u'3F DEVOL ÚLTIM AVÍS',
-    u'6F TALL',
-    u'7F ADVOCATS',
-    u'7F CUR',
-    u'PACTE FRACCIO',
-    u'PACTE TRANSFER',
-    u'POBRESA',
-    u'R1 RECLAMACIÓ'
-]
-
 class GiscedataFacturacioFactura(osv.osv):
 
     _name = 'giscedata.facturacio.factura'
@@ -73,9 +56,15 @@ class GiscedataFacturacioFactura(osv.osv):
             ('som_account_invoice_pending', 'default_tall_pending_state'),
             ('giscedata_facturacio_comer_bono_social','tall_pending_state'),
             # Advocats bs i dp
+            ('som_account_invoice_pending', 'pendent_traspas_advocats_pending_state'),
+            ('som_account_invoice_pending', 'default_pendent_traspas_advocats_pending_state'),
+            ('som_account_invoice_pending', 'monitori_bo_social_pending_state'),
+            ('som_account_invoice_pending', 'default_monitori_pending_state'),
+            ('som_account_invoice_pending', 'pending_tugesto_bo_social_pending_state'),
+            ('som_account_invoice_pending', 'pending_tugesto_default_pending_state'),
             ('som_account_invoice_pending', 'tugesto_bo_social_pending_state'),
-            ('som_account_invoice_pending', 'traspassat_advocats_pending_state'),
             ('som_account_invoice_pending', 'tugesto_default_pending_state'),
+            ('som_account_invoice_pending', 'traspassat_advocats_pending_state'),
             ('som_account_invoice_pending', 'default_traspassat_advocats_pending_state'),
             # Fraccionament bs i dp
             ('som_account_invoice_pending', 'pacte_fraccio_pending_state'),
