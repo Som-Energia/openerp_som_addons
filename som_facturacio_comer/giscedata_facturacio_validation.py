@@ -233,7 +233,8 @@ class GiscedataFacturacioValidationValidator(osv.osv):
                     )
 
                 for periode, lectura in lectures_activa.items():
-                    if lectura['actual']['origen_comer_id'][0] == origen_comer_f1g_id:
+                    if 'origen_comer_id' in lectura['actual'] and \
+                       lectura['actual']['origen_comer_id'][0] == origen_comer_f1g_id:
                         return {}
 
         return None
