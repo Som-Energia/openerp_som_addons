@@ -310,7 +310,6 @@ class WizardCreateTechnicalReport(osv.osv_memory):
     def extract_invoices_table_metadata(self, cursor, uid, wiz, invoice_ids, context):
         if not isinstance(invoice_ids, list):
             invoice_ids = [invoice_ids]
-        invoice_ids.reverse()
         result = []
         component_name = 'TableInvoices'
         extractor = self.factory_metadata_extractor(component_name)
