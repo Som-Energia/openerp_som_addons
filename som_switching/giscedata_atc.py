@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
-import datetime
+from datetime import datetime
 
 class GiscedataAtc(osv.osv):
 
@@ -23,6 +23,9 @@ class GiscedataAtc(osv.osv):
             self.pool.get("giscedata.polissa").write(cursor, uid, pol_ids, {'facturacio_suspesa': False})
         return res
 
+    _columns = {
+        'tag': fields.many2one('giscedata.atc.tag', "Etiqueta"),
+    }
 
 GiscedataAtc()
 
