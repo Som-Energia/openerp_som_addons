@@ -178,8 +178,8 @@ class InvestmentStrategyTests(testing.OOTestCase):
                   - {invoice_line_tax_id}
                 journal_id: Factures Aportacions
                 mandate_id: False
-                name: {investment_name}-INT2021
-                number: {investment_name}-INT2021
+                name: {investment_name}-INT{year}
+                number: {investment_name}-INT{year}
                 origin: {investment_name}
                 partner_bank: {iban}
                 partner_id:
@@ -195,7 +195,7 @@ class InvestmentStrategyTests(testing.OOTestCase):
                 invoice_date=datetime.today().strftime("%Y-%m-%d"),
                 id=invoice_ids,
                 iban='ES37 0151 7119 6002 1121 9240',
-                year=2021,
+                year=datetime.today().strftime("%Y"),
                 investment_name=investment.name,
                 p=partner_data,
                 num_soci= partner_data.ref[1:],
