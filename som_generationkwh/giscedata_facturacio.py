@@ -488,8 +488,6 @@ class GiscedataFacturacioFactura(osv.osv):
                             }
                         )
 
-            self.button_reset_taxes(cursor, uid, [inv_id], context=context)
-
     def get_gkwh_lines(self, cursor, uid, ids, context=None):
         """ Returns a id list of giscedata.facturacio.factura.linia with
             gkwh products
@@ -591,7 +589,6 @@ class GiscedataFacturacioFacturador(osv.osv):
         if can_have_gkwh:
             factura_obj.apply_gkwh(cursor, uid, factures, context)
             self.reaplica_ajustar_saldo_excedents_autoconsum(cursor, uid, factures, context)
-            factura_obj.button_reset_taxes(cursor, uid, factures, context=context)
         return factures
 
     def create_discount_lines_for_rd_17_2021(self, cursor, uid, fact_ids, context=None):
@@ -682,8 +679,6 @@ class GiscedataFacturacioFacturador(osv.osv):
                         line_id = self.crear_linia(cursor, uid, factura.id, vals, context=ctx_crear_linia)
                         tax_ids = [x.id for x in line.invoice_line_tax_id]
                         line_obj.write(cursor, uid, line_id, {'invoice_line_tax_id': [(6, 0, tax_ids)]})
-
-            factura.button_reset_taxes()
 
 
 GiscedataFacturacioFacturador()
