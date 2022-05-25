@@ -22,6 +22,8 @@
     'account_invoice_som',
     'www_som',
     'c2c_webkit_report',
+    'async_reports',
+    'custom_search',
     ],
   "init_xml": [],
   "demo_xml": [
@@ -52,6 +54,8 @@
     "emission_view.xml",
     "wizard/wizard_llibre_registre_socis_view.xml",
     "wizard/wizard_factures_liquidacio_interessos_view.xml",
+    "giscedata_polissa_view.xml",
+    "custom_search_data.xml",
     ],
   "active": False,
   "installable": True

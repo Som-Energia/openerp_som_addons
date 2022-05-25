@@ -385,7 +385,6 @@
         <record id="giscedata_polissa.polissa_0001" model="giscedata.polissa">
             <field name="titular" ref="res_partner_inversor1"></field>
         </record>
-
         <record id="invoice_GKWH00002" model="account.invoice">
             <field name="name">GKWH00002-JUST</field>
             <field name="origin">GKWH00002</field>
@@ -412,6 +411,45 @@
             <field name="account_id" ref="account.a_recv"/>
             <field name="origin_date_invoice">2020-06-30</field>
             <field name="reference">GISCE</field>
+        </record>
+        <record id="linia_factura_01" model="giscedata.facturacio.factura.linia">
+            <field name="name">Linia 01</field>
+            <field name="product_id" ref="giscedata_polissa.p1_e_tarifa_20TD_product_product"/>
+            <field name="account_id" search="[('code', '=', '700000')]" model="account.account"/>
+            <field name="tipus">energia</field>
+            <field name="price_unit_multi" eval="10.0"/>
+            <field name="multi" eval="1"/>
+            <!--<field name="uom_multi_id"></field>-->
+            <field name="factura_id" ref="giscedata_facturacio.factura_0001"/>
+            <!--<field name="invoice_line_id"></field>-->
+            <!--<field name="cosfi"></field>-->
+            <field name="data_desde">2016-01-01</field>
+            <!--<field name="data_fins"></field>-->
+        </record>
+        <record id="linia_factura_gkwh_0001" model="giscedata.facturacio.factura.linia">
+            <field name="name">Linia 1 GKWH</field>
+            <field name="product_id" ref="p1_gkwh_tarifa_20TD"/>
+            <field name="tipus">energia</field>
+            <field name="price_unit_multi" eval="8.0"/>
+            <field name="multi" eval="1"/>
+            <field name="account_id" search="[('code', '=', '700000')]" model="account.account"/>
+            <!--<field name="uom_multi_id"></field>-->
+            <field name="factura_id" ref="giscedata_facturacio.factura_0001"/>
+            <!--<field name="invoice_line_id"></field>-->
+            <!--<field name="cosfi"></field>-->
+            <field name="data_desde">2016-01-01</field>
+            <!--<field name="data_fins"></field>-->
+        </record>
+        <record id="lineowner_001" model="generationkwh.invoice.line.owner">
+            <field name="factura_id" ref="giscedata_facturacio.factura_0001"/>
+            <field name="factura_line_id" ref="linia_factura_gkwh_0001"/>
+            <field name="owner_id" ref="res_partner_inversor1"/>
+            <field name="saving_gkw_amount">0.5</field>
+        </record>
+        <record id="right_usage_001" model="generationkwh.right.usage.line">
+            <field name="datetime">2016-01-01 06:00:00</field>
+            <field name="quantity">1</field>
+            <field name="line_owner" ref="lineowner_001"/>
         </record>
     </data>
 </openerp>
