@@ -3,7 +3,7 @@ from __future__ import division
 from ast import increment_lineno
 from osv import osv, fields
 from tools.translate import _
-import time
+import time, json
 
 class WizardFacturesLiquidacioInteressos(osv.osv_memory):
     """Assistent per liquidar els interessos.
@@ -38,6 +38,7 @@ class WizardFacturesLiquidacioInteressos(osv.osv_memory):
             'Estat',
             50
         ),
+        'res_ids': fields.json("Llistat de factures"),
         'open_invoices': fields.boolean(
             'Obrir factures, afegir a remesa i notificar per correu.',
             help="Marca aquesta opció per obrir les factures, afegir-les a la remesa i notificar per correu electronic.")
@@ -51,6 +52,7 @@ class WizardFacturesLiquidacioInteressos(osv.osv_memory):
         return float(interest_rate)
 
     _defaults = {
+        'res_ids': [],
         'state': lambda *a: 'init',
         'interest_rate': _default_currrent_interest,
         'date_invoice': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
@@ -102,13 +104,16 @@ class WizardFacturesLiquidacioInteressos(osv.osv_memory):
         errors = '\n'.join(errors)
         self.write(cursor, uid, [ids[0]],
             {'state': 'all_apos_calc',
+             'res_ids': invoice_ids
             'calc': 'Inversions sel·leccionades: {}\nFactures creades: {}\nErrors trobats de les factures no creades:\n{}'.format(
             len(investments_ids), len(invoice_ids), errors
         )})
 
     def _factures_apos(self, cursor, uid, ids, context=None):
+        wiz = self.browse(cursor, uid, ids[0], context=context)
+        res_ids = wiz.res_ids
         return {
-                'domain': "[ ('number','ilike', '%INT%'), ('state','in', ['open','draft']), ('type','=','in_invoice') ]",
+                'domain': "[('id','in',{})]".format(res_ids),
                 'name': _('Factures Aportacions'),
                 'view_type': 'form',
                 'view_mode': 'tree,form',
