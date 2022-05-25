@@ -228,7 +228,7 @@ class InvestmentTests(testing.OOTestCase):
                     'active': True,
                     'order_date': '2020-06-06',
                     'amortized_amount': 0.0,
-                    'name': u'APO005000'
+                    'name': u'APO000001'
                 })
             self.MailMockup.deactivate(cursor, uid)
 
@@ -277,7 +277,7 @@ class InvestmentTests(testing.OOTestCase):
                         'active': True,
                         'order_date': '2020-06-06',
                         'amortized_amount': 0.0,
-                        'name': u'APO005000'
+                        'name': u'APO000001'
                     })
                 self.MailMockup.deactivate(cursor, uid)
         self.assertEqual(str(ctx.exception),'Emission not open yet')
@@ -1218,45 +1218,6 @@ class InvestmentTests(testing.OOTestCase):
 
             self.assertEqual(amount, 1000)
 
-    def test__get_investments_amount__withOldAportacions(self):
-        with Transaction().start(self.database) as txn:
-            cursor = txn.cursor
-            uid = txn.user
-            member_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'soci_0002'
-                        )[1]
-
-            amount = self.Investment.get_investments_amount(cursor, uid,
-                member_id,
-            )
-
-            self.assertEqual(amount, 5000)
-
-    @freeze_time("2020-06-03")
-    def test__get_investments_amount__withOldAndNewAportacions(self):
-        with Transaction().start(self.database) as txn:
-            cursor = txn.cursor
-            uid = txn.user
-            member_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'soci_0002'
-                        )[1]
-            partner_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'res_partner_inversor2'
-                        )[1]
-            inv_id = self.Investment.create_from_form(cursor, uid,
-                    partner_id,
-                    '2020-06-06',
-                    4000,
-                    '10.10.23.123',
-                    'ES7712341234161234567890',
-                    'APO_202006')
-
-            amount = self.Investment.get_investments_amount(cursor, uid,
-                member_id,
-            )
-
-            self.assertEqual(amount, 9000)
-
     @freeze_time("2020-06-03")
     def test__get_max_investment__noInvestments_inTemporaLimitWithoutLimitInEmission(self):
         with Transaction().start(self.database) as txn:
@@ -1414,27 +1375,6 @@ class InvestmentTests(testing.OOTestCase):
                                                         partner_id, 'APO_202006'
                                                         )
             self.assertEqual(amount, 1000)
-
-    @freeze_time("2020-06-13")
-    def test__get_max_investment__withOldInvestments_outOfTemporaLimit(self):
-        with Transaction().start(self.database) as txn:
-            cursor = txn.cursor
-            uid = txn.user
-            partner_id = self.IrModelData.get_object_reference(
-                cursor, uid, 'som_generationkwh', 'res_partner_inversor2'
-            )[1]
-            emission_id = self.IrModelData.get_object_reference(
-                cursor, uid, 'som_generationkwh', 'emissio_apo2'
-            )[1]
-            self.Emission.write(cursor, uid, emission_id,
-                                {'limited_period_amount': 500,
-                                 'limited_period_end_date': '2020-06-10'})
-
-            amount = self.Investment.get_max_investment(cursor, uid,
-                                                        partner_id, 'APO_202006'
-                                                        )
-
-            self.assertEqual(amount, 95000)
 
     @freeze_time("2020-03-13")
     def test__get_max_investment__emissionNotExist(self):

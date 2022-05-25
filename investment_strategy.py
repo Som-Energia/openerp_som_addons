@@ -61,11 +61,17 @@ class InvestmentActions(ErpWrapper):
 
         return member_ids, emission_id
 
+    def create_from_transfer(self, cursor, uid, investment_id, new_partner_id, transmission_date, iban, context=None):
+        pass
+
     def divest(self, cursor, uid, id, invoice_ids, errors, date_invoice):
         pass
 
     def get_or_create_investment_account(self, cursor, uid, partner_id):
         pass
+
+    def get_investment_legal_attachment(self, cursor, uid, partner_id, emission_id):
+        return False
 
     def create_divestment_invoice(self, cursor, uid,
             investment_id, date_invoice, to_be_divested,
@@ -241,6 +247,105 @@ class GenerationkwhActions(InvestmentActions):
 
         return investment_id
 
+    def create_from_transfer(self, cursor, uid, investment_id, new_partner_id, transmission_date, iban, context=None):
+        GenerationkwhInvestment = self.erp.pool.get('generationkwh.investment')
+
+        #Obtenir dades inversio (total invertit, total amortiztzat/pendent, data original...)
+        old_investment = GenerationkwhInvestment.read(cursor, uid, investment_id)
+        if old_investment['draft'] :
+            raise Exception("Investment in draft, so not transferible")
+        if not old_investment['active']:
+            raise Exception("Investment not active")
+        if old_investment['amortized_amount'] >= old_investment['nshares']*gkwh.shareValue :
+            raise Exception("Amount to return = 0, not transferible")
+
+        #Comprovar dades del partner al qual es vol tranferir (existeix, soci, iban, compte inversions..)
+        Soci = self.erp.pool.get('somenergia.soci')
+        member_ids = Soci.search(cursor, uid, [
+                ('partner_id','=', new_partner_id)
+                ])
+        if not member_ids:
+            raise Exception("Destination partner is not a member")
+
+        ResPartner = self.erp.pool.get('res.partner')
+        new_partner = ResPartner.browse(cursor, uid, new_partner_id)
+        if not new_partner.property_account_gkwh.id:
+            new_partner.button_assign_acc_1635()
+            new_partner = ResPartner.browse(cursor, uid, new_partner_id)
+            print("Nou partner: Creat compte comptable de Generation: {}".format(new_partner.property_account_gkwh.code))
+        if not new_partner.bank_inversions:
+            print("Nou banc per aquest partner: Cal definir un IBAN de banc inversions")
+            bank_id = GenerationkwhInvestment.get_or_create_partner_bank(cursor, uid,
+                        new_partner_id, iban)
+            ResPartner.write(cursor, uid, new_partner_id, dict(
+                bank_inversions = bank_id,),context)
+
+        #Crear inversio
+        ResUser = self.erp.pool.get('res.users')
+        user = ResUser.read(cursor, uid, uid, ['name'])
+        IrSequence = self.erp.pool.get('ir.sequence')
+
+        name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')
+
+        inv = InvestmentState(user['name'], datetime.now(),
+                name = old_investment['name'],
+                purchase_date = old_investment['purchase_date'],
+                first_effective_date = old_investment['first_effective_date'],
+                last_effective_date = old_investment['last_effective_date'],
+                order_date = old_investment['order_date'],
+                log = old_investment['log'],
+                actions_log = old_investment['actions_log'],
+        )
+        inv_old = InvestmentState(user['name'], datetime.now(),
+                name = old_investment['name'],
+                purchase_date = isodate(old_investment['purchase_date']),
+                first_effective_date = isodate(old_investment['first_effective_date']),
+                paid_amount = old_investment['nshares']*gkwh.shareValue,
+                nominal_amount = old_investment['nshares']*gkwh.shareValue,
+                amortized_amount = old_investment['amortized_amount'],
+                last_effective_date = old_investment['last_effective_date'],
+                order_date = old_investment['order_date'],
+                log = old_investment['log'],
+                actions_log = old_investment['actions_log'],
+        )
+        amount = old_investment['nshares']*gkwh.shareValue - old_investment['amortized_amount']
+        to_partner_name = new_partner_id #TODO Get partner name from id
+        move_line_id = 1
+        origin = GenerationkwhInvestment.browse(cursor, uid, investment_id)
+        origin_partner_name = origin.member_id.name
+
+        transferred = inv.receiveTransfer(
+            name = name,
+            date = isodate(transmission_date),
+            amount = amount,
+            origin = inv_old,
+            origin_partner_name = origin_partner_name,
+            move_line_id = move_line_id
+        )
+        new_investment_id = GenerationkwhInvestment.create(cursor, uid, dict(
+            inv.erpChanges(),
+            member_id = member_ids[0],
+            nshares = old_investment['nshares'],
+            emission_id = old_investment['emission_id'][0]
+        ), context)
+
+        new_investment = GenerationkwhInvestment.browse(cursor, uid, new_investment_id)
+
+        emited = inv_old.emitTransfer(
+            date = isodate(transmission_date),
+            amount = amount,
+            to_name = new_investment.name,
+            to_partner_name = new_investment.member_id.name,
+            move_line_id = move_line_id,
+        )
+        GenerationkwhInvestment.write(cursor, uid, investment_id, inv_old.erpChanges())
+
+        GenerationkwhInvestment.mark_as_invoiced(cursor, uid, new_investment_id)
+        old_partner = Soci.browse(cursor, uid, old_investment['member_id'][0]).partner_id
+        GenerationkwhInvestment.move_line_when_tranfer(cursor, uid, old_partner.id, new_partner_id, old_partner.property_account_gkwh.id , new_partner.property_account_gkwh.id, amount, transmission_date)
+
+        return new_investment_id
+
     def get_prefix_semantic_id(self):
         return 'generationkwh'
 
@@ -248,6 +353,14 @@ class GenerationkwhActions(InvestmentActions):
         IrModelData = self.erp.pool.get('ir.model.data')
         payment_mode_id = IrModelData.get_object_reference(
             cursor, uid, 'som_generationkwh', 'genkwh_investment_payment_mode'
+        )[1]
+        PaymentMode = self.erp.pool.get('payment.mode')
+        return PaymentMode.read(cursor, uid, payment_mode_id, ['name'])['name']
+
+    def get_divest_payment_mode(self, cursor, uid):
+        imd_model = self.erp.pool.get('ir.model.data')
+        payment_mode_id = imd_model.get_object_reference(
+            cursor, uid, 'som_generationkwh', 'genkwh_amortization_payment_mode'
         )[1]
         PaymentMode = self.erp.pool.get('payment.mode')
         return PaymentMode.read(cursor, uid, payment_mode_id, ['name'])['name']
@@ -270,7 +383,7 @@ class GenerationkwhActions(InvestmentActions):
         Invoice = self.erp.pool.get('account.invoice')
         MoveLine = self.erp.pool.get('account.move.line')
         Investment = self.erp.pool.get('generationkwh.investment')
-        
+
         inversio = Investment.read(cursor, uid, id, [
             'log',
             'nshares',
@@ -303,7 +416,7 @@ class GenerationkwhActions(InvestmentActions):
 
         Investment.open_invoices(cursor, uid, [invoice_id])
         Investment.invoices_to_payment_order(cursor, uid,
-                [invoice_id], gkwh.amortizationPaymentMode)
+                [invoice_id], self.get_divest_payment_mode(cursor, uid))
         invoice_ids.append(invoice_id)
 
         #Get moveline id
@@ -328,7 +441,6 @@ class GenerationkwhActions(InvestmentActions):
         )
         Investment.write(cursor, uid, id, inv.erpChanges())
 
-
 class AportacionsActions(InvestmentActions):
 
     @property
@@ -342,6 +454,7 @@ class AportacionsActions(InvestmentActions):
     def create_from_form(self, cursor, uid, partner_id, order_date, amount_in_euros, ip, iban, emission=None, context=None):
         member_ids, emission_id = super(AportacionsActions, self).create_from_form(cursor, uid, partner_id, order_date, amount_in_euros, ip, iban,emission, context)
         GenerationkwhInvestment = self.erp.pool.get('generationkwh.investment')
+
 
         Emission = self.erp.pool.get('generationkwh.emission')
         emi_obj = Emission.read(cursor, uid, emission_id, ['mandate_name','code'])
@@ -376,10 +489,130 @@ class AportacionsActions(InvestmentActions):
         GenerationkwhInvestment.get_or_create_payment_mandate(cursor, uid,
             partner_id, iban, emi_obj['mandate_name'], gkwh.creditorCode)
 
+        total_amount_in_emission = GenerationkwhInvestment.get_investments_amount(cursor, uid, member_ids[0], emission_id=emission_id)
+
+        mail_context = {}
+        if total_amount_in_emission > gkwh.amountForlegalAtt:
+            attachment_id = self.get_investment_legal_attachment(cursor, uid, partner_id, emission_id)
+            if attachment_id:
+                mail_context.update({'attachment_ids': [(6, 0, [attachment_id])]})
+
         GenerationkwhInvestment.send_mail(cursor, uid, investment_id,
-            'generationkwh.investment', '_mail_creacio')
+            'generationkwh.investment', '_mail_creacio', context=mail_context)
 
         return investment_id
+
+    def create_from_transfer(self, cursor, uid, investment_id, new_partner_id, transmission_date, iban, context=None):
+        #Obtenir dades inversio (total invertit, total amortiztzat/pendent, data original...)
+        GenerationkwhInvestment = self.erp.pool.get('generationkwh.investment')
+
+        old_investment = GenerationkwhInvestment.read(cursor, uid, investment_id)
+        if old_investment['draft'] :
+            raise Exception("Investment in draft, so not transferible")
+        if not old_investment['active']:
+            raise Exception("Investment not active")
+        if old_investment['amortized_amount'] >= old_investment['nshares']*gkwh.shareValue :
+            raise Exception("Amount to return = 0, not transferible")
+
+        #Comprovar dades del partner al qual es vol tranferir (existeix, soci, iban, compte inversions..)
+        Soci = self.erp.pool.get('somenergia.soci')
+        member_ids = Soci.search(cursor, uid, [
+                ('partner_id','=', new_partner_id)
+                ])
+        if not member_ids:
+            raise Exception("Destination partner is not a member")
+
+        ResPartner = self.erp.pool.get('res.partner')
+        new_partner = ResPartner.browse(cursor, uid, new_partner_id)
+        if not new_partner.property_account_aportacions.id:
+            new_partner.button_assign_acc_163()
+            new_partner = ResPartner.browse(cursor, uid, new_partner_id)
+            print("Nou partner: Creat/assignat compte comptable d'aportacions {}".format(new_partner.property_account_aportacions.code))
+        if not new_partner.bank_inversions:
+            print("Nou banc per aquest partner: Cal definir un IBAN de banc inversions")
+            bank_id = GenerationkwhInvestment.get_or_create_partner_bank(cursor, uid,
+                        new_partner_id, iban)
+            ResPartner.write(cursor, uid, new_partner_id, dict(
+                bank_inversions = bank_id,),context)
+
+        #Crear inversio
+        ResUser = self.erp.pool.get('res.users')
+        user = ResUser.read(cursor, uid, uid, ['name'])
+        IrSequence = self.erp.pool.get('ir.sequence')
+
+        name = IrSequence.get_next(cursor,uid,'seq.som.aportacions')
+
+        inv = InvestmentState(user['name'], datetime.now(),
+                name = old_investment['name'],
+                purchase_date = old_investment['purchase_date'],
+                first_effective_date = old_investment['first_effective_date'],
+                last_effective_date = old_investment['last_effective_date'],
+                order_date = old_investment['order_date'],
+                log = old_investment['log'],
+                actions_log = old_investment['actions_log'],
+        )
+        inv_old = InvestmentState(user['name'], datetime.now(),
+                name = old_investment['name'],
+                purchase_date = isodate(old_investment['purchase_date']),
+                first_effective_date = isodate(old_investment['first_effective_date']),
+                paid_amount = old_investment['nshares']*gkwh.shareValue,
+                nominal_amount = old_investment['nshares']*gkwh.shareValue,
+                amortized_amount = old_investment['amortized_amount'],
+                last_effective_date = old_investment['last_effective_date'],
+                order_date = old_investment['order_date'],
+                log = old_investment['log'],
+                actions_log = old_investment['actions_log'],
+        )
+        amount = old_investment['nshares']*gkwh.shareValue - old_investment['amortized_amount']
+        to_partner_name = new_partner_id #TODO Get partner name from id
+        move_line_id = 1
+        origin = GenerationkwhInvestment.browse(cursor, uid, investment_id)
+        origin_partner_name = origin.member_id.name
+
+        transferred = inv.receiveTransfer(
+            name = name,
+            date = isodate(transmission_date),
+            amount = amount,
+            origin = inv_old,
+            origin_partner_name = origin_partner_name,
+            move_line_id = move_line_id
+        )
+        new_investment_id = GenerationkwhInvestment.create(cursor, uid, dict(
+            inv.erpChanges(),
+            member_id = member_ids[0],
+            nshares = old_investment['nshares'],
+            emission_id = old_investment['emission_id'][0]
+        ), context)
+
+        new_investment = GenerationkwhInvestment.browse(cursor, uid, new_investment_id)
+
+        emited = inv_old.emitTransfer(
+            date = isodate(transmission_date),
+            amount = amount,
+            to_name = new_investment.name,
+            to_partner_name = new_investment.member_id.name,
+            move_line_id = move_line_id,
+        )
+        GenerationkwhInvestment.write(cursor, uid, investment_id, inv_old.erpChanges())
+
+        GenerationkwhInvestment.mark_as_invoiced(cursor, uid, new_investment_id)
+        old_partner = Soci.browse(cursor, uid, old_investment['member_id'][0]).partner_id
+        GenerationkwhInvestment.move_line_when_tranfer(cursor, uid, old_partner.id, new_partner_id, old_partner.property_account_aportacions.id, new_partner.property_account_aportacions.id, amount, transmission_date)
+
+        return new_investment_id
+
+    def get_investment_legal_attachment(self, cursor, uid, partner_id, emission_id):
+        ResPartner = self.erp.pool.get('res.partner')
+        IrAttachment = self.erp.pool.get('ir.attachment')
+        partner_lang = ResPartner.read(cursor, uid, partner_id, ['lang'])['lang']
+        # Attaching legal docs for higher than 5k APOS
+        search_params = [('res_model', '=', 'generationkwh.emission'),
+                         ('res_id', '=', emission_id),
+                         ('name', 'ilike', '%_{}'.format('CA' if partner_lang == 'ca_ES' else 'ES'))]
+        attachment_id = IrAttachment.search(cursor, uid, search_params)
+        if attachment_id:
+            return attachment_id[0]
+        return False
 
     def get_prefix_semantic_id(self):
         return 'aportacio'
@@ -392,10 +625,10 @@ class AportacionsActions(InvestmentActions):
         PaymentMode = self.erp.pool.get('payment.mode')
         return PaymentMode.read(cursor, uid, payment_mode_id, ['name'])['name']
 
-    def get_interest_payment_mode_name(self, cursor, uid):
+    def get_divest_payment_mode(self, cursor, uid):
         imd_model = self.erp.pool.get('ir.model.data')
         payment_mode_id = imd_model.get_object_reference(
-            cursor, uid, 'som_generationkwh', 'apo_investment_interest_payment_mode'
+            cursor, uid, 'som_generationkwh', 'apo_divestment_payment_mode'
         )[1]
         PaymentMode = self.erp.pool.get('payment.mode')
         return PaymentMode.read(cursor, uid, payment_mode_id, ['name'])['name']
@@ -445,7 +678,7 @@ class AportacionsActions(InvestmentActions):
 
         Investment.open_invoices(cursor, uid, [invoice_id])
         Investment.invoices_to_payment_order(cursor, uid,
-                [invoice_id], gkwh.amortizationPaymentMode)
+                [invoice_id], self.get_divest_payment_mode(cursor, uid))
         invoice_ids.append(invoice_id)
 
         #Get moveline id
