@@ -37,6 +37,7 @@
         'giscedata_polissa_view.xml',
         'giscedata_switching_notification_data.xml',
         'wizard/wizard_create_atc_from_polissa.xml',
+        'giscedata_atc_view.xml',
     ],
     "active": False,
     "installable": True

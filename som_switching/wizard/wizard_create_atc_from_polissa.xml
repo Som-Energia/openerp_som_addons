@@ -8,11 +8,11 @@
                 <field name="inherit_id" ref="giscedata_atc.view_wizard_create_atc_from_polissa_form"/>
                 <field name="arch" type="xml">
                     <field name="section_id" position="replace">
+                        <field name="section_id" on_change="onchange_section(section_id)"/>
                         <field name="mostrar_tag" invisible="1"/>
-                        <field name="section_id" colspan="15" on_change="onchange_section(section_id)"/>
-                        <group colspan="15" attrs="{'invisible': [('mostrar_tag', '=', False)]}">
-                            <field name="tag"/>
-                        </group>
+                            <group colspan="15"  attrs="{'invisible': [('mostrar_tag','!=',True)]}" >
+                                <field name="tag" attrs="{'required': [('mostrar_tag','==',True)]}"/>
+                            </group>
                     </field>
                 </field>
             </record>

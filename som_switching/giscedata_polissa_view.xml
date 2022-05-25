@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
-            <record model="ir.ui.view" id="view_polissa_autoconsum_form">
+        <record model="ir.ui.view" id="view_polissa_autoconsum_form">
             <field name="name">view.polissa.autoconsum.form.som</field>
             <field name="model">giscedata.polissa</field>
             <field name="type">form</field>
@@ -24,6 +24,45 @@
                 <field name="data_ultima_lectura" position="after" >
                     <field name="data_ultima_lectura_f1" string="Última lectura de F1"/>
                 </field>
+            </field>
+        </record>
+        <!-- Llistat per defecte d'etiquetes de CACs -->
+        <record model="ir.ui.view" id="view_giscedata_polissa_tag_cac_tree">
+            <field name="name">giscedata.atc.tag.tree</field>
+            <field name="model">giscedata.atc.tag</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Etiquestes CACs">
+                    <field name="name"/>
+                    <field name="titol"/>
+                    <field name="description"/>
+                    <field name="creation_date"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+        <!-- Acció per obrir el llistat d'etiquetes de CACs -->
+        <record model="ir.actions.act_window" id="action_tags_cac">
+            <field name="name">Etiquetes CACs</field>
+            <field name="view_id" ref="view_giscedata_polissa_tag_cac_tree"/>
+            <field name="res_model">giscedata.atc.tag</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+         <menuitem id="menu_tags_cac" parent="giscedata_polissa.menu_configuracio" action="action_tags_cac"/>
+        <!-- Llistat per etiquetes de cacs -->
+        <record model="ir.ui.view" id="view_giscedata_polissa_tag_cac_form">
+            <field name="name">giscedata.atc.tag.form</field>
+            <field name="model">giscedata.atc.tag</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Etiquetes CACs">
+                    <field name="name"/>
+                    <field name="titol"/>
+                    <field name="description"/>
+                    <field name="creation_date"/>
+                    <field name="active"/>
+                </form>
             </field>
         </record>
     </data>
