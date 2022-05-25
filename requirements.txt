@@ -5,3 +5,4 @@ yamlns
 plantmeter
 python-dateutil
 freezegun
+certifi==2021.10.8
