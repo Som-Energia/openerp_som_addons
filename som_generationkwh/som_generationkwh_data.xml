@@ -1902,7 +1902,7 @@ ${text_legal}
 </body>
 </html>]]></field>
         </record>
-        <record model="poweremail.templates" id="interest_apo_notification_mail">
+        <record model="poweremail.templates" id="aportacio_interest_notification_mail">
             <field name="name">Liquidació aportació voluntaria</field>
             <field name="object_name" model="ir.model" search="[('model', '=', 'account.invoice')]"/>
             <field eval="0" name="save_to_drafts"/>
