@@ -633,10 +633,10 @@ class AportacionsActions(InvestmentActions):
         PaymentMode = self.erp.pool.get('payment.mode')
         return PaymentMode.read(cursor, uid, payment_mode_id, ['name'])['name']
 
-    def get_divest_payment_mode(self, cursor, uid):
+    def get_interest_payment_mode_name(self, cursor, uid):
         imd_model = self.erp.pool.get('ir.model.data')
         payment_mode_id = imd_model.get_object_reference(
-            cursor, uid, 'som_generationkwh', 'genkwh_amortization_payment_mode'
+            cursor, uid, 'som_generationkwh', 'apo_investment_interest_payment_mode'
         )[1]
         PaymentMode = self.erp.pool.get('payment.mode')
         return PaymentMode.read(cursor, uid, payment_mode_id, ['name'])['name']
