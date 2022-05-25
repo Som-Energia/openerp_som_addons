@@ -301,73 +301,9 @@ class GenerationkwhInvestment(osv.osv):
         investment_ids = self.search(cursor, uid, search_params)
 
         amount = 0
-        #New investments
+
         for id in investment_ids:
             amount += self.read(cursor, uid, id, ['nshares'])['nshares'] * gkwh.shareValue
-
-        if emission_id: #Avoid old investments amount
-            return amount
-
-        #START Old investments (remove when migrated)
-        Member = self.pool.get('somenergia.soci')
-        MoveLine = self.pool.get('account.move.line')
-        Account = self.pool.get('account.account')
-        aportacionsAccountPrefix = '163000'
-
-        if member_id is None:
-            accountDomain = [('code','ilike',aportacionsAccountPrefix+'%')]
-        else:
-            memberCodes = Member.read(cursor, uid, member_id, ['ref'])
-            accountCodes = aportacionsAccountPrefix + memberCodes['ref'][1:]
-            accountDomain = [ ('code','ilike',accountCodes)]
-        accountId = Account.search(cursor, uid, accountDomain)
-
-        if not accountId: #No Old investments
-            return amount
-
-        movelinefilter = [
-            ('account_id', 'in', accountId),
-            ('period_id.special', '=', False),
-            ]
-
-        movelinesids = MoveLine.search(
-            cursor, uid, movelinefilter,
-            order='date_created asc, id asc',
-            )
-
-        investment_ids = []
-
-        contextWithInactives = dict({}, active_test=False)
-
-        for line in MoveLine.browse(cursor, uid, movelinesids):
-            # Filter out already converted move lines
-            if self.search(cursor, uid,
-                [('move_line_id','=',line.id)],
-                context=dict({}, active_test=False),
-            ):
-                continue
-
-            partnerid = line.partner_id.id
-            if not partnerid:
-                # Handle cases with no partner_id
-                membercode = int(line.account_id.code[4:])
-                domain = [('ref', 'ilike', '%'+str(membercode).zfill(6))]
-            else:
-                domain = [('partner_id', '=', partnerid)]
-
-            members = Member.search(cursor, uid, domain, context=contextWithInactives)
-            if not members:
-                print (
-                    "No existeix el soci de la linia comptable "
-                    "id {l.id} {l.date_created} partner {l.partner_id.name} "
-                    "ac {l.account_id.name}, {l.credit} -{l.debit}  {d}"
-                    .format(l=line, d=domain))
-                continue
-
-            member_id = members[0]
-
-            amount += line.credit-line.debit
-        #END Old investments (remove when migrated)
 
         return amount
 
@@ -856,6 +792,7 @@ class GenerationkwhInvestment(osv.osv):
             #'check_total': to_be_amortized + (irpf_amount * -1),
             # TODO: Remove the GENKWHID stuff when fully migrated, error instead
             'origin': investment.name or 'GENKWHID{}'.format(investment.id),
+            'origin_date_invoice': date_invoice,
             'reference': invoice_name,
             'date_invoice': date_invoice,
         })
@@ -1043,108 +980,15 @@ class GenerationkwhInvestment(osv.osv):
         return investment_id
 
     def create_from_transfer(self, cursor, uid,
-            investment_id, new_partner_id, transfer_date, iban,
+            investment_id, new_partner_id, transmission_date, iban, emission=None,
             context=None):
-
-        #Obtenir dades inversio (total invertit, total amortiztzat/pendent, data original...)
-        old_investment = self.read(cursor, uid, investment_id)
-        if old_investment['draft'] :
-            raise Exception("Investment in draft, so not transferible")
-        if not old_investment['active']:
-            raise Exception("Investment not active")
-        if old_investment['amortized_amount'] >= old_investment['nshares']*gkwh.shareValue :
-            raise Exception("Amount to return = 0, not transferible")
-
-        #Comprovar dades del partner al qual es vol tranferir (existeix, soci, iban, compte inversions..)
-        Soci = self.pool.get('somenergia.soci')
-        member_ids = Soci.search(cursor, uid, [
-                ('partner_id','=', new_partner_id)
-                ])
-        if not member_ids:
-            raise Exception("Destination partner is not a member")
-
-        ResPartner = self.pool.get('res.partner')
-        new_partner = ResPartner.browse(cursor, uid, new_partner_id)
-        if not new_partner.property_account_gkwh.id:
-            new_partner.button_assign_acc_1635()
-            new_partner = ResPartner.browse(cursor, uid, new_partner_id)
-            print "Nou partner: Creat compte comptable de Generation: ", new_partner.property_account_gkwh
-        if not new_partner.bank_inversions:
-            print "Nou banc per aquest partner: Cal definir un IBAN de banc inversions"
-            bank_id = self.get_or_create_partner_bank(cursor, uid,
-                        new_partner_id, iban)
-            ResPartner.write(cursor, uid, new_partner_id, dict(
-                bank_inversions = bank_id,),context)
-
-        #Crear inversio
-        ResUser = self.pool.get('res.users')
-        user = ResUser.read(cursor, uid, uid, ['name'])
-        IrSequence = self.pool.get('ir.sequence')
-
-        # TODO: This has to be the sequence of the kind of investment!!!! (APO, GKWH...)
-        name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')
-
-        inv = InvestmentState(user['name'], datetime.now(),
-                name = old_investment['name'],
-                purchase_date = old_investment['purchase_date'],
-                first_effective_date = old_investment['first_effective_date'],
-                last_effective_date = old_investment['last_effective_date'],
-                order_date = old_investment['order_date'],
-                log = old_investment['log'],
-                actions_log = old_investment['actions_log'],
-        )
-        inv_old = InvestmentState(user['name'], datetime.now(),
-                name = old_investment['name'],
-                purchase_date = isodate(old_investment['purchase_date']),
-                first_effective_date = isodate(old_investment['first_effective_date']),
-                paid_amount = old_investment['nshares']*gkwh.shareValue,
-                nominal_amount = old_investment['nshares']*gkwh.shareValue,
-                amortized_amount = old_investment['amortized_amount'],
-                last_effective_date = old_investment['last_effective_date'],
-                order_date = old_investment['order_date'],
-                log = old_investment['log'],
-                actions_log = old_investment['actions_log'],
-        )
-        amount = old_investment['nshares']*gkwh.shareValue - old_investment['amortized_amount']
-        to_partner_name = new_partner_id #TODO Get partner name from id
-        move_line_id = 1
-        origin = self.browse(cursor, uid, investment_id)
-        origin_partner_name = origin.member_id.name
-
-        transferred = inv.receiveTransfer(
-            name = name,
-            date = isodate(transfer_date),
-            amount = amount,
-            origin = inv_old,
-            origin_partner_name = origin_partner_name,
-            move_line_id = move_line_id
-        )
-        new_investment_id = self.create(cursor, uid, dict(
-            inv.erpChanges(),
-            member_id = member_ids[0],
-            nshares = old_investment['nshares'],
-            emission_id = old_investment['emission_id'][0]
-        ), context)
-
-        new_investment = self.browse(cursor, uid, new_investment_id)
-
-        emited = inv_old.emitTransfer(
-            date = isodate(transfer_date),
-            amount = amount,
-            to_name = new_investment.name,
-            to_partner_name = new_investment.member_id.name,
-            move_line_id = move_line_id,
-        )
-        self.write(cursor, uid, investment_id, inv_old.erpChanges())
-
-        #Modificar dates
-        self.mark_as_invoiced(cursor, uid, new_investment_id)
-        #Crear moviment 1635old 1635new
-        old_partner = Soci.read(cursor, uid, old_investment['member_id'][0])
-        self.move_line_when_tranfer(cursor, uid, old_partner['id'], new_partner_id, old_partner['property_account_gkwh'][0], new_partner.property_account_gkwh.id, amount)
-
-        #Enviar correu cofirmació?
-        return new_investment_id
+        emission = self.browse(cursor, uid, investment_id).emission_id.code
+        investment_actions = GenerationkwhActions(self, cursor, uid, 1)
+        if emission == 'emissio_apo' or (emission and 'APO_' in emission):
+            investment_actions = AportacionsActions(self, cursor, uid, 1)
+        investment_id = investment_actions.create_from_transfer(cursor, uid,
+                investment_id, new_partner_id, transmission_date, iban, context)
+        return investment_id
 
     def mark_as_signed(self, cursor, uid, id, signed_date=None):
         """
@@ -1176,7 +1020,7 @@ class GenerationkwhInvestment(osv.osv):
         self.write(cursor, uid, id, inv.erpChanges())
 
     def move_line_when_tranfer(self, cursor, uid, partner_id_from, partner_id_to,
-            account_id_from, account_id_to, amount):
+            account_id_from, account_id_to, amount, transmission_date):
         ResPartner = self.pool.get('res.partner')
         AccountMove = self.pool.get('account.move')
         AccountMoveLine = self.pool.get('account.move.line')
@@ -1198,7 +1042,7 @@ class GenerationkwhInvestment(osv.osv):
 
         id_move = AccountMove.create(cursor, uid, {
             'journal_id': journal_id,
-            'date': today,
+            'date': transmission_date,
             'amount': amount,
             'name': 'Transfer',
             'period_id': period_id,
@@ -1207,6 +1051,7 @@ class GenerationkwhInvestment(osv.osv):
             'type': 'journal_voucher',
         })
         id_moveline_debit = AccountMoveLine.create(cursor, uid, {
+            'date': transmission_date,
             'journal_id': journal_id,
             'period_id': period_id,
             'account_id': account_id_from,
@@ -1215,13 +1060,14 @@ class GenerationkwhInvestment(osv.osv):
             'debit': amount,
             'state': 'valid',
             'amount_currency': 0,
-            'parnter_id': partner_id_from,
+            'partner_id': partner_id_from,
             'tax_amount': 0,
             'credit': 0,
             'quantity': 0,
             'move_id': id_move,
         })
         id_moveline_credit = AccountMoveLine.create(cursor, uid, {
+            'date': transmission_date,
             'journal_id': journal_id,
             'period_id': period_id,
             'account_id': account_id_to,
@@ -1230,7 +1076,7 @@ class GenerationkwhInvestment(osv.osv):
             'debit': 0,
             'state': 'valid',
             'amount_currency': 0,
-            'parnter_id': partner_id_to,
+            'partner_id': partner_id_to,
             'tax_amount': 0,
             'credit': amount,
             'quantity': 0,
@@ -1279,7 +1125,7 @@ class GenerationkwhInvestment(osv.osv):
         }
         return PaymentMandate.create(cursor, uid, vals)
 
-    def get_or_create_open_payment_order(self, cursor, uid,  mode_name, use_invoice = False):
+    def get_or_create_open_payment_order(self, cursor, uid,  payment_mode_name, use_invoice = False):
         """
         Searches an existing payment order (remesa)
         with the proper payment mode and still in draft.
@@ -1287,7 +1133,7 @@ class GenerationkwhInvestment(osv.osv):
         """
         PaymentMode = self.pool.get('payment.mode')
         payment_mode_ids = PaymentMode.search(cursor, uid, [
-            ('name', '=', mode_name),
+            ('name', '=', payment_mode_name),
             ])
 
         if not payment_mode_ids: return False
@@ -1584,13 +1430,13 @@ class GenerationkwhInvestment(osv.osv):
                     inv_id, 'invoice_open', cursor)
         return openOK
 
-    def invoices_to_payment_order(self,cursor,uid,invoice_ids, model_name):
+    def invoices_to_payment_order(self,cursor,uid,invoice_ids, payment_mode_name):
         """
         Add the invoices to the currently open payment order having the
-        specified model name. If none is open, then creates a new one.
+        specified payment_mode name. If none is open, then creates a new one.
         """
         Invoice = self.pool.get('account.invoice')
-        order_id = self.get_or_create_open_payment_order(cursor, uid, model_name,
+        order_id = self.get_or_create_open_payment_order(cursor, uid, payment_mode_name,
                     True)
         Invoice.afegeix_a_remesa(cursor,uid,invoice_ids, order_id)
 
@@ -1604,23 +1450,38 @@ class GenerationkwhInvestment(osv.osv):
         invoice_ids, errors = self.create_initial_invoices(cursor,uid, investment_ids)
         if invoice_ids:
             self.open_invoices(cursor, uid, invoice_ids)
-            payment_mode = self.investment_actions(cursor, uid, investment_ids[0]).get_payment_mode_name(cursor, uid)
+            InvestmentActions = self.investment_actions(cursor, uid, investment_ids[0])
+            payment_mode = InvestmentActions.get_payment_mode_name(cursor, uid)
             self.invoices_to_payment_order(cursor, uid,
                 invoice_ids, payment_mode)
+
+            investment =  self.browse(cursor, uid, investment_ids[0])
+            emission_id = investment.emission_id.id
+            member_id = investment.member_id.id
             for invoice_id in invoice_ids:
-                invoice_data = Invoice.read(cursor, uid, invoice_id, ['origin'])
+                invoice_data = Invoice.read(cursor, uid, invoice_id, ['origin','partner_id'])
                 investment_ids = self.search(cursor, uid,[
                     ('name','=',invoice_data['origin'])])
+                partner_id = invoice_data['partner_id'][0]
+                total_amount_in_emission = self.get_investments_amount(cursor, uid, member_id, emission_id=emission_id)
+
+                mail_context = {}
+                if total_amount_in_emission > gkwh.amountForlegalAtt:
+                    attachment_id = InvestmentActions.get_investment_legal_attachment(cursor, uid, partner_id, emission_id)
+                    if attachment_id:
+                        mail_context.update({'attachment_ids': [(6, 0, [attachment_id])]})
+
                 self.send_mail(cursor, uid, invoice_id,
-                    'account.invoice', '_mail_pagament', investment_ids[0])
+                    'account.invoice', '_mail_pagament', investment_ids[0], context=mail_context)
         return invoice_ids, errors
 
-    def send_mail(self, cursor, uid, id, model, template, investment_id=None):
+    def send_mail(self, cursor, uid, id, model, template, investment_id=None, context={}):
 
         PEAccounts = self.pool.get('poweremail.core_accounts')
         WizardInvoiceOpenAndSend = self.pool.get('wizard.invoice.open.and.send')
         MailMockup = self.pool.get('generationkwh.mailmockup')
         IrModelData = self.pool.get('ir.model.data')
+
         if not investment_id:
             investment_id = id
         prefix = self.investment_actions(cursor, uid, investment_id).get_prefix_semantic_id()
@@ -1636,7 +1497,9 @@ class GenerationkwhInvestment(osv.osv):
                 ])
         else:
             from_id = from_id[:1]
-        ctx = {
+
+        ctx = context.copy()
+        ctx.update({
             'active_ids': [id],
             'active_id': id,
             'src_rec_ids': [id],
@@ -1644,7 +1507,8 @@ class GenerationkwhInvestment(osv.osv):
             'from': from_id,
             'state': 'single',
             'priority': '0',
-            }
+            })
+
         with AsyncMode('sync') as asmode:
             if MailMockup.isActive(cursor, uid):
                 MailMockup.send_mail(cursor, uid, ns(

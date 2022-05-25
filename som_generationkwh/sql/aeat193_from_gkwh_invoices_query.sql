@@ -9,6 +9,6 @@ FROM (SELECT gkwh_owner.factura_line_id AS factura_line_id,
       INNER JOIN account_invoice i ON i.id=f.invoice_id
       INNER JOIN res_partner par ON par.id = gkwh_owner.owner_id
       WHERE i.date_invoice BETWEEN %(start)s AND %(end)s
-      GROUP BY gkwh_owner.factura_line_id ORDER BY gkwh_owner.factura_line_id  DESC) AS parcial
+      GROUP BY gkwh_owner.factura_line_id, gkwh_owner.owner_id ORDER BY gkwh_owner.factura_line_id  DESC) AS parcial
 GROUP BY owner_id, owner_id, owner_vat
 ORDER BY owner_id;

@@ -45,26 +45,19 @@ class TestsWizard(testing.OOTestCase):
         wiz_o = pool.get('wizard.llibre.registre.socis')
         soci_id = self.get_object_id('som_generationkwh', 'soci_aportacions')
         soci_o.write(cursor, uid, soci_id, {'date': '2017-01-01'})
-        context = {}
-        context['date_from'] = '2017-01-01'
-        context['date_to'] = '2017-12-31'
-
+        context = {'date_from': '2017-01-01', 'date_to': '2017-12-31'}
         values = wiz_o.get_aportacions_obligatories_values(cursor, uid, soci_id, context)
 
         self.assertEqual(values, [{'concepte': u'Obligatoria',
              'data': '2017-01-01',
              'import': 100}])
 
-
     def test_get_aportacions_voluntaries_values(self):
         cursor, uid, pool = (self.txn.cursor, self.txn.user, self.openerp.pool)
         soci_o = pool.get('somenergia.soci')
         wiz_o = pool.get('wizard.llibre.registre.socis')
         soci_id = self.get_object_id('som_generationkwh', 'soci_aportacions')
-        context = {}
-        context['date_from'] = '2020-01-01'
-        context['date_to'] = '2020-12-31'
-
+        context = {'date_from': '2020-01-01', 'date_to': '2020-12-31'}
         values = wiz_o.get_aportacions_voluntaries_values(cursor, uid, soci_id, context)
 
         self.assertEqual(values, [{'concepte': u'Voluntaria',

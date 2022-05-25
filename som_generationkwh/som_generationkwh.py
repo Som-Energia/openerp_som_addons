@@ -155,6 +155,7 @@ class GenerationkWhDealer(osv.osv):
             dict(
                 member_id = soci2partner(line['member_id']),
                 kwh = line['kwh'],
+                usage=line['usage']
                 )
             for line in res
         ]
@@ -194,7 +195,7 @@ class GenerationkWhDealer(osv.osv):
             isodate(first_date),
             isodate(last_date),
             fare, period, kwh, member_id)
-        return int(res)
+        return res
 
     def _createTracker(self, cursor, uid, context):
 
@@ -574,8 +575,43 @@ class GenerationkWhInvoiceLineOwner(osv.osv):
             method=True, type='float',
             digits=(16, int(config['price_accuracy'])), store=True,
         ),
+        'right_usage_lines': fields.one2many(
+            'generationkwh.right.usage.line', 'line_owner',
+            'Drets emprats', readonly=True, ondelete='cascade'
+        )
     }
 
 GenerationkWhInvoiceLineOwner()
+
+
+class GenerationkWhRightUsageLine(osv.osv):
+    """ Class with the relation between generation invoice line and rights owner
+    """
+
+    _name = 'generationkwh.right.usage.line'
+    _order = 'datetime'
+
+    _columns = {
+        'datetime': fields.datetime(
+            'Data generació drets',required=True, readonly=True
+        ),
+        'quantity': fields.integer(
+            'KWh utilitzats', required=True, readonly=True
+        ),
+        'line_owner': fields.many2one(
+            'generationkwh.invoice.line.owner', 'Propietari drets GkWh factura',
+            required=True, readonly=True, ondelete='cascade'
+        ),
+        'owner_id' : fields.related(
+            'line_owner', 'owner_id', type='many2one', relation='res.partner',
+            string="Propietari", readonly=True
+        ),
+        'factura_id' : fields.related(
+            'line_owner', 'factura_id', type='many2one',
+            relation='giscedata.facturacio.factura', string="Factura", readonly=True
+        ),
+    }
+
+GenerationkWhRightUsageLine()
 
 # vim: ts=4 sw=4 et
