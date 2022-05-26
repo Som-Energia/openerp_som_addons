@@ -37,6 +37,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='additional_info']" position="after">
                     <field name="data_sollicitud"/>
+                    <field name="data_accio"/>
                 </xpath>
             </field>
         </record>
