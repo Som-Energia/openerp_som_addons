@@ -3,6 +3,24 @@ from osv import osv, fields
 from tools.translate import _
 from datetime import datetime
 
+class GiscedataAtcTag(osv.osv):
+    _name = 'giscedata.atc.tag'
+
+    _columns = {
+        'name': fields.char(u"Etiqueta", size=100),
+        'titol': fields.char(u"Títol", size=300),
+        'description': fields.char(u"Descripció", size=1000),
+        'creation_date': fields.date(u"Data creació", required=True),
+        'active': fields.boolean('Actiu'),
+    }
+
+    _defaults = {
+        'active': lambda *a: True,
+        'creation_date': lambda *a: datetime.today().strftime('%Y-%m-%d'),
+    }
+
+GiscedataAtcTag()
+
 class GiscedataAtc(osv.osv):
 
     _inherit = 'giscedata.atc'
@@ -29,20 +47,3 @@ class GiscedataAtc(osv.osv):
 
 GiscedataAtc()
 
-class GiscedataAtcTag(osv.osv):
-    _name = 'giscedata.atc.tag'
-
-    _columns = {
-        'name': fields.char(u"Etiqueta", size=100),
-        'titol': fields.char(u"Títol", size=300),
-        'description': fields.char(u"Descripció", size=1000),
-        'creation_date': fields.date(u"Data creació", required=True),
-        'active': fields.boolean('Actiu'),
-    }
-
-    _defaults = {
-        'active': lambda *a: True,
-        'creation_date': lambda *a: datetime.today().strftime('%Y-%m-%d'),
-    }
-
-GiscedataAtcTag()
