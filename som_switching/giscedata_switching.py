@@ -171,8 +171,8 @@ class GiscedataSwitching(osv.osv):
         """
         result = dict.fromkeys(ids, None)
         for sw_obs in self.read(cursor, uid, ids, ['proces_id'], context=context):
-            if sw_obs['proces_id'] in ['a3', 'b1', 'm1', 'c1', 'c2']:
-                pas_obj = self.pool.get('giscedata.switching.{}.01'.format(sw_obs['proces_id']))
+            if sw_obs['proces_id'][1].lower() in ['a3', 'b1', 'm1', 'c1', 'c2']:
+                pas_obj = self.pool.get('giscedata.switching.{}.01'.format(sw_obs['proces_id'][1].lower()))
                 pas_id = pas_obj.search(cursor, uid, [('sw_id','=',sw_obs['id'])])
                 if pas_id:
                     result[sw_obs['id']] = pas_obj.read(cursor, uid, pas_id[0], ['data_accio'])['data_accio']
