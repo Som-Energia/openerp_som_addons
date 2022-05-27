@@ -160,6 +160,32 @@ class GiscedataSwitching(osv.osv):
 
         return res
 
+    def _ff_get_data_accio(self, cursor, uid, ids, field_name, args, context=None):
+        """Find the value of field data_accio in step '01'.
+        Only search for process which are in ['a3', 'b1', 'm1', 'c1', 'c2']
+        :param cursor: Database cursor
+        :param uid: User id
+        :param ids: cas atr id list
+        :param context: Application context
+        :returns data_accio
+        """
+        result = dict.fromkeys(ids, None)
+        for sw_obs in self.read(cursor, uid, ids, ['proces_id'], context=context):
+            if sw_obs['proces_id'][1].lower() in ['a3', 'b1', 'm1', 'c1', 'c2']:
+                pas_obj = self.pool.get('giscedata.switching.{}.01'.format(sw_obs['proces_id'][1].lower()))
+                pas_id = pas_obj.search(cursor, uid, [('sw_id','=',sw_obs['id'])])
+                if pas_id:
+                    result[sw_obs['id']] = pas_obj.read(cursor, uid, pas_id[0], ['data_accio'])['data_accio']
+
+        return result
+
+    def _get_pas_id(self, cr, uid, ids, context=None):
+        res = []
+        for sw_obs in self.read(cr, uid, ids, ['sw_id']):
+            res.append(sw_obs['sw_id'][0])
+
+        return res
+
     _columns = {
         'user_observations': fields.text('Observaciones del usuario'),
         'last_observation_line': fields.function(
@@ -170,6 +196,17 @@ class GiscedataSwitching(osv.osv):
                     lambda self, cr, uid, ids, c=None: ids, ['user_observations'],
                     20
                 ),
+            }
+        ),
+        'data_accio': fields.function(
+            _ff_get_data_accio, method=True, type="date",
+            string="Data acció del pas 01",
+            store={
+                'giscedata.switching.a3.01': (_get_pas_id, ['data_accio'],20),
+                'giscedata.switching.b1.01': (_get_pas_id, ['data_accio'],20),
+                'giscedata.switching.c1.01': (_get_pas_id, ['data_accio'],20),
+                'giscedata.switching.c2.01': (_get_pas_id, ['data_accio'],20),
+                'giscedata.switching.m1.01': (_get_pas_id, ['data_accio'],20),
             }
         )
     }

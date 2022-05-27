@@ -41,6 +41,18 @@
             </field>
         </record>
 
+        <record model="ir.ui.view" id="giscedata_switching_tree_view">
+            <field name="name">giscedata.switching.tree</field>
+            <field name="model">giscedata.switching</field>
+            <field name="type">tree</field>
+            <field name="inherit_id" ref="giscedata_switching.giscedata_switching_tree_view"/>
+            <field name="arch" type="xml">
+                <field name="validacio_pendent" position="after">
+                    <field name="data_accio" select="2"/>
+                </field>
+            </field>
+        </record>
+
         <!--Replace reference view for r1 casos en marxa action-->
         <record id="giscedata_switching.sw_crm_case_r1" model="ir.actions.act_window">
             <field name="view_id" ref="som_switching.view_r1_custom_som_tree"/>
