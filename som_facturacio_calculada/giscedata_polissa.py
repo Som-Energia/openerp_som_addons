@@ -51,12 +51,19 @@ class GiscedataPolissaCalculada(osv.osv):
             return False, _(u"té Maximetre")
         if pol.tg != '1':
             return False, _(u"no té telegestió")
-        if pol.cnae.name != '9820':
-            return False, _(u"no es un CNAE acceptat")
         gp_cat_o = self.pool.get('giscedata.polissa.category')
         gp_pobresa_id = gp_cat_o.search(cursor, uid, [('name', 'ilike', '%Pobresa Energ%')])
         if gp_pobresa_id and pol.category_id and gp_pobresa_id in [x.id for x in pol.category_id]:
             return False, _(u"té Pobresa Energètica")
+        payment_term = pol.payment_term
+        if not payment_term:
+            payment_term = pol.titular.property_payment_term
+
+        payment_lines = payment_term.line_ids
+        if not payment_lines:
+            return False, _(u"el termini de pagament no té regles definides")
+        if payment_lines[0].days2 or 'COVID' in payment_term.name:
+            return False, _(u"el termini de pagament és en un dia fixe o és frac. COVID")
 
         return True, _(u"ok")
 
