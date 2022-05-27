@@ -821,6 +821,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 'cups': fact.cups_id.name,
                 'cups_direction': fact.cups_id.direccio,
                 'tariff': pol.tarifa.name,
+                'pricelist': pol.llista_preu.name,
+                'invoicing_mode': pol.mode_facturacio,
                 'remote_managed_meter': pol.tg in ['1','3'],
                 'power': pol.potencia,
                 'powers': sorted([ (potencia.periode_id.name, potencia.potencia) for potencia in pol.potencies_periode ], key=lambda l:l[0]),
