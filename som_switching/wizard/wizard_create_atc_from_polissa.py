@@ -22,9 +22,12 @@ class WizardCreateAtc(osv.osv_memory):
 
         res = super(WizardCreateAtc, self).onchange_subtipus(cursor, uid, ids, subtipus_id)
         section_id = res['value']['section_id']
+        seccio = False
+        mostrar_tag = False
 
         section_obj = self.pool.get('crm.case.section')
-        seccio = section_obj.read(cursor, uid, section_id, ['code'])['code']
+        if section_id:
+            seccio = section_obj.read(cursor, uid, section_id, ['code'])['code']
         if seccio:
             mostrar_tag = True if seccio == 'ATCF' else False
         res['value']['mostrar_tag'] = mostrar_tag
