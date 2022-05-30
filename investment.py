@@ -1764,6 +1764,11 @@ class GenerationkwhInvestment(osv.osv):
              end_date_dt = datetime.strptime(investment.last_effective_date,'%Y-%m-%d')
 
         days_of_interest = (end_date_dt - start_date_dt).days
+        if days_of_interest < 0:
+            raise InvestmentException("Cannot pay interest of a negative dates range")
+        else:
+            # We want to include both stard and end date days
+            days_of_interest += 1
         amount = investment.nshares * gkwh.shareValue
         daily_interest = (interest_rate/100) / 365
 
