@@ -104,7 +104,7 @@ class WizardFacturesLiquidacioInteressos(osv.osv_memory):
         errors = '\n'.join(errors)
         self.write(cursor, uid, [ids[0]],
             {'state': 'all_apos_calc',
-             'res_ids': invoice_ids
+             'res_ids': invoice_ids,
             'calc': 'Inversions sel·leccionades: {}\nFactures creades: {}\nErrors trobats de les factures no creades:\n{}'.format(
             len(investments_ids), len(invoice_ids), errors
         )})
