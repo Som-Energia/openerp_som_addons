@@ -116,7 +116,7 @@ msgstr ""
 #. module: giscedata_facturacio_comer_som
 #: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:297
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:11
-msgid "calculada segons CCH"
+msgid "calculada"
 msgstr ""
 
 #. module: giscedata_facturacio_comer_som
