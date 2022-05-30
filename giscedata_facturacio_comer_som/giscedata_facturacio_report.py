@@ -1837,6 +1837,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             lines_data[block]['origin'] = readings[l.data_desde] if l.data_desde in readings else _(u'sense lectura')
             lines_data[block]['data'] = data_desde
             lines_data[block]['days'] = (datetime.strptime(l.data_fins,'%Y-%m-%d') - datetime.strptime(l.data_desde,'%Y-%m-%d')).days + 1
+            lines_data[block]['data_from'] = dateformat(l.data_desde)
+            lines_data[block]['data_to'] = dateformat(l.data_fins)
 
         lines_data = [lines_data[k] for k in sorted(lines_data.keys())]
         return lines_data
