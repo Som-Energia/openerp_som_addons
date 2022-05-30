@@ -8,7 +8,7 @@
     ${_(u"Maxímetre (kW)")}
     ${_(u"real")}
     ${_(u"calculada per Som Energia")}
-    ${_(u"calculada segons CCH")}
+    ${_(u"calculada")}
     ${_(u"estimada distribuïdora")}
 % endif
 % if meter.is_visible:
