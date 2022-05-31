@@ -123,11 +123,11 @@ class GiscedataPolissaCalculada(osv.osv):
 
         sw_ids = sw_o.search(cursor, uid, [
             ('cups_polissa_id', '=', _id),
-            ('finalitzat', '=', False),
+            ('state', 'in', ['draft', 'open', 'pending']),
             ('proces_id.name', '!=', 'R1')
         ])
         if sw_ids:
-            return False, _(u" te algun cas ATR no finalitzat")
+            return False, _(u" te algun cas ATR en estat Esborrany, Obert o Pendent")
 
         return True, _(u" ok")
 
@@ -159,6 +159,49 @@ class GiscedataPolissaCalculada(osv.osv):
         wiz_measures_curve_o.create_measures(cursor, uid, [wiz_id], context=ctx)
         return True, 'ok'
 
+
+    def canvi_lectures_regularitzadores(self, cursor, uid, _id, mtr_id, data_ultima_lect, data_ultima_lectura_f1, ontext):
+        pol_obj = self.pool.get('giscedata.polissa')
+        lect_obj = self.pool.get('giscedata.lectura.lectures')
+        imd_o = self.pool.get('ir.model.data')
+        lc_origin = imd_o.get_object_reference(
+            cursor, uid, 'som_facturacio_calculada', 'origen_lect_calculada'
+        )[1]
+        f1reg_origin = imd_o.get_object_reference(
+            cursor, uid, 'som_facturacio_calculada', 'origen_comer_f1_g'
+        )[1]
+        lect_pre_ids = lect_obj.search(cursor, uid, [('comptador','=', mtr_id), ('name','=', data_ultima_lect), ('tipus', '=', 'A'), ('origen_comer_id','=', lc_origin)])
+        if not lect_pre_ids:
+            return False
+
+        lect_post_ids = lect_obj.search(cursor, uid, [('comptador','=', mtr_id), ('name','=', data_ultima_lectura_f1), ('tipus', '=', 'A')])
+
+        lect_fields = ['lectura', 'origen_comer_id', 'periode']
+        lect_pre_infos = lect_obj.read(cursor, uid, lect_pre_ids, lect_fields)
+        change = False
+        for lect_pre_info in lect_pre_infos:
+
+            lect_post_id = lect_obj.search(cursor, uid, [
+                ('id', 'in', lect_post_ids),
+                ('periode','=', lect_pre_info['periode'][0]), ('lectura', '<', lect_pre_info['lectura']),
+                ('origen_comer_id','!=', f1reg_origin)
+            ])
+            if lect_post_id:
+                change = True
+                break
+
+        if change:
+            obs = "Canvi d\'orgien F1 regularitzador després d'una lectura calculada"
+            lect_post_info = lect_obj.read(cursor, uid, lect_post_ids, ['observacions'])
+            for lect_info in lect_post_info:
+                vals = {
+                    'origen_comer_id': f1reg_origin,
+                    'observacions': u'{0}\n{1}'.format(obs, lect_post_info['observacions'] if lect_post_info['observacions'] else '')
+                }
+                lect_obj.write(cursor, uid, lect_info['id'], vals)
+            return True
+        return False
+
     def crear_lectura_calculada(self, cursor, uid, _id, context=None):
         def add_days(the_date, d):
             return (datetime.strptime(the_date, '%Y-%m-%d') + timedelta(days=d)).strftime("%Y-%m-%d")
@@ -181,22 +224,28 @@ class GiscedataPolissaCalculada(osv.osv):
         if not crear_lectures:
             return _(u"La pòlissa {} no compleix les condicions perquè {}".format(pol_name, text))
 
+        mtr_id = mtr_o.search(cursor, uid, [
+            ('polissa.id', '=', _id),
+            ('active', '=', True)
+        ])
+
         if data_ultima_lect and data_ultima_lect < data_ultima_lectura_f1:
+            lect_canviades = False
+            if mtr_id:
+                mtr_id = mtr_id[0]
+                lect_canviades = self.canvi_lectures_regularitzadores(cursor, uid, _id, mtr_id, data_ultima_lect, data_ultima_lectura_f1, context)
             self.retrocedir_lot(cursor, uid, _id, context)
-            return _(u"La pòlissa {} té lectura F1 amb data {} i data última factura {}.".format(
+            return _(u"La pòlissa {} té lectura F1 amb data {} i data última factura {}. {}".format(
                 pol_name,
                 data_ultima_lectura_f1,
-                data_ultima_lect)
+                data_ultima_lect,
+                "S'ha canviat l'origen de les lectures per F1 regularitzador." if lect_canviades else '')
             )
-
         crear_lectures, text = self._check_conditions_lectures_calculades(cursor, uid, _id, context=context)
         if not crear_lectures:
             return _(u"La pòlissa {} {}".format(pol_name, text))
 
-        mtr_id = mtr_o.search(cursor, uid, [
-            ('polissa.id', '=', _id),
-            ('active', '=', True)
-        ])[0]
+        mtr_id = mtr_id[0]
         start_date = add_days(data_ultima_lect, 1)
         data_seguent_lect_7 = add_days(data_ultima_lect, 7)
         data_seguent_lect_14 = add_days(data_ultima_lect, 14)
