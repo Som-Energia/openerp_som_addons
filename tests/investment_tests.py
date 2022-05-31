@@ -2696,7 +2696,7 @@ class InvestmentTests(testing.OOTestCase):
             current_interest = self.Emission.current_interest(cursor, uid)
             vals = {
                 'date_invoice': '2021-06-30',
-                'date_start': '2020-06-30',
+                'date_start': '2020-07-01',
                 'date_end': '2021-06-30',
                 'interest_rate': current_interest
             }
@@ -2743,7 +2743,7 @@ class InvestmentTests(testing.OOTestCase):
 
             amount = self.Investment.get_to_be_interized(cursor, uid, inv_id, vals, {})
 
-            self.assertEqual(amount, 5.04)
+            self.assertEqual(amount, 5.07)
 
     def test__get_to_be_interized__NotPayed(self):
         with self.assertRaises(InvestmentException) as ctx:

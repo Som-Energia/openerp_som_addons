@@ -24,6 +24,7 @@
     'c2c_webkit_report',
     'async_reports',
     'custom_search',
+    'giscedata_facturacio_impagat_comer',
     ],
   "init_xml": [],
   "demo_xml": [
