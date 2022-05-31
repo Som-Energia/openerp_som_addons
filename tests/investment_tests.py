@@ -2762,5 +2762,25 @@ class InvestmentTests(testing.OOTestCase):
                 }
                 self.Investment.get_to_be_interized(cursor, uid, inv_id, vals, {})
 
+    def test__get_to_be_interized__previousPartialInterized(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            inv_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0003'
+                        )[1]
+            inv_obj = self.Investment.browse(cursor, uid, inv_id)
+            inv_obj.write({'last_interest_payed_date' : '2020-12-31'})
+            current_interest = self.Emission.current_interest(cursor, uid)
+            vals = {
+                'date_invoice': '2021-06-30',
+                'date_start': '2020-06-30',
+                'date_end': '2021-06-30',
+                'interest_rate': current_interest
+            }
+
+            to_be_interized = self.Investment.get_to_be_interized(cursor, uid, inv_id, vals, {})
+
+            self.assertEqual(to_be_interized, 10)
 
 # vim: et ts=4 sw=4

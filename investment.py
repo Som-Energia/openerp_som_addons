@@ -1759,6 +1759,9 @@ class GenerationkwhInvestment(osv.osv):
             raise InvestmentException("Cannot pay interest of a already paid interest")
 
         start_date_dt = datetime.strptime(vals['date_start'],'%Y-%m-%d')
+        if investment.last_interest_payed_date:
+            start_date_dt = max(datetime.strptime(vals['date_start'],'%Y-%m-%d'),
+                datetime.strptime(investment.last_interest_payed_date,'%Y-%m-%d'))
         end_date_dt = datetime.strptime(vals['date_end'],'%Y-%m-%d')
         if investment.last_effective_date:
              end_date_dt = datetime.strptime(investment.last_effective_date,'%Y-%m-%d')
@@ -1825,6 +1828,7 @@ class GenerationkwhInvestment(osv.osv):
             invstate.interest(
                 date = date_invoice,
                 to_be_interized = to_be_interized,
+                last_interest_payed_date = vals['date_end']
                 )
             self.write(cursor, uid, investment_id, dict(
                 invstate.erpChanges(),
