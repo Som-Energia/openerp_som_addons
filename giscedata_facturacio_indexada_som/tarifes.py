@@ -23,7 +23,7 @@ class TarifaPoolSOM(TarifaPool):
             res['pmd'] = 'prmdiari'
             res['pc3_ree'] = 'pc3_boe'
             res['pos'] = 'sobrecostes_ree'
-        if self.phf_function in ('phf_calc_baleares', 'phf_calc_canaries'):
+        if self.phf_function in ('phf_calc_balears', 'phf_calc_canaries'):
             # only if 'phf_calc_peninsula' formula is used
             res['pmd'] = 'sphdem'
             res['pc3_ree'] = 'pc3_ree'
@@ -238,13 +238,14 @@ class TarifaPoolSOM(TarifaPool):
         # REE
         # Precio horario demanda aplicable sistema no peninsular
         postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d")))
-        if self.geom_zone is None or self.geom_zone == '1':
-            raise ValueError('Geom Zone must be a non-peninsular subsystem')
+        if self.geom_zone is None or self.geom_zone != '2':
+            raise ValueError('Geom Zone must be Balear subsystem')
         filename = 'SphdemDD_{}'.format(SUBSYSTEMS_SPHDEM[self.geom_zone])
         classname = globals()[filename]
         sphdem = classname('C2_%(filename)s_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         # Pagos por capacidad
-        filename = 'Sprpcap{}_{}'.format(self.code, SUBSYSTEMS_SPHDEM[self.geom_zone])
+        filename = 'Sprpcap{}_{}'.format(self.code.replace('.', ''), SUBSYSTEMS_SPHDEM[self.geom_zone])
+        classname = globals()[filename]
         pc3_ree = classname('C2_%(filename)s_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         # Servicio de Interrumpibilidad
         si = SIFree('C2_sifree_%(postfix)s' % locals(), esios_token)  # [€/MWh]
@@ -305,13 +306,14 @@ class TarifaPoolSOM(TarifaPool):
         # REE
         # Precio horario demanda aplicable sistema no peninsular
         postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d")))
-        if self.geom_zone is None or self.geom_zone == '1':
-            raise ValueError('Geom Zone must be a non-peninsular subsystem')
+        if self.geom_zone is None or self.geom_zone != '3':
+            raise ValueError('Geom Zone must be Canarian subsystem')
         filename = 'SphdemDD_{}'.format(SUBSYSTEMS_SPHDEM[self.geom_zone])
         classname = globals()[filename]
         sphdem = classname('C2_%(filename)s_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         # Pagos por capacidad
-        filename = 'Sprpcap{}_{}'.format(self.code, SUBSYSTEMS_SPHDEM[self.geom_zone])
+        filename = 'Sprpcap{}_{}'.format(self.code.replace('.', ''), SUBSYSTEMS_SPHDEM[self.geom_zone])
+        classname = globals()[filename]
         pc3_ree = classname('C2_%(filename)s_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         # Servicio de Interrumpibilidad
         si = SIFree('C2_sifree_%(postfix)s' % locals(), esios_token)  # [€/MWh]
