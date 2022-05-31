@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from destral import testing
 from destral.transaction import Transaction
 from expects import *
 from giscedata_facturacio_indexada_som.tarifes import *
+from ..tarifes import *
 import os
 import tools
 
@@ -394,6 +396,104 @@ class IndexadaSOMTest(testing.OOTestCase):
                 esios_token=token,
                 audit=['pmd', 'curve'],
                 indexed_formula=u'Indexada Península'
+            )
+
+            getattr(tarifa, tarifa.phf_function)(
+                curve, date(2017, 1, 1)
+            )
+
+            # test component
+            tarifa.factura_energia()
+            assert tarifa.code == '2.0A'
+
+            # CURVE
+            curve_audit = tarifa.get_audit_data('curve')
+            tarifa.dump_audit_data('curve', '/tmp/curve_data.csv')
+            # test
+            expect(curve_audit[0]).to(
+                equal(("2017-01-01 01", 0.001, '', ''))
+            )
+            expect(curve_audit[-1]).to(
+                equal(("2017-01-31 24", 0.03123, '', ''))
+            )
+            with open('/tmp/curve_data.csv', 'r') as curvefile:
+                first_line = curvefile.readline()
+            expect(first_line).to(equal('2017-01-01 01;0.001;;\r\n'))
+
+            if os.path.exists('/tmp/curve_data.csv'):
+                os.remove('/tmp/curve_data.csv')
+
+    def test_phf_balears(self):
+        ESIOS_TOKEN = tools.config['esios_token']
+        token = ESIOS_TOKEN
+
+        facturador_obj = self.openerp.pool.get(
+            'giscedata.facturacio.facturador'
+        )
+        self.openerp.install_module(
+            'giscedata_tarifas_pagos_capacidad_20170101'
+        )
+        self.openerp.install_module(
+            'giscedata_tarifas_peajes_20170101'
+        )
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            contract_obj = self.openerp.pool.get('giscedata.polissa')
+            imd_obj = self.openerp.pool.get('ir.model.data')
+            pricelist_obj = self.openerp.pool.get('product.pricelist')
+
+            # gets contract 0001
+            contract_id_index = imd_obj.get_object_reference(
+                cursor, uid, 'giscedata_polissa', 'polissa_0001'
+            )[1]
+
+            contract_id_atr = imd_obj.get_object_reference(
+                cursor, uid, 'giscedata_polissa', 'polissa_0002'
+            )[1]
+
+            pricelist_id = imd_obj.get_object_reference(
+                cursor, uid, 'giscedata_facturacio',
+                'pricelist_tarifas_electricidad'
+            )[1]
+
+            # change formula to 'Pass-Through Ebroenergia'
+            pricelist_obj.write(cursor, uid, pricelist_id, {'indexed_formula': u'Indexada Península'})
+
+            contract_obj.send_signal(
+                cursor, uid, [contract_id_index], ['validar', 'contracte']
+            )
+            self.crear_modcon(
+                cursor, uid, contract_id_index, '2017-01-01', '2017-12-31'
+            )
+
+            context = {'llista_preu': pricelist_id}
+            versions = facturador_obj.versions_de_preus(
+                cursor, uid, contract_id_index, '2017-01-01', '2017-01-31',
+                context
+            )
+
+            curve_data = self.get_curve()
+            curve = Curve(datetime(2017, 1, 1))
+            curve.load(curve_data)
+
+            consums = {
+                'activa': {'2017-01-01': curve_data},
+                'reactiva': {'P1': 2}
+            }
+            tarifa = Tarifa20APoolSOM(
+                consums, {},
+                '2017-01-01', '2017-01-31',
+                facturacio=1, facturacio_potencia='icp',
+                data_inici_periode='2017-01-01',
+                data_final_periode='2017-01-31',
+                potencies_contractades={'P1': 4.6},
+                versions=versions,
+                holidays=HOLIDAYS,
+                esios_token=token,
+                audit=['pmd', 'curve'],
+                indexed_formula=u'Indexada Balears'
             )
 
             getattr(tarifa, tarifa.phf_function)(
