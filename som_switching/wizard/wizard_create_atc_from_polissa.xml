@@ -11,7 +11,7 @@
                         <field name="section_id" on_change="onchange_section(section_id)"/>
                         <field name="mostrar_tag" invisible="1"/>
                             <group colspan="15"  attrs="{'invisible': [('mostrar_tag','!=',True)]}" >
-                                <field name="tag" attrs="{'required': [('mostrar_tag','==',True)]}"/>
+                                <field name="tag" attrs="{'required': [('mostrar_tag','==',True)]}" domain="[('active','=',True)]"/>
                             </group>
                     </field>
                 </field>
