@@ -293,14 +293,218 @@
         </record>
     </data>
     <data noupdate="0">
-         <record model="giscedata.atc.tag" id="3_0_estimades">
+         <record model="giscedata.atc.tag" id="tag_1">
             <field name="name">3.0 estimades 33% jurídic</field>
             <field name="titol">Estimacions (3.0TD) en què s'aplica càlcul del 33% sobre potència pel càlcul de l'energia. També ho podem fer servir amb sobreestimades recurrents</field>
             <field name="description">https://docs.google.com/document/d/1Nd3r0XgGuK-CU440H7g7WWWUQ94y80EGwspwVDWhlmY/edit?usp=sharing</field>
             <field name="creation_date">2021-10-21</field>
             <field name="active">True</field>
         </record>
-        <record model="giscedata.atc.tag" id="altress">
+        <record model="giscedata.atc.tag" id="tag_2">
+            <field name="name">SOBREESTIMACIO ENDESA 3.0TD</field>
+            <field name="titol">Estimacions Endesa post canvi peatges (3.0TD)</field>
+            <field name="description">Contractes 3.0TD que han rebut lectures estimades després del canvi de peatges, que han servit per desencallar la situació de no-facturació però l'estimació és errònia</field>
+            <field name="creation_date">2021-09-13</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_3">
+            <field name="name">SOBREESTIMACIO ENDESA 2.0TD</field>
+            <field name="titol">Estimacions Endesa post canvi peatges (2.0TD)</field>
+            <field name="description">Contractes 2.0TD que han rebut lectures estimades després del canvi de peatges, que han servit per desencallar la situació de no-facturació però l'estimació és errònia</field>
+            <field name="creation_date">2021-09-13</field>
+            <field name="active">True</field>
+        </record>
+         <record model="giscedata.atc.tag" id="tag_4">
+            <field name="name">FacturaR1</field>
+            <field name="titol">Factura en estat R1 Reclamació</field>
+            <field name="description">CAC's que surten d'una factura client en estat R1 Reclamació i que no es cobra</field>
+            <field name="creation_date">2021-09-14</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_5">
+            <field name="name">FaltaF1Juny21</field>
+            <field name="titol">Falta F1 i genera error de facturació F024</field>
+            <field name="description">Contractes que ens falta l'F1 de Juny i no està al portal, però tenim períodes posteriors.</field>
+            <field name="creation_date">2021-08-13</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_6">
+            <field name="name">012NNPP31Maig</field>
+            <field name="titol">p1 de tancament estimat i amb consum superior que el que tenim habitualment</field>
+            <field name="description">Contractes que amb l'adaptació de NNPP, la lectura de tall podria no ser correcte, sospitant que es pugin cobrar per part de distri kWh ja facturats</field>
+            <field name="creation_date">2021-07-30</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_5bis">
+            <field name="name">011TENIA_DH</field>
+            <field name="titol">P2 comença a comptar amb la lectura finsl de quan tenia DH</field>
+            <field name="description">Contractes que en algun moment tenis la tarifa amb DH i vas passar a sense. En el moment d'adaptar els comptadors als NNPP,Endesa comença acomptar el valor de P2 teninet en compte l'antic valor de P2 quan el contracte tenia DH i cobre uns consums astronòmics a les titulars.</field>
+            <field name="creation_date">2021-06-08</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_6bis">
+            <field name="name">010AUTO</field>
+            <field name="titol">Consum facturat superior a la diferència entre lectures.</field>
+            <field name="description">El balanç horaria hauria de fer que el consum cobrat és sempre menor a la diferència entre lectures, a l'ERP ho podem detectar fàcilmetn quan veiem que l'ajust  creat en les lectures EA és positiu</field>
+            <field name="creation_date">2021-03-04</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_7">
+            <field name="name">009AUTO</field>
+            <field name="titol">Altres</field>
+            <field name="titol">Auto+Endesa+ La primera lectura real que rebem és inferior a la darrera que teníem.</field>
+            <field name="description">En alguns casos de contractes amb endesa i auto, la primera lectura real que rebem és inferior a la darrera calculada que ens havien fet arribar. Això ens pot fer pensar que hi hagi hagut una sobrestimació en algun moment</field>
+            <field name="creation_date">2021-03-01</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_8">
+            <field name="name">007P3</field>
+            <field name="titol">Comptadors Endesa amb Tres períodes</field>
+            <field name="description">Des de fa poc que estem rebent per part dels titulars fotografies de comptadors amb tres lesctures en lloc de les que correspondria per tarifa (2 ens els casos de la DHA i una en la resta de comptadors)</field>
+            <field name="creation_date">2021-01-25</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_9">
+            <field name="name">008AUTO</field>
+            <field name="titol">Lectures comencen de zero</field>
+            <field name="description">Endesa ens envia lectures estimades com si el comptador comencés a comptar de zero. Les lectutes reals de la persona titular són completament diferents, segeuixen sent consecutives amb les lectures anteriors (no inici zero)</field>
+            <field name="creation_date">2021-01-29</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_10">
+            <field name="name">006AUTO</field>
+            <field name="titol">(AUTO ENDESA) lectura estimada + coherent amb les CCH + superior a la que ens diu el titular</field>
+            <field name="description"></field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_11">
+            <field name="name">[3034+3.0+1kWh]</field>
+            <field name="titol">Error F1 3034 en contracte 3.0 per una diferència de 1kWh</field>
+            <field name="description">Ens trobem molts contractes Endesa amb error F1 3034 que en la majoria de casos van acompanyats de 3035 que la divergència entre el consum facturat i el calcul de consum entre lectures + ajust difereix de només 1kWh en alguns dels periodes informats</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_12">
+            <field name="name">[3034+3.0]</field>
+            <field name="titol">Error F1 en contractes 3.0 per una diferència de kWh de més d'un kWh</field>
+            <field name="description"></field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_13">
+            <field name="name">[3034+2.0]</field>
+            <field name="titol">Error en contractes 2.0 o 2.1 per una diferència de més d'un kwh</field>
+            <field name="description">Altres</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_14">
+            <field name="name">[CT+G] </field>
+            <field name="titol">Canvi de titular + factura tipo G</field>
+            <field name="description">Són contractes que es donen de baixa amb lectura estimada. El contracte nou es dona d'alta l'endemà d'aquella data i normalemnt esperem a rebre un F1 tipo N mab la lectura d'inici que ha de coincidir amb la lectura de fi del contracte de baixa, fins aquí tot guai però NO! en aquests casos ens envien una factura tipo G que compren periodes del contracte de baixa i un nou periode del contracte nou. No tenim lectura d'inici de contracte nou en aquests casos.La lectura Hasta de la G es carrega al nou contracte i és una lectura real, aquesta difereix de la lectura estimada amb què hem donat de baixa l'anterior contracte  per tantn haurem de refacturar segons convingui l'anterior contracte)</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_15">
+            <field name="name">[CC+G]</field>
+            <field name="titol">Canvi de comptador + factura tipo G</field>
+            <field name="description">factura G que regularitza consums de dos comptadors i no ens delimita la lectura d'inici del comptador nou</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_16">
+            <field name="name">[3035+R]</field>
+            <field name="titol">Error sol, que no va acompanyat d'un 3034. Divergència entre consum facturat i consum calculat entre lectures + ajsust en una factura de distri tipo R</field>
+            <field name="description">Tenim molts F1 amb error 3035 per la divergència del consum calculat i facturat en facturas R amb una mateixa casuística. Ens trobem amb que la factura tipo R refactura una factura tipo N i no coincideix en periode facturat, sinó que la factura tippus R tot  i rectificar el consum (normalment ve d'una R1) informa de toot el periode refacturat, encara que aquest ja estigui refacturat. (s'entén?)</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_17">
+            <field name="name">[3035+N]</field>
+            <field name="titol">Error sol, que no va acompanyat d'un 3034. Divergència entre consum facturat i consum calculat entre lectures + ajsust en una factura de distri tipo N</field>
+            <field name="description">Altres</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_18">
+            <field name="name"> [JURÍDIC]</field>
+            <field name="titol">pels casos d'enderreriment d'endesa que hem entrat denúncia a la generalitat</field>
+            <field name="description">https://drive.google.com/open?id=1-Bz5dWVGBYH3YCgwApn2TytaeUMPiPQs</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_19">
+            <field name="name">[TE]</field>
+            <field name="titol">Tota gestió relacionada amb contractes especials</field>
+            <field name="description"></field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_20">
+            <field name="name">[TE INDEXADA]</field>
+            <field name="titol">Tota gestió relacionada amb contractes especials i que a més tenen tarifa indexada</field>
+            <field name="description">Altres</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_21">
+            <field name="name">[SENSE LECT AUTO]</field>
+            <field name="titol">Aqueslls contractes amb algun tipus de tarifa amb autoproducció i endarrerits pq no tenen lectures des de fa més de dos mesos</field>
+            <field name="description"></field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_22">
+            <field name="name">[ENDESA SENSE AUTO]</field>
+            <field name="titol">Afecta a tots aquells contractes amb auto d'ENdesa que a l'F1 tinguin algun tipus d'error</field>
+            <field name="description"></field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_23">
+            <field name="name">[Petites SENSE AUTO]</field>
+            <field name="titol">Afecta a tots aquells contractes amb auto de distris petites que a l'F1 tinguin algun tipus d'error</field>
+            <field name="description"></field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_24">
+            <field name="name">[FACTURACIO BIMESTRAL]</field>
+            <field name="titol">Contractes amb facturació bimestral per part de la duistribuïdora</field>
+            <field name="description">https://docs.google.com/spreadsheets/d/1qcgTKvEovfzsFELGlzek6LHWRbKMgDuMDQ1zGNlClTI/edit#gid=0</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_25">
+            <field name="name">3035</field>
+            <field name="titol">Contractes en què la diferència entre lectures no és igual al consum facturat</field>
+            <field name="description">Davant un 3.0 o 2.0 amb error F3035. 1. Posar CAC deixar-lo obert + etiqueta 3035 possible text: Hola. De este contrato nos indicáis unos consumos a facturar en los tres periodos no coinciden con la diferencia entre lecturas. Como ejemplo, para el periodo del dd/mm al dd/mm facturan xx kWh en periodo llano y la diferencia entre lecturas es de xx kWh. Se recuerda que si un saldo ATR es inválido sistemáticamente se debe abrir una incidencia en línea con lo establecido en el P.O 10.5. Los saldos ATR deben ser válidos y disponibles de manera que las lecturas hasta de un fichero F1 coincida con la lectura desde del fichero F1 siguiente. Corrijan el fichero o rectifiquen la facturación para este periodo. Gracias. 2. Passar a fase 5 l’F1 3. Facturar el contracte i que aquest sí que es cobri</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_26">
+            <field name="name">Gener22</field>
+            <field name="titol">F1s rebuts gener 2022</field>
+            <field name="description">Altres</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_27">
+            <field name="name">Falta F1 periode febrer 22</field>
+            <field name="titol"></field>
+            <field name="description">Contractes amb facturació suspesa perquè falta la factura de febrer i ja tenim les lectures de març.Donen incicidència per procés. Les que he trobat fins ara són auto + endesa</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_28">
+            <field name="name">[F13036]</field>
+            <field name="titol">F1 error 3036 d'Endesa</field>
+            <field name="description">Contractes d'Endesa que tenen error 3036 i que hem facturat amb CH</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="altres">
             <field name="name">Altres</field>
             <field name="titol">Altres</field>
             <field name="description">Altres</field>
