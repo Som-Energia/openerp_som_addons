@@ -2778,9 +2778,9 @@ class InvestmentTests(testing.OOTestCase):
                 'date_end': '2021-06-30',
                 'interest_rate': current_interest
             }
+            with self.assertRaises(InvestmentException) as e:
+                to_be_interized = self.Investment.get_to_be_interized(cursor, uid, inv_id, vals, {})
 
-            to_be_interized = self.Investment.get_to_be_interized(cursor, uid, inv_id, vals, {})
-
-            self.assertEqual(to_be_interized, 10)
+            self.assertTrue('Cannot pay interest of a already paid interest' in e.exception.message)
 
 # vim: et ts=4 sw=4
