@@ -1783,7 +1783,6 @@ class GenerationkwhInvestment(osv.osv):
         open_invoices = context.get('open_invoices', False)
         User = self.pool.get('res.users')
         username = User.read(cursor, uid, uid, ['name'])['name']
-        date_invoice = vals['date_invoice']
 
         interest_ids = []
         interest_errors = []
@@ -1826,9 +1825,8 @@ class GenerationkwhInvestment(osv.osv):
             interest_ids.append(interest_id)
 
             invstate.interest(
-                date = date_invoice,
+                date = vals['date_end'],
                 to_be_interized = to_be_interized,
-                last_interest_payed_date = vals['date_end']
                 )
             self.write(cursor, uid, investment_id, dict(
                 invstate.erpChanges(),
