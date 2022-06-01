@@ -8,8 +8,8 @@ class GiscedataAtcTag(osv.osv):
 
     _columns = {
         'name': fields.char(u"Etiqueta", size=100),
-        'titol': fields.char(u"Títol", size=300),
-        'description': fields.text(u"Descripció"),
+        'titol': fields.char(u"Títol", size=200),
+        'description': fields.char(u"Descripció", size=300),
         'creation_date': fields.date(u"Data creació", required=True),
         'active': fields.boolean('Actiu'),
         'text_R1': fields.text(u'Proposta text R1')
