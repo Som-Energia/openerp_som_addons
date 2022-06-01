@@ -613,8 +613,8 @@ msgid "Segment tarifari:"
 msgstr "Segmento tarifario:"
 
 #: rml:giscedata_facturacio_comer_som/report/components/contract_data_td/contract_data_td.mako:60
-msgid "Tarifa Comercialitzadora:"
-msgstr "Tarifa Comercializadora:"
+msgid "Tarifa comercialitzadora:"
+msgstr "Tarifa comercializadora:"
 
 #: rml:giscedata_facturacio_comer_som/report/components/contract_data_td/contract_data_td.mako:69
 #, python-format
@@ -1095,7 +1095,7 @@ msgstr "Más residuos radiactivos"
 
 #: rml:giscedata_facturacio_comer_som/report/components/gdo/gdo.mako:6
 msgid "DETALL DELS CERTIFICATS DE GARANTIA D'ORIGEN PER A SOM ENERGIA"
-msgstr "DETALLE DE LOS CERTIFICADOS DE GARANTÍA DE ORÍGEN PARA SOM ENERGIA"
+msgstr "DETALLE DE LOS CERTIFICADOS DE GARANTÍA DE ORIGEN PARA SOM ENERGIA"
 
 #: rml:giscedata_facturacio_comer_som/report/components/gdo/gdo.mako:12
 msgid "Font renovable"
@@ -2014,8 +2014,8 @@ msgstr "Otras no renovables"
 
 #: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:58
 #, python-format
-msgid "Impacte ambiental de la seva comercialitzadora. %s"
-msgstr "Impacto ambiental de su comercializadora. %s"
+msgid "Impacte ambiental de Som Energia. %s"
+msgstr "Impacto ambiental de Som Energia. %s"
 
 #: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:59
 msgid ""
@@ -2049,4 +2049,4 @@ msgstr "Media Nacional (&micro;g/kWh)"
 
 #: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:110
 msgid "Més informació sobre l'origen de la seva electricitat a "
-msgstr "Más información sobre el origen de su electricidad en"
+msgstr "Más información sobre el origen de su electricidad en "

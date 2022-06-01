@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2022-05-30 12:48+0000\n"
-"PO-Revision-Date: 2022-05-30 12:48+0000\n"
+"POT-Creation-Date: 2022-06-01 14:00+0000\n"
+"PO-Revision-Date: 2022-06-01 14:00+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -604,7 +604,7 @@ msgid "Segment tarifari:"
 msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/contract_data_td/contract_data_td.mako:60
-msgid "Tarifa Comercialitzadora:"
+msgid "Tarifa comercialitzadora:"
 msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/contract_data_td/contract_data_td.mako:69
@@ -2004,7 +2004,7 @@ msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:58
 #, python-format
-msgid "Impacte ambiental de la seva comercialitzadora. %s"
+msgid "Impacte ambiental de Som Energia. %s"
 msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:59
