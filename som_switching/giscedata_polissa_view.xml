@@ -62,7 +62,7 @@
                     <field name="titol" select="1"/>
                     <field name="creation_date"/>
                     <field name="active"/>
-                    <field name="description" colspan="4">
+                    <field name="description" colspan="4"/>
                     <field name="text_R1" colspan="4" width="300" height="200"/>
                 </form>
             </field>
