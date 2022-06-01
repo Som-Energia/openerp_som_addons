@@ -112,30 +112,29 @@ class InvestmentStrategyTests(testing.OOTestCase):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
-            product_id = self.Product.search(cursor, uid, [
-                ('default_code','=', 'APO_INT'),
-            ])[0]
+            product_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'apo_product_int'
+            )[1]
             taxes_id = self.Product.read(cursor, uid, product_id, ['supplier_taxes_id'])
             id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0003'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'apo_0003'
+            )[1]
             today = datetime.now().strftime('%Y-%m-%d')
             current_interest = self.Emission.current_interest(cursor, uid)
             vals = {
                 'date_invoice': today,
                 'interes': current_interest,
-                'date_start': '2020-06-30',
+                'date_start': '2020-07-01',
                 'date_end': '2021-06-30',
                 'to_be_interized': 10,
                 'interest_rate': current_interest
             }
-
             invoice_ids, errs =  self.Investment.create_interest_invoice(cursor, uid,
             [id], vals)
 
-            invoice = self.Invoice.browse(cursor, uid, invoice_ids)
             self.assertFalse(errs)
             self.assertTrue(invoice_ids)
+            invoice = self.Invoice.browse(cursor, uid, invoice_ids)
             investment = self.Investment.browse(cursor, uid, id)
             iban = 'ES7712341234161234567890'
             partner_id = self.IrModelData.get_object_reference(
