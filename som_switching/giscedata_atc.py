@@ -11,8 +11,8 @@ class GiscedataAtcTag(osv.osv):
         'titol': fields.char(u"Títol", size=200),
         'description': fields.char(u"Descripció", size=300),
         'creation_date': fields.date(u"Data creació", required=True),
+        'text_R1': fields.text(u'Proposta text R1'),
         'active': fields.boolean('Actiu'),
-        'text_R1': fields.text(u'Proposta text R1')
     }
 
     _defaults = {
