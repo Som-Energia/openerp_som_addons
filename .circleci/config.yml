@@ -34,7 +34,7 @@ jobs:
           name: Download required repositories
           command: |
             export ROOT_DIR_SRC=~/src
-            git clone --depth 1 https://github.com/gisce/erp.git -b developer $ROOT_DIR_SRC/erp
+            git clone --depth 1 git@github.com:gisce/erp.git -b developer $ROOT_DIR_SRC/erp
             git clone --depth 1 https://github.com/gisce/oorq.git -b api_v5 $ROOT_DIR_SRC/oorq
             git clone --depth 1 https://github.com/gisce/spawn_oop.git $ROOT_DIR_SRC/spawn_oop
             git clone --depth 1 https://github.com/gisce/poweremail.git $ROOT_DIR_SRC/poweremail2
