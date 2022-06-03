@@ -14,7 +14,7 @@ class GiscedataPolissa(osv.osv):
         'teoric_maximum_consume_GC': fields.float(
             digits=(8,2),
             string='Teoric maximum consume Grans Contractes',
-            help=u"Maximum consum teoric d'un contracte d'autoconsum associat a una validació.")
+            help=u"Màxim consum mensual teòric d'un contracte amb categoria Gran Consum associat a la validació SF03.")
     }
 
 GiscedataPolissa()
