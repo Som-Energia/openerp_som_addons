@@ -548,6 +548,8 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
                 'renovation_date': '2021-01-01',
                 'cups': u'ES1234000000000001JN0F',
                 'tariff': u'2.0A',
+                'invoicing_mode': u'atr',
+                'pricelist': u'TARIFAS ELECTRICIDAD',
                 'autoconsum_cau': '',
                 'is_autoconsum_colectiu': False,
                 'cups_direction': u'carrer inventat 1 1 1 1 aclaridor 00001 (Poble de Prova)',
@@ -584,6 +586,8 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
                 'renovation_date': '2021-01-01',
                 'cups': u'ES1234000000000001JN0F',
                 'tariff': u'2.0A',
+                'invoicing_mode': u'atr',
+                'pricelist': u'TARIFAS ELECTRICIDAD',
                 'autoconsum_cau': u'ES0318363477145938GEA000',
                 'is_autoconsum_colectiu': False,
                 'cups_direction': u'carrer inventat 1 1 1 1 aclaridor 00001 (Poble de Prova)',
@@ -1446,6 +1450,7 @@ class Tests_FacturacioFacturaReport_invoice_info(Tests_FacturacioFacturaReport_b
         self.factura_obj.write(self.cursor, self.uid, f_id,
             {
                 'date_due': '01/01/2016',
+                'number': '0001/F'
             })
 
         result = self.r_obj.get_component_invoice_info_data(**self.bfp(f_id))

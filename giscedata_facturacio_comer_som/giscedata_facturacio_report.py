@@ -294,7 +294,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     else:
                         origen_txt = _(u"estimada distribuïdora")
                 if lect['origen_id'][0] == calculada_som_id:
-                    origen_txt = _(u"calculada segons CCH")
+                    origen_txt = _(u"calculada")
                 res[lect['name']] = "%s" % (origen_txt)
 
         return res
@@ -821,6 +821,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 'cups': fact.cups_id.name,
                 'cups_direction': fact.cups_id.direccio,
                 'tariff': pol.tarifa.name,
+                'pricelist': pol.llista_preu.name,
+                'invoicing_mode': pol.mode_facturacio,
                 'remote_managed_meter': pol.tg in ['1','3'],
                 'power': pol.potencia,
                 'powers': sorted([ (potencia.periode_id.name, potencia.potencia) for potencia in pol.potencies_periode ], key=lambda l:l[0]),
@@ -1800,9 +1802,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                         origin = _(u'estimada')
                         if lectura[6] == 'real' and lectura[7] =='real':
                             origin = _(u'real')
-                        elif (lectura[6] == 'estimada distribuïdora' or lectura[6] == 'real') and lectura[7] == 'calculada segons CCH':
+                        elif (lectura[6] == 'estimada distribuïdora' or lectura[6] == 'real') and lectura[7] == 'calculada':
                             origin = _(u'calculada')
-                        elif lectura[6] == 'calculada segons CCH' and (lectura[7] =='calculada segons CCH' or lectura[7] == 'real'):
+                        elif lectura[6] == 'calculada' and (lectura[7] =='calculada' or lectura[7] == 'real'):
                             origin = _(u'calculada')
 
                         readings[data] = origin
