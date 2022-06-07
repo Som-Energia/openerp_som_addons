@@ -23,6 +23,10 @@ class TarifaPoolSOM(TarifaPool):
             res['pmd'] = 'prmdiari'
             res['pc3_ree'] = 'pc3_boe'
             res['pos'] = 'sobrecostes_ree'
+        if self.phf_function in ('phf_calc_balears', 'phf_calc_canaries'):
+            # only if 'phf_calc_peninsula' formula is used
+            res['pmd'] = 'sphdem'
+            res['pc3_ree'] = 'pc3_ree'
 
         return res
 
@@ -215,6 +219,142 @@ class TarifaPoolSOM(TarifaPool):
 
         return component
 
+    def phf_calc_balears(self, curve, start_date):
+        """
+        Calcs component PHF as:
+        PHF = (1 + IMU) * [(SPHDEM + PC_REE + SI + POS) * (1 + Perdidas) + FNEE + K] + PA + CA
+        :param curve: Component curve
+        :param start_date: component start date
+        :return: returns a component
+        """
+        num_days = calendar.monthrange(start_date.year, start_date.month)[1]
+        end_date = datetime(
+            start_date.year, start_date.month, num_days
+        ).date()
+
+        esios_token = self.conf['esios_token']
+        holidays = self.conf['holidays']
+
+        # REE
+        # Precio horario demanda aplicable sistema no peninsular
+        postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d")))
+        if self.geom_zone is None or self.geom_zone != '2':
+            raise ValueError('Geom Zone must be Balear subsystem')
+        filename = 'SphdemDD_{}'.format(SUBSYSTEMS_SPHDEM[self.geom_zone])
+        classname = globals()[filename]
+        sphdem = classname('C2_%(filename)s_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        # Pagos por capacidad
+        filename = 'Sprpcap{}_{}'.format(self.code.replace('.', ''), SUBSYSTEMS_SPHDEM[self.geom_zone])
+        classname = globals()[filename]
+        pc3_ree = classname('C2_%(filename)s_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        # Servicio de Interrumpibilidad
+        si = SIFree('C2_sifree_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        # Coeficientes de pérdidas
+        self.get_perdclass()
+        fname = self.perdclass.name
+        perdues = self.perdclass('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
+
+        # Pricelist and contract
+        # Fondo de Eficiencia
+        fe = self.get_coeficient_component(start_date, 'fe')  # [€/MWh]
+        # Contract specific coeficients
+        k = self.get_coeficient_component(start_date, 'k')  # [€/kWh]
+        # Municipal fee
+        imu = self.get_coeficient_component(start_date, 'imu')  # [%]
+
+        # peajes y cargos
+        pa = self.get_peaje_component(start_date, holidays)  # [€/kWh]
+
+        A = ((sphdem + pc3_ree + si) * 0.001)
+        B = (1 + (perdues * 0.01))
+        C = A * B
+        D = (fe * 0.001) + k
+        E = C + D
+        F = E * (1 + (imu * 0.01))
+        G = F + pa
+        H = curve * 0.001
+        component = H * G
+
+        audit_keys = self.get_available_audit_coefs()
+        for key in self.conf.get('audit', []):
+            if key not in self.audit_data.keys():
+                self.audit_data[key] = []
+            var_name = audit_keys[key]
+            com = locals()[var_name]
+            self.audit_data[key].extend(
+                com.get_audit_data(start=start_date.day)
+            )
+
+        return component
+
+    def phf_calc_canaries(self, curve, start_date):
+        """
+        Calcs component PHF as:
+        PHF = (1 + IMU) * [(SPHDEM + PC_REE + SI + POS) * (1 + Perdidas) + FNEE + K] + PA + CA
+        :param curve: Component curve
+        :param start_date: component start date
+        :return: returns a component
+        """
+        num_days = calendar.monthrange(start_date.year, start_date.month)[1]
+        end_date = datetime(
+            start_date.year, start_date.month, num_days
+        ).date()
+
+        esios_token = self.conf['esios_token']
+        holidays = self.conf['holidays']
+
+        # REE
+        # Precio horario demanda aplicable sistema no peninsular
+        postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d")))
+        if self.geom_zone is None or self.geom_zone != '3':
+            raise ValueError('Geom Zone must be Canarian subsystem')
+        filename = 'SphdemDD_{}'.format(SUBSYSTEMS_SPHDEM[self.geom_zone])
+        classname = globals()[filename]
+        sphdem = classname('C2_%(filename)s_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        # Pagos por capacidad
+        filename = 'Sprpcap{}_{}'.format(self.code.replace('.', ''), SUBSYSTEMS_SPHDEM[self.geom_zone])
+        classname = globals()[filename]
+        pc3_ree = classname('C2_%(filename)s_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        # Servicio de Interrumpibilidad
+        si = SIFree('C2_sifree_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        # Coeficientes de pérdidas
+        self.get_perdclass()
+        fname = self.perdclass.name
+        perdues = self.perdclass('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
+
+        # Pricelist and contract
+        # Fondo de Eficiencia
+        fe = self.get_coeficient_component(start_date, 'fe')  # [€/MWh]
+        # Contract specific coeficients
+        k = self.get_coeficient_component(start_date, 'k')  # [€/kWh]
+        # Municipal fee
+        imu = self.get_coeficient_component(start_date, 'imu')  # [%]
+
+        # peajes y cargos
+        pa = self.get_peaje_component(start_date, holidays)  # [€/kWh]
+
+        A = ((sphdem + pc3_ree + si) * 0.001)
+        B = (1 + (perdues * 0.01))
+        C = A * B
+        D = (fe * 0.001) + k
+        E = C + D
+        F = E * (1 + (imu * 0.01))
+        G = F + pa
+        H = curve * 0.001
+        component = H * G
+
+        audit_keys = self.get_available_audit_coefs()
+        for key in self.conf.get('audit', []):
+            if key not in self.audit_data.keys():
+                self.audit_data[key] = []
+            var_name = audit_keys[key]
+            com = locals()[var_name]
+            self.audit_data[key].extend(
+                com.get_audit_data(start=start_date.day)
+            )
+
+        return component
+
     def get_available_indexed_formulas(self):
         """
         Gets available formulas for indexed invoicing
@@ -223,7 +363,9 @@ class TarifaPoolSOM(TarifaPool):
         """
         return {
             u'Indexada': 'phf_calc',
-            u'Indexada Península': 'phf_calc_peninsula'
+            u'Indexada Península': 'phf_calc_peninsula',
+            u'Indexada Balears': 'phf_calc_balears',
+            u'Indexada Canàries': 'phf_calc_canaries',
         }
 
 
