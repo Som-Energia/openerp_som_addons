@@ -55,7 +55,7 @@
     </div>
     </div>
     <div class="sei_box">
-      <h1>${_(u"Impacte ambiental de la seva comercialitzadora. %s") %d.som.year}</h1>
+      <h1>${_(u"Impacte ambiental de Som Energia. %s") %d.som.year}</h1>
       <p>${_(u"La lletra 'A' correspon al mínim impacte ambiental, la lletra 'D' a la mitjana de generació nacional i la 'G' al màxim impacte ambiental.")}</p>
       <table class="sei_table_r">
         <tr>

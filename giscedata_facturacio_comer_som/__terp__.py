@@ -10,12 +10,14 @@
         'c2c_webkit_report',
         "account_invoice_base",
         "giscedata_facturacio_comer",
+        "giscedata_sup_territorials_2013_tec271_comer",
+        "giscedata_facturacio_iese",
         "giscedata_polissa_comer",
         "som_polissa_soci",
         "jasper_reports",
     ],
     "init_xml": [],
-    "demo_xml": [],
+    "demo_xml": ["giscedata_facturacio_comer_som_demo.xml"],
     "update_xml":[
         "giscedata_facturacio_comer_data.xml",
         "giscedata_facturacio_comer_report.xml"
