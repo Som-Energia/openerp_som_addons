@@ -27,7 +27,7 @@ class GiscedataFacturacioContracteLot(osv.osv):
     _STORE_WHEN_ERRORS_ADDED = {
         'giscedata.facturacio.contracte_lot': (
             lambda self, cr, uid, ids, context=None: ids,
-            ['status'],
+            ['status', 'state'],
             10
         )
     }
