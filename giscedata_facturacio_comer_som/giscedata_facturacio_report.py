@@ -2129,7 +2129,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 charges_lines_energy[l_name] += l_count
 
         for k,v in charges_lines_energy.items():
-            d = discount[k]['price_subtotal'] if discount['is_visible'] else 0
+            d = discount[k]['price_subtotal'] if discount['is_visible'] and k in discount else 0
             charges_lines_energy[k] = {
                 'preu_cargos': v['price'], # TODO switch back when lines comes well calculated
                 'atr_cargos':v['our_cargos'] - d,# TODO switch back when lines comes well calculated
