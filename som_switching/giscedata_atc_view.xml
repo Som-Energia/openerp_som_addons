@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_som_switching_atc_form">
+            <field name="name">som.switching.atc.form</field>
+            <field name="model">giscedata.atc</field>
+            <field name="inherit_id" ref="giscedata_atc.giscedata_atc-view"/>
+            <field name="type">form</field>
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                <field name="section_id" position="after">
+                    <field name="tag"/>
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_som_switching_atc_tree">
+            <field name="name">som.switching.atc.tree</field>
+            <field name="model">giscedata.atc</field>
+            <field name="inherit_id" ref="giscedata_atc.giscedata_atc_tree-view"/>
+            <field name="type">tree</field>
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                <field name="section_id" position="after">
+                    <field name="tag" select="2"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>

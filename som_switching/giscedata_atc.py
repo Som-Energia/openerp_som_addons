@@ -1,7 +1,26 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
+from datetime import datetime
 
+class GiscedataAtcTag(osv.osv):
+    _name = 'giscedata.atc.tag'
+
+    _columns = {
+        'name': fields.char(u"Etiqueta", size=100),
+        'titol': fields.char(u"Títol", size=200),
+        'description': fields.char(u"Descripció", size=300),
+        'creation_date': fields.date(u"Data creació", required=True),
+        'text_R1': fields.text(u'Proposta text R1'),
+        'active': fields.boolean('Actiu'),
+    }
+
+    _defaults = {
+        'active': lambda *a: True,
+        'creation_date': lambda *a: datetime.today().strftime('%Y-%m-%d'),
+    }
+
+GiscedataAtcTag()
 
 class GiscedataAtc(osv.osv):
 
@@ -23,5 +42,9 @@ class GiscedataAtc(osv.osv):
             self.pool.get("giscedata.polissa").write(cursor, uid, pol_ids, {'facturacio_suspesa': False})
         return res
 
+    _columns = {
+        'tag': fields.many2one('giscedata.atc.tag', "Etiqueta"),
+    }
 
 GiscedataAtc()
+
