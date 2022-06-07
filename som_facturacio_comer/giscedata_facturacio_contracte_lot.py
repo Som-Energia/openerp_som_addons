@@ -24,6 +24,14 @@ class GiscedataFacturacioContracteLot(osv.osv):
         )
     }
 
+    _STORE_WHEN_ERRORS_ADDED = {
+        'giscedata.facturacio.contracte_lot': (
+            lambda self, cr, uid, ids, context=None: ids,
+            ['status'],
+            10
+        )
+    }
+
     def total_incidencies(self, cr, uid, id, context=None):
         status = self.read(cr, uid, id, ['status'])['status']
         if status:
@@ -152,7 +160,7 @@ class GiscedataFacturacioContracteLot(osv.osv):
         'total_incidencies': fields.function(
                                 _ff_update_fields, multi='totals',
                                 string='Nombre total dincidencies',
-                                type='integer', store=_STORE_WHEN_INVOICE_ADDED, method=True),
+                                type='integer', store=_STORE_WHEN_ERRORS_ADDED, method=True),
         'date_invoice': fields.function(
                                 _ff_update_fields, multi='totals',
                                 string='Data de la factura',
