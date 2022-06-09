@@ -2180,6 +2180,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     items[p] = item
                 items['multi'] = excess_lines['multi']
                 items['total'] = excess_lines['total']
+                items['date_from'] = excess_lines['data_from']
+                items['date_to'] = excess_lines['data_to']
             excess_data.append(items)
         data = {
             'showing_periods': showing_periods,
@@ -2189,45 +2191,6 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'is_visible': True,
         }
         return data
-
-    def get_sub_component_invoice_details_td_excess_power_quarterhours_accumulative(self, fact, pol, linies):
-        lines_data = {}
-        total = 0
-        days = 0
-
-        for l in linies:
-            l_count = Counter({
-                'price_subtotal': l.price_subtotal,
-                'extra': l.multi,
-                'days': (datetime.strptime(l.data_fins,'%Y-%m-%d') - datetime.strptime(l.data_desde,'%Y-%m-%d')).days + 1,
-            })
-
-            if l.name not in lines_data:
-                lines_data[l.name] = l_count
-                lines_data[l.name].update({
-                    'price_unit_multi': l.price_unit_multi,
-                    'quantity': l.quantity,
-                })
-            else:
-                lines_data[l.name] += l_count
-
-            lines_data[l.name]['end_date'] = l.data_fins,
-            total += l.price_subtotal
-
-        for k,v in lines_data.items():
-            lines_data[k] = {
-                'quantity': v['quantity'],
-                'price_subtotal': v['price_subtotal'],
-                'price_unit_multi': v['price_unit_multi'],
-                'extra': v['extra'],
-                'days': v['days'],
-                'end_date': v['end_date'],
-            }
-            days = v['days']
-
-        lines_data['total'] = total
-        lines_data['days'] = days
-        return lines_data
 
     def get_sub_component_invoice_details_td_excess_power_quarterhours(self, fact, pol):
         excess_lines = [l for l in fact.linia_ids if l.tipus == 'exces_potencia']
@@ -2259,6 +2222,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 items['visible_days_month'] = replace_kp and excess_lines['data']
                 items['days'] = excess_lines['days']
                 items['total'] = excess_lines['total']
+                items['date_from'] = excess_lines['data_from']
+                items['date_to'] = excess_lines['data_to']
             excess_data.append(items)
         data = {
             'showing_periods': showing_periods,
