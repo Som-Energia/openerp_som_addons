@@ -57,9 +57,9 @@ count = 1
     <tr class="tr_bold last_row">
     % endif
         % if excess_data['visible_days_month']:
-            <td class="detall_td">${_(u"kW excés x €/kW excés x kp x (%.f/30) dies") %(excess_data['days'])}</td>
+            <td class="detall_td">${_(u"kW excés x €/kW excés x kp x (%.f/30) dies (del %s al %s)") %(excess_data['days'],excess_data['date_from'], excess_data['date_to'])}</td>
         % else:
-            <td class="detall_td">${_(u"kW excés x €/kW excés x kp")}</td>
+            <td class="detall_td">${_(u"kW excés x €/kW excés x kp (del %s al %s)") %(excess_data['date_from'], excess_data['date_to'])}</td>
         % endif
         % for p in id.showing_periods:
             % if p in excess_data:
