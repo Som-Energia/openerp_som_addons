@@ -1719,7 +1719,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return data
 
     def get_component_hourly_curve_data(self, fact, pol):
-        is_visible = is_6X(pol) or is_6XTD(pol)
+        is_visible = is_6X(pol) or is_6XTD(pol) or is_indexed(fact)
         data = {
             'is_visible': is_visible,
             'has_agreement_partner': pol.soci.ref in agreementPartners.keys(),
@@ -1734,6 +1734,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'is_6x': is_6X(pol),
             'is_TD': is_TD(pol),
             'is_6xTD': is_6XTD(pol),
+            'is_indexed': is_indexed(fact),
         }
         return data
 
