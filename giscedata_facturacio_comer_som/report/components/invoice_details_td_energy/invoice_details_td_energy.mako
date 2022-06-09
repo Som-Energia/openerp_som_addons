@@ -14,16 +14,16 @@ first_energy_line = True
     % endif
         % if first_energy_line:
             % if energy_lines_data.get('has_discount', False):
-                <td class="detall_td">${_(u"Electricitat utilitzada [kWh] (%s) (del %s al %s)") % (_(energy_lines_data.origin), energy_lines_data.data_from, energy_lines_data.data_to)}<p class="detall_td_no_bold">${_(u"subjectes a descompte")}</p></td>
+                <td class="detall_td">${_(u"Electricitat utilitzada [kWh] (%s)") % (_(energy_lines_data.origin))}<p class="detall_td_no_bold">${_(u"subjectes a descompte")}</p></td>
             % else:
-                <td class="detall_td">${_(u"Electricitat utilitzada [kWh] (%s) (del %s al %s)") % (_(energy_lines_data.origin), energy_lines_data.data_from, energy_lines_data.data_to)}</td>
+                <td class="detall_td">${_(u"Electricitat utilitzada [kWh] (%s)") % (_(energy_lines_data.origin))}</td>
             % endif
             <%first_energy_line = False%>
         % else:
             % if energy_lines_data.get('has_discount', False):
-                <td class="detall_td">${_(u"Electricitat utilitzada [kWh] (del %s al %s)") % (energy_lines_data.data_from, energy_lines_data.data_to)}<p class="detall_td_no_bold">${_(u"subjectes a descompte")}</p></td>
+                <td class="detall_td">${_(u"Electricitat utilitzada [kWh]")}<p class="detall_td_no_bold">${_(u"subjectes a descompte")}</p></td>
             % else:
-                <td class="detall_td">${_(u"Electricitat utilitzada [kWh] (del %s al %s)") % (energy_lines_data.data_from, energy_lines_data.data_to)}</td>
+                <td class="detall_td">${_(u"Electricitat utilitzada [kWh]")}</td>
             % endif
         % endif
         % for p in id.showing_periods:
@@ -47,7 +47,7 @@ first_energy_line = True
         <td></td>
     </tr>
     <tr class="tr_bold">
-        <td class="detall_td">${_(u"kWh x €/kWh")}</td>
+        <td class="detall_td">${_(u"kWh x €/kWh (del %s al %s)") % (energy_lines_data.data_from, energy_lines_data.data_to)}</td>
         % for p in id.showing_periods:
             % if p in energy_lines_data:
                 <td>${_(u"%s €") %(formatLang(energy_lines_data[p]["price_subtotal"]))}</td>
