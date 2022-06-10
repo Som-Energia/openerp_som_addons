@@ -972,7 +972,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         (historic, historic_js) = self.get_historic_data(fact)
         for h_js in historic_js:
             periode = h_js['mes'].split('/')
-            if int(periode[0]) >= 6 and int(periode[1]) >= 21:
+            if (int(periode[0]) >= 6 and int(periode[1]) == 21) or (int(periode[1]) > 21):
                 h_js['labels'] = labels[fact.lang_partner]
             h_js['mes'] = shortMonths[fact.lang_partner][periode[0]] + '/' + periode[1]
 
