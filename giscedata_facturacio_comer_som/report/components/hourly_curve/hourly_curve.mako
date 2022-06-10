@@ -154,5 +154,13 @@ modes = {
             %>
         %endif
         <div style="clear: both;"></div>
+
+    <p class="profile_curve_text">
+    % if hc.profiled_curve:
+        ${_(u"Corbes horàries perfilades segons l'ús mensual informat per la distribuïdora.")}
+    % else:
+        ${_(u"Corbes horàries informades per la distribuïdora.")}
+    % endif
+    </p>
     </div>
 % endif

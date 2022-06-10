@@ -1725,6 +1725,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'has_agreement_partner': pol.soci.ref in agreementPartners.keys(),
             'factura_data': fact.get_curve_as_csv().get(fact.id, None) if is_visible else None,
         }
+        data['profiled_curve'] = data['factura_data'] and 'REEPROFILE' in data['factura_data']
         return data
 
     def get_component_globals_data(self, fact, pol):
