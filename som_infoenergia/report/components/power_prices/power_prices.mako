@@ -16,13 +16,13 @@
     </thead>
     <tbody>
         <tr>
-            <td>${_(u"Preu %s")} % (d.tariff)</td>
-            <td>${formatLang(d.preu_p1, digits=6)}</td>
-            <td>${formatLang(d.preu_p2, digits=6)}</td>
-            <td>${formatLang(d.preu_p3, digits=6)}</td>
-            <td>${formatLang(d.preu_p4, digits=6)}</td>
-            <td>${formatLang(d.preu_p5, digits=6)}</td>
-            <td>${formatLang(d.preu_p6, digits=6)}</td>
+            <td>${_(u"Preu %s" % (d.tariff))}</td>
+            <td>${formatLang(d.preu_P1, digits=6)}</td>
+            <td>${formatLang(d.preu_P2, digits=6)}</td>
+            <td>${formatLang(d.preu_P3, digits=6)}</td>
+            <td>${formatLang(d.preu_P4, digits=6)}</td>
+            <td>${formatLang(d.preu_P5, digits=6)}</td>
+            <td>${formatLang(d.preu_P6, digits=6)}</td>
         </tr>
     </tbody>
     </table>
