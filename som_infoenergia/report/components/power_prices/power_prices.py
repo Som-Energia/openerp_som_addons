@@ -1,4 +1,4 @@
-from giscedata_facturacio.report.utils import get_atr_prices
+from giscedata_facturacio.report.utils import get_atr_price
 from datetime import datetime
 
 class power_prices():
@@ -7,14 +7,14 @@ class power_prices():
         polissa = object.polissa_id
         preus = {
             'tariff': '',
-            'preu_p1': 0,
-            'preu_p2': 0,
-            'preu_p3': 0,
-            'preu_p4': 0,
-            'preu_p5': 0,
-            'preu_p6': 0,
+            'preu_P1': 0,
+            'preu_P2': 0,
+            'preu_P3': 0,
+            'preu_P4': 0,
+            'preu_P5': 0,
+            'preu_P6': 0,
         }
-        if polissa and polissa.tarifa.codi_ocsum in ('020', '021', '022', '023', '025', '019', '024')
+        if polissa and polissa.tarifa.codi_ocsum in ('020', '021', '022', '023', '025', '019', '024'):
                 preus['tariff'] = polissa.tarifa_codi
                 ctx = {'date': False}
                 data_final = polissa.modcontractual_activa.data_final or ''
