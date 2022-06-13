@@ -211,6 +211,8 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             seleccionats.append('M1')
 
         result_crono = []
+        quadre_lectures = []
+        quadre_factures = []
         context['has_atr'] = len(seleccionats) > 0
         if seleccionats:
             search_params = [
@@ -241,10 +243,8 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             invoice_ids = fact_obj.search(cursor, uid, search_parameters)
             if wiz.mostra_factura:
                 result_crono.extend(self.extract_invoice_metadata(cursor, uid, wiz, invoice_ids, context))
-            quadre_lectures = []
             if wiz.mostra_quadre_resum_lectures:
                 quadre_lectures.extend(self.extract_readings_table_metadata(cursor, uid, wiz, invoice_ids , context))
-            quadre_factures = []
             if wiz.mostra_quadre_resum_factures:
                 quadre_factures.extend(self.extract_invoices_table_metadata(cursor, uid, wiz, invoice_ids , context))
 
