@@ -5,7 +5,7 @@
 <p>${_(u"On:")}</p>
 <ul>
     <li>${_(u"<b>PH</b> = Preu horari de l’energia")}</li>
-    <li>${_("<b>PHM</b> = Preu horari del mercat diari.Per als contractes de la península és el preu OMIE, mentre que a les illes Balears i Canàries és el preu horari de la demanda del sistema balear i canari respectivamen.")}</li>
+    <li>${_("<b>PHM</b> = Preu horari del mercat diari. Per als contractes de la península és el preu OMIE, mentre que a les illes Balears i Canàries és el preu horari de la demanda del sistema balear i canari respectivament.")}</li>
     <li>${_("<b>Pc</b> = Pagaments per Capacitat definits pel Ministeri corresponent.")}</li>
     <li>${_("<b>SobrecostosREE</b> = sobrecostos publicats per REE per la gestió de la xarxa.")}</li>
     <li>${_("<b>Interrump</b> = Cost del servei d’Interrumpibilitat.")}</li>
