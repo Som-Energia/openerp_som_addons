@@ -17,6 +17,9 @@ class power_prices():
         if polissa and polissa.tarifa.codi_ocsum in ('020', '021', '022', '023', '025', '019', '024'):
                 preus['tariff'] = polissa.tarifa_codi
                 ctx = {'date': False}
+                ctx['potencia_anual'] = True
+                ctx['sense_agrupar'] = True
+
                 data_final = polissa.modcontractual_activa.data_final or ''
                 if data_final:
                     data_llista_preus = min(datetime.strptime(data_final, '%Y-%m-%d'), datetime.today())
@@ -25,6 +28,6 @@ class power_prices():
                 periodes_potencia = sorted(polissa.tarifa.get_periodes('tp', context=ctx).keys())
 
                 for p in periodes_potencia:
-                    preus['preu_{0}'.format(p)] = get_atr_price(cursor, uid, polissa, p, 'tp', ctx, with_taxes=True)[0]
+                    preus['preu_{0}'.format(p)] = get_atr_price(cursor, uid, polissa, p, 'tp', ctx, with_taxes=False)[0]
 
         return preus
