@@ -686,7 +686,7 @@ class SomAutoreclamaDoActionTest(SomAutoreclamaEzATC_Test):
         atc_id = self.build_atc(log_days=60, subtype='001')
 
         ir_obj = self.get_model('ir.model.data')
-        state_id = ir_obj.get_object_reference(self.cursor, self.uid, 'som_autoreclama', 'third_state_workflow_atc')[1]
+        state_id = ir_obj.get_object_reference(self.cursor, self.uid, 'som_autoreclama', 'disabled_state_workflow_atc')[1]
         state_obj.write(self.cursor, self.uid, state_id, {'active':False})
         state = state_obj.browse(self.cursor, self.uid, state_id)
 
@@ -739,7 +739,7 @@ class SomAutoreclamaDoActionTest(SomAutoreclamaEzATC_Test):
         atc_id = self.build_atc(log_days=60, subtype='001')
 
         ir_obj = self.get_model('ir.model.data')
-        state_id = ir_obj.get_object_reference(self.cursor, self.uid, 'som_autoreclama', 'third_state_workflow_atc')[1]
+        state_id = ir_obj.get_object_reference(self.cursor, self.uid, 'som_autoreclama', 'first_state_workflow_atc')[1]
         state = state_obj.browse(self.cursor, self.uid, state_id)
 
         atc = atc_obj.browse(self.cursor, self.uid, atc_id)
