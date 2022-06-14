@@ -48,3 +48,6 @@
 "access_crm_m_wizard_som_autoreclama_execute_step_r","wizard.som.autoreclama.execute.step","model_wizard_som_autoreclama_execute_step","crm.group_crm_manager",1,0,0,0
 "access_crm_m_wizard_som_autoreclama_generated_atc_r","wizard.som.autoreclama.generated.atc","model_wizard_som_autoreclama_generated_atc","crm.group_crm_manager",1,0,0,0
 "access_crm_m_wizard_som_autoreclama_set_manual_state_r","wizard.som.autoreclama.set.manual.state","model_wizard_som_autoreclama_set_manual_state","crm.group_crm_manager",1,0,0,0
+"access_wizard_som_autoreclama_set_disable_state_r","wizard.som.autoreclama.set.disable.state","model_wizard_som_autoreclama_set_disable_state","crm.group_crm_manager",1,0,0,0
+"access_wizard_som_autoreclama_set_disable_state_rw","wizard.som.autoreclama.set.disable.state","model_wizard_som_autoreclama_set_disable_state","crm.group_crm_manager",1,1,0,0
+"access_wizard_som_autoreclama_set_disable_state_rcwd","wizard.som.autoreclama.set.disable.state","model_wizard_som_autoreclama_set_disable_state","crm.group_crm_manager",1,1,1,1
