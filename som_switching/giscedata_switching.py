@@ -144,6 +144,100 @@ class GiscedataSwitching(osv.osv):
     _name = 'giscedata.switching'
     _inherit = 'giscedata.switching'
 
+    def activa_cas_atr(self, cursor, uid, sw, context=None):
+        if context is None:
+            context = {}
+        act_obj = self.pool.get("giscedata.switching.activation.config")
+        helperdist_obj = self.pool.get('giscedata.switching.helpers.distri')
+        helpercomer_obj = self.pool.get('giscedata.switching.helpers')
+        if sw.whereiam == "distri":
+            helper_obj = helperdist_obj
+            whereiam = _(u'Distribuidora')
+        else:
+            helper_obj = helpercomer_obj
+            whereiam = _(u'Comercializadora')
+
+        method_names = act_obj.get_activation_method(cursor, uid, sw.get_pas(), context=context)
+        if not method_names:
+            return [_(u'Atenció'),
+                    _(u'Activació cas %s-%s no implementada/activada a %s.\n\n'
+                      u'Pots consultar les activacions disponibles a:\n'
+                      u'* Gestió ATR -> Configuració -> Activacions de Casos ATR'
+                      ) % (sw.proces_id.name, sw.step_id.name, whereiam)]
+        else:
+            all_res = []
+            all_res_description = []
+            for method_name in method_names:
+                method_caller = getattr(helper_obj, method_name, False)
+                if not method_caller and helper_obj != helpercomer_obj:
+                    # Els metodes comuns estan al de comer, busquem allà
+                    method_caller = getattr(helpercomer_obj, method_name, False)
+                if not method_caller:
+                    raise osv.except_osv(
+                        _('Error'),
+                        _("No s'ha pogut activar el cas {0} perqué no es troba el "
+                          "métode d'activació {1}.").format(sw.name, method_name)
+                    )
+                init_str = _(u"Resultat Activacio:\n")
+                db = pooler.get_db(cursor.dbname)
+                tmp_cursor = db.cursor()
+                msg_h = ""
+                try:
+                    res = method_caller(tmp_cursor, uid, sw.id, context=context)
+                    if len(res) == 2:
+                        msg = res[0] + ": " + res[1]
+                        all_res.append(res[0].upper())
+                        all_res_description.append(res[1])
+                    elif len(res) == 1:
+                        msg = res[0]
+                        all_res.append("INFO.")
+                        all_res_description.append(res[0])
+                    elif not res:
+                        continue
+                    else:
+                        raise Exception("ERROR", _(u"La activacio no ha retornat la informacio esperada"))
+                    msg_h = init_str + msg
+                    tmp_cursor.commit()
+                except Exception, e:
+                    msg_h = init_str + str(e)
+                    tmp_cursor.rollback()
+                    return ("ERROR", str(e))
+                finally:
+                    tmp_cursor.close()
+                    db = pooler.get_db(cursor.dbname)
+                    tmp_cursor = db.cursor()
+                    self.update_deadline(tmp_cursor, uid, sw.id)
+                    self.historize_msg(tmp_cursor, uid, sw.id, msg_h, context=context)
+                    tmp_cursor.commit()
+                    tmp_cursor.close()
+            if "ERROR" in all_res:
+                final_res = ["ERROR"]
+            elif "OK" in all_res:
+                final_res = ["OK"]
+            else:
+                final_res = [all_res[0]]
+
+            n_msg = ""
+            try:
+                init_str = _(u"Resultat Notificacio:\n")
+                notificate_on_activate = int(
+                    self.pool.get("res.config").get(cursor, 1, "sw_notificate_on_activate", "0")
+                )
+                if notificate_on_activate and final_res[0] != "ERROR":
+                    pas = sw.get_pas()
+                    if pas.notificacio_pendent:
+                        ctx = context.copy()
+                        ctx['check_cas_tancat_on_activate'] = True
+                        ares = sw.notifica_a_client(context=ctx)
+                        n_msg = init_str + ares[1]
+                        self.historize_msg(cursor, uid, sw.id, n_msg, context=context)
+            except Exception, e:
+                n_msg = init_str + str(e)
+                self.historize_msg(cursor, uid, sw.id, n_msg, context=context)
+
+            final_res.append("\n\n".join(all_res_description + [n_msg]))
+            return final_res
+
     def _get_last_history_line(self, cr, uid, ids, name, arg, context=None):
         """ Nom de la situació de la instal·lació """
         res = dict([(i, '') for i in ids])
