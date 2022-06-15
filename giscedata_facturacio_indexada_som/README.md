@@ -94,7 +94,7 @@ Where:
 
 ## PHF BALEARES formula
 
- `PHF = (1 + IMU) * [(SPHDEM + PC_REE + SI + POS) * (1 + Perdidas) + FNEE + K] + PA + CA`
+ `PHF = (1 + IMU) * [(SPHDEM + PC_REE + SI + POS) * (1 + Perdidas) + FNEE + K + D] + PA + CA`
 
 Where:
 
@@ -102,10 +102,11 @@ Where:
 * **SPHDEM**:  Precio Medio de Demanda en los sistemas no peninsulares [€/MWh]
 * **PC_REE**: Pagos por capacidad según REE [€/kWh]
 * **SI**: Precio Servicio Interrumpibilidad [€/MWh]
-* **POS**: Preu Operació Sistema [€/MWh]
+* **POS**: Preu Operació Sistema (REE) [€/MWh]
 * **Perdidas**: Perdidas por tarifa [%]
 * **FNEE**: Pagos al fondo de eficiencia según consumo computado [€/MWh]
 * **K**: Coeficiente de comercializadora [€/kWh]
+* **D**: Coeficiente de desvíos [€/kWh]
 * **PA**: Peajes de acceso según BOE [€/kWh]
 * **CA**: Cargos según BOE [€/kWh]
 
@@ -123,7 +124,9 @@ Where:
 
 * **IMU**: Impuesto Municipal. Fixed value by pricelist and version.
 * **FNEE**: Pagos Fondo Eficiencia. Fixed value by pricelist and version
+* **POS**: Precio retribución a Operador del Sistema (REE). Fixed value by pricelist and version
 * **K**: Margen comercializadora. Fixed value by pricelist and version OR by contract (`coeficient_k` field)
+* **D**: Margen desvíos. Fixed value by pricelist and version OR by contract (`coeficient_d` field)
 
 ### audit files
 
@@ -134,7 +137,7 @@ Where:
 
 ## PHF BALEARES formula
 
- `PHF = (1 + IMU) * [(SPHDEM + PC_REE + SI + POS) * (1 + Perdidas) + FNEE + K] + PA + CA`
+ `PHF = (1 + IMU) * [(SPHDEM + PC_REE + SI + POS) * (1 + Perdidas) + FNEE + K + D] + PA + CA`
 
 Where:
 
@@ -146,6 +149,7 @@ Where:
 * **Perdidas**: Perdidas por tarifa [%]
 * **FNEE**: Pagos al fondo de eficiencia según consumo computado [€/MWh]
 * **K**: Coeficiente de comercializadora [€/kWh]
+* **D**: Coeficiente de desvíos [€/kWh]
 * **PA**: Peajes de acceso según BOE [€/kWh]
 * **CA**: Cargos según BOE [€/kWh]
 
@@ -163,7 +167,9 @@ Where:
 
 * **IMU**: Impuesto Municipal. Fixed value by pricelist and version.
 * **FNEE**: Pagos Fondo Eficiencia. Fixed value by pricelist and version
+* **POS**: Precio retribución a Operador del Sistema (REE). Fixed value by pricelist and version
 * **K**: Margen comercializadora. Fixed value by pricelist and version OR by contract (`coeficient_k` field)
+* **D**: Margen desvíos. Fixed value by pricelist and version OR by contract (`coeficient_d` field)
 
 ### audit files
 
