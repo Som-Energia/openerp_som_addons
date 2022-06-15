@@ -11,7 +11,7 @@
                     <group colspan="4" col="4" attrs="{'invisible': [('state', '!=', 'init')]}">
                         <group colspan="4" col="4">
                             <label string="Abonar i rectificar automàticament" colspan="4"/>
-                            <label string="Es rectifiquen i anuŀlen les factures client que comprenguin algun període de la factura seleccionada o de les lectures de l'F1" colspan="4"/>
+                            <label string="Es rectifiquen i anuŀlen les factures client que comprenguin algun període de la factura seleccionada o de les dates de factura de l'F1" colspan="4"/>
                             <label string="En cas que s'indiqui, s'obren i agrupen les factures, es remesen les que són a pagar" colspan="4"/>
                             <label string=" " colspan="4"/>
                             <label string=" " colspan="4"/>
