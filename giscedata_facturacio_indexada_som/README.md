@@ -92,6 +92,92 @@ Where:
 * **pmd**: prmdiari
 * **perdues**: perdxxxxx
 
+## PHF BALEARES formula
+
+ `PHF = (1 + IMU) * [(SPHDEM + PC_REE + SI + POS) * (1 + Perdidas) + FNEE + K + D] + PA + CA`
+
+Where:
+
+* **IMU**: Impost Municipal [%]
+* **SPHDEM**:  Precio Medio de Demanda en los sistemas no peninsulares [€/MWh]
+* **PC_REE**: Pagos por capacidad según REE [€/kWh]
+* **SI**: Precio Servicio Interrumpibilidad [€/MWh]
+* **POS**: Preu Operació Sistema (REE) [€/MWh]
+* **Perdidas**: Perdidas por tarifa [%]
+* **FNEE**: Pagos al fondo de eficiencia según consumo computado [€/MWh]
+* **K**: Coeficiente de comercializadora [€/kWh]
+* **D**: Coeficiente de desvíos [€/kWh]
+* **PA**: Peajes de acceso según BOE [€/kWh]
+* **CA**: Cargos según BOE [€/kWh]
+
+### Hourly Coeficients
+
+* **SPHDEM**: liquicomun -> sphdem
+* **Perdidas**: liquicomun -> Sperdxxxxx. xxxxx diferent by tariff
+
+### Pricelist coeficients by period
+
+* **PA**: Peajes (BOE). ERP Module `giscedata_tarifas_peajes_yyyymmdd`
+* **CA**: Cargos (BOE). ERP Module `giscedata_tarifas_cargos_yyyymmdd`
+
+### Pricelist coeficients
+
+* **IMU**: Impuesto Municipal. Fixed value by pricelist and version.
+* **FNEE**: Pagos Fondo Eficiencia. Fixed value by pricelist and version
+* **POS**: Precio retribución a Operador del Sistema (REE). Fixed value by pricelist and version
+* **K**: Margen comercializadora. Fixed value by pricelist and version OR by contract (`coeficient_k` field)
+* **D**: Margen desvíos. Fixed value by pricelist and version OR by contract (`coeficient_d` field)
+
+### audit files
+
+* **phf**: Precio Horario Final (incluye consumo)
+* **curve**: Curva
+* **pmd**: sphdem
+* **perdues**: perdxxxxx
+
+## PHF BALEARES formula
+
+ `PHF = (1 + IMU) * [(SPHDEM + PC_REE + SI + POS) * (1 + Perdidas) + FNEE + K + D] + PA + CA`
+
+Where:
+
+* **IMU**: Impost Municipal [%]
+* **SPHDEM**:  Precio Medio de Demanda en los sistemas no peninsulares [€/MWh]
+* **PC_REE**: Pagos por capacidad según REE [€/kWh]
+* **SI**: Precio Servicio Interrumpibilidad [€/MWh]
+* **POS**: Preu Operació Sistema [€/MWh]
+* **Perdidas**: Perdidas por tarifa [%]
+* **FNEE**: Pagos al fondo de eficiencia según consumo computado [€/MWh]
+* **K**: Coeficiente de comercializadora [€/kWh]
+* **D**: Coeficiente de desvíos [€/kWh]
+* **PA**: Peajes de acceso según BOE [€/kWh]
+* **CA**: Cargos según BOE [€/kWh]
+
+### Hourly Coeficients
+
+* **SPHDEM**: liquicomun -> sphdem
+* **Perdidas**: liquicomun -> Sperdxxxxx. xxxxx diferent by tariff
+
+### Pricelist coeficients by period
+
+* **PA**: Peajes (BOE). ERP Module `giscedata_tarifas_peajes_yyyymmdd`
+* **CA**: Cargos (BOE). ERP Module `giscedata_tarifas_cargos_yyyymmdd`
+
+### Pricelist coeficients
+
+* **IMU**: Impuesto Municipal. Fixed value by pricelist and version.
+* **FNEE**: Pagos Fondo Eficiencia. Fixed value by pricelist and version
+* **POS**: Precio retribución a Operador del Sistema (REE). Fixed value by pricelist and version
+* **K**: Margen comercializadora. Fixed value by pricelist and version OR by contract (`coeficient_k` field)
+* **D**: Margen desvíos. Fixed value by pricelist and version OR by contract (`coeficient_d` field)
+
+### audit files
+
+* **phf**: Precio Horario Final (incluye consumo)
+* **curve**: Curva
+* **pmd**: sphdem
+* **perdues**: perdxxxxx
+
 ## PHF Generació
 
  `PHF = [PMD]`

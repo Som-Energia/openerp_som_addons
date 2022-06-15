@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from destral import testing
 from destral.transaction import Transaction
 from expects import *
 from giscedata_facturacio_indexada_som.tarifes import *
+from ..tarifes import *
 import os
 import tools
 
@@ -45,7 +47,7 @@ class IndexadaSOMTest(testing.OOTestCase):
 
         wz_id_mod = wz_crear_mc_obj.create(cursor, uid, params, ctx)
         wiz_mod = wz_crear_mc_obj.browse(cursor, uid, wz_id_mod, ctx)
-        res = wz_crear_mc_obj.onchange_duracio(
+        wz_crear_mc_obj.onchange_duracio(
             cursor, uid, [wz_id_mod], wiz_mod.data_inici, wiz_mod.duracio,
             ctx
         )
@@ -420,3 +422,239 @@ class IndexadaSOMTest(testing.OOTestCase):
 
             if os.path.exists('/tmp/curve_data.csv'):
                 os.remove('/tmp/curve_data.csv')
+
+    def test_phf_balears(self):
+        facturador_obj = self.openerp.pool.get(
+            'giscedata.facturacio.facturador'
+        )
+        self.openerp.install_module(
+            'giscedata_tarifas_pagos_capacidad_20220101'
+        )
+        self.openerp.install_module(
+            'giscedata_tarifas_peajes_20220101'
+        )
+        self.openerp.install_module(
+            'giscedata_tarifas_cargos_20220101'
+        )
+
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            token = tools.config['esios_token']
+
+            contract_obj = self.openerp.pool.get('giscedata.polissa')
+            imd_obj = self.openerp.pool.get('ir.model.data')
+            pricelist_obj = self.openerp.pool.get('product.pricelist')
+
+            # gets contract 018 (with tariff 2.0TD)
+            contract_id_index = imd_obj.get_object_reference(
+                cursor, uid, 'giscedata_polissa', 'polissa_tarifa_018'
+            )[1]
+
+            pricelist_id = imd_obj.get_object_reference(
+                cursor, uid, 'giscedata_facturacio',
+                'pricelist_tarifas_electricidad'
+            )[1]
+
+            # change formula to 'Pass-Through Ebroenergia'
+            pricelist_obj.write(cursor, uid, pricelist_id, {'indexed_formula': u'Indexada Balears'})
+
+            contract_obj.write(cursor, uid, [contract_id_index], {'mode_facturacio': 'index'})
+
+            contract_obj.send_signal(
+                cursor, uid, [contract_id_index], ['validar', 'contracte']
+            )
+            self.crear_modcon(
+                cursor, uid, contract_id_index, '2022-01-01', '2022-12-31'
+            )
+
+            context = {'llista_preu': pricelist_id}
+            versions = facturador_obj.versions_de_preus(
+                cursor, uid, contract_id_index, '2022-01-01', '2022-12-31',
+                context
+            )
+
+            curve_data = self.get_curve()
+            curve = Curve(datetime(2022, 1, 1))
+            curve.load(curve_data)
+
+            consums = {
+                'activa': {'2022-01-01': curve_data},
+                'reactiva': {'P1': 2}
+            }
+            tarifa = Tarifa20TDPoolSOM(
+                consums, {},
+                '2022-01-01', '2022-01-31',
+                facturacio=1, facturacio_potencia='icp',
+                data_inici_periode='2022-01-01',
+                data_final_periode='2022-01-31',
+                potencies_contractades={'P1': 4.6, 'P2': 4.6},
+                versions=versions,
+                holidays=HOLIDAYS,
+                esios_token=token,
+                audit=['pmd', 'curve', 'ph', 'phf'],
+                indexed_formula=u'Indexada Balears',
+                geom_zone='2'
+            )
+
+            component = tarifa.phf_calc_balears(
+                curve, date(2022, 1, 1)
+            )
+
+            # test component
+            tarifa.factura_energia()
+            assert tarifa.code == '2.0TD'
+
+            # CURVE
+            curve_audit = tarifa.get_audit_data('curve')
+            tarifa.dump_audit_data('curve', '/tmp/curve_data.csv')
+            # test
+            expect(curve_audit[0]).to(
+                equal(("2022-01-01 01", 0.001, '', ''))
+            )
+            expect(curve_audit[-1]).to(
+                equal(("2022-01-31 24", 0.03123, '', ''))
+            )
+            with open('/tmp/curve_data.csv', 'r') as curvefile:
+                first_line = curvefile.readline()
+            expect(first_line).to(equal('2022-01-01 01;0.001;;\r\n'))
+
+            if os.path.exists('/tmp/curve_data.csv'):
+                os.remove('/tmp/curve_data.csv')
+
+            # PH (coste horario)
+            tarifa.dump_audit_data('ph', '/tmp/ph_data.csv')
+            with open('/tmp/ph_data.csv', 'r') as curvefile:
+                first_line = curvefile.readline()
+            expect(first_line).to(equal('2022-01-01 01;1.187037;;\r\n'))
+
+            if os.path.exists('/tmp/ph_data.csv'):
+                os.remove('/tmp/ph_data.csv')
+
+            # PHF (precio horario)
+            tarifa.dump_audit_data('phf', '/tmp/phf_data.csv')
+            with open('/tmp/phf_data.csv', 'r') as curvefile:
+                first_line = curvefile.readline()
+            expect(first_line).to(equal('2022-01-01 01;0.001187;;\r\n'))
+
+            if os.path.exists('/tmp/phf_data.csv'):
+                os.remove('/tmp/phf_data.csv')
+
+    def test_phf_canaries(self):
+        facturador_obj = self.openerp.pool.get(
+            'giscedata.facturacio.facturador'
+        )
+        self.openerp.install_module(
+            'giscedata_tarifas_pagos_capacidad_20220101'
+        )
+        self.openerp.install_module(
+            'giscedata_tarifas_peajes_20220101'
+        )
+        self.openerp.install_module(
+            'giscedata_tarifas_cargos_20220101'
+        )
+
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            token = tools.config['esios_token']
+
+            contract_obj = self.openerp.pool.get('giscedata.polissa')
+            imd_obj = self.openerp.pool.get('ir.model.data')
+            pricelist_obj = self.openerp.pool.get('product.pricelist')
+
+            # gets contract 018 (with tariff 2.0TD)
+            contract_id_index = imd_obj.get_object_reference(
+                cursor, uid, 'giscedata_polissa', 'polissa_tarifa_018'
+            )[1]
+
+            pricelist_id = imd_obj.get_object_reference(
+                cursor, uid, 'giscedata_facturacio',
+                'pricelist_tarifas_electricidad'
+            )[1]
+
+            # change formula to 'Pass-Through Ebroenergia'
+            pricelist_obj.write(cursor, uid, pricelist_id, {'indexed_formula': u'Indexada Balears'})
+
+            contract_obj.write(cursor, uid, [contract_id_index], {'mode_facturacio': 'index'})
+
+            contract_obj.send_signal(
+                cursor, uid, [contract_id_index], ['validar', 'contracte']
+            )
+            self.crear_modcon(
+                cursor, uid, contract_id_index, '2022-01-01', '2022-12-31'
+            )
+
+            context = {'llista_preu': pricelist_id}
+            versions = facturador_obj.versions_de_preus(
+                cursor, uid, contract_id_index, '2022-01-01', '2022-12-31',
+                context
+            )
+
+            curve_data = self.get_curve()
+            curve = Curve(datetime(2022, 1, 1))
+            curve.load(curve_data)
+
+            consums = {
+                'activa': {'2022-01-01': curve_data},
+                'reactiva': {'P1': 2}
+            }
+            tarifa = Tarifa20TDPoolSOM(
+                consums, {},
+                '2022-01-01', '2022-01-31',
+                facturacio=1, facturacio_potencia='icp',
+                data_inici_periode='2022-01-01',
+                data_final_periode='2022-01-31',
+                potencies_contractades={'P1': 4.6, 'P2': 4.6},
+                versions=versions,
+                holidays=HOLIDAYS,
+                esios_token=token,
+                audit=['pmd', 'curve', 'ph', 'phf'],
+                indexed_formula=u'Indexada Canàries',
+                geom_zone='3'
+            )
+
+            component = tarifa.phf_calc_canaries(
+                curve, date(2022, 1, 1)
+            )
+
+            # test component
+            tarifa.factura_energia()
+            assert tarifa.code == '2.0TD'
+
+            # CURVE
+            curve_audit = tarifa.get_audit_data('curve')
+            tarifa.dump_audit_data('curve', '/tmp/curve_data.csv')
+            # test
+            expect(curve_audit[0]).to(
+                equal(("2022-01-01 01", 0.001, '', ''))
+            )
+            expect(curve_audit[-1]).to(
+                equal(("2022-01-31 24", 0.03123, '', ''))
+            )
+            with open('/tmp/curve_data.csv', 'r') as curvefile:
+                first_line = curvefile.readline()
+            expect(first_line).to(equal('2022-01-01 01;0.001;;\r\n'))
+
+            if os.path.exists('/tmp/curve_data.csv'):
+                os.remove('/tmp/curve_data.csv')
+
+            # PH (coste horario)
+            tarifa.dump_audit_data('ph', '/tmp/ph_data.csv')
+            with open('/tmp/ph_data.csv', 'r') as curvefile:
+                first_line = curvefile.readline()
+            expect(first_line).to(equal('2022-01-01 01;1.176631;;\r\n'))
+
+            if os.path.exists('/tmp/ph_data.csv'):
+                os.remove('/tmp/ph_data.csv')
+
+            # PHF (precio horario)
+            tarifa.dump_audit_data('phf', '/tmp/phf_data.csv')
+            with open('/tmp/phf_data.csv', 'r') as curvefile:
+                first_line = curvefile.readline()
+            expect(first_line).to(equal('2022-01-01 01;0.001177;;\r\n'))
+
+            if os.path.exists('/tmp/phf_data.csv'):
+                os.remove('/tmp/phf_data.csv')
