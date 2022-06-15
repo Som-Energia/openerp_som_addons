@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2022-06-15 10:12+0000\n"
-"PO-Revision-Date: 2022-06-15 10:12+0000\n"
+"POT-Creation-Date: 2022-06-15 16:25+0000\n"
+"PO-Revision-Date: 2022-06-15 16:25+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1747,9 +1747,7 @@ msgstr ""
 
 #: rml:som_infoenergia/report/components/antecedents/antecedents.mako:4
 #, python-format
-msgid ""
-"El volum total d’energia és d’aproximadament <strong>%s</strong> kWh "
-"anuals."
+msgid "El volum total d’energia és d’aproximadament <b>%s</b> kWh anuals."
 msgstr ""
 
 #: rml:som_infoenergia/report/components/conclusions/conclusions.mako:2
@@ -1808,8 +1806,8 @@ msgstr ""
 
 #: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:4
 msgid ""
-"PH = 1,015 * [(PrmDiari + Pc + SobrecostosREE + Interrump + "
-"P<sub>OsOm</sub>) (1 + Perd) + FE + K] + PA + CA"
+"PH = 1,015 * [(PHM + Pc + SobrecostosREE + Interrump + P<sub>OsOm</sub>) "
+"(1 + Perd) + FE + K] + PA + CA"
 msgstr ""
 
 #: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:5
@@ -1821,7 +1819,10 @@ msgid "<b>PH</b> = Preu horari de l’energia"
 msgstr ""
 
 #: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:8
-msgid "<b>PrmDiari</b> = Preu horari del mercat diari (OMIE)."
+msgid ""
+"<b>PHM</b> = Preu horari del mercat diari. Per als contractes de la "
+"península és el preu OMIE, mentre que a les illes Balears i Canàries és "
+"el preu horari de la demanda del sistema balear i canari respectivament."
 msgstr ""
 
 #: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:9
@@ -2048,54 +2049,51 @@ msgid ""
 "subministrament."
 msgstr ""
 
-#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:2
+#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:3
 msgid "Preus del terme de potència"
 msgstr ""
 
-#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:3
+#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:4
 msgid ""
 "El terme de potència serà el cost regulat, sense que Som Energia apliqui "
 "cap marge ni cost afegit. Aquests preus només seran modificables per "
 "canvis normatius."
 msgstr ""
 
-#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:7
+#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:8
 msgid "Periode tarifari"
 msgstr ""
 
-#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:8
+#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:9
 msgid "P1"
 msgstr ""
 
-#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:9
+#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:10
 msgid "P2"
 msgstr ""
 
-#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:10
+#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:11
 msgid "P3"
 msgstr ""
 
-#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:11
+#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:12
 msgid "P4"
 msgstr ""
 
-#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:12
+#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:13
 msgid "P5"
 msgstr ""
 
-#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:13
+#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:14
 msgid "P6"
 msgstr ""
 
 #: rml:som_infoenergia/report/components/power_prices/power_prices.mako:19
-msgid "Preu 3.0TD"
+#, python-format
+msgid "Preu %s"
 msgstr ""
 
 #: rml:som_infoenergia/report/components/power_prices/power_prices.mako:29
-msgid "Preu 6.1TD"
-msgstr ""
-
-#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:40
 msgid ""
 "Taula 1: Preus del terme de potència per període tarifari sense impostos "
 "(€/kW i any)"
@@ -2121,42 +2119,5 @@ msgstr ""
 msgid ""
 "Aquesta oferta té una vigència de 15 dies naturals a partir de la data "
 "d’oferta."
-msgstr ""
-
-#: rml:som_infoenergia/report/components/tail_text/tail_text.mako:6
-msgid "Garantia per impagament"
-msgstr ""
-
-#: rml:som_infoenergia/report/components/tail_text/tail_text.mako:7
-msgid ""
-"La contractació amb tarifa indexada està supeditada al pagament d’una "
-"<b>garantia en forma de dipòsit bancari executable en cas "
-"d’impagament.</b>"
-msgstr ""
-
-#: rml:som_infoenergia/report/components/tail_text/tail_text.mako:8
-#, python-format
-msgid ""
-"Aquest dipòsit de garantia està calculat a partir de l’ús d’energia fet "
-"servir l’últim any, aplicant la nostra predicció de preu indexat de "
-"l'electricitat dels mesos vinents (no preu fix com fins ara), sense els "
-"descomptes provisionals que actualment està aplicant l’Estat als impostos"
-" i sense el descompte en els càrrecs que es van aplicar fins al desembre."
-" Així, l’import del dipòsit és <b>%s €</b>."
-msgstr ""
-
-#: rml:som_infoenergia/report/components/tail_text/tail_text.mako:9
-msgid ""
-"Aquest import és la nostra estimació del que podria arribar a representar"
-" una factura teva els pròxims mesos, en el cas que el preu de "
-"l'electricitat es mantingui elevat durant cada hora del dia."
-msgstr ""
-
-#: rml:som_infoenergia/report/components/tail_text/tail_text.mako:10
-#, python-format
-msgid ""
-"El pagament s’haurà de fer efectiu al compte bancari de Som Energia dins "
-"dels 7 dies posteriors a la signatura del contracte i en tot cas, abans "
-"del <b>%s</b>"
 msgstr ""
 
