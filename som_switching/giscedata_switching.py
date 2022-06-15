@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 from datetime import datetime
+from tools.translate import _
+import pooler
 
 from giscedata_switching_comer.giscedata_switching import POTENCIES_TRIFASIQUES
 
