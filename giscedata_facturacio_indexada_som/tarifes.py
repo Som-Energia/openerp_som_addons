@@ -255,20 +255,23 @@ class TarifaPoolSOM(TarifaPool):
         perdues = self.perdclass('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
 
         # Pricelist and contract
+        # Coste remuneración REE
+        ree = self.get_coeficient_component(start_date, 'omie')  # [€/MWh]
         # Fondo de Eficiencia
         fe = self.get_coeficient_component(start_date, 'fe')  # [€/MWh]
         # Contract specific coeficients
         k = self.get_coeficient_component(start_date, 'k')  # [€/kWh]
+        d = self.get_coeficient_component(start_date, 'd')  # [€/kWh]
         # Municipal fee
         imu = self.get_coeficient_component(start_date, 'imu')  # [%]
 
         # peajes y cargos
         pa = self.get_peaje_component(start_date, holidays)  # [€/kWh]
 
-        A = ((sphdem + pc3_ree + si) * 0.001)
+        A = ((sphdem + pc3_ree + si + ree) * 0.001)
         B = (1 + (perdues * 0.01))
         C = A * B
-        D = (fe * 0.001) + k
+        D = (fe * 0.001) + k + d
         E = C + D
         F = E * (1 + (imu * 0.01))
         G = F + pa
@@ -323,20 +326,23 @@ class TarifaPoolSOM(TarifaPool):
         perdues = self.perdclass('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
 
         # Pricelist and contract
+        # Coste remuneración REE
+        ree = self.get_coeficient_component(start_date, 'omie')  # [€/MWh]
         # Fondo de Eficiencia
         fe = self.get_coeficient_component(start_date, 'fe')  # [€/MWh]
         # Contract specific coeficients
         k = self.get_coeficient_component(start_date, 'k')  # [€/kWh]
+        d = self.get_coeficient_component(start_date, 'd')  # [€/kWh]
         # Municipal fee
         imu = self.get_coeficient_component(start_date, 'imu')  # [%]
 
         # peajes y cargos
         pa = self.get_peaje_component(start_date, holidays)  # [€/kWh]
 
-        A = ((sphdem + pc3_ree + si) * 0.001)
+        A = ((sphdem + pc3_ree + si + ree) * 0.001)
         B = (1 + (perdues * 0.01))
         C = A * B
-        D = (fe * 0.001) + k
+        D = (fe * 0.001) + k + d
         E = C + D
         F = E * (1 + (imu * 0.01))
         G = F + pa
