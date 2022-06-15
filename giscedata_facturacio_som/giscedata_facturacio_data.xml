@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data noupdate="1">
+        <record model="res.config" id="dismiss_draft_inv_f1_payment" forcecreate="1">
+            <field name="name">dismiss_draft_inv_f1_payment</field>
+            <field name="value">1</field>
+            <field name="description">Permet evitar la comprovació de si hi ha factures en esborrany a una remesa d'F1. Si es deixa a 0, es fa la validació.</field>
+        </record>
+    </data>
+</openerp>
