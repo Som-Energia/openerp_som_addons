@@ -43,10 +43,6 @@ class GiscedataAtc(osv.osv):
             'tanca_al_finalitzar_r1': True,
             'crear_cas_r1': True,
             'autoreclama_history_initial_state_id': initial_state_id,
-            'overwrite': {
-                'agent_actual': '10',
-                'state': 'pending',
-            },
         }
         return self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
 
@@ -97,23 +93,9 @@ class GiscedataAtc(osv.osv):
             r1w_id = r1w_obj.create(cursor, uid, {}, r1w_ctx)
             subtype_r1_wiz = r1w_obj.action_subtype_fields_view(cursor, uid, [r1w_id], r1w_ctx)  # obtain subtype wizard R1
 
-            sr1w_ctx = eval(subtype_r1_wiz['context'])
             sr1w_obj = self.pool.get(subtype_r1_wiz['res_model'])  # "wizard.subtype.r1"
-            sr1w_id = sr1w_obj.create(cursor, uid, {}, sr1w_ctx)
-            r1_result = sr1w_obj.action_create_r1_case(cursor, uid, [sr1w_id], sr1w_ctx)  # create subtype R1 for example:029
-
-            atr_id = r1_result['domain'][0][2]
-            atr_model = r1_result.get('res_model', 'giscedata.switching')
-
-            r1_to_atc_ref = '{},{}'.format(atr_model, atr_id)
-            self.write(cursor, uid, atc_id, {'ref': r1_to_atc_ref})  # link the ATc case with the newly generated R1
-
-            atc_to_r1_ref = '{},{}'.format('giscedata.atc', atc_id)
-            atr_obj = self.pool.get(atr_model)
-            atr_obj.write(cursor, uid, atr_id, {'ref': atc_to_r1_ref})  # link the R1 with the atc
-
-        if 'overwrite' in case_data and type(case_data['overwrite']) == dict and case_data['overwrite'].keys():
-            self.write(cursor, uid, atc_id, case_data['overwrite'], context=ctx)
+            sr1w_id = sr1w_obj.create(cursor, uid, {}, r1w_ctx)
+            r1_result = sr1w_obj.action_create_r1_case(cursor, uid, [sr1w_id], r1w_ctx)  # create subtype R1 for example:029  # USE OLD CONTEXT!
 
         return atc_id
 
