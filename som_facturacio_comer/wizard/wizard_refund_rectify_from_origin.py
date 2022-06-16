@@ -237,7 +237,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             ], context=context)
             if f1_ids:
                 f1_id = f1_ids[0]
-                obs = f1_obj.read(cursor, uid, ['user_observations'], context=context)['user_observations'] or ''
+                obs = f1_obj.read(cursor, uid, f1_id, ['user_observations'], context=context)['user_observations'] or ''
                 f1_obj.write(cursor, uid, f1_id, {'user_observations': '{}\n{}'.format(text, obs)})
 
     def open_polissa_invoices_send_mail(self, cursor, uid, ids, facts_by_polissa, context={}):
@@ -247,14 +247,16 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         msg = []
         fact_csv_result = []
         for pol_name, facts_created in facts_by_polissa.items():
+            if not facts_created:
+                continue
             res = False
             if wiz.open_invoices:
-                res, msg_open = self.open_group_invoices(cursor, uid, ids, facts_created, po_id, context)
+                res, msg_open = self.open_group_invoices(cursor, uid, ids, facts_created, wiz.order.id, context)
                 msg.append("S'han obert les factures de la pòlissa {}. {}". format(pol_name, msg_open))
             if res and wiz.send_mail:
                 self.send_polissa_mail(cursor, uid, ids, pol_id, wiz.email_template, context)
                 msg.append("S'ha enviat el correu a la pòlissa {}.". format(pol_name))
-            fact_csv_result.append(['', pol_name, "Ha arribat al final del procés (obrir factures {}: {}, enviar correu: {}).".format(
+            fact_csv_result.append(['', pol_name, "Ha arribat al final del procés (obrir {} factures: {}, enviar correu: {}).".format(
                 len(facts_created), wiz.open_invoices and 'Sí' or 'No', wiz.send_mail and 'Sí' or 'No')
             ])
         return msg, fact_csv_result
