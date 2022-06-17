@@ -42,12 +42,12 @@ class SomAutoreclamaState(osv.osv):
                 new_atc_id = model_method(cursor, uid, atc_id, context)
         except Exception as e:
             tb = traceback.format_exc()
-            msg = _(u'Estat {} amb ERROR {}').format(state_name, e.message)
+            msg = _(u"Execució d'accions del estat {} genera ERROR {}").format(state_name, e.message)
             logger.info('**** CAPTURED '+'*'*45)
             logger.info(msg_head + msg)
             logger.info(tb)
             logger.info('**** CAPTURED '+'*'*45)
-            return {'do_change': False, 'message': msg}
+            return {'do_change': False, 'message': msg + "\n" + tb}
 
         msg = _(u'Estat {} executat, nou atc creat amb id {}').format(state_name, new_atc_id)
         logger.info(msg_head + msg)

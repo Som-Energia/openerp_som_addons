@@ -18,21 +18,37 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             ]
         return atc_obj.search(cursor, uid, search_params)
 
+    def get_autoreclama_state_name(self, cursor, uid, atc_id, context=None):
+        atc_obj = self.pool.get('giscedata.atc')
+        data = atc_obj.read(cursor, uid, atc_id, ['autoreclama_state'], context=context)
+        if 'autoreclama_state' in data and data['autoreclama_state'] and len(data['autoreclama_state']) > 1:
+            return data['autoreclama_state'][1]
+        return "No initial state"
+
     def update_atcs_if_possible(self, cursor, uid, ids, context=None):
         updated = []
         not_updated = []
         errors = []
+        msg = u""
 
         for atc_id in tqdm(ids):
+            actual_state = self.get_autoreclama_state_name(cursor, uid, atc_id, context)
             result, message = self.update_atc_if_possible(cursor, uid, atc_id, context)
             if result:
                 updated.append(atc_id)
+                next_state = self.get_autoreclama_state_name(cursor, uid, atc_id, context)
+                msg += _("Cas ATC amb id {} ha canviat d'estat: {} --> {}\n").format(atc_id, actual_state, next_state)
+                msg += _(" - {}\n").format(message)
             elif result == False:
                 not_updated.append(atc_id)
+                msg += _("Cas ATC amb id {} no li toca canviar d'estat, estat actual: {}\n").format(atc_id, actual_state)
+                msg += _(" - {}\n").format(message)
             else:
                 errors.append(atc_id)
+                msg += _("Cas ATC amb id {} no ha canviat d'estat per error, estat actual: {}\n").format(atc_id, actual_state)
+                msg += _(" - {}\n").format(message)
 
-        return updated, not_updated, errors
+        return updated, not_updated, errors, msg
 
     def update_atc_if_possible(self, cursor, uid, atc_id, context=None):
         atc_obj = self.pool.get("giscedata.atc")
@@ -69,11 +85,12 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         return False, _(u'No compleix cap condició activa, examinades {} condicions.').format(len(cond_ids))
 
     def state_updater(self, cursor, uid, context=None):
-        if context is None:
-            context = {}
-
         atc_ids = self.get_atc_candidates_to_update(cursor, uid, context)
         return self.update_atcs_if_possible(cursor, uid, atc_ids, context)
+
+    def state_updater_mail_text(self, cursor, uid, context=None):
+        _,_,_, msg = self.state_updater(cursor, uid, context)
+        return msg
 
 
 SomAutoreclamaStateUpdater()
