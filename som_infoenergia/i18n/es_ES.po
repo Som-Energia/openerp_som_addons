@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2022-06-15 16:25+0000\n"
-"PO-Revision-Date: 2022-06-15 14:31+0000\n"
+"POT-Creation-Date: 2022-06-17 13:58+0000\n"
+"PO-Revision-Date: 2022-06-17 12:04+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -1798,9 +1798,9 @@ msgstr "En el término de energía se presenta una oferta indexada en relación 
 
 #: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:4
 msgid ""
-"PH = 1,015 * [(PHM + Pc + SobrecostosREE + Interrump + P<sub>OsOm</sub>) (1 "
-"+ Perd) + FE + K] + PA + CA"
-msgstr "PH = 1,015 * [(PHM + Pc + SobrecostesREE + Interrump + P<sub>OsOm</sub>) (1 + Perd) + FE + K] + PA + CA"
+"PH = 1,015 * [(PHM + PHMA + Pc + SobrecostosREE + Interrump + "
+"P<sub>OsOm</sub>) (1 + Perd) + FE + K] + PA + CA"
+msgstr "PH = 1,015 * [(PHM + PHMA + Pc + SobrecostesREE + Interrump + P<sub>OsOm</sub>) (1 + Perd) + FE + K] + PA + CA"
 
 #: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:5
 msgid "On:"
@@ -1819,60 +1819,67 @@ msgstr "<b>PHM</b> = Precio horario del mercado diario. Para los contratos de la
 
 #: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:9
 msgid ""
+"<b>PHMA</b> = Preu horari del Mecanisme d’Ajust als costos de producció "
+"d’electricitat mitjançant el gas."
+msgstr "<b>PHMA</b> = Precio horario del Mecanismo de Ajuste a los costes de producción de electricidad mediante el gas."
+
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:10
+msgid ""
 "<b>Pc</b> = Pagaments per Capacitat definits pel Ministeri corresponent."
 msgstr "<b>Pc</b> = Pagos por Capacidad definidos por el Ministerio correspondiente."
 
-#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:10
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:11
 msgid ""
 "<b>SobrecostosREE</b> = sobrecostos publicats per REE per la gestió de la "
 "xarxa."
 msgstr "<b>SobrecostesREE</b> = sobrecostes publicados por REE para la gestión de la red."
 
-#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:11
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:12
 msgid "<b>Interrump</b> = Cost del servei d’Interrumpibilitat."
 msgstr "<b>Interrump</b> = Coste del servicio de Interrumpibilidad."
 
-#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:12
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:13
 msgid ""
 "<b>P<sub>OsOm</sub></b> = Cost de l’Operador del sistema (REE) i de "
-"l’Operador del Mercat (OMIE)."
-msgstr "<b>P<sub>OsOm</sub></b> = Coste del Operador del sistema (REE) y del Operador del Mercado (OMIE)."
+"l’Operador del Mercat (OMIE). (El cost de l’Operador del Mercat (OMIE) no "
+"aplica a contractes de Balears i Canàries)"
+msgstr "<b>P<sub>OsOm</sub></b> = Coste del Operador del sistema (REE) i del Operador del Mercado (OMIE). (El coste del Operador del Mercado (OMIE) no aplica a contratos de Baleares y Canarias)."
 
-#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:13
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:14
 msgid ""
 "<b>Perd</b> = Pèrdues regulades de sistema des del punt de generació al punt"
 " de consum."
 msgstr "<b>Perd</b> = Pérdidas reguladas de sistema desde el punto de generación al punto de consumo."
 
-#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:14
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:15
 msgid "<b>FE</b> = Aportació al Fons d’Eficiència Energètica."
 msgstr "<b>FE</b> = Aportación al Fondo de Eficiencia Energética."
 
-#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:15
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:16
 msgid ""
 "<b>K</b> = Marge de comercialització (que inclou els costos de desviament)."
 msgstr "<b>K</b> = Margen de comercialización (que incluye los costes de desvío)."
 
-#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:16
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:17
 msgid "<b>PA</b> = Peatges de transport i distribució definits per la CNMC."
 msgstr "<b>PA</b> = Peajes de transporte y distribución definidos por la CNMC."
 
-#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:17
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:18
 msgid "<b>CA</b> = Càrrecs del sistema definits pel Ministeri corresponent."
 msgstr "<b>CA</b> = Cargos del sistema definidos por el Ministerio correspondiente."
 
-#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:19
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:20
 msgid ""
 "El marge de comercialització inclòs els costos de desviament pel punt de "
 "subministrament resulta:"
 msgstr "El margen de comercialización incluido los costes de desvío por el punto de suministro resulta:"
 
-#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:20
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:21
 #, python-format
 msgid "<b>%s Euros/MWh</b>"
 msgstr "<b>%s Euros/MWh</b>"
 
-#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:21
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:22
 #, python-format
 msgid ""
 "En cas de procedir a la contractació, aquest marge es podrà revisar "
