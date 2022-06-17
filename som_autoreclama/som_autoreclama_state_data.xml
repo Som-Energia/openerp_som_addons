@@ -523,7 +523,7 @@
             <field name="doall" eval="False"/>
             <field name="active" eval="False"/>
             <field name="model" eval="'som.autoreclama.state.updater'"/>
-            <field name="function" eval="'state_updater'"/>
+            <field name="function" eval="'state_updater_mail_text'"/>
             <field name="args" eval="'([],)'"/>
         </record>
     </data>
