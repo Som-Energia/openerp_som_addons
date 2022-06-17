@@ -6,6 +6,7 @@ from .erpwrapper import ErpWrapper
 from dateutil.relativedelta import relativedelta
 from datetime import datetime, date
 from yamlns import namespace as ns
+from calendar import isleap
 from generationkwh.isodates import isodate
 from tools.translate import _
 from tools import config
@@ -1747,33 +1748,65 @@ class GenerationkwhInvestment(osv.osv):
         return has_invoice
 
     def get_to_be_interized(self, cursor, uid, investment_id, vals, context=None):
+        """
+        1) Si l'aportació no està pagada, error
+        2) Si l'aportació s'ha desinventit abans de la data_start, error
+        3) Si l'aportació ha rebut interessos a data posterior a data_start, error
+        4) Si l'aportacio ha rebut interessos:
+                Si l'aportació ha rebut interessos a data posterior que la data_start, error
+           Altrament:
+                Si la data de compra és posterior a data_start, actualitzem data_start
+        5) Si s'ha desinvertit abans de date_end, actualtizem date_end
+        6) Si entre date_start i date_end hi ha menys de 0 dies, error
+        7) Afegim 1 dia al rang de dies, per incloure tots els dies del periode
+        """
         interest_rate = vals['interest_rate']
         Investment = self.pool.get('generationkwh.investment')
         investment = Investment.browse(cursor, uid, investment_id)
 
-        if not investment.purchase_date:
+        date_start = vals['date_start']
+        date_start_dt = datetime.strptime(date_start,'%Y-%m-%d')
+        date_end = vals['date_end']
+        date_end_dt = datetime.strptime(date_end,'%Y-%m-%d')
+        purchase_date = investment.purchase_date
+        last_effective_date = investment.last_effective_date
+        last_interest_payed_date = investment.last_interest_payed_date
+
+        if not purchase_date:
             raise InvestmentException("Cannot pay interest of an unpaid investment")
-        if investment.last_effective_date and investment.last_effective_date < vals['date_start']:
+        if last_effective_date and last_effective_date < date_start:
             raise InvestmentException("Cannot pay interest of a divested investment")
-        if investment.last_interest_payed_date and vals['date_start'] < investment.last_interest_payed_date:
+        if last_interest_payed_date and date_start <= last_interest_payed_date:
             raise InvestmentException("Cannot pay interest of a already paid interest")
 
-        start_date_dt = datetime.strptime(vals['date_start'],'%Y-%m-%d')
-        if investment.last_interest_payed_date:
-            start_date_dt = max(datetime.strptime(vals['date_start'],'%Y-%m-%d'),
-                datetime.strptime(investment.last_interest_payed_date,'%Y-%m-%d'))
-        end_date_dt = datetime.strptime(vals['date_end'],'%Y-%m-%d')
-        if investment.last_effective_date:
-             end_date_dt = datetime.strptime(investment.last_effective_date,'%Y-%m-%d')
+        if last_interest_payed_date:
+            first_date_to_pay_dt = datetime.strptime(last_interest_payed_date,'%Y-%m-%d') + relativedelta(days=1)
+            if date_start_dt > first_date_to_pay_dt:
+                raise InvestmentException("Selected dates create a period without paid interests")
+        else:
+            if purchase_date > date_start:
+                date_start_dt = datetime.strptime(purchase_date,'%Y-%m-%d')
 
-        days_of_interest = (end_date_dt - start_date_dt).days
+        if last_effective_date and date_end >= last_effective_date:
+            date_end_dt = datetime.strptime(investment.last_effective_date,'%Y-%m-%d')
+
+        days_of_interest = (date_end_dt - date_start_dt).days
+
         if days_of_interest < 0:
             raise InvestmentException("Cannot pay interest of a negative dates range")
-        else:
-            # We want to include both stard and end date days
-            days_of_interest += 1
+        days_of_interest += 1
         amount = investment.nshares * gkwh.shareValue
-        daily_interest = (interest_rate/100) / 365
+        start_year = date_start_dt.year
+        end_year = date_end_dt.year
+        
+        if start_year != end_year and (isleap(start_year) or isleap(end_year)):    
+            start_year_days = (date_start_dt - datetime(start_year,12,31)).days
+            end_year_days = (datetime(end_year,1,1) - date_end_dt ).days
+            start_year_days_factor = start_year_days/(366 if isleap(start_year) else 365)
+            end_year_days_factor = end_year_days/(366 if isleap(end_year) else 365)
+            daily_interest = (interest_rate/100) / (start_year_days_factor + end_year_days_factor)
+        else:
+            daily_interest = (interest_rate/100) / (366 if isleap(start_year) else 365)
 
         return round(amount * daily_interest * days_of_interest, 2)
 
