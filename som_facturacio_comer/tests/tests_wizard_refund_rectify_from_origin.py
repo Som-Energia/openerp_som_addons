@@ -221,3 +221,6 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
             cursor, uid, wiz_id, fact_info['polissa_id'][0], fact_info['data_inici'], fact_info['data_final'], context=ctx
         )
         self.assertEqual(sorted(result[0]), sorted(f_cli_ids[:2]))
+
+    def test_dummy(self):
+        self.assertEqual(1,1)
