@@ -84,7 +84,8 @@ class WizardFacturesLiquidacioInteressos(osv.osv_memory):
             apos_emission = Emission.search(cursor, uid, [('type','=','apo')])
             search_params = [
                 ('emission_id', 'in', apos_emission),
-                ('purchase_date', '>=', wiz.date_start),
+                ('purchase_date', '<=', wiz.date_end),
+                '|', ('last_effective_date', '=', False), ('last_effective_date', '>=', wiz.date_start),
                 ('active', '=', True)
             ]
             investments_ids = Investment.search(cursor, uid, search_params)
