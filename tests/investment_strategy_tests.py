@@ -154,7 +154,7 @@ class InvestmentStrategyTests(testing.OOTestCase):
                 - account_analytic_id: false
                   uos_id: PCE
                   account_id: 163000{num_soci:0>6s} {p.name}
-                  name: 'Interessos fins a 30/06/2021 de {investment_name} '
+                  name: 'Interessos des de 01/07/2020 fins a 30/06/2021 de {investment_name} '
                   discount: 0.0
                   invoice_id:
                   - {id}
@@ -164,13 +164,113 @@ class InvestmentStrategyTests(testing.OOTestCase):
                   price_subtotal: 10.0
                   note:
                     dateInvoice: '{invoice_date}'
-                    dateEnd: '2021-06-30'
+                    actionDateEnd: '2021-06-30'
+                    actionDateStart: '2020-07-01'
                     interestRate: 1.0
                     investmentId: {investment_id}
                     investmentInitialAmount: 1000
                     investmentLastEffectiveDate: false
                     investmentName: APO00003
                     investmentPurchaseDate: '2020-03-12'
+                  quantity: 1.0
+                  product_id: '[APO_INT] Interessos Aportacions'
+                  invoice_line_tax_id:
+                  - {invoice_line_tax_id}
+                journal_id: Factures Aportacions
+                mandate_id: False
+                name: {investment_name}-INT{year}
+                number: {investment_name}-INT{year}
+                origin: {investment_name}
+                partner_bank: {iban}
+                partner_id:
+                - {p.id}
+                - {p.name}
+                payment_type:
+                - 3
+                - Transferencia
+                sii_to_send: false
+                type: in_invoice
+                state: draft
+                """.format(
+                invoice_date=datetime.today().strftime("%Y-%m-%d"),
+                id=invoice_ids,
+                iban='ES37 0151 7119 6002 1121 9240',
+                year=datetime.today().strftime("%Y"),
+                investment_name=investment.name,
+                p=partner_data,
+                num_soci= partner_data.ref[1:],
+                investment_id=id,
+                taxes_id=taxes_id,
+                invoice_line_tax_id=invoice.invoice_line[0].invoice_line_tax_id[0].id
+                ))
+
+    def test__create_interest_invoices__AllOkAPO_middlePurchaseDateAndLastEffectiveDate(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            product_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'apo_product_int'
+            )[1]
+            taxes_id = self.Product.read(cursor, uid, product_id, ['supplier_taxes_id'])
+            id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'apo_0003'
+            )[1]
+            self.Investment.write(cursor, uid, id, {
+                'purchase_date': '2020-08-01', 'last_effective_date': '2021-02-01'
+            })
+            today = datetime.now().strftime('%Y-%m-%d')
+            current_interest = self.Emission.current_interest(cursor, uid)
+            vals = {
+                'date_invoice': today,
+                'interes': current_interest,
+                'date_start': '2020-07-01',
+                'date_end': '2021-06-30',
+                'to_be_interized': 10,
+                'interest_rate': current_interest
+            }
+            invoice_ids, errs =  self.Investment.create_interest_invoice(cursor, uid,
+            [id], vals)
+
+            self.assertFalse(errs)
+            self.assertTrue(invoice_ids)
+            invoice = self.Invoice.browse(cursor, uid, invoice_ids)
+            investment = self.Investment.browse(cursor, uid, id)
+            iban = 'ES7712341234161234567890'
+            partner_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'res_partner_aportacions'
+                        )[1]
+            emission_data = investment.emission_id
+            partner_data = self.Partner.browse(cursor, uid, partner_id)
+
+            self.assertInvoiceInfoEqual(cursor, uid, invoice_ids, u"""\
+                account_id: 410000{num_soci:0>6s} {p.name}
+                amount_total: 8.1
+                amount_untaxed: 10.0
+                check_total: 8.1
+                date_invoice: '{invoice_date}'
+                id: {id}
+                invoice_line:
+                - account_analytic_id: false
+                  uos_id: PCE
+                  account_id: 163000{num_soci:0>6s} {p.name}
+                  name: 'Interessos des de 01/08/2020 fins a 01/02/2021 de {investment_name} '
+                  discount: 0.0
+                  invoice_id:
+                  - {id}
+                  - 'SI: {investment_name}'
+                  origin: false
+                  price_unit: 10.0
+                  price_subtotal: 10.0
+                  note:
+                    dateInvoice: '{invoice_date}'
+                    actionDateEnd: '2021-06-30'
+                    actionDateStart: '2020-07-01'
+                    interestRate: 1.0
+                    investmentId: {investment_id}
+                    investmentInitialAmount: 1000
+                    investmentLastEffectiveDate: '2021-02-01'
+                    investmentName: APO00003
+                    investmentPurchaseDate: '2020-08-01'
                   quantity: 1.0
                   product_id: '[APO_INT] Interessos Aportacions'
                   invoice_line_tax_id:
