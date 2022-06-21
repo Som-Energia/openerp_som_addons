@@ -47,6 +47,10 @@ p.center {
   text-align: center;
 }
 
+p sub {
+  margin-left:-8px;
+}
+
 .data-oferta {
   font-size: 18px;
   text-align: center;
