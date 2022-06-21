@@ -62,7 +62,7 @@ first_pass = True
         <td></td>
     </tr>
     <tr class="tr_bold">
-        <td class="detall_td">${_(u"kW x €/kW x (%.f/%d) dies") %(int(power_lines_data.multi), power_lines_data.days_per_year)}</td>
+        <td class="detall_td">${_(u"kW x €/kW x (%.f/%d) dies (del %s al %s)") %(int(power_lines_data.multi), power_lines_data.days_per_year, power_lines_data.data_from, power_lines_data.data_to)}</td>
         % if len(id.showing_periods) == 3:
             % for p in id.showing_periods[:-1]:
                 % if p in power_lines_data:
