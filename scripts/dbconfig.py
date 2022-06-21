@@ -1,1 +1,1 @@
-../../../../dbconfig.py
+../../../dbconfig.py
