@@ -88,14 +88,14 @@ first_pass = True
 % for l in id.iva_lines:
     <tr>
         <td class="td_first concepte_td">${l['name']}</td>
-        <td class="detall_td" colspan="${id.number_of_columns}">${_(u"%s €") % (formatLang(l['base']))}${_(u"(BASE IMPOSABLE)")}</td>
+        <td class="detall_td" colspan="${id.number_of_columns}">${_(u"%s € ") % (formatLang(l['base']))}${_(u"(BASE IMPOSABLE)")}</td>
         <td class="subtotal">${_(u"%s €") % formatLang(l['amount'])}</td>
     </tr>
 % endfor
 % for l in id.igic_lines:
     <tr>
         <td class="td_first concepte_td">${l['name']}</td>
-        <td class="detall_td" colspan="${id.number_of_columns}">${_(u"%s €") % (formatLang(l['base']))}${_(u"(BASE IMPOSABLE)")}</td>
+        <td class="detall_td" colspan="${id.number_of_columns}">${_(u"%s € ") % (formatLang(l['base']))}${_(u"(BASE IMPOSABLE)")}</td>
         <td class="subtotal">${_(u"%s €") % formatLang(l['amount'])}</td>
     </tr>
 % endfor

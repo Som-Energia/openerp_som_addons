@@ -47,7 +47,7 @@ first_energy_line = True
         <td></td>
     </tr>
     <tr class="tr_bold">
-        <td class="detall_td">${_(u"kWh x €/kWh")}</td>
+        <td class="detall_td">${_(u"kWh x €/kWh (del %s al %s)") % (energy_lines_data.data_from, energy_lines_data.data_to)}</td>
         % for p in id.showing_periods:
             % if p in energy_lines_data:
                 <td>${_(u"%s €") %(formatLang(energy_lines_data[p]["price_subtotal"]))}</td>
