@@ -8,6 +8,7 @@
     "category": "Master",
     "depends":[
         "giscedata_facturacio_comer_bono_social",
+        "giscedata_facturacio_impagat_comer",
         "account_invoice_pending",
         "giscedata_facturacio",
         "l10n_ES_cobros_ventanilla",
