@@ -49,5 +49,13 @@
             <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
             <field name="pending_days_type">natural</field>
         </record>
+        <!-- Other Account journal -->
+        <record model="account.journal" id="other_journal">
+            <field name="name">Other</field>
+            <field name="code">Other</field>
+            <field name="type">cash</field>
+            <field name="view_id" ref="account.account_journal_bank_view"/>
+            <field name="sequence_id" ref="account.sequence_journal"/>
+        </record>
     </data>
 </openerp>
