@@ -5,7 +5,6 @@
     "website" : "https://github.com/Som-Energia/powersms",
     "category" : "Added functionality",
     "depends" : [
-        'base_extended',
         'giscedata_facturacio_impagat_comer',
         ],
     "description": """Power SMS""",
