@@ -13,7 +13,6 @@ Mòdul per la integració de l'oficina virtual
         "som_polissa_soci",
         "giscedata_lectures_comer",
         "giscedata_lectures_pool",
-        "giscedata_facturacio_impagat",
         "giscedata_facturacio_impagat_comer",
         "giscedata_atc_switching",
     ],
