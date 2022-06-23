@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 {
     "name": "Procediments d'impagats específics de Som Energia",
-    "description": """Mòdul per a la gestió dels impagaments de contractes 
+    "description": """Mòdul per a la gestió dels impagaments de contractes
         especifics de SomEngergia""",
     "version": "0.1.2",
     "author": "Som Energia SCCL",
     "category": "Master",
     "depends":[
-        "giscedata_facturacio_impagat_comer",
         "account_invoice_pending",
         "giscedata_facturacio",
         "l10n_ES_cobros_ventanilla",
         "powersms",
+        "giscedata_facturacio_impagat_comer",
         "www_som",
         "poweremail"
    ],
