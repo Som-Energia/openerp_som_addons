@@ -7,7 +7,6 @@
     "author": "Som Energia SCCL",
     "category": "Master",
     "depends":[
-        "giscedata_facturacio_comer_bono_social",
         "giscedata_facturacio_impagat_comer",
         "account_invoice_pending",
         "giscedata_facturacio",
