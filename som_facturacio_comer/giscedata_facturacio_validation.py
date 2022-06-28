@@ -74,7 +74,7 @@ class GiscedataFacturacioValidationValidator(osv.osv):
             fact_obj = self.pool.get('giscedata.facturacio.factura')
 
             pol_obj = self.pool.get('giscedata.polissa')
-            teoric_maximum_consume_GC = pol_obj.read(cursor, uid, fact.polissa_id.id, ['teoric_maximum_consume_GC'])['teoric_maximum_consume_GC']
+            teoric_maximum_consume_gc = pol_obj.read(cursor, uid, fact.polissa_id.id, ['teoric_maximum_consume_gc'])['teoric_maximum_consume_gc']
 
             n_months = parameters['n_months']
             min_periods = parameters.get('min_periods', False)
@@ -95,7 +95,7 @@ class GiscedataFacturacioValidationValidator(osv.osv):
             if number_of_invoices > 0:
                 max_consume = max(parameter_by_date.values())
 
-            if (not max_consume or number_of_invoices < n_months) and (not teoric_maximum_consume_GC or teoric_maximum_consume_GC == 0):
+            if (not max_consume or number_of_invoices < n_months) and (not teoric_maximum_consume_gc or teoric_maximum_consume_gc == 0):
                 return {
                     'invoice_consume': fact.energia_kwh,
                 }
@@ -138,13 +138,13 @@ class GiscedataFacturacioValidationValidator(osv.osv):
                 max_consume = max(parameter_by_date.values())
 
             pol_obj = self.pool.get('giscedata.polissa')
-            teoric_maximum_consume_GC = pol_obj.read(cursor, uid, fact.polissa_id.id, ['teoric_maximum_consume_GC'])['teoric_maximum_consume_GC']
+            teoric_maximum_consume_gc = pol_obj.read(cursor, uid, fact.polissa_id.id, ['teoric_maximum_consume_gc'])['teoric_maximum_consume_gc']
 
             if not max_consume or number_of_invoices < n_months:
                 max_consume = False
 
-            if not max_consume and teoric_maximum_consume_GC and teoric_maximum_consume_GC > 0:
-                max_consume = teoric_maximum_consume_GC
+            if not max_consume and teoric_maximum_consume_gc and teoric_maximum_consume_gc > 0:
+                max_consume = teoric_maximum_consume_gc
 
             if max_consume:
                 percentage_margin = parameters['overuse_percentage']
@@ -156,7 +156,7 @@ class GiscedataFacturacioValidationValidator(osv.osv):
                         'percentage': percentage_margin,
                         'maximum_consume': max_consume,
                         'n_months': n_months,
-                        'maximum_teoric_consume_GC': teoric_maximum_consume_GC if teoric_maximum_consume_GC else 0,
+                        'maximum_teoric_consume_GC': teoric_maximum_consume_gc if teoric_maximum_consume_gc else 0,
                     }
 
         return None
