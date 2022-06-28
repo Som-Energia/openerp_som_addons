@@ -584,5 +584,50 @@ import_factura = object.residual
 ]]>
             </field>
         </record>
+
+        <record model="poweremail.templates" id="tpv_pay_alert_template_som">
+            <field name="name">Gestió de cobraments - Avís Factura pagada per TPV</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.facturacio.factura')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">giscedata.facturacio.factura</field>
+            <field name="def_to">cobraments@somenergia.coop</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Avís Factura pagada per TPV</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang"/>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_bcc"></field>
+            <field name="def_cc"></field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Gestió de Cobraments')]"/>
+            <field name="def_body_text"><![CDATA[<!doctype html>
+                <html>
+                <head></head>
+                <body>
+                Este correo ha estado generado automáticamente.
+                </body>
+                </html>
+                ]]></field>
+        </record>
+    </data>
+
+    <data noupdate="1">
+        <record model="res.config" id="pay_alert_pending_states_som" forcecreate="1">
+            <field name="name">pay_alert_pending_states_som</field>
+            <field name="value">[]</field>
+            <field name="description">Estats pendents on volem rebre avís en rebre un pagament per TPV.\n(ids d'estats pendents) Ex: [3,12,33]</field>
+        </record>
+        <!-- Account journal for TPV payments -->
+        <record model="account.journal" id="tpv_journal">
+            <field name="name">TPV</field>
+            <field name="code">TPV</field>
+            <field name="type">cash</field>
+            <field name="view_id" ref="account.account_journal_bank_view"/>
+            <field name="sequence_id" ref="account.sequence_journal"/>
+            <!--field name="default_debit_account_id" model="account.account" search="[('type','=','cash')]"/-->
+            <!--field name="default_credit_account_id" model="account.account" search="[('type','=','cash')]"/-->
+        </record>
     </data>
 </openerp>

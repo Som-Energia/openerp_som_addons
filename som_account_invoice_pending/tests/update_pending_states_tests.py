@@ -274,23 +274,6 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
         self.assertEqual(inv_data.pending_state.id, self.annexIII_first_sent)
 
-    @mock.patch('som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email')
-    def test__update_unpaid_invoice_waiting_annexIII_first_email_unsend(self, mock_function):
-        cursor = self.txn.cursor
-        uid = self.txn.user
-        self._load_data_unpaid_invoices(cursor, uid, [self.waiting_annexIII_first])
-
-        mock_function.return_value = -1
-
-        pending_obj = self.pool.get('update.pending.states')
-        fact_obj = self.pool.get('giscedata.facturacio.factura')
-        inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
-        self.assertEqual(inv_data.pending_state.id, self.waiting_annexIII_first)
-
-        pending_obj.update_waiting_for_annexIII_first(cursor, uid)
-        inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
-        self.assertEqual(inv_data.pending_state.id, self.waiting_annexIII_first)
-
     def test__update_unpaid_invoice_waiting_for_annexIII_second_no_update(self):
         cursor = self.txn.cursor
         uid = self.txn.user
@@ -318,29 +301,6 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
 
         inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
         self.assertEqual(inv_data.pending_state.id, self.annexIII_second_sent)
-
-    @mock.patch('som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email')
-    def test__update_unpaid_invoice_waiting_annexIII_second_email_unsend(self, mock_function):
-        cursor = self.txn.cursor
-        uid = self.txn.user
-        self._load_data_unpaid_invoices(cursor, uid, [self.waiting_annexIII_second])
-
-        pending_obj = self.pool.get('update.pending.states')
-        fact_obj = self.pool.get('giscedata.facturacio.factura')
-        inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
-        self.assertEqual(inv_data.pending_state.id, self.waiting_annexIII_second)
-        mock_function.return_value = -1
-
-        pending_obj.update_waiting_for_annexIII_second(cursor, uid)
-
-        params = {
-            'email_from': self.account_id,
-            'template_id': self.annex3_template_id,
-        }
-        mock_function.assert_called_once_with(cursor, uid, self.invoice_1_id, params)
-
-        inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
-        self.assertEqual(inv_data.pending_state.id, self.waiting_annexIII_second)
 
     @mock.patch('som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email')
     @mock.patch('som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_sms')
