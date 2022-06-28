@@ -111,7 +111,7 @@ def is_6XTD(pol):
     return pol.tarifa.codi_ocsum in ('020', '021', '022', '023', '025')
 
 def is_indexed(fact):
-    return fact.llista_preu.name == 'Indexada'
+    return 'Indexada' in fact.llista_preu.name
 
 def val(object):
     try:
