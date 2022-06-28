@@ -135,6 +135,9 @@ class TarifaPoolSOM(TarifaPool):
         ):
             ajom = self.get_coeficient_from_dict(start_date, 'ajom')
             A += ajom * 0.001
+        else:
+            ajom = None
+            maj3 = None
 
         B = (1 + (perdues * 0.01))
         C = A * B
@@ -151,6 +154,8 @@ class TarifaPoolSOM(TarifaPool):
                 self.audit_data[key] = []
             var_name = audit_keys[key]
             com = locals()[var_name]
+            if com is None:
+                continue
             self.audit_data[key].extend(
                 com.get_audit_data(start=start_date.day)
             )
@@ -226,6 +231,9 @@ class TarifaPoolSOM(TarifaPool):
             maj3.load(grcosdnc.indicators[GRCOSDNC_MAGNS_2022[12]])
 
             A += (ajom + maj3) * 0.001
+        else:
+            ajom = None
+            maj3 = None
 
         B = (1 + (perdues * 0.01))
         C = A * B
@@ -242,6 +250,8 @@ class TarifaPoolSOM(TarifaPool):
                 self.audit_data[key] = []
             var_name = audit_keys[key]
             com = locals()[var_name]
+            if com is None:
+                continue
             self.audit_data[key].extend(
                 com.get_audit_data(start=start_date.day)
             )
