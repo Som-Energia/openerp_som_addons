@@ -152,7 +152,7 @@ class TestsFacturesValidation(testing.OOTestCase):
 
         pol = polissa_obj.browse(cursor, uid, polissa_id)
         pol.send_signal(['modcontractual'])
-        polissa_obj.write(cursor, uid, polissa_id, {'teoric_maximum_consume_GC': teoric_max})
+        polissa_obj.write(cursor, uid, polissa_id, {'teoric_maximum_consume_gc': teoric_max})
         wz_crear_mc_obj = pool.get('giscedata.polissa.crear.contracte')
 
         ctx = {'active_id': polissa_id}

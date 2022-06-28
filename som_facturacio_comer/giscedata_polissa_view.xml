@@ -10,7 +10,7 @@
             <field name="arch" type="xml">
                 <field name="deposit" position="after">
                     <group col="2" colspan="2">
-                        <field name="teoric_maximum_consume_GC" string="Teoric maximum consume GC" select="2" widget="char"/>
+                        <field name="teoric_maximum_consume_gc" string="Teoric maximum consume GC" select="2" widget="char"/>
                     </group>
                 </field>
             </field>
