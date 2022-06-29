@@ -137,7 +137,6 @@ class TarifaPoolSOM(TarifaPool):
             A += ajom * 0.001
         else:
             ajom = None
-            maj3 = None
 
         B = (1 + (perdues * 0.01))
         C = A * B
@@ -225,15 +224,9 @@ class TarifaPoolSOM(TarifaPool):
                 (start_date.year == 2023 and start_date.month < 6)
         ):
             ajom = self.get_coeficient_from_dict(start_date, 'ajom')
-
-            grcosdnc = Grcosdnc('C2_grcosdnc_%(postfix)s' % locals(), esios_token)  # [€/MWh]
-            maj3 = Component(data=grcosdnc.start_date, version=grcosdnc.version)
-            maj3.load(grcosdnc.indicators[GRCOSDNC_MAGNS_2022[12]])
-
-            A += (ajom + maj3) * 0.001
+            A += ajom * 0.001
         else:
             ajom = None
-            maj3 = None
 
         B = (1 + (perdues * 0.01))
         C = A * B
