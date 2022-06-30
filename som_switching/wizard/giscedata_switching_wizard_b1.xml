@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_wizard_switching_accio_polissa_b101_form_som" model="ir.ui.view">
+            <field name="name">wizard.switching.polissa.b101.form.som</field>
+            <field name="model">giscedata.switching.b101.wizard</field>
+            <field name="inherit_id" ref="giscedata_switching.view_wizard_switching_accio_polissa_b101_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <xpath expr="/form/group/field[@name='activacio']" position="after">
+                    <field name="phone_pre" colspan="2"/>
+                    <field name="phone_num" colspan="2"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
