@@ -84,7 +84,7 @@ class TestActivacioM1(TestSwitchingImport):
             context = {}
         uid = txn.user
         cursor = txn.cursor
-        m1 = self.get_m1_02_ct(txn, contract_id, 'T')
+        m1 = self.get_m1_02_ct(txn, contract_id, 'T', context)
         self.ResConfig.set(cursor, uid, 'sw_m1_owner_change_auto', '1')
         self.create_step(
             cursor, uid, m1, 'M1', '05', context=None
@@ -191,8 +191,13 @@ class TestActivacioM1(TestSwitchingImport):
             mock_lectures.return_value = []
 
             contract_id = self.get_contract_id(txn, 'polissa_tarifa_018')
+            contract = self.Polissa.browse(cursor, uid, contract_id)
+            contract.send_signal(['validar', 'contracte'])
+            contract.modcontractual_activa.write({'data_final': '2022-01-01'})
 
-            m1 = self.get_m1_05_traspas(txn, contract_id, {'polissa_xml_id': 'polissa_tarifa_018'})
+            m1 = self.get_m1_05_traspas(txn, contract_id, {'polissa_xml_id': 'polissa_tarifa_018', 'data_activacio': '2021-06-30'})
+            m1.ref.write({'data_baixa':'2022-01-01'})
+
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, m1)
 
