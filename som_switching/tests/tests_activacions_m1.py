@@ -24,7 +24,7 @@ class TestActivacioM1(TestSwitchingImport):
         uid = txn.user
         cursor = txn.cursor
         self.switch(txn, 'comer')
-        context['extra_vals'] = {'data_alta': "2017-01-31", "lot_facturacio": False, 'data_baixa': False}
+        context['extra_vals'] = {'data_alta': "2016-01-01", "lot_facturacio": False, 'data_baixa': False}
 
         # create step 01
         self.change_polissa_comer(txn)
@@ -72,11 +72,13 @@ class TestActivacioM1(TestSwitchingImport):
         )
         m1 = self.Switching.browse(cursor, uid, m1.id, {"browse_reference": True})
         m102 = m1.step_ids[-1].pas_id
-        m102.write({"data_activacio": "2021-08-01"})
+        m102.write({"data_activacio": "2017-01-01"})
 
         return m1
 
     def get_m1_05_traspas(self, txn, contract_id, context=None):
+        if not context:
+            context = {}
         uid = txn.user
         cursor = txn.cursor
         m1 = self.get_m1_02_ct(txn, contract_id, 'T')
@@ -86,7 +88,8 @@ class TestActivacioM1(TestSwitchingImport):
         )
         m1 = self.Switching.browse(cursor, uid, m1.id, {"browse_reference": True})
         m105 = m1.step_ids[-1].pas_id
-        m105.write({"data_activacio": "2021-08-05"})
+        data_activacio = context.get("data_activacio", "2017-01-02")
+        m105.write({"data_activacio": data_activacio})
 
         return m1
 
@@ -124,6 +127,9 @@ class TestActivacioM1(TestSwitchingImport):
             uid = txn.user
 
             contract_id = self.get_contract_id(txn, 'polissa_tarifa_018')
+            contract = self.Polissa.browse(cursor, uid, contract_id)
+            contract.send_signal(['validar', 'contracte'])
+            contract.modcontractual_activa.write({'data_final': '2021-01-01'})
 
             m1 = self.get_m1_02_ct(txn, contract_id, 'S', {'polissa_xml_id': 'polissa_tarifa_018'})
             with PatchNewCursors():
@@ -148,13 +154,16 @@ class TestActivacioM1(TestSwitchingImport):
             mock_lectures.return_value = []
 
             contract_id = self.get_contract_id(txn)
+            contract = self.Polissa.browse(cursor, uid, contract_id)
+            contract.send_signal(['validar', 'contracte'])
+            contract.modcontractual_activa.write({'data_final': '2021-01-01'})
             # remove all other contracts
             old_partner_id = self.Polissa.read(cursor, uid, contract_id, ['titular'])['titular'][0]
             pol_ids = self.Polissa.search(cursor, uid,
                 [('id', '!=', contract_id), ('titular', '=', old_partner_id)])
             self.Polissa.write(cursor, uid, pol_ids, {'titular': False})
 
-            m1 = self.get_m1_05_traspas(txn, contract_id)
+            m1 = self.get_m1_05_traspas(txn, contract_id, context={'data_activacio': '2016-08-01'})
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, m1)
 
