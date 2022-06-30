@@ -59,6 +59,8 @@ class TestActivacioM1(TestSwitchingImport):
         return self.Switching.browse(cursor, uid, m101.sw_id.id, {"browse_reference": True})
 
     def get_m1_02_ct(self, txn, contract_id, tipus, context=None):
+        if not context:
+            context = {}
         uid = txn.user
         cursor = txn.cursor
         m1 = self.get_m1_01_ct(txn, contract_id, tipus)
@@ -72,7 +74,8 @@ class TestActivacioM1(TestSwitchingImport):
         )
         m1 = self.Switching.browse(cursor, uid, m1.id, {"browse_reference": True})
         m102 = m1.step_ids[-1].pas_id
-        m102.write({"data_activacio": "2017-01-01"})
+        data_activacio = context.get('data_activacio', "2017-01-01")
+        m102.write({"data_activacio": data_activacio})
 
         return m1
 
@@ -100,6 +103,9 @@ class TestActivacioM1(TestSwitchingImport):
             uid = txn.user
 
             contract_id = self.get_contract_id(txn)
+            contract = self.Polissa.browse(cursor, uid, contract_id)
+            contract.send_signal(['validar', 'contracte'])
+            contract.modcontractual_activa.write({'data_final': '2021-01-01'})
             # remove all other contracts
             old_partner_id = self.Polissa.read(cursor, uid, contract_id, ['titular'])['titular'][0]
             pol_ids = self.Polissa.search(cursor, uid,
@@ -129,9 +135,8 @@ class TestActivacioM1(TestSwitchingImport):
             contract_id = self.get_contract_id(txn, 'polissa_tarifa_018')
             contract = self.Polissa.browse(cursor, uid, contract_id)
             contract.send_signal(['validar', 'contracte'])
-            contract.modcontractual_activa.write({'data_final': '2021-01-01'})
-
-            m1 = self.get_m1_02_ct(txn, contract_id, 'S', {'polissa_xml_id': 'polissa_tarifa_018'})
+            ctx =  {'data_activacio': '2021-06-10'}
+            m1 = self.get_m1_02_ct(txn, contract_id, 'S', {'polissa_xml_id': 'polissa_tarifa_018', 'data_activacio': '2021-06-10'})
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, m1)
 
