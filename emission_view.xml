@@ -79,7 +79,7 @@
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="view_gkwh_emission_tree"/>
         </record>
-        <menuitem id="menu_gkwh_base" name="Generation kWh"/>
+        <menuitem id="menu_gkwh_base" name="Aportacions"/>
         <menuitem action="action_gkwh_emission_tree"
             id="menu_gkwh_emission_tree" parent="menu_gkwh_base"/>
     </data>
