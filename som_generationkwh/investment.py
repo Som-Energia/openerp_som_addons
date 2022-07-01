@@ -153,7 +153,7 @@ class GenerationkwhInvestment(osv.osv):
             #required=True, # TODO to be required
             help="Campanya d'emissió de la que forma part la inversió",
             ),
-        last_interest_payed_date=fields.date(
+        last_interest_paid_date=fields.date(
             "Darrera data interessos",
             help="Darrer data fins la que s'han pagat interessos d'aquesta inversió",
             ),
@@ -1793,17 +1793,17 @@ class GenerationkwhInvestment(osv.osv):
         date_end_dt = datetime.strptime(date_end,'%Y-%m-%d')
         purchase_date = investment.purchase_date
         last_effective_date = investment.last_effective_date
-        last_interest_payed_date = investment.last_interest_payed_date
+        last_interest_paid_date = investment.last_interest_paid_date
 
         if not purchase_date:
             raise InvestmentException("Cannot pay interest of an unpaid investment")
         if last_effective_date and last_effective_date < date_start:
             raise InvestmentException("Cannot pay interest of a divested investment")
-        if last_interest_payed_date and date_start <= last_interest_payed_date:
+        if last_interest_paid_date and date_start <= last_interest_paid_date:
             raise InvestmentException("Cannot pay interest of a already paid interest")
 
-        if last_interest_payed_date:
-            first_date_to_pay_dt = datetime.strptime(last_interest_payed_date,'%Y-%m-%d') + relativedelta(days=1)
+        if last_interest_paid_date:
+            first_date_to_pay_dt = datetime.strptime(last_interest_paid_date,'%Y-%m-%d') + relativedelta(days=1)
             if date_start_dt > first_date_to_pay_dt:
                 raise InvestmentException("Selected dates create a period without paid interests")
         else:
@@ -1852,7 +1852,7 @@ class GenerationkwhInvestment(osv.osv):
                 log = inv['log'],
                 purchase_date = isodate(inv['purchase_date']),
                 nominal_amount = gkwh.shareValue*inv['nshares'],
-                last_interest_payed_date = inv.last_interest_payed_date
+                last_interest_paid_date = inv.last_interest_paid_date
             )
 
             if self.has_interest_invoice(cursor, uid, investment_id):
@@ -1860,7 +1860,7 @@ class GenerationkwhInvestment(osv.osv):
                 continue
 
             if inv.emission_id.type != 'apo':
-                interest_errors.append('{}: Investment not APO, not interest has to be payed'.format(inv.name))
+                interest_errors.append('{}: Investment not APO, not interest has to be paid'.format(inv.name))
                 continue
 
             try:
