@@ -10,7 +10,6 @@
                 <tree string="Som autofactura tasks">
                     <field name="name"/>
                     <field name="active"/>
-                    <field name="sequence"/>
                 </tree>
             </field>
         </record>
@@ -103,6 +102,7 @@
                 <tree string="Autofactura tasks steps" editable="bottom">
                     <field name="name" select="1"/>
                     <field name="active" select="1" />
+                    <field name="sequence"/>
                 </tree>
             </field>
         </record>
