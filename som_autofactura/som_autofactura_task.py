@@ -66,6 +66,7 @@ SomAutofacturaTask()
 class SomAutofacturaTaskStep(osv.osv):
 
     _name = 'som.autofactura.task.step'
+    _order = 'sequence'
 
     def _execute_task(self, cursor, uid, ids, context):
         task = self.browse(cursor, uid, ids[0])
