@@ -24,7 +24,8 @@ class SomAutofacturaTask(osv.osv):
         context['active_ids'] = lot_ids
         step_obj = self.pool.get('som.autofactura.task.step')
         some_task_done = False
-        for step_id in step_obj.search(cursor, uid, [('task_id', '=' , ids)], order="sequence"):
+        ctx_sch = {'active_test': False}
+        for step_id in step_obj.search(cursor, uid, [('task_id', '=' , ids)], order="sequence", context=ctx_sch):
             step = step_obj.browse(cursor, uid, step_id, context)
             if step.active == False and some_task_done:
                 break
