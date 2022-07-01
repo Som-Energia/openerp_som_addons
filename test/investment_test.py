@@ -898,7 +898,7 @@ class Investment_Test(unittest.TestCase):
             invoice_line:
             - origin: false
               uos_id: PCE
-              account_id: 163500{p.nsoci:0>6s} {p.surname}, {p.name}
+              account_id: 163500000000 {p.surname}, {p.name}
               name: 'Amortització fins a 30/01/2018 de {investment_name} '
               invoice_id:
               - {id}
@@ -1850,7 +1850,7 @@ class Investment_Test(unittest.TestCase):
             invoice_line:
             - origin: false
               uos_id: PCE
-              account_id: 163500{p.nsoci:0>6s} {p.surname}, {p.name}
+              account_id: 163500000000 {p.surname}, {p.name}
               name: 'Inversió {investment_name} '
               invoice_id:
               - {id}
@@ -1910,7 +1910,7 @@ class Investment_Test(unittest.TestCase):
             invoice_line:
             - origin: false
               uos_id: PCE
-              account_id: 163500{p.nsoci:0>6s} {p.surname}, {p.name}
+              account_id: 163500000000 {p.surname}, {p.name}
               name: 'Inversió {investment_name} '
               invoice_id:
               - {id}
@@ -2140,7 +2140,7 @@ class Investment_Test(unittest.TestCase):
             invoice_line:
             - origin: false
               uos_id: PCE
-              account_id: 163500{p.nsoci:0>6s} {p.surname}, {p.name}
+              account_id: 163500000000 {p.surname}, {p.name}
               name: 'Desinversió total de {investment_name} a {invoice_date} '
               invoice_id:
               - {id}
