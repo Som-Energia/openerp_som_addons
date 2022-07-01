@@ -1,7 +1,8 @@
 # coding=utf-8
 from osv import osv
-
+from datetime import date
 import generationkwh.investmentmodel as gkwh
+
 
 class AccountInvoice(osv.osv):
     _name = 'account.invoice'

@@ -969,27 +969,50 @@ class GenerationkwhInvestment(osv.osv):
         return ResPartnerBank.create(cursor, uid, vals)
 
     def create_from_form(self, cursor, uid,
-            partner_id, order_date, amount_in_euros, ip, iban, emission=None,
-            context=None):
+                         partner_id, order_date, amount_in_euros, ip, iban, emission=None,
+                         context=None):
         investment_actions = GenerationkwhActions(self, cursor, uid, 1)
-        #Compatibility 'emissio_apo'
-        if emission == 'emissio_apo' or (emission and 'APO_' in emission) :
+        # Compatibility 'emissio_apo'
+        if emission == 'emissio_apo' or (emission and 'APO_' in emission):
             investment_actions = AportacionsActions(self, cursor, uid, 1)
         investment_id = investment_actions.create_from_form(cursor, uid,
-                partner_id, order_date, amount_in_euros, ip, iban, emission,
-                context)
+                                                            partner_id, order_date, amount_in_euros, ip, iban, emission,
+                                                            context)
         return investment_id
 
     def create_from_transfer(self, cursor, uid,
-            investment_id, new_partner_id, transmission_date, iban, emission=None,
-            context=None):
+                             investment_id, new_partner_id, transmission_date, iban, emission=None,
+                             context=None):
         emission = self.browse(cursor, uid, investment_id).emission_id.code
         investment_actions = GenerationkwhActions(self, cursor, uid, 1)
         if emission == 'emissio_apo' or (emission and 'APO_' in emission):
             investment_actions = AportacionsActions(self, cursor, uid, 1)
         investment_id = investment_actions.create_from_transfer(cursor, uid,
-                investment_id, new_partner_id, transmission_date, iban, context)
+                                                                investment_id, new_partner_id, transmission_date, iban, context)
         return investment_id
+
+    def mark_as_interested(self, cursor, uid, id):
+        """
+        The investment last_interest_paid_date is updated
+        """
+
+        User = self.pool.get('res.users')
+        user = User.read(cursor, uid, uid, ['name'])
+        investment = self.read(cursor, uid, id, [
+            'log',
+            'draft',
+            'actions_log',
+        ])
+        ResUser = self.pool.get('res.users')
+        user = ResUser.read(cursor, uid, uid, ['name'])
+
+        inv = InvestmentState(user['name'], datetime.now(),
+                              actions_log=investment['actions_log'],
+                              log=investment['log'],
+                              draft=investment['draft'],
+                              )
+        inv.interest()
+        self.write(cursor, uid, id, inv.erpChanges())
 
     def mark_as_signed(self, cursor, uid, id, signed_date=None):
         """
