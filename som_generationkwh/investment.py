@@ -1821,16 +1821,16 @@ class GenerationkwhInvestment(osv.osv):
         amount = investment.nshares * gkwh.shareValue
         start_year = date_start_dt.year
         end_year = date_end_dt.year
-        
-        if start_year != end_year and (isleap(start_year) or isleap(end_year)):    
-            start_year_days = (date_start_dt - datetime(start_year,12,31)).days
-            end_year_days = (datetime(end_year,1,1) - date_end_dt ).days
-            start_year_days_factor = start_year_days/(366 if isleap(start_year) else 365)
-            end_year_days_factor = end_year_days/(366 if isleap(end_year) else 365)
-            daily_interest = (interest_rate/100) / (start_year_days_factor + end_year_days_factor)
-        else:
-            daily_interest = (interest_rate/100) / (366 if isleap(start_year) else 365)
 
+        if start_year != end_year and (isleap(start_year) or isleap(end_year)):
+            start_year_days = (datetime(start_year,12,31) - date_start_dt).days + 1
+            end_year_days = (date_end_dt - datetime(end_year,1,1)).days + 1
+            start_year_days_factor = float(start_year_days) / (366 if isleap(start_year) else 365)
+            end_year_days_factor = float(end_year_days) / (366 if isleap(end_year) else 365)
+            interest = amount * interest_rate/100 * (start_year_days_factor + end_year_days_factor)
+            return round(interest, 2)
+
+        daily_interest = (interest_rate/100) / (366 if isleap(start_year) else 365)
         return round(amount * daily_interest * days_of_interest, 2)
 
     def interest(self, cursor, uid, ids, vals, context=None):

@@ -731,6 +731,7 @@ class AportacionsActions(InvestmentActions):
         interest_rate = vals['interest_rate']
         to_be_interized = vals['to_be_interized']
         date_end = vals['date_end']
+        date_start = vals['date_start']
 
         year = date_invoice.split('-')[0]
 
@@ -770,13 +771,19 @@ class AportacionsActions(InvestmentActions):
         # Memento of mutable data
         investmentMemento = ns()
         investmentMemento.dateInvoice = date_invoice
-        investmentMemento.dateEnd = date_end
+        investmentMemento.actionDateEnd = date_end
+        investmentMemento.actionDateStart = date_start
         investmentMemento.interestRate = interest_rate
         investmentMemento.investmentId = investment_id
         investmentMemento.investmentName = investment.name
         investmentMemento.investmentPurchaseDate = investment.purchase_date
         investmentMemento.investmentLastEffectiveDate = investment.last_effective_date
         investmentMemento.investmentInitialAmount = investment.nshares * gkwh.shareValue
+
+        if investment.last_effective_date and investment.last_effective_date < date_end:
+            date_end = investment.last_effective_date
+        if investment.purchase_date > vals['date_start']:
+            date_start = investment.purchase_date
 
         invoice_name = '%s-INT%s' % (
             investment.name,
@@ -816,9 +823,10 @@ class AportacionsActions(InvestmentActions):
                 type='in_invoice',
                 ).get('value', {}),
             invoice_id = invoice_id,
-            name = _('Interessos fins a {date_end:%d/%m/%Y} de {investment} ').format(
+            name = _('Interessos des de {date_start:%d/%m/%Y} fins a {date_end:%d/%m/%Y} de {investment} ').format(
                 investment = investment.name,
                 date_end = datetime.strptime(date_end,'%Y-%m-%d'),
+                date_start = datetime.strptime(date_start,'%Y-%m-%d'),
                 ),
             note = investmentMemento.dump(),
             quantity = 1,
