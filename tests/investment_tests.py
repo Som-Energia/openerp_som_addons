@@ -171,7 +171,7 @@ class InvestmentTests(testing.OOTestCase):
                     'first_effective_date': False,
                     'move_line_id': False,
                     'last_effective_date': False,
-                    'last_interest_payed_date': False,
+                    'last_interest_paid_date': False,
                     'nshares': 10,
                     'signed_date': '2017-01-06',
                     'draft': True,
@@ -219,7 +219,7 @@ class InvestmentTests(testing.OOTestCase):
                     'first_effective_date': False,
                     'move_line_id': False,
                     'last_effective_date': False,
-                    'last_interest_payed_date': False,
+                    'last_interest_paid_date': False,
                     'nshares': 40,
                     'signed_date': False,
                     'draft': True,
@@ -268,7 +268,7 @@ class InvestmentTests(testing.OOTestCase):
                         'first_effective_date': False,
                         'move_line_id': False,
                         'last_effective_date': False,
-                        'last_interest_payed_date': False,
+                        'last_interest_paid_date': False,
                         'nshares': 40,
                         'signed_date': False,
                         'draft': True,
@@ -1493,7 +1493,7 @@ class InvestmentTests(testing.OOTestCase):
                     'first_effective_date': '2017-01-06',
                     'move_line_id': False,
                     'last_effective_date': False,
-                    'last_interest_payed_date': False,
+                    'last_interest_paid_date': False,
                     'nshares': 10,
                     'signed_date': False,
                     'draft': False,
@@ -1540,7 +1540,7 @@ class InvestmentTests(testing.OOTestCase):
                     'first_effective_date': '2018-01-06',
                     'move_line_id': False,
                     'last_effective_date': '2042-01-06',
-                    'last_interest_payed_date': False,
+                    'last_interest_paid_date': False,
                     'nshares': 10,
                     'signed_date': False,
                     'draft': False,
@@ -2770,7 +2770,7 @@ class InvestmentTests(testing.OOTestCase):
                         cursor, uid, 'som_generationkwh', 'apo_0003'
                         )[1]
             inv_obj = self.Investment.browse(cursor, uid, inv_id)
-            inv_obj.write({'last_interest_payed_date' : '2020-12-31'})
+            inv_obj.write({'last_interest_paid_date' : '2020-12-31'})
             current_interest = self.Emission.current_interest(cursor, uid)
             vals = {
                 'date_invoice': '2021-06-30',
