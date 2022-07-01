@@ -72,7 +72,7 @@
             <field name="context">{'emission_id.type':'genkwh'}</field>
             <field name="domain">[('emission_id.type', '=', 'genkwh')]</field>
         </record>
-        <menuitem id="menu_gkwh_base" name="Generation kWh"/>
+        <menuitem id="menu_gkwh_base" name="Aportacions"/>
         <menuitem action="action_gkwh_investment_tree"
             id="menu_gkwh_investment_tree" parent="menu_gkwh_base"/>
         <record id="action_all_investment_tree" model="ir.actions.act_window">
