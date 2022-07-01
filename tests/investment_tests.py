@@ -2686,7 +2686,7 @@ class InvestmentTests(testing.OOTestCase):
 
                 amount = self.Investment.get_to_be_interized(cursor, uid, inv_id, vals)
 
-    def test__get_to_be_interized__AllYear(self):
+    def test__get_to_be_interized__AllYear_leapYear(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
@@ -2698,6 +2698,25 @@ class InvestmentTests(testing.OOTestCase):
                 'date_invoice': '2021-06-30',
                 'date_start': '2020-07-01',
                 'date_end': '2021-06-30',
+                'interest_rate': current_interest
+            }
+
+            to_be_interized = self.Investment.get_to_be_interized(cursor, uid, inv_id, vals, {})
+
+            self.assertEqual(to_be_interized, 9.99)
+
+    def test__get_to_be_interized__AllYear_notLeapYear(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            inv_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0003'
+                        )[1]
+            current_interest = self.Emission.current_interest(cursor, uid)
+            vals = {
+                'date_invoice': '2022-06-30',
+                'date_start': '2021-07-01',
+                'date_end': '2022-06-30',
                 'interest_rate': current_interest
             }
 
@@ -2724,7 +2743,7 @@ class InvestmentTests(testing.OOTestCase):
 
                 self.Investment.get_to_be_interized(cursor, uid, inv_id, vals, {})
 
-    def test__get_to_be_interized__InterestAndDivested(self):
+    def test__get_to_be_interized__InterestAndDivested_notLeap(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
@@ -2736,14 +2755,33 @@ class InvestmentTests(testing.OOTestCase):
             current_interest = self.Emission.current_interest(cursor, uid)
             vals = {
                 'date_invoice': '2021-06-30',
-                'date_start': '2020-06-30',
+                'date_start': '2020-07-01',
                 'date_end': '2021-06-30',
                 'interest_rate': current_interest
             }
-
             amount = self.Investment.get_to_be_interized(cursor, uid, inv_id, vals, {})
 
-            self.assertEqual(amount, 5.07)
+            self.assertEqual(amount, 5.03)
+
+    def test__get_to_be_interized__InterestAndDivested_leapYear(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            inv_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'apo_0003'
+                        )[1]
+            inv_obj = self.Investment.browse(cursor, uid, inv_id)
+            inv_obj.write({'last_effective_date' : '2021-12-31'})
+            current_interest = self.Emission.current_interest(cursor, uid)
+            vals = {
+                'date_invoice': '2022-06-30',
+                'date_start': '2021-07-01',
+                'date_end': '2022-06-30',
+                'interest_rate': current_interest
+            }
+            amount = self.Investment.get_to_be_interized(cursor, uid, inv_id, vals, {})
+
+            self.assertEqual(amount, 5.04)
 
     def test__get_to_be_interized__NotPayed(self):
         with self.assertRaises(InvestmentException) as ctx:
