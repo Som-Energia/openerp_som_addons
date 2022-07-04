@@ -651,6 +651,10 @@ class InvestmentTests(testing.OOTestCase):
                         cursor, uid, 'som_generationkwh', 'apo_0001'
                         )[1]
 
+            aa_obj = self.openerp.pool.get('account.account')
+            aa_id = aa_obj.search(cursor, uid, [('type','!=','view'),('type','!=','closed')])
+            aa_obj.write(cursor, uid, aa_id[0], {'code': '163000000000'})
+
             invoice_ids, errs =  self.Investment.create_initial_invoices(cursor, uid, [id])
 
             self.assertFalse(errs)
@@ -674,7 +678,7 @@ class InvestmentTests(testing.OOTestCase):
                 invoice_line:
                 - account_analytic_id: false
                   uos_id: PCE
-                  account_id: 163000{num_soci:0>6s} {p.name}
+                  account_id: 163000000000 Capital social
                   name: 'Inversió {investment_name} '
                   discount: 0.0
                   invoice_id:
@@ -762,6 +766,11 @@ class InvestmentTests(testing.OOTestCase):
                         cursor, uid, 'som_generationkwh', 'apo_0001'
                         )[1]
             investment = self.Investment.browse(cursor, uid, id)
+
+            aa_obj = self.openerp.pool.get('account.account')
+            aa_id = aa_obj.search(cursor, uid, [('type','!=','view'),('type','!=','closed')])
+            aa_obj.write(cursor, uid, aa_id[0], {'code': '163000000000'})
+
             self.Investment.create_initial_invoices(cursor, uid, [id])
 
             result = self.Investment.create_initial_invoices(cursor, uid, [id])
@@ -801,6 +810,10 @@ class InvestmentTests(testing.OOTestCase):
                         cursor, uid, 'som_generationkwh', 'apo_0001'
                         )[1]
             self.Investment.write(cursor, uid, id, dict(name=None))
+
+            aa_obj = self.openerp.pool.get('account.account')
+            aa_id = aa_obj.search(cursor, uid, [('type','!=','view'),('type','!=','closed')])
+            aa_obj.write(cursor, uid, aa_id[0], {'code': '163000000000'})
 
             invoice_ids, errs = self.Investment.create_initial_invoices(cursor, uid, [id])
 
@@ -936,7 +949,8 @@ class InvestmentTests(testing.OOTestCase):
 
             aa_obj = self.openerp.pool.get('account.account')
             aa_id = aa_obj.search(cursor, uid, [('type','!=','view'),('type','!=','closed')])
-            aa_obj.write(cursor, uid, aa_id[0], {'code': '163500000000'})
+            aa_obj.write(cursor, uid, aa_id[0], {'code': '163000000000'})
+            aa_obj.write(cursor, uid, aa_id[1], {'code': '163500000000'})
 
             result, errs = self.Investment.create_initial_invoices(cursor, uid, [id1,id2])
 
@@ -1006,6 +1020,11 @@ class InvestmentTests(testing.OOTestCase):
             id = self.IrModelData.get_object_reference(
                         cursor, uid, 'som_generationkwh', 'apo_0001'
                         )[1]
+
+            aa_obj = self.openerp.pool.get('account.account')
+            aa_id = aa_obj.search(cursor, uid, [('type','!=','view'),('type','!=','closed')])
+            aa_obj.write(cursor, uid, aa_id[0], {'code': '163000000000'})
+
             invoice_ids, errs =  self.Investment.create_initial_invoices(cursor, uid, [id])
             self.Investment.open_invoices(cursor, uid, invoice_ids)
             emission_id = self.IrModelData.get_object_reference(
@@ -1099,10 +1118,13 @@ class InvestmentTests(testing.OOTestCase):
                         cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
                         )[1]
 
+            aa_obj = self.openerp.pool.get('account.account')
+            aa_obj.write(cursor, uid, 1, {'code': '163000000000'})
+
             self.Investment.investment_actions(cursor, uid, investment.id).get_or_create_investment_account(cursor, uid, partner_id)
 
             partner = self.Partner.browse(cursor, uid, partner_id)
-            self.assertEquals(partner.property_account_aportacions.code, '163000202001')
+            self.assertEquals(partner.property_account_aportacions.code, '163000000000')
             self.assertEquals(partner.property_account_liquidacio.code, '410000202001')
 
     def test__get_or_create_investment_account_GKWH(self):
@@ -1194,6 +1216,10 @@ class InvestmentTests(testing.OOTestCase):
                         cursor, uid, 'som_generationkwh', 'apo_0001'
                         )[1]
             investment = self.Investment.browse(cursor, uid, inv_id)
+
+            aa_obj = self.openerp.pool.get('account.account')
+            aa_id = aa_obj.search(cursor, uid, [('type','!=','view'),('type','!=','closed')])
+            aa_obj.write(cursor, uid, aa_id[0], {'code': '163000000000'})
 
             invoice_ids, errors = self.Investment.investment_payment(cursor, uid, [inv_id])
 
@@ -2319,11 +2345,16 @@ class InvestmentTests(testing.OOTestCase):
                         cursor, uid, 'som_generationkwh', 'apo_0001'
                         )[1]
             iban = 'ES7712341234161234567890'
+
             investment = self.Investment.browse(cursor, uid, investment_id)
             mandate_id = self.Investment.get_or_create_payment_mandate(cursor, uid,
                 partner_id, iban, investment.emission_id.mandate_name, gkwh.creditorCode)
             date_invoice = '2020-04-23'
             pending_amount = 1000
+
+            aa_obj = self.openerp.pool.get('account.account')
+            aa_id = aa_obj.search(cursor, uid, [('type','!=','view'),('type','!=','closed')])
+            aa_obj.write(cursor, uid, aa_id[0], {'code': '163000000000'})
 
             invoice_ids, errs = self.Investment.create_divestment_invoice(cursor, uid, investment_id, date_invoice, pending_amount)
 
@@ -2340,7 +2371,7 @@ class InvestmentTests(testing.OOTestCase):
                 invoice_line:
                 - account_analytic_id: false
                   uos_id: PCE
-                  account_id: 163000{num_soci:0>6s} {p.name}
+                  account_id: 163000000000 Capital social
                   name: 'Desinversió total de {investment_name} a {invoice_date} '
                   discount: 0.0
                   invoice_id:
@@ -2399,6 +2430,10 @@ class InvestmentTests(testing.OOTestCase):
             )[1]
 
             self.Investment.write(cursor, uid, investment_id, {'member_id': member_id})
+            
+            aa_obj = self.openerp.pool.get('account.account')
+            aa_id = aa_obj.search(cursor, uid, [('type','!=','view'),('type','!=','closed')])
+            aa_obj.write(cursor, uid, aa_id[0], {'code': '163000000000'})
 
             self.Investment.divest(cursor, uid, [investment_id])
 
