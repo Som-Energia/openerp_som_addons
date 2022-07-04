@@ -43,10 +43,17 @@ class AccountInvoice(osv.osv):
             moveline_id = self.investment_last_moveline(cursor,uid,invoice_id)
             if self.is_interest_payment(cursor, uid, invoice_id):
                 Investment.mark_as_interested(cursor, uid, invoice_id)
-            if not self.is_investment_payment(cursor,uid,invoice_id):
-                continue
-            Investment.mark_as_paid(cursor,uid,[investment_id],today,moveline_id)
+            if self.is_investment_payment(cursor,uid,invoice_id):
+               Investment.mark_as_paid(cursor,uid,[investment_id],today,moveline_id)
         return res
+
+    def is_interest_payment(self, cursor, uid, invoice_id):
+        ir_md_obj = self.pool.get('ir.model.data')
+        apo_journal = ir_md_obj.get_object_reference(
+            cursor, uid, 'som_generationkwh', 'apo_journal'
+        )[1]
+        invoice = self.browse(cursor, uid, invoice_id)
+        return invoice and invoice.name and str(invoice.name).startswith("APO") and invoice.journal_id.id == apo_journal
 
     def is_investment_payment(self, cursor, uid, invoice_id):
         invoice = self.read(cursor, uid, invoice_id, ['name'])
