@@ -1011,7 +1011,8 @@ class GenerationkwhInvestment(osv.osv):
                               log=investment['log'],
                               draft=investment['draft'],
                               )
-        inv.interest()
+        #We want to set last_interest_paid_date only ??
+        #inv_data = {'last_interest_paid_date': inv.interest()['last_interest_paid_date']}
         self.write(cursor, uid, id, inv.erpChanges())
 
     def mark_as_signed(self, cursor, uid, id, signed_date=None):
@@ -1880,13 +1881,6 @@ class GenerationkwhInvestment(osv.osv):
                 continue
             interest_ids.append(interest_id)
 
-            invstate.interest(
-                date = vals['date_end'],
-                to_be_interized = to_be_interized,
-                )
-            self.write(cursor, uid, investment_id, dict(
-                invstate.erpChanges(),
-            ), context)
 
             if open_invoices:
                 self.open_invoices(cursor, uid, [interest_id])
