@@ -22,7 +22,7 @@ A continuació podràs triar entre les factures només per a les persones sòcie
                             <field name="date_end"/>
                         </group>
                         <group col="2" colspan="4">
-                            <field name="open_invoices"/>
+                            <field name="open_invoices" readonly="1"/>
                         </group>
                         <label string="" colspan="4"/>
                         <label string="" colspan="4"/>
