@@ -35,13 +35,14 @@ class AccountInvoice(osv.osv):
             writeoff_journal_id, context, name
         )
         #TODO: Untested
-        from datetime import date
         today = str(date.today()) #TODO date more real?
         Investment = self.pool.get('generationkwh.investment')
         for invoice_id in ids:
             investment_id = self.get_investment(cursor,uid,invoice_id)
             if not investment_id: continue
             moveline_id = self.investment_last_moveline(cursor,uid,invoice_id)
+            if self.is_interest_payment(cursor, uid, invoice_id):
+                Investment.mark_as_interested(cursor, uid, invoice_id)
             if not self.is_investment_payment(cursor,uid,invoice_id):
                 continue
             Investment.mark_as_paid(cursor,uid,[investment_id],today,moveline_id)
