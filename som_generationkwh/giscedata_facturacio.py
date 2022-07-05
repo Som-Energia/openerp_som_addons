@@ -402,6 +402,7 @@ class GiscedataFacturacioFactura(osv.osv):
                 line_vals = invlines_obj.read(
                     cursor, uid, line_id, line_fields, context=context
                 )
+                end_date_line = line_vals['data_fins']
                 line_product_id = line_vals['product_id'][0]
 
                 # GkWh invoice line creation
@@ -420,7 +421,7 @@ class GiscedataFacturacioFactura(osv.osv):
 
                 price_unit = pricelist_obj.price_get(
                     cursor, uid, [pricelist], product_gkwh_id, 1,
-                    context={'date': end_date}
+                    context={'date': end_date_line}
                 )[pricelist]
 
                 # Get available gkwh rights
