@@ -38,27 +38,7 @@ class WizardAutofactura(osv.osv_memory):
 
         }
 
-    _columns = {
-        'tasks_steps': fields.one2many(
-            'wizard.autofactura.task.steps',
-            'wiz_auto_id',
-            u"Passos de la tasca",
-        ),
-    }
+    _columns = {}
 
 
 WizardAutofactura()
-
-class WizardAutofacturaTaskSteps(osv.osv_memory):
-    _name = 'wizard.autofactura.task.steps'
-
-    _columns = {
-        'step_id': fields.many2one('som.autofactura.task.step', 'TaskStep',
-                                      required=True),
-        'wiz_auto_id': fields.many2one('wizard.autofactura', 'Passos',
-                                  required=True),
-        'name': fields.char("Nom", size=30),
-        'active': fields.boolean("Estat"),
-        'id': fields.integer("id"),
-    }
-WizardAutofacturaTaskSteps()
