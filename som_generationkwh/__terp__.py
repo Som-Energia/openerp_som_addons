@@ -43,7 +43,6 @@
     "wizard/wizard_investment_divest.xml",
     "wizard/wizard_investment_transfer.xml",
     "wizard/wizard_aeat193_from_gkwh_invoices_view.xml",
-    "wizard/wizard_send_retencio_estalvi_to_members.xml",
     "wizard/wizard_baixa_soci.xml",
     "wizard/wizard_contract_sign_signaturit.xml",
     "investment_view.xml",
