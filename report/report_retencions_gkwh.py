@@ -10,59 +10,21 @@ from datetime import datetime, timedelta, date
 import logging
 
 
-class GenerationkwhInvestment(osv.osv):
-    _name = 'somenergia.soci'
-    _inherit = 'somenergia.soci'
-
-    def send_emails_to_investors_with_savings_in_year(self, cursor, uid, year=None):
-        """
-        Send email to the partners with retencions.rendiment.gkwh report
-        attached to certificat_retencio_rendiment_generationkwh poweremail template.
-        Only partners with generationkwh.investment investments that had saving at
-        given year.
-        """
-        if year is None:
-            raise Exception("Year must have a value")
-
-        pool = pooler.get_pool(cursor.dbname)
-        Investment = pool.get('generationkwh.investment')
-
-        first_day = str(year) + '-01-01'
-        last_day = str(year) + '-12-31'
-
-        all_investments_ids_in_year = Investment.search(cursor, uid, [('first_effective_date', '<=', last_day),
-                                                                      ('last_effective_date', '>=', first_day),
-                                                                      ('emission_id.type', '=', 'genkwh')])
-        if all_investments_ids_in_year is None:
-            raise Exception("No investments found at year {}".format(year))
-
-        members = []
-        for invest_id in all_investments_ids_in_year:
-            investment = Investment.read(cursor, uid, invest_id, ['member_id'])
-            members.append(investment['member_id'][0])
-
-        members = set(members)
-        email_params = RetencionsSobreRendimentGenerationKwh.get_email_params(cursor, uid, self)
-
-        successfully_sent = 0
-        for member_id in members:
-            if RetencionsSobreRendimentGenerationKwh.send_email(cursor, uid, self, member_id, email_params) > 0:
-                successfully_sent += 1
-        return successfully_sent
-
+class ResPartner(osv.osv):
+    _name = 'res.partner'
+    _inherit = 'res.partner'
 
     def generationkwh_amortization_data(self, cursor, uid, ids):
         if not ids:
             raise Exception("No member provided")
 
-        member_id = ids[0]
+        partner_id = ids[0]
 
         report = ns()
         pool = pooler.get_pool(cursor.dbname)
         Accounts = pool.get('poweremail.core_accounts')
         ResPartner = pool.get('res.partner')
         ResPartnerAdress = pool.get('res.partner.address')
-        Soci = pool.get('somenergia.soci')
         som_partner_id = 1  # ResPartner.search(cursor, uid, [('vat','=','ESF55091367')])
         som_partner = ResPartner.read(cursor, uid, som_partner_id, ['name', 'vat', 'address'])
         som_address = ResPartnerAdress.read(cursor, uid, som_partner['address'][0], ['street', 'zip', 'city'])
@@ -82,7 +44,6 @@ class GenerationkwhInvestment(osv.osv):
         else:
             report.address_email = None
 
-        partner_id = Soci.read(cursor, uid, member_id, ['partner_id'])['partner_id'][0]
         partner = ResPartner.read(cursor, uid, partner_id, ['vat', 'name', 'lang'])
         report.data_inici = date(report.year, 1, 1).isoformat()
         report.data_fi = date(report.year, 12, 31).isoformat()
@@ -116,7 +77,7 @@ class GenerationkwhInvestment(osv.osv):
 
         return report
 
-GenerationkwhInvestment()
+ResPartner()
 
 
 class RetencionsSobreRendimentGenerationKwh():
