@@ -53,6 +53,7 @@
     "security/ir.model.access.csv",
     "emission_view.xml",
     "wizard/wizard_llibre_registre_socis_view.xml",
+    "wizard/wizard_factures_liquidacio_interessos_view.xml",
     "giscedata_polissa_view.xml",
     "custom_search_data.xml",
     ],

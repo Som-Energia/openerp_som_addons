@@ -16,6 +16,7 @@
                     <field name="first_effective_date" readonly="1"/>
                     <field name="amortized_amount" readonly="1"/>
                     <field name="last_effective_date" readonly="1"/>
+                    <field name="last_interest_paid_date" domain="[('emission_id.type','=','apo')]"/>
                     <field name="active" readonly="1"/>
                     <field name="draft" readonly="1"/>
                     <field name="emission_id" readonly="1"/>
@@ -57,6 +58,7 @@
                     <field name="signed_date" select="1"/>
                     <field name="first_effective_date" select="1"/>
                     <field name="last_effective_date" select="1"/>
+                    <field name="last_interest_paid_date" select="1"/>
                     <field name="emission_id" select="1"/>
                 </tree>
             </field>
@@ -70,7 +72,7 @@
             <field name="context">{'emission_id.type':'genkwh'}</field>
             <field name="domain">[('emission_id.type', '=', 'genkwh')]</field>
         </record>
-        <menuitem id="menu_gkwh_base" name="Generation kWh"/>
+        <menuitem id="menu_gkwh_base" name="Aportacions"/>
         <menuitem action="action_gkwh_investment_tree"
             id="menu_gkwh_investment_tree" parent="menu_gkwh_base"/>
         <record id="action_all_investment_tree" model="ir.actions.act_window">

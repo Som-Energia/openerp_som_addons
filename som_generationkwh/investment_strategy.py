@@ -220,29 +220,29 @@ class GenerationkwhActions(InvestmentActions):
         member_ids, emission_id = super(GenerationkwhActions, self).create_from_form(cursor, uid, partner_id, order_date, amount_in_euros, ip, iban,emission, context)
 
         GenerationkwhInvestment = self.erp.pool.get('generationkwh.investment')
-        ResUser = self.erp.pool.get('res.users')                            
-        user = ResUser.read(cursor, uid, uid, ['name'])                 
-        IrSequence = self.erp.pool.get('ir.sequence')                       
+        ResUser = self.erp.pool.get('res.users')
+        user = ResUser.read(cursor, uid, uid, ['name'])
+        IrSequence = self.erp.pool.get('ir.sequence')
         name = IrSequence.get_next(cursor,uid,'som.inversions.gkwh')
-                                                                        
-        inv = InvestmentState(user['name'], datetime.now())             
-        inv.order(                                                      
-            name = name,                                                
-            date = order_date,                                          
-            amount = amount_in_euros,                                   
-            iban = iban,                                                
-            ip = ip,                                                    
-            )                                                           
-        investment_id = GenerationkwhInvestment.create(cursor, uid, dict(                  
-            inv.erpChanges(),                                           
-            member_id = member_ids[0],                                  
-            emission_id = emission_id,                                  
-        ), context)                                                     
-                                                                        
-        GenerationkwhInvestment.get_or_create_payment_mandate(cursor, uid,                 
-            partner_id, iban, gkwh.mandateName, gkwh.creditorCode)      
 
-        GenerationkwhInvestment.send_mail(cursor, uid, investment_id,                      
+        inv = InvestmentState(user['name'], datetime.now())
+        inv.order(
+            name = name,
+            date = order_date,
+            amount = amount_in_euros,
+            iban = iban,
+            ip = ip,
+            )
+        investment_id = GenerationkwhInvestment.create(cursor, uid, dict(
+            inv.erpChanges(),
+            member_id = member_ids[0],
+            emission_id = emission_id,
+        ), context)
+
+        GenerationkwhInvestment.get_or_create_payment_mandate(cursor, uid,
+            partner_id, iban, gkwh.mandateName, gkwh.creditorCode)
+
+        GenerationkwhInvestment.send_mail(cursor, uid, investment_id,
             'generationkwh.investment', '_mail_creacio')
 
         return investment_id
@@ -633,11 +633,18 @@ class AportacionsActions(InvestmentActions):
         PaymentMode = self.erp.pool.get('payment.mode')
         return PaymentMode.read(cursor, uid, payment_mode_id, ['name'])['name']
 
+    def get_interest_payment_mode_name(self, cursor, uid):
+        imd_model = self.erp.pool.get('ir.model.data')
+        payment_mode_id = imd_model.get_object_reference(
+            cursor, uid, 'som_generationkwh', 'apo_investment_interest_payment_mode'
+        )[1]
+        PaymentMode = self.erp.pool.get('payment.mode')
+        return PaymentMode.read(cursor, uid, payment_mode_id, ['name'])['name']
 
     def get_or_create_investment_account(self, cursor, uid, partner_id):
         Partner = self.erp.pool.get('res.partner')
         partner = Partner.browse(cursor, uid, partner_id)
-        
+
         if not partner.property_account_liquidacio:
             partner.button_assign_acc_410()
             partner = partner.browse()[0]
@@ -703,5 +710,145 @@ class AportacionsActions(InvestmentActions):
             move_line_id = movementline_id,
         )
         Investment.write(cursor, uid, id, inv.erpChanges())
+
+
+    def create_interest_invoice(self, cursor, uid,
+            investment_id, vals,
+            context=None):
+        if isinstance(investment_id, list):
+            investment_id = investment_id[0]
+
+        Partner = self.erp.pool.get('res.partner')
+        Product = self.erp.pool.get('product.product')
+        Invoice = self.erp.pool.get('account.invoice')
+        InvoiceLine = self.erp.pool.get('account.invoice.line')
+        PaymentType = self.erp.pool.get('payment.type')
+        Journal = self.erp.pool.get('account.journal')
+        Investment = self.erp.pool.get('generationkwh.investment')
+
+        investment = Investment.browse(cursor, uid, investment_id)
+        date_invoice = vals['date_invoice']
+        interest_rate = vals['interest_rate']
+        to_be_interized = vals['to_be_interized']
+        date_end = vals['date_end']
+        date_start = vals['date_start']
+
+        year = date_invoice.split('-')[0]
+
+        # The partner
+        partner_id = investment.member_id.partner_id.id
+        partner = Partner.browse(cursor, uid, partner_id)
+
+        # Get or create partner specific accounts
+        account_inv_id = self.get_or_create_investment_account(cursor, uid, partner_id)
+
+        # The product
+        product_id = Product.search(cursor, uid, [
+            ('default_code','=', 'APO_INT'),
+            ])[0]
+
+        product = Product.browse(cursor, uid, product_id)
+        product_uom_id = product.uom_id.id
+
+        # The journal
+        journal_id = Journal.search(cursor, uid, [
+            ('code','=','APO_FACT')
+            ])[0]
+
+        # The payment type
+        payment_type_id = PaymentType.search(cursor, uid, [
+            ('code', '=', 'TRANSFERENCIA_CSB'),
+            ])[0]
+
+        errors = []
+        def error(message):
+            errors.append(message)
+
+        # Check if exist bank account
+        if not partner.bank_inversions:
+            return 0, u"Aportació {0}: El partner {1} no té informat un compte corrent\n".format(investment.id, partner.name)
+
+        # Memento of mutable data
+        investmentMemento = ns()
+        investmentMemento.dateInvoice = date_invoice
+        investmentMemento.actionDateEnd = date_end
+        investmentMemento.actionDateStart = date_start
+        investmentMemento.interestRate = interest_rate
+        investmentMemento.investmentId = investment_id
+        investmentMemento.investmentName = investment.name
+        investmentMemento.investmentPurchaseDate = investment.purchase_date
+        investmentMemento.investmentLastEffectiveDate = investment.last_effective_date
+        investmentMemento.investmentInitialAmount = investment.nshares * gkwh.shareValue
+
+        if investment.last_effective_date and investment.last_effective_date < date_end:
+            date_end = investment.last_effective_date
+        if investment.purchase_date > vals['date_start']:
+            date_start = investment.purchase_date
+
+        invoice_name = '%s-INT%s' % (
+            investment.name,
+            year,
+            )
+
+        # Default invoice fields for given partne
+        vals = {}
+        vals.update(Invoice.onchange_partner_id(
+            cursor, uid, [], 'in_invoice', partner_id,
+        ).get('value', {}))
+
+        vals.update({
+            'partner_id': partner_id,
+            'type': 'in_invoice',
+            'name': invoice_name,
+            'number': invoice_name,
+            'journal_id': journal_id,
+            'account_id': partner.property_account_liquidacio.id,
+            'partner_bank': partner.bank_inversions.id,
+            'payment_type': payment_type_id,
+            #'check_total': to_be_interized + (irpf_amount * -1),
+            # TODO: Remove the GENKWHID stuff when fully migrated, error instead
+            'origin': investment.name or 'GENKWHID{}'.format(investment.id),
+            'reference': invoice_name,
+            'date_invoice': date_invoice,
+        })
+
+        invoice_id = Invoice.create(cursor, uid, vals)
+        Invoice.write(cursor,uid, invoice_id,{'sii_to_send':False})
+
+        line = dict(
+            InvoiceLine.product_id_change(cursor, uid, [],
+                product=product_id,
+                uom=product_uom_id,
+                partner_id=partner_id,
+                type='in_invoice',
+                ).get('value', {}),
+            invoice_id = invoice_id,
+            name = _('Interessos des de {date_start:%d/%m/%Y} fins a {date_end:%d/%m/%Y} de {investment} ').format(
+                investment = investment.name,
+                date_end = datetime.strptime(date_end,'%Y-%m-%d'),
+                date_start = datetime.strptime(date_start,'%Y-%m-%d'),
+                ),
+            note = investmentMemento.dump(),
+            quantity = 1,
+            price_unit = to_be_interized,
+            product_id = product_id,
+            # partner specific account, was generic from product
+            account_id = account_inv_id,
+        )
+
+        # Force apply taxes. Taxes from product doesn't work.
+        line['invoice_line_tax_id'] = [
+            (6, 0, line.get('invoice_line_tax_id', []))
+        ]
+
+        InvoiceLine.create(cursor, uid, line)
+
+        Invoice.button_reset_taxes(cursor, uid, [invoice_id])
+        inv = Invoice.browse(cursor, uid, invoice_id)
+        Invoice.write(cursor,uid, invoice_id, dict(
+            check_total = inv.amount_total,
+        ))
+
+        return invoice_id, errors
 
 # vim: et ts=4 sw=4

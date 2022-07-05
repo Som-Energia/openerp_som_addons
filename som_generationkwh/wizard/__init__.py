@@ -10,3 +10,4 @@ import wizard_aeat193_from_gkwh_invoices
 import wizard_baixa_soci
 import wizard_contract_sign_signaturit
 import wizard_llibre_registre_socis
+import wizard_factures_liquidacio_interessos

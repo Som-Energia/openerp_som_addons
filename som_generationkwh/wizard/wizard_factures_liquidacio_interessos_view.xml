@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_factures_liquidacio_interessos_form">
+            <field name="name">wizard.factures.liquidacio.interessos.form</field>
+            <field name="model">wizard.factures.liquidacio.interessos</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Assistent de creació de factures - liquidació interessos">
+                    <field name="state" invisible="1"/>
+                    <group colspan="4" attrs="{'invisible':[('state', '!=', 'init')]}">
+                        <label string="En aquest primer pas encara no es generen factures. Només es fara un càlcul i es mostrarà un resum abans de crear cap factura.
+A continuació podràs triar entre les factures només per a les persones sòcies seleccionades o bé per a totes."/>
+                        <label string="" colspan="4"/>
+                        <label string="" colspan="4"/>
+                        <group col="2" colspan="4">
+                            <field name="date_invoice"/>
+                            <field name="interest_rate" readonly="1"/>
+                        </group>
+                        <group colspan="2">
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                        </group>
+                        <group col="2" colspan="4">
+                            <field name="open_invoices" readonly="1"/>
+                        </group>
+                        <label string="" colspan="4"/>
+                        <label string="" colspan="4"/>
+                        <group colspan="4">
+                            <button string="Generar interessos aportacions" name="create_invoice"
+                                    type="object" icon="gtk-dnd-multiple"
+                                    colspan="3" />
+                            <button special="cancel" string="Cancel·lar" icon="gtk-cancel" colspan="3"/>
+                        </group>
+                    </group>
+                    <group colspan="4" col="4" attrs="{'invisible':[('state', '!=', 'all_apos_calc')]}">
+                        <separator string="Informació" colspan="4" />
+                        <field name="calc" nolabel="1" colspan="4" height="250" readonly="1"/>
+                        <button special="cancel" string="Sortir" icon="gtk-close"/>
+                        <label string="" colspan="4"/>
+                        <label string="" colspan="4"/>
+                        <group colspan="4">
+                            <button string="Factures d'aportacions" name="_factures_apos"
+                                    type="object" icon="gtk-dnd-multiple"
+                                    colspan="3" />
+                            <button special="cancel" string="Sortir" icon="gtk-cancel" colspan="3"/>
+                        </group>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_factures_liquidacio_interessos_form">
+            <field name="name">Assistent liquidació interessos</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.factures.liquidacio.interessos</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="context">{'from_list': 'selected_items'}</field>
+            <field name="view_id" ref="view_wizard_factures_liquidacio_interessos_form"/>
+        </record>
+        <record id="value_wizard_factures_liquidacio_interessos" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Genera liquidació interessos Aportacions</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">generationkwh.investment</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_factures_liquidacio_interessos_form'))" />
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_factures_liquidacio_interessos_menu_item_form">
+            <field name="name">Assistent liquidació interessos</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.factures.liquidacio.interessos</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="context">{'from_list': 'all_items'}</field>
+            <field name="view_id" ref="view_wizard_factures_liquidacio_interessos_form"/>
+        </record>
+        <menuitem id="menu_wizard_factures_liquidacio_interessos"
+                  name="Factures liquidacions interessos aportacions"
+                  parent="menu_gkwh_base"
+                  action="action_wizard_factures_liquidacio_interessos_menu_item_form"
+                  icon="STOCK_CONVERT"
+        />
+    </data>
+</openerp>

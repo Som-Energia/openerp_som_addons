@@ -6,6 +6,7 @@ from .erpwrapper import ErpWrapper
 from dateutil.relativedelta import relativedelta
 from datetime import datetime, date
 from yamlns import namespace as ns
+from calendar import isleap
 from generationkwh.isodates import isodate
 from tools.translate import _
 from tools import config
@@ -63,9 +64,6 @@ class Generationkwh_MailMockup(osv.osv_memory):
     def log(self, cur, uid):
         ids = self.search(cur, uid, [])
         return self.browse(cur, uid, ids[0]).log
-        
-        
-        
 
 
 Generationkwh_MailMockup()
@@ -154,6 +152,10 @@ class GenerationkwhInvestment(osv.osv):
             select=True,
             #required=True, # TODO to be required
             help="Campanya d'emissió de la que forma part la inversió",
+            ),
+        last_interest_paid_date=fields.date(
+            "Darrera data interessos",
+            help="Darrer data fins la que s'han pagat interessos d'aquesta inversió",
             ),
         )
 
@@ -967,27 +969,51 @@ class GenerationkwhInvestment(osv.osv):
         return ResPartnerBank.create(cursor, uid, vals)
 
     def create_from_form(self, cursor, uid,
-            partner_id, order_date, amount_in_euros, ip, iban, emission=None,
-            context=None):
+                         partner_id, order_date, amount_in_euros, ip, iban, emission=None,
+                         context=None):
         investment_actions = GenerationkwhActions(self, cursor, uid, 1)
-        #Compatibility 'emissio_apo'
-        if emission == 'emissio_apo' or (emission and 'APO_' in emission) :
+        # Compatibility 'emissio_apo'
+        if emission == 'emissio_apo' or (emission and 'APO_' in emission):
             investment_actions = AportacionsActions(self, cursor, uid, 1)
         investment_id = investment_actions.create_from_form(cursor, uid,
-                partner_id, order_date, amount_in_euros, ip, iban, emission,
-                context)
+                                                            partner_id, order_date, amount_in_euros, ip, iban, emission,
+                                                            context)
         return investment_id
 
     def create_from_transfer(self, cursor, uid,
-            investment_id, new_partner_id, transmission_date, iban, emission=None,
-            context=None):
+                             investment_id, new_partner_id, transmission_date, iban, emission=None,
+                             context=None):
         emission = self.browse(cursor, uid, investment_id).emission_id.code
         investment_actions = GenerationkwhActions(self, cursor, uid, 1)
         if emission == 'emissio_apo' or (emission and 'APO_' in emission):
             investment_actions = AportacionsActions(self, cursor, uid, 1)
         investment_id = investment_actions.create_from_transfer(cursor, uid,
-                investment_id, new_partner_id, transmission_date, iban, context)
+                                                                investment_id, new_partner_id, transmission_date, iban, context)
         return investment_id
+
+    def mark_as_interested(self, cursor, uid, id):
+        """
+        The investment last_interest_paid_date is updated
+        """
+
+        User = self.pool.get('res.users')
+        user = User.read(cursor, uid, uid, ['name'])
+        investment = self.read(cursor, uid, id, [
+            'log',
+            'draft',
+            'actions_log',
+        ])
+        ResUser = self.pool.get('res.users')
+        user = ResUser.read(cursor, uid, uid, ['name'])
+
+        inv = InvestmentState(user['name'], datetime.now(),
+                              actions_log=investment['actions_log'],
+                              log=investment['log'],
+                              draft=investment['draft'],
+                              )
+        #We want to set last_interest_paid_date only ??
+        #inv_data = {'last_interest_paid_date': inv.interest()['last_interest_paid_date']}
+        self.write(cursor, uid, id, inv.erpChanges())
 
     def mark_as_signed(self, cursor, uid, id, signed_date=None):
         """
@@ -1684,7 +1710,7 @@ class GenerationkwhInvestment(osv.osv):
             investment_actions.divest(cursor, uid, id, invoice_ids, errors, date_invoice)
 
         return invoice_ids, errors
-        
+
     def create_divestment_invoice(self, cursor, uid,
         investment_id, date_invoice, to_be_divested,
         irpf_amount_current_year=0, irpf_amount=0, context=None):
@@ -1735,6 +1761,144 @@ class GenerationkwhInvestment(osv.osv):
         result.append({'amount': shares * 100,
                        'socis': n_socis})
         return result
+
+    def has_interest_invoice(self, cursor, uid, id, year=None):
+        if not year:
+            today = datetime.today()
+            year = today.year
+        Invoice = self.pool.get('account.invoice')
+        investment_data = self.read(cursor, uid, id)
+        has_invoice = Invoice.search(cursor, uid, [('name','=', investment_data['name']+'-INT'+str(year))])
+        return has_invoice
+
+    def get_to_be_interized(self, cursor, uid, investment_id, vals, context=None):
+        """
+        1) Si l'aportació no està pagada, error
+        2) Si l'aportació s'ha desinventit abans de la data_start, error
+        3) Si l'aportació ha rebut interessos a data posterior a data_start, error
+        4) Si l'aportacio ha rebut interessos:
+                Si l'aportació ha rebut interessos a data posterior que la data_start, error
+           Altrament:
+                Si la data de compra és posterior a data_start, actualitzem data_start
+        5) Si s'ha desinvertit abans de date_end, actualtizem date_end
+        6) Si entre date_start i date_end hi ha menys de 0 dies, error
+        7) Afegim 1 dia al rang de dies, per incloure tots els dies del periode
+        """
+        interest_rate = vals['interest_rate']
+        Investment = self.pool.get('generationkwh.investment')
+        investment = Investment.browse(cursor, uid, investment_id)
+
+        date_start = vals['date_start']
+        date_start_dt = datetime.strptime(date_start,'%Y-%m-%d')
+        date_end = vals['date_end']
+        date_end_dt = datetime.strptime(date_end,'%Y-%m-%d')
+        purchase_date = investment.purchase_date
+        last_effective_date = investment.last_effective_date
+        last_interest_paid_date = investment.last_interest_paid_date
+
+        if not purchase_date:
+            raise InvestmentException("Cannot pay interest of an unpaid investment")
+        if last_effective_date and last_effective_date < date_start:
+            raise InvestmentException("Cannot pay interest of a divested investment")
+        if last_interest_paid_date and date_start <= last_interest_paid_date:
+            raise InvestmentException("Cannot pay interest of a already paid interest")
+
+        if last_interest_paid_date:
+            first_date_to_pay_dt = datetime.strptime(last_interest_paid_date,'%Y-%m-%d') + relativedelta(days=1)
+            if date_start_dt > first_date_to_pay_dt:
+                raise InvestmentException("Selected dates create a period without paid interests")
+        else:
+            if purchase_date > date_start:
+                date_start_dt = datetime.strptime(purchase_date,'%Y-%m-%d')
+
+        if last_effective_date and date_end >= last_effective_date:
+            date_end_dt = datetime.strptime(investment.last_effective_date,'%Y-%m-%d')
+
+        days_of_interest = (date_end_dt - date_start_dt).days
+
+        if days_of_interest < 0:
+            raise InvestmentException("Cannot pay interest of a negative dates range")
+        days_of_interest += 1
+        amount = investment.nshares * gkwh.shareValue
+        start_year = date_start_dt.year
+        end_year = date_end_dt.year
+
+        if start_year != end_year and (isleap(start_year) or isleap(end_year)):
+            start_year_days = (datetime(start_year,12,31) - date_start_dt).days + 1
+            end_year_days = (date_end_dt - datetime(end_year,1,1)).days + 1
+            start_year_days_factor = float(start_year_days) / (366 if isleap(start_year) else 365)
+            end_year_days_factor = float(end_year_days) / (366 if isleap(end_year) else 365)
+            interest = amount * interest_rate/100 * (start_year_days_factor + end_year_days_factor)
+            return round(interest, 2)
+
+        daily_interest = (interest_rate/100) / (366 if isleap(start_year) else 365)
+        return round(amount * daily_interest * days_of_interest, 2)
+
+    def interest(self, cursor, uid, ids, vals, context=None):
+        if not context:
+            context = {}
+        open_invoices = context.get('open_invoices', False)
+        User = self.pool.get('res.users')
+        username = User.read(cursor, uid, uid, ['name'])['name']
+
+        interest_ids = []
+        interest_errors = []
+
+        investment_ids = ids or self.search(cursor, uid, [('emission_id.type','=','apo')], order='id')
+        investments = self.browse(cursor, uid, investment_ids)
+        for inv in investments:
+            investment_id = inv.id
+            invstate = InvestmentState(username, datetime.now(),
+                actions_log = inv['actions_log'],
+                log = inv['log'],
+                purchase_date = isodate(inv['purchase_date']),
+                nominal_amount = gkwh.shareValue*inv['nshares'],
+                last_interest_paid_date = inv.last_interest_paid_date
+            )
+
+            if self.has_interest_invoice(cursor, uid, investment_id):
+                interest_errors.append('{}: Investment already have interest invoice'.format(inv.name))
+                continue
+
+            if inv.emission_id.type != 'apo':
+                interest_errors.append('{}: Investment not APO, not interest has to be paid'.format(inv.name))
+                continue
+
+            try:
+                to_be_interized = self.get_to_be_interized(cursor, uid,
+                    investment_id, vals, context)
+            except InvestmentException as e:
+                interest_errors.append('{}: {}'.format(inv.name, str(e)))
+                continue
+
+            vals['to_be_interized'] = to_be_interized
+
+            interest_id, error = self.create_interest_invoice(cursor, uid,
+                    investment_id, vals)
+
+            if error:
+                interest_errors.append('{}: {}'.format(inv.name, error))
+                continue
+            interest_ids.append(interest_id)
+
+
+            if open_invoices:
+                self.open_invoices(cursor, uid, [interest_id])
+                payment_mode = self.investment_actions(cursor, uid, investment_id).get_interest_payment_mode_name(cursor, uid)
+                self.invoices_to_payment_order(cursor, uid,
+                    [interest_id], payment_mode)
+                self.send_mail(cursor, uid, interest_id,
+                    'account.invoice', '_interest_notification_mail', investment_id)
+
+        return interest_ids, interest_errors
+
+    def create_interest_invoice(self, cursor, uid,
+            investment_id, vals, context=None):
+
+        investment_actions = AportacionsActions(self, cursor, uid, 1)
+        investment_id, error = investment_actions.create_interest_invoice(cursor, uid,
+                investment_id, vals, context)
+        return investment_id, error
 
 class InvestmentProvider(ErpWrapper):
 

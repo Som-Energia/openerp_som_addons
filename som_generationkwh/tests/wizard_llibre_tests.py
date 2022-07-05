@@ -29,7 +29,7 @@ class TestsWizard(testing.OOTestCase):
 
         self.assertEqual(values, {'adreca': u'Esperan\xe7a, 8',
 	     'cp': u'43580',
-	     'data_alta': False,
+	     'data_alta': '2017-01-01',
 	     'data_baixa': '',
 	     'dni': u'16405474B',
 	     'email': '',
@@ -51,7 +51,6 @@ class TestsWizard(testing.OOTestCase):
         self.assertEqual(values, [{'concepte': u'Obligatoria',
              'data': '2017-01-01',
              'import': 100}])
-
 
     def test_get_aportacions_voluntaries_values(self):
         cursor, uid, pool = (self.txn.cursor, self.txn.user, self.openerp.pool)

@@ -143,7 +143,7 @@
             <field name="name">Alina Aníssimova</field>
             <field name="ref">S202003</field>
             <field name="vat">ES16405474B</field>
-            <field name="data">2017-01-01</field>
+            <field name="date">2017-01-01</field>
         </record>
         <record id="res_partner_address_aportacions" model="res.partner.address">
             <field name="city">Deltebre</field>
@@ -160,6 +160,9 @@
             <field name="state">iban</field>
             <field name="partner_id" ref="res_partner_aportacions"></field>
         </record>
+        <record id="res_partner_aportacions" model="res.partner">
+            <field name="bank_inversions" ref="partner_bank_aportacions" />
+        </record>
         <record id="soci_aportacions" model="somenergia.soci">
             <field name="partner_id" ref="res_partner_aportacions"/>
             <field name="baixa">False</field>
@@ -170,7 +173,7 @@
             <field name="name">Kathleen McNulty Mauchly Antonelli</field>
             <field name="ref">S202004</field>
             <field name="vat">ES93646384K</field>
-            <field name="data">2017-01-01</field>
+            <field name="date">2017-01-01</field>
             <field name="data_baixa">2022-01-01</field>
         </record>
         <record id="res_partner_address_generation" model="res.partner.address">
@@ -382,7 +385,6 @@
         <record id="giscedata_polissa.polissa_0001" model="giscedata.polissa">
             <field name="titular" ref="res_partner_inversor1"></field>
         </record>
-
         <record id="invoice_GKWH00002" model="account.invoice">
             <field name="name">GKWH00002-JUST</field>
             <field name="origin">GKWH00002</field>
@@ -394,6 +396,20 @@
             <field name="period_id" ref="account.period_1"/>
             <field name="account_id" ref="account.a_recv"/>
             <field name="origin_date_invoice">2015-10-09</field>
+            <field name="reference">GISCE</field>
+        </record>
+        <record id="invoice_APO00003_INT2020" model="account.invoice">
+            <field name="name">APO00003-INT2020</field>
+            <field name="number">APO00003-INT2020</field>
+            <field name="origin">APO00003</field>
+            <field name="type">out_invoice</field>
+            <field name="state">paid</field>
+            <field name="date_invoice">2020-06-30</field>
+            <field name="partner_id" ref="res_partner_aportacions"/>
+            <field name="address_invoice_id" ref="res_partner_address_aportacions"/>
+            <field name="period_id" ref="account.period_1"/>
+            <field name="account_id" ref="account.a_recv"/>
+            <field name="origin_date_invoice">2020-06-30</field>
             <field name="reference">GISCE</field>
         </record>
         <record id="linia_factura_01" model="giscedata.facturacio.factura.linia">
