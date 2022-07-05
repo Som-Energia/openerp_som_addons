@@ -123,7 +123,21 @@ class TarifaPoolSOM(TarifaPool):
             'C2_%(fname)s_%(postfix)s' % locals(), esios_token
         )
 
+        # MAJ RDL 10/2022
+        maj_activated = self.conf.get('maj_activated', 0)
+
         A = (((prmncur - pc3_ree) * 0.001) + pc3_boe + (omie * 0.001))
+
+        # Use AJOM if invoice includes june'22 or later days and variable is activated
+        if maj_activated and (
+                (start_date.year >= 2022 and start_date.month >= 6) or
+                (start_date.year == 2023 and start_date.month < 6)
+        ):
+            ajom = self.get_coeficient_from_dict(start_date, 'ajom')
+            A += ajom * 0.001
+        else:
+            ajom = None
+
         B = (1 + (perdues * 0.01))
         C = A * B
         D = (k + desvios) + (fe * 0.001)
@@ -139,6 +153,8 @@ class TarifaPoolSOM(TarifaPool):
                 self.audit_data[key] = []
             var_name = audit_keys[key]
             com = locals()[var_name]
+            if com is None:
+                continue
             self.audit_data[key].extend(
                 com.get_audit_data(start=start_date.day)
             )
@@ -197,7 +213,21 @@ class TarifaPoolSOM(TarifaPool):
         coste_medio_desvios.load(grcosdnc.indicators[GRCOSDNC_MAGNS[8]])
         sobrecostes_ree = coste_total - coste_medio_desvios
 
+        # MAJ RDL 10/2022
+        maj_activated = self.conf.get('maj_activated', 0)
+
         A = ((prmdiari + sobrecostes_ree + si) * 0.001) + pc3_boe + (omie * 0.001) + h
+
+        # Use AJOM if invoice includes june'22 or later days and variable is activated
+        if maj_activated and (
+                (start_date.year >= 2022 and start_date.month >= 6) or
+                (start_date.year == 2023 and start_date.month < 6)
+        ):
+            ajom = self.get_coeficient_from_dict(start_date, 'ajom')
+            A += ajom * 0.001
+        else:
+            ajom = None
+
         B = (1 + (perdues * 0.01))
         C = A * B
         D = (fe * 0.001) + k + d
@@ -213,6 +243,8 @@ class TarifaPoolSOM(TarifaPool):
                 self.audit_data[key] = []
             var_name = audit_keys[key]
             com = locals()[var_name]
+            if com is None:
+                continue
             self.audit_data[key].extend(
                 com.get_audit_data(start=start_date.day)
             )
