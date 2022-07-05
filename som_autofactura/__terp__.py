@@ -9,7 +9,7 @@
     "author": "SOM ENERGIA",
     "category": "SomEnergia",
     "depends":[
-        "base_extended",
+        "giscedata_facturacio",
         #"giscedata_facturacio_comer_som",
     ],
     "init_xml": [],
