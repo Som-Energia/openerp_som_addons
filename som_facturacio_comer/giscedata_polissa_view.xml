@@ -8,9 +8,9 @@
 			<field name="priority">110</field>
             <field name="inherit_id" ref="giscedata_polissa.view_polisses_form"/>
             <field name="arch" type="xml">
-                <field name="cnae" position="after">
-                    <group col="4" colspan="4">
-                        <field name="teoric_maximum_consume_GC" string="Teoric maximum consume GC" select="2"/>
+                <field name="deposit" position="after">
+                    <group col="2" colspan="2">
+                        <field name="teoric_maximum_consume_gc" string="Teoric maximum consume GC" select="2"/>
                     </group>
                 </field>
             </field>
