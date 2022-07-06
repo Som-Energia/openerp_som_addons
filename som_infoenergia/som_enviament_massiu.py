@@ -27,10 +27,15 @@ class SomEnviamentMassiu(osv.osv):
     _name = 'som.enviament.massiu'
 
     def create(self, cursor, uid, vals=None, context=None):
-        pol_obj = self.pool.get('giscedata.polissa')
         if 'polissa_id' in vals:
+            pol_obj = self.pool.get('giscedata.polissa')
             titular_id = pol_obj.read(cursor, uid, vals['polissa_id'], ['titular'])['titular'][0]
             vals['partner_id'] = titular_id
+        elif 'invoice_id' in vals:
+            inv_obj = self.pool.get('account.invoice')
+            partner_id = inv_obj.read(cursor, uid, vals['invoice_id'], ['partner_id'])[
+                'partner_id'][0]
+            vals['partner_id'] = partner_id
 
         return super(SomEnviamentMassiu, self).create(cursor, uid, vals, context)
 
@@ -144,6 +149,9 @@ class SomEnviamentMassiu(osv.osv):
         'partner_id': fields.many2one('res.partner', _('Contacte'),
             ondelete='restrict',
             select=True),
+        'invoice_id': fields.many2one('account.invoice', _('Factura'),
+            ondelete='restrict',
+            select=True, pol_rel='no'),
         'lang': fields.related('partner_id', 'lang',
             type='char',
             help=_("Idioma del partner"),
