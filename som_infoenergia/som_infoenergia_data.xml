@@ -274,9 +274,9 @@
         </record>
         <record model="poweremail.templates" id="rebaixa_iva_5">
             <field name="name">Enviament rebaixa iva 5%</field>
-            <field name="object_name" model="ir.model" search="[('model', '=', 'som.infoenergia.enviament')]"/>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'som.enviament.massiu')]"/>
             <field eval="0" name="save_to_drafts"/>
-            <field name="model_int_name">som.infoenergia.enviament</field>
+            <field name="model_int_name">som.enviament.massiu</field>
             <field eval="0" name="use_filter"/>
             <field name="def_to">${object.polissa_id.titular.address[0].email}</field>
             <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
