@@ -1632,8 +1632,8 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                 'origin': 'sense lectura',
                 'data': '2021-06-01',
                 'days': 30,
-                'data_from': '01/06/2021',
-                'data_to': '30/06/2021',
+                'date_from': '01/06/2021',
+                'date_to': '30/06/2021',
             }])
 
     @mock.patch.object(giscedata_facturacio_report, 'is_2XTD')
@@ -1726,8 +1726,8 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                         'origin': 'sense lectura',
                         'data': '2021-05-01',
                         'days': 31,
-                        'data_from': '01/05/2021',
-                        'data_to': '31/05/2021',
+                        'date_from': '01/05/2021',
+                        'date_to': '31/05/2021',
                     },{
                         'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
                         'P2': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
@@ -1737,8 +1737,8 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                         'origin': 'sense lectura',
                         'data': '2021-06-01',
                         'days': 30,
-                        'data_from': '01/06/2021',
-                        'data_to': '30/06/2021',
+                        'date_from': '01/06/2021',
+                        'date_to': '30/06/2021',
                     },
                 ],
             })
@@ -1867,8 +1867,8 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                         'origin': 'sense lectura',
                         'data': '2021-06-01',
                         'days': 30,
-                        'data_from': '01/06/2021',
-                        'data_to': '30/06/2021',
+                        'date_from': '01/06/2021',
+                        'date_to': '30/06/2021',
                     },
                 ],
             })
@@ -2099,8 +2099,8 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                         'origin': 'sense lectura',
                         'data': '2021-05-01',
                         'days': 30,
-                        'data_from': '01/05/2021',
-                        'data_to': '30/05/2021',
+                        'date_from': '01/05/2021',
+                        'date_to': '30/05/2021',
                     },{
                         'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
                         'P2': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
@@ -2114,8 +2114,8 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                         'origin': 'sense lectura',
                         'data': '2021-06-01',
                         'days': 30,
-                        'data_from': '01/06/2021',
-                        'data_to': '30/06/2021',
+                        'date_from': '01/06/2021',
+                        'date_to': '30/06/2021',
                     },
                 ],
             })
