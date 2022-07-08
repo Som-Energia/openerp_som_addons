@@ -292,7 +292,7 @@
             <field name="default_section" ref="atc_section_factura"/>
         </record>
     </data>
-    <data noupdate="0">
+    <data noupdate="1">
          <record model="giscedata.atc.tag" id="tag_1">
             <field name="name">3.0 estimades 33% jurídic</field>
             <field name="titol">Estimacions (3.0TD) en què s'aplica càlcul del 33% sobre potència pel càlcul de l'energia. També ho podem fer servir amb sobreestimades recurrents</field>
