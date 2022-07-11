@@ -14,7 +14,7 @@
                 <th style="text-align: center;">Potència facturada</th>
                 % if readings_m.has_exces_potencia:
                     <th style="text-align: center;">Quantitat excedida</th>
-                    <th style="text-align: center;">Import excés de Poténcia <br/> (en Euros)</th>
+                    <th style="text-align: center;">Import excés de Potència <br/> (en Euros)</th>
                 % endif
             </tr>
             % for iteracio, periode in enumerate(readings_m.periodes_m):
