@@ -44,8 +44,8 @@ class GiscedataAtc(osv.osv):
             'crear_cas_r1': True,
             'autoreclama_history_initial_state_id': initial_state_id,
         }
-        if atc.ref:
-            new_case_data['orginal_sw_id'] = atc.ref.id
+        if atc.ref and atc.ref.split(',')[0] == u'giscedata.switching':
+            new_case_data['orginal_sw_id'] = int(atc.ref.split(',')[1])
         return self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
 
     # Automatic ATC + [R1] from dictonary / Entry poiut
