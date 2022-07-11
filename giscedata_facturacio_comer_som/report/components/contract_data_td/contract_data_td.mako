@@ -50,7 +50,7 @@ autoconsum_text = TABLA_113_dict[cd.autoconsum] if cd.autoconsum in TABLA_113_di
                     % if cd.power_invoicing_type == 1:
                         ${_(u"Facturació potència:")} <span style="font-weight: bold;">${_(u"Facturació per maxímetre")}</span> <br />
                     % elif cd.power_invoicing_type == 2:
-                        ${_(u"Facturació potència:")} <span style="font-weight: bold;">${_(u"Facturació per poténcia quarthorari")}</span> <br />
+                        ${_(u"Facturació potència:")} <span style="font-weight: bold;">${_(u"Facturació per potència quarthorari")}</span> <br />
                     % else:
                         ${_(u"Facturació potència:")} <span style="font-weight: bold;">${_(u"Facturació per ICP")}</span> <br />
                     % endif

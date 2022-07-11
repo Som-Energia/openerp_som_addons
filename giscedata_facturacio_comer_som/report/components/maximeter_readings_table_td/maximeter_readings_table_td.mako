@@ -37,9 +37,9 @@
                     % for iteracio, periode in enumerate(readings_m.periodes_m):
                         <td style="text-align: center;">${int(readings_m.exces_m[iteracio][0])}</td>
                     % endfor
-                </tr>   
+                </tr>
                 <tr>
-                    <th>Import excés de Poténcia (en Euros)</th>                 
+                    <th>Import excés de Potència (en Euros)</th>
                     % for iteracio, periode in enumerate(readings_m.periodes_m):
                         <td style="text-align: center;">${formatLang(readings_m.exces_m[iteracio][1])}</td>
                     % endfor
