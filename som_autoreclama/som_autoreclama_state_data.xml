@@ -516,15 +516,15 @@
         </record>
         <record id="ir_cron_autoreclama_states_updater" model="ir.cron" forcecreate="1">
             <field name="name">Apply autoreclama automations</field>
-            <field name="user_id" ref="base.user_root"/>
+            <field name="user_id" ref="base.user_admin"/>
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
             <field name="numbercall">-1</field>
             <field name="doall" eval="False"/>
             <field name="active" eval="False"/>
             <field name="model" eval="'som.autoreclama.state.updater'"/>
-            <field name="function" eval="'state_updater_mail_text'"/>
-            <field name="args" eval="'([],)'"/>
+            <field name="function" eval="'_cronjob_state_updater_mail_text'"/>
+            <field name="args" eval="({'emails_to': ''},)"/>
         </record>
     </data>
 </openerp>

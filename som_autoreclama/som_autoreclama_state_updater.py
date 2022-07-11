@@ -2,6 +2,7 @@
 from osv import osv
 from tqdm import tqdm
 from tools.translate import _
+from tools import email_send
 
 
 class SomAutoreclamaStateUpdater(osv.osv_memory):
@@ -88,9 +89,21 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         atc_ids = self.get_atc_candidates_to_update(cursor, uid, context)
         return self.update_atcs_if_possible(cursor, uid, atc_ids, context)
 
-    def state_updater_mail_text(self, cursor, uid, context=None):
-        _,_,_, msg = self.state_updater(cursor, uid, context)
-        return msg
+    def _cronjob_state_updater_mail_text(self, cursor, uid, data=None, context=None):
+        if not data:
+            data = {}
+        if not context:
+            context = {}
 
+        subject = _(u"Resultat accions batch d'autoreclama")
+        _,_,_, msg = self.state_updater(cursor, uid, context)
+
+        emails_to = filter(lambda a: bool(a), map(str.strip, data.get('emails_to', '').split(',')))
+        if emails_to:
+            user_obj = self.pool.get('res.users')
+            email_from = user_obj.browse(cursor, uid, uid).address_id.email
+            email_send(email_from, emails_to, subject, msg)
+
+        return True
 
 SomAutoreclamaStateUpdater()
