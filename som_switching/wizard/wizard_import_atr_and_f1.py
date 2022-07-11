@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import zipfile
 import glob
 
@@ -17,7 +18,7 @@ class WizardImportAtrAndF1(osv.osv_memory):
         if prefix == 'F1_':
             wizard = self.browse(cursor, uid, ids[0])
             tmp_zip = open('{temporal_folder}/{filename}'.format(
-                temporal_folder = directory, pref=prefix,
+                temporal_folder = directory,
                 filename = wizard.filename),
                 'w+'
             )
@@ -26,7 +27,6 @@ class WizardImportAtrAndF1(osv.osv_memory):
             zip_handler = super(WizardImportAtrAndF1, self)._create_tmp_zip(
                 cursor, uid, ids, directory, prefix, context
             )
-
         return zip_handler
 
     @staticmethod
