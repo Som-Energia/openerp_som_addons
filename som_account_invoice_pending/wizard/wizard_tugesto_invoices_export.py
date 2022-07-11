@@ -53,7 +53,8 @@ class WizardExportTugestoInvoices(osv.osv_memory):
         for fact_id in fact_ids:
             factura = fact_obj.browse(cursor, uid, fact_id)
             partner = factura.partner_id
-            identificador_expediente = "{}-{}".format(partner.vat,datetime.strftime(date.today(),'%Y-%m-%d'))
+            vat_numbers = re.findall(r'\d+', partner.vat)[0]
+            identificador_expediente = "{}".format(vat_numbers)
             Id_tipo = 2 # Expediente Prejudicial
             importe_pagare = 0.0 
             cnae = factura.polissa_id.cnae.name
