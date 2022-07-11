@@ -107,6 +107,6 @@
           </td>
         </tr>
       </table>
-      <p class="sei_info">${_(u"Més informació sobre l'origen de la seva electricitat a")}&nbsp;<a href="https://gdo.cnmc.es/">https://gdo.cnmc.es</a></p>
+      <p class="sei_info">${_(u"Més informació sobre l'origen de la seva electricitat a")}&nbsp; &nbsp;<a href="https://gdo.cnmc.es/">https://gdo.cnmc.es</a></p>
     </div>
 % endif
