@@ -44,6 +44,8 @@ class GiscedataAtc(osv.osv):
             'crear_cas_r1': True,
             'autoreclama_history_initial_state_id': initial_state_id,
         }
+        if atc.ref:
+            new_case_data['orginal_sw_id'] = atc.ref.id
         return self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
 
     # Automatic ATC + [R1] from dictonary / Entry poiut
@@ -94,6 +96,8 @@ class GiscedataAtc(osv.osv):
             subtype_r1_wiz = r1w_obj.action_subtype_fields_view(cursor, uid, [r1w_id], r1w_ctx)  # obtain subtype wizard R1
 
             sr1w_obj = self.pool.get(subtype_r1_wiz['res_model'])  # "wizard.subtype.r1"
+            if 'orginal_sw_id' in case_data:
+                r1w_ctx['from_sw_id'] = case_data['orginal_sw_id']
             sr1w_id = sr1w_obj.create(cursor, uid, {}, r1w_ctx)
             r1_result = sr1w_obj.action_create_r1_case(cursor, uid, [sr1w_id], r1w_ctx)  # create subtype R1 for example:029  # USE OLD CONTEXT!
 
