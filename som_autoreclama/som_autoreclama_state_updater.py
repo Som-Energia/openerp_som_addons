@@ -30,7 +30,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         updated = []
         not_updated = []
         errors = []
-        msg = u""
+        msg = _("Accions\n")
 
         for atc_id in tqdm(ids):
             actual_state = self.get_autoreclama_state_name(cursor, uid, atc_id, context)
@@ -48,6 +48,23 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                 errors.append(atc_id)
                 msg += _("Cas ATC amb id {} no ha canviat d'estat per error, estat actual: {}\n").format(atc_id, actual_state)
                 msg += _(" - {}\n").format(message)
+
+        msg += _("\n")
+        msg += _("Sumari\n")
+        msg += _("casos ATC que han canviat d'estat: .................. {}\n".format(len(updated)))
+        msg += _("casos ATC que no han canviat d'estat: ............... {}\n".format(len(not_updated)))
+        msg += _("casos ATC que no han pogut canviar per un error: .... {}\n".format(len(errors)))
+        msg += _("\n")
+
+        if updated:
+            msg += _("Id's de casos ATC que han canviat d'estat\n")
+            msg += ",".join(str(upd) for upd in updated)
+            msg += _("\n\n")
+
+        if errors:
+            msg += _("Id's de casos ATC que han donat error (REVISAR)\n")
+            msg += ",".join(str(error) for error in errors)
+            msg += _("\n\n")
 
         return updated, not_updated, errors, msg
 
