@@ -31,7 +31,7 @@
         <td></td>
     </tr>
     <tr class="tr_bold">
-        <td class="detall_td">${_(u"kWh x €/kWh (del %s al %s)") % (energy_lines_data.data_from, energy_lines_data.data_to)}</td>
+        <td class="detall_td">${_(u"kWh x €/kWh (del %s al %s)") % (energy_lines_data.date_from, energy_lines_data.date_to)}</td>
         % for p in id.showing_periods:
             <% pGwh = p + " GkWh" %>
             % if pGwh in energy_lines_data:

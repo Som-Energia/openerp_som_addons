@@ -72,7 +72,7 @@ count = 1
             <tr class="tr_bold last_row">
             % endif
                 % if excess_data['multi'] > 1:
-                    <td class="detall_td">${_(u"kW x €/kW x %s dies (del %s al %s)") %(int(excess_data['multi']),excess_data['data_from'], excess_data['data_to'])}</td>
+                    <td class="detall_td">${_(u"kW x €/kW x %s dies (del %s al %s)") %(int(excess_data['multi']),excess_data['date_from'], excess_data['date_to'])}</td>
                 % else:
                     <td class="detall_td">${_(u"kW x €/kW")}</td>
                 % endif
