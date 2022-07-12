@@ -38,9 +38,9 @@ class WizardImportAtrAndF1(osv.osv_memory):
                 '{path}/*.zip.b64'.format(path=zip_path)
             )[0]
         else:
-            zip_filename = super(WizardImportAtrAndF1, self)._get_b64_zip_files(
-                zip_path, context
-            )
+            zip_filename = glob.glob(
+                '{path}/{type}_*.zip.b64'.format(path=zip_path, type=_type)
+            )[0]
         with open(zip_filename, 'r') as zip_handler:
             return zip_filename, zip_handler.read()
 
