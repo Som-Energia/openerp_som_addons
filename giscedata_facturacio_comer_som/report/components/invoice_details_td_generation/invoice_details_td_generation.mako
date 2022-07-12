@@ -38,7 +38,7 @@ count = 1
         % else:
         <tr class="tr_bold last_row">
         % endif
-            <td class="detall_td">${_(u"kWh x €/kWh (del %s al %s)") % (generation_lines_data['data_from'], generation_lines_data['data_to'])}</td>
+            <td class="detall_td">${_(u"kWh x €/kWh (del %s al %s)") % (generation_lines_data['date_from'], generation_lines_data['date_to'])}</td>
             % for p in id.showing_periods:
                 % if p in generation_lines_data:
                     <td>${_(u"%s €") %(locale.str(locale.atof(formatLang(generation_lines_data[p]["price_subtotal"], digits=3))))}</td>

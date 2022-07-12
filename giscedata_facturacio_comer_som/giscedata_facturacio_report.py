@@ -1839,8 +1839,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             lines_data[block]['origin'] = readings[l.data_desde] if l.data_desde in readings else _(u'sense lectura')
             lines_data[block]['data'] = data_desde
             lines_data[block]['days'] = (datetime.strptime(l.data_fins,'%Y-%m-%d') - datetime.strptime(l.data_desde,'%Y-%m-%d')).days + 1
-            lines_data[block]['data_from'] = dateformat(l.data_desde)
-            lines_data[block]['data_to'] = dateformat(l.data_fins)
+            lines_data[block]['date_from'] = dateformat(l.data_desde)
+            lines_data[block]['date_to'] = dateformat(l.data_fins)
 
         lines_data = [lines_data[k] for k in sorted(lines_data.keys())]
         return lines_data
@@ -2182,8 +2182,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     items[p] = item
                 items['multi'] = excess_lines['multi']
                 items['total'] = excess_lines['total']
-                items['date_from'] = excess_lines['data_from']
-                items['date_to'] = excess_lines['data_to']
+                items['date_from'] = excess_lines['date_from']
+                items['date_to'] = excess_lines['date_to']
             excess_data.append(items)
         data = {
             'showing_periods': showing_periods,
@@ -2224,8 +2224,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 items['visible_days_month'] = replace_kp and excess_lines['data']
                 items['days'] = excess_lines['days']
                 items['total'] = excess_lines['total']
-                items['date_from'] = excess_lines['data_from']
-                items['date_to'] = excess_lines['data_to']
+                items['date_from'] = excess_lines['date_from']
+                items['date_to'] = excess_lines['date_to']
             excess_data.append(items)
         data = {
             'showing_periods': showing_periods,
