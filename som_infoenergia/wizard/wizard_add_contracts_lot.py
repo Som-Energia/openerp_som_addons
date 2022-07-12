@@ -34,7 +34,7 @@ class WizardAddContractsLot(osv.osv_memory):
             'comer_fare': [('llista_preu', 'ilike', '%{}%'.format(wiz.comer_fare))],
             'access_fare': [('tarifa', 'ilike', '%{}%'.format(wiz.access_fare))],
             'autoconsum': [('autoconsumo','!=','00'), ('autoconsumo', '!=', False)] if wiz.autoconsum == 'all' else [('autoconsumo', '=', wiz.autoconsum)],
-            'agree_tipus': [('agree_tipus', 'ilike', '%{}%'.format(wiz.agree_tipus))],
+            'tipo_medida': [('tipo_medida', 'ilike', '%{}%'.format(wiz.tipo_medida))],
             'category': [('category_id','!=',False), ('category_id.name','ilike', '%{}%'.format(wiz.category))],
         }
         for field in search_params_relation.keys():
@@ -56,7 +56,7 @@ class WizardAddContractsLot(osv.osv_memory):
         'access_fare': fields.char('Tarifa d\'accés', size=256),
         'comer_fare': fields.char('Tarifa comercialitzadora', size=256),
         'autoconsum': fields.selection([(False, ''), ('all','Qualsevol Autoconsum')]+TABLA_113, 'Tipus autoconsum'),
-        'agree_tipus': fields.char('Tipus Punt', size=256),
+        'tipo_medida': fields.char('Tipus Punt', size=256),
         'category': fields.char('Categoria', size=256),
         'len_result': fields.text('Resultat de la cerca', readonly=True),
     }
