@@ -113,7 +113,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             context = {}
 
         subject = _(u"Resultat accions batch d'autoreclama")
-        _,_,_, msg = self.state_updater(cursor, uid, context)
+        a,b,c, msg = self.state_updater(cursor, uid, context)
 
         emails_to = filter(lambda a: bool(a), map(str.strip, data.get('emails_to', '').split(',')))
         if emails_to:
