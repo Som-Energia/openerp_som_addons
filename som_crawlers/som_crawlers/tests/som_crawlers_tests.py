@@ -9,7 +9,7 @@ class ConfiguracioTests(testing.OOTestCase):
 
     def setUp(self):
         self.pool = self.openerp.pool
-        self.Configuracio = self.pool.get('classe.configuracio')
+        self.Configuracio = self.pool.get('som.crawlers.config')
         self.Data = self.pool.get('ir.model.data')
     
     def tearDown(self):

@@ -2,7 +2,7 @@
 <openerp>
     <data noupdate="0">
     <!-- Exemple de Usuari-->
-        <record model="classe.configuracio" id="demo_configuracio_1">
+        <record model="som.crawlers.config" id="demo_configuracio_1">
         <field name="name">Endesa</field>
         <field name="usuari">Admin</field>
         <field name="contrasenya">Admin</field>

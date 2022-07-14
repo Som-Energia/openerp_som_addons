@@ -2,8 +2,8 @@
 <openerp>
     <data>
         <record model="ir.ui.view" id="view_configuracio_form">
-            <field name="name">classe.configuracio.form</field>
-            <field name="model">classe.configuracio</field>
+            <field name="name">som.crawlers.config.form</field>
+            <field name="model">som.crawlers.config</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Configuracio">
@@ -17,8 +17,8 @@
             </field>
         </record>
          <record model="ir.ui.view" id="view_configuracio_tree">
-            <field name="name">classe.configuracio.tree</field>
-            <field name="model">classe.configuracio</field>
+            <field name="name">som.crawlers.config.tree</field>
+            <field name="model">som.crawlers.config</field>
             <field name="type">tree</field>
             <field name="arch" type="xml">
             <tree string="Configuracio">
@@ -34,7 +34,7 @@
         </record>
         <record id="action_configuracio_tree" model="ir.actions.act_window">
             <field name="name">Configuracio</field>
-            <field name="res_model">classe.configuracio</field>
+            <field name="res_model">som.crawlers.config</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="view_configuracio_tree"/>
