@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from cryptography.fernet import Fernet
 
 class classeConfiguracio(osv.osv):
-    _name = 'classe.configuracio'
+    _name = 'som.crawlers.config'
 
     _columns = {
         'name' : fields.char('Nom', size=10, required=True,),
