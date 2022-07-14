@@ -1,6 +1,7 @@
 
 from osv import osv, fields
 from datetime import datetime, timedelta
+from cryptography.fernet import Fernet
 
 class classeConfiguracio(osv.osv):
     _name = 'classe.configuracio'
@@ -18,12 +19,15 @@ class classeConfiguracio(osv.osv):
     }
 
     def canviar_contrasenya(self, cursor, uid, ids, contrasenya, context=None):        
-     
-        self.write(cursor,uid,ids,{'contrasenya': contrasenya , 'user_ultima_modificacio': uid, 'date_ultima_modificacio': datetime.now().isoformat()}, context=context)
-        return 
-        
-        
-
+        crawler_config = self.browse(cursor,uid,ids,context=context)
+        if contrasenya == crawler_config.contrasenya:
+            raise osv.except_osv('Contrasenya identica a la anterior!','Torna a introduir una contrasenya diferent a la anterior')
+        else:
+            #key = Fernet.generate_key()
+            #fernet = Fernet(key)
+            #enctex = fernet.encrypt(contrasenya.encode())
+            self.write(cursor,uid,ids,{'contrasenya': contrasenya, 'user_ultima_modificacio': uid, 'date_ultima_modificacio': datetime.now().isoformat()}, context=context)
+            return contrasenya 
 classeConfiguracio()
 
 class classeAccionsPlanificades(osv.osv):
