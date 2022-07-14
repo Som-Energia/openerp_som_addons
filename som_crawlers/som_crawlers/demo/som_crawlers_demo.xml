@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data noupdate="0">
+    <!-- Exemple de Usuari-->
+        <record model="classe.configuracio" id="demo_configuracio_1">
+        <field name="name">Endesa</field>
+        <field name="usuari">Admin</field>
+        <field name="contrasenya">Admin</field>
+        <field name="url_portal">https://www.endesa.com/es</field>
+        <field name="date_ultima_modificacio">2022-07-12</field>
+        </record>
+    <!-- Exemple accions planificades-->
+        <record model="classe.accions.planificades" id="demo_accions_planificades_1">
+        <field name="name">Endesa</field>
+        <field name="data_execucio">2022-06-01</field>
+        <field name="data_ultima_execucio">2022-05-26</field>
+        <field name="llista_execucions">...</field>
+        </record>
+    </data>
+</openerp>
+
+  
