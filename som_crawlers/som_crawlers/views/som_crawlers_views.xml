@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_configuracio_form">
+            <field name="name">classe.configuracio.form</field>
+            <field name="model">classe.configuracio</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Configuracio">
+                    <field name="name" readonly='1'/>
+                    <field name="usuari" readonly='1'/>
+                    <field name="contrasenya" readonly='1'/>
+                    <field name="url_portal" readonly='1'/>
+                    <field name="date_ultima_modificacio" readonly='1'/>
+                    <field name="user_ultima_modificacio" readonly='1'/>
+                </form>
+            </field>
+        </record>
+         <record model="ir.ui.view" id="view_configuracio_tree">
+            <field name="name">classe.configuracio.tree</field>
+            <field name="model">classe.configuracio</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+            <tree string="Configuracio">
+                    <field name="name" select="1"/>
+                    <field name="usuari" select="1"/>
+                    <field name="contrasenya" />
+                    <field name="url_portal" />
+                    <field name="date_ultima_modificacio" select="1"/>
+                    <field name="user_ultima_modificacio"/>
+
+                </tree>
+            </field>
+        </record>
+        <record id="action_configuracio_tree" model="ir.actions.act_window">
+            <field name="name">Configuracio</field>
+            <field name="res_model">classe.configuracio</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_configuracio_tree"/>
+        </record>
+
+    <menuitem id="menu_som_crawlers_base" name="Som Crawlers" />
+    <menuitem action="action_configuracio_tree" id="menu_configuracio_tree" parent="som_crawlers.menu_som_crawlers_base"/>
+
+
+    <!--Accions planificades-->
+    <record model="ir.ui.view" id="view_accions_planificades_form">
+            <field name="name">classe.accions.planificades.form</field>
+            <field name="model">classe.accions.planificades</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Accions planificades">
+                    <field name="name" />
+                    <field name="data_execucio" />
+                    <field name="data_ultima_execucio" />
+                    <field name="llista_execucions" />
+                </form>
+            </field>
+        </record>
+         <record model="ir.ui.view" id="view_accions_planificades_tree">
+            <field name="name">classe.accions.planificades.tree</field>
+            <field name="model">classe.accions.planificades</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+            <tree string="Accions Planificades">
+                     <field name="name" select="1"/>
+                    <field name="data_execucio" select="1"/>
+                    <field name="data_ultima_execucio" select="1"/>
+                    <field name="llista_execucions" select="1"/>
+
+                </tree>
+            </field>
+        </record>
+        <record id="action_accions_planificades_tree" model="ir.actions.act_window">
+            <field name="name">Accions planificades</field>
+            <field name="res_model">classe.accions.planificades</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_accions_planificades_tree"/>
+        </record>
+
+    <menuitem id="menu_som_crawlers_base" name="Som Crawlers" />
+    <menuitem action="action_accions_planificades_tree" id="menu_accions_planificades_tree" parent="som_crawlers.menu_som_crawlers_base"/>
+    
+    </data>
+</openerp>
+
+
+
