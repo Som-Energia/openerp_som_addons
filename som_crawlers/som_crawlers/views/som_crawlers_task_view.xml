@@ -17,11 +17,11 @@
                     </group>
                     <field name="data_proxima_execucio" />
                     <group colspan="6" col="2" string="Configuració de tasca">
-                        <field name="configuracions_id" />
+                        <field name="configuracio_id" />
                     </group>
-                    <group colspan="6" col="2" string="Execucions realitzades per la tasca">
+                    <!--<group colspan="6" col="2" string="Execucions realitzades per la tasca">
                         <field name="run_ids" select="2" height="300" nolabel="1" widget="one2many_list"/>
-                    </group>
+                    </group>-->
                 </form>
             </field>
         </record>
@@ -35,8 +35,8 @@
                         <field name="active"/>
                         <field name="task_step_ids" />
                         <field name="data_proxima_execucio" />
-                        <field name="configuracions_id" />
-                        <field name="run_ids"/>
+                        <field name="configuracio_id" />
+                       <!-- <field name="run_ids"/>-->
                 </tree>
             </field>
         </record>

@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
-class somCrawlersTask(osv.osv):
+class SomCrawlersTask(osv.osv):
     _name = 'som.crawlers.task'
     _columns = {
         'name': fields.char(_(u"Nom"), size=128, help=_("Nom de la tasca"),required=True,),
         'active': fields.boolean( string=_(u"Actiu"), help=_(u"Indica si la tasca està activa o no"),),
-        'task_step_ids': fields.one2many('som.crawlers.config','url_portal',string=_(u"Passos de la tasca")),
+        'task_step_ids': fields.one2many('som.crawlers.task.step','task_id', string=_(u"Passos de la tasca")),
         'data_proxima_execucio':fields.datetime(_(u"Data proxima execució"),),
-        'configuracions_id': fields.many2one('som.crawlers.config','Configuracio', help="Relacio de una configuracio amb la seva tasca",),
-        'run_ids': fields.one2many('som.crawlers.config','name',string="Llistat d'execucions", help="Llista de execucions que ha realitzat la tasca",),
+        'configuracio_id': fields.many2one('som.crawlers.config', 'Configuracio', help="Relacio de una configuracio amb la seva tasca",),
+        #'run_ids': fields.one2many('som.crawlers.config','',string="Llistat d'execucions", help="Llista de execucions que ha realitzat la tasca",),
     }
     _defaults = {
         'active': lambda *a:False,
     }
 
 
-somCrawlersTask()
+SomCrawlersTask()
 
-class somCrawlersTaskStep(osv.osv):
+class SomCrawlersTaskStep(osv.osv):
 
     _name = 'som.crawlers.task.step'
     _order = 'sequence'
@@ -55,4 +55,4 @@ class somCrawlersTaskStep(osv.osv):
         'name': lambda *a: 'nom_per_defecte',
     }
 
-somCrawlersTaskStep()
+SomCrawlersTaskStep()
