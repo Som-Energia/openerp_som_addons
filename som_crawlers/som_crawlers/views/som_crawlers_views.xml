@@ -46,35 +46,31 @@
 
     <!--Accions planificades-->
     <record model="ir.ui.view" id="view_accions_planificades_form">
-            <field name="name">classe.accions.planificades.form</field>
-            <field name="model">classe.accions.planificades</field>
+            <field name="name">som.crawlers.task.form</field>
+            <field name="model">som.crawlers.task</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <form string="Accions planificades">
+                <form string="Tasques automatiques">
                     <field name="name" />
-                    <field name="data_execucio" />
-                    <field name="data_ultima_execucio" />
-                    <field name="llista_execucions" />
+                    <field name="data_proxima_execucio" />
                 </form>
             </field>
         </record>
          <record model="ir.ui.view" id="view_accions_planificades_tree">
-            <field name="name">classe.accions.planificades.tree</field>
-            <field name="model">classe.accions.planificades</field>
+            <field name="name">som.crawlers.task.tree</field>
+            <field name="model">som.crawlers.task</field>
             <field name="type">tree</field>
             <field name="arch" type="xml">
-            <tree string="Accions Planificades">
-                     <field name="name" select="1"/>
-                    <field name="data_execucio" select="1"/>
-                    <field name="data_ultima_execucio" select="1"/>
-                    <field name="llista_execucions" select="1"/>
+                <tree string="Tasques automatiques">
+                    <field name="name" select="1"/>
+                    <field name="data_proxima_execucio" select="1"/>
 
                 </tree>
             </field>
         </record>
         <record id="action_accions_planificades_tree" model="ir.actions.act_window">
-            <field name="name">Accions planificades</field>
-            <field name="res_model">classe.accions.planificades</field>
+            <field name="name">Tasques automatiques tree</field>
+            <field name="res_model">som.crawlers.task</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="view_accions_planificades_tree"/>
