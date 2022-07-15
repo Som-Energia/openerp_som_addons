@@ -3,7 +3,7 @@ from osv import osv, fields
 from datetime import datetime, timedelta
 from cryptography.fernet import Fernet
 
-class classeConfiguracio(osv.osv):
+class somCrawlersConfig(osv.osv):
     _name = 'som.crawlers.config'
 
     _columns = {
@@ -15,7 +15,8 @@ class classeConfiguracio(osv.osv):
         'user_ultima_modificacio': fields.many2one(
             'res.users',
             string='Modificat per',
-            help='Usuai qui ha realitzar la ultima modificacio de la contrasenya')
+            help='Usuai qui ha realitzar la ultima modificacio de la contrasenya'),
+        
     }
 
     def canviar_contrasenya(self, cursor, uid, ids, contrasenya, context=None):        
@@ -28,16 +29,4 @@ class classeConfiguracio(osv.osv):
             #enctex = fernet.encrypt(contrasenya.encode())
             self.write(cursor,uid,ids,{'contrasenya': contrasenya, 'user_ultima_modificacio': uid, 'date_ultima_modificacio': datetime.now().isoformat()}, context=context)
             return contrasenya 
-classeConfiguracio()
-
-class classeAccionsPlanificades(osv.osv):
-    _name = 'classe.accions.planificades'
-
-    _columns = {
-        'name' : fields.char('Configuracio', size=10,required=True,),
-        'data_execucio' : fields.date('Data execucio',required=False,),
-        'data_ultima_execucio' : fields.date('Data ultima execucio', size=10,required=False,),
-        'llista_execucions' : fields.char('Llista execucions que ha fet', size=10,required=False,),
-    }
-
-classeAccionsPlanificades()
+somCrawlersConfig()
