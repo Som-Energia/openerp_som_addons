@@ -9,13 +9,12 @@
     ],
     "init_xml":[],
     "demo_xml": [
-       
+       "demo/som_crawlers_demo.xml",
         
     ],
     "update_xml":[
         "views/som_crawlers_views.xml",
         "som_crawlers_data.xml",
-        "demo/som_crawlers_demo.xml",
         "views/som_crawlers_task_view.xml",
         "wizard/wizard_canviarContrasenya.xml"
     ],

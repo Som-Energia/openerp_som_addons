@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <openerp>
     <data noupdate="0">
+
     <!-- Exemple de Usuari-->
         <record model="som.crawlers.config" id="demo_configuracio_1">
         <field name="name">Endesa</field>
@@ -8,15 +9,14 @@
         <field name="contrasenya">Admin</field>
         <field name="url_portal">https://www.endesa.com/es</field>
         <field name="date_ultima_modificacio">2022-07-12+00:00:00</field>
-        <field name="user_ultima_modificacio">1</field>
+        <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
     <!-- Exemple accions planificades-->
         <record model="som.crawlers.task" id="demo_accions_planificades_1">
-        <field name="name">Endesa</field>
-        <field name="task_step_ids">https://www.endesa.com/es</field>
+        <field name="name">Endesa descargar R1</field>
         <field name="data_proxima_execucio">2022-07-16+00:00:00</field>
-        <field name="configuracions_id">1</field>
-        <field name="run_ids"></field>
+        <field name="configuracio_id" ref="demo_configuracio_1"/>
+        <field name="active">True</field>
         </record>
     </data>
 </openerp>

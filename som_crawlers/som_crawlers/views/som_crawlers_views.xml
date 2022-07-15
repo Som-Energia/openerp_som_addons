@@ -51,8 +51,12 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Tasques automatiques">
-                    <field name="name" />
-                    <field name="data_proxima_execucio" />
+                    <field name="name"/>
+                    <field name="data_proxima_execucio"/>
+                    <field name="task_step_ids"/>
+                    <field name="data_proxima_execucio"/>
+                    <field name="configuracio_id" />
+                    <!--<field name="run_ids" />-->
                 </form>
             </field>
         </record>
@@ -64,7 +68,10 @@
                 <tree string="Tasques automatiques">
                     <field name="name" select="1"/>
                     <field name="data_proxima_execucio" select="1"/>
-
+                    <field name="task_step_ids" select="1" />
+                    <field name="data_proxima_execucio" select="1" />
+                    <field name="configuracio_id" select="1" />
+                    <!--<field name="run_ids" select="1" />-->
                 </tree>
             </field>
         </record>

@@ -3,14 +3,14 @@ from osv import osv, fields
 from datetime import datetime, timedelta
 from cryptography.fernet import Fernet
 
-class somCrawlersConfig(osv.osv):
+class SomCrawlersConfig(osv.osv):
     _name = 'som.crawlers.config'
 
     _columns = {
-        'name' : fields.char('Nom', size=10, required=True,),
+        'name': fields.char('Nom', size=10, required=True,),
         'usuari' : fields.char('Usuari del portal', size=10,required=True, unique = True,),
         'contrasenya' : fields.char('Contrasenya del portal', size=15, required=True,),
-        'url_portal' : fields.char('Url del portal', size=35, required=False,),
+        'url_portal' : fields.char('Url del portal', size=100, required=False,),
         'date_ultima_modificacio' : fields.datetime('Data i hora ultima modificacio',required=False,),
         'user_ultima_modificacio': fields.many2one(
             'res.users',
@@ -29,4 +29,4 @@ class somCrawlersConfig(osv.osv):
             #enctex = fernet.encrypt(contrasenya.encode())
             self.write(cursor,uid,ids,{'contrasenya': contrasenya, 'user_ultima_modificacio': uid, 'date_ultima_modificacio': datetime.now().isoformat()}, context=context)
             return contrasenya 
-somCrawlersConfig()
+SomCrawlersConfig()
