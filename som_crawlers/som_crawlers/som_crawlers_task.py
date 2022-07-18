@@ -23,6 +23,7 @@ class SomCrawlersTaskStep(osv.osv):
     _name = 'som.crawlers.task.step'
     _order = 'sequence'
 
+   
     _columns = {
         'name': fields.char(
             _(u"Nom"),
@@ -34,15 +35,17 @@ class SomCrawlersTaskStep(osv.osv):
             _(u'Ordre'),
             required=True,
         ),
+        'function': fields.char(
+            _(u'Funció'),
+            help=_("Funció del model a executar"),
+            size=256,
+            required=True,
+        ),
         'params': fields.text(
             _(u"Paràmetres"),
-            help=_("Path del fitxer a passar a la funció del model a executar"),
+            help=_("Parametres a passar a la funció del model a executar"),
         ),
-        'autoworker_task_name': fields.text(
-            _(u"Condicio d'acabar"),
-            help=_("Cua o procés que fa la tasca i al que hem d'esperar que acabi"),
-        ),
-         'task_id': fields.many2one(
+        'task_id': fields.many2one(
             'som.crawlers.task',
             _('Tasca'),
             help=_("Tasca englobant"),
@@ -52,6 +55,7 @@ class SomCrawlersTaskStep(osv.osv):
 
     _defaults = {
         'sequence': lambda *a: 99,
+        'function': lambda *a: '',
         'name': lambda *a: 'nom_per_defecte',
     }
 

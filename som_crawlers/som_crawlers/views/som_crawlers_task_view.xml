@@ -49,77 +49,48 @@
         </record>
         <menuitem id="menu_crawlers_task" action="action_som_crawlers_task_tree" parent="som_crawlers.menu_som_crawlers_base"/>
 
-         <record model="ir.ui.view" id="view_som_crawlers_task_step_admin_tree">
-            <field name="name">som.crawlers.task.step.admin.tree</field>
-            <field name="model">som.crawlers.task.step</field>
-            <field name="type">tree</field>
-            <field name="priority">16</field>
-            <field name="arch" type="xml">
-                <tree string="crawlers tasks steps" editable="bottom">
-                    <field name="task_id" editable='no'/>
-                    <field name="name" editable='no'/>
-                    <field name="sequence" editable='no'/>
-                    <field name="params" editable='no'/>
-                    <field name="autoworker_task_name" editable='no'/>
-                </tree>
-            </field>
-        </record>
-        <record model="ir.ui.view" id="view_som_crawlers_task_step_admin_form">
-            <field name="name">som.crawlers.task.step.admin.form</field>
+    <!-- view de som crawlers task step-->
+     <record model="ir.ui.view" id="view_som_crawlers_task_step_form">
+            <field name="name">som.crawlers.task.step.form</field>
             <field name="model">som.crawlers.task.step</field>
             <field name="type">form</field>
             <field name="priority">16</field>
             <field name="arch" type="xml">
-                <form string="Autofactura tasks steps">
-                    <group colspan="2" col="8">
-                        <field name="name" select="1"/>
-                        <field name="sequence" select="1"/>
-                        <field name="task_id" select="1"/>
-                        <group colspan="8" col="4" string="Execució la tasca">
-                            <field name="params" colspan="4" height="200" select="2"/>
-                        </group>
-                        <group colspan="8" col="2" string="Control de finalització">
-                            <field name="autoworker_task_name" select="1" colspan="8" />
-                        </group>
+                <form string="Som crawlers tasks steps">
+                    <field name="name" select='1' />
+                    <field name="sequence" select='1' />
+                    <field name= "task_id" select='1' />
+                    <group colspan="6" col="2" string="Execució tasca">
+                        <field name='function' select='1' />
+                        <field name="params" height="200" nolabel="1" select='2'/>
                     </group>
                 </form>
             </field>
         </record>
-        <record id="action_som_crawlers_task_step_tree_admin" model="ir.actions.act_window">
-            <field name="name">Tasques dels procesos automàtics administració(Admin)</field>
-            <field name="res_model">som.crawlers.task.step</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="view_som_crawlers_task_step_admin_tree" />
-            <field name="context">{'active_test': False}</field>
-        </record>
-        <menuitem id="menu_crawlers_task_step_admin" action="action_som_crawlers_task_step_tree_admin" parent="som_crawlers.menu_som_crawlers_base" groups="base.group_system"/>
-
-
-        <record model="ir.ui.view" id="view_som_crawlers_task_step_tree">
+         <record model="ir.ui.view" id="view_som_crawlers_task_step_tree">
             <field name="name">som.crawlers.task.step.tree</field>
             <field name="model">som.crawlers.task.step</field>
             <field name="type">tree</field>
             <field name="priority">16</field>
             <field name="arch" type="xml">
-                <tree string="crawlers tasks steps" editable="bottom">
-                    <field name="name" select="1"/>
-                    <field name="active" select="1" />
-                    <field name="sequence"/>
+                <tree string="Crawlers tasks steps" editable="bottom">
+                    <field name="task_id" editable='no'/>
+                    <field name="name" editable='no'/>
+                    <field name="sequence" editable='no'/>
+                    <field name="function" editable='no'/>
+                    <field name="params" editable='no'/>
                 </tree>
             </field>
         </record>
-        <record id="action_som_crawlers_task_step_tree" model="ir.actions.act_window">
-            <field name="name">Tasques dels procesos automàtics administració</field>
+         <record id="action_som_crawlers_task_step_tree" model="ir.actions.act_window">
+            <field name="name">Passos Tasques automatiques</field>
             <field name="res_model">som.crawlers.task.step</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="context">{'active_test': False}</field>
             <field name="view_id" ref="view_som_crawlers_task_step_tree" />
+            <field name="context">{'active_test': False}</field>
         </record>
-        <menuitem id="menu_crawlers_task_step" action="action_som_crawlers_task_step_tree" parent="som_crawlers.menu_som_crawlers_base"/>
-
-
+        <menuitem id="menu_crawlers_task_step" action="action_som_crawlers_task_step_tree" parent="som_crawlers.menu_crawlers_task"/>
     </data>
 </openerp>
 
