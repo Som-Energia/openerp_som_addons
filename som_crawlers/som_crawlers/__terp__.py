@@ -16,7 +16,8 @@
         "views/som_crawlers_views.xml",
         "som_crawlers_data.xml",
         "views/som_crawlers_task_view.xml",
-        "wizard/wizard_canviarContrasenya.xml"
+        "wizard/wizard_canviarContrasenya.xml",
+        "wizard/wizard_executar_tasca.xml"
     ],
     "active": False,
     "installable":True

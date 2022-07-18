@@ -16,10 +16,9 @@ class SomCrawlersConfig(osv.osv):
             'res.users',
             string='Modificat per',
             help='Usuai qui ha realitzar la ultima modificacio de la contrasenya'),
-        
     }
 
-    def canviar_contrasenya(self, cursor, uid, ids, contrasenya, context=None):        
+    def canviar_contrasenya(self, cursor, uid, ids, contrasenya, context=None):
         crawler_config = self.browse(cursor,uid,ids,context=context)
         if contrasenya == crawler_config.contrasenya:
             raise osv.except_osv('Contrasenya identica a la anterior!','Torna a introduir una contrasenya diferent a la anterior')
@@ -28,5 +27,6 @@ class SomCrawlersConfig(osv.osv):
             #fernet = Fernet(key)
             #enctex = fernet.encrypt(contrasenya.encode())
             self.write(cursor,uid,ids,{'contrasenya': contrasenya, 'user_ultima_modificacio': uid, 'date_ultima_modificacio': datetime.now().isoformat()}, context=context)
-            return contrasenya 
+            return contrasenya
+
 SomCrawlersConfig()
