@@ -32,6 +32,16 @@ class GiscedataAtc(osv.osv):
         )[1]
 
         atc = self.browse(cursor, uid, atc_id, context)
+        if atc.ref and atc.ref.split(',')[0] == u'giscedata.switching':
+            original_sw_id = int(atc.ref.split(',')[1])
+
+            sw_obj = self.pool.get('giscedata.switching')
+            original_sw = sw_obj.browse(cursor, uid, original_sw_id, context)
+            if original_sw.state != 'open':
+                raise Exception(_(u"S'ha intentat generar un cas ATC amb R1 029 a partir del cas ATR {} amb R1 {} no oberta!").format(atc_id, original_sw_id))
+        else:
+            raise Exception(_(u"S'ha intentat generar un cas ATC amb R1 029 a partir del cas ATR {} sense R1 associada!").format(atc_id))
+
         new_case_data = {
             'polissa_id': atc.polissa_id.id,
             'descripcio': u'Reclamació per retràs automàtica',
@@ -43,9 +53,8 @@ class GiscedataAtc(osv.osv):
             'tanca_al_finalitzar_r1': True,
             'crear_cas_r1': True,
             'autoreclama_history_initial_state_id': initial_state_id,
+            'orginal_sw_id': original_sw_id,
         }
-        if atc.ref and atc.ref.split(',')[0] == u'giscedata.switching':
-            new_case_data['orginal_sw_id'] = int(atc.ref.split(',')[1])
         return self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
 
     # Automatic ATC + [R1] from dictonary / Entry poiut
