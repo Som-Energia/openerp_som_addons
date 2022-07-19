@@ -11,7 +11,7 @@ class ConfiguracioTests(testing.OOTestCase):
         self.pool = self.openerp.pool
         self.Configuracio = self.pool.get('som.crawlers.config')
         self.Data = self.pool.get('ir.model.data')
-    
+
     def tearDown(self):
         pass
 
@@ -21,7 +21,7 @@ class ConfiguracioTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             #get_object_reference per llegir la id de un objecte
-    
+
             crawler_config_id = self.Data.get_object_reference(cursor, uid, 'som_crawlers', 'demo_configuracio_1')[1]
             #set values
             password = 'Admin'

@@ -18,6 +18,7 @@ class SomCrawlersTask(osv.osv):
         'active': lambda *a:False,
     }
 
+
 SomCrawlersTask()
 
 class SomCrawlersTaskStep(osv.osv):
@@ -59,9 +60,7 @@ class SomCrawlersTaskStep(osv.osv):
         'function': lambda *a: '',
         'name': lambda *a: 'nom_per_defecte',
     }
-
-
-
+    
 SomCrawlersTaskStep()
 
 class SomCrawlersResult(osv.osv):
@@ -84,6 +83,5 @@ class SomCrawlersResult(osv.osv):
             required=True,)
 
     }
-
 
 SomCrawlersResult()
