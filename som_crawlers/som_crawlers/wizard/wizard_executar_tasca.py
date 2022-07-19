@@ -4,6 +4,7 @@ from tools.translate import _
 import json
 import os
 from datetime import datetime
+import subprocess
 
 class WizardExecutarTasca(osv.osv_memory):
     _name= 'wizard.executar.tasca'
@@ -42,15 +43,20 @@ class WizardExecutarTasca(osv.osv_memory):
         taskStep = classTaskStep.browse(cursor,uid,id)
         taskStepParams = json.loads(taskStep.params)
         if taskStepParams.has_key('nom_fitxer'):
-            resultat = os.system("python3 /home/somenergia/src/openerp_som_addons/som_crawlers/som_crawlers/Downloads/" + taskStepParams['nom_fitxer'])
-            if resultat == 0:
-                resultat = 'ok'
-            else:
-                resultat = 'Error'
+            output =os.system("python3 /home/somenergia/src/openerp_som_addons/som_crawlers/som_crawlers/Downloads/"
+             + taskStepParams['nom_fitxer'])
+            if output == 0:
+                output = 'ok'
+            elif output == 512:
+                output = 'File or directory doesn\'t exist'
+            else :
+                output = 'Error while executing'
+
+
         else:
-            resultat = 'falta especificar nom fitxer'
+            output = 'Falta especificar nom fitxer'
         data_i_hora = datetime.now().isoformat()
-        classresult.create(cursor,uid,{'task_id': taskStep.task_id.id, 'data_i_hora_execucio': data_i_hora, 'resultat':resultat})
+        classresult.create(cursor,uid,{'task_id': taskStep.task_id.id, 'data_i_hora_execucio': data_i_hora, 'resultat':output})
 
 
 WizardExecutarTasca()
