@@ -12,7 +12,7 @@ class SomAutoreclamaStateCondition(osv.osv):
 
     def fit_atc_condition(self, cursor, uid, id, data, context=None):
         cond_data = self.read(cursor, uid, id, ['subtype_id', 'days'], context=context)
-        return data['subtipus_id'] == cond_data['subtype_id'][0] and data['distri_days'] >= cond_data['days']
+        return data['subtipus_id'] == cond_data['subtype_id'][0] and data['distri_days'] >= cond_data['days'] and data['agent_actual']=='10' and data['state']=='pending'
 
     _columns = {
         'priority': fields.integer(

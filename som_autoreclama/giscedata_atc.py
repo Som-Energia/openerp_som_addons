@@ -11,11 +11,13 @@ class GiscedataAtc(osv.osv):
     _order = 'id desc'
 
     def get_autoreclama_data(self, cursor, uid, id, context=None):
-        data = self.read(cursor, uid, id, ['business_days_with_same_agent', 'subtipus_id', 'agent_actual'], context)
+        data = self.read(cursor, uid, id, ['business_days_with_same_agent', 'subtipus_id', 'agent_actual', 'state'], context)
         # agent_actual = '10' is ditri
         return {
             'distri_days': data['business_days_with_same_agent'] if data['agent_actual'] == '10' else 0,
             'subtipus_id': data['subtipus_id'][0],
+            'agent_actual': data['agent_actual'],
+            'state': data['state'],
             }
 
     # Automatic ATC + R1-029 from existing ATC / Entry poiut
