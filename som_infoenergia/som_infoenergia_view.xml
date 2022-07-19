@@ -271,6 +271,7 @@
                     <group colspan="2" col="3">
                         <field name='partner_id' readonly="1"/>
                         <field name='polissa_id' readonly="1"/>
+                        <field name='invoice_id' readonly="1"/>
                         <field name='lang' select="1"/>
                     </group>
                     <newline/>
@@ -296,6 +297,7 @@
                         <field name="name" select="1"/>
                         <field name="polissa_id" select="1"/>
                         <field name="partner_id" select="1"/>
+                        <field name='invoice_id' readonly="1"/>
                         <field name='lot_enviament' select="1"/>
                         <field name='data_enviament' select="1"/>
                         <field name='estat' select="1"/>
