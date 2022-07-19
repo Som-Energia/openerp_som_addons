@@ -9,19 +9,19 @@
             <field name="arch" type="xml">
                 <form string="Tasques a realitzar">
 
-                    <field name="name" />
+                    <field name="name" select = '1'/>
                     <field name="active" />
                     <separator colspan="6"/>
                     <group colspan="6" col="2" string="Passos de la tasca">
-                        <field name="task_step_ids" select="2" height="300" nolabel="1" widget="one2many_list"/>
+                        <field name="task_step_ids"  height="300" nolabel="1" widget="one2many_list"/>
                     </group>
-                    <field name="data_proxima_execucio" />
+                    <field name="data_proxima_execucio" select = '1'/>
                     <group colspan="6" col="2" string="Configuració de tasca">
-                        <field name="configuracio_id" />
+                        <field name="configuracio_id"  select = '1'/>
                     </group>
                     <field name="ultima_tasca_executada" />
                     <group colspan="6" col="2" string="Execucions realitzades per la tasca">
-                        <field name="run_ids" select="2" height="300" nolabel="1" widget="one2many_list"/>
+                        <field name="run_ids" height="300" nolabel="1" widget="one2many_list"/>
                     </group>
                 </form>
             </field>
@@ -116,9 +116,9 @@
             <field name="priority">16</field>
             <field name="arch" type="xml">
                 <tree string="Resultat de la tasca" editable="bottom">
-                    <field name="task_id" editable='no' />
-                    <field name="data_i_hora_execucio" editable='no' />
-                    <field name= "resultat" editable='no' />
+                    <field name="task_id" readonly ='1'/>
+                    <field name="data_i_hora_execucio" select='1' readonly ='1' />
+                    <field name= "resultat" readonly ='1' />
                 </tree>
             </field>
         </record>
