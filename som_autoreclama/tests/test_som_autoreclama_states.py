@@ -491,7 +491,7 @@ class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
             })
         atc = atc_obj.browse(self.cursor, self.uid, atc_id)
         log_obj = self.get_model('crm.case.log')
-        log_obj.write(self.cursor, self.uid, atc.log_ids[-1].id, {'date':today_minus_str(log_days)})
+        log_obj.write(self.cursor, self.uid, atc.log_ids[1].id, {'date':today_minus_str(log_days)})
 
         return atc_id
 
@@ -516,7 +516,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
         atc_obj = self.get_model('giscedata.atc')
         cond_obj = self.get_model('som.autoreclama.state.condition')
 
-        atc_id = self.build_atc(subtype='001', log_days=50)
+        atc_id = self.build_atc(subtype='001', log_days=50, r1=True)
         atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
 
         cond_id = ir_obj.get_object_reference(self.cursor, self.uid, 'som_autoreclama', 'conditions_001_correct_state_workflow_atc')[1]
@@ -541,7 +541,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
         ]
 
         for test_data in test_datas:
-            atc_id = self.build_atc(subtype=test_data['subtype'], log_days=test_data['log_days'])
+            atc_id = self.build_atc(subtype=test_data['subtype'], log_days=test_data['log_days'], r1=True)
             atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
 
             cond_id = ir_obj.get_object_reference(self.cursor, self.uid, 'som_autoreclama', test_data['cond'])[1]
@@ -557,14 +557,18 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
         for cond_id in cond_ids:
             cond = cond_obj.browse(self.cursor, self.uid, cond_id)
 
+            print cond.subtype_id.name
+            if cond.subtype_id.name == '006': # unsuported
+                continue
+
             # test more
-            atc_id = self.build_atc(subtype=cond.subtype_id.name, log_days=cond.days * 2)
+            atc_id = self.build_atc(subtype=cond.subtype_id.name, log_days=cond.days * 2, r1=True)
             atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
             ok = cond_obj.fit_atc_condition(self.cursor, self.uid, cond_id, atc_data, {})
             self.assertEqual(ok, True, "Error on More than for condition id {}".format(cond_id))
 
             # test less
-            atc_id = self.build_atc(subtype=cond.subtype_id.name, log_days=cond.days / 2)
+            atc_id = self.build_atc(subtype=cond.subtype_id.name, log_days=cond.days / 2, r1=True)
             atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
             ok = cond_obj.fit_atc_condition(self.cursor, self.uid, cond_id, atc_data, {})
             self.assertEqual(ok, False, "Error on Less than for condition id {}".format(cond_id))
@@ -639,7 +643,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
     def test_update_atc_if_possible__do_action_test(self):
         atc_obj = self.get_model('giscedata.atc')
 
-        atc_id = self.build_atc(log_days=60, subtype='001')
+        atc_id = self.build_atc(log_days=60, subtype='001', r1=True)
 
         updtr_obj = self.get_model('som.autoreclama.state.updater')
         status, message = updtr_obj.update_atc_if_possible(self.cursor, self.uid, atc_id, {'search_only':True})
@@ -650,7 +654,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
     def test_update_atc_if_possible__do_action_full(self):
         atc_obj = self.get_model('giscedata.atc')
 
-        atc_id = self.build_atc(log_days=60, subtype='001')
+        atc_id = self.build_atc(log_days=60, subtype='001', r1=True)
 
         updtr_obj = self.get_model('som.autoreclama.state.updater')
         status, message = updtr_obj.update_atc_if_possible(self.cursor, self.uid, atc_id, {})
@@ -666,8 +670,8 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         self.assertGreaterEqual(len(atc.autoreclama_history_ids), 2)
 
     def test_update_atcs_if_possible__some_consitions(self):
-        atc_n_id = self.build_atc()
-        atc_y_id = self.build_atc(log_days=60, subtype='001')
+        atc_n_id = self.build_atc(r1=True)
+        atc_y_id = self.build_atc(log_days=60, subtype='001', r1=True)
 
         updtr_obj = self.get_model('som.autoreclama.state.updater')
         up, not_up, error, msg = updtr_obj.update_atcs_if_possible(self.cursor, self.uid, [atc_y_id, atc_n_id], {})
@@ -736,7 +740,7 @@ class SomAutoreclamaDoActionTest(SomAutoreclamaEzATC_Test):
         atc_obj = self.get_model('giscedata.atc')
         state_obj = self.get_model('som.autoreclama.state')
 
-        atc_id = self.build_atc(log_days=60, subtype='001')
+        atc_id = self.build_atc(log_days=60, subtype='001', r1=True)
 
         ir_obj = self.get_model('ir.model.data')
         state_id = ir_obj.get_object_reference(self.cursor, self.uid, 'som_autoreclama', 'first_state_workflow_atc')[1]
