@@ -23,16 +23,13 @@ class WizardExecutarTasca(osv.osv_memory):
 
         for id in active_ids:
             #obtenim una tasca
-
             task_obj = task.browse(cursor, uid, id)
             task_steps_list = task_obj.task_step_ids
             task_steps_list.sort(key=lambda x: x.sequence)
             for taskStep in task_steps_list:
                 function = getattr(self, taskStep.function)
-                function(cursor,uid,taskStep.id,context)
-
-
-
+                date = function(cursor,uid,taskStep.id,context)
+                task_obj.write({'ultima_tasca_executada': str(taskStep.name)+ ' - ' + date})
 
         return {'type': 'ir.actions.act_window_close'}
 
@@ -52,11 +49,10 @@ class WizardExecutarTasca(osv.osv_memory):
             else :
                 output = 'Error while executing'
 
-
         else:
             output = 'Falta especificar nom fitxer'
-        data_i_hora = datetime.now().isoformat()
+        data_i_hora = datetime.now()
         classresult.create(cursor,uid,{'task_id': taskStep.task_id.id, 'data_i_hora_execucio': data_i_hora, 'resultat':output})
-
+        return data_i_hora.strftime("%m/%d/%Y, %H:%M:%S")
 
 WizardExecutarTasca()
