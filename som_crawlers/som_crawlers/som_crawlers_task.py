@@ -13,6 +13,7 @@ class SomCrawlersTask(osv.osv):
         'data_proxima_execucio':fields.datetime(_(u"Data proxima execució"),),
         'configuracio_id': fields.many2one('som.crawlers.config', 'Configuracio', help="Relacio de una configuracio amb la seva tasca",),
         'run_ids': fields.one2many('som.crawlers.result','task_id',string="Llistat d'execucions", help="Llista de execucions que ha realitzat la tasca",),
+        'ultima_tasca_executada': fields.char(_(u"Darrer pas executat"), size=128, help=_("Darrer pas de tasca executat"),),
     }
     _defaults = {
         'active': lambda *a:False,
@@ -53,6 +54,7 @@ class SomCrawlersTaskStep(osv.osv):
             help=_("Tasca englobant"),
             select=True,
         ),
+
     }
 
     _defaults = {
@@ -60,7 +62,7 @@ class SomCrawlersTaskStep(osv.osv):
         'function': lambda *a: '',
         'name': lambda *a: 'nom_per_defecte',
     }
-    
+
 SomCrawlersTaskStep()
 
 class SomCrawlersResult(osv.osv):
