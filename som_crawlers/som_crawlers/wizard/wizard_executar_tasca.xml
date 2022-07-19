@@ -8,9 +8,6 @@
             <field name="arch" type='xml'>
                 <form string= 'Executar tasca'>
                     <group colspan="6">
-                        <group colspan="4">
-                            <field name='nom_fitxer' string='Nom del fitxer' colspan="4"/> 
-                        </group>
                         <separator colspan="4"/>
                         <button special="cancel" string="Cancelar" icon="gtk-cancel"/>
                         <button name="executar_tasca" type="object" icon="gtk-ok" string="Executar" />

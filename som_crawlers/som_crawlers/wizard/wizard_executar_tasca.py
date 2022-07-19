@@ -1,5 +1,7 @@
+from ast import Param
 from osv import osv, fields
 from tools.translate import _
+import json
 import os
 from datetime import datetime
 
@@ -7,6 +9,8 @@ class WizardExecutarTasca(osv.osv_memory):
     _name= 'wizard.executar.tasca'
 
     def executar_tasca(self, cursor, uid, ids, context=None):
+        #obtenim l'objecte tasca
+        task = self.pool.get('som.crawlers.task')
 
         if not context:
             return False
@@ -15,25 +19,38 @@ class WizardExecutarTasca(osv.osv_memory):
             ids = [ids]
 
         active_ids = context.get('active_ids',[])
-        wiz = self.browse(cursor, uid, ids[0], context=context)
 
-        fitxer = wiz.nom_fitxer
-        classtask = self.pool.get('som.crawlers.task')
-        classresult = self.pool.get('som.crawlers.result')
         for id in active_ids:
-            resultat = os.system("python3 " + fitxer)
+            #obtenim una tasca
+
+            task_obj = task.browse(cursor, uid, id)
+            task_steps_list = task_obj.task_step_ids
+            task_steps_list.sort(key=lambda x: x.sequence)
+            for taskStep in task_steps_list:
+                function = getattr(self, taskStep.function)
+                function(cursor,uid,taskStep.id,context)
+
+
+
+
+        return {'type': 'ir.actions.act_window_close'}
+
+    def executar_un_fitxer(self, cursor, uid,id, context=None):
+
+        classresult = self.pool.get('som.crawlers.result')
+        classTaskStep = self.pool.get('som.crawlers.task.step')
+        taskStep = classTaskStep.browse(cursor,uid,id)
+        taskStepParams = json.loads(taskStep.params)
+        if taskStepParams.has_key('nom_fitxer'):
+            resultat = os.system("python3 /home/somenergia/src/openerp_som_addons/som_crawlers/som_crawlers/Downloads/" + taskStepParams['nom_fitxer'])
             if resultat == 0:
                 resultat = 'ok'
             else:
                 resultat = 'Error'
+        else:
+            resultat = 'falta especificar nom fitxer'
+        data_i_hora = datetime.now().isoformat()
+        classresult.create(cursor,uid,{'task_id': taskStep.task_id.id, 'data_i_hora_execucio': data_i_hora, 'resultat':resultat})
 
-            data_i_hora = datetime.now().isoformat()
-            classresult.create(cursor,uid,{'task_id': id, 'data_i_hora_execucio': data_i_hora, 'resultat':resultat})
-
-        return {'type': 'ir.actions.act_window_close'}
-
-    _columns = {
-    'nom_fitxer': fields.char("Nom fitxer", size = 256, required=True, help="Nom del fitxer que vols introduir en el ERP",),
-    }
 
 WizardExecutarTasca()
