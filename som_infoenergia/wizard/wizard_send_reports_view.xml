@@ -13,10 +13,12 @@
                         <label string="S'enviaran els reports pendents del lot (el procés es farà en segon pla)." colspan="4" />
                         <label string="" colspan="4"/>
                         <field name="allow_reenviar" widget="boolean"/>
+                        <field name="n_max_mails"/>
                         <group attrs="{'invisible': [('is_test', '=', False)]}" colspan="4" >
                             <separator string="Enviament de test" colspan="4"/>
                             <field name="email_to" colspan="4" width="500"/>
                             <field name="email_subject" colspan="4" width="500"/>
+                            <label string="Els correus s'enviaran exactament amb aquest assumpte (sense traduir)" colspan="4" />
                         </group>
                     </group>
                     <group colspan="6" attrs="{'invisible': [('state', '=', 'finished')]}">
@@ -30,7 +32,7 @@
             </field>
         </record>
         <record model="ir.actions.act_window" id="action_wizard_send_report_lot">
-            <field name="name">Enviament reports Infoenergia del lot</field>
+            <field name="name">Enviament correus del lot</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wizard.infoenergia.send.reports</field>
             <field name="view_type">form</field>
@@ -41,7 +43,7 @@
         </record>
         <record id="values_infoenergia_send_report_lot_form" model="ir.values">
             <field name="object" eval="1"/>
-            <field name="name">Envia reports Infoenergia del lot</field>
+            <field name="name">Envia correus del lot</field>
             <field name="key2">client_action_multi</field>
             <field name="key">action</field>
             <field name="model">som.infoenergia.lot.enviament</field>

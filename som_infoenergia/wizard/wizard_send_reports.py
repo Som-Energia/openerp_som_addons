@@ -34,6 +34,10 @@ class WizardSendReports(osv.osv_memory):
 
         return lot_obj.read(cursor, uid, lot_id,['is_test'])['is_test']
 
+    def _get_is_from_lot(self, cursor, uid, context=None):
+
+        return context.get('from_model', False) == 'som.infoenergia.lot.enviament'
+
     def _get_default_subject(self, cursor, uid, context=None):
 
         lot_id = self._get_lot_id(cursor, uid, context)
@@ -53,8 +57,10 @@ class WizardSendReports(osv.osv_memory):
         if wiz.is_test:
             if not wiz.email_to:
                 raise osv.except_osv(_(u'ERROR'), "Cal indicar l'email destinatari de l'enviament")
-
             ctx.update({'email_to': wiz.email_to, 'email_subject': wiz.email_subject})
+
+        if wiz.n_max_mails < 0:
+            raise osv.except_osv(_(u'ERROR'), "El número màxim de correus no pot ser negatiu!")
 
         env_ids = []
         if context.get('from_model') == 'som.infoenergia.lot.enviament':
@@ -67,7 +73,9 @@ class WizardSendReports(osv.osv_memory):
                 env_obj = self.pool.get('som.enviament.massiu')
             else:
                 raise osv.except_osv(_(u'ERROR'), "Tipus de lot desconegut")
-            env_ids = env_obj.search(cursor, uid, [('lot_enviament', '=', lot_id), ('estat','in', allowed_states)])
+            env_ids = env_obj.search(cursor, uid, [
+                ('lot_enviament', '=', lot_id), ('estat','in', allowed_states)
+            ], limit=wiz.n_max_mails)
         elif context.get('from_model') in ['som.infoenergia.enviament', 'som.enviament.massiu']:
             env_ids = context.get('active_ids', [])
 
@@ -78,16 +86,20 @@ class WizardSendReports(osv.osv_memory):
     _columns = {
         'state': fields.selection(STATES, _(u"Estat del wizard d'enviament del lot de reports")),
         'is_test': fields.boolean('Test', help=_(u"És un lot de Test?")),
+        'is_from_lot': fields.boolean('Cridat des de lot', help=_(u"Accionat des de lot?")),
         'email_to': fields.char(u'E-mail on enviar els correus', size=256, help=u"Tots els enviaments s'enviaran a aquesta adreça"),
         'email_subject': fields.char('Assumpte correu', size=200, help="Assumpte dels correus enviats"),
         'allow_reenviar': fields.boolean('Reenviar correus ja enviats', help=_(u"Permetre que es reenviïn correus ja enviats?")),
+        'n_max_mails': fields.integer('Màxim de correus (0 per enviar-los tots)', help=_(u"Número màxim de correus que es volen enviar. 0 per enviar-los tots")),
     }
 
     _defaults = {
         'state': 'init',
         'is_test': _get_is_test,
+        'is_from_lot': _get_is_from_lot,
         'email_subject': _get_default_subject,
         'allow_reenviar': lambda *a: False,
+        'n_max_mails': lambda *a: 0,
     }
 
 
