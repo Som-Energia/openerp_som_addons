@@ -9,11 +9,14 @@
                 <form string="Envia reports Infoenergia">
                     <field name="state" invisible="1"/>
                     <field name="is_test" invisible="1"/>
+                    <field name="is_from_lot" invisible="1"/>
                     <group attrs="{'invisible': [('state', '!=', 'init')]}" colspan="4">
                         <label string="S'enviaran els reports pendents del lot (el procés es farà en segon pla)." colspan="4" />
                         <label string="" colspan="4"/>
                         <field name="allow_reenviar" widget="boolean"/>
-                        <field name="n_max_mails"/>
+                        <group attrs="{'invisible': [('is_from_lot', '=', False)]}" colspan="2" >
+                            <field name="n_max_mails"/>
+                        </group>
                         <group attrs="{'invisible': [('is_test', '=', False)]}" colspan="4" >
                             <separator string="Enviament de test" colspan="4"/>
                             <field name="email_to" colspan="4" width="500"/>
