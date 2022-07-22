@@ -53,7 +53,7 @@
             <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_send_report_lot'))"/>
         </record>
         <record model="ir.actions.act_window" id="action_wizard_send_reports">
-            <field name="name">Enviament report Infoenergia</field>
+            <field name="name">Enviament correu</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wizard.infoenergia.send.reports</field>
             <field name="view_type">form</field>
@@ -64,7 +64,7 @@
         </record>
         <record id="values_infoenergia_send_report_form" model="ir.values">
             <field name="object" eval="1"/>
-            <field name="name">Enviament report Infoenergia</field>
+            <field name="name">Enviament correu</field>
             <field name="key2">client_action_multi</field>
             <field name="key">action</field>
             <field name="model">som.infoenergia.enviament</field>
