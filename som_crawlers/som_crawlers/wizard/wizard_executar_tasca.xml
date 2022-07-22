@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <openerp>
-    <data>
+    <data noupdate="0"
+    >
         <record model="ir.ui.view" id ="view_wizard_executar_tasca_form" >
             <field name="name">wizard.executar.tasca.form</field>
             <field name="model">wizard.executar.tasca</field>

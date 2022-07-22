@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <openerp>
-    <data noupdate="0">
+    <data noupdate="1">
 
     <!-- Exemple de Usuari-->
         <record model="som.crawlers.config" id="demo_configuracio_1">
@@ -14,16 +14,29 @@
     <!-- Exemple accions planificades-->
         <record model="som.crawlers.task" id="demo_accions_planificades_1">
         <field name="name">Endesa descargar R1</field>
-        <field name="data_proxima_execucio">2022-07-16+00:00:00</field>
-        <field name="configuracio_id" ref="demo_configuracio_1"/>
+        <field name="data_proxima_execucio">2022-07-20+00:58:11</field>
         <field name="active">True</field>
         </record>
     <!-- Exemple tasca-->
         <record model="som.crawlers.task.step" id="demo_tasca_1">
+        <field name="name">Executar fitxer holii.py</field>
+        <field name="sequence">1</field>
+        <field name="function">executar_un_fitxer</field>
+        <field name="params">{"nom_fitxer":"hol.py"}</field>
+        <field name="task_id" ref="demo_accions_planificades_1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="demo_tasca_2">
         <field name="name">Executar fitxer hola.py</field>
         <field name="sequence">1</field>
         <field name="function">executar_un_fitxer</field>
-        <field name="params">{'nom_fitxer':'hola.py'}</field>
+        <field name="params">{"nom_fitxer":"hola.py"}</field>
+        <field name="task_id" ref="demo_accions_planificades_1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="demo_taskStep_3">
+        <field name="name">Executar fitxer adeu.py</field>
+        <field name="sequence">1</field>
+        <field name="function">executar_un_fitxer</field>
+        <field name="params">{}</field>
         <field name="task_id" ref="demo_accions_planificades_1"/>
         </record>
 
