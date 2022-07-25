@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+	<data>
+        <record id="view_wizard_massive_create_R1029_form" model="ir.ui.view">
+            <field name="name">wizard.massive.create.r1029.form</field>
+            <field name="model">wizard.massive.create.r1029</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Crear ATC R1029 i passar a gestionat manualment (desactivar autoreclama)">
+                    <field name="state" invisible="1"/>
+                    <group colspan="4" col="2" attrs="{'invisible':[('state', '!=', 'init')]}">
+                        <group>
+                            <button icon="gtk-ok" name="action_create_r1029" string="Crear" type="object"
+                                    confirm="Aquesta acció passarà els casos seleccionats a estat d'autoreclama 'Desactivat - Gestió Manual' i generarà casos d'atenció al client amb R1 029 associada per cadascú." />
+                            <button special="cancel" string="Tancar" icon="gtk-no"/>
+                        </group>
+                    </group>
+                    <group colspan="4" col="4">
+                        <field name="info" colspan="4" nolabel="1" height="150" width="600" readonly="1"/>
+                    </group>
+                    <group colspan="4" col="2" attrs="{'invisible':[('state', '=', 'init')]}">
+                        <group>
+                            <button special="cancel" string="Tancar" icon="gtk-no"/>
+                        </group>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_wizard_massive_create_R1029" model="ir.actions.act_window">
+            <field name="name">Crear ATC R1029 i desactivar auto</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.massive.create.r1029</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_wizard_massive_create_R1029_form"/>
+            <field name="target">new</field>
+        </record>
+        <record id="value_wizard_massive_create_R1029" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Crear ATC R1029 i desactivar auto</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.atc</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_massive_create_R1029'))" />
+        </record>
+    </data>
+</openerp> 

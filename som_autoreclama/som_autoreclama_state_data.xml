@@ -1,0 +1,538 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data noupdate="1">
+        <!-- SomEnergia autoreclama  states -->
+        <record model="som.autoreclama.state.workflow" id="workflow_atc">
+            <field name="name">Reclamació per no resposta cas ATC</field>
+            <field name="model">ATC</field>
+        </record>
+        <record model="som.autoreclama.state.workflow" id="workflow_F1">
+            <field name="name">Reclamació per no resposta F1</field>
+            <field name="model">F1</field>
+        </record>
+        <record model="som.autoreclama.state" id="correct_state_workflow_atc">
+            <field name="name">Correcte</field>
+            <field name="priority">10</field>
+            <field name="is_last" eval="False"/>
+            <field name="workflow_id" ref="workflow_atc"/>
+            <field name="active" eval="True"/>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="som.autoreclama.state" id="first_state_workflow_atc">
+            <field name="name">Primera reclamacio</field>
+            <field name="priority">20</field>
+            <field name="is_last" eval="True"/>
+            <field name="workflow_id" ref="workflow_atc"/>
+            <field name="active" eval="True"/>
+            <field name="generate_atc_parameters_text">{"model": "giscedata.atc", "method": "create_ATC_R1_029_from_atc_via_wizard"}</field>
+        </record>
+        <record model="som.autoreclama.state" id="disabled_state_workflow_atc">
+            <field name="name">Desactivat - Gestió Manual</field>
+            <field name="priority">99</field>
+            <field name="is_last" eval="True"/>
+            <field name="workflow_id" ref="workflow_atc"/>
+            <field name="active" eval="True"/>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="som.autoreclama.state" id="automated_state_workflow_atc">
+            <field name="name">Generat automatic</field>
+            <field name="priority">90</field>
+            <field name="is_last" eval="True"/>
+            <field name="workflow_id" ref="workflow_atc"/>
+            <field name="active" eval="True"/>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_001_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_001"/>
+            <field name="days">30</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">10</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_038_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_038"/>
+            <field name="days">30</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">20</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_070_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_070"/>
+            <field name="days">30</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">30</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_002_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_002"/>
+            <field name="days">10</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">40</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_027_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_027"/>
+            <field name="days">10</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">50</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_028_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_028"/>
+            <field name="days">5</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">60</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_030_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_030"/>
+            <field name="days">10</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">80</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_031_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_031"/>
+            <field name="days">10</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">90</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_032_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_032"/>
+            <field name="days">5</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">100</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_039_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_039"/>
+            <field name="days">30</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">110</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_020_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_020"/>
+            <field name="days">30</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">120</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_021_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_021"/>
+            <field name="days">30</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">130</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_022_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_022"/>
+            <field name="days">30</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">140</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_023_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_023"/>
+            <field name="days">30</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">150</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_114_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_114"/>
+            <field name="days">31</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">160</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_013_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_013"/>
+            <field name="days">30</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">170</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_014_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_014"/>
+            <field name="days">30</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">180</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_015_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_015"/>
+            <field name="days">15</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">190</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_045_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_045"/>
+            <field name="days">30</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">200</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_048_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_048"/>
+            <field name="days">15</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">210</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_066_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_066"/>
+            <field name="days">30</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">220</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_034_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_034"/>
+            <field name="days">15</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">230</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_035_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_035"/>
+            <field name="days">15</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">240</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_058_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_058"/>
+            <field name="days">15</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">250</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_059_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_059"/>
+            <field name="days">25</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">260</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_060_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_060"/>
+            <field name="days">15</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">270</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_061_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_061"/>
+            <field name="days">30</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">280</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_062_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_062"/>
+            <field name="days">10</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">290</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_063_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_063"/>
+            <field name="days">10</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">300</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_064_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_064"/>
+            <field name="days">10</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">310</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_065_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_065"/>
+            <field name="days">30</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">320</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_003_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_003"/>
+            <field name="days">20</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">330</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_004_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_004"/>
+            <field name="days">15</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">340</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_005_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_005"/>
+            <field name="days">15</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">350</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_006_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_006"/>
+            <field name="days">15</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">360</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_007_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_007"/>
+            <field name="days">40</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">370</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_008_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_008"/>
+            <field name="days">15</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">380</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_009_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_009"/>
+            <field name="days">15</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">390</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_010_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_010"/>
+            <field name="days">15</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">400</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_011_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_011"/>
+            <field name="days">15</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">410</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_012_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_012"/>
+            <field name="days">30</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">420</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_037_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_037"/>
+            <field name="days">20</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">430</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_047_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_047"/>
+            <field name="days">30</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">440</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_049_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_049"/>
+            <field name="days">20</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">445</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_055_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_055"/>
+            <field name="days">20</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">450</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_036_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_036"/>
+            <field name="days">15</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">460</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_057_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_057"/>
+            <field name="days">15</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">470</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_040_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_040"/>
+            <field name="days">30</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">480</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_046_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_046"/>
+            <field name="days">20</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">490</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_056_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_056"/>
+            <field name="days">20</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">500</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_067_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_067"/>
+            <field name="days">15</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">510</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_018_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_018"/>
+            <field name="days">10</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">520</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_019_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_019"/>
+            <field name="days">10</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">530</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_024_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_024"/>
+            <field name="days">30</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">540</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_025_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_025"/>
+            <field name="days">30</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">550</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_026_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_026"/>
+            <field name="days">30</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">560</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_041_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_041"/>
+            <field name="days">30</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">570</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_042_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_042"/>
+            <field name="days">30</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">580</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_043_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_043"/>
+            <field name="days">30</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">590</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_044_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_044"/>
+            <field name="days">30</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">600</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="ir_cron_autoreclama_states_updater" model="ir.cron" forcecreate="1">
+            <field name="name">Apply autoreclama automations</field>
+            <field name="user_id" ref="base.user_admin"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="active" eval="False"/>
+            <field name="model" eval="'som.autoreclama.state.updater'"/>
+            <field name="function" eval="'_cronjob_state_updater_mail_text'"/>
+            <field name="args" eval="({'emails_to': ''},)"/>
+        </record>
+    </data>
+</openerp>

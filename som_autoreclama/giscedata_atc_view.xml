@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+       <record model="ir.ui.view" id="giscedata_atc_autoreclama_tree-view">
+            <field name="name">giscedata.atc.autoreclama.tree</field>
+            <field name="model">giscedata.atc</field>
+            <field name="type">tree</field>
+            <field name="inherit_id" ref="giscedata_atc.giscedata_atc_tree-view"/>
+            <field name="arch" type="xml">
+                <field name="business_days_with_same_agent" position="after" >
+                    <field name="autoreclama_state" select="2"/>
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_som_autoreclama_state_history_atc_form">
+            <field name="name">giscedata.atc.autoreclama.form</field>
+            <field name="model">giscedata.atc</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="giscedata_atc.giscedata_atc-view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="Accions Autoreclama">
+                        <field name="autoreclama_state"/>
+                        <field name="autoreclama_state_date"/>
+                        <group colspan="4" string="Eines debug" groups="som_autoreclama.group_som_autoreclama_u">
+                            <button string="Executa pas d'autoreclama" type="action" icon="gtk-execute" name="%(action_wizard_som_autoreclama_execute_step)d"/>
+                            <button string="Selecció manual d'estat" type="action" icon="gtk-convert" name="%(action_wizard_som_autoreclama_set_manual_state)d"/>
+                        </group>
+                        <group colspan="4" string="Accions d'autoreclama">
+                            <button string="Desactivar autoreclama" type="action" icon="gtk-disconnect" name="%(action_wizard_som_autoreclama_set_disable_state)d"/>
+                            <button string="Casos ATC generats" type="action" icon="gtk-find" name="%(action_wizard_som_autoreclama_generated_atc)d"/>
+                        </group>
+                        <field name="autoreclama_history_ids" nolabel="1" colspan="4"/>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

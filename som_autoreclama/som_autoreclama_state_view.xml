@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_som_autoreclama_state_tree">
+            <field name="name">som.autoreclama.state.tree</field>
+            <field name="model">som.autoreclama.state</field>
+            <field name="type">tree</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <tree string="Estats autoreclama">
+                    <field name="workflow_id"/>
+                    <field name="name"/>
+                    <field name="priority"/>
+                    <field name="is_last"/>
+                    <field name="active"/>
+                    <field name="generate_atc_parameters"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_som_autoreclama_state_form">
+            <field name="name">som.autoreclama.state.form</field>
+            <field name="model">som.autoreclama.state</field>
+            <field name="type">form</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <form string="Estats autoreclama">
+                    <group colspan="2" col="6">
+                        <field name="name" select="1" colspan="4"/>
+                        <field name="workflow_id" select="1"/>
+                        <field name="priority" select="1"/>
+                        <field name="active" select="1"/>
+                        <field name="is_last" select="2"/>
+                        <separator colspan="6"/>
+                        <group colspan="6" col="2" string="Condicions per canvi d'estat">
+                            <field name="conditions_ids" select="2" height="500" nolabel="1" widget="one2many_list"/>
+                        </group>
+                        <separator colspan="6"/>
+                        <group colspan="6" col="2" string="Parametres del cas ATC a crear">
+                            <field name="generate_atc_parameters_text" select="2" on_change="check_correct_json(generate_atc_parameters_text)" height="100"  nolabel="1" />
+                        </group>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_som_autoreclama_state_tree" model="ir.actions.act_window">
+            <field name="name">Estats autoreclama</field>
+            <field name="res_model">som.autoreclama.state</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'active_test': False}</field>
+        </record>
+        <menuitem id="menu_folder_autoreclama" parent="crm.menu_crm_configuration" name="Autoreclamacions" sequence="1"/>
+        <menuitem id="menu_autoreclama_state_config" action="action_som_autoreclama_state_tree" parent="menu_folder_autoreclama"/>
+        <record model="ir.ui.view" id="view_som_autoreclama_state_condition_tree">
+            <field name="name">som.autoreclama.state.condition.tree</field>
+            <field name="model">som.autoreclama.state.condition</field>
+            <field name="type">tree</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <tree string="Condicions Autoreclama">
+                    <field name="priority"/>
+                    <field name="active"/>
+                    <field name="subtype_id"/>
+                    <field name="days"/>
+                    <field name="next_state_id"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_som_autoreclama_state_condition_form">
+            <field name="name">som.autoreclama.state.condition.form</field>
+            <field name="model">som.autoreclama.state.condition</field>
+            <field name="type">form</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <form string="Condicions autoreclama">
+                    <group colspan="2" col="4">
+                        <group colspan="4" col="2" string="Ordre i activació">
+                            <field name="priority" select="2"/>
+                            <field name="active" select="1"/>
+                        </group>
+                        <group colspan="4" col="2" string="Condicions d'activació">
+                            <field name="subtype_id" select="1"/>
+                            <field name="days" select="1"/>
+                        </group>
+                        <group colspan="4" col="2" string="Estats">
+                            <field name="state_id" select="1"/>
+                            <field name="next_state_id" select="1"/>
+                        </group>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_som_autoreclam_state_history_atc_tree">
+            <field name="name">som.autoreclama.state.history.atc.tree</field>
+            <field name="model">som.autoreclama.state.history.atc</field>
+            <field name="type">tree</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <tree string="Accions realitzades per autoreclama">
+                    <field name="state_id"/>
+                    <field name="change_date"/>
+                    <field name="end_date"/>
+                    <field name="generated_atc_id"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_som_autoreclam_state_history_atc_form">
+            <field name="name">som.autoreclama.state.history.atc.form</field>
+            <field name="model">som.autoreclama.state.history.atc</field>
+            <field name="type">form</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <form string="Historic d'autoreclama">
+                    <group colspan="2" col="4">
+                        <field name="state_id" colspan="4" select="1"/>
+                        <field name="atc_id" colspan="4" select="1"/>
+                        <group colspan="4" col="2" string="Dates">
+                            <field name="change_date" select="1"/>
+                            <field name="end_date" select="2"/>
+                            <field name="generated_atc_id" colspan="4" select="1"/>
+                        </group>
+                    </group>
+                </form>
+            </field>
+        </record>
+    </data>
+</openerp>
