@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <openerp>
-    <data noupdate="0">
+    <data noupdate="1">
         <!-- SomEnergia autoreclama  states -->
         <record model="som.autoreclama.state.workflow" id="workflow_atc">
             <field name="name">Reclamació per no resposta cas ATC</field>
@@ -68,7 +68,7 @@
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_002_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_002"/>
-            <field name="days">2</field>
+            <field name="days">10</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">40</field>
@@ -84,7 +84,7 @@
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_028_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_028"/>
-            <field name="days">10</field>
+            <field name="days">5</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">60</field>
@@ -108,7 +108,7 @@
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_032_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_032"/>
-            <field name="days">10</field>
+            <field name="days">5</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">100</field>
@@ -156,7 +156,7 @@
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_114_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_114"/>
-            <field name="days">10</field>
+            <field name="days">31</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">160</field>
@@ -196,7 +196,7 @@
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_048_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_048"/>
-            <field name="days">30</field>
+            <field name="days">15</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">210</field>
@@ -220,7 +220,7 @@
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_035_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_035"/>
-            <field name="days">30</field>
+            <field name="days">15</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">240</field>
@@ -228,7 +228,7 @@
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_058_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_058"/>
-            <field name="days">10</field>
+            <field name="days">15</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">250</field>
@@ -244,7 +244,7 @@
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_060_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_060"/>
-            <field name="days">10</field>
+            <field name="days">15</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">270</field>
@@ -292,7 +292,7 @@
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_003_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_003"/>
-            <field name="days">10</field>
+            <field name="days">20</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">330</field>
@@ -300,7 +300,7 @@
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_004_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_004"/>
-            <field name="days">10</field>
+            <field name="days">15</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">340</field>
@@ -308,7 +308,7 @@
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_005_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_005"/>
-            <field name="days">10</field>
+            <field name="days">15</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">350</field>
@@ -316,7 +316,7 @@
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_006_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_006"/>
-            <field name="days">10</field>
+            <field name="days">15</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">360</field>
@@ -324,7 +324,7 @@
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_007_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_007"/>
-            <field name="days">30</field>
+            <field name="days">40</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">370</field>
@@ -332,7 +332,7 @@
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_008_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_008"/>
-            <field name="days">10</field>
+            <field name="days">15</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">380</field>
@@ -340,7 +340,7 @@
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_009_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_009"/>
-            <field name="days">10</field>
+            <field name="days">15</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">390</field>
@@ -348,7 +348,7 @@
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_010_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_010"/>
-            <field name="days">10</field>
+            <field name="days">15</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">400</field>
@@ -356,7 +356,7 @@
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_011_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_011"/>
-            <field name="days">10</field>
+            <field name="days">15</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">410</field>
@@ -364,7 +364,7 @@
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_012_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_012"/>
-            <field name="days">10</field>
+            <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">420</field>
@@ -372,7 +372,7 @@
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_037_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_037"/>
-            <field name="days">10</field>
+            <field name="days">20</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">430</field>
@@ -380,15 +380,23 @@
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_047_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_047"/>
-            <field name="days">10</field>
+            <field name="days">30</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">440</field>
             <field name="active" eval="True"/>
         </record>
+        <record model="som.autoreclama.state.condition" id="conditions_049_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_049"/>
+            <field name="days">20</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">445</field>
+            <field name="active" eval="True"/>
+        </record>
         <record model="som.autoreclama.state.condition" id="conditions_055_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_055"/>
-            <field name="days">10</field>
+            <field name="days">20</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">450</field>
@@ -396,7 +404,7 @@
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_036_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_036"/>
-            <field name="days">10</field>
+            <field name="days">15</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">460</field>
@@ -404,7 +412,7 @@
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_057_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_057"/>
-            <field name="days">10</field>
+            <field name="days">15</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">470</field>
@@ -420,7 +428,7 @@
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_046_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_046"/>
-            <field name="days">30</field>
+            <field name="days">20</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">490</field>
@@ -428,7 +436,7 @@
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_056_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_056"/>
-            <field name="days">30</field>
+            <field name="days">20</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">500</field>
@@ -436,7 +444,7 @@
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_067_correct_state_workflow_atc">
             <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_067"/>
-            <field name="days">30</field>
+            <field name="days">15</field>
             <field name="state_id" ref="correct_state_workflow_atc"/>
             <field name="next_state_id" ref="first_state_workflow_atc"/>
             <field name="priority">510</field>
