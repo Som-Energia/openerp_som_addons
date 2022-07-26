@@ -62,6 +62,7 @@ jobs:
           git clone --depth 1 git@github.com:Som-Energia/openerp_som_addons.git $ROOT_DIR_SRC/openerp_som_addons
           git clone --depth 1 https://$GITHUB_TOKEN@github.com/gisce/erp.git -b developer $ROOT_DIR_SRC/erp
           git clone --depth 1 git@github.com:Som-Energia/somenergia-generationkwh.git $ROOT_DIR_SRC/somenergia-generationkwh
+          git clone --depth 1 https://github.com/Som-Energia/plantmeter.git $ROOT_DIR_SRC/plantmeter
           git clone --depth 1 git@github.com:gisce/oorq.git -b api_v5 $ROOT_DIR_SRC/oorq
           git clone --depth 1 git@github.com:gisce/spawn_oop.git $ROOT_DIR_SRC/spawn_oop
           git clone --depth 1 git@github.com:gisce/poweremail.git $ROOT_DIR_SRC/poweremail2
@@ -88,6 +89,11 @@ jobs:
           cd $ROOT_DIR_SRC/ooop
           git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
           pip install -e .
+          pip install somutils==1.7.2
+          cd $ROOT_DIR_SRC/somenergia-generationkwh
+          pip install -e . || "Not installing somenergia-generation Python package"
+          cd $ROOT_DIR_SRC/plantmeter
+          pip install -e . || "Not installing plantmeter Python package"
           cd $ROOT_DIR_SRC
           pip install -r $ROOT_DIR_SRC/erp/requirements-dev.txt
           pip install -r $ROOT_DIR_SRC/erp/requirements.txt
