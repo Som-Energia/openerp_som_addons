@@ -17,9 +17,12 @@ class WizardImportAtrAndF1(osv.osv_memory):
 
         if prefix == 'F1_':
             wizard = self.browse(cursor, uid, ids[0])
+            tmp_filename = wizard.filename
+            if '/' in tmp_filename:
+                tmp_filename = tmp_filename.split('/')[-1] #when file from massive_importer file_name can contains subfolders
             tmp_zip = open('{temporal_folder}/{filename}'.format(
                 temporal_folder = directory,
-                filename = wizard.filename),
+                filename = tmp_filename),
                 'w+'
             )
             zip_handler = zipfile.ZipFile(tmp_zip, 'w')

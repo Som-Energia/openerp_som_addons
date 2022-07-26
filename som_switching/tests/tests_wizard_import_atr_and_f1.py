@@ -26,6 +26,16 @@ class TestWizardImportAtrAndF1(testing.OOTestCase):
 
         mock_open.assert_called_with('testDirectory/nomFitxer', 'w+')
 
+    @mock.patch('__builtin__.open')
+    def test__import_F1_subfolder__originalName(self, mock_open):
+        wiz_o = self.pool.get('wizard.import.atr.and.f1')
+        wiz_content = {'filename': '25_07_2022/nomFitxer'}
+        wiz_id = wiz_o.create(self.cursor, self.uid, wiz_content)
+
+        zip_handler = wiz_o._create_tmp_zip(self.cursor, self.uid, [wiz_id], 'testDirectory', 'F1_')
+
+        mock_open.assert_called_with('testDirectory/nomFitxer', 'w+')
+
     @mock.patch('giscedata_switching.wizard.wizard_import_atr_and_f1.datetime')
     @mock.patch('__builtin__.open')
     def test__import_ATR__nameChanged(self, mock_open, mock_datetime):
