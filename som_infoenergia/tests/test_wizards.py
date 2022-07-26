@@ -43,6 +43,27 @@ class WizardSendReportsTests(testing.OOTestCase):
         mocked_send_reports.assert_called_with(cursor, uid, env_ids, context={'allow_reenviar':False})
 
     @mock.patch('som_infoenergia.som_infoenergia_enviament.SomInfoenergiaEnviament.send_reports')
+    def test_send_reports_from_lot_max_one(self, mocked_send_reports):
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        env_obj = self.openerp.pool.get('som.infoenergia.enviament')
+        cursor = self.cursor
+        uid = self.uid
+        lot_enviament_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_infoenergia', 'lot_enviament_0001'
+        )[1]
+        env_ids = env_obj.search(cursor, uid, [('lot_enviament','=', lot_enviament_id), ('estat', '=', 'obert')])
+        wiz_obj = self.openerp.pool.get('wizard.infoenergia.send.reports')
+        ctx = {
+            'active_id': lot_enviament_id, 'active_ids': [lot_enviament_id],
+            'from_model':'som.infoenergia.lot.enviament'
+        }
+        self.assertTrue(len(env_ids) > 1)
+        wiz_id = wiz_obj.create(cursor, uid, {'n_max_mails':1},context=ctx)
+        wiz_obj.send_reports(cursor, uid, [wiz_id], context=ctx)
+        mocked_send_reports.assert_called_with(cursor, uid, env_ids[:1], context={'allow_reenviar':False})
+
+
+    @mock.patch('som_infoenergia.som_infoenergia_enviament.SomInfoenergiaEnviament.send_reports')
     def test_send_reports_from_enviament(self, mocked_send_reports):
         imd_obj = self.openerp.pool.get('ir.model.data')
         cursor = self.cursor

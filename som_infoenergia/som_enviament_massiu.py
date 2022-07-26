@@ -141,6 +141,14 @@ class SomEnviamentMassiu(osv.osv):
                     self.add_info_line(cursor, uid, _id, "Correu enviat", context)
         return True
 
+    def poweremail_unlink_callback(self, cursor, uid, ids, vals, context=None):
+        """Hook que cridarà el poweremail quan s'esborra un email
+        d'un enviament.
+        """
+        for _id in ids:
+            self.write(cursor, uid, _id, {'estat':'obert'})
+            self.add_info_line(cursor, uid, _id, "Correu eliminat de la bústia", context)
+        return True
 
     _columns = {
         'polissa_id': fields.many2one('giscedata.polissa', _('Contracte'),
@@ -168,7 +176,7 @@ class SomEnviamentMassiu(osv.osv):
             ondelete='restrict',
             select=True),
         'mail_id': fields.many2one(
-            'poweremail.mailbox', 'Mail'
+            'poweremail.mailbox', 'Mail', ondelete='set null'
         ),
         'data_enviament':  fields.date(_("Data enviament"), allow_none=True),
         'info': fields.text(_(u'Informació Adicional'),

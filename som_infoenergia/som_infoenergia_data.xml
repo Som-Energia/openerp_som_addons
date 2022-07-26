@@ -302,6 +302,34 @@
     </html>
         ]]></field>
         </record>
+        <record model="poweremail.templates" id="correu_titular_pagador_diferents">
+            <field name="name">Correu Titular i Pagador diferents</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'som.enviament.massiu')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">som.enviament.massiu</field>
+            <field eval="0" name="use_filter"/>
+            <field name="def_to">${object.polissa_id.titular.address[0].email},${object.polissa_id.pagador.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="def_cc"></field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Dades titular i fiscals</field>
+            <field name="template_language">mako</field>
+	    <field name="enforce_from_account" model="poweremail.core_accounts" search="[('email_id','=', 'modifica@somenergia.coop')]" />
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.polissa_id.titular.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text">
+    <![CDATA[
+    <!doctype html>
+    <html>
+    <head></head>
+    <body>
+    Avís pagador i titular diferents
+    </body>
+    </html>
+        ]]></field>
+        </record>
     </data>
     <data noupdate="1">
         <record model="res.config" id="infoenergia_send_tasks_max_procs">

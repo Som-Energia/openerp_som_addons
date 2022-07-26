@@ -297,6 +297,15 @@ class SomInfoenergiaEnviament(osv.osv):
                     self.add_info_line(cursor, uid, _id, "Correu enviat", context)
         return True
 
+    def poweremail_unlink_callback(self, cursor, uid, ids, vals, context=None):
+        """Hook que cridarà el poweremail quan s'esborra un email
+        d'un enviament.
+        """
+        for _id in ids:
+            self.write(cursor, uid, _id, {'estat':'obert'})
+            self.add_info_line(cursor, uid, _id, "Correu eliminat de la bústia", context)
+        return True
+
     def resend_email(self, cursor, uid, id, context=None):
         md_obj = self.pool.get('ir.model.data')
         view_id = md_obj.get_object_reference(
@@ -357,7 +366,7 @@ class SomInfoenergiaEnviament(osv.osv):
             ondelete='restrict',
             select=True),
         'mail_id': fields.many2one(
-            'poweremail.mailbox', 'Mail'
+            'poweremail.mailbox', 'Mail', ondelete='set null'
         ),
         'tipus_informe_lot': fields.related('lot_enviament', 'tipus_informe',
             type='char',
