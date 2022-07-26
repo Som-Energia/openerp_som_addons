@@ -29,12 +29,7 @@ class SomCrawlersTask(osv.osv):
         if not context:
             return False
 
-        if not isinstance(ids, (tuple, list)):
-            ids = [ids]
-
-        active_ids = context.get('active_ids',[])
-
-        for id in active_ids:
+        for id in ids:
             #obtenim una tasca
             task_obj = self.browse(cursor, uid, id)
             task_steps_list = task_obj.task_step_ids
@@ -137,3 +132,14 @@ class SomCrawlersResult(osv.osv):
     }
 
 SomCrawlersResult()
+
+
+class ImprimirHola(osv.osv):
+
+    _name = 'imprimirPerLaPantalla'
+
+    def imprimirPerPantalla():
+        with open('output.txt', 'w') as f:
+            f.write('Hola funciona')
+
+ImprimirHola()
