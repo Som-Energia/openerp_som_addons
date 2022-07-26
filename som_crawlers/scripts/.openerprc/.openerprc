@@ -1,0 +1,52 @@
+[printer]
+preview = True
+softpath_html = None
+softpath = None
+path = None
+
+[client]
+search_limit = 80
+lang = False
+toolbar = both
+estimate_min_value = 0
+filetype = {}
+default_path = /home/somenergia
+form_tab_orientation = 0
+form_tab = top
+timeout = 300
+theme = None
+
+[login]
+protocol = http://
+server = localhost
+port = 18069
+login = admin
+db = destral_db
+
+[help]
+index = http://doc.openerp.com/
+context = http://doc.openerp.com/index.php?model=%(model)s&lang=%(lang)s
+
+[logging]
+level = error
+output = stdout
+
+[tip]
+autostart = False
+position = 0
+
+[path]
+pixmaps = /usr/local/share/pixmaps/openerp-client
+share = /usr/local/share/openerp-client
+
+[support]
+support_id = 
+recipient = support@openerp.com
+
+[form]
+toolbar = True
+autosave = False
+
+[survey]
+position = 0
+
