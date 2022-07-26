@@ -32,7 +32,7 @@ class WizardExecutarTasca(osv.osv_memory):
             task_steps_list.sort(key=lambda x: x.sequence)
             for taskStep in task_steps_list:
                 function = getattr(self, taskStep.function)
-                function(cursor,uid,id,context)
+                function(cursor,uid,taskStep.id,context)
 
         return {'type': 'ir.actions.act_window_close'}
 

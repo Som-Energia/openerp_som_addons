@@ -1,3 +1,5 @@
 import som_crawlers
 import som_crawlers_task
 import wizard
+import massive_importer
+import massive_importer_crawlers
