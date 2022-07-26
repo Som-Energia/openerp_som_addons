@@ -89,6 +89,7 @@ jobs:
           cd $ROOT_DIR_SRC/ooop
           git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
           pip install -e .
+          pip install somutils==1.7.2
           cd $ROOT_DIR_SRC/somenergia-generationkwh
           pip install -e . || "Not installing somenergia-generation Python package"
           cd $ROOT_DIR_SRC/plantmeter
