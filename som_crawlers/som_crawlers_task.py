@@ -42,13 +42,15 @@ class SomCrawlersTask(osv.osv):
         return {'type': 'ir.actions.act_window_close'}
 
     def executar_un_fitxer(self, cursor, uid,id, context=None):
-
+        import pudb;pu.db
         classresult = self.pool.get('som.crawlers.result')
         classTaskStep = self.pool.get('som.crawlers.task.step')
         taskStep = classTaskStep.browse(cursor,uid,id)
         taskStepParams = json.loads(taskStep.params)
         if taskStepParams.has_key('nom_fitxer'):
-            output =os.system("python3 /home/somenergia/src/openerp_som_addons/som_crawlers/som_crawlers/Downloads/"
+            path =os.path.dirname(os.path.abspath(__file__))
+            print (path)
+            output =os.system("python3 /home/somenergia/src/openerp_som_addons/som_crawlers/scripts/"
              + taskStepParams['nom_fitxer'])
             if output == 0:
                 output = 'ok'
