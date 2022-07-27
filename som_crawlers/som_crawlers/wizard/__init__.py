@@ -1,2 +1,0 @@
-import wizard_executar_tasca
-import wizard_canviarContrasenya
