@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_importacio_linia_auto_tarifa_codi_rect_anul_form">
+            <field name="name">giscedata.facturacio.importacio.linia.som.from</field>
+            <field name="model">giscedata.facturacio.importacio.linia</field>
+            <field name="inherit_id" ref="giscedata_facturacio_switching.view_importacio_linia_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='fecha_factura_hasta']" position="after">
+                    <field name="tarifa_atr"/>
+                    <field name="tipus_autoconsum"/>
+                </xpath>
+                <xpath expr="//field[@name='type_factura']" position="after">
+                    <group attrs="{'invisible': [('type_factura', 'not in', ['R','A'])]}" colspan="4" col="4">
+                        <field name="codi_rectificada_anulada"/>
+                    </group>
+                    <group attrs="{'invisible': [('type_factura', 'not in', ['C'])]}" colspan="4" col="4">
+                        <field name="num_expedient"/>
+                        <field name="comentari"/>
+                    </group>
+                </xpath>
+                <xpath expr="//field[@name='liniafactura_id']" position="before">
+                    <field name="polissa_id"/>
+                    <field name="data_ultima_lectura_polissa"/>
+                </xpath>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_importacio_linia_auto_tarifa_codi_rect_anul_tree">
+            <field name="name">giscedata.facturacio.importacio.linia.som.tree</field>
+            <field name="model">giscedata.facturacio.importacio.linia</field>
+            <field name="inherit_id" ref="giscedata_facturacio_switching.view_importacio_linia_general_tree"/>
+            <field name="arch" type="xml">
+                <field name="tipo_factura_f1" position="after">
+                    <field name="codi_rectificada_anulada" select="2"/>
+                    <field name="tipus_autoconsum" select="2"/>
+                    <field name="tarifa_atr" select="2"/>
+                    <field name="data_ultima_lectura_polissa"/>
+                    <field name="polissa_id" select="2"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>

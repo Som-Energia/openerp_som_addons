@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="ir_cron_reimport_f1" model="ir.cron" forcecreate="1">
+            <field name="name">Reimportació de F1ns amb error diària</field>
+            <field name="user_id" ref="base.user_admin"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field eval="False" name="doall"/>
+            <field eval="False" name="active"/>
+            <field eval="'giscedata.facturacio.importacio.linia'" name="model"/>
+            <field eval="'do_reimport_f1'" name="function"/>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record id="ir_cron_reimport_f1" model="ir.cron">
+            <field name="args" eval="({'error_codes': [{'code':'2999', 'text': 'no file in gridfs collection'},{'code':'3044', 'text':''}], 'days_to_check': 30})"/>
+        </record>
+    </data>
+ 
+</openerp>
