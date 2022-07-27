@@ -43,8 +43,7 @@ class WizardExecutarTasca(osv.osv_memory):
         taskStep_obj=classTaskStep.browse(cursor,uid,id)
         taskStepParams = json.loads(taskStep_obj.params)
         if taskStepParams.has_key('nom_fitxer'):
-            print(taskStepParams['nom_fitxer'])
-            output =os.system("python3 /home/somenergia/src/openerp_som_addons/som_crawlers/scripts/"
+            output =os.system("python3 /home/somenergia/src/openerp_som_addons/som_crawlers/som_crawlers/Downloads/"
              + taskStepParams['nom_fitxer'])
             if output == 0:
                 output = 'ok'
