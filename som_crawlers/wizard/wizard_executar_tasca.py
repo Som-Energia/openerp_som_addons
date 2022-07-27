@@ -44,8 +44,16 @@ class WizardExecutarTasca(osv.osv_memory):
         taskStepParams = json.loads(taskStep_obj.params)
         path = os.path.dirname(os.path.abspath(__file__))
         if taskStepParams.has_key('nom_fitxer'):
-            filePath = os.path.join(path, "../Downloads/" + taskStepParams['nom_fitxer'])
-            output =os.system("python3 " + filePath)
+            id_portal=self.id_del_portal_config(cursor,uid,id,context)
+            filePath = os.path.join(path, "../scripts/" + taskStepParams['nom_fitxer'])
+            command = "python3 " + filePath
+            #os.system('source /home/somenergia/.virtualenvs/erp/bin/activate')
+            #print('Anterior virtual enviroment')
+            #print(str(os.system('pip -V')))
+            #os.system('/bin/bash -c source /home/somenergia/.virtualenvs/massive/bin/activate_this.py')
+           #print('Posterior virtual enviroment')
+            #print(str(os.system('pip -V')))
+            output =os.system(command +" "+ id_portal)
             if output == 0:
                 output = 'ok'
             elif output == 512:
@@ -61,7 +69,7 @@ class WizardExecutarTasca(osv.osv_memory):
         classresult.create(cursor,uid,{'task_id': taskStep_obj.task_id.id, 'data_i_hora_execucio': data_i_hora, 'resultat':output})
         return output
 
-    def executar_crawler(self,cursor,uid,id,context=None):
+    def id_del_portal_config(self,cursor,uid,id,context=None):
         classresult = self.pool.get('som.crawlers.result')
         classTask = self.pool.get('som.crawlers.task')
         classTaskStep = self.pool.get('som.crawlers.task.step')
@@ -71,10 +79,9 @@ class WizardExecutarTasca(osv.osv_memory):
         config_obj = classConfig.browse(cursor,uid,config_id.id)
         conf_name = config_obj.name
         data_i_hora = datetime.now()
-        classresult.create(cursor,uid,{'task_id': task_id.id, 'data_i_hora_execucio': data_i_hora, 'resultat':str(conf_name)})
+        #classresult.create(cursor,uid,{'task_id': task_id.id, 'data_i_hora_execucio': data_i_hora, 'resultat':str(conf_name)})
 
         return str(conf_name)
-
 
 
 WizardExecutarTasca()
