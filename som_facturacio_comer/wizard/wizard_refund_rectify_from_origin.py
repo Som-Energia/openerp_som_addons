@@ -53,58 +53,28 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         return facts_cli_ids, msg
 
     def recarregar_lectures_between_dates(self, cursor, uid, ids, pol_id, data_inici, data_final, context={}):
-        pol_obj = self.pool.get('giscedata.polissa')
-        lect_obj = self.pool.get('giscedata.lectures.lectura')
-        lect_pot_obj = self.pool.get('giscedata.lectures.potencia')
-        carrega_lect_wiz_o = self.pool.get('giscedata.lectures.pool.wizard')
+        lect_pool_obj = self.pool.get('giscedata.lectures.lectura.pool')
+        copia_lect_wiz_o = self.pool.get('wizard.copiar.lectura.pool.a.fact')
 
         polissa = pol_obj.browse(cursor, uid, pol_id)
-        data_ultima_lectura = polissa.data_ultima_lectura
-
         data_lectura_anterior = (datetime.strptime(data_inici, '%Y-%m-%d') - timedelta(days=1)).strftime("%Y-%m-%d")
-        data_final_rectificacio = data_final
-        comptadors_actius = polissa.comptadors_actius(data_lectura_anterior, data_final)
 
-        if not isinstance(comptadors_actius, (list, tuple)):
-            comptadors_actius= [comptadors_actius]
+        lect_prev_id = lect_pool_obj.search(cursor, uid, [
+            ('comptador', 'in', [x.id for x in polissa.comptadors]),
+            ('name','in', [data_lectura_anterior, data_inici])
+        ], limit=1)
 
-        search_params = [
-            ('name','>=', data_lectura_anterior),
-            ('name','<=',data_final),
-            ('comptador', 'in', comptadors_actius),
-        ]
+        lect_final_id = lect_pool_obj.search(cursor, uid, [
+            ('comptador', 'in', [x.id for x in polissa.comptadors]),
+            ('name','=',data_final)
+        ], limit=1)
 
-        lects_esborrar = lect_obj.search(cursor, uid, search_params, context={'active_test':False})
-        if not lects_esborrar:
-            return False
+        for lect_id in (lect_prev_id + lect_final_id):
+            context = {'active_id': lect_id, 'active_ids': [lectures_id]}
+            copia_lect_wiz_o.create({'overwrite': True}, context=context)
+            copia_lect_wiz_o.action_copia_lectura(context=context)
 
-        db = pooler.get_db_only(cursor.dbname)
-        nou_cr = db.cursor()
-        lect_obj.unlink(nou_cr, uid, lects_esborrar)
-
-        lects_pot_esborrar = lect_pot_obj.search(nou_cr, uid, search_params, context={'active_test':False})
-        if lects_pot_esborrar:
-            lect_pot_obj.unlink(nou_cr, uid, lects_pot_esborrar)
-        nou_cr.commit()
-        ####### carrega lectures de l'F1 afectat ######
-        self.carrega_lectures(cursor, uid, ids, data_final_rectificacio, data_lectura_anterior, comptadors_actius, context)
-        return len(lects_esborrar)
-
-    def carrega_lectures(self, cursor, uid, ids, data_final_rectificacio, data_lectura_anterior, comptador_ids,  context):
-        comptador_obj = self.pool.get('giscedata.lectures.comptador')
-        with AsyncMode('sync') as asmode:
-            # Carreguem lectures de pool del comptador a facturació del periode
-            # que cal rectificar
-            ctx = context.copy()
-            ctx.update({
-                'allow_new_measures': False,
-                'data_ultima_lectura': data_lectura_anterior,
-            })
-            carrega_lectures = comptador_obj.get_lectures_from_pool(
-                cursor, uid, comptador_ids, data_final_rectificacio, context=ctx
-            )
-        return True
-
+        return len(lect_prev_id + lect_final_id)
 
     def refund_rectify_if_needed(self, cursor, uid, ids, f_ids, context={}):
         wiz_ranas_o = self.pool.get('wizard.ranas')
@@ -193,52 +163,13 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         })
         csv_file.close()
 
-    def get_facts_from_f1(self, cursor, uid, ids, active_ids, context):
+    def save_info_into_f1_after_refacturacio(self, cursor, uid, ids, f1_refacturats, context):
         f1_obj = self.pool.get('giscedata.facturacio.importacio.linia')
-        fact_obj = self.pool.get('giscedata.facturacio.factura')
 
-        f1_infos = f1_obj.read(cursor, uid, active_ids, ['invoice_number_text','cups_id'], context=context)
-        fact_ids = []
-        errors = []
-        for f1 in f1_infos:
-            origin = f1['invoice_number_text']
-            cups_id = f1['cups_id']
-            if not (origin and cups_id):
-                errors.append("L'F1 amb origen {} i cups {} no té alguna d'aquestes dades".format(
-                    origin, cups_id[1] if cups_id else '--'
-                    ))
-                continue
-            fact_id = fact_obj.search(cursor, uid, [
-                ('origin', '=', origin), ('cups_id', '=', cups_id[0]), ('type','=','in_invoice')
-            ], context=context)
-            if not fact_id:
-                errors.append("L'F1 amb origen {} i cups {} no té cap factura de Proveïdor relacionada".format(
-                    origin, cups_id[1]
-                    ))
-                continue
-            elif len(fact_id) > 1:
-                errors.append("L'F1 amb origen {} i cups {} té més d'una factura de Proveïdor relacionada".format(
-                    origin, cups_id[1]
-                    ))
-                continue
-            else:
-                fact_ids.append(fact_id[0])
-        return fact_ids, errors
-
-    def save_info_into_f1_after_refacturacio(self, cursor, uid, ids, fact_prov_ids, context):
-        f1_obj = self.pool.get('giscedata.facturacio.importacio.linia')
-        fact_obj = self.pool.get('giscedata.facturacio.factura')
-        fact_infos = fact_obj.read(cursor, uid, fact_prov_ids, ['origin', 'cups_id'], context=context)
         text = "F1 refacturat en data {}".format(datetime.today().strftime('%d-%m-%Y'))
-        for f_info in fact_infos:
-            f1_ids = f1_obj.search(cursor, uid, [
-                ('invoice_number_text', '=', f_info['origin']),
-                ('cups_id', '=', f_info['cups_id'][0])
-            ], context=context)
-            if f1_ids:
-                f1_id = f1_ids[0]
-                obs = f1_obj.read(cursor, uid, f1_id, ['user_observations'], context=context)['user_observations'] or ''
-                f1_obj.write(cursor, uid, f1_id, {'user_observations': '{}\n{}'.format(text, obs)})
+        for f1_id in f1_refacturats:
+            obs = f1_obj.read(cursor, uid, f1_id, ['user_observations'], context=context)['user_observations'] or ''
+            f1_obj.write(cursor, uid, f1_id, {'user_observations': '{}\n{}'.format(text, obs)})
 
     def open_polissa_invoices_send_mail(self, cursor, uid, ids, facts_by_polissa, context={}):
         if not isinstance(ids, (tuple, list)):
@@ -266,6 +197,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             ids = [ids]
 
         fact_obj = self.pool.get('giscedata.facturacio.factura')
+        f1_obj = self.pool.get('giscedata.facturacio.importacio.linia')
 
         wiz = self.browse(cursor, uid, ids[0])
         if wiz.send_mail and not wiz.email_template:
@@ -277,40 +209,33 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
 
         msg = []
         active_ids = context.get('active_ids', [])
-        if context.get('from_model', False) == 'giscedata.facturacio.importacio.linia':
-            active_ids, errors = self.get_facts_from_f1(cursor, uid, ids, active_ids, context)
-            msg += errors
-        sorted_ids = fact_obj.search(cursor, uid, [('id', 'in', active_ids)], order='data_inici')
+        sorted_ids = f1_obj.search(cursor, uid, [('id', 'in', active_ids)], order='fecha_factura_desde')
         facts_generades = []
         facts_by_polissa = {}
         fact_csv_result = []
-        facts_prov_refacturades = []
+        f1_refacturats = []
         for _id in sorted_ids:
+            f1 = f1_obj.browse(cursor, uid, _id)
+            origen = f1.invoice_number_text
+            pol_id = f1.polissa_id.id
+            pol_name = f1.polissa_id.name
             try:
-                fact_prov = fact_obj.browse(cursor, uid, _id)
-                origen = fact_prov.origin
-                pol_id = fact_prov.polissa_id.id
-                pol_name = fact_prov.polissa_id.name
-                if fact_prov.polissa_id.facturacio_suspesa:
-                    msg.append('La pòlissa {}, que té la factura amb origen {}, té facturació suspesa. No s\'actua.'.format(pol_name, origen))
+                if f1.polissa_id.facturacio_suspesa:
+                    msg.append('La pòlissa {}, que té l\'F1 amb origen {}, té facturació suspesa. No s\'actua.'.format(pol_name, origen))
                     fact_csv_result.append([origen, pol_name, "Pòlissa amb facturació suspesa"])
                     continue
-                if fact_prov.type != 'in_invoice':
-                    msg.append('La factura amb origen {} no es de tipus in_invoice, no s\'actua'.format(origen))
-                    fact_csv_result.append([origen, pol_name, "La factura seleccionada no és de tipus Factura Proveïdor"])
-                    continue
 
-                facts_cli_ids, msg_get = self.get_factures_client_by_dates(cursor, uid, ids, pol_id, fact_prov.data_inici, fact_prov.data_final, context)
+                facts_cli_ids, msg_get = self.get_factures_client_by_dates(cursor, uid, ids, pol_id, f1.fecha_factura_desde, f1.fecha_factura_hasta, context)
                 if msg_get:
-                    msg.append("Pòlissa {} per factura amb origen {}: {}".format(pol_name, origen, msg_get))
+                    msg.append("Pòlissa {} per l\'F1 amb origen {}: {}".format(pol_name, origen, msg_get))
                 if not facts_cli_ids:
-                    msg.append('La factura amb origen {} no té res per abonar i rectificar, no s\'actua'.format(origen))
+                    msg.append('L\'F1 amb origen {} no té res per abonar i rectificar, no s\'actua'.format(origen))
                     fact_csv_result.append([origen, pol_name, "No té res per abonar i rectificar, no s\'actua"])
                     continue
 
-                n_lect_del = self.recarregar_lectures_between_dates(cursor, uid, ids, pol_id, fact_prov.data_inici, fact_prov.data_final, context)
+                n_lect_del = self.recarregar_lectures_between_dates(cursor, uid, ids, pol_id, f1.fecha_factura_desde, f1.fecha_factura_hasta, context)
                 if not n_lect_del:
-                    msg.append("La pòlissa {}, que té la factura amb origen {}, no té lectures per esborrar. No s'hi actua.".format(pol_name, origen))
+                    msg.append("La pòlissa {}, que té l\'F1 amb origen {}, no té lectures per esborrar. No s'hi actua.".format(pol_name, origen))
                     fact_csv_result.append([origen, pol_name, "No té lectures per esborrar. No s'hi actua."])
                     continue
 
@@ -326,16 +251,16 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                         continue
                 facts_by_polissa.setdefault(pol_name, []).extend(facts_created)
 
-                facts_prov_refacturades.append(_id)
+                f1_refacturats.append(_id)
             except Exception as e:
                 msg.append("Error processant la factura amb origen {}: {}".format(origen, str(e)))
                 fact_csv_result.append([origen, pol_name, "Hi ha hagut algun problema, cal revisar."])
 
-        if facts_prov_refacturades:
+        if f1_refacturats:
             msg_open_send, csv_open_send = self.open_polissa_invoices_send_mail(cursor, uid, ids, facts_by_polissa, context)
             msg += msg_open_send
             fact_csv_result += csv_open_send
-            self.save_info_into_f1_after_refacturacio(cursor, uid, ids, facts_prov_refacturades, context=context)
+            self.save_info_into_f1_after_refacturacio(cursor, uid, ids, f1_refacturats, context=context)
 
         self.write_report(cursor, uid, ids, fact_csv_result, context)
         self.write(cursor, uid, ids, {'info': '\n'.join(msg), 'state': 'end', 'facts_generades': json.dumps(facts_generades)})

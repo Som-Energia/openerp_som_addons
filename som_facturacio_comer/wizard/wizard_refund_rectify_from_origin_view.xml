@@ -11,7 +11,7 @@
                     <group colspan="4" col="4" attrs="{'invisible': [('state', '!=', 'init')]}">
                         <group colspan="4" col="4">
                             <label string="Abonar i rectificar automàticament" colspan="4"/>
-                            <label string="Es rectifiquen i anuŀlen les factures client que comprenguin algun període de la factura seleccionada o de les dates de factura de l'F1" colspan="4"/>
+                            <label string="Es rectifiquen i anuŀlen les factures client que comprenguin algun període de les dates de factura de l'F1" colspan="4"/>
                             <label string="En cas que s'indiqui, s'obren i agrupen les factures, es remesen les que són a pagar" colspan="4"/>
                             <label string=" " colspan="4"/>
                             <label string=" " colspan="4"/>
@@ -42,26 +42,6 @@
             </field>
         </record>
 
-        <record model="ir.actions.act_window" id="action_wizard_refund_rectify_from_origin_form">
-            <field name="name">Abonar i rectificar automàticament</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">wizard.refund.rectify.from.origin</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">form</field>
-            <field name="view_id" ref="view_wizard_refund_rectify_from_origin"/>
-            <field name="context">{'from_model': 'giscedata.facturacio.factura'}</field>
-            <field name="target">new</field>
-        </record>
-
-        <record id="value_wizard_refund_rectify_from_origin_form" model="ir.values">
-            <field name="object" eval="1"/>
-            <field name="name">Abonar i rectificar automàticament</field>
-            <field name="key2">client_action_multi</field>
-            <field name="key">action</field>
-            <field name="model">giscedata.facturacio.factura</field>
-            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_refund_rectify_from_origin_form'))"/>
-        </record>
-
         <record model="ir.actions.act_window" id="action_wizard_refund_rectify_from_origin_from_f1_form">
             <field name="name">Abonar i rectificar automàticament</field>
             <field name="type">ir.actions.act_window</field>
@@ -72,7 +52,6 @@
             <field name="context">{'from_model': 'giscedata.facturacio.importacio.linia'}</field>
             <field name="target">new</field>
         </record>
-
         <record id="value_wizard_refund_rectify_from_origin_from_f1_form" model="ir.values">
             <field name="object" eval="1"/>
             <field name="name">Abonar i rectificar automàticament</field>
