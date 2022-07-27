@@ -56,11 +56,24 @@ class WizardExecutarTasca(osv.osv_memory):
         else:
             output = 'Falta especificar nom fitxer'
         data_i_hora = datetime.now()
-        classresult.create(cursor,uid,{'task_id': taskStep_obj.task_id.id, 'data_i_hora_execucio': data_i_hora, 'resultat':output})
+         
         taskStep_obj.task_id.write({'ultima_tasca_executada': str(taskStep_obj.task_id.name)+ ' - ' + str(data_i_hora)})
+        classresult.create(cursor,uid,{'task_id': taskStep_obj.task_id.id, 'data_i_hora_execucio': data_i_hora, 'resultat':output})
         return output
 
+    def executar_crawler(self,cursor,uid,id,context=None):
+        classresult = self.pool.get('som.crawlers.result')
+        classTask = self.pool.get('som.crawlers.task')
+        classTaskStep = self.pool.get('som.crawlers.task.step')
+        classConfig = self.pool.get('som.crawlers.config')
+        task_id = classTaskStep.browse(cursor,uid,id).task_id
+        config_id = classTask.browse(cursor,uid,task_id.id).configuracio_id
+        config_obj = classConfig.browse(cursor,uid,config_id.id)
+        conf_name = config_obj.name
+        data_i_hora = datetime.now()
+        classresult.create(cursor,uid,{'task_id': task_id.id, 'data_i_hora_execucio': data_i_hora, 'resultat':str(conf_name)})
 
+        return str(conf_name)
 
 
 
