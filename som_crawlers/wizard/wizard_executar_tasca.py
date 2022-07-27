@@ -27,7 +27,6 @@ class WizardExecutarTasca(osv.osv_memory):
 
         for id in active_ids:
             #obtenim una tasca
-            import pudb;pu.db
             task_obj = task.browse(cursor, uid, id)
             task_steps_list = task_obj.task_step_ids
             task_steps_list.sort(key=lambda x: x.sequence)
@@ -43,10 +42,10 @@ class WizardExecutarTasca(osv.osv_memory):
         classTaskStep = self.pool.get('som.crawlers.task.step')
         taskStep_obj=classTaskStep.browse(cursor,uid,id)
         taskStepParams = json.loads(taskStep_obj.params)
-        import pudb;pu.db
+        path = os.path.dirname(os.path.abspath(__file__))
         if taskStepParams.has_key('nom_fitxer'):
-            output =os.system("python3 /home/somenergia/src/openerp_som_addons/som_crawlers/scripts/"
-             + taskStepParams['nom_fitxer'])
+            filePath = os.path.join(path, "../Downloads/" + taskStepParams['nom_fitxer'])
+            output =os.system("python3 " + filePath)
             if output == 0:
                 output = 'ok'
             elif output == 512:
