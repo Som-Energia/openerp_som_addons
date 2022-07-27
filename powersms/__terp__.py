@@ -6,7 +6,6 @@
     "category" : "Added functionality",
     "depends" : [
         "giscedata_facturacio_impagat_comer",
-        "giscedata_facturacio_impagat_comer",
         ],
     "description": """Power SMS""",
     "demo_xml": [
