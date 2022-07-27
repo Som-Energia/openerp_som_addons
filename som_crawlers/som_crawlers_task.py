@@ -24,8 +24,6 @@ class SomCrawlersTask(osv.osv):
 
     def executar_tasques(self, cursor, uid, ids, context=None):
         #obtenim l'objecte tasca
-        import pudb; pu.db
-
         if not context:
             return False
 
@@ -42,7 +40,6 @@ class SomCrawlersTask(osv.osv):
         return {'type': 'ir.actions.act_window_close'}
 
     def executar_un_fitxer(self, cursor, uid,id, context=None):
-        import pudb;pu.db
         classresult = self.pool.get('som.crawlers.result')
         classTaskStep = self.pool.get('som.crawlers.task.step')
         taskStep = classTaskStep.browse(cursor,uid,id)

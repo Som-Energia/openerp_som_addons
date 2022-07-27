@@ -66,11 +66,10 @@ class WizardExecutarTascaTests(testing.OOTestCase):
 
     def tearDown(self):
         pass
-    
+
     def test_executar_un_fitxer_buida_resultat_falta_especificar_nomFItxer(self): #no detecta l'id que toca??
 
         with Transaction().start(self.database) as txn:
-                import pudb;pu.db
                 cursor = txn.cursor
                 uid = txn.user
                 crawler_task_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_accions_planificades_1')[1]
@@ -82,7 +81,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
                 #set values
                 wiz_id = self.wiz.create(cursor, uid,{},context=ctx)
                 #try test
-                result = self.wiz.executar_un_fitxer(cursor, uid,crawler_task_step_id,context=ctx) 
+                result = self.wiz.executar_un_fitxer(cursor, uid,crawler_task_step_id,context=ctx)
                 #check result
                 self.assertEqual(result, 'Falta especificar nom fitxer')
                 #objecte.browse(... + id) per llegir el objecte al complet.
@@ -91,7 +90,6 @@ class WizardExecutarTascaTests(testing.OOTestCase):
     def test_executar_un_fitxer_entrada_hol_py_resultat_fitxer_invalid(self): #no detecta l'id que toca??
 
         with Transaction().start(self.database) as txn:
-                import pudb;pu.db
                 cursor = txn.cursor
                 uid = txn.user
                 crawler_task_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_accions_planificades_1')[1]
@@ -103,15 +101,14 @@ class WizardExecutarTascaTests(testing.OOTestCase):
                 #set values
                 wiz_id = self.wiz.create(cursor, uid,{},context=ctx)
                 #try test
-                result = self.wiz.executar_un_fitxer(cursor, uid,crawler_task_step_id,context=ctx) 
+                result = self.wiz.executar_un_fitxer(cursor, uid,crawler_task_step_id,context=ctx)
                 #check result
                 self.assertEqual(result, 'File or directory doesn\'t exist')
                 #objecte.browse(... + id) per llegir el objecte al complet.
 
-    def test_executar_un_fitxer_hola_py_resultat_ok(self): 
+    def test_executar_un_fitxer_hola_py_resultat_ok(self):
 
         with Transaction().start(self.database) as txn:
-                import pudb;pu.db
                 cursor = txn.cursor
                 uid = txn.user
                 crawler_task_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_accions_planificades_1')[1]
@@ -123,7 +120,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
                 #set values
                 wiz_id = self.wiz.create(cursor, uid,{},context=ctx)
                 #try test
-                result = self.wiz.executar_un_fitxer(cursor, uid,crawler_task_step_id,context=ctx) 
+                result = self.wiz.executar_un_fitxer(cursor, uid,crawler_task_step_id,context=ctx)
                 #check result
                 self.assertEqual(result, 'ok')
                 #objecte.browse(... + id) per llegir el objecte al complet.

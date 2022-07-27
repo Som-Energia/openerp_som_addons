@@ -17,7 +17,6 @@ class WizardCanviarContrasenya(osv.osv_memory):
 
         active_id = context.get('active_id')
         active_ids = context.get('active_ids')
-        import pudb;pu.db
         #carregar el model
         classconf = self.pool.get('som.crawlers.config')
 
