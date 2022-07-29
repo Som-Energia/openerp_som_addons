@@ -46,25 +46,15 @@ class WizardExecutarTasca(osv.osv_memory):
         if taskStepParams.has_key('nom_fitxer'):
             id_portal=self.id_del_portal_config(cursor,uid,id,context)
             filePath = os.path.join(path, "../scripts/" + taskStepParams['nom_fitxer'])
-            command = "python3 " + filePath
-            #os.system('source /home/somenergia/.virtualenvs/erp/bin/activate')
-            #print('Anterior virtual enviroment')
-            #print(str(os.system('pip -V')))
-            #os.system('/bin/bash -c source /home/somenergia/.virtualenvs/massive/bin/activate_this.py')
-           #print('Posterior virtual enviroment')
-            #print(str(os.system('pip -V')))
-            output =os.system(command +" "+ id_portal)
-            if output == 0:
-                output = 'ok'
-            elif output == 512:
-                output = 'File or directory doesn\'t exist'
-            else :
-                output = 'Error while executing'
-
+            path_python = "/home/somenergia/.virtualenvs/massive/bin/python3"
+            command_script =  filePath + " " + id_portal
+            os.system(path_python + " " + command_script + " > output.log")
+            with open('output.log') as f:
+                output = f.read().replace('\n', ' ')
         else:
             output = 'Falta especificar nom fitxer'
-        data_i_hora = datetime.now()
-         
+        data_i_hora = datetime.now().strftime("%Y-%m-%d_%H:%M")
+
         taskStep_obj.task_id.write({'ultima_tasca_executada': str(taskStep_obj.task_id.name)+ ' - ' + str(data_i_hora)})
         classresult.create(cursor,uid,{'task_id': taskStep_obj.task_id.id, 'data_i_hora_execucio': data_i_hora, 'resultat':output})
         return output
@@ -78,9 +68,6 @@ class WizardExecutarTasca(osv.osv_memory):
         config_id = classTask.browse(cursor,uid,task_id.id).configuracio_id
         config_obj = classConfig.browse(cursor,uid,config_id.id)
         conf_name = config_obj.name
-        data_i_hora = datetime.now()
-        #classresult.create(cursor,uid,{'task_id': task_id.id, 'data_i_hora_execucio': data_i_hora, 'resultat':str(conf_name)})
-
         return str(conf_name)
 
 
