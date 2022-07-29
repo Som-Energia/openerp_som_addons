@@ -98,6 +98,8 @@ jobs:
           export ROOT_DIR_SRC=${{github.workspace}}/..
           . $ROOT_DIR_SRC/venv/bin/activate
           cd $ROOT_DIR_SRC/erp && ./tools/link_addons.sh
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate
       - name: Run Tests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -125,7 +127,6 @@ jobs:
           pip install pudb
           pip install ipython
           destral --report-coverage --enable-coverage --report-junitxml ${{github.workspace}}/test-results/destral
-        uses: mxschmitt/action-tmate
       - name: Publish Unit Test Results
         if: (success() || failure()) && matrix.python-version == '2.7' && github.event_name == 'pull_request'
         uses: EnricoMi/publish-unit-test-result-action@v1
