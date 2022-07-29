@@ -44,22 +44,21 @@ class SomCrawlersTask(osv.osv):
         classTaskStep = self.pool.get('som.crawlers.task.step')
         taskStep = classTaskStep.browse(cursor,uid,id)
         taskStepParams = json.loads(taskStep.params)
+        data_i_hora = datetime.now()
         if taskStepParams.has_key('nom_fitxer'):
             path =os.path.dirname(os.path.abspath(__file__))
-            print (path)
-            output =os.system("python3 /home/somenergia/src/openerp_som_addons/som_crawlers/scripts/"
-             + taskStepParams['nom_fitxer'])
-            if output == 0:
-                output = 'ok'
-            elif output == 512:
-                output = 'File or directory doesn\'t exist'
-            else :
-                output = 'Error while executing'
-
+            import pudb;pu.db
+            output = subprocess.check_output("python3 /home/somenergia/src/openerp_som_addons/som_crawlers/scripts/"
+             + taskStepParams['nom_fitxer'], shell=True)
+            #outputFile = "output.log"
+            #os.system("python3 /home/somenergia/src/openerp_som_addons/som_crawlers/scripts/"
+            # + taskStepParams['nom_fitxer'] + " > " + outputFile)
+            #with open(outputFile, "r") as f:
+            #    output = f.readlines()
         else:
             output = 'Falta especificar nom fitxer'
-        data_i_hora = datetime.now()
-        classresult.create(cursor,uid,{'task_id': taskStep.task_id.id, 'data_i_hora_execucio': data_i_hora, 'resultat':output})
+        
+        classresult.create(cursor,uid,{'task_id': taskStep.task_id.id, 'data_i_hora_execucio': data_i_hora, 'resultat': str(output)})
         return data_i_hora.strftime("%m/%d/%Y, %H:%M:%S")
 
 
@@ -125,7 +124,7 @@ class SomCrawlersResult(osv.osv):
         'resultat': fields.char(
             _(u"Resultat"),
             help=_("Resultat de l'execució"),
-            size=128,
+            size=512,
             required=True,)
 
     }

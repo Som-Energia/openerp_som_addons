@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <openerp>
-    <data noupdate="1">
+    <data noupdate="0">
 
     <!-- Exemple de Usuari-->
         <record model="som.crawlers.config" id="demo_configuracio_1">
-        <field name="name">Endesa</field>
+        <field name="name">anselmo</field>
         <field name="usuari">Admin</field>
         <field name="contrasenya">Admin</field>
-        <field name="url_portal">https://www.endesa.com/es</field>
+        <field name="url_portal">https://www.anselmo.com/es</field>
         <field name="date_ultima_modificacio">2022-07-12+00:00:00</field>
         <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
     <!-- Exemple accions planificades-->
         <record model="som.crawlers.task" id="demo_accions_planificades_1">
-        <field name="name">Endesa descargar R1</field>
+        <field name="name">Anselmo descargar R1</field>
         <field name="data_proxima_execucio">2022-07-20+00:58:11</field>
         <field name="active">True</field>
+        <field name="configuracio_id" ref="demo_configuracio_1"/>
         </record>
-    <!-- Exemple tasca-->
+    <!-- Exemple tasca
         <record model="som.crawlers.task.step" id="demo_tasca_1">
         <field name="name">Executar fitxer holii.py</field>
         <field name="sequence">1</field>
@@ -31,12 +32,12 @@
         <field name="function">executar_un_fitxer</field>
         <field name="params">{"nom_fitxer":"hola.py"}</field>
         <field name="task_id" ref="demo_accions_planificades_1"/>
-        </record>
-        <record model="som.crawlers.task.step" id="demo_taskStep_3">
-        <field name="name">Executar fitxer adeu.py</field>
+        </record>-->
+        <record model="som.crawlers.task.step" id="demo_taskStep_1">
+        <field name="name">Executar script massive</field>
         <field name="sequence">1</field>
         <field name="function">executar_un_fitxer</field>
-        <field name="params">{}</field>
+        <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
         <field name="task_id" ref="demo_accions_planificades_1"/>
         </record>
 
