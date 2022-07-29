@@ -46,12 +46,10 @@ class WizardExecutarTasca(osv.osv_memory):
         if taskStepParams.has_key('nom_fitxer'):
             config_obj=self.id_del_portal_config(cursor,uid,id,context)
             filePath = os.path.join(path, "../scripts/" + taskStepParams['nom_fitxer'])
-            path_python = "/home/somenergia/.virtualenvs/massive/bin/python3"
+            path_python = "~/.virtualenvs/massive/bin/python"
             import pudb;pu.db
-            command_script =  filePath + " " + config_obj
-            os.system(path_python + " " + command_script + " " + config_obj +" > output.log")
-            with open('output.log') as f:
-                output = f.read().replace('\n', ' ')
+            os.system(path_python + " " + filePath + " -n "+ config_obj.name + " -u " + config_obj.usuari + " -p " + config_obj.contrasenya)
+            output = "  "
         else:
             output = 'Falta especificar nom fitxer'
         data_i_hora = datetime.now().strftime("%Y-%m-%d_%H:%M")
@@ -69,7 +67,7 @@ class WizardExecutarTasca(osv.osv_memory):
         config_id = classTask.browse(cursor,uid,task_id.id).configuracio_id
         config_obj = classConfig.browse(cursor,uid,config_id.id)
         #conf_name = config_obj.name
-        return config_obj.read()[0]
+        return config_obj
 
 
 WizardExecutarTasca()

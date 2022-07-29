@@ -27,10 +27,12 @@ def crawl(user, name, password):
         portalCreds = dict()
         portalCreds['username'] = user
         portalCreds['password'] = password
-        spider_instance.start_with_timeout(portalCreds = portalCreds, debug=True)
+        spider_instance.start_with_timeout(portalCreds, debug=True)
         print('Files have been successfully downloaded')
     except Exception as e:
         print(e)
+
+
 
 
 if __name__ == '__main__':
