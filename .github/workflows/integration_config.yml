@@ -99,7 +99,7 @@ jobs:
           . $ROOT_DIR_SRC/venv/bin/activate
           cd $ROOT_DIR_SRC/erp && ./tools/link_addons.sh
       - name: Setup tmate session
-        uses: mxschmitt/action-tmate
+        uses: mxschmitt/action-tmate@v3
       - name: Run Tests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
