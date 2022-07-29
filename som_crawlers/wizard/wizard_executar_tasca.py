@@ -44,11 +44,12 @@ class WizardExecutarTasca(osv.osv_memory):
         taskStepParams = json.loads(taskStep_obj.params)
         path = os.path.dirname(os.path.abspath(__file__))
         if taskStepParams.has_key('nom_fitxer'):
-            id_portal=self.id_del_portal_config(cursor,uid,id,context)
+            config_obj=self.id_del_portal_config(cursor,uid,id,context)
             filePath = os.path.join(path, "../scripts/" + taskStepParams['nom_fitxer'])
             path_python = "/home/somenergia/.virtualenvs/massive/bin/python3"
-            command_script =  filePath + " " + id_portal
-            os.system(path_python + " " + command_script + " > output.log")
+            import pudb;pu.db
+            command_script =  filePath + " " + config_obj
+            os.system(path_python + " " + command_script + " " + config_obj +" > output.log")
             with open('output.log') as f:
                 output = f.read().replace('\n', ' ')
         else:
@@ -67,8 +68,8 @@ class WizardExecutarTasca(osv.osv_memory):
         task_id = classTaskStep.browse(cursor,uid,id).task_id
         config_id = classTask.browse(cursor,uid,task_id.id).configuracio_id
         config_obj = classConfig.browse(cursor,uid,config_id.id)
-        conf_name = config_obj.name
-        return str(conf_name)
+        #conf_name = config_obj.name
+        return config_obj.read()[0]
 
 
 WizardExecutarTasca()
