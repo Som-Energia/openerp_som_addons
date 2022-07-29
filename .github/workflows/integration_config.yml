@@ -123,6 +123,8 @@ jobs:
           export OPENERP_DB_USER=$POSTGRES_USER
           export OPENERP_DB_PASSWORD=$POSTGRES_PASSWORD
           cd ${{github.workspace}}
+          pip install pudb
+          pip install ipython
           destral --report-coverage --enable-coverage --report-junitxml ${{github.workspace}}/test-results/destral
       - name: Publish Unit Test Results
         if: (success() || failure()) && matrix.python-version == '2.7' && github.event_name == 'pull_request'
