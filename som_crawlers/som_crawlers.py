@@ -10,7 +10,8 @@ class SomCrawlersConfig(osv.osv):
         'name': fields.char('Nom', size=10, required=True,),
         'usuari' : fields.char('Usuari del portal', size=10,required=True, unique = True,),
         'contrasenya' : fields.char('Contrasenya del portal', size=15, required=True,),
-        'url_portal' : fields.char('Url del portal', size=100, required=False,),
+        'url_portal' : fields.char('Url del portal', size=200, required=False,),
+        'filtres' : fields.char('Filtres de descarrega', size=200, required=False,),
         'date_ultima_modificacio' : fields.datetime('Data i hora ultima modificacio',required=False,),
         'user_ultima_modificacio': fields.many2one(
             'res.users',
