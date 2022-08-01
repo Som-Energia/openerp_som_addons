@@ -11,6 +11,7 @@
                     <field name="usuari" readonly='1'/>
                     <field name="contrasenya" readonly='1'/>
                     <field name="url_portal" readonly='1'/>
+                    <field name="filtres" readonly='1'/>
                     <field name="date_ultima_modificacio" readonly='1'/>
                     <field name="user_ultima_modificacio" readonly='1'/>
                 </form>
@@ -26,6 +27,7 @@
                     <field name="usuari" select="1"/>
                     <field name="contrasenya" />
                     <field name="url_portal" />
+                    <field name="filtres" />
                     <field name="date_ultima_modificacio" select="1"/>
                     <field name="user_ultima_modificacio"/>
 

@@ -47,15 +47,17 @@ class WizardExecutarTasca(osv.osv_memory):
             config_obj=self.id_del_portal_config(cursor,uid,id,context)
             filePath = os.path.join(path, "../scripts/" + taskStepParams['nom_fitxer'])
             path_python = "~/.virtualenvs/massive/bin/python"
-            import pudb;pu.db
-            os.system(path_python + " " + filePath + " -n "+ config_obj.name + " -u " + config_obj.usuari + " -p " + config_obj.contrasenya)
-            output = "  "
+            fileName = "output_" + config_obj.name + "_" + datetime.now().strftime("%Y-%m-%d_%H_%M") + ".txt"
+            os.system(path_python + " " + filePath + " -n "+ config_obj.name + " -u " + config_obj.usuari + " -p " + config_obj.contrasenya + " -f " + fileName + " -url " + config_obj.url_portal + " -fltr " + config_obj.filtres)
+            with open("/home/somenergia/src/openerp_som_addons/som_crawlers/outputFiles/" + fileName) as f:
+                output = f.read().replace('\n', ' ')
         else:
             output = 'Falta especificar nom fitxer'
         data_i_hora = datetime.now().strftime("%Y-%m-%d_%H:%M")
 
         taskStep_obj.task_id.write({'ultima_tasca_executada': str(taskStep_obj.task_id.name)+ ' - ' + str(data_i_hora)})
         classresult.create(cursor,uid,{'task_id': taskStep_obj.task_id.id, 'data_i_hora_execucio': data_i_hora, 'resultat':output})
+        f.close()
         return output
 
     def id_del_portal_config(self,cursor,uid,id,context=None):
