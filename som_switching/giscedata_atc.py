@@ -42,13 +42,6 @@ class GiscedataAtc(osv.osv):
             self.pool.get("giscedata.polissa").write(cursor, uid, pol_ids, {'facturacio_suspesa': False})
         return res
 
-    def delete_atc(self, cursor, uid, ids, context=None):
-        res = super(GiscedataAtc, self).unlink(cursor, uid, ids, context=context)
-        return res
-
-    def unlink(self, cursor, uid, ids, context=None):
-        super(GiscedataAtc, self).case_cancel(cursor, uid, ids, context)
-
     _columns = {
         'tag': fields.many2one('giscedata.atc.tag', "Etiqueta"),
     }

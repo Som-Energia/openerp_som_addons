@@ -51,3 +51,6 @@
 "access_wizard_som_autoreclama_set_disable_state_r","wizard.som.autoreclama.set.disable.state","model_wizard_som_autoreclama_set_disable_state","crm.group_crm_manager",1,0,0,0
 "access_wizard_som_autoreclama_set_disable_state_rw","wizard.som.autoreclama.set.disable.state","model_wizard_som_autoreclama_set_disable_state","crm.group_crm_manager",1,1,0,0
 "access_wizard_som_autoreclama_set_disable_state_rcwd","wizard.som.autoreclama.set.disable.state","model_wizard_som_autoreclama_set_disable_state","crm.group_crm_manager",1,1,1,1
+"access_wizard_som_autoreclama_delete_atc_r","wizard.delete.atc","model_wizard_delete_atc","som_autoreclama.group_som_autoreclama_r",0,0,0,0
+"access_wizard_som_autoreclama_delete_atc_rw","wizard.delete.atc","model_wizard_delete_atc","som_autoreclama.group_som_autoreclama_w",0,0,0,0
+"access_wizard_som_autoreclama_delete_atc_rcwd","wizard.delete.atc","model_wizard_delete_atc","som_autoreclama.group_som_autoreclama_u",1,1,1,1

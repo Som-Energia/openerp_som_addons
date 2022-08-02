@@ -9,6 +9,22 @@ class WizardDeleteAtc(osv.osv_memory):
         return '\n'.join(str(x) for x in context.get('active_ids',[]))
 
     def delete_atc(self, cursor, uid, ids, context=None):
+        resgroups_obj = self.pool.get('res.groups')
+
+        user_obj = self.pool.get('res.users')
+        group_ids = user_obj.read(
+            cursor, uid, uid, ['groups_id'], context=context
+        )['groups_id']
+        group_id = resgroups_obj.search(
+            cursor, uid, [('name', '=', 'Product / Manager')]
+        )[0]
+
+        if group_id not in group_ids:
+            raise osv.except_osv(
+                _(u"Error"),
+                _(u"No tens permisos per realitzar aquesta acció. Per més informació contacta amb el referent de Reclama")
+            )
+
         atc_obj = self.pool.get('giscedata.atc')
 
         atc_cases = context.get('active_ids',[])
