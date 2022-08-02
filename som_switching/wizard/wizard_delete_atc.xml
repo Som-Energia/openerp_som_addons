@@ -7,6 +7,9 @@
                 <field name="type">form</field>
                 <field name="arch" type="xml">
                     <form col="4">
+                        <group string="Els següents casos seran eliminats:">
+                            <field name="info" colspan="8" nolabel="1" readonly="1" height="210"/>
+                        </group>
                         <group colspan="4">
                             <button icon="gtk-yes" name="delete_atc" string="Acceptar" type="object" groups="crm.group_crm_manager"
                             confirm="Aquesta acció elimina definitivament el cas ATC. N'estàs segur que vols continuar?"

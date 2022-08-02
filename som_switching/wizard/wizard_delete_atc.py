@@ -5,6 +5,9 @@ from osv import osv, fields
 class WizardDeleteAtc(osv.osv_memory):
     _name = 'wizard.delete.atc'
 
+    def _get_atc_info(self, cursor, uid, context=None):
+        return '\n'.join(str(x) for x in context.get('active_ids',[]))
+
     def delete_atc(self, cursor, uid, ids, context=None):
         atc_obj = self.pool.get('giscedata.atc')
 
@@ -14,5 +17,13 @@ class WizardDeleteAtc(osv.osv_memory):
         return {
             'type': 'ir.actions.act_window_close',
         }
+
+    _columns = {
+        'info': fields.text("info")
+    }
+
+    _defaults = {
+        'info': _get_atc_info
+    }
 
 WizardDeleteAtc()
