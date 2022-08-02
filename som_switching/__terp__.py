@@ -39,7 +39,6 @@
         'wizard/wizard_create_atc_from_polissa.xml',
         'giscedata_atc_view.xml',
         'wizard/giscedata_switching_wizard_b1.xml',
-        'wizard/wizard_delete_atc.xml',
     ],
     "active": False,
     "installable": True

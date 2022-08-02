@@ -196,6 +196,13 @@ class GiscedataAtc(osv.osv):
         values = self.read(cursor, uid, ids, ['atc_id'])
         return [value['atc_id'][0] for value in values]
 
+    def delete_atc(self, cursor, uid, ids, context=None):
+        res = super(GiscedataAtc, self).unlink(cursor, uid, ids, context=context)
+        return res
+
+    def unlink(self, cursor, uid, ids, context=None):
+        super(GiscedataAtc, self).case_cancel(cursor, uid, ids, context)
+
     _STORE_STATE = {
         'som.autoreclama.state.history.atc': (
             change_state, ['change_date'], 10

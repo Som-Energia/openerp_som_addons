@@ -12,9 +12,7 @@
                         </group>
                         <group colspan="4">
                             <button icon="gtk-yes" name="delete_atc" string="Acceptar" type="object" groups="crm.group_crm_manager"
-                            confirm="Aquesta acció elimina definitivament el cas ATC. N'estàs segur que vols continuar?"
-                            />
-                            <newline/>
+                            confirm="Aquesta acció elimina definitivament el cas ATC. N'estàs segur que vols continuar?" />
                             <button special="cancel" string="Cancel" icon="gtk-no"/>
                         </group>
                     </form>

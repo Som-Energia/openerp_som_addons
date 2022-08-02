@@ -2,4 +2,3 @@
 "access_wizard_comment_to_F1_rcwd","wizard.comment.to.F1","model_wizard_comment_to_F1","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
 "access_giscedata_atc_tag_w","giscedata.atc.tag","model_giscedata_atc_tag","crm.group_crm_manager",1,1,1,1
 "access_giscedata_atc_tag_u","giscedata.atc.tag","model_giscedata_atc_tag","crm.group_crm_user",1,1,1,0
-"access_wizard_delete_atc_w","wizard.delete.atc","model_wizard_delete_atc","crm.group_crm_manager",1,1,1,1

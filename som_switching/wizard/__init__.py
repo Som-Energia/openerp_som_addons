@@ -9,4 +9,3 @@ import giscedata_switching_mod_con_wizard
 import wizard_create_atc_from_polissa
 import giscedata_switching_wizard_b1
 import wizard_import_atr_and_f1
-import wizard_delete_atc

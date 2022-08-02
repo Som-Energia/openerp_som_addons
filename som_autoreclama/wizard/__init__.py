@@ -3,3 +3,4 @@ import wizard_som_autoreclama_execute_step
 import wizard_som_autoreclama_set_manual_state
 import wizard_som_autoreclama_generated_atc
 import wizard_som_autoreclama_set_disable_state
+import wizard_delete_atc
