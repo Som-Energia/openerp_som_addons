@@ -28,7 +28,6 @@
         "security/som_autoreclama.xml",
         "security/ir.model.access.csv",
         "wizard/wizard_massive_create_r1029_view.xml",
-        'wizard/wizard_delete_atc.xml',
     ],
     "active": False,
     "installable": True

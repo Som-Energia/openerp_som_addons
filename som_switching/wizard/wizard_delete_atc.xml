@@ -6,12 +6,12 @@
                 <field name="model">wizard.delete.atc</field>
                 <field name="type">form</field>
                 <field name="arch" type="xml">
-                    <form col="4">
+                    <form col="8" string="Eliminar casos ATC">
                         <group string="Els següents casos seran eliminats:">
                             <field name="info" colspan="8" nolabel="1" readonly="1" height="210"/>
                         </group>
-                        <group colspan="4">
-                            <button icon="gtk-yes" name="delete_atc" string="Acceptar" type="object" groups="group_som_autoreclama_u"
+                        <group colspan="8">
+                            <button icon="gtk-yes" name="delete_atc" string="Acceptar" type="object"
                             confirm="Aquesta acció elimina definitivament el cas ATC. N'estàs segur que vols continuar?" />
                             <button special="cancel" string="Cancel" icon="gtk-no"/>
                         </group>
