@@ -343,10 +343,21 @@ class GiscedataFacturacioFactura(osv.osv):
         return factura_linia_ids
 
     def get_real_energy_lines(self, cursor, uid, inv_id, pol_id, linies_energia_ids):
+        product_obj = self.pool.get('product.product')
+        invline_obj = self.pool.get('giscedata.facturacio.factura.linia')
+        maj_product = product_obj.search(cursor, uid, [('default_code','=', 'RMAG')])
+        if maj_product:
+            maj_product = maj_product[0]
+        else:
+            maj_product = False
+
         real_energy = []
         lines_extra_ids = self.get_lines_in_extralines(cursor, uid, inv_id, pol_id)
         for l_id in linies_energia_ids:
             if l_id not in lines_extra_ids:
+                line = invline_obj.browse(cursor, uid, l_id)
+                if line.product_id.id == maj_product:
+                    continue
                 real_energy.append(l_id)
         return real_energy
 
