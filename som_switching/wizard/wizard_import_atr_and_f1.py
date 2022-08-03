@@ -20,8 +20,9 @@ class WizardImportAtrAndF1(osv.osv_memory):
             tmp_filename = wizard.filename
             if '/' in tmp_filename:
                 tmp_filename = tmp_filename.split('/')[-1] #when file from massive_importer file_name can contains subfolders
-            tmp_zip = open('{temporal_folder}/{filename}'.format(
+            tmp_zip = open('{temporal_folder}/{pref}{filename}'.format(
                 temporal_folder = directory,
+                pref=prefix,
                 filename = tmp_filename),
                 'w+'
             )
@@ -31,20 +32,5 @@ class WizardImportAtrAndF1(osv.osv_memory):
                 cursor, uid, ids, directory, prefix, context
             )
         return zip_handler
-
-    @staticmethod
-    def _get_b64_zip_files(zip_path, context=None):
-
-        _type = context['type']
-        if _type == 'F1':
-            zip_filename = glob.glob(
-                '{path}/*.zip.b64'.format(path=zip_path)
-            )[0]
-        else:
-            zip_filename = glob.glob(
-                '{path}/{type}_*.zip.b64'.format(path=zip_path, type=_type)
-            )[0]
-        with open(zip_filename, 'r') as zip_handler:
-            return zip_filename, zip_handler.read()
 
 WizardImportAtrAndF1()
