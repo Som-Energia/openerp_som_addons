@@ -24,7 +24,7 @@ class TestWizardImportAtrAndF1(testing.OOTestCase):
 
         zip_handler = wiz_o._create_tmp_zip(self.cursor, self.uid, [wiz_id], 'testDirectory', 'F1_')
 
-        mock_open.assert_called_with('testDirectory/nomFitxer', 'w+')
+        mock_open.assert_called_with('testDirectory/F1_nomFitxer', 'w+')
 
     @mock.patch('__builtin__.open')
     def test__import_F1_subfolder__originalName(self, mock_open):
@@ -34,7 +34,7 @@ class TestWizardImportAtrAndF1(testing.OOTestCase):
 
         zip_handler = wiz_o._create_tmp_zip(self.cursor, self.uid, [wiz_id], 'testDirectory', 'F1_')
 
-        mock_open.assert_called_with('testDirectory/nomFitxer', 'w+')
+        mock_open.assert_called_with('testDirectory/F1_nomFitxer', 'w+')
 
     @mock.patch('giscedata_switching.wizard.wizard_import_atr_and_f1.datetime')
     @mock.patch('__builtin__.open')
