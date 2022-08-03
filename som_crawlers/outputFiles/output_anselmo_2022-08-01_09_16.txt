@@ -1,2 +1,0 @@
-FENT LOGIN: Error d'autenticació al portal web. Verifiqui usuari i contrasenya!
-[S'ha fet click a descarregar: False]

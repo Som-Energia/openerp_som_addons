@@ -19,25 +19,11 @@
         <field name="active">True</field>
         <field name="configuracio_id" ref="demo_configuracio_1"/>
         </record>
-    <!-- Exemple tasca
-        <record model="som.crawlers.task.step" id="demo_tasca_1">
-        <field name="name">Executar fitxer holii.py</field>
-        <field name="sequence">1</field>
-        <field name="function">executar_un_fitxer</field>
-        <field name="params">{"nom_fitxer":"hol.py"}</field>
-        <field name="task_id" ref="demo_accions_planificades_1"/>
-        </record>
-        <record model="som.crawlers.task.step" id="demo_tasca_2">
-        <field name="name">Executar fitxer hola.py</field>
-        <field name="sequence">1</field>
-        <field name="function">executar_un_fitxer</field>
-        <field name="params">{"nom_fitxer":"hola.py"}</field>
-        <field name="task_id" ref="demo_accions_planificades_1"/>
-        </record>-->
+    <!-- Exemple tasca-->
         <record model="som.crawlers.task.step" id="demo_taskStep_1">
-        <field name="name">Executar script massive</field>
+        <field name="name">Descarregar fitxers</field>
         <field name="sequence">1</field>
-        <field name="function">executar_un_fitxer</field>
+        <field name="function">download_files</field>
         <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
         <field name="task_id" ref="demo_accions_planificades_1"/>
         </record>
