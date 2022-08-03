@@ -27,7 +27,7 @@ import os
 
 def crawl(user, name, password, file, url, filters):
     wc = WebCrawler()
-    path = path = os.path.dirname(os.path.abspath(__file__))
+    path = os.path.dirname(os.path.abspath(__file__))
     f = open(os.path.join(path,"../outputFiles",file),'w')
     try:
         spider_instance = anselmo.Anselmo(wc.selenium_crawlers_conf[name])
