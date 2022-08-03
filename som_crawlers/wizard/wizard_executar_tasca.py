@@ -55,11 +55,14 @@ class WizardExecutarTasca(osv.osv_memory):
             filePath = os.path.join(path, "../scripts/" + taskStepParams['nom_fitxer'])
             path_python = "~/.virtualenvs/massive/bin/python"
             fileName = "output_" + config_obj.name + "_" + datetime.now().strftime("%Y-%m-%d_%H_%M") + ".txt"
-            os.system(path_python + " " + filePath + " -n "+ config_obj.name + " -u " + config_obj.usuari + " -p " + config_obj.contrasenya + " -f " + fileName + " -url " + config_obj.url_portal + " -fltr " + config_obj.filtres)
+            os.system(path_python + " " + filePath + " -n "+ config_obj.name +
+                 " -u " + config_obj.usuari + " -p " + config_obj.contrasenya + " -f " + fileName + " -url " +
+                    config_obj.url_portal + " -fltr " + config_obj.filtres + " -c " + config_obj.crawler + " -d " +
+                    str(config_obj.days_of_margin) + " -nfp " + str(config_obj.pending_files_only) + " -b " + config_obj.browser) 
             with open(os.path.join(path,"../outputFiles",fileName)) as f:
                 output = f.read().replace('\n', ' ')
 
-            os.remove(os.path.join(path, "../outputFiles/",fileName))
+            os.remove(os.path.join(path, "../outputFiles",fileName))
             if output == 'Files have been successfully downloaded':
 
                self.attach_files(cursor, uid, id, config_obj, path, context = context)
