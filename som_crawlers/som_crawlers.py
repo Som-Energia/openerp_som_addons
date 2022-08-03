@@ -16,7 +16,11 @@ class SomCrawlersConfig(osv.osv):
         'user_ultima_modificacio': fields.many2one(
             'res.users',
             string='Modificat per',
-            help='Usuai qui ha realitzar la ultima modificacio de la contrasenya'),
+            help='Usuari que ha realitzat la ultima modificacio de la contrasenya'),
+        'crawler' : fields.char('Crawler', size = 20, required = False,),
+        'days_of_margin' : fields.integer('Dies de marge', required = True,),
+        'pending_files_only': fields.boolean('Nomes fitxers pendents',),
+        'browser': fields.char('Navegador', size=30, required=True,),
     }
 
     def canviar_contrasenya(self, cursor, uid, ids, contrasenya, context=None):
@@ -31,3 +35,6 @@ class SomCrawlersConfig(osv.osv):
             return contrasenya
 
 SomCrawlersConfig()
+
+
+

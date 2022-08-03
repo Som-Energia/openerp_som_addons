@@ -9,6 +9,10 @@
         <field name="contrasenya">374wmG3</field>
         <field name="url_portal">https://www.iberdrola.es/pwmultid/ServletAutentificacion?pwmultid=anselmoleond</field>
         <field name="filtres">"https://www.iberdrola.es/pwmultid/ServletLogin"</field>
+        <field name="crawler">Selenium</field>
+        <field name="days_of_margin">5</field>
+        <field name="pending_files_only">False</field>
+        <field name="browser">firefox</field>
         <field name="date_ultima_modificacio">2022-07-12+00:00:00</field>
         <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>

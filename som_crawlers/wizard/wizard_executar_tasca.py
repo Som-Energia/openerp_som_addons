@@ -73,6 +73,9 @@ class WizardExecutarTasca(osv.osv_memory):
         f.close()
         return output
 
+
+
+
     def id_del_portal_config(self,cursor,uid,id,context=None):
         classresult = self.pool.get('som.crawlers.result')
         classTask = self.pool.get('som.crawlers.task')
