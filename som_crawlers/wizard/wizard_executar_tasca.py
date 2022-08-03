@@ -48,7 +48,7 @@ class WizardExecutarTasca(osv.osv_memory):
         classTaskStep = self.pool.get('som.crawlers.task.step')
         taskStep_obj=classTaskStep.browse(cursor,uid,id)
         taskStepParams = json.loads(taskStep_obj.params)
-        path = os.path.dirname(os.path.abspath(__file__))
+        path = os.path.dirname(os.path.realpath(__file__))
 
         if taskStepParams.has_key('nom_fitxer'):
             config_obj=self.id_del_portal_config(cursor,uid,id,context)
@@ -56,12 +56,13 @@ class WizardExecutarTasca(osv.osv_memory):
             path_python = "~/.virtualenvs/massive/bin/python"
             fileName = "output_" + config_obj.name + "_" + datetime.now().strftime("%Y-%m-%d_%H_%M") + ".txt"
             os.system(path_python + " " + filePath + " -n "+ config_obj.name + " -u " + config_obj.usuari + " -p " + config_obj.contrasenya + " -f " + fileName + " -url " + config_obj.url_portal + " -fltr " + config_obj.filtres)
-            with open(os.path.join("/home/somenergia/src/openerp_som_addons/som_crawlers/outputFiles",fileName)) as f:
+            with open(os.path.join(path,"../outputFiles",fileName)) as f:
                 output = f.read().replace('\n', ' ')
-            os.remove(os.path.join("/home/somenergia/src/openerp_som_addons/som_crawlers/outputFiles",fileName))
+
+            os.remove(os.path.join(path, "../outputFiles/",fileName))
             if output == 'Files have been successfully downloaded':
 
-                self.attach_files(cursor, uid, id, config_obj, context = context)
+               self.attach_files(cursor, uid, id, config_obj, path, context = context)
 
         else:
             output = 'Falta especificar nom fitxer'
@@ -82,9 +83,9 @@ class WizardExecutarTasca(osv.osv_memory):
         config_obj = classConfig.browse(cursor,uid,config_id.id)
         return config_obj
 
-    def attach_files(self, cursor, uid, id, config_obj, context=None):
+    def attach_files(self, cursor, uid, id, config_obj, path, context=None):
 
-        path_to_zip = os.path.join('/home/somenergia/src/openerp_som_addons/som_crawlers/tmp',config_obj.name)
+        path_to_zip = os.path.join(path,'../tmp',config_obj.name)
         for fileName in os.listdir(path_to_zip):
             with zipfile.ZipFile(os.path.join(path_to_zip,fileName), 'r') as zip_ref:
                 zip_ref.extractall(path_to_zip)
