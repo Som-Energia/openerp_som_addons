@@ -27,7 +27,8 @@ import os
 
 def crawl(user, name, password, file, url, filters):
     wc = WebCrawler()
-    f = open(os.path.join("/home/somenergia/src/openerp_som_addons/som_crawlers/outputFiles",file),'w')
+    path = path = os.path.dirname(os.path.abspath(__file__))
+    f = open(os.path.join(path,"../outputFiles",file),'w')
     try:
         spider_instance = anselmo.Anselmo(wc.selenium_crawlers_conf[name])
         portalCreds = dict()
