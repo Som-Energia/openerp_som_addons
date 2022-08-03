@@ -22,47 +22,6 @@ class SomCrawlersTask(osv.osv):
         'active': lambda *a:False,
     }
 
-    def executar_tasques(self, cursor, uid, ids, context=None):
-        #obtenim l'objecte tasca
-        if not context:
-            return False
-
-        for id in ids:
-            #obtenim una tasca
-            task_obj = self.browse(cursor, uid, id)
-            task_steps_list = task_obj.task_step_ids
-            task_steps_list.sort(key=lambda x: x.sequence)
-            for taskStep in task_steps_list:
-                function = getattr(self, taskStep.function)
-                date = function(cursor,uid,taskStep.id,context)
-                task_obj.write({'ultima_tasca_executada': str(taskStep.name)+ ' - ' + date})
-
-        return {'type': 'ir.actions.act_window_close'}
-
-    def executar_un_fitxer(self, cursor, uid,id, context=None):
-        classresult = self.pool.get('som.crawlers.result')
-        classTaskStep = self.pool.get('som.crawlers.task.step')
-        taskStep = classTaskStep.browse(cursor,uid,id)
-        taskStepParams = json.loads(taskStep.params)
-        data_i_hora = datetime.now()
-        if taskStepParams.has_key('nom_fitxer'):
-            path =os.path.dirname(os.path.abspath(__file__))
-            import pudb;pu.db
-            output = subprocess.check_output("python3 /home/somenergia/src/openerp_som_addons/som_crawlers/scripts/"
-             + taskStepParams['nom_fitxer'], shell=True)
-            #outputFile = "output.log"
-            #os.system("python3 /home/somenergia/src/openerp_som_addons/som_crawlers/scripts/"
-            # + taskStepParams['nom_fitxer'] + " > " + outputFile)
-            #with open(outputFile, "r") as f:
-            #    output = f.readlines()
-        else:
-            output = 'Falta especificar nom fitxer'
-        
-        classresult.create(cursor,uid,{'task_id': taskStep.task_id.id, 'data_i_hora_execucio': data_i_hora, 'resultat': str(output)})
-        return data_i_hora.strftime("%m/%d/%Y, %H:%M:%S")
-
-
-
 SomCrawlersTask()
 
 class SomCrawlersTaskStep(osv.osv):

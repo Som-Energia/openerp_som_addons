@@ -8,9 +8,12 @@ from massive_importer.lib.exceptions import (
     FileToBucketException, CrawlingFilteringException,
     CrawlingDownloadingException
 )
+from massive_importer.lib.erp_utils import ErpManager
+from massive_importer.conf import configure_logging, settings
 
 import sys
 import click
+import os
 
 @click.command()
 @click.option('-u', '--user', help='Username of the portal.', required=True)
@@ -23,8 +26,8 @@ import click
 #sys.argv[1] es tota la informacio d'una configuració qualsevol que estigui executant la tasca
 
 def crawl(user, name, password, file, url, filters):
-    f = open("/home/somenergia/src/openerp_som_addons/som_crawlers/outputFiles/" + file,'w')
     wc = WebCrawler()
+    f = open(os.path.join("/home/somenergia/src/openerp_som_addons/som_crawlers/outputFiles",file),'w')
     try:
         spider_instance = anselmo.Anselmo(wc.selenium_crawlers_conf[name])
         portalCreds = dict()
@@ -34,6 +37,7 @@ def crawl(user, name, password, file, url, filters):
         portalCreds['filters'] = filters
         spider_instance.start_with_timeout(portalCreds, debug=True)
         f.write('Files have been successfully downloaded')
+
     except Exception as e:
         f.write(str(e))
 

@@ -1,2 +1,0 @@
-DESCARREGANT: __str__ returned non-string (type MaxRetryError)
-[S'ha fet click a descarregar: True]

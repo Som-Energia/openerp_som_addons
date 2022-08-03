@@ -125,7 +125,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
                 self.assertEqual(result, 'ok')
                 #objecte.browse(... + id) per llegir el objecte al complet.
 
-    def no_test_executar_una_tasca(self):
+    def  no_test_executar_una_tasca(self):
 
          with Transaction().start(self.database) as txn:
 
