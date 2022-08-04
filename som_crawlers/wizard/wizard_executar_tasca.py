@@ -43,7 +43,7 @@ class WizardExecutarTasca(osv.osv_memory):
         return {'type': 'ir.actions.act_window_close'}
 
     def download_files(self, cursor, uid,id,context=None):
-        import pudb;pu.db
+
         classresult = self.pool.get('som.crawlers.result')
         classTask = self.pool.get('som.crawlers.task')
         classTaskStep = self.pool.get('som.crawlers.task.step')
@@ -75,9 +75,39 @@ class WizardExecutarTasca(osv.osv_memory):
         return output
 
 
+    def import_xml_files(self, cursor, uid,id,context=None):
+
+        classresult = self.pool.get('som.crawlers.result')
+        classTask = self.pool.get('som.crawlers.task')
+        classTaskStep = self.pool.get('som.crawlers.task.step')
+        taskStep_obj=classTaskStep.browse(cursor,uid,id)
+        taskStepParams = json.loads(taskStep_obj.params)
+        path = os.path.dirname(os.path.realpath(__file__))
+
+        config_obj=self.id_del_portal_config(cursor,uid,id,context)
+        filePath = os.path.join(path, "../scripts/" + taskStepParams['nom_fitxer'])
+        path_python = "~/.virtualenvs/massive/bin/python"
+        path_to_zip = os.path.join(path,'../tmp',config_obj.name)
+
+        fileName = "output_" + config_obj.name + "_" + datetime.now().strftime("%Y-%m-%d_%H_%M") + ".txt"
+
+        os.system(path_python + " " + filePath + " -o " + fileName + " -p " + path_to_zip)
+
+        with open(os.path.join(path,"../outputFiles",fileName)) as f:
+                output = f.read().replace('\n', ' ')
+        os.remove(os.path.join(path, "../outputFiles",fileName))
+        data_i_hora = datetime.now().strftime("%Y-%m-%d_%H:%M")
+
+        taskStep_obj.task_id.write({'ultima_tasca_executada': str(taskStep_obj.task_id.name)+ ' - ' + str(data_i_hora)})
+        classresult.create(cursor,uid,{'task_id': taskStep_obj.task_id.id, 'data_i_hora_execucio': data_i_hora, 'resultat': output})
+        for fileZipName in os.listdir(path_to_zip):
+            os.remove(os.path.join(path_to_zip, fileZipName))
+        f.close()
+        return output
 
 
     def id_del_portal_config(self,cursor,uid,id,context=None):
+
         classresult = self.pool.get('som.crawlers.result')
         classTask = self.pool.get('som.crawlers.task')
         classTaskStep = self.pool.get('som.crawlers.task.step')
@@ -95,10 +125,9 @@ class WizardExecutarTasca(osv.osv_memory):
             with open(os.path.join(path_to_zip,fileName), 'r') as f:
                 content  = f.read()
             full_path = os.path.join(path_to_zip,fileName)
-            os.remove(full_path)
+            #os.remove(full_path)
 
             pool = pooler.get_pool(cursor.dbname)
-            
             attachment = {
                 'name':  fileName,
                 'datas': base64.encodestring(content),

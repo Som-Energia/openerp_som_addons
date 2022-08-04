@@ -30,7 +30,6 @@ import os
 #sys.argv[1] es tota la informacio d'una configuració qualsevol que estigui executant la tasca
 
 def crawl(user, name, password, file, url, filters, crawler, days, pfiles, browser):
-    import pudb;pu.db
     wc = WebCrawler()
     path = os.path.dirname(os.path.abspath(__file__))
     f = open(os.path.join(path,"../outputFiles",file),'w')
