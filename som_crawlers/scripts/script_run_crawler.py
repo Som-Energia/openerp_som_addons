@@ -30,6 +30,7 @@ import os
 #sys.argv[1] es tota la informacio d'una configuració qualsevol que estigui executant la tasca
 
 def crawl(user, name, password, file, url, filters, crawler, days, pfiles, browser):
+    import pudb;pu.db
     wc = WebCrawler()
     path = os.path.dirname(os.path.abspath(__file__))
     f = open(os.path.join(path,"../outputFiles",file),'w')
@@ -42,11 +43,11 @@ def crawl(user, name, password, file, url, filters, crawler, days, pfiles, brows
         portalCreds['filters'] = filters
         portalCreds['crawler'] = crawler
         portalCreds['days_of_margin'] = int(days)
-        portalCreds['pending_files_only'] = bool(pfiles)
+        portalCreds['pending_files_only'] = eval(pfiles)
         portalCreds['browser'] = browser
         spider_instance.start_with_timeout(portalCreds, debug=True)
         f.write('Files have been successfully downloaded')
-
+    
     except Exception as e:
         f.write(str(e))
 if __name__ == '__main__':
