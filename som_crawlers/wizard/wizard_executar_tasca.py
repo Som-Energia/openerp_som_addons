@@ -43,6 +43,7 @@ class WizardExecutarTasca(osv.osv_memory):
         return {'type': 'ir.actions.act_window_close'}
 
     def download_files(self, cursor, uid,id,context=None):
+        import pudb;pu.db
         classresult = self.pool.get('som.crawlers.result')
         classTask = self.pool.get('som.crawlers.task')
         classTaskStep = self.pool.get('som.crawlers.task.step')
@@ -55,17 +56,14 @@ class WizardExecutarTasca(osv.osv_memory):
             filePath = os.path.join(path, "../scripts/" + taskStepParams['nom_fitxer'])
             path_python = "~/.virtualenvs/massive/bin/python"
             fileName = "output_" + config_obj.name + "_" + datetime.now().strftime("%Y-%m-%d_%H_%M") + ".txt"
-            os.system(path_python + " " + filePath + " -n "+ config_obj.name +
-                 " -u " + config_obj.usuari + " -p " + config_obj.contrasenya + " -f " + fileName + " -url " +
-                    config_obj.url_portal + " -fltr " + config_obj.filtres + " -c " + config_obj.crawler + " -d " +
-                    str(config_obj.days_of_margin) + " -nfp " + str(config_obj.pending_files_only) + " -b " + config_obj.browser) 
+            os.system(path_python + " " + filePath + " -n "+ config_obj.name + " -u " + config_obj.usuari + " -p " + config_obj.contrasenya + " -f " + fileName + " -url " + config_obj.url_portal + " -fltr " + config_obj.filtres + " -c " + config_obj.crawler + " -d " + str(config_obj.days_of_margin) + " -nfp " + str(config_obj.pending_files_only) + " -b " + config_obj.browser) 
             with open(os.path.join(path,"../outputFiles",fileName)) as f:
                 output = f.read().replace('\n', ' ')
 
             os.remove(os.path.join(path, "../outputFiles",fileName))
             if output == 'Files have been successfully downloaded':
 
-               self.attach_files(cursor, uid, id, config_obj, path, context = context)
+               self.attach_files_zip(cursor, uid, id, config_obj, path, context = context)
 
         else:
             output = 'Falta especificar nom fitxer'
@@ -89,7 +87,30 @@ class WizardExecutarTasca(osv.osv_memory):
         config_obj = classConfig.browse(cursor,uid,config_id.id)
         return config_obj
 
-    def attach_files(self, cursor, uid, id, config_obj, path, context=None):
+
+    def attach_files_zip(self, cursor, uid, id, config_obj, path, context=None):
+
+        path_to_zip = os.path.join(path,'../tmp',config_obj.name)
+        for fileName in os.listdir(path_to_zip):
+            with open(os.path.join(path_to_zip,fileName), 'r') as f:
+                content  = f.read()
+            full_path = os.path.join(path_to_zip,fileName)
+            os.remove(full_path)
+
+            pool = pooler.get_pool(cursor.dbname)
+            
+            attachment = {
+                'name':  fileName,
+                'datas': base64.encodestring(content),
+                'datas_fname': fileName,
+                'res_model': 'som.crawlers.task',
+                'res_id': id,
+            }
+            self.pool.get('ir.attachment').create(cursor, uid, attachment, context=context)
+            cursor.commit()
+            #os.remove(os.path.join(path_to_zip,fileName))
+
+    def attach_files_xml(self, cursor, uid, id, config_obj, path, context=None):
 
         path_to_zip = os.path.join(path,'../tmp',config_obj.name)
         for fileName in os.listdir(path_to_zip):
