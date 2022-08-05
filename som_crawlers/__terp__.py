@@ -6,6 +6,7 @@
     "category": "Master",
     "depends":[
         "base",
+        "giscedata_switching",
     ],
     "init_xml":[],
     "demo_xml": [

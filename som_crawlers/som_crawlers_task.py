@@ -72,6 +72,7 @@ class SomCrawlersResult(osv.osv):
 
     _columns={
 
+        'name': fields.char(_(u'Nom'), size=64, required=False,),
         'task_id': fields.many2one(
             'som.crawlers.task',
             _('Tasca'),
@@ -83,20 +84,10 @@ class SomCrawlersResult(osv.osv):
         'resultat': fields.char(
             _(u"Resultat"),
             help=_("Resultat de l'execució"),
-            size=512,
-            required=True,)
+            size=512,),
+        'zip_name':fields.many2one('ir.attachment', _(u"Fitxer adjunt"),)
 
     }
 
+
 SomCrawlersResult()
-
-
-class ImprimirHola(osv.osv):
-
-    _name = 'imprimirPerLaPantalla'
-
-    def imprimirPerPantalla():
-        with open('output.txt', 'w') as f:
-            f.write('Hola funciona')
-
-ImprimirHola()
