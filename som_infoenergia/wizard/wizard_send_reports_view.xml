@@ -21,7 +21,7 @@
                             <separator string="Enviament de test" colspan="4"/>
                             <field name="email_to" colspan="4" width="500"/>
                             <field name="email_subject" colspan="4" width="500"/>
-                            <label string="Els correus s'enviaran exactament amb aquest assumpte (sense traduir)" colspan="4" />
+                            <label string="Els correus de test s'enviaran exactament amb aquest assumpte (sense traduir)" colspan="4" />
                         </group>
                     </group>
                     <group colspan="6" attrs="{'invisible': [('state', '=', 'finished')]}">
