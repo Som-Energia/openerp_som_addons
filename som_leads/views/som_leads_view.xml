@@ -1,0 +1,125 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>
+        <menuitem id="menu_som_soci_crm_leads" parent="crm.menu_crm" sequence="10" name="CRM Ofertes/Oportunitats"/>
+        <menuitem name="Configuració" id="menu_som_soci_crm_lead_config" parent="menu_som_soci_crm_leads"/>
+        <record id="som_soci_crm_lead_view_form" model="ir.ui.view">
+            <field name="name">som.soci.crm.lead.form</field>
+            <field name="model">som.soci.crm.lead</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="crm.crm_case-view"/>
+            <field name="extend">1</field>
+            <field name="arch" type="xml">
+                <!--New Page -->
+                <xpath expr="//field[@name='stage_id']" position="after">
+                    <button name="stage_next" string="Next Stage" type="object"  icon="gtk-go-forward" />
+                    <button name="stage_previous" string="Previous Stage" type="object" icon="gtk-go-back" />
+                </xpath>
+                <page string="General" position="before">
+                    <page string="Oferta/Oportunitat">
+                    <notebook>
+                        <page string="Sobre el Cliente">
+                            <separator string="Datos sobre el Titular" colspan="8"/>
+                            <group colspan="8" col="8">
+                                <group string="Titular" col="4" colspan="5">
+                                    <field name="titular_vat" on_change="onchange_generic('titular_vat', titular_vat)"/>
+                                    <field name="titular_es_empresa" invisible="1"/>
+                                    <field name="titular_nom" colspan="8"/>
+                                    <group attrs="{'invisible': [('titular_es_empresa', '=', True)]}" colspan="8">
+                                        <field name="titular_cognom1"/>
+                                        <field name="titular_cognom2"/>
+                                    </group>
+                                </group>
+                                <group string="Contacto" col="8" colspan="3">
+                                    <field name="titular_email" colspan="8"/>
+                                    <newline/>
+                                    <field name="titular_phone" colspan="4"/>
+                                    <field name="titular_mobile" colspan="4"/>
+                                    <newline/>
+                                    <field name="lang"/>
+                                </group>
+                            </group>
+                            <group string="Direccion" col="8"  colspan="8">
+                                <field name="titular_zip"/>
+                                <field name="titular_id_municipi" on_change="onchange_generic('titular_id_municipi', titular_id_municipi)"/>
+                                <field name="titular_id_poblacio" domain="[('municipi_id.id', '=', titular_id_municipi)]" on_change="onchange_generic('titular_id_poblacio', titular_id_poblacio)"/>
+                                <field name="titular_tv" colspan="1"/>
+                                <field name="titular_nv" colspan="6"/>
+                                <field name="titular_pnp"/>
+                                <field name="titular_bq"/>
+                                <field name="titular_es"/>
+                                <field name="titular_pt"/>
+                                <field name="titular_pu"/>
+                                <field name="titular_cpo"/>
+                                <field name="titular_cpa"/>
+                                <field name="titular_apartat_correus"/>
+                                <field name="titular_aclarador"/>
+                                <group colspan="8" col="8" string="Acciones">
+                                    <label string=" " colspan="2"/>
+                                    <button string="Copiar desde direccion del CUPS" name="copy_address_from_cups" icon="gtk-execute" type="object" colspan="4"/>
+                                    <label string=" " colspan="2"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Sobre el Pago">
+                            <separator string="Datos sobre la Facturacion y el Pago" colspan="8"/>
+                            <group string="Forma de Pago" col="2" colspan="8">
+                                <field name="payment_mode_id"/>
+                                <field name="iban" on_change="onchange_generic('iban', iban)"/>
+                            </group>
+                        </page>
+
+                        <page string="Validaciones">
+                            <field name="stage_validation_ids" nolabel="1"/>
+                            <group colspan="4" col="4">
+                                <button string="Marcar todas OK" icon="gtk-ok" type="object" name="force_validation" />
+                            </group>
+                        </page>
+
+                    </notebook>
+                    </page>
+                </page>
+            </field>
+        </record>
+        <record id="som_soci_crm_lead_view_tree" model="ir.ui.view">
+            <field name="name">som.soci.crm.lead.tree</field>
+            <field name="model">som.soci.crm.lead</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree colors="blue:state=='open'" string="CRM Soci Leads">
+                    <field name="id" select="2"/>
+                    <field name="create_date" select="1"/>
+                    <field name="name" select="1"/>
+                    <field name="user_id" select="1"/>
+                    <field name="stage_id" select="1"/>
+                    <field name="state" select="1"/>
+                    <field name="titular_vat" select="2" string="Nº Documento (Cliente)"/>
+                    <field name="titular_nom" select="2" string="Nombre (Cliente)"/>
+                    <field name="titular_cognom1" select="2" string="Apellido (Cliente)"/>
+                    <field name="titular_cognom2" select="2" string="2º Apellido (Cliente)"/>
+                    <field name="titular_email" select="2" string="Email (Cliente)"/>
+                    <field name="date" select="2"/>
+                    <!-- Camps tornats a definir per treurelsi el select 1-->
+                    <field name="partner_id" select="2" invisible="1"/>
+                    <field name="create_uid" select="2" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_all_som_soci_crm_leads" model="ir.actions.act_window">
+                <field name="name">Tots els processos d'alta</field>
+                <field name="res_model">som.soci.crm.lead</field>
+                <field name="view_type">form</field>
+                <field name="view_id" ref="som_soci_crm_lead_view_tree"/>
+        </record>
+        <record id="action_current_som_soci_crm_leads" model="ir.actions.act_window">
+                <field name="name">Processos d'alta no finalitzats</field>
+                <field name="res_model">som.soci.crm.lead</field>
+                <field name="domain">[('state', 'not in', ('done', 'cancel'))]</field>
+                <field name="view_type">form</field>
+                <field name="view_id" ref="som_soci_crm_lead_view_tree"/>
+        </record>
+        <menuitem action="action_all_som_soci_crm_leads" id="menu_all_som_soci_crm_leads" parent="menu_som_soci_crm_leads" sequence="10" name="Tots els processos d'alta"/>
+        <menuitem action="action_current_som_soci_crm_leads" id="menu_current_som_soci_crm_leads" parent="menu_som_soci_crm_leads" sequence="11" name="Processos d'alta no finalitzats"/>
+    </data>
+</openerp>

@@ -15,23 +15,6 @@ class SomSociCrmLead(osv.OsvInherits):
     _description = _(u"Somenergia Soci CRM Leads")
 
 
-    addr_fields = [
-        'zip',
-        'id_municipi',
-        'id_poblacio',
-        'tv',
-        'nv',
-        'pnp',
-        'bq',
-        'es',
-        'pt',
-        'pu',
-        'cpo',
-        'cpa',
-        'aclarador',
-        'apartat_correus',
-    ]
-
     lead_titular_adr_to_adr = {
         'titular_zip': 'zip',
         'titular_id_municipi': 'id_municipi',
@@ -609,15 +592,4 @@ class SomSociCrmLead(osv.OsvInherits):
             return False
         return True
 
-    def _vat_es_empresa(self, cr, uid, ids, prop, unknow_none, unknow_dict):
-        res = {}
-        partner_o = self.pool.get("res.partner")
-        for inf in self.read(cr, uid, ids, ['titular_vat']):
-            vat = inf['titular_vat']
-            res[inf['id']] = partner_o.is_enterprise_vat(vat) if vat else False
-        return res
-
 SomSociCrmLead()
-
-
-

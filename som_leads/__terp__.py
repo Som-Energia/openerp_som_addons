@@ -11,19 +11,18 @@
     "author": "Somenergia",
     "category": "GISCEMaster",
     "depends": [
-        "crm",
         "crm_case_stage",
-        "product",
         "base_extended",
         "account_payment",
+        "giscedata_crm_leads",
     ],
     "init_xml": [],
     "demo_xml": [
-        "demo/som_leads_demo_data.xml"
     ],
     "update_xml": [
         "som_leads_data.xml",
         "security/ir.model.access.csv",
+        "views/som_leads_view.xml",
     ],
     "active": False,
     "installable": True
