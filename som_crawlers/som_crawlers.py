@@ -10,12 +10,17 @@ class SomCrawlersConfig(osv.osv):
         'name': fields.char('Nom', size=10, required=True,),
         'usuari' : fields.char('Usuari del portal', size=10,required=True, unique = True,),
         'contrasenya' : fields.char('Contrasenya del portal', size=15, required=True,),
-        'url_portal' : fields.char('Url del portal', size=100, required=False,),
+        'url_portal' : fields.char('Url del portal', size=200, required=False,),
+        'filtres' : fields.char('Filtres de descarrega', size=200, required=False,),
         'date_ultima_modificacio' : fields.datetime('Data i hora ultima modificacio',required=False,),
         'user_ultima_modificacio': fields.many2one(
             'res.users',
             string='Modificat per',
-            help='Usuai qui ha realitzar la ultima modificacio de la contrasenya'),
+            help='Usuari que ha realitzat la ultima modificacio de la contrasenya'),
+        'crawler' : fields.char('Crawler', size = 20, required = False,),
+        'days_of_margin' : fields.integer('Dies de marge', required = True,),
+        'pending_files_only': fields.boolean('Nomes fitxers pendents',),
+        'browser': fields.char('Navegador', size=30, required=True,),
     }
 
     def canviar_contrasenya(self, cursor, uid, ids, contrasenya, context=None):
@@ -30,3 +35,6 @@ class SomCrawlersConfig(osv.osv):
             return contrasenya
 
 SomCrawlersConfig()
+
+
+

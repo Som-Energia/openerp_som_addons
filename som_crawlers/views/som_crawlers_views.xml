@@ -11,6 +11,11 @@
                     <field name="usuari" readonly='1'/>
                     <field name="contrasenya" readonly='1'/>
                     <field name="url_portal" readonly='1'/>
+                    <field name="filtres" readonly='1'/>
+                    <field name="crawler" readonly='1'/>
+                    <field name="days_of_margin" readonly='1'/>
+                    <field name="pending_files_only" readonly='1'/>
+                    <field name="browser" readonly='1'/>
                     <field name="date_ultima_modificacio" readonly='1'/>
                     <field name="user_ultima_modificacio" readonly='1'/>
                 </form>
@@ -26,6 +31,11 @@
                     <field name="usuari" select="1"/>
                     <field name="contrasenya" />
                     <field name="url_portal" />
+                    <field name="filtres" />
+                    <field name="crawler"/>
+                    <field name="days_of_margin"/>
+                    <field name="pending_files_only"/>
+                    <field name="browser"/>
                     <field name="date_ultima_modificacio" select="1"/>
                     <field name="user_ultima_modificacio"/>
 
