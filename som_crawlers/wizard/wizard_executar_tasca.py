@@ -2,6 +2,7 @@ from ast import Param
 import base64
 from fileinput import filename
 from quopri import encodestring
+from ssl import DefaultVerifyPaths
 import pooler
 from osv import osv, fields
 from tools.translate import _
@@ -14,6 +15,7 @@ import zipfile
 from os.path import expanduser
 
 LOGGER = netsvc.Logger()
+
 
 class WizardExecutarTasca(osv.osv_memory):
     _name= 'wizard.executar.tasca'
@@ -57,53 +59,47 @@ class WizardExecutarTasca(osv.osv_memory):
             path_python = "~/.virtualenvs/massive/bin/python"
             fileName = "output_" + config_obj.name + "_" + datetime.now().strftime("%Y-%m-%d_%H_%M") + ".txt"
             os.system(path_python + " " + filePath + " -n "+ config_obj.name + " -u " + config_obj.usuari + " -p " + config_obj.contrasenya + " -f " + fileName + " -url " + config_obj.url_portal + " -fltr " + config_obj.filtres + " -c " + config_obj.crawler + " -d " + str(config_obj.days_of_margin) + " -nfp " + str(config_obj.pending_files_only) + " -b " + config_obj.browser) 
+            result_id = classresult.create(cursor,uid,{'task_id': taskStep_obj.task_id.id})
             with open(os.path.join(path,"../outputFiles",fileName)) as f:
                 output = f.read().replace('\n', ' ')
 
             os.remove(os.path.join(path, "../outputFiles",fileName))
             if output == 'Files have been successfully downloaded':
 
-               self.attach_files_zip(cursor, uid, id, config_obj, path, context = context)
+               self.attach_files_zip(cursor, uid, result_id, config_obj, path, context = context)
 
         else:
             output = 'Falta especificar nom fitxer'
-        data_i_hora = datetime.now().strftime("%Y-%m-%d_%H:%M")
 
+        data_i_hora = datetime.now().strftime("%Y-%m-%d_%H:%M")
         taskStep_obj.task_id.write({'ultima_tasca_executada': str(taskStep_obj.task_id.name)+ ' - ' + str(data_i_hora)})
-        classresult.create(cursor,uid,{'task_id': taskStep_obj.task_id.id, 'data_i_hora_execucio': data_i_hora, 'resultat': output})
+        classresult.write(cursor,uid, result_id, {'data_i_hora_execucio': data_i_hora, 'resultat': output})
         f.close()
-        return output
 
 
     def import_xml_files(self, cursor, uid,id,context=None):
 
         classresult = self.pool.get('som.crawlers.result')
-        classTask = self.pool.get('som.crawlers.task')
         classTaskStep = self.pool.get('som.crawlers.task.step')
         taskStep_obj=classTaskStep.browse(cursor,uid,id)
-        taskStepParams = json.loads(taskStep_obj.params)
-        path = os.path.dirname(os.path.realpath(__file__))
 
-        config_obj=self.id_del_portal_config(cursor,uid,id,context)
-        filePath = os.path.join(path, "../scripts/" + taskStepParams['nom_fitxer'])
-        path_python = "~/.virtualenvs/massive/bin/python"
-        path_to_zip = os.path.join(path,'../tmp',config_obj.name)
+        attachment_obj = self.pool.get('ir.attachment')
+        attachment_id = attachment_obj.search(cursor, uid, [('res_model',"=",'som.crawlers.result'),('res_id', "=", taskStep_obj.task_id.id)])
+        if not attachment_id:
+            output = "don't exist id attachment"
 
-        fileName = "output_" + config_obj.name + "_" + datetime.now().strftime("%Y-%m-%d_%H_%M") + ".txt"
+        else:
+            att = attachment_obj.browse(cursor, uid, attachment_id[0])
+            content = att.datas
+            fileName = att.name
 
-        os.system(path_python + " " + filePath + " -o " + fileName + " -p " + path_to_zip)
+            output = self.import_wizard(cursor, uid, fileName, base64.b64encode(bytes(content)))
 
-        with open(os.path.join(path,"../outputFiles",fileName)) as f:
-                output = f.read().replace('\n', ' ')
-        os.remove(os.path.join(path, "../outputFiles",fileName))
         data_i_hora = datetime.now().strftime("%Y-%m-%d_%H:%M")
-
         taskStep_obj.task_id.write({'ultima_tasca_executada': str(taskStep_obj.task_id.name)+ ' - ' + str(data_i_hora)})
-        classresult.create(cursor,uid,{'task_id': taskStep_obj.task_id.id, 'data_i_hora_execucio': data_i_hora, 'resultat': output})
-        for fileZipName in os.listdir(path_to_zip):
-            os.remove(os.path.join(path_to_zip, fileZipName))
-        f.close()
-        return output
+        result_id = classresult.search(cursor, uid, [('task_id',"=",taskStep_obj.task_id.id),('data_i_hora_execucio', "=", data_i_hora)])
+        classresult.write(cursor,uid, result_id, {'resultat': output})
+        #classresult.create(cursor,uid,{'task_id': taskStep_obj.task_id.id, 'data_i_hora_execucio': data_i_hora, 'resultat': output})
 
 
     def id_del_portal_config(self,cursor,uid,id,context=None):
@@ -120,24 +116,27 @@ class WizardExecutarTasca(osv.osv_memory):
 
     def attach_files_zip(self, cursor, uid, id, config_obj, path, context=None):
 
+        classresult = self.pool.get('som.crawlers.result')
         path_to_zip = os.path.join(path,'../tmp',config_obj.name)
         for fileName in os.listdir(path_to_zip):
             with open(os.path.join(path_to_zip,fileName), 'r') as f:
                 content  = f.read()
             full_path = os.path.join(path_to_zip,fileName)
-            #os.remove(full_path)
+            os.remove(full_path)
 
             pool = pooler.get_pool(cursor.dbname)
+
             attachment = {
                 'name':  fileName,
                 'datas': base64.encodestring(content),
                 'datas_fname': fileName,
-                'res_model': 'som.crawlers.task',
+                'res_model': 'som.crawlers.result',
                 'res_id': id,
             }
-            self.pool.get('ir.attachment').create(cursor, uid, attachment, context=context)
+
+            attachment_id = self.pool.get('ir.attachment').create(cursor, uid, attachment, context=context)
+            classresult.write(cursor,uid, id, {'zip_name': attachment_id})
             cursor.commit()
-            #os.remove(os.path.join(path_to_zip,fileName))
 
     def attach_files_xml(self, cursor, uid, id, config_obj, path, context=None):
 
@@ -147,6 +146,7 @@ class WizardExecutarTasca(osv.osv_memory):
                 zip_ref.extractall(path_to_zip)
             full_path = os.path.join(path_to_zip,fileName)
             os.remove(full_path)
+
 
         for fileName in os.listdir(path_to_zip):
             with open(os.path.join(path_to_zip,fileName), 'rb') as f:
@@ -165,5 +165,23 @@ class WizardExecutarTasca(osv.osv_memory):
             os.remove(os.path.join(path_to_zip,fileName))
 
 
+    def import_wizard(self, cursor, uid, file_name, file_content):
+        if file_name.endswith('.zip'):
+
+            values = {'filename': file_name, 'file': base64.b64encode(bytes(file_content)).decode()}
+            WizardImportAtrF1 = self.pool.get('wizard.import.atr.and.f1')
+            import_wizard_id = WizardImportAtrF1.create(cursor, uid, values)
+            import_wizard = WizardImportAtrF1.browse(cursor, uid, import_wizard_id)
+            context = {'active_ids': [import_wizard.id], 'active_id': import_wizard.id}
+
+            try:
+                import_wizard.action_import_xmls(context)
+                if import_wizard.state == 'load':
+                    import_wizard.action_send_xmls(context=context)
+                return 'done'
+            except Exception as e:
+                msg = "An error ocurred importing %s: %s"
+                return msg
+        else: return False
 
 WizardExecutarTasca()

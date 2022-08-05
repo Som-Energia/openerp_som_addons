@@ -106,9 +106,11 @@
                     <field name="task_id" select='1' readonly ='1' />
                     <field name="data_i_hora_execucio" select='1' readonly ='1' />
                     <field name= "resultat" readonly ='1' />
+                    <field name="zip_name" readonly ='1' />
                 </form>
             </field>
         </record>
+
          <record model="ir.ui.view" id="view_som_crawlers_result_tree">
             <field name="name">som.crawlers.result.tree</field>
             <field name="model">som.crawlers.result</field>
@@ -119,9 +121,11 @@
                     <field name="task_id" readonly ='1'/>
                     <field name="data_i_hora_execucio" select='1' readonly ='1' />
                     <field name= "resultat" readonly ='1' />
+                    <field name="zip_name"   />
                 </tree>
             </field>
         </record>
+
          <record id="action_som_crawlers_result_tree" model="ir.actions.act_window">
             <field name="name">Resultat de les tasques automatiques</field>
             <field name="res_model">som.crawlers.result</field>
