@@ -99,7 +99,7 @@ class WizardExecutarTasca(osv.osv_memory):
         taskStep_obj.task_id.write({'ultima_tasca_executada': str(taskStep_obj.task_id.name)+ ' - ' + str(data_i_hora)})
         result_id = classresult.search(cursor, uid, [('task_id',"=",taskStep_obj.task_id.id),('data_i_hora_execucio', "=", data_i_hora)])
         classresult.write(cursor,uid, result_id, {'resultat': output})
-        #classresult.create(cursor,uid,{'task_id': taskStep_obj.task_id.id, 'data_i_hora_execucio': data_i_hora, 'resultat': output})
+
 
 
     def id_del_portal_config(self,cursor,uid,id,context=None):
