@@ -1,7 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data noupdate="0">
-     	<record id="ir_cron_run_tasks_action" model="ir.cron">
+        <record model="som.crawlers.config" id="demo_configuracio_1">
+        <field name="name">anselmo</field>
+        <field name="usuari">W4X151</field>
+        <field name="contrasenya">374wmG3</field>
+        <field name="url_portal">https://www.iberdrola.es/pwmultid/ServletAutentificacion?pwmultid=anselmoleond</field>
+        <field name="filtres">"https://www.iberdrola.es/pwmultid/ServletLogin"</field>
+        <field name="crawler">Selenium</field>
+        <field name="days_of_margin">5</field>
+        <field name="pending_files_only" eval="False"/>
+        <field name="browser">firefox</field>
+        <field name="date_ultima_modificacio">2022-07-12+00:00:00</field>
+        <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <!-- Exemple accions planificades-->
+        <record model="som.crawlers.task" id="demo_accions_planificades_1">
+        <field name="name">Anselmo descargar R1</field>
+        <field name="data_proxima_execucio">2022-07-20+00:58:11</field>
+        <field name="active">True</field>
+        <field name="configuracio_id" ref="demo_configuracio_1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="demo_taskStep_1">
+        <field name="name">Descarregar fitxers</field>
+        <field name="sequence">1</field>
+        <field name="function">download_files</field>
+        <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+        <field name="task_id" ref="demo_accions_planificades_1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="demo_taskStep_2">
+        <field name="name">Importar fitxers XML</field>
+        <field name="sequence">1</field>
+        <field name="function">import_xml_files</field>
+        <field name="params">{}</field>
+        <field name="task_id" ref="demo_accions_planificades_1"/>
+        </record>
+     	<!--<record id="ir_cron_run_tasks_action" model="ir.cron">
             <field name="name">Taks scheduler</field>
             <field name="active" eval="True" />
             <field name="user_id" ref="base.user_root"/>
@@ -24,6 +58,6 @@
             <field eval="False" name="doall"/>
             <field eval="'som.crawlers.task'" name="model"/>
             <field eval="'executar_tasques'" name="function"/>
-        </record>
+        </record>-->
     </data>
 </openerp>

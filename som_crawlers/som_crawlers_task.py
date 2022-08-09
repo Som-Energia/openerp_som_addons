@@ -56,6 +56,7 @@ class SomCrawlersTaskStep(osv.osv):
             help=_("Tasca englobant"),
             select=True,
         ),
+        
 
     }
 
@@ -72,7 +73,7 @@ class SomCrawlersResult(osv.osv):
 
     _columns={
 
-        'name': fields.char(_(u'Nom'), size=64, required=False,),
+        'name': fields.char(_(u'Funció'), size=64, required=False,),
         'task_id': fields.many2one(
             'som.crawlers.task',
             _('Tasca'),
@@ -85,7 +86,8 @@ class SomCrawlersResult(osv.osv):
             _(u"Resultat"),
             help=_("Resultat de l'execució"),
             size=512,),
-        'zip_name':fields.many2one('ir.attachment', _(u"Fitxer adjunt"),)
+        'zip_name':fields.many2one('ir.attachment', _(u"Fitxer adjunt"),
+        ),
 
     }
 

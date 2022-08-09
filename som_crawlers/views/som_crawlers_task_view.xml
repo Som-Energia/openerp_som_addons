@@ -104,6 +104,7 @@
             <field name="arch" type="xml">
                 <form string="Resultat de la tasca">
                     <field name="task_id" select='1' readonly ='1' />
+                    <field name="name" select ='1' readonly = '1' />
                     <field name="data_i_hora_execucio" select='1' readonly ='1' />
                     <field name= "resultat" readonly ='1' />
                     <field name="zip_name" readonly ='1' />
@@ -119,6 +120,7 @@
             <field name="arch" type="xml">
                 <tree string="Resultat de la tasca" editable="bottom">
                     <field name="task_id" readonly ='1'/>
+                    <field name="name" readonly = '1' />
                     <field name="data_i_hora_execucio" select='1' readonly ='1' />
                     <field name= "resultat" readonly ='1' />
                     <field name="zip_name"   />
