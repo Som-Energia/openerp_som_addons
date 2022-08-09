@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_som_facturacio_extra_tree">
+            <field name="name">giscedata.som.facturacio.extra.tree</field>
+            <field name="model">giscedata.facturacio.extra</field>
+            <field name="inherit_id" ref="giscedata_facturacio.view_facturacio_extra_tree"/>
+            <field name="arch" type="xml">
+                <field name="product_id" position="before">
+                    <field name="data_origen"/>
+                    <field name="origin_invoice"/>
+                    <field name="is_invoiced"/>
+                    <field name="data_invoiced"/>
+                    <field name="has_last_invoice"/>
+                    <field name="data_baixa_polissa"/>
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_som_facturacio_extra_form">
+            <field name="name">giscedata.som.facturacio.extra.form</field>
+            <field name="model">giscedata.facturacio.extra</field>
+            <field name="inherit_id" ref="giscedata_facturacio.view_facturacio_extra_form" />
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='active']" position="attributes">
+                    <attribute name="select">1</attribute>
+                </xpath>
+                <field name="date_from" position="before">
+                    <field name="data_origen" select="2"/>
+                    <field name="origin_invoice" select="2"/>
+                    <field name="is_invoiced" select="2"/>
+                    <field name="data_invoiced" select="2"/>
+                    <group colspan="4" col="4" string="Dades de baixa de la pòlissa" attrs="{'invisible': [('data_baixa_polissa','=',False)]}">
+                        <field name="has_last_invoice" select="2"/>
+                        <field name="data_baixa_polissa" select="2"/>
+                    </group>
+                </field>
+            </field>
+        </record>
+        <record id="giscedata_facturacio.action_facturacio_extra_pendents_de_baixa_tree" model="ir.actions.act_window">
+            <field name="name">Linies extra de contractes de baixa i pendents de facturar</field>
+            <field name="domain">[('polissa_id.state','=', 'baixa'),('amount_pending', '!=', 0),('active','=',True)]</field>
+            <field name="context">{'active_test': False}</field>
+        </record>
+    </data>
+</openerp>

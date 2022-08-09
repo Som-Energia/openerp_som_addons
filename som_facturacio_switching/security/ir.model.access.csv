@@ -1,0 +1,4 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_wizard_delete_reimport_2001_f1_u","wizard.delete.reimport.2001.f1","model_wizard_delete_reimport_2001_f1","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
+"access_wizard_delete_reimport_2001_f1_r","wizard.delete.reimport.2001.f1","model_wizard_delete_reimport_2001_f1","giscedata_facturacio.group_giscedata_facturacio_r",1,0,0,0
+"access_wizard_delete_reimport_2001_f1_w","wizard.delete.reimport.2001.f1","model_wizard_delete_reimport_2001_f1","giscedata_facturacio.group_giscedata_facturacio_w",1,1,1,0

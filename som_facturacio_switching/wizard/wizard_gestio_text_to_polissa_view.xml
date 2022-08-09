@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record model="ir.actions.act_window" id="action_wizard_gestio_text_to_polissa_form">
+            <field name="name">Afegir/modificar un comentari de gestió a la pòlissa</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.gestio.text.to.polissa</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="context">{'from_model':'giscedata.facturacio.importacio.linia'}</field>
+            <field name="view_id" ref="som_polissa.view_wizard_gestio_text_to_polissa_form"/>
+        </record>
+        <record id="value_wizard_gestio_text_to_polissa_form" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Afegir/modificar un comentari de gestió a la pòlissa</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.facturacio.importacio.linia</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_gestio_text_to_polissa_form'))" />
+        </record>
+    </data>
+</openerp>

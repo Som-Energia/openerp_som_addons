@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_delete_reimport_2001_f1">
+            <field name="name">wizard.delete.reimport.2001.f1.form</field>
+            <field name="model">wizard.delete.reimport.2001.f1</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="(2001) Eliminar els altres F1 amb mateix origen i emisor i reimportar el seleccionat">
+                    <field name="state" invisible="1"/>
+                    <group colspan="4" col="4" attrs="{'invisible': [('state', '!=', 'init')]}">
+                        <group colspan="4" col="4">
+                            <label string="S'eliminaran els F1 amb mateix origen i emsior i es reimportarà el seleccionat" colspan="4" />
+                            <label string="Si la factura proveïdor no està en esborrany, no actua" colspan="4" />
+                            <label string=" " colspan="4"/>
+                            <label string=" " colspan="4"/>
+                            <label string=" " colspan="4"/>
+                        </group>
+                        <button name="delete_reimport" string="Acceptar" icon="gtk-ok" type="object"/>
+                        <button special="cancel" string="Cancel·lar" icon="gtk-close"/>
+                    </group>
+                    <group colspan="4" col="4" attrs="{'invisible': [('state', '!=', 'end')]}">
+                        <label string="Resultat" colspan="4"/>
+                        <field name="info" nolabel="1" colspan="4" height="100" width="300"/>
+                        <button special="cancel" string="Finalizar" icon="gtk-close" />
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_wizard_delete_reimport_2001_f1_form">
+            <field name="name">(2001) Eliminar F1's amb mateix origen i reimportar</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.delete.reimport.2001.f1</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_wizard_delete_reimport_2001_f1"/>
+            <field name="target">new</field>
+        </record>
+
+        <record id="value_wizard_delete_reimport_2001_f1_form" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">(2001) Eliminar F1's amb mateix origen i reimportar</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.facturacio.importacio.linia</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_delete_reimport_2001_f1_form'))"/>
+        </record>
+    </data>
+</openerp>

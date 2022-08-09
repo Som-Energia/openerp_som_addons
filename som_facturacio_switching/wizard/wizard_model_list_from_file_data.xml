@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="wizard.model.list.from.file.filter" id="model_list_wizard_filter_importacio_polissa_name">
+            <field name="model">giscedata.facturacio.importacio.linia</field>
+            <field name="name">Número de pòlissa</field>
+            <field name="column">polissa_id.name</field>
+        </record>
+        <record model="wizard.model.list.from.file.filter" id="model_list_wizard_filter_importacio_polissa_id">
+            <field name="model">giscedata.facturacio.importacio.linia</field>
+            <field name="name">Id de pòlissa</field>
+            <field name="column">polissa_id.id</field>
+        </record>
+    </data>
+</openerp>

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="product.pricelist" id="pricelist_20A_SOM">
+            <field name="name">2.0A_SOM</field>
+            <field name="type">sale</field>
+        </record>
+        <record model="product.pricelist" id="pricelist_20A_SOM_INSULAR">
+            <field name="name">2.0A_SOM_INSULAR</field>
+            <field name="type">sale</field>
+        </record>
+    </data>
+</openerp>
