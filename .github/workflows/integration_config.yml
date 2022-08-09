@@ -62,7 +62,6 @@ jobs:
           git clone --depth 1 git@github.com:Som-Energia/openerp_som_addons.git $ROOT_DIR_SRC/openerp_som_addons
           git clone --depth 1 https://$GITHUB_TOKEN@github.com/gisce/erp.git -b developer $ROOT_DIR_SRC/erp
           git clone --depth 1 git@github.com:Som-Energia/somenergia-generationkwh.git $ROOT_DIR_SRC/somenergia-generationkwh
-          git clone --depth 1 git@github.com:Som-Energia/destral.git -b ADD_print_detect_module $ROOT_DIR_SRC/destral
           git clone --depth 1 https://github.com/Som-Energia/plantmeter.git $ROOT_DIR_SRC/plantmeter
           git clone --depth 1 git@github.com:gisce/oorq.git -b api_v5 $ROOT_DIR_SRC/oorq
           git clone --depth 1 git@github.com:gisce/spawn_oop.git $ROOT_DIR_SRC/spawn_oop
@@ -75,10 +74,6 @@ jobs:
           git clone --depth 1 git@github.com:gisce/crm_poweremail.git $ROOT_DIR_SRC/crm_poweremail
           git clone --depth 1 https://$GITHUB_TOKEN@github.com/gisce/libFacturacioATR.git $ROOT_DIR_SRC/libFacturacioATR
           git clone --depth 1 git@github.com:gisce/ooop.git $ROOT_DIR_SRC/ooop
-      - name: List dir
-        run: |
-          export ROOT_DIR_SRC=${{github.workspace}}/..
-          dir --recursive $ROOT_DIR_SRC
       - name: Install dependencies
         run: |
           sudo apt-get --allow-releaseinfo-change update
@@ -88,9 +83,6 @@ jobs:
           pip install virtualenv
           virtualenv venv
           . $ROOT_DIR_SRC/venv/bin/activate
-          cd $ROOT_DIR_SRC/destral
-          git checkout ADD_print_detect_module
-          pip install -e .
           cd $ROOT_DIR_SRC/libFacturacioATR
           git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
           pip install -e .
