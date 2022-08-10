@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_configuracio_form">
+            <field name="name">som.crawlers.config.form</field>
+            <field name="model">som.crawlers.config</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Configuracio">
+                    <field name="name" readonly='1'/>
+                    <field name="usuari" readonly='1'/>
+                    <field name="contrasenya" readonly='1'/>
+                    <field name="url_portal" readonly='1'/>
+                    <field name="filtres" readonly='1'/>
+                    <field name="crawler" readonly='1'/>
+                    <field name="days_of_margin" readonly='1'/>
+                    <field name="pending_files_only" readonly='1'/>
+                    <field name="browser" readonly='1'/>
+                    <field name="date_ultima_modificacio" readonly='1'/>
+                    <field name="user_ultima_modificacio" readonly='1'/>
+                </form>
+            </field>
+        </record>
+         <record model="ir.ui.view" id="view_configuracio_tree">
+            <field name="name">som.crawlers.config.tree</field>
+            <field name="model">som.crawlers.config</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+            <tree string="Configuracio">
+                    <field name="name" select="1"/>
+                    <field name="usuari" select="1"/>
+                    <field name="contrasenya" />
+                    <field name="url_portal" />
+                    <field name="filtres" />
+                    <field name="crawler"/>
+                    <field name="days_of_margin"/>
+                    <field name="pending_files_only"/>
+                    <field name="browser"/>
+                    <field name="date_ultima_modificacio" select="1"/>
+                    <field name="user_ultima_modificacio"/>
+
+                </tree>
+            </field>
+        </record>
+        <record id="action_configuracio_tree" model="ir.actions.act_window">
+            <field name="name">Configuracio</field>
+            <field name="res_model">som.crawlers.config</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_configuracio_tree"/>
+        </record>
+
+    <menuitem id="menu_som_crawlers_base" name="Som Crawlers" />
+    <menuitem action="action_configuracio_tree" id="menu_configuracio_tree" parent="som_crawlers.menu_som_crawlers_base"/>
+    </data>
+</openerp>
+
+
+
