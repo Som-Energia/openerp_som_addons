@@ -84,12 +84,19 @@ class WizardExecutarTasca(osv.osv_memory):
 
         classresult = self.pool.get('som.crawlers.result')
         attachment_obj = self.pool.get('ir.attachment')
-        attachment_id = attachment_obj.search(cursor, uid, [('res_model',"=",'som.crawlers.task'),('res_id', "=", taskStep_obj.task_id.id)])
+        
+        data_i_hora = datetime.now().strftime("%Y-%m-%d_%H:%M")
+        #attachment_id = attachment_obj.search(cursor, uid, [('res_model',"=",'som.crawlers.task'),('res_id', "=", taskStep_obj.task_id.id)])
+       
+       
+        id_last_result= classresult.search(cursor, uid, [('task_id','=', taskStep_obj.task_id.id),('name', '=', 'Descarregar fitxers'),('data_i_hora_execucio', '=', data_i_hora),('resultat', '=', 'files succesfully attached')])
+        last_result_obj= classresult.browse(cursor, uid, id_last_result)
+        attachment_id = last_result_obj[0].zip_name.id
         if not attachment_id:
             output = "don't exist id attachment"
 
         else:
-            att = attachment_obj.browse(cursor, uid, attachment_id[0])
+            att = attachment_obj.browse(cursor,uid,attachment_id)
             content = att.datas
             fileName = att.name
 
@@ -129,7 +136,7 @@ class WizardExecutarTasca(osv.osv_memory):
 
                     attachment = {
                         'name':  fileName,
-                        'datas': base64.encodestring(content),
+                        'datas':  base64.encodestring(content),
                         'datas_fname': fileName,
                         'res_model': 'som.crawlers.task',
                         'res_id': taskStep_obj.task_id.id,
@@ -159,7 +166,7 @@ class WizardExecutarTasca(osv.osv_memory):
             pool = pooler.get_pool(cursor.dbname)
             attachment = {
                 'name':  fileName,
-                'datas': base64.encodestring(content),
+                'datas':  base64.encodestring(content),
                 'datas_fname': fileName,
                 'res_model': 'som.crawlers.task',
                 'res_id': id,
@@ -171,21 +178,26 @@ class WizardExecutarTasca(osv.osv_memory):
 
     def import_wizard(self, cursor, uid, file_name, file_content):
         if file_name.endswith('.zip'):
-
-            values = {'filename': file_name, 'file': base64.b64encode(bytes(file_content)).decode()}
+            file_content = base64.decodestring(file_content)
+            values = {'filename': file_name, 'file': base64.b64encode(file_content).decode()}
             WizardImportAtrF1 = self.pool.get('wizard.import.atr.and.f1')
-            import_wizard_id = WizardImportAtrF1.create(cursor, uid, values)
-            import_wizard = WizardImportAtrF1.browse(cursor, uid, import_wizard_id)
+            import_wizard_id = WizardImportAtrF1.create(cursor,uid,values)
+            import_wizard  = WizardImportAtrF1.browse(cursor, uid, import_wizard_id)
             context = {'active_ids': [import_wizard.id], 'active_id': import_wizard.id}
 
             try:
-                import_wizard.action_import_xmls(context)
+                import pudb;pu.db
+                import_wizard.action_import_xmls(cursor, uid, context)
                 if import_wizard.state == 'load':
-                    import_wizard.action_send_xmls(context=context)
-                return 'done'
+                    import_wizard.action_send_xmls(cursor, uid, context=context)
+                if import_wizard.state == 'done':
+                    return 'Successful import'
+                else:
+                    return 'Import error'
             except Exception as e:
                 msg = "An error ocurred importing %s: %s"
                 return msg
-        else: return False
+        else:
+            return False
 
 WizardExecutarTasca()

@@ -56,7 +56,7 @@ class SomCrawlersTaskStep(osv.osv):
             help=_("Tasca englobant"),
             select=True,
         ),
-        
+
 
     }
 
