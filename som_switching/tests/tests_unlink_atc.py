@@ -18,7 +18,6 @@ class TestUnlinkATC(testing.OOTestCase):
         """
         Test per comprovar que l'unlink no elimina i cancela el cas
         """
-        import pudb;pu.db
 
         atc_o = self.pool.get('giscedata.atc')
         imd_obj = self.openerp.pool.get('ir.model.data')
