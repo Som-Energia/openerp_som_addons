@@ -31,10 +31,11 @@ class GiscedataFacturacioFactura(osv.osv):
         1)Si té estat oberta i té estat pedent (Correcte): 'EN_PROCES' 
         2)Si té estat oberta i té estat pendent (llistat_NO_pagables): 'EN_PROCES'
         3)Si té estat oberta i forma part d'una agrupació: 'EN_PROCES'
-        4)Si té estat oberta i té estat pedent que no pertany a (llistat_NO_pagables): 'NO_PAGADA'
-        5)Si té estat realitzat i té estat pendent (llistat_Fraccionaments) 'EN_PROCES'
-        6)Si té estat realitzat: 'PAGADA'
-        7)Altrament: 'ERROR'
+        4)Si té estat oberta i el residual és diferent al amount_total: 'EN_PROCES'
+        5)Si té estat oberta i té estat pedent que no pertany a (llistat_NO_pagables): 'NO_PAGADA'
+        6)Si té estat realitzat i té estat pendent (llistat_Fraccionaments) 'EN_PROCES'
+        7)Si té estat realitzat: 'PAGADA'
+        8)Altrament: 'ERROR'
         """
         cfg = self.pool.get('res.config')
         if isinstance(ids, (list, tuple)):
@@ -48,7 +49,8 @@ class GiscedataFacturacioFactura(osv.osv):
         ps_no_pagables = literal_eval(cfg.get(cursor, uid, 'cobraments_ps_no_pagable', '[]'))
 
         if inv_state == 'open':
-            if inv_pstate in ps_correct + ps_no_pagables or inv_group:
+            partial = inv.amount_total != inv.residual
+            if inv_pstate in ps_correct + ps_no_pagables or inv_group or partial:
                 return _WWW_ESTAT_PAGAMENT['en_proces']
             return _WWW_ESTAT_PAGAMENT['no_pagada']
         if inv_state == 'paid':
