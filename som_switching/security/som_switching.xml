@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<openerp>
-    <data>
-        <record model="res.groups" id="group_som_switching_atc_d">
-            <field name="name">Som Switching / Delete ATC</field>
-        </record>
-     </data>
-</openerp>

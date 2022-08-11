@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record  model="giscedata.atc" id="cas_atc_0001">
+            <field name="name">ccc</field>
+            <field name="provincia">20</field>
+		</record>
+    </data>
+</openerp>
