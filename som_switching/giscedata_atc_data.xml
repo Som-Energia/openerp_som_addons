@@ -735,9 +735,5 @@
             <field name="creation_date">1970-1-1</field>
             <field name="active">True</field>
         </record>
-        <record  model="giscedata.atc" id="cas_atc_0001">
-            <field name="name">ccc</field>
-            <field name="provincia">20</field>
-		</record>
     </data>
 </openerp>
