@@ -540,13 +540,16 @@ class GenerationkWhInvoiceLineOwner(osv.osv):
             cr, uid, 'end_date_mecanisme_ajust_gas', '2099-12-31')
 
         priceNoGen = float(self.getPriceWithoutGeneration(cr, uid, line)['price_unit'])
-        rmag_lines = self.browse(cr, uid, line).factura_id.get_rmag_lines()
-        if rmag_lines and \
+        rmag_lines_ids = self.browse(cr, uid, line).factura_id.get_rmag_lines()
+
+        if rmag_lines_ids and \
                 line['data_desde'] >= start_date_mecanisme_ajust_gas and \
                 line['data_fins'] <= end_date_mecanisme_ajust_gas:
-            profit = (priceNoGen + rmag_lines[0]['price_unit'] - line['price_unit']) * line['quantity']
+            rmag_line = self.browse(cr, uid, rmag_lines_ids[0])
+            profit = (priceNoGen + rmag_line.price_unit - line['price_unit']) * line['quantity']
         else:
             profit = (priceNoGen - line['price_unit']) * line['quantity']
+
         if ai_obj.read(cr, uid, line['invoice_id'][0], ['type'])['type'] == 'out_refund':
             return round(profit * -1, 2)
         return round(profit ,2)

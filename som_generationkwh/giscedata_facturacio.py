@@ -499,6 +499,34 @@ class GiscedataFacturacioFactura(osv.osv):
                                 'line_owner': lineowner_id
                             }
                         )
+            self.update_maj_quantity(cursor, uid, inv_id, context)
+
+    def update_maj_quantity(self, cursor, uid, inv_id, context):
+        rmag_lines_ids = self.get_rmag_lines(cursor, uid, inv_id, context)
+        if not rmag_lines_ids:
+            return
+
+        rmag_line = self.browse(cursor, uid, rmag_lines_ids[0])
+
+        line_obj = self.pool.get('giscedata.facturacio.factura.linia')
+        cfg_obj = self.pool.get('res.config')
+
+        start_date_mecanisme_ajust_gas = cfg_obj.get(
+           cursor, uid, 'start_date_mecanisme_ajust_gas', '2022-10-01'
+        )
+        end_date_mecanisme_ajust_gas = cfg_obj.get(
+            cursor, uid, 'end_date_mecanisme_ajust_gas', '2099-12-31'
+        )
+        all_gkwh_lines_ids = self.get_gkwh_lines(cursor, uid, inv_id, context)
+        substract_from_maj_line_ids = line_obj.search(cursor, uid,
+            [('id', 'in', all_gkwh_lines_ids), ('data_desde', '>=', start_date_mecanisme_ajust_gas),
+            ('data_fins','<=', end_date_mecanisme_ajust_gas)]
+        )
+        if substract_from_maj_line_ids:
+            rmag_original_quantity = rmag_line.quantity
+            gkwh_data = line_obj.read(cursor, uid, substract_from_maj_line_ids, ['quantity'])
+            new_quantity = rmag_original_quantity - sum([x['quantity'] for x in gkwh_data])
+            line_obj.write(cursor, uid, rmag_line.id, {'quantity': new_quantity})
 
     def get_gkwh_lines(self, cursor, uid, ids, context=None):
         """ Returns a id list of giscedata.facturacio.factura.linia with
@@ -551,7 +579,7 @@ class GiscedataFacturacioFactura(osv.osv):
         if not args[0][2]:
             # search for False
             operator = 'not in'
-        return [('id', operator, gkwh_ids)] 
+        return [('id', operator, gkwh_ids)]
 
     def _ff_is_gkwh(self, cursor, uid, ids, field_name, arg, context=None):
         """Returns true if invoice has gkwh lines"""
