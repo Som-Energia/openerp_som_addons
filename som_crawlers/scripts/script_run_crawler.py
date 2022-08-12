@@ -1,3 +1,7 @@
+
+ # Script that run crawler
+
+##Imports
 from nturl2path import url2pathname
 from massive_importer.crawlers.run_crawlers import WebCrawler
 from massive_importer.crawlers.crawlers.spiders.selenium_spiders import anselmo
@@ -15,6 +19,7 @@ import sys
 import click
 import os
 
+## Arguments passed through the os systemm call
 @click.command()
 @click.option('-u', '--user', help='Username of the portal.', required=True)
 @click.option('-n', '--name', prompt='Crawler portal name', help ='The person to greet.', required=True)
@@ -27,12 +32,23 @@ import os
 @click.option('-nfp', '--pfiles', help = 'Pending files only',required = True)
 @click.option('-b', '--browser', help = 'Browser', required = True)
 
-#sys.argv[1] es tota la informacio d'una configuració qualsevol que estigui executant la tasca
 
+## Function that runs de crawler of the crawler saves the user and the date when it was modified and returns the new password.
+        # @param user Username of the portal
+        # @param name Crawler portal name
+        # @param password Password of the portal
+        # @param file Log file name
+        # @param url URL of the portal
+        # @param filters Filters
+        # @param crawler Selenium crawler
+        # @param days Days of margin
+        # @param pfiles Pending files only
+        # @param browser Browser
+        # @return Exception or string if everything passed successfully
 def crawl(user, name, password, file, url, filters, crawler, days, pfiles, browser):
     wc = WebCrawler()
     path = os.path.dirname(os.path.abspath(__file__))
-    f = open(os.path.join(path,"../outputFiles",file),'w')
+    f = open(os.path.join(path,"../outputFiles/",file),'w')
     try:
         spider_instance = anselmo.Anselmo(wc.selenium_crawlers_conf[name])
         portalCreds = dict()
@@ -46,8 +62,9 @@ def crawl(user, name, password, file, url, filters, crawler, days, pfiles, brows
         portalCreds['browser'] = browser
         spider_instance.start_with_timeout(portalCreds, debug=True)
         f.write('Files have been successfully downloaded')
-    
+
     except Exception as e:
         f.write(str(e))
+## Main program
 if __name__ == '__main__':
     crawl()

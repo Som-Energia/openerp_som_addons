@@ -7,6 +7,7 @@
     "depends":[
         "base",
         "giscedata_switching",
+        "giscedata_facturacio_switching",
     ],
     "init_xml":[],
     "demo_xml": [
