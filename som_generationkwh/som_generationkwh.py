@@ -529,14 +529,27 @@ class GenerationkWhInvoiceLineOwner(osv.osv):
 
     def getProfit(self, cr, uid, line):
         ai_obj = self.pool.get('account.invoice')
+        cfg_obj = self.pool.get('res.config')
 
         if line['quantity'] == 0:
             return 0
 
+        start_date_mecanisme_ajust_gas = cfg_obj.get(
+            cr, uid, 'start_date_mecanisme_ajust_gas', '2022-10-01')
+        end_date_mecanisme_ajust_gas = cfg_obj.get(
+            cr, uid, 'end_date_mecanisme_ajust_gas', '2099-12-31')
+
         priceNoGen = float(self.getPriceWithoutGeneration(cr, uid, line)['price_unit'])
+        rmag_lines = self.browse(cr, uid, line).factura_id.get_rmag_lines()
+        if rmag_lines and \
+                line['data_desde'] >= start_date_mecanisme_ajust_gas and \
+                line['data_fins'] <= end_date_mecanisme_ajust_gas:
+            profit = (priceNoGen + rmag_lines[0]['price_unit'] - line['price_unit']) * line['quantity']
+        else:
+            profit = (priceNoGen - line['price_unit']) * line['quantity']
         if ai_obj.read(cr, uid, line['invoice_id'][0], ['type'])['type'] == 'out_refund':
-            return round((priceNoGen - line['price_unit']) * line['quantity'] * -1,2)
-        return round((priceNoGen - line['price_unit']) * line['quantity'],2)
+            return round(profit * -1, 2)
+        return round(profit ,2)
 
 
     def _ff_saving_generation(self, cursor, uid, ids, field_name, arg,

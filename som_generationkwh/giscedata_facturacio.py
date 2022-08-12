@@ -518,6 +518,24 @@ class GiscedataFacturacioFactura(osv.osv):
             return line_ids
         return res
 
+    def get_rmag_lines(self, cursor, uid, ids, context=None):
+        """ Returns a id list of giscedata.facturacio.factura.linia with
+            RMAG products
+        """
+        if isinstance(ids, (list, tuple)):
+            ids = ids[0]
+
+        line_obj = self.pool.get('giscedata.facturacio.factura.linia')
+
+        res = []
+        fields_to_read = ['linies_energia']
+        inv_vals = self.read(cursor, uid, ids, fields_to_read, context)
+        if inv_vals['linies_energia']:
+            is_rmag = line_obj.is_rmag(cursor, uid, inv_vals['linies_energia'])
+            line_ids = [l for l, v in is_rmag.items() if v]
+            return line_ids
+        return res
+
     def _search_is_gkwh(self, cursor, uid, obj, name, args, context=None):
         """Search function for is_gkwh"""
         if not args:
@@ -713,6 +731,12 @@ class GiscedataFacturacioFacturaLinia(osv.osv):
         )
         return product_obj.search(cursor, uid, [('categ_id', 'in', cat_ids)])
 
+    @cache()
+    def get_rmag_products(self, cursor, uid, context=None):
+        """Returns rmag products list"""
+        product_obj = self.pool.get('product.product')
+        return product_obj.search(cursor, uid, [('default_code', '=', 'RMAG')])
+
     def is_gkwh(self, cursor, uid, ids, context=None):
         """Checks invoice line is gkwh"""
         if not isinstance(ids, (tuple, list)):
@@ -725,6 +749,22 @@ class GiscedataFacturacioFacturaLinia(osv.osv):
         gkwh_products = self.get_gkwh_products(cursor, uid)
         for l in l_vals:
             if l['product_id'] and l['product_id'][0] in gkwh_products:
+                res[l['id']] = True
+        return res
+
+    def is_rmag(self, cursor, uid, ids, context=None):
+        """Checks invoice line is rmag"""
+        if not isinstance(ids, (tuple, list)):
+            ids = [ids]
+
+        res = dict([(i, False) for i in ids])
+
+        # check if product is rmag
+        l_vals = self.read(cursor, uid, ids, ['product_id'], context=context)
+        rmag_products = self.get_rmag_products(cursor, uid)
+
+        for l in l_vals:
+            if l['product_id'] and l['product_id'][0] in rmag_products:
                 res[l['id']] = True
         return res
 
