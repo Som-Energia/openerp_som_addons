@@ -161,7 +161,7 @@ class Account_Invoice_Test(unittest.TestCase):
 
         self.assertAccountingByInvoice(invoice_ids[0], u"""
         movelines:
-        - account_id: 1635000{nsoci:>05} {surname}, {name}
+        - account_id: 163500000000 {surname}, {name}
           amount_to_pay: 4000.0
           credit: 4000.0
           debit: 0.0
@@ -208,7 +208,7 @@ class Account_Invoice_Test(unittest.TestCase):
         self.assertAccountingByInvoice(invoice_ids[0], u"""
         movelines:
         # Open
-        - account_id: 1635000{nsoci:>05} {surname}, {name}
+        - account_id: 163500000000 {surname}, {name}
           amount_to_pay: 4000.0
           credit: 4000.0
           debit: 0.0
@@ -283,7 +283,7 @@ class Account_Invoice_Test(unittest.TestCase):
         self.assertAccountingByInvoice(invoice_ids[0], u"""
         movelines:
         # Open
-        - account_id: 1635000{nsoci:>05} {surname}, {name}
+        - account_id: 163500000000 {surname}, {name}
           amount_to_pay: 4000.0
           credit: 4000.0
           debit: 0.0
@@ -445,7 +445,7 @@ class Account_Invoice_Test(unittest.TestCase):
 
         self.assertAccountingByInvoice(amortization_ids[0], u"""
         movelines:
-        - account_id: 1635000{nsoci:>05} {surname}, {name}
+        - account_id: 163500000000 {surname}, {name}
           amount_to_pay: -160.0
           credit: 0.0
           debit: 160.0
@@ -495,7 +495,7 @@ class Account_Invoice_Test(unittest.TestCase):
 
         self.assertAccountingByInvoice(amortization_ids[0], u"""
         movelines:
-        - account_id: 1635000{nsoci:>05} {surname}, {name}
+        - account_id: 163500000000 {surname}, {name}
           amount_to_pay: -160.0
           credit: 0.0
           debit: 160.0
