@@ -212,6 +212,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
 
             result = self.wiz.id_del_portal_config(cursor,uid,crawler_task_step_id)
             self.assertNotEqual(result,crawler_config_obj)
+
     """Function that tests if the attached files zip after giving an inexistent path return that the zip directory does not exist.
         # @param self The object pointer"""
     def test_attach_files_zip_entrada_path_inexistent_sortida_zip_directory_no_existeix(self):
@@ -225,6 +226,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             result = self.wiz.attach_files_zip(cursor, uid, id, crawler_config_obj, pathFileActual, context=None)
 
             self.assertEqual(result,'zip directory doesn\'t exist')
+
     """Function that tests ifthe attached files zip after giving an empty diretory return that the zip directory is empty.
         # @param self The object pointer"""
     def test_attach_files_zip_entrada_directory_buit_sortida_zip_directory_buit(self):
@@ -238,14 +240,17 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             result = self.wiz.attach_files_zip(cursor, uid, id, crawler_config_obj, pathFileActual, context=None)
 
             self.assertEqual(result,'Directori doesn\'t contain any ZIP')
+            
+    #funcio no utilitzable
 
-    #def test_attach_files_zip_entrada_config_prova_sortida_files_successfuly_attached(self):
-       # with Transaction().start(self.database) as txn:
+    """def test_attach_files_zip_entrada_config_prova_sortida_files_successfuly_attached(self):  
+        with Transaction().start(self.database) as txn:
            # cursor = txn.cursor
             #uid = txn.user
             #crawler_config_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_configuracio_2')[1]
             #crawler_config_obj = self.Configuracio.browse(cursor,uid,crawler_config_id)
             #pathFileActual = os.path.dirname(os.path.realpath(__file__))
-            #result = self.wiz.attach_files_zip(cursor, uid, id, crawler_config_obj, pathFileActual, context=None)
-
+            #result = self.wiz.attach_files_zip(cursor, uid, id, crawler_confgi_obj, pathFileActual, context=None)
             #self.assertEqual(result,'files succesfully attached')
+    """       
+        
