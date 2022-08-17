@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data noupdate="1">
+        <record model="giscedata.polissa.condicions.generals" id="condicions_generals_som_01_ca" forcecreate="1">
+            <field name="name">Condicions Generals (CAT)</field>
+        </record>
+        <record model="giscedata.polissa.condicions.generals" id="condicions_generals_som_01_es" forcecreate="1">
+            <field name="name">Condiciones Generales (ES)</field>
+        </record>
+        <record model="giscedata.polissa.condicions.generals" id="condicions_generals_som_01_ek" forcecreate="1">
+            <field name="name">Condiciones Generales (EUS)</field>
+        </record>
+        <record model="giscedata.polissa.condicions.generals" id="condicions_generals_som_01_ga" forcecreate="1">
+            <field name="name">Condiciones Generales (GAL)</field>
+        </record>
+    </data>
+</openerp>

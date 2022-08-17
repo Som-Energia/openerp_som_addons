@@ -1,0 +1,86 @@
+body{
+    font-family: helvetica;
+    font-size: 10px;
+    margin-right: 50px;
+    margin-left: 50px;
+}
+table{
+    border-collapse: collapse;
+    width: 100%;
+    border-bottom: 1px solid #9F9F9F;
+}
+table td{
+    text-align: left;
+    font-size: 10px;
+}
+
+#header{
+    margin-top: 20px;
+    margin-bottom: 15px;
+}
+#logo img{
+    margin-top:10px;
+    height: 60px;
+}
+
+.titol{
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    padding: 3px;
+    border-bottom: 1px solid #000000;
+    border-top: 1px solid #000000;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    vertical-align: middle;
+}
+#header .titol{
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+#header .company{
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+#header .text_capcalera{
+    margin-top:20px;
+}
+#header .text_vigencia{
+    margin-top:20px;
+    font-weight: bold;
+}
+.seccio{
+    font-weight: bold;
+    margin-bottom: 25px;
+
+}
+.label{
+    font-weight: bold;
+    margin-left: 5px;
+}
+.field{
+    margin-left: 10px;
+}
+#legal{
+    text-align: justify;
+}
+#footer{
+    margin-top:30px;
+    margin-bottom: 15px;
+}
+.signatura{
+    margin-top:10px;
+    position: relative;
+    float: left;
+    width: 50%;
+    text-align: center;
+    height: 80px;
+}
+.signatura img{
+    margin-top:15px;
+    height:80px;
+}
+.city_date{
+    text-align: center;
+}
