@@ -25,6 +25,7 @@
                     </group>
                 </form>
             </field>
+            
         </record>
         <record model="ir.ui.view" id="view_som_crawlers_task_tree">
             <field name="name">som.crawlers.task.tree</field>

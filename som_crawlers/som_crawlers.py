@@ -34,7 +34,7 @@ class SomCrawlersConfig(osv.osv):
         @param ids The crawler configuration id
         @param contrasenya The new password
         @param context None certain data to pass
-        @return New password value 
+        @return New password value
     """
     def canviar_contrasenya(self, cursor, uid, ids, contrasenya, context=None):
 
@@ -47,8 +47,7 @@ class SomCrawlersConfig(osv.osv):
             #enctex = fernet.encrypt(contrasenya.encode())
             self.write(cursor,uid,ids,{'contrasenya': contrasenya, 'user_ultima_modificacio': uid, 'date_ultima_modificacio': datetime.now().isoformat()}, context=context)
             return contrasenya
-   
-  
+
 
 
 

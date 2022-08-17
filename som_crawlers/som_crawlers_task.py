@@ -2,6 +2,7 @@
 ##Imports
 ## Module that contains all the information of a Task
 from ast import Param
+from inspect import ArgSpec
 import pooler
 import subprocess
 from datetime import datetime
@@ -10,12 +11,25 @@ from tools.translate import _
 import os
 import base64
 import json
+import base64
+from fileinput import filename
+from genericpath import isfile
+import io
+from quopri import encodestring
+from ssl import DefaultVerifyPaths
+import netsvc
+import zipfile
+from os.path import expanduser
+
+from autoworker import AutoWorker
+from oorq.decorators import job
+
 # @author Ikram Ahdadouche El Idrissi
 # @author Dalila Jbilou Kouhous
 
 ## Class Task that describes the module and the task fields
 class SomCrawlersTask(osv.osv):
-    ## Module name 
+    ## Module name
     _name = 'som.crawlers.task'
     ## Columns fields
     _columns = {
@@ -32,11 +46,15 @@ class SomCrawlersTask(osv.osv):
         'active': lambda *a:False,
     }
 
-    def id_del_portal_config(self,cursor,uid,id,context=None): 
+    def id_del_portal_config(self,cursor,uid,id,context=None):
         classConfig = self.pool.get('som.crawlers.config')
         task_obj = self.browse(cursor,uid,id)
         config_obj = classConfig.browse(cursor,uid,task_obj.configuracio_id.id)
         return config_obj
+
+    @job(queue="som_crawlers_queue")
+    def executar_tasca_async(self, cursor, uid, id, context=None):
+        self.executar_tasca(cursor, uid, id, context=None)
 
     def executar_tasca(self,cursor,uid,id,context=None):
         classresult = self.pool.get('som.crawlers.result')
@@ -44,7 +62,7 @@ class SomCrawlersTask(osv.osv):
         task_obj = self.browse(cursor, uid, id)
         task_steps_list = task_obj.task_step_ids
         task_steps_list.sort(key=lambda x: x.sequence)
-        result_id = classresult.create(cursor,uid,{'task_id': id})
+        result_id = classresult.create(cursor,uid,{'task_id': id,'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M")})
         for taskStep in task_steps_list:
             try:
                 output = classTaskStep.executar_steps(cursor,uid,taskStep.id,result_id)
@@ -90,9 +108,8 @@ class SomCrawlersTaskStep(osv.osv):
             help=_("Tasca englobant"),
             select=True,
         ),
-
-
     }
+
     # Default values of a column
     _defaults = {
         'sequence': lambda *a: 99,
@@ -101,10 +118,9 @@ class SomCrawlersTaskStep(osv.osv):
     }
 
     def executar_steps(self, cursor, uid, id, result_id, context=None):
-        classresult = self.pool.get('som.crawlers.result')
-        taskStep = self.browse(cursor,uid,id)
+        taskStep = self.browse(cursor, uid, id)
         function = getattr(self, taskStep.function)
-        output = function(cursor,uid,taskStep.id, result_id, context=None)
+        output = function(cursor, uid, id, result_id, context=None)
         return output
 
 
@@ -118,7 +134,6 @@ class SomCrawlersTaskStep(osv.osv):
             if len(os.listdir(path_to_zip)) == 0:
                  output = "Directori doesn\'t contain any ZIP"
             else:
-
                 for fileName in os.listdir(path_to_zip):
                     with open(os.path.join(path_to_zip,fileName), 'rb') as f:
                         content  = f.read()
@@ -141,17 +156,17 @@ class SomCrawlersTaskStep(osv.osv):
 
         return output
 
-    def download_files(self, cursor, uid,id, result_id, context=None):
+    def download_all_files(self, cursor, uid,id, result_id, context=None):
+        pass
 
+    def download_files(self, cursor, uid,id, result_id, context=None):
         classresult = self.pool.get('som.crawlers.result')
         taskStep_obj = self.browse(cursor,uid,id)
         taskStepParams = json.loads(taskStep_obj.params)
         path = os.path.dirname(os.path.realpath(__file__))
 
-        data_i_hora = datetime.now().strftime("%Y-%m-%d_%H:%M")
-        classresult.write(cursor,uid, result_id, {'data_i_hora_execucio': data_i_hora})
-
-
+        classresult.write(cursor,uid, result_id, {'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M")})
+        import pudb;pu.db
         if taskStepParams.has_key('nom_fitxer'):
             config_obj=self.pool.get('som.crawlers.task').id_del_portal_config(cursor,uid,taskStep_obj.task_id.id,context)
             filePath = os.path.join(path, "scripts/" + taskStepParams['nom_fitxer'])
@@ -159,38 +174,21 @@ class SomCrawlersTaskStep(osv.osv):
                 cfg_obj = self.pool.get('res.config')
                 path_python = cfg_obj.get(cursor, uid, 'som_crawlers_massive_importer_python_path', '~/.virtualenvs/massive/bin/python')
                 fileName = "output_" + config_obj.name + "_" + datetime.now().strftime("%Y-%m-%d_%H_%M") + ".txt"
-                str_days = str(config_obj.days_of_margin)
-                str_pending = str(config_obj.pending_files_only)
-                args = {
-                    '-n':config_obj.name,
-                    '-u':config_obj.usuari,
-                    '-p':config_obj.contrasenya,
-                    '-f':fileName,
-                    '-url':config_obj.url_portal,
-                    '-fltr':config_obj.filtres,
-                    '-c':config_obj.crawler,
-                    '-d':str_days,
-                    '-nfp':str_pending,
-                    '-b':config_obj.browser,
-                }
-                args_str = " ".join(["{} {}".format(k,v) for k,v in args.iteritems()])
-                os.system("{} {} {}".format(path_python, filePath, args_str))
-
-                with open(os.path.join(path,"outputFiles/",fileName)) as f:
-                    output = f.read().replace('\n', ' ')
-                f.close()
-                os.remove(os.path.join(path, "outputFiles/",fileName))
+                args_str = self.createArgsForScript(cursor, uid, id, config_obj, fileName)
+                ret_value = os.system("{} {} {}".format(path_python, filePath, args_str))
+                if ret_value != 0:
+                    output = "System call from download files failed"
+                else:
+                    output = self.readOutputFile(cursor, uid, path, fileName)
                 if output == 'Files have been successfully downloaded':
                     output = self.attach_files_zip(cursor, uid, id, result_id, config_obj, path, context = context)
                 else:
                     raise Exception("%s" % output)
-
             else:
                 output = 'File or directory doesn\'t exist'
         else:
             output = 'Falta especificar nom fitxer'
-
-        taskStep_obj.task_id.write({'ultima_tasca_executada': str(taskStep_obj.task_id.name)+ ' - ' + str(data_i_hora)})
+        taskStep_obj.task_id.write({'ultima_tasca_executada': str(taskStep_obj.task_id.name)+ ' - ' + str(datetime.now().strftime("%Y-%m-%d_%H:%M"))})
 
         return output
 
@@ -198,21 +196,19 @@ class SomCrawlersTaskStep(osv.osv):
         taskStep_obj = self.browse(cursor,uid,id)
         classresult = self.pool.get('som.crawlers.result')
         attachment_obj = self.pool.get('ir.attachment')
-        data_i_hora = datetime.now().strftime("%Y-%m-%d_%H:%M")
-        classresult.write(cursor,uid, result_id, {'data_i_hora_execucio': data_i_hora})
+        classresult.write(cursor,uid, result_id, {'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M")})
         result_obj= classresult.browse(cursor, uid, result_id)
         attachment_id = result_obj.zip_name.id
         if not attachment_id:
             output = "don't exist id attachment"
             raise Exception(output)
-
         else:
             att = attachment_obj.browse(cursor,uid,attachment_id)
             content = att.datas
             fileName = att.name
             output = self.import_wizard(cursor, uid, fileName,content)
 
-        taskStep_obj.task_id.write({'ultima_tasca_executada': str(taskStep_obj.task_id.name)+ ' - ' + str(data_i_hora)})
+        taskStep_obj.task_id.write({'ultima_tasca_executada': str(taskStep_obj.task_id.name)+ ' - ' + str(datetime.now().strftime("%Y-%m-%d_%H:%M"))})
 
         return output
 
@@ -238,7 +234,30 @@ class SomCrawlersTaskStep(osv.osv):
         else:
             return False
 
+    def readOutputFile(self, cursor, uid, path, fileName):
+        with open(os.path.join(path,"outputFiles/",fileName)) as f:
+            output = f.read().replace('\n', ' ')
+        f.close()
+        os.remove(os.path.join(path, "outputFiles/",fileName))
 
+        return output
+
+    def createArgsForScript(self, cursor, uid, id, config_obj, fileName):
+        str_days = str(config_obj.days_of_margin)
+        str_pending = str(config_obj.pending_files_only)
+        args = {
+            '-n':config_obj.name,
+            '-u':config_obj.usuari,
+            '-p':config_obj.contrasenya,
+            '-f':fileName,
+            '-url':config_obj.url_portal,
+            '-fltr':config_obj.filtres,
+            '-c':config_obj.crawler,
+            '-d':str_days,
+            '-nfp':str_pending,
+            '-b':config_obj.browser,
+        }
+        return " ".join(["{} {}".format(k,v) for k,v in args.iteritems()])
 
 SomCrawlersTaskStep()
 
@@ -268,6 +287,4 @@ class SomCrawlersResult(osv.osv):
         ),
 
     }
-
-
 SomCrawlersResult()

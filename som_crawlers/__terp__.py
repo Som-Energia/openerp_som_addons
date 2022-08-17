@@ -8,6 +8,7 @@
         "base",
         "giscedata_switching",
         "giscedata_facturacio_switching",
+        "oorq"
     ],
     "init_xml":[],
     "demo_xml": [
@@ -18,6 +19,7 @@
         "views/som_crawlers_task_view.xml",
         "wizard/wizard_canviarContrasenya.xml",
         "wizard/wizard_executar_tasca.xml"
+
     ],
     "active": False,
     "installable":True

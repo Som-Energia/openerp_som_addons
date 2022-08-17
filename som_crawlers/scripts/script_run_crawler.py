@@ -5,6 +5,7 @@
 from nturl2path import url2pathname
 from massive_importer.crawlers.run_crawlers import WebCrawler
 from massive_importer.crawlers.crawlers.spiders.selenium_spiders import anselmo
+from massive_importer.crawlers.crawlers.spiders.selenium_spiders import fenosa
 from massive_importer.crawlers.crawlers.spiders.selenium_spiders import *
 from massive_importer.crawlers.crawlers.spiders.selenium_spiders import PortalConfig
 from massive_importer.lib.exceptions import (
@@ -46,11 +47,15 @@ import os
         # @param browser Browser
         # @return Exception or string if everything passed successfully
 def crawl(user, name, password, file, url, filters, crawler, days, pfiles, browser):
+    import pudb;pu.db
     wc = WebCrawler()
     path = os.path.dirname(os.path.abspath(__file__))
     f = open(os.path.join(path,"../outputFiles/",file),'w')
     try:
-        spider_instance = anselmo.Anselmo(wc.selenium_crawlers_conf[name])
+        if(name == 'anselmo'):
+            spider_instance = anselmo.Anselmo(wc.selenium_crawlers_conf[name])
+        else:
+            spider_instance = fenosa.Fenosa(wc.selenium_crawlers_conf[name])
         portalCreds = dict()
         portalCreds['username'] = user
         portalCreds['password'] = password

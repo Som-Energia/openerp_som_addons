@@ -1,5 +1,5 @@
 
-##imports
+#imports
 
 from ast import Param
 import base64
@@ -32,7 +32,7 @@ LOGGER = netsvc.Logger()
 
 class WizardExecutarTasca(osv.osv_memory):
 
-     ## Module name 
+     ## Module name
     _name= 'wizard.executar.tasca'
 
     """Function that gets gets that task, task result and task step, and executes a task
@@ -56,7 +56,7 @@ class WizardExecutarTasca(osv.osv_memory):
 
         for id in active_ids:
             #obtenim una tasca
-            task.executar_tasca(cursor,uid,id,context)
+            task.executar_tasca_async(cursor,uid,id,context)
 
         return {'type': 'ir.actions.act_window_close'}
 
