@@ -545,7 +545,7 @@ class GenerationkWhInvoiceLineOwner(osv.osv):
         if rmag_lines and \
                 line['data_desde'] >= start_date_mecanisme_ajust_gas and \
                 line['data_fins'] <= end_date_mecanisme_ajust_gas:
-            rmag_line = self.browse(cr, uid, rmag_lines_ids[0])
+            rmag_line = gffl_obj.browse(cr, uid, rmag_lines[0])
             profit = (priceNoGen + rmag_line.price_unit - line['price_unit']) * line['quantity']
         else:
             profit = (priceNoGen - line['price_unit']) * line['quantity']

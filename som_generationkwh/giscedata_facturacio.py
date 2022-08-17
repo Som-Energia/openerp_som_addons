@@ -506,9 +506,9 @@ class GiscedataFacturacioFactura(osv.osv):
         if not rmag_lines_ids:
             return
 
-        rmag_line = self.browse(cursor, uid, rmag_lines_ids[0])
-
         line_obj = self.pool.get('giscedata.facturacio.factura.linia')
+        rmag_line = line_obj.browse(cursor, uid, rmag_lines_ids[0])
+
         cfg_obj = self.pool.get('res.config')
 
         start_date_mecanisme_ajust_gas = cfg_obj.get(
