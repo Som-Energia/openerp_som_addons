@@ -9,7 +9,6 @@
         <field name="days_of_margin">5</field>
         <field name="pending_files_only" eval="False"/>
         <field name="browser">firefox</field>
-        <field name="date_ultima_modificacio">2022-07-12 00:00:00</field>
         <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="demo_configuracio_2">
@@ -19,20 +18,17 @@
         <field name="days_of_margin">3</field>
         <field name="pending_files_only" eval="False"/>
         <field name="browser">chrome</field>
-        <field name="date_ultima_modificacio">2022-07-12 00:00:00</field>
         <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <!-- Exemple accions planificades-->
         <!-- Tasques generals-->
         <record model="som.crawlers.task" id="demo_accions_planificades_1">
         <field name="name">Anselmo descargar R1</field>
-        <field name="data_proxima_execucio">2022-08-17 16:30:00</field>
         <field name="active">True</field>
         <field name="configuracio_id" ref="demo_configuracio_1"/>
         </record>
         <record model="som.crawlers.task" id="demo_accions_planificades_2">
         <field name="name">Fenosa descargar F1 i ATR</field>
-        <field name="data_proxima_execucio">2022-08-17 15:30:00</field>
         <field name="active">True</field>
         <field name="configuracio_id" ref="demo_configuracio_2"/>
         </record>
@@ -76,9 +72,9 @@
             <field name="active" eval="True" />
             <field name="user_id" ref="base.user_root"/>
             <field eval="False" name="doall"/>
-            <field eval="'som.crawlers.task'" name="model"/>
-            <field eval="'executar_tasca'" name="function"/>
-            <field eval="'2022-08-17 15:50:00'" name="nextcall"/>
+            <field eval="'wizard.executar.tasca'" name="model"/>
+            <field eval="'executar_tasca_cron'" name="function"/>
+            <field eval="'2022-08-18 12:15:00'" name="nextcall"/>
         </record>
     </data>
 </openerp>

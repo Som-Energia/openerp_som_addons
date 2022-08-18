@@ -15,7 +15,6 @@ from massive_importer.lib.exceptions import (
 )
 from massive_importer.lib.erp_utils import ErpManager
 from massive_importer.conf import configure_logging, settings
-
 import sys
 import click
 import os
@@ -49,7 +48,6 @@ import importlib
         # @param browser Browser
         # @return Exception or string if everything passed successfully
 def crawl(user, name, classe, password, file, url, filters, crawler, days, pfiles, browser):
-    import pudb;pu.db
     wc = WebCrawler()
     path = os.path.dirname(os.path.abspath(__file__))
     f = open(os.path.join(path,"../outputFiles/",file),'w')

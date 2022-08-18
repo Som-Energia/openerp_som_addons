@@ -54,4 +54,18 @@ class WizardExecutarTasca(osv.osv_memory):
 
         return {'type': 'ir.actions.act_window_close'}
 
+
+    def executar_tasca_cron(self, cursor, uid, id): #tasca cron
+        ##obtenim l'objecte tasca
+        task = self.pool.get('som.crawlers.task')
+        active_ids = task.search(cursor, uid, [])
+        for id in active_ids:
+            #obtenim una tasca
+            task_obj = task.browse(cursor,uid,id)
+            if(datetime.strptime(task_obj.data_proxima_execucio,"%Y-%m-%d %H:%M:%S") <= datetime.now()):
+                task.executar_tasca_async(cursor,uid,id)
+
+        return True
+
+
 WizardExecutarTasca()
