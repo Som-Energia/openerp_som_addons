@@ -321,8 +321,8 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                 tarifes_a_mostrar = get_comming_atr_price(cursor, uid, polissa, ctx)
             text_vigencia = ''
         %>
-        %for dades_tarifa in tarifes_a_mostrar:
         <div class="styled_box">
+        %for dades_tarifa in tarifes_a_mostrar:
             <%
                 if dades_tarifa['date_end'] and dades_tarifa['date_start']:
                     text_vigencia = _(u"(vigent fins el {})").format(min(datetime.strptime(data_final, '%Y-%m-%d'), datetime.strptime(dades_tarifa['date_end'], '%Y-%m-%d')).strftime('%Y-%m-%d'))
@@ -552,9 +552,6 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                 </div>
             </div>
             %endfor
-            %if text_vigencia:
-                <p style="page-break-after: always"></p>
-            %endif
             <%
                 owner_b = polissa.bank.partner_id.name
                 nif = polissa.bank.partner_id.vat
@@ -566,6 +563,10 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                 nif = nif.replace('ES', '')
             %>
         </div>
+            %if text_vigencia:
+                <p style="page-break-after: always"></p>
+                <br><br><br>
+            %endif
         <div class="styled_box">
             <h5> ${_("DADES DE PAGAMENT")} </h5>
             <% iban = polissa.bank and polissa.bank.printable_iban[5:] or '' %>
