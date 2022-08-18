@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record model="ir.header_webkit" id="webkit_header">
+            <field name="format">A4</field>
+            <field name="margin_bottom">1.0</field>
+            <field name="margin_top">1.01</field>
+            <field name="margin_left">0.01</field>
+            <field name="margin_right">0.01</field>
+            <field name="name">Contract header</field>
+            <field name="orientation">Portrait</field>
+            <field name="html"><![CDATA[<html>
+                ]]>
+            </field>
+            <field name="css" ><![CDATA[
+                ]]>
+            </field>
+        </record>
+        <record id="giscedata_polissa.report_contracte" model="ir.actions.report.xml">
+            <field name="report_type">webkit</field>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field eval="0" name="auto"/>
+            <field eval="0" name="header"/>
+            <field name="report_webkit"
+                   eval="'som_polissa_condicions_generals/report/condicions_particulars.mako'"/>
+            <field name="webkit_header" ref="webkit_header"/>
+            <field name="report_rml" eval="False"/>
+        </record>
+        <record id="report_contracte_canvi_preus" model="ir.actions.report.xml">
+            <field name="report_type">webkit</field>
+            <field name="report_name">giscedata.polissa.canvi_preus</field>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field eval="0" name="auto"/>
+            <field eval="0" name="header"/>
+            <field name="model">giscedata.polissa</field>
+            <field name="type">ir.actions.report.xml</field>
+            <field name="name">Condicions particulars canvi preus</field>
+            <field name="report_webkit"
+                   eval="'som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako'"/>
+            <field name="webkit_header" ref="webkit_header"/>
+            <field name="report_rml" eval="False"/>
+        </record>
+        <record id="report_contracte_condicions_generals_dummy" model="ir.actions.report.xml">
+            <field name="report_type">webkit</field>
+            <field name="report_name">giscedata.polissa.condicions_generals_dummy</field>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field eval="0" name="auto"/>
+            <field eval="0" name="header"/>
+            <field name="model">giscedata.polissa</field>
+            <field name="type">ir.actions.report.xml</field>
+            <field name="name">Condicions generals</field>
+            <field name="report_webkit"
+                   eval="'som_polissa_condicions_generals/report/condicions_generals_dummy.mako'"/>
+            <field name="webkit_header" ref="webkit_header"/>
+            <field name="report_rml" eval="False"/>
+        </record>
+    </data>
+</openerp>

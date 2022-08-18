@@ -1,0 +1,619 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+# * som_polissa_condicions_generals_m101
+# 
+# Translators:
+# Som Energia  <itcrowd@somenergia.coop>, 2020, 2021.
+msgid ""
+msgstr ""
+"Project-Id-Version: Som Energia\n"
+"Report-Msgid-Bugs-To: support@openerp.com\n"
+"POT-Creation-Date: 2021-08-10 10:07+0000\n"
+"PO-Revision-Date: 2021-08-10 08:09+0000\n"
+"Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
+"Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Generated-By: Babel 2.8.0\n"
+"Language: es_ES\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: som_polissa_condicions_generals_m101
+#: model:ir.module.module,shortdesc:som_polissa_condicions_generals_m101.module_meta_information
+msgid "Condicions generals Somenergia (model giscedata.switching)"
+msgstr "Condiciones generales Somenergia (modelo giscedata.switching)"
+
+#. module: som_polissa_condicions_generals_m101
+#: model:poweremail.templates,def_subject:som_polissa_condicions_generals_m101.notification_atr_M1_01_SS
+msgid ""
+"Som Energia: Canvi de titular. Verificació de dades. Contracte "
+"${object.cups_polissa_id.name} / Cambio de titular. Verificación de datos. "
+"Contrato ${object.cups_polissa_id.name}"
+msgstr "Somos Energía: Cambio de titular. Verificación de datos. Contrato ${object.cups_polissa_id.name} / Cambio de titular. Verificación de datos. Contrato ${object.cups_polissa_id.name}"
+
+#. module: som_polissa_condicions_generals_m101
+#: model:poweremail.templates,def_body_text:som_polissa_condicions_generals_m101.notification_atr_M1_01_SS
+#, python-format
+msgid ""
+"<!doctype html>\n"
+"<%!\n"
+"    from mako.template import Template\n"
+"    from datetime import datetime, timedelta\n"
+"\n"
+"\n"
+"    def render(text_to_render, object_):\n"
+"        templ = Template(text_to_render)\n"
+"        return templ.render_unicode(\n"
+"            object=object_,\n"
+"            format_exceptions=True\n"
+"    )\n"
+"\n"
+"\n"
+"    def get_nom_cognoms(object_, owner):\n"
+"        partner_obj = object_.pool.get('res.partner')\n"
+"        name_dict = partner_obj.separa_cognoms(object_._cr, object_._uid, owner.name)\n"
+"\n"
+"        if partner_obj.vat_es_empresa(object_._cr, object_._uid, owner.vat):\n"
+"            return name_dict['nom']\n"
+"\n"
+"        return \"{0} {1}\".format(name_dict['nom'], ' '.join(name_dict['cognoms']))\n"
+"\n"
+"\n"
+"    def hide_code(code, start, hidden_factor):\n"
+"        return code[start:].replace(code[-hidden_factor:], '*' * hidden_factor)\n"
+"\n"
+"\n"
+"    def is_soci(object_, partner_id):\n"
+"        soci_obj = object_.pool.get('somenergia.soci')\n"
+"        return bool(search([\n"
+"            ('partner_id','=',partner_id),\n"
+"        ]))\n"
+"\n"
+"%>\n"
+"\n"
+"<%\n"
+"    pas01 = object.step_ids[0].pas_id if len(object.step_ids) > 0 else None\n"
+"    nom_antic_tiular = get_nom_cognoms(object, object.cups_polissa_id.titular)\n"
+"\n"
+"    nom_nou_titular = get_nom_cognoms(object, pas01.dades_client)\n"
+"\n"
+"    nom_soci = get_nom_cognoms(object, object.polissa_ref_id.soci) if object.polissa_ref_id.soci else False\n"
+"\n"
+"    cut_vat = hide_code(pas01.codi_document, 0, 4)\n"
+"    cut_iban = hide_code(pas01.bank.iban, 0, 8)\n"
+"\n"
+"    t_obj = object.pool.get('poweremail.templates')\n"
+"    md_obj = object.pool.get('ir.model.data')\n"
+"\n"
+"    template_id = md_obj.get_object_reference(\n"
+"        object._cr, object._uid,  'som_poweremail_common_templates', 'common_template_legal_footer'\n"
+"    )[1]\n"
+"\n"
+"    text_legal = render(\n"
+"        t_obj.read(object._cr, object._uid, [template_id], ['def_body_text'])[0]['def_body_text'],\n"
+"        object\n"
+"    )\n"
+"%>\n"
+"\n"
+"<!doctype html>\n"
+"<html>\n"
+"    <head>\n"
+"        <meta charset='utf-8'>\n"
+"    </head>\n"
+"    % if pas01.dades_client and pas01.dades_client.lang == \"ca_ES\":\n"
+"        ${correu_cat()}\n"
+"    % else:\n"
+"        ${correu_es()}\n"
+"    % endif\n"
+"    ${text_legal}\n"
+"</html>\n"
+"\n"
+"\n"
+"<%def name=\"correu_cat()\">\n"
+"    <body>\n"
+"        <table width=\"100%\" frame=\"below\" bgcolor=\"#E8F1D4\">\n"
+"            <tr>\n"
+"                <td height=2px>\n"
+"                    <font size=2><strong> Contracte Som Energia nº ${object.cups_polissa_id.name}</strong></font>\n"
+"                </td>\n"
+"                <td valign=top rowspan=\"4\" align=\"right\">\n"
+"                    <img width='130' height='65' src=\"https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png\">\n"
+"                </td>\n"
+"            </tr>\n"
+"            <tr>\n"
+"                <td height=2px>\n"
+"                    <font size=1> Adreça punt subministrament: ${object.cups_id.direccio}</font>\n"
+"                </td>\n"
+"            </tr>\n"
+"            <tr>\n"
+"                <td height=2px>\n"
+"                    <font size=1> Codi CUPS: ${object.cups_id.name}</font>\n"
+"                </td>\n"
+"            </tr>\n"
+"        </table>\n"
+"        <p>\n"
+"            Benvolguts/des,\n"
+"        </p>\n"
+"        <p>\n"
+"            Us informem que hem rebut correctament la sol·licitud d'un canvi de titular pel contracte número ${object.cups_polissa_id.name} amb el CUPS: ${object.cups_id.name} i del qual, fins ara, el titular és en/na ${object.cups_polissa_id.titular.name}.\n"
+"        </p>\n"
+"        <p>\n"
+"            Si es tracta d'un canvi de titularitat degut a la defunció de la persona titular actual o bé detecteu un error en el resum de dades següent, contesteu aquest correu.<br>\n"
+"            <b>Si tot és correcte no és necessari que contesteu</b> i la gestió es durà a terme en un màxim de cinc dies hàbils.<br>\n"
+"            És important tenir en compte que en les properes setmanes, la persona que ha estat titular fins ara, rebrà una última factura fins a la data d’activació del contracte amb la nova persona titular.<br>\n"
+"        </p>\n"
+"            <p>\n"
+"                Les dades de la nova persona titular són:<br>\n"
+"                - Nom: ${nom_nou_titular}<br/>\n"
+"                - NIF, NIE o CIF: ${cut_vat}<br>\n"
+"                - Número de compte: ${cut_iban}<br>\n"
+"            </p>\n"
+"        <br>\n"
+"        Salutacions,<br>\n"
+"        <br>\n"
+"        Equip de Som Energia<br>\n"
+"        <a href=\"mailto:modifica@somenergia.coop\">modifica@somenergia.coop</a><br>\n"
+"        <a href=\"http://www.somenergia.coop/ca\">www.somenergia.coop</a>\n"
+"    </body>\n"
+"</%def>\n"
+"\n"
+"\n"
+"<%def name=\"correu_es()\">\n"
+"    <body>\n"
+"        <table width=\"100%\" frame=\"below\" bgcolor=\"#E8F1D4\">\n"
+"            <tr>\n"
+"                <td height=2px>\n"
+"                    <font size=2><strong> Contracte Som Energia nº ${object.cups_polissa_id.name}</strong></font>\n"
+"                </td>\n"
+"                <td valign=top rowspan=\"4\" align=\"right\">\n"
+"                    <img width='130' height='65' src=\"https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png\">\n"
+"                </td>\n"
+"            </tr>\n"
+"            <tr>\n"
+"                <td height=2px>\n"
+"                    <font size=1> Dirección del punto de suministro: ${object.cups_id.direccio}</font>\n"
+"                </td>\n"
+"            </tr>\n"
+"            <tr>\n"
+"                <td height=2px>\n"
+"                    <font size=1> Codigo CUPS: ${object.cups_id.name}</font>\n"
+"                </td>\n"
+"            </tr>\n"
+"        </table>\n"
+"        <p>\n"
+"            Estimados/as,\n"
+"        </p>\n"
+"        <p>\n"
+"                Os informamos que hemos recibido correctamente la solicitud de cambio de titular del contrato número ${object.cups_polissa_id.name} con el CUPS: ${object.cups_id.name} y del cual, hasta ahora el titular es ${object.cups_polissa_id.titular.name}.\n"
+"            </p>\n"
+"        <p>\n"
+"                Si se trata de un cambio de titularidad debido a la defunción de la persona titular actual o bien detectáis un error en el resumen de datos siguiente, contestad este correo.<br/>\n"
+"                <b>Si todo es correcto no es necesario que lo hagáis</b> y la gestión se llevará a cabo en un plazo máximo de cinco días hábiles.<br/>\n"
+"                Es importante tener en cuenta que en las próximas semanas, la persona que ha sido titular hasta ahora, recibirá una última factura hasta la fecha de activación del contrato con la nueva persona titular.<br/>\n"
+"        </p>\n"
+"        <p>\n"
+"                Los datos de la nueva persona titular son:<br/>\n"
+"                - Nombre: ${nom_nou_titular}<br/>\n"
+"                - NIF, NIE o CIF: ${cut_vat}<br/>\n"
+"                - Número de cuenta: ${cut_iban}<br/>\n"
+"        </p>\n"
+"        <br>\n"
+"            Saludos,<br/>\n"
+"            <br/>\n"
+"        Equipo de Som Energia<br>\n"
+"        <a href=\"mailto:modifica@somenergia.coop\">modifica@somenergia.coop</a><br>\n"
+"        <a href=\"http://www.somenergia.coop/es\">www.somenergia.coop</a>\n"
+"    </body>\n"
+"</%def>\n"
+msgstr "<!doctype html>\n<%!\n    from mako.template import Template\n    from datetime import datetime, timedelta\n\n\n    def render(text_to_render, object_):\n        templ = Template(text_to_render)\n        return templ.render_unicode(\n            object=object_,\n            format_exceptions=True\n    )\n\n\n    def get_nom_cognoms(object_, owner):\n        partner_obj = object_.pool.get('res.partner')\n        name_dict = partner_obj.separa_cognoms(object_._cr, object_._uid, owner.name)\n\n        if partner_obj.vat_es_empresa(object_._cr, object_._uid, owner.vat):\n            return name_dict['nom']\n\n        return \"{0} {1}\".format(name_dict['nom'], ' '.join(name_dict['cognoms']))\n\n\n    def hide_code(code, start, hidden_factor):\n        return code[start:].replace(code[-hidden_factor:], '*' * hidden_factor)\n\n\n    def is_soci(object_, partner_id):\n        soci_obj = object_.pool.get('somenergia.soci')\n        return bool(search([\n            ('partner_id','=',partner_id),\n        ]))\n\n%>\n\n<%\n    pas01 = object.step_ids[0].pas_id if len(object.step_ids) > 0 else None\n    nom_antic_tiular = get_nom_cognoms(object, object.cups_polissa_id.titular)\n\n    nom_nou_titular = get_nom_cognoms(object, pas01.dades_client)\n\n    nom_soci = get_nom_cognoms(object, object.polissa_ref_id.soci) if object.polissa_ref_id.soci else False\n\n    cut_vat = hide_code(pas01.codi_document, 0, 4)\n    cut_iban = hide_code(pas01.bank.iban, 0, 8)\n\n    t_obj = object.pool.get('poweremail.templates')\n    md_obj = object.pool.get('ir.model.data')\n\n    template_id = md_obj.get_object_reference(\n        object._cr, object._uid,  'som_poweremail_common_templates', 'common_template_legal_footer'\n    )[1]\n\n    text_legal = render(\n        t_obj.read(object._cr, object._uid, [template_id], ['def_body_text'])[0]['def_body_text'],\n        object\n    )\n%>\n\n<!doctype html>\n<html>\n    <head>\n        <meta charset='utf-8'>\n    </head>\n    % if pas01.dades_client and pas01.dades_client.lang == \"ca_ES\":\n        ${correu_cat()}\n    % else:\n        ${correu_es()}\n    % endif\n    ${text_legal}\n</html>\n\n\n<%def name=\"correu_cat()\">\n    <body>\n        <table width=\"100%\" frame=\"below\" bgcolor=\"#E8F1D4\">\n            <tr>\n                <td height=2px>\n                    <font size=2><strong> Contracte Som Energia nº ${object.cups_polissa_id.name}</strong></font>\n                </td>\n                <td valign=top rowspan=\"4\" align=\"right\">\n                    <img width='130' height='65' src=\"https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png\">\n                </td>\n            </tr>\n            <tr>\n                <td height=2px>\n                    <font size=1> Adreça punt subministrament: ${object.cups_id.direccio}</font>\n                </td>\n            </tr>\n            <tr>\n                <td height=2px>\n                    <font size=1> Codi CUPS: ${object.cups_id.name}</font>\n                </td>\n            </tr>\n        </table>\n        <p>\n            Benvolguts/des,\n        </p>\n        <p>\n            Us informem que hem rebut correctament la sol·licitud d'un canvi de titular pel contracte número ${object.cups_polissa_id.name} amb el CUPS: ${object.cups_id.name} i del qual, fins ara, el titular és en/na ${object.cups_polissa_id.titular.name}.\n        </p>\n        <p>\n            Si es tracta d'un canvi de titularitat degut a la defunció de la persona titular actual o bé detecteu un error en el resum de dades següent, contesteu aquest correu.<br>\n            <b>Si tot és correcte no és necessari que contesteu</b> i la gestió es durà a terme en un màxim de cinc dies hàbils.<br>\n            És important tenir en compte que en les properes setmanes, la persona que ha estat titular fins ara, rebrà una última factura fins a la data d’activació del contracte amb la nova persona titular.<br>\n        </p>\n            <p>\n                Les dades de la nova persona titular són:<br>\n                - Nom: ${nom_nou_titular}<br/>\n                - NIF, NIE o CIF: ${cut_vat}<br>\n                - Número de compte: ${cut_iban}<br>\n            </p>\n        <br>\n        Salutacions,<br>\n        <br>\n        Equip de Som Energia<br>\n        <a href=\"mailto:modifica@somenergia.coop\">modifica@somenergia.coop</a><br>\n        <a href=\"http://www.somenergia.coop/ca\">www.somenergia.coop</a>\n    </body>\n</%def>\n\n\n<%def name=\"correu_es()\">\n    <body>\n        <table width=\"100%\" frame=\"below\" bgcolor=\"#E8F1D4\">\n            <tr>\n                <td height=2px>\n                    <font size=2><strong> Contracte Som Energia nº ${object.cups_polissa_id.name}</strong></font>\n                </td>\n                <td valign=top rowspan=\"4\" align=\"right\">\n                    <img width='130' height='65' src=\"https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png\">\n                </td>\n            </tr>\n            <tr>\n                <td height=2px>\n                    <font size=1> Dirección del punto de suministro: ${object.cups_id.direccio}</font>\n                </td>\n            </tr>\n            <tr>\n                <td height=2px>\n                    <font size=1> Codigo CUPS: ${object.cups_id.name}</font>\n                </td>\n            </tr>\n        </table>\n        <p>\n            Estimados/as,\n        </p>\n        <p>\n                Os informamos que hemos recibido correctamente la solicitud de cambio de titular del contrato número ${object.cups_polissa_id.name} con el CUPS: ${object.cups_id.name} y del cual, hasta ahora el titular es ${object.cups_polissa_id.titular.name}.\n            </p>\n        <p>\n                Si se trata de un cambio de titularidad debido a la defunción de la persona titular actual o bien detectáis un error en el resumen de datos siguiente, contestad este correo.<br/>\n                <b>Si todo es correcto no es necesario que lo hagáis</b> y la gestión se llevará a cabo en un plazo máximo de cinco días hábiles.<br/>\n                Es importante tener en cuenta que en las próximas semanas, la persona que ha sido titular hasta ahora, recibirá una última factura hasta la fecha de activación del contrato con la nueva persona titular.<br/>\n        </p>\n        <p>\n                Los datos de la nueva persona titular son:<br/>\n                - Nombre: ${nom_nou_titular}<br/>\n                - NIF, NIE o CIF: ${cut_vat}<br/>\n                - Número de cuenta: ${cut_iban}<br/>\n        </p>\n        <br>\n            Saludos,<br/>\n            <br/>\n        Equipo de Som Energia<br>\n        <a href=\"mailto:modifica@somenergia.coop\">modifica@somenergia.coop</a><br>\n        <a href=\"http://www.somenergia.coop/es\">www.somenergia.coop</a>\n    </body>\n</%def>\n"
+
+#. module: som_polissa_condicions_generals_m101
+#: model:poweremail.templates,file_name:som_polissa_condicions_generals_m101.notification_atr_M1_01_SS
+msgid "${object.codi_sollicitud}"
+msgstr "${object.codi_sollicitud}"
+
+#. module: som_polissa_condicions_generals_m101
+#: model:ir.module.module,description:som_polissa_condicions_generals_m101.module_meta_information
+msgid ""
+"Aquest mòdul afegeix les següents funcionalitats:\n"
+"    * Afegir nou report i nova plantilla d'email pels casos M1 01 de CT per subrogació i canvis tècnics\n"
+"    "
+msgstr "Aquest mòdul afegeix les següents funcionalitats:\n    * Afegir nou report i nova plantilla d'email pels casos M1 01 de CT per subrogació i canvis tècnics\n    "
+
+#. module: som_polissa_condicions_generals_m101
+#: model:ir.actions.report.xml,name:som_polissa_condicions_generals_m101.report_contracte_m101
+msgid "Contracte"
+msgstr "Contrato"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:25
+msgid "Sense Autoconsum"
+msgstr "Sin Autoconsumo"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:26
+msgid "Autoconsum Tipus 1"
+msgstr "Autoconsumo Tipo 1"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:27
+msgid "Autoconsum tipus 2 (segons l'Art. 13. 2. a) RD 900/2015)"
+msgstr "Autoconsumo tipo 2 (según el Art. 13. 2. a) RD 900/2015)"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:28
+msgid "Autoconsum tipus 2 (segons l'Art. 13. 2. b) RD 900/2015)"
+msgstr "Autoconsumo tipo 2 (según el Art. 13. 2. b) RD 900/2015)"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:29
+msgid "Serveis auxiliars de generació lligada a un autoconsum tipus 2"
+msgstr "Servicios auxiliares de generación ligada a un autoconsumo tipo 2"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:30
+msgid "Sense Excedents Individual - Consum"
+msgstr "Sin Excedentes Individual – Consumo"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:31
+msgid "Sense Excedents Col·lectiu - Consum"
+msgstr "Sin Excedentes Colectivo – Consumo"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:32
+msgid "Sense Excedents Col·lectiu amb acord de compensació – Consum"
+msgstr "Sin Excedentes Colectivo con acuerdo de compensación – Consumo"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:33
+msgid "Amb excedents i compensació Individual-Consum"
+msgstr "Con excedentes y compensación Individual - Consumo"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:34
+msgid "Amb excedents i compensació Col·lectiu-Consum"
+msgstr "Con excedentes y compensación Colectivo– Consumo"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:35
+msgid "Amb excedents i compensació Col·lectiu a través de xarxa - Consum"
+msgstr "Con excedentes y compensación Colectivo a través de red– Consumo"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:36
+msgid ""
+"Amb excedents sense compensació Individual sense cte. de Serv. Aux. en Xarxa"
+" Interior - Consum"
+msgstr "Con excedentes sin compensación Individual sin cto de SSAA en Red Interior– Consumo"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:37
+msgid ""
+"Amb excedents sense compensació Col·lectiu sense cte. de Serv. Aux. en Xarxa"
+" Interior - Consum"
+msgstr "Con excedentes sin compensación Colectivo sin cto de SSAA en Red Interior– Consumo"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:38
+msgid ""
+"Amb excedents sense compensació Individual amb cte. de Serv. Aux. en Xarxa "
+"Interior - Consum"
+msgstr "Con excedentes sin compensación Individual con cto SSAA en Red Interior– Consumo"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:39
+msgid ""
+"Amb excedents sense compensació individual amb cte. de Serv. Aux. en Xarxa "
+"Interior - Serv. Aux."
+msgstr "Con excedentes sin compensación individual con cto SSAA en Red Interior– SSAA"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:40
+msgid ""
+"Amb excedents sense compensació Col·lectiu / en Xarxa Interior - Consum"
+msgstr "Con excedentes sin compensación Colectivo/en Red Interior– Consumo"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:41
+msgid ""
+"Amb excedents sense compensació Col·lectiu / en Xarxa Interior - Serv. Aux."
+msgstr "Con excedentes sin compensación Colectivo/en Red Interior - SSAA"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:42
+msgid ""
+"Amb excedents sense compensació Individual amb cte. de Serv. Aux. a través "
+"de xarxa - Consum"
+msgstr "Con excedentes sin compensación Individual con cto SSAA a través de red – Consumo"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:43
+msgid ""
+"Amb excedents sense compensació individual amb cte. de Serv. Aux. a través "
+"de xarxa - Serv. Aux."
+msgstr "Con excedentes sin compensación individual con cto SSAA a través de red – SSAA"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:44
+msgid "Amb excedents sense compensació Col·lectiu a través de xarxa - Consum"
+msgstr "Con excedentes sin compensación Colectivo a través de red – Consumo"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:45
+msgid ""
+"Amb excedents sense compensació Col·lectiu a través de xarxa - Serv. Aux."
+msgstr "Con excedentes sin compensación Colectivo a través de red - SSAA"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:46
+msgid ""
+"Amb excedents sense compensació Individual amb cte. de Serv. Aux. a través "
+"de xarxa i xarxa interior - Consum"
+msgstr "Con excedentes sin compensación Individual con cto SSAA a través de red y red interior – Consumo"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:47
+msgid ""
+"Amb excedents sense compensació individual amb cte. de Serv. Aux. a través "
+"de xarxa i xarxa interior - Serv. Aux."
+msgstr "Con excedentes sin compensación individual con cto SSAA a través de red y red interior – SSAA"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:48
+msgid ""
+"Amb excedents sense compensació Col·lectiu amb cte. de Serv. Aux. a través "
+"de xarxa i xarxa interior - Consum"
+msgstr "Con excedentes sin compensación Colectivo con cto de SSAA  a través de red y red interior – Consumo"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:49
+msgid ""
+"Amb excedents sense compensació Col·lectiu amb cte. de Serv. Aux. a través "
+"de xarxa i xarxa interior - SSAA"
+msgstr "Con excedentes sin compensación Colectivo con cto de SSAA a través de red y red interior - SSAA"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:103
+msgid "Som Energia, SCCL"
+msgstr "Som Energia, SCCL"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:104
+msgid "CIF:"
+msgstr "CIF:"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:104
+msgid " F55091367"
+msgstr "F55091367"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:105
+msgid "Domicili:"
+msgstr "Domicilio:"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:105
+msgid " C/Pic de Peguera, 9 (1a planta)<br/>17003, Girona"
+msgstr "C/Pic de Peguera, 9 (1a planta)<br/>17003, Girona"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:106
+msgid "Adreça electrònica:"
+msgstr "Dirección electrónica:"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:106
+msgid " info@somenergia.coop"
+msgstr " info@somenergia.coop"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:110
+msgid "DADES DEL CONTRACTE"
+msgstr "DATOS DEL CONTRATO"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:117
+msgid "Contracte núm.: "
+msgstr "Contrato núm .: "
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:118
+msgid "Data d'inici del subministrament: "
+msgstr "Fecha de inicio del suministro: "
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:125
+msgid "Data de renovació del subministrament: "
+msgstr "Fecha de renovación del suministro: "
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:136
+msgid ""
+"CONDICIONS PARTICULARS DEL CONTRACTE DE SUBMINISTRAMENT D'ENERGIA ELÈCTRICA"
+msgstr "CONDICIONES PARTICULARES DEL CONTRATO DE SUMINISTRO DE ENERGÍA ELÉCTRICA"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:143
+msgid "LES DADES D'AQUEST CONTRACTE ESTAN PENDENTS DE VALIDACIÓ."
+msgstr "LOS DATOS DE ESTE CONTRATO ESTÁN PENDIENTES DE VALIDACIÓN."
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:146
+msgid "Tarifes vigents en el moment d’activació del contracte."
+msgstr "Tarifas vigentes en el momento de activación del contrato."
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:164
+msgid "PERSONA TITULAR"
+msgstr "PERSONA TITULAR"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:166
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:212
+msgid "Nom/Raó social: "
+msgstr "Nombre/Razón social: "
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:168
+msgid "NIF/CIF: "
+msgstr "NIF/CIF: "
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:170
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:189
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:214
+msgid "Adreça: "
+msgstr "Dirección: "
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:172
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:216
+msgid "Codi postal i municipi: "
+msgstr "Código postal y municipio: "
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:174
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:191
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:222
+msgid "Província i país: "
+msgstr "Provincia y país: "
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:176
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:228
+msgid "Adreça electrònica: "
+msgstr "Correo electrónico: "
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:178
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:234
+msgid "Telèfon: "
+msgstr "Teléfono: "
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:180
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:240
+msgid "Telèfon 2: "
+msgstr "Teléfono 2: "
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:186
+msgid "DADES DEL PUNT DE SUBMINISTRAMENT"
+msgstr "DATOS DEL PUNTO DE SUMINISTRO"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:193
+msgid "CUPS: "
+msgstr "CUPS: "
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:195
+msgid "CNAE: "
+msgstr "CNAE: "
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:197
+msgid "Contracte d'accés: "
+msgstr "Contrato de acceso: "
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:199
+msgid "Activitat principal: "
+msgstr "Actividad principal: "
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:201
+msgid "Empresa distribuïdora: "
+msgstr "Empresa distribuidora: "
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:203
+msgid "Tensió Nominal (V): "
+msgstr "Tensión Nominal (V): "
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:210
+msgid "DADES DE CONTACTE"
+msgstr "DATOS DEL CONTACTO"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:251
+msgid ""
+"PEATGE I CÀRRECS (definits a la Circular de la CNMC 3/2020 i al Reial decret"
+" 148/2021)"
+msgstr "PEAJE Y CARGOS (definidos en la Circular de la CNMC 3/2020 y el Real Decreto 148/2021)"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:267
+msgid "Tarifa contractada: "
+msgstr "Tarifa contratada: "
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:275
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:377
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:441
+msgid "Punta"
+msgstr "Punta"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:277
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:379
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:443
+msgid "Vall"
+msgstr "Valle"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:291
+msgid "Potència contractada (kW):"
+msgstr "Potencia contratada (kW):"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:341
+msgid "Tipus de contracte: "
+msgstr "Tipus de contracte: "
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:345
+msgid "TARIFES D'ELECTRICITAT"
+msgstr "TARIFAS DE ELECTRICIDAD"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:393
+msgid "Terme potència (€/kW i any)"
+msgstr "Término potencia (€/kW y año)"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:442
+msgid "Pla"
+msgstr "Llano"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:450
+msgid "Terme energia (€/kWh)"
+msgstr "Término energía (€/kWh)"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:471
+msgid "(1) GenerationkWh (€/kWh)"
+msgstr "(1) GenerationkWh (€/kWh)"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:492
+msgid "(2) Autoconsum (€/kWh)"
+msgstr "(2) Autoconsumo (€/kWh)"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:505
+msgid ""
+"Terme d'energia en cas de participar-hi, segons condicions del contracte "
+"GenerationkWh."
+msgstr "Termino de energía en caso de participar, según condiciones del contrato GenerationkWh."
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:506
+msgid "Preu de la compensació d'excedents, si és aplicable."
+msgstr "Precio de la compensación de excedentes, si es aplicable."
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:508
+msgid ""
+"Aquests preus inclouen l'impost elèctric i l'IVA (IGIC a Canàries) sense "
+"prejudici de les exempcions o bonificacions que puguin ser d'aplicació. Pots"
+" consultar altres conceptes que poden ser d'aplicació, com ara, el lloguer "
+"de comptador, el recàrrec per potència demandada o el recàrrec per energia "
+"reactiva, a la "
+msgstr "Estos precios incluyen el impuesto eléctrico y el IVA (IGIC en Canarias) sin perjuicio de las exenciones o bonificaciones que puedan ser de aplicación. Puedes consultar otros conceptos que pueden ser de aplicación, tales como, el alquiler de contador, el recargo por potencia demandada o el recargo por energía reactiva, a la"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:510
+msgid "pàgina de tarifes"
+msgstr "página de tarifas"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:512
+msgid "página de tarifas"
+msgstr "página de tarifas"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:514
+msgid ""
+" del nostre web, on també trobaràs més informació sobre els períodes "
+"tarifaris."
+msgstr "de nuestra web, donde también encontrarás más información sobre los períodos tarifarios."
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:537
+msgid ""
+"Al contractar s’accepten aquestes Condicions Particulars i les Condicions "
+"Generals, que es poden consultar a les pàgines següents. Si ens cal "
+"modificar-les, a la clàusula 9 de les Condicions Generals s’explica el "
+"procediment que seguirem. En cas que hi hagi alguna discrepància, prevaldrà "
+"el que estigui previst en aquestes Condicions Particulars."
+msgstr "Al contratar aceptan estas Condiciones Particulares y las Condiciones Generales, que se pueden consultar en las páginas siguientes. Si necesitamos modificarlas, en la cláusula 9 de las Condiciones Generales se explica el procedimiento que seguiremos. En caso de que haya alguna discrepancia, prevalecerá lo que esté previsto en estas Condiciones Particulares."
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:541
+msgid "DADES DE PAGAMENT"
+msgstr "DATOS DE PAGO"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:545
+msgid "Persona titular del compte: "
+msgstr "Persona titular de la cuenta: "
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:546
+msgid "NIF:"
+msgstr "NIF:"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:549
+msgid "Nº de compte bancari (IBAN): "
+msgstr "Nº de cuenta bancaria (IBAN): "
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:561
+msgid "a {0}"
+msgstr "a {0}"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:564
+msgid "La persona clienta:"
+msgstr "La persona clienta:"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:566
+msgid "Acceptat digitalment via formulari web"
+msgstr "Aceptado digitalmente vía formulario web"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:571
+msgid "La comercialitzadora"
+msgstr "la comercializadora"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:582
+msgid ""
+"Aquestes Condicions Particulars estan condicionades a possibles "
+"modificacions amb la finalitat d'ajustar-les a les condicions tècniques "
+"d'accés a xarxa segons la clàusula 6.3 de les Condicions Generals."
+msgstr "Estas Condiciones Particulares están condicionadas a posibles modificaciones con el fin de ajustarlas a las condiciones técnicas de acceso a red según la cláusula 6.3 de las Condiciones Generales."

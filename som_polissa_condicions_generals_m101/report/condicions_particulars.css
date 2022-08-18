@@ -1,0 +1,378 @@
+body{
+    color: #5b5b5f;
+    font-family: "Roboto";
+    font-size: 10.49px;
+    margin-right: 50px;
+    margin-left: 50px;
+}
+table{
+    width: 100%;
+    border: 0;
+    font-weight: bold;
+}
+
+table td{
+    text-align: left;
+    font-size: 10px;
+    width: auto;
+}
+
+h3 {
+   font-size: 12px;
+}
+
+#logo {
+    margin-top: 0px;
+    width: 100%;
+    height: auto;
+    float: left;
+}
+
+.esborrany_warning {
+    position: relative;
+    background-color: #ffc306;
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;
+}
+
+.esborrany_warning img {
+    height: 1.6em;
+    width: auto;
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0.6em 0.8em 0.6em 0.8em;
+}
+
+.esborrany_warning h2 {
+    font-size: 1em;
+    color: white;
+    margin: 0.6em 0em 0.6em 0em;
+    display: inline;
+    vertical-align: middle;
+}
+
+.esborrany_warning h3 {
+    font-size: 1em;
+    color: white;
+    display: inline;
+    vertical-align: middle;
+}
+
+.esborrany_warning h3 {
+    font-size: 1em;
+    color: white;
+    display: inline;
+    vertical-align: middle;
+}
+
+#titol {
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    font-size: 8.5px;
+    padding: 0px;
+    margin-top: 0px;
+    margin-bottom: 10px;
+    vertical-align: middle;
+}
+.center{
+    text-align: center;
+}
+.bold{
+    font-weight: bold;
+}
+
+/* Estils custom C1 */
+
+#capcelera {
+    font-family: "Roboto";
+    margin-top: 20px;
+    position: relative;
+}
+
+#logo_capcelera {
+    width: 22%;
+    height: auto;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+#address_capcelera {
+    font-size: 9px;
+    /*padding-left: 5px;*/
+    width: 31%;
+    display: inline-block;
+    vertical-align: middle;
+    padding-left: 2%;
+}
+
+#dades_capcelera {
+    width: 44%;
+    background-color: #f8f8f8;
+    margin: 0;
+    padding: 0;
+    border-bottom: 3px #bbca2b solid;
+    display: inline-block;
+    vertical-align: middle;
+    line-height: normal;
+}
+
+#titol_dades {
+    background-color: #bbca2b;
+    color: white;
+    line-height: 20px;
+    margin: 0;
+    font-family: "Roboto";
+}
+
+#bloc_dades_capcelera {
+    /*margin: 7px;*/
+    font-family: "Roboto";
+    padding-left: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+#titol_dades h3{
+    padding-left: 10px;
+    margin: 0;
+}
+
+.taula_custom td {
+    width: auto;
+}
+
+.pujar{
+     font-size: 0.5em;
+}
+
+.caixa_index {
+    width: 70%;
+    border: 1px solid #bbc82a;
+    margin-left: 15%;
+}
+
+a {
+   color: #747474;
+}
+
+.new_taula_custom tr .bold {
+	width: auto !important;
+}
+
+.new_taula_custom tr td {
+	width: 50px;
+}
+
+.contact_info {
+    display: table;
+    border-spacing: 10px;
+    margin-left: -10px;
+    margin-right: -10px;
+}
+
+.persona_titular, .dades_de_contacte, .dades_subministrament {
+    display: table-cell;
+}
+
+.width49 {
+    width: 49%;
+}
+
+.width33 {
+    width: 33%;
+}
+
+.peatge_acces {
+    clear: both;
+}
+
+.styled_box {
+    background: #f7f7f8;
+    border-bottom: 2px solid #5b5b5f;
+    margin-bottom: 10px;
+}
+
+.inside_styled_box {
+    line-height: 150%;
+    padding-left: 1em;
+    padding-top: 0.8em;
+    padding-bottom: 0.8em;
+}
+
+.styled_box h5 {
+    background: #5b5b5f;
+    color: white;
+    padding-left: 0.8em;
+    padding-top: 0.4em;
+    padding-bottom: 0.4em;
+    margin: 0;
+    font-size: 0.95em;
+}
+
+.taula_custom {
+    border-collapse: collapse !important;
+    width: 100%;
+}
+
+.taula_custom th, td {
+    text-align: left;
+    padding: 8px;
+}
+
+.taula_custom tr:nth-child(odd){background-color: #efeff1}
+
+.taula_custom th {
+    font-size: 0.6em;
+    background-color: #878787;
+    color: white;
+    text-align: center;
+}
+
+.tarifes_electricitat {
+    padding: 1em;
+}
+
+.peatge_access_content {
+    padding: 1em;
+}
+
+.padding_bottom {
+    padding-bottom: 1em;
+}
+
+.padding_top {
+    padding-top: 1em;
+}
+
+.padding_left {
+    padding-left: 0.8em;
+}
+.padding_right {
+    padding-left: 0.8em;
+}
+.city_date{
+    width: 39%;
+    font-weight: bold;
+    display: table-cell;
+}
+.acceptacio_digital{
+    width: 30%;
+    text-align: center;
+    height: 110px;
+    display: table-cell;
+}
+.acceptacio_digital img{
+    margin-top:10px;
+    height: auto;
+    width: 20%;
+    background-color: white;
+}
+.acceptacio_digital_txt {
+    text-align: center;
+    /*width: 20%;*/
+    padding-left: 30px;
+    padding-right: 30px;
+}
+.signatura{
+    width: 30%;
+    text-align: center;
+    display: table-cell;
+}
+.signatura img{
+    margin-top:10px;
+    height: 80px;
+    background-color: white;
+}
+.dades_pagament {
+    padding: 1em;
+    margin-bottom: 2em;
+}
+
+.dades_pagament .titular {
+    width: 100%;
+    margin-bottom: 0.4em;
+}
+
+.dades_pagament .titular .name {
+    float: left;
+    min-width: 70%;
+}
+
+.dades_pagament .titular .nif {
+    float: right;
+}
+
+.dades_pagament .iban {
+    float: left;
+    width: 100%;
+}
+
+.esborrany_footer {
+    margin-top: 1em;
+    width: 100%;
+    font-size: 0.90em;
+    background-color: #f7f7f8;
+}
+#footer{
+    margin-top: 7px;
+    margin-bottom: 7px;
+    width: 100%;
+    display: table;
+    height: auto;
+}
+
+.avis_impostos {
+    margin: 0;
+    padding: 1em 1em 0em 1em;
+    font-size: 0.90em;
+}
+
+.modi_condicions {
+    font-size: 0.90em;
+    text-align: justify;
+    margin: 0em 1em 0em 1em;
+}
+
+.new_taula_custom {
+    table-layout:fixed;
+}
+
+.new_taula_custom tr {
+    line-height: 0.4em;
+}
+
+.new_taula_custom th:first-child {
+    width: 240px;
+}
+
+.hr-text {
+    position: relative;
+    outline: 0;
+    border: 0;
+    margin: 0;
+    text-align: center;
+}
+.hr-text:before {
+    content: '';
+    background: grey;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+}
+.hr-text:after {
+    content: attr(data-content);
+    position: relative;
+    display: inline-block;
+    padding: 0 .5em;
+}
+
+.taula_custom .hr-text:after {
+    background-color: #efeff1
+}
+
+.doble_table .hr-text:after {
+    background-color: #fff
+}

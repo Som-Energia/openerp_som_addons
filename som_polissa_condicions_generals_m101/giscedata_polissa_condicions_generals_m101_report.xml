@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record model="ir.header_webkit" id="webkit_header">
+            <field name="format">A4</field>
+            <field name="margin_bottom">1.0</field>
+            <field name="margin_top">1.01</field>
+            <field name="margin_left">0.01</field>
+            <field name="margin_right">0.01</field>
+            <field name="name">Contract header</field>
+            <field name="orientation">Portrait</field>
+            <field name="html"><![CDATA[<html>
+                ]]>
+            </field>
+            <field name="css" ><![CDATA[
+                ]]>
+            </field>
+        </record>
+        <record id="report_contracte_m101" model="ir.actions.report.xml">
+            <field name="report_type">webkit</field>
+            <field name="report_name">somenergia.polissa_m101</field>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field eval="0" name="auto"/>
+            <field eval="0" name="header"/>
+            <field name="type">ir.actions.report.xml</field>
+            <field name="name">Contracte</field>
+            <field name="report_webkit"
+            eval="'som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako'"/>
+            <field name="webkit_header" ref="webkit_header"/>
+            <field name="report_rml" eval="False"/>
+            <field name="report_xsl" eval='False'/>
+            <field name="report_xml" eval='False'/>
+            <field name="model">giscedata.switching</field>
+        </record>
+    </data>
+</openerp>
