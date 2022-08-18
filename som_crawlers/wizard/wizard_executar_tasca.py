@@ -35,16 +35,10 @@ class WizardExecutarTasca(osv.osv_memory):
      ## Module name
     _name= 'wizard.executar.tasca'
 
-    """Function that gets gets that task, task result and task step, and executes a task
-        @param self The object pointer
-        @param cursor The database pointer
-        @param uid The current user
-        @param ids The tasks ids selected
-        @param context None certain data to pass
-        @return server action module (act_windows_close)
-    """
+    """Function that gets gets that task, task result and task step, and executes a task  """
+   
 
-    def executar_tasca(self, cursor, uid, ids, context=None):
+    def executar_tasca(self, cursor, uid, ids, context=None): #tasca individual
         ##obtenim l'objecte tasca
         task = self.pool.get('som.crawlers.task')
         if not context:

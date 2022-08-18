@@ -1,5 +1,5 @@
 
- # Script that run crawler
+ # This script runs a crawler
 
 ##Imports
 from nturl2path import url2pathname
