@@ -19,11 +19,13 @@ from massive_importer.conf import configure_logging, settings
 import sys
 import click
 import os
+import importlib
 
 ## Arguments passed through the os systemm call
 @click.command()
 @click.option('-u', '--user', help='Username of the portal.', required=True)
 @click.option('-n', '--name', prompt='Crawler portal name', help ='The person to greet.', required=True)
+@click.option('-class', '--classe', prompt='Crawler class name', required=True)
 @click.option('-p', '--password', help='Password of the portal.', required = True)
 @click.option('-f', '--file', help='Log file name', required = True)
 @click.option('-url', '--url', help='URL of the portal.', required = True)
@@ -46,16 +48,12 @@ import os
         # @param pfiles Pending files only
         # @param browser Browser
         # @return Exception or string if everything passed successfully
-def crawl(user, name, password, file, url, filters, crawler, days, pfiles, browser):
+def crawl(user, name, classe, password, file, url, filters, crawler, days, pfiles, browser):
     import pudb;pu.db
     wc = WebCrawler()
     path = os.path.dirname(os.path.abspath(__file__))
     f = open(os.path.join(path,"../outputFiles/",file),'w')
     try:
-        if(name == 'anselmo'):
-            spider_instance = anselmo.Anselmo(wc.selenium_crawlers_conf[name])
-        else:
-            spider_instance = fenosa.Fenosa(wc.selenium_crawlers_conf[name])
         portalCreds = dict()
         portalCreds['username'] = user
         portalCreds['password'] = password
@@ -65,11 +63,22 @@ def crawl(user, name, password, file, url, filters, crawler, days, pfiles, brows
         portalCreds['days_of_margin'] = int(days)
         portalCreds['pending_files_only'] = eval(pfiles)
         portalCreds['browser'] = browser
+        selenium_spiders_path = os.path.join(
+            path, "../spiders/selenium_spiders")
+        spec = importlib.util.spec_from_file_location(
+            name, "".join([selenium_spiders_path, "/", name, '.py']))
+        spider_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(spider_module)
+        logger.debug("Loaded %s module" % (name))
+        logger.debug("Starting %s crawling..." % (name))
+        spider_instance = spider_module.instance(
+            wc.selenium_crawlers_conf[name])
         spider_instance.start_with_timeout(portalCreds, debug=True)
         f.write('Files have been successfully downloaded')
 
     except Exception as e:
         f.write(str(e))
-## Main program
+
+## Main program crawler
 if __name__ == '__main__':
     crawl()

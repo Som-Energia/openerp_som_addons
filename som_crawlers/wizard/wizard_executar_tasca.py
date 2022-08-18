@@ -36,7 +36,7 @@ class WizardExecutarTasca(osv.osv_memory):
     _name= 'wizard.executar.tasca'
 
     """Function that gets gets that task, task result and task step, and executes a task  """
-   
+
 
     def executar_tasca(self, cursor, uid, ids, context=None): #tasca individual
         ##obtenim l'objecte tasca

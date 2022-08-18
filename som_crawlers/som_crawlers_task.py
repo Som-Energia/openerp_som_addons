@@ -166,7 +166,7 @@ class SomCrawlersTaskStep(osv.osv):
         path = os.path.dirname(os.path.realpath(__file__))
 
         classresult.write(cursor,uid, result_id, {'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M")})
-        import pudb;pu.db
+
         if taskStepParams.has_key('nom_fitxer'):
             config_obj=self.pool.get('som.crawlers.task').id_del_portal_config(cursor,uid,taskStep_obj.task_id.id,context)
             filePath = os.path.join(path, "scripts/" + taskStepParams['nom_fitxer'])
@@ -247,6 +247,7 @@ class SomCrawlersTaskStep(osv.osv):
         str_pending = str(config_obj.pending_files_only)
         args = {
             '-n':config_obj.name,
+            '-class':config_obj.className,
             '-u':config_obj.usuari,
             '-p':config_obj.contrasenya,
             '-f':fileName,
