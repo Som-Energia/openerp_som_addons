@@ -13,5 +13,22 @@
         <record model="giscedata.polissa.condicions.generals" id="condicions_generals_som_01_ga" forcecreate="1">
             <field name="name">Condiciones Generales (GAL)</field>
         </record>
+
+        <!-- Add fiscal position IVA Reduït-->
+        <record id="fp_iva_reduit" model="account.fiscal.position">
+            <field name="name">IVA Reduït (IVA 5%)</field>
+        </record>
+
+        <record id="fp_iese_reduit_map" model="account.fiscal.position.tax">
+            <field name="position_id" ref="fp_iva_reduit" />
+            <field name="tax_src_id" model="account.tax" search="[('name','=','Impuesto especial sobre la electricidad')]" />
+            <field name="tax_dest_id" model="account.tax" search="[('code','=','IESE_RD_17_2021')]"  />
+        </record>
+
+        <record id="fp_iva_reduit_map" model="account.fiscal.position.tax">
+            <field name="position_id" ref="fp_iva_reduit" />
+            <field name="tax_src_id" model="account.tax" search="[('name','=','IVA 21% (Vendes)')]" />
+            <field name="tax_dest_id" model="account.tax" search="[('name','=','IVA 5%')]"  />
+        </record>
     </data>
 </openerp>

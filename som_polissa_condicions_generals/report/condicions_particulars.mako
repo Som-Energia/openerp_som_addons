@@ -320,6 +320,13 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
             else:
                 tarifes_a_mostrar = get_comming_atr_price(cursor, uid, polissa, ctx)
             text_vigencia = ''
+            if not polissa.fiscal_position_id:
+                imd_obj = polissa.pool.get('ir.model.data')
+                if polissa.potencia <= 10:
+                    fp_id = imd_obj.get_object_reference(cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
+                else:
+                    fp_id = imd_obj.get_object_reference(cursor, uid, 'giscedata_facturacio', 'fp_nacional_2021_rd_17_2021')[1]
+                ctx.update({'force_fiscal_position': fp_id})
         %>
         <div class="styled_box">
         %for dades_tarifa in tarifes_a_mostrar:
