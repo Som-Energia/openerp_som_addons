@@ -726,6 +726,19 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         return {'qr': qr, 'url': url}
 
+    def get_mag_lines_info(self, fact):
+        rmag_line_ids = fact.get_rmag_lines()
+        if not rmag_line_ids:
+            return False
+        gffl_obj = self.pool.get('giscedata.facturacio.factura.linia')
+        rmag_line = gffl_obj.browse(self.cursor, self.uid, rmag_line_ids[0])
+        data = {
+            'date_from': dateformat(rmag_line.data_desde),
+            'date_to': dateformat(rmag_line.data_fins),
+            'price': rmag_line.price_unit,
+            'quantity': rmag_line.quantity,
+            'total': rmag_line.price_subtotal,
+        }
     # -----------------------------
     # Component fill data functions
     # -----------------------------
@@ -2058,7 +2071,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         generationkwh_lines = [l for l in linies_energia if 'GkWh' in l.name]
         gkwh_energy_lines_data = self.get_sub_component_invoice_details_td(fact, pol, generationkwh_lines)
-
+        mag_line_data = self.get_mag_lines_info(fact)
         for e in energy_lines_data:
             if e['data'] >= BOE17_2021_dates['start'] and e['data'] <= BOE17_2021_dates['end'] and u'P1' in discount:
                 e['has_discount'] = True
@@ -2070,8 +2083,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data = {
             'energy_lines_data': energy_lines_data,
             'gkwh_energy_lines_data': gkwh_energy_lines_data,
-            'header_multi': 3*(len(energy_lines_data)+len(gkwh_energy_lines_data)),
+            'header_multi': 3*(len(energy_lines_data)+len(gkwh_energy_lines_data))+1 if mag_line else 0,
             'showing_periods': self.get_matrix_show_periods(pol),
+            'mag_line_data': mag_line_data
         }
         return data
 
