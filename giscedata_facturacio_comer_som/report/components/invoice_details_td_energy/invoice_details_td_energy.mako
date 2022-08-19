@@ -58,18 +58,18 @@ first_energy_line = True
         <td><span class="subtotal">${_(u"%s €") %(formatLang(energy_lines_data.total))}</span></td>
     </tr>
 % endfor
-% if id.maj_line_data:
+% if id.mag_line_data:
     <tr class="tr_bold">
         <td class="detall_td">
-            ${_(u"Import Ajust mecanisme gas RDL 10/2022 (%s kWh x %s €/kWh) (del %s al %s)") % (
-                locale.str(locale.atof(formatLang(id.maj_line_data.quantity, digits=3))),
-                locale.str(locale.atof(formatLang(id.maj_line_data.price, digist=6))),
-                id.maj_line_data.date_from,
-                id.maj_line_data.date_to
-            )}
+            ${_(u"Import Ajust mecanisme gas RDL 10/2022 (%s kWh x %s €/kWh)") % (
+                locale.str(locale.atof(formatLang(id.mag_line_data.quantity, digits=3))),
+                locale.str(locale.atof(formatLang(id.mag_line_data.price, digits=6)))
+            )}<br>
+            ${(" (del %s al %s)") % (id.mag_line_data.date_from, id.mag_line_data.date_to)}
         </td>
         % for p in id.showing_periods:
                 <td></td>
         % endfor
-        <td><span class="subtotal">${_(u"%s €") % (formatLang(id.maj_line_data.total))}</span></td>
+        <td><span class="subtotal">${_(u"%s €") % (formatLang(id.mag_line_data.total))}</span></td>
     </tr>
+% endif

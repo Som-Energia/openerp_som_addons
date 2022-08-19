@@ -739,6 +739,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'quantity': rmag_line.quantity,
             'total': rmag_line.price_subtotal,
         }
+        return data
     # -----------------------------
     # Component fill data functions
     # -----------------------------
@@ -2083,7 +2084,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data = {
             'energy_lines_data': energy_lines_data,
             'gkwh_energy_lines_data': gkwh_energy_lines_data,
-            'header_multi': 3*(len(energy_lines_data)+len(gkwh_energy_lines_data))+1 if mag_line else 0,
+            'header_multi': 3*(len(energy_lines_data)+len(gkwh_energy_lines_data))+(1 if mag_line_data else 0),
             'showing_periods': self.get_matrix_show_periods(pol),
             'mag_line_data': mag_line_data
         }
