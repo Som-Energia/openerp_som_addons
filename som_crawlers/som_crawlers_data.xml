@@ -4,7 +4,6 @@
         <!-- Configuracions (diferents configuracions)-->
         <record model="som.crawlers.config" id="configuracio_1">
         <field name="name">anselmo</field>
-        <field name="className">Anselmo</field>
         <field name="crawler">Selenium</field>
         <field name="days_of_margin">5</field>
         <field name="pending_files_only" eval="False"/>
@@ -13,7 +12,6 @@
         </record>
         <record model="som.crawlers.config" id="configuracio_2">
         <field name="name">fenosa</field>
-        <field name="className">Fenosa</field>
         <field name="crawler">Selenium</field>
         <field name="days_of_margin">3</field>
         <field name="pending_files_only" eval="False"/>

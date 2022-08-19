@@ -254,7 +254,6 @@ class SomCrawlersTaskStep(osv.osv):
         str_pending = str(config_obj.pending_files_only)
         args = {
             '-n':config_obj.name,
-            '-class':config_obj.className,
             '-u':config_obj.usuari,
             '-p':config_obj.contrasenya,
             '-f':fileName,

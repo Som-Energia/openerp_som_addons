@@ -7,7 +7,6 @@ class SomCrawlersConfig(osv.osv):
 
     _columns = {
         'name': fields.char('Nom', size=20, required=True,),
-        'className': fields.char('Classe', size=20, required=True,),
         'usuari' : fields.char('Usuari del portal', size=10, unique = True,),
         'contrasenya' : fields.char('Contrasenya del portal', size=15,),
         'url_portal' : fields.char('Url del portal', size=200, required=False,),

@@ -24,7 +24,6 @@ import importlib
 @click.command()
 @click.option('-u', '--user', help='Username of the portal.', required=True)
 @click.option('-n', '--name', prompt='Crawler portal name', help ='The person to greet.', required=True)
-@click.option('-class', '--classe', prompt='Crawler class name', required=True)
 @click.option('-p', '--password', help='Password of the portal.', required = True)
 @click.option('-f', '--file', help='Log file name', required = True)
 @click.option('-url', '--url', help='URL of the portal.', required = True)
@@ -47,7 +46,7 @@ import importlib
         # @param pfiles Pending files only
         # @param browser Browser
         # @return Exception or string if everything passed successfully
-def crawl(user, name, classe, password, file, url, filters, crawler, days, pfiles, browser):
+def crawl(user, name, password, file, url, filters, crawler, days, pfiles, browser):
     wc = WebCrawler()
     path = os.path.dirname(os.path.abspath(__file__))
     f = open(os.path.join(path,"../outputFiles/",file),'w')
