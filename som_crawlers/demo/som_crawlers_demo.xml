@@ -78,13 +78,21 @@
         <field name="sequence">1</field>
         <field name="function">import_xml_files</field>
         <field name="params">{}</field>
-        <field name="task_id" ref="demo_accions_planificades_2"/>
+        <field name="task_id" ref="demo_accions_planificades_1"/>
         </record>
         <record model="som.crawlers.task.step" id="demo_taskStep_7">
         <field name="name">Importar fitxers XML</field>
         <field name="sequence">1</field>
         <field name="function">import_xml_files</field>
         <field name="params">{"nom_fitxer":"script_import_xml"}</field>
+        <field name="task_id" ref="demo_accions_planificades_1"/>
+        </record>
+
+        <!-- Exemple result-->
+        <record model="som.crawlers.result" id="demo_result_1">
+        <field name="task_id" ref="demo_accions_planificades_1"/>
+        </record>
+        <record model="som.crawlers.result" id="demo_result_2">
         <field name="task_id" ref="demo_accions_planificades_1"/>
         </record>
     </data>

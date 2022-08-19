@@ -13,6 +13,7 @@
     "init_xml":[],
     "demo_xml": [
         "demo/som_crawlers_demo.xml"
+        
     ],
     "update_xml":[
         "views/som_crawlers_views.xml",

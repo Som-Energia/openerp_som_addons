@@ -94,14 +94,10 @@ class WizardExecutarTascaTests(testing.OOTestCase):
                 uid = txn.user
                 crawler_task_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_accions_planificades_1')[1]
                 crawler_task_step_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_taskStep_3')[1]
-                ctx = {
-                    'active_id': crawler_task_id, 'active_ids': [crawler_task_id],
-                    'from_model':'som.crawlers.task.step'
-                 }
                 #set values
-                result_id = self.result.create(cursor,uid,{'task_id': crawler_task_id,'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M")})
+                result_id = self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_result_1')[1]
                 #try test
-                resultat = self.taskStep.download_files(cursor, uid,crawler_task_step_id, result_id,context=ctx)
+                resultat = self.taskStep.download_files(cursor, uid,crawler_task_step_id, result_id)
                 #check result
                 self.assertEqual(resultat, 'Falta especificar nom fitxer')
                
@@ -114,15 +110,11 @@ class WizardExecutarTascaTests(testing.OOTestCase):
                 uid = txn.user
                 crawler_task_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_accions_planificades_1')[1]
                 crawler_task_step_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_taskStep_5')[1]
-                ctx = {
-                    'active_id': crawler_task_id, 'active_ids': [crawler_task_id],
-                    'from_model':'som.crawlers.task.step'
-                 }
                 #set values
-                result_id = self.result.create(cursor,uid,{'task_id': id,'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M")})
+                result_id = self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_result_1')[1]
                 #try test
                 
-                result = self.taskStep.download_files(cursor, uid,crawler_task_step_id,context=ctx)
+                result = self.taskStep.download_files(cursor, uid,crawler_task_step_id,result_id)
                 #check result
                 self.assertEqual(result, 'File or directory doesn\'t exist')
                 #objecte.browse(... + id) per llegir el objecte al complet.
@@ -132,18 +124,13 @@ class WizardExecutarTascaTests(testing.OOTestCase):
         with Transaction().start(self.database) as txn:
                 cursor = txn.cursor
                 uid = txn.user
-                crawler_task_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_accions_planificades_1')[1]
                 crawler_task_step_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_taskStep_1')[1]
-                ctx = {
-                    'active_id': crawler_task_id, 'active_ids': [crawler_task_id],
-                    'from_model':'som.crawlers.task.step'
-                 }
-                #set values
-                wiz_id = self.wiz.create(cursor, uid,{},context=ctx)
                 #try test
-                result = self.wiz.download_files(cursor, uid,crawler_task_step_id,context=ctx)
+                result_id = self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_result_1')[1]
+                #try test
+                result = self.taskStep.download_files(cursor, uid,crawler_task_step_id,result_id)
                 #check result
-                self.assertEqual(result, 'Files have been successfully downloaded')
+                self.assertEqual(result, 'files succesfully attached')
                 #objecte.browse(... + id) per llegir el objecte al complet.
 
     #import_xml_files
@@ -155,18 +142,14 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             with Transaction().start(self.database) as txn:
                 cursor = txn.cursor
                 uid = txn.user
-                crawler_task_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_accions_planificades_2')[1]
-                crawler_task_step_id = self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_taskStep_6')[1]
-                ctx = {
-                    'active_id': crawler_task_id, 'active_ids': [crawler_task_id],
-                    'from_model':'som.crawlers.task.step'
-                }
-                #set values
-                wiz_id = self.wiz.create(cursor, uid,{},context=ctx)
+                crawler_task_step_id = self.Data.get_object_reference(cursor, uid, 'som_crawlers', 'demo_taskStep_6')[1]
                 #try test
-                result = self.wiz.import_xml_files(cursor, uid,crawler_task_step_id,context=ctx)
+                result_id = self.Data.get_object_reference(cursor, uid, 'som_crawlers', 'demo_result_2')[1]
+                with self.assertRaises(Exception) as context:
+                    self.taskStep.import_xml_files(cursor, uid, crawler_task_step_id, result_id)
                 #check result
-                self.assertEqual(result, 'don\'t exist id attachment')
+                self.assertTrue('don\'t exist id attachment' in context.exception)
+    
 
     def  no_test_executar_una_tasca(self):
 
@@ -175,13 +158,6 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             crawler_task_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_accions_planificades_1')[1]
-            ctx = {
-                    'active_id': crawler_task_id, 'active_ids': [crawler_task_id],
-                    'from_model':'som.crawlers.task.step'
-            }
-            #set values
-            wiz_id = self.wiz.create(cursor, uid,{},context=ctx)
-            #try test
             result = self.wiz.executar_tasca(cursor,uid,[wiz_id],context=ctx)
             #check result
             self.assertEqual(result,{'type': 'ir.actions.act_window_close'})
