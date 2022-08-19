@@ -99,12 +99,12 @@ class WizardExecutarTascaTests(testing.OOTestCase):
                     'from_model':'som.crawlers.task.step'
                  }
                 #set values
-                wiz_id = self.wiz.create(cursor, uid,{},context=ctx)
+                result_id = self.result.create(cursor,uid,{'task_id': crawler_task_id,'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M")})
                 #try test
-                result = self.wiz.download_files(cursor, uid,crawler_task_step_id,context=ctx)
+                resultat = self.taskStep.download_files(cursor, uid,crawler_task_step_id, result_id,context=ctx)
                 #check result
-                self.assertEqual(result, 'Falta especificar nom fitxer')
-                #objecte.browse(... + id) per llegir el objecte al complet.
+                self.assertEqual(resultat, 'Falta especificar nom fitxer')
+               
 
     """Function that tests if after trying to download files, the result is that the directory does not exits
         # @param self The object pointer"""
@@ -119,9 +119,10 @@ class WizardExecutarTascaTests(testing.OOTestCase):
                     'from_model':'som.crawlers.task.step'
                  }
                 #set values
-                wiz_id = self.wiz.create(cursor, uid,{},context=ctx)
+                result_id = self.result.create(cursor,uid,{'task_id': id,'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M")})
                 #try test
-                result = self.wiz.download_files(cursor, uid,crawler_task_step_id,context=ctx)
+                
+                result = self.taskStep.download_files(cursor, uid,crawler_task_step_id,context=ctx)
                 #check result
                 self.assertEqual(result, 'File or directory doesn\'t exist')
                 #objecte.browse(... + id) per llegir el objecte al complet.

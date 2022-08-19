@@ -1,12 +1,6 @@
-## Imports
 from osv import osv, fields
 from datetime import datetime, timedelta
-from cryptography.fernet import Fernet
-# @author Ikram Ahdadouche El Idrissi
-# @author Dalila Jbilou Kouhous
-## Module that contains all the attributes of a configuration portal.
 
-## Describes the module and the configuration fields of a configuration crawler
 class SomCrawlersConfig(osv.osv):
 
     _name = 'som.crawlers.config'
@@ -43,9 +37,6 @@ class SomCrawlersConfig(osv.osv):
         if contrasenya == crawler_config.contrasenya:
             raise osv.except_osv('Contrasenya identica a la anterior!','Torna a introduir una contrasenya diferent a la anterior')
         else:
-            #key = Fernet.generate_key()
-            #fernet = Fernet(key)
-            #enctex = fernet.encrypt(contrasenya.encode())
             self.write(cursor,uid,ids,{'contrasenya': contrasenya, 'user_ultima_modificacio': uid, 'date_ultima_modificacio': datetime.now().isoformat()}, context=context)
             return contrasenya
 

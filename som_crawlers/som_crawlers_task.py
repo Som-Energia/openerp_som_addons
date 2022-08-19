@@ -166,9 +166,6 @@ class SomCrawlersTaskStep(osv.osv):
 
         return output
 
-    def download_all_files(self, cursor, uid,id, result_id, context=None):
-        pass
-
     def download_files(self, cursor, uid,id, result_id, context=None):
         classresult = self.pool.get('som.crawlers.result')
         taskStep_obj = self.browse(cursor,uid,id)
