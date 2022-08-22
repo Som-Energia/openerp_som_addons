@@ -320,6 +320,7 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
             else:
                 tarifes_a_mostrar = get_comming_atr_price(cursor, uid, polissa, ctx)
             text_vigencia = ''
+
             if not polissa.fiscal_position_id:
                 imd_obj = polissa.pool.get('ir.model.data')
                 if polissa.potencia <= 10:
@@ -327,6 +328,14 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                 else:
                     fp_id = imd_obj.get_object_reference(cursor, uid, 'giscedata_facturacio', 'fp_nacional_2021_rd_17_2021')[1]
                 ctx.update({'force_fiscal_position': fp_id})
+            
+            cfg_obj = polissa.pool.get('res.config')
+            start_date_mecanisme_ajust_gas = cfg_obj.get(
+            cursor, uid, 'start_date_mecanisme_ajust_gas', '2022-10-01'
+            )
+            end_date_mecanisme_ajust_gas = cfg_obj.get(
+                cursor, uid, 'end_date_mecanisme_ajust_gas', '2099-12-31'
+            )
         %>
         <div class="styled_box">
         %for dades_tarifa in tarifes_a_mostrar:
@@ -516,7 +525,7 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                     %if polissa.autoconsumo != '00':
                     <tr>
                         <td><span class="bold">${_("(2) Autoconsum (€/kWh)")}</span></td>
-                        %if polissa.mode_facturacio_generacio == 'index':
+                        %if polissa.mode_facturacio == 'index':
                             <td class="center reset_line_height" colspan="6">
                                 <span class="normal_font_weight">${_(u"Tarifa indexada - el preu es calcula d'acord amb la fórmula:")}</span>
                                 <br/>
@@ -543,22 +552,38 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                 %if polissa.autoconsumo != '00':
                     <span class="bold">(2) </span> ${_("Preu de la compensació d'excedents, si és aplicable.")}
                 %endif
+                %if polissa.mode_facturacio != 'index' and dades_tarifa['date_start'] >= start_date_mecanisme_ajust_gas and \
+                    (not dades_tarifa['date_end'] or dades_tarifa['date_end'] <= end_date_mecanisme_ajust_gas):
                     <div class="center avis_impostos">
-                        %if polissa.mode_facturacio_generacio == 'index':
-                            ${_(u"Els preus del terme de potència inclouen l'impost elèctric i l'IVA (IGIC a Canàries) sense prejudici de les exempcions o bonificacions que puguin ser d'aplicació. Pots consultar altres conceptes que poden ser d'aplicació, com ara, el lloguer de comptador, el recàrrec per potència demandada o el recàrrec per energia reactiva, a la ")}
-                        %else:
-                            ${_(u"Aquests preus inclouen l'impost elèctric i l'IVA (IGIC a Canàries) sense prejudici de les exempcions o bonificacions que puguin ser d'aplicació. Pots consultar altres conceptes que poden ser d'aplicació, com ara, el lloguer de comptador, el recàrrec per potència demandada o el recàrrec per energia reactiva, a la ")}
-                        %endif
-                        %if lang ==  'ca_ES':
-                            <a href="https://www.somenergia.coop/tarifes-d-electricitat/">${_(u"pàgina de tarifes")}</a>
-                        %else:
-                            <a href="https://www.somenergia.coop/tarifas-de-electricidad/">${_(u"página de tarifas")}</a>
-                        %endif
-                        ${_(u" del nostre web, on també trobaràs més informació sobre els períodes tarifaris.")}
+                        ${_(u"A més del preu fix associat al cost de l'energia, establert per Som Energia i publicat a la nostra pàgina web, la factura inclourà un import variable associat al mecanisme d'ajust establert al")}
+                        &nbsp;<a href="https://www.boe.es/buscar/act.php?id=BOE-A-2022-10557">RD 10/2022</a>.
+                        ${_(u"Aquest import el calcularem per a cada període de facturació. Ponderarem el preu de cada hora del mecanisme d'ajust (")}<a href="https://www.omie.es/es/market-results/daily/average-final-prices/hourly-price-consumers">${_(u"publicat per OMIE")}</a>
+                        ${_(u") en funció del repartiment horari energètic d'un consumidor/a tipus (")}<a href="https://www.ree.es/es/clientes/consumidor/gestion-medidas-electricas/consulta-perfiles-de-consumo">${_(u"publicat per Red Eléctrica de España")}</a>
+                        &nbsp;${_(u"segons la")}&nbsp;<a href="https://www.boe.es/diario_boe/txt.php?id=BOE-A-2021-21395">${_(u"Resolució de 23/12/2021")}</a>
+                        ${_(u"). El preu obtingut el multiplicarem, en cada factura, per l'energia total consumida en el període de facturació. (El mecanisme d’ajust al gas no aplica per als contractes de les Illes Canàries ni Balears, i tampoc aplica a la tarifa Generation kWh.)")}
                     </div>
+                %endif
                 </div>
             </div>
             %endfor
+        </div>
+        <div class="styled_box">
+            <div class="center avis_impostos">
+                %if polissa.mode_facturacio == 'index':
+                    ${_(u"Els preus del terme de potència")}
+                %else:
+                    ${_(u"Aquests preus")}
+                %endif
+                &nbsp;${_(u"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent en cada moment per a cada tipus de contracte. Actualment, d'acord amb el")}&nbsp;<a href="https://www.boe.es/buscar/act.php?id=BOE-A-2022-10557">${_(u"Reial Decret-llei 11/2022")}</a>, ${_(u"l’IVA aplicable serà del")}&nbsp;
+                %if polissa.potencia <= 10:
+                    ${_(u"5% (sempre que el preu mitjà del mercat majorista del mes anterior al de facturació hagi estat superior a 45€/MWh. En cas que hagi estat inferior, l’IVA que s’aplicarà serà del 21%).")}
+                %else:
+                    ${_(u"21%.")}
+                %endif
+                &nbsp;${_(u"També, i seguint el Reial Decret-Llei 11/2022, els preus inclouen l’Impost Especial sobre l’Electricitat rebaixat al 0,5% amb una quota mínima de 0,5 €/MWh o 1 €/MWh, segons correspongui)")}
+            </div>
+            <br>
+        </div>
             <%
                 owner_b = polissa.bank.partner_id.name
                 nif = polissa.bank.partner_id.vat
@@ -569,7 +594,6 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                         nif = polissa.bank.owner_id.vat
                 nif = nif.replace('ES', '')
             %>
-        </div>
             %if text_vigencia:
                 <p style="page-break-after: always"></p>
                 <br><br><br>
