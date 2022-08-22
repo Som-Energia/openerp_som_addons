@@ -9,7 +9,7 @@ print "Connectat"
 write_vals = False
 fact_number = 'FE2200231739'
 partner_id = 204530
-mandate_id = 241229
+mandate_id = 315028
 
 partner_obj = c.model('res.partner')
 partner_new = partner_obj.browse(partner_id)
