@@ -1,6 +1,6 @@
 import configdb
 from erppeek import Client as Client
-
+import psycopg2
 
 print "Connectant"
 c = Client(**configdb.erppeek)
@@ -138,34 +138,76 @@ else:
     print 'Partner or fact does not exists'
 
 
-"""
-#SQL for payments
-select m.id, l.move_id, l.id, l.partner_id from account_move m inner join account_move_line l on l.move_id = m.id where m.ref = 'FE2200231739';
+# Consider move to somutils.dbutils
+def run_query(dbconn, query, kwds={}):
+    from yamlns import namespace as ns
+    def fetchNs(cursor):
+	"""
+		Wraps a database cursor so that instead of providing data
+		as arrays, it provides objects with attributes named
+		as the query column names.
+	"""
 
-begin;
-update account_move_line
-set partner_id = 204530
-from (
-	select l.id as line_id from account_move m inner join account_move_line l on l.move_id = m.id where m.ref = 'FE2200231739'
-) as subquery
-where id = subquery.line_id
+	fields = [column.name for column in cursor.description]
+	for row in cursor:
+		yield ns(zip(fields, row))
+
+    def nsList(cursor):
+        return [e for e in fetchNs(cursor) ]
+
+    with dbconn.cursor() as cursor :
+        try:
+            cursor.execute(query, kwds)
+        except KeyError as e:
+            key = e.args[0]
+            raise Exception(key)
+        if cursor.description:
+            return nsList(cursor)
+        else:
+            print cursor.statusmessage
+            dbconn.commit()
 
 
-select p.id as p_id
-from payment_line p
-inner join account_move_line l on l.id = p.move_line_id
-inner join account_move m on m.id = l.move_id
-where m.ref = 'FE2200231739'
+try:
+    dbconn=psycopg2.connect(**configdb.psycopg)
+except Exception, ex:
+    print "Unable to connect to database " + configdb.psycopg['database']
+    raise ex
 
-begin;
-update payment_line 
-set partner_id = 204530
-from (
-select p.id as p_id
-from payment_line p
-inner join account_move_line l on l.id = p.move_line_id
-inner join account_move m on m.id = l.move_id
-where m.ref = 'FE2200231739'
-) as subquery
-where id = subquery.p_id
-"""
+#dbcur = dbconn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+if partner_new and fact: # and write_vals:
+
+    # ACCOUNT MOVE LINE
+    result = run_query(dbconn, """select m.id, l.move_id, l.id, l.partner_id
+            from account_move m inner join account_move_line l on l.move_id = m.id
+            where m.ref = %(number)s and l.partner_id = %(old_partner)s""", {'number': fact_number, 'old_partner': old_partner_id})
+    print "{} account_move_line to modify".format(len(result))
+    if result and write_vals:
+        run_query(dbconn, """update account_move_line
+            set partner_id = %(new_partner)s
+            from (
+                select l.id as line_id
+                from account_move m inner join account_move_line l on l.move_id = m.id
+                where m.ref = %(number)s and l.partner_id = %(old_partner)s
+            ) as subquery   where id = subquery.line_id""", {'number': fact_number, 'old_partner': old_partner_id, 'new_partner': partner_id})
+
+    # PAYMENT LINE
+    result = run_query(dbconn, """select p.id as p_id
+            from payment_line p
+            inner join account_move_line l on l.id = p.move_line_id
+            inner join account_move m on m.id = l.move_id
+            where m.ref = %(number)s and p.partner_id = %(old_partner)s""", {'number': fact_number, 'old_partner': old_partner_id})
+    print "{} payment_line to modify".format(len(result))
+    if result: # and write_vals:
+        run_query(dbconn,"""update payment_line
+            set partner_id = %(new_partner)s
+            from (
+                select p.id as p_id
+                from payment_line p
+                inner join account_move_line l on l.id = p.move_line_id
+                inner join account_move m on m.id = l.move_id
+                where m.ref = %(number)s and p.partner_id = %(old_partner)s
+            ) as subquery
+            where id = subquery.p_id
+            """, {'number': fact_number, 'old_partner': old_partner_id, 'new_partner': partner_id})
