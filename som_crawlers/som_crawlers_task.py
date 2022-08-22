@@ -20,9 +20,11 @@ from ssl import DefaultVerifyPaths
 import netsvc
 import zipfile
 from os.path import expanduser
+#from mock import Mock
 
 from autoworker import AutoWorker
 from oorq.decorators import job
+
 
 # @author Ikram Ahdadouche El Idrissi
 # @author Dalila Jbilou Kouhous
@@ -127,13 +129,15 @@ class SomCrawlersTaskStep(osv.osv):
         'name': lambda *a: 'nom_per_defecte',
     }
 
+    #execute steps of a general task
     def executar_steps(self, cursor, uid, id, result_id, context=None):
         taskStep = self.browse(cursor, uid, id)
         function = getattr(self, taskStep.function)
         output = function(cursor, uid, id, result_id, context=None)
         return output
 
-
+    #attached files [zip]
+    # test ok
     def attach_files_zip(self, cursor, uid, id, result_id, config_obj, path, context=None):
         classresult = self.pool.get('som.crawlers.result')
         taskStep_obj = self.browse(cursor,uid,id,context = context)
@@ -165,7 +169,7 @@ class SomCrawlersTaskStep(osv.osv):
                     output = "files succesfully attached"
 
         return output
-
+    #test ok
     def download_files(self, cursor, uid,id, result_id, context=None):
         classresult = self.pool.get('som.crawlers.result')
         taskStep_obj = self.browse(cursor,uid,id)
@@ -248,7 +252,7 @@ class SomCrawlersTaskStep(osv.osv):
         os.remove(os.path.join(path, "outputFiles/",fileName))
 
         return output
-
+    #test ok
     def createArgsForScript(self, cursor, uid, id, config_obj, fileName):
         str_days = str(config_obj.days_of_margin)
         str_pending = str(config_obj.pending_files_only)

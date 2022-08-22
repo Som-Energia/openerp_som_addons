@@ -30,6 +30,7 @@ class SomCrawlersConfig(osv.osv):
         @param context None certain data to pass
         @return New password value
     """
+    #testo ok
     def canviar_contrasenya(self, cursor, uid, ids, contrasenya, context=None):
 
         crawler_config = self.browse(cursor,uid,ids,context=context)
