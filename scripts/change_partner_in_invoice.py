@@ -66,9 +66,9 @@ if partner_new and fact:
     ## Main invoice
 
     print 'Old values: '
-    print 'address_contact_id ', fact.address_contact_id
-    print 'address_invoice_id ', fact.address_invoice_id
-    print 'partner_bank ', fact.partner_bank
+    print 'address_contact_id ', fact.address_contact_id.id
+    print 'address_invoice_id ', fact.address_invoice_id.id
+    print 'partner_bank ', fact.partner_bank.id
     print 'partner_id ', fact.partner_id
 
     fact_vals = {
@@ -85,9 +85,9 @@ if partner_new and fact:
         fact_obj.write(fact.id,fact_vals) 
 
         print 'Fact changed values: '
-        print 'address_contact_id ', fact.address_contact_id
-        print 'address_invoice_id ', fact.address_invoice_id
-        print 'partner_bank ', fact.partner_bank
+        print 'address_contact_id ', fact.address_contact_id.id
+        print 'address_invoice_id ', fact.address_invoice_id.id
+        print 'partner_bank ', fact.partner_bank.id
         print 'partner_id ', fact.partner_id
         print 'mandate_id ', fact.mandate_id
     else:
