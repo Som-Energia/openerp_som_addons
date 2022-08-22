@@ -152,7 +152,7 @@ class GiscedataPolissaTarifa(osv.osv):
             end_iva_reduit = conf_obj.get(
               cursor, uid, 'iva_reduit_get_tariff_prices_end_date', '2099-12-31'
             )
-            if date <= end_iva_reduit and max_power <= 10:
+            if date <= end_iva_reduit and max_power <= 10000:
                 fiscal_position_id = imd_obj.get_object_reference(cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
             else:
                 prop_id = prop_obj.search(cursor,uid,[('name','=','property_account_position'),('res_id','=',False)])
