@@ -61,7 +61,7 @@ first_energy_line = True
 % if id.mag_line_data:
     <tr class="tr_bold">
         <td class="detall_td">
-            ${_(u"Import Ajust mecanisme gas RDL 10/2022 (%s kWh x %s €/kWh)") % (
+            ${_(u"Import associat al mecanisme d'ajust del gas RDL 10/2022 (%s kWh x %s €/kWh)") % (
                 locale.str(locale.atof(formatLang(id.mag_line_data.quantity, digits=3))),
                 locale.str(locale.atof(formatLang(id.mag_line_data.price, digits=6)))
             )}<br>
