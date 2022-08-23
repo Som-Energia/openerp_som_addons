@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2022-08-08 10:01+0000\n"
-"PO-Revision-Date: 2022-08-09 07:23+0000\n"
+"POT-Creation-Date: 2022-08-16 13:01+0000\n"
+"PO-Revision-Date: 2022-08-16 11:08+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -425,8 +425,8 @@ msgid "Tipus de contracte: "
 msgstr "Tipo de contrato: "
 
 #: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:251
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:368
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:433
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:370
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:435
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:379
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:463
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:527
@@ -434,8 +434,8 @@ msgid "Punta"
 msgstr "Punta"
 
 #: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:253
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:370
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:435
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:372
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:437
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:381
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:465
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:529
@@ -448,78 +448,80 @@ msgstr "Valle"
 msgid "Potència contractada (kW):"
 msgstr "Potencia contratada (kW):"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:326
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:328
 msgid "(vigent fins el {})"
 msgstr "(vigente hasta el {})"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:328
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:330
 msgid "(vigent a partir del {})"
 msgstr "(vigente a partir del {})"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:331
 #: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:333
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:335
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:451
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:431
 msgid "TARIFES D'ELECTRICITAT"
 msgstr "TARIFAS DE ELECTRICIDAD"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:384
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:386
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:479
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:450
 msgid "Terme potència (€/kW i any)"
 msgstr "Término potencia (€/kW y año) "
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:434
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:436
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:528
 msgid "Pla"
 msgstr "Llano"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:442
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:444
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:536
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:479
 msgid "Terme energia (€/kWh)"
 msgstr "Término energía (€/kWh)"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:448
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:452
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:450
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:454
 msgid "Tarifa indexada"
 msgstr "Tarifa indexada"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:455
-msgid "El preu horari es calcula d'acord amb la fórmula:"
-msgstr "El precio horario se calcula de acuerdo con la fórmula:"
-
 #: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:457
+msgid " - el preu horari es calcula d'acord amb la fórmula:"
+msgstr " - el precio horario se calcula de acuerdo con la fórmula:"
+
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:460
 msgid ""
 "PH = 1,015 * [(PHM + PHMA + Pc + SobrecostosREE + Interrump + POsOm) (1 + "
 "Perd) + FE + K] + PA + CA"
 msgstr "PH = 1,015 * [(PHM + PHMA + Pc + SobrecostesREE + Interrump + POsOm) (1 + Perd) + FE + K] + PA + CA"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:458
-#, python-format
-msgid "On marge de comercialització (K) = %s €/MWh"
-msgstr "Donde margen de comercialización (K) = %s €/MWh"
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:462
+msgid "on el marge de comercialització"
+msgstr "donde el margen de comercialización"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:482
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:488
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:551
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:494
 msgid "(1) GenerationkWh (€/kWh)"
 msgstr "(1) GenerationkWh (€/kWh)"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:505
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:511
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:566
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:509
 msgid "(2) Autoconsum (€/kWh)"
 msgstr "(2) Autoconsumo (€/kWh) "
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:508
-msgid ""
-"Preu indexat. El preu es calcula d'acord amb la fórmula:<br/>Import "
-"excedents = Suma horària (kWh excedentaris h <sub>i</sub> * PHM <sub>i</sub>"
-" )"
-msgstr "Precio indexado. El precio se calcula de acuerdo con la fórmula:<br/>Importe excedentes = Suma horaria (kWh excedentarios h <sub>i</sub> * PHM <sub>i</sub> )"
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:514
+msgid "Tarifa indexada - el preu es calcula d'acord amb la fórmula:"
+msgstr "Tarifa indexada - el precio se calcula de acuerdo a la fórmula:"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:526
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:516
+msgid ""
+"Import excedents = Suma horària (kWh excedentaris h <sub>i</sub> * PHM "
+"<sub>i</sub> )"
+msgstr "Importe excedentes = Suma horaria (kWh excedentarios h <sub>i</sub> * PHM <sub>i</sub> )"
+
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:534
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:574
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:516
 msgid ""
@@ -527,13 +529,13 @@ msgid ""
 "GenerationkWh."
 msgstr "Termino de energía en caso de participar, según condiciones del contrato GenerationkWh."
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:529
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:537
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:575
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:517
 msgid "Preu de la compensació d'excedents, si és aplicable."
 msgstr "Precio de la compensación de excedentes, si es aplicable."
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:532
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:541
 msgid ""
 "Els preus del terme de potència inclouen l'impost elèctric i l'IVA (IGIC a "
 "Canàries) sense prejudici de les exempcions o bonificacions que puguin ser "
@@ -542,19 +544,28 @@ msgid ""
 "recàrrec per energia reactiva, a la "
 msgstr "Los precios del término de potencia incluyen el impuesto eléctrico y el IVA (IGIC en Canarias) sin perjuicio de las exenciones o bonificaciones que puedan ser de aplicación. Puedes consultar otros conceptos que pueden ser de aplicación, como el alquiler de contador, el recargo por potencia demandada o el recargo por energía reactiva, en la"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:534
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:543
+msgid ""
+"Aquests preus inclouen l'impost elèctric i l'IVA (IGIC a Canàries) sense "
+"prejudici de les exempcions o bonificacions que puguin ser d'aplicació. Pots"
+" consultar altres conceptes que poden ser d'aplicació, com ara, el lloguer "
+"de comptador, el recàrrec per potència demandada o el recàrrec per energia "
+"reactiva, a la "
+msgstr "Estos precios incluyen el impuesto eléctrico y el IVA (IGIC en Canarias) sin prejuicio de las exenciones o bonificaciones que puedan ser de aplicación. Puedes consultar otros conceptos que pueden ser de aplicación, tales como, el alquiler de contador, el recargo por potencia demandada o el recargo por energía reactiva, en la "
+
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:546
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:579
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:521
 msgid "pàgina de tarifes"
 msgstr "página de tarifas"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:536
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:548
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:581
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:523
 msgid "página de tarifas"
 msgstr "página de tarifas"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:538
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:550
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:583
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:525
 msgid ""
@@ -562,27 +573,27 @@ msgid ""
 "tarifaris."
 msgstr "de nuestra web, donde también encontrarás más información sobre los períodos tarifarios. "
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:563
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:575
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:601
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:543
 msgid "DADES DE PAGAMENT"
 msgstr "DATOS DE PAGO"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:567
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:579
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:547
 msgid "Persona titular del compte: "
 msgstr "Persona titular de la cuenta: "
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:568
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:580
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:548
 msgid "NIF: "
 msgstr "NIF: "
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:571
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:583
 msgid "Nº de compte bancari (IBAN): **** **** **** ****"
 msgstr "Nº de cuenta bancaria (IBAN): **** **** **** ****"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:576
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:588
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:597
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:539
 msgid ""
@@ -593,30 +604,30 @@ msgid ""
 "el que estigui previst en aquestes Condicions Particulars."
 msgstr "Al contratar aceptan estas Condiciones Particulares y las Condiciones Generales, que se pueden consultar en las páginas siguientes. Si necesitamos modificarlas, en la cláusula 9 de las Condiciones Generales se explica el procedimiento que seguiremos. En caso de que haya alguna discrepancia, prevalecerá lo que esté previsto en estas Condiciones Particulares."
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:588
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:600
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:619
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:561
 msgid "a {0}"
 msgstr "a {0}"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:591
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:603
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:622
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:564
 msgid "La persona clienta:"
 msgstr "La persona clienta:"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:593
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:605
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:566
 msgid "Acceptat digitalment via formulari web"
 msgstr "Aceptado digitalmente vía formulario web"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:598
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:610
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:629
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:571
 msgid "La comercialitzadora"
 msgstr "La comercializadora"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:609
+#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:621
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:640
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:582
 msgid ""
