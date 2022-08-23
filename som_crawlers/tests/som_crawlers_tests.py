@@ -152,7 +152,8 @@ class WizardExecutarTascaTests(testing.OOTestCase):
                 #check result
                 self.assertTrue('don\'t exist id attachment' in context.exception)
 
-    def no_test_import_xml_files_entrada_zip_prova_sortida_import_done(self): #posiible funcio on farem servir mocks
+       
+    def no_test_import_xml_files_entrada_zip_prova_sortida_import_donee(self): 
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
@@ -176,16 +177,14 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             result = self.taskStep.import_xml_files(cursor,uid,crawler_taskStep_id,result_id) #'som.crawler.task.step' import_wizard
             self.assertEqual(result,'Successful import') 
             
-
-    def  no_test_executar_una_tasca(self):
-
+    def no_test_executar_una_tasca(self):
          with Transaction().start(self.database) as txn:
 
             cursor = txn.cursor
             uid = txn.user
             crawler_task_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_accions_planificades_1')[1]
-            result = self.wiz.executar_tasca(cursor,uid,[wiz_id],context=ctx)
-            #check result
+            result = self.wiz.executar_tasca(cursor,uid,crawler_task_id,context=None)
+            #check result --> comparacio
             self.assertEqual(result,{'type': 'ir.actions.act_window_close'})
 
     # id del portal config
@@ -200,6 +199,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             crawler_config_obj = self.Configuracio.browse(cursor, uid, crawler_config_id)
             result = self.task.id_del_portal_config(cursor,uid,crawler_task_id)
             self.assertEqual(result,crawler_config_obj)
+        
     """ Id portal config tests --> error result
         # @param self The object pointer"""
     def test_id_del_portal_config_entrada_anselmo_sortida_prova_i_error(self):
@@ -226,7 +226,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             result = self.taskStep.attach_files_zip(cursor, uid, crawler_taskStep_id, result_id, crawler_config_obj, pathFileActual, context=None)
             self.assertEqual(result,'zip directory doesn\'t exist')
 
-    """Function that tests ifthe attached files zip after giving an empty diretory return that the zip directory is empty.
+    """Attach files zip tests --> directori es buit.
         # @param self The object pointer"""
     def test_attach_files_zip_entrada_directory_buit_sortida_zip_directory_buit(self):
         with Transaction().start(self.database) as txn:
@@ -241,8 +241,9 @@ class WizardExecutarTascaTests(testing.OOTestCase):
 
             self.assertEqual(result,'Directori doesn\'t contain any ZIP')
             
-    
-    def test_attach_files_zip_entrada_config_prova_sortida_files_successfuly_attached(self): # si que dona ok, pero al no tenir el zip donara fail
+    """ Attach files zip test --> file successfully attached
+        # @param self The object pointer"""
+    def test_attach_files_zip_entrada_config_prova_sortida_files_successfuly_attached(self): # si que dona ok, pero al no tenir el zip donara fail pq fem remove
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
@@ -254,6 +255,8 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             result = self.taskStep.attach_files_zip(cursor, uid, crawler_taskStep_id, result_id, crawler_config_obj, pathFileActual, context=None)
             self.assertEqual(result,'files succesfully attached')
 
+    """  Create args for script test --> sortida string arguments
+         # @param self The object pointer"""
     def test_createArgsForScript_entrada_config_prova_sortida_string_arguments(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
