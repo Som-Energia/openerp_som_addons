@@ -147,10 +147,8 @@
         <record model="som.crawlers.result" id="demo_result_3">
         <field name="task_id" ref="demo_accions_planificades_3"/>
         </record>
-        <!--
         <record model="som.crawlers.result" id="demo_result_4">
         <field name="task_id" ref="demo_accions_planificades_3"/>
-        <field name="zip_name"> anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip </field> 
-        </record> -->
+        </record> 
     </data>
 </openerp>

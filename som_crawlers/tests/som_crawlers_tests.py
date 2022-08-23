@@ -33,11 +33,8 @@ class ConfiguracioTests(testing.OOTestCase):
         pass
 
     ## Function that tests if the new password is the same as the old one
-        # @param self The object pointer
-        
-
+        # @param self The object pointe
     def test_canviarContrasenya_contrasenya_nova_igual_contrasenya_antiga_resultat_exception(self):
-
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
@@ -52,10 +49,10 @@ class ConfiguracioTests(testing.OOTestCase):
                 self.Configuracio.canviar_contrasenya(cursor,uid,crawler_config_id,password)
 
             self.assertTrue('Contrasenya identica a la anterior!','Torna a introduir una contrasenya diferent a la anterior' in context.exception)
+
     ## Function that tests if the modification password gets an ok result
         # @param self The object pointer
     def test_canviarContrasenya_nova_resultat_ok(self):
-
             with Transaction().start(self.database) as txn:
                 cursor = txn.cursor
                 uid = txn.user
@@ -72,7 +69,6 @@ class ConfiguracioTests(testing.OOTestCase):
 
 # Module that tests the executar tasca wizard
 class WizardExecutarTascaTests(testing.OOTestCase):
-
     ## Functiom that set up all the module dependencies
         # @param self The object pointer
     def setUp(self):
@@ -122,7 +118,6 @@ class WizardExecutarTascaTests(testing.OOTestCase):
                 #objecte.browse(... + id) per llegir el objecte al complet.
 
     def no_test_download_files_resultat_files_has_been_succesfully_downloaded(self):
-
         with Transaction().start(self.database) as txn:
                 cursor = txn.cursor
                 uid = txn.user
@@ -140,7 +135,6 @@ class WizardExecutarTascaTests(testing.OOTestCase):
     """Import xml test --> id does not exist
         # @param self The object pointer"""
     def test_import_xml_files_resultat_task_step_id_does_not_exist(self):
-
             with Transaction().start(self.database) as txn:
                 cursor = txn.cursor
                 uid = txn.user
@@ -153,7 +147,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
                 self.assertTrue('don\'t exist id attachment' in context.exception)
 
        
-    def no_test_import_xml_files_entrada_zip_prova_sortida_import_donee(self): 
+    def test_import_xml_files_entrada_zip_prova_sortida_import_donee(self): 
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
@@ -179,7 +173,6 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             
     def no_test_executar_una_tasca(self):
          with Transaction().start(self.database) as txn:
-
             cursor = txn.cursor
             uid = txn.user
             crawler_task_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_accions_planificades_1')[1]
@@ -254,7 +247,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             pathFileActual = os.path.join(os.path.dirname(os.path.realpath(__file__)),'../demo')
             result = self.taskStep.attach_files_zip(cursor, uid, crawler_taskStep_id, result_id, crawler_config_obj, pathFileActual, context=None)
             self.assertEqual(result,'files succesfully attached')
-
+    
     """  Create args for script test --> sortida string arguments
          # @param self The object pointer"""
     def test_createArgsForScript_entrada_config_prova_sortida_string_arguments(self):
@@ -270,3 +263,4 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             result_string ="-u  Hola  -d 5 -f prova.txt -url https://egymonluments.gov.eg/en/museums/egyptian-museum  -p  ***  -c Selenium -b firefox -n Tutankamon -fltr  https://egymonuments.gov.eg/en/collections/kawit-sarcophagus-4  -nfp False"
             
             self.assertEqual(result,result_string)
+

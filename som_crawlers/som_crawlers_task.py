@@ -230,7 +230,6 @@ class SomCrawlersTaskStep(osv.osv):
             import_wizard_id = WizardImportAtrF1.create(cursor,uid,values)
             import_wizard  = WizardImportAtrF1.browse(cursor, uid, import_wizard_id)
             context = {'active_ids': [import_wizard.id], 'active_id': import_wizard.id}
-
             try:
                 import_wizard.action_import_xmls(context)
                 if import_wizard.state == 'load':
@@ -250,8 +249,8 @@ class SomCrawlersTaskStep(osv.osv):
             output = f.read().replace('\n', ' ')
         f.close()
         os.remove(os.path.join(path, "outputFiles/",fileName))
-
         return output
+    
     #test ok
     def createArgsForScript(self, cursor, uid, id, config_obj, fileName):
         str_days = str(config_obj.days_of_margin)
