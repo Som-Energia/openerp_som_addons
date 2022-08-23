@@ -190,7 +190,8 @@ class SomCrawlersTaskStep(osv.osv):
                 if ret_value != 0:
                     output = "System call from download files failed"
                 else:
-                    output = self.readOutputFile(cursor, uid, path, fileName)
+                    pathToZip = os.path.join(path,'outputFiles')
+                    output = self.readOutputFile(cursor, uid, pathToZip, fileName)
                 if output == 'Files have been successfully downloaded':
                     output = self.attach_files_zip(cursor, uid, id, result_id, config_obj, path, context = context)
                 else:
@@ -246,15 +247,16 @@ class SomCrawlersTaskStep(osv.osv):
 
     def readOutputFile(self, cursor, uid, path, fileName):
         try:
-            with open(os.path.join(path,"outputFiles/",fileName)) as f:
+            path = os.path.join(path,fileName)
+            with open(path) as f:
                 output = f.read().replace('\n', ' ')
             f.close()
-            os.remove(os.path.join(path, "outputFiles/",fileName))
+            os.remove(path)
         except Exception as e:
             return str(e)
-        
+
         return output
-    
+
     #test ok
     def createArgsForScript(self, cursor, uid, id, config_obj, fileName):
         str_days = str(config_obj.days_of_margin)

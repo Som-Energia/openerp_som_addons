@@ -78,12 +78,12 @@ class WizardExecutarTascaTests(testing.OOTestCase):
         self.Data = self.pool.get('ir.model.data')
         self.task = self.pool.get('som.crawlers.task')
         self.taskStep = self.pool.get('som.crawlers.task.step')
-        self.result = self.pool.get('som.crawlers.result')              
+        self.result = self.pool.get('som.crawlers.result')
         self.wiz= self.pool.get('wizard.executar.tasca')
 
     def tearDown(self):
         pass
-    
+
     """Function that tests if after trying to download files, the result is "Falta especificar nom fitxer"
         # @param self The object pointer"""
     def test_download_files_resultat_falta_especificar_nomfitxer(self): #no detecta l'id que toca??
@@ -99,7 +99,6 @@ class WizardExecutarTascaTests(testing.OOTestCase):
                 resultat = self.taskStep.download_files(cursor, uid,crawler_task_step_id, result_id)
                 #check result
                 self.assertEqual(resultat, 'Falta especificar nom fitxer')
-               
 
     """Function that tests if after trying to download files, the result is that the directory does not exits
         # @param self The object pointer"""
@@ -112,7 +111,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
                 #set values
                 result_id = self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_result_1')[1]
                 #try test
-                
+
                 result = self.taskStep.download_files(cursor, uid,crawler_task_step_id,result_id)
                 #check result
                 self.assertEqual(result, 'File or directory doesn\'t exist')
@@ -147,7 +146,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
                 #check result
                 self.assertTrue('don\'t exist id attachment' in context.exception)
 
-       
+
     def no_test_import_xml_files_entrada_zip_prova_sortida_import_donee(self): 
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
@@ -193,7 +192,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             crawler_config_obj = self.Configuracio.browse(cursor, uid, crawler_config_id)
             result = self.task.id_del_portal_config(cursor,uid,crawler_task_id)
             self.assertEqual(result,crawler_config_obj)
-        
+
     """ Id portal config tests --> error result
         # @param self The object pointer"""
     def test_id_del_portal_config_entrada_anselmo_sortida_prova_i_error(self):
@@ -234,7 +233,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             result = self.taskStep.attach_files_zip(cursor, uid, crawler_taskStep_id, result_id, crawler_config_obj, pathFileActual, context=None)
 
             self.assertEqual(result,'Directori doesn\'t contain any ZIP')
-            
+
     """ Attach files zip test --> file successfully attached
         # @param self The object pointer"""
     def test_attach_files_zip_entrada_config_prova_sortida_files_successfuly_attached(self): # si que dona ok, pero al no tenir el zip donara fail pq fem remove
@@ -248,7 +247,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             pathFileActual = os.path.join(os.path.dirname(os.path.realpath(__file__)),'../demo')
             result = self.taskStep.attach_files_zip(cursor, uid, crawler_taskStep_id, result_id, crawler_config_obj, pathFileActual, context=None)
             self.assertEqual(result,'files succesfully attached')
-    
+
     """  Create args for script test --> sortida string arguments
          # @param self The object pointer"""
     def test_createArgsForScript_entrada_config_prova_sortida_string_arguments(self):
@@ -262,10 +261,10 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             fileName = "prova.txt"
             result = self.taskStep.createArgsForScript(cursor,uid,crawler_taskStep_id,crawler_config_obj,fileName)
             result_string ="-u  Hola  -d 5 -f prova.txt -url https://egymonluments.gov.eg/en/museums/egyptian-museum  -p  ***  -c Selenium -b firefox -n Tutankamon -fltr  https://egymonuments.gov.eg/en/collections/kawit-sarcophagus-4  -nfp False"
-            
+
             self.assertEqual(result,result_string)
 
-    
+
     def test_readOutPutFile_entrada_path_inexistent_sortida_excepcio(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
@@ -273,7 +272,13 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             path = "~/hola"
             filename = "porva.zip"
             result = self.taskStep.readOutputFile(cursor,uid,path,filename)
-            print (result)
-            self.assertTrue('No such file or directory' ,result)
-            self.assertTrue('[Errno 2] No such file or directory', result)
-
+            self.assertEqual("[Errno 2] No such file or directory: '" + path + '/' + filename +"'" ,result)
+    
+    def test_readOutPutFile_entrada_path_zip_demo_2_sortida_ok(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            path = "/home/somenergia/src/openerp_som_addons/som_crawlers/demo/zip_demo_2"
+            filename = "anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip"
+            result = self.taskStep.readOutputFile(cursor,uid,path,filename)
+            self.assertNotEqual("[Errno 2] No such file or directory: '" + path + '/' + filename +"'" ,result)
