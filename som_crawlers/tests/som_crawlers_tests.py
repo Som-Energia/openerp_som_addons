@@ -155,7 +155,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             crawler_taskStep_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_taskStep_8')[1]
             crawler_taskStep_obj = self.taskStep.browse(cursor,uid,crawler_taskStep_id)
             result_id = self.Data.get_object_reference(cursor, uid, 'som_crawlers', 'demo_result_4')[1]
-            pathToZip = "~/openerp_som_addons/som_crawlers/demo/zip_demo_2/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip"
+            pathToZip = '~/src/openerp_som_addons/som_crawlers/demo/zip_demo_2/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip'
             with open(pathToZip ,'rb') as f:
                 content  = f.read()
             attachment = {
