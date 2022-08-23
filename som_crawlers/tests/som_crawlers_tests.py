@@ -8,7 +8,8 @@ from datetime import datetime, timedelta
 import wizard
 import os
 import base64
-#from mock import patch,Mock
+from pathlib import Path
+import zipfile
 # @author Ikram Ahdadouche El Idrissi
 # @author Dalila Jbilou Kouhous
 
@@ -147,7 +148,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
                 self.assertTrue('don\'t exist id attachment' in context.exception)
 
        
-    def test_import_xml_files_entrada_zip_prova_sortida_import_donee(self): 
+    def no_test_import_xml_files_entrada_zip_prova_sortida_import_donee(self): 
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
@@ -155,8 +156,8 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             crawler_taskStep_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_taskStep_8')[1]
             crawler_taskStep_obj = self.taskStep.browse(cursor,uid,crawler_taskStep_id)
             result_id = self.Data.get_object_reference(cursor, uid, 'som_crawlers', 'demo_result_4')[1]
-            pathToZip = '~/src/openerp_som_addons/som_crawlers/demo/zip_demo_2/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip'
-            with open(pathToZip ,'rb') as f:
+            pathToZip = zipfile.ZipFile('~/src/openerp_som_addons/som_crawlers/demo/zip_demo_2/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip')
+            with open(pathToZip,'r') as f:
                 content  = f.read()
             attachment = {
                         'name':  "anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip",
@@ -170,7 +171,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             result.write(cursor,uid, result_id, {'zip_name': attachment_id})
             result = self.taskStep.import_xml_files(cursor,uid,crawler_taskStep_id,result_id) #'som.crawler.task.step' import_wizard
             self.assertEqual(result,'Successful import') 
-            
+
     def no_test_executar_una_tasca(self):
          with Transaction().start(self.database) as txn:
             cursor = txn.cursor
@@ -256,11 +257,23 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             uid = txn.user
             crawler_config_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_configuracio_4')[1]
             crawler_taskStep_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_taskStep_9')[1]
-            
+
             crawler_config_obj = self.Configuracio.browse(cursor,uid,crawler_config_id)
             fileName = "prova.txt"
             result = self.taskStep.createArgsForScript(cursor,uid,crawler_taskStep_id,crawler_config_obj,fileName)
             result_string ="-u  Hola  -d 5 -f prova.txt -url https://egymonluments.gov.eg/en/museums/egyptian-museum  -p  ***  -c Selenium -b firefox -n Tutankamon -fltr  https://egymonuments.gov.eg/en/collections/kawit-sarcophagus-4  -nfp False"
             
             self.assertEqual(result,result_string)
+
+    
+    def test_readOutPutFile_entrada_path_inexistent_sortida_excepcio(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            path = "~/hola"
+            filename = "porva.zip"
+            result = self.taskStep.readOutputFile(cursor,uid,path,filename)
+            print (result)
+            self.assertTrue('No such file or directory' ,result)
+            self.assertTrue('[Errno 2] No such file or directory', result)
 

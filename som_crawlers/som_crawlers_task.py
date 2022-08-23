@@ -245,10 +245,14 @@ class SomCrawlersTaskStep(osv.osv):
             return False
 
     def readOutputFile(self, cursor, uid, path, fileName):
-        with open(os.path.join(path,"outputFiles/",fileName)) as f:
-            output = f.read().replace('\n', ' ')
-        f.close()
-        os.remove(os.path.join(path, "outputFiles/",fileName))
+        try:
+            with open(os.path.join(path,"outputFiles/",fileName)) as f:
+                output = f.read().replace('\n', ' ')
+            f.close()
+            os.remove(os.path.join(path, "outputFiles/",fileName))
+        except Exception as e:
+            return str(e)
+        
         return output
     
     #test ok
