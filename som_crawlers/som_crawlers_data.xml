@@ -2,7 +2,7 @@
 <openerp>
     <data noupdate="0">
         <!-- Configuracions (diferents configuracions)-->
-        <record model="som.crawlers.config" id="configuracio_1">
+        <record model="som.crawlers.config" id="anselmo_conf">
         <field name="name">anselmo</field>
         <field name="crawler">Selenium</field>
         <field name="days_of_margin">5</field>
@@ -10,7 +10,7 @@
         <field name="browser">firefox</field>
         <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
-        <record model="som.crawlers.config" id="configuracio_2">
+        <record model="som.crawlers.config" id="fenosa_conf">
         <field name="name">fenosa</field>
         <field name="crawler">Selenium</field>
         <field name="days_of_margin">3</field>
@@ -18,17 +18,72 @@
         <field name="browser">chrome</field>
         <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
+        <record model="som.crawlers.config" id="viesgo_conf">
+        <field name="name">viesgo</field>
+        <field name="crawler">Selenium</field>
+        <field name="days_of_margin">10</field>
+        <field name="pending_files_only" eval="False"/>
+        <field name="browser">firefox</field>
+        <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="viesgo_atr_conf">
+        <field name="name">viesgo_atr</field>
+        <field name="crawler">Selenium</field>
+        <field name="days_of_margin">10</field>
+        <field name="pending_files_only" eval="False"/>
+        <field name="browser">firefox</field>
+        <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="viesgo_r_conf">
+        <field name="name">viesgo_r</field>
+        <field name="crawler">Selenium</field>
+        <field name="days_of_margin">10</field>
+        <field name="pending_files_only" eval="False"/>
+        <field name="browser">firefox</field>
+        <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="viesgo_f1_conf">
+        <field name="name">viesgo_f1</field>
+        <field name="crawler">Selenium</field>
+        <field name="days_of_margin">10</field>
+        <field name="pending_files_only" eval="False"/>
+        <field name="browser">firefox</field>
+        <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="viesgo_d_conf">
+        <field name="name">viesgo_d</field>
+        <field name="crawler">Selenium</field>
+        <field name="days_of_margin">10</field>
+        <field name="pending_files_only" eval="False"/>
+        <field name="browser">firefox</field>
+        <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
         <!-- Exemple accions planificades-->
         <!-- Tasques generals-->
         <record model="som.crawlers.task" id="accions_planificades_1">
         <field name="name">Anselmo descargar R1</field>
         <field name="active">True</field>
-        <field name="configuracio_id" ref="configuracio_1"/>
+        <field name="configuracio_id" ref="anselmo_conf"/>
         </record>
         <record model="som.crawlers.task" id="accions_planificades_2">
         <field name="name">Fenosa descargar F1 i ATR</field>
         <field name="active">True</field>
-        <field name="configuracio_id" ref="configuracio_2"/>
+        <field name="configuracio_id" ref="fenosa_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_atr_viesgo">
+        <field name="name">Viesgo descargar ATR</field>
+        <field name="active">True</field>
+        <field name="configuracio_id" ref="viesgo_atr_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_R_viesgo">
+        <field name="name">Viesgo descargar R</field>
+        <field name="active">True</field>
+        <field name="configuracio_id" ref="viesgo_r_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_F1_viesgo">
+        <field name="name">Viesgo descargar F1</field>
+        <field name="active">True</field>
+        <field name="configuracio_id" ref="viesgo_f1_conf"/>
         </record>
         <!-- Passos de cada tasca general-->
         <record model="som.crawlers.task.step" id="taskStep_3">
@@ -59,11 +114,55 @@
         <field name="params">{}</field>
         <field name="task_id" ref="accions_planificades_1"/>
         </record>
+        <!--Viesgo-->
+        <record model="som.crawlers.task.step" id="taskStep_viesgo_download_ATR">
+        <field name="name">Descarregar fitxers</field>
+        <field name="sequence">1</field>
+        <field name="function">download_files</field>
+        <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+        <field name="task_id" ref="descargar_atr_viesgo"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_viesgo_import_ATR">
+        <field name="name">Importar fitxers XML</field>
+        <field name="sequence">2</field>
+        <field name="function">import_xml_files</field>
+        <field name="params">{}</field>
+        <field name="task_id" ref="descargar_atr_viesgo"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_viesgo_download_R">
+        <field name="name">Descarregar fitxers</field>
+        <field name="sequence">1</field>
+        <field name="function">download_files</field>
+        <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+        <field name="task_id" ref="descargar_R_viesgo"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_viesgo_import_R">
+        <field name="name">Importar fitxers XML</field>
+        <field name="sequence">2</field>
+        <field name="function">import_xml_files</field>
+        <field name="params">{}</field>
+        <field name="task_id" ref="descargar_R_viesgo"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_viesgo_download_F1">
+        <field name="name">Descarregar fitxers</field>
+        <field name="sequence">1</field>
+        <field name="function">download_files</field>
+        <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+        <field name="task_id" ref="descargar_F1_viesgo"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_viesgo_import_F1">
+        <field name="name">Importar fitxers XML</field>
+        <field name="sequence">2</field>
+        <field name="function">import_xml_files</field>
+        <field name="params">{}</field>
+        <field name="task_id" ref="descargar_F1_viesgo"/>
+        </record>
         <record model="res.config" id="som_crawlers_massive_importer_python_path">
             <field name="name">som_crawlers_massive_importer_python_path</field>
             <field name="value">~/.virtualenvs/massive/bin/python</field>
             <field name="description">Conté la ruta de la versió de python que executarà Massive Importer</field>
         </record>
+
         <!-- Executar tasques a partir d'un cron -->
         <record id="ir_cron_run_tasks_action" model="ir.cron">
             <field name="name">Tasca programada</field>

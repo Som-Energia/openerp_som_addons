@@ -8,7 +8,6 @@
             <field name="arch" type="xml">
                 <form string="Configuracio">
                     <field name="name" readonly='1'/>
-                    <field name="className" readonly='1'/>
                     <field name="usuari" readonly='1'/>
                     <field name="contrasenya" readonly='1'/>
                     <field name="url_portal" readonly='1'/>
@@ -29,7 +28,6 @@
             <field name="arch" type="xml">
             <tree string="Configuracio">
                     <field name="name" select="1"/>
-                    <field name="className" />
                     <field name="usuari" select="1"/>
                     <field name="contrasenya" />
                     <field name="url_portal" />

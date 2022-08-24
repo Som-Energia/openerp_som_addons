@@ -4,8 +4,6 @@
 ##Imports
 from nturl2path import url2pathname
 from massive_importer.crawlers.run_crawlers import WebCrawler
-from massive_importer.crawlers.crawlers.spiders.selenium_spiders import anselmo
-from massive_importer.crawlers.crawlers.spiders.selenium_spiders import fenosa
 from massive_importer.crawlers.crawlers.spiders.selenium_spiders import *
 from massive_importer.crawlers.crawlers.spiders.selenium_spiders import PortalConfig
 from massive_importer.lib.exceptions import (
@@ -33,7 +31,6 @@ import importlib
 @click.option('-nfp', '--pfiles', help = 'Pending files only',required = True)
 @click.option('-b', '--browser', help = 'Browser', required = True)
 
-
 ## Function that runs de crawler of the crawler saves the user and the date when it was modified and returns the new password.
         # @param user Username of the portal
         # @param name Crawler portal name
@@ -47,6 +44,7 @@ import importlib
         # @param browser Browser
         # @return Exception or string if everything passed successfully
 def crawl(user, name, password, file, url, filters, crawler, days, pfiles, browser):
+
     wc = WebCrawler()
     path = os.path.dirname(os.path.abspath(__file__))
     f = open(os.path.join(path,"../outputFiles/",file),'w')
