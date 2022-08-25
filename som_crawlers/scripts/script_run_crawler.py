@@ -30,6 +30,7 @@ import importlib
 @click.option('-d', '--days', help = 'Days of margin', required = True )
 @click.option('-nfp', '--pfiles', help = 'Pending files only',required = True)
 @click.option('-b', '--browser', help = 'Browser', required = True)
+@click.option('-pr', '--process', help = 'Process to download', required = False)
 
 ## Function that runs de crawler of the crawler saves the user and the date when it was modified and returns the new password.
         # @param user Username of the portal
@@ -43,8 +44,7 @@ import importlib
         # @param pfiles Pending files only
         # @param browser Browser
         # @return Exception or string if everything passed successfully
-def crawl(user, name, password, file, url, filters, crawler, days, pfiles, browser):
-
+def crawl(user, name, password, file, url, filters, crawler, days, pfiles, browser, process):
     wc = WebCrawler()
     path = os.path.dirname(os.path.abspath(__file__))
     f = open(os.path.join(path,"../outputFiles/",file),'w')
@@ -58,6 +58,7 @@ def crawl(user, name, password, file, url, filters, crawler, days, pfiles, brows
         portalCreds['days_of_margin'] = int(days)
         portalCreds['pending_files_only'] = eval(pfiles)
         portalCreds['browser'] = browser
+        portalCreds['process'] = process
         selenium_spiders_path = os.path.join(
             path, "../spiders/selenium_spiders")
         spec = importlib.util.spec_from_file_location(

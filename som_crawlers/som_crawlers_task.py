@@ -186,7 +186,7 @@ class SomCrawlersTaskStep(osv.osv):
                 cfg_obj = self.pool.get('res.config')
                 path_python = cfg_obj.get(cursor, uid, 'som_crawlers_massive_importer_python_path', '~/.virtualenvs/massive/bin/python')
                 fileName = "output_" + config_obj.name + "_" + datetime.now().strftime("%Y-%m-%d_%H_%M") + ".txt"
-                args_str = self.createArgsForScript(cursor, uid, id, config_obj, fileName)
+                args_str = self.createArgsForScript(cursor, uid, id, config_obj, taskStepParams, fileName)
                 ret_value = os.system("{} {} {}".format(path_python, filePath, args_str))
                 if ret_value != 0:
                     output = "System call from download files failed"
@@ -259,21 +259,38 @@ class SomCrawlersTaskStep(osv.osv):
         return output
 
     #test ok
-    def createArgsForScript(self, cursor, uid, id, config_obj, fileName):
+    def createArgsForScript(self, cursor, uid, id, config_obj, taskStepsParams,fileName):
         str_days = str(config_obj.days_of_margin)
         str_pending = str(config_obj.pending_files_only)
-        args = {
-            '-n':config_obj.name,
-            '-u':config_obj.usuari,
-            '-p':config_obj.contrasenya,
-            '-f':fileName,
-            '-url':config_obj.url_portal,
-            '-fltr':config_obj.filtres,
-            '-c':config_obj.crawler,
-            '-d':str_days,
-            '-nfp':str_pending,
-            '-b':config_obj.browser,
-        }
+        if(taskStepsParams.has_key('process')):
+            args = {
+                '-n':config_obj.name,
+                '-u':config_obj.usuari,
+                '-p':config_obj.contrasenya,
+                '-f':fileName,
+                '-url':config_obj.url_portal,
+                '-fltr':config_obj.filtres,
+                '-c':config_obj.crawler,
+                '-d':str_days,
+                '-nfp':str_pending,
+                '-b':config_obj.browser,
+                '-pr':taskStepsParams['process'],
+            }
+        else:
+            args = {
+                '-n':config_obj.name,
+                '-u':config_obj.usuari,
+                '-p':config_obj.contrasenya,
+                '-f':fileName,
+                '-url':config_obj.url_portal,
+                '-fltr':config_obj.filtres,
+                '-c':config_obj.crawler,
+                '-d':str_days,
+                '-nfp':str_pending,
+                '-b':config_obj.browser,
+            }
+
+
         return " ".join(["{} {}".format(k,v) for k,v in args.iteritems()])
 
 SomCrawlersTaskStep()
