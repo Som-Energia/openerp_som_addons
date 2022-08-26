@@ -519,12 +519,15 @@ class GenerationkWhInvoiceLineOwner(osv.osv):
     def getPriceWithoutGeneration(self, cr, uid, line):
         per_obj = self.pool.get('giscedata.polissa.tarifa.periodes')
         gff_obj = self.pool.get('giscedata.facturacio.factura')
-        ail_obj = self.pool.get('account.invoice.line')
+        gffl_obj = self.pool.get('giscedata.facturacio.factura.linia')
 
         fare_period = gff_obj.get_fare_period(cr, uid, line['product_id'])
         product_id_nogen = per_obj.read(cr, uid, fare_period, ['product_id'])['product_id'][0]
-        line_s_gen_id = ail_obj.search(cr, uid, [('invoice_id','=', line['invoice_id'][0]),('product_id','=',product_id_nogen)])
-        line_s_gen = ail_obj.read(cr, uid, line_s_gen_id[0])
+        line_s_gen_id = gffl_obj.search(cr, uid, [
+            ('invoice_id','=', line['invoice_id'][0]),('product_id','=',product_id_nogen),
+            ('data_fins', '=', line['data_fins']), ('data_desde', '=', line['data_desde'])
+        ])
+        line_s_gen = gffl_obj.read(cr, uid, line_s_gen_id[0])
         return line_s_gen
 
     def getProfit(self, cr, uid, line):
