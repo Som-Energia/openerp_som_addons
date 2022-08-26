@@ -26,7 +26,7 @@ class ResPartner(osv.osv):
             allowed = polissa_obj.search(cursor, uid, [
                 '|',
                     ('titular.id', '=', partner['id']),
-                    ('pagador.id', '=', partner['id'])
+                    ('administradora.id', '=', partner['id'])
             ])
             if allowed:
                 allowed = [{'name': x.name, 'cups': x.cups.name}
