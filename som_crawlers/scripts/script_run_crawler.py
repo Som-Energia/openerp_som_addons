@@ -67,8 +67,7 @@ def crawl(user, name, password, file, url, filters, crawler, days, pfiles, brows
         spec.loader.exec_module(spider_module)
         logger.debug("Loaded %s module" % (name))
         logger.debug("Starting %s crawling..." % (name))
-        spider_instance = spider_module.instance(
-            wc.selenium_crawlers_conf[name])
+        spider_instance = spider_module.instance(wc.selenium_crawlers_conf[name])
         spider_instance.start_with_timeout(portalCreds, debug=True)
         f.write('Files have been successfully downloaded')
 
