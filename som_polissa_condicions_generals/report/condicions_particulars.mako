@@ -562,7 +562,7 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                         ${_(u") en funció del repartiment horari energètic d'un consumidor/a tipus (")}<a href="https://www.ree.es/es/clientes/consumidor/gestion-medidas-electricas/consulta-perfiles-de-consumo">${_(u"publicat per Red Eléctrica de")}</a>
                         <a href="https://www.ree.es/es/clientes/consumidor/gestion-medidas-electricas/consulta-perfiles-de-consumo">España</a>
                         &nbsp;${_(u"segons la")}&nbsp;<a href="https://www.boe.es/diario_boe/txt.php?id=BOE-A-2021-21395">${_(u"Resolució de 23/12/2021")}</a>
-                        ${_(u"). El preu obtingut el multiplicarem, en cada factura, per l'energia total consumida en el període de facturació. (El mecanisme d’ajust al gas no aplica per als contractes de les Illes Canàries ni Balears, i tampoc aplica a la tarifa Generation kWh.)")}
+                        ${_(u"). El preu obtingut el multiplicarem, en cada factura, per l'energia total consumida en el període de facturació. El mecanisme d’ajust al gas no aplica per als contractes de les Illes Canàries ni Balears, i tampoc aplica a la tarifa Generation kWh.")}
                     </div>
                 %endif
             </div>
