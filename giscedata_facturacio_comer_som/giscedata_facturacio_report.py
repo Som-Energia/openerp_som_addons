@@ -1826,8 +1826,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             days_per_year = is_leap_year(datetime.strptime(l.data_desde, '%Y-%m-%d').year) and 366 or 365
 
             if lines_data.has_key(block) and lines_data[block].has_key(l.name):
-                linies_data[block][l.name]['quantity'] = linies_data[block][l.name]['quantity'] + l.quantity
-                linies_data[block][l.name]['price_subtotal'] = linies_data[block][l.name]['price_subtotal'] + l.price_subtotal
+                lines_data[block][l.name]['quantity'] = lines_data[block][l.name]['quantity'] + l.quantity
+                lines_data[block][l.name]['price_subtotal'] = lines_data[block][l.name]['price_subtotal'] + l.price_subtotal
             else:
                 lines_data[block][l.name] = {
                     'quantity': l.quantity,
