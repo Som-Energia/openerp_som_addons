@@ -25,9 +25,9 @@ import importlib
 @click.option('-p', '--password', help='Password of the portal.', required = True)
 @click.option('-f', '--file', help='Log file name', required = True)
 @click.option('-url', '--url', help='URL of the portal.', required = True)
-@click.option('-fltr', '--filters', help='Filters.', required = True)
-@click.option('-c', '--crawler', help = 'Crawler', required = False)
-@click.option('-d', '--days', help = 'Days of margin', required = True )
+@click.option('-fltr', '--filters', help='Filters.', required = False)
+@click.option('-c', '--crawler', help = 'Crawler', required = True)
+@click.option('-d', '--days', help = 'Days of margin', required = True)
 @click.option('-nfp', '--pfiles', help = 'Pending files only',required = True)
 @click.option('-b', '--browser', help = 'Browser', required = True)
 @click.option('-pr', '--process', help = 'Process to download', required = False)
@@ -53,12 +53,14 @@ def crawl(user, name, password, file, url, filters, crawler, days, pfiles, brows
         portalCreds['username'] = user
         portalCreds['password'] = password
         portalCreds['url'] = url
-        portalCreds['filters'] = filters
+        if filters!='None':
+            portalCreds['filters'] = filters
         portalCreds['crawler'] = crawler
         portalCreds['days_of_margin'] = int(days)
         portalCreds['pending_files_only'] = eval(pfiles)
         portalCreds['browser'] = browser
-        portalCreds['process'] = process
+        if process!='None':
+            portalCreds['process'] = process
         selenium_spiders_path = os.path.join(
             path, "../spiders/selenium_spiders")
         spec = importlib.util.spec_from_file_location(
