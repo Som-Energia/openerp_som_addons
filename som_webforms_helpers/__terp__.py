@@ -16,6 +16,7 @@
         "tests/tarifes_demo.xml",
     ],
     "update_xml":[
+        "som_webforms_helpers_data.xml"
     ],
     "active": False,
     "installable": True

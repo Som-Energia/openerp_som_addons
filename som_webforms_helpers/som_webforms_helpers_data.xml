@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data noupdate="1">
+        <record model="res.config" id="iva_reduit_get_tariff_prices_end_date">
+            <field name="name">iva_reduit_get_tariff_prices_end_date</field>
+            <field name="description">Data final de l'aplicació de IVA reduït per contractes amb potència menor o igual 10 kwh quan el preu mes anterior major 45€/Mwh</field>
+            <field name="value">2099-12-31</field>
+        </record>
+    </data>
+</openerp>

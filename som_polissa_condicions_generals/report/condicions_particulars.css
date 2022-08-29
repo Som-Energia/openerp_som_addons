@@ -399,3 +399,8 @@ ol.decimal-list > li:before {
 .normal_font_weight {
     font-weight: normal;
 }
+
+.avis_rmag {
+    text-align: justify;
+    padding-top: 1em;
+}

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv
 from tools import config
+from datetime import datetime
 
 class GiscedataPolissaTarifa(osv.osv):
     _name = 'giscedata.polissa.tarifa'
@@ -86,7 +87,7 @@ class GiscedataPolissaTarifa(osv.osv):
 
         return price, prod.uom_id
 
-    def get_tariff_prices(self, cursor, uid, tariff_id, municipi_id,
+    def get_tariff_prices(self, cursor, uid, tariff_id, municipi_id, max_power,
                           fiscal_position_id=None, with_taxes=False,
                           date=False, context=None):
         """
@@ -122,6 +123,8 @@ class GiscedataPolissaTarifa(osv.osv):
         uom_obj = self.pool.get('product.uom')
         prod_obj = self.pool.get('product.product')
         prop_obj = self.pool.get('ir.property')
+        conf_obj = self.pool.get('res.config')
+        imd_obj = self.pool.get('ir.model.data')
 
         # get default pricelist for this tariff
         tariff = tariff_obj.browse(cursor, uid, tariff_id)
@@ -132,6 +135,7 @@ class GiscedataPolissaTarifa(osv.osv):
 
         if not date:
             pricelist = pricelist_municipi
+            date = datetime.today().strftime('%Y-%m-%d')
         else:
             pricelist = []
             for item in pricelist_municipi:
@@ -145,12 +149,18 @@ class GiscedataPolissaTarifa(osv.osv):
 
         fiscal_position = None
         if not fiscal_position_id:
-            prop_id = prop_obj.search(cursor,uid,[('name','=','property_account_position'),('res_id','=',False)])
-            if isinstance(prop_id,list):
-                prop_id = prop_id[0]
-            prop=prop_obj.browse(cursor, uid, prop_id)
-            if prop.value:
-                fiscal_position_id = int(prop.value.split(',')[1])
+            end_iva_reduit = conf_obj.get(
+              cursor, uid, 'iva_reduit_get_tariff_prices_end_date', '2099-12-31'
+            )
+            if date <= end_iva_reduit and max_power <= 10000:
+                fiscal_position_id = imd_obj.get_object_reference(cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
+            else:
+                prop_id = prop_obj.search(cursor,uid,[('name','=','property_account_position'),('res_id','=',False)])
+                if isinstance(prop_id,list):
+                    prop_id = prop_id[0]
+                prop=prop_obj.browse(cursor, uid, prop_id)
+                if prop.value:
+                    fiscal_position_id = int(prop.value.split(',')[1])
         if fiscal_position_id:
             fiscal_position = fp_obj.browse(cursor, uid, fiscal_position_id)
 
@@ -214,7 +224,7 @@ class GiscedataPolissaTarifa(osv.osv):
             'uom': '€/{}'.format(uom.name.split('/')[1])
         }
 
-	return preus
+        return preus
 
 
 GiscedataPolissaTarifa()
