@@ -530,6 +530,26 @@ SOM ENERGIA. CORTE LUZ POR IMPAGO EN 48h. Importe pendiente: ${import_pendent}�
             <field name="def_body_text"><![CDATA[<!doctype html><html>Missatge generat automaticament</html>]]>
             </field>
         </record>
+        <record model="poweremail.templates" id="email_generic_N57_contracte_baixa">
+            <field name="name">Impagats: Plantilla genèrica pagament per N57 (codi de barres) contracte de baixa</field>
+            <field name="object_name" model="ir.model" search="[('name', '=', 'giscedata.facturacio.factura')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">giscedata.facturacio.factura</field>
+            <field name="def_to">${object.address_invoice_id.email}, ${object.polissa_id.direccio_notificacio.email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Pagament factura / Pago Factura ${object.number} de Som Energia</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang"/>
+            <field eval="0" name="send_on_write"/>
+            <field name="file_name">Recibo_${object.number}_N57.pdf</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Gestió de Cobraments')]"/>
+            <field name="def_body_text"><![CDATA[<!doctype html><html>Missatge generat automaticament</html>]]>
+            </field>
+        </record>
         <record model="poweremail.templates" id="email_impagats_48h">
             <field name="name">Impagats: Avui et tallem la llum</field>
             <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.facturacio.factura')]"/>
@@ -582,6 +602,42 @@ import_factura = object.residual
       SOM ENERGIA. Factura ${num_factura} PENDIENTE DE PAGO. Importe pendiente: ${import_factura} €. Contrato: ${polissa}. Para contactar: 900.103.605 / cobros@somenergia.coop
 % endif
 ]]>
+            </field>
+        </record>
+
+        <record model="powersms.templates" id="sms_template_previ_advocats">
+            <field name="name">Enviament SMS Previ advocats</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.facturacio.factura')]"/>
+            <field name="def_from">Info</field>
+            <field name="model_int_name">giscedata.facturacio.factura</field>
+            <field name="def_to">${object.partner_id.www_phone}, ${object.partner_id.www_mobile}</field>
+            <field eval="0" name="auto_sms"/>
+            <field eval="0" name="certificate"/>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.invoice_id.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="enforce_from_account" model="powersms.core_accounts" search="[('name','=', 'SMS Account')]"/>
+            <field name="def_body_text"><![CDATA[
+            <%
+            import datetime
+            polissa = object.polissa_id.name
+            factures_pendents = fact_obj.search(object._cr, object._uid, [
+            ('polissa_id', '=', object.polissa_id.id),
+            ('type', 'in', ['out_invoice', 'out_refund']),
+            ('pending_state', '!=', False),
+            ('pending_state', 'not in', ids_exclosos)
+            ])
+
+            import_pendent = sum([item['amount_total'] for item in fact_obj.read(object._cr, object._uid, factures_pendents, ['amount_total'])])
+            data_venciment = (datetime.date.today() + datetime.timedelta(days=7)).strftime("%d-%m-%Y")
+            %>
+
+            % if object.invoice_id.partner_id.lang == "ca_ES":
+                SOM ENERGIA Baixa contracte. Pendent: ${import_pendent}€. El ${data_venciment} passarem al Servei extern de Recobrament. Fer transferència: ES8214910001292027098223 Ref:${polissa}
+            % else:
+                SOM ENERGIA Baja contrato. Pendiente: ${import_pendent}€. El ${data_venciment} pasaremos al Servicio de Recobros, hacer transferencia: ES8214910001292027098223 Ref:${polissa}
+            % endif
+            ]]>
             </field>
         </record>
 

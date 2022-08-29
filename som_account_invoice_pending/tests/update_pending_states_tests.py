@@ -37,6 +37,10 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             cursor, uid, 'som_account_invoice_pending', 'email_impagats_48h'
         )[1]
 
+        self.email_N57_left_template_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_account_invoice_pending', 'email_generic_N57_contracte_baixa'
+        )[1]
+
         self.sms_annex4_template_id = imd_obj.get_object_reference(
             cursor, uid, 'som_account_invoice_pending', 'sms_template_annex4'
         )[1]
