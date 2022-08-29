@@ -18,18 +18,6 @@
         <field name="browser">firefox</field>
         <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
-<<<<<<< HEAD
-        <record model="som.crawlers.config" id="serrania_conf">
-        <field name="name">serrania</field>
-        <field name="crawler">Selenium</field>
-        <field name="days_of_margin">80</field>
-        <field name="pending_files_only" eval="False"/>
-        <field name="browser">firefox</field>
-        <field name="user_ultima_modificacio" ref="base.user_admin"/>
-        </record>
-        
-=======
-        </record>
         <record model="som.crawlers.config" id="hc_conf">
         <field name="name">hc</field>
         <field name="crawler">Selenium</field>
@@ -38,7 +26,22 @@
         <field name="browser">chrome</field>
         <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
->>>>>>> 94e8d2a00f276621a040acd9f89429131ee7942a
+        <record model="som.crawlers.config" id="serrania_conf">
+        <field name="name">serrania</field>
+        <field name="crawler">Selenium</field>
+        <field name="days_of_margin">3</field>
+        <field name="pending_files_only" eval="False"/>
+        <field name="browser">chrome</field>
+        <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="meliana_conf">
+        <field name="name">meliana</field>
+        <field name="crawler">Selenium</field>
+        <field name="days_of_margin">3</field>
+        <field name="pending_files_only" eval="False"/>
+        <field name="browser">chrome</field>
+        <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
         <record model="som.crawlers.config" id="anselmo_conf">
         <field name="name">anselmo</field>
         <field name="crawler">Selenium</field>
@@ -189,6 +192,13 @@
         <field name="active">True</field>
         <field name="configuracio_id" ref="serrania_conf"/>
         </record>
+        <!--Meliana-->
+        <record model="som.crawlers.task" id="descargar_meliana">
+        <field name="name">Descargar Meliana</field>
+        <field name="active">True</field>
+        <field name="configuracio_id" ref="meliana_conf"/>
+        </record>
+
         <!--  Iberdrola[different]-->
         <record model="som.crawlers.task" id="descargar_iberdrola_contratacion">
         <field name="name">Descargar Iberdrola Contrataciones</field>
@@ -366,6 +376,22 @@
         <field name="params">{}</field>
         <field name="task_id" ref="descargar_soller"/>
         </record>
+        <!--Meliana-->
+        <record model="som.crawlers.task.step" id="pas_descargar_meliana">
+        <field name="name">Descarregar fitxers</field>
+        <field name="sequence">1</field>
+        <field name="function">download_files</field>
+        <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+        <field name="task_id" ref="descargar_meliana"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_meliana">
+        <field name="name">Importar fitxers XML</field>
+        <field name="sequence">2</field>
+        <field name="function">import_xml_files</field>
+        <field name="params">{}</field>
+        <field name="task_id" ref="descargar_meliana"/>
+        </record>
+
         <!--Serrania-->
         <record model="som.crawlers.task.step" id="pas_descargar_serrania">
         <field name="name">Descarregar fitxers</field>
