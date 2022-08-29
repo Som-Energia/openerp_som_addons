@@ -11,6 +11,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: support@openerp.com\n"
 "POT-Creation-Date: 2022-08-26 11:36+0000\n"
 "PO-Revision-Date: 2022-08-26 09:38+0000\n"
+
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -453,6 +454,7 @@ msgstr "Valle"
 msgid "Potència contractada (kW):"
 msgstr "Potencia contratada (kW):"
 
+
 #: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:344
 msgid "(vigents fins al {})"
 msgstr "(vigentes hasta el {})"
@@ -468,16 +470,19 @@ msgstr "(vigentes a partir del {})"
 msgid "TARIFES D'ELECTRICITAT"
 msgstr "TARIFAS DE ELECTRICIDAD"
 
+
 #: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:402
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:479
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:450
 msgid "Terme potència (€/kW i any)"
 msgstr "Término potencia (€/kW y año) "
 
+
 #: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:452
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:528
 msgid "Pla"
 msgstr "Llano"
+
 
 #: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:460
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:536
@@ -546,6 +551,7 @@ msgid ""
 "i publicat a la nostra pàgina web, la factura inclourà un import variable "
 "associat al mecanisme d'ajust establert al"
 msgstr "Además del precio fijo asociado al coste de la energía, establecido por Som Energia y publicado en nuestra página web, la factura incluirá un importe variable asociado al mecanismo de ajuste establecido en el"
+
 
 #: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:561
 msgid ""

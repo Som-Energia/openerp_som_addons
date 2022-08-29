@@ -30,7 +30,6 @@
         'giscedata_switching_activation_data.xml',
         'giscedata_facturacio_switching_error_data.xml',
         'wizard/wizard_comment_to_F1_view.xml',
-        'security/som_switching.xml',
         'security/ir.model.access.csv',
         'giscedata_switching_rebutjos_m.xml',
         'giscedata_switching_rebutjos_c.xml',

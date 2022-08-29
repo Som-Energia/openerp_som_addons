@@ -8,6 +8,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: support@openerp.com\n"
 "POT-Creation-Date: 2022-08-26 11:36+0000\n"
 "PO-Revision-Date: 2022-08-26 11:36+0000\n"
+
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -510,6 +511,7 @@ msgstr ""
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:509
 msgid "(2) Autoconsum (€/kWh)"
 msgstr ""
+
 
 #: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:530
 msgid "Tarifa indexada - el preu es calcula d'acord amb la fórmula:"
