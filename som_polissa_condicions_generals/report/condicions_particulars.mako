@@ -343,7 +343,7 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                 if not data_final and dades_tarifa['date_end']:
                     text_vigencia = _(u"(vigents fins al {})").format(dades_tarifa['date_end'])
                 elif dades_tarifa['date_end'] and dades_tarifa['date_start']:
-                    text_vigencia = _(u"(vigents fins al {})").format(min(datetime.strptime(data_final, '%Y-%m-%d'), datetime.strptime(dades_tarifa['date_end'], '%Y-%m-%d')).strftime('%d/%m/%Y'))
+                    text_vigencia = _(u"(vigents fins al {})").format((datetime.strptime(dades_tarifa['date_end'], '%Y-%m-%d')).strftime('%d/%m/%Y'))
                 elif datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d') > datetime.today():
                     text_vigencia = _(u"(vigents a partir del {})").format(datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d').strftime('%d/%m/%Y'))
             %>
