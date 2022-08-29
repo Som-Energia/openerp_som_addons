@@ -18,6 +18,14 @@
         <field name="browser">firefox</field>
         <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
+        <record model="som.crawlers.config" id="serrania_conf">
+        <field name="name">serrania</field>
+        <field name="crawler">Selenium</field>
+        <field name="days_of_margin">80</field>
+        <field name="pending_files_only" eval="False"/>
+        <field name="browser">firefox</field>
+        <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
         
         <record model="som.crawlers.config" id="anselmo_conf">
         <field name="name">anselmo</field>
@@ -156,6 +164,12 @@
         <field name="name">Descargar Soller</field>
         <field name="active">True</field>
         <field name="configuracio_id" ref="soller_conf"/>
+        </record>
+        <!--Serrania-->
+        <record model="som.crawlers.task" id="descargar_serrania">
+        <field name="name">Descargar Serrania</field>
+        <field name="active">True</field>
+        <field name="configuracio_id" ref="serrania_conf"/>
         </record>
         <!--  Iberdrola[different]-->
         <record model="som.crawlers.task" id="descargar_iberdrola_contratacion">
@@ -304,7 +318,7 @@
         <field name="params">{}</field>
         <field name="task_id" ref="descargar_cide"/>
         </record>
-        <!--Cide-->
+        <!--Soler-->
         <record model="som.crawlers.task.step" id="pas_descargar_soller">
         <field name="name">Descarregar fitxers</field>
         <field name="sequence">1</field>
@@ -319,6 +333,22 @@
         <field name="params">{}</field>
         <field name="task_id" ref="descargar_soller"/>
         </record>
+        <!--Serrania-->
+        <record model="som.crawlers.task.step" id="pas_descargar_serrania">
+        <field name="name">Descarregar fitxers</field>
+        <field name="sequence">1</field>
+        <field name="function">download_files</field>
+        <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+        <field name="task_id" ref="descargar_serrania"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_serrania">
+        <field name="name">Importar fitxers XML</field>
+        <field name="sequence">2</field>
+        <field name="function">import_xml_files</field>
+        <field name="params">{}</field>
+        <field name="task_id" ref="descargar_serrania"/>
+        </record>
+
 
         <!--Iberdrola-->
         <record model="som.crawlers.task.step" id="pas_descargar_iberdrola_contratacion">
