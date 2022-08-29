@@ -511,7 +511,8 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                                     </td>
                                 %endfor
                             %endif
-                        </tr>
+                        %endif
+                    </tr>
                     %if polissa.te_assignacio_gkwh:
                     <tr>
                         <td class="bold">${_("(1) GenerationkWh (€/kWh)")}</td>
@@ -556,7 +557,7 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                             %endif
                         %endif
                     </tr>
-                     %endif
+                    %endif
                 </table>
                 <div class="padding_top padding_left padding_right">
                     %if polissa.te_assignacio_gkwh:
