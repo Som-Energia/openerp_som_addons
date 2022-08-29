@@ -119,14 +119,14 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                     %if polissa.state == 'esborrany':
                         &nbsp;
                     %else:
-                        ${data_inici}
+                        ${formatLang(data_inici, date=True)}
                     %endif
                     <br/>
                     <b>${_(u"Data de renovació del subministrament: ")}</b>
                     %if polissa.state == 'esborrany':
                         &nbsp;
                     %else:
-                        ${data_final}
+                        ${formatLang(data_final, date=True)}
                     %endif
                     <br/>
                 </div>
@@ -266,7 +266,7 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
             <div class="peatge_access_content">
                 <div class="padding_bottom padding_left">
                     <b>${_(u"Peatge de transport i distribució: ")}</b>
-                    ${clean(polissa.tarifa_contractada)}
+                    ${clean(tarifa_contractada)}
                 </div>
 
                 <table class="taula_custom new_taula_custom">
@@ -536,7 +536,7 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                         %endif
                     </tr>
                     %endif
-                    %if autoconsumo:
+                    %if autoconsum != '00':
                     <tr>
                         <td><span class="bold">${_("(2) Autoconsum (€/kWh)")}</span></td>
                         %if polissa.mode_facturacio_generacio == 'index':
@@ -563,7 +563,7 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                     %if polissa.te_assignacio_gkwh:
                     <span class="bold">(1) </span> ${_("Terme d'energia en cas de participar-hi, segons condicions del contracte GenerationkWh.")}<br/>
                     %endif
-                    %if autoconsum:
+                    %if autoconsum != '00':
                     <span class="bold">(2) </span> ${_("Preu de la compensació d'excedents, si és aplicable.")}
                     %endif
                     <div class="center avis_impostos">
