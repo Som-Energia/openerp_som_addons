@@ -2,6 +2,14 @@
 <openerp>
     <data noupdate="0">
         <!-- Configuracions (diferents configuracions)-->
+        <record model="som.crawlers.config" id="enguerina_conf">
+        <field name="name">enguerina</field>
+        <field name="crawler">Selenium</field>
+        <field name="days_of_margin">80</field>
+        <field name="pending_files_only" eval="False"/>
+        <field name="browser">firefox</field>
+        <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
         <record model="som.crawlers.config" id="anselmo_conf">
         <field name="name">anselmo</field>
         <field name="crawler">Selenium</field>
@@ -91,12 +99,18 @@
         <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <!-- Exemple accions planificades-->
-        <!--  Endesa [different]-->
+        <record model="som.crawlers.task" id="descargar_enguerina">
+        <field name="name">Descargar Enguerina</field>
+        <field name="active">True</field>
+        <field name="configuracio_id" ref="enguerina_conf"/>
+        </record>
+        <!--Cide-->
         <record model="som.crawlers.task" id="descargar_cide">
         <field name="name">Descargar Cide</field>
         <field name="active">True</field>
         <field name="configuracio_id" ref="cide_conf"/>
         </record>
+        <!--  Endesa [different]-->
         <record model="som.crawlers.task" id="descargar_iberdrola_contratacion">
         <field name="name">Descargar Iberdrola Contrataciones</field>
         <field name="active">True</field>
@@ -193,7 +207,22 @@
         <field name="configuracio_id" ref="viesgo_f1_conf"/>
         </record>
         <!-- Passos de cada tasca general-->
-        <!--Iberdrola-->
+        <!--Enguerina-->
+        <record model="som.crawlers.task.step" id="pas_descargar_enguerina">
+        <field name="name">Descarregar fitxers</field>
+        <field name="sequence">1</field>
+        <field name="function">download_files</field>
+        <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+        <field name="task_id" ref="descargar_enguerina"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_enguerina">
+        <field name="name">Importar fitxers XML</field>
+        <field name="sequence">2</field>
+        <field name="function">import_xml_files</field>
+        <field name="params">{}</field>
+        <field name="task_id" ref="descargar_enguerina"/>
+        </record>
+        <!--Cide-->
         <record model="som.crawlers.task.step" id="pas_descargar_cide">
         <field name="name">Descarregar fitxers</field>
         <field name="sequence">1</field>
@@ -208,6 +237,7 @@
         <field name="params">{}</field>
         <field name="task_id" ref="descargar_cide"/>
         </record>
+        <!--Iberdrola-->
         <record model="som.crawlers.task.step" id="pas_descargar_iberdrola_contratacion">
         <field name="name">Descarregar fitxers</field>
         <field name="sequence">1</field>
