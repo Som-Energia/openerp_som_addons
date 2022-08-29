@@ -464,11 +464,11 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                             <td class="center reset_line_height" colspan="6">
                                 <span class="normal_font_weight">
                                     %if lang ==  'ca_ES':
-                                        <a href="https://www.somenergia.coop/documentacio_EiE/CA_EiE_Explica_Tarifa%20Indexada%20per%20Entitats%20i%20Empreses_Som%20Energia.pdf">
+                                        <a target="_blank" href="https://www.somenergia.coop/documentacio_EiE/CA_EiE_Explica_Tarifa%20Indexada%20per%20Entitats%20i%20Empreses_Som%20Energia.pdf">
                                             <b>${_(u"Tarifa indexada")}</b>
                                         </a>
                                     %else:
-                                        <a href="https://www.somenergia.coop/documentacio_EiE/ES_EiE_Explica_Tarifa%20Indexada%20para%20Entidades%20y%20Empresas_Som%20Energia.pdf">
+                                        <a target="_blank" href="https://www.somenergia.coop/documentacio_EiE/ES_EiE_Explica_Tarifa%20Indexada%20para%20Entidades%20y%20Empresas_Som%20Energia.pdf">
                                             <b>${_(u"Tarifa indexada")}</b>
                                         </a>
                                     %endif
@@ -559,11 +559,11 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                     (not dades_tarifa['date_end'] or dades_tarifa['date_end'] <= end_date_mecanisme_ajust_gas):
                     <div class="avis_rmag">
                         ${_(u"A més del preu fix associat al cost de l'energia, establert per Som Energia i publicat a la nostra pàgina web, la factura inclourà un import variable associat al mecanisme d'ajust establert al")}
-                        &nbsp;<a href="https://www.boe.es/buscar/act.php?id=BOE-A-2022-10557">RD 10/2022</a>.
-                        ${_(u"Aquest import el calcularem per a cada període de facturació. Ponderarem el preu de cada hora del mecanisme d'ajust (")}<a href="https://www.omie.es/es/market-results/daily/average-final-prices/hourly-price-consumers">${_(u"publicat per OMIE")}</a>
-                        ${_(u") en funció del repartiment horari energètic d'un consumidor/a tipus (")}<a href="https://www.ree.es/es/clientes/consumidor/gestion-medidas-electricas/consulta-perfiles-de-consumo">${_(u"publicat per Red Eléctrica de")}</a>
-                        <a href="https://www.ree.es/es/clientes/consumidor/gestion-medidas-electricas/consulta-perfiles-de-consumo">España</a>
-                        &nbsp;${_(u"segons la")}&nbsp;<a href="https://www.boe.es/diario_boe/txt.php?id=BOE-A-2021-21395">${_(u"Resolució de 23/12/2021")}</a>
+                        &nbsp;<a target="_blank" href="https://www.boe.es/buscar/act.php?id=BOE-A-2022-10557">RD 10/2022</a>.
+                        ${_(u"Aquest import el calcularem per a cada període de facturació. Ponderarem el preu de cada hora del mecanisme d'ajust (")}<a target="_blank" href="https://www.omie.es/es/market-results/daily/average-final-prices/hourly-price-consumers">${_(u"publicat per OMIE")}</a>
+                        ${_(u") en funció del repartiment horari energètic d'un consumidor/a tipus (")}<a target="_blank" href="https://www.ree.es/es/clientes/consumidor/gestion-medidas-electricas/consulta-perfiles-de-consumo">${_(u"publicat per Red Eléctrica de")}</a>
+                        <a target="_blank" href="https://www.ree.es/es/clientes/consumidor/gestion-medidas-electricas/consulta-perfiles-de-consumo">&nbsp;España</a>
+                        &nbsp;${_(u"segons la")}&nbsp;<a target="_blank" href="https://www.boe.es/diario_boe/txt.php?id=BOE-A-2021-21395">${_(u"Resolució de 23/12/2021")}</a>
                         ${_(u"). El preu obtingut el multiplicarem, en cada factura, per l'energia total consumida en el període de facturació. El mecanisme d’ajust al gas no aplica per als contractes de les Illes Canàries ni Balears, i tampoc aplica a la tarifa Generation kWh.")}
                     </div>
                 %endif
@@ -577,7 +577,7 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                 %else:
                     ${_(u"Tots els preus que apareixen en aquest contracte")}
                 %endif
-                &nbsp;${_(u"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent en cada moment per a cada tipus de contracte. Actualment, d'acord amb el")}&nbsp;<a href="https://www.boe.es/buscar/act.php?id=BOE-A-2022-10557">${_(u"Reial Decret-llei 11/2022")}</a>, ${_(u"l’IVA aplicable serà del")}&nbsp;
+                &nbsp;${_(u"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent en cada moment per a cada tipus de contracte. Actualment, d'acord amb el")}&nbsp;<a target="_blank" href="https://www.boe.es/buscar/act.php?id=BOE-A-2022-10557">${_(u"Reial Decret-llei 11/2022")}</a>, ${_(u"l’IVA aplicable serà del")}&nbsp;
                 %if polissa.potencia <= 10:
                     ${_(u"5% (sempre que el preu mitjà del mercat majorista del mes anterior al de facturació hagi estat superior a 45€/MWh. En cas que hagi estat inferior, l’IVA que s’aplicarà serà del 21%).")}
                 %else:
