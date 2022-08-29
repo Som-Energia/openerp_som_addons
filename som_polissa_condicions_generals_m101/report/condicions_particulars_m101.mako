@@ -3,7 +3,7 @@
 import calendar
 import time, babel
 from datetime import datetime
-from giscedata_facturacio.report.utils import get_atr_price
+from giscedata_facturacio.report.utils import get_atr_price, get_comming_atr_price
 from som_extend_facturacio_comer.utils import get_gkwh_atr_price
 from giscedata_polissa.report.utils import localize_period, datetime_to_date
 from gestionatr.defs import TABLA_9
@@ -111,7 +111,7 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                 </div>
                 <div id="bloc_dades_capcelera">
                     <%
-                        data_final = polissa.modcontractual_activa.data_final or ''
+                        data_final = polissa.modcontractual_activa.data_final or '9999-12-31'
                         data_inici = polissa.data_alta or ''
                     %>
                     <b>${_(u"Contracte núm.: ")}</b> ${polissa.name}<br/>
@@ -119,14 +119,14 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                     %if polissa.state == 'esborrany':
                         &nbsp;
                     %else:
-                        ${formatLang(data_inici, date=True)}
+                        ${data_inici}
                     %endif
                     <br/>
                     <b>${_(u"Data de renovació del subministrament: ")}</b>
                     %if polissa.state == 'esborrany':
                         &nbsp;
                     %else:
-                        ${formatLang(data_final, date=True)}
+                        ${data_final}
                     %endif
                     <br/>
                 </div>
@@ -261,12 +261,12 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                             tarifa_contractada = gpt_obj.read(cursor, uid, tarifa_id, ["name"])[0]["name"]
                     potencies = pas01.pas_id.pot_ids if es_canvi_tecnic else polissa.potencies_periode 
                     autoconsum = pas01.pas_id.tipus_autoconsum if es_canvi_tecnic else polissa.autoconsumo
-                    
+
             %>
             <div class="peatge_access_content">
                 <div class="padding_bottom padding_left">
-                    <b>${_(u"Tarifa contractada: ")}</b>
-                    ${clean(tarifa_contractada)}
+                    <b>${_(u"Peatge de transport i distribució: ")}</b>
+                    ${clean(polissa.tarifa_contractada)}
                 </div>
 
                 <table class="taula_custom new_taula_custom">
@@ -342,8 +342,29 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                 <div class="padding_top padding_left"><b>${_(u"Tipus de contracte: ")}</b> ${CONTRACT_TYPES[polissa.contract_type]} ${"({0})".format(autoconsum_txt) if autoconsum_txt != '' else ""}</div>
             </div>
         </div>
+        <%
+            ctx = {'date': datetime.today()}
+            if polissa.data_baixa:
+                ctx = {'date': datetime.strptime(polissa.data_baixa, '%Y-%m-%d')}
+            if not polissa.llista_preu:
+                tarifes_a_mostrar = []
+            else:
+                tarifes_a_mostrar = get_comming_atr_price(cursor, uid, polissa, ctx)
+            text_vigencia = ''
+        %>
+        %for dades_tarifa in tarifes_a_mostrar:
         <div class="styled_box">
-            <h5> ${_("TARIFES D'ELECTRICITAT")}</h5>
+            <%
+                if dades_tarifa['date_end'] and dades_tarifa['date_start']:
+                    text_vigencia = _(u"(vigent fins el {})").format(min(datetime.strptime(data_final, '%Y-%m-%d'), datetime.strptime(dades_tarifa['date_end'], '%Y-%m-%d')).strftime('%Y-%m-%d'))
+                elif datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d') > datetime.today():
+                    text_vigencia = _(u"(vigent a partir del {})").format(dades_tarifa['date_start'])
+            %>
+            %if text_vigencia:
+                <h5> ${_("TARIFES D'ELECTRICITAT")} ${text_vigencia}</h5>
+            %else:
+                <h5> ${_("TARIFES D'ELECTRICITAT")}</h5>
+            %endif
             <%
                 periodes_potencia = []
                 if potencies:
@@ -361,8 +382,10 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                     periodes_energia = sorted(polissa.tarifa.get_periodes(context=ctx).keys())
                     periodes_potencia = sorted(polissa.tarifa.get_periodes('tp', context=ctx).keys())
                     if periodes:
-                        if data_final:
-                            data_llista_preus = min(datetime.strptime(data_final, '%Y-%m-%d'), datetime.today())
+                        if data_final: #TODO: A LA SEGONA PASSADA, POSARIEM ELS PREUS VELLS
+                            data_llista_preus = dades_tarifa['date_start'] or '9999-12-31'
+                            if datetime.strptime(data_llista_preus, '%Y-%m-%d') <= datetime.today():
+                                data_llista_preus = min(datetime.strptime(data_final, '%Y-%m-%d'), datetime.today())
                             ctx['date'] = data_llista_preus
                         data_i = data_inici and datetime.strptime(polissa.modcontractual_activa.data_inici, '%Y-%m-%d')
                         if data_i and calendar.isleap(data_i.year):
@@ -449,25 +472,47 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                     %endif
                     <tr>
                         <td class="bold">${_("Terme energia (€/kWh)")}</td>
-                        %for p in periodes_energia:
-                            %if polissa.llista_preu:
-                                <td class="center">
-                                    <span class="">${formatLang(get_atr_price(cursor, uid, polissa, p, 'te', ctx, with_taxes=True)[0], digits=6)}</span>
-                                </td>
-                            %else:
-                                <td class="">
-                                    &nbsp;
-                                </td>
-                            %endif
-                        %endfor
-                        %if len(periodes_energia) < 6:
-                            %for p in range(0, 6-len(periodes_energia)):
-                                <td class="">
-                                    &nbsp;
-                                </td>
+                        %if polissa.mode_facturacio == 'index':
+                            <td class="center reset_line_height" colspan="6">
+                                <span class="normal_font_weight">
+                                    %if lang ==  'ca_ES':
+                                        <a href="https://www.somenergia.coop/documentacio_EiE/CA_EiE_Explica_Tarifa%20Indexada%20per%20Entitats%20i%20Empreses_Som%20Energia.pdf">
+                                            <b>${_(u"Tarifa indexada")}</b>
+                                        </a>
+                                    %else:
+                                        <a href="https://www.somenergia.coop/documentacio_EiE/ES_EiE_Explica_Tarifa%20Indexada%20para%20Entidades%20y%20Empresas_Som%20Energia.pdf">
+                                            <b>${_(u"Tarifa indexada")}</b>
+                                        </a>
+                                    %endif
+                                    ${_(u" - el preu horari es calcula d'acord amb la fórmula:")}
+                                </span>
+                                <br/>
+                                <span>${_(u"PH = 1,015 * [(PHM + PHMA + Pc + SobrecostosREE + Interrump + POsOm) (1 + Perd) + FE + K] + PA + CA")}</span>
+                                <br/>
+                                <span class="normal_font_weight">${_(u"on el marge de comercialització")}</span>
+                                <span>&nbsp;${("(K) = %s €/MWh</B>") % formatLang((polissa.coeficient_k + polissa.coeficient_d), digits=3)}</span>
+                            </td>
+                        %else:
+                            %for p in periodes_energia:
+                                %if polissa.llista_preu:
+                                    <td class="center">
+                                        <span class="">${formatLang(get_atr_price(cursor, uid, polissa, p, 'te', ctx, with_taxes=True)[0], digits=6)}</span>
+                                    </td>
+                                %else:
+                                    <td class="">
+                                        &nbsp;
+                                    </td>
+                                %endif
                             %endfor
-                        %endif
-                    </tr>
+                            %if len(periodes_energia) < 6:
+                                %for p in range(0, 6-len(periodes_energia)):
+                                    <td class="">
+                                        &nbsp;
+                                    </td>
+                                %endfor
+                            %endif
+                        </tr>
+                    %if polissa.te_assignacio_gkwh:
                     <tr>
                         <td class="bold">${_("(1) GenerationkWh (€/kWh)")}</td>
                         %for p in periodes_energia:
@@ -489,24 +534,43 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                             %endfor
                         %endif
                     </tr>
+                    %endif
+                    %if autoconsumo:
                     <tr>
-                        <td class="bold">${_("(2) Autoconsum (€/kWh)")}</td>
-                        %if polissa.llista_preu:
-                            <td colspan="6">
-                                <hr class="hr-text" data-content="${formatLang(get_atr_price(cursor, uid, polissa, periodes_energia[0], 'ac', ctx, with_taxes=True)[0], digits=6)}"/>
+                        <td><span class="bold">${_("(2) Autoconsum (€/kWh)")}</span></td>
+                        %if polissa.mode_facturacio_generacio == 'index':
+                            <td class="center reset_line_height" colspan="6">
+                                <span class="normal_font_weight">${_(u"Tarifa indexada - el preu es calcula d'acord amb la fórmula:")}</span>
+                                <br/>
+                                <span>${_(u"Import excedents = Suma horària (kWh excedentaris h <sub>i</sub> * PHM <sub>i</sub> )")}</span>
                             </td>
                         %else:
-                            <td colspan="6">
-                                &nbsp;
-                            </td>
+                            %if polissa.llista_preu:
+                                <td colspan="6">
+                                    <hr class="hr-text" data-content="${formatLang(get_atr_price(cursor, uid, polissa, periodes_energia[0], 'ac', ctx, with_taxes=True)[0], digits=6)}"/>
+                                </td>
+                            %else:
+                                <td colspan="6">
+                                    &nbsp;
+                                </td>
+                            %endif
                         %endif
                     </tr>
+                     %endif
                 </table>
                 <div class="padding_top padding_left padding_right">
+                    %if polissa.te_assignacio_gkwh:
                     <span class="bold">(1) </span> ${_("Terme d'energia en cas de participar-hi, segons condicions del contracte GenerationkWh.")}<br/>
+                    %endif
+                    %if autoconsum:
                     <span class="bold">(2) </span> ${_("Preu de la compensació d'excedents, si és aplicable.")}
+                    %endif
                     <div class="center avis_impostos">
-                       ${_(u"Aquests preus inclouen l'impost elèctric i l'IVA (IGIC a Canàries) sense prejudici de les exempcions o bonificacions que puguin ser d'aplicació. Pots consultar altres conceptes que poden ser d'aplicació, com ara, el lloguer de comptador, el recàrrec per potència demandada o el recàrrec per energia reactiva, a la ")}
+                        %if polissa.mode_facturacio_generacio == 'index':
+                            ${_(u"Els preus del terme de potència inclouen l'impost elèctric i l'IVA (IGIC a Canàries) sense prejudici de les exempcions o bonificacions que puguin ser d'aplicació. Pots consultar altres conceptes que poden ser d'aplicació, com ara, el lloguer de comptador, el recàrrec per potència demandada o el recàrrec per energia reactiva, a la ")}
+                        %else:
+                            ${_(u"Aquests preus inclouen l'impost elèctric i l'IVA (IGIC a Canàries) sense prejudici de les exempcions o bonificacions que puguin ser d'aplicació. Pots consultar altres conceptes que poden ser d'aplicació, com ara, el lloguer de comptador, el recàrrec per potència demandada o el recàrrec per energia reactiva, a la ")}
+                        %endif
                         %if lang ==  'ca_ES':
                             <a href="https://www.somenergia.coop/tarifes-d-electricitat/">${_(u"pàgina de tarifes")}</a>
                         %else:
@@ -516,6 +580,10 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                     </div>
                 </div>
             </div>
+            %endfor
+            %if text_vigencia:
+                <p style="page-break-after: always"></p>
+            %endif
             <%
                 bank = pas01.pas_id.bank if pas01.pas_id.bank else polissa.bank
                 owner_b = ''
@@ -547,7 +615,7 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                     <span class="nif"><b>${_(u"NIF:")}</b> ${nif}</span>
                 </div>
                 </br>
-                <div class="iban"><b>${_(u"Nº de compte bancari (IBAN): ")}</b> ${iban}</div>
+                <div class="iban"><b>${_(u"Nº de compte bancari (IBAN): **** **** **** ****")}</b> &nbsp ${iban[-4:]}</div>
             </div>
         </div>
         <div id="footer">
