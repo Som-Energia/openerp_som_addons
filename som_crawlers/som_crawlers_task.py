@@ -181,6 +181,8 @@ class SomCrawlersTaskStep(osv.osv):
 
         if taskStepParams.has_key('nom_fitxer'):
             config_obj=self.pool.get('som.crawlers.task').id_del_portal_config(cursor,uid,taskStep_obj.task_id.id,context)
+            import pudb;pu.db
+
             filePath = os.path.join(path, "scripts/" + taskStepParams['nom_fitxer'])
             if os.path.exists(filePath):
                 cfg_obj = self.pool.get('res.config')
@@ -260,34 +262,21 @@ class SomCrawlersTaskStep(osv.osv):
 
     #test ok
     def createArgsForScript(self, cursor, uid, id, config_obj, taskStepsParams,fileName):
+        args = {
+            '-n':str(config_obj.name),
+            '-u':str(config_obj.usuari),
+            '-p':str(config_obj.contrasenya),
+            '-c':str(config_obj.crawler),
+            '-f':str(fileName),
+            '-url':"'{}'".format(str(config_obj.url_portal)),
+            '-fltr':str(config_obj.filtres),
+            '-d':str(config_obj.days_of_margin),
+            '-nfp':str(config_obj.pending_files_only),
+            '-b':str(config_obj.browser),
+            '-pr': 'None',
+        }
         if(taskStepsParams.has_key('process')):
-            args = {
-                '-n':str(config_obj.name),
-                '-u':str(config_obj.usuari),
-                '-p':str(config_obj.contrasenya),
-                '-c':str(config_obj.crawler),
-                '-f':str(fileName),
-                '-url':str(config_obj.url_portal),
-                '-fltr':str(config_obj.filtres),
-                '-d':str(config_obj.days_of_margin),
-                '-nfp':str(config_obj.pending_files_only),
-                '-b':str(config_obj.browser),
-                '-pr':str(taskStepsParams['process']),
-            }
-        else:
-            args = {
-                '-n':str(config_obj.name),
-                '-u':str(config_obj.usuari),
-                '-p':str(config_obj.contrasenya),
-                '-c':str(config_obj.crawler),
-                '-f':str(fileName),
-                '-url':str(config_obj.url_portal),
-                '-fltr':str(config_obj.filtres),
-                '-d':str(config_obj.days_of_margin),
-                '-nfp':str(config_obj.pending_files_only),
-                '-b':str(config_obj.browser),
-                '-pr':'None',
-            }
+            args.update({'-pr':str(taskStepsParams['process'])})
 
         return " ".join(["{} {}".format(k,v) for k,v in args.iteritems()])
 

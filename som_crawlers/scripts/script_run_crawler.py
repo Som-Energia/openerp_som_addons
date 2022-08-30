@@ -17,16 +17,16 @@ import importlib
 
 ## Arguments passed through the os systemm call
 @click.command()
-@click.option('-u', '--user', help='Username of the portal.', required=True)
-@click.option('-n', '--name', prompt='Crawler portal name', help ='The person to greet.', required=True)
-@click.option('-p', '--password', help='Password of the portal.', required = True)
-@click.option('-f', '--file', help='Log file name', required = True)
-@click.option('-url', '--url', help='URL of the portal.', required = True)
+@click.option('-u', '--user', help='Username of the portal.', required=False)
+@click.option('-n', '--name', prompt='Crawler portal name', help ='The person to greet.', required=False)
+@click.option('-p', '--password', help='Password of the portal.', required = False)
+@click.option('-f', '--file', help='Log file name', required = False)
+@click.option('-url', '--url', help='URL of the portal.', required = False)
 @click.option('-fltr', '--filters', help='Filters.', required = False)
-@click.option('-c', '--crawler', help = 'Crawler', required = True)
-@click.option('-d', '--days', help = 'Days of margin', required = True)
-@click.option('-nfp', '--pfiles', help = 'Pending files only',required = True)
-@click.option('-b', '--browser', help = 'Browser', required = True)
+@click.option('-c', '--crawler', help = 'Crawler', required = False)
+@click.option('-d', '--days', help = 'Days of margin', required = False)
+@click.option('-nfp', '--pfiles', help = 'Pending files only',required = False)
+@click.option('-b', '--browser', help = 'Browser', required = False)
 @click.option('-pr', '--process', help = 'Process to download', required = False)
 
 ## Function that runs de crawler of the crawler saves the user and the date when it was modified and returns the new password.
@@ -73,6 +73,7 @@ def crawl(user, name, password, file, url, filters, crawler, days, pfiles, brows
     except CrawlingLoginException as e:
         f.write(str(e))
     except CrawlingProcessException as e:
+        import pudb; pu.db
         f.write(str(e))
     except FileToBucketException as e:
         f.write(str(e))
