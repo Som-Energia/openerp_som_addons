@@ -6,11 +6,8 @@ from nturl2path import url2pathname
 from massive_importer.crawlers.run_crawlers import WebCrawler
 from massive_importer.crawlers.crawlers.spiders.selenium_spiders import *
 from massive_importer.crawlers.crawlers.spiders.selenium_spiders import PortalConfig
-from massive_importer.lib.exceptions import (
-    CrawlingLoginException, CrawlingProcessException,
-    FileToBucketException, CrawlingFilteringException,
-    CrawlingDownloadingException
-)
+from massive_importer.lib.exceptions import CrawlingLoginException, CrawlingProcessException, FileToBucketException, CrawlingFilteringException, CrawlingDownloadingException, NoResultsException
+from massive_importer.lib.db_utils import insert_crawling_process_error
 from massive_importer.lib.erp_utils import ErpManager
 from massive_importer.conf import configure_logging, settings
 import sys
@@ -62,19 +59,27 @@ def crawl(user, name, password, file, url, filters, crawler, days, pfiles, brows
         if process!='None':
             portalCreds['process'] = process
         selenium_spiders_path = os.path.join(
-            path, "../spiders/selenium_spiders")
+        path, "../spiders/selenium_spiders")
         spec = importlib.util.spec_from_file_location(
-            name, "".join([selenium_spiders_path, "/", name, '.py']))
+        name, "".join([selenium_spiders_path, "/", name, '.py']))
         spider_module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(spider_module)
         logger.debug("Loaded %s module" % (name))
         logger.debug("Starting %s crawling..." % (name))
         spider_instance = spider_module.instance(wc.selenium_crawlers_conf[name])
         spider_instance.start_with_timeout(portalCreds, debug=True)
-        f.write('Files have been successfully downloaded')
-
+    except NoResultsException as e:
+        f.write(str(e))
+    except CrawlingLoginException as e:
+        f.write(str(e))
+    except CrawlingProcessException as e:
+        f.write(str(e))
+    except FileToBucketException as e:
+        f.write(str(e))
     except Exception as e:
         f.write(str(e))
+    else:
+        f.write('Files have been successfully downloaded')
 
 ## Main program crawler
 if __name__ == '__main__':
