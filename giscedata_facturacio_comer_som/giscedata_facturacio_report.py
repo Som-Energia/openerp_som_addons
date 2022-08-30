@@ -546,12 +546,15 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         partner_id = sw_obj.partner_map(self.cursor, self.uid,
                                         polissa.cups, polissa.distribuidora.id)
-        if partner_id:
-            pa_ids = pa_obj.search(self.cursor, self.uid, [('partner_id', '=', partner_id)])
-            return (pa_obj.read(self.cursor, self.uid, [pa_ids[0]],['phone'])[0]['phone'] or
-                    polissa.distribuidora.address[0].phone)
-        else:
-            return polissa.distribuidora.address[0].phone
+        try:
+            if partner_id:
+                pa_ids = pa_obj.search(self.cursor, self.uid, [('partner_id', '=', partner_id)])
+                return (pa_obj.read(self.cursor, self.uid, [pa_ids[0]],['phone'])[0]['phone'] or
+                        polissa.distribuidora.address[0].phone)
+            else:
+                return polissa.distribuidora.address[0].phone
+        except:
+            return polissa.distribuidora.www_phone
 
     def get_atr_price(self, fact, tarifa, linia):
         pricelist_obj = linia.pool.get('product.pricelist')
