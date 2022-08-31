@@ -1,4 +1,5 @@
 ## Describes the module(tests) that tests the different functions contained in the project
+import json
 from destral import testing
 from osv import osv
 import unittest
@@ -41,7 +42,7 @@ class ConfiguracioTests(testing.OOTestCase):
             uid = txn.user
             #get_object_reference per llegir la id de un objecte
 
-            crawler_config_id = self.Data.get_object_reference(cursor, uid, 'som_crawlers', 'demo_configuracio_1')[1]
+            crawler_config_id = self.Data.get_object_reference(cursor, uid, 'som_crawlers', 'demo1_conf')[1]
             #set values
             password = 'Admin'
             #check result
@@ -58,7 +59,7 @@ class ConfiguracioTests(testing.OOTestCase):
                 cursor = txn.cursor
                 uid = txn.user
                 #get_object_reference per llegir la id de un objecte
-                crawler_config_id = self.Data.get_object_reference(cursor, uid, 'som_crawlers', 'demo_configuracio_1')[1]
+                crawler_config_id = self.Data.get_object_reference(cursor, uid, 'som_crawlers', 'demo1_conf')[1]
                 #set values
                 password = 'Hola'
                 #try test
@@ -188,7 +189,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             crawler_task_id = self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_accions_planificades_2')[1]
-            crawler_config_id = self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_configuracio_2')[1]
+            crawler_config_id = self.Data.get_object_reference(cursor,uid,'som_crawlers','anselmo_conf')[1]
             crawler_config_obj = self.Configuracio.browse(cursor, uid, crawler_config_id)
             result = self.task.id_del_portal_config(cursor,uid,crawler_task_id)
             self.assertEqual(result,crawler_config_obj)
@@ -200,7 +201,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             crawler_task_id = self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_accions_planificades_1')[1]
-            crawler_config_id = self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_configuracio_2')[1]
+            crawler_config_id = self.Data.get_object_reference(cursor,uid,'som_crawlers','demo1_conf')[1]
             crawler_config_obj = self.Configuracio.browse(cursor, uid, crawler_config_id)
             result = self.task.id_del_portal_config(cursor,uid,crawler_task_id)
             self.assertNotEqual(result,crawler_config_obj)
@@ -212,7 +213,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             crawler_taskStep_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_taskStep_1')[1]
-            crawler_config_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_configuracio_1')[1]
+            crawler_config_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','anselmo_conf')[1]
             result_id = self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_result_2')[1]
             crawler_config_obj = self.Configuracio.browse(cursor,uid,crawler_config_id)
             pathFileActual = os.path.dirname(os.path.realpath(__file__))
@@ -226,7 +227,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             crawler_taskStep_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_taskStep_1')[1]
-            crawler_config_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_configuracio_1')[1]
+            crawler_config_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','anselmo_conf')[1]
             result_id = self.Data.get_object_reference(cursor, uid, 'som_crawlers', 'demo_result_2')[1]
             crawler_config_obj = self.Configuracio.browse(cursor,uid,crawler_config_id)
             pathFileActual = os.path.join(os.path.dirname(os.path.realpath(__file__)),'..')
@@ -241,7 +242,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             result_id = self.Data.get_object_reference(cursor, uid, 'som_crawlers', 'demo_result_3')[1]
-            crawler_config_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_configuracio_3')[1]
+            crawler_config_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','anselmo_conf')[1]
             crawler_taskStep_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_taskStep_8')[1]
             crawler_config_obj = self.Configuracio.browse(cursor,uid,crawler_config_id)
             pathFileActual = os.path.join(os.path.dirname(os.path.realpath(__file__)),'../demo')
@@ -254,14 +255,14 @@ class WizardExecutarTascaTests(testing.OOTestCase):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
-            crawler_config_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_configuracio_4')[1]
+            crawler_config_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo1_conf')[1]
             crawler_taskStep_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_taskStep_9')[1]
-
+            taskStep_obj = self.taskStep.browse(cursor,uid,crawler_taskStep_id)
+            taskStepParams = json.loads(taskStep_obj.params)
             crawler_config_obj = self.Configuracio.browse(cursor,uid,crawler_config_id)
             fileName = "prova.txt"
-            result = self.taskStep.createArgsForScript(cursor,uid,crawler_taskStep_id,crawler_config_obj,fileName)
-            result_string ="-u  Hola  -d 5 -f prova.txt -url https://egymonluments.gov.eg/en/museums/egyptian-museum  -p  ***  -c Selenium -b firefox -n Tutankamon -fltr  https://egymonuments.gov.eg/en/collections/kawit-sarcophagus-4  -nfp False"
-
+            result = self.taskStep.createArgsForScript(crawler_config_obj, taskStepParams, fileName)
+            result_string ="-u usuariProva -d 80 -f prova.txt -url 'https://egymonluments.gov.eg/en/museums/egyptian-museum' -p contraProva -c Selenium -b firefox -n prova1 -fltr 'https://egymonuments.gov.eg/en/collections/kawit-sarcophagus-4' -nfp False"
             self.assertEqual(result,result_string)
 
 
@@ -273,12 +274,12 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             filename = "porva.zip"
             result = self.taskStep.readOutputFile(cursor,uid,path,filename)
             self.assertEqual("[Errno 2] No such file or directory: '" + path + '/' + filename +"'" ,result)
-    
+
     def test_readOutPutFile_entrada_path_zip_demo_2_sortida_ok(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
-            path = "/home/somenergia/src/openerp_som_addons/som_crawlers/demo/zip_demo_2"
+            path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../demo/zip_demo_2')
             filename = "anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip"
             result = self.taskStep.readOutputFile(cursor,uid,path,filename)
             self.assertNotEqual("[Errno 2] No such file or directory: '" + path + '/' + filename +"'" ,result)

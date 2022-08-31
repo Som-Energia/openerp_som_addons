@@ -187,7 +187,7 @@ class SomCrawlersTaskStep(osv.osv):
                 cfg_obj = self.pool.get('res.config')
                 path_python = cfg_obj.get(cursor, uid, 'som_crawlers_massive_importer_python_path', '~/.virtualenvs/massive/bin/python')
                 fileName = "output_" + config_obj.name + "_" + datetime.now().strftime("%Y-%m-%d_%H_%M") + ".txt"
-                args_str = self.createArgsForScript(cursor, uid, id, config_obj, taskStepParams, fileName)
+                args_str = self.createArgsForScript(config_obj, taskStepParams, fileName)
                 ret_value = os.system("{} {} {}".format(path_python, filePath, args_str))
                 if ret_value != 0:
                     output = "System call from download files failed"
@@ -260,7 +260,7 @@ class SomCrawlersTaskStep(osv.osv):
         return output
 
     #test ok
-    def createArgsForScript(self, cursor, uid, id, config_obj, taskStepsParams,fileName):
+    def createArgsForScript(self,config_obj, taskStepsParams,fileName):
         args = {
             '-n':str(config_obj.name),
             '-u':str(config_obj.usuari),

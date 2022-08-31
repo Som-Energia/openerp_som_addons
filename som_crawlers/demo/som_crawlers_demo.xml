@@ -1,73 +1,43 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <openerp>
     <data noupdate="0">
-
-    <!-- Configuracio de Anselmo-->
-        <record model="som.crawlers.config" id="demo_configuracio_1">
-        <field name="name">anselmo</field>
+    <!--Configuracions demo-->
+       <record model="som.crawlers.config" id="demo1_conf">
+        <field name="name">prova1</field>
         <field name="crawler">Selenium</field>
-        <field name="days_of_margin">5</field>
+        <field name="usuari">usuariProva</field>
+        <field name="filtres">https://egymonuments.gov.eg/en/collections/kawit-sarcophagus-4</field>
+        <field name="url_portal">https://egymonluments.gov.eg/en/museums/egyptian-museum</field>
+        <field name="contrasenya">contraProva</field>
+        <field name="days_of_margin">80</field>
         <field name="pending_files_only" eval="False"/>
         <field name="browser">firefox</field>
-        <field name="date_ultima_modificacio">2022-07-12+00:00:00</field>
         <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
-        <record model="som.crawlers.config" id="demo_configuracio_2">
-        <field name="name">prova</field>
-        <field name="crawler">Selenium</field>
-        <field name="days_of_margin">5</field>
-        <field name="pending_files_only" eval="False"/>
-        <field name="browser">firefox</field>
-        <field name="date_ultima_modificacio">2022-07-12+00:00:00</field>
-        <field name="user_ultima_modificacio" ref="base.user_admin"/>
-        </record>
-        <record model="som.crawlers.config" id="demo_configuracio_3">
-        <field name="name">zip_demo</field>
-        <field name="crawler">Selenium</field>
-        <field name="days_of_margin">5</field>
-        <field name="pending_files_only" eval="False"/>
-        <field name="browser">firefox</field>
-        <field name="date_ultima_modificacio">2022-07-12+00:00:00</field>
-        <field name="user_ultima_modificacio" ref="base.user_admin"/>
-        </record>
-        <record model="som.crawlers.config" id="demo_configuracio_4">
-        <field name="name">Tutankamon</field>
-        <field name="crawler">Selenium</field>
-        <field name="usuari"> Hola </field>
-        <field name="contrasenya"> *** </field>
-        <field name="url_portal">https://egymonluments.gov.eg/en/museums/egyptian-museum </field> 
-        <field name="filtres"> https://egymonuments.gov.eg/en/collections/kawit-sarcophagus-4 </field>
-        <field name="days_of_margin">5</field>
-        <field name="pending_files_only" eval="False"/>
-        <field name="browser">firefox</field>
-        <field name="date_ultima_modificacio">2022-07-12+00:00:00</field>
-        <field name="user_ultima_modificacio" ref="base.user_admin"/>
-        </record>
-
     <!-- Exemple accions planificades-->
         <record model="som.crawlers.task" id="demo_accions_planificades_1">
-        <field name="name">Anselmo descargar R1</field>
+        <field name="name">Anselmo descargar demo</field>
         <field name="data_proxima_execucio">2022-07-20+00:58:11</field>
         <field name="active">True</field>
-        <field name="configuracio_id" ref="demo_configuracio_1"/>
+        <field name="configuracio_id" ref="anselmo_conf"/>
         </record>
         <record model="som.crawlers.task" id="demo_accions_planificades_2">
-        <field name="name">Anselmo descargar R3</field>
+        <field name="name">Anselmo descargar demo2</field>
         <field name="data_proxima_execucio">2022-07-20+00:58:11</field>
         <field name="active">True</field>
-        <field name="configuracio_id" ref="demo_configuracio_2"/>
+        <field name="configuracio_id" ref="anselmo_conf"/>
         </record>
         <record model="som.crawlers.task" id="demo_accions_planificades_3">
         <field name="name">zip attachment test</field>
         <field name="data_proxima_execucio">2022-07-20+00:58:11</field>
         <field name="active">True</field>
-        <field name="configuracio_id" ref="demo_configuracio_3"/>
+        <field name="configuracio_id" ref="anselmo_conf"/>
         </record>
         <record model="som.crawlers.task" id="demo_accions_planificades_4">
         <field name="name">zip attachment test</field>
         <field name="data_proxima_execucio">2022-07-20+00:58:11</field>
         <field name="active">True</field>
-        <field name="configuracio_id" ref="demo_configuracio_4"/>
+        <field name="configuracio_id" ref="anselmo_conf"/>
         </record>
 
 
@@ -81,7 +51,7 @@
         </record>
         <record model="som.crawlers.task.step" id="demo_taskStep_2">
         <field name="name">Importar fitxers XML</field>
-        <field name="sequence">1</field>
+        <field name="sequence">2</field>
         <field name="function">import_xml_files</field>
         <field name="params">{"nom_fitxer":"script_import_xml_files.py"}</field>
         <field name="task_id" ref="demo_accions_planificades_1"/>
