@@ -29,11 +29,14 @@ class WizardCancelFromCSV(osv.osv_memory):
         if context is None:
             context = {}
         lot_obj = self.pool.get('som.infoenergia.lot.enviament')
+        pol_obj = self.pool.get('giscedata.polissa')
+        example_name = pol_obj.read(cursor, uid, pol_obj.search([], limit=1)[0], ['name'])['name']
         wiz = self.browse(cursor, uid, ids[0], context=context)
+
         context['reason'] = wiz.reason
         csv_file = StringIO(base64.b64decode(wiz.csv_file))
         reader = csv.reader(csv_file)
-        pol_list = [line[0] for line in list(reader)]
+        pol_list = [line[0].zfill(len(example_name)) for line in list(reader)]
 
         lot_id = context.get('active_id', [])
         lot_obj.cancel_enviaments_from_polissa_names(cursor, uid, lot_id, pol_list, context)
