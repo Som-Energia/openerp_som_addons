@@ -2,6 +2,7 @@
  # This script runs a crawler
 
 ##Imports
+from distutils.command.build import build
 from nturl2path import url2pathname
 from massive_importer.crawlers.run_crawlers import WebCrawler
 from massive_importer.crawlers.crawlers.spiders.selenium_spiders import *
@@ -46,18 +47,8 @@ def crawl(user, name, password, file, url, filters, crawler, days, pfiles, brows
     path = os.path.dirname(os.path.abspath(__file__))
     f = open(os.path.join(path,"../outputFiles/",file),'w')
     try:
-        portalCreds = dict()
-        portalCreds['username'] = user
-        portalCreds['password'] = password
-        portalCreds['url'] = url
-        if filters!='None':
-            portalCreds['filters'] = filters
-        portalCreds['crawler'] = crawler
-        portalCreds['days_of_margin'] = int(days)
-        portalCreds['pending_files_only'] = eval(pfiles)
-        portalCreds['browser'] = browser
-        if process!='None':
-            portalCreds['process'] = process
+        crawler_conf = {'crawler': crawler, 'days_of_margin': days, 'pending_files_only': pfiles, 'browser': browser}
+        portalCreds = buildPortalCreds(user, password, url, filters, crawler, days, pfiles, browser, process)
         selenium_spiders_path = os.path.join(
         path, "../spiders/selenium_spiders")
         spec = importlib.util.spec_from_file_location(
@@ -66,7 +57,7 @@ def crawl(user, name, password, file, url, filters, crawler, days, pfiles, brows
         spec.loader.exec_module(spider_module)
         logger.debug("Loaded %s module" % (name))
         logger.debug("Starting %s crawling..." % (name))
-        spider_instance = spider_module.instance(wc.selenium_crawlers_conf[name])
+        spider_instance = spider_module.instance(crawler_conf)
         spider_instance.start_with_timeout(portalCreds, debug=True)
     except NoResultsException as e:
         f.write(str(e))
@@ -80,6 +71,23 @@ def crawl(user, name, password, file, url, filters, crawler, days, pfiles, brows
         f.write(str(e))
     else:
         f.write('Files have been successfully downloaded')
+
+
+def buildPortalCreds(user, password, url, filters, crawler, days, pfiles, browser, process):
+    portalCreds = dict()
+    portalCreds['username'] = user
+    portalCreds['password'] = password
+    portalCreds['url'] = url
+    if filters!='None':
+        portalCreds['filters'] = filters
+    portalCreds['crawler'] = crawler
+    portalCreds['days_of_margin'] = int(days)
+    portalCreds['pending_files_only'] = eval(pfiles)
+    portalCreds['browser'] = browser
+    if process!='None':
+        portalCreds['process'] = process
+
+    return portalCreds
 
 ## Main program crawler
 if __name__ == '__main__':
