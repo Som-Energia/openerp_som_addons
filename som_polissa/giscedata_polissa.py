@@ -11,6 +11,25 @@ POLISSA_DATE_FIELDS = [
     'data_alta_autoconsum', 'data_baixa', 'data_firma_contracte'
 ]
 
+TARIFF_MAPPING = {
+    "2.0A": "2.0TD",
+    "2.0DHA": "2.0TD",
+    "2.0DHS": "2.0TD",
+    "2.1A": "2.0TD",
+    "2.1DHA": "2.0TD",
+    "2.1DHSA": "2.0TD",
+    "2.1DHS": "2.0TD",
+    "3.0A": "3.0TD",
+    "6.1": "6.1TD",
+    "3.1A": "6.1TD",
+    "6.2": "6.2TD",
+    "6.3": "6.3TD",
+    "6.4": "6.4TD",
+    "3.1A LB": "6.1TD",
+    "6.1A": "6.1TD",
+    "6.1B": "6.2TD"
+}
+ 
 class GiscedataPolissa(osv.osv):
     _name = 'giscedata.polissa'
     _inherit = 'giscedata.polissa'
@@ -71,6 +90,57 @@ class GiscedataPolissa(osv.osv):
                     args[idx][1] = '='
                     args[idx][2] = False
         return super(GiscedataPolissa, self).search(cr, user, args, offset, limit, order, context, count)
+
+    def get_new_potencies(self, potencies_periode, new_tariff_code):
+        potencies_periode = list(potencies_periode)
+        if len(potencies_periode) == 6:
+            return potencies_periode
+        if new_tariff_code == '2.0TD':
+            return [potencies_periode[0], potencies_periode[0]]
+
+        p2_to_p5 = potencies_periode[0] if potencies_periode[0] > potencies_periode[1] else potencies_periode[1]
+        p6 = p2_to_p5 if p2_to_p5 > potencies_periode[2] else potencies_periode[2]
+        if new_tariff_code == '3.0TD':
+            return [
+                potencies_periode[0],
+                p2_to_p5,
+                p2_to_p5,
+                p2_to_p5,
+                p2_to_p5,
+                p6,
+            ]
+
+        if new_tariff_code == '6.1TD':
+            return [
+                potencies_periode[0],
+                p2_to_p5,
+                p2_to_p5,
+                p2_to_p5,
+                p2_to_p5,
+                p6,
+            ]
+        return potencies_periode
+
+    def get_new_tariff(self, cursor, uid, ids):
+        if not isinstance(ids, list):
+            ids = [ids]
+        res = dict.fromkeys([str(_id) for _id in ids], {'tarifa_codi':'', 'potencies':[]})
+        for pol in self.browse(cursor, uid, ids):
+            pol_reads = self.read(cursor, uid, pol['id'], ['tarifa_codi', 'tensio'])
+            if pol_reads['tarifa_codi'].startswith("3.1") and pol_reads['tensio'] > 30000:
+                new_tariff_code = "6.2TD"
+            else:
+                new_tariff_code = TARIFF_MAPPING[pol_reads['tarifa_codi']]
+
+            res[str(pol['id'])]['tarifa_codi'] = new_tariff_code
+
+            potencies_periode = []
+            for potencia_periode in pol['potencies_periode']:
+                potencies_periode.append(potencia_periode.potencia)
+
+            res[str(pol['id'])]['potencies'] = self.get_new_potencies(potencies_periode, new_tariff_code) if potencies_periode != [] else []
+
+        return res
 
     def _fnct_info_gestio_endarrerida_curta(self, cursor, uid, ids, field_name, arg, context=None):
         """
