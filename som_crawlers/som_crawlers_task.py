@@ -3,6 +3,7 @@
 ## Module that contains all the information of a Task
 from ast import Param
 from inspect import ArgSpec
+import time
 import pooler
 import subprocess
 from datetime import datetime, date,timedelta
@@ -176,13 +177,11 @@ class SomCrawlersTaskStep(osv.osv):
         taskStep_obj = self.browse(cursor,uid,id)
         taskStepParams = json.loads(taskStep_obj.params)
         path = os.path.dirname(os.path.realpath(__file__))
-
+        
         classresult.write(cursor,uid, result_id, {'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M")})
 
         if taskStepParams.has_key('nom_fitxer'):
             config_obj=self.pool.get('som.crawlers.task').id_del_portal_config(cursor,uid,taskStep_obj.task_id.id,context)
-            import pudb;pu.db
-
             filePath = os.path.join(path, "scripts/" + taskStepParams['nom_fitxer'])
             if os.path.exists(filePath):
                 cfg_obj = self.pool.get('res.config')
@@ -239,9 +238,9 @@ class SomCrawlersTaskStep(osv.osv):
                 if import_wizard.state == 'load':
                     import_wizard.action_send_xmls(context=context)
                 if import_wizard.state == 'done':
-                    return 'Successful import'
-                else:
-                    return 'Import error'
+                   return 'Successful import'
+-               else:
+-                  return 'Import error'
             except Exception as e:
                 msg = "An error ocurred importing {}:{}".format("asd", "asd")
                 return msg
@@ -269,7 +268,7 @@ class SomCrawlersTaskStep(osv.osv):
             '-c':str(config_obj.crawler),
             '-f':str(fileName),
             '-url':"'{}'".format(str(config_obj.url_portal)),
-            '-fltr':str(config_obj.filtres),
+            '-fltr':"'{}'".format(str(config_obj.filtres)),
             '-d':str(config_obj.days_of_margin),
             '-nfp':str(config_obj.pending_files_only),
             '-b':str(config_obj.browser),

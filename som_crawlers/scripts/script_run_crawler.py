@@ -73,7 +73,6 @@ def crawl(user, name, password, file, url, filters, crawler, days, pfiles, brows
     except CrawlingLoginException as e:
         f.write(str(e))
     except CrawlingProcessException as e:
-        import pudb; pu.db
         f.write(str(e))
     except FileToBucketException as e:
         f.write(str(e))
