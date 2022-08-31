@@ -1,0 +1,1 @@
+https://github.com/mailchimp/mailchimp-marketing-python/archive/master.zip

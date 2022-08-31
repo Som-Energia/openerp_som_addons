@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="0">
+        <record model="ir.sequence.type" id="seq_type_som_administradora_seq">
+            <field name="name">Administradora</field>
+            <field name="code">res.partner.administradora</field>
+        </record>
+        <record model="ir.sequence" id="seq_som_administradora_seq">
+            <field name="name">Seqüència Administradores</field>
+            <field name="code">res.partner.administradora</field>
+            <field name="prefix">A</field>
+            <field name="padding">6</field>
+        </record>
+
+        <record id="res_partner_category_administradora" model="res.partner.category">
+            <field name="name">Administradora</field>
+        </record>
+    </data>
+</openerp>

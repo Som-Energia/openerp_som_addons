@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data noupdate="0">
+        <record id="view_wizard_notify_ov_admin" model="ir.ui.view">
+            <field name="name">wizard.notify.ov.admin.form</field>
+            <field name="model">wizard.notify.ov.admin</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Notificar Administradora OV">
+                    <field name="state" invisible="1"/>
+                    <group col="1">
+                        <field name="info" editable="no" colspan="4" nolabel="1" height="200" width="800"/>
+                        <group col="1" attrs="{'invisible':[('state','=', 'done')]}">
+                            <separator/>
+                            <button icon="gtk-ok" name="send_email" string="Enviar email" type="object"/>
+                            <separator/>
+                            <button special="cancel" string="Cancel" icon="gtk-no"/>
+                        </group>
+                        <group col="1" attrs="{'invisible':[('state','!=', 'done')]}">
+                            <separator/>
+                            <button special="cancel" string="Sortir" icon="gtk-apply"/>
+                        </group>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_wizard_notify_ov_admin" model="ir.actions.act_window">
+            <field name="name">Notificar Administradora OV</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.notify.ov.admin</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        <record id="values_wizard_notify_ov_admin" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Notificar Administradora OV</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">som.admin.notification</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_notify_ov_admin'))"/>
+        </record>
+    </data>
+</openerp>

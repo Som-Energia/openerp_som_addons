@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>
+        <record id="res_partner_domestic" model="res.partner">
+            <field name="vat">ES78106306P</field>
+            <field name="name">Física, Persona</field>
+        </record>
+        <record id="polissa_domestica_0100" model="giscedata.polissa">
+            <field name="name">0100</field>
+            <field name="name_auto" eval="1"/>
+            <field name="active" eval="1"/>
+            <field name="renovacio_auto" eval="1"/>
+            <field name="cups" ref="giscedata_cups.cups_tarifa_018"/>
+            <field name="observacions">Polissa per 2.0TD</field>
+            <field name="potencia">4.600</field>
+            <field name="tarifa" ref="giscedata_polissa.tarifa_20TD"/>
+            <field name="titular" ref="res_partner_domestic"/>
+            <field name="tensio_normalitzada" ref="giscedata_tensions.tensio_127"/>
+            <field name="state">activa</field>
+            <field name="data_alta">2021-06-01</field>
+            <field name="data_baixa">2099-01-01</field>
+            <field name="data_firma_contracte">2021-03-20</field>
+            <field name="cnae" ref="giscemisc_cnae.cnae_9820"/>
+            <field name="comercialitzadora" ref="base.main_partner"/>
+            <field name="distribuidora" ref="base.res_partner_agrolait"/>
+            <field name="tipus_vivenda">habitual</field>
+            <field name="tg">1</field>
+            <field name="autoconsumo">00</field>
+        </record>
+    </data>
+</openerp>

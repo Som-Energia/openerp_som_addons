@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data noupdate="0">
+        <record id="view_wizard_modify_ov_admin" model="ir.ui.view">
+            <field name="name">wizard.modify.ov.admin.form</field>
+            <field name="model">wizard.modify.ov.admin</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Modificar Administradora OV">
+                    <field name="state" invisible="1"/>
+                    <group colspan="4" attrs="{'invisible':[('state','=', 'done')]}">
+                        <group colspan="4">
+                            <field name="new_administradora" on_change="onchange_administradora(new_administradora)"/>
+                        </group>
+                        <group colspan="4">
+                            <field name="administradora_permissions" attrs="{'readonly':[('state', '!=', 'admin_specified')]}"/>
+                            <field name="is_legal_representative" attrs="{'readonly':[('state', '!=', 'admin_specified')]}"/>
+                        </group>
+                        <group colspan="4">
+                            <field name="claimant"/>
+                            <field name="not_notify_changes"/>
+                        </group>
+                        <group name="assignar" colspan="4">
+                            <button colspan="4" icon="gtk-ok" name="action_assignar_administradora" string="Assignar" type="object"/>
+                        </group>
+                        <group name="desassignar" colspan="4">
+                            <button colspan="4" icon="gtk-ok" name="action_desassignar_administradora" string="Desassignar" type="object"/>
+                        </group>
+                        <separator colspan="4"/>
+                        <group colspan="4">
+                            <button special="cancel" string="Cancel" icon="gtk-no"/>
+                        </group>
+                    </group>
+                    <group colspan="4" attrs="{'invisible':[('state','!=', 'done')]}">
+                        <field name="info" editable="no" colspan="4" nolabel="1" height="100"/>
+                        <group colspan="4">
+                            <button special="cancel" string="Sortir" icon="gtk-apply"/>
+                        </group>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_wizard_modify_ov_admin" model="ir.actions.act_window">
+            <field name="name">Modificar Administradora OV</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.modify.ov.admin</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        <record id="values_wizard_modify_ov_admin" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Modificar Administradora OV</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_modify_ov_admin'))"/>
+        </record>
+    </data>
+</openerp>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <!-- LListat de pòlisses amb facturació endarrerida custom -->
+        <record model="ir.ui.view" id="view_giscedata_polissa_endarrerida_tree">
+            <field name="name">polisses.facturacio.endarrerida.tree</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="type">tree</field>
+            <field name="priority">99</field>
+            <field name="arch" type="xml">
+                <tree colors="red:state == 'baixa'" string="Contractes amb facturació endarrerida">
+                    <field name="name"/>
+                    <field name="distribuidora"/>
+                    <field name="cups"/>
+                    <field name="state"/>
+                    <field name="tarifa"/>
+                    <field name="potencia"/>
+                    <field name="data_ultima_lectura"/>
+                    <field name="data_alta"/>
+                    <field name="data_baixa"/>
+                    <field name="lot_facturacio"/>
+                    <field name="info_gestio_endarrerida_curta" string="Gest. Endarrerida"/>
+                    <field name="user_id"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="giscedata_facturacio.action_polisses_facturacio_endarrerida">
+            <field name="view_id" ref="view_giscedata_polissa_endarrerida_tree"/>
+            <field name="context">{'active_test':False}</field>
+        </record>
+
+        <record model="ir.ui.view" id="view_giscedata_polissa_endarrerida_form">
+            <field name="name">polisses.facturacio.endarrerida.form</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_polissa_comer.view_giscedata_polissa_comer_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <field name="state" position="after">
+                    <field name="info_gestio_endarrerida_curta" string="Gest. Endarrerida" select="1"/>
+                </field>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_giscedata_polissa_comer_form">
+            <field name="name">giscedata.polissa.comer.form</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_polissa_comer.view_giscedata_polissa_comer_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@string='Observacions']" position="after">
+                    <page string="Gest. Endarrerida">
+                        <field name="info_gestio_endarrerida" nolabel="1" colspan="4"/>
+                    </page>
+                    <page string="Gest. Massives">
+                        <field name="info_gestions_massives" nolabel="1" colspan="4" select="2"/>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_som_polissa_tipus_mesura">
+            <field name="name">som.polissa.tipus.mesura.tree</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_polissa.view_polisses_tree"/>
+            <field name="type">tree</field>
+            <field name="priority">99</field>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="agree_tipus" string="Tipus de Punt de Mesura" invisible="1" select="2"/>
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_giscedata_polissa_enviament_tree">
+            <field name="name">giscedata.polissa.enviament.tree</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_facturacio_comer.view_giscedata_polissa_adreca_pagament_tree"/>
+            <field name="type">tree</field>
+            <field name="priority">99</field>
+            <field name="arch" type="xml">
+                <field name="direccio_pagament" position="after">
+                    <field name="enviament"/>
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_giscedata_polissa_enviament_form">
+            <field name="name">giscedata.polissa.enviament.form</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_facturacio_comer.view_giscedata_email_pagador"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <field name="enviament" position="replace">
+                    <field name="enviament" select="2"/>
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_giscedata_facturacio_factura_enviament_tree">
+            <field name="name">giscedata.facturacio.factura.enviament.tree</field>
+            <field name="model">giscedata.facturacio.factura</field>
+            <field name="inherit_id" ref="giscedata_facturacio.view_factura_tree"/>
+            <field name="type">tree</field>
+            <field name="priority">99</field>
+            <field name="arch" type="xml">
+                <field name="origin" position="after">
+                    <field name="per_enviar"/>
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_som_polissa_unpaid_invoices">
+            <field name="name">som.polissa.unpaid.invoices.form</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_facturacio_impagat_comer.view_polissa_pending_form"/>
+            <field name="type">form</field>
+            <field name="priority">99</field>
+            <field name="arch" type="xml">
+                <field name="debt_amount" position="after">
+                    <field name="unpaid_invoices"/>
+                </field>
+                <field name="process_id" position="replace"/>
+                <field name="data_tall" position="after">
+                    <group colspan="6" col="3">
+                        <field name="process_id" select="2" attrs="{'readonly': [('bono_social_disponible','=', True)]}"/>
+                    </group>
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>

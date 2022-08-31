@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data noupdate="0">
+        <record id="view_wizard_massive_category_to_polissa" model="ir.ui.view">
+            <field name="name">wizard.massive.category.to.polissa.form</field>
+            <field name="model">wizard.massive.category.to.polissa</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Gestionar categoria a polisses massivament">
+                    <field name="state" invisible="1"/>
+                    <group colspan="4" attrs="{'invisible':[('state','=', 'done')]}">
+                        <group colspan="4">
+                            <field name="category" on_change="onchange_category(category)"/>
+                        </group>
+                        <group name="accions" colspan="4">
+                            <button colspan="2" icon="gtk-ok" name="action_assignar_categoria" string="Assignar" type="object" attrs="{'readonly':[('state', '!=', 'category_specified')]}"/>
+                            <button colspan="2" icon="gtk-ok" name="action_desassignar_categoria" string="Desassignar" type="object" attrs="{'readonly':[('state', '!=', 'category_specified')]}"/>
+                        </group>
+                        <separator colspan="4"/>
+                        <group colspan="4">
+                            <button special="cancel" string="Sortir" icon="gtk-apply"/>
+                        </group>
+                    </group>
+                    <group colspan="4" attrs="{'invisible':[('state','!=', 'done')]}">
+                        <field name="info" editable="no" colspan="4" nolabel="1" height="300"/>
+                        <group colspan="4">
+                            <button special="cancel" string="Sortir" icon="gtk-apply"/>
+                        </group>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_wizard_massive_category_to_polissa" model="ir.actions.act_window">
+            <field name="name">Gestionar categoria a polisses massivament</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.massive.category.to.polissa</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        <record id="values_wizard_massive_category_to_polissa" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Gestionar categoria a polisses massivament</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_massive_category_to_polissa'))"/>
+        </record>
+    </data>
+</openerp>
