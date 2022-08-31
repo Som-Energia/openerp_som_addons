@@ -74,9 +74,9 @@ class GiscedataFacturacioFacturador(osv.osv):
                         # factura rel·lacionada amb el producte donatiu
                         ctx.update({'lang': fact.partner_id.lang})
                         p_br = product_obj.browse(cursor, uid, pdona_id, ctx)
-                        # identificar la línia d'energia
+                        # identificar la línia d'energia excloent el preu del MAG (RD 10/2022)
                         kwh = sum([x.quantity for x in fact.linia_ids
-                                                    if x.tipus == 'energia'])
+                                                    if x.tipus == 'energia' and x.product_id.code != 'RMAG'])
                         vals = {'data_desde': fact.data_inici,
                                 'data_fins': fact.data_final,
                                 'force_price': 0.01,
