@@ -380,6 +380,29 @@ class LotEnviamentTests(testing.OOTestCase):
         self.assertEqual(cancellats_post, cancellats_pre + 3)
         mock_add_info.assert_called_with(self.cursor, self.uid, mock.ANY, 'Enviament cancel·lat per Test cancel from polissa list')
 
+    @mock.patch('som_infoenergia.som_enviament_massiu.SomEnviamentMassiu.add_info_line')
+    def test_cancel_enviaments_from_polissa_names_polissaInactiva(self, mock_add_info):
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
+        cursor = self.cursor
+        uid = self.uid
+        lot_enviament_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_infoenergia', 'lot_enviament_0002'
+        )[1]
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
+        pol_id = pol_obj.search(cursor, uid, [('name','=','0001C')])[0]
+        pol_obj.write(cursor, uid, pol_id, {'active': False})
+        lot_enviament = lot_env_obj.browse(cursor, uid, lot_enviament_id)
+        cancellats_pre = lot_enviament.total_cancelats
+
+        lot_enviament.cancel_enviaments_from_polissa_names(['0001C','0002'], {'reason': 'Test cancel from polissa list'})
+
+        lot_enviament = lot_env_obj.browse(cursor, uid, lot_enviament_id)
+        cancellats_post = lot_enviament.total_cancelats
+        self.assertEqual(cancellats_post, cancellats_pre + 2)
+        mock_add_info.assert_called_with(self.cursor, self.uid, mock.ANY, 'Enviament cancel·lat per Test cancel from polissa list')
+
+
     def test_ff_totals_ff_progress_altres(self):
         imd_obj = self.openerp.pool.get('ir.model.data')
         lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')

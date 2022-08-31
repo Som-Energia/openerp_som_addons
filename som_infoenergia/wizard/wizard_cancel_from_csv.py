@@ -30,7 +30,11 @@ class WizardCancelFromCSV(osv.osv_memory):
             context = {}
         lot_obj = self.pool.get('som.infoenergia.lot.enviament')
         pol_obj = self.pool.get('giscedata.polissa')
-        example_name = pol_obj.read(cursor, uid, pol_obj.search([], limit=1)[0], ['name'])['name']
+        example_name = pol_obj.read(
+            cursor, uid,
+            pol_obj.search(cursor, uid, [], limit=1, order='id asc')[0],
+            ['name']
+        )['name']
         wiz = self.browse(cursor, uid, ids[0], context=context)
 
         context['reason'] = wiz.reason

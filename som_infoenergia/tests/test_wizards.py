@@ -263,6 +263,11 @@ class WizardCancelFromCSVTestsAndAddContractsLot(testing.OOTestCase):
         imd_obj = self.openerp.pool.get('ir.model.data')
         env_obj = self.openerp.pool.get('som.infoenergia.enviament')
         lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
+
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
+        pol_id = pol_obj.search(self.cursor, self.uid, [], limit=1, order='id asc')[0]
+        pol_obj.write(self.cursor, self.uid, pol_id, {'name': '0001'})
+
         csv_content = "0001"
         encoded_csv = base64.b64encode(csv_content)
         vals = {
@@ -292,6 +297,11 @@ class WizardCancelFromCSVTestsAndAddContractsLot(testing.OOTestCase):
         imd_obj = self.openerp.pool.get('ir.model.data')
         env_obj = self.openerp.pool.get('som.infoenergia.enviament')
         lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
+
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
+        pol_id = pol_obj.search(self.cursor, self.uid, [], limit=1, order='id asc')[0]
+        pol_obj.write(self.cursor, self.uid, pol_id, {'name': '0001'})
+
         csv_content = "0001\n0002"
         encoded_csv = base64.b64encode(csv_content)
         vals = {
@@ -322,6 +332,11 @@ class WizardCancelFromCSVTestsAndAddContractsLot(testing.OOTestCase):
         imd_obj = self.openerp.pool.get('ir.model.data')
         env_obj = self.openerp.pool.get('som.infoenergia.enviament')
         lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
+
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
+        pol_id = pol_obj.search(self.cursor, self.uid, [], limit=1, order='id asc')[0]
+        pol_obj.write(self.cursor, self.uid, pol_id, {'name': '0001'})
+
         csv_content = "1\n2"
         encoded_csv = base64.b64encode(csv_content)
         vals = {
@@ -334,7 +349,6 @@ class WizardCancelFromCSVTestsAndAddContractsLot(testing.OOTestCase):
         ctx = {
             'active_id': lot_enviament_id, 'active_ids': [lot_enviament_id],
         }
-        env_ids = env_obj.search(self.cursor, self.uid, [('lot_enviament', '=', lot_enviament_id), ('polissa_id.name', '=', '0001')])
         wiz_id = wiz_obj.create(self.cursor, self.uid, vals,context=ctx)
 
         wiz_obj.cancel_from_file(self.cursor, self.uid, [wiz_id], context=ctx)
