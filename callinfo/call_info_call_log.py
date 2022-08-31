@@ -10,22 +10,26 @@ class CallInfoCallLog(osv.osv):
 
 
     def _normalize_phone_number(self, phone_number):
-        clean_phone_number = re.sub(r'[ +-(),.]', '', phone_number)
-        return phone_number.lstrip('0')
+        clean_phone_number = re.sub(r'[ +(),.-]', '', phone_number)
+        return clean_phone_number.lstrip('0')
 
     def insert_call_log(self, cursor, uid, call_data, context=None):
         new_call = {
-            'phone': self._normalize_phone_number(call_data['phone']),
-            'partner_id': call_data['partner_id'],
-            'contract_id': call_data['polissa_id']
-            'date': datetime.now(),
+            'call_date': datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S'),
             'categ_id': call_data['categ_id'],
             'comment': call_data['notes'],
             'user_id': call_data['user_id'],
         }
-        if 'atc' in call_data:
-            new_atc['atc_id'] = call_data['atc']
-
+        if 'atc_id' in call_data:
+            new_call['atc_id'] = call_data['atc_id']
+        if 'phone' in call_data:
+            phone = self._normalize_phone_number(call_data['phone'])
+            if phone:
+                new_call['phone'] = phone
+        if 'partner_id' in call_data:
+            new_call['partner_id'] = call_data['partner_id'],
+        if 'polissa_id' in call_data:
+            new_call['contract_id'] = call_data['polissa_id'],
         return self.create(cursor, uid, new_call, context=context)
 
     _columns = {
@@ -44,7 +48,7 @@ class CallInfoCallLog(osv.osv):
             _('Pòlissa'),
             help=_('Pòlissa associada a la trucada')
         ),
-        'date': fields.datetime(
+        'call_date': fields.datetime(
             _('Data'),
             required=True,
             help=_('Dia i hora de la trucada')

@@ -16,6 +16,7 @@
     "init_xml": [],
     "demo_xml": [],
     "update_xml":[
+        "call_info_call_log_view.xml",
         "security/ir.model.access.csv",
     ],
     "active": False,
