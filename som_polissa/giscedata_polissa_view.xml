@@ -57,18 +57,6 @@
                 </xpath>
             </field>
         </record>
-        <record model="ir.ui.view" id="view_som_polissa_tipus_mesura">
-            <field name="name">som.polissa.tipus.mesura.tree</field>
-            <field name="model">giscedata.polissa</field>
-            <field name="inherit_id" ref="giscedata_polissa.view_polisses_tree"/>
-            <field name="type">tree</field>
-            <field name="priority">99</field>
-            <field name="arch" type="xml">
-                <field name="name" position="after">
-                    <field name="agree_tipus" string="Tipus de Punt de Mesura" invisible="1" select="2"/>
-                </field>
-            </field>
-        </record>
         <record model="ir.ui.view" id="view_giscedata_polissa_enviament_tree">
             <field name="name">giscedata.polissa.enviament.tree</field>
             <field name="model">giscedata.polissa</field>
