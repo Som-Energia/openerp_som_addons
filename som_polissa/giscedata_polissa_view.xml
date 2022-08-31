@@ -16,10 +16,19 @@
                     <field name="tarifa"/>
                     <field name="potencia"/>
                     <field name="data_ultima_lectura"/>
+                    <field name="data_ultima_lectura_f1"/>
+                    <field name="dies_lectures_facturada_f1"/>
                     <field name="data_alta"/>
                     <field name="data_baixa"/>
                     <field name="lot_facturacio"/>
+                    <field name="facturacio_suspesa"/>
+                    <field name="observacio_suspesa"/>
+                    <field name="pending_state"/>
+                    <field name="lot_facturacio"/>
                     <field name="info_gestio_endarrerida_curta" string="Gest. Endarrerida"/>
+                    <field name="info_gestions_massives"/>
+                    <field name="data_alta_autoconsum"/>
+                    <field name="autoconsumo"/>
                     <field name="user_id"/>
                 </tree>
             </field>
@@ -40,7 +49,17 @@
                 </field>
             </field>
         </record>
-
+        <record model="ir.ui.view" id="view_giscedata_polissa_diferencies_lectura_form">
+            <field name="name">polisses.facturacio.endarrerida.form</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_facturacio_comer.view_giscedata_polissa_form_2"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <field name="refacturacio_pendent" position="before">
+                    <field name="dies_lectures_facturada_f1" select="1"/>
+                </field>
+            </field>
+        </record>
         <record model="ir.ui.view" id="view_giscedata_polissa_comer_form">
             <field name="name">giscedata.polissa.comer.form</field>
             <field name="model">giscedata.polissa</field>
@@ -107,6 +126,18 @@
                     <group colspan="6" col="3">
                         <field name="process_id" select="2" attrs="{'readonly': [('bono_social_disponible','=', True)]}"/>
                     </group>
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_som_polissa_diferencia_lectures">
+            <field name="name">som.polissa.diferencia.lectures.tree</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="som_switching.giscedata_polissa_auto_tree"/>
+            <field name="type">tree</field>
+            <field name="priority">99</field>
+            <field name="arch" type="xml">
+                <field name="data_ultima_lectura_f1" position="after">
+                    <field name="dies_lectures_facturada_f1" select="2"/>
                 </field>
             </field>
         </record>

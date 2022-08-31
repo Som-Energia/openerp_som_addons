@@ -1,0 +1,131 @@
+diff --git a/som_polissa/__terp__.py b/som_polissa/__terp__.py
+index ce9d20ec39e3..c713d4812a73 100644
+--- a/som_polissa/__terp__.py
++++ b/som_polissa/__terp__.py
+@@ -14,6 +14,10 @@
+         "giscedata_polissa_comer",
+         "giscedata_polissa_category",
+         "giscedata_facturacio",
++        "giscedata_facturacio_comer",
++        "giscedata_facturacio_suspesa",
++        "giscedata_facturacio_impagat",
++        "som_switching",
+         "giscedata_polissa_responsable",
+         "base_bank_extended",
+         "l10n_ES_remesas"
+diff --git a/som_polissa/giscedata_polissa.py b/som_polissa/giscedata_polissa.py
+index d79ee4cef5de..bdaf0fa7d24e 100644
+--- a/som_polissa/giscedata_polissa.py
++++ b/som_polissa/giscedata_polissa.py
+@@ -3,6 +3,7 @@
+ from dateutil.relativedelta import relativedelta
+ from ooquery.expression import Field
+ from osv import osv, fields
++from addons.giscedata_facturacio.giscedata_polissa import _get_polissa_from_energy_invoice
+ 
+ 
+ class GiscedataPolissa(osv.osv):
+@@ -272,6 +273,21 @@ def set_category_eie(self, cursor, uid, ids, context=None):
+ 
+             polissa_obj.write(cursor, uid, [_id], {'category_id': categories_ids})
+ 
++    def _ff_get_dies_lectures_facturada_f1(self, cursor, uid, ids, field_name, arg, context=None):
++        if not context:
++            context = {}
++
++        res = dict.fromkeys(ids, 0)
++        if ids:
++            pols_dates = self.read(cursor, uid, ids, ['data_ultima_lectura', 'data_ultima_lectura_f1', 'data_alta'])
++            for p_dates in pols_dates:
++                data_desde = p_dates['data_ultima_lectura'] or p_dates['data_alta']
++                data_fins = p_dates['data_ultima_lectura_f1']
++                if data_fins and data_desde:
++                    res[p_dates['id']] = (datetime.strptime(data_fins, '%Y-%m-%d') - datetime.strptime(data_desde, '%Y-%m-%d')).days
++
++        return res
++
+ 
+     _columns = {
+         'info_gestio_endarrerida': fields.text('Informació gestió endarrerida'),
+@@ -286,6 +302,20 @@ def set_category_eie(self, cursor, uid, ids, context=None):
+                                                   fnct_search=_search_fact_endarrerida,
+                                                   readonly=True),
+         'info_gestions_massives': fields.text('Informació gestions massives'),
++        'dies_lectures_facturada_f1': fields.function(
++            _ff_get_dies_lectures_facturada_f1, method=True, type='float', digits=(8, 1),
++            string='Dif. dies lectures F1 i facturades', readonly=True,
++            help="Data última lectura F1 - data última lectura facturada (si no té data facturada real, agafa la data d'alta de la pòlissa).",
++            store={
++                'giscedata.polissa': (
++                    lambda self, cr, uid, ids, c={}: ids,
++                    ['name', 'data_ultima_lectura', 'data_ultima_lectura_f1', 'data_alta'], 20
++                ),
++                'account.invoice': (
++                    _get_polissa_from_energy_invoice, ['state'], 20
++                )
++            }
++        ),
+     }
+ 
+ 
+diff --git a/som_polissa/giscedata_polissa_view.xml b/som_polissa/giscedata_polissa_view.xml
+index 3a6cbd937f9c..7c9f13f395b0 100644
+--- a/som_polissa/giscedata_polissa_view.xml
++++ b/som_polissa/giscedata_polissa_view.xml
+@@ -16,10 +16,19 @@
+                     <field name="tarifa"/>
+                     <field name="potencia"/>
+                     <field name="data_ultima_lectura"/>
++                    <field name="data_ultima_lectura_f1"/>
++                    <field name="dies_lectures_facturada_f1"/>
+                     <field name="data_alta"/>
+                     <field name="data_baixa"/>
+                     <field name="lot_facturacio"/>
++                    <field name="facturacio_suspesa"/>
++                    <field name="observacio_suspesa"/>
++                    <field name="pending_state"/>
++                    <field name="lot_facturacio"/>
+                     <field name="info_gestio_endarrerida_curta" string="Gest. Endarrerida"/>
++                    <field name="info_gestions_massives"/>
++                    <field name="data_alta_autoconsum"/>
++                    <field name="autoconsumo"/>
+                     <field name="user_id"/>
+                 </tree>
+             </field>
+@@ -39,7 +48,17 @@
+                 </field>
+             </field>
+         </record>
+-
++        <record model="ir.ui.view" id="view_giscedata_polissa_diferencies_lectura_form">
++            <field name="name">polisses.facturacio.endarrerida.form</field>
++            <field name="model">giscedata.polissa</field>
++            <field name="inherit_id" ref="giscedata_facturacio_comer.view_giscedata_polissa_form_2"/>
++            <field name="type">form</field>
++            <field name="arch" type="xml">
++                <field name="refacturacio_pendent" position="before">
++                    <field name="dies_lectures_facturada_f1" select="1"/>
++                </field>
++            </field>
++        </record>
+         <record model="ir.ui.view" id="view_giscedata_polissa_comer_form">
+             <field name="name">giscedata.polissa.comer.form</field>
+             <field name="model">giscedata.polissa</field>
+@@ -68,5 +87,17 @@
+                 </field>
+             </field>
+         </record>
++        <record model="ir.ui.view" id="view_som_polissa_diferencia_lectures">
++            <field name="name">som.polissa.diferencia.lectures.tree</field>
++            <field name="model">giscedata.polissa</field>
++            <field name="inherit_id" ref="som_switching.giscedata_polissa_auto_tree"/>
++            <field name="type">tree</field>
++            <field name="priority">99</field>
++            <field name="arch" type="xml">
++                <field name="data_ultima_lectura_f1" position="after">
++                    <field name="dies_lectures_facturada_f1" select="2"/>
++                </field>
++            </field>
++        </record>
+     </data>
+ </openerp>

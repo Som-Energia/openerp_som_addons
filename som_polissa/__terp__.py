@@ -15,7 +15,11 @@
         "giscedata_polissa_category",
         "giscedata_facturacio",
         "giscedata_polissa_responsable",
+        "giscedata_facturacio_comer",
+        "giscedata_facturacio_suspesa",
+        "giscedata_facturacio_impagat",
         "giscedata_facturacio_impagat_comer",
+        "som_switching",
         "base_bank_extended",
         "l10n_ES_remesas"
     ],

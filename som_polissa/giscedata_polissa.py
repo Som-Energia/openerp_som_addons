@@ -4,6 +4,7 @@ from dateutil.relativedelta import relativedelta
 from ooquery.expression import Field
 from addons import get_module_resource
 from osv import osv, fields
+from addons.giscedata_facturacio.giscedata_polissa import _get_polissa_from_energy_invoice
 
 POLISSA_DATE_FIELDS = [
     'data_ultima_lectura', 'data_ultima_lectura_f1', 'data_alta',
@@ -256,6 +257,21 @@ class GiscedataPolissa(osv.osv):
 
             polissa_obj.write(cursor, uid, [_id], {'category_id': categories_ids})
 
+    def _ff_get_dies_lectures_facturada_f1(self, cursor, uid, ids, field_name, arg, context=None):
+        if not context:
+            context = {}
+
+        res = dict.fromkeys(ids, 0)
+        if ids:
+            pols_dates = self.read(cursor, uid, ids, ['data_ultima_lectura', 'data_ultima_lectura_f1', 'data_alta'])
+            for p_dates in pols_dates:
+                data_desde = p_dates['data_ultima_lectura'] or p_dates['data_alta']
+                data_fins = p_dates['data_ultima_lectura_f1']
+                if data_fins and data_desde:
+                    res[p_dates['id']] = (datetime.strptime(data_fins, '%Y-%m-%d') - datetime.strptime(data_desde, '%Y-%m-%d')).days
+
+        return res
+
 
     _columns = {
         'info_gestio_endarrerida': fields.text('Informació gestió endarrerida'),
@@ -270,6 +286,20 @@ class GiscedataPolissa(osv.osv):
                                                   fnct_search=_search_fact_endarrerida,
                                                   readonly=True),
         'info_gestions_massives': fields.text('Informació gestions massives'),
+        'dies_lectures_facturada_f1': fields.function(
+            _ff_get_dies_lectures_facturada_f1, method=True, type='float', digits=(8, 1),
+            string='Dif. dies lectures F1 i facturades', readonly=True,
+            help="Data última lectura F1 - data última lectura facturada (si no té data facturada real, agafa la data d'alta de la pòlissa).",
+            store={
+                'giscedata.polissa': (
+                    lambda self, cr, uid, ids, c={}: ids,
+                    ['name', 'data_ultima_lectura', 'data_ultima_lectura_f1', 'data_alta'], 20
+                ),
+                'account.invoice': (
+                    _get_polissa_from_energy_invoice, ['state'], 20
+                )
+            }
+        ),
     }
 
 
