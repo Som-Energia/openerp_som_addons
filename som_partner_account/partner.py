@@ -223,11 +223,14 @@ class ResPartner(osv.osv):
             if not partner['property_account_aportacions']:
                 gen_ids.append(partner['id'])
         if gen_ids:
-            res = self.create_account_163(cursor, uid, gen_ids, context)
-            for partner_id in res:
-                self.write(cursor, uid, int(partner_id), {
-                    'property_account_aportacions': res[partner_id]}
-                )
+            aa_obj = self.pool.get('account.account')
+            ag_id = aa_obj.search(cursor, uid, [('code','=','163000000000')])
+            if ag_id:
+                for partner in self.browse(cursor, uid, ids):
+                    self.write(cursor, uid, int(partner.id),
+                       {'property_account_aportacions': ag_id[0]})
+            else:
+                return False
         return True
 
     def button_assign_acc_1714(self, cursor, uid, ids, context=None):
@@ -246,11 +249,15 @@ class ResPartner(osv.osv):
         """
         if not context:
             context = {}
-        res = self.create_account_1635(cursor, uid, ids, context)
-        for partner_id in res:
-            self.write(cursor, uid, int(partner_id),
-                       {'property_account_gkwh': res[partner_id]})
-        return True
+        aa_obj = self.pool.get('account.account')
+        ag_id = aa_obj.search(cursor, uid, [('code','=','163500000000')])
+        if ag_id:
+            for partner in self.browse(cursor, uid, ids):
+                self.write(cursor, uid, int(partner.id),
+                       {'property_account_gkwh': ag_id[0]})
+            return True
+        else:
+            return False
 
     def become_member(self, cursor, uid, id, context=None):
         imd_obj = self.pool.get('ir.model.data')
