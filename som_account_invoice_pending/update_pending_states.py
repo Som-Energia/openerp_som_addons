@@ -532,7 +532,7 @@ class UpdatePendingStates(osv.osv_memory):
 
         try:
             n57_template_id = self.get_object_id(
-                cursor, uid, 'som_account_invoice_pending', 'email_generic_N57_contracte_baixa'
+                cursor, uid, 'som_account_invoice_pending', 'email_generic_previ_advocats'
             )
 
             sms_template_id = self.get_object_id(
