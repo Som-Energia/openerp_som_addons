@@ -10,8 +10,11 @@ class CallInfoCallLog(osv.osv):
 
 
     def _normalize_phone_number(self, phone_number):
-        clean_phone_number = re.sub(r'[ +(),.-]', '', phone_number)
-        return clean_phone_number.lstrip('0')
+        clean_phone_number = re.sub('\D', '', phone_number)
+        no_zeros = clean_phone_number.lstrip('0')
+        if no_zeros.startswith('34'):
+            no_zeros = no_zeros[2:]
+        return no_zeros
 
     def insert_call_log(self, cursor, uid, call_data, context=None):
         new_call = {
