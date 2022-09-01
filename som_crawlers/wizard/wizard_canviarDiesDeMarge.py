@@ -11,7 +11,7 @@ class WizardCanviarDiesDeMarge(osv.osv_memory):
     ## Module name
     _name = 'wizard.canviarDiesDeMarge'
 
-    ## Wizard function that changes the password of a configuration which id is activated
+    ## Wizard function that changes the days of margin of a configuration which id is activated
         # @param self The object pointer
         # @param cursor The database pointer
         # @param uid The current user
@@ -39,7 +39,7 @@ class WizardCanviarDiesDeMarge(osv.osv_memory):
 
         return {'type': 'ir.actions.act_window_close'}
 
-    ##Column definition : contrasenya nova, the user puts the new password
+    ##Column definition : dies de marge nous, the user puts the margin days
     _columns = {
         'days_of_margin': fields.char("Dies de marge", size = 10, required=True, help="Introdueix un nombre >= 0 de dies de marge",)
     }
