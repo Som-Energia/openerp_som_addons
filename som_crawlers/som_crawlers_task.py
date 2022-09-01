@@ -47,6 +47,7 @@ class SomCrawlersTask(osv.osv):
     ## Default values of a column
     _defaults = {
         'active': lambda *a:False,
+        'data_proxima_execucio':datetime.now().strftime("%Y-%m-%d_%H:%M"),
     }
 
     def id_del_portal_config(self,cursor,uid,id,context=None):
@@ -60,7 +61,7 @@ class SomCrawlersTask(osv.osv):
         self.executar_tasca(cursor, uid, id, context=context)
 
     def executar_tasca(self,cursor,uid,id,context=None):
-       
+
         classresult = self.pool.get('som.crawlers.result')
         classTaskStep = self.pool.get('som.crawlers.task.step')
         cron_obj = self.pool.get('ir.cron')
@@ -177,7 +178,6 @@ class SomCrawlersTaskStep(osv.osv):
         taskStep_obj = self.browse(cursor,uid,id)
         taskStepParams = json.loads(taskStep_obj.params)
         path = os.path.dirname(os.path.realpath(__file__))
-        
         classresult.write(cursor,uid, result_id, {'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M")})
 
         if taskStepParams.has_key('nom_fitxer'):

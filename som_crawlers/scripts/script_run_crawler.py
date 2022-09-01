@@ -15,6 +15,9 @@ import sys
 import click
 import os
 import importlib
+import pyautogui
+import numpy as np
+import cv2
 
 ## Arguments passed through the os systemm call
 @click.command()
@@ -59,14 +62,6 @@ def crawl(user, name, password, file, url, filters, crawler, days, pfiles, brows
         logger.debug("Starting %s crawling..." % (name))
         spider_instance = spider_module.instance(crawler_conf)
         spider_instance.start_with_timeout(portalCreds, debug=True)
-    except NoResultsException as e:
-        f.write(str(e))
-    except CrawlingLoginException as e:
-        f.write(str(e))
-    except CrawlingProcessException as e:
-        f.write(str(e))
-    except FileToBucketException as e:
-        f.write(str(e))
     except Exception as e:
         f.write(str(e))
     else:

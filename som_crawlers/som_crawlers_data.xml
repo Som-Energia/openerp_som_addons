@@ -734,7 +734,14 @@
             <field eval="False" name="doall"/>
             <field eval="'wizard.executar.tasca'" name="model"/>
             <field eval="'executar_tasca_cron'" name="function"/>
-            <field eval="'2022-08-18 12:15:00'" name="nextcall"/>
+            <field eval="'([],)'" name="args"/>
         </record>
+
+        <!--field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field eval="False" name="doall"/>
+        <field name="nextcall" eval="'2019-01-01 01:00:00'"/>
+        <field eval="'([],)'" name="args"/-->
     </data>
 </openerp>
