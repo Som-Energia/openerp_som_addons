@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data noupdate="True">
+        <record id="categ_domestic" model="giscedata.polissa.category">
+            <field name="name">0. Domèstic</field>
+            <field name="code">DOM</field>
+        </record>
+        <record id="categ_entitat_o_empresa" model="giscedata.polissa.category">
+            <field name="name">Entitat o Empresa</field>
+            <field name="code">EiE</field>
+        </record>
+        <record id="categ_eie_CNAE_no_domestic" model="giscedata.polissa.category">
+            <field name="name">1. CNAE no domèstic</field>
+            <field name="code">CNAE</field>
+            <field name="parent_id" ref="categ_entitat_o_empresa"/>
+        </record>
+        <record id="categ_eie_persona_juridic" model="giscedata.polissa.category">
+            <field name="name">2. Persona jurídica</field>
+            <field name="code">CIF</field>
+            <field name="parent_id" ref="categ_entitat_o_empresa"/>
+        </record>
+        <record id="categ_eie_CNAE_CIF" model="giscedata.polissa.category">
+            <field name="name">3. CNAE + CIF</field>
+            <field name="name">EMPRESA</field>
+            <field name="parent_id" ref="categ_entitat_o_empresa"/>
+        </record>
+    </data>
+</openerp>

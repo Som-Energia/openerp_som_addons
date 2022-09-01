@@ -1,0 +1,8 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_foreign_res_partner_r","res.partner","base.model_res_partner","base_extended.group_base_extended_r",1,0,0,0
+"access_foreign_res_partner_u","res.partner","base.model_res_partner","base_extended.group_base_extended_u",1,0,0,0
+"access_foreign_res_partner_w","res.partner","base.model_res_partner","base_extended.group_base_extended_w",1,0,0,0
+"access_wizard_modify_ov_admin_rcwd","wizard.modify.ov.admin","model_wizard_modify_ov_admin","giscedata_polissa.group_giscedata_polissa_u",1,1,1,1
+"access_som_admin_notification_rcwd","som.admin.notification","model_som_admin_notification","giscedata_polissa.group_giscedata_polissa_w",1,1,1,1
+"access_som_admin_modification_rcwd","som.admin.modification","model_som_admin_modification","giscedata_polissa.group_giscedata_polissa_w",1,1,1,1
+"access_wizard_notify_ov_admin_rcwd","wizard.notify.ov.admin","model_wizard_notify_ov_admin","giscedata_polissa.group_giscedata_polissa_u",1,1,1,1

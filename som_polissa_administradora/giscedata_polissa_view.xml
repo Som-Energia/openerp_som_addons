@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+		<!-- Formulari pels modcontractuals -->
+		<record model="ir.ui.view" id="view_modcontractuals_form_administradora">
+			<field name="name">giscedata.polissa.modcontractual.form</field>
+			<field name="model">giscedata.polissa.modcontractual</field>
+			<field name="inherit_id" ref="giscedata_polissa.view_modcontractuals_form"/>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<page string="Contactes">
+					<field name="administradora" colspan="4"/>
+					<field name="administradora_permissions" colspan="2"/>
+				</page>
+			</field>
+		</record>
+
+		<!-- Administradora de pòlisses -->
+		<record model="ir.ui.view" id="view_giscedata_polissa_form_administradora">
+			<field name="name">giscedata.polissa.soci.form</field>
+			<field name="model">giscedata.polissa</field>
+			<field name="inherit_id" ref="giscedata_polissa.view_polisses_form"/>
+			<field name="type">form</field>
+			<field name="priority">100</field>
+			<field name="arch" type="xml">
+				<page string="Contactes" position="inside">
+					<separator colspan="4" string="Administradora"/>
+					<field name="administradora" colspan="2"/>
+					<field name="administradora_nif" select="1"/>
+					<group col="4" colspan="2" attrs="{'invisible': [('administradora', '=', False)]}">
+						<field name="administradora_permissions"/>
+					</group>
+				</page>
+			</field>
+		</record>
+	</data>
+</openerp>

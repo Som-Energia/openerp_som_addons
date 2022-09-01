@@ -74,6 +74,7 @@ jobs:
           git clone --depth 1 git@github.com:gisce/crm_poweremail.git $ROOT_DIR_SRC/crm_poweremail
           git clone --depth 1 https://$GITHUB_TOKEN@github.com/gisce/libFacturacioATR.git $ROOT_DIR_SRC/libFacturacioATR
           git clone --depth 1 git@github.com:gisce/ooop.git $ROOT_DIR_SRC/ooop
+          git clone --depth 1 https://github.com/Som-Energia/giscedata_facturacio_indexada_som.git $ROOT_DIR_SRC/giscedata_facturacio_indexada_som
       - name: Install dependencies
         run: |
           sudo apt-get --allow-releaseinfo-change update

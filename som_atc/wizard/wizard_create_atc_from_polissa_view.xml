@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+	<data>
+        <record id="view_wizard_create_atc_from_polissa_form" model="ir.ui.view">
+            <field name="name">wizard.create.atc.from.polissa.form</field>
+            <field name="model">wizard.create.atc.from.polissa</field>
+            <field name="inherit_id" ref="giscedata_atc.view_wizard_create_atc_from_polissa_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <field name="name" position="replace"/>
+                <field name="canal_id" position="before">
+                    <group colspan="16" col="16" >
+                        <field name="name" required="1" colspan="16"/>
+                    </group>
+                </field>
+                <xpath expr='//field[@name="canal_id"]' position='replace'>
+                    <field name="canal_id" colspan="7" domain="[('active', '!=', False)]"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="action_wizard_create_atc_from_giscedata_facturacio_contracte_lot" model="ir.actions.act_window">
+            <field name="name">Generar cas Atenció al Client</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.create.atc.from.polissa</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_wizard_create_atc_from_polissa_form"/>
+            <field name="context" eval="{'from_model': 'giscedata.facturacio.contracte_lot', 'polissa_field': 'polissa_id'}"/>
+            <field name="target">new</field>
+        </record>
+        <record id="value_wizard_create_atc_from_giscedata_facturacio_contracte_lot" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Generar cas Atenció al Client</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.facturacio.contracte_lot</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_create_atc_from_giscedata_facturacio_contracte_lot'))" />
+        </record>
+    </data>
+</openerp>

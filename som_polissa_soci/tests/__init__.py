@@ -1,0 +1,1 @@
+from .test_somenergia_soci import *

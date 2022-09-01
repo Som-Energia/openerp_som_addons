@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_giscedata_polissa_form">
+            <field name="name">giscedata.polissa.soci.form</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_polissa.view_polisses_form"/>
+            <field name="type">form</field>
+            <field name="priority">99</field>
+            <field name="arch" type="xml">
+                <page string="Contactes" position="inside">
+                    <separator colspan="4" string="Soci"/>
+                    <field name="soci" select="1"/>
+                    <field name="soci_nif"/>
+                </page>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_giscedata_polissa_form_donatiu">
+            <field name="name">giscedata.polissa.soci.form</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_polissa.view_polisses_form"/>
+            <field name="type">form</field>
+            <field name="priority">99</field>
+            <field name="arch" type="xml">
+                <field name="versio_primera_factura" position="after">
+                    <field name="donatiu"/>
+                </field>
+            </field>
+        </record>
+        <!-- Cercador-->
+        <record model="ir.ui.view" id="view_som_polissa_soci_tipus_vivenda_form">
+            <field name="name">som.polissa.soci.tipus.vivenda.form</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_polissa.view_polisses_form"/>
+            <field name="type">form</field>
+            <field name="priority">99</field>
+            <field name="arch" type="xml">
+                <field name="tipus_vivenda" position="replace">
+                    <field name="tipus_vivenda" select="2"/>
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_som_polissa_soci_firmat_form">
+            <field name="name">som.polissa.soci.firmat.tree</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_polissa.view_polisses_tree"/>
+            <field name="type">tree</field>
+            <field name="priority">99</field>
+            <field name="arch" type="xml">
+                <field name="firmat" position="replace">
+                    <field name="firmat" invisible="1" select="2"/>
+                </field>
+            </field>
+        </record>
+        <!-- Comptadors en vista formulari per defecte -->
+        <record model="ir.ui.view" id="view_som_polissa_soci_comptadors_form">
+            <field name="name">som.polissa.soci.comptadors.form</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_polissa.view_polisses_form"/>
+            <field name="type">form</field>
+            <field name="priority">99</field>
+            <field name="arch" type="xml">
+                <field name="comptadors" position="replace">
+                    <field name="comptadors" nolabel="1" colspan="4" context="{'polissa_id':active_id}"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>

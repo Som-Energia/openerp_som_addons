@@ -1,0 +1,32 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+#	* som_extend_facturacio_comer
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: GISCE-ERP\n"
+"Report-Msgid-Bugs-To: https://github.com/Som-Energia/erp/issues\n"
+"POT-Creation-Date: 2016-09-19 09:18:19+0000\n"
+"PO-Revision-Date: 2016-09-19 09:18:19+0000\n"
+"Last-Translator: SomEnergia <info@somenergia.coop>\n"
+"Language-Team: Spanish (spain) <info@somenergia.coop>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: som_extend_facturacio_comer
+#: model:ir.module.module,description:som_extend_facturacio_comer.module_meta_information
+msgid "SomEnergia billing extension"
+msgstr "SomEnergia billing extension"
+
+#. module: som_extend_facturacio_comer
+#: model:ir.actions.act_window,name:som_extend_facturacio_comer.action_factura_tree_admin
+#: model:ir.ui.menu,name:som_extend_facturacio_comer.menu_facturacio_base_factures_admin
+msgid "Factures Admin. Locals"
+msgstr "Facturas Admin. Locales"
+
+#. module: som_extend_facturacio_comer
+#: model:ir.module.module,shortdesc:som_extend_facturacio_comer.module_meta_information
+msgid "Som Energia billing extension"
+msgstr "Som Energia billing extension"
