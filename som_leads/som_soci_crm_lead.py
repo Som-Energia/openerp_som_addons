@@ -28,8 +28,6 @@ class SomSociCrmLead(osv.OsvInherits):
         'titular_pu': 'pu',
         'titular_cpo': 'cpo',
         'titular_cpa': 'cpa',
-        'titular_aclarador': 'aclarador',
-        'titular_apartat_correus': 'apartat_correus',
         'titular_email': 'email',
         'titular_phone': 'phone',
         'titular_mobile': 'mobile'
@@ -229,20 +227,8 @@ class SomSociCrmLead(osv.OsvInherits):
                 raise osv.except_osv(_(u"Operacion no permitida!"), _(u"No se puede cambiar de stage hasta que no se hayan completado o eliminado las siguientes validaciones: {0}").format(err_msg))
 
     def update_current_stage_validations(self, cursor, uid, ids, context=None):
-        if not isinstance(ids, (list, tuple)):
-            ids = [ids]
-        if context is None:
-            context = {}
-        template_o = self.pool.get('crm.stage.validation.template')
-        val_o = self.pool.get("crm.stage.validation")
-        sp = [('stage_id', '=', None)]
-        for vals in self.read(cursor, uid, ids, ['stage_id']):
-            current_sp = sp[:]
-            if vals.get("stage_id"):
-                current_sp = ['|'] + current_sp + [('stage_id', '=', vals.get("stage_id")[0])]
-            for default_val in template_o.search(cursor, uid,  current_sp, context=context):
-                val_o.create_from_template(cursor, uid, vals['id'], default_val, context=context)
-        return True
+        return False
+
 
     def _vat_es_empresa(self, cr, uid, ids, prop, unknow_none, unknow_dict):
         res = {}
@@ -557,7 +543,6 @@ class SomSociCrmLead(osv.OsvInherits):
         'titular_cognom1': fields.char("Apellido 1", size=30, mandatory=True),
         'titular_cognom2': fields.char("Apellido 2", size=30),
         # Dades de contacte del Titular
-        'tipus_vivenda': fields.selection([('habitual', 'Habitual'), ('no_habitual', 'No habitual')], string='Tipo vivienda', mandatory=True),
         'titular_zip': fields.char('Codigo Postal', change_default=True, size=24),
         'titular_tv': fields.many2one('res.tipovia', 'Tipo Via'),
         'titular_nv': fields.char('Calle', size=256),
@@ -568,10 +553,8 @@ class SomSociCrmLead(osv.OsvInherits):
         'titular_pu': fields.char('Puerta', size=10),
         'titular_cpo': fields.char('Poligono', size=10),
         'titular_cpa': fields.char('Parcela', size=10),
-        'titular_aclarador': fields.char('Aclarador', size=256),
         'titular_id_municipi': fields.many2one('res.municipi', 'Municipio'),
         'titular_id_poblacio': fields.many2one('res.poblacio', 'Población'),
-        'titular_apartat_correus': fields.char("Apartado de Correos", size=5),
         'titular_email': fields.char('E-Mail', size=240, mandatory=True),
         'titular_phone': fields.char('Telefono', size=64, mandatory=True),
         'titular_mobile': fields.char('Mobil', size=64, mandatory=True),

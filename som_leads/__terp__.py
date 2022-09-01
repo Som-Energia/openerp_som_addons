@@ -14,7 +14,7 @@
         "crm_case_stage",
         "base_extended",
         "account_payment",
-        "giscedata_crm_leads",
+        "som_generationkwh",
     ],
     "init_xml": [],
     "demo_xml": [

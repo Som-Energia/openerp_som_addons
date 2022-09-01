@@ -1,8 +1,13 @@
 <?xml version="1.0" ?>
 <openerp>
     <data>
-        <menuitem id="menu_som_soci_crm_leads" parent="crm.menu_crm" sequence="10" name="CRM Ofertes/Oportunitats"/>
+        <menuitem id="menu_som_soci_crm_leads" parent="base.menu_base_partner" sequence="50" name="Processos d'alta/baixa de sòcies"/>
         <menuitem name="Configuració" id="menu_som_soci_crm_lead_config" parent="menu_som_soci_crm_leads"/>
+        <menuitem name="Seccions" id="menu_som_soci_crm_lead_config_sections" parent="menu_som_soci_crm_lead_config" action="crm.crm_case_section_act"/>
+        <menuitem name="Stages" id="menu_som_soci_crm_lead_config_stages" parent="menu_som_soci_crm_lead_config" action="crm_configuration.crm_case_stage_act"/>
+        <menuitem name="Alta de sòcies" id="menu_som_soci_crm_leads_altes" parent="menu_som_soci_crm_leads"/>
+        <menuitem name="Baixa de sòcies" id="menu_som_soci_crm_leads_baixes" parent="menu_som_soci_crm_leads"/>
+
         <record id="som_soci_crm_lead_view_form" model="ir.ui.view">
             <field name="name">som.soci.crm.lead.form</field>
             <field name="model">som.soci.crm.lead</field>
@@ -52,8 +57,6 @@
                                 <field name="titular_pu"/>
                                 <field name="titular_cpo"/>
                                 <field name="titular_cpa"/>
-                                <field name="titular_apartat_correus"/>
-                                <field name="titular_aclarador"/>
                                 <group colspan="8" col="8" string="Acciones">
                                     <label string=" " colspan="2"/>
                                     <button string="Copiar desde direccion del CUPS" name="copy_address_from_cups" icon="gtk-execute" type="object" colspan="4"/>
@@ -68,16 +71,8 @@
                                 <field name="iban" on_change="onchange_generic('iban', iban)"/>
                             </group>
                         </page>
-
-                        <page string="Validaciones">
-                            <field name="stage_validation_ids" nolabel="1"/>
-                            <group colspan="4" col="4">
-                                <button string="Marcar todas OK" icon="gtk-ok" type="object" name="force_validation" />
-                            </group>
-                        </page>
-
                     </notebook>
-                    </page>
+                </page>
                 </page>
             </field>
         </record>
@@ -119,7 +114,7 @@
                 <field name="view_type">form</field>
                 <field name="view_id" ref="som_soci_crm_lead_view_tree"/>
         </record>
-        <menuitem action="action_all_som_soci_crm_leads" id="menu_all_som_soci_crm_leads" parent="menu_som_soci_crm_leads" sequence="10" name="Tots els processos d'alta"/>
-        <menuitem action="action_current_som_soci_crm_leads" id="menu_current_som_soci_crm_leads" parent="menu_som_soci_crm_leads" sequence="11" name="Processos d'alta no finalitzats"/>
+        <menuitem action="action_all_som_soci_crm_leads" id="menu_all_som_soci_crm_leads" parent="menu_som_soci_crm_leads_altes" sequence="10" name="Tots els processos d'alta"/>
+        <menuitem action="action_current_som_soci_crm_leads" id="menu_current_som_soci_crm_leads" parent="menu_som_soci_crm_leads_altes" sequence="11" name="Processos d'alta no finalitzats"/>
     </data>
 </openerp>

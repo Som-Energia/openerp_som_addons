@@ -6,7 +6,7 @@
                 <field name="code">ASOCIA</field>
             </record>
             <record id="alta_socies_tpv_section_crm_leads" model="crm.case.section">
-                <field name="name">Procés d'alta de sòcies</field>
+                <field name="name">Procés d'alta de sòcies TPV</field>
                 <field name="code">ASOCIATPV</field>
             </record>
         </data>
