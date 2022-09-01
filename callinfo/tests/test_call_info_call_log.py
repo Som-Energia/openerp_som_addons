@@ -43,3 +43,33 @@ class CallInfoCallLogTest(CallInfoBaseTests):
     def test_normalize_phone_dummy(self):
         self.assertEqual(1,1)
 
+    def test_normalize_phone_ok(self):
+        cil_obj = self.get_model('call.info.call.log')
+
+        phone_clean = cil_obj._normalize_phone_number('872.202.550')
+        self.assertEqual(phone_clean, '872202550')
+
+        phone_clean = cil_obj._normalize_phone_number('900.103.605')
+        self.assertEqual(phone_clean, '900103605')
+
+    def test_normalize_phone_various(self):
+        cil_obj = self.get_model('call.info.call.log')
+
+        samples = [
+            {'raw': '123456789', 'clean': '123456789'},
+            {'raw': '123.456.789', 'clean': '123456789'},
+            {'raw': '123.45.67.89', 'clean': '123456789'},
+            {'raw': '123-456-789', 'clean': '123456789'},
+            {'raw': '123-45-67-89', 'clean': '123456789'},
+            {'raw': '(+34)123456789', 'clean': '123456789'},
+            {'raw': '0034 123-456.789', 'clean': '123456789'},
+            {'raw': '(+49)123456789', 'clean': '49123456789'},
+            {'raw': '0049 123-456.789', 'clean': '49123456789'},
+            {'raw': ' 123456789  ', 'clean': '123456789'},
+            {'raw': '000  00123456789', 'clean': '123456789'},
+            {'raw': '00000000000', 'clean': ''},
+            {'raw': '123 45.6.78-9 someone', 'clean': '123456789'},
+        ]
+        for sample in samples:
+            result = cil_obj._normalize_phone_number(sample['raw'])
+            self.assertEqual(result, sample['clean'])
