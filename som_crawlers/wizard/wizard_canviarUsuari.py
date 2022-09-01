@@ -38,7 +38,7 @@ class WizardCanviarUsuari(osv.osv_memory):
 
         return {'type': 'ir.actions.act_window_close'}
 
-    ##Column definition : usuari nou, the user puts the new password
+    ##Column definition : usuari nou, the user puts the new user
     _columns = {
     'usuari_nou': fields.char("Usuari_nou", size = 30, required=True, help="Entra el nou usuari",)
     }
