@@ -3,7 +3,7 @@ from destral import testing
 from destral.transaction import Transaction
 from expects import *
 from datetime import datetime,date
-
+from random import choice
 
 def today_str():
     return date.today().strftime("%Y-%m-%d")
@@ -26,10 +26,14 @@ class CallInfoBaseTests(testing.OOTestCase):
     def get_model(self, model_name):
         return self.openerp.pool.get(model_name)
 
-    def search_in(self, model, params):
+    def search_in(self, model, params, who=0):
         model_obj = self.get_model(model)
         found_ids = model_obj.search(self.cursor, self.uid, params)
-        return found_ids[0] if found_ids else None
+        if not found_ids:
+            return None
+        if who == 'random':
+            return choice(found_ids)
+        return found_ids[who]
 
     def browse_referenced(self, reference):
         model, id = reference.split(',')
@@ -71,20 +75,12 @@ class CallInfoCallLogTest(CallInfoBaseTests):
             result = cil_obj._normalize_phone_number(sample['raw'])
             self.assertEqual(result, sample['clean'])
 
-    def create_dummy_category(self):
-        sec_obj = self.get_model('crm.case.section')
-        cat_obj = self.get_model('crm.case.categ')
-        sec_id = sec_obj.create(self.cursor, self.uid, {'name':'dummy_section','code':'dummy'})
-        cat_id = cat_obj.create(self.cursor, self.uid, {'name':'dummy_section_cat','section_id': sec_id})
-        return sec_id, cat_id
-
     def test_insert_call_log__basic(self):
         cil_obj = self.get_model('call.info.call.log')
-        self.create_dummy_category()
 
         call_data = {
             'user_id': self.search_in('res.users',[]),
-            'categ_id': self.search_in('crm.case.categ',[]),
+            'categ_id': self.search_in('call.info.call.category',[]),
             'notes': 'bla bla bla, complex explanation, ...',
         }
 
@@ -99,13 +95,31 @@ class CallInfoCallLogTest(CallInfoBaseTests):
         self.assertEqual(call.polissa_id, False)
         self.assertEqual(call.partner_id.id, False)
 
-    def test_insert_call_log__phone(self):
+
+    def test_insert_call_log__time(self):
         cil_obj = self.get_model('call.info.call.log')
-        self.create_dummy_category()
 
         call_data = {
             'user_id': self.search_in('res.users',[]),
-            'categ_id': self.search_in('crm.case.categ',[]),
+            'categ_id': self.search_in('call.info.call.category',[]),
+            'notes': 'bla bla bla, complex explanation, ...',
+            'call_date': '2022-08-15 15:31:32',
+        }
+
+        call_id = cil_obj.insert_call_log(self.cursor, self.uid, call_data, {})
+        call = cil_obj.browse(self.cursor, self.uid, call_id)
+
+        self.assertEqual(call.comment, call_data['notes'])
+        self.assertEqual(call.call_date, call_data['call_date'])
+        self.assertEqual(call.user_id.id, call_data['user_id'])
+        self.assertEqual(call.categ_id.id, call_data['categ_id'])
+
+    def test_insert_call_log__phone(self):
+        cil_obj = self.get_model('call.info.call.log')
+
+        call_data = {
+            'user_id': self.search_in('res.users',[]),
+            'categ_id': self.search_in('call.info.call.category',[],'random'),
             'notes': 'bla bla bla, complex explanation, ...',
             'phone': '0034900103605 som'
         }
@@ -123,11 +137,10 @@ class CallInfoCallLogTest(CallInfoBaseTests):
         cil_obj = self.get_model('call.info.call.log')
         ir_obj = self.get_model('ir.model.data')
         polissa_id = ir_obj.get_object_reference(self.cursor, self.uid, 'giscedata_polissa', 'polissa_0001')[1]
-        self.create_dummy_category()
 
         call_data = {
             'user_id': self.search_in('res.users',[]),
-            'categ_id': self.search_in('crm.case.categ',[]),
+            'categ_id': self.search_in('call.info.call.category',[],'random'),
             'notes': 'bla bla bla, complex explanation, ...',
             'polissa_id': polissa_id,
         }
@@ -145,11 +158,10 @@ class CallInfoCallLogTest(CallInfoBaseTests):
         cil_obj = self.get_model('call.info.call.log')
         ir_obj = self.get_model('ir.model.data')
         partner_id = ir_obj.get_object_reference(self.cursor, self.uid, 'base', 'main_partner')[1]
-        self.create_dummy_category()
 
         call_data = {
             'user_id': self.search_in('res.users',[]),
-            'categ_id': self.search_in('crm.case.categ',[]),
+            'categ_id': self.search_in('call.info.call.category',[],'random'),
             'notes': 'bla bla bla, complex explanation, ...',
             'partner_id': partner_id,
         }
@@ -168,11 +180,10 @@ class CallInfoCallLogTest(CallInfoBaseTests):
         ir_obj = self.get_model('ir.model.data')
         polissa_id = ir_obj.get_object_reference(self.cursor, self.uid, 'giscedata_polissa', 'polissa_0001')[1]
         partner_id = ir_obj.get_object_reference(self.cursor, self.uid, 'base', 'main_partner')[1]
-        self.create_dummy_category()
 
         call_data = {
             'user_id': self.search_in('res.users',[]),
-            'categ_id': self.search_in('crm.case.categ',[]),
+            'categ_id': self.search_in('call.info.call.category',[],'random'),
             'notes': 'bla bla bla, complex explanation, ...',
             'partner_id': partner_id,
             'polissa_id': polissa_id,
