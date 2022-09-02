@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data noupdate="1">
+        <record model="call.info.call.category" id="categ_AP01">
+            <field name="name">[APORTACIONS - GKWH] Aportacions al GkWh, capital social</field>
+            <field name="code">AP01</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_AU01">
+            <field name="name">[AUTOPRODUCCIÓ] Info compres col·lectives, com instal·lar auto..</field>
+            <field name="code">AU01</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_CB01">
+            <field name="name">[COBRAMENTS] Dubtes  factures impagades i com fer pagament</field>
+            <field name="code">CB01</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_CB02">
+            <field name="name">[COBRAMENTS] Informació sobre tall subministrament</field>
+            <field name="code">CB01</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_CO01">
+            <field name="name">[COMUNICACIÓ] Comentar noticies blog, campanyes, newsletter, mai</field>
+            <field name="code">CO01</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_CT01">
+            <field name="name">[CONTRACTES]  Consultes referents a ALTES d'un nou punt de subm</field>
+            <field name="code">CT01</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_CT02">
+            <field name="name">[CONTRACTES] Consultes referents a BAIXES d’un punt subm</field>
+            <field name="code">CT02</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_CT06">
+            <field name="name">[CONTRACTES] Canvi de Titular - Pagador. Com es fa, on es fa</field>
+            <field name="code">CT06</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_CT03">
+            <field name="name">[CONTRACTES] Info procés contractació, endarreriments, rebuig</field>
+            <field name="code">CT03</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_CT04">
+            <field name="name">[CONTRACTES] Informació sobre possible canvi de comer fraudulent</field>
+            <field name="code">CT04</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_CT05">
+            <field name="name">[CONTRACTES] Quina potència necessito? Info sobre nova tarifa</field>
+            <field name="code">CT05</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_CT07">
+            <field name="name">[CONTRACTES] Tràmits autoconsum (com es fa, documentació)</field>
+            <field name="code">CT07</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_EE01">
+            <field name="name">[ENTITATS I EMPRESES] CCVV, Finques, Ajuntaments, Campanyes</field>
+            <field name="code">EE01</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_EE02">
+            <field name="name">[ENTITATS I EMPRESES] Informació sobre tarifa 3.X TD i 6.X TD</field>
+            <field name="code">EE02</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_FA01">
+            <field name="name">[FACTURA] Dubtes informació sobre les seves factures</field>
+            <field name="code">FA01</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_FA03">
+            <field name="name">[FACTURA] Info comptadors, lloguer, canvi a telegestió, trifàsic</field>
+            <field name="code">FA03</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_FA02">
+            <field name="name">[FACTURA] Dubtes  sobre les lectures - vol donar lectura</field>
+            <field name="code">FA02</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_PA01">
+            <field name="name">[GL - PARTICIPA - AULA POPULAR]  Assemblea, Participa, GL</field>
+            <field name="code">PA01</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_IE01">
+            <field name="name">[INFOENERGIA] Consulta sobre els seus informes</field>
+            <field name="code">IE01</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_IN03">
+            <field name="name">[INFO] Bo social (com es demana, qui hi pot tenir accés, etc)</field>
+            <field name="code">IN03</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_IN04">
+            <field name="name">[INFO] No tinc llum, què faig?</field>
+            <field name="code">IN04</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_IN02">
+            <field name="name">[INFO] Sóc Soci i vull Convidar. No sóc Soci i vull contractar</field>
+            <field name="code">IN02</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_">
+            <field name="name">[INFO] Dubtes amb formularis (informàtics, CNAE, adjunts..)</field>
+            <field name="code"></field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_IN01">
+            <field name="name">[INFO] Dubtes informació general (com fer-me soci, formulari)</field>
+            <field name="code">IN01</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_">
+            <field name="name">[INFO] Explicació de la cooperativa (Primer contacte)</field>
+            <field name="code"></field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_OV01">
+            <field name="name">[OV] Demanen canvis que els hem de dirigir a l'OV </field>
+            <field name="code">OV01</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_OV03">
+            <field name="name">[OV] Consultes sobre seccions (infoenergia, corbes, GkWh...)</field>
+            <field name="code">OV03</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_OV02">
+            <field name="name">[OV] Problemes accés a OV (contrassenya, usuari, activació)</field>
+            <field name="code">OV02</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_PR01">
+            <field name="name">[PROJECTES - GENERACIÓ] Informació sobre les nostres plantes</field>
+            <field name="code">PR01</field>
+            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+    </data>
+</openerp>

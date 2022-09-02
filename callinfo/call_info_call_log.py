@@ -2,6 +2,7 @@
 from osv import osv, fields
 from tools.translate import _
 from datetime import datetime
+import call_info_call_category
 import re
 
 class CallInfoCallLog(osv.osv):
@@ -18,11 +19,14 @@ class CallInfoCallLog(osv.osv):
 
     def insert_call_log(self, cursor, uid, call_data, context=None):
         new_call = {
-            'call_date': datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S'),
             'categ_id': call_data['categ_id'],
             'comment': call_data['notes'],
             'user_id': call_data['user_id'],
         }
+        if 'call_date' in call_data:
+            new_call['call_date'] = call_data['call_date']
+        else:
+            new_call['call_date'] = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
         if 'atc_id' in call_data:
             new_call['atc_id'] = call_data['atc_id']
         if 'phone' in call_data:
@@ -57,7 +61,7 @@ class CallInfoCallLog(osv.osv):
             help=_('Dia i hora de la trucada')
         ),
         'categ_id': fields.many2one(
-            'crm.case.categ',
+            'call.info.call.category',
             _('Categoria'),
             required=True,
             help=_('Categoria de la trucada')

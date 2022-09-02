@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_call_info_call_category_tree">
+            <field name="name">call.info.call.category.tree</field>
+            <field name="model">call.info.call.category</field>
+            <field name="type">tree</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <tree string="Categoria de les trucades Call Info">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="generate_atc_parameters"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_call_info_call_category_form">
+            <field name="name">call.info.call.category.form</field>
+            <field name="model">call.info.call.category</field>
+            <field name="type">form</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <form string="Categoria de trucades Call Info">
+                    <group colspan="2" col="2">
+                        <field name="name" select="1"/>
+                        <field name="code" select="1"/>
+                        <group colspan="2" col="2" string="Parametres del cas ATC a crear">
+                            <field name="generate_atc_parameters_text" select="2" on_change="check_correct_json(generate_atc_parameters_text)" height="100"  nolabel="1" />
+                        </group>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_call_info_call_category_tree" model="ir.actions.act_window">
+            <field name="name">Categoria de trucades Call Info</field>
+            <field name="res_model">call.info.call.category</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[]</field>
+        </record>
+        <menuitem id="menu_call_info_call_category_view" action="action_call_info_call_category_tree" parent="menu_folder_call_info"/>
+    </data>
+</openerp>

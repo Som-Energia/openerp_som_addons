@@ -11,12 +11,14 @@
     "category": "SomEnergia",
     "depends":[
         "base",
-        "giscedata_atc_switching",
+        "som_autoreclama",
     ],
     "init_xml": [],
     "demo_xml": [],
     "update_xml":[
         "call_info_call_log_view.xml",
+        "call_info_call_category_view.xml",
+        "call_info_call_category_data.xml",
         "security/ir.model.access.csv",
     ],
     "active": False,

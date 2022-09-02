@@ -1,2 +1,3 @@
 "id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
-"access_call_info_call_log_rcw","call.info.call.log","model_call_info_call_log","crm.group_crm_manager",1,0,1,0
+"access_call_info_call_log_rc","call.info.call.log","model_call_info_call_log","crm.group_crm_manager",1,1,1,0
+"access_call_info_call_category_rcw","call.info.call.category","model_call_info_call_category","crm.group_crm_manager",1,1,1,0
