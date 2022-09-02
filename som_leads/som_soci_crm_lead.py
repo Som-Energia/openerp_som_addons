@@ -526,6 +526,26 @@ class SomSociCrmLead(osv.OsvInherits):
         del res['id']
         return res
 
+    def create_new_member(self, cursor, uid, ids, context={}):
+        """
+            Si el lead és de tipus pagament per TPV: no fa res
+            Si el lead és per pagar remesat: passa  l'estat que crea les entitats i retorna un codi soci.
+        """
+        pass
+
+    def payment_successful(self, cursor, uid, ids, context={}):
+        """
+            Només per leads de tipus TPV.
+            Passa a l'estat que crea les entitats, (que passi a pagat directe) i retorna codi soci
+        """
+        pass
+
+    def payment_failed(self, cursor, uid, ids, context={}):
+        """
+            Només per leads tipus TPV.
+            Passa a l'estat de lead canceŀlat.
+        """
+        pass
 
     _columns = {
         'crm_id': fields.many2one('crm.case', required=True, ondelete='cascade'),
@@ -537,27 +557,31 @@ class SomSociCrmLead(osv.OsvInherits):
         'iban': fields.char(string='Cuenta IBAN', size=34, mandatory=True),
         'payment_mode_id': fields.many2one('payment.mode', 'Grupo de pago', mandatory=True),
         # Dades del Titular
-        'titular_vat': fields.char('Nº de Documento', size=11, mandatory=True),
-        'titular_es_empresa': fields.function(_vat_es_empresa, method=True, type='boolean', string='Es Empresa'),
-        'titular_nom': fields.char("Nombre Cliente / Razón Social", size=256, mandatory=True),
-        'titular_cognom1': fields.char("Apellido 1", size=30, mandatory=True),
-        'titular_cognom2': fields.char("Apellido 2", size=30),
+        'vat': fields.char('Nº de Documento', size=11, mandatory=True),
+        'es_empresa': fields.function(_vat_es_empresa, method=True, type='boolean', string='Es Empresa'),
+        'nom': fields.char("Nombre Cliente / Razón Social", size=256, mandatory=True),
+        'cognom1': fields.char("Apellido 1", size=30, mandatory=True),
+        'cognom2': fields.char("Apellido 2", size=30),
         # Dades de contacte del Titular
-        'titular_zip': fields.char('Codigo Postal', change_default=True, size=24),
-        'titular_tv': fields.many2one('res.tipovia', 'Tipo Via'),
-        'titular_nv': fields.char('Calle', size=256),
-        'titular_pnp': fields.char('Número', size=10),
-        'titular_bq': fields.char('Bloque', size=4),
-        'titular_es': fields.char('Escalera', size=10),
-        'titular_pt': fields.char('Planta',size=10),
-        'titular_pu': fields.char('Puerta', size=10),
-        'titular_cpo': fields.char('Poligono', size=10),
-        'titular_cpa': fields.char('Parcela', size=10),
-        'titular_id_municipi': fields.many2one('res.municipi', 'Municipio'),
-        'titular_id_poblacio': fields.many2one('res.poblacio', 'Población'),
-        'titular_email': fields.char('E-Mail', size=240, mandatory=True),
-        'titular_phone': fields.char('Telefono', size=64, mandatory=True),
-        'titular_mobile': fields.char('Mobil', size=64, mandatory=True),
+        'zip': fields.char('Codigo Postal', change_default=True, size=24),
+        'tv': fields.many2one('res.tipovia', 'Tipo Via'),
+        'nv': fields.char('Calle', size=256),
+        'pnp': fields.char('Número', size=10),
+        'bq': fields.char('Bloque', size=4),
+        'es': fields.char('Escalera', size=10),
+        'pt': fields.char('Planta',size=10),
+        'pu': fields.char('Puerta', size=10),
+        'cpo': fields.char('Poligono', size=10),
+        'cpa': fields.char('Parcela', size=10),
+        'id_municipi': fields.many2one('res.municipi', 'Municipio'),
+        'id_poblacio': fields.many2one('res.poblacio', 'Población'),
+        'email': fields.char('E-Mail', size=240, mandatory=True),
+        'phone': fields.char('Telefono', size=64, mandatory=True),
+        'mobile': fields.char('Mobil', size=64, mandatory=True),
+
+
+        'representant_nom': fields.char('Mobil', size=64, mandatory=True),
+        'representant_dni': fields.char('Mobil', size=64, mandatory=True),
     }
 
     def call_check_vat(self, cr, uid, ids):
