@@ -15,9 +15,6 @@ import sys
 import click
 import os
 import importlib
-import pyautogui
-import numpy as np
-import cv2
 
 ## Arguments passed through the os systemm call
 @click.command()
