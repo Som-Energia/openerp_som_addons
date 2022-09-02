@@ -87,6 +87,20 @@
                 </tree>
             </field>
         </record>
+        <!--ERROR-->
+        <record model="ir.ui.view" id="powersms_errorbox_tree">
+            <field name="name">powersms.smsbox.errorboxtree</field>
+            <field name="model">powersms.smsbox</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Power SMS Error">
+                    <field name="date_sms" select="1" />
+                    <field name="psms_from" select="1" />
+                    <field name="psms_to" select="1" />
+                    <field name="psms_body_text" select="1"/>
+                </tree>
+            </field>
+        </record>
 
         <!-- ACTIONS -->
         <!--OUTBOX-->
@@ -116,12 +130,22 @@
             <field name="view_id" ref="powersms_sentbox_tree" />
             <field name="domain">[('folder','=','sent')]</field>
         </record>
+        <!-- ERROR -->
+        <record model="ir.actions.act_window" id="action_powersms_error_tree_company">
+            <field name="name">SMS ErrorBox</field>
+            <field name="res_model">powersms.smsbox</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form,tree</field>
+            <field name="view_id" ref="powersms_errorbox_tree" />
+            <field name="domain">[('folder','=','error')]</field>
+        </record>
 
         <!-- MENUS -->
         <menuitem name="SMSBox" id="menu_powersms_smsbox_all_main2" parent="menu_powersms_administration_server" />
         <menuitem name="Drafts" id="menu_powersms_drafts_company" parent="menu_powersms_smsbox_all_main2" action="action_powersms_drafts_tree_company" />
         <menuitem name="Outbox" id="menu_powersms_outbox_company" parent="menu_powersms_smsbox_all_main2" action="action_powersms_outbox_tree_company" />
         <menuitem name="Sent" id="menu_powersms_sent_company" parent="menu_powersms_smsbox_all_main2" action="action_powersms_sent_tree_company" />
+        <menuitem name="Error" id="menu_powersms_error_company" parent="menu_powersms_smsbox_all_main2" action="action_powersms_error_tree_company" />
     </data>
 </openerp>
 
