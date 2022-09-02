@@ -225,7 +225,7 @@ class PowersmsSMSbox(osv.osv):
                 else:
                     self.historise(cr, uid, [id], result, context, error=True)
                     self.write(cr, uid, id, {'state':'na'}, context)
-            except Exception, error:
+            except Exception as error:
                 logger = netsvc.Logger()
                 logger.notifyChannel(_("Power SMS"), netsvc.LOG_ERROR, _("Sending of SMS %s failed. Probable Reason: Could not login to server\nError: %s") % (id, error))
                 self.historise(cr, uid, [id], error, context, error=True)
@@ -249,9 +249,10 @@ class PowersmsSMSbox(osv.osv):
             history_newline = "\n{}: {}".format(
                 time.strftime("%Y-%m-%d %H:%M:%S"), tools.ustr(message)
             )
-            self.write(
-                cr, uid, psms_id, {
-                    'history': (history or '') + history_newline}, context)
+            smsbox_wv = {'history': (history or '') + history_newline}
+            if error:
+                smsbox_wv.update({'folder': 'error', 'state': 'na'})
+            self.write(cr, uid, psms_id, smsbox_wv, context=context)
 
     def check_mobile(self, mobile_number):
         if not re.match(r"((?:\+34)*|(?:0034)*)6[0-9]{8}|((?:\+34)*|(?:0034)*)7[0-9]{8}", mobile_number):
@@ -291,6 +292,7 @@ class PowersmsSMSbox(osv.osv):
                             ('trash', 'Trash'),
                             ('followup', 'Follow Up'),
                             ('sent', 'Sent Items'),
+                            ('error', 'Error'),
                             ], 'Folder', required=True),
             'history':fields.text(
                             'History',
