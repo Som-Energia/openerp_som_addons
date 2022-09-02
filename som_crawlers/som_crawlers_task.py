@@ -237,10 +237,7 @@ class SomCrawlersTaskStep(osv.osv):
                 import_wizard.action_import_xmls(context)
                 if import_wizard.state == 'load':
                     import_wizard.action_send_xmls(context=context)
-                if import_wizard.state == 'done':
-                    return 'Successful import'
-                else:
-                    return 'Import error'
+                return import_wizard.info
             except Exception as e:
                 msg = "An error ocurred importing {}:{}".format("asd", "asd")
                 return msg

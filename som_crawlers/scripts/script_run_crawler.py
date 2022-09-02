@@ -59,8 +59,16 @@ def crawl(user, name, password, file, url, filters, crawler, days, pfiles, brows
         logger.debug("Starting %s crawling..." % (name))
         spider_instance = spider_module.instance(crawler_conf)
         spider_instance.start_with_timeout(portalCreds, debug=True)
-    except Exception as e:
+    except NoResultsException as e:
         f.write(str(e))
+    except CrawlingLoginException as e:
+        f.write(str(e))
+    except CrawlingProcessException as e:
+        f.write(str(e))
+    except FileToBucketException as e:
+        f.write(str(e))
+    except Exception as e:
+       f.write(str(e))
     else:
         f.write('Files have been successfully downloaded')
 
