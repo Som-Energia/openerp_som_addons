@@ -1311,6 +1311,9 @@ class Tests_FacturacioFacturaReport_amount_destination(Tests_FacturacioFacturaRe
 
     def test__som_report_comp_amount_destination__with_altres_lines(self):
 
+        polissa_obj = self.model('giscedata.polissa')
+        data_tall = polissa_obj.read(self.cursor, self.uid, 1, ['data_tall'])['data_tall']
+
         f_id = self.get_fixture('giscedata_facturacio', 'factura_0008')
         product_obj = self.model('product.product')
         product_id = product_obj.search(self.cursor, self.uid, [],limit=1)[0]

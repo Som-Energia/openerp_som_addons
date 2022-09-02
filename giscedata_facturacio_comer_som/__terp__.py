@@ -7,6 +7,7 @@
     "category": "Extrareports",
     "depends":[
         'base',
+        "giscedata_facturacio_impagat_comer",
         'c2c_webkit_report',
         "account_invoice_base",
         "giscedata_facturacio_comer",
