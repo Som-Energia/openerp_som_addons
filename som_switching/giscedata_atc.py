@@ -44,8 +44,15 @@ class GiscedataAtc(osv.osv):
         return res
 
     def case_cancel(self, cursor, uid, ids, *args):
-        if not self.has_process or (self.state == 'draft' or self.state =='pending'):
-            super(GiscedataAtc, self).case_cancel(cursor, uid, ids, args)
+        atc_obj = self.pool.get("giscedata.atc")
+        cancel_ids = []
+
+        for id in ids:
+            case = atc_obj.browse(cursor, uid, id)
+            if not case.has_process or (case.state == 'draft' or case.state =='pending'):
+                cancel_ids.append(id)
+
+        super(GiscedataAtc, self).case_cancel(cursor, uid, cancel_ids, args)
 
     def unlink(self, cursor, uid, ids, context=None):
         self.case_cancel(cursor, uid, ids, context)
