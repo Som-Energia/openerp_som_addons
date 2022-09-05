@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from cmath import e
 from osv import osv, fields
 from tools.translate import _
 from datetime import datetime
@@ -41,6 +42,16 @@ class GiscedataAtc(osv.osv):
             pol_ids = [x['polissa_id'][0] for x in pol_ids]
             self.pool.get("giscedata.polissa").write(cursor, uid, pol_ids, {'facturacio_suspesa': False})
         return res
+
+    def case_cancel(self, cursor, uid, ids, *args):
+        if self.has_process:
+            process = []
+            if self.ref:
+                process.append(ref)
+            if self.ref2:
+                process.append(ref2)
+            if len(process) == 0 or (self.state == 'draft' or self.state =='pending'):
+                super(GiscedataAtc, self).case_cancel(cursor, uid, ids, args)
 
     def unlink(self, cursor, uid, ids, context=None):
         super(GiscedataAtc, self).case_cancel(cursor, uid, ids, context)
