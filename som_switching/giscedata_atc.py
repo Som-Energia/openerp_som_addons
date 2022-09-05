@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from cmath import e
 from osv import osv, fields
 from tools.translate import _
 from datetime import datetime
@@ -49,10 +48,11 @@ class GiscedataAtc(osv.osv):
 
         for id in ids:
             case = atc_obj.browse(cursor, uid, id)
-            if not case.has_process or (case.state == 'draft' or case.state =='pending'):
+            if not case.has_process or (case.state == 'draft' or case.state == 'pending'):
                 cancel_ids.append(id)
 
-        super(GiscedataAtc, self).case_cancel(cursor, uid, cancel_ids, args)
+        if len(cancel_ids) > 0:
+            super(GiscedataAtc, self).case_cancel(cursor, uid, cancel_ids, args)
 
     def unlink(self, cursor, uid, ids, context=None):
         self.case_cancel(cursor, uid, ids, context)
