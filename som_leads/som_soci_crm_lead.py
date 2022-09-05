@@ -548,40 +548,55 @@ class SomSociCrmLead(osv.OsvInherits):
         pass
 
     _columns = {
+        #Camps propis del lead
         'crm_id': fields.many2one('crm.case', required=True, ondelete='cascade'),
-        'lang': fields.selection(_lang_get, 'Idioma', size=5),
-        # Dades facturacio del contracte
-        'iban_owner_vat': fields.char('NIF titular IBAN', size=11),
-        'iban_owner_name': fields.char('Nombre titular IBAN', size=256),
-        'iban_owner_email': fields.char('Email titular IBAN', size=256),
-        'iban': fields.char(string='Cuenta IBAN', size=34, mandatory=True),
-        'payment_mode_id': fields.many2one('payment.mode', 'Grupo de pago', mandatory=True),
-        # Dades del Titular
-        'vat': fields.char('Nº de Documento', size=11, mandatory=True),
-        'es_empresa': fields.function(_vat_es_empresa, method=True, type='boolean', string='Es Empresa'),
-        'nom': fields.char("Nombre Cliente / Razón Social", size=256, mandatory=True),
-        'cognom1': fields.char("Apellido 1", size=30, mandatory=True),
-        'cognom2': fields.char("Apellido 2", size=30),
-        # Dades de contacte del Titular
-        'zip': fields.char('Codigo Postal', change_default=True, size=24),
-        'tv': fields.many2one('res.tipovia', 'Tipo Via'),
-        'nv': fields.char('Calle', size=256),
-        'pnp': fields.char('Número', size=10),
-        'bq': fields.char('Bloque', size=4),
-        'es': fields.char('Escalera', size=10),
-        'pt': fields.char('Planta',size=10),
-        'pu': fields.char('Puerta', size=10),
-        'cpo': fields.char('Poligono', size=10),
-        'cpa': fields.char('Parcela', size=10),
-        'id_municipi': fields.many2one('res.municipi', 'Municipio'),
-        'id_poblacio': fields.many2one('res.poblacio', 'Población'),
-        'email': fields.char('E-Mail', size=240, mandatory=True),
-        'phone': fields.char('Telefono', size=64, mandatory=True),
-        'mobile': fields.char('Mobil', size=64, mandatory=True),
+        'lead_payment_method': fields.char('Mètode de pagament', size=64),
+        'lead_info': fields.text('Observacions'),
+        'lead_redsys_response': fields.char('redsys_response', size=256),
+        'partner_es_empresa': fields.function(_vat_es_empresa, method=True, type='boolean', string='Es Empresa'),
 
+        #Camps Altres comptes
+        'payment_mode_id': fields.many2one('payment.mode', 'Grupo de pago'),
 
-        'representant_nom': fields.char('Mobil', size=64, mandatory=True),
-        'representant_dni': fields.char('Mobil', size=64, mandatory=True),
+        #Camps res.partner#
+        'partner_nom': fields.char("Nombre Cliente / Razón Social", size=256), #a webforms 'name', 'name' es un attr de crm.case, ja està agafat
+        'partner_vat': fields.char('Nº de Documento', size=11),
+        #'active': True, # Aquest no cal
+        'partner_comment': fields.char('Comentari', size=64),
+        #'category_id': [(6, 0, c_soci)], # Auxpi no cal, ja posarem la categoria que toca
+        'partner_lang': fields.selection(_lang_get, 'Idioma', size=5),
+        'partner_comercial': fields.char('Trade name', size=64),
+        'partner_date': fields.datetime('Date'),
+        'partner_customer': fields.boolean('Client'),
+
+        #Camps res.partner.address#
+        #'name': member_name, ja el tenim
+        'address_country_id': fields.many2one('res.country', 'Country'),
+        'address_state_id': fields.many2one('res.country.state', 'State'),
+        'address_email': fields.char('Email titular', size=256),
+        'address_phone': fields.char('Telefono', size=64),
+        'address_mobile': fields.char('Mobil', size=64),
+        'address_zip': fields.char('Zip', size=24),
+        'address_nv': fields.char('Carrer', size=256),
+        #'type': 'default', #Això no cal
+        'address_municipi_id': fields.many2one('res.municipi', 'Municipi'),
+
+        #Camps payment.mandate#
+        #'debtor_name': member_name, # El tenim a 'nom'
+        #'debtor_vat': vat, # El tenim a 'vat'
+        #'debtor_address': '%s %s %s' % (
+        #        request.form['adreca'],
+        #        request.form['cp'],
+        #        form_ciutat), # El tenim a 'nv'
+        #'debtor_state': state_name, #tenim el country_id i necessitem accedir al name
+        'mandate_debtor_country': fields.char('Pais', size=64),
+        'mandate_debtor_iban': fields.char(string='Compte IBAN', size=34),
+        #'reference': 'res.partner,%s', #TODO: el crearem nosaltres
+        #'notes': _('QUOTA SOCI'), #TODO: el crearem nosaltres
+        #'name': mandato, #això no cal, el default de l'ERP ja crida el mateix uuid4().hex
+        'mandate_creditor_code': fields.char(string='Creditor code', size=24),
+        #'date': mandato_date.strftime('%Y-%m-%d'), #és la mateixa que 'date'
+        #'payment_type': 'one_payment' #TODO: ho posarem nosaltres pq sabem que la quota de soci és un sol pagamen
     }
 
     def call_check_vat(self, cr, uid, ids):
