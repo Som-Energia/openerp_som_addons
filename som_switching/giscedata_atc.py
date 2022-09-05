@@ -44,17 +44,11 @@ class GiscedataAtc(osv.osv):
         return res
 
     def case_cancel(self, cursor, uid, ids, *args):
-        if self.has_process:
-            process = []
-            if self.ref:
-                process.append(ref)
-            if self.ref2:
-                process.append(ref2)
-            if len(process) == 0 or (self.state == 'draft' or self.state =='pending'):
-                super(GiscedataAtc, self).case_cancel(cursor, uid, ids, args)
+        if not self.has_process or (self.state == 'draft' or self.state =='pending'):
+            super(GiscedataAtc, self).case_cancel(cursor, uid, ids, args)
 
     def unlink(self, cursor, uid, ids, context=None):
-        super(GiscedataAtc, self).case_cancel(cursor, uid, ids, context)
+        self.case_cancel(cursor, uid, ids, context)
 
     _columns = {
         'tag': fields.many2one('giscedata.atc.tag', "Etiqueta"),
