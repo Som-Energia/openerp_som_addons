@@ -104,5 +104,96 @@ class GiscedataFacturacioSwitchingValidator(osv.osv):
                     })
         return period_consum
 
+    def check_f1_foradat(self, cursor, uid, line, f1, parameters=None):
+        f1_o = self.pool.get('giscedata.facturacio.importacio.linia')
+        lect_helper = self.pool.get('giscedata.lectures.switching.helper')
+        polissa_obj = self.pool.get('giscedata.polissa')
+        errors = []
+        for fact_xml in f1.facturas_atr:
+            if not fact_xml.datos_factura.fecha_desde_factura:
+                continue  # N'hauria de tenir. Sino vol dir que es de conceptes i no hem de fer res
+            if fact_xml.datos_factura.tipo_factura != 'N':
+                continue
+            # Primer mirem si el contracte te maximetre, autoconsum o es indexat.
+            # Si no es compleix cap dels 3 no cal revisar res.
+            polissa_id = None
+            autoconsum, maximetres, indexada = False, False, False
+            autoconsum = fact_xml.te_autoconsum()
+            if not autoconsum:  # No cal comprovarles les 3 si la primera ja es compleix
+                start_date = datetime.strptime(fact_xml.datos_factura.fecha_desde_factura, '%Y-%m-%d')
+                start_date += timedelta(days=1)
+                data_inici = start_date.strftime('%Y-%m-%d')
+                polissa_id = lect_helper.find_polissa_with_cups_id(
+                    cursor, uid, line.cups_id.id, data_inici, fact_xml.datos_factura.fecha_hasta_factura
+                )
+                context = {'date': fact_xml.datos_factura.fecha_hasta_factura, 'from_f1': True, 'avoid_error': True}
+                polissa_vals = polissa_obj.read(cursor, uid, polissa_id, ['mode_facturacio', 'facturacio_potencia'], context=context)
+                maximetres = polissa_vals['facturacio_potencia'] == 'max'
+                indexada = polissa_vals['mode_facturacio'] == 'index'
+
+            if autoconsum or maximetres or indexada:
+                # Si hi ha altres F1 amb error de importacio no hem de mirar res
+                cups_text = line.cups_text
+                sp = [
+                    ('cups_text', '=', cups_text),
+                    ('fecha_factura_desde', '<=', fact_xml.datos_factura.fecha_desde_factura),
+                    ('import_phase', '!=', '50'),
+                    ('state', '=', 'erroni'),
+                    ('id', '!=', line.id),
+                ]
+                altres_f1 = f1_o.search(cursor, uid, sp, limit=1)
+                if not altres_f1:
+                    # Ara toca mirar forats
+                    if not polissa_id:
+                        start_date = datetime.strptime(fact_xml.datos_factura.fecha_desde_factura, '%Y-%m-%d')
+                        start_date += timedelta(days=1)
+                        data_inici = start_date.strftime('%Y-%m-%d')
+                        polissa_id = lect_helper.find_polissa_with_cups_id(
+                            cursor, uid, line.cups_id.id, data_inici, fact_xml.datos_factura.fecha_hasta_factura
+                        )
+
+                    # El camp funcio se suposa que ja fa la feina
+                    te_forats = polissa_obj.read(cursor, uid, polissa_id, ['f1_foradat'])['f1_foradat']
+                    if te_forats:
+                        errors.append({})
+        return errors
+
+    def check_f1_foradat_fase_4(self, cursor, uid, line, f1, parameters=None):
+        f1_o = self.pool.get('giscedata.facturacio.importacio.linia')
+        lect_helper = self.pool.get('giscedata.lectures.switching.helper')
+        polissa_obj = self.pool.get('giscedata.polissa')
+        errors = []
+        for fact_xml in f1.facturas_atr:
+            if not fact_xml.datos_factura.fecha_desde_factura:
+                continue  # N'hauria de tenir. Sino vol dir que es de conceptes i no hem de fer res
+            if fact_xml.datos_factura.tipo_factura != 'N':
+                continue
+
+            es_20td = fact_xml.datos_factura.tarifa_atr_fact == '018'
+            if es_20td:
+                # Si hi ha altres F1 amb error de importacio no hem de mirar res
+                cups_text = line.cups_text
+                sp = [
+                    ('cups_text', '=', cups_text),
+                    ('fecha_factura_desde', '<=', fact_xml.datos_factura.fecha_desde_factura),
+                    ('import_phase', '!=', '50'),
+                    ('state', '=', 'erroni'),
+                    ('id', '!=', line.id),
+                ]
+                altres_f1 = f1_o.search(cursor, uid, sp, limit=1)
+                if not altres_f1:
+                    # Ara toca mirar forats
+                    start_date = datetime.strptime(fact_xml.datos_factura.fecha_desde_factura, '%Y-%m-%d')
+                    start_date += timedelta(days=1)
+                    data_inici = start_date.strftime('%Y-%m-%d')
+                    polissa_id = lect_helper.find_polissa_with_cups_id(
+                        cursor, uid, line.cups_id.id, data_inici, fact_xml.datos_factura.fecha_hasta_factura
+                    )
+                    # El camp funcio se suposa que ja fa la feina
+                    te_forats = polissa_obj.read(cursor, uid, polissa_id, ['f1_foradat'])['f1_foradat']
+                    if te_forats:
+                        errors.append({})
+        return errors
+
 
 GiscedataFacturacioSwitchingValidator()
