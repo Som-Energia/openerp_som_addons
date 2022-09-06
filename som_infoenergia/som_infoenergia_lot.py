@@ -278,7 +278,9 @@ class SomInfoenergiaLotEnviament(osv.osv):
         elif tipus == 'altres':
             env_obj = self.pool.get('som.enviament.massiu')
 
-        env_ids = env_obj.search(cursor, uid, [('lot_enviament','=', ids), ('polissa_id.name', 'in', polissa_name_list)])
+        env_ids = env_obj.search(cursor, uid, [
+            ('lot_enviament','=', ids), ('polissa_id.name', 'in', polissa_name_list)
+        ], context={'active_test': False})
         env_obj.write(cursor, uid, env_ids, {'estat': 'cancellat'})
         env_obj.add_info_line(cursor, uid, env_ids, u'Enviament cancel·lat per ' + context['reason'])
 
