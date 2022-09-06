@@ -621,6 +621,7 @@ import_factura = object.residual
             <%
             import datetime
             polissa = object.polissa_id.name
+            fact_obj = object.pool.get('giscedata.facturacio.factura')
             factures_pendents = fact_obj.search(object._cr, object._uid, [
             ('polissa_id', '=', object.polissa_id.id),
             ('type', 'in', ['out_invoice', 'out_refund']),
