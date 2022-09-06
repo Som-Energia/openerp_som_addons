@@ -579,7 +579,7 @@
         <field name="params">{}</field>
         <field name="task_id" ref="descargar_C1_endesa"/>
         </record>
-        <record model="som.crawlers.task.step" id="pas_descarregar_C1_endesa ">
+        <record model="som.crawlers.task.step" id="pas_descarregar_C2_endesa ">
         <field name="name">Descarregar fitxers</field>
         <field name="sequence">1</field>
         <field name="function">download_files</field>
