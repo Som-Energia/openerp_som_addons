@@ -2,6 +2,10 @@
 from datetime import datetime
 from osv import osv, fields
 from tools.translate import _
+import json
+import os
+import pooler
+import base64
 
 
 # Class Task Step that describes the module and the task step fields
