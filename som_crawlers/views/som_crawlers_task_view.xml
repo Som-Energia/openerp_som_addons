@@ -52,4 +52,3 @@
         <menuitem id="menu_crawlers_task" action="action_som_crawlers_task_tree" parent="som_crawlers.menu_som_crawlers_base"/>
     </data>
 </openerp>
-

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from osv import osv, fields
+from tools.translate import _
 
 
 # Class Task Step that describes the module and the task step fields

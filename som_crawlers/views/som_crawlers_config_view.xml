@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
         <record model="ir.ui.view" id="view_configuracio_form">
@@ -54,6 +54,3 @@
     <menuitem action="action_configuracio_tree" id="menu_configuracio_tree" parent="som_crawlers.menu_som_crawlers_base"/>
     </data>
 </openerp>
-
-
-
