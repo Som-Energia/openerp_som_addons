@@ -247,7 +247,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
-            path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../demo/zip_demo_2')
+            path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../demo/tmp')
             filename = "anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip"
             os.system('cp ' + path + '/../anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip ' + path + '/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip')
 
