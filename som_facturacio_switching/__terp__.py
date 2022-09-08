@@ -27,6 +27,7 @@
         "wizard/wizard_delete_reimport_2001_f1_view.xml",
         "security/ir.model.access.csv",
         "giscedata_facturacio_switching_cron.xml",
+        "wizard/wizard_refund_rectify_from_origin_view.xml",
     ],
     "active": False,
     "installable": True
