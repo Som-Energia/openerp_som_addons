@@ -1,0 +1,13 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_som_crawlers_task_manager","som.crawlers.task","model_som_crawlers_task","res_groups_som_crawlers_manager",1,1,1,1
+"access_som_crawlers_task_users","som.crawlers.task","model_som_crawlers_task","res_groups_som_crawlers_user",1,0,0,0
+"access_som_crawlers_task_step_manager","som.crawlers.task.step","model_som_crawlers_task_step","res_groups_som_crawlers_manager",1,1,1,1
+"access_som_crawlers_task_step_users","som.crawlers.task.step","model_som_crawlers_task_step","res_groups_som_crawlers_user",1,0,0,0
+"access_som_crawlers_task_step_result_manager","som.crawlers.task.step.result","model_som_crawlers_task_step_result","res_groups_som_crawlers_manager",1,1,1,1
+"access_som_crawlers_task_step_result_users","som.crawlers.task.step.result","model_som_crawlers_task_step_result","res_groups_som_crawlers_user",1,0,0,0
+"access_som_crawlers_config_manager","som.crawlers.config","model_som_crawlers_config","res_groups_som_crawlers_manager",1,1,1,1
+"access_som_crawlers_config_users","som.crawlers.config","model_som_crawlers_config","res_groups_som_crawlers_user",1,0,0,0
+"access_wizard.canviar.dies.de.marge_r","wizard_canviar_dies_de_marge","model_wizard.canviar.dies.de.marge","res_groups_som_crawlers_manager",1,1,1,1
+"access_wizard.canviar.dies.de.marge_rcwd","wizard_canviar_dies_de_marge","model_wizard.canviar.dies.de.marge","res_groups_som_crawlers_user",1,0,0,0
+"access_wizard.executar.tasca_r","wizard_executar_tasca","model_wizard.executar.tasca","res_groups_som_crawlers_manager",1,1,1,1
+"access_wizard.executar.tasca_rcwd","wizard_executar_tasca","model_wizard.executar.tasca","res_groups_som_crawlers_user",1,0,0,0

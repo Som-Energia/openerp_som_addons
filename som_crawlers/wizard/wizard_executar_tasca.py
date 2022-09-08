@@ -1,32 +1,11 @@
-
-#imports
-
-from ast import Param
-import base64
-from fileinput import filename
-from genericpath import isfile
-import io
-from quopri import encodestring
-from ssl import DefaultVerifyPaths
-import pooler
-from osv import osv, fields
+# -*- coding: utf-8 -*-
+from osv import osv
 from tools.translate import _
-import json
-import os
 from datetime import datetime
-import subprocess
-import netsvc
-import zipfile
-from os.path import expanduser
-
 
 ## Describes the module that executes a general task
 # @author Ikram Ahdadouche El Idrissi
 # @author Dalila Jbilou Kouhous
-
-
-LOGGER = netsvc.Logger()
-
 
 ## Describes the module and contains the function that changes the password
 

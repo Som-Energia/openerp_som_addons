@@ -1,5 +1,7 @@
+# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 from osv import osv, fields
-from datetime import datetime, timedelta
+from datetime import datetime
 
 class SomCrawlersConfig(osv.osv):
 
@@ -67,9 +69,6 @@ class SomCrawlersConfig(osv.osv):
         else:
             self.write(cursor,uid,ids,{'days_of_margin': days, 'user_ultima_modificacio': uid, 'date_ultima_modificacio': datetime.now().isoformat()}, context=context)
             return days
-
-
-
 
 SomCrawlersConfig()
 

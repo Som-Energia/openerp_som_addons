@@ -7,10 +7,10 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Configuracio">
-                    <field name="name" readonly='1'/>
-                    <field name="usuari" readonly='1'/>
-                    <field name="contrasenya" readonly='1'/>
-                    <field name="url_portal" readonly='1'/>
+                    <field name="name"/>
+                    <field name="usuari"/>
+                    <field name="contrasenya"/>
+                    <field name="url_portal" />
                     <field name="filtres" readonly='1'/>
                     <field name="crawler" readonly='1'/>
                     <field name="days_of_margin" readonly='1'/>
