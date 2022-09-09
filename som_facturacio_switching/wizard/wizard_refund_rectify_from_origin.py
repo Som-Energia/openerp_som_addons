@@ -53,6 +53,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         return facts_cli_ids, msg
 
     def recarregar_lectures_between_dates(self, cursor, uid, ids, pol_id, data_inici, data_final, context={}):
+        pol_obj = self.pool.get('giscedata.polissa')
         lect_pool_obj = self.pool.get('giscedata.lectures.lectura.pool')
         copia_lect_wiz_o = self.pool.get('wizard.copiar.lectura.pool.a.fact')
 
@@ -70,9 +71,9 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         ], limit=1)
 
         for lect_id in (lect_prev_id + lect_final_id):
-            context = {'active_id': lect_id, 'active_ids': [lectures_id]}
-            copia_lect_wiz_o.create({'overwrite': True}, context=context)
-            copia_lect_wiz_o.action_copia_lectura(context=context)
+            context = {'active_id': lect_id, 'active_ids': [lect_id]}
+            wiz_id = copia_lect_wiz_o.create(cursor, uid, {'overwrite': True}, context=context)
+            copia_lect_wiz_o.action_copia_lectura(cursor, uid, [wiz_id], context=context)
 
         return len(lect_prev_id + lect_final_id)
 
@@ -89,12 +90,13 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
 
         #Eliminem les que no cal rectificar (import AB == import RE)
         for initial_id in f_ids:
-            inv_id = fact_obj.read(cursor, uid, initial_id, ['invoice_id'])['invoice_id'][0]
+            inv_initial_info = fact_obj.read(cursor, uid, initial_id, ['invoice_id', 'number'])
+            inv_id = inv_initial_info['invoice_id'][0]
             rectifying_amounts = filter(lambda x: x['rectifying_id'][0] == inv_id, f_res_info)
             if len(set([x['amount_total'] for x in rectifying_amounts])) == 1:
                 ab_re_ids = [x['id'] for x in rectifying_amounts]
                 fact_obj.unlink(cursor, uid, ab_re_ids)
-                msg.append("Per la factura origen {} les factures AB i RE tenen mateix import, s'esborren")
+                msg.append("Per la factura numero {} les factures AB i RE tenen mateix import, s'esborren".format(inv_initial_info['number']))
                 fres_resultat = list(set(fres_resultat) - set(ab_re_ids))
 
         return fres_resultat, msg
@@ -174,12 +176,14 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
     def open_polissa_invoices_send_mail(self, cursor, uid, ids, facts_by_polissa, context={}):
         if not isinstance(ids, (tuple, list)):
             ids = [ids]
+        pol_obj = self.pool.get('giscedata.polissa')
         wiz = self.browse(cursor, uid, ids[0])
         msg = []
         fact_csv_result = []
         for pol_name, facts_created in facts_by_polissa.items():
             if not facts_created:
                 continue
+            pol_id = pol_obj.search(cursor, uid, [('name','=',pol_name)], context={'active_test': False})[0]
             res = False
             if wiz.open_invoices:
                 res, msg_open = self.open_group_invoices(cursor, uid, ids, facts_created, wiz.order.id, context)
