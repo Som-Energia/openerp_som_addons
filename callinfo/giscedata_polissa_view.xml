@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record model="ir.actions.act_window" id="action_open_contract_call_info_logs">
+            <field name="name">Trucades Call Info</field>
+            <field name="res_model">call.info.call.log</field>
+            <field name="src_model">giscedata.polissa</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('contract_id','=',active_id)]</field>
+        </record>
+        <record id="value_action_open_contract_call_info_logs" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Trucades Call Info</field>
+            <field name="key2">client_action_relate</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_open_contract_call_info_logs'))" />
+        </record>
+    </data>
+</openerp>

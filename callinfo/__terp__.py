@@ -19,6 +19,8 @@
         "call_info_call_log_view.xml",
         "call_info_call_category_view.xml",
         "call_info_call_category_data.xml",
+        "giscedata_polissa_view.xml",
+        "res_partner_view.xml",
         "security/ir.model.access.csv",
     ],
     "active": False,
