@@ -6,12 +6,7 @@ from distutils.command.build import build
 from nturl2path import url2pathname
 from massive_importer.crawlers.run_crawlers import WebCrawler
 from massive_importer.crawlers.crawlers.spiders.selenium_spiders import *
-from massive_importer.crawlers.crawlers.spiders.selenium_spiders import PortalConfig
-from massive_importer.lib.exceptions import CrawlingLoginException, CrawlingProcessException, FileToBucketException, CrawlingFilteringException, CrawlingDownloadingException, NoResultsException
-from massive_importer.lib.db_utils import insert_crawling_process_error
-from massive_importer.lib.erp_utils import ErpManager
-from massive_importer.conf import configure_logging, settings
-import sys
+from massive_importer.lib.exceptions import CrawlingLoginException, CrawlingProcessException, FileToBucketException, NoResultsException
 import click
 import os
 import importlib

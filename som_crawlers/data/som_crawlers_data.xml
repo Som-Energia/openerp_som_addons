@@ -672,7 +672,7 @@
         </record>
         <record model="res.config" id="som_crawlers_massive_importer_python_path">
             <field name="name">som_crawlers_massive_importer_python_path</field>
-            <field name="value">~/.virtualenvs/massive/bin/python</field>
+            <field name="value">/home/erp/.virtualenvs/massive/bin/python</field>
             <field name="description">Conté la ruta de la versió de python que executarà Massive Importer</field>
         </record>
 

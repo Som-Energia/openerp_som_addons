@@ -63,7 +63,7 @@ class SomCrawlersTaskStep(osv.osv):
     def attach_files_zip(self, cursor, uid, id, result_id, config_obj, path, context=None):
         classresult = self.pool.get('som.crawlers.result')
         taskStep_obj = self.browse(cursor,uid,id,context = context)
-        path_to_zip = os.path.join(path,'tmp/',config_obj.name)
+        path_to_zip = os.path.join(path,'spiders/selenium_spiders/tmp/',config_obj.name)
         if not os.path.exists(path_to_zip):
             output = "zip directory doesn\'t exist"
         else:
@@ -96,7 +96,7 @@ class SomCrawlersTaskStep(osv.osv):
         classresult = self.pool.get('som.crawlers.result')
         taskStep_obj = self.browse(cursor,uid,id)
         taskStepParams = json.loads(taskStep_obj.params)
-        path = os.path.dirname(os.path.realpath(__file__))
+        path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../')
         classresult.write(cursor,uid, result_id, {'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M")})
 
         if taskStepParams.has_key('nom_fitxer'):
@@ -104,7 +104,9 @@ class SomCrawlersTaskStep(osv.osv):
             filePath = os.path.join(path, "scripts/" + taskStepParams['nom_fitxer'])
             if os.path.exists(filePath):
                 cfg_obj = self.pool.get('res.config')
-                path_python = cfg_obj.get(cursor, uid, 'som_crawlers_massive_importer_python_path', '~/.virtualenvs/massive/bin/python')
+                path_python = cfg_obj.get(cursor, uid, 'som_crawlers_massive_importer_python_path', '/home/erp/.virtualenvs/massive/bin/python')
+                if not os.path.exists(path_python):
+                    raise Exception("Not virtualenv of massive importer found")
                 fileName = "output_" + config_obj.name + "_" + datetime.now().strftime("%Y-%m-%d_%H_%M") + ".txt"
                 args_str = self.createArgsForScript(config_obj, taskStepParams, fileName)
                 ret_value = os.system("{} {} {}".format(path_python, filePath, args_str))

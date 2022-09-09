@@ -31,7 +31,7 @@ class SomCrawlersTask(osv.osv):
         config_obj = classConfig.browse(cursor,uid,task_obj.configuracio_id.id)
         return config_obj
 
-    @job(queue="som_crawlers_queue")
+    @job(queue="som_crawlers", timeout=1200)
     def executar_tasca_async(self, cursor, uid, id, context=None):
         self.executar_tasca(cursor, uid, id, context=context)
 
@@ -45,20 +45,27 @@ class SomCrawlersTask(osv.osv):
         task_steps_list = task_obj.task_step_ids
         task_steps_list.sort(key=lambda x: x.sequence)
         result_id = classresult.create(cursor,uid,{'task_id': id,'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M")})
-        data_proxima_exec = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")
+
         for taskStep in task_steps_list:
             try:
                 output = classTaskStep.executar_steps(cursor,uid,taskStep.id,result_id)
                 classresult.write(cursor,uid, result_id, {'resultat': output})
             except Exception as e:
                 classresult.write(cursor,uid, result_id, {'resultat': str(e)})
-                return False
+                self.schedule_next_execution(cursor, uid, id, context)
+                raise e
+            finally:
+                self.schedule_next_execution(cursor, uid, id, context)
 
+    def schedule_next_execution(self, cursor, uid, id, context=None):
+        ir_obj = self.pool.get('ir.model.data')
+        cron_obj = self.pool.get('ir.cron')
+        data_proxima_exec = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")
         #seguent data d'execucio
-        self.write(cursor, uid, id,{'data_proxima_execucio': data_proxima_exec})
+        self.write(cursor, uid, id,{'data_proxima_execucio': data_proxima_exec}, context)
         cron_id = ir_obj.get_object_reference(
             cursor, uid, 'som_crawlers', 'ir_cron_run_tasks_action'
         )[1]
-        cron_obj.write(cursor, uid, cron_id, {'nextcall': data_proxima_exec})
+        cron_obj.write(cursor, uid, cron_id, {'nextcall': data_proxima_exec}, context)
 
 SomCrawlersTask()
