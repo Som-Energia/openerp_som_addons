@@ -111,9 +111,9 @@
             <field name="code">IN02</field>
             <field name="generate_atc_parameters_text">{}</field>
         </record>
-        <record model="call.info.call.category" id="categ_">
+        <record model="call.info.call.category" id="categ_IN05">
             <field name="name">[INFO] Dubtes amb formularis (informàtics, CNAE, adjunts..)</field>
-            <field name="code"></field>
+            <field name="code">IN05</field>
             <field name="generate_atc_parameters_text">{}</field>
         </record>
         <record model="call.info.call.category" id="categ_IN01">
@@ -121,30 +121,30 @@
             <field name="code">IN01</field>
             <field name="generate_atc_parameters_text">{}</field>
         </record>
-        <record model="call.info.call.category" id="categ_">
+        <record model="call.info.call.category" id="categ_IN06">
             <field name="name">[INFO] Explicació de la cooperativa (Primer contacte)</field>
-            <field name="code"></field>
-            <field name="generate_atc_parameters_text">{}</field>
+            <field name="code">IN06</field>
         </record>
         <record model="call.info.call.category" id="categ_OV01">
             <field name="name">[OV] Demanen canvis que els hem de dirigir a l'OV </field>
             <field name="code">OV01</field>
-            <field name="generate_atc_parameters_text">{}</field>
         </record>
         <record model="call.info.call.category" id="categ_OV03">
             <field name="name">[OV] Consultes sobre seccions (infoenergia, corbes, GkWh...)</field>
             <field name="code">OV03</field>
-            <field name="generate_atc_parameters_text">{}</field>
         </record>
         <record model="call.info.call.category" id="categ_OV02">
             <field name="name">[OV] Problemes accés a OV (contrassenya, usuari, activació)</field>
             <field name="code">OV02</field>
-            <field name="generate_atc_parameters_text">{}</field>
         </record>
         <record model="call.info.call.category" id="categ_PR01">
             <field name="name">[PROJECTES - GENERACIÓ] Informació sobre les nostres plantes</field>
             <field name="code">PR01</field>
-            <field name="generate_atc_parameters_text">{}</field>
+        </record>
+        <record model="call.info.call.category" id="categ_R006">
+            <field name="name">CONTRATOS ATR QUE NO SE FACTURAN</field>
+            <field name="code">R006</field>
+            <field name="subtipus_reclamacio_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_006" />
         </record>
     </data>
 </openerp>

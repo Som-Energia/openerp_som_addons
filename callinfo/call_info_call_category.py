@@ -61,6 +61,12 @@ class CallInfoCallCategory(osv.osv):
             size=8,
             help=_('Codi de la categoria')
         ),
+        'active': fields.boolean('Actiu'),
+        'subtipus_reclamacio_id': fields.many2one(
+            'giscedata.subtipus.reclamacio',
+            _('Tipus Reclamació'),
+            help=_('Subtipus de la reclamació associada')
+        ),
         'generate_atc_parameters': fields.json("Parametres de generació d'ATC"),
         'generate_atc_parameters_text': fields.function(
             _ff_generate_atc_parameters,
@@ -72,6 +78,8 @@ class CallInfoCallCategory(osv.osv):
     }
 
     _defaults = {
+        'active': lambda *a: True,
+        'generate_atc_parameters_text': lambda *a: '{}',
     }
 
 
