@@ -20,10 +20,10 @@ class SomCrawlersResult(osv.osv):
         ),
         'data_i_hora_execucio': fields.datetime(
             _(u"Data i hora de l'execució"),),
-        'resultat': fields.char(
+        'resultat': fields.text(
             _(u"Resultat"),
             help=_("Resultat de l'execució"),
-            size=512,),
+        ),
         'zip_name':fields.many2one('ir.attachment', _(u"Fitxer adjunt"),
         ),
 

@@ -50,5 +50,20 @@
             <field name="context">{'active_test': False}</field>
         </record>
         <menuitem id="menu_crawlers_task" action="action_som_crawlers_task_tree" parent="som_crawlers.menu_som_crawlers_base"/>
+        <act_window name="Resultats"
+            domain="[('task_id', '=', active_id)]"
+            res_model="som.crawlers.result"
+            src_model="som.crawlers.task"
+            view_type="form"
+            view_mode="tree,form"
+            id="act_resultats_tasca" />
+        <record id="value_act_resultats_tasca" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Resultats</field>
+            <field name="key2">client_action_relate</field>
+            <field name="key">action</field>
+            <field name="model">"som.crawlers.task</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('act_resultats_tasca'))" />
+        </record>
     </data>
 </openerp>
