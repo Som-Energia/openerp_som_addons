@@ -5,7 +5,7 @@
     This module provide :
         * Funció propia a pólissa (escull_llista_preus) per escollir tarifa a partir llistes de preus.
     """,
-    "version": "2.107.5",
+    "version": "2.107.6",
     "author": "GISCE",
     "category": "SomEnergia",
     "depends":[
