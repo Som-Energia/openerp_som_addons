@@ -15,22 +15,22 @@ class SomSociCrmLead(osv.OsvInherits):
     _description = _(u"Somenergia Soci CRM Leads")
 
 
-    lead_titular_adr_to_adr = {
-        'titular_zip': 'zip',
-        'titular_id_municipi': 'id_municipi',
-        'titular_id_poblacio': 'id_poblacio',
-        'titular_tv': 'tv',
-        'titular_nv': 'nv',
-        'titular_pnp': 'pnp',
-        'titular_bq': 'bq',
-        'titular_es': 'es',
-        'titular_pt': 'pt',
-        'titular_pu': 'pu',
-        'titular_cpo': 'cpo',
-        'titular_cpa': 'cpa',
-        'titular_email': 'email',
-        'titular_phone': 'phone',
-        'titular_mobile': 'mobile'
+    lead_partner_adr_to_adr = {
+        'address_zip': 'zip',
+        'address_municipi_id': 'id_municipi',
+        'address_poblacio_id': 'id_poblacio',
+        'address_nv': 'nv',
+        'address_email': 'email',
+        'address_phone': 'phone',
+        'address_mobile': 'mobile',
+        # 'titular_pnp': 'pnp',
+        # 'titular_bq': 'bq',
+        # 'titular_es': 'es',
+        # 'titular_pt': 'pt',
+        # 'titular_pu': 'pu',
+        # 'titular_cpo': 'cpo',
+        # 'titular_cpa': 'cpa',
+        # 'titular_tv': 'tv',
     }
 
     def unlink(self, cursor, uid, ids, context=None):
@@ -277,7 +277,7 @@ class SomSociCrmLead(osv.OsvInherits):
         cache.clean_caches_for_db(cursor.dbname)
         return res
 
-    def create_entity_titular(self, cursor, uid, crml_id, context=None):
+    def create_entity_partner(self, cursor, uid, crml_id, context=None):
         if context is None:
             context = {}
         if isinstance(crml_id, (list, tuple)):
@@ -287,35 +287,13 @@ class SomSociCrmLead(osv.OsvInherits):
         adr_o = self.pool.get("res.partner.address")
         municipi_o = self.pool.get("res.municipi")
 
-        adr_titular_fields = self.lead_titular_adr_to_adr.keys()
+        adr_partner_fields = self.lead_partner_adr_to_adr.keys()
         opt_fields = adr_titular_fields[:]
-        opt_fields.extend(['titular_cognom2', 'lang'])
-        mandatory_fields = ['titular_vat', 'titular_nom', 'use_cont_address']
-        lead = self.read(cursor, uid, crml_id, ['titular_es_empresa', 'iban_other_owner'])
-        es_empresa = lead['titular_es_empresa']
-        if not es_empresa:
-            mandatory_fields.append('titular_cognom1')
-        else:
-            opt_fields.append('titular_cognom1')
-        if lead['iban_other_owner']:
-            mandatory_fields += ['iban_owner_vat', 'iban_owner_name', 'iban_owner_email']
+        opt_fields.extend(['titular_cognom2', 'partner_lang'])
+        mandatory_fields = ['partner_vat', 'partner_nom']
+
         info = self._check_and_get_mandatory_fields(cursor, uid, crml_id, mandatory_fields, opt_fields, context=context)
 
-        if es_empresa:
-            new_name = info['titular_nom']
-        else:
-            conf_obj = self.pool.get('res.config')
-            name_as_dict = {
-                "N": info['titular_nom'], "C1": info['titular_cognom1'] or "", "C2": info['titular_cognom2'] or ""
-            }
-            name_struct = conf_obj.get(cursor, uid, 'partner_name_format', 'C1 C2, N')
-            if name_struct == 'C1 C2, N':
-                name_formatter = "{C1} {C2}, {N}"
-            else:
-                name_formatter = "{N} {C1} {C2}"
-            new_name = name_formatter.format(**name_as_dict)
-            new_name = new_name.strip()
-            new_name = new_name.replace(" ,", ",")
 
         aid = None
         tids = partner_o.search(cursor, uid, [('vat', '=', info['titular_vat'])])
@@ -325,11 +303,11 @@ class SomSociCrmLead(osv.OsvInherits):
             # Comprovem si l'adreça tamb existeix
             sp = [('partner_id', '=', tid)]
             for f, val in info.iteritems():
-                if f not in self.lead_titular_adr_to_adr.keys():
+                if f not in self.lead_partner_adr_to_adr.keys():
                     continue
                 if isinstance(val, (list, tuple)):
                     val = val[0]
-                sp.append((self.lead_titular_adr_to_adr.get(f), '=', val))
+                sp.append((self.lead_partner_adr_to_adr.get(f), '=', val))
             adrids = adr_o.search(cursor, uid, sp)
             if len(adrids):
                 aid = adrids[0]
@@ -341,9 +319,9 @@ class SomSociCrmLead(osv.OsvInherits):
             crear_address = True
 
             create_vals = {
-                'name': new_name,
-                'vat': info['titular_vat'],
-                'lang': info['lang']
+                'name': info['partner_nom'],
+                'vat': info['partner_vat'],
+                'lang': info['partner_lang']
             }
             tid = partner_o.create(cursor, uid, create_vals)
             res = _(u"Se ha creado un nuevo titular con numero de documento {0}. ").format(info['titular_vat'])
@@ -366,71 +344,50 @@ class SomSociCrmLead(osv.OsvInherits):
             aid = adr_o.create(cursor, uid, create_vals)
             res += _(u"Ninguna direccion del titular coincide con la actual, se ha creado una nueva direccion.")
 
-        if info['use_cont_address']:
-            cont_titular_fields = self.lead_titular_adr_to_adr.keys()
-            cont_titular_fields = ["cont_"+x for x in cont_titular_fields]
-            cont_titular_fields.append("cont_titular_nom")
-            alt_info = self._check_and_get_mandatory_fields(cursor, uid, crml_id, [], cont_titular_fields, context=context)
-            ctx = context.copy()
-            ctx['extra_match_fields'] = ["cont_titular_nom"]
-            adrids = self.match_address_id_from_lead(cursor, uid, crml_id, address_prefix="cont_", partner_id=tid, context=ctx)
-            if not len(adrids):
-                create_vals = {'name': alt_info['cont_titular_nom'] or new_name, 'partner_id': tid}
-                for fname, fval in alt_info.iteritems():
-                    if not fval:
-                        continue
-                    if isinstance(fval, (list, tuple)):
-                        fval = fval[0]
-                    if fname in ['cont_titular_nom', 'cont_titular_cognom1', 'cont_titular_cognom2']:
-                        continue
-                    create_vals[self.lead_titular_adr_to_adr.get(fname.replace("cont_", ""), fname)] = fval
-                if create_vals.get("id_municipi") and not create_vals.get("state_id"):
-                    create_vals["state_id"] = municipi_o.read(cursor, uid, create_vals.get("id_municipi"), ['state'])['state'][0]
-                adr_o.create(cursor, uid, create_vals)
-                res += _(u"Se ha creado una nueva direccion de contacto.")
-
-        if lead['iban_other_owner']:
-            adrids = []
-            tids = partner_o.search(cursor, uid, [
-                ('vat', '=', info['iban_owner_vat'])
-            ])
-            if tids:
-                tid = tids[0]
-                res = _(
-                    u"Se ha encontrado un partner con numero de documento {0}, no se creara una nueva ficha de empresa. ").format(
-                    info['iban_owner_vat'])
-                # Comprovem si l'adreça tamb existeix
-                sp = [
-                    ('partner_id', '=', tid),
-                    ('email', '=', info['iban_owner_email']),
-                    ('name', '=', info['iban_owner_name'])
-                ]
-                adrids = adr_o.search(cursor, uid, sp)
-                if adrids:
-                    res += _(
-                        u"La direccion del propietario del IBAN encontrado coincide con la actual, no se creara una nueva direccion.")
-            else:
-                create_vals = {
-                    'name': info['iban_owner_name'],
-                    'vat': info['iban_owner_vat'],
-                    'lang': info['lang']
-                }
-                tid = partner_o.create(cursor, uid, create_vals)
-                res = _(
-                    u"Se ha creado un nuevo partner propietario IBAN con numero de documento {0}. ").format(
-                    info['iban_owner_vat'])
-            if not adrids:
-                adr_o.create(cursor, uid, {
-                    'partner_id': tid,
-                    'name': info['iban_owner_name'],
-                    'email': info['iban_owner_email']
-                })
-                res += _(u"Ninguna direccion coincide con el propietario del IBAN, se ha creado una nueva direccion.")
-
         if aid:
             self.write(cursor, uid, [crml_id], {'partner_address_id': aid}, context=context)
 
         return res
+
+    def create_entity_soci(self, cursor, uid, crml_id, context=None):
+        if context is None:
+            context = {}
+        if isinstance(crml_id, (list, tuple)):
+            crml_id = crml_id[0]
+
+        soci_o = self.pool.get("somenergia.soci")
+        partner_id = self.read(cursor, uid, crml_id, ['partner_id'])['partner_id'][0]
+        soci_id = self.search(cursor, uid, [('partner_id', '=', partner_id)], context=context)
+        res = ''
+        if soci_id:
+            res = _(
+                u"S'ha trobat un soci amb el partner_id {}. No es crea un nou soci i s'activa l'existent"
+            ).format(partner_id)
+        else:
+            soci_id = soci_o.create_one_soci(cursor, uid, partner_id, context)
+            res = _(u"S'ha creat un nou soci")
+        self.write(cursor, uid, [crml_id], {'soci_id': aid}, context=context)
+
+        return res
+
+    def create_mandatory_apo(self, cursor, uid, crml_id, context=None):
+        if context is None:
+            context = {}
+        if isinstance(crml_id, (list, tuple)):
+            crml_id = crml_id[0]
+        conf_o = self.pool.get('res.config')
+        investment_o = self.pool.get("generationkwh.investment")
+        emission_o = self.pool.get("generationkwh.emission")
+
+        quota_amount = eval(conf_o.get(cursor, uid, 'quota_soci_amount', '100'))
+        emission_id = emission_o.search(cursor, uid, [('type', '=', 'apo_obl')])[0]
+        li = self.read(cursor, uid, crml_id, ['partner_id', 'ip', 'iban', 'partner_date'])
+
+        investment_id = investment_o.create_from_form(
+            cursor, uid, li['partner_id'][0], li['partner_date'], quota_amount, li['ip'],
+            li['iban'], emission_id, context)
+        )
+        self.write(cursor, uid, [crml_id], {'investment_id': investment_id}, context=context)
 
     def create_entity_iban(self, cursor, uid, crml_id, context=None):
         if context is None:
@@ -526,6 +483,34 @@ class SomSociCrmLead(osv.OsvInherits):
         del res['id']
         return res
 
+    def create_entities(self, cursor, uid, ids, context={}):
+        """
+        Creació de les entitats: partner, soci, inversió, factura
+        """
+        for crm_id in ids:
+            crm_msg = [""]
+            msg = self.create_entity_partner(cursor, uid, ids, context)
+            crm_msg.append(msg)
+            msg = self.create_entity_soci(cursor, uid, ids, context)
+            crm_msg.append(msg)
+            msg = self.create_mandatory_apo(cursor, uid, ids, context)
+            crm_msg.append(msg)
+            all_msgs.append("\n * ".join(crm_msg))
+
+        res = "\n\n\n".join(all_msgs)
+        return res
+
+    def remesar_factura(self, cursor, uid, ids, context={}):
+        """ Remesar la factura """
+        pass
+
+    def validate_fields(self, cursor, uid, ids, context={}):
+        """
+            Comprovar que les dades entrades són correctes i
+            la persona fisica/jurídica es pot fer socia
+        """
+        pass
+
     def create_new_member(self, cursor, uid, ids, context={}):
         """
             Si el lead és de tipus pagament per TPV: no fa res
@@ -556,11 +541,11 @@ class SomSociCrmLead(osv.OsvInherits):
         'partner_es_empresa': fields.function(_vat_es_empresa, method=True, type='boolean', string='Es Empresa'),
 
         #Camps Altres comptes
-        'payment_mode_id': fields.many2one('payment.mode', 'Grupo de pago'),
+        'payment_mode_id': fields.many2one('payment.mode', 'Grup de pagament'),
 
         #Camps res.partner#
-        'partner_nom': fields.char("Nombre Cliente / Razón Social", size=256), #a webforms 'name', 'name' es un attr de crm.case, ja està agafat
-        'partner_vat': fields.char('Nº de Documento', size=11),
+        'partner_nom': fields.char("Nom Client / Raó Social", size=256), #a webforms 'name', 'name' es un attr de crm.case, ja està agafat
+        'partner_vat': fields.char('Nº de Document', size=11),
         #'active': True, # Aquest no cal
         'partner_comment': fields.char('Comentari', size=64),
         #'category_id': [(6, 0, c_soci)], # Auxpi no cal, ja posarem la categoria que toca
@@ -572,15 +557,15 @@ class SomSociCrmLead(osv.OsvInherits):
         #Camps res.partner.address#
         #'name': member_name, ja el tenim
         'address_country_id': fields.many2one('res.country', 'Country'),
-        'address_state_id': fields.many2one('res.country.state', 'State'),
+        'address_state_id': fields.many2one('res.country.state', 'State'), #TODO: Per a què?
         'address_email': fields.char('Email titular', size=256),
-        'address_phone': fields.char('Telefono', size=64),
-        'address_mobile': fields.char('Mobil', size=64),
-        'address_zip': fields.char('Zip', size=24),
+        'address_phone': fields.char('Telèfon', size=64),
+        'address_mobile': fields.char('Mòbil', size=64),
+        'address_zip': fields.char('CP', size=24),
         'address_nv': fields.char('Carrer', size=256),
         #'type': 'default', #Això no cal
         'address_municipi_id': fields.many2one('res.municipi', 'Municipi'),
-
+        'address_poblacio_id': fields.many2one('res.poblacio', 'Població'),
         #Camps payment.mandate#
         #'debtor_name': member_name, # El tenim a 'nom'
         #'debtor_vat': vat, # El tenim a 'vat'
@@ -589,14 +574,17 @@ class SomSociCrmLead(osv.OsvInherits):
         #        request.form['cp'],
         #        form_ciutat), # El tenim a 'nv'
         #'debtor_state': state_name, #tenim el country_id i necessitem accedir al name
-        'mandate_debtor_country': fields.char('Pais', size=64),
-        'mandate_debtor_iban': fields.char(string='Compte IBAN', size=34),
+        #'debtor_country': fields.char('Pais', size=64), #No cal, el create_from_form ja crea el mandato
+        'iban': fields.char(string='Compte IBAN', size=34),
         #'reference': 'res.partner,%s', #TODO: el crearem nosaltres
         #'notes': _('QUOTA SOCI'), #TODO: el crearem nosaltres
         #'name': mandato, #això no cal, el default de l'ERP ja crida el mateix uuid4().hex
-        'mandate_creditor_code': fields.char(string='Creditor code', size=24),
+        #'creditor_code': fields.char(string='Creditor code', size=24), #No cal, el create_from_form ja crea el mandato
         #'date': mandato_date.strftime('%Y-%m-%d'), #és la mateixa que 'date'
         #'payment_type': 'one_payment' #TODO: ho posarem nosaltres pq sabem que la quota de soci és un sol pagamen
+        'soci_id': fields.many2one('somenergia.soci', 'Soci'),
+        'investment_id': fields.many2one('generationkwh.investment', 'Aportació Obligatòria'),
+        'ip': fields.char('IP de la connexió'),
     }
 
     def call_check_vat(self, cr, uid, ids):

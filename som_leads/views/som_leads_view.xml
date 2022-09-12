@@ -23,15 +23,15 @@
                 <page string="General" position="before">
                     <page string="Oferta/Oportunitat">
                     <notebook>
-                        <page string="Sobre el Cliente">
-                            <separator string="Datos sobre el Titular" colspan="8"/>
+                        <page string="Sobre el Client">
+                            <separator string="Dades de la nova sòcia" colspan="8"/>
                             <group colspan="8" col="8">
                                 <group string="Titular" col="4" colspan="5">
                                     <field name="partner_vat" on_change="onchange_generic('partner_vat', partner_vat)"/>
                                     <field name="partner_es_empresa" invisible="1"/>
                                     <field name="partner_nom" colspan="8"/>
                                 </group>
-                                <group string="Contacto" col="8" colspan="3">
+                                <group string="Contacte" col="8" colspan="3">
                                     <field name="address_email" colspan="8"/>
                                     <newline/>
                                     <field name="address_phone" colspan="4"/>
@@ -40,15 +40,16 @@
                                     <field name="partner_lang"/>
                                 </group>
                             </group>
-                            <group string="Direccion" col="8"  colspan="8">
+                            <group string="Direcció" col="8"  colspan="8">
                                 <field name="address_zip"/>
-                                <field name="address_municipi_id" on_change="onchange_generic('titular_id_municipi', titular_id_municipi)"/>
+                                <field name="address_municipi_id" on_change="onchange_generic('address_municipi_id', address_municipi_id)"/>
+                                <field name="address_poblacio_id" on_change="onchange_generic('address_poblacio_id', address_poblacio_id)"/>
                                 <field name="address_nv" colspan="6"/>
                             </group>
                         </page>
-                        <page string="Sobre el Pago">
-                            <separator string="Datos sobre la Facturacion y el Pago" colspan="8"/>
-                            <group string="Forma de Pago" col="2" colspan="8">
+                        <page string="Sobre el Pagament">
+                            <separator string="Dades de la facturació i pagament" colspan="8"/>
+                            <group string="Forma de Pagament" col="2" colspan="8">
                                 <field name="payment_mode_id"/>
                                 <field name="iban" on_change="onchange_generic('iban', iban)"/>
                             </group>
@@ -70,11 +71,9 @@
                     <field name="user_id" select="1"/>
                     <field name="stage_id" select="1"/>
                     <field name="state" select="1"/>
-                    <field name="partner_vat" select="2" string="Nº Documento (Cliente)"/>
-                    <field name="partner_nom" select="2" string="Nombre (Cliente)"/>
-                    <field name="titular_cognom1" select="2" string="Apellido (Cliente)"/>
-                    <field name="titular_cognom2" select="2" string="2º Apellido (Cliente)"/>
-                    <field name="address_email" select="2" string="Email (Cliente)"/>
+                    <field name="partner_vat" select="2" string="Nº Document"/>
+                    <field name="partner_name" select="2" string="Nom"/>
+                    <field name="address_email" select="2" string="Email"/>
                     <field name="date" select="2"/>
                     <!-- Camps tornats a definir per treurelsi el select 1-->
                     <field name="partner_id" select="2" invisible="1"/>
