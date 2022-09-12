@@ -39,8 +39,6 @@ class SomCrawlersTask(osv.osv):
 
         classresult = self.pool.get('som.crawlers.result')
         classTaskStep = self.pool.get('som.crawlers.task.step')
-        cron_obj = self.pool.get('ir.cron')
-        ir_obj = self.pool.get('ir.model.data')
         task_obj = self.browse(cursor, uid, id)
         task_steps_list = task_obj.task_step_ids
         task_steps_list.sort(key=lambda x: x.sequence)
@@ -52,15 +50,16 @@ class SomCrawlersTask(osv.osv):
                 classresult.write(cursor,uid, result_id, {'resultat': output})
             except Exception as e:
                 classresult.write(cursor,uid, result_id, {'resultat': str(e)})
-                self.schedule_next_execution(cursor, uid, id, context)
-                raise e
-            finally:
-                self.schedule_next_execution(cursor, uid, id, context)
+                break
+
+        self.schedule_next_execution(cursor, uid, id, context)
 
     def schedule_next_execution(self, cursor, uid, id, context=None):
         ir_obj = self.pool.get('ir.model.data')
         cron_obj = self.pool.get('ir.cron')
-        data_proxima_exec = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")
+        data_anterior = datetime.strptime(self.read(cursor, uid, id, ['data_proxima_execucio'])['data_proxima_execucio'], "%Y-%m-%d %H:%M:%S")
+        data_proxima_exec = (datetime.now() + timedelta(days=1)).replace(
+            hour=data_anterior.hour, minute=data_anterior.minute, second=data_anterior.second).strftime("%Y-%m-%d %H:%M:%S")
         #seguent data d'execucio
         self.write(cursor, uid, id,{'data_proxima_execucio': data_proxima_exec}, context)
         cron_id = ir_obj.get_object_reference(

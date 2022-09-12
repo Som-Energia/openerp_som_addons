@@ -21,7 +21,7 @@
             <field name="type">tree</field>
             <field name="priority">16</field>
             <field name="arch" type="xml">
-                <tree string="Resultat de la tasca" editable="bottom">
+                <tree string="Resultat de la tasca">
                     <field name="task_id" />
                     <field name="data_i_hora_execucio" select='1' />
                     <field name="resultat" />

@@ -63,7 +63,7 @@ def crawl(user, name, password, file, url, filters, crawler, days, pfiles, brows
     except FileToBucketException as e:
         f.write(str(e))
     except Exception as e:
-       f.write(str(e))
+        f.write(str(e))
     else:
         f.write('Files have been successfully downloaded')
 

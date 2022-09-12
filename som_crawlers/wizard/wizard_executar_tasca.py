@@ -34,7 +34,7 @@ class WizardExecutarTasca(osv.osv_memory):
         return {'type': 'ir.actions.act_window_close'}
 
 
-    def executar_tasca_cron(self, cursor, uid, id,context=None): #tasca cron
+    def executar_tasca_crawlers_cron(self, cursor, uid, id,context=None): #tasca cron
         ##obtenim l'objecte tasca
         task_obj = self.pool.get('som.crawlers.task')
         active_ids = task_obj.search(cursor, uid, [])

@@ -7,6 +7,7 @@ from tools.translate import _
 class SomCrawlersResult(osv.osv):
     # Module name
     _name= 'som.crawlers.result'
+    _order = 'data_i_hora_execucio desc'
 
     # Column fields
     _columns={
@@ -26,6 +27,6 @@ class SomCrawlersResult(osv.osv):
         ),
         'zip_name':fields.many2one('ir.attachment', _(u"Fitxer adjunt"),
         ),
-
     }
+
 SomCrawlersResult()

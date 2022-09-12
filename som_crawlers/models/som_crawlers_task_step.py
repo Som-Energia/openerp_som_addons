@@ -123,7 +123,7 @@ class SomCrawlersTaskStep(osv.osv):
                 output = 'File or directory doesn\'t exist'
         else:
             output = 'Falta especificar nom fitxer'
-        taskStep_obj.task_id.write({'ultima_tasca_executada': str(taskStep_obj.task_id.name)+ ' - ' + str(datetime.now().strftime("%Y-%m-%d_%H:%M"))})
+        taskStep_obj.task_id.write({'ultima_tasca_executada': str(taskStep_obj.name)+ ' - ' + str(datetime.now().strftime("%Y-%m-%d_%H:%M"))})
 
         return output
 
@@ -143,7 +143,7 @@ class SomCrawlersTaskStep(osv.osv):
             fileName = att.name
             output = self.import_wizard(cursor, uid, fileName,content)
 
-        taskStep_obj.task_id.write({'ultima_tasca_executada': str(taskStep_obj.task_id.name)+ ' - ' + str(datetime.now().strftime("%Y-%m-%d_%H:%M"))})
+        taskStep_obj.task_id.write({'ultima_tasca_executada': str(taskStep_obj.name)+ ' - ' + str(datetime.now().strftime("%Y-%m-%d_%H:%M"))})
 
         return output
 
