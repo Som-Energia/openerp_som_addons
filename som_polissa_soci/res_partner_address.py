@@ -286,6 +286,6 @@ class ResPartnerAddress(osv.osv):
 
         for mchimp_list in all_lists:
             list_id = mchimp_list['id']
-            self.archieve_mail_in_list(cursor, uid, old_email , list_id, MAILCHIMP_CLIENT)
+            self.archieve_mail_in_list(cursor, uid, ids, list_id, mailchimp_conn)
 
 ResPartnerAddress()
