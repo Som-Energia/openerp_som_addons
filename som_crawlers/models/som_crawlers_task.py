@@ -10,14 +10,9 @@ class SomCrawlersTask(osv.osv):
     ## Module name
     _name = 'som.crawlers.task'
 
-
-    _STORE_WHEN_RESULT_MODIFIED = {
-        'som.crawlers.result': (
-            lambda self, cr, uid, ids, context=None: ids,
-            ['resultat_bool'],
-            10
-        )
-    }
+    def _change_result(self, cursor, uid, ids, context):
+        values = self.read(cursor, uid, ids, ['task_id'])
+        return [value['task_id'][0] for value in values]
 
     def _get_distri_name(self, cursor, uid, task_ids, field_name, arg, context=None):
         res = {}
@@ -48,6 +43,12 @@ class SomCrawlersTask(osv.osv):
                 cursor, uid, run_ids[0], ['resultat_bool'])['resultat_bool']
             res[task_id] = resultat_bool
         return res
+
+    _STORE_WHEN_RESULT_MODIFIED = {
+        'som.crawlers.result': (
+            _change_result, ['resultat_bool'], 10
+        )
+    }
 
     ## Columns field
     _columns = {
