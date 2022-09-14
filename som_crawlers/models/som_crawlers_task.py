@@ -17,7 +17,6 @@ class SomCrawlersTask(osv.osv):
     def _get_distri_name(self, cursor, uid, task_ids, field_name, arg, context=None):
         res = {}
         config_obj = self.pool.get('som.crawlers.config')
-        import pudb;pudb
         for task_id in task_ids:
             config_id = self.read(cursor, uid, task_id, ['configuracio_id'])['configuracio_id']
             if not config_id:
