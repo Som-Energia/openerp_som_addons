@@ -11,7 +11,6 @@ class SomCrawlersResult(osv.osv):
 
     # Column fields
     _columns={
-
         'name': fields.char(_(u'Funció'), size=64, required=False,),
         'task_id': fields.many2one(
             'som.crawlers.task',
@@ -21,12 +20,18 @@ class SomCrawlersResult(osv.osv):
         ),
         'data_i_hora_execucio': fields.datetime(
             _(u"Data i hora de l'execució"),),
-        'resultat': fields.text(
+        'resultat_text': fields.text(
             _(u"Resultat"),
             help=_("Resultat de l'execució"),
         ),
         'zip_name':fields.many2one('ir.attachment', _(u"Fitxer adjunt"),
         ),
+        'resultat_bool': fields.boolean(
+            _(u"Resultat"),
+        ),
+    }
+    _defaults = {
+        'resultat_bool': lambda *a:False,
     }
 
 SomCrawlersResult()

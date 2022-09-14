@@ -81,8 +81,8 @@ class SomCrawlersTaskStep(osv.osv):
                         'name':  fileName,
                         'datas':  base64.b64encode(content),
                         'datas_fname': fileName,
-                        'res_model': 'som.crawlers.task',
-                        'res_id': taskStep_obj.task_id.id,
+                        'res_model': 'som.crawlers.result',
+                        'res_id': result_id,
                     }
 
                     attachment_id = self.pool.get('ir.attachment').create(cursor, uid, attachment, context=context)
@@ -97,7 +97,7 @@ class SomCrawlersTaskStep(osv.osv):
         taskStep_obj = self.browse(cursor,uid,id)
         taskStepParams = json.loads(taskStep_obj.params)
         path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../')
-        classresult.write(cursor,uid, result_id, {'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M")})
+        classresult.write(cursor,uid, result_id, {'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M:%S")})
 
         if taskStepParams.has_key('nom_fitxer'):
             config_obj=self.pool.get('som.crawlers.task').id_del_portal_config(cursor,uid,taskStep_obj.task_id.id,context)
@@ -123,7 +123,8 @@ class SomCrawlersTaskStep(osv.osv):
                 output = 'File or directory doesn\'t exist'
         else:
             output = 'Falta especificar nom fitxer'
-        taskStep_obj.task_id.write({'ultima_tasca_executada': str(taskStep_obj.name)+ ' - ' + str(datetime.now().strftime("%Y-%m-%d_%H:%M"))})
+        taskStep_obj.task_id.write({'ultima_tasca_executada': str(taskStep_obj.name)+ ' - ' + str(datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))})
+        classresult.write(cursor, uid, result_id, {'resultat_bool': True})
 
         return output
 
@@ -131,7 +132,8 @@ class SomCrawlersTaskStep(osv.osv):
         taskStep_obj = self.browse(cursor,uid,id)
         classresult = self.pool.get('som.crawlers.result')
         attachment_obj = self.pool.get('ir.attachment')
-        classresult.write(cursor,uid, result_id, {'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M")})
+        classresult.write(cursor, uid, result_id, {'resultat_bool': False})
+        classresult.write(cursor,uid, result_id, {'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M:%S")})
         result_obj= classresult.browse(cursor, uid, result_id)
         attachment_id = result_obj.zip_name.id
         if not attachment_id:
@@ -143,7 +145,8 @@ class SomCrawlersTaskStep(osv.osv):
             fileName = att.name
             output = self.import_wizard(cursor, uid, fileName,content)
 
-        taskStep_obj.task_id.write({'ultima_tasca_executada': str(taskStep_obj.name)+ ' - ' + str(datetime.now().strftime("%Y-%m-%d_%H:%M"))})
+        taskStep_obj.task_id.write({'ultima_tasca_executada': str(taskStep_obj.name)+ ' - ' + str(datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))})
+        classresult.write(cursor, uid, result_id, {'resultat_bool': True})
 
         return output
 

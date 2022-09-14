@@ -7,6 +7,7 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Configuracio">
+                    <field name="distribuidora"/>
                     <field name="name"/>
                     <field name="usuari"/>
                     <field name="contrasenya"/>
@@ -27,6 +28,7 @@
             <field name="type">tree</field>
             <field name="arch" type="xml">
             <tree string="Configuracio">
+                    <field name="distribuidora" select="1"/>
                     <field name="name" select="1"/>
                     <field name="usuari" select="1"/>
                     <field name="contrasenya" />
@@ -38,7 +40,6 @@
                     <field name="browser"/>
                     <field name="date_ultima_modificacio" select="1"/>
                     <field name="user_ultima_modificacio"/>
-
                 </tree>
             </field>
         </record>
