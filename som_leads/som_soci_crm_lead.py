@@ -50,6 +50,7 @@ class SomSociCrmLead(osv.OsvInherits):
         ]
         return crm_obj.unlink(cursor, uid, crm_ids, context=context)
 
+    #TODO: Valorar si cal, en principi no farem servir validacions
     def create(self, cursor, uid, vals, context=None):
         if vals is None:
             vals = {}
@@ -66,6 +67,7 @@ class SomSociCrmLead(osv.OsvInherits):
         self.update_current_stage_validations(cursor, uid, res_id, context=context)
         return res_id
 
+    #TODO: Valorar si cal, en principi no farem servir validacions
     def write(self, cursor, uid, ids, vals, context=None):
         if context is None:
             context = {}
@@ -83,6 +85,7 @@ class SomSociCrmLead(osv.OsvInherits):
             self.update_current_stage_validations(cursor, uid, ids, context=context)
         return res
 
+    #TODO: ajustar als camps que tenim
     def _clean_and_fill_values(self, cursor, uid, values, context=None):
         if context is None:
             context = {}
@@ -112,6 +115,7 @@ class SomSociCrmLead(osv.OsvInherits):
         res_vals = self._clean_values(cursor, uid, values_cpy, context=None)
         return res_vals
 
+    #TODO: ajustar als camps que tenim
     def _clean_values(self, cursor, uid, values, context=None):
         values_cpy = values.copy()
         # Netejem els camps char en general per treure espais al final
@@ -125,7 +129,7 @@ class SomSociCrmLead(osv.OsvInherits):
             k: False if v is None else v for (k, v) in values_cpy.items()
         }
         return values_coalesced
-
+"""
     def _get_values_titular(self, cursor, uid, vat, context=None):
         vals = {'titular_vat': vat}
         if not vat:
@@ -169,7 +173,7 @@ class SomSociCrmLead(osv.OsvInherits):
                 vals[prefix + 'id_poblacio'] = False
 
         return vals
-
+"""
 
     def onchange_generic(self, cr, uid, ids, *args):
         res = {}
@@ -185,6 +189,7 @@ class SomSociCrmLead(osv.OsvInherits):
 
         return res
 
+    #TODO: ajustar. No utilitzem validacions però si que volem executar una funció.
     def stage_next(self, cr, uid, ids, context=None):
         self.validate_current_stage(cr, uid, ids, context=context)
 
@@ -194,6 +199,7 @@ class SomSociCrmLead(osv.OsvInherits):
         self.update_current_stage_validations(cr, uid, ids, context=context)
         return res
 
+    #TODO: ajustar. No utilitzem validacions. Volem executar alguna funcio?.
     def stage_previous(self, cr, uid, ids, context=None):
         self.validate_current_stage(cr, uid, ids, context=context)
 
@@ -203,6 +209,7 @@ class SomSociCrmLead(osv.OsvInherits):
         self.update_current_stage_validations(cr, uid, ids, context=context)
         return res
 
+    #TODO: valorar si ho necessitem. En ppi no farem servir validacions
     def validate_current_stage(self, cr, uid, ids, context=None):
         if context is None:
             context = {}
@@ -226,6 +233,7 @@ class SomSociCrmLead(osv.OsvInherits):
                 err_msg = ", ".join(val_texts)
                 raise osv.except_osv(_(u"Operacion no permitida!"), _(u"No se puede cambiar de stage hasta que no se hayan completado o eliminado las siguientes validaciones: {0}").format(err_msg))
 
+    #TODO: en principi no farem servir validacions
     def update_current_stage_validations(self, cursor, uid, ids, context=None):
         return False
 
@@ -236,45 +244,6 @@ class SomSociCrmLead(osv.OsvInherits):
         for inf in self.read(cr, uid, ids, ['partner_vat']):
             vat = inf['partner_vat']
             res[inf['id']] = partner_o.is_enterprise_vat(vat) if vat else False
-        return res
-
-    def create_entities(self, cursor, uid, ids, context=None):
-        if context is None:
-            context = {}
-        if not isinstance(ids, (list, tuple)):
-            ids = [ids]
-
-        all_msgs = []
-        gid = self.pool.get("res.users").read(cursor, uid, uid, ['groups_id'])['groups_id'][0]
-        with Sudo(uid=uid, gid=gid):
-            for crm_id in ids:
-                crm_msg = [""]
-
-                self.validate_current_stage(cursor, 1, crm_id, context=context)
-
-                msg = self.create_entity_distribuidora(cursor, 1, crm_id, context=context)
-                crm_msg.append(msg)
-
-                msg = self.create_entity_cups(cursor, 1, crm_id, context=context)
-                crm_msg.append(msg)
-
-                msg = self.create_entity_titular(cursor, 1, crm_id, context=context)
-                crm_msg.append(msg)
-
-                msg = self.create_entity_iban(cursor, 1, crm_id, context=context)
-                crm_msg.append(msg)
-
-                msg = self.create_entity_polissa(cursor, 1, crm_id, context=context)
-                crm_msg.append(msg)
-
-                msg = self.create_entity_autoconsum(cursor, 1, crm_id, context=context)
-                crm_msg.append(msg)
-
-                all_msgs.append("\n * ".join(crm_msg))
-
-        res = "\n\n\n".join(all_msgs)
-        # Netegem cache per refrescar les regles dels colaboradors
-        cache.clean_caches_for_db(cursor.dbname)
         return res
 
     def create_entity_partner(self, cursor, uid, crml_id, context=None):
@@ -391,6 +360,7 @@ class SomSociCrmLead(osv.OsvInherits):
         )
         self.write(cursor, uid, [crml_id], {'investment_id': investment_id}, context=context)
 
+    #TODO: potser no cal pq ho fa el create_from_form?
     def create_entity_iban(self, cursor, uid, crml_id, context=None):
         if context is None:
             context = {}
