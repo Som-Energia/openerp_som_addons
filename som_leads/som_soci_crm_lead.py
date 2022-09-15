@@ -233,8 +233,8 @@ class SomSociCrmLead(osv.OsvInherits):
     def _vat_es_empresa(self, cr, uid, ids, prop, unknow_none, unknow_dict):
         res = {}
         partner_o = self.pool.get("res.partner")
-        for inf in self.read(cr, uid, ids, ['titular_vat']):
-            vat = inf['titular_vat']
+        for inf in self.read(cr, uid, ids, ['partner_vat']):
+            vat = inf['partner_vat']
             res[inf['id']] = partner_o.is_enterprise_vat(vat) if vat else False
         return res
 
@@ -288,18 +288,18 @@ class SomSociCrmLead(osv.OsvInherits):
         municipi_o = self.pool.get("res.municipi")
 
         adr_partner_fields = self.lead_partner_adr_to_adr.keys()
-        opt_fields = adr_titular_fields[:]
-        opt_fields.extend(['titular_cognom2', 'partner_lang'])
+        opt_fields = adr_partner_fields[:]
+        opt_fields.extend(['partner_lang'])
         mandatory_fields = ['partner_vat', 'partner_nom']
 
         info = self._check_and_get_mandatory_fields(cursor, uid, crml_id, mandatory_fields, opt_fields, context=context)
 
 
         aid = None
-        tids = partner_o.search(cursor, uid, [('vat', '=', info['titular_vat'])])
+        tids = partner_o.search(cursor, uid, [('vat', '=', info['partner_vat'])])
         if len(tids):
             tid = tids[0]
-            res = _(u"Se ha encontrado un titular con numero de documento {0}, no se creara una nueva ficha de empresa. ").format(info['titular_vat'])
+            res = _(u"Se ha encontrado un titular con numero de documento {0}, no se creara una nueva ficha de empresa. ").format(info['partner_vat'])
             # Comprovem si l'adreça tamb existeix
             sp = [('partner_id', '=', tid)]
             for f, val in info.iteritems():
@@ -324,13 +324,13 @@ class SomSociCrmLead(osv.OsvInherits):
                 'lang': info['partner_lang']
             }
             tid = partner_o.create(cursor, uid, create_vals)
-            res = _(u"Se ha creado un nuevo titular con numero de documento {0}. ").format(info['titular_vat'])
+            res = _(u"Se ha creado un nuevo titular con numero de documento {0}. ").format(info['partner_vat'])
 
         if tid:
             self.write(cursor, uid, [crml_id], {'partner_id': tid}, context=context)
 
         if crear_address:
-            create_vals = {'name': new_name, 'partner_id': tid}
+            create_vals = {'name': info['partner_nom'], 'partner_id': tid}
             for fname, fval in info.iteritems():
                 if not fval:
                     continue
@@ -338,7 +338,7 @@ class SomSociCrmLead(osv.OsvInherits):
                     fval = fval[0]
                 if fname in ['titular_nom', 'titular_cognom1', 'titular_cognom2']:
                     continue
-                create_vals[self.lead_titular_adr_to_adr.get(fname, fname)] = fval
+                create_vals[self.lead_partner_adr_to_adr.get(fname, fname)] = fval
             if create_vals.get("id_municipi") and not create_vals.get("state_id"):
                 create_vals["state_id"] = municipi_o.read(cursor, uid, create_vals.get("id_municipi"), ['state'])['state'][0]
             aid = adr_o.create(cursor, uid, create_vals)
@@ -366,7 +366,9 @@ class SomSociCrmLead(osv.OsvInherits):
         else:
             soci_id = soci_o.create_one_soci(cursor, uid, partner_id, context)
             res = _(u"S'ha creat un nou soci")
-        self.write(cursor, uid, [crml_id], {'soci_id': aid}, context=context)
+        if isinstance(soci_id, (list, tuple)):
+            soci_id = soci_id[0]
+        self.write(cursor, uid, [crml_id], {'soci_id': soci_id}, context=context)
 
         return res
 
@@ -385,7 +387,7 @@ class SomSociCrmLead(osv.OsvInherits):
 
         investment_id = investment_o.create_from_form(
             cursor, uid, li['partner_id'][0], li['partner_date'], quota_amount, li['ip'],
-            li['iban'], emission_id, context)
+            li['iban'], 'APO_OB', context
         )
         self.write(cursor, uid, [crml_id], {'investment_id': investment_id}, context=context)
 
@@ -402,7 +404,7 @@ class SomSociCrmLead(osv.OsvInherits):
         res_country = self.pool.get('res.country')
 
         lead = self.read(cursor, uid, crml_id, ['iban_other_owner'])
-        mandatory_fields = ['payment_mode_id', 'titular_vat']
+        mandatory_fields = ['payment_mode_id', 'partner_vat']
         if lead['iban_other_owner']:
             mandatory_fields = [
                 'payment_mode_id', 'iban_owner_vat', 'iban_owner_name',
@@ -421,7 +423,7 @@ class SomSociCrmLead(osv.OsvInherits):
         if lead['iban_other_owner']:
             iban_owner_vat = info['iban_owner_vat']
         else:
-            iban_owner_vat = info['titular_vat']
+            iban_owner_vat = info['partner_vat']
         partner_id = partner_o.search(cursor, uid, [('vat', '=', iban_owner_vat)])
         if not partner_id:
             raise osv.except_osv(
@@ -584,12 +586,12 @@ class SomSociCrmLead(osv.OsvInherits):
         #'payment_type': 'one_payment' #TODO: ho posarem nosaltres pq sabem que la quota de soci és un sol pagamen
         'soci_id': fields.many2one('somenergia.soci', 'Soci'),
         'investment_id': fields.many2one('generationkwh.investment', 'Aportació Obligatòria'),
-        'ip': fields.char('IP de la connexió'),
+        'ip': fields.char(string='IP de la connexió', size=20),
     }
 
     def call_check_vat(self, cr, uid, ids):
         for crm_lead in self.browse(cr, uid, ids):
-            if not self.check_vat(cr, uid, crm_lead.titular_vat):
+            if not self.check_vat(cr, uid, crm_lead.partner_vat):
                 return False
         return True
 
