@@ -31,7 +31,7 @@
             <field name="model">som.crawlers.task</field>
             <field name="type">tree</field>
             <field name="arch" type="xml">
-                <tree string="Tasques a realitzar" colors="red:ultim_resultat == False">
+                <tree string="Tasques a realitzar" colors="red:resultat_bool == False">
                         <field name="distribuidora"/>
                         <field name="name" />
                         <field name="active"/>
@@ -40,7 +40,8 @@
                         <field name="configuracio_id" />
                         <field name="ultima_tasca_executada"/>
                         <field name="run_ids"/>
-                        <field name="ultim_resultat" select="1"/>
+                        <field name="resultat_bool" select="1"/>
+                        <field name="resultat_curt" select="1"/>
                 </tree>
             </field>
         </record>

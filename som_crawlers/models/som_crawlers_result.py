@@ -9,6 +9,23 @@ class SomCrawlersResult(osv.osv):
     _name= 'som.crawlers.result'
     _order = 'data_i_hora_execucio desc'
 
+
+    def _get_last_result(self, cursor, uid, task_ids, field_name, arg, context=None):
+        res = {}
+        for task_id in task_ids:
+            resultat_text = self.read(cursor, uid, task_id, ['resultat_text'])['resultat_text']
+            if not resultat_text:
+                res[task_id] = ''
+                continue
+            res[task_id] = resultat_text.lstrip()[:50] + '...' if len(resultat_text) > 50 else resultat_text
+        return res
+
+    _STORE_WHEN_RESULT_MODIFIED = {
+        'som.crawlers.result': (
+            lambda self, cr, uid, ids, c={}: ids, ['resultat_text'], 10
+        )
+    }
+
     # Column fields
     _columns={
         'name': fields.char(_(u'Funció'), size=64, required=False,),
@@ -28,6 +45,10 @@ class SomCrawlersResult(osv.osv):
         ),
         'resultat_bool': fields.boolean(
             _(u"Resultat"),
+        ),
+        'resultat_curt': fields.function(
+            _get_last_result, string='Resultat',
+            type='char', size=55, method=True, store=_STORE_WHEN_RESULT_MODIFIED
         ),
     }
     _defaults = {

@@ -39,13 +39,13 @@ class SomCrawlersTask(osv.osv):
                 res[task_id] = False
                 continue
             resultat_bool = result_obj.read(
-                cursor, uid, run_ids[0], ['resultat_bool'])['resultat_bool']
+                cursor, uid, run_ids[0], [field_name])[field_name]
             res[task_id] = resultat_bool
         return res
 
     _STORE_WHEN_RESULT_MODIFIED = {
         'som.crawlers.result': (
-            _change_result, ['resultat_bool'], 10
+            _change_result, ['resultat_bool', 'resultat_text'], 10
         )
     }
 
@@ -53,19 +53,27 @@ class SomCrawlersTask(osv.osv):
     _columns = {
         'name': fields.char(_(u"Nom"), size=128, help=_("Nom de la tasca"),required=True,),
         'active': fields.boolean( string=_(u"Actiu"), help=_(u"Indica si la tasca està activa o no"),),
-        'task_step_ids': fields.one2many('som.crawlers.task.step','task_id', string=_(u"Passos de la tasca")),
+        'task_step_ids': fields.one2many('som.crawlers.task.step','task_id', string=_(u"Passos")),
         'data_proxima_execucio':fields.datetime(_(u"Data proxima execució"),),
         'configuracio_id': fields.many2one('som.crawlers.config', 'Configuracio', help="Relacio de una configuracio amb la seva tasca",),
-        'run_ids': fields.one2many('som.crawlers.result','task_id',string="Llistat d'execucions", help="Llista de execucions que ha realitzat la tasca",),
+        'run_ids': fields.one2many('som.crawlers.result','task_id',string="Execucions", help="Llista de execucions que ha realitzat la tasca",),
         'ultima_tasca_executada': fields.char(_(u"Darrer pas executat"), size=128, help=_("Darrer pas de tasca executat"),),
         'distribuidora': fields.function(
             _get_distri_name, string='Distribuidora',
             type='many2one', size=250, method=True,
             obj='res.partner',
         ),
-        'ultim_resultat': fields.function(
-            _get_last_result, string='Últim resultat',
+        'resultat_bool': fields.function(
+            _get_last_result, string='OK',
             type='boolean', method=True, store=_STORE_WHEN_RESULT_MODIFIED
+        ),
+        'resultat_text': fields.function(
+            _get_last_result, string='Últim missatge',
+            type='text', method=True, store=_STORE_WHEN_RESULT_MODIFIED
+        ),
+        'resultat_curt': fields.function(
+            _get_last_result, string='Últim missatge',
+            type='text', method=True, store=_STORE_WHEN_RESULT_MODIFIED
         ),
     }
     ## Default values of a column

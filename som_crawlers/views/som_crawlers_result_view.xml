@@ -26,6 +26,7 @@
                     <field name="task_id" select='1'/>
                     <field name="data_i_hora_execucio" select='1' />
                     <field name="resultat_bool" select='1'/>
+                    <field name="resultat_curt" select='1'/>
                     <field name="zip_name" select='1'/>
                 </tree>
             </field>
