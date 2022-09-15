@@ -1,2 +1,3 @@
 import wizard
 import som_soci_crm_lead
+import crm_case_stage

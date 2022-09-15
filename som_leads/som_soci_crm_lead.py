@@ -50,7 +50,6 @@ class SomSociCrmLead(osv.OsvInherits):
         ]
         return crm_obj.unlink(cursor, uid, crm_ids, context=context)
 
-    #TODO: Valorar si cal, en principi no farem servir validacions
     def create(self, cursor, uid, vals, context=None):
         if vals is None:
             vals = {}
@@ -64,25 +63,19 @@ class SomSociCrmLead(osv.OsvInherits):
         lead_v = self.read(cursor, uid, res_id, ['stage_id'], context=context)
         if not lead_v['stage_id']:
             self.stage_next(cursor, uid, [res_id], context=context)
-        self.update_current_stage_validations(cursor, uid, res_id, context=context)
+
         return res_id
 
-    #TODO: Valorar si cal, en principi no farem servir validacions
     def write(self, cursor, uid, ids, vals, context=None):
         if context is None:
             context = {}
         if vals is None:
             vals = {}
 
-        if vals.get("stage_id"):
-            self.validate_current_stage(cursor, uid, ids, context=context)
-
         self._clean_values(cursor, uid, vals, context=context)
 
         res = super(osv.osv, self).write(cursor, uid, ids, vals, context)
 
-        if vals.get("stage_id"):
-            self.update_current_stage_validations(cursor, uid, ids, context=context)
         return res
 
     #TODO: ajustar als camps que tenim
@@ -129,7 +122,7 @@ class SomSociCrmLead(osv.OsvInherits):
             k: False if v is None else v for (k, v) in values_cpy.items()
         }
         return values_coalesced
-"""
+    """
     def _get_values_titular(self, cursor, uid, vat, context=None):
         vals = {'titular_vat': vat}
         if not vat:
@@ -173,7 +166,7 @@ class SomSociCrmLead(osv.OsvInherits):
                 vals[prefix + 'id_poblacio'] = False
 
         return vals
-"""
+    """
 
     def onchange_generic(self, cr, uid, ids, *args):
         res = {}
@@ -189,54 +182,29 @@ class SomSociCrmLead(osv.OsvInherits):
 
         return res
 
-    #TODO: ajustar. No utilitzem validacions però si que volem executar una funció.
+
+    def run_method(self, cr, uid, id, context):
+        if isinstance(id, (tuple, list)):
+            id = id[0]
+
+        stage = self.browse(cr, uid, id).stage
+        if stage:
+            stage = stage.id
+            stage_obj = self.pool.get('crm.case.stage')
+            method = stage_obj.read(cr, uid, stage, ['method'])['method']
+            if method:
+                func = getattr(self, method)
+                result = func()
+
+
     def stage_next(self, cr, uid, ids, context=None):
-        self.validate_current_stage(cr, uid, ids, context=context)
-
         crm_obj = self.pool.get('crm.case')
-        crm_ids = [crm_tala_data['crm_id'][0] for crm_tala_data in self.read(cr, uid, ids, ['crm_id'])]
-        res = crm_obj.stage_next(cr, uid, crm_ids, context)
-        self.update_current_stage_validations(cr, uid, ids, context=context)
+        for _id in ids:
+            self.run_method(cr, uid, _id, context)
+            crm_id = self.read(cr, uid, ids, ['crm_id'])['crm_id'][0]
+            res = crm_obj.stage_next(cr, uid, [crm_id], context)
+
         return res
-
-    #TODO: ajustar. No utilitzem validacions. Volem executar alguna funcio?.
-    def stage_previous(self, cr, uid, ids, context=None):
-        self.validate_current_stage(cr, uid, ids, context=context)
-
-        crm_obj = self.pool.get('crm.case')
-        crm_ids = [crm_tala_data['crm_id'][0] for crm_tala_data in self.read(cr, uid, ids, ['crm_id'])]
-        res = crm_obj.stage_previous(cr, uid, crm_ids, context)
-        self.update_current_stage_validations(cr, uid, ids, context=context)
-        return res
-
-    #TODO: valorar si ho necessitem. En ppi no farem servir validacions
-    def validate_current_stage(self, cr, uid, ids, context=None):
-        if context is None:
-            context = {}
-        cl_ids = ids
-        if not isinstance(ids, (list, tuple)):
-            cl_ids = [ids]
-
-        for cl_id in cl_ids:
-            current_stage = self.read(cr, uid, cl_id, ['stage_id'])
-            if not current_stage['stage_id']:
-                return True
-            current_stage = current_stage['stage_id'][0]
-            val_o = self.pool.get("crm.stage.validation")
-            vids = val_o.search(cr, uid, [
-                ('crm_lead_id', '=', cl_id),
-                ('validated', '!=', True),
-                '|', ('stage_id', '=', current_stage), ('stage_id', '=', None)
-            ])
-            if len(vids):
-                val_texts = [x['name'] for x in val_o.read(cr, uid, vids, ['name'])]
-                err_msg = ", ".join(val_texts)
-                raise osv.except_osv(_(u"Operacion no permitida!"), _(u"No se puede cambiar de stage hasta que no se hayan completado o eliminado las siguientes validaciones: {0}").format(err_msg))
-
-    #TODO: en principi no farem servir validacions
-    def update_current_stage_validations(self, cursor, uid, ids, context=None):
-        return False
-
 
     def _vat_es_empresa(self, cr, uid, ids, prop, unknow_none, unknow_dict):
         res = {}
@@ -326,15 +294,16 @@ class SomSociCrmLead(osv.OsvInherits):
 
         soci_o = self.pool.get("somenergia.soci")
         partner_id = self.read(cursor, uid, crml_id, ['partner_id'])['partner_id'][0]
-        soci_id = self.search(cursor, uid, [('partner_id', '=', partner_id)], context=context)
+        soci_id = soci_o.search(cursor, uid, [('partner_id', '=', partner_id), ('baixa','=', False)], context=context)
         res = ''
         if soci_id:
+            raise _("Ja existeix el soci i està actiu")
             res = _(
                 u"S'ha trobat un soci amb el partner_id {}. No es crea un nou soci i s'activa l'existent"
             ).format(partner_id)
         else:
             soci_id = soci_o.create_one_soci(cursor, uid, partner_id, context)
-            res = _(u"S'ha creat un nou soci")
+            res = _(u"S'ha creat o activat el soci")
         if isinstance(soci_id, (list, tuple)):
             soci_id = soci_id[0]
         self.write(cursor, uid, [crml_id], {'soci_id': soci_id}, context=context)
@@ -351,12 +320,12 @@ class SomSociCrmLead(osv.OsvInherits):
         emission_o = self.pool.get("generationkwh.emission")
 
         quota_amount = eval(conf_o.get(cursor, uid, 'quota_soci_amount', '100'))
-        emission_id = emission_o.search(cursor, uid, [('type', '=', 'apo_obl')])[0]
+
         li = self.read(cursor, uid, crml_id, ['partner_id', 'ip', 'iban', 'partner_date'])
 
         investment_id = investment_o.create_from_form(
             cursor, uid, li['partner_id'][0], li['partner_date'], quota_amount, li['ip'],
-            li['iban'], 'APO_OB', context
+            str(li['iban']), 'APO_OB', context
         )
         self.write(cursor, uid, [crml_id], {'investment_id': investment_id}, context=context)
 
@@ -559,6 +528,9 @@ class SomSociCrmLead(osv.OsvInherits):
         'ip': fields.char(string='IP de la connexió', size=20),
     }
 
+    _defaults = {
+
+    }
     def call_check_vat(self, cr, uid, ids):
         for crm_lead in self.browse(cr, uid, ids):
             if not self.check_vat(cr, uid, crm_lead.partner_vat):

@@ -23,6 +23,7 @@
         "som_leads_data.xml",
         "security/ir.model.access.csv",
         "views/som_leads_view.xml",
+        "views/crm_case_stage_view.xml",
     ],
     "active": False,
     "installable": True

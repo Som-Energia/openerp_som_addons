@@ -15,11 +15,13 @@
                 <field name="name">Formulari omplert</field>
                 <field eval="[(6,0,[ref('alta_socies_section_crm_leads'), ref('alta_socies_tpv_section_crm_leads')])]" name="section_ids"/>
                 <field name="sequence" eval="1000"/>
+                <field name="method">create_entities</field>
             </record>
             <record id="alta_socies_crm_lead_stage_1" model="crm.case.stage">
                 <field name="name">Procés en curs</field>
                 <field eval="[(6,0,[ref('alta_socies_section_crm_leads'), ref('alta_socies_tpv_section_crm_leads')])]" name="section_ids"/>
                 <field name="sequence" eval="1010"/>
+                <field name="method"></field>
             </record>
             <record id="alta_socies_crm_lead_stage_2" model="crm.case.stage">
                 <field name="name">Remesat</field>
