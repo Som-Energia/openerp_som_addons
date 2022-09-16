@@ -1,0 +1,2 @@
+import orm_timescale
+import osv_timescale
