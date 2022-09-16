@@ -97,6 +97,9 @@ class ResPartnerAddress(osv.osv):
 
     @job(queue="mailchimp_tasks")
     def archieve_mail_in_list(self, cursor, uid, ids, list_id, mailchimp_conn, context=None):
+        self.archieve_mail_in_list_sync(cursor, uid, ids, list_id, mailchimp_conn, context=None)
+
+    def archieve_mail_in_list_sync(self, cursor, uid, ids, list_id, mailchimp_conn, context=None):
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
 
