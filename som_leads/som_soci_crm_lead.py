@@ -187,21 +187,21 @@ class SomSociCrmLead(osv.OsvInherits):
         if isinstance(id, (tuple, list)):
             id = id[0]
 
-        stage = self.browse(cr, uid, id).stage
+        stage = self.browse(cr, uid, id).stage_id
         if stage:
             stage = stage.id
             stage_obj = self.pool.get('crm.case.stage')
             method = stage_obj.read(cr, uid, stage, ['method'])['method']
             if method:
                 func = getattr(self, method)
-                result = func()
+                result = func(cr, uid, [id], context)
 
 
     def stage_next(self, cr, uid, ids, context=None):
         crm_obj = self.pool.get('crm.case')
         for _id in ids:
             self.run_method(cr, uid, _id, context)
-            crm_id = self.read(cr, uid, ids, ['crm_id'])['crm_id'][0]
+            crm_id = self.read(cr, uid, _id, ['crm_id'])['crm_id'][0]
             res = crm_obj.stage_next(cr, uid, [crm_id], context)
 
         return res
@@ -328,6 +328,7 @@ class SomSociCrmLead(osv.OsvInherits):
             str(li['iban']), 'APO_OB', context
         )
         self.write(cursor, uid, [crml_id], {'investment_id': investment_id}, context=context)
+        return 'TODO'
 
     #TODO: potser no cal pq ho fa el create_from_form?
     def create_entity_iban(self, cursor, uid, crml_id, context=None):
@@ -428,6 +429,9 @@ class SomSociCrmLead(osv.OsvInherits):
         """
         Creació de les entitats: partner, soci, inversió, factura
         """
+        if not isinstance(ids, (tuple, list)):
+            ids = [ids]
+        all_msgs = []
         for crm_id in ids:
             crm_msg = [""]
             msg = self.create_entity_partner(cursor, uid, ids, context)
