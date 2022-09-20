@@ -131,7 +131,7 @@ class WizardExportTugestoInvoices(osv.osv_memory):
         df = pd.DataFrame(llistat, columns=headers)
         filename = 'Plantilla Entrada.xlsx'
         output = StringIO.StringIO()
-        writer = pd.ExcelWriter(output, engine='xlsxwriter', date_format="DD/MM/YYYY")
+        writer = pd.ExcelWriter(output, engine='xlsxwriter', datetime_format="DD/MM/YYYY")
         df.to_excel(writer, sheet_name='Expedientes', index=None)
         workbook = writer.book
         writer.save()
