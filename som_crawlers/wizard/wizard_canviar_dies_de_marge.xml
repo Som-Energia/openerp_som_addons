@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data noupdate="0">
+        <record model="ir.ui.view" id="view_wizard_canviar_dies_de_marge_form">
+            <field name="name">wizard.canviar.dies.de.marge.form</field>
+            <field name="model">wizard.canviar.dies.de.marge</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Canviar dies de marge">
+                    <field name="days_of_margin" string="Dies de marge" />
+                    <button special="cancel" string="Cancelar" icon="gtk-cancel"/>
+                    <button name="canviar_dies" type="object" icon="gtk-ok" string="Canviar"/>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_canviar_dies_de_marge">
+            <field name="name">Canviar dies de marge</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.canviar.dies.de.marge</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_canviar_dies_de_marge_form"/>
+        </record>
+        <record id="values_canviar_dies_de_marge_form" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Canviar dies de marge</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">som.crawlers.config</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_canviar_dies_de_marge'))"/>
+        </record>
+    </data>
+</openerp>
