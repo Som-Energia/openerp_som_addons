@@ -60,11 +60,6 @@ class WizardExportTugestoInvoices(osv.osv_memory):
             cnae = factura.polissa_id.cnae.name
             tipo_deudor = False
 
-            if factura.pending_state.process_id.id == bo_social or cnae == '6820':
-                tipo_deudor = 1
-            else:
-                tipo_deudor = 2
-
             nif_cif = partner.vat.replace('ES','') if partner.vat else ''
             try:
                 #trantament pels NIE
@@ -72,9 +67,14 @@ class WizardExportTugestoInvoices(osv.osv_memory):
             except IndexError:
                 pass
 
+            if re.search('^[XY]', nif_cif) != None:
+                tipo_deudor = 2
+            else:
+                tipo_deudor = 1
+
             razon_social = partner.name if factura.pending_state.process_id.id == default_process else ''
-            nombre = '' if factura.pending_state.process_id.id == default_process else res_partner_obj.separa_cognoms(cursor,uid, partner.name)['nom']
-            apellidos = '' if factura.pending_state.process_id.id == default_process else ' '.join(res_partner_obj.separa_cognoms(cursor,uid, partner.name)['cognoms'])
+            nombre = '' if factura.pending_state.process_id.id == default_process or tipo_deudor == 2 else res_partner_obj.separa_cognoms(cursor,uid, partner.name)['nom']
+            apellidos = '' if factura.pending_state.process_id.id == default_process or tipo_deudor == 2 else ' '.join(res_partner_obj.separa_cognoms(cursor,uid, partner.name)['cognoms'])
             
             direccion = ''
 
@@ -99,7 +99,7 @@ class WizardExportTugestoInvoices(osv.osv_memory):
             email = aux_addr.email or ''
             emails_adicionales = ''
             numero_factura = factura.number
-            fecha_factura = datetime.strftime(datetime.strptime(factura.date_invoice,'%Y-%m-%d'),'%d-%m-%Y') #forcem a format espanyol
+            fecha_factura = datetime.strptime(factura.date_invoice,'%Y-%m-%d')
             importe_factura = factura.residual
             idioma_comunicacion = partner.lang or 'ca_ES'
 
@@ -131,7 +131,7 @@ class WizardExportTugestoInvoices(osv.osv_memory):
         df = pd.DataFrame(llistat, columns=headers)
         filename = 'Plantilla Entrada.xlsx'
         output = StringIO.StringIO()
-        writer = pd.ExcelWriter(output, engine='xlsxwriter')
+        writer = pd.ExcelWriter(output, engine='xlsxwriter', date_format="DD/MM/YYYY")
         df.to_excel(writer, sheet_name='Expedientes', index=None)
         workbook = writer.book
         writer.save()
