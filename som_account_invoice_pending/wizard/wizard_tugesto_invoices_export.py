@@ -139,7 +139,8 @@ class WizardExportTugestoInvoices(osv.osv_memory):
 
         format_text = workbook.add_format({'num_format': '@'})
         format_amount = workbook.add_format({'num_format': '0.00'})
-        worksheet.set_column(13, 13, None, format_text)
+        worksheet.set_column(9, 11, None, format_text)
+        worksheet.set_column(13, 15, None, format_text)
         worksheet.set_column(20, 20, None, format_amount)
 
         writer.save()
