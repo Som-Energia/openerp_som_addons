@@ -133,7 +133,12 @@ class WizardExportTugestoInvoices(osv.osv_memory):
         output = StringIO.StringIO()
         writer = pd.ExcelWriter(output, engine='xlsxwriter', datetime_format="DD/MM/YYYY")
         df.to_excel(writer, sheet_name='Expedientes', index=None)
+
         workbook = writer.book
+        worksheet = writer.sheets['Expedientes']
+        format_text = workbook.add_format({'num_format': '@'})
+        worksheet.set_column(13, 13, None, format_text)
+
         writer.save()
         mfile = base64.b64encode(output.getvalue())
         output.close()
