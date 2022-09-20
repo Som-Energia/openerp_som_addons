@@ -525,7 +525,7 @@ class GenerationkWhInvoiceLineOwner(osv.osv):
         product_id_nogen = per_obj.read(cr, uid, fare_period, ['product_id'])['product_id'][0]
         line_s_gen_id = gffl_obj.search(cr, uid, [
             ('invoice_id','=', line['invoice_id'][0]),('product_id','=',product_id_nogen),
-            ('data_fins', '=', line['data_fins']), ('data_desde', '=', line['data_desde'])
+            ('data_desde', '=', line['data_desde']),
         ])
         line_s_gen = gffl_obj.read(cr, uid, line_s_gen_id[0])
         return line_s_gen
