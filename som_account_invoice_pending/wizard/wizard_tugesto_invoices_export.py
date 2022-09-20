@@ -136,8 +136,11 @@ class WizardExportTugestoInvoices(osv.osv_memory):
 
         workbook = writer.book
         worksheet = writer.sheets['Expedientes']
+
         format_text = workbook.add_format({'num_format': '@'})
+        format_amount = workbook.add_format({'num_format': '0.00'})
         worksheet.set_column(13, 13, None, format_text)
+        worksheet.set_column(20, 20, None, format_amount)
 
         writer.save()
         mfile = base64.b64encode(output.getvalue())
