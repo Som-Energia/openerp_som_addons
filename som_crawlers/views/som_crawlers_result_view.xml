@@ -10,8 +10,9 @@
                 <form string="Resultat de la tasca">
                     <field name="task_id" readonly ='1' />
                     <field name="data_i_hora_execucio" readonly ='1' />
-                    <field name="resultat" readonly ='1' />
+                    <field name="resultat_text" readonly ='1' />
                     <field name="zip_name" readonly ='1' />
+                    <field name="resultat_bool" select='1'/>
                 </form>
             </field>
         </record>
@@ -21,11 +22,12 @@
             <field name="type">tree</field>
             <field name="priority">16</field>
             <field name="arch" type="xml">
-                <tree string="Resultat de la tasca">
-                    <field name="task_id" />
+                <tree string="Resultat de la tasca" colors="red:resultat_bool == False">
+                    <field name="task_id" select='1'/>
                     <field name="data_i_hora_execucio" select='1' />
-                    <field name="resultat" />
-                    <field name="zip_name" />
+                    <field name="resultat_bool" select='1'/>
+                    <field name="resultat_curt" select='1'/>
+                    <field name="zip_name" select='1'/>
                 </tree>
             </field>
         </record>

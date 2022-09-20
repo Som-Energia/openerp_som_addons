@@ -21,6 +21,7 @@ class SomCrawlersConfig(osv.osv):
         'days_of_margin' : fields.integer('Dies de marge', required = True,),
         'pending_files_only': fields.boolean('Nomes fitxers pendents',),
         'browser': fields.char('Navegador', size=30, required=True,),
+        'distribuidora': fields.many2one('res.partner', 'Distribuidora', help="Distribuidora",),
     }
     """canvia la contrasenya d'un portal i retorna la nova contrasenya
         @param self The object pointer
