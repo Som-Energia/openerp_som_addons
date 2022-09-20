@@ -17,25 +17,6 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
     def tearDown(self):
         self.txn.stop()
 
-    def test_refund_rectify_by_origin_notInInvoice(self):
-        cursor = self.cursor
-        uid = self.uid
-
-        fact_obj = self.pool.get('giscedata.facturacio.factura')
-        wiz_obj = self.pool.get('wizard.refund.rectify.from.origin')
-        imd_obj = self.pool.get('ir.model.data')
-
-        fact_cli_id = imd_obj.get_object_reference(
-            cursor, uid, 'giscedata_facturacio', 'factura_0001'
-        )[1]
-        ctx = {'active_id': fact_cli_id, 'active_ids': [fact_cli_id]}
-
-        wiz_id = wiz_obj.create(cursor, uid, {}, context=ctx)
-
-        wiz_obj.refund_rectify_by_origin(cursor, uid, wiz_id, context=ctx)
-        wiz = wiz_obj.browse(cursor, uid, wiz_id)
-        self.assertTrue("no es de tipus in_invoice, no s\'actua" in wiz.info)
-
     def test_refund_rectify_by_origin_notEnforceFromAccount(self):
         cursor = self.cursor
         uid = self.uid
@@ -75,18 +56,26 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
         uid = self.uid
 
         fact_obj = self.pool.get('giscedata.facturacio.factura')
+        f1_obj = self.pool.get('giscedata.facturacio.importacio.linia')
         wiz_obj = self.pool.get('wizard.refund.rectify.from.origin')
         imd_obj = self.pool.get('ir.model.data')
 
         fact_prov_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_facturacio', 'factura_0003'
         )[1]
-        fact_info = fact_obj.read(cursor, uid, fact_prov_id, ['origin', 'polissa_id', 'data_inici', 'data_final'])
+        f1_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_facturacio_switching', 'line_01_f1_import_01'
+        )[1]
+        fact_info = fact_obj.read(cursor, uid, fact_prov_id, ['origin', 'polissa_id', 'data_inici', 'data_final','cups_id'])
+        f1_obj.write(cursor, uid, [f1_id], {
+            'invoice_number_text': fact_info['origin'], 'cups_id': fact_info['cups_id'][0],
+            'fecha_factura_desde': fact_info['data_inici'], 'fecha_factura_hasta': fact_info['data_final']
+        })
         f_cli_ids = fact_obj.search(cursor, uid, [
             ('data_inici','<', fact_info['data_final']), ('data_final','>', fact_info['data_inici']), ('type','=','out_invoice')
         ])
         self.assertEqual(fact_obj.read(cursor, uid, f_cli_ids[0], ['state'])['state'], 'draft')
-        ctx = {'active_id': fact_prov_id, 'active_ids': [fact_prov_id]}
+        ctx = {'active_id': f1_id, 'active_ids': [f1_id]}
 
         wiz_id = wiz_obj.create(cursor, uid, {}, context=ctx)
 
@@ -94,8 +83,8 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
 
         wiz = wiz_obj.browse(cursor, uid, wiz_id)
         self.assertEqual(
-            "Pòlissa {0} per factura amb origen {1}: S'han eliminat 1 factures en esborrany"
-            "\nLa factura amb origen {1} no té res per abonar i rectificar, no s'actua".format(fact_info['polissa_id'][1],fact_info['origin']),
+            "Pòlissa {0} per l'F1 amb origen {1}: S'han eliminat 1 factures en esborrany"
+            "\nL'F1 amb origen {1} no té res per abonar i rectificar, no s'actua".format(fact_info['polissa_id'][1],fact_info['origin']),
             wiz.info
         )
 
@@ -106,20 +95,30 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
         uid = self.uid
 
         fact_obj = self.pool.get('giscedata.facturacio.factura')
+        f1_obj = self.pool.get('giscedata.facturacio.importacio.linia')
         wiz_obj = self.pool.get('wizard.refund.rectify.from.origin')
         imd_obj = self.pool.get('ir.model.data')
 
         fact_prov_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_facturacio', 'factura_0003'
         )[1]
-        fact_info = fact_obj.read(cursor, uid, fact_prov_id, ['origin', 'polissa_id', 'data_inici', 'data_final'])
+        f1_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_facturacio_switching', 'line_01_f1_import_01'
+        )[1]
+        fact_info = fact_obj.read(cursor, uid, fact_prov_id, ['origin', 'polissa_id', 'data_inici', 'data_final', 'cups_id'])
+
+        f1_obj.write(cursor, uid, [f1_id], {
+            'invoice_number_text': fact_info['origin'], 'cups_id': fact_info['cups_id'][0],
+            'fecha_factura_desde': fact_info['data_inici'], 'fecha_factura_hasta': fact_info['data_final']
+        })
+
         f_cli_ids = fact_obj.search(cursor, uid, [
-            ('data_inici','<', fact_info['data_final']), ('data_final','>', fact_info['data_inici']), ('type','=','out_invoice')
+            ('data_inici','<', fact_info['data_final']), ('data_final','>', fact_info['data_inici']), ('type','=','out_invoice'),
         ])
         self.assertEqual(len(f_cli_ids), 1)
-        fact_obj.write(cursor, uid, f_cli_ids[0], {'state':'open'})
+        fact_obj.write(cursor, uid, f_cli_ids[0], {'state':'open', 'polissa_id': fact_info['polissa_id'][0], 'cups_id': fact_info['cups_id'][0]})
 
-        ctx = {'active_id': fact_prov_id, 'active_ids': [fact_prov_id]}
+        ctx = {'active_id': f1_id, 'active_ids': [f1_id]}
 
         wiz_id = wiz_obj.create(cursor, uid, {}, context=ctx)
         mock_lectures.side_effect = lambda *x: 3
@@ -139,18 +138,26 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         wiz_obj = self.pool.get('wizard.refund.rectify.from.origin')
         imd_obj = self.pool.get('ir.model.data')
+        f1_obj = self.pool.get('giscedata.facturacio.importacio.linia')
 
         fact_prov_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_facturacio', 'factura_0003'
         )[1]
-        fact_info = fact_obj.read(cursor, uid, fact_prov_id, ['origin', 'polissa_id', 'data_inici', 'data_final'])
+        f1_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_facturacio_switching', 'line_01_f1_import_01'
+        )[1]
+        fact_info = fact_obj.read(cursor, uid, fact_prov_id, ['origin', 'polissa_id', 'data_inici', 'data_final', 'cups_id'])
+        f1_obj.write(cursor, uid, [f1_id], {
+            'invoice_number_text': fact_info['origin'], 'cups_id': fact_info['cups_id'][0],
+            'fecha_factura_desde': fact_info['data_inici'], 'fecha_factura_hasta': fact_info['data_final']
+        })
         f_cli_ids = fact_obj.search(cursor, uid, [
             ('data_inici','<', fact_info['data_final']), ('data_final','>', fact_info['data_inici']), ('type','=','out_invoice')
         ])
         self.assertEqual(len(f_cli_ids), 1)
         fact_obj.write(cursor, uid, f_cli_ids[0], {'state':'open'})
 
-        ctx = {'active_id': fact_prov_id, 'active_ids': [fact_prov_id]}
+        ctx = {'active_id': f1_id, 'active_ids': [f1_id]}
 
         wiz_id = wiz_obj.create(cursor, uid, {}, context=ctx)
         mock_lectures.side_effect = lambda *x: 0
@@ -158,7 +165,7 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
         wiz_obj.refund_rectify_by_origin(cursor, uid, wiz_id, context=ctx)
         mock_lectures.assert_called_with(cursor, uid, [wiz_id], fact_info['polissa_id'][0], fact_info['data_inici'], fact_info['data_final'], ctx)
         wiz = wiz_obj.browse(cursor, uid, wiz_id)
-        self.assertEqual(wiz.info, "La pòlissa {}, que té la factura amb origen {}, "
+        self.assertEqual(wiz.info, "La pòlissa {}, que té l'F1 amb origen {}, "
             "no té lectures per esborrar. No s'hi actua.".format(fact_info['polissa_id'][1], fact_info['origin']))
 
     def test_get_factures_client_by_dates_toRefundOne(self):
