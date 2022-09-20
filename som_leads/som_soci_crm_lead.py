@@ -82,21 +82,17 @@ class SomSociCrmLead(osv.OsvInherits):
     def _clean_and_fill_values(self, cursor, uid, values, context=None):
         if context is None:
             context = {}
-        sobreescriure_sempre = ['titular_vat', 'cups', 'iban', 'distribuidora_vat'
+        sobreescriure_sempre = ['partner_vat', 'cups', 'iban', 'distribuidora_vat'
                                 ] + context.get("sobreescriure_sempre_extra", [])
         new_vals = {}
         # Camps del titular
-        if values.get("titular_vat"):
-            new_vals.update(self._get_values_titular(cursor, uid, values.get("titular_vat"), context=context))
+        partner_vat = values.get("partner_vat")
+        if partner_vat and len(partner_vat) <= 9:
+            new_vals['partner_vat'] = ("ES" + partner_vat).upper()
 
         # Camps del IBAN
-        if values.get("iban") or new_vals.get("titular_vat"):
-            new_vals.update(self._get_values_iban(cursor, uid, values.get("iban"), titular_vat=new_vals.get("titular_vat"), context=context))
-
-        # Autocompletar els municipis desde les poblacions
-        if values.get("titular_id_municipi") or new_vals.get("titular_id_poblacio"):
-            new_vals.update(self._get_values_poblacio_municipi(cursor, uid, prefix="titular_", municipi_id=values.get("titular_id_municipi"), poblacio_id=new_vals.get("titular_id_poblacio"), context=context))
-
+        if values.get("iban"):
+            new_vals.update({'iban':_format_iban(values.get("iban"))})
         values_cpy = values.copy()
         # Emplenem nomes els camps que no tinguem ja
         for key, val in new_vals.iteritems():
@@ -297,10 +293,7 @@ class SomSociCrmLead(osv.OsvInherits):
         soci_id = soci_o.search(cursor, uid, [('partner_id', '=', partner_id), ('baixa','=', False)], context=context)
         res = ''
         if soci_id:
-            raise _("Ja existeix el soci i està actiu")
-            res = _(
-                u"S'ha trobat un soci amb el partner_id {}. No es crea un nou soci i s'activa l'existent"
-            ).format(partner_id)
+            return _(u"S'ha trobat un soci amb el partner_id {} i està actiu.").format(partner_id)
         else:
             soci_id = soci_o.create_one_soci(cursor, uid, partner_id, context)
             res = _(u"S'ha creat o activat el soci")
@@ -310,24 +303,31 @@ class SomSociCrmLead(osv.OsvInherits):
 
         return res
 
-    def create_mandatory_apo(self, cursor, uid, crml_id, context=None):
+    def create_mandatory_apo_invoice(self, cursor, uid, crml_id, context=None):
         if context is None:
             context = {}
         if isinstance(crml_id, (list, tuple)):
             crml_id = crml_id[0]
         conf_o = self.pool.get('res.config')
+        imd_o = self.pool.get('ir.model.data')
         investment_o = self.pool.get("generationkwh.investment")
-        emission_o = self.pool.get("generationkwh.emission")
-
+        tpv_section_id = imd_o.get_object_reference(cursor, uid, 'som_leads', 'alta_socies_tpv_section_crm_leads')[1]
         quota_amount = eval(conf_o.get(cursor, uid, 'quota_soci_amount', '100'))
+        li = self.read(cursor, uid, crml_id, ['partner_id', 'ip', 'iban', 'partner_date', 'section_id'])
 
-        li = self.read(cursor, uid, crml_id, ['partner_id', 'ip', 'iban', 'partner_date'])
+        context['tpv_payment'] = li['section_id'][0] == tpv_section_id
 
         investment_id = investment_o.create_from_form(
             cursor, uid, li['partner_id'][0], li['partner_date'], quota_amount, li['ip'],
             str(li['iban']), 'APO_OB', context
         )
-        self.write(cursor, uid, [crml_id], {'investment_id': investment_id}, context=context)
+
+        invoice_ids, errors = investment_o.create_initial_invoices(cursor, uid, [investment_id], context)
+
+        self.write(cursor, uid, [crml_id], {
+            'investment_id': investment_id, 'invoice_id': invoice_ids[0]
+        }, context=context)
+
         return 'TODO'
 
     #TODO: potser no cal pq ho fa el create_from_form?
@@ -434,11 +434,11 @@ class SomSociCrmLead(osv.OsvInherits):
         all_msgs = []
         for crm_id in ids:
             crm_msg = [""]
-            msg = self.create_entity_partner(cursor, uid, ids, context)
+            msg = self.create_entity_partner(cursor, uid, crm_id, context)
             crm_msg.append(msg)
-            msg = self.create_entity_soci(cursor, uid, ids, context)
+            msg = self.create_entity_soci(cursor, uid, crm_id, context)
             crm_msg.append(msg)
-            msg = self.create_mandatory_apo(cursor, uid, ids, context)
+            msg = self.create_mandatory_apo_invoice(cursor, uid, crm_id, context)
             crm_msg.append(msg)
             all_msgs.append("\n * ".join(crm_msg))
 
@@ -529,12 +529,10 @@ class SomSociCrmLead(osv.OsvInherits):
         #'payment_type': 'one_payment' #TODO: ho posarem nosaltres pq sabem que la quota de soci és un sol pagamen
         'soci_id': fields.many2one('somenergia.soci', 'Soci'),
         'investment_id': fields.many2one('generationkwh.investment', 'Aportació Obligatòria'),
+        'invoice_id': fields.many2one('account.invoice', 'Factura de l\'aportació'),
         'ip': fields.char(string='IP de la connexió', size=20),
     }
 
-    _defaults = {
-
-    }
     def call_check_vat(self, cr, uid, ids):
         for crm_lead in self.browse(cr, uid, ids):
             if not self.check_vat(cr, uid, crm_lead.partner_vat):
@@ -551,3 +549,10 @@ class SomSociCrmLead(osv.OsvInherits):
         return True
 
 SomSociCrmLead()
+
+
+#TODO: mode de pagament i grup de pagament, com encaixa
+#TODO: gestionar errors
+#TODO: afegir i reordenar camps a la vista
+#TODO: qui envia el correu de alta socia?
+#TODO: quin tipus pagament han de tenir les pagades en targeta?
