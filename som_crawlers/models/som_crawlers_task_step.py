@@ -60,10 +60,14 @@ class SomCrawlersTaskStep(osv.osv):
 
     #attached files [zip]
     # test ok
-    def attach_files_zip(self, cursor, uid, id, result_id, config_obj, path, context=None):
+    def attach_files_zip(self, cursor, uid, id, result_id, config_obj, path, taskStepParams, context=None):
         classresult = self.pool.get('som.crawlers.result')
         taskStep_obj = self.browse(cursor,uid,id,context = context)
-        path_to_zip = os.path.join(path,'spiders/selenium_spiders/tmp/',config_obj.name)
+        if 'process' in taskStepParams:
+            name = config_obj.name + '_' + taskStepParams['process']
+            path_to_zip = os.path.join(path,'spiders/selenium_spiders/tmp/', name)
+        else:
+           path_to_zip = os.path.join(path,'spiders/selenium_spiders/tmp/',config_obj.name)
         if not os.path.exists(path_to_zip):
             output = "zip directory doesn\'t exist"
         else:
@@ -116,7 +120,7 @@ class SomCrawlersTaskStep(osv.osv):
                     pathToZip = os.path.join(path,'outputFiles')
                     output = self.readOutputFile(cursor, uid, pathToZip, fileName)
                 if output == 'Files have been successfully downloaded':
-                    output = self.attach_files_zip(cursor, uid, id, result_id, config_obj, path, context = context)
+                    output = self.attach_files_zip(cursor, uid, id, result_id, config_obj, path, taskStepParams, context = context)
                 else:
                     raise Exception("%s" % output)
             else:
