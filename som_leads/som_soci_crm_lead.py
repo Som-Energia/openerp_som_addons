@@ -330,6 +330,23 @@ class SomSociCrmLead(osv.OsvInherits):
 
         return 'TODO'
 
+    def add_invoice_payment_order(self, cursor, uid, crml_id, context=None):
+        if not context:
+            context = {}
+        imd_o = self.pool.get('ir.model.data')
+        investment_o = self.pool.get("generationkwh.investment")
+        errors = []
+        for _id in crml_id:
+            li = self.read(cursor, uid, _id, ['invoice_id', 'investment_id'])
+
+            invoice_ids, errors = investment_o.investment_payment_add_to_payment_order(
+                cursor, uid, [li['investment_id'][0]], [li['invoice_id'][0]], errors, context
+            )
+        return 'TODO'
+
+    def pay_invoice(self, cursor, uid, crml_id, context=None):
+        import pudb; pu.db
+        pass
     #TODO: potser no cal pq ho fa el create_from_form?
     def create_entity_iban(self, cursor, uid, crml_id, context=None):
         if context is None:

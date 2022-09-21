@@ -19,9 +19,15 @@
             </record>
             <record id="alta_socies_crm_lead_stage_1" model="crm.case.stage">
                 <field name="name">Procés en curs</field>
-                <field eval="[(6,0,[ref('alta_socies_section_crm_leads'), ref('alta_socies_tpv_section_crm_leads')])]" name="section_ids"/>
+                <field eval="[(6,0,[ref('alta_socies_section_crm_leads')])]" name="section_ids"/>
                 <field name="sequence" eval="1010"/>
-                <field name="method"></field>
+                <field name="method">add_invoice_payment_order</field>
+            </record>
+            <record id="alta_socies_crm_lead_stage_1" model="crm.case.stage">
+                <field name="name">Procés en curs TPV</field>
+                <field eval="[(6,0,[ref('alta_socies_tpv_section_crm_leads')])]" name="section_ids"/>
+                <field name="sequence" eval="1010"/>
+                <field name="method">pay_invoice</field>
             </record>
             <record id="alta_socies_crm_lead_stage_2" model="crm.case.stage">
                 <field name="name">Remesat</field>
