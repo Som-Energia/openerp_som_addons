@@ -27,7 +27,6 @@
         "giscedata_facturacio_contracte_lot_view.xml",
         "giscedata_facturacio_factura_view.xml",
         "giscedata_facturacio_data.xml",
-        "giscedata_polissa_view.xml",
         "giscedata_lectures_view.xml",
     ],
     "active": False,
