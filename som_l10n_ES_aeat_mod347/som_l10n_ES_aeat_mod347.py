@@ -97,7 +97,7 @@ class SomL10nEsAeatMod347Helper():
         )[1]
 
         email_from = ir_model_data.get_object_reference(
-            cursor, uid, 'som_l10n_ES_aeat_mod347', 'info_energia_from_email'
+            cursor, uid, 'base_extended_som', 'info_energia_from_email'
         )[1]
 
         email_params = dict({

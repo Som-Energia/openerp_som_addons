@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data noupdate="1">
+        <record model="poweremail.core_accounts" id="info_energia_from_email">
+            <field name="email_id">info@somenergia.coop</field>
+            <field name="company">yes</field>
+            <field name="smtpserver">test.com</field>
+            <field name="send_pref">html</field>
+            <field name="name">Info-fiscal Som Energia</field>
+            <field name="state">approved</field>
+            <field name="smtpport">587</field>
+        </record>
+    </data>
+</openerp>

@@ -104,7 +104,7 @@ class Soml10nEsAeatMod347Report(testing.OOTestCase):
                 cursor, uid, 'som_l10n_ES_aeat_mod347', 'aeat_347_report_1'
             )[1]
             from_email_id = imd_obj.get_object_reference(
-                cursor, uid, 'som_l10n_ES_aeat_mod347', 'info_energia_from_email'
+                cursor, uid, 'base_extended_som', 'info_energia_from_email'
             )[1]
             template_id = imd_obj.get_object_reference(
                 cursor, uid, 'som_l10n_ES_aeat_mod347', 'email_model_347_resum'
@@ -164,7 +164,7 @@ class Soml10nEsAeatMod347Partner(testing.OOTestCase):
             uid = txn.user
 
             from_email_id = imd_obj.get_object_reference(
-                cursor, uid, 'som_l10n_ES_aeat_mod347', 'info_energia_from_email'
+                cursor, uid, 'base_extended_som', 'info_energia_from_email'
             )[1]
             template_id = imd_obj.get_object_reference(
                 cursor, uid, 'som_l10n_ES_aeat_mod347', 'email_model_347_resum'
