@@ -23,7 +23,7 @@ class WizardExportTugestoInvoices(osv.osv_memory):
         headers = ['identificador_expediente','Id_tipo','importe_pagare','tipo_deudor','nif_cif',
             'razon_social','nombre','apellidos','direccion','provincia','poblacion','pais',
             'poblacion_pais','codigo_postal','telefono','movil','email','emails_adicionales',
-            'numero_factura','fecha_factura','importe_factura','idioma_comunicacion']      
+            'numero_factura','fecha_factura','importe_factura','idioma_comunicacion']
 
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         res_partner_obj = self.pool.get('res.partner')
@@ -56,14 +56,9 @@ class WizardExportTugestoInvoices(osv.osv_memory):
             vat_numbers = re.findall(r'\d+', partner.vat)[0]
             identificador_expediente = "{}".format(vat_numbers)
             Id_tipo = 2 # Expediente Prejudicial
-            importe_pagare = 0.0 
+            importe_pagare = 0.0
             cnae = factura.polissa_id.cnae.name
             tipo_deudor = False
-
-            if factura.pending_state.process_id.id == bo_social or cnae == '6820':
-                tipo_deudor = 1
-            else:
-                tipo_deudor = 2
 
             nif_cif = partner.vat.replace('ES','') if partner.vat else ''
             try:
@@ -72,16 +67,21 @@ class WizardExportTugestoInvoices(osv.osv_memory):
             except IndexError:
                 pass
 
+            if re.search('^[XYZ0-9]', nif_cif) != None:
+                tipo_deudor = 1
+            else:
+                tipo_deudor = 2
+
             razon_social = partner.name if factura.pending_state.process_id.id == default_process else ''
-            nombre = '' if factura.pending_state.process_id.id == default_process else res_partner_obj.separa_cognoms(cursor,uid, partner.name)['nom']
-            apellidos = '' if factura.pending_state.process_id.id == default_process else ' '.join(res_partner_obj.separa_cognoms(cursor,uid, partner.name)['cognoms'])
-            
+            nombre = '' if factura.pending_state.process_id.id == default_process or tipo_deudor == 2 else res_partner_obj.separa_cognoms(cursor,uid, partner.name)['nom']
+            apellidos = '' if factura.pending_state.process_id.id == default_process or tipo_deudor == 2 else ' '.join(res_partner_obj.separa_cognoms(cursor,uid, partner.name)['cognoms'])
+
             direccion = ''
 
             if factura.polissa_id.notificacio == 'titular':
-                aux_addr = factura.polissa_id.direccio_notificacio 
+                aux_addr = factura.polissa_id.direccio_notificacio
             else:
-                addr_objs = [ad for ad in partner.address if ad.type == 'default'] 
+                addr_objs = [ad for ad in partner.address if ad.type == 'default']
                 aux_addr = addr_objs[0] if addr_objs else partner.address[0]
 
             direccion = aux_addr.street or ''
@@ -91,7 +91,7 @@ class WizardExportTugestoInvoices(osv.osv_memory):
             # fem el mapeig per obtenir el ID específic de Tugesto per al municipi
             aux_ine_code = aux_addr.id_poblacio.municipi_id.ine if (aux_addr.id_poblacio and aux_addr.id_poblacio.municipi_id and aux_addr.id_poblacio.municipi_id.ine) else None
             poblacion = imtug.INEMapingTugesto().get_tugesto_id(poblacion_pais or 'unknown', provincia or None, aux_ine_code)
-            
+
             pais = 9 # Codi propi de Tugesto per a 'Espanya'
             codigo_postal = aux_addr.zip or ''
             telefono = aux_addr.phone or ''
@@ -99,7 +99,7 @@ class WizardExportTugestoInvoices(osv.osv_memory):
             email = aux_addr.email or ''
             emails_adicionales = ''
             numero_factura = factura.number
-            fecha_factura = datetime.strftime(datetime.strptime(factura.date_invoice,'%Y-%m-%d'),'%d-%m-%Y') #forcem a format espanyol
+            fecha_factura = datetime.strftime(datetime.strptime(factura.date_invoice,'%Y-%m-%d'), '%d/%m/%Y')
             importe_factura = factura.residual
             idioma_comunicacion = partner.lang or 'ca_ES'
 
@@ -133,7 +133,17 @@ class WizardExportTugestoInvoices(osv.osv_memory):
         output = StringIO.StringIO()
         writer = pd.ExcelWriter(output, engine='xlsxwriter')
         df.to_excel(writer, sheet_name='Expedientes', index=None)
+
         workbook = writer.book
+        worksheet = writer.sheets['Expedientes']
+
+        format_text = workbook.add_format({'num_format': '@'})
+        format_amount = workbook.add_format({'num_format': '0.00'})
+        worksheet.set_column(9, 11, None, format_text)
+        worksheet.set_column(13, 15, None, format_text)
+        worksheet.set_column(19, 19, None, format_text)
+        worksheet.set_column(20, 20, None, format_amount)
+
         writer.save()
         mfile = base64.b64encode(output.getvalue())
         output.close()
