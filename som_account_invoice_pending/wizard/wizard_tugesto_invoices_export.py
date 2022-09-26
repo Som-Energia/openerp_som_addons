@@ -99,7 +99,7 @@ class WizardExportTugestoInvoices(osv.osv_memory):
             email = aux_addr.email or ''
             emails_adicionales = ''
             numero_factura = factura.number
-            fecha_factura = datetime.strptime(factura.date_invoice,'%Y-%m-%d')
+            fecha_factura = datetime.strftime(datetime.strptime(factura.date_invoice,'%Y-%m-%d'), '%d/%m/%Y')
             importe_factura = factura.residual
             idioma_comunicacion = partner.lang or 'ca_ES'
 
@@ -131,7 +131,7 @@ class WizardExportTugestoInvoices(osv.osv_memory):
         df = pd.DataFrame(llistat, columns=headers)
         filename = 'Plantilla Entrada.xlsx'
         output = StringIO.StringIO()
-        writer = pd.ExcelWriter(output, engine='xlsxwriter', datetime_format="DD/MM/YYYY")
+        writer = pd.ExcelWriter(output, engine='xlsxwriter')
         df.to_excel(writer, sheet_name='Expedientes', index=None)
 
         workbook = writer.book
@@ -141,6 +141,7 @@ class WizardExportTugestoInvoices(osv.osv_memory):
         format_amount = workbook.add_format({'num_format': '0.00'})
         worksheet.set_column(9, 11, None, format_text)
         worksheet.set_column(13, 15, None, format_text)
+        worksheet.set_column(19, 19, None, format_text)
         worksheet.set_column(20, 20, None, format_amount)
 
         writer.save()
