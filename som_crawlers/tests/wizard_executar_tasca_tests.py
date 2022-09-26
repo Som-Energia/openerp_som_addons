@@ -20,6 +20,14 @@ class WizardExecutarTascaTests(testing.OOTestCase):
         self.result = self.pool.get('som.crawlers.result')
         self.wiz= self.pool.get('wizard.executar.tasca')
 
+        pathFileActual = os.path.join(os.path.dirname(os.path.realpath(__file__)),'..')
+        os.system('mkdir ' + pathFileActual + '/demo/tmp')
+        os.system('mkdir ' + pathFileActual + '/demo/tmp/anselmo')
+        os.system('rm -f ' + pathFileActual + '/spiders')
+        os.system('mkdir ' + pathFileActual + '/spiders')
+        os.system('mkdir ' + pathFileActual + '/spiders/selenium_spiders')
+        os.system('mkdir ' + pathFileActual + '/spiders/selenium_spiders/tmp/')
+        os.system('mkdir ' + pathFileActual + '/spiders/selenium_spiders/tmp/anselmo')
 
     def tearDown(self):
         pass
@@ -171,8 +179,9 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             result_id = self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_result_2')[1]
             crawler_config_obj = self.Configuracio.browse(cursor,uid,crawler_config_id)
             pathFileActual = os.path.dirname(os.path.realpath(__file__))
+            taskStepParams = {}
 
-            result = self.taskStep.attach_files_zip(cursor, uid, crawler_taskStep_id, result_id, crawler_config_obj, pathFileActual, context=None)
+            result = self.taskStep.attach_files_zip(cursor, uid, crawler_taskStep_id, result_id, crawler_config_obj, pathFileActual, taskStepParams, context=None)
 
             self.assertEqual(result,'zip directory doesn\'t exist')
 
@@ -187,9 +196,10 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             crawler_config_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','anselmo_conf')[1]
             result_id = self.Data.get_object_reference(cursor, uid, 'som_crawlers', 'demo_result_2')[1]
             crawler_config_obj = self.Configuracio.browse(cursor,uid,crawler_config_id)
-            pathFileActual = os.path.join(os.path.dirname(os.path.realpath(__file__)),'../demo')
+            pathFileActual = os.path.join(os.path.dirname(os.path.realpath(__file__)),'..')
+            taskStepParams = {}
 
-            result = self.taskStep.attach_files_zip(cursor, uid, crawler_taskStep_id, result_id, crawler_config_obj, pathFileActual, context=None)
+            result = self.taskStep.attach_files_zip(cursor, uid, crawler_taskStep_id, result_id, crawler_config_obj, pathFileActual, taskStepParams, context=None)
 
             self.assertEqual(result,'Directori doesn\'t contain any ZIP')
 
@@ -204,10 +214,11 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             crawler_config_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','anselmo_conf')[1]
             crawler_taskStep_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_taskStep_8')[1]
             crawler_config_obj = self.Configuracio.browse(cursor,uid,crawler_config_id)
-            pathFileActual = os.path.join(os.path.dirname(os.path.realpath(__file__)),'../demo')
-            os.system('cp ' + pathFileActual + '/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip ' + pathFileActual + '/tmp/anselmo/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip')
+            pathFileActual = os.path.join(os.path.dirname(os.path.realpath(__file__)),'..')
+            os.system('cp ' + pathFileActual + '/demo/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip ' + pathFileActual + '/spiders/selenium_spiders/tmp/anselmo/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip')
+            taskStepParams = {}
 
-            result = self.taskStep.attach_files_zip(cursor, uid, crawler_taskStep_id, result_id, crawler_config_obj, pathFileActual, context=None)
+            result = self.taskStep.attach_files_zip(cursor, uid, crawler_taskStep_id, result_id, crawler_config_obj, pathFileActual, taskStepParams, context=None)
 
             self.assertEqual(result,'files succesfully attached')
 

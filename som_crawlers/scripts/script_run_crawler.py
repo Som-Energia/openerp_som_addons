@@ -46,8 +46,12 @@ def crawl(user, name, password, file, url, filters, crawler, days, pfiles, brows
         portalCreds = buildPortalCreds(user, password, url, filters, crawler, days, pfiles, browser, process)
         selenium_spiders_path = os.path.join(
         path, "../spiders/selenium_spiders")
-        spec = importlib.util.spec_from_file_location(
-        name, "".join([selenium_spiders_path, "/", name, '.py']))
+        if process != None:
+            spec = importlib.util.spec_from_file_location(
+            name, "".join([selenium_spiders_path, "/", name + "_" + process , '.py']))
+        else:
+            spec = importlib.util.spec_from_file_location(
+            name, "".join([selenium_spiders_path, "/", name, '.py']))
         spider_module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(spider_module)
         logger.debug("Loaded %s module" % (name))
