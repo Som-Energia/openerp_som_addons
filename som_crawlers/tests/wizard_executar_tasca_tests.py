@@ -264,3 +264,6 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             result = self.taskStep.readOutputFile(cursor,uid,path,filename)
 
             self.assertNotEqual("[Errno 2] No such file or directory: '" + path + '/' + filename +"'" ,result)
+
+    def test_for_github_actions(self):
+        self.assertEqual("test","test")
