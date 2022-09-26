@@ -23,6 +23,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
         pathFileActual = os.path.join(os.path.dirname(os.path.realpath(__file__)),'..')
         os.system('mkdir ' + pathFileActual + '/demo/tmp')
         os.system('mkdir ' + pathFileActual + '/demo/tmp/anselmo')
+        os.system('rm -f ' + pathFileActual + '/spiders')
         os.system('mkdir ' + pathFileActual + '/spiders')
         os.system('mkdir ' + pathFileActual + '/spiders/selenium_spiders')
         os.system('mkdir ' + pathFileActual + '/spiders/selenium_spiders/tmp/')
