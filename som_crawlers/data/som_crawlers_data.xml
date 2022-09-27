@@ -211,11 +211,6 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="endesa_conf"/>
         </record>
-        <record model="som.crawlers.task" id="descargar_R_endesa">
-            <field name="name">Endesa descargar R</field>
-            <field name="active">True</field>
-            <field name="configuracio_id" ref="endesa_conf"/>
-        </record>
         <record model="som.crawlers.task" id="descargar_R1_endesa">
             <field name="name">Endesa descargar R1</field>
             <field name="active">True</field>
@@ -571,21 +566,6 @@
             <field name="params">{}</field>
             <field name="task_id" ref="descargar_R1_endesa"/>
         </record>
-        <!-- R està deprecated?-->
-        <!-- <record model="som.crawlers.task.step" id="pas_descarregar_R_endesa ">
-            <field name="name">Descarregar fitxers</field>
-            <field name="sequence">1</field>
-            <field name="function">download_files</field>
-            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"R"}</field>
-            <field name="task_id" ref="descargar_R_endesa"/>
-        </record>
-        <record model="som.crawlers.task.step" id="pas_import_R_endesa">
-            <field name="name">Importar fitxers XML</field>
-            <field name="sequence">2</field>
-            <field name="function">import_xml_files</field>
-            <field name="params">{}</field>
-            <field name="task_id" ref="descargar_R_endesa"/>
-        </record> -->
         <record model="som.crawlers.task.step" id="pas_descarregar_E1_endesa ">
             <field name="name">Descarregar fitxers</field>
             <field name="sequence">1</field>
@@ -604,7 +584,7 @@
             <field name="name">Descarregar fitxers</field>
             <field name="sequence">1</field>
             <field name="function">download_files</field>
-            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"f1"}</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
             <field name="task_id" ref="descargar_F1_endesa"/>
         </record>
         <record model="som.crawlers.task.step" id="pas_import_F1_endesa">
