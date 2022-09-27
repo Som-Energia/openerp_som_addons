@@ -343,10 +343,21 @@ class GiscedataFacturacioFactura(osv.osv):
         return factura_linia_ids
 
     def get_real_energy_lines(self, cursor, uid, inv_id, pol_id, linies_energia_ids):
+        product_obj = self.pool.get('product.product')
+        invline_obj = self.pool.get('giscedata.facturacio.factura.linia')
+        maj_product = product_obj.search(cursor, uid, [('default_code','=', 'RMAG')])
+        if maj_product:
+            maj_product = maj_product[0]
+        else:
+            maj_product = False
+
         real_energy = []
         lines_extra_ids = self.get_lines_in_extralines(cursor, uid, inv_id, pol_id)
         for l_id in linies_energia_ids:
             if l_id not in lines_extra_ids:
+                line = invline_obj.browse(cursor, uid, l_id)
+                if line.product_id.id == maj_product:
+                    continue
                 real_energy.append(l_id)
         return real_energy
 
@@ -488,6 +499,34 @@ class GiscedataFacturacioFactura(osv.osv):
                                 'line_owner': lineowner_id
                             }
                         )
+            self.update_maj_quantity(cursor, uid, inv_id, context)
+
+    def update_maj_quantity(self, cursor, uid, inv_id, context):
+        rmag_lines_ids = self.get_rmag_lines(cursor, uid, inv_id, context)
+        if not rmag_lines_ids:
+            return
+
+        line_obj = self.pool.get('giscedata.facturacio.factura.linia')
+        rmag_line = line_obj.browse(cursor, uid, rmag_lines_ids[0])
+
+        cfg_obj = self.pool.get('res.config')
+
+        start_date_mecanisme_ajust_gas = cfg_obj.get(
+           cursor, uid, 'start_date_mecanisme_ajust_gas', '2022-10-01'
+        )
+        end_date_mecanisme_ajust_gas = cfg_obj.get(
+            cursor, uid, 'end_date_mecanisme_ajust_gas', '2099-12-31'
+        )
+        all_gkwh_lines_ids = self.get_gkwh_lines(cursor, uid, inv_id, context)
+        substract_from_maj_line_ids = line_obj.search(cursor, uid,
+            [('id', 'in', all_gkwh_lines_ids), ('data_desde', '>=', start_date_mecanisme_ajust_gas),
+            ('data_fins','<=', end_date_mecanisme_ajust_gas)]
+        )
+        if substract_from_maj_line_ids:
+            rmag_original_quantity = rmag_line.quantity
+            gkwh_data = line_obj.read(cursor, uid, substract_from_maj_line_ids, ['quantity'])
+            new_quantity = rmag_original_quantity - sum([x['quantity'] for x in gkwh_data])
+            line_obj.write(cursor, uid, rmag_line.id, {'quantity': new_quantity})
 
     def get_gkwh_lines(self, cursor, uid, ids, context=None):
         """ Returns a id list of giscedata.facturacio.factura.linia with
@@ -507,6 +546,24 @@ class GiscedataFacturacioFactura(osv.osv):
             return line_ids
         return res
 
+    def get_rmag_lines(self, cursor, uid, ids, context=None):
+        """ Returns a id list of giscedata.facturacio.factura.linia with
+            RMAG products
+        """
+        if isinstance(ids, (list, tuple)):
+            ids = ids[0]
+
+        line_obj = self.pool.get('giscedata.facturacio.factura.linia')
+
+        res = []
+        fields_to_read = ['linies_energia']
+        inv_vals = self.read(cursor, uid, ids, fields_to_read, context)
+        if inv_vals['linies_energia']:
+            is_rmag = line_obj.is_rmag(cursor, uid, inv_vals['linies_energia'])
+            line_ids = [l for l, v in is_rmag.items() if v]
+            return line_ids
+        return res
+
     def _search_is_gkwh(self, cursor, uid, obj, name, args, context=None):
         """Search function for is_gkwh"""
         if not args:
@@ -522,7 +579,7 @@ class GiscedataFacturacioFactura(osv.osv):
         if not args[0][2]:
             # search for False
             operator = 'not in'
-        return [('id', operator, gkwh_ids)] 
+        return [('id', operator, gkwh_ids)]
 
     def _ff_is_gkwh(self, cursor, uid, ids, field_name, arg, context=None):
         """Returns true if invoice has gkwh lines"""
@@ -702,6 +759,12 @@ class GiscedataFacturacioFacturaLinia(osv.osv):
         )
         return product_obj.search(cursor, uid, [('categ_id', 'in', cat_ids)])
 
+    @cache()
+    def get_rmag_products(self, cursor, uid, context=None):
+        """Returns rmag products list"""
+        product_obj = self.pool.get('product.product')
+        return product_obj.search(cursor, uid, [('default_code', '=', 'RMAG')])
+
     def is_gkwh(self, cursor, uid, ids, context=None):
         """Checks invoice line is gkwh"""
         if not isinstance(ids, (tuple, list)):
@@ -714,6 +777,22 @@ class GiscedataFacturacioFacturaLinia(osv.osv):
         gkwh_products = self.get_gkwh_products(cursor, uid)
         for l in l_vals:
             if l['product_id'] and l['product_id'][0] in gkwh_products:
+                res[l['id']] = True
+        return res
+
+    def is_rmag(self, cursor, uid, ids, context=None):
+        """Checks invoice line is rmag"""
+        if not isinstance(ids, (tuple, list)):
+            ids = [ids]
+
+        res = dict([(i, False) for i in ids])
+
+        # check if product is rmag
+        l_vals = self.read(cursor, uid, ids, ['product_id'], context=context)
+        rmag_products = self.get_rmag_products(cursor, uid)
+
+        for l in l_vals:
+            if l['product_id'] and l['product_id'][0] in rmag_products:
                 res[l['id']] = True
         return res
 
