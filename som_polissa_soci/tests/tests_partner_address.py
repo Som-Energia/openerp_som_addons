@@ -97,12 +97,12 @@ class TestsPartnerAddress(testing.OOTestCase):
         mock_fakemailchimp.update_list_member.assert_any_call(1, subscriber_hash, client_data)
         mock_fakemailchimp.update_list_member.assert_any_call(2, subscriber_hash, client_data)
 
-    @mock.patch.object(res_partner_address.ResPartnerAddress, 'archieve_mail_in_list')
+    @mock.patch.object(res_partner_address.ResPartnerAddress, 'archieve_mail_in_list_sync')
     @mock.patch("som_polissa_soci.tests.tests_partner_address.fake_mchimp_client.lists")
-    def test_unsubscribe_client_email_in_all_lists(self, mock_fakemailchimp, archieve_mail_in_list_mock_function):
+    def test_unsubscribe_client_email_in_all_lists(self, mock_fakemailchimp, archieve_mail_in_list_sync_mock_function):
         old_email = "test@test.test"
 
-        archieve_mail_in_list_mock_function.return_value = None
+        archieve_mail_in_list_sync_mock_function.return_value = None
         mock_fakemailchimp.get_all_lists.return_value = {
             "lists": [
                 { "id": 1, "name": "som" },
@@ -114,7 +114,7 @@ class TestsPartnerAddress(testing.OOTestCase):
         partner_address_o.unsubscribe_client_email_in_all_lists(
             self.cursor, self.txn, [1], old_email, fake_mchimp_client)
 
-        archieve_mail_in_list_mock_function.assert_called()
+        archieve_mail_in_list_sync_mock_function.assert_called()
 
     @mock.patch.object(res_partner_address.ResPartnerAddress, 'read')
     @mock.patch('som_polissa_soci.res_partner_address.md5')
