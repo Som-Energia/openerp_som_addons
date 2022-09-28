@@ -6,6 +6,7 @@ import json
 import os
 import pooler
 import base64
+from time import sleep
 
 
 # Class Task Step that describes the module and the task step fields
@@ -116,7 +117,7 @@ class SomCrawlersTaskStep(osv.osv):
                 if ret_value != 0:
                     output = "System call from download files failed"
                 else:
-                    pathToZip = os.path.join(path,'outputFiles')
+                    pathToZip = '/tmp/outputFiles'
                     output = self.readOutputFile(cursor, uid, pathToZip, fileName)
                 if output == 'Files have been successfully downloaded':
                     output = self.attach_files_zip(cursor, uid, id, result_id, config_obj, path, taskStepParams, context = context)
@@ -131,7 +132,10 @@ class SomCrawlersTaskStep(osv.osv):
 
         return output
 
-    def import_xml_files(self, cursor, uid, id, result_id, context=None):
+    def import_xml_files(self, cursor, uid, id, result_id, nivell=10, context=None):
+        if nivell < 0:
+            raise Exception("SomCrawlersTaskStep: No s'ha pogut adjuntar el zip")
+
         taskStep_obj = self.browse(cursor,uid,id)
         classresult = self.pool.get('som.crawlers.result')
         attachment_obj = self.pool.get('ir.attachment')
@@ -143,10 +147,15 @@ class SomCrawlersTaskStep(osv.osv):
             output = "don't exist id attachment"
             raise Exception(output)
         else:
-            att = attachment_obj.browse(cursor,uid,attachment_id)
-            content = att.datas
-            fileName = att.name
-            output = self.import_wizard(cursor, uid, fileName,content)
+            try:
+                att = attachment_obj.browse(cursor,uid,attachment_id)
+                content = att.datas
+                fileName = att.name
+            except:
+                sleep(10)
+                self.import_xml_files(cursor, uid, id, result_id, nivell-1, context)
+                return 0
+
 
         taskStep_obj.task_id.write({'ultima_tasca_executada': str(taskStep_obj.name)+ ' - ' + str(datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))})
         classresult.write(cursor, uid, result_id, {'resultat_bool': True})
