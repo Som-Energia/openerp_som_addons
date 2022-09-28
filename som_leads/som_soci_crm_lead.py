@@ -6,6 +6,7 @@ from base_iban.base_iban import _format_iban
 from base.res.partner.partner import _lang_get
 from tools.misc import cache
 from service.security import Sudo
+from datetime import datetime
 
 class SomSociCrmLead(osv.OsvInherits):
 
@@ -345,8 +346,35 @@ class SomSociCrmLead(osv.OsvInherits):
         return 'TODO'
 
     def pay_invoice(self, cursor, uid, crml_id, context=None):
-        import pudb; pu.db
-        pass
+        if not isinstance(crml_id, (tuple, list)):
+            crml_id = [crml_id]
+
+        imd_o = self.pool.get('ir.model.data')
+        a_period_o = self.pool.get('account.period')
+        pay_invoice_o = self.pool.get('facturacio.pay.invoice')
+
+        date_now = datetime.now().strftime('%Y-%m-%d')
+        period_id = a_period_o.find(cursor, uid, dt=date_now)[0]
+
+        journal_id = imd_o.get_object_reference(cursor, uid, 'som_generationkwh', 'socis_tpv_journal')[1]
+        for _id in crml_id:
+            lead = self.browse(cursor, uid, _id)
+            ctx = {
+                'active_id': lead.invoice_id.id,
+                'active_ids': [lead.invoice_id.id]
+            }
+            vals = {
+                'comment': 'Pagament efectuat per TPV des del formulari. {}'.format(date_now),
+                'journal_id': journal_id,
+                'date': date_now,
+                'period_id': period_id,
+            }
+            wiz_id = pay_invoice_o.create(cursor, uid, vals, context=ctx)
+            #TODO: ara peta
+            pay_invoice_o.action_pay_and_reconcile(cursor, uid, wiz_id, context=ctx)
+
+        return 'TODO'
+
     #TODO: potser no cal pq ho fa el create_from_form?
     def create_entity_iban(self, cursor, uid, crml_id, context=None):
         if context is None:
@@ -568,8 +596,9 @@ class SomSociCrmLead(osv.OsvInherits):
 SomSociCrmLead()
 
 
-#TODO: mode de pagament i grup de pagament, com encaixa
+#TODO: mode de pagament i grup de pagament, com encaixa: mode pagament VISA-TPV
 #TODO: gestionar errors
 #TODO: afegir i reordenar camps a la vista
 #TODO: qui envia el correu de alta socia?
 #TODO: quin tipus pagament han de tenir les pagades en targeta?
+#TODO: quin journal: TPV - SOCIS: compte deure: Arquia: 5720, i el haver: 100
