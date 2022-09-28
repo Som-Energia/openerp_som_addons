@@ -72,7 +72,11 @@ class ResPartnerAddress(osv.osv):
                 email = vals['email']
                 if not old_email or old_email == email:
                     continue
-                self.update_client_email_in_all_lists_async(cursor, uid, _id, old_email, email, MAILCHIMP_CLIENT)
+
+                if not email:
+                    self.unsubscribe_client_email_in_all_lists_async(cursor, uid, _id, old_email, MAILCHIMP_CLIENT)
+                else:
+                    self.update_client_email_in_all_lists_async(cursor, uid, _id, old_email, email, MAILCHIMP_CLIENT)
 
         return super(ResPartnerAddress, self).write(cursor, uid, ids, vals, context=context)
 
@@ -93,6 +97,9 @@ class ResPartnerAddress(osv.osv):
 
     @job(queue="mailchimp_tasks")
     def archieve_mail_in_list(self, cursor, uid, ids, list_id, mailchimp_conn, context=None):
+        self.archieve_mail_in_list_sync(cursor, uid, ids, list_id, mailchimp_conn, context=None)
+
+    def archieve_mail_in_list_sync(self, cursor, uid, ids, list_id, mailchimp_conn, context=None):
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
 
@@ -263,5 +270,25 @@ class ResPartnerAddress(osv.osv):
                     )
                     logger.info("L'email {} s'ha actualitzat en la llista {}".format(client_data['email_address'],
                         mchimp_list["name"]))
+
+    @job(queue="mailchimp_tasks")
+    def unsubscribe_client_email_in_all_lists_async(self, cursor, uid, ids, old_email, mailchimp_conn, context=None):
+        self.unsubscribe_client_email_in_all_lists(cursor, uid, ids, old_email, mailchimp_conn, context=None)
+
+    def unsubscribe_client_email_in_all_lists(self, cursor, uid, ids, old_email, mailchimp_conn, context=None):
+        if not isinstance(ids, (list, tuple)):
+            ids = [ids]
+
+        logger = logging.getLogger('openerp.{0}.unsubscribe_client_email_in_all_lists'.format(__name__))
+
+        all_lists = mailchimp_conn.lists.get_all_lists(
+            fields=['lists.id,lists.name'],
+            count=100,
+            email=old_email
+        )['lists']
+
+        for mchimp_list in all_lists:
+            list_id = mchimp_list['id']
+            self.archieve_mail_in_list_sync(cursor, uid, ids, list_id, mailchimp_conn)
 
 ResPartnerAddress()
