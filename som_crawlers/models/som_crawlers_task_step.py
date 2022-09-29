@@ -128,7 +128,7 @@ class SomCrawlersTaskStep(osv.osv):
                 if output == 'Files have been successfully downloaded':
                     output = self.attach_files_zip(cursor, uid, id, result_id, config_obj, path, taskStepParams, context = context)
                 else:
-                    output = self.attach_files_screenshot(cursor, uid, config_obj, path, result_id, context)
+                    self.attach_files_screenshot(cursor, uid, config_obj, path, result_id, context)
                     raise Exception("%s" % output)
             else:
                 output = 'File or directory doesn\'t exist'

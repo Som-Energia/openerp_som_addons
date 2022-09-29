@@ -95,7 +95,6 @@ class SomCrawlersTask(osv.osv):
         self.executar_tasca(cursor, uid, id, context=context)
 
     def executar_tasca(self,cursor,uid,id,context=None):
-
         classresult = self.pool.get('som.crawlers.result')
         classTaskStep = self.pool.get('som.crawlers.task.step')
         task_obj = self.browse(cursor, uid, id)

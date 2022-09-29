@@ -106,6 +106,14 @@
             <field name="browser">firefox</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
+        <record model="som.crawlers.config" id="vinalesa_conf">
+            <field name="name">vinalesa</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">firefox</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
         <!-- Exemple accions planificades-->
         <record model="som.crawlers.task" id="descargar_enguerina">
             <field name="name">Descargar Enguerina</field>
@@ -263,6 +271,11 @@
             <field name="name">Descarregar Guadassuar</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="guadassuar_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_vinalesa">
+            <field name="name">Descarregar Vinalesa</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="vinalesa_conf"/>
         </record>
         <!-- Passos de cada tasca general-->
         <!--Hc-->
@@ -584,21 +597,6 @@
             <field name="params">{}</field>
             <field name="task_id" ref="descargar_R1_endesa"/>
         </record>
-        <!-- R està deprecated?-->
-        <!-- <record model="som.crawlers.task.step" id="pas_descarregar_R_endesa ">
-            <field name="name">Descarregar fitxers</field>
-            <field name="sequence">1</field>
-            <field name="function">download_files</field>
-            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"R"}</field>
-            <field name="task_id" ref="descargar_R_endesa"/>
-        </record>
-        <record model="som.crawlers.task.step" id="pas_import_R_endesa">
-            <field name="name">Importar fitxers XML</field>
-            <field name="sequence">2</field>
-            <field name="function">import_xml_files</field>
-            <field name="params">{}</field>
-            <field name="task_id" ref="descargar_R_endesa"/>
-        </record> -->
         <record model="som.crawlers.task.step" id="pas_descarregar_E1_endesa ">
             <field name="name">Descarregar fitxers</field>
             <field name="sequence">1</field>
@@ -698,6 +696,21 @@
             <field name="params">{}</field>
             <field name="task_id" ref="descargar_guadassuar"/>
         </record>
+        <record model="som.crawlers.task.step" id="taskStep_vinalesa_download">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_vinalesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_vinalesa_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_vinalesa"/>
+        </record>
+
         <!-- Variables de configuració-->
         <record model="res.config" id="som_crawlers_massive_importer_python_path">
             <field name="name">som_crawlers_massive_importer_python_path</field>
@@ -716,11 +729,5 @@
             <field eval="'([],)'" name="args"/>
         </record>
 
-        <!--field name="interval_number">1</field>
-            <field name="interval_type">days</field>
-            <field name="numbercall">-1</field>
-            <field eval="False" name="doall"/>
-            <field name="nextcall" eval="'2019-01-01 01:00:00'"/>
-            <field eval="'([],)'" name="args"/-->
     </data>
 </openerp>
