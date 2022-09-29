@@ -29,7 +29,6 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
     def generate_one_report(self, cursor, uid, ids, context=None):
         wiz = self.browse(cursor, uid, ids[0])
 
-        import pudb; pu.db
         dades = self.get_report_data(cursor, uid, ids, context)
         summary_dades = self.get_report_summary(dades)
 
