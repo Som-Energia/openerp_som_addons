@@ -77,8 +77,6 @@ class SomCrawlersTaskStep(osv.osv):
                     with open(os.path.join(path_to_zip,fileName), 'rb') as f:
                         content  = f.read()
                     full_path = os.path.join(path_to_zip,fileName)
-                    os.remove(full_path)
-
                     pool = pooler.get_pool(cursor.dbname)
                     attachment = {
                         'name':  fileName,
@@ -92,8 +90,28 @@ class SomCrawlersTaskStep(osv.osv):
                     classresult.write(cursor,uid, result_id, {'zip_name': attachment_id})
                     cursor.commit()
                     output = "files succesfully attached"
-
+                    os.remove(full_path)
         return output
+
+    def attach_files_screenshot(self, cursor, uid, config_obj, path, result_id, context=None):
+        path_to_screenshot = os.path.join(path,'spiders/selenium_spiders/screenShots/' + config_obj.name)
+        if os.path.exists(path_to_screenshot):
+            for fileName in os.listdir(path_to_screenshot):
+                with open(os.path.join(path_to_screenshot,fileName), 'rb') as f:
+                    content  = f.read()
+                full_path = os.path.join(path_to_screenshot,fileName)
+                pool = pooler.get_pool(cursor.dbname)
+                attachment = {
+                    'name':  fileName,
+                    'datas':  base64.b64encode(content),
+                    'datas_fname': fileName,
+                    'res_model': 'som.crawlers.result',
+                    'res_id': result_id,
+                }
+
+                attachment_id = self.pool.get('ir.attachment').create(cursor, uid, attachment, context=context)
+                cursor.commit()
+                os.remove(full_path)
 
     def download_files(self, cursor, uid,id, result_id, context=None):
         classresult = self.pool.get('som.crawlers.result')
@@ -121,6 +139,7 @@ class SomCrawlersTaskStep(osv.osv):
                 if output == 'Files have been successfully downloaded':
                     output = self.attach_files_zip(cursor, uid, id, result_id, config_obj, path, taskStepParams, context = context)
                 else:
+                    output = self.attach_files_screenshot(cursor, uid, config_obj, path, result_id, context)
                     raise Exception("%s" % output)
             else:
                 output = 'File or directory doesn\'t exist'
