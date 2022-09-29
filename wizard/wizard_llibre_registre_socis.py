@@ -25,7 +25,7 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
         aw.work()
         return {}
 
-    #@job(queue="print_report", timeout=3000)
+    @job(queue="print_report", timeout=3000)
     def generate_one_report(self, cursor, uid, ids, context=None):
         wiz = self.browse(cursor, uid, ids[0])
 
