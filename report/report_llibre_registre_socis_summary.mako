@@ -4,9 +4,8 @@ import ast
 pool = objects[0].pool
 cursor = objects[0]._cr
 uid = user.id
-dades = data.get('dades', [])
+summary_dades = data.get('dades', [])
 header = data.get('header', {})
-soci_anterior = ''
 %>
 <!doctype html public "-//w3c//dtd html 4.0 transitional//en">
 <html>
@@ -45,26 +44,28 @@ html {
 </style>
 </head>
 <body>
-<div class="break-after">
-    <br />
-    <br />
-    <h1>SOM ENERGIA SCCL</h1>
-    <br />
-    <h2>RESUMEN DEL LIBR0 DE SOCIOS Y APORTACIONES SOCIALES</h2>
-    <br />
-    <br />
-    <p>Fecha de apertura: ${header['date_from']}</p>
-    <p>Fecha de cierre: ${header['date_to']}</p>
-    <br />
-    <br />
-    <p>Ejercicio económico ${header['date_to'][:4]}</p>
-</div>
+% if len(summary_dades) > 0:
+        <div class="break-after">
+        <br />
+        <br />
+        <h1>SOM ENERGIA SCCL</h1>
+        <br />
+        <h2>RESUMEN DEL LIBR0 DE SOCIOS Y APORTACIONES SOCIALES</h2>
+        <br />
+        <br />
+        <p>Fecha de apertura: ${header['date_from']}</p>
+        <p>Fecha de cierre: ${header['date_to']}</p>
+        <br />
+        <br />
+        <p>Ejercicio económico ${header['date_to'][:4]}</p>
+        </div>
 
- <div>
-        <p><b>Número de altas : </b>${summary_dades['numero_altes']}</p>
-        <p><b>Número de bajas : </b>${summary_dades['numero_baixes']}</p>
-        <p><b>Total de aportaciones de capital voluntarias : </b>${summary_dades['total_import_voluntari']}</p>
-        <p><b>Total de capital voluntario retirado : </b>${summary_dades['total_import_voluntari_retirat']}</p>
-</div>
+        <div>
+                <p><b>Número de altas : </b>${summary_dades['numero_altes']}</p>
+                <p><b>Número de bajas : </b>${summary_dades['numero_baixes']}</p>
+                <p><b>Total de aportaciones de capital voluntarias : </b>${summary_dades['total_import_voluntari']}</p>
+                <p><b>Total de capital voluntario retirado : </b>${summary_dades['total_import_voluntari_retirat']}</p>
+        </div>
+% endif
 </body>
 </html>

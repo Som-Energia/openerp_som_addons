@@ -25,15 +25,20 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
         aw.work()
         return {}
 
-    @job(queue="print_report", timeout=3000)
+    #@job(queue="print_report", timeout=3000)
     def generate_one_report(self, cursor, uid, ids, context=None):
         wiz = self.browse(cursor, uid, ids[0])
 
+        import pudb; pu.db
         dades = self.get_report_data(cursor, uid, ids, context)
         summary_dades = self.get_report_summary(dades)
 
-        document_binary = self.generate_report_pdf(self, cursor, uid, ids, dades, context)
-        document_binary_summary = self.generate_report_summary_pdf(self, cursor, uid, ids, summary_dades, context)
+        header = {}
+        header['date_from'] = context['date_from']
+        header['date_to'] = context['date_to']
+
+        document_binary = self.generate_report_pdf(cursor, uid, ids, dades, header, context)
+        document_binary_summary = self.generate_report_summary_pdf(cursor, uid, ids, summary_dades, header, context)
 
         path = "/tmp/reports"
         if not os.path.exists(path):
@@ -41,8 +46,6 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
                 os.mkdir(path)
             except OSError:
                 print ("Creation of the directory %s failed" % path)
-
-
 
         filename = path + "/llibre_registre_socis_" + str(header['date_to'][:4]) + ".pdf"
         f = open(filename, 'wb+' )
@@ -70,11 +73,7 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
         datas = ar_obj.get_datas_email_params(cursor, uid, {}, context)
         ar_obj.send_mail(cursor, uid, datas['from'], filename_zip, datas['email_to'], filename_zip.split("/")[-1])
 
-    def generate_report_pdf(self, cursor, uid, ids, dades, context):
-        header = {}
-        header['date_from'] = context['date_from']
-        header['date_to'] = context['date_to']
-
+    def generate_report_pdf(self, cursor, uid, ids, dades, header, context):
         report_printer = webkit_report.WebKitParser(
             'report.somenergia.soci.report_llibre_registre_socis',
             'somenergia.soci',
@@ -98,7 +97,7 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
 
         return document_binary
 
-    def generate_report_summary_pdf(self, cursor, uid, ids, summary_dades, context):
+    def generate_report_summary_pdf(self, cursor, uid, ids, summary_dades, header, context):
         header = {}
         header['date_from'] = context['date_from']
         header['date_to'] = context['date_to']
@@ -113,7 +112,7 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
         data = {
             'model': 'giscedata.facturacio.factura',
             'report_type': 'webkit',
-            'dades': dades,
+            'dades': summary_dades,
             'header': header,
         }
         context['webkit_extra_params'] = '--footer-right [page]'
