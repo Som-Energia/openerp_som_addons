@@ -120,7 +120,7 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
                 'concepte': u'Obligatoria',
                 'import': 100
             })
-        if data['date'] >= context['date_from'] and data['date'] <= context['date_to'] and data['data_baixa_soci']:
+        if data['data_baixa_soci'] and data['data_baixa_soci'] >= context['date_from'] and data['data_baixa_soci'] <= context['date_to']:
             inversions.append({
                 'data': data['data_baixa_soci'],
                 'concepte': u'Obligatoria',
