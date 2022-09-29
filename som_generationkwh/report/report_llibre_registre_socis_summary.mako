@@ -63,8 +63,8 @@ html {
         <div>
                 <p><b>Número de altas : </b>${summary_dades['numero_altes']}</p>
                 <p><b>Número de bajas : </b>${summary_dades['numero_baixes']}</p>
-                <p><b>Total de aportaciones de capital voluntarias : </b>${summary_dades['total_import_voluntari']}</p>
-                <p><b>Total de capital voluntario retirado : </b>${summary_dades['total_import_voluntari_retirat']}</p>
+                <p><b>Total de aportaciones de capital voluntarias : </b>${_(u"%s €") % (formatLang(summary_dades['total_import_voluntari'], digits=2))}</p>
+                <p><b>Total de capital voluntario retirado : </b>${formatLang(summary_dades['total_import_voluntari_retirat'], digits=2)}€</p>
         </div>
 % endif
 </body>
