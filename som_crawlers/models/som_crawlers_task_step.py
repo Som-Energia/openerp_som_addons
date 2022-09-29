@@ -58,6 +58,23 @@ class SomCrawlersTaskStep(osv.osv):
         output = function(cursor, uid, id, result_id, context=None)
         return output
 
+    def attach_file(self, cursor, uid, path_to_file, file_name, result_id, context=None):
+        with open(os.path.join(path_to_file,file_name), 'rb') as f:
+            content  = f.read()
+
+        attachment = {
+            'name':  file_name,
+            'datas':  base64.b64encode(content),
+            'datas_fname': file_name,
+            'res_model': 'som.crawlers.result',
+            'res_id': result_id,
+        }
+        attachment_id =  self.pool.get('ir.attachment').create(cursor, uid, attachment, context=context)
+        full_path = os.path.join(path_to_file,file_name)
+        cursor.commit()
+        os.remove(full_path)
+        return attachment_id
+
     #attached files [zip]
     def attach_files_zip(self, cursor, uid, id, result_id, config_obj, path, taskStepParams, context=None):
         classresult = self.pool.get('som.crawlers.result')
@@ -73,45 +90,17 @@ class SomCrawlersTaskStep(osv.osv):
             if len(os.listdir(path_to_zip)) == 0:
                  output = "Directori doesn\'t contain any ZIP"
             else:
-                for fileName in os.listdir(path_to_zip):
-                    with open(os.path.join(path_to_zip,fileName), 'rb') as f:
-                        content  = f.read()
-                    full_path = os.path.join(path_to_zip,fileName)
-                    pool = pooler.get_pool(cursor.dbname)
-                    attachment = {
-                        'name':  fileName,
-                        'datas':  base64.b64encode(content),
-                        'datas_fname': fileName,
-                        'res_model': 'som.crawlers.result',
-                        'res_id': result_id,
-                    }
-
-                    attachment_id = self.pool.get('ir.attachment').create(cursor, uid, attachment, context=context)
+                for file_name in os.listdir(path_to_zip):
+                    attachment_id = self.attach_file(cursor, uid, path_to_zip, file_name, result_id, context)
                     classresult.write(cursor,uid, result_id, {'zip_name': attachment_id})
-                    cursor.commit()
                     output = "files succesfully attached"
-                    os.remove(full_path)
         return output
 
     def attach_files_screenshot(self, cursor, uid, config_obj, path, result_id, context=None):
         path_to_screenshot = os.path.join(path,'spiders/selenium_spiders/screenShots/' + config_obj.name)
         if os.path.exists(path_to_screenshot):
-            for fileName in os.listdir(path_to_screenshot):
-                with open(os.path.join(path_to_screenshot,fileName), 'rb') as f:
-                    content  = f.read()
-                full_path = os.path.join(path_to_screenshot,fileName)
-                pool = pooler.get_pool(cursor.dbname)
-                attachment = {
-                    'name':  fileName,
-                    'datas':  base64.b64encode(content),
-                    'datas_fname': fileName,
-                    'res_model': 'som.crawlers.result',
-                    'res_id': result_id,
-                }
-
-                attachment_id = self.pool.get('ir.attachment').create(cursor, uid, attachment, context=context)
-                cursor.commit()
-                os.remove(full_path)
+            for file_name in os.listdir(path_to_screenshot):
+                self.attach_file(cursor, uid, path_to_screenshot, file_name, result_id, context)
 
     def download_files(self, cursor, uid,id, result_id, context=None):
         classresult = self.pool.get('som.crawlers.result')
