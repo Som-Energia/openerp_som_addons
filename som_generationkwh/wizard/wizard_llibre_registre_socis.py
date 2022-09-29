@@ -98,10 +98,6 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
         return document_binary
 
     def generate_report_summary_pdf(self, cursor, uid, ids, summary_dades, header, context):
-        header = {}
-        header['date_from'] = context['date_from']
-        header['date_to'] = context['date_to']
-
         report_printer = webkit_report.WebKitParser(
             'report.somenergia.soci.report_llibre_registre_socis_summary',
             'somenergia.soci',
