@@ -46,31 +46,31 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
             except OSError:
                 print ("Creation of the directory %s failed" % path)
 
-        filename = path + "/llibre_registre_socis_" + str(header['date_to'][:4]) + ".pdf"
-        f = open(filename, 'wb+' )
-        try:
-            bits = base64.b64decode(base64.b64encode(document_binary[0]))
-            f.write(bits)
-        finally:
-            f.close()
-
-        filename_summary = path + "/resum_llibre_registre_socis_" + str(header['date_to'][:4]) + ".pdf"
-        f = open(filename_summary, 'wb+' )
-        try:
-            bits = base64.b64decode(base64.b64encode(document_binary_summary[0]))
-            f.write(bits)
-        finally:
-            f.close()
+        path_filename, filename = self.create_file(path, "llibre_registre_socis_", header['date_to'][:4],document_binary[0])
+        path_filenamesummary, filenamesummary = self.create_file(path, "resum_llibre_registre_socis_", header['date_to'][:4],document_binary_summary[0])
 
         filename_zip = path + "/llibre_registre_socis_" + str(header['date_to'][:4]) + ".zip"
         zipObj = ZipFile(filename_zip, 'w')
-        zipObj.write(filename)
-        zipObj.write(filename_summary)
+        zipObj.write(path_filename, filename)
+        zipObj.write(path_filenamesummary, filenamesummary)
         zipObj.close()
 
         ar_obj = self.pool.get('async.reports')
         datas = ar_obj.get_datas_email_params(cursor, uid, {}, context)
         ar_obj.send_mail(cursor, uid, datas['from'], filename_zip, datas['email_to'], filename_zip.split("/")[-1])
+
+    def create_file(self, path, file_header, date, document):
+        filename = file_header + str(date) + ".pdf"
+        path_filename = path + "/" + filename
+
+        f = open(path_filename, 'wb+' )
+        try:
+            bits = base64.b64decode(base64.b64encode(document))
+            f.write(bits)
+        finally:
+            f.close()
+
+        return path_filename,filename
 
     def generate_report_pdf(self, cursor, uid, ids, dades, header, context):
         report_printer = webkit_report.WebKitParser(
@@ -79,22 +79,7 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
             'som_generationkwh/report/report_llibre_registre_socis.mako',
             parser=report_sxw.rml_parse
         )
-
-        data = {
-            'model': 'giscedata.facturacio.factura',
-            'report_type': 'webkit',
-            'dades': dades,
-            'header': header,
-        }
-        context['webkit_extra_params'] = '--footer-right [page]'
-        document_binary = report_printer.create(
-            cursor, uid, ids, data,
-            context=context
-        )
-        if not document_binary:
-            raise Exception("We can't create the report")
-
-        return document_binary
+        return self.generate_report_document(cursor, uid, ids, dades, header, report_printer, context)
 
     def generate_report_summary_pdf(self, cursor, uid, ids, summary_dades, header, context):
         report_printer = webkit_report.WebKitParser(
@@ -103,11 +88,13 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
             'som_generationkwh/report/report_llibre_registre_socis_summary.mako',
             parser=report_sxw.rml_parse
         )
+        return self.generate_report_document(cursor, uid, ids, summary_dades, header, report_printer, context)
 
+    def generate_report_document(self, cursor, uid, ids, dades, header, report_printer, context):
         data = {
             'model': 'giscedata.facturacio.factura',
             'report_type': 'webkit',
-            'dades': summary_dades,
+            'dades': dades,
             'header': header,
         }
         context['webkit_extra_params'] = '--footer-right [page]'
