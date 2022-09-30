@@ -8,7 +8,7 @@ from oorq.oorq import ProgressJobsPool
 import os
 from osv import osv, fields
 from report import report_sxw
-
+from zipfile import ZipFile
 
 class WizardLlibreRegistreSocis(osv.osv_memory):
     """Assistent per generar registre de socis"""
@@ -25,22 +25,72 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
         aw.work()
         return {}
 
-
     @job(queue="print_report", timeout=3000)
     def generate_one_report(self, cursor, uid, ids, context=None):
         wiz = self.browse(cursor, uid, ids[0])
+
         dades = self.get_report_data(cursor, uid, ids, context)
+        summary_dades = self.get_report_summary(dades)
+
         header = {}
         header['date_from'] = context['date_from']
         header['date_to'] = context['date_to']
 
+        document_binary = self.generate_report_pdf(cursor, uid, ids, dades, header, context)
+        document_binary_summary = self.generate_report_summary_pdf(cursor, uid, ids, summary_dades, header, context)
+
+        path = "/tmp/reports"
+        if not os.path.exists(path):
+            try:
+                os.mkdir(path)
+            except OSError:
+                print ("Creation of the directory %s failed" % path)
+
+        path_filename, filename = self.create_file(path, "llibre_registre_socis_", header['date_to'][:4],document_binary[0])
+        path_filenamesummary, filenamesummary = self.create_file(path, "resum_llibre_registre_socis_", header['date_to'][:4],document_binary_summary[0])
+
+        filename_zip = path + "/llibre_registre_socis_" + str(header['date_to'][:4]) + ".zip"
+        zipObj = ZipFile(filename_zip, 'w')
+        zipObj.write(path_filename, filename)
+        zipObj.write(path_filenamesummary, filenamesummary)
+        zipObj.close()
+
+        ar_obj = self.pool.get('async.reports')
+        datas = ar_obj.get_datas_email_params(cursor, uid, {}, context)
+        ar_obj.send_mail(cursor, uid, datas['from'], filename_zip, datas['email_to'], filename_zip.split("/")[-1])
+
+    def create_file(self, path, file_header, date, document):
+        filename = file_header + str(date) + ".pdf"
+        path_filename = path + "/" + filename
+
+        f = open(path_filename, 'wb+' )
+        try:
+            bits = base64.b64decode(base64.b64encode(document))
+            f.write(bits)
+        finally:
+            f.close()
+
+        return path_filename,filename
+
+    def generate_report_pdf(self, cursor, uid, ids, dades, header, context):
         report_printer = webkit_report.WebKitParser(
             'report.somenergia.soci.report_llibre_registre_socis',
             'somenergia.soci',
             'som_generationkwh/report/report_llibre_registre_socis.mako',
             parser=report_sxw.rml_parse
         )
+        return self.generate_report_document(cursor, uid, ids, dades, header, report_printer, context)
 
+    def generate_report_summary_pdf(self, cursor, uid, ids, summary_dades, header, context):
+        report_printer = webkit_report.WebKitParser(
+            'report.somenergia.soci.report_llibre_registre_socis_summary',
+            'somenergia.soci',
+            'som_generationkwh/report/report_llibre_registre_socis_summary.mako',
+            parser=report_sxw.rml_parse
+        )
+        return self.generate_report_document(cursor, uid, ids, summary_dades, header, report_printer, context)
+
+    def generate_report_document(self, cursor, uid, ids, dades, header, report_printer, context):
         data = {
             'model': 'giscedata.facturacio.factura',
             'report_type': 'webkit',
@@ -54,23 +104,33 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
         )
         if not document_binary:
             raise Exception("We can't create the report")
-        path = "/tmp/reports"
-        if not os.path.exists(path):
-            try:
-                os.mkdir(path)
-            except OSError:
-                print ("Creation of the directory %s failed" % path)
-        filename = path + "/llibre_registre_socis_" + str(header['date_to'][:4]) + ".pdf"
-        f = open(filename, 'wb+' )
-        try:
-            bits = base64.b64decode(base64.b64encode(document_binary[0]))
-            f.write(bits)
-        finally:
-            f.close()
 
-        ar_obj = self.pool.get('async.reports')
-        datas = ar_obj.get_datas_email_params(cursor, uid, {}, context)
-        ar_obj.send_mail(cursor, uid, datas['from'], filename, datas['email_to'], filename.split("/")[-1])
+        return document_binary
+
+    def get_report_summary(self, dades):
+        numero_altes = 0
+        numero_baixes = 0
+        total_import_voluntari = 0
+        total_import_voluntari_retirat = 0
+
+        for dada in dades:
+            for inversio in dada['inversions']:
+                if inversio['concepte'] == u'Obligatoria':
+                    if inversio['import'] > 0:
+                        numero_altes += 1
+                    else:
+                        numero_baixes += 1
+                elif inversio['concepte'] == u'Voluntaria':
+                    if inversio['import'] > 0:
+                        total_import_voluntari += inversio['import']
+                    else:
+                        total_import_voluntari_retirat += inversio['import'] * -1
+        return {
+                'numero_altes': numero_altes,
+                'numero_baixes': numero_baixes,
+                'total_import_voluntari': total_import_voluntari,
+                'total_import_voluntari_retirat':total_import_voluntari_retirat,
+                }
 
     def get_report_data(self, cursor, uid, ids, context=None):
         soci_obj = self.pool.get('somenergia.soci')
@@ -120,7 +180,7 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
                 'concepte': u'Obligatoria',
                 'import': 100
             })
-        if data['date'] >= context['date_from'] and data['date'] <= context['date_to'] and data['data_baixa_soci']:
+        if data['data_baixa_soci'] and data['data_baixa_soci'] >= context['date_from'] and data['data_baixa_soci'] <= context['date_to']:
             inversions.append({
                 'data': data['data_baixa_soci'],
                 'concepte': u'Obligatoria',
