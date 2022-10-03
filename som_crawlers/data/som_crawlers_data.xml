@@ -323,7 +323,6 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="sucsa_conf"/>
         </record>
-        </record>
         <!--DIELESUR-->
         <record model="som.crawlers.task" id="descargar_dielesur">
             <field name="name">Descarregar Dielesur</field>
