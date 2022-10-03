@@ -130,14 +130,6 @@
             <field name="browser">firefox</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
-        <record model="som.crawlers.config" id="mitjans_conf">
-            <field name="name">mitjans</field>
-            <field name="crawler">Selenium</field>
-            <field name="days_of_margin">5</field>
-            <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
-            <field name="user_ultima_modificacio" ref="base.user_admin"/>
-        </record>
         <record model="som.crawlers.config" id="dielesur_conf">
             <field name="name">dielesur</field>
             <field name="crawler">Selenium</field>
@@ -146,24 +138,8 @@
             <field name="browser">firefox</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
-        <record model="som.crawlers.config" id="aurora_conf">
-            <field name="name">aurora</field>
-            <field name="crawler">Selenium</field>
-            <field name="days_of_margin">5</field>
-            <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
-            <field name="user_ultima_modificacio" ref="base.user_admin"/>
-        </record>
         <record model="som.crawlers.config" id="constancia_conf">
             <field name="name">constancia</field>
-            <field name="crawler">Selenium</field>
-            <field name="days_of_margin">5</field>
-            <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
-            <field name="user_ultima_modificacio" ref="base.user_admin"/>
-        </record>
-        <record model="som.crawlers.config" id="talarn_conf">
-            <field name="name">talarn</field>
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
@@ -347,11 +323,6 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="sucsa_conf"/>
         </record>
-        <!--MITJANS-->
-        <record model="som.crawlers.task" id="descargar_mitjans">
-            <field name="name">Descarregar Central Eléctrica Mitjans</field>
-            <field name="active">True</field>
-            <field name="configuracio_id" ref="mitjans_conf"/>
         </record>
         <!--DIELESUR-->
         <record model="som.crawlers.task" id="descargar_dielesur">
@@ -359,23 +330,11 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="dielesur_conf"/>
         </record>
-        <!--Aurora-->
-        <record model="som.crawlers.task" id="descargar_aurora">
-            <field name="name">Descarregar Aurora</field>
-            <field name="active">True</field>
-            <field name="configuracio_id" ref="aurora_conf"/>
-        </record>
         <!--Constancia-->
         <record model="som.crawlers.task" id="descargar_constancia">
             <field name="name">Descarregar La Constancia Arén</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="constancia_conf"/>
-        </record>
-        <!--Talarn-->
-        <record model="som.crawlers.task" id="descargar_talarn">
-            <field name="name">Descarregar Talarn</field>
-            <field name="active">True</field>
-            <field name="configuracio_id" ref="talarn_conf"/>
         </record>
         <!-- Passos de cada tasca general-->
         <!--Hc-->
@@ -842,21 +801,6 @@
             <field name="params">{}</field>
             <field name="task_id" ref="descargar_sucsa"/>
         </record>
-        <!--MITJANS-->
-        <record model="som.crawlers.task.step" id="taskStep_mitjans_download">
-            <field name="name">Descarregar fitxers</field>
-            <field name="sequence">1</field>
-            <field name="function">download_files</field>
-            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
-            <field name="task_id" ref="descargar_mitjans"/>
-        </record>
-        <record model="som.crawlers.task.step" id="taskStep_mitjans_import">
-            <field name="name">Importar fitxers XML</field>
-            <field name="sequence">2</field>
-            <field name="function">import_xml_files</field>
-            <field name="params">{}</field>
-            <field name="task_id" ref="descargar_mitjans"/>
-        </record>
         <!--DIELESUR-->
         <record model="som.crawlers.task.step" id="taskStep_dielesur_download">
             <field name="name">Descarregar fitxers</field>
@@ -872,21 +816,6 @@
             <field name="params">{}</field>
             <field name="task_id" ref="descargar_dielesur"/>
         </record>
-        <!--AURORA-->
-        <record model="som.crawlers.task.step" id="taskStep_aurora_download">
-            <field name="name">Descarregar fitxers</field>
-            <field name="sequence">1</field>
-            <field name="function">download_files</field>
-            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
-            <field name="task_id" ref="descargar_aurora"/>
-        </record>
-        <record model="som.crawlers.task.step" id="taskStep_aurora_import">
-            <field name="name">Importar fitxers XML</field>
-            <field name="sequence">2</field>
-            <field name="function">import_xml_files</field>
-            <field name="params">{}</field>
-            <field name="task_id" ref="descargar_aurora"/>
-        </record>
         <!--CONSTANCIA AREN-->
         <record model="som.crawlers.task.step" id="taskStep_constancia_download">
             <field name="name">Descarregar fitxers</field>
@@ -901,21 +830,6 @@
             <field name="function">import_xml_files</field>
             <field name="params">{}</field>
             <field name="task_id" ref="descargar_constancia"/>
-        </record>
-        <!--TALARN-->
-        <record model="som.crawlers.task.step" id="taskStep_talarn_download">
-            <field name="name">Descarregar fitxers</field>
-            <field name="sequence">1</field>
-            <field name="function">download_files</field>
-            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
-            <field name="task_id" ref="descargar_talarn"/>
-        </record>
-        <record model="som.crawlers.task.step" id="taskStep_talarn_import">
-            <field name="name">Importar fitxers XML</field>
-            <field name="sequence">2</field>
-            <field name="function">import_xml_files</field>
-            <field name="params">{}</field>
-            <field name="task_id" ref="descargar_talarn"/>
         </record>
         <!-- Variables de configuració-->
         <record model="res.config" id="som_crawlers_massive_importer_python_path">
