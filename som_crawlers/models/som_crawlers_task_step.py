@@ -160,11 +160,12 @@ class SomCrawlersTaskStep(osv.osv):
             import_wizard_id = WizardImportAtrF1.create(cursor,uid,values)
             import_wizard  = WizardImportAtrF1.browse(cursor, uid, import_wizard_id)
             context = {'active_ids': [import_wizard.id], 'active_id': import_wizard.id}
+
             try:
                 import_wizard.action_import_xmls(context)
                 if import_wizard.state == 'load':
                     import_wizard.action_send_xmls(context=context)
-                return import_wizard.info
+                return WizardImportAtrF1.browse(cursor, uid, import_wizard_id).info
             except Exception as e:
                 msg = "An error ocurred importing {}:{}".format("asd", "asd")
                 return msg
