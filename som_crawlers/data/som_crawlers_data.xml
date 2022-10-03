@@ -146,6 +146,46 @@
             <field name="browser">firefox</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
+        <record model="som.crawlers.config" id="conquense_conf">
+            <field name="name">conquense</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">firefox</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="cabriel_conf">
+            <field name="name">cabriel</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">firefox</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+            <record model="som.crawlers.config" id="cipriano_conf">
+            <field name="name">cipriano</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">firefox</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="herederos_conf">
+            <field name="name">herederos</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">firefox</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="serrano_conf">
+            <field name="name">serrano</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">firefox</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
         <!-- Exemple accions planificades-->
         <record model="som.crawlers.task" id="descargar_enguerina">
             <field name="name">Descargar Enguerina</field>
@@ -334,6 +374,36 @@
             <field name="name">Descarregar La Constancia Arén</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="constancia_conf"/>
+        </record>
+        <!--Conquense-->
+        <record model="som.crawlers.task" id="descargar_conquense">
+            <field name="name">Descarregar Conquense</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_conf"/>
+        </record>
+        <!--Cabriel-->
+        <record model="som.crawlers.task" id="descargar_cabriel">
+            <field name="name">Descarregar Cabriel</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="cabriel_conf"/>
+        </record>
+        <!--Cipriano-->
+        <record model="som.crawlers.task" id="descargar_cipriano">
+            <field name="name">Descarregar Cipriano</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="cipriano_conf"/>
+        </record>
+        <!--Herederos-->
+        <record model="som.crawlers.task" id="descargar_herederos">
+            <field name="name">Descarregar Herederos</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="herederos_conf"/>
+        </record>
+        <!--Serrano-->
+        <record model="som.crawlers.task" id="descargar_serrano">
+            <field name="name">Descarregar Serrano</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="serrano_conf"/>
         </record>
         <!-- Passos de cada tasca general-->
         <!--Hc-->
@@ -829,6 +899,81 @@
             <field name="function">import_xml_files</field>
             <field name="params">{}</field>
             <field name="task_id" ref="descargar_constancia"/>
+        </record>
+        <!--Conquense-->
+        <record model="som.crawlers.task.step" id="taskStep_conquense_download">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_conquense"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_conquense_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_conquense"/>
+        </record>
+        <!--Cabriel-->
+        <record model="som.crawlers.task.step" id="taskStep_cabriel_download">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_cabriel"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_cabriel_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_cabriel"/>
+        </record>
+        <!--Cipriano-->
+        <record model="som.crawlers.task.step" id="taskStep_cipriano_download">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_cipriano"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_cipriano_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_cipriano"/>
+        </record>
+        <!--Herederos-->
+        <record model="som.crawlers.task.step" id="taskStep_herederos_download">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_herederos"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_herederos_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_herederos"/>
+        </record>
+        <!--Serrano-->
+        <record model="som.crawlers.task.step" id="taskStep_serrano_download">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_serrano"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_serrano_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_serrano"/>
         </record>
         <!-- Variables de configuració-->
         <record model="res.config" id="som_crawlers_massive_importer_python_path">
