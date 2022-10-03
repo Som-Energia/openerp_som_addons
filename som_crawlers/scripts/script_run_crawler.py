@@ -40,7 +40,7 @@ import importlib
 def crawl(user, name, password, file, url, filters, crawler, days, pfiles, browser, process):
     wc = WebCrawler()
     path = os.path.dirname(os.path.abspath(__file__))
-    f = open(os.path.join(path,"../outputFiles/",file),'w')
+    f = open(os.path.join("/tmp/outputFiles/",file),'w')
     try:
         crawler_conf = {'crawler': crawler, 'days_of_margin': days, 'pending_files_only': pfiles, 'browser': browser}
         portalCreds = buildPortalCreds(user, password, url, filters, crawler, days, pfiles, browser, process)
