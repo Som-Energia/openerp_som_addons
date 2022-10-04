@@ -116,7 +116,8 @@ class SomCrawlersTask(osv.osv):
         ir_obj = self.pool.get('ir.model.data')
         cron_obj = self.pool.get('ir.cron')
         data_anterior = datetime.strptime(self.read(cursor, uid, id, ['data_proxima_execucio'])['data_proxima_execucio'], "%Y-%m-%d %H:%M:%S")
-        data_proxima_exec = (datetime.now() + timedelta(days=1)).replace(
+        day_shift = 3 if datetime.now().weekday() == 4 else 1
+        data_proxima_exec = (datetime.now() + timedelta(days=day_shift)).replace(
             hour=data_anterior.hour, minute=data_anterior.minute, second=data_anterior.second).strftime("%Y-%m-%d %H:%M:%S")
         #seguent data d'execucio
         self.write(cursor, uid, id,{'data_proxima_execucio': data_proxima_exec}, context)
