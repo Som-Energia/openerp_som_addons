@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record id="view_wizard_close_obsolete_cases_form" model="ir.ui.view">
+            <field name="name">wizard.close.obsolete.cases.form</field>
+            <field name="model">wizard.close.obsolete.cases</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Tancar casos ATR obsolets">
+                    <label string="Tancar casos ATR obsolets"/>
+                    <separator colspan="4"/>
+                    <field name="state" invisible="1"/>
+                    <group colspan="4">
+                        <field nolabel="1" name="info" height="200" readonly="1"/>
+                    </group>
+                    <group>
+                        <button special="cancel" string="Cancel·lar" type="object" icon="gtk-no"/>
+                        <button name="close_obsolete_cases" string="Tancar casos" type="object" icon="gtk-execute"
+                                attrs="{'invisible': [('state','!=','init')]}"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_wizard_delete_obsolete_cases" model="ir.actions.act_window">
+            <field name="name">Tancar casos ATR obsolets</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.close.obsolete.cases</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_wizard_close_obsolete_cases_form"/>
+            <field name="target">new</field>
+        </record>
+        <record id="value_wizard_close_obsolete_cases" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Tancar casos ATR obsolets</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.switching</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_delete_obsolete_cases'))" />
+        </record>
+    </data>
+</openerp>
