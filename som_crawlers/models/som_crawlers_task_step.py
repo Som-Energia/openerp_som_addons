@@ -80,6 +80,7 @@ class SomCrawlersTaskStep(osv.osv):
     def attach_files_zip(self, cursor, uid, id, result_id, config_obj, path, taskStepParams, context=None):
         classresult = self.pool.get('som.crawlers.result')
         taskStep_obj = self.browse(cursor,uid,id,context = context)
+        output = ''
         if 'process' in taskStepParams:
             name = config_obj.name + '_' + taskStepParams['process']
             path_to_zip = os.path.join(path,'spiders/selenium_spiders/tmp/', name)
@@ -109,6 +110,7 @@ class SomCrawlersTaskStep(osv.osv):
         taskStepParams = json.loads(taskStep_obj.params)
         path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../')
         classresult.write(cursor,uid, result_id, {'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M:%S")})
+        output = ''
 
         if taskStepParams.has_key('nom_fitxer'):
             config_obj=self.pool.get('som.crawlers.task').id_del_portal_config(cursor,uid,taskStep_obj.task_id.id,context)
@@ -159,11 +161,11 @@ class SomCrawlersTaskStep(osv.osv):
                 att = attachment_obj.browse(cursor,uid,attachment_id)
                 content = att.datas
                 fileName = att.name
+                output = self.import_wizard(cursor, uid, fileName,content)
             except:
                 sleep(10)
-                self.import_xml_files(cursor, uid, id, result_id, nivell-1, context)
-                return 0
-
+                output = self.import_xml_files(cursor, uid, id, result_id, nivell-1, context)
+                return output
 
         taskStep_obj.task_id.write({'ultima_tasca_executada': str(taskStep_obj.name)+ ' - ' + str(datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))})
         classresult.write(cursor, uid, result_id, {'resultat_bool': True})
