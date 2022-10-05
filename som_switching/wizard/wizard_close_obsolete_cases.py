@@ -35,7 +35,7 @@ class WizardCloseObsoleteCases(osv.osv_memory):
                     continue
                 if (
                     not sw.cups_polissa_id.active
-                    or sw.cups_polissa_id.autoconsumo != "01"
+                    or sw.cups_polissa_id.autoconsumo != "00"
                 ):
                     case_ids.append(sw.case_id)
 
