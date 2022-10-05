@@ -6,15 +6,14 @@ from tools.translate import _
 class WizardCloseObsoleteCases(osv.osv_memory):
 
     _name = "wizard.close.obsolete.cases"
-    _inherit = 'wizard.crm.multi.close'
-
+    _inherit = "wizard.crm.multi.close"
 
     def _get_info_default(self, cursor, uid, context=None):
         if not context:
             context = {}
         return _(
-            u"Només els casos oberts:\n"
-            u" * D1 01 amb motiu 04 amb pólissa de baixa o autoconsum activat\n"
+            "Només els casos oberts:\n"
+            " * D1 01 amb motiu 04 amb pólissa de baixa o autoconsum activat\n"
         )
 
     def close_obsolete_cases(self, cursor, uid, ids, context=None):
@@ -34,14 +33,16 @@ class WizardCloseObsoleteCases(osv.osv_memory):
             if sw.state != "open":
                 continue
             if sw.proces_id.name == "D1" and sw.step_id.name == "01":  # D101
-                step_info = swsi_obj.browse(cursor, uid, sw.step_ids[0], context)
-                if step_info.pas_id.motiu_canvi != "04":
+                pas_str = sw.step_ids[0].pas_id
+                swsi_obj, pas_id = pas_str.split(",")
+                pas_obj = self.pool.get(swsi_obj).browse(cursor, uid, eval(pas_id))
+                if pas_obj.motiu_canvi != "04":
                     continue
                 if (
                     not sw.cups_polissa_id.active
                     or sw.cups_polissa_id.autoconsumo != "00"
                 ):
-                    case_ids.append(sw.case_id)
+                    case_ids.append(sw.case_id.id)
 
         ctx = context.copy()
         ctx.update({"active_ids": case_ids})
