@@ -30,7 +30,7 @@ class WizardCloseObsoleteCases(osv.osv_memory):
             sw = sw_obj.browse(cursor, uid, sw_id, context)
             if sw.state != "open":
                 continue
-            if sw.proces_id.name == "R1" and sw.step_id.name == "01":  # R101
+            if sw.proces_id.name == "D1" and sw.step_id.name == "01":  # D101
                 if sw.step_ids[0].pas_id.motiu_canvi != "04":
                     continue
                 if (
