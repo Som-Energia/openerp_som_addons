@@ -6,6 +6,8 @@ from tools.translate import _
 class WizardCloseObsoleteCases(osv.osv_memory):
 
     _name = "wizard.close.obsolete.cases"
+    _inherit = 'wizard.crm.multi.close'
+
 
     def _get_info_default(self, cursor, uid, context=None):
         if not context:
@@ -39,11 +41,11 @@ class WizardCloseObsoleteCases(osv.osv_memory):
                 ):
                     case_ids.append(sw.case_id)
 
-            ctx = context.copy()
-            ctx.update({"active_ids": case_ids})
-            self.perform_close(cursor, uid, ids, context=ctx)
+        ctx = context.copy()
+        ctx.update({"active_ids": case_ids})
+        self.perform_close(cursor, uid, ids, context=ctx)
 
-            # info += "%s: %s\n\n" % (res[0], res[1]) TODO
+        info = "S'han tancat %s casos obsolets\n" % len(case_ids)
 
         wizard.write({"info": info, "state": "done"})
 
