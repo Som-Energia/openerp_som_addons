@@ -19,6 +19,7 @@ class WizardCloseObsoleteCases(osv.osv_memory):
 
     def close_obsolete_cases(self, cursor, uid, ids, context=None):
         sw_obj = self.pool.get("giscedata.switching")
+        swsi_obj = self.pool.get("giscedata.switching.step.info")
 
         if not context:
             context = {}
@@ -33,7 +34,8 @@ class WizardCloseObsoleteCases(osv.osv_memory):
             if sw.state != "open":
                 continue
             if sw.proces_id.name == "D1" and sw.step_id.name == "01":  # D101
-                if sw.step_ids[0].pas_id.motiu_canvi != "04":
+                step_info = swsi_obj.browse(cursor, uid, sw.step_ids[0], context)
+                if step_info.pas_id.motiu_canvi != "04":
                     continue
                 if (
                     not sw.cups_polissa_id.active
