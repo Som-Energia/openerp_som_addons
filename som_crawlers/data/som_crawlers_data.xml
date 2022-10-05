@@ -498,6 +498,12 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="curos_conf"/>
         </record>
+        <!-- TASQUES D'EXPORTACIÓ -->
+        <record model="som.crawlers.task" id="carregar_anselmo">
+            <field name="name">Carregar Anselmo</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
         <!-- Passos de cada tasca general-->
         <!--Hc-->
         <record model="som.crawlers.task.step" id="pas_descargar_hc">
@@ -685,6 +691,7 @@
             <field name="params">{}</field>
             <field name="task_id" ref="accions_planificades_2"/>
         </record>
+        <!-- Anselmo -->
         <record model="som.crawlers.task.step" id="taskStep_1">
             <field name="name">Descarregar fitxers</field>
             <field name="sequence">1</field>
@@ -698,6 +705,20 @@
             <field name="function">import_xml_files</field>
             <field name="params">{}</field>
             <field name="task_id" ref="accions_planificades_1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_generar_zip_anselmo">
+            <field name="name">Generar zip exportació</field>
+            <field name="sequence">1</field>
+            <field name="function">export_xml_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="carregar_anselmo"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_carregar_fitxers_anselmo">
+            <field name="name">Carregar fitxers</field>
+            <field name="sequence">2</field>
+            <field name="function">upload_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="carregar_anselmo"/>
         </record>
         <record model="som.crawlers.task.step" id="pas_descarregar_A3_endesa ">
             <field name="name">Descarregar fitxers</field>

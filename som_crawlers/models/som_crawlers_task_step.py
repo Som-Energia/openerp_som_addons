@@ -223,4 +223,36 @@ class SomCrawlersTaskStep(osv.osv):
 
         return " ".join(["{} {}".format(k,v) for k,v in args.iteritems()])
 
+
+    def upload_files(self, cursor, uid):
+        pass
+
+    def export_xml_files(self, cursor, uid, id, result_id, proces_name='D1', step_name='02', context={}):
+        sw_obj = self.pool.get('giscedata.switching')
+        atr_wiz_obj = self.pool.get('giscedata.switching.wizard')
+        task_step_obj = self.browse(cursor,uid,id)
+        active_ids = sw_obj.search(cursor, uid, [('proces_id.name','=', proces_name),
+            ('step_id.name','=', step_name), ('state','=', 'open')])
+        ctx = {
+            'active_ids': active_ids,
+            'active_id': active_ids[0],
+        }
+        wiz = atr_wiz_obj.create(cursor, uid, {}, context=ctx)
+        atr_wiz_obj.action_exportar_xml(cursor, uid, [wiz], context=ctx)
+        wiz = atr_wiz_obj.browse(cursor, uid, wiz)
+
+        attachment = {
+            'name':  wiz.name,
+            'datas':  base64.b64encode(wiz.file),
+            'datas_fname': wiz.name,
+            'res_model': 'som.crawlers.result',
+            'res_id': result_id,
+        }
+        attachment_id =  self.pool.get('ir.attachment').create(cursor, uid, attachment, context=context)
+        classresult = self.pool.get('som.crawlers.result')
+        classresult.write(cursor,uid, result_id, {'zip_name': attachment_id})
+        task_step_obj.task_id.write({'ultima_tasca_executada': str(task_step_obj.name)+ ' - ' + str(datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))})
+        classresult.write(cursor, uid, result_id, {'resultat_bool': True})
+        pass
+
 SomCrawlersTaskStep()
