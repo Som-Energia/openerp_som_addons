@@ -107,7 +107,7 @@ class SomCrawlersTask(osv.osv):
                 output = classTaskStep.executar_steps(cursor,uid,taskStep.id,result_id)
                 classresult.write(cursor,uid, result_id, {'resultat_text': output})
             except Exception as e:
-                classresult.write(cursor,uid, result_id, {'resultat_text': str(e)})
+                classresult.write(cursor,uid, result_id, {'resultat_bool': False, 'resultat_text': str(e)})
                 break
 
         self.schedule_next_execution(cursor, uid, id, context)

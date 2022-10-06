@@ -56,7 +56,7 @@ class SomCrawlersTaskStep(osv.osv):
     def executar_steps(self, cursor, uid, id, result_id, context=None):
         taskStep = self.browse(cursor, uid, id)
         function = getattr(self, taskStep.function)
-        output = function(cursor, uid, id, result_id, context=None)
+        output = function(cursor, uid, id, result_id, context)
         return output
 
     def attach_file(self, cursor, uid, path_to_file, file_name, result_id, context=None):
@@ -204,7 +204,7 @@ class SomCrawlersTaskStep(osv.osv):
         return output
 
     #test ok
-    def createArgsForScript(self,config_obj, taskStepsParams,fileName):
+    def createArgsForScript(self, config_obj, taskStepsParams, fileName, file_path=None):
         args = {
             '-n':str(config_obj.name),
             '-u':str(config_obj.usuari),
@@ -212,11 +212,13 @@ class SomCrawlersTaskStep(osv.osv):
             '-c':str(config_obj.crawler),
             '-f':str(fileName),
             '-url':"'{}'".format(str(config_obj.url_portal)),
+            '-url-upload':"'{}'".format(str(config_obj.url_upload)),
             '-fltr':"'{}'".format(str(config_obj.filtres)),
             '-d':str(config_obj.days_of_margin),
             '-nfp':str(config_obj.pending_files_only),
             '-b':str(config_obj.browser),
             '-pr': 'None',
+            '-fp': file_path,
         }
         if(taskStepsParams.has_key('process')):
             args.update({'-pr':str(taskStepsParams['process'])})
@@ -224,13 +226,56 @@ class SomCrawlersTaskStep(osv.osv):
         return " ".join(["{} {}".format(k,v) for k,v in args.iteritems()])
 
 
-    def upload_files(self, cursor, uid):
-        pass
+    def upload_files(self, cursor, uid, id, result_id, context=None):
+        classresult = self.pool.get('som.crawlers.result')
+        taskStep_obj = self.browse(cursor,uid,id)
+        taskStepParams = json.loads(taskStep_obj.params)
+        config_obj=self.pool.get('som.crawlers.task').id_del_portal_config(cursor,uid,taskStep_obj.task_id.id,context)
+        path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../')
+        classresult.write(cursor,uid, result_id, {'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M:%S")})
+        #TODO: Que fem quan carreguem el segon fitxer
+        path_to_zip = '/tmp/outputFiles'
+        file_name = "output_" + config_obj.name + "_" + datetime.now().strftime("%Y-%m-%d_%H_%M") + ".zip"
+        file_path = os.path.join(path_to_zip,file_name)
+        attachment_id =  self.pool.get('ir.attachment').search(cursor, uid, [('res_model','=','som.crawlers.result'),
+            ('res_id','=',result_id)], context=context)
+        zip_file = self.pool.get('ir.attachment').browse(cursor, uid, attachment_id[0])
+        with open(file_path, 'w') as f:
+            f.write(base64.b64decode(zip_file.datas))
+
+        output = ''
+
+        if taskStepParams.has_key('nom_fitxer'):
+            filePath = os.path.join(path, "scripts/" + taskStepParams['nom_fitxer'])
+            if os.path.exists(filePath):
+                cfg_obj = self.pool.get('res.config')
+                path_python = cfg_obj.get(cursor, uid, 'som_crawlers_massive_importer_python_path', '/home/erp/.virtualenvs/massive/bin/python')
+                if not os.path.exists(path_python):
+                    raise Exception("Not virtualenv of massive importer found")
+                fileName = "output_" + config_obj.name + "_" + datetime.now().strftime("%Y-%m-%d_%H_%M") + ".txt"
+                args_str = self.createArgsForScript(config_obj, taskStepParams, fileName, file_path)
+                ret_value = os.system("{} {} {}".format(path_python, filePath, args_str))
+                if ret_value != 0:
+                    output = "System call from download files failed"
+                else:
+                    output = self.readOutputFile(cursor, uid, path_to_zip, fileName)
+                if output != 'Files have been successfully uploaded':
+                    self.attach_files_screenshot(cursor, uid, config_obj, path, result_id, context)
+                    raise Exception("%s" % output)
+            else:
+                output = 'File or directory doesn\'t exist'
+        else:
+            output = 'Falta especificar nom fitxer'
+        taskStep_obj.task_id.write({'ultima_tasca_executada': str(taskStep_obj.name)+ ' - ' + str(datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))})
+        classresult.write(cursor, uid, result_id, {'resultat_bool': True})
+        os.remove(file_path)
+        return output
 
     def export_xml_files(self, cursor, uid, id, result_id, proces_name='D1', step_name='02', context={}):
+        task_step_obj = self.browse(cursor,uid,id)
+        """
         sw_obj = self.pool.get('giscedata.switching')
         atr_wiz_obj = self.pool.get('giscedata.switching.wizard')
-        task_step_obj = self.browse(cursor,uid,id)
         active_ids = sw_obj.search(cursor, uid, [('proces_id.name','=', proces_name),
             ('step_id.name','=', step_name), ('state','=', 'open')])
         ctx = {
@@ -240,14 +285,25 @@ class SomCrawlersTaskStep(osv.osv):
         wiz = atr_wiz_obj.create(cursor, uid, {}, context=ctx)
         atr_wiz_obj.action_exportar_xml(cursor, uid, [wiz], context=ctx)
         wiz = atr_wiz_obj.browse(cursor, uid, wiz)
-
         attachment = {
             'name':  wiz.name,
-            'datas':  base64.b64encode(wiz.file),
+            'datas':  base64.b64encode(wiz.datas),
             'datas_fname': wiz.name,
             'res_model': 'som.crawlers.result',
             'res_id': result_id,
         }
+        """
+
+        f = open('/home/oriol/Baixades/D1-01-ES0031408597230013PZ0F_0009.xml.zip','r')
+
+        attachment = {
+            'name':  'D1-01-ES0031408597230013PZ0F_0009.xml.zip',
+            'datas':  base64.b64encode(f.read()),
+            'datas_fname': 'D1-01-ES0031408597230013PZ0F_0009.xml.zip',
+            'res_model': 'som.crawlers.result',
+            'res_id': result_id,
+        }
+
         attachment_id =  self.pool.get('ir.attachment').create(cursor, uid, attachment, context=context)
         classresult = self.pool.get('som.crawlers.result')
         classresult.write(cursor,uid, result_id, {'zip_name': attachment_id})

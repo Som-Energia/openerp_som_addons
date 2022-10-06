@@ -4,9 +4,8 @@
 ##Imports
 from distutils.command.build import build
 from nturl2path import url2pathname
-from massive_importer.crawlers.run_crawlers import WebCrawler
-from massive_importer.crawlers.crawlers.spiders.selenium_spiders import *
-from massive_importer.lib.exceptions import CrawlingLoginException, CrawlingProcessException, FileToBucketException, NoResultsException
+from massive_importer_crawlers.spiders.selenium_spiders import *
+from massive_importer_crawlers.models.exceptions import *
 import click
 import os
 import importlib
@@ -18,12 +17,14 @@ import importlib
 @click.option('-p', '--password', help='Password of the portal.', required = False)
 @click.option('-f', '--file', help='Log file name', required = False)
 @click.option('-url', '--url', help='URL of the portal.', required = False)
-@click.option('-fltr', '--filters', help='Filters.', required = False)
+@click.option('-fltr', '--filters', help='Filters URL.', required = False)
 @click.option('-c', '--crawler', help = 'Crawler', required = False)
 @click.option('-d', '--days', help = 'Days of margin', required = False)
 @click.option('-nfp', '--pfiles', help = 'Pending files only',required = False)
 @click.option('-b', '--browser', help = 'Browser', required = False)
 @click.option('-pr', '--process', help = 'Process to download', required = False)
+@click.option('-url-upload', '--url-upload', help='Upload URL', required = False)
+@click.option('-fp', '--file-path', help='Upload file path.', required = False)
 
 ## Function that runs de crawler of the crawler saves the user and the date when it was modified and returns the new password.
         # @param user Username of the portal
@@ -37,13 +38,12 @@ import importlib
         # @param pfiles Pending files only
         # @param browser Browser
         # @return Exception or string if everything passed successfully
-def crawl(user, name, password, file, url, filters, crawler, days, pfiles, browser, process):
-    wc = WebCrawler()
+def crawl(user, name, password, file, url, filters, crawler, days, pfiles, browser, process, url_upload, file_path):
     path = os.path.dirname(os.path.abspath(__file__))
     f = open(os.path.join("/tmp/outputFiles/",file),'w')
     try:
         crawler_conf = {'crawler': crawler, 'days_of_margin': days, 'pending_files_only': pfiles, 'browser': browser}
-        portalCreds = buildPortalCreds(user, password, url, filters, crawler, days, pfiles, browser, process)
+        portalCreds = buildPortalCreds(user, password, url, filters, crawler, days, pfiles, browser, process, url_upload, file_path)
         selenium_spiders_path = os.path.join(
         path, "../spiders/selenium_spiders")
         if process != 'None':
@@ -69,10 +69,12 @@ def crawl(user, name, password, file, url, filters, crawler, days, pfiles, brows
     except Exception as e:
         f.write(str(e))
     else:
-        f.write('Files have been successfully downloaded')
+        if portalCreds['url_upload']:
+            f.write('Files have been successfully uploaded')
+        else:
+            f.write('Files have been successfully downloaded')
 
-
-def buildPortalCreds(user, password, url, filters, crawler, days, pfiles, browser, process):
+def buildPortalCreds(user, password, url, filters, crawler, days, pfiles, browser, process, url_upload, file_path):
     portalCreds = dict()
     portalCreds['username'] = user
     portalCreds['password'] = password
@@ -85,6 +87,8 @@ def buildPortalCreds(user, password, url, filters, crawler, days, pfiles, browse
     portalCreds['browser'] = browser
     if process!='None':
         portalCreds['process'] = process
+    portalCreds['url_upload'] = url_upload
+    portalCreds['file_path'] = file_path
 
     return portalCreds
 
