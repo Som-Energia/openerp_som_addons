@@ -120,7 +120,7 @@ class GiscedataAtc(osv.osv):
             cancel_ids.append(atc_id)
 
         if cancel_ids:
-            return super(GiscedataAtc, self).case_cancel(self, cursor, uid, cancel_ids, *args)
+            return super(GiscedataAtc, self).case_cancel(cursor, uid, cancel_ids, *args)
         return True
 
     _columns = {
