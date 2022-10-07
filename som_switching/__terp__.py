@@ -17,7 +17,9 @@
         "giscedata_atc_switching",
     ],
     "init_xml": [],
-    "demo_xml": [],
+    "demo_xml": [
+        'demo/som_switching_demo_data.xml',
+    ],
     "update_xml": [
         'giscedata_switching_view.xml',
         'giscedata_switching_data.xml',

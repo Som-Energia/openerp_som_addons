@@ -4,6 +4,27 @@
         <record  model="giscedata.atc" id="cas_atc_0001">
             <field name="name">ccc</field>
             <field name="provincia">20</field>
+            <field name="section_id">1</field>
+            <field name="sector">electric</field>
+            <field name="subtipus_id">1</field>
+            <field name="reclamante">06</field>
+            <field name="agent_actual">06</field>
+		</record>
+        <record  model="giscedata.switching" id="sw_001">
+            <field name="ref_contracte">Test</fiel>
+            <field name="data_sollicitud">2022-01-02</field>
+            <field name="proces_id" ref='sw_proces_r1' />
+            <field name="step_id" ref='sw_proces_r1' />
+		</record>
+        <record  model="giscedata.atc" id="cas_atc_0002">
+            <field name="name">ccc</field>
+            <field name="provincia">20</field>
+            <field name="section_id">1</field>
+            <field name="sector">electric</field>
+            <field name="subtipus_id">1</field>
+            <field name="reclamante">06</field>
+            <field name="agent_actual">06</field>
+            <field name="ref" ref="sw_001" />
 		</record>
     </data>
 </openerp>
