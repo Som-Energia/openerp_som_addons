@@ -38,7 +38,8 @@ import importlib
         # @param pfiles Pending files only
         # @param browser Browser
         # @return Exception or string if everything passed successfully
-def crawl(user, name, password, file, url, filters, crawler, days, pfiles, browser, process, url_upload, file_path):
+def crawl(user, name, password, file, url, filters, crawler, days, pfiles, browser, process, url_upload, file_path=None):
+    import pudb;pu.db
     path = os.path.dirname(os.path.abspath(__file__))
     f = open(os.path.join("/tmp/outputFiles/",file),'w')
     try:
@@ -54,25 +55,17 @@ def crawl(user, name, password, file, url, filters, crawler, days, pfiles, brows
             name, "".join([selenium_spiders_path, "/", name, '.py']))
         spider_module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(spider_module)
-        logger.debug("Loaded %s module" % (name))
-        logger.debug("Starting %s crawling..." % (name))
         spider_instance = spider_module.instance(crawler_conf)
         spider_instance.start_with_timeout(portalCreds, debug=True)
-    except NoResultsException as e:
-        f.write(str(e))
-    except CrawlingLoginException as e:
-        f.write(str(e))
-    except CrawlingProcessException as e:
-        f.write(str(e))
-    except FileToBucketException as e:
-        f.write(str(e))
     except Exception as e:
         f.write(str(e))
+        f.close()
     else:
-        if portalCreds['url_upload']:
+        if file_path:
             f.write('Files have been successfully uploaded')
         else:
             f.write('Files have been successfully downloaded')
+        f.close()
 
 def buildPortalCreds(user, password, url, filters, crawler, days, pfiles, browser, process, url_upload, file_path):
     portalCreds = dict()
@@ -88,7 +81,8 @@ def buildPortalCreds(user, password, url, filters, crawler, days, pfiles, browse
     if process!='None':
         portalCreds['process'] = process
     portalCreds['url_upload'] = url_upload
-    portalCreds['file_path'] = file_path
+    if file_path:
+        portalCreds['file_path'] = file_path
 
     return portalCreds
 

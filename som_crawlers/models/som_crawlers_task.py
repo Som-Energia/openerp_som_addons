@@ -101,11 +101,10 @@ class SomCrawlersTask(osv.osv):
         task_steps_list = task_obj.task_step_ids
         task_steps_list.sort(key=lambda x: x.sequence)
         result_id = classresult.create(cursor,uid,{'task_id': id,'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M")})
-
         for taskStep in task_steps_list:
             try:
                 output = classTaskStep.executar_steps(cursor,uid,taskStep.id,result_id)
-                classresult.write(cursor,uid, result_id, {'resultat_text': output})
+                classresult.write(cursor,uid, result_id, {'resultat_bool': True, 'resultat_text': output})
             except Exception as e:
                 classresult.write(cursor,uid, result_id, {'resultat_bool': False, 'resultat_text': str(e)})
                 break
