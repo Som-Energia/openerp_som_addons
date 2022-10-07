@@ -50,12 +50,13 @@ class GiscedataAtc(osv.osv):
             ids = [ids]
 
         cancel_ids = []
-        warning_info = []
         for atc_id in ids:
             atc = self.browse(cursor, uid, atc_id)
-            r1 = atc.ref
+
+            r1 = atc.has_process
             if r1:
-                model, index = r1.split(',')
+                ref = atc.ref if atc.ref else atc.ref2
+                model, index = ref.split(',')
                 m_obj = self.pool.get(model)
                 r1 = m_obj.browse(cursor, uid, int(index))
 
@@ -110,6 +111,11 @@ class GiscedataAtc(osv.osv):
                     raise osv.except_osv(
                             _(u"Warning"),
                             _(u"Cas ATC {} no es pot cancel·lar: R1 09 d'acceptació s'ha de tancar i no cancel·lar").format(atc_id))
+
+            if atc.state not in ('draft', 'pending', 'open'):
+                raise osv.except_osv(
+                        _(u"Warning"),
+                        _(u"Cas ATC {} no es pot cancel·lar: L'estat no és Pendent, Esborrany o Obert").format(atc_id))
 
             cancel_ids.append(atc_id)
 
