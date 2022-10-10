@@ -288,9 +288,10 @@ class SomCrawlersTaskStep(osv.osv):
         wiz = atr_wiz_obj.create(cursor, uid, {}, context=ctx)
         atr_wiz_obj.action_exportar_xml(cursor, uid, [wiz], context=ctx)
         wiz = atr_wiz_obj.browse(cursor, uid, wiz)
+
         attachment = {
             'name':  wiz.name,
-            'datas':  base64.b64encode(wiz.datas),
+            'datas':  wiz.file,
             'datas_fname': wiz.name,
             'res_model': 'som.crawlers.result',
             'res_id': result_id,
