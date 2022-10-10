@@ -273,13 +273,25 @@ class SomCrawlersTaskStep(osv.osv):
         os.remove(file_path)
         return output
 
-    def export_xml_files(self, cursor, uid, id, result_id, proces_name='D1', step_name='02', context={}):
+    def export_xml_files(self, cursor, uid, id, result_id, context={}):
         task_step_obj = self.browse(cursor,uid,id)
-
         sw_obj = self.pool.get('giscedata.switching')
         atr_wiz_obj = self.pool.get('giscedata.switching.wizard')
-        active_ids = sw_obj.search(cursor, uid, [('proces_id.name','=', proces_name),
-            ('step_id.name','=', step_name), ('state','=', 'open'), ('enviament_pendent', '=', True)])
+        config_obj = self.pool.get('som.crawlers.task').id_del_portal_config(cursor, uid, task_step_obj.task_id.id, context)
+
+        task_step_params = json.loads(task_step_obj.params)
+        export_d1 = True
+        if task_step_params.has_key('export_d1'):
+            export_d1 = task_step_params[export_d1]
+
+        # TODO filtrar per distri nom config_obj.name
+        if (export_d1):
+            active_ids = sw_obj.search(cursor, uid, [('proces_id.name','=', 'D1'),
+                ('step_id.name','=', '02'), ('state','=', 'open'), ('enviament_pendent', '=', True)])
+        else:
+            active_ids = sw_obj.search(cursor, uid, [('proces_id.name','!=', 'D1'),
+                ('state','=', 'open'), ('enviament_pendent', '=', True)])
+
         ctx = {
             'active_ids': active_ids,
             'active_id': active_ids[0],
