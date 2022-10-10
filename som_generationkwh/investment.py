@@ -1693,7 +1693,7 @@ class GenerationkwhInvestment(osv.osv):
 
     def is_last_year_amortized(self, cursor, uid, investment_name, current_year):
         Invoice = self.pool.get('account.invoice')
-        invoice_number = investment_name + "-AMOR" + str(int(current_year)-1)
+        invoice_number = investment_name + "-AMOR" + str(current_year)
         amortized = Invoice.search(cursor, uid, [('number','=', invoice_number)])
         return amortized
 
