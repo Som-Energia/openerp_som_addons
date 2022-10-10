@@ -275,15 +275,16 @@ class SomCrawlersTaskStep(osv.osv):
 
     def export_xml_files(self, cursor, uid, id, result_id, proces_name='D1', step_name='02', context={}):
         task_step_obj = self.browse(cursor,uid,id)
-        """
+
         sw_obj = self.pool.get('giscedata.switching')
         atr_wiz_obj = self.pool.get('giscedata.switching.wizard')
         active_ids = sw_obj.search(cursor, uid, [('proces_id.name','=', proces_name),
-            ('step_id.name','=', step_name), ('state','=', 'open')])
+            ('step_id.name','=', step_name), ('state','=', 'open'), ('enviament_pendent', '=', True)])
         ctx = {
             'active_ids': active_ids,
             'active_id': active_ids[0],
         }
+
         wiz = atr_wiz_obj.create(cursor, uid, {}, context=ctx)
         atr_wiz_obj.action_exportar_xml(cursor, uid, [wiz], context=ctx)
         wiz = atr_wiz_obj.browse(cursor, uid, wiz)
@@ -294,8 +295,8 @@ class SomCrawlersTaskStep(osv.osv):
             'res_model': 'som.crawlers.result',
             'res_id': result_id,
         }
-        """
 
+        """
         f = open('/home/oriol/Baixades/D1-01-ES0031408597230013PZ0F_0009.xml.zip','r')
 
         attachment = {
@@ -305,12 +306,13 @@ class SomCrawlersTaskStep(osv.osv):
             'res_model': 'som.crawlers.result',
             'res_id': result_id,
         }
+        """
 
+        # Marcar com enviat?
         attachment_id =  self.pool.get('ir.attachment').create(cursor, uid, attachment, context=context)
         classresult = self.pool.get('som.crawlers.result')
         classresult.write(cursor,uid, result_id, {'zip_name': attachment_id})
         task_step_obj.task_id.write({'ultima_tasca_executada': str(task_step_obj.name)+ ' - ' + str(datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))})
         classresult.write(cursor, uid, result_id, {'resultat_bool': True})
-        pass
 
 SomCrawlersTaskStep()
