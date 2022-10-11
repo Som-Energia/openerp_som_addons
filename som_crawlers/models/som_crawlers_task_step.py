@@ -277,20 +277,20 @@ class SomCrawlersTaskStep(osv.osv):
         task_step_obj = self.browse(cursor,uid,id)
         sw_obj = self.pool.get('giscedata.switching')
         atr_wiz_obj = self.pool.get('giscedata.switching.wizard')
-        config_obj = self.pool.get('som.crawlers.task').id_del_portal_config(cursor, uid, task_step_obj.task_id.id, context)
+
+        task_obj = self.pool.get('som.crawlers.task')
+        distri_id = task_obj.read(cursor, uid, task_step_obj.task_id.id, ['distribuidora'])
 
         task_step_params = json.loads(task_step_obj.params)
-        export_d1 = True
-        if task_step_params.has_key('export_d1'):
-            export_d1 = task_step_params[export_d1]
+        if task_step_params.has_key('process'):
+            process = task_step_params['process']
+            if not isinstance(process, list):
+                process = [process]
 
-        # TODO filtrar per distri nom config_obj.name
-        if (export_d1):
-            active_ids = sw_obj.search(cursor, uid, [('proces_id.name','=', 'D1'),
-                ('step_id.name','=', '02'), ('state','=', 'open'), ('enviament_pendent', '=', True)])
-        else:
-            active_ids = sw_obj.search(cursor, uid, [('proces_id.name','!=', 'D1'),
-                ('state','=', 'open'), ('enviament_pendent', '=', True)])
+        search_params = [('proces_id.name', 'in', ['D1']), ('state', '=', 'open'), ('enviament_pendent', '=', True)]
+        if distri_id['distribuidora']:
+            search_params.append(('partner_id', '=', distri_id['distribuidora'][0]))
+        active_ids = sw_obj.search(cursor, uid, search_params)
 
         ctx = {
             'active_ids': active_ids,
