@@ -238,8 +238,9 @@ class SomCrawlersTaskStep(osv.osv):
         path_to_zip = '/tmp/outputFiles'
         file_name = "output_" + config_obj.name + "_" + datetime.now().strftime("%Y-%m-%d_%H_%M") + ".zip"
         file_path = os.path.join(path_to_zip, file_name)
-        attachment_id =  self.pool.get('ir.attachment').search(cursor, uid, [('res_model','=','som.crawlers.result'),
-            ('res_id','=',result_id)], context=context)
+        attachment_id = int(classresult.read(cursor,uid, result_id, ['resultat_text'])['resultat_text'])
+        #attachment_id =  self.pool.get('ir.attachment').search(cursor, uid, [('res_model','=','som.crawlers.result'),
+        #    ('res_id','=',result_id)], context=context)
         zip_file = self.pool.get('ir.attachment').browse(cursor, uid, attachment_id[0])
         with open(file_path, 'w') as f:
             f.write(base64.b64decode(zip_file.datas))
@@ -288,14 +289,14 @@ class SomCrawlersTaskStep(osv.osv):
                 process = [process]
 
 
-        search_params = [('proces_id.name', 'in', ['D1']), ('state', '=', 'open'), ('enviament_pendent', '=', True)]
+        search_params = [('proces_id.name', 'in', process), ('state', '=', 'open'), ('enviament_pendent', '=', True)]
         if distri_id['distribuidora']:
             search_params.append(('partner_id', '=', distri_id['distribuidora'][0]))
         active_ids = sw_obj.search(cursor, uid, search_params)
 
 
         if not len(active_ids):
-            raise Exception("No hi ha fitxers pendents d'exportar")
+            raise Exception("SENSE RESULTATS: No hi ha fitxers pendents d'exportar")
 
         ctx = {
             'active_ids': active_ids,
@@ -320,6 +321,6 @@ class SomCrawlersTaskStep(osv.osv):
         task_step_obj.task_id.write({'ultima_tasca_executada': str(task_step_obj.name)+ ' - ' + str(datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))})
         classresult.write(cursor, uid, result_id, {'resultat_bool': True})
 
-        return ''
+        return attachment_id
 
 SomCrawlersTaskStep()
