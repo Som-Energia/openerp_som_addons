@@ -295,7 +295,7 @@ class SomCrawlersTaskStep(osv.osv):
 
 
         if not len(active_ids):
-            return "No hi ha fitxers pendents d'exportar"
+            raise Exception("No hi ha fitxers pendents d'exportar")
 
         ctx = {
             'active_ids': active_ids,
