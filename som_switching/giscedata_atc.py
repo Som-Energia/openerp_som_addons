@@ -77,7 +77,12 @@ class GiscedataAtc(osv.osv):
                             _(u"Warning"),
                             _(u"Cas ATC {} no es pot cancel·lar: R1 02 amb passos finalitzats").format(atc_id))
 
-            if atc.state == 'pending' and atc.process_step == '03':
+            if atc.state == 'open' and atc.process_step == '03':
+                raise osv.except_osv(
+                        _(u"Warning"),
+                        _(u"Cas ATC {} no es pot cancel·lar: R1 03 en estat Obert").format(atc_id))
+
+            if atc.state =='pending' and atc.process_step == '03':
                 raise osv.except_osv(
                         _(u"Warning"),
                         _(u"Cas ATC {} no es pot cancel·lar: R1 03 en estat Pendent").format(atc_id))
@@ -100,7 +105,7 @@ class GiscedataAtc(osv.osv):
                 else:
                     raise osv.except_osv(
                             _(u"Warning"),
-                            _(u"Cas ATC {} no es pot cancel·lar: R1 05 en estat obert s'ha de gestionar i tancar sefons tancament indicat (procedent/improcedent)").format(atc_id))
+                            _(u"Cas ATC {} no es pot cancel·lar: R1 05 en estat obert s'ha de gestionar i tancar segons tancament indicat (procedent/improcedent)").format(atc_id))
 
             if atc.state == 'open' and atc.process_step == '08':
                 raise osv.except_osv(
