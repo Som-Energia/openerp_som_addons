@@ -418,7 +418,7 @@ class TestUnlinkATC(TestSwitchingImport):
 
         self.assertEqual(atc.state, 'open')
 
-    def test__case_cancel_ATC_with_R108__NOCancelATC(self):
+    def test__case_cancel_ATC_with_R108__NOCancelATC__via_import(self):
         """
         Test case_cancel for atc 'open' with R108, ATC is not cancelled
         """
@@ -472,4 +472,206 @@ class TestUnlinkATC(TestSwitchingImport):
         atc = atc_o.browse(self.cursor, self.uid, atc_id)
 
         self.assertEqual(atc.state, 'open')
+
+    def test__case_cancel_ATC_with_R108__NOCancelATC__via_create_case_and_step(self):
+        """
+        Test case_cancel for atc 'open' with R108, ATC is not cancelled
+        """
+        atc_o = self.pool.get('giscedata.atc')
+        imd_obj = self.openerp.pool.get('ir.model.data')
+
+        atc_id = imd_obj.get_object_reference(self.cursor, self.uid, 'som_switching', 'cas_atc_0001')[1]
+
+        self.switch(self.txn, 'comer')
+
+        r108_obj = self.openerp.pool.get('giscedata.switching.r1.08')
+        sw_obj = self.openerp.pool.get('giscedata.switching')
+
+        act_obj = self.openerp.pool.get("giscedata.switching.activation.config")
+        act_obj.write(self.cursor, self.uid, act_obj.search(self.cursor, self.uid, [], context={"active_test": False}), {'active': True, 'is_automatic': True})
+
+        contract_id = self.get_contract_id(self.txn)
+        self.change_polissa_comer(self.txn)
+        self.update_polissa_distri(self.txn)
+        # Creates step R1-08
+        step_id = self.create_case_and_step(self.cursor, self.uid, contract_id, 'R1', '08')
+
+        r108 = r108_obj.browse(self.cursor, self.uid, step_id)
+
+        sw_id = sw_obj.browse(self.cursor, self.uid, r108.sw_id.id)
+
+        atc = atc_o.browse(self.cursor, self.uid, atc_id)
+
+        atc_o.write(self.cursor, self.uid, atc_id, {'state': 'open', 'ref': 'giscedata.switching,{}'.format(sw_id.id)})
+
+        try:
+            atc_o.case_cancel(self.cursor, self.uid, atc_id)
+        except Exception, e:
+            atc_e = e
+
+        self.assertEqual(atc_e.value, 'Cas ATC {} no es pot cancel·lar: R1 08 no pots cancel·lar una cancel·lació, cal esperar a rebre pas 09 de distribuïdora'.format(atc_id))
+
+        atc = atc_o.browse(self.cursor, self.uid, atc_id)
+
+        self.assertEqual(atc.state, 'open')
+
+    def test__case_cancel_ATC_with_R109__no_rebuig__NOCancelATC(self):
+        """
+        Test case_cancel for atc 'open' with R109, ATC is not cancelled
+        """
+        atc_o = self.pool.get('giscedata.atc')
+        imd_obj = self.openerp.pool.get('ir.model.data')
+
+        atc_id = imd_obj.get_object_reference(self.cursor, self.uid, 'som_switching', 'cas_atc_0001')[1]
+
+        r1_xml_path = get_module_resource('giscedata_switching', 'tests', 'fixtures', 'r109_new.xml')
+
+        self.switch(self.txn, 'comer')
+
+        r108_obj = self.openerp.pool.get('giscedata.switching.r1.08')
+        sw_obj = self.openerp.pool.get('giscedata.switching')
+
+        act_obj = self.openerp.pool.get("giscedata.switching.activation.config")
+        act_obj.write(self.cursor, self.uid, act_obj.search(self.cursor, self.uid, [], context={"active_test": False}), {'active': True, 'is_automatic': True})
+
+        contract_id = self.get_contract_id(self.txn)
+        self.change_polissa_comer(self.txn)
+        self.update_polissa_distri(self.txn)
+        # Creates step R1-08
+        step_id = self.create_case_and_step(self.cursor, self.uid, contract_id, 'R1', '08')
+
+        r108 = r108_obj.browse(self.cursor, self.uid, step_id)
+
+        sw_id = sw_obj.browse(self.cursor, self.uid, r108.sw_id.id)
+
+        sw_obj.write(self.cursor, self.uid, sw_id.id, {'codi_sollicitud': '201607211259'})
+
+        # El creem ara perque la data sigui posterior a la posada al r101
+        data_old = '<FechaSolicitud>2016-09-29T09:39:08'
+        with open(r1_xml_path, 'r') as f:
+            data_new = datetime.strftime(datetime.now(),'%Y-%m-%dT%H:%M:%S')
+            r1_xml = f.read()
+            r1_xml = r1_xml.replace(
+                data_old, "<FechaSolicitud>{}".format(data_new)
+            )
+
+        sw_obj.importar_xml(self.cursor, self.uid, r1_xml, 'r109.xml')
+
+        sw_id = sw_obj.browse(self.cursor, self.uid, r108.sw_id.id)
+
+        atc = atc_o.browse(self.cursor, self.uid, atc_id)
+
+        atc_o.write(self.cursor, self.uid, atc_id, {'state': 'open', 'ref': 'giscedata.switching,{}'.format(sw_id.id)})
+
+        try:
+            atc_o.case_cancel(self.cursor, self.uid, atc_id)
+        except Exception, e:
+            atc_e = e
+
+        self.assertEqual(atc_e.value, "Cas ATC {} no es pot cancel·lar: R1 09 d'acceptació s'ha de tancar i no cancel·lar".format(atc_id))
+
+        atc = atc_o.browse(self.cursor, self.uid, atc_id)
+
+        self.assertEqual(atc.state, 'open')
+
+    def test__case_cancel_ATC_with_R109__rebuig__NOCancelATC(self):
+        """
+        Test case_cancel for atc 'open' with R109, ATC is not cancelled
+        """
+        atc_o = self.pool.get('giscedata.atc')
+        imd_obj = self.openerp.pool.get('ir.model.data')
+
+        atc_id = imd_obj.get_object_reference(self.cursor, self.uid, 'som_switching', 'cas_atc_0001')[1]
+
+        r1_xml_path = get_module_resource('giscedata_switching', 'tests', 'fixtures', 'r109_new.xml')
+
+        self.switch(self.txn, 'comer')
+
+        r108_obj = self.openerp.pool.get('giscedata.switching.r1.08')
+        sw_obj = self.openerp.pool.get('giscedata.switching')
+
+        act_obj = self.openerp.pool.get("giscedata.switching.activation.config")
+        act_obj.write(self.cursor, self.uid, act_obj.search(self.cursor, self.uid, [], context={"active_test": False}), {'active': True, 'is_automatic': True})
+
+        contract_id = self.get_contract_id(self.txn)
+        self.change_polissa_comer(self.txn)
+        self.update_polissa_distri(self.txn)
+        # Creates step R1-08
+        step_id = self.create_case_and_step(self.cursor, self.uid, contract_id, 'R1', '08')
+
+        r108 = r108_obj.browse(self.cursor, self.uid, step_id)
+
+        sw_id = sw_obj.browse(self.cursor, self.uid, r108.sw_id.id)
+
+        sw_obj.write(self.cursor, self.uid, sw_id.id, {'codi_sollicitud': '201607211259'})
+
+        # El creem ara perque la data sigui posterior a la posada al r101
+        data_old = '<FechaSolicitud>2016-09-29T09:39:08'
+        with open(r1_xml_path, 'r') as f:
+            data_new = datetime.strftime(datetime.now(),'%Y-%m-%dT%H:%M:%S')
+            r1_xml = f.read()
+            r1_xml = r1_xml.replace(
+                data_old, "<FechaSolicitud>{}".format(data_new)
+            )
+            r1_xml = r1_xml.replace('MensajeAceptacionAnulacionReclamacion','MensajeRechazoReclamacion')
+            r1_xml = r1_xml.replace('AceptacionAnulacion','Rechazos')
+            r1_xml = r1_xml.replace('FechaAceptacion','FechaRechazo')
+            dada_rebuig = """<Rechazo>
+                            <Secuencial>1</Secuencial>
+                            <CodigoMotivo>F1</CodigoMotivo>
+                            <Comentarios>Motiu de rebuig F1</Comentarios>
+                            </Rechazo>
+                            <RegistrosDocumento>
+                            <RegistroDoc>
+                                <TipoDocAportado>08</TipoDocAportado>
+                                <DireccionUrl>http://eneracme.com/docs/NIF11111111H.pdf</DireccionUrl>
+                            </RegistroDoc>
+                            <RegistroDoc>
+                                <TipoDocAportado>07</TipoDocAportado>
+                                <DireccionUrl>http://eneracme.com/docs/NIF11111111H.pdf</DireccionUrl>
+                            </RegistroDoc>
+                            </RegistrosDocumento>"""
+            r1_xml = r1_xml.replace('</FechaRechazo>','</FechaRechazo>'+dada_rebuig)
+
+        sw_obj.importar_xml(self.cursor, self.uid, r1_xml, 'r109.xml')
+
+        sw_id = sw_obj.browse(self.cursor, self.uid, r108.sw_id.id)
+
+        atc = atc_o.browse(self.cursor, self.uid, atc_id)
+
+        atc_o.write(self.cursor, self.uid, atc_id, {'state': 'open', 'ref': 'giscedata.switching,{}'.format(sw_id.id)})
+
+        try:
+            atc_o.case_cancel(self.cursor, self.uid, atc_id)
+        except Exception, e:
+            atc_e = e
+
+        self.assertEqual(atc_e.value, "Cas ATC {} no es pot cancel·lar: R1 09 de rebuig no es pot cancel·lar ni tancar".format(atc_id))
+
+        atc = atc_o.browse(self.cursor, self.uid, atc_id)
+
+        self.assertEqual(atc.state, 'open')
+
+
+    def test__case_cancel_ATC_done__NOcancelATC(self):
+        """
+        Test case_cancel for atc 'done' ATC is cancelled
+        """
+
+        atc_o = self.pool.get('giscedata.atc')
+        imd_obj = self.openerp.pool.get('ir.model.data')
+
+        atc_id = imd_obj.get_object_reference(self.cursor, self.uid, 'som_switching', 'cas_atc_0001')[1]
+        atc_o.write(self.cursor, self.uid, atc_id, {'state': 'done'})
+
+        try:
+            atc_o.case_cancel(self.cursor, self.uid, atc_id)
+        except Exception, e:
+            atc_e = e
+
+        self.assertEqual(atc_e.value, "Cas ATC {} no es pot cancel·lar: L'estat no és Pendent, Esborrany o Obert".format(atc_id))
+
+        atc = atc_o.browse(self.cursor, self.uid, atc_id)
+
+        self.assertEqual(atc.state, 'done')
 
