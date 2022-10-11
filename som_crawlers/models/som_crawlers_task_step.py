@@ -287,10 +287,15 @@ class SomCrawlersTaskStep(osv.osv):
             if not isinstance(process, list):
                 process = [process]
 
+
         search_params = [('proces_id.name', 'in', ['D1']), ('state', '=', 'open'), ('enviament_pendent', '=', True)]
         if distri_id['distribuidora']:
             search_params.append(('partner_id', '=', distri_id['distribuidora'][0]))
         active_ids = sw_obj.search(cursor, uid, search_params)
+
+
+        if not len(active_ids):
+            return "No hi ha fitxers pendents d'exportar"
 
         ctx = {
             'active_ids': active_ids,
@@ -309,23 +314,12 @@ class SomCrawlersTaskStep(osv.osv):
             'res_id': result_id,
         }
 
-        """
-        f = open('/home/oriol/Baixades/D1-01-ES0031408597230013PZ0F_0009.xml.zip','r')
-
-        attachment = {
-            'name':  'D1-01-ES0031408597230013PZ0F_0009.xml.zip',
-            'datas':  base64.b64encode(f.read()),
-            'datas_fname': 'D1-01-ES0031408597230013PZ0F_0009.xml.zip',
-            'res_model': 'som.crawlers.result',
-            'res_id': result_id,
-        }
-        """
-
-        # Marcar com enviat?
         attachment_id =  self.pool.get('ir.attachment').create(cursor, uid, attachment, context=context)
         classresult = self.pool.get('som.crawlers.result')
-        classresult.write(cursor,uid, result_id, {'zip_name': attachment_id})
+        classresult.write(cursor, uid, result_id, {'zip_name': attachment_id})
         task_step_obj.task_id.write({'ultima_tasca_executada': str(task_step_obj.name)+ ' - ' + str(datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))})
         classresult.write(cursor, uid, result_id, {'resultat_bool': True})
+
+        return ''
 
 SomCrawlersTaskStep()
