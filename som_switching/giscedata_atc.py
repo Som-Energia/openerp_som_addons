@@ -60,12 +60,12 @@ class GiscedataAtc(osv.osv):
                 m_obj = self.pool.get(model)
                 r1 = m_obj.browse(cursor, uid, int(index))
 
-            if atc.state == 'open' and atc.process_step == '01' and r1 and r1.enviament_pendent == False:
+            if atc.state == 'open' and atc.process_step == '01' and r1 and r1.enviament_pendent == True:
                 raise osv.except_osv(
                         _(u"Warning"),
                         _(u"Cas ATC {} no es pot cancel·lar: R1 01 enviat a distribuïdora, per cancel·lar cal anul·lar amb un 08 i esperar el 09").format(atc_id))
 
-            if atc.state == 'open'and atc.process_step == '02':
+            if atc.state in ['open', 'pending'] and atc.process_step == '02':
                 r1_finalitzat = self.has_r1_no_finalitzat(cursor, uid, atc_id)
                 if r1 and not r1_finalitzat:
                     raise osv.except_osv(
@@ -76,6 +76,11 @@ class GiscedataAtc(osv.osv):
                     raise osv.except_osv(
                             _(u"Warning"),
                             _(u"Cas ATC {} no es pot cancel·lar: R1 02 amb passos finalitzats").format(atc_id))
+
+            if atc.state == 'pending' and atc.process_step == '03':
+                raise osv.except_osv(
+                        _(u"Warning"),
+                        _(u"Cas ATC {} no es pot cancel·lar: R1 03 en estat Pendent").format(atc_id))
 
             if atc.state == 'open' and atc.process_step == '04':
                 raise osv.except_osv(
