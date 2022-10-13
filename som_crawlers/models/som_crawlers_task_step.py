@@ -239,7 +239,7 @@ class SomCrawlersTaskStep(osv.osv):
         file_name = "output_" + config_obj.name + "_" + datetime.now().strftime("%Y-%m-%d_%H_%M") + ".zip"
         file_path = os.path.join(path_to_zip, file_name)
         attachment_id = int(classresult.read(cursor,uid, result_id, ['resultat_text'])['resultat_text'])
-        zip_file = self.pool.get('ir.attachment').browse(cursor, uid, attachment_id[0])
+        zip_file = self.pool.get('ir.attachment').browse(cursor, uid, attachment_id)
         with open(file_path, 'w') as f:
             f.write(base64.b64decode(zip_file.datas))
 
