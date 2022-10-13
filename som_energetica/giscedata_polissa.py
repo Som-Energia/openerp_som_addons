@@ -116,5 +116,13 @@ class GiscedataPolissa(osv.osv):
                 'Added partner {} to Energética category'.format(p_data['name'])
             )
 
+    def create(self, cursor, uid, vals, context=None):
+        res_id = super(GiscedataPolissa,
+                       self).create(cursor, uid, vals, context)
+
+        if self.is_energetica(cursor, uid, res_id):
+            self.set_energetica(cursor, uid, [res_id], context)
+
+        return res_id
 
 GiscedataPolissa()

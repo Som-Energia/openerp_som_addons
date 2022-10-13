@@ -128,3 +128,89 @@ class EnergeticaTests(testing.OOTestCase):
                 cursor, uid, contract_id
             )
             expect(partners_ids).to(be_empty)
+
+    def test_create_contract_soci_energetica(self):
+        contract_obj = self.openerp.pool.get('giscedata.polissa')
+        partner_obj = self.openerp.pool.get('res.partner')
+        imd_obj = self.openerp.pool.get('ir.model.data')
+
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            _, self.demo_contract_01 = imd_obj.get_object_reference(
+                cursor, uid, 'giscedata_polissa', 'polissa_0001'
+            )
+            cat_energetica_id = imd_obj.get_object_reference(
+                cursor, uid,
+                'som_energetica', 'res_partner_category_energetica'
+            )[1]
+
+            vals, _ = contract_obj.copy_data(cursor, uid, self.demo_contract_01)
+
+            soci_id = imd_obj.get_object_reference(
+                cursor, uid, 'som_energetica', 'res_partner_energetica'
+            )[1]
+
+            vals.update({
+                'soci': soci_id
+            })
+
+            new_contract_id = contract_obj.create(cursor, uid, vals)
+
+            # energetica setted
+            partners_ids = contract_obj.get_bad_energetica_partners(
+                cursor, uid, new_contract_id
+            )
+            expect(partners_ids).to(be_empty)
+
+            par_ids = self.get_all_partners(cursor, uid, new_contract_id)
+            for par_id in par_ids:
+                partner_data = partner_obj.read(cursor, uid, par_id)
+                expect(partner_data['category_id']).to(contain(cat_energetica_id))
+
+    def test_create_contract_no_soci_energetica(self):
+        contract_obj = self.openerp.pool.get('giscedata.polissa')
+        partner_obj = self.openerp.pool.get('res.partner')
+        imd_obj = self.openerp.pool.get('ir.model.data')
+
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            _, self.demo_contract_01 = imd_obj.get_object_reference(
+                cursor, uid, 'giscedata_polissa', 'polissa_0001'
+            )
+            cat_energetica_id = imd_obj.get_object_reference(
+                cursor, uid,
+                'som_energetica', 'res_partner_category_energetica'
+            )[1]
+
+            vals, _ = contract_obj.copy_data(cursor, uid, self.demo_contract_01)
+
+            new_contract_id = contract_obj.create(cursor, uid, vals)
+
+            # energetica setted
+            partners_ids = contract_obj.get_bad_energetica_partners(
+                cursor, uid, new_contract_id
+            )
+            expect(partners_ids).to(be_empty)
+
+            par_ids = self.get_all_partners(cursor, uid, new_contract_id)
+            for par_id in par_ids:
+                partner_data = partner_obj.read(cursor, uid, par_id)
+                expect(partner_data['category_id']).not_to(contain(cat_energetica_id))
+
+    def get_all_partners(self, cursor, uid, contract_id):
+        contract_fields = ['titular', 'pagador', 'altre_p', 'propietari_bank']
+        contract_obj = self.openerp.pool.get('giscedata.polissa')
+        contract_data = contract_obj.read(cursor, uid, contract_id, contract_fields)
+
+        partners_list = []
+        for contract_field in contract_fields:
+            if not contract_data[contract_field]:
+                continue
+            partner_id = contract_data[contract_field][0]
+            partners_list.append(partner_id)
+
+        return list(set(partners_list))
