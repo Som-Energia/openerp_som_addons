@@ -51,33 +51,39 @@ class GiscedataPolissa(osv.osv):
         :param context:
         :return: llista amb les partners a modificar
         """
-        contract_fields = ['titular', 'pagador', 'altre_p', 'propietari_bank']
+
         imd_obj = self.pool.get('ir.model.data')
-        partner_obj = self.pool.get('res.partner')
 
         if not isinstance(contract_ids, (list, tuple)):
             contract_ids = [contract_ids]
-
-        contracts_data = self.read(cursor, uid, contract_ids, contract_fields)
 
         cat_energetica_id = imd_obj.get_object_reference(
             cursor, uid, 'som_energetica', 'res_partner_category_energetica'
         )[1]
 
         partners_list = []
-        for contract_data in contracts_data:
-            contract_id = contract_data['id']
+
+        for contract_id in contract_ids:
             if not self.is_energetica(cursor, uid, contract_id):
                 continue
-            for contract_field in contract_fields:
-                if not contract_data[contract_field]:
-                    continue
-                partner_id = contract_data[contract_field][0]
-                partner_data = partner_obj.read(
-                    cursor, uid, partner_id, context=context
-                )
-                if cat_energetica_id not in partner_data['category_id']:
-                    partners_list.append(partner_id)
+
+            contract = self.browse(cursor, uid, contract_id, context)
+
+            if contract.titular and cat_energetica_id not in [x.id for x in contract.titular.category_id]:
+                partners_list.append(contract.titular.id)
+
+            if contract.pagador and cat_energetica_id not in [x.id for x in contract.pagador.category_id]:
+                partners_list.append(contract.pagador.id)
+
+            if contract.direccio_pagament and \
+                contract.direccio_pagament.partner_id and \
+                cat_energetica_id not in [x.id for x in contract.direccio_pagament.partner_id.category_id]:
+                partners_list.append(contract.direccio_pagament.partner_id.id)
+
+            if contract.direccio_notificacio and \
+                contract.direccio_notificacio.partner_id and \
+                cat_energetica_id not in [x.id for x in contract.direccio_notificacio.partner_id.category_id]:
+                partners_list.append(contract.direccio_notificacio.partner_id.id)
 
         return list(set(partners_list))
 
