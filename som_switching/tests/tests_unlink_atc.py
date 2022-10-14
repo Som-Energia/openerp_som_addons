@@ -52,9 +52,9 @@ class TestUnlinkATC(TestSwitchingImport):
 
         self.assertEqual(atc.state, 'cancel')
 
-    def test__case_cancel_ATC_with_R101_enviament_pendentFalse__CancelATC(self):
+    def test__case_cancel_ATC_with_R101_enviament_pendentFalse__NoCancelATC(self):
         """
-        Test case_cancel for atc 'pending' with R101 without enviament_pendent, ATC is cancelled
+        Test case_cancel for atc 'pending' with R101 without enviament_pendent, ATC is not cancelled
         """
         atc_o = self.pool.get('giscedata.atc')
         imd_obj = self.openerp.pool.get('ir.model.data')
@@ -65,15 +65,21 @@ class TestUnlinkATC(TestSwitchingImport):
 
         atc_o.write(self.cursor, self.uid, atc_id, {'state': 'pending', 'ref': 'giscedata.switching,1'})
 
-        atc_o.case_cancel(self.cursor, self.uid, atc_id)
+        try:
+            atc_o.case_cancel(self.cursor, self.uid, atc_id)
+        except Exception, e:
+            atc_e = e
+
+        self.assertEqual(atc_e.value, 'Cas ATC {} no es pot cancel·lar: R1 01 està pendent del pas finalitzador'.format(atc_id))
 
         atc = atc_o.browse(self.cursor, self.uid, atc_id)
 
-        self.assertEqual(atc.state, 'cancel')
+        self.assertEqual(atc.state, 'pending')
 
-    def test__case_cancel_ATC_with_R101_enviament_pendentTrue__NOCancelATC(self):
+
+    def test__case_cancel_ATC_with_R101_enviament_pendentTrue__CancelATC(self):
         """
-        Test case_cancel for atc 'pending' with R101 with enviament_pendent, ATC is not cancelled
+        Test case_cancel for atc 'pending' with R101 with enviament_pendent, ATC is cancelled
         """
         atc_o = self.pool.get('giscedata.atc')
         imd_obj = self.openerp.pool.get('ir.model.data')
@@ -96,16 +102,11 @@ class TestUnlinkATC(TestSwitchingImport):
 
         r101.write({'enviament_pendent': True})
 
-        try:
-            atc_o.case_cancel(self.cursor, self.uid, atc_id)
-        except Exception, e:
-            atc_e = e
-
-        self.assertEqual(atc_e.value, 'Cas ATC {} no es pot cancel·lar: R1 01 enviat a distribuïdora, per cancel·lar cal anul·lar amb un 08 i esperar el 09'.format(atc_id))
+        atc_o.case_cancel(self.cursor, self.uid, atc_id)
 
         atc = atc_o.browse(self.cursor, self.uid, atc_id)
 
-        self.assertEqual(atc.state, 'open')
+        self.assertEqual(atc.state, 'cancel')
 
     @mock.patch.object(giscedata_atc_switching.giscedata_atc.GiscedataAtc,"has_r1_no_finalitzat")
     def test__case_cancel_ATC_with_R102_no_finalizat__NOCancelATC(self, mock_has_r1_no_finalitzat):
