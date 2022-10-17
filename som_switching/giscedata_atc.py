@@ -70,12 +70,12 @@ class GiscedataAtc(osv.osv):
                 if r1 and not r1_finalitzat:
                     raise osv.except_osv(
                             _(u"Warning"),
-                            _(u"Cas ATC {} no es pot cancel·lar: R1 02 està pendent del pas finalitzador").format(atc_id))
+                            _(u"Cas ATC {} no es pot cancel·lar: R1 02 l'heu de revisar i tancar").format(atc_id))
 
                 if r1 and r1_finalitzat:
                     raise osv.except_osv(
                             _(u"Warning"),
-                            _(u"Cas ATC {} no es pot cancel·lar: R1 02 l'heu de revisar i tancar").format(atc_id))
+                            _(u"Cas ATC {} no es pot cancel·lar: R1 02 està pendent del pas finalitzador").format(atc_id))
 
             if atc.state == 'open' and atc.process_step == '03':
                 raise osv.except_osv(

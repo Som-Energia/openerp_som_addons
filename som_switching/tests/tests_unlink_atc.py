@@ -159,7 +159,7 @@ class TestUnlinkATC(TestSwitchingImport):
         except Exception, e:
             atc_e = e
 
-        self.assertEqual(atc_e.value, u'Cas ATC {} no es pot cancel·lar: R1 02 està pendent del pas finalitzador'.format(atc_id))
+        self.assertEqual(atc_e.value, u"Cas ATC {} no es pot cancel·lar: R1 02 l'heu de revisar i tancar".format(atc_id))
 
         atc = atc_o.browse(self.cursor, self.uid, atc_id)
 
@@ -216,7 +216,7 @@ class TestUnlinkATC(TestSwitchingImport):
         except Exception, e:
             atc_e = e
 
-        self.assertEqual(atc_e.value, u"Cas ATC {} no es pot cancel·lar: R1 02 l'heu de revisar i tancar".format(atc_id))
+        self.assertEqual(atc_e.value, u"Cas ATC {} no es pot cancel·lar: R1 02 està pendent del pas finalitzador".format(atc_id))
 
         atc = atc_o.browse(self.cursor, self.uid, atc_id)
 
