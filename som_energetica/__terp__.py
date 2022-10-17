@@ -12,6 +12,7 @@
         "giscedata_facturacio_comer",
         "som_polissa_soci",
         "som_switching",
+        "som_polissa_administradora",
     ],
     "init_xml": [],
     "demo_xml": [],

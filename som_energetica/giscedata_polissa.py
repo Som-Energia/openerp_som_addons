@@ -75,6 +75,17 @@ class GiscedataPolissa(osv.osv):
             if contract.pagador and cat_energetica_id not in [x.id for x in contract.pagador.category_id]:
                 partners_list.append(contract.pagador.id)
 
+            if contract.altre_p and cat_energetica_id not in [x.id for x in contract.altre_p.category_id]:
+                partners_list.append(contract.altre_p.id)
+
+            if contract.administradora and cat_energetica_id not in [x.id for x in contract.administradora.category_id]:
+                partners_list.append(contract.administradora.id)
+
+            if contract.bank and \
+                contract.bank.partner_id and \
+                cat_energetica_id not in [x.id for x in contract.bank.partner_id.category_id]:
+                partners_list.append(contract.bank.partner_id.id)
+
             if contract.direccio_pagament and \
                 contract.direccio_pagament.partner_id and \
                 cat_energetica_id not in [x.id for x in contract.direccio_pagament.partner_id.category_id]:
