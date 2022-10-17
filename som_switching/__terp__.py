@@ -15,6 +15,7 @@
         "giscedata_polissa_responsable",
         "giscedata_facturacio_suspesa",
         "giscedata_atc_switching",
+        "giscedata_switching_multi_close",
     ],
     "init_xml": [],
     "demo_xml": [],
