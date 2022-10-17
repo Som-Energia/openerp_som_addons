@@ -69,7 +69,7 @@ class EnergeticaTests(testing.OOTestCase):
         contract_obj = self.openerp.pool.get('giscedata.polissa')
         imd_obj = self.openerp.pool.get('ir.model.data')
 
-        for field in 'titular', 'pagador', 'altre_p', 'propietari_bank':
+        for field in 'titular', 'pagador', 'altre_p':
             with Transaction().start(self.database) as txn:
                 cursor = txn.cursor
                 uid = txn.user
@@ -100,6 +100,102 @@ class EnergeticaTests(testing.OOTestCase):
                 )
 
                 expect(partners_ids).to_not(contain(field_object.id))
+
+    def test_bad_energetica_partners_full(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            contract_obj = self.openerp.pool.get('giscedata.polissa')
+            partner_obj = self.openerp.pool.get('res.partner')
+            address_obj = self.openerp.pool.get('res.partner.address')
+            bank_obj = self.openerp.pool.get('res.partner.bank')
+            imd_obj = self.openerp.pool.get('ir.model.data')
+
+            cat_energetica_id = imd_obj.get_object_reference(
+                cursor, uid,
+                'som_energetica', 'res_partner_category_energetica'
+            )[1]
+
+            contract_id = imd_obj.get_object_reference(
+                cursor, uid, 'giscedata_polissa', 'polissa_0001'
+            )[1]
+
+            partner_ids = partner_obj.search(cursor, uid, [])
+            bank_ids = bank_obj.search(cursor, uid, [])
+            address_ids = address_obj.search(cursor, uid, [])
+            contract_obj.write(cursor, uid ,contract_id,{
+                'titular': partner_ids[-1],
+                'pagador': partner_ids[-2],
+                'altre_p': partner_ids[-3],
+                'administradora': partner_ids[-4],
+                'bank': bank_ids[-1],
+                'direccio_pagament': address_ids[-1],
+                'direccio_notificacio': address_ids[-2],
+            })
+            address_obj.write(cursor, uid, address_ids[-1] , {'partner_id': partner_ids[-5]})
+            address_obj.write(cursor, uid, address_ids[-2] , {'partner_id': partner_ids[-6]})
+            bank_obj.write(cursor, uid, bank_ids[-1] , {'partner_id': partner_ids[-7]})
+
+            bad_ids = contract_obj.get_bad_energetica_partners(
+                cursor, uid, contract_id
+            )
+            expect(bad_ids).to(be_empty)
+
+            self.set_soci(cursor, uid, contract_id)
+
+            bad_ids = contract_obj.get_bad_energetica_partners(
+                cursor, uid, contract_id
+            )
+            expect(set(bad_ids)).to(equal(set(partner_ids[-7:])))
+
+    def test_bad_energetica_partners_one(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            contract_obj = self.openerp.pool.get('giscedata.polissa')
+            partner_obj = self.openerp.pool.get('res.partner')
+            address_obj = self.openerp.pool.get('res.partner.address')
+            bank_obj = self.openerp.pool.get('res.partner.bank')
+            imd_obj = self.openerp.pool.get('ir.model.data')
+
+            cat_energetica_id = imd_obj.get_object_reference(
+                cursor, uid,
+                'som_energetica', 'res_partner_category_energetica'
+            )[1]
+
+            contract_id = imd_obj.get_object_reference(
+                cursor, uid, 'giscedata_polissa', 'polissa_0001'
+            )[1]
+
+            partner_ids = partner_obj.search(cursor, uid, [])
+            bank_ids = bank_obj.search(cursor, uid, [])
+            address_ids = address_obj.search(cursor, uid, [])
+            contract_obj.write(cursor, uid ,contract_id,{
+                'titular': partner_ids[-1],
+                'pagador': partner_ids[-1],
+                'altre_p': partner_ids[-1],
+                'administradora': partner_ids[-1],
+                'bank': bank_ids[-1],
+                'direccio_pagament': address_ids[-1],
+                'direccio_notificacio': address_ids[-2],
+            })
+            address_obj.write(cursor, uid, address_ids[-1] , {'partner_id': partner_ids[-1]})
+            address_obj.write(cursor, uid, address_ids[-2] , {'partner_id': partner_ids[-1]})
+            bank_obj.write(cursor, uid, bank_ids[-1] , {'partner_id': partner_ids[-1]})
+
+            bad_ids = contract_obj.get_bad_energetica_partners(
+                cursor, uid, contract_id
+            )
+            expect(bad_ids).to(be_empty)
+
+            self.set_soci(cursor, uid, contract_id)
+
+            bad_ids = contract_obj.get_bad_energetica_partners(
+                cursor, uid, contract_id
+            )
+            expect(set(bad_ids)).to(equal(set(partner_ids[-1:])))
 
     def test_set_energetica(self):
         contract_obj = self.openerp.pool.get('giscedata.polissa')
@@ -202,7 +298,7 @@ class EnergeticaTests(testing.OOTestCase):
                 expect(partner_data['category_id']).not_to(contain(cat_energetica_id))
 
     def get_all_partners(self, cursor, uid, contract_id):
-        contract_fields = ['titular', 'pagador', 'altre_p', 'propietari_bank']
+        contract_fields = ['titular', 'pagador', 'altre_p', 'administradora']
         contract_obj = self.openerp.pool.get('giscedata.polissa')
         contract_data = contract_obj.read(cursor, uid, contract_id, contract_fields)
 
@@ -212,5 +308,16 @@ class EnergeticaTests(testing.OOTestCase):
                 continue
             partner_id = contract_data[contract_field][0]
             partners_list.append(partner_id)
+
+        contract = contract_obj.browse(cursor, uid, contract_id)
+
+        if contract.bank and contract.bank.partner_id:
+            partners_list.append(contract.bank.partner_id.id)
+
+        if contract.direccio_pagament and contract.direccio_pagament.partner_id:
+            partners_list.append(contract.direccio_pagament.partner_id.id)
+
+        if contract.direccio_notificacio and contract.direccio_notificacio.partner_id:
+            partners_list.append(contract.direccio_notificacio.partner_id.id)
 
         return list(set(partners_list))
