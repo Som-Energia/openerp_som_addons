@@ -37,6 +37,10 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             cursor, uid, 'som_account_invoice_pending', 'email_impagats_48h'
         )[1]
 
+        self.email_N57_left_template_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_account_invoice_pending', 'email_generic_previ_advocats'
+        )[1]
+
         self.sms_annex4_template_id = imd_obj.get_object_reference(
             cursor, uid, 'som_account_invoice_pending', 'sms_template_annex4'
         )[1]
@@ -138,6 +142,10 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         self.def_waiting_unpaid_id = imd_obj.get_object_reference(
             cursor, uid, 'som_account_invoice_pending',
             'default_esperant_segona_factura_impagada_pending_state'
+        )[1]
+
+        self.traspas_advocats_dp = imd_obj.get_object_reference(
+            cursor, uid, 'som_account_invoice_pending', 'default_pendent_traspas_advocats_pending_state'
         )[1]
 
     def _load_data_unpaid_invoices(self, cursor, uid, invoice_semid_list=[]):
@@ -806,3 +814,19 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
 
         self.assertEqual(last_pending.observations,
                          u'New message\nComunicació feta a través de la factura amb id:{}'.format(first_inv))
+
+    @mock.patch('som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email')
+    @mock.patch('som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_sms')
+    def test__update_waiting_for_annex_cancelled_contracts_baixa(self, mock_sms, mock_mail):
+        cursor = self.txn.cursor
+        uid = self.txn.user
+        self._load_data_unpaid_invoices(cursor, uid, [self.waiting_annexIV_def])
+        pending_obj = self.pool.get('update.pending.states')
+        fact_obj = self.pool.get('giscedata.facturacio.factura')
+
+        pending_obj.update_waiting_for_annex_cancelled_contracts(cursor, uid, self.invoice_1_id, self.traspas_advocats_dp, context=None)
+
+        factura = fact_obj.browse(cursor, uid, self.invoice_1_id)
+        self.assertEqual(mock_mail.call_count, 1)
+        self.assertEqual(mock_sms.call_count, 1)
+        self.assertEqual(factura.pending_state.id, self.traspas_advocats_dp)

@@ -459,6 +459,7 @@ class UpdatePendingStates(osv.osv_memory):
 
         factura_ids = self.get_invoices_with_pending_state(cursor, uid, initial_state)
         fact_obj = self.pool.get('giscedata.facturacio.factura')
+        pol_obj = self.pool.get('giscedata.polissa')
 
         email_params = dict({
             'email_from': email_from,
@@ -468,6 +469,15 @@ class UpdatePendingStates(osv.osv_memory):
         for factura_id in factura_ids:
             invoice = fact_obj.read(cursor, uid, factura_id)
             ret_value = self.send_email(cursor, uid, invoice['id'], email_params)
+
+            polissa_id = invoice['polissa_id'][0]
+            polissa_state = pol_obj.read(cursor, uid, polissa_id, ['state'])['state']
+            if polissa_state == 'baixa':
+                traspas_advocats_bs= self.get_object_id(
+                    cursor, uid, 'som_account_invoice_pending', 'pendent_traspas_advocats_pending_state'
+                )
+                self.update_waiting_for_annex_cancelled_contracts(cursor, uid, factura_id, traspas_advocats_bs, context) #mirar si es bo social o no, entenc que aquí al igual que al II es posen per default a bs
+
 
             if ret_value == -1:
                 logger.info(
@@ -505,7 +515,7 @@ class UpdatePendingStates(osv.osv_memory):
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         pol_obj = self.pool.get('giscedata.polissa')
 
-        for factura_id in factura_ids:
+        for factura_id in factura_ids: #Aqui el factura ids_no discrimina per bo social o no
             invoice = fact_obj.read(cursor, uid, factura_id, ['id', 'polissa_id'])
             polissa_id = invoice['polissa_id'][0]
             polissa_state = pol_obj.read(cursor, uid, polissa_id, ['state'])['state']
@@ -522,8 +532,13 @@ class UpdatePendingStates(osv.osv_memory):
 
         try:
             n57_template_id = self.get_object_id(
-                cursor, uid, 'som_account_invoice_pending', 'email_generic_N57'
+                cursor, uid, 'som_account_invoice_pending', 'email_generic_previ_advocats'
             )
+
+            sms_template_id = self.get_object_id(
+                cursor, uid, 'som_account_invoice_pending', 'sms_template_previ_advocats'
+            )
+            current_state_id = fact_obj.read(cursor, uid, factura_id, ['pending_state'])['pending_state'][0]
 
             email_from = self.get_from_email(cursor, uid, n57_template_id)
 
@@ -532,18 +547,23 @@ class UpdatePendingStates(osv.osv_memory):
                 'template_id': n57_template_id
             })
 
-            ret_value = 1 #self.send_email(cursor, uid, factura_id, email_params)
+            ret_value = self.send_email(cursor, uid, factura_id, email_params)
 
             if ret_value == -1:
                 logger.info(
-                    'ERROR: Sending N57 default payment email for {factura_id} invoice error.'.format(
+                    'ERROR: Sending N57 default payment email cancelled contract for {factura_id} invoice error.'.format(
                         factura_id=factura_id,
                     )
                 )
             else:
+                try:
+                    self.send_sms(cursor, uid, factura_id, sms_template_id, current_state_id, context)
+                except Exception as e:
+                    raise SMSException(e)
+
                 fact_obj.set_pending(cursor, uid, [factura_id], next_state)
                 logger.info(
-                    'Sending N57 default payment email for {factura_id} invoice with result: {ret_value}'.format(
+                    'Sending N57 default payment email cancelled contract for {factura_id} invoice with result: {ret_value}'.format(
                         factura_id=factura_id,
                         ret_value=ret_value
                     )
@@ -692,6 +712,14 @@ class UpdatePendingStates(osv.osv_memory):
         """
         if context is None:
             context = {}
+
+        traspas_advocats_dp = self.get_object_id(
+            cursor, uid, 'som_account_invoice_pending', 'default_pendent_traspas_advocats_pending_state'
+        )
+        traspas_advocats_bs = self.get_object_id(
+            cursor, uid, 'som_account_invoice_pending', 'pendent_traspas_advocats_pending_state'
+        )
+
         inv_obj = self.pool.get('account.invoice')
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         pend_obj = self.pool.get('account.invoice.pending.state')
@@ -706,12 +734,15 @@ class UpdatePendingStates(osv.osv_memory):
             inv_list = inv_obj.search(cursor, uid, [('name', 'like', contract_name),
                                                     ('pending_state.weight', '<=', waiting_unpaid_weight),
                                                     ('pending_state.weight', '>', correct_weight)])
-
             if len(inv_list) >= 2:
                 for invoice_id in inv_list:
                     inv_number = inv_obj.browse(cursor, uid, invoice_id).number
-                    fact_ids = fact_obj.search(cursor, uid, [('number', '=', inv_number)])
-                    fact_obj.set_pending(cursor, uid, fact_ids, waiting_notif_id)
-
+                    fact_id = fact_obj.search(cursor, uid, [('number', '=', inv_number)])
+                    polissa = fact_obj.browse(cursor, uid, fact_id[0]).polissa_id
+                    if polissa.state == 'baixa':
+                        if 'Bo Social' in process_name:
+                            self.update_waiting_for_annex_cancelled_contracts(cursor, uid, fact_id, traspas_advocats_bs, context)
+                        self.update_waiting_for_annex_cancelled_contracts(cursor, uid, fact_id, traspas_advocats_dp, context)
+                    fact_obj.set_pending(cursor, uid, fact_id, waiting_notif_id)
 
 UpdatePendingStates()
