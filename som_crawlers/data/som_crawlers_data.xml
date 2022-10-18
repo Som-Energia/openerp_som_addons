@@ -390,6 +390,11 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="viesgo_conf"/>
         </record>
+        <record model="som.crawlers.task" id="descargar_D_viesgo">
+            <field name="name">Viesgo descargar D</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="viesgo_conf"/>
+        </record>
         <!--Guadassuar-->
         <record model="som.crawlers.task" id="descargar_guadassuar">
             <field name="name">Descarregar Guadassuar</field>
@@ -858,7 +863,7 @@
             <field name="name">Descarregar fitxers</field>
             <field name="sequence">1</field>
             <field name="function">download_files</field>
-            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"atr"}</field>
             <field name="task_id" ref="descargar_atr_viesgo"/>
         </record>
         <record model="som.crawlers.task.step" id="taskStep_viesgo_import_ATR">
@@ -872,7 +877,7 @@
             <field name="name">Descarregar fitxers</field>
             <field name="sequence">1</field>
             <field name="function">download_files</field>
-            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"r"}</field>
             <field name="task_id" ref="descargar_R_viesgo"/>
         </record>
         <record model="som.crawlers.task.step" id="taskStep_viesgo_import_R">
@@ -886,7 +891,7 @@
             <field name="name">Descarregar fitxers</field>
             <field name="sequence">1</field>
             <field name="function">download_files</field>
-            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"f1"}</field>
             <field name="task_id" ref="descargar_F1_viesgo"/>
         </record>
         <record model="som.crawlers.task.step" id="taskStep_viesgo_import_F1">
@@ -895,6 +900,20 @@
             <field name="function">import_xml_files</field>
             <field name="params">{}</field>
             <field name="task_id" ref="descargar_F1_viesgo"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_viesgo_download_D">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"d"}</field>
+            <field name="task_id" ref="descargar_D_viesgo"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_viesgo_import_D">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_D_viesgo"/>
         </record>
         <!--Guadassuar-->
         <record model="som.crawlers.task.step" id="taskStep_guadassuar_download_F1">
