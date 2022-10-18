@@ -12,6 +12,7 @@
                     <field name="usuari"/>
                     <field name="contrasenya"/>
                     <field name="url_portal" />
+                    <field name="url_upload" />
                     <field name="filtres"/>
                     <field name="crawler" readonly='1'/>
                     <field name="days_of_margin" readonly='1'/>
@@ -33,6 +34,7 @@
                     <field name="usuari" select="1"/>
                     <field name="contrasenya" />
                     <field name="url_portal" />
+                    <field name="url_upload" />
                     <field name="filtres" />
                     <field name="crawler"/>
                     <field name="days_of_margin"/>
