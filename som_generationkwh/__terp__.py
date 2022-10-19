@@ -6,7 +6,7 @@
   "author": "GISCE-TI & Som Energia",
   "category": "Master",
   "depends": [
-    'base',
+    'base_extended_som',
     'product',
     "poweremail",
     "poweremail_references",

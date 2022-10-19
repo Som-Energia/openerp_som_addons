@@ -289,16 +289,6 @@
             <field name="smtpport">587</field>
         </record>
 
-        <record model="poweremail.core_accounts" id="info_som_mail_account">
-            <field name="email_id">info@somenergia.coop</field>
-            <field name="company">yes</field>
-            <field name="smtpserver">smtp.mandrillapp.com</field>
-            <field name="send_pref">html</field>
-            <field name="name">Info Som Energia</field>
-            <field name="state">approved</field>
-            <field name="smtpport">587</field>
-        </record>
-
         <record id="res_partner_inversor1" model="res.partner">
             <field name="bank_inversions" ref="partner_bank1"></field>
         </record>
