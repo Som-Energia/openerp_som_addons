@@ -7,7 +7,7 @@
 <style>
 .absolute {
   position: absolute;
-  top: 98px;
+  top: 88px;
   left: 349px;
   right: 0;
   width: 600px;
