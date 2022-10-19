@@ -110,7 +110,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             if factura.amount_total > max_amount:
                 return True
 
-    def open_group_invoices(self, cursor, uid, ids, facts_created, payment_order_id, context={}):
+    def open_group_invoices(self, cursor, uid, ids, facts_created, payment_order_id, action, context={}):
 
         wiz_ag_o = self.pool.get('wizard.group.invoices.payment')
         fact_obj = self.pool.get('giscedata.facturacio.factura')
@@ -133,6 +133,9 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         finally:
             tmp_cr.close()
 
+        if action == 'open':
+            return True, "S'han obert {} factures.".format(len(sorted_factures))
+
         agrupar_ctx = {'active_id':facts_created[0], 'active_ids':facts_created, 'model':'giscedata.facturacio.factura'}
         wiz_id = wiz_ag_o.create(cursor, uid, {}, context=agrupar_ctx)
         wiz = wiz_ag_o.browse(cursor, uid, wiz_id)
@@ -143,6 +146,8 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         elif total_import < 0:
             total_import = wiz.amount_total
             res = wiz_ag_o.agrupar_remesar(cursor, uid, [wiz.id], context=agrupar_ctx)
+            if action =='open-group':
+                return True, "S'han obert i agrupat {} factures que sumen {}.".format(len(sorted_factures), total_import)
             remesar_ctx = res['context']
             wiz_remesar_o = self.pool.get(res['res_model'])
             wiz_remesa_id = wiz_remesar_o.create(cursor, uid, {'tipus': 'payable', 'order': payment_order_id}, context=remesar_ctx)
@@ -173,7 +178,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             obs = f1_obj.read(cursor, uid, f1_id, ['user_observations'], context=context)['user_observations'] or ''
             f1_obj.write(cursor, uid, f1_id, {'user_observations': '{}\n{}'.format(text, obs)})
 
-    def open_polissa_invoices_send_mail(self, cursor, uid, ids, facts_by_polissa, context={}):
+    def open_polissa_invoices_send_mail(self, cursor, uid, ids, facts_by_polissa, action, context={}):
         if not isinstance(ids, (tuple, list)):
             ids = [ids]
         pol_obj = self.pool.get('giscedata.polissa')
@@ -185,14 +190,15 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                 continue
             pol_id = pol_obj.search(cursor, uid, [('name','=',pol_name)], context={'active_test': False})[0]
             res = False
-            if wiz.open_invoices:
-                res, msg_open = self.open_group_invoices(cursor, uid, ids, facts_created, wiz.order.id, context)
+
+            if action != 'draft':
+                res, msg_open = self.open_group_invoices(cursor, uid, ids, facts_created, wiz.order.id, action, context)
                 msg.append("S'han obert les factures de la pòlissa {}. {}". format(pol_name, msg_open))
-            if res and wiz.send_mail:
+            if res and action == 'open-group-order-send':
                 self.send_polissa_mail(cursor, uid, ids, pol_id, wiz.email_template, context)
                 msg.append("S'ha enviat el correu a la pòlissa {}.". format(pol_name))
             fact_csv_result.append(['', pol_name, "Ha arribat al final del procés (obrir {} factures: {}, enviar correu: {}).".format(
-                len(facts_created), wiz.open_invoices and 'Sí' or 'No', wiz.send_mail and 'Sí' or 'No')
+                len(facts_created), action != 'draft' and 'Sí' or 'No', action == 'open-group-order-send' and 'Sí' or 'No')
             ])
         return msg, fact_csv_result
 
@@ -204,11 +210,11 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         f1_obj = self.pool.get('giscedata.facturacio.importacio.linia')
 
         wiz = self.browse(cursor, uid, ids[0])
-        if wiz.send_mail and not wiz.email_template:
+        if wiz.actions == 'open-group-order-send' and not wiz.email_template:
             raise osv.except_osv(_('Error'), _('Per enviar el correu cal indicar una plantilla'))
         if wiz.email_template and not wiz.email_template.enforce_from_account:
             raise osv.except_osv(_('Error'), _('La plantilla no té indicat el compte des del qual enviar'))
-        if wiz.open_invoices and not wiz.order:
+        if wiz.actions in ['open-group-order-send', 'open-group-order'] and not wiz.order:
             raise osv.except_osv(_('Error'), _('Per remesar les factures a pagar cal una ordre de pagament'))
 
         msg = []
@@ -260,8 +266,8 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                 msg.append("Error processant la factura amb origen {}: {}".format(origen, str(e)))
                 fact_csv_result.append([origen, pol_name, "Hi ha hagut algun problema, cal revisar."])
 
-        if f1_refacturats:
-            msg_open_send, csv_open_send = self.open_polissa_invoices_send_mail(cursor, uid, ids, facts_by_polissa, context)
+        if f1_refacturats and wiz.actions != 'draft':
+            msg_open_send, csv_open_send = self.open_polissa_invoices_send_mail(cursor, uid, ids, facts_by_polissa, wiz.actions, context)
             msg += msg_open_send
             fact_csv_result += csv_open_send
             self.save_info_into_f1_after_refacturacio(cursor, uid, ids, f1_refacturats, context=context)
@@ -286,8 +292,10 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             [('init', 'Initial'), ('end', 'End')], 'State'
         ),
         'order': fields.many2one('payment.order', 'Remesa'),
-        'open_invoices': fields.boolean(_("Obrir, agrupar i remesar (si són a pagar) les factures")),
-        'send_mail': fields.boolean(_("Enviar el correu de pòlissa")),
+        'actions': fields.selection([('draft', 'Factures en esborrany'), ('open', 'Obrir'),
+                        ('open-group', 'Obrir i agrupar'),
+                        ('open-group-order', 'Obrir, agrupar i remesar'),
+                        ('open-group-order-send', 'Obrir, agrupar, remesar i enviar')], _("Accions:")),
         'info': fields.text(_('Informació'), readonly=True),
         'facts_generades': fields.text(),
         'max_amount': fields.float("Import màxim",
@@ -302,6 +310,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
     _defaults = {
         'state': lambda *a: 'init',
         'max_amount': lambda *a: 2000,
+        'actions': 'draft',
     }
 
 WizardRefundRectifyFromOrigin()
