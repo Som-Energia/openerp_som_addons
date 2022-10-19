@@ -11,7 +11,7 @@
     ],
     "init_xml": [],
     "demo_xml":[
-        "poweremail_demo_data.xml",
+        "demo/poweremail_demo_data.xml",
     ],
     "update_xml":[
     ],
