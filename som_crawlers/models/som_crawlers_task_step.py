@@ -254,7 +254,6 @@ class SomCrawlersTaskStep(osv.osv):
                     raise Exception("Not virtualenv of massive importer found")
                 execution_restult_file = "output_" + config_obj.name + "_" + datetime.now().strftime("%Y-%m-%d_%H_%M") + ".txt"
                 args_str = self.create_script_args(config_obj, task_step_params, execution_restult_file, file_path)
-                import pudb;pu.db
                 ret_value = os.system("{} {} {}".format(path_python, script_path, args_str))
                 if ret_value != 0:
                     output = "System call from download files failed"
