@@ -39,7 +39,6 @@ import importlib
         # @param browser Browser
         # @return Exception or string if everything passed successfully
 def crawl(user, name, password, file, url, filters, crawler, days, pfiles, browser, process, url_upload, file_path=None):
-    import pudb;pu.db
     path = os.path.dirname(os.path.abspath(__file__))
     f = open(os.path.join("/tmp/outputFiles/",file),'w')
     try:
