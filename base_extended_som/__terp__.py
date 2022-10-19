@@ -11,9 +11,9 @@
     ],
     "init_xml": [],
     "demo_xml":[
+        "poweremail_demo_data.xml",
     ],
     "update_xml":[
-        "poweremail_data.xml",
     ],
     "active": False,
     "installable": True
