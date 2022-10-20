@@ -40,13 +40,13 @@ first_pass = True
             <td class="detall_td" colspan="${id.number_of_columns}">
                 % if l.tax_type == '0.5percent':
                     ${_(u"%s € x 0,5%%") % (formatLang(l['base_iese']))}
-                    ${_(u"En virtut del Reial decret llei 17/2021, de 14 de setembre, l'impost especial sobre l'electricitat aplicable a la factura es troba reduït del 5,11269632%% al 0,5%%.")}
+                    ${_(u"En virtut del Reial decret llei 17/2021, de 14 de setembre, l'impost especial sobre l'electricitat aplicable a la factura es troba reduït del 5,11269632% al 0,5%.")}
                 % elif l.tax_type == '1euroMWh':
                     ${_(u"%s kWh x 0,001 €/kWh (aplicant Art 99.2 de la Llei 28/2014 sense bonificació del 85%%)") % (formatLang(l['base_iese']))}
                 % elif l.tax_type == '0.5euroMWh':
                     ${_(u"%s kWh x 0,0005 €/kWh (aplicant Art 99.2 de la Llei 28/2014 sense bonificació del 85%%)") % (formatLang(l['base_iese']))}
                 % elif l.tax_type == 'excempcio':
-                    ${_(u"%s € x 0,5%% kaka") % (formatLang(l['base_iese']))}
+                    ${_(u"%s € x 0,5%%") % (formatLang(l['base_iese']))}
                 % else:
                     ${_(u"%s € x 5,11269%%") % (formatLang(l['base_iese']))}
                 % endif
@@ -67,7 +67,7 @@ first_pass = True
             <td class="detall_td" colspan="${id.number_of_columns}">
                 % if l.tax_type == '0.5percent':
                     ${_(u"%s € x 0,5%%") % (formatLang(l['base_amount']))}
-                    ${_(u"En virtut del Reial decret llei 17/2021, de 14 de setembre, l'impost especial sobre l'electricitat aplicable a la factura es troba reduït del 5,11269632%% al 0,5%%.")}
+                    ${_(u"En virtut del Reial decret llei 17/2021, de 14 de setembre, l'impost especial sobre l'electricitat aplicable a la factura es troba reduït del 5,11269632% al 0,5%.")}
                 % elif l.tax_type == '1euroMWh':
                     ${_(u"%s kWh x 0,001 €/kWh (aplicant Art 99.2 de la Llei 28/2014)") % (formatLang(l['base_amount']))}
                 % elif l.tax_type == '0.5euroMWh':
