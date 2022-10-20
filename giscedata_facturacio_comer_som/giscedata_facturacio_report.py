@@ -1311,6 +1311,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     'name': l.name,
                     'base': l.base,
                     'amount': l.amount,
+                    'disclaimer_21_to_5': l.name == 'IVA 5%',
                 })
             if 'IGIC' in l.name:
                 igic_lines.append({
@@ -2067,7 +2068,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
     def get_component_invoice_details_info_td_data(self, fact, pol):
         data = {
-            'has_autoconsum': te_autoconsum(fact, pol)
+            'has_autoconsum': te_autoconsum(fact, pol),
+            'has_mag': True if self.get_mag_lines_info(fact) else False,
         }
         return data
 
