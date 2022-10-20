@@ -64,7 +64,7 @@ first_energy_line = True
             ${_(u"Import de l'energia associada al mecanisme ibèric regulat pel Reial decret llei 10/2022, de 13 de maig. (%s kWh x %s €/kWh)") % (
                 locale.str(locale.atof(formatLang(id.mag_line_data.quantity, digits=3))),
                 locale.str(locale.atof(formatLang(id.mag_line_data.price, digits=6)))
-            )}<br>
+            )}
             ${(" (del %s al %s)") % (id.mag_line_data.date_from, id.mag_line_data.date_to)}
         </td>
         % for p in id.showing_periods:
