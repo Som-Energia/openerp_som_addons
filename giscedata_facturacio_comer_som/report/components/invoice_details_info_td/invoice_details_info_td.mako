@@ -10,7 +10,7 @@
     ${_(u"Els preus dels termes de peatges de transport i distribució són els publicats en el BOE núm. 70, de 23 de març de 2021. Els preus dels càrrecs són els publicats a l'Ordre TED/371/2021. Els preus del lloguer dels comptadors són els publicats a l'Ordre ITC/3860/2007.")}
     <br>
     % if id_info.has_mag:
-        ${_(u"Les comercialitzadores en mercat lliure poden triar voluntàriament repercutir l'import de l'energia associada a la compensació del mecanisme ibèric regulat pel Reial decret llei 10/2022, de 13 de maig, dins dels costos d'aprovisionament, o bé traslladar-lo de manera diferenciada els seus consumidors. En aquest cas, la seva comercialitzadora ha optat per aquesta última opció.")}
+        ${_(u"Les comercialitzadores del mercat lliure poden triar voluntàriament repercutir l'import de l'energia associada a la compensació del mecanisme ibèric regulat pel Reial Decret-llei 10/2022, del 13 de maig, dins dels costos d'aprovisionament, o bé traslladar-lo de manera diferenciada als seus consumidors. En aquest cas, la seva comercialitzadora ha optat per aquesta última opció.")}
     % endif
     % if id_info.has_autoconsum:
         <br>
