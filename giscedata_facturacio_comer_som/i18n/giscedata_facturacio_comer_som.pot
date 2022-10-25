@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2022-10-24 16:18+0000\n"
-"PO-Revision-Date: 2022-10-24 16:18+0000\n"
+"POT-Creation-Date: 2022-10-25 15:36+0000\n"
+"PO-Revision-Date: 2022-10-25 15:36+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1322,10 +1322,10 @@ msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_info_td/invoice_details_info_td.mako:13
 msgid ""
-"Les comercialitzadores en mercat lliure poden triar voluntàriament "
+"Les comercialitzadores del mercat lliure poden triar voluntàriament "
 "repercutir l'import de l'energia associada a la compensació del mecanisme"
-" ibèric regulat pel Reial decret llei 10/2022, de 13 de maig, dins dels "
-"costos d'aprovisionament, o bé traslladar-lo de manera diferenciada els "
+" ibèric regulat pel Reial Decret-llei 10/2022, del 13 de maig, dins dels "
+"costos d'aprovisionament, o bé traslladar-lo de manera diferenciada als "
 "seus consumidors. En aquest cas, la seva comercialitzadora ha optat per "
 "aquesta última opció."
 msgstr ""
@@ -1515,7 +1515,7 @@ msgstr ""
 #, python-format
 msgid ""
 "Import de l'energia associada al mecanisme ibèric regulat pel Reial "
-"decret llei 10/2022, de 13 de maig. (%s kWh x %s €/kWh)"
+"Decret-llei 10/2022, del 13 de maig. (%s kWh x %s €/kWh)"
 msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges/invoice_details_td_energy_charges.mako:5
@@ -1670,7 +1670,7 @@ msgstr ""
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:43
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:70
 msgid ""
-"En virtut del Reial decret llei 17/2021, de 14 de setembre, l'impost "
+"En virtut del Reial Decret-llei 17/2021, del 14 de setembre, l'impost "
 "especial sobre l'electricitat aplicable a la factura es troba reduït del "
 "5,11269632% al 0,5%."
 msgstr ""
@@ -1718,8 +1718,8 @@ msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:95
 msgid ""
-"En virtut del Reial decret llei 12/2021, de 24 de juny, l'IVA aplicable a"
-" la factura es troba reduït del 21% al 5%."
+"En virtut del Reial Decret-llei 12/2021, del 24 de juny, l'IVA aplicable "
+"a la factura es troba reduït del 21% al 5%."
 msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power/invoice_details_td_power.mako:10

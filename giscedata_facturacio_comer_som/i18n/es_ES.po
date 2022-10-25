@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2022-10-24 16:18+0000\n"
-"PO-Revision-Date: 2022-10-24 14:25+0000\n"
+"POT-Creation-Date: 2022-10-25 15:36+0000\n"
+"PO-Revision-Date: 2022-10-25 13:37+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -1332,10 +1332,10 @@ msgstr "Los precios de los términos de peajes de transporte y distribución son
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_info_td/invoice_details_info_td.mako:13
 msgid ""
-"Les comercialitzadores en mercat lliure poden triar voluntàriament "
+"Les comercialitzadores del mercat lliure poden triar voluntàriament "
 "repercutir l'import de l'energia associada a la compensació del mecanisme "
-"ibèric regulat pel Reial decret llei 10/2022, de 13 de maig, dins dels "
-"costos d'aprovisionament, o bé traslladar-lo de manera diferenciada els seus"
+"ibèric regulat pel Reial Decret-llei 10/2022, del 13 de maig, dins dels "
+"costos d'aprovisionament, o bé traslladar-lo de manera diferenciada als seus"
 " consumidors. En aquest cas, la seva comercialitzadora ha optat per aquesta "
 "última opció."
 msgstr "Las comercializadoras en mercado libre pueden elegir voluntariamente repercutir el importe de la energía asociada a la compensación del mecanismo ibérico regulado por el Real Decreto-ley 10/2022, de 13 de mayo, dentro de sus costes de aprovisionamiento, o bien trasladarlo de forma diferenciada a sus consumidores. En este caso su comercializadora ha optado por esta última opción."
@@ -1524,8 +1524,8 @@ msgstr "kWh x €/kWh (del %s al %s)"
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy/invoice_details_td_energy.mako:64
 #, python-format
 msgid ""
-"Import de l'energia associada al mecanisme ibèric regulat pel Reial decret "
-"llei 10/2022, de 13 de maig. (%s kWh x %s €/kWh)"
+"Import de l'energia associada al mecanisme ibèric regulat pel Reial Decret-"
+"llei 10/2022, del 13 de maig. (%s kWh x %s €/kWh)"
 msgstr "Importe de la energía asociada al mecanismo ibérico regulado por el Real Decreto-ley 10/2022, de 13 de mayo. (%s kWh x %s €/kWh)"
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges/invoice_details_td_energy_charges.mako:5
@@ -1680,7 +1680,7 @@ msgstr "%s € x 0,5%%"
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:43
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:70
 msgid ""
-"En virtut del Reial decret llei 17/2021, de 14 de setembre, l'impost "
+"En virtut del Reial Decret-llei 17/2021, del 14 de setembre, l'impost "
 "especial sobre l'electricitat aplicable a la factura es troba reduït del "
 "5,11269632% al 0,5%."
 msgstr "En virtud del Real Decreto-ley 17/2021, de 14 de septiembre, el impuesto especial sobre la electricidad aplicable a su factura se encuentra reducido del 5,11269632% al 0,5%."
@@ -1728,8 +1728,8 @@ msgstr "%s € "
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:95
 msgid ""
-"En virtut del Reial decret llei 12/2021, de 24 de juny, l'IVA aplicable a la"
-" factura es troba reduït del 21% al 5%."
+"En virtut del Reial Decret-llei 12/2021, del 24 de juny, l'IVA aplicable a "
+"la factura es troba reduït del 21% al 5%."
 msgstr "En virtud del Real Decreto-ley 12/2021, de 24 de junio, el IVA aplicable a su factura se encuentra reducido del 21% al 5%."
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power/invoice_details_td_power.mako:10
