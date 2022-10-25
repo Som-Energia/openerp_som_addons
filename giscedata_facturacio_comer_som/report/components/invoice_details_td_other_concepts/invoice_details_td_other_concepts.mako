@@ -40,6 +40,7 @@ first_pass = True
             <td class="detall_td" colspan="${id.number_of_columns}">
                 % if l.tax_type == '0.5percent':
                     ${_(u"%s € x 0,5%%") % (formatLang(l['base_iese']))}
+                    ${_(u"En virtut del Reial Decret-llei 17/2021, del 14 de setembre, l'impost especial sobre l'electricitat aplicable a la factura es troba reduït del 5,11269632% al 0,5%.")}
                 % elif l.tax_type == '1euroMWh':
                     ${_(u"%s kWh x 0,001 €/kWh (aplicant Art 99.2 de la Llei 28/2014 sense bonificació del 85%%)") % (formatLang(l['base_iese']))}
                 % elif l.tax_type == '0.5euroMWh':
@@ -66,6 +67,7 @@ first_pass = True
             <td class="detall_td" colspan="${id.number_of_columns}">
                 % if l.tax_type == '0.5percent':
                     ${_(u"%s € x 0,5%%") % (formatLang(l['base_amount']))}
+                    ${_(u"En virtut del Reial Decret-llei 17/2021, del 14 de setembre, l'impost especial sobre l'electricitat aplicable a la factura es troba reduït del 5,11269632% al 0,5%.")}
                 % elif l.tax_type == '1euroMWh':
                     ${_(u"%s kWh x 0,001 €/kWh (aplicant Art 99.2 de la Llei 28/2014)") % (formatLang(l['base_amount']))}
                 % elif l.tax_type == '0.5euroMWh':
@@ -88,7 +90,11 @@ first_pass = True
 % for l in id.iva_lines:
     <tr>
         <td class="td_first concepte_td">${l['name']}</td>
-        <td class="detall_td" colspan="${id.number_of_columns}">${_(u"%s € ") % (formatLang(l['base']))}${_(u"(BASE IMPOSABLE)")}</td>
+        <td class="detall_td" colspan="${id.number_of_columns}">${_(u"%s € ") % (formatLang(l['base']))}${_(u"(BASE IMPOSABLE)")}
+        %if l.disclaimer_21_to_5:
+            ${_(u"En virtut del Reial Decret-llei 12/2021, del 24 de juny, l'IVA aplicable a la factura es troba reduït del 21% al 5%.")}
+        %endif
+        </td>
         <td class="subtotal">${_(u"%s €") % formatLang(l['amount'])}</td>
     </tr>
 % endfor

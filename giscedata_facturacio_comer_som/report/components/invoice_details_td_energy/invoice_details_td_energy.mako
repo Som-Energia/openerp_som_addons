@@ -61,10 +61,10 @@ first_energy_line = True
 % if id.mag_line_data:
     <tr class="tr_bold">
         <td class="detall_td">
-            ${_(u"Import associat al mecanisme d'ajust del gas RDL 10/2022 (%s kWh x %s €/kWh)") % (
+            ${_(u"Import de l'energia associada al mecanisme ibèric regulat pel Reial Decret-llei 10/2022, del 13 de maig. (%s kWh x %s €/kWh)") % (
                 locale.str(locale.atof(formatLang(id.mag_line_data.quantity, digits=3))),
                 locale.str(locale.atof(formatLang(id.mag_line_data.price, digits=6)))
-            )}<br>
+            )}
             ${(" (del %s al %s)") % (id.mag_line_data.date_from, id.mag_line_data.date_to)}
         </td>
         % for p in id.showing_periods:
