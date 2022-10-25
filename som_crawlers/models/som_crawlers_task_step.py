@@ -124,9 +124,7 @@ class SomCrawlersTaskStep(osv.osv):
                 args_str = self.create_script_args(config_obj, task_step_params, file_name)
                 ret_value = os.system("{} {} {}".format(path_python, script_path, args_str))
                 output_temp_path = '/tmp/outputFiles'
-                output = output = self.readOutputFile(cursor, uid, output_temp_path, file_name)
-                if ret_value != 0:
-                    output = "ERROR en el crawler: " + output
+                output = self.readOutputFile(cursor, uid, output_temp_path, file_name)
                 if output == 'Files have been successfully downloaded':
                     output = self.attach_files_zip(cursor, uid, id, result_id, config_obj, path, task_step_params, context = context)
                 else:
