@@ -2,7 +2,7 @@
 {
     "name": "Som AEAT 347",
     "description": """
-""",
+    """,
     "version": "0-dev",
     "author": "Som",
     "category": "Master",
@@ -14,6 +14,7 @@
     ],
     "init_xml": [],
     "demo_xml": [
+        "demo/som_l10n_ES_aeat_mod347_demo.xml",
     ],
     "update_xml": [
         'wizard/wizard_send_email_over_limit.xml',
