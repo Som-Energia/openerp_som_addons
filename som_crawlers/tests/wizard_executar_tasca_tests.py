@@ -225,7 +225,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
 
     """  Create args for script test --> sortida string arguments
          # @param self The object pointer"""
-    def test_createArgsForScript_entrada_config_prova_sortida_string_arguments(self):
+    def test__create_script_args__entrada_config_prova_sortida_string_arguments(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
@@ -236,7 +236,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             crawler_config_obj = self.Configuracio.browse(cursor,uid,crawler_config_id)
             fileName = "prova.txt"
 
-            result = self.taskStep.createArgsForScript(crawler_config_obj, taskStepParams, fileName)
+            result = self.taskStep.create_script_args(crawler_config_obj, taskStepParams, fileName)
 
             result_string ="-pr None -u usuariProva -d 80 -f prova.txt -url 'https://egymonluments.gov.eg/en/museums/egyptian-museum' -p contraProva -c Selenium -b firefox -n prova1 -fltr 'https://egymonuments.gov.eg/en/collections/kawit-sarcophagus-4' -nfp False"
             self.assertEqual(set(result.split()),set(result_string.split()))

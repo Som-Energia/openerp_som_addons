@@ -4,8 +4,6 @@
 ##Imports
 from distutils.command.build import build
 from nturl2path import url2pathname
-from massive_importer_crawlers.spiders.selenium_spiders import *
-from massive_importer_crawlers.models.exceptions import *
 import click
 import os
 import importlib
@@ -59,6 +57,7 @@ def crawl(user, name, password, file, url, filters, crawler, days, pfiles, brows
     except Exception as e:
         f.write(str(e))
         f.close()
+        raise e
     else:
         if file_path:
             f.write('Files have been successfully uploaded')
