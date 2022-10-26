@@ -729,6 +729,14 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         return {'qr': qr, 'url': url}
 
+    def mag_get_preu_mig_mensual_ajust(self, fact):
+        report_v2_obj = self.pool.get('giscedata.facturacio.factura.report.v2')
+        return report_v2_obj.get_preu_mig_mensual_ajust(self.cursor, self.uid, fact.id)
+
+    def mag_get_reduccio_preu(self, fact):
+        report_v2_obj = self.pool.get('giscedata.facturacio.factura.report.v2')
+        return report_v2_obj.get_reduccio_preu(self.cursor, self.uid, fact.id)
+
     def get_mag_lines_info(self, fact):
         rmag_line_ids = fact.get_rmag_lines()
         if not rmag_line_ids:
@@ -2067,9 +2075,12 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return data
 
     def get_component_invoice_details_info_td_data(self, fact, pol):
+        has_mag = True if self.get_mag_lines_info(fact) else False
         data = {
             'has_autoconsum': te_autoconsum(fact, pol),
-            'has_mag': True if self.get_mag_lines_info(fact) else False,
+            'has_mag': has_mag,
+            'preu_mig_mensual': self.mag_get_preu_mig_mensual_ajust(fact) if has_mag else 0.0,
+            'reduccio_preu': self.mag_get_reduccio_preu(fact) if has_mag else 0.0,
         }
         return data
 

@@ -11,6 +11,10 @@
     <br>
     % if id_info.has_mag:
         ${_(u"Les comercialitzadores del mercat lliure poden triar voluntàriament repercutir l'import de l'energia associada a la compensació del mecanisme ibèric regulat pel Reial Decret-llei 10/2022, del 13 de maig, dins dels costos d'aprovisionament, o bé traslladar-lo de manera diferenciada als seus consumidors. En aquest cas, la seva comercialitzadora ha optat per aquesta última opció.")}
+        <br>
+        ${_(u"L'estalvi a la factura en alicar el topall del gas es de %s €") % (formatLang(id_info.reduccio_preu))}
+        <br>
+        ${_(u"El preu mitja del mes de la factura es %s €") % (formatLang(id_info.preu_mig_mensual))}
     % endif
     % if id_info.has_autoconsum:
         <br>
