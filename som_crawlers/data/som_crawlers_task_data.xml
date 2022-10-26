@@ -267,6 +267,72 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="curos_conf"/>
         </record>
+        <!-- Caldense -->
+        <record model="som.crawlers.task" id="descarregar_caldense_ftp">
+            <field name="name">Descarregar FTP Caldense</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="caldense_ftp_conf"/>
+        </record>
+        <!-- Red energia -->
+        <record model="som.crawlers.task" id="descarregar_redenergia_ftp">
+            <field name="name">Descarregar FTP Redenergia SL</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="redenergia_ftp_conf"/>
+        </record>
+        <!-- Aurora -->
+        <record model="som.crawlers.task" id="descarregar_aurora_ftp">
+            <field name="name">Descarregar FTP Aurora</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="aurora_ftp_conf"/>
+        </record>
+        <!-- Mitjans -->
+        <record model="som.crawlers.task" id="descarregar_mitjans_ftp">
+            <field name="name">Descarregar FTP mitjans</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="mitjans_ftp_conf"/>
+        </record>
+        <!-- panticosa -->
+        <record model="som.crawlers.task" id="descarregar_panticosa_ftp">
+            <field name="name">Descarregar FTP panticosa</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="panticosa_ftp_conf"/>
+        </record>
+        <!-- guadiela -->
+        <record model="som.crawlers.task" id="descarregar_guadiela_ftp">
+            <field name="name">Descarregar FTP guadiela</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="guadiela_ftp_conf"/>
+        </record>
+        <!-- pitarch -->
+        <record model="som.crawlers.task" id="descarregar_pitarch_ftp">
+            <field name="name">Descarregar FTP pitarch</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="pitarch_ftp_conf"/>
+        </record>
+        <!-- chilla -->
+        <record model="som.crawlers.task" id="descarregar_chilla_ftp">
+            <field name="name">Descarregar FTP chilla</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="chilla_ftp_conf"/>
+        </record>
+        <!-- aseme -->
+        <record model="som.crawlers.task" id="descarregar_aseme_ftp">
+            <field name="name">Descarregar FTP aseme</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="aseme_ftp_conf"/>
+        </record>
+        <!-- datacenter -->
+        <record model="som.crawlers.task" id="descarregar_datacenter_ftp_atr">
+            <field name="name">Descarregar FTP datacenter ATR</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="datacenter_ftp_atr_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descarregar_datacenter_ftp_f1">
+            <field name="name">Descarregar FTP datacenter F1s</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="datacenter_ftp_f1_conf"/>
+        </record>
+
         <!-- TASQUES D'EXPORTACIÓ -->
         <record model="som.crawlers.task" id="carregar_anselmo">
             <field name="name">Carregar Anselmo</field>

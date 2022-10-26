@@ -242,8 +242,109 @@
             <field name="browser">firefox</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
+
+        <!-- Configuracions a FTPs -->
         <record model="som.crawlers.config" id="avellana_ftp_conf">
             <field name="name">avellana_ftp</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">firefox</field>
+            <field name="port">22</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="caldense_ftp_conf">
+            <field name="name">caldense_ftp</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">firefox</field>
+            <field name="port">22</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="redenergia_ftp_conf">
+            <field name="name">redenergia_ftp</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">firefox</field>
+            <field name="port">22</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="aurora_ftp_conf">
+            <field name="name">aurora_ftp</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">firefox</field>
+            <field name="port">22</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="mitjans_ftp_conf">
+            <field name="name">mitjans_ftp</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">firefox</field>
+            <field name="port">22</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="panticosa_ftp_conf">
+            <field name="name">panticosa_ftp</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">firefox</field>
+            <field name="port">22</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="guadiela_ftp_conf">
+            <field name="name">guadiela_ftp</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">firefox</field>
+            <field name="port">22</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="pitarch_ftp_conf">
+            <field name="name">pitarch_ftp</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">firefox</field>
+            <field name="port">22</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="chilla_ftp_conf">
+            <field name="name">chilla_ftp</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">firefox</field>
+            <field name="port">22</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="aseme_ftp_conf">
+            <field name="name">aseme_ftp</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">firefox</field>
+            <field name="port">22</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="datacenter_ftp_atr_conf">
+            <field name="name">datacenter_ftp_atr</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">firefox</field>
+            <field name="port">22</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="datacenter_ftp_f1_conf">
+            <field name="name">datacenter_ftp_f1</field>
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
