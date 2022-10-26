@@ -244,6 +244,11 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="avellana_conf"/>
         </record>
+        <record model="som.crawlers.task" id="descargar_ftp_avellana">
+            <field name="name">Descarregar FTP Avellana</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="avellana_ftp_conf"/>
+        </record>
         <!--Centelles-->
         <record model="som.crawlers.task" id="descargar_centelles">
             <field name="name">Descarregar Centelles</field>

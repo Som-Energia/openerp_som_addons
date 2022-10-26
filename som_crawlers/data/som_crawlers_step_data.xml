@@ -667,6 +667,20 @@
             <field name="params">{}</field>
             <field name="task_id" ref="descargar_avellana"/>
         </record>
+        <record model="som.crawlers.task.step" id="taskStep_avellana_ftp_download">
+            <field name="name">Descarregar fitxers FTP</field>
+            <field name="sequence">1</field>
+            <field name="function">download_ftp_files</field>
+            <field name="params">{"dir_list": ['SALIDA']}</field>
+            <field name="task_id" ref="descargar_ftp_avellana"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_avellana_ftp_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_ftp_avellana"/>
+        </record>
         <!--Centelles-->
         <record model="som.crawlers.task.step" id="taskStep_centelles_download">
             <field name="name">Descarregar fitxers</field>

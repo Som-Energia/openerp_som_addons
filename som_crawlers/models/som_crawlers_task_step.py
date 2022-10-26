@@ -7,6 +7,7 @@ import os
 import pooler
 import base64
 from time import sleep
+from . import som_sftp
 
 
 # Class Task Step that describes the module and the task step fields
@@ -316,5 +317,67 @@ class SomCrawlersTaskStep(osv.osv):
         classresult.write(cursor, uid, result_id, {'resultat_bool': True})
 
         return attachment_id
+
+    def download_ftp_files(self, cursor, uid, id, result_id, context=None):
+        import pudb;pu.db
+        classresult = self.pool.get('som.crawlers.result')
+        ftp_reg = self.pool.get('som.ftp.file.register')
+        task_step_obj = self.browse(cursor,uid,id)
+        task_step_params = json.loads(task_step_obj.params)
+        classresult.write(cursor, uid, result_id, {'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M:%S")})
+        output = ''
+
+        destination_path = '/tmp/outputFiles' #TODO: fer carpeta nova per execució (timestmap?)
+
+        if task_step_params.has_key('dir_list'):
+            server_data = self.pool.get('som.crawlers.task').id_del_portal_config(cursor, uid, task_step_obj.task_id.id, context)
+
+            #login i anar buscar fitxers al FTP
+            sftp = som_sftp.SomSftp()
+            sftp.login(server_data)
+            file_list, dir_list = sftp.list_files('/', task_step_params['dir_list'])
+
+            #comprovar quins hem de baixar
+            #som_ftp_file_register.search()
+            files_to_download = []
+            for remote_file in file_list:
+                remote_file_name = os.path.basename(remote_file)
+                local_file = ftp_reg.search(cursor, uid, [('name','=', remote_file_name), ('server_from', '=', server_data['url'])])
+                if not local_file or ftp_reg.read(cursor, uid, local_file[0])['state'] != 'imported':
+                    files_to_download.append(local_file)
+
+            #descarregar els nous i marcarlos
+            for remote_path in files_to_download:
+                try:
+                    som_sftp.download_file(remote_path, destination_path)
+                except Exception as e:
+                    output += str(e) + "\n"
+                    file_id = ftp_reg.search(cursor, uid, [('name','=', remote_file_name), ('server_from', '=', server_data['url'])])
+                    if file_id:
+                        ftp_reg.write(file_id, {'state': 'error'})
+                    else:
+                        ftp_reg.create({'name': remote_file_name, 'server_from': server_data['url'],
+                            'state': 'error', 'date_download': datetime.now()})
+
+            #Fer un zip
+            #fer un zip del destination_path
+
+            #attacharlos al result
+            for file_name in os.listdir(path_to_zip):
+                attachment_id = self.attach_file(cursor, uid, path_to_zip, file_name, result_id, context)
+                classresult.write(cursor,uid, result_id, {'zip_name': attachment_id})
+                output = "Files succesfully attached"
+
+            #som_ftp_file_register.create()
+            ftp_reg.create({'name': remote_file_name, 'server_from': server_data['url'],
+                            'state': 'downloaded', 'date_download': datetime.now()})
+            #esborrar fitxers de destination_path
+        else:
+            output = 'Falta la llista de directoris'
+        task_step_obj.task_id.write({'ultima_tasca_executada': str(task_step_obj.name)+ ' - ' + str(datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))})
+        classresult.write(cursor, uid, result_id, {'resultat_bool': True})
+
+        return output
+
 
 SomCrawlersTaskStep()

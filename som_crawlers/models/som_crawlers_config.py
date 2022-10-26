@@ -23,6 +23,7 @@ class SomCrawlersConfig(osv.osv):
         'pending_files_only': fields.boolean('Nomes fitxers pendents',),
         'browser': fields.char('Navegador', size=30, required=True,),
         'distribuidora': fields.many2one('res.partner', 'Distribuidora', help="Distribuidora",),
+        'port': fields.integer('Port del FTP'),
     }
     """canvia la contrasenya d'un portal i retorna la nova contrasenya
         @param self The object pointer
