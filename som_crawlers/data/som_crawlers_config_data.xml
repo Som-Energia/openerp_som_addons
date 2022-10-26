@@ -257,7 +257,11 @@
             <field name="value">/home/erp/.virtualenvs/massive/bin/python</field>
             <field name="description">Conté la ruta de la versió de python que executarà Massive Importer</field>
         </record>
-
+        <record model="res.config" id="som_crawlers_output_tmp_path">
+            <field name="name">som_crawlers_output_tmp_path</field>
+            <field name="value">/tmp/outputFiles</field>
+            <field name="description">Ruta dels fitxers temporals del massive importer</field>
+        </record>
         <!-- Executar tasques a partir d'un cron -->
         <record id="ir_cron_run_tasks_action" model="ir.cron">
             <field name="name">Executar crawlers programats distris</field>
