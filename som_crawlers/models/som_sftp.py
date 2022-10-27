@@ -1,27 +1,23 @@
 from pysftp import Connection, CnOpts
-from pysftp import ConnectionException, CredentialException, SSHException, AuthenticationException
 import os
 
 
-class SomSftp():
-    connection = None
-
-    def login(self, server_data):
+class SomSftp:
+    def __init__(self, server_data):
         cnopts = CnOpts()
         cnopts.hostkeys = None  # disable host key checking.
         params = {
-            'host': server_data['url_portal'],
-            'port': server_data['port'],
-            'username': server_data['usuari'],
-            'password': server_data['contrasenya'],
-            'cnopts': cnopts
+            "host": server_data["url_portal"],
+            "port": int(server_data["port"]),
+            "username": server_data["usuari"],
+            "password": server_data["contrasenya"],
+            "cnopts": cnopts,
         }
-        self.connection = Connection(**params)
-        return self.connection
 
-    def list_files(self, path='/', unique_folders=[], recursive=False):
-        '''return list of files'''
-        connection = self.connection
+        self.connection = Connection(**params)
+
+    def list_files(self, path="/", unique_folders=[], recursive=False):
+        """return list of files"""
         file_list = []
         dir_list = []
 
@@ -33,16 +29,20 @@ class SomSftp():
                 file_list.append(filename)
 
             def _valid_dir(path):
-                print('- Found subdir: {}'.format(path))
+                print("- Found subdir: {}".format(path))
                 dir_list.append(path)
 
             def _valid_unknown(path):
-                print('- Found unknown: {}'.format(path))
+                print("- Found unknown: {}".format(path))
 
-
-            connection.walktree(remote_path, _valid_file, _valid_dir, _valid_unknown, recurse=recursive)
+            self.connection.walktree(
+                remote_path, _valid_file, _valid_dir, _valid_unknown, recurse=recursive
+            )
 
         return file_list, dir_list
 
     def download_file(self, remote_path, destination_path):
         return self.connection.get(remote_path, destination_path)
+
+    def close(self):
+        self.connection.close()

@@ -203,6 +203,7 @@ class SomCrawlersTaskStep(osv.osv):
             file_handler = StringIO.StringIO(data)
 
             input_file = zipfile.ZipFile(file_handler)
+
             for filename in input_file.namelist():
                 file_id = ftp_reg.search(cursor, uid, [('name','=', filename), ('server_from', '=', server_data['url_portal'])])
                 if file_id:
@@ -380,8 +381,7 @@ class SomCrawlersTaskStep(osv.osv):
                 os.mkdir(destination_path)
 
                 #login i anar buscar fitxers al FTP
-                sftp = som_sftp.SomSftp()
-                sftp.login(server_data)
+                sftp = som_sftp.SomSftp(server_data)
                 file_list, dir_list = sftp.list_files('/', task_step_params['dir_list'])
 
                 #comprovar quins hem de baixar
@@ -410,6 +410,8 @@ class SomCrawlersTaskStep(osv.osv):
                         else:
                             ftp_reg.create(cursor, uid, {'name': remote_file_name, 'server_from': server_data['url_portal'],
                                 'state': 'error', 'date_download': datetime.now()})
+
+                sftp.close()
 
                 #Fer un zip
                 zip_filename = temp_folder + '.zip'
