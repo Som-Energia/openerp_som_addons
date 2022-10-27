@@ -241,6 +241,9 @@ class SomInfoenergiaLotEnviament(osv.osv):
             output_dir = config.get(
                 "infoenergia_report_download_dir", "/tmp/test_shera/reports")
 
+            if not os.path.exists(output_dir):
+                os.makedirs(output_dir)
+
             csv_path_file = context.get('path_csv','')
             output_filepath = os.path.join(output_dir, 'Enviaments.csv')
 
