@@ -677,7 +677,7 @@
         <record model="som.crawlers.task.step" id="taskStep_avellana_ftp_import">
             <field name="name">Importar fitxers XML</field>
             <field name="sequence">2</field>
-            <field name="function">import_xml_files</field>
+            <field name="function">import_ftp_xml_files</field>
             <field name="params">{}</field>
             <field name="task_id" ref="descargar_ftp_avellana"/>
         </record>
