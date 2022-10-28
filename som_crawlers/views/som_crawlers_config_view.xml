@@ -13,6 +13,7 @@
                     <field name="contrasenya"/>
                     <field name="url_portal" />
                     <field name="port"/>
+                    <field name="ftp"/>
                     <field name="url_upload" />
                     <field name="filtres"/>
                     <field name="crawler" readonly='1'/>
