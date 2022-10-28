@@ -390,22 +390,22 @@ class SomCrawlersTaskStep(osv.osv):
 
                 # Comprovar fitxers nous
                 files_to_download = []
-                for remote_path in file_list:
-                    remote_file_name = os.path.basename(remote_path)
+                for remote_file_path in file_list:
+                    remote_file_name = os.path.basename(remote_file_path)
                     local_file = ftp_reg.search(cursor, uid, [('name','=', remote_file_name), ('server_from', '=', server_data['url_portal'])])
                     if not local_file or ftp_reg.read(cursor, uid, local_file[0])['state'] != 'imported':
-                        files_to_download.append(remote_path)
+                        files_to_download.append(remote_file_path)
 
                 if len(files_to_download) == 0:
                     raise Exception("SENSE RESULTATS: No hi ha fitxers a descarregar")
 
                 # Descarregarels fitxers
                 files_to_import = []
-                for remote_path in files_to_download:
+                for remote_file_path in files_to_download:
                     try:
-                        remote_file_name = os.path.basename(remote_path)
-                        conn.download_file(remote_path, destination_path + '/' + remote_file_name)
-                        files_to_import.append(remote_path)
+                        remote_file_name = os.path.basename(remote_file_path)
+                        conn.download_file(remote_file_path, destination_path + '/' + remote_file_name)
+                        files_to_import.append(remote_file_path)
                     except Exception as e:
                         output += str(e) + "\n"
                         file_id = ftp_reg.search(cursor, uid, [('name','=', remote_file_name), ('server_from', '=', server_data['url_portal'])])
@@ -417,13 +417,20 @@ class SomCrawlersTaskStep(osv.osv):
 
                 conn.close()
 
+                # Descomprimir ZIPs
+                filenames = os.listdir(destination_path)
+                for filename in filenames:
+                    if zipfile.is_zipfile(destination_path + '/' + filename):
+                        with zipfile.ZipFile(destination_path + '/' + filename, 'r') as zip_ref:
+                            zip_ref.extractall(destination_path)
 
                 # Fer un ZIP
                 zip_filename = temp_folder + '.zip'
                 filenames = os.listdir(destination_path)
                 with zipfile.ZipFile(destination_path + '/' + zip_filename, 'w') as zipObj:
                     for filename in filenames:
-                        zipObj.write(destination_path + '/' + filename, filename)
+                        if filename.endswith('.xml'):
+                            zipObj.write(destination_path + '/' + filename, filename)
                     zipObj.close()
 
                 # Adjuntar la sortida
@@ -432,8 +439,8 @@ class SomCrawlersTaskStep(osv.osv):
                 output = "Fitxer ZIP adjuntat correctament"
 
                 # Marcar com a descarregats
-                for remote_path in files_to_import:
-                    remote_file_name = os.path.basename(remote_path)
+                for remote_file_path in files_to_import:
+                    remote_file_name = os.path.basename(remote_file_path)
                     file_id = ftp_reg.search(cursor, uid, [('name','=', remote_file_name), ('server_from', '=', server_data['url_portal'])])
                     if file_id:
                         ftp_reg.write(cursor, uid, file_id, {'state': 'downloaded', 'date_download': datetime.now()})
