@@ -7,7 +7,7 @@ import os
 import pooler
 import base64
 from time import sleep
-from . import som_sftp
+from . import som_sftp, som_ftp
 import zipfile
 import shutil
 import StringIO
@@ -380,11 +380,15 @@ class SomCrawlersTaskStep(osv.osv):
 
                 os.mkdir(destination_path)
 
-                #login i anar buscar fitxers al FTP
-                sftp = som_sftp.SomSftp(server_data)
-                file_list, dir_list = sftp.list_files('/', task_step_params['dir_list'])
+                # Connectar per FTP o SFTP
+                if (server_data['ftp']):
+                    conn = som_ftp.SomFtp(server_data)
+                else:
+                    conn = som_sftp.SomSftp(server_data)
 
-                #comprovar quins hem de baixar
+                file_list, dir_list = conn.list_files('/', task_step_params['dir_list'])
+
+                # Comprovar fitxers nous
                 files_to_download = []
                 for remote_path in file_list:
                     remote_file_name = os.path.basename(remote_path)
@@ -395,12 +399,12 @@ class SomCrawlersTaskStep(osv.osv):
                 if len(files_to_download) == 0:
                     raise Exception("SENSE RESULTATS: No hi ha fitxers a descarregar")
 
-                #descarregar els nous i marcarlos
+                # Descarregarels fitxers
                 files_to_import = []
                 for remote_path in files_to_download:
                     try:
                         remote_file_name = os.path.basename(remote_path)
-                        sftp.download_file(remote_path, destination_path + '/' + remote_file_name)
+                        conn.download_file(remote_path, destination_path + '/' + remote_file_name)
                         files_to_import.append(remote_path)
                     except Exception as e:
                         output += str(e) + "\n"
@@ -411,9 +415,10 @@ class SomCrawlersTaskStep(osv.osv):
                             ftp_reg.create(cursor, uid, {'name': remote_file_name, 'server_from': server_data['url_portal'],
                                 'state': 'error', 'date_download': datetime.now()})
 
-                sftp.close()
+                conn.close()
 
-                #Fer un zip
+
+                # Fer un ZIP
                 zip_filename = temp_folder + '.zip'
                 filenames = os.listdir(destination_path)
                 with zipfile.ZipFile(destination_path + '/' + zip_filename, 'w') as zipObj:
@@ -421,12 +426,12 @@ class SomCrawlersTaskStep(osv.osv):
                         zipObj.write(destination_path + '/' + filename, filename)
                     zipObj.close()
 
-                #attacharlos al result
+                # Adjuntar la sortida
                 attachment_id = self.attach_file(cursor, uid, destination_path, zip_filename, result_id, context)
                 classresult.write(cursor, uid, result_id, {'zip_name': attachment_id})
                 output = "Fitxer ZIP adjuntat correctament"
 
-                #marcar com a baixats
+                # Marcar com a descarregats
                 for remote_path in files_to_import:
                     remote_file_name = os.path.basename(remote_path)
                     file_id = ftp_reg.search(cursor, uid, [('name','=', remote_file_name), ('server_from', '=', server_data['url_portal'])])
@@ -436,7 +441,7 @@ class SomCrawlersTaskStep(osv.osv):
                         ftp_reg.create(cursor, uid, {'name': remote_file_name, 'server_from': server_data['url_portal'],
                                 'state': 'downloaded', 'date_download': datetime.now()})
 
-                #esborrar fitxers
+                # Esborrar fitxers temporals
                 shutil.rmtree(destination_path)
 
             else:
