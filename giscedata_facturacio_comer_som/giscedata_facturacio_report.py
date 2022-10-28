@@ -729,13 +729,16 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         return {'qr': qr, 'url': url}
 
-    def mag_get_preu_mig_mensual_ajust(self, fact):
+    def mag_get_ajust_topall_gas_info(self, fact):
         report_v2_obj = self.pool.get('giscedata.facturacio.factura.report.v2')
-        return report_v2_obj.get_preu_mig_mensual_ajust(self.cursor, self.uid, fact.id)
-
-    def mag_get_reduccio_preu(self, fact):
-        report_v2_obj = self.pool.get('giscedata.facturacio.factura.report.v2')
-        return report_v2_obj.get_reduccio_preu(self.cursor, self.uid, fact.id)
+        ok = True
+        try:
+            res = report_v2_obj.get_ajust_topall_gas_info(self.cursor, self.uid, fact.id)
+        except Exception as e:
+            ok = False
+            import traceback
+            res = str(e) +"\n"+ traceback.format_exc()
+        return ok, res
 
     def get_mag_lines_info(self, fact):
         rmag_line_ids = fact.get_rmag_lines()
@@ -2076,11 +2079,27 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
     def get_component_invoice_details_info_td_data(self, fact, pol):
         has_mag = True if self.get_mag_lines_info(fact) else False
+        if not has_mag:
+            return {
+                'has_autoconsum': te_autoconsum(fact, pol),
+                'has_mag': has_mag,
+            }
+
+        ok, mag_info = self.mag_get_ajust_topall_gas_info(fact)
+        if not ok:
+            return {
+                'has_autoconsum': te_autoconsum(fact, pol),
+                'has_mag': False,
+                'gisce_library_error': mag_info.split("\n"),
+            }
+
         data = {
             'has_autoconsum': te_autoconsum(fact, pol),
             'has_mag': has_mag,
-            'preu_mig_mensual': self.mag_get_preu_mig_mensual_ajust(fact) if has_mag else 0.0,
-            'reduccio_preu': self.mag_get_reduccio_preu(fact) if has_mag else 0.0,
+            'preu_mitja_mag_darrer_mes': mag_info['mes_natural_anterior']['preu_mig_mensual_ajust'],
+            'reductor_mag': mag_info['periode_facturacio']['preu_mitja_reduccio'],
+            'majorista_sense_mag': mag_info['periode_facturacio']['preu_mitja_omie'] + mag_info['periode_facturacio']['preu_mitja_ajust'],
+            'majorista_amb_mag': mag_info['periode_facturacio']['preu_mitja_omie'] + mag_info['periode_facturacio']['preu_mitja_cost_unitari'],
         }
         return data
 
