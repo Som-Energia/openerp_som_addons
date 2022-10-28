@@ -25,6 +25,7 @@
         "views/som_crawlers_task_view.xml",
         "wizard/wizard_executar_tasca.xml",
         "wizard/wizard_canviar_dies_de_marge.xml",
+        "wizard/wizard_canviar_usuari.xml",
         "security/crawlers_security.xml",
         "security/ir.model.access.csv",
     ],
