@@ -2,9 +2,9 @@ from ftplib import FTP, FTP_TLS, FTP_PORT
 import os
 
 
-class SomSftp:
+class SomFtp:
     def __init__(self, server_data):
-        self.ftpcon = FTP_TLS()
+        self.ftpcon = FTP()
         self.ftpcon.connect(server_data["url_portal"], int(server_data["port"]))
         self.ftpcon.login(server_data["usuari"], server_data["contrasenya"])
 
