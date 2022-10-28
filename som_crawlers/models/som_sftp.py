@@ -21,7 +21,6 @@ class SomSftp:
         file_list = []
         dir_list = []
 
-        # read once every folder
         for current_folder in unique_folders:
             remote_path = os.path.join(path, current_folder)
 

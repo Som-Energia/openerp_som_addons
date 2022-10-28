@@ -13,10 +13,9 @@ class SomFtp:
         file_list = []
         dir_list = []
 
-        # read once every folder
         for current_folder in unique_folders:
             remote_path = os.path.join(path, current_folder)
-            file_list += self.ftpcon.nlst(remote_path) # servidors retornen diferents coses
+            file_list += self.ftpcon.nlst(remote_path)
 
         return file_list, dir_list
 
