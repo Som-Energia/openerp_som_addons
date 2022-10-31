@@ -13,3 +13,7 @@
 "access_wizard_canviar_dies_de_marge_rcwd","wizard.canviar.dies.de.marge","model_wizard_canviar_dies_de_marge","res_groups_som_crawlers_user",1,0,0,0
 "access_wizard_executar_tasca_r","wizard.executar.tasca","model_wizard_executar_tasca","res_groups_som_crawlers_manager",1,1,1,1
 "access_wizard_executar_tasca_rcwd","wizard.executar.tasca","model_wizard_executar_tasca","res_groups_som_crawlers_user",1,0,0,0
+"access_wizard_canviar_contrasenya_r","wizard.canviar.contrasenya","model_wizard_canviar_contrasenya","res_groups_som_crawlers_manager",1,1,1,1
+"access_wizard_canviar_contrasenya_rcwd","wizard.canviar.contrasenya","model_wizard_canviar_contrasenya","res_groups_som_crawlers_user",1,0,0,0
+"access_wizard_canviar_usuari_r","wizard.canviar.usuari","model_wizard_canviar_usuari","res_groups_som_crawlers_manager",1,1,1,1
+"access_wizard_canviar_usuari_rcwd","wizard.canviar.usuari","model_wizard_canviar_usuari","res_groups_som_crawlers_user",1,0,0,0
