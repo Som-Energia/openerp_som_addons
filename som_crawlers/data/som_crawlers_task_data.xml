@@ -19,6 +19,11 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="cide_conf"/>
         </record>
+        <record model="som.crawlers.task" id="descargar_cide_f1">
+            <field name="name">Descargar Cide F1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="cide_conf"/>
+        </record>
         <!--Soller-->
         <record model="som.crawlers.task" id="descargar_soller">
             <field name="name">Descargar Soller</field>
