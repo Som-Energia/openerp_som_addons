@@ -159,16 +159,24 @@ class SomCrawlersTaskStep(osv.osv):
         classresult.write(cursor,uid, result_id, {'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M:%S")})
         result_obj= classresult.browse(cursor, uid, result_id)
         attachment_id = result_obj.zip_name.id
+        task_step_obj = self.browse(cursor,uid,id)
+        task_step_params = json.loads(task_step_obj.params)
+
         if not attachment_id:
             output = "don't exist id attachment"
             raise Exception(output)
         else:
             try:
-                att = attachment_obj.browse(cursor,uid,attachment_id)
-                content = att.datas
-                file_name = att.name
+                if task_step_params.has_key('clean_zip'):
+                    content, file_name = self.get_clean_attachment(cursor, uid, id, attachment_id)
+                else:
+                    att = attachment_obj.browse(cursor,uid,attachment_id)
+                    content = att.datas
+                    file_name = att.name
                 output = self.import_wizard(cursor, uid, file_name, content)
-            except:
+            except TypeError as e:
+                if 'a2b_base64' not in e.message:
+                    raise e
                 sleep(10)
                 output = self.import_xml_files(cursor, uid, id, result_id, nivell-1, context)
                 return output
@@ -177,6 +185,55 @@ class SomCrawlersTaskStep(osv.osv):
         classresult.write(cursor, uid, result_id, {'resultat_bool': True})
 
         return output
+
+
+    def recursive_extract_zip(self, zip_path, destination_path):
+        with zipfile.ZipFile(zip_path, 'r') as zip_file:
+            zip_file.extractall(path=destination_path)
+        os.remove(zip_path)
+        for root, dirs, files in os.walk(destination_path):
+            for filename in files:
+                if filename.endswith('.xml'):
+                    continue
+                elif filename.endswith('.zip'):
+                    new_zip_path = os.path.join(root, filename)
+                    self.recursive_extract_zip(new_zip_path, root)
+                    return True
+                else:
+                    os.remove(filename)
+
+
+    def get_clean_attachment(self, cursor, uid, id, attachment_id):
+        attachment_obj = self.pool.get('ir.attachment')
+        att = attachment_obj.browse(cursor,uid,attachment_id)
+        data = base64.b64decode(att.datas)
+
+        # Guardem att a disc
+        working_path = self.get_output_path(cursor, uid) + '/som_crawlers_import_{}'.format(datetime.strftime(datetime.today(), '%Y%m%d%H%M%S'))
+        os.makedirs(working_path)
+        zip_path = working_path + '/' + att.name
+        with open(zip_path, 'w') as zip_file:
+            zip_file.write(data)
+
+        self.recursive_extract_zip(zip_path, working_path)
+
+        # Fer un ZIP
+        zip_path = working_path + '.zip'
+        filenames = os.listdir(working_path)
+        with zipfile.ZipFile(zip_path, 'w') as zipObj:
+            for filename in filenames:
+                zipObj.write(working_path + '/' + filename, filename)
+            zipObj.close()
+
+        # Llegim fitxer
+        with open(zip_path, 'rb') as f:
+            content  = f.read()
+
+        #Netejem
+        os.remove(zip_path)
+        shutil.rmtree(working_path)
+        return base64.b64encode(content), att.name
+
 
     def import_ftp_xml_files(self, cursor, uid, id, result_id, context=None):
         try:
@@ -391,10 +448,11 @@ class SomCrawlersTaskStep(osv.osv):
                 # Comprovar fitxers nous
                 files_to_download = []
                 for remote_file_path in file_list:
-                    remote_file_name = os.path.basename(remote_file_path)
-                    local_file = ftp_reg.search(cursor, uid, [('name','=', remote_file_name), ('server_from', '=', server_data['url_portal'])])
-                    if not local_file or ftp_reg.read(cursor, uid, local_file[0])['state'] != 'imported':
-                        files_to_download.append(remote_file_path)
+                    if remote_file_path.endswith(".xml") or remote_file_path.endswith(".zip"):
+                        remote_file_name = os.path.basename(remote_file_path)
+                        local_file = ftp_reg.search(cursor, uid, [('name','=', remote_file_name), ('server_from', '=', server_data['url_portal'])])
+                        if not local_file or ftp_reg.read(cursor, uid, local_file[0])['state'] != 'imported':
+                            files_to_download.append(remote_file_path)
 
                 if len(files_to_download) == 0:
                     raise Exception("SENSE RESULTATS: No hi ha fitxers a descarregar")
@@ -417,19 +475,11 @@ class SomCrawlersTaskStep(osv.osv):
 
                 conn.close()
 
-                # Descomprimir ZIPs
-                filenames = os.listdir(destination_path)
-                for filename in filenames:
-                    if zipfile.is_zipfile(destination_path + '/' + filename):
-                        with zipfile.ZipFile(destination_path + '/' + filename, 'r') as zip_ref:
-                            zip_ref.extractall(destination_path)
-
                 # Fer un ZIP
                 zip_filename = temp_folder + '.zip'
                 filenames = os.listdir(destination_path)
                 with zipfile.ZipFile(destination_path + '/' + zip_filename, 'w') as zipObj:
                     for filename in filenames:
-                        if filename.endswith('.xml'):
                             zipObj.write(destination_path + '/' + filename, filename)
                     zipObj.close()
 
@@ -457,6 +507,9 @@ class SomCrawlersTaskStep(osv.osv):
             task_step_obj.task_id.write({'ultima_tasca_executada': str(task_step_obj.name)+ ' - ' + str(datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))})
             classresult.write(cursor, uid, result_id, {'resultat_bool': True})
         except Exception as e:
+            if 'SENSE RESULTATS' in str(e):
+                shutil.rmtree(destination_path)
+                raise e
             raise Exception("DESCARREGANT: " + str(e))
 
         return output
