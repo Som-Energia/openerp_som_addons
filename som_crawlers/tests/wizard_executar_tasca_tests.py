@@ -238,7 +238,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
 
             result = self.taskStep.create_script_args(crawler_config_obj, taskStepParams, fileName)
 
-            result_string ="-pr None -u usuariProva -d 80 -f prova.txt -url 'https://egymonluments.gov.eg/en/museums/egyptian-museum' -p contraProva -c Selenium -b firefox -n prova1 -fltr 'https://egymonuments.gov.eg/en/collections/kawit-sarcophagus-4' -nfp False"
+            result_string ="-pr None -u usuariProva -d 80 -f prova.txt -url 'https://egymonluments.gov.eg/en/museums/egyptian-museum' -p contraProva -c Selenium -b firefox -n prova1 -fltr 'https://egymonuments.gov.eg/en/collections/kawit-sarcophagus-4' -nfp False -url-upload 'False'"
             self.assertEqual(set(result.split()),set(result_string.split()))
 
 
