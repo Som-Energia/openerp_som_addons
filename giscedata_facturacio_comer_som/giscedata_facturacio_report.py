@@ -2093,6 +2093,16 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 'gisce_library_error': mag_info.split("\n"),
             }
 
+        if 'periode_facturacio' not in mag_info or \
+           'aplica' not in mag_info['periode_facturacio'] or \
+            not mag_info['periode_facturacio']['aplica']:
+            return {
+                'has_autoconsum': te_autoconsum(fact, pol),
+                'has_mag': False,
+                'gisce_library_error': "no aplica periode de facturacio",
+                'data': mag_info,
+            }
+
         data = {
             'has_autoconsum': te_autoconsum(fact, pol),
             'has_mag': has_mag,
