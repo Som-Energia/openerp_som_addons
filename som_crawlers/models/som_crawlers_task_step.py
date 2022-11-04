@@ -191,16 +191,21 @@ class SomCrawlersTaskStep(osv.osv):
         with zipfile.ZipFile(zip_path, 'r') as zip_file:
             zip_file.extractall(path=destination_path)
         os.remove(zip_path)
+
+        for root, dirs, files in os.walk(destination_path):
+            for filename in files:
+                if filename.endswith('.zip'):
+                    new_zip_path = os.path.join(root, filename)
+                    self.recursive_extract_zip(new_zip_path, root)
+                    return True
+
         for root, dirs, files in os.walk(destination_path):
             for filename in files:
                 if filename.endswith('.xml'):
                     continue
-                elif filename.endswith('.zip'):
-                    new_zip_path = os.path.join(root, filename)
-                    self.recursive_extract_zip(new_zip_path, root)
-                    return True
                 else:
-                    os.remove(filename)
+                    file_path = os.path.join(root, filename)
+                    os.remove(file_path)
 
 
     def get_clean_attachment(self, cursor, uid, id, attachment_id):
@@ -480,7 +485,7 @@ class SomCrawlersTaskStep(osv.osv):
                 filenames = os.listdir(destination_path)
                 with zipfile.ZipFile(destination_path + '/' + zip_filename, 'w') as zipObj:
                     for filename in filenames:
-                            zipObj.write(destination_path + '/' + filename, filename)
+                        zipObj.write(destination_path + '/' + filename, filename)
                     zipObj.close()
 
                 # Adjuntar la sortida

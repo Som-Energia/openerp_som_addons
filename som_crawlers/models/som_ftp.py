@@ -16,7 +16,14 @@ class SomFtp:
 
         for current_folder in unique_folders:
             remote_path = os.path.join(path, current_folder)
-            file_list += self.ftpcon.nlst(remote_path)
+            file_list_current_folder = self.ftpcon.nlst(remote_path)
+            if current_folder not in file_list_current_folder[-1]:
+                file_list_aux = []
+                for file_name in file_list_current_folder:
+                    file_list_aux.append(current_folder + "/" + file_name)
+                file_list += file_list_aux
+            else:
+                file_list += file_list_current_folder
 
         return file_list, dir_list
 

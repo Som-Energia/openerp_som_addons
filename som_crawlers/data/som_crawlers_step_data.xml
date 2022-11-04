@@ -738,7 +738,7 @@
             <field name="name">Importar fitxers XML</field>
             <field name="sequence">2</field>
             <field name="function">import_ftp_xml_files</field>
-            <field name="params">{}</field>
+            <field name="params">{"clean_zip": "True"}</field>
             <field name="task_id" ref="descarregar_caldense_ftp"/>
         </record>
         <!-- Red energia -->
@@ -746,14 +746,14 @@
             <field name="name">Descarregar fitxers FTP Red energia</field>
             <field name="sequence">1</field>
             <field name="function">download_ftp_files</field>
-            <field name="params">{"dir_list": ["Salida", "Facturas"]}</field>
+            <field name="params">{"dir_list": ["Sortides/0762/Salida", "Sortides/0762/Facturas"]}</field>
             <field name="task_id" ref="descarregar_redenergia_ftp"/>
         </record>
         <record model="som.crawlers.task.step" id="pas_importar_redenergia">
             <field name="name">Importar fitxers XML</field>
             <field name="sequence">2</field>
             <field name="function">import_ftp_xml_files</field>
-            <field name="params">{}</field>
+            <field name="params">{"clean_zip": "True"}</field>
             <field name="task_id" ref="descarregar_redenergia_ftp"/>
         </record>
         <!-- Aurora -->
@@ -821,14 +821,14 @@
             <field name="name">Descarregar fitxers FTP pitarch</field>
             <field name="sequence">1</field>
             <field name="function">download_ftp_files</field>
-            <field name="params">{"dir_list": ["Entrada"]}</field>
+            <field name="params">{"dir_list": ["/0762/ATR/salida","/0762/FACTURAS"]}</field>
             <field name="task_id" ref="descarregar_pitarch_ftp"/>
         </record>
         <record model="som.crawlers.task.step" id="pas_importar_pitarch">
             <field name="name">Importar fitxers XML</field>
             <field name="sequence">2</field>
             <field name="function">import_ftp_xml_files</field>
-            <field name="params">{}</field>
+            <field name="params">{"clean_zip": "True"}</field>
             <field name="task_id" ref="descarregar_pitarch_ftp"/>
         </record>
         <!-- chilla -->
@@ -879,17 +879,15 @@
         <record model="som.crawlers.task.step" id="pas_descarregar_ftp_datacenter_f1">
             <field name="name">Descarregar fitxers FTP datacenter f1</field>
             <field name="sequence">1</field>
-            <field name="function">download_ftp_datacenter_f1_files</field>
-            <field name="params">{"dir_list": ["0111","0127","0131","0160","0170","0173","0181",
-                "0183","0184","0185","0186","0188","0191","0193","0217","0221","0228","0235",
-                "0301","0302","0350","0354","0357","0358","0414","0496","0555","0574","0999"]}</field>
+            <field name="function">download_ftp_files</field>
+            <field name="params">{"dir_list": ["0111/FACTURAS","0127/FACTURAS","0131/FACTURAS","0160/FACTURAS","0170/FACTURAS","0173/FACTURAS","0181/FACTURAS","0183/FACTURAS","0184/FACTURAS","0185/FACTURAS","0186/FACTURAS","0188/FACTURAS","0191/FACTURAS","0193/FACTURAS","0217/FACTURAS","0221/FACTURAS","0228/FACTURAS","0235/FACTURAS","0301/FACTURAS","0302/FACTURAS","0350/FACTURAS","0354/FACTURAS","0357/FACTURAS","0358/FACTURAS","0414/FACTURAS","0496/FACTURAS","0555/FACTURAS","0574/FACTURAS","0999/FACTURAS"]}</field>
             <field name="task_id" ref="descarregar_datacenter_ftp_f1"/>
         </record>
         <record model="som.crawlers.task.step" id="pas_importar_datacenter_f1">
             <field name="name">Importar fitxers XML f1</field>
             <field name="sequence">2</field>
             <field name="function">import_ftp_xml_files</field>
-            <field name="params">{}</field>
+            <field name="params">{"clean_zip": "True"}</field>
             <field name="task_id" ref="descarregar_datacenter_ftp_f1"/>
         </record>
     </data>
