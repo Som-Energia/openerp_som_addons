@@ -130,7 +130,7 @@
             <field name="configuracio_id" ref="endesa_conf"/>
         </record>
         <record model="som.crawlers.task" id="accions_planificades_1">
-            <field name="name">Anselmo descargar R1</field>
+            <field name="name">Descarregar Anselmo</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="anselmo_conf"/>
         </record>

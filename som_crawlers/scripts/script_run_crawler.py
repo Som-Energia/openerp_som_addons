@@ -38,6 +38,8 @@ import importlib
         # @return Exception or string if everything passed successfully
 def crawl(user, name, password, file, url, filters, crawler, days, pfiles, browser, process, url_upload, file_path=None):
     path = os.path.dirname(os.path.abspath(__file__))
+    if not os.path.exists("/tmp/outputFiles/"):
+        os.mkdir("/tmp/outputFiles/")
     f = open(os.path.join("/tmp/outputFiles/",file),'w')
     try:
         crawler_conf = {'crawler': crawler, 'days_of_margin': days, 'pending_files_only': pfiles, 'browser': browser}
