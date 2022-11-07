@@ -364,19 +364,6 @@ class SomSociCrmLead(osv.OsvInherits):
         for lead in self.browse(cursor, uid, crml_id):
             invoice = lead.invoice_id
             investment_o.open_invoices(cursor, uid, [invoice.id])
-            # ctx = {
-            #     'active_id': invoice_id,
-            #     'active_ids': [invoice_id]
-            # }
-            # vals = {
-            #     'comment': 'Pagament efectuat per TPV des del formulari. {}'.format(date_now),
-            #     'journal_id': journal_id,
-            #     'date': date_now,
-            #     'period_id': period_id,
-            # }
-            # wiz_id = pay_invoice_o.create(cursor, uid, vals, context=ctx)
-            # #TODO: ara peta
-            # pay_invoice_o.action_pay_and_reconcile(cursor, uid, wiz_id, context=ctx)
 
             from addons.account.wizard.wizard_pay_invoice import _pay_and_reconcile as wizard_pay
 
@@ -391,11 +378,6 @@ class SomSociCrmLead(osv.OsvInherits):
                     date=date_now,
                 ),
             ), context={})
-
-            # res = invoice_o.pay_and_reconcile(
-            # cursor, uid, [invoice.id], invoice.amount_total, pay_account_id, period_id,
-            # journal_id, writeoff_acc_id, writeoff_period_id,
-            # writeoff_journal_id, context, name)
 
         return 'TODO'
 
@@ -600,6 +582,14 @@ class SomSociCrmLead(osv.OsvInherits):
         'investment_id': fields.many2one('generationkwh.investment', 'Aportació Obligatòria'),
         'invoice_id': fields.many2one('account.invoice', 'Factura de l\'aportació'),
         'ip': fields.char(string='IP de la connexió', size=20),
+
+        # Camps retorn pasarel·la TPV
+        'id_transaccio': fields.char(string='ID transacció TPV', size=64),
+        'codi_resposta': fields.char(string='Codi resposta TPV', size=64),
+        'dades_peticio_tpv': fields.text(string='Dades petició TPV'),
+        'dades_resposta_tpv': fields.text(string='Dades resposta TPV'),
+        'data_transaccio': fields.date(string='Data de la transacció'),
+
     }
 
     def call_check_vat(self, cr, uid, ids):

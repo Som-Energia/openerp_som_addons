@@ -21,41 +21,44 @@
                     <button name="stage_previous" string="Previous Stage" type="object" icon="gtk-go-back" />
                 </xpath>
                 <page string="General" position="before">
-                    <page string="Oferta/Oportunitat">
-                    <notebook>
-                        <page string="Sobre el Client">
-                            <separator string="Dades de la nova sòcia" colspan="8"/>
-                            <group colspan="8" col="8">
-                                <group string="Titular" col="4" colspan="5">
-                                    <field name="partner_vat" on_change="onchange_generic('partner_vat', partner_vat)"/>
-                                    <field name="partner_es_empresa" invisible="1"/>
-                                    <field name="partner_nom" colspan="8"/>
-                                </group>
-                                <group string="Contacte" col="8" colspan="3">
-                                    <field name="address_email" colspan="8"/>
-                                    <newline/>
-                                    <field name="address_phone" colspan="4"/>
-                                    <field name="address_mobile" colspan="4"/>
-                                    <newline/>
-                                    <field name="partner_lang"/>
-                                </group>
+                    <page string="Sobre el Client">
+                        <separator string="Dades de la nova sòcia" colspan="8"/>
+                        <group colspan="8" col="8">
+                            <group string="Titular" col="4" colspan="5">
+                                <field name="partner_vat" on_change="onchange_generic('partner_vat', partner_vat)"/>
+                                <field name="partner_es_empresa" invisible="1"/>
+                                <field name="partner_nom" colspan="8"/>
                             </group>
-                            <group string="Direcció" col="8"  colspan="8">
-                                <field name="address_zip"/>
-                                <field name="address_municipi_id" on_change="onchange_generic('address_municipi_id', address_municipi_id)"/>
-                                <field name="address_poblacio_id" on_change="onchange_generic('address_poblacio_id', address_poblacio_id)"/>
-                                <field name="address_nv" colspan="6"/>
+                            <group string="Contacte" col="8" colspan="3">
+                                <field name="address_email" colspan="8"/>
+                                <newline/>
+                                <field name="address_phone" colspan="4"/>
+                                <field name="address_mobile" colspan="4"/>
+                                <newline/>
+                                <field name="partner_lang"/>
                             </group>
-                        </page>
-                        <page string="Sobre el Pagament">
-                            <separator string="Dades de la facturació i pagament" colspan="8"/>
-                            <group string="Forma de Pagament" col="2" colspan="8">
-                                <field name="payment_mode_id"/>
-                                <field name="iban" on_change="onchange_generic('iban', iban)"/>
-                            </group>
-                        </page>
-                    </notebook>
-                </page>
+                        </group>
+                        <group string="Direcció" col="8"  colspan="8">
+                            <field name="address_zip"/>
+                            <field name="address_municipi_id" on_change="onchange_generic('address_municipi_id', address_municipi_id)"/>
+                            <field name="address_poblacio_id" on_change="onchange_generic('address_poblacio_id', address_poblacio_id)"/>
+                            <field name="address_nv" colspan="6"/>
+                        </group>
+                    </page>
+                    <page string="Sobre el Pagament">
+                        <separator string="Dades de la facturació i pagament" colspan="8"/>
+                        <group string="Forma de Pagament" col="2" colspan="8">
+                            <field name="payment_mode_id"/>
+                            <field name="iban" on_change="onchange_generic('iban', iban)"/>
+                        </group>
+                        <group string="Informació pasarel·la TPV" col="8" colspan="8">
+                            <field name="id_transaccio" colspan="4" readonly="1"/>
+                            <field name="data_transaccio" readonly="1"/>
+                            <field name="codi_resposta" colspan="8" readonly="1"/>
+                            <field name="dades_peticio_tpv" colspan="8" readonly="1"/>
+                            <field name="dades_resposta_tpv" colspan="8" readonly="1"/>
+                        </group>
+                    </page>
                 </page>
             </field>
         </record>
