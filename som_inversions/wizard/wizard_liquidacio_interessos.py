@@ -281,7 +281,7 @@ class WizardLiquidacioInteressos(osv.osv_memory):
                     inv = inv_obj.browse(new_cursor, uid, inv_id)
                     inv_obj.write(new_cursor, uid, inv_id, {'check_total': inv.amount_total})
                     new_cursor.commit()
-                    new_cursor.close()
+
         if pre_calc:
             out = {'err': '', 'calc': ''}
             for key in msg:
@@ -303,6 +303,7 @@ class WizardLiquidacioInteressos(osv.osv_memory):
             new_cursor.commit()
             new_cursor.close()
         else:
+            new_cursor.close()
             return {
                 'domain': "[('id','in', %s)]" % str(inv_ids),
                 'name': _('Factures generades'),
