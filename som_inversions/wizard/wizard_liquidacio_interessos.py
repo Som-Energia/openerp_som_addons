@@ -301,7 +301,9 @@ class WizardLiquidacioInteressos(osv.osv_memory):
                 )
             )
             new_cursor.commit()
+            new_cursor.close()
         else:
+            new_cursor.close()
             return {
                 'domain': "[('id','in', %s)]" % str(inv_ids),
                 'name': _('Factures generades'),
@@ -310,6 +312,4 @@ class WizardLiquidacioInteressos(osv.osv_memory):
                 'res_model': 'account.invoice',
                 'type': 'ir.actions.act_window'
             }
-        new_cursor.close()
-
 WizardLiquidacioInteressos()
