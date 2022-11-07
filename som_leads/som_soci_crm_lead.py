@@ -322,7 +322,7 @@ class SomSociCrmLead(osv.OsvInherits):
             cursor, uid, li['partner_id'][0], li['partner_date'], quota_amount, li['ip'],
             str(li['iban']), 'APO_OB', context
         )
-
+        #TODO: al log de l'apo s'escriu Facturada i remesada i no és veritat.
         invoice_ids, errors = investment_o.create_initial_invoices(cursor, uid, [investment_id], context)
 
         self.write(cursor, uid, [crml_id], {
@@ -345,33 +345,57 @@ class SomSociCrmLead(osv.OsvInherits):
             )
         return 'TODO'
 
-    def pay_invoice(self, cursor, uid, crml_id, context=None):
+    def pay_invoice_tpv(self, cursor, uid, crml_id, context=None):
         if not isinstance(crml_id, (tuple, list)):
             crml_id = [crml_id]
 
+        investment_o = self.pool.get("generationkwh.investment")
+
         imd_o = self.pool.get('ir.model.data')
         a_period_o = self.pool.get('account.period')
-        pay_invoice_o = self.pool.get('facturacio.pay.invoice')
-
+        invoice_o = self.pool.get('account.invoice')
+        import pudb; pu.db
         date_now = datetime.now().strftime('%Y-%m-%d')
         period_id = a_period_o.find(cursor, uid, dt=date_now)[0]
 
-        journal_id = imd_o.get_object_reference(cursor, uid, 'som_generationkwh', 'socis_tpv_journal')[1]
-        for _id in crml_id:
-            lead = self.browse(cursor, uid, _id)
-            ctx = {
-                'active_id': lead.invoice_id.id,
-                'active_ids': [lead.invoice_id.id]
-            }
-            vals = {
-                'comment': 'Pagament efectuat per TPV des del formulari. {}'.format(date_now),
-                'journal_id': journal_id,
-                'date': date_now,
-                'period_id': period_id,
-            }
-            wiz_id = pay_invoice_o.create(cursor, uid, vals, context=ctx)
-            #TODO: ara peta
-            pay_invoice_o.action_pay_and_reconcile(cursor, uid, wiz_id, context=ctx)
+        #TODO: permetre un altre journal de TPV. Ara mateix, la funció investment_last_moveline de gkwh ho impedeix
+        journal_id = imd_o.get_object_reference(cursor, uid, 'som_generationkwh', 'apo_ob_fact_journal')[1]
+
+        for lead in self.browse(cursor, uid, crml_id):
+            invoice = lead.invoice_id
+            investment_o.open_invoices(cursor, uid, [invoice.id])
+            # ctx = {
+            #     'active_id': invoice_id,
+            #     'active_ids': [invoice_id]
+            # }
+            # vals = {
+            #     'comment': 'Pagament efectuat per TPV des del formulari. {}'.format(date_now),
+            #     'journal_id': journal_id,
+            #     'date': date_now,
+            #     'period_id': period_id,
+            # }
+            # wiz_id = pay_invoice_o.create(cursor, uid, vals, context=ctx)
+            # #TODO: ara peta
+            # pay_invoice_o.action_pay_and_reconcile(cursor, uid, wiz_id, context=ctx)
+
+            from addons.account.wizard.wizard_pay_invoice import _pay_and_reconcile as wizard_pay
+
+            wizard_pay(self, cursor, uid, data=dict(
+                id = invoice.id,
+                ids = [invoice.id],
+                form = dict(
+                    amount=invoice.amount_total,
+                    name='todo',
+                    journal_id=journal_id,
+                    period_id=period_id,
+                    date=date_now,
+                ),
+            ), context={})
+
+            # res = invoice_o.pay_and_reconcile(
+            # cursor, uid, [invoice.id], invoice.amount_total, pay_account_id, period_id,
+            # journal_id, writeoff_acc_id, writeoff_period_id,
+            # writeoff_journal_id, context, name)
 
         return 'TODO'
 
