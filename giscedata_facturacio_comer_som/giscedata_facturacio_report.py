@@ -777,8 +777,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
     def get_preu_mitja_mensual_mes_anterior_ajust(self, cursor, uid, fra, context=None):
         pmm_ajust_q = self.pool.get('giscedata.monthly.price.ajom').q(cursor, uid)
-        mes_anterior = fra.data_inici.month - 1 if fra.data_inici.month > 1 else 12
-        year = fra.data_inici.year - 1 if mes_anterior == 12 else fra.data_inici.year
+        data_inici = datetime.strptime(fra.data_inici, '%Y-%m-%d')
+        mes_anterior = data_inici.month - 1 if data_inici.month > 1 else 12
+        year = data_inici.year - 1 if mes_anterior == 12 else data_inici.year
         dmn = [('name', '=', '{}/{}'.format(year, str(mes_anterior).zfill(2)))]
         pmm_ajust_vs = pmm_ajust_q.read(['price']).where(dmn)
         res = 0.0
