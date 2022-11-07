@@ -7,7 +7,10 @@ import os
 import pooler
 import base64
 from time import sleep
-
+from . import som_sftp, som_ftp
+import zipfile
+import shutil
+import StringIO
 
 # Class Task Step that describes the module and the task step fields
 class SomCrawlersTaskStep(osv.osv):
@@ -51,6 +54,13 @@ class SomCrawlersTaskStep(osv.osv):
         'function': lambda *a: '',
         'name': lambda *a: 'nom_per_defecte',
     }
+
+    def get_output_path(self, cursor, uid, context=None):
+        cfg_obj = self.pool.get('res.config')
+        output_path = cfg_obj.get(cursor, uid, 'som_crawlers_output_tmp_path', '/tmp/outputFiles')
+        if not os.path.isdir(output_path):
+            os.mkdir(output_path)
+        return output_path
 
     #execute steps of a general task
     def executar_steps(self, cursor, uid, id, result_id, context=None):
@@ -123,7 +133,7 @@ class SomCrawlersTaskStep(osv.osv):
                 file_name = "output_" + config_obj.name + "_" + datetime.now().strftime("%Y-%m-%d_%H_%M") + ".txt"
                 args_str = self.create_script_args(config_obj, task_step_params, file_name)
                 ret_value = os.system("{} {} {}".format(path_python, script_path, args_str))
-                output_temp_path = '/tmp/outputFiles'
+                output_temp_path = self.get_output_path(cursor, uid)
                 output = self.readOutputFile(cursor, uid, output_temp_path, file_name)
                 if output == 'Files have been successfully downloaded':
                     output = self.attach_files_zip(cursor, uid, id, result_id, config_obj, path, task_step_params, context = context)
@@ -149,22 +159,119 @@ class SomCrawlersTaskStep(osv.osv):
         classresult.write(cursor,uid, result_id, {'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M:%S")})
         result_obj= classresult.browse(cursor, uid, result_id)
         attachment_id = result_obj.zip_name.id
+        task_step_obj = self.browse(cursor,uid,id)
+        task_step_params = json.loads(task_step_obj.params)
+
         if not attachment_id:
             output = "don't exist id attachment"
             raise Exception(output)
         else:
             try:
-                att = attachment_obj.browse(cursor,uid,attachment_id)
-                content = att.datas
-                file_name = att.name
+                if task_step_params.has_key('clean_zip'):
+                    content, file_name = self.get_clean_attachment(cursor, uid, id, attachment_id)
+                else:
+                    att = attachment_obj.browse(cursor,uid,attachment_id)
+                    content = att.datas
+                    file_name = att.name
                 output = self.import_wizard(cursor, uid, file_name, content)
-            except:
+            except TypeError as e:
+                if 'a2b_base64' not in e.message:
+                    raise e
                 sleep(10)
                 output = self.import_xml_files(cursor, uid, id, result_id, nivell-1, context)
                 return output
 
         task_step_obj.task_id.write({'ultima_tasca_executada': str(task_step_obj.name)+ ' - ' + str(datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))})
         classresult.write(cursor, uid, result_id, {'resultat_bool': True})
+
+        return output
+
+
+    def recursive_extract_zip(self, zip_path, destination_path):
+        with zipfile.ZipFile(zip_path, 'r') as zip_file:
+            zip_file.extractall(path=destination_path)
+        os.remove(zip_path)
+
+        for root, dirs, files in os.walk(destination_path):
+            for filename in files:
+                if filename.endswith('.zip'):
+                    new_zip_path = os.path.join(root, filename)
+                    self.recursive_extract_zip(new_zip_path, root)
+                    return True
+
+        for root, dirs, files in os.walk(destination_path):
+            for filename in files:
+                if filename.endswith('.xml'):
+                    continue
+                else:
+                    file_path = os.path.join(root, filename)
+                    os.remove(file_path)
+
+
+    def get_clean_attachment(self, cursor, uid, id, attachment_id):
+        attachment_obj = self.pool.get('ir.attachment')
+        att = attachment_obj.browse(cursor,uid,attachment_id)
+        data = base64.b64decode(att.datas)
+
+        # Guardem att a disc
+        working_path = self.get_output_path(cursor, uid) + '/som_crawlers_import_{}'.format(datetime.strftime(datetime.today(), '%Y%m%d%H%M%S'))
+        os.makedirs(working_path)
+        zip_path = working_path + '/' + att.name
+        with open(zip_path, 'w') as zip_file:
+            zip_file.write(data)
+
+        self.recursive_extract_zip(zip_path, working_path)
+
+        # Fer un ZIP
+        zip_path = working_path + '.zip'
+        filenames = os.listdir(working_path)
+        with zipfile.ZipFile(zip_path, 'w') as zipObj:
+            for filename in filenames:
+                zipObj.write(working_path + '/' + filename, filename)
+            zipObj.close()
+
+        # Llegim fitxer
+        with open(zip_path, 'rb') as f:
+            content  = f.read()
+
+        #Netejem
+        os.remove(zip_path)
+        shutil.rmtree(working_path)
+        return base64.b64encode(content), att.name
+
+
+    def import_ftp_xml_files(self, cursor, uid, id, result_id, context=None):
+        try:
+            output =  self.import_xml_files(cursor, uid, id, result_id)
+        except Exception as e:
+            raise Exception("IMPORTANT: " + str(e))
+        else:
+            task_step_obj = self.browse(cursor,uid,id)
+            server_data = self.pool.get('som.crawlers.task').id_del_portal_config(cursor, uid, task_step_obj.task_id.id, context)
+            classresult = self.pool.get('som.crawlers.result')
+            attachment_obj = self.pool.get('ir.attachment')
+            ftp_reg = self.pool.get('som.ftp.file.register')
+
+            result_obj= classresult.browse(cursor, uid, result_id)
+            attachment_id = result_obj.zip_name.id
+            att = attachment_obj.browse(cursor,uid,attachment_id)
+
+            input_file = att.datas
+
+            working_path = self.get_output_path(cursor, uid) + '/som_crawlers_import_{}'.format(datetime.strftime(datetime.today(), '%Y%m%d%H%M%S'))
+            os.makedirs(working_path)
+
+            data = base64.b64decode(input_file)
+            file_handler = StringIO.StringIO(data)
+
+            input_file = zipfile.ZipFile(file_handler)
+
+            for filename in input_file.namelist():
+                file_id = ftp_reg.search(cursor, uid, [('name','=', filename), ('server_from', '=', server_data['url_portal'])])
+                if file_id:
+                    ftp_reg.write(cursor, uid, file_id, {'state': 'imported', 'date_imported': datetime.now()})
+
+            shutil.rmtree(working_path)
 
         return output
 
@@ -232,7 +339,7 @@ class SomCrawlersTaskStep(osv.osv):
         path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../')
         classresult.write(cursor,uid, result_id, {'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M:%S")})
         #TODO: Que fem quan carreguem el segon fitxer
-        path_to_zip = '/tmp/outputFiles'
+        path_to_zip = self.get_output_path(cursor, uid)
         file_name = "output_" + config_obj.name + "_" + datetime.now().strftime("%Y-%m-%d_%H_%M") + ".zip"
         file_path = os.path.join(path_to_zip, file_name)
         attachment_id = int(classresult.read(cursor,uid, result_id, ['resultat_text'])['resultat_text'])
@@ -316,5 +423,101 @@ class SomCrawlersTaskStep(osv.osv):
         classresult.write(cursor, uid, result_id, {'resultat_bool': True})
 
         return attachment_id
+
+    def download_ftp_files(self, cursor, uid, id, result_id, context=None):
+        try:
+            classresult = self.pool.get('som.crawlers.result')
+            ftp_reg = self.pool.get('som.ftp.file.register')
+            task_step_obj = self.browse(cursor,uid,id)
+            task_step_params = json.loads(task_step_obj.params)
+            classresult.write(cursor, uid, result_id, {'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M:%S")})
+            output = ''
+
+            if task_step_params.has_key('dir_list'):
+                server_data = self.pool.get('som.crawlers.task').id_del_portal_config(cursor, uid, task_step_obj.task_id.id, context)
+
+                base_path = self.get_output_path(cursor, uid)
+                temp_folder = server_data['name'] + "_" + datetime.now().strftime("%Y%m%d%H%M%S")
+                destination_path = base_path + '/' + temp_folder
+
+                os.mkdir(destination_path)
+
+                # Connectar per FTP o SFTP
+                if (server_data['ftp']):
+                    conn = som_ftp.SomFtp(server_data)
+                else:
+                    conn = som_sftp.SomSftp(server_data)
+
+                file_list, dir_list = conn.list_files('/', task_step_params['dir_list'])
+
+                # Comprovar fitxers nous
+                files_to_download = []
+                for remote_file_path in file_list:
+                    if remote_file_path.endswith(".xml") or remote_file_path.endswith(".zip"):
+                        remote_file_name = os.path.basename(remote_file_path)
+                        local_file = ftp_reg.search(cursor, uid, [('name','=', remote_file_name), ('server_from', '=', server_data['url_portal'])])
+                        if not local_file or ftp_reg.read(cursor, uid, local_file[0])['state'] != 'imported':
+                            files_to_download.append(remote_file_path)
+
+                if len(files_to_download) == 0:
+                    raise Exception("SENSE RESULTATS: No hi ha fitxers a descarregar")
+
+                # Descarregarels fitxers
+                files_to_import = []
+                for remote_file_path in files_to_download:
+                    try:
+                        remote_file_name = os.path.basename(remote_file_path)
+                        conn.download_file(remote_file_path, destination_path + '/' + remote_file_name)
+                        files_to_import.append(remote_file_path)
+                    except Exception as e:
+                        output += str(e) + "\n"
+                        file_id = ftp_reg.search(cursor, uid, [('name','=', remote_file_name), ('server_from', '=', server_data['url_portal'])])
+                        if file_id:
+                            ftp_reg.write(cursor, uid, file_id, {'state': 'error'})
+                        else:
+                            ftp_reg.create(cursor, uid, {'name': remote_file_name, 'server_from': server_data['url_portal'],
+                                'state': 'error', 'date_download': datetime.now()})
+
+                conn.close()
+
+                # Fer un ZIP
+                zip_filename = temp_folder + '.zip'
+                filenames = os.listdir(destination_path)
+                with zipfile.ZipFile(destination_path + '/' + zip_filename, 'w') as zipObj:
+                    for filename in filenames:
+                        zipObj.write(destination_path + '/' + filename, filename)
+                    zipObj.close()
+
+                # Adjuntar la sortida
+                attachment_id = self.attach_file(cursor, uid, destination_path, zip_filename, result_id, context)
+                classresult.write(cursor, uid, result_id, {'zip_name': attachment_id})
+                output = "Fitxer ZIP adjuntat correctament"
+
+                # Marcar com a descarregats
+                for remote_file_path in files_to_import:
+                    remote_file_name = os.path.basename(remote_file_path)
+                    file_id = ftp_reg.search(cursor, uid, [('name','=', remote_file_name), ('server_from', '=', server_data['url_portal'])])
+                    if file_id:
+                        ftp_reg.write(cursor, uid, file_id, {'state': 'downloaded', 'date_download': datetime.now()})
+                    else:
+                        ftp_reg.create(cursor, uid, {'name': remote_file_name, 'server_from': server_data['url_portal'],
+                                'state': 'downloaded', 'date_download': datetime.now()})
+
+                # Esborrar fitxers temporals
+                shutil.rmtree(destination_path)
+
+            else:
+                output = 'Falta la llista de directoris'
+
+            task_step_obj.task_id.write({'ultima_tasca_executada': str(task_step_obj.name)+ ' - ' + str(datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))})
+            classresult.write(cursor, uid, result_id, {'resultat_bool': True})
+        except Exception as e:
+            if 'SENSE RESULTATS' in str(e):
+                shutil.rmtree(destination_path)
+                raise e
+            raise Exception("DESCARREGANT: " + str(e))
+
+        return output
+
 
 SomCrawlersTaskStep()
