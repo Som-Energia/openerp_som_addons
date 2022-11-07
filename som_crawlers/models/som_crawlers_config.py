@@ -36,7 +36,7 @@ class SomCrawlersConfig(osv.osv):
             required=False,
         ),
         "filtres": fields.text(
-            "Filtres de descarrega",
+            "Filtres de descàrrega",
             required=False,
         ),
         "crawler": fields.char(
@@ -58,13 +58,11 @@ class SomCrawlersConfig(osv.osv):
         ),
         "distribuidora": fields.many2one(
             "res.partner",
-            "Distribuïdora",
-        ),
-        "port": fields.integer("Port FTP/SFTP"),
-        "ftp": fields.boolean("FTP", help="Utilitzar FTP en comptes de SFTP"),
             "Distribuidora",
             help="Distribuidora",
         ),
+        "port": fields.integer("Port FTP/SFTP"),
+        "ftp": fields.boolean("FTP", help="Utilitzar FTP en comptes de SFTP"),
         "log": fields.text(
             "Història",
             help="Història de modificacions de la configuració",
@@ -169,7 +167,7 @@ class SomCrawlersConfig(osv.osv):
                 "Nombre negatiu!", "Introdueix un nombre mes gran o igual a 0 diferent"
             )
         else:
-            self.write(cursor, uid, ids, {"days_of_margin": days_old}, context=None)
+            self.write(cursor, uid, ids, {"days_of_margin": days}, context=None)
             message = (
                 "S'ha actualitzat els dies de marge: " + str(days_old) + " -> " + str(days)
             )
