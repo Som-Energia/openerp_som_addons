@@ -39,15 +39,6 @@ class SomCrawlersConfig(osv.osv):
             "Filtres de descàrrega",
             required=False,
         ),
-        "date_ultima_modificacio": fields.datetime(
-            "Data i hora última modificació",
-            required=False,
-        ),
-        "user_ultima_modificacio": fields.many2one(
-            "res.users",
-            string="Modificat per",
-            help="Usuari que ha realitzat la última modificació de la contrasenya",
-        ),
         "crawler": fields.char(
             "Crawler",
             size=20,
@@ -67,11 +58,39 @@ class SomCrawlersConfig(osv.osv):
         ),
         "distribuidora": fields.many2one(
             "res.partner",
-            "Distribuïdora",
+            "Distribuidora",
+            help="Distribuidora",
         ),
         "port": fields.integer("Port FTP/SFTP"),
         "ftp": fields.boolean("FTP", help="Utilitzar FTP en comptes de SFTP"),
+        "log": fields.text(
+            "Història",
+            help="Història de modificacions de la configuració",
+        ),
     }
+
+    def _log(self, cursor, uid, ids, message):
+        user_obj = self.pool.get("res.users")
+        username = user_obj.browse(cursor, uid, uid, context=None).name
+
+        if not isinstance(ids, list):
+            ids = [ids]
+
+        for id in ids:
+            old_log = self.read(cursor, uid, id, ["log"], context=None)["log"]
+            if not old_log:
+                old_log = ""
+
+            log = (
+                "[{update_date} {user}] ".format(
+                    update_date=datetime.now(),
+                    user=username,
+                )
+                + message + "\n" + old_log
+            )
+
+            self.write(cursor, uid, id, {"log": log,}, context=None)
+
     """canvia la contrasenya d'un portal i retorna la nova contrasenya
         @param self The object pointer
         @param cursor The database pointer
@@ -81,27 +100,25 @@ class SomCrawlersConfig(osv.osv):
         @param context None certain data to pass
         @return New password value
     """
-    # testo ok
     def canviar_contrasenya(self, cursor, uid, ids, contrasenya, context=None):
+        contrasenya_antiga = self.browse(cursor, uid, ids, context=context).contrasenya
 
-        crawler_config = self.browse(cursor, uid, ids, context=context)
-        if contrasenya == crawler_config.contrasenya:
+        if not contrasenya_antiga:
+            contrasenya_antiga = ""
+
+        if contrasenya == contrasenya_antiga:
             raise osv.except_osv(
                 "Contrasenya identica a la anterior!",
                 "Torna a introduir una contrasenya diferent a la anterior",
             )
         else:
-            self.write(
-                cursor,
-                uid,
-                ids,
-                {
-                    "contrasenya": contrasenya,
-                    "user_ultima_modificacio": uid,
-                    "date_ultima_modificacio": datetime.now().isoformat(),
-                },
-                context=context,
+            self.write(cursor, uid, ids, {"contrasenya": contrasenya}, context=None)
+            message = (
+                "S'ha actualitzat la contrasenya: \""
+                + str(contrasenya_antiga) + '" -> "' + str(contrasenya) + '"'
             )
+            self._log(cursor, uid, ids, message)
+
             return contrasenya
 
     """canvia el nom d'usuari d'un portal i retorna el nou usuari
@@ -115,31 +132,32 @@ class SomCrawlersConfig(osv.osv):
     """
 
     def canviar_usuari(self, cursor, uid, ids, usuari, context=None):
+        usuari_antic = self.browse(cursor, uid, ids, context=context).usuari
 
-        crawler_config = self.browse(cursor, uid, ids, context=context)
-        if usuari == crawler_config.usuari:
+        if not usuari_antic:
+            usuari_antic = ""
+
+        if usuari == usuari_antic:
             raise osv.except_osv(
                 "Usuari identic a l'anterior!",
                 "Torna a introduir un usuari diferent a l'anterior",
             )
         else:
-            self.write(
-                cursor,
-                uid,
-                ids,
-                {
-                    "usuari": usuari,
-                    "user_ultima_modificacio": uid,
-                    "date_ultima_modificacio": datetime.now().isoformat(),
-                },
-                context=context,
+            self.write(cursor, uid, ids, {"usuari": usuari,}, context=None)
+            message = (
+                "S'ha actualitzat l'usuari: \"" + str(usuari_antic) + '" -> "' + str(usuari) + '"'
             )
+            self._log(cursor, uid, ids, message)
+
             return usuari
 
     def canviar_dies_de_marge(self, cursor, uid, ids, days, context=None):
+        days_old = self.browse(cursor, uid, ids, context=context).days_of_margin
 
-        crawler_config = self.browse(cursor, uid, ids, context=context)
-        if days == crawler_config.days_of_margin:
+        if not days_old:
+            days_old = 0
+
+        if days == days_old:
             raise osv.except_osv(
                 "Nombre de dies igual a l'anterior!",
                 "Introdueix un nombre diferent mes gran o igual a 0",
@@ -149,17 +167,12 @@ class SomCrawlersConfig(osv.osv):
                 "Nombre negatiu!", "Introdueix un nombre mes gran o igual a 0 diferent"
             )
         else:
-            self.write(
-                cursor,
-                uid,
-                ids,
-                {
-                    "days_of_margin": days,
-                    "user_ultima_modificacio": uid,
-                    "date_ultima_modificacio": datetime.now().isoformat(),
-                },
-                context=context,
+            self.write(cursor, uid, ids, {"days_of_margin": days}, context=None)
+            message = (
+                "S'ha actualitzat els dies de marge: " + str(days_old) + " -> " + str(days)
             )
+            self._log(cursor, uid, ids, message)
+
             return days
 
 

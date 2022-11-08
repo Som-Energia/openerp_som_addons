@@ -12,8 +12,8 @@
                         <field name="name"/>
                     </group>
                     <group colspan="2" string="Credencials">
-                        <field name="usuari"/>
-                        <field name="contrasenya"/>
+                        <field name="usuari" readonly='1'/>
+                        <field name="contrasenya" readonly='1'/>
                     </group>
                     <group colspan="2" string="Configuració FTP">
                         <field name="port"/>
@@ -31,8 +31,7 @@
                         <field name="browser" readonly='1'/>
                     </group>
                     <group colspan="4" string="Logs">
-                        <field name="date_ultima_modificacio" readonly='1'/>
-                        <field name="user_ultima_modificacio" readonly='1'/>
+                        <field name="log" readonly='1'/>
                     </group>
                 </form>
             </field>
@@ -54,8 +53,6 @@
                     <field name="days_of_margin"/>
                     <field name="pending_files_only"/>
                     <field name="browser"/>
-                    <field name="date_ultima_modificacio" select="1"/>
-                    <field name="user_ultima_modificacio"/>
                 </tree>
             </field>
         </record>
