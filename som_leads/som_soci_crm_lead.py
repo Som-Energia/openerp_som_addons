@@ -196,12 +196,24 @@ class SomSociCrmLead(osv.OsvInherits):
 
     def stage_next(self, cr, uid, ids, context=None):
         crm_obj = self.pool.get('crm.case')
+        err = []
         for _id in ids:
+            lead = self.browse(cr, uid, _id)
+            if lead.state != 'open':
+                err.append(_id)
+                continue
             self.run_method(cr, uid, _id, context)
-            crm_id = self.read(cr, uid, _id, ['crm_id'])['crm_id'][0]
-            res = crm_obj.stage_next(cr, uid, [crm_id], context)
-
+            res = crm_obj.stage_next(cr, uid, [lead.crm_id.id], context)
+        if err:
+            raise osv.except_osv(
+                _(u"ERROR"), _(u"Els leads {} no estan en estat Obert")
+            )
         return res
+
+    def stage_previous(self, cr, uid, ids, context=None):
+        raise osv.except_osv(
+                _(u"ERROR"), _(u"Not implemented yet")
+            )
 
     def _vat_es_empresa(self, cr, uid, ids, prop, unknow_none, unknow_dict):
         res = {}
@@ -509,9 +521,11 @@ class SomSociCrmLead(osv.OsvInherits):
 
     def create_new_member(self, cursor, uid, ids, context={}):
         """
+            Crear el lead i passar-lo en estat obert
             Si el lead és de tipus pagament per TPV: no fa res
             Si el lead és per pagar remesat: passa  l'estat que crea les entitats i retorna un codi soci.
         """
+
         pass
 
     def payment_successful(self, cursor, uid, ids, context={}):
@@ -536,7 +550,7 @@ class SomSociCrmLead(osv.OsvInherits):
         'lead_redsys_response': fields.char('redsys_response', size=256),
         'partner_es_empresa': fields.function(_vat_es_empresa, method=True, type='boolean', string='Es Empresa'),
 
-        #Camps Altres comptes
+        #TODO: cal?? potser per les validacions?
         'payment_mode_id': fields.many2one('payment.mode', 'Grup de pagament'),
 
         #Camps res.partner#
