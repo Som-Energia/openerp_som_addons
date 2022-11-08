@@ -187,20 +187,20 @@
             <field name="params">{}</field>
             <field name="task_id" ref="descargar_iberdrola_d1"/>
         </record>
-        <!--endesa-->
-        <record model="som.crawlers.task.step" id="pas_descarregar_endesa">
+        <!--fenosa-->
+        <record model="som.crawlers.task.step" id="pas_descarregar_fenosa">
             <field name="name">Descarregar fitxers</field>
             <field name="sequence">1</field>
             <field name="function">download_files</field>
             <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
-            <field name="task_id" ref="accions_planificades_2"/>
+            <field name="task_id" ref="descarregar_fenosa"/>
         </record>
-        <record model="som.crawlers.task.step" id="pas_importar_endesa">
+        <record model="som.crawlers.task.step" id="pas_importar_fenosa">
             <field name="name">Importar fitxers XML</field>
             <field name="sequence">2</field>
             <field name="function">import_xml_files</field>
             <field name="params">{}</field>
-            <field name="task_id" ref="accions_planificades_2"/>
+            <field name="task_id" ref="descarregar_fenosa"/>
         </record>
         <!-- Anselmo -->
         <record model="som.crawlers.task.step" id="pas_descarregar_anselmo">
@@ -208,14 +208,14 @@
             <field name="sequence">1</field>
             <field name="function">download_files</field>
             <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
-            <field name="task_id" ref="accions_planificades_1"/>
+            <field name="task_id" ref="descarregar_anselmo"/>
         </record>
         <record model="som.crawlers.task.step" id="pas_importar_anselmo">
             <field name="name">Importar fitxers XML</field>
             <field name="sequence">2</field>
             <field name="function">import_xml_files</field>
             <field name="params">{}</field>
-            <field name="task_id" ref="accions_planificades_1"/>
+            <field name="task_id" ref="descarregar_anselmo"/>
         </record>
         <record model="som.crawlers.task.step" id="pas_generar_zip_anselmo_d1">
             <field name="name">Generar zip exportació</field>

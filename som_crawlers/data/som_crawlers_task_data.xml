@@ -129,12 +129,12 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="endesa_conf"/>
         </record>
-        <record model="som.crawlers.task" id="accions_planificades_1">
+        <record model="som.crawlers.task" id="descarregar_anselmo">
             <field name="name">Descarregar Anselmo</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="anselmo_conf"/>
         </record>
-        <record model="som.crawlers.task" id="accions_planificades_2">
+        <record model="som.crawlers.task" id="descarregar_fenosa">
             <field name="name">Fenosa descargar F1 i ATR</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="fenosa_conf"/>
