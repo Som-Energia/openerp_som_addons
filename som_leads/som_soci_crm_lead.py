@@ -206,7 +206,7 @@ class SomSociCrmLead(osv.OsvInherits):
             res = crm_obj.stage_next(cr, uid, [lead.crm_id.id], context)
         if err:
             raise osv.except_osv(
-                _(u"ERROR"), _(u"Els leads {} no estan en estat Obert")
+                _(u"ERROR"), _(u"Els leads amb ID's: {} no estan en estat Obert".format(err))
             )
         return res
 
