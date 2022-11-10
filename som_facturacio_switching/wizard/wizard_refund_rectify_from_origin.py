@@ -98,6 +98,8 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                 fact_obj.unlink(cursor, uid, ab_re_ids)
                 msg.append("Per la factura numero {} les factures AB i RE tenen mateix import, s'esborren".format(inv_initial_info['number']))
                 fres_resultat = list(set(fres_resultat) - set(ab_re_ids))
+            else:
+                msg.append("Per la factura numero {} les factures AB i RE tenen import diferent.".format(inv_initial_info['number']))
 
         return fres_resultat, msg
 
@@ -170,13 +172,19 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         })
         csv_file.close()
 
-    def save_info_into_f1_after_refacturacio(self, cursor, uid, ids, f1_refacturats, context):
+    def save_info_into_f1_after_refacturacio(self, cursor, uid, f1_refacturats, context):
         f1_obj = self.pool.get('giscedata.facturacio.importacio.linia')
 
         text = "F1 refacturat en data {}".format(datetime.today().strftime('%d-%m-%Y'))
-        for f1_id in f1_refacturats:
+        text_zero = "F1 refacturat en data {} però import 0".format(datetime.today().strftime('%d-%m-%Y'))
+        for f1_data in f1_refacturats:
+            f1_id = f1_data['id']
+            any_zero = len([msg for msg in f1_data['refund_result'] if 'esborren' in msg])
             obs = f1_obj.read(cursor, uid, f1_id, ['user_observations'], context=context)['user_observations'] or ''
-            f1_obj.write(cursor, uid, f1_id, {'user_observations': '{}\n{}'.format(text, obs)})
+            if any_zero:
+                f1_obj.write(cursor, uid, f1_id, {'user_observations': '{}\n{}'.format(text_zero, obs)})
+            else:
+                f1_obj.write(cursor, uid, f1_id, {'user_observations': '{}\n{}'.format(text, obs)})
 
     def open_polissa_invoices_send_mail(self, cursor, uid, ids, facts_by_polissa, action, context={}):
         if not isinstance(ids, (tuple, list)):
@@ -261,7 +269,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                         continue
                 facts_by_polissa.setdefault(pol_name, []).extend(facts_created)
 
-                f1_refacturats.append(_id)
+                f1_refacturats.append({'id': _id ,'refund_result': msg_rr})
             except Exception as e:
                 msg.append("Error processant la factura amb origen {}: {}".format(origen, str(e)))
                 fact_csv_result.append([origen, pol_name, "Hi ha hagut algun problema, cal revisar."])
@@ -270,7 +278,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             msg_open_send, csv_open_send = self.open_polissa_invoices_send_mail(cursor, uid, ids, facts_by_polissa, wiz.actions, context)
             msg += msg_open_send
             fact_csv_result += csv_open_send
-            self.save_info_into_f1_after_refacturacio(cursor, uid, ids, f1_refacturats, context=context)
+            self.save_info_into_f1_after_refacturacio(cursor, uid, f1_refacturats, context=context)
 
         self.write_report(cursor, uid, ids, fact_csv_result, context)
         self.write(cursor, uid, ids, {'info': '\n'.join(msg), 'state': 'end', 'facts_generades': json.dumps(facts_generades)})
