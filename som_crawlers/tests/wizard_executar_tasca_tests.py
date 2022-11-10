@@ -219,7 +219,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             path_desti = self.taskStep.get_output_path(cursor, uid)
             if not os.path.exists(path_desti):
                 os.mkdir(path_desti)
-            os.system('cp ' + pathFileActual + '/demo/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip ' + path_desti + '/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip')
+            os.system('cp ' + pathFileActual + '/demo/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip ' + path_desti + '/anselmo/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip')
             taskStepParams = {}
 
             result = self.taskStep.attach_files_zip(cursor, uid, crawler_taskStep_id, result_id, crawler_config_obj, path_desti, taskStepParams, context=None)
