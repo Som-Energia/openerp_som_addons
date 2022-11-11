@@ -7,7 +7,6 @@ class SomCrawlersHoliday(osv.osv):
     _name = 'som.crawlers.holiday'
     _order = 'date desc'
 
-
     def is_working_day(self, cursor, uid, date):
         res = self.search(cursor, uid, [('date','=',date)])
         return not res
