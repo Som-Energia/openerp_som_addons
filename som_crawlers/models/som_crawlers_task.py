@@ -130,7 +130,7 @@ class SomCrawlersTask(osv.osv):
         ree_calendar = REECalendar()
 
         def workable_day(date):
-            return ree_calendar.is_working_day(date) and date.weekday() in [0,1,2,3,4] and sch_obj.is_working_day(date.strftime("%Y-%m-%d"))
+            return ree_calendar.is_working_day(date) and date.weekday() in [0,1,2,3,4] and sch_obj.is_working_day(cursor, uid, date.strftime("%Y-%m-%d"))
 
         if context and "datetime_now" in context:
             now = context["datetime_now"]
@@ -141,8 +141,12 @@ class SomCrawlersTask(osv.osv):
         while not workable_day(date):
             date += timedelta(days=1)
 
-        date_proxima_exec = (date).replace(
-            hour=prev_date.hour, minute=prev_date.minute, second=prev_date.second).strftime("%Y-%m-%d %H:%M:%S")
+        #date_proxima_exec = (date).replace(
+        #    hour=prev_date.hour, minute=prev_date.minute, second=prev_date.second).strftime("%Y-%m-%d %H:%M:%S")
+
+        date_proxima_exec = prev_date.replace(
+            year=date.year, month=date.month, day=date.day).strftime("%Y-%m-%d %H:%M:%S")
+
         return date_proxima_exec
 
 
