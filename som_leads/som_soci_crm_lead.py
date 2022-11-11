@@ -508,6 +508,23 @@ class SomSociCrmLead(osv.OsvInherits):
         res = "\n\n\n".join(all_msgs)
         return res
 
+
+    def change_leads_stage_when_paid_and_payment_order(self, cursor, uid, ids):
+        inv_o = self.pool.get("account.invoice")
+
+        leads_to_change = []
+        for id in ids:
+            lead_id = self.search(cursor, uid, [('invoice_id', '=', id)])
+            if len(lead_id) <= 0:
+                continue
+            lead = self.browse(cursor, uid, lead_id[0])
+            invoice = inv_o.browse(cursor, uid, id)
+            if invoice.state == 'paid' and lead.stage_id.name == 'Remesat':
+                leads_to_change.append(lead_id[0])
+
+        if len(leads_to_change) > 0:
+            self.stage_next(cursor, uid, leads_to_change)
+
     def remesar_factura(self, cursor, uid, ids, context={}):
         """ Remesar la factura """
         pass
