@@ -216,9 +216,10 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             crawler_taskStep_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_taskStep_8')[1]
             crawler_config_obj = self.Configuracio.browse(cursor,uid,crawler_config_id)
             pathFileActual = os.path.join(os.path.dirname(os.path.realpath(__file__)),'..')
-            path_desti = self.taskStep.get_output_path(cursor, uid)
-            if not os.path.exists(path_desti):
-                os.mkdir(path_desti)
+            path_desti = os.path.join(os.path.dirname(os.path.realpath(__file__)),'tmpDir')
+            create_path = os.path.join(path_desti,'anselmo')
+            if not os.path.exists(create_path):
+                os.mkdir(create_path)
             os.system('cp ' + pathFileActual + '/demo/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip ' + path_desti + '/anselmo/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip')
             taskStepParams = {}
 
