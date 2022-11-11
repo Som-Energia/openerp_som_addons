@@ -219,6 +219,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             path_desti = os.path.join(os.path.dirname(os.path.realpath(__file__)),'tmpDir')
             create_path = os.path.join(path_desti,'anselmo')
             if not os.path.exists(create_path):
+                os.mkdir(path_desti)
                 os.mkdir(create_path)
             os.system('cp ' + pathFileActual + '/demo/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip ' + path_desti + '/anselmo/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip')
             taskStepParams = {}
