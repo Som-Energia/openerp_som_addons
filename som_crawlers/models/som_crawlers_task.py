@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from osv import osv, fields
 from tools.translate import _
 from oorq.decorators import job
+from enerdata.calendars import REECalendar
 
 
 ## Class Task that describes the module and the task fields
@@ -124,10 +125,25 @@ class SomCrawlersTask(osv.osv):
         cron_obj.write(cursor, uid, cron_id, {'nextcall': data_proxima_exec}, context)
 
     def get_next_execution_date(self, cursor, uid, prev_date, context=None):
-        day_shift = 3 if datetime.now().weekday() == 4 else 1
-        data_proxima_exec = (datetime.now() + timedelta(days=day_shift)).replace(
+
+        sch_obj = self.pool.get('som.crawlers.holiday')
+        ree_calendar = REECalendar()
+
+        def workable_day(date):
+            return ree_calendar.is_working_day(date) and date.weekday() in [0,1,2,3,4] and sch_obj.is_working_day(date.strftime("%Y-%m-%d"))
+
+        if context and "datetime_now" in context:
+            now = context["datetime_now"]
+        else:
+            now = datetime.now()
+        date = now + timedelta(days=1)
+
+        while not workable_day(date):
+            date += timedelta(days=1)
+
+        date_proxima_exec = (date).replace(
             hour=prev_date.hour, minute=prev_date.minute, second=prev_date.second).strftime("%Y-%m-%d %H:%M:%S")
-        return data_proxima_exec
+        return date_proxima_exec
 
 
 SomCrawlersTask()
