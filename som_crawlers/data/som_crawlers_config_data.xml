@@ -363,6 +363,11 @@
             <field name="value">/tmp/outputFiles</field>
             <field name="description">Ruta dels fitxers temporals del massive importer</field>
         </record>
+        <record model="res.config" id="som_crawlers_sleep_mongo_attachment">
+            <field name="name">som_crawlers_sleep_mongo_attachment</field>
+            <field name="value">100</field>
+            <field name="description">Segons d'espera abans de tornar a provar si s'ha pujat el zip a mongo</field>
+        </record>
         <!-- Executar tasques a partir d'un cron -->
         <record id="ir_cron_run_tasks_action" model="ir.cron">
             <field name="name">Executar crawlers programats distris</field>

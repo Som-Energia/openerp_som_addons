@@ -177,9 +177,14 @@ class SomCrawlersTaskStep(osv.osv):
             except TypeError as e:
                 if 'a2b_base64' not in e.message:
                     raise e
-                sleep(10)
+                cfg_obj = self.pool.get('res.config')
+                sleep_time = int(cfg_obj.get(cursor, uid, 'som_crawlers_sleep_mongo_attachment', '100'))
+                sleep(sleep_time)
                 output = self.import_xml_files(cursor, uid, id, result_id, nivell-1, context)
                 return output
+            except Exception as e:
+                raise Exception("IMPORTANT: {}: {}".format(type(e).__name__, str(e)))
+
 
         task_step_obj.task_id.write({'ultima_tasca_executada': str(task_step_obj.name)+ ' - ' + str(datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))})
         classresult.write(cursor, uid, result_id, {'resultat_bool': True})
