@@ -1,1 +1,2 @@
 pysftp==0.2.9
+progressbar>=2.5 #giscedata_facturacio_comer
