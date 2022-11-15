@@ -21,8 +21,17 @@ class TarifaPoolSOM(TarifaPool):
         if self.phf_function == 'phf_calc_peninsula':
             # only if 'phf_calc_peninsula' formula is used
             res['pmd'] = 'prmdiari'
-            res['pc3_ree'] = 'pc3_boe'
+            del res['pc3_ree']
+            res['pc3_boe'] = 'pc3_boe'
             res['pos'] = 'sobrecostes_ree'
+            res['peatges'] = 'pa'
+            res['omie_ree'] = 'omie'
+            res['fe'] = 'fe'
+            res['imu'] = 'imu'
+            res['k'] = 'k'
+            res['d'] = 'd'
+            res['si'] = 'si'
+
         if self.phf_function in ('phf_calc_balears', 'phf_calc_canaries'):
             # only if 'phf_calc_peninsula' formula is used
             res['pmd'] = 'sphdem'
