@@ -267,7 +267,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                         msg.append("La pòlissa {} té alguna factura d'import superior al límit, cal revisar les factures. No continua el procés.". format(pol_name))
                         fact_csv_result.append([origen, pol_name, "Té alguna factura d'import superior al límit, cal revisar les factures. No continua el procés."])
                         continue
-                if self.has_open_initial_invoices(cursor, uid, ids, facts_cli_ids):
+                if facts_created and self.has_open_initial_invoices(cursor, uid, ids, facts_cli_ids):
                     msg.append("La pòlissa {} té alguna factura inicial oberta. No continua el procés". format(pol_name))
                     fact_csv_result.append([origen, pol_name, "Té alguna factura inicial oberta, cal revisar les factures. No continua el procés."])
                     continue
