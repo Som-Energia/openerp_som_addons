@@ -196,11 +196,12 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             crawler_config_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','anselmo_conf')[1]
             result_id = self.Data.get_object_reference(cursor, uid, 'som_crawlers', 'demo_result_2')[1]
             crawler_config_obj = self.Configuracio.browse(cursor,uid,crawler_config_id)
-            pathFileActual = os.path.join(os.path.dirname(os.path.realpath(__file__)),'..')
+            empty_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'anselmo')
+            current_path = os.path.dirname(os.path.realpath(__file__))
+            os.mkdir(empty_path)
             taskStepParams = {}
-
-            result = self.taskStep.attach_files_zip(cursor, uid, crawler_taskStep_id, result_id, crawler_config_obj, pathFileActual, taskStepParams, context=None)
-
+            result = self.taskStep.attach_files_zip(cursor, uid, crawler_taskStep_id, result_id, crawler_config_obj, current_path, taskStepParams, context=None)
+            os.rmdir(empty_path)
             self.assertEqual(result,'Directori doesn\'t contain any ZIP')
 
 
@@ -215,10 +216,15 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             crawler_taskStep_id= self.Data.get_object_reference(cursor,uid,'som_crawlers','demo_taskStep_8')[1]
             crawler_config_obj = self.Configuracio.browse(cursor,uid,crawler_config_id)
             pathFileActual = os.path.join(os.path.dirname(os.path.realpath(__file__)),'..')
-            os.system('cp ' + pathFileActual + '/demo/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip ' + pathFileActual + '/spiders/selenium_spiders/tmp/anselmo/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip')
+            path_desti = os.path.join(os.path.dirname(os.path.realpath(__file__)),'tmpDir')
+            create_path = os.path.join(path_desti,'anselmo')
+            if not os.path.exists(create_path):
+                os.mkdir(path_desti)
+                os.mkdir(create_path)
+            os.system('cp ' + pathFileActual + '/demo/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip ' + path_desti + '/anselmo/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip')
             taskStepParams = {}
 
-            result = self.taskStep.attach_files_zip(cursor, uid, crawler_taskStep_id, result_id, crawler_config_obj, pathFileActual, taskStepParams, context=None)
+            result = self.taskStep.attach_files_zip(cursor, uid, crawler_taskStep_id, result_id, crawler_config_obj, path_desti, taskStepParams, context=None)
 
             self.assertEqual(result,'files succesfully attached')
 

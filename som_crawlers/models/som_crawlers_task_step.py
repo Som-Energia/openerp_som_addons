@@ -93,9 +93,9 @@ class SomCrawlersTaskStep(osv.osv):
         output = ''
         if 'process' in task_step_params:
             name = config_obj.name + '_' + task_step_params['process']
-            path_to_zip = os.path.join(path,'spiders/selenium_spiders/tmp/', name)
+            path_to_zip = os.path.join(path, name)
         else:
-           path_to_zip = os.path.join(path,'spiders/selenium_spiders/tmp/', config_obj.name)
+           path_to_zip = os.path.join(path, config_obj.name)
         if not os.path.exists(path_to_zip):
             output = "zip directory doesn\'t exist"
         else:
@@ -108,8 +108,12 @@ class SomCrawlersTaskStep(osv.osv):
                     output = "files succesfully attached"
         return output
 
-    def attach_files_screenshot(self, cursor, uid, config_obj, path, result_id, context=None):
-        path_to_screenshot = os.path.join(path,'spiders/selenium_spiders/screenShots/' + config_obj.name)
+    def attach_files_screenshot(self, cursor, uid, config_obj, path, result_id, task_step_params, context=None):
+        if 'process' in task_step_params:
+            name = config_obj.name + '_' + task_step_params['process']
+            path_to_screenshot = os.path.join(path, name)
+        else:
+           path_to_screenshot = os.path.join(path, config_obj.name)
         if os.path.exists(path_to_screenshot):
             for file_name in os.listdir(path_to_screenshot):
                 self.attach_file(cursor, uid, path_to_screenshot, file_name, result_id, context)
@@ -133,12 +137,12 @@ class SomCrawlersTaskStep(osv.osv):
                 file_name = "output_" + config_obj.name + "_" + datetime.now().strftime("%Y-%m-%d_%H_%M_%S_%f") + ".txt"
                 args_str = self.create_script_args(config_obj, task_step_params, file_name)
                 ret_value = os.system("{} {} {}".format(path_python, script_path, args_str))
-                output_temp_path = self.get_output_path(cursor, uid)
-                output = self.readOutputFile(cursor, uid, output_temp_path, file_name)
+                output_path = self.get_output_path(cursor, uid)
+                output = self.readOutputFile(cursor, uid, output_path, file_name)
                 if output == 'Files have been successfully downloaded':
-                    output = self.attach_files_zip(cursor, uid, id, result_id, config_obj, path, task_step_params, context = context)
+                    output = self.attach_files_zip(cursor, uid, id, result_id, config_obj, output_path, task_step_params, context = context)
                 else:
-                    self.attach_files_screenshot(cursor, uid, config_obj, path, result_id, context)
+                    self.attach_files_screenshot(cursor, uid, config_obj, output_path, result_id, task_step_params, context)
                     raise Exception("%s" % output)
             else:
                 output = 'File or directory doesn\'t exist'
@@ -364,7 +368,7 @@ class SomCrawlersTaskStep(osv.osv):
                 else:
                     output = self.readOutputFile(cursor, uid, path_to_zip, execution_restult_file)
                 if output != 'Files have been successfully uploaded':
-                    self.attach_files_screenshot(cursor, uid, config_obj, path, result_id, context)
+                    self.attach_files_screenshot(cursor, uid, config_obj, path, result_id, task_step_params, context)
                     raise Exception("%s" % output)
             else:
                 output = 'File or directory doesn\'t exist'
