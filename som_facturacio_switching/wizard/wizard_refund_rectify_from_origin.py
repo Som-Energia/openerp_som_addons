@@ -86,15 +86,18 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         fres_resultat = wiz_ranas_o.action_rectificar(cursor, uid, wiz_id, context=ctx)
         msg = []
 
-        f_res_info = fact_obj.read(cursor, uid, fres_resultat, ['rectifying_id','amount_total','invoice_id'])
+        f_res_info = fact_obj.read(cursor, uid, fres_resultat, ['rectifying_id','amount_untaxed','invoice_id', 'is_gkwh'])
 
         #Eliminem les que no cal rectificar (import AB == import RE)
         for initial_id in f_ids:
-            inv_initial_info = fact_obj.read(cursor, uid, initial_id, ['invoice_id', 'number'])
+            inv_initial_info = fact_obj.read(cursor, uid, initial_id, ['invoice_id', 'number', 'is_gkwh'])
             inv_id = inv_initial_info['invoice_id'][0]
-            rectifying_amounts = filter(lambda x: x['rectifying_id'][0] == inv_id, f_res_info)
-            if len(set([x['amount_total'] for x in rectifying_amounts])) == 1:
-                ab_re_ids = [x['id'] for x in rectifying_amounts]
+            re_ab_fact_info = filter(lambda x: x['rectifying_id'][0] == inv_id, f_res_info)
+            has_gkwh = any([x['is_gkwh'] for x in re_ab_fact_info])
+            if inv_initial_info['is_gkwh'] or has_gkwh:
+                msg.append("Per la factura numero {} no s'esborren per que alguna de les factures té generationkwh.".format(inv_initial_info['number']))
+            elif len(set([x['amount_untaxed'] for x in re_ab_fact_info])) == 1:
+                ab_re_ids = [x['id'] for x in re_ab_fact_info]
                 fact_obj.unlink(cursor, uid, ab_re_ids)
                 msg.append("Per la factura numero {} les factures AB i RE tenen mateix import, s'esborren".format(inv_initial_info['number']))
                 fres_resultat = list(set(fres_resultat) - set(ab_re_ids))
@@ -264,6 +267,10 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                         msg.append("La pòlissa {} té alguna factura d'import superior al límit, cal revisar les factures. No continua el procés.". format(pol_name))
                         fact_csv_result.append([origen, pol_name, "Té alguna factura d'import superior al límit, cal revisar les factures. No continua el procés."])
                         continue
+                if self.has_open_initial_invoices(cursor, uid, ids, facts_cli_ids):
+                    msg.append("La pòlissa {} té alguna factura inicial oberta. No continua el procés". format(pol_name))
+                    fact_csv_result.append([origen, pol_name, "Té alguna factura inicial oberta, cal revisar les factures. No continua el procés."])
+                    continue
                 facts_by_polissa.setdefault(pol_name, []).extend(facts_created)
 
                 f1_refacturats.append({'id': _id ,'refund_result': msg_rr})
@@ -279,6 +286,11 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
 
         self.write_report(cursor, uid, ids, fact_csv_result, context)
         self.write(cursor, uid, ids, {'info': '\n'.join(msg), 'state': 'end', 'facts_generades': json.dumps(facts_generades)})
+
+    def has_open_initial_invoices(self, cursor, uid, ids, facts_cli_ids):
+        fact_obj = self.pool.get('giscedata.facturacio.factura')
+        fact_states = fact_obj.read(cursor, uid, facts_cli_ids,['state'])
+        return 'open' in [x['state'] for x in fact_states]
 
     def _show_invoices(self, cursor, uid, ids, context=None):
         fact_ids = self.read(cursor, uid, ids[0], ['facts_generades'])[0]['facts_generades']
