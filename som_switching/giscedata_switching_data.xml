@@ -528,7 +528,7 @@
             INFORMACIÓN DE PROTECCIÓN DE DATOS DE SOM ENERGIA
         </p>
         <p>
-            Esperamos tu respuesta para continuar o no con la gestión, 
+            Esperamos tu respuesta para continuar o no con la gestión,
         </p>
         <p>
             <b>Responsabilidades:</b> SOM ENERGIA, SCCL. (F55091367), C/ Pic de Peguera, 11, 17003 de Girona, somenergia@delegado-datos.com. <b>Finalidades:</b> Tramitar el alta del autoconsumo asociado a su instalación.<b> Legitimación:</b> Acuerdo de servicios con el titular de la instalación fotovoltaica. <b>Destinatarios:</b> No están previstas cesiones, salvo entre el cliente, el titular de la instalación y Som Energia y, las legalmente previstas. <b>Derechos:</b>  Puede retirar su consentimiento en cualquier momento, así como acceder, rectificar, suprimir sus datos y demás derechos en somenergia@delegado-datos.com. <b>Información Adicional:</b> <a href="https://www.somenergia.coop/es/aviso-legal/#politica-de-privacidad">Política de Privacidad</a>.
@@ -548,7 +548,7 @@
             <field name="object_name" model="ir.model" search="[('name', '=', 'giscedata.switching')]"/>
             <field eval="0" name="save_to_drafts"/>
             <field name="model_int_name">giscedata.switching</field>
-            <field name="def_to">${object.cups_polissa_id.titular.email}</field>
+            <field name="def_to">${object.cups_polissa_id.titular.www_email}</field>
             <field eval="0" name="auto_email"/>
             <field eval="0" name="single_email"/>
             <field eval="0" name="use_sign"/>
