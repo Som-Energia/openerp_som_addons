@@ -16,6 +16,7 @@
     "update_xml": [
         "res_partner_data.xml",
         "wizard/wizard_create_atc_from_polissa_view.xml",
+        "views/giscedata_atc_view.xml",
     ],
     "active": False,
     "installable": True
