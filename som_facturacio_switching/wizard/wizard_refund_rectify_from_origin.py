@@ -95,7 +95,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             re_ab_fact_info = filter(lambda x: x['rectifying_id'][0] == inv_id, f_res_info)
             has_gkwh = any([x['is_gkwh'] for x in re_ab_fact_info])
             if inv_initial_info['is_gkwh'] or has_gkwh:
-                msg.append("Per la factura numero {} no s'esborren per que alguna de les factures té generationkwh.".format(inv_initial_info['number']))
+                msg.append("Per la factura numero {} no s'esborren perquè alguna de les factures té generationkwh.".format(inv_initial_info['number']))
             elif len(set([x['amount_untaxed'] for x in re_ab_fact_info])) == 1:
                 ab_re_ids = [x['id'] for x in re_ab_fact_info]
                 fact_obj.unlink(cursor, uid, ab_re_ids)
@@ -183,7 +183,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             f1_str = '\n'.join(f1_data['refund_result'])
             obs = f1_obj.read(cursor, uid, f1_id, ['user_observations'], context=context)['user_observations'] or ''
             f1_obj.write(cursor, uid, f1_id, {
-                'user_observations': '{}. Resultat:\n{}\n{}'.format(text, f1_str, obs)
+                'user_observations': '{}. Resultat: Diferència 0\n{}\n{}'.format(text, f1_str, obs)
             })
 
     def open_polissa_invoices_send_mail(self, cursor, uid, ids, facts_by_polissa, action, context={}):
@@ -247,8 +247,8 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                 if msg_get:
                     msg.append("Pòlissa {} per l\'F1 amb origen {}: {}".format(pol_name, origen, msg_get))
                 if not facts_cli_ids:
-                    msg.append('L\'F1 amb origen {} no té res per abonar i rectificar, no s\'actua'.format(origen))
-                    fact_csv_result.append([origen, pol_name, "No té res per abonar i rectificar, no s\'actua"])
+                    msg.append('L\'F1 amb origen {} no té res per abonar i rectificar perquè no hi ha factura generada, no s\'actua'.format(origen))
+                    fact_csv_result.append([origen, pol_name, "No té res per abonar i rectificar perquè no hi ha factura generada, no s\'actua"])
                     continue
 
                 n_lect_del = self.recarregar_lectures_between_dates(cursor, uid, ids, pol_id, f1.fecha_factura_desde, f1.fecha_factura_hasta, context)
