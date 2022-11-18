@@ -181,9 +181,10 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         for f1_data in f1_refacturats:
             f1_id = f1_data['id']
             f1_str = '\n'.join(f1_data['refund_result'])
+            diff = " Diferència 0" if "factures AB i RE tenen mateix import, s'esborren" in f1_str else ""
             obs = f1_obj.read(cursor, uid, f1_id, ['user_observations'], context=context)['user_observations'] or ''
             f1_obj.write(cursor, uid, f1_id, {
-                'user_observations': '{}. Resultat: Diferència 0\n{}\n{}'.format(text, f1_str, obs)
+                'user_observations': '{}. Resultat:{}\n{}\n{}'.format(text, diff, f1_str, obs)
             })
 
     def open_polissa_invoices_send_mail(self, cursor, uid, ids, facts_by_polissa, action, context={}):
