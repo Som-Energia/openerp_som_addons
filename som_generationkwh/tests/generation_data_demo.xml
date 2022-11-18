@@ -441,5 +441,29 @@
             <field name="quantity">1</field>
             <field name="line_owner" ref="lineowner_001"/>
         </record>
+        <record id="pgc_99900000_demo" model="account.account">
+            <field name="code">99900000</field>
+            <field name="reconcile" eval="True"/>
+            <field name="parent_id" model="account.account" search="[('code','=','163')]"/>
+            <field name="type">other</field>
+            <field name="name">Capital social demo</field>
+            <field name="user_type" ref="l10n_chart_ES.financieras"/>
+        </record>
+        <!-- we use the Caixa account and demo account because it's created in the same module, and this is demo -->
+        <record id="property_gkwh_account_demo" model="ir.property">
+            <field name="name">property_account_gkwh</field>
+            <field name="fields_id" search="[('model','=','res.partner'),('name','=','property_account_gkwh')]"/>
+            <field eval="'account.account,'+str(pgc_555000000004)" name="value"/>
+        </record>
+        <record id="property_apo_account_demo" model="ir.property">
+            <field name="name">property_account_aportacions</field>
+            <field name="fields_id" search="[('model','=','res.partner'),('name','=','property_account_aportacions')]"/>
+            <field eval="'account.account,'+str(pgc_99900000_demo)" name="value"/>
+        </record>
+        <record id="property_liq_account_demo" model="ir.property">
+            <field name="name">property_account_liquidacio</field>
+            <field name="fields_id" search="[('model','=','res.partner'),('name','=','property_account_liquidacio')]"/>
+            <field eval="'account.account,'+str(pgc_555000000011)" name="value"/>
+        </record>
     </data>
 </openerp>
