@@ -55,6 +55,11 @@ class TestWizardBaixaSoci(testing.OOTestCase):
         member_id = self.IrModelData.get_object_reference(
             self.cursor, self.uid, 'som_generationkwh', 'soci_0003' 
         )[1]
+        template_id = self.IrModelData.get_object_reference(
+            self.cursor, self.uid, 'som_generationkwh', 'email_baixa_soci'
+        )[1]
+        email_from = self.AccountObj.search(self.cursor, self.uid, [('name', 'ilike', 'Info%Som Energia')])[0]
+        self.AccountObj.write(self.cursor, self.uid, email_from, {'name': 'Info Som Energia'})
         self.Soci.write(self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
         context = {'active_ids':[member_id]}
 
@@ -64,12 +69,6 @@ class TestWizardBaixaSoci(testing.OOTestCase):
         baixa = self.Soci.read(self.cursor, self.uid, member_id, ['baixa'])['baixa']
         self.assertTrue(baixa)
 
-        template_id = self.IrModelData.get_object_reference(
-            self.cursor, self.uid, 'som_generationkwh', 'email_baixa_soci'
-        )[1]
-        
-        email_from = self.AccountObj.search(self.cursor, self.uid, [('name', '=', 'Info Som Energia')])[0]
-        
         expected_ctx = {
                 'active_ids': [member_id],
                 'active_id': member_id,
@@ -83,7 +82,7 @@ class TestWizardBaixaSoci(testing.OOTestCase):
 
         mocked_send_mail.assert_called_with(self.cursor, self.uid, mock.ANY, expected_ctx)
         mailchimp_mock.assert_called_with(self.cursor, self.uid, member_id)
-    
+
     @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
     def test__baixa_soci_and_send_mail__notAllowed(self, mocked_send_mail):
         member_id = self.IrModelData.get_object_reference(
