@@ -46,6 +46,8 @@ class InvestmentStrategyTests(testing.OOTestCase):
         self.PaymentLine = self.openerp.pool.get('payment.line')
         self.PaymentOrder = self.openerp.pool.get('payment.order')
         self.Soci = self.openerp.pool.get('somenergia.soci')
+        self.IrProperty = self.openerp.pool.get('ir.property')
+        self.AccountAccount = self.openerp.pool.get('account.account')
         self.maxDiff = None
 
     def tearDown(self):
@@ -108,6 +110,13 @@ class InvestmentStrategyTests(testing.OOTestCase):
     def assertMailLogEqual(self, log, expected):
         self.assertNsEqual(log or '{}', expected)
 
+    def _propertyAccountData(self, cursor, uid, demo_id):
+        property_account_id = self.IrModelData.get_object_reference(
+            cursor, uid, 'som_generationkwh', demo_id
+            )[1]
+        gkwh_account_value = self.IrProperty.read(cursor, uid, property_account_id, ['value'])['value']
+        return self.AccountAccount.read(cursor, uid, int(gkwh_account_value.split(',')[1]), ['name','code'])
+
     def test__create_interest_invoices__AllOkAPO(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
@@ -129,6 +138,9 @@ class InvestmentStrategyTests(testing.OOTestCase):
                 'to_be_interized': 10,
                 'interest_rate': current_interest
             }
+            liq_account_dict = self._propertyAccountData(cursor, uid, 'property_liq_account_demo')
+            apo_account_dict = self._propertyAccountData(cursor, uid, 'property_apo_account_demo')
+
             invoice_ids, errs =  self.Investment.create_interest_invoice(cursor, uid,
             [id], vals)
 
@@ -144,7 +156,7 @@ class InvestmentStrategyTests(testing.OOTestCase):
             partner_data = self.Partner.browse(cursor, uid, partner_id)
 
             self.assertInvoiceInfoEqual(cursor, uid, invoice_ids, u"""\
-                account_id: 410000{num_soci:0>6s} {p.name}
+                account_id: {liq_account_code} {liq_account_name}
                 amount_total: 8.1
                 amount_untaxed: 10.0
                 check_total: 8.1
@@ -153,7 +165,7 @@ class InvestmentStrategyTests(testing.OOTestCase):
                 invoice_line:
                 - account_analytic_id: false
                   uos_id: PCE
-                  account_id: 163000{num_soci:0>6s} {p.name}
+                  account_id: {apo_account_code} {apo_account_name}
                   name: 'Interessos des de 01/07/2020 fins a 30/06/2021 de {investment_name} '
                   discount: 0.0
                   invoice_id:
@@ -201,7 +213,11 @@ class InvestmentStrategyTests(testing.OOTestCase):
                 num_soci= partner_data.ref[1:],
                 investment_id=id,
                 taxes_id=taxes_id,
-                invoice_line_tax_id=invoice.invoice_line[0].invoice_line_tax_id[0].id
+                invoice_line_tax_id=invoice.invoice_line[0].invoice_line_tax_id[0].id,
+                liq_account_code=liq_account_dict['code'],
+                liq_account_name=liq_account_dict['name'],
+                apo_account_code=apo_account_dict['code'],
+                apo_account_name=apo_account_dict['name']
                 ))
 
     def test__create_interest_invoices__AllOkAPO_middlePurchaseDateAndLastEffectiveDate(self):
@@ -228,6 +244,9 @@ class InvestmentStrategyTests(testing.OOTestCase):
                 'to_be_interized': 10,
                 'interest_rate': current_interest
             }
+            liq_account_dict = self._propertyAccountData(cursor, uid, 'property_liq_account_demo')
+            apo_account_dict = self._propertyAccountData(cursor, uid, 'property_apo_account_demo')
+
             invoice_ids, errs =  self.Investment.create_interest_invoice(cursor, uid,
             [id], vals)
 
@@ -243,7 +262,7 @@ class InvestmentStrategyTests(testing.OOTestCase):
             partner_data = self.Partner.browse(cursor, uid, partner_id)
 
             self.assertInvoiceInfoEqual(cursor, uid, invoice_ids, u"""\
-                account_id: 410000{num_soci:0>6s} {p.name}
+                account_id: {liq_account_code} {liq_account_name}
                 amount_total: 8.1
                 amount_untaxed: 10.0
                 check_total: 8.1
@@ -252,7 +271,7 @@ class InvestmentStrategyTests(testing.OOTestCase):
                 invoice_line:
                 - account_analytic_id: false
                   uos_id: PCE
-                  account_id: 163000{num_soci:0>6s} {p.name}
+                  account_id: {apo_account_code} {apo_account_name}
                   name: 'Interessos des de 01/08/2020 fins a 01/02/2021 de {investment_name} '
                   discount: 0.0
                   invoice_id:
@@ -300,5 +319,9 @@ class InvestmentStrategyTests(testing.OOTestCase):
                 num_soci= partner_data.ref[1:],
                 investment_id=id,
                 taxes_id=taxes_id,
-                invoice_line_tax_id=invoice.invoice_line[0].invoice_line_tax_id[0].id
+                invoice_line_tax_id=invoice.invoice_line[0].invoice_line_tax_id[0].id,
+                liq_account_code=liq_account_dict['code'],
+                liq_account_name=liq_account_dict['name'],
+                apo_account_code=apo_account_dict['code'],
+                apo_account_name=apo_account_dict['name']
                 ))
