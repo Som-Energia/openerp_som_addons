@@ -73,16 +73,24 @@ class WizardAtcMultiChange(osv.osv_memory):
 
         case_obj = self.pool.get('giscedata.atc')
         sw_obj = self.pool.get('giscedata.switching')
+        d101_obj = self.pool.get('giscedata.switching.d1.01')
 
         # Autoconsum/generacio section and subtypes
         section_autoconsum_id = self.get_section_autoconsum(cursor, uid)
         subtipus_id = self.get_subtype_privacy(cursor, uid)
-
         for case in case_obj.browse(cursor, uid, case_ids, context=context):
             if case.section_id.id == section_autoconsum_id and case.subtipus_id.id == subtipus_id:
                 sw_model, sw_id = case.ref.split(',')
+                noti_pendent = sw_obj.read(cursor, uid, int(sw_id), [])['notificacio_pendent']
                 res = sw_obj.notifica_a_client(cursor, uid, int(sw_id),
                     template='notificacioTractamentDadesGeneradorAutoconsum')
+                if noti_pendent:
+                    d101_ids = d101_obj.search(cursor, uid, [('sw_id', '=', int(sw_id))])
+                    if len(d101_ids):
+                        d101_obj.write(cursor, uid, d101_ids[0], {'notificacio_pendent': True})
+                        res = sw_obj.notifica_a_client(cursor, uid, int(sw_id),
+                            template='notificacioTractamentDadesTitularDiferentContracte')
+
         return True
 
 
