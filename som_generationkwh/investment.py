@@ -684,8 +684,13 @@ class GenerationkwhInvestment(osv.osv):
                 ), context)
 
                 self.open_invoices(cursor, uid, [amortization_id])
+
+                payment_mode_name = gkwh.amortizationPaymentMode
+                if to_be_amortized < irpf_amount:
+                    payment_mode_name = gkwh.amortizationReceivablePaymentMode
+
                 self.invoices_to_payment_order(cursor, uid,
-                    [amortization_id], gkwh.amortizationPaymentMode)
+                    [amortization_id], payment_mode_name)
                 self.send_mail(cursor, uid, amortization_id,
                     'account.invoice', '_mail_amortitzacio', investment_id)
 
