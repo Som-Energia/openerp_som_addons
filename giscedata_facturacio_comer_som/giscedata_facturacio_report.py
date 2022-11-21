@@ -777,9 +777,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
     def get_preu_mitja_mensual_mes_anterior_ajust(self, cursor, uid, fra, context=None):
         pmm_ajust_q = self.pool.get('giscedata.monthly.price.ajom').q(cursor, uid)
-        data_inici = datetime.strptime(fra.data_inici, '%Y-%m-%d')
-        mes_anterior = data_inici.month - 1 if data_inici.month > 1 else 12
-        year = data_inici.year - 1 if mes_anterior == 12 else data_inici.year
+        data_fi = datetime.strptime(fra.data_fi, '%Y-%m-%d')
+        mes_anterior = data_fi.month - 1 if data_fi.month > 1 else 12
+        year = data_fi.year - 1 if mes_anterior == 12 else data_fi.year
         dmn = [('name', '=', '{}/{}'.format(year, str(mes_anterior).zfill(2)))]
         pmm_ajust_vs = pmm_ajust_q.read(['price']).where(dmn)
         res = 0.0
@@ -790,8 +790,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
     def get_efecto_reductor_precio_mayorista_mecanismo_ajuste(self, cursor, uid, fra, context=None):
         ph_ajust_q = self.pool.get('giscedata.omie.ajom').q(cursor, uid)
         dmn = [
-            ('local_timestamp', '>', '{} 01:00:00'.format(fra.data_inici)),
-            ('local_timestamp', '<',  (datetime.strptime(val(fra.data_final), '%Y-%m-%d') + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')),
+            ('local_timestamp', '>=', '{} 01:00:00'.format(fra.data_inici)),
+            ('local_timestamp', '<=',  (datetime.strptime(val(fra.data_final), '%Y-%m-%d') + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')),
         ]
         ph_ajust_vs = ph_ajust_q.read(['value', 'unit_amount', 'omie_price']).where(dmn)
         sum_preu_reduccio = 0.0
@@ -2180,7 +2180,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'has_autoconsum': te_autoconsum(fact, pol),
             'has_mag': has_mag,
             'preu_mitja_mag_darrer_mes': mag_info['mes_natural_anterior']['preu_mig_mensual_ajust'],
-            'reductor_mag': mag_info['periode_facturacio']['preu_mitja_reduccio'],
+            'reductor_mag': abs(mag_info['periode_facturacio']['preu_mitja_reduccio']),
             'majorista_sense_mag': mag_info['periode_facturacio']['preu_mitja_omie'] + mag_info['periode_facturacio']['preu_mitja_ajust'],
             'majorista_amb_mag': mag_info['periode_facturacio']['preu_mitja_omie'] + mag_info['periode_facturacio']['preu_mitja_cost_unitari'],
         }
