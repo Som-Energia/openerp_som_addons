@@ -749,11 +749,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             }
         }
         if res['periode_facturacio']['aplica']:
-            res['mes_natural_anterior'] = {
-                'preu_mig_mensual_ajust': self.get_preu_mitja_mensual_mes_anterior_ajust(
+            res['mes_natural_anterior'] = self.get_preu_mitja_mensual_mes_anterior_ajust(
                     cursor, uid, fra, context=context
                 )
-            }
             efecto_reductor_precio_mayorista_mecanismo_ajuste = self.get_efecto_reductor_precio_mayorista_mecanismo_ajuste(
                 cursor, uid, fra, context=context
             )
@@ -785,7 +783,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         res = 0.0
         if pmm_ajust_vs:
             res = pmm_ajust_vs[0]['price']
-        return res
+        return {'preu_mig_mensual_ajust': res , 'mes': mes_anterior, 'any': year}
+
 
     def get_efecto_reductor_precio_mayorista_mecanismo_ajuste(self, cursor, uid, fra, context=None):
         ph_ajust_q = self.pool.get('giscedata.omie.ajom').q(cursor, uid)
@@ -2180,6 +2179,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'has_autoconsum': te_autoconsum(fact, pol),
             'has_mag': has_mag,
             'preu_mitja_mag_darrer_mes': mag_info['mes_natural_anterior']['preu_mig_mensual_ajust'],
+            'mes_mag_darrer_mes': mag_info['mes_natural_anterior']['mes'],
+            'any_mag_darrer_mes': mag_info['mes_natural_anterior']['any'],
             'reductor_mag': abs(mag_info['periode_facturacio']['preu_mitja_reduccio']),
             'majorista_sense_mag': mag_info['periode_facturacio']['preu_mitja_omie'] + mag_info['periode_facturacio']['preu_mitja_ajust'],
             'majorista_amb_mag': mag_info['periode_facturacio']['preu_mitja_omie'] + mag_info['periode_facturacio']['preu_mitja_cost_unitari'],
