@@ -1856,7 +1856,7 @@ class GenerationkwhInvestment(osv.osv):
                 last_interest_paid_date = inv.last_interest_paid_date
             )
 
-            if self.has_interest_invoice(cursor, uid, investment_id):
+            if self.has_interest_invoice(cursor, uid, investment_id, year=vals['date_invoice'].split('-')[0]):
                 interest_errors.append('{}: Investment already have interest invoice'.format(inv.name))
                 continue
 
