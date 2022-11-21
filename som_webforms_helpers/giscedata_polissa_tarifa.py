@@ -226,5 +226,9 @@ class GiscedataPolissaTarifa(osv.osv):
 
         return preus
 
+    def get_period_from_date(self, cursor, uid, ids, tariff_name, period_datetime):
+        dt = datetime.strptime(period_datetime, '%Y-%m-%d %H:%M:%S')
+        return self.get_tariff_period(tariff_name, dt)
+
 
 GiscedataPolissaTarifa()
