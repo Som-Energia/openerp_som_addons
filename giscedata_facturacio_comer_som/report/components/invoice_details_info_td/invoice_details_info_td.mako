@@ -29,9 +29,9 @@ mes_text = mesos_text[id_info.mes_mag_darrer_mes] if id_info.mes_mag_darrer_mes 
     % if id_info.has_mag:
         ${_(u"Les comercialitzadores del mercat lliure poden triar voluntàriament repercutir l'import de l'energia associada a la compensació del mecanisme ibèric regulat pel Reial Decret-llei 10/2022, del 13 de maig, dins dels costos d'aprovisionament, o bé traslladar-lo de manera diferenciada als seus consumidors. En aquest cas, la seva comercialitzadora ha optat per aquesta última opció.")}
         <br>
-        ${_(u"Preu mitjà del Mecanisme d'Ajust el darrer mes natural complet (%s) ha estat de %s €/kWh, segons estableix el RD-L 18/2022.") % (mes_text, formatLang(id_info.preu_mitja_mag_darrer_mes))}
+        ${_(u"Preu mitjà del Mecanisme d'Ajust el darrer mes natural complet (%s) ha estat de %s €/MWh, segons estableix el RD-L 10/2022.") % (mes_text, formatLang(id_info.preu_mitja_mag_darrer_mes))}
         <br>
-        ${_(u"L'efecte reductor del Mecanisme d'Ajust regulat al RD-L 18/2022 sobre el preu del mercat majorista de l'energia en el període comprès en aquesta factura ha estat de %s €/MWh, considerant que el preu mitjà del mercat majorista sense ajustament hagués estat de %s €/MWh (preu mitjà OMIE + mitjana de la quantia unitària) mentre que el preu mitjà amb ajustament ha estat de %s €/MWh (preu mitjà OMIE + mitjana del cost del MAG)") % (formatLang(id_info.reductor_mag), formatLang(id_info.majorista_amb_mag), formatLang(id_info.majorista_sense_mag) )}
+        ${_(u"L'efecte reductor del Mecanisme d'Ajust regulat al RD-L 10/2022 sobre el preu del mercat majorista de l'energia en el període comprès en aquesta factura ha estat de %s €/MWh, considerant que el preu mitjà del mercat majorista sense ajustament hagués estat de %s €/MWh (preu mitjà OMIE + mitjana de la quantia unitària) mentre que el preu mitjà amb ajustament ha estat de %s €/MWh (preu mitjà OMIE + mitjana del cost del MAG)") % (formatLang(id_info.reductor_mag), formatLang(id_info.majorista_amb_mag), formatLang(id_info.majorista_sense_mag) )}
     % endif
     % if id_info.has_autoconsum:
         <br>
