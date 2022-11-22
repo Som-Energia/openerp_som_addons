@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2022-11-21 15:28+0000\n"
-"PO-Revision-Date: 2022-11-21 14:35+0000\n"
+"POT-Creation-Date: 2022-11-22 10:46+0000\n"
+"PO-Revision-Date: 2022-11-22 09:51+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -1399,19 +1399,19 @@ msgstr "Las comercializadoras en mercado libre pueden elegir voluntariamente rep
 #, python-format
 msgid ""
 "Preu mitjà del Mecanisme d'Ajust el darrer mes natural complet (%s) ha estat"
-" de %s €/kWh, segons estableix el RD-L 18/2022."
-msgstr "Precio medio del Mecanismo de Ajuste en el último mes natural completo (%s) ha sido de %s €/kWh, según establece el RD-L 18/2022."
+" de %s €/MWh, segons estableix el RD-L 10/2022."
+msgstr "Precio medio del Mecanismo de Ajuste en el último mes natural completo (%s) ha sido de %s €/MWh, según establece el RD-L 10/2022."
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_info_td/invoice_details_info_td.mako:34
 #, python-format
 msgid ""
-"L'efecte reductor del Mecanisme d'Ajust regulat al RD-L 18/2022 sobre el "
+"L'efecte reductor del Mecanisme d'Ajust regulat al RD-L 10/2022 sobre el "
 "preu del mercat majorista de l'energia en el període comprès en aquesta "
 "factura ha estat de %s €/MWh, considerant que el preu mitjà del mercat "
 "majorista sense ajustament hagués estat de %s €/MWh (preu mitjà OMIE + "
 "mitjana de la quantia unitària) mentre que el preu mitjà amb ajustament ha "
 "estat de %s €/MWh (preu mitjà OMIE + mitjana del cost del MAG)"
-msgstr "El efecto reductor del Mecanismo de Ajuste regulado en el RD-L 18/2022 sobre el precio del mercado mayorista de la energía en el período comprendido en esta factura ha sido de %s €/MWh, considerando que el precio medio del mercado mayorista sin ajuste hubiera sido de %s €/MWh (precio medio OMIE + promedio de la cuantía unitaria) mientras que el precio medio con ajuste ha sido de %s €/MWh (precio medio OMIE + promedio del coste del MAJ)"
+msgstr "El efecto reductor del Mecanismo de Ajuste regulado en el RD-L 10/2022 sobre el precio del mercado mayorista de la energía en el período comprendido en esta factura ha sido de %s €/MWh, considerando que el precio medio del mercado mayorista sin ajuste hubiera sido de %s €/MWh (precio medio OMIE + promedio de la cuantía unitaria) mientras que el precio medio con ajuste ha sido de %s €/MWh (precio medio OMIE + promedio del coste del MAJ)"
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_info_td/invoice_details_info_td.mako:38
 msgid ""
