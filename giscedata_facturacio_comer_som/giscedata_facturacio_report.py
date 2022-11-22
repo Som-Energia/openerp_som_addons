@@ -729,6 +729,89 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         return {'qr': qr, 'url': url}
 
+    def mag_get_ajust_topall_gas_info(self, fact):
+        report_v2_obj = self.pool.get('giscedata.facturacio.factura.report.v2')
+        ok = True
+        try:
+            #res = report_v2_obj.get_ajust_topall_gas_info(self.cursor, self.uid, fact.id)
+            res = self.get_ajust_topall_gas_info(self.cursor, self.uid, fact)
+        except Exception as e:
+            ok = False
+            import traceback
+            res = str(e) +"\n"+ traceback.format_exc()
+        return ok, res
+
+    ## Duplicated code until V108 and molule giscedata_omie_comer can be installed, then remove it
+    def get_ajust_topall_gas_info(self, cursor, uid, fra, context=None):
+        res = {
+            'periode_facturacio': {
+                'aplica': self.aplica_ajust_topall_gas(cursor, uid, fra, context=context)
+            }
+        }
+        if res['periode_facturacio']['aplica']:
+            res['mes_natural_anterior'] = self.get_preu_mitja_mensual_mes_anterior_ajust(
+                    cursor, uid, fra, context=context
+                )
+            efecto_reductor_precio_mayorista_mecanismo_ajuste = self.get_efecto_reductor_precio_mayorista_mecanismo_ajuste(
+                cursor, uid, fra, context=context
+            )
+            res['periode_facturacio'].update(efecto_reductor_precio_mayorista_mecanismo_ajuste)
+        return res
+
+    def aplica_ajust_topall_gas(self, cursor, uid, fra, context=None):
+        varconf_o = self.pool.get('res.config')
+        data_inici_ajust_topall_gas = varconf_o.get(cursor, uid, 'start_date_mecanisme_ajust_gas')
+        data_fi_ajust_topall_gas = varconf_o.get(cursor, uid, 'end_date_mecanisme_ajust_gas')
+        if not data_inici_ajust_topall_gas or not data_fi_ajust_topall_gas:
+            raise osv.except_osv(
+                'Error !',
+                _(u"Variables que marquen l'inici i/o final de l'aplicació del "
+                  u"mecanisme del topall de gas no estàn configurades")
+            )
+        aplica = True
+        if fra.data_inici > data_fi_ajust_topall_gas or fra.data_final < data_inici_ajust_topall_gas:
+            aplica = False
+        return aplica
+
+    def get_preu_mitja_mensual_mes_anterior_ajust(self, cursor, uid, fra, context=None):
+        pmm_ajust_q = self.pool.get('giscedata.monthly.price.ajom').q(cursor, uid)
+        data_fi = datetime.strptime(fra.data_final, '%Y-%m-%d')
+        mes_anterior = data_fi.month - 1 if data_fi.month > 1 else 12
+        year = data_fi.year - 1 if mes_anterior == 12 else data_fi.year
+        dmn = [('name', '=', '{}/{}'.format(year, str(mes_anterior).zfill(2)))]
+        pmm_ajust_vs = pmm_ajust_q.read(['price']).where(dmn)
+        res = 0.0
+        if pmm_ajust_vs:
+            res = pmm_ajust_vs[0]['price']
+        return {'preu_mig_mensual_ajust': res , 'mes': mes_anterior, 'any': year}
+
+
+    def get_efecto_reductor_precio_mayorista_mecanismo_ajuste(self, cursor, uid, fra, context=None):
+        ph_ajust_q = self.pool.get('giscedata.omie.ajom').q(cursor, uid)
+        dmn = [
+            ('local_timestamp', '>=', '{} 01:00:00'.format(fra.data_inici)),
+            ('local_timestamp', '<=',  (datetime.strptime(val(fra.data_final), '%Y-%m-%d') + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')),
+        ]
+        ph_ajust_vs = ph_ajust_q.read(['value', 'unit_amount', 'omie_price']).where(dmn)
+        sum_preu_reduccio = 0.0
+        sum_preu_omie = 0.0
+        sum_preu_ajust = 0.0
+        sum_preu_cost_unitari = 0.0
+        for ph_ajust_v in ph_ajust_vs:
+            sum_preu_reduccio += ph_ajust_v['value'] - ph_ajust_v['unit_amount']
+            sum_preu_omie += ph_ajust_v['omie_price']
+            sum_preu_ajust += ph_ajust_v['value']
+            sum_preu_cost_unitari += ph_ajust_v['unit_amount']
+
+        res = {
+            'preu_mitja_reduccio': sum_preu_reduccio / (len(ph_ajust_vs) or 1),
+            'preu_mitja_omie': sum_preu_omie / (len(ph_ajust_vs) or 1),
+            'preu_mitja_ajust': sum_preu_ajust / (len(ph_ajust_vs) or 1),
+            'preu_mitja_cost_unitari': sum_preu_cost_unitari / (len(ph_ajust_vs) or 1),
+        }
+        return res
+    ## Duplicated code until V108 and molule giscedata_omie_comer can be installed, then remove it
+
     def get_mag_lines_info(self, fact):
         rmag_line_ids = fact.get_rmag_lines()
         if not rmag_line_ids:
@@ -2067,9 +2150,40 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return data
 
     def get_component_invoice_details_info_td_data(self, fact, pol):
+        has_mag = True if self.get_mag_lines_info(fact) else False
+        if not has_mag:
+            return {
+                'has_autoconsum': te_autoconsum(fact, pol),
+                'has_mag': has_mag,
+            }
+
+        ok, mag_info = self.mag_get_ajust_topall_gas_info(fact)
+        if not ok:
+            return {
+                'has_autoconsum': te_autoconsum(fact, pol),
+                'has_mag': False,
+                'library_error': mag_info.split("\n"),
+            }
+
+        if 'periode_facturacio' not in mag_info or \
+           'aplica' not in mag_info['periode_facturacio'] or \
+            not mag_info['periode_facturacio']['aplica']:
+            return {
+                'has_autoconsum': te_autoconsum(fact, pol),
+                'has_mag': False,
+                'library_error': "no aplica periode de facturacio",
+                'data': mag_info,
+            }
+
         data = {
             'has_autoconsum': te_autoconsum(fact, pol),
-            'has_mag': True if self.get_mag_lines_info(fact) else False,
+            'has_mag': has_mag,
+            'preu_mitja_mag_darrer_mes': mag_info['mes_natural_anterior']['preu_mig_mensual_ajust'],
+            'mes_mag_darrer_mes': mag_info['mes_natural_anterior']['mes'],
+            'any_mag_darrer_mes': mag_info['mes_natural_anterior']['any'],
+            'reductor_mag': abs(mag_info['periode_facturacio']['preu_mitja_reduccio']),
+            'majorista_sense_mag': mag_info['periode_facturacio']['preu_mitja_omie'] + mag_info['periode_facturacio']['preu_mitja_ajust'],
+            'majorista_amb_mag': mag_info['periode_facturacio']['preu_mitja_omie'] + mag_info['periode_facturacio']['preu_mitja_cost_unitari'],
         }
         return data
 
