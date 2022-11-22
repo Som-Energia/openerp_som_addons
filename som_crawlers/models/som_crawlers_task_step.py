@@ -11,6 +11,7 @@ from . import som_sftp, som_ftp
 import zipfile
 import shutil
 import StringIO
+from gridfs.errors import CorruptGridFile, NoFile
 
 # Class Task Step that describes the module and the task step fields
 class SomCrawlersTaskStep(osv.osv):
@@ -178,10 +179,8 @@ class SomCrawlersTaskStep(osv.osv):
                     content = att.datas
                     file_name = att.name
                 output = self.import_wizard(cursor, uid, file_name, content)
-            except TypeError as e:
-                if 'a2b_base64' not in e.message:
-                    raise e
-                sleep(10)
+            except (TypeError, CorruptGridFile, NoFile) as e:
+                sleep(100)
                 output = self.import_xml_files(cursor, uid, id, result_id, nivell-1, context)
                 return output
 
@@ -248,7 +247,7 @@ class SomCrawlersTaskStep(osv.osv):
         try:
             output =  self.import_xml_files(cursor, uid, id, result_id)
         except Exception as e:
-            raise Exception("IMPORTANT: " + str(e))
+            raise Exception("IMPORTANT: {}: {}".format(type(e).__name__, str(e)))
         else:
             task_step_obj = self.browse(cursor,uid,id)
             server_data = self.pool.get('som.crawlers.task').id_del_portal_config(cursor, uid, task_step_obj.task_id.id, context)

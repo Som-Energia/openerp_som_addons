@@ -91,7 +91,7 @@ class SomCrawlersTask(osv.osv):
         config_obj = classConfig.browse(cursor,uid,task_obj.configuracio_id.id)
         return config_obj
 
-    @job(queue="som_crawlers", timeout=1200)
+    @job(queue="som_crawlers", timeout=3600)
     def executar_tasca_async(self, cursor, uid, id, context=None):
         self.executar_tasca(cursor, uid, id, context=context)
 
