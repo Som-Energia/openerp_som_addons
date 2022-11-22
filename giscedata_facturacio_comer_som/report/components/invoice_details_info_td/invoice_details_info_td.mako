@@ -18,7 +18,7 @@ mesos_text = {
     11: _(u"Novembre"),
     12: _(u"Desembre"),
     }
-mes_text = mesos_text[id_info.mes_mag_darrer_mes] if id_info.mes_mag_darrer_mes in mesos_text else _("")
+mes_text = mesos_text[id_info.mes_mag_darrer_mes] if id_info.has_mag and id_info.mes_mag_darrer_mes in mesos_text else _("")
 %>
 <table class="invoice_details_info_td_indivisible">
 <tr>
