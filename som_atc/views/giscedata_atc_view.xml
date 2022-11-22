@@ -38,7 +38,7 @@
             <field name="arch" type="xml">
                 <field name="business_days_with_same_agent" position="after" >
                     <field name="pending_state" string="Pending State" select="2"/>
-                    <field name="polissa_active" string="Pòŀlissa Activa" select="2"/>
+                    <field name="polissa_active" string="Pòlissa Activa" select="2"/>
                 </field>
             </field>
         </record>
