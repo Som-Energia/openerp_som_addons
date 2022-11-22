@@ -135,10 +135,13 @@ class SomEnviamentMassiu(osv.osv):
                     'date_sent': vals['date_mail'],
                     'folder': vals['folder']
                 }
-            if vals_w['folder'] == 'sent' and not self.lot_enviament.is_test:
+            if vals_w['folder'] == 'sent':
                 for _id in ids:
-                    self.write(cursor, uid, _id, {'estat':'enviat', 'data_enviament': vals_w['date_sent']})
-                    self.add_info_line(cursor, uid, _id, "Correu enviat", context)
+                    if not self.browse(cursor, uid, _id).lot_enviament.is_test:
+                        self.write(cursor, uid, _id, {'estat':'enviat', 'data_enviament': vals_w['date_sent']})
+                        self.add_info_line(cursor, uid, _id, "Correu enviat", context)
+                    else:
+                        self.add_info_line(cursor, uid, _id, "Correu de test enviat", context)
         return True
 
     def poweremail_unlink_callback(self, cursor, uid, ids, vals, context=None):
