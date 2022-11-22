@@ -291,7 +291,7 @@ class SomInfoenergiaEnviament(osv.osv):
                     'date_sent': vals['date_mail'],
                     'folder': vals['folder']
                 }
-            if vals_w['folder'] == 'sent':
+            if vals_w['folder'] == 'sent' and not self.lot_enviament.is_test:
                 for _id in ids:
                     self.write(cursor, uid, _id, {'estat':'enviat', 'data_enviament': vals_w['date_sent']})
                     self.add_info_line(cursor, uid, _id, "Correu enviat", context)
