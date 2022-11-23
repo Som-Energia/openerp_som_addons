@@ -114,13 +114,16 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
 
         wiz.write({'file': output_file})
 
-    def set_to_date(self):
+    def set_to_date(self, cursor, uid, context=None):
         day_initial_date = int(self.start_date.strftime("%d"))
         self.to_date = self.start_date - timedelta(days=day_initial_date)
 
-    def set_from_date(self):
+    def set_from_date(self, cursor, uid, context=None):
         self.from_date = self.to_date - \
             relativedelta(months=12) + timedelta(days=1)
+
+    def onchange_start_date(self, cursor, uid, start_date):
+        return {'value': {'name': 1}}
 
     _columns = {
         'state': fields.char('Estat', size=16, required=True),
@@ -136,8 +139,8 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
     _defaults = {
         'state': lambda *a: 'init',
         'start_date': datetime.today(),
-        'from_date': self.set_from_date(),
-        'to_date': self.set_to_date(),
+        'from_date': set_from_date,
+        'to_date': set_to_date,
     }
 
 
