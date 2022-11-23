@@ -298,6 +298,7 @@ class SomInfoenergiaEnviament(osv.osv):
                         self.add_info_line(cursor, uid, _id, "Correu enviat", context)
                     else:
                         self.add_info_line(cursor, uid, _id, "Correu de test enviat", context)
+                        self.write(cursor, uid, _id, {'estat':'obert'})
         return True
 
     def poweremail_unlink_callback(self, cursor, uid, ids, vals, context=None):
