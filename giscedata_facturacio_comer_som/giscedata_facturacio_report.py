@@ -9,6 +9,7 @@ from gestionatr.defs import TENEN_AUTOCONSUM
 import json
 from operator import attrgetter
 from collections import Counter
+from invoice_data_container import SmartInvoiceDataContainer
 
 SENSE_EXCEDENTS = ['31','32','33']
 
@@ -201,7 +202,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 ctxt = context
                 ctxt['date'] = val(fac.data_final)
             pol = pol_obj.browse(cursor, uid, fac.polissa_id.id, ctxt)
-            res[fac_id] = self.fill_all_components_data(fill_methods, fac, pol, ctxt)
+            res[fac_id] = self.get_components_data_container(fill_methods, fac, pol, ctxt)
         return res
 
     def get_report_data(self, cursor, uid, objects, context=None):
@@ -252,6 +253,12 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         self.cleanup_data(fac)
         return ns.loads(ns(data).dump())
+
+    def get_components_data_container(self, fill_methods, fact, pol, ctxt):
+        data_cont = SmartInvoiceDataContainer(self.cursor, self.uid, self, fact, pol, ctxt)
+        old_data = self.fill_all_components_data(fill_methods, fact, pol, ctxt)
+        data_cont.set_old_data(old_data)
+        return data_cont
 
     def cleanup_data(self, fact):
         self.del_historic_data(fact)
