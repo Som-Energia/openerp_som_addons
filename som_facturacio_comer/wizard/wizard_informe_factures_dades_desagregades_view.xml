@@ -39,6 +39,5 @@
       <field name="view_mode">form</field>
       <field name="target">new</field>
     </record>
-    <menuitem id="menu_informe_comptable" parent="menu_informes_facturacio" name="Generar informe dades desagregades: 3.0 i 6.x" action="action_informe_dades_desagregades_form" sequence="10" />
   </data>
 </openerp>
