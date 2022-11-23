@@ -14,6 +14,7 @@ from osv import fields, osv
 from tools.translate import _
 from tools import config
 from som_infoenergia.pdf_tools import topdf
+import unicodedata
 
 
 
@@ -37,6 +38,10 @@ def get_ssh_connection():
                 password=beedata_password)
     return ssh
 
+#Per python 3 provar unidecode
+def strip_accents(s):
+   return ''.join(c for c in unicodedata.normalize('NFD', s)
+                  if unicodedata.category(c) != 'Mn')
 
 
 ESTAT_ENVIAT = [
@@ -68,7 +73,7 @@ class SomInfoenergiaEnviament(osv.osv):
                 'name':'Lot {}, informe {}, contracte {}'.format(
                         enviament.lot_enviament.name, enviament.lot_enviament.tipus_informe.upper(), enviament.polissa_id.name
                     ),
-                'datas_fname': '{}_{}.pdf'.format(enviament.polissa_id.name, enviament.lot_enviament.name),
+                'datas_fname': strip_accents(u'{}_{}.pdf'.format(enviament.polissa_id.name, enviament.lot_enviament.name)),
                 'datas': base64.b64encode(data),
                 'res_model': 'som.infoenergia.enviament',
                 'res_id': ids
