@@ -1,4 +1,4 @@
-V#!/usr/bin/env python
+#!/usr/bin/env python
 from __future__ import print_function
 import sys
 import times
@@ -11,8 +11,9 @@ import argparse
 
 INTERVAL = 7200  # Seconds
 MAX_ATTEMPTS = 5
-QUEUES_TO_REQUEUE = ['cups_cch']
+QUEUES_TO_REQUEUE = ['cups_cch', 'tm_validate']
 QUEUES_TO_DELETE = ['jobspool-autoworker']
+EXECINFO_TO_DELETE = ['Work-horse process was terminated unexpectedly', 'es mes petita que la data inicial', 'ValueError: start date not found in coefficients']
 
 redis_conn = from_url(sys.argv[1])
 use_connection(redis_conn)
@@ -20,7 +21,7 @@ use_connection(redis_conn)
 all_queues = Queue().all()
 
 
-def main(redis_conn, interval, max_attempts, permanent_failed):
+def main(redis_conn, interval, max_attempts):
     use_connection(redis_conn)
     all_queues = Queue().all()
     print("{}: Try to requeu jobs".format(str(datetime.now())))
@@ -62,10 +63,21 @@ def main(redis_conn, interval, max_attempts, permanent_failed):
                         job.meta['attempts'] += 1
                         job.save()
                         requeue_job(job.id, connection=redis_conn)
-            elif queue.name in QUEUES_TO_DELETE:
+                        continue
+            if queue.name in QUEUES_TO_DELETE:
                 try:
                     key_registry = fq.key
                     redis_conn.zrem(key_registry,job_id)
+                    continue
+                except Exception as e:
+                    print("We cannot delete job in FailedJobRegistry")
+                    print(job_id)
+                    print(e)
+            if any(substring in j.exc_info  for substring in EXECINFO_TO_DELETE):
+                try:
+                    key_registry = fq.key
+                    redis_conn.zrem(key_registry,job_id)
+                    continue
                 except Exception as e:
                     print("We cannot delete job in FailedJobRegistry")
                     print(job_id)
@@ -100,7 +112,7 @@ if __name__ == '__main__':
     )
 
     args = parser.parse_args()
-    main(from_url(args.redis_conn), args.interval, args.max_attempts, args.permanent)
+    main(from_url(args.redis_conn), args.interval, args.max_attempts)
 
 # vim: et ts=4 sw=4
 
