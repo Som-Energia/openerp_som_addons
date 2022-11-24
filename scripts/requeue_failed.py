@@ -14,7 +14,9 @@ MAX_ATTEMPTS = 5
 QUEUES_TO_REQUEUE = ['cups_cch', 'tm_validate', 'make_invoices']
 QUEUES_TO_DELETE = ['jobspool-autoworker']
 EXECINFO_TO_DELETE = ['Work-horse process was terminated unexpectedly', 'es mes petita que la data inicial', 'ValueError: start date not found in coefficients',
-        'No s\'han trobat versions de preus', 'InFailedSqlTransaction: current transaction is aborted, commands ignored until end of transaction block']
+        'No s\'han trobat versions de preus', 'InFailedSqlTransaction: current transaction is aborted, commands ignored until end of transaction block',
+        'RepresenterError: (\'cannot represent an object\', <osv.orm.browse_null object at 0x7f3148f11a90>)',
+        ]
 
 redis_conn = from_url(sys.argv[1])
 use_connection(redis_conn)
@@ -65,25 +67,17 @@ def main(redis_conn, interval, max_attempts):
                         job.save()
                         requeue_job(job.id, connection=redis_conn)
                         continue
-            if queue.name in QUEUES_TO_DELETE:
+            if queue.name in QUEUES_TO_DELETE or any(substring in job.exc_info  for substring in EXECINFO_TO_DELETE):
                 try:
+                    print("deleting: %s from %s (Requeue)" % ( job.id, job.origin ))
                     key_registry = fq.key
                     redis_conn.zrem(key_registry,job_id)
                     continue
                 except Exception as e:
-                    print("We cannot delete job in FailedJobRegistry")
-                    print(job_id)
-                    print(e)
-            if any(substring in job.exc_info  for substring in EXECINFO_TO_DELETE):
-                try:
-                    key_registry = fq.key
-                    redis_conn.zrem(key_registry,job_id)
-                    continue
-                except Exception as e:
-                    print("We cannot delete job in FailedJobRegistry")
-                    print(job_id)
+                    print("We cannot delete job %s in FailedJobRegistry" % job.id)
                     print(e)
 
+    print("{}: End of requeu/delete jobs".format(str(datetime.now())))
 
 if __name__ == '__main__':
 
