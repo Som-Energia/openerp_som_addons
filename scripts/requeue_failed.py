@@ -74,7 +74,7 @@ def main(redis_conn, interval, max_attempts):
                     print("We cannot delete job in FailedJobRegistry")
                     print(job_id)
                     print(e)
-            if any(substring in j.exc_info  for substring in EXECINFO_TO_DELETE):
+            if any(substring in job.exc_info  for substring in EXECINFO_TO_DELETE):
                 try:
                     key_registry = fq.key
                     redis_conn.zrem(key_registry,job_id)
