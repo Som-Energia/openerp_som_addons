@@ -11,9 +11,10 @@ import argparse
 
 INTERVAL = 7200  # Seconds
 MAX_ATTEMPTS = 5
-QUEUES_TO_REQUEUE = ['cups_cch', 'tm_validate']
+QUEUES_TO_REQUEUE = ['cups_cch', 'tm_validate', 'make_invoices']
 QUEUES_TO_DELETE = ['jobspool-autoworker']
-EXECINFO_TO_DELETE = ['Work-horse process was terminated unexpectedly', 'es mes petita que la data inicial', 'ValueError: start date not found in coefficients']
+EXECINFO_TO_DELETE = ['Work-horse process was terminated unexpectedly', 'es mes petita que la data inicial', 'ValueError: start date not found in coefficients',
+        'No s\'han trobat versions de preus', 'InFailedSqlTransaction: current transaction is aborted, commands ignored until end of transaction block']
 
 redis_conn = from_url(sys.argv[1])
 use_connection(redis_conn)
