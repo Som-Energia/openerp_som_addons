@@ -11,8 +11,10 @@
           <field name="state" invisible="1" />
           <group colspan="4" col="4" attrs="{'invisible': [('state', '!=', 'init')]}">
             <field name="start_date" on_change="onchange_start_date(start_date)" />
-            <field name="from_date" />
-            <field name="to_date" />
+            <newline/>
+            <field name="from_date"/>
+            <field name="to_date"/>
+            <newline/>
             <field name="contracts" />
             <newline />
             <separator colspan="4" />
@@ -21,9 +23,17 @@
               <button name="action_crear_informe" type="object" colspan="1" string="Generar informe" icon="gtk-ok" />
             </group>
           </group>
-          <group colspan="4" col="4" attrs="{'invisible': [('state', '!=', 'create')]}">
+          <group colspan="4" col="4" string="" states="running,done">
+            <separator string="Processed:" colspan="4"/>
+            <field name="progress" widget="progressbar" colspan="3" nolabel="1"/>
+            <button type="object" name="read" string="" icon="gtk-refresh" colspan="1"/>
+          </group>
+          <group colspan="4" col="4" attrs="{'invisible': [('state', '!=', 'done')]}">
             <label>S'ha generat les dades de l'informe</label>
-            <newline />
+            <newline/>
+            <separator colspan="4"/>
+            <field name="file_name" invisible="1" readonly="1"/>
+            <field name="file" filename="file_name" readonly="1"/>
           </group>
         </form>
       </field>
@@ -37,6 +47,7 @@
       <field name="view_mode">form</field>
       <field name="target">new</field>
     </record>
-    <menuitem id="menu_informe_comptable" parent="giscedata_facturacio.menu_informes_facturacio" name="Generar informe dades desagregades: 3.0 i 6.x" action="action_informe_dades_desagregades_form" sequence="10" />
+    <menuitem id="menu_informe_dades_desagregades" parent="giscedata_facturacio.menu_informes_facturacio"
+              name="Generar informe dades desagregades: 3.0 i 6.x" action="action_informe_dades_desagregades_form"/>
   </data>
 </openerp>

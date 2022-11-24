@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from collections import OrderedDict
 import base64
+import StringIO
 
 import csv
 
@@ -16,51 +17,60 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
     """
     _name = "wizard.informe.dades_desagregades"
 
-    def create_csv(items, from_date, to_date):
+    def create_csv(self, items, from_date, to_date, context=None):
         file_name = 'Informe_factures_dades_desagregades_{}_{}.csv'.format(
             from_date, to_date)
-        with open(file_name, 'w') as output_file:
-            for e in items.values():
-                for key, value in e.items():
-                    if isinstance(value, float):
-                        e[key] = str(value).replace('.', ',')
+        keys = items[0].keys()
 
-            dict_writer = csv.DictWriter(
-                output_file, items.keys(), delimiter=';')
-            dict_writer.writeheader()
-            dict_writer.writerows(items.values())
+        output_file = StringIO.StringIO()
+        for e in items:
+            for key, value in e.items():
+                if isinstance(value, float):
+                    e[key] = str(value).replace('.', ',')
+
+        dict_writer = csv.DictWriter(
+            output_file, keys, delimiter=';')
+        dict_writer.writeheader()
+        dict_writer.writerows(items)
 
         mfile = base64.b64encode(output_file.getvalue())
         output_file.close()
-        return mfile
 
-    def get_contract_ids(self, contracts):
+        return file_name, mfile
+
+    def get_contract_ids(self, cursor, uid, contracts):
         pol_obj = self.pool.get('giscedata.polissa')
 
         # only 3.0TD and 6.xTD
         search_params = [('tarifa.codi_ocsum', 'in', [
                           '019', '020', '021', '022', '023'])]
         if contracts:
-            search_params.append(('id', 'in', contracts))
+            search_params.append(('name', 'in', contracts))
 
-        return pol_obj.search(search_params)
+        pol_ids = pol_obj.search(cursor, uid, search_params)
 
-    def find_invoices(self, pol_ids, from_date, to_date):
+        return [int(x) for x in pol_ids]
+
+    def find_invoices(self, cursor, uid, ids, pol_ids, from_date, to_date):
+        wiz = self.browse(cursor, uid, ids[0])
+
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         pol_obj = self.pool.get('giscedata.polissa')
 
         items = {}
+        counter = 0.0
 
         for pol_id in pol_ids:
-            pol = pol_obj.browse(pol_id)
+            pol = pol_obj.browse(cursor, uid, pol_id)
             subitem = OrderedDict([('Contracte', pol.name), ('Tarifa Comercialitzadora', pol.llista_preu.name if pol.llista_preu else ''), ('Indexada', 'Indexada' if pol.llista_preu and 'indexada' in pol.llista_preu.name.lower(
             ) else 'No'), ('Energia activa', 0), ('MAG', 0), ('Penalització reactiva', 0), ('Potència', 0), ('Excés potència', 0), ('Excedents', 0), ('Lloguer comptador', 0), ('IVA', 0), ('IGIC', 0), ('IESE', 0), ('Altres', 0), ('TOTAL', 0)])
             items[pol_id] = subitem
 
-        facts = fact_obj.browse([('polissa_id', 'in', pol_ids), ('data_inici', '>=', from_date), ('data_final', '<=', to_date),
+        fact_ids = fact_obj.search(cursor, uid, [('polissa_id.id', 'in', pol_ids), ('data_inici', '>=', from_date), ('data_final', '<=', to_date),
                                 ('type', 'in', ['out_invoice', 'out_refund']), ('state', '!=', 'draft')])
 
-        for fact in facts:
+        for fact_id in fact_ids:
+            fact = fact_obj.browse(cursor, uid, fact_id)
             pol_item = items[fact.polissa_id.id]
 
             factor = 1.0 if fact.type == 'out_invoice' else -1.0
@@ -88,10 +98,16 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
             for key, value in item_values:
                 if isinstance(value, float):
                     pol_item[key] = round(value, 2)
-
             items[fact.polissa_id.id] = pol_item
 
-            return items
+            counter += 1
+            wiz.write({'progress': (counter / len(fact_ids)) * 100})
+
+        if len(fact_ids) > 0:
+            wiz.write({'progress': 100, 'state': 'done', 'errors': _(u"{0} lines have been imported.").format(fact_ids)})
+        else:
+            items = {}
+        return items
 
     def action_crear_informe(self, cursor, uid, ids, context=None):
         if not context:
@@ -100,56 +116,62 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
             ids = [ids]
 
         wiz = self.browse(cursor, uid, ids[0])
-        wiz.write({'state': 'create'})
 
-        to_date = datetime.strftime(self.to_date, '%Y-%m-%d')
-        from_date = datetime.strftime(self.from_date, '%Y-%m-%d')
-        contracts = list(set(map(str.strip, str(self.contracts).split(','))))
+        wiz_values = wiz.read()[0]
 
-        pol_ids = self.get_contract_ids(contracts)
+        wiz.write({'state': 'running'})
 
-        items = self.find_invoices(pol_ids, from_date, to_date)
+        to_date = wiz_values['to_date']
+        from_date = wiz_values['from_date']
 
-        output_file = self.create_csv(items, from_date, to_date)
+        contracts = wiz_values['contracts']
+        contracts_list = []
+        if contracts:
+            contracts_list = contracts.split(',')
 
-        wiz.write({'file': output_file})
+        pol_ids = self.get_contract_ids(cursor, uid, contracts_list)
 
-    def set_to_date(start_date):
-        day_initial_date = int(self.start_date.strftime("%d"))
+        items = self.find_invoices(cursor, uid, ids, pol_ids, from_date, to_date)
+
+        if len(items) > 0:
+            file_name, mfile = self.create_csv(items.values(), from_date, to_date)
+            wiz.write({'file_name': file_name, 'file': mfile})
+        else:
+            raise osv.except_osv(_("No s'ha generat l'informe !"), _("No s'han trobat factures per aquestes dates i/o contractes!"))
+
+    def set_to_date(self, start_date):
+        day_initial_date = int(start_date.strftime("%d"))
         return start_date - timedelta(days=day_initial_date)
 
-    def set_from_date(start_date):
+    def set_from_date(self, start_date):
         to_date = self.set_to_date(start_date)
         return to_date - relativedelta(months=12) + timedelta(days=1)
 
-    def onchange_start_date(self, cursor, uid, start_date, context=None):
-        value = {}
-        value['to_date'] = self.set_to_date(start_date)
-        value['from_date'] = self.set_from_date(start_date)
-        return {'value': value}
-
-    def _get_default_to_date(self, cursor, uid, context=None)
-        return self.set_to_date(datetime.today())
-
-    def _get_default_from_date(self, cursor, uid, context=None)
-        return self.set_from_date(datetime.today())
+    def onchange_start_date(self, cursor, uid, ids, start_date, context=None):
+        res = {'value': {}}
+        if start_date:
+            start_date = datetime.strptime(start_date, "%Y-%m-%d")
+            res['value']['to_date'] = datetime.strftime(self.set_to_date(start_date), '%Y-%m-%d')
+            res['value']['from_date'] = datetime.strftime(self.set_from_date(start_date), '%Y-%m-%d')
+        return res
 
     _columns = {
         'state': fields.char('Estat', size=16, required=True),
         'start_date': fields.date('Data inici càlcul', required=True),
         'from_date': fields.date(
-            'Data inici inf.', required=True, readonly=True),
+            'Data inici inf.', required=True),
         'to_date': fields.date(
-            'Data fi inf.', required=True, readonly=True),
+            'Data fi inf.', required=True),
         'contracts': fields.char('Contractes', size=256, required=False),
-        'file': fields.binary('Informe dades desagregades CSV'),
+        'file': fields.binary('Informe'),
+        'file_name': fields.char('Nom fitxer', size=32),
+        'progress': fields.float("Progress"),
+        'errors': fields.text("Info"),
     }
 
     _defaults = {
         'state': lambda *a: 'init',
-        'start_date': datetime.today(),
-        'from_date': _get_default_from_date,
-        'to_date': _get_default_to_date,
+        'start_date': datetime.strftime(datetime.today(), '%Y-%m-%d'),
     }
 
 
