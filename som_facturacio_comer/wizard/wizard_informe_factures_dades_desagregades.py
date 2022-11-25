@@ -58,7 +58,6 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
         pol_obj = self.pool.get('giscedata.polissa')
 
         items = {}
-        counter = 0.0
 
         for pol_id in pol_ids:
             pol = pol_obj.browse(cursor, uid, pol_id)
@@ -100,14 +99,7 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
                     pol_item[key] = round(value, 2)
             items[fact.polissa_id.id] = pol_item
 
-            counter += 1
-            wiz.write({'progress': (counter / len(fact_ids)) * 100})
-
-        if len(fact_ids) > 0:
-            wiz.write({'progress': 100, 'state': 'done', 'errors': _(u"{0} lines have been imported.").format(fact_ids)})
-        else:
-            items = {}
-        return items
+        return items if len(fact_ids) > 0 else {}
 
     def action_crear_informe(self, cursor, uid, ids, context=None):
         if not context:
@@ -118,8 +110,6 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
         wiz = self.browse(cursor, uid, ids[0])
 
         wiz_values = wiz.read()[0]
-
-        wiz.write({'state': 'running'})
 
         to_date = wiz_values['to_date']
         from_date = wiz_values['from_date']
@@ -135,7 +125,7 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
 
         if len(items) > 0:
             file_name, mfile = self.create_csv(items.values(), from_date, to_date)
-            wiz.write({'file_name': file_name, 'file': mfile})
+            wiz.write({'file_name': file_name, 'file': mfile, 'state':'done'})
         else:
             raise osv.except_osv(_("No s'ha generat l'informe !"), _("No s'han trobat factures per aquestes dates i/o contractes!"))
 
@@ -165,8 +155,6 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
         'contracts': fields.char('Contractes', size=256, required=False),
         'file': fields.binary('Informe'),
         'file_name': fields.char('Nom fitxer', size=32),
-        'progress': fields.float("Progress"),
-        'errors': fields.text("Info"),
     }
 
     _defaults = {

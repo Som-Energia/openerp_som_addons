@@ -23,11 +23,6 @@
               <button name="action_crear_informe" type="object" colspan="1" string="Generar informe" icon="gtk-ok" />
             </group>
           </group>
-          <group colspan="4" col="4" string="" states="running,done">
-            <separator string="Processed:" colspan="4"/>
-            <field name="progress" widget="progressbar" colspan="3" nolabel="1"/>
-            <button type="object" name="read" string="" icon="gtk-refresh" colspan="1"/>
-          </group>
           <group colspan="4" col="4" attrs="{'invisible': [('state', '!=', 'done')]}">
             <label>S'ha generat les dades de l'informe</label>
             <newline/>

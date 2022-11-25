@@ -5,6 +5,4 @@
 "access_wizard_open_factures_send_mail_rcwd","wizard.open.factures.send.mail","model_wizard_open_factures_send_mail","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
 "access_wizard_open_factures_send_mail_rcwd","wizard.open.factures.send.mail","model_wizard_open_factures_send_mail","giscedata_facturacio.group_giscedata_facturacio_r",1,1,1,1
 "access_wizard_open_factures_send_mail_rcwd","wizard.open.factures.send.mail","model_wizard_open_factures_send_mail","giscedata_facturacio.group_giscedata_facturacio_w",1,1,1,1
-"access_wizard_informe_dades_desagregades_u","wizard.informer.dades_desagregades","model_wizard_informe_dades_desagregades","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
-"access_wizard_informe_dades_desagregades_r","wizard.informer.dades_desagregades"","model_wizard_informe_dades_desagregades","giscedata_facturacio.group_giscedata_facturacio_r",1,0,0,0
-"access_wizard_informe_dades_desagregades_w","wizard.informer.dades_desagregades"","model_wizard_informe_dades_desagregades","giscedata_facturacio.group_giscedata_facturacio_w",1,1,1,0
+"access_wizard_informe_dades_desagregades_rcwd","wizard.informe.dades_desagregades","model_wizard_informe_dades_desagregades","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
