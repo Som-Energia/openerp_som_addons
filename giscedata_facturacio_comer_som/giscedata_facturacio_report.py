@@ -854,19 +854,19 @@ class GiscedataFacturacioFacturaReport(osv.osv):
     #         data['has_agreement_partner'] = False
     #     return data
 
-    def get_component_company_data(self, fact, pol):
-        """
-        returns a dictionary with all required company address data
-        """
-        data = {
-                'name': fact.company_id.partner_id.name,
-                'cif': fact.company_id.partner_id.vat.replace('ES', ''),
-                'street': fact.company_id.partner_id.address[0].street,
-                'zip': fact.company_id.partner_id.address[0].zip,
-                'city': fact.company_id.partner_id.address[0].city,
-                'email': fact.company_id.partner_id.address[0].email,
-                }
-        return data
+    # def get_component_company_data(self, fact, pol):
+    #     """
+    #     returns a dictionary with all required company address data
+    #     """
+    #     data = {
+    #             'name': fact.company_id.partner_id.name,
+    #             'cif': fact.company_id.partner_id.vat.replace('ES', ''),
+    #             'street': fact.company_id.partner_id.address[0].street,
+    #             'zip': fact.company_id.partner_id.address[0].zip,
+    #             'city': fact.company_id.partner_id.address[0].city,
+    #             'email': fact.company_id.partner_id.address[0].email,
+    #             }
+    #     return data
 
     def get_component_gdo_data(self, fact, pol):
         """

@@ -1,2 +1,3 @@
 import base_component_data
 import logo
+import company

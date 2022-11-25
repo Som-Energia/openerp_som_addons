@@ -4,7 +4,8 @@ class BaseComponentData():
     def __init__(self):
         pass
 
-    def set_data(self, pol):
+    def set_data(self, fact, pol):
+        self.fact = fact
         self.pol = pol
 
     def is_visible(self):
