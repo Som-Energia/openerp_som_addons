@@ -119,12 +119,12 @@ CONTRACT_TYPES = dict(TABLA_9)
     </%def>
     %for obj in objects:
         <%
-            if obj._model_name == 'giscedata.switching':
+            if obj._name == 'giscedata.switching':
                 pool = cas.pool
                 pol_obj = pool.get('giscedata.polissa')
                 polissa = pol_obj.browse(cas._cr, cas._uid, cas.cups_polissa_id.id)
                 pas01 = get_pas01(cas)
-            elif obj._model_name == 'giscedata.polissa':
+            elif obj._name == 'giscedata.polissa':
                 polissa = obj
                 pas01 = False
             lang = polissa.titular.lang
