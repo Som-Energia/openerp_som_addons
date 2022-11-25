@@ -152,7 +152,7 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
             'Data inici inf.', required=True),
         'to_date': fields.date(
             'Data fi inf.', required=True),
-        'contracts': fields.char('Contractes', size=256, required=False),
+        'contracts': fields.char('Contractes', size=256, required=False, help="Entrar números de pòlissa separats amb una coma (Exemple: 0001453, 0001460)"),
         'file': fields.binary('Informe'),
         'file_name': fields.char('Nom fitxer', size=32),
     }
