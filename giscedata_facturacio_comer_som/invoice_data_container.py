@@ -29,7 +29,7 @@ class SmartInvoiceDataContainer():
     def __getattr__(self, key):
         if key not in self.data:
             data_generator = SmartInvoiceDataContainer.factory_data_generator(key)
-            data_generator.set_data(self.factura, self.polissa)
+            data_generator.set_data(self.cursor, self.uid, self.factura, self.polissa, self, self.report)
             data = data_generator.get_data()
             self.data[key] = ns(data)
 

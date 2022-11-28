@@ -976,29 +976,29 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data['segment_tariff'] = segment_tarif.get(pol.tarifa.name,"")
         return data
 
-    def get_component_readings_table_data(self, fact, pol):
-        """
-        return a dictionary with all readings table component needed data
-        """
-        (periodes_a, _, _, _, lectures_a, _, _, _, _, _, _, _, total_lectures_a, _, _, _, _, _, _) = self.get_readings_data(fact)
+    # def get_component_readings_table_data(self, fact, pol):
+    #     """
+    #     return a dictionary with all readings table component needed data
+    #     """
+    #     (periodes_a, _, _, _, lectures_a, _, _, _, _, _, _, _, total_lectures_a, _, _, _, _, _, _) = self.get_readings_data(fact)
 
-        dies_factura = (datetime.strptime(fact.data_final, '%Y-%m-%d') - datetime.strptime(fact.data_inici, '%Y-%m-%d')).days + 1
-        diari_factura_actual_eur = fact.total_energia / (dies_factura or 1.0)
-        diari_factura_actual_kwh = (fact.energia_kwh * 1.0) / (dies_factura or 1.0)
+    #     dies_factura = (datetime.strptime(fact.data_final, '%Y-%m-%d') - datetime.strptime(fact.data_inici, '%Y-%m-%d')).days + 1
+    #     diari_factura_actual_eur = fact.total_energia / (dies_factura or 1.0)
+    #     diari_factura_actual_kwh = (fact.energia_kwh * 1.0) / (dies_factura or 1.0)
 
-        lang = fact.lang_partner
+    #     lang = fact.lang_partner
 
-        data = {
-                'periodes_a': periodes_a,
-                'lectures_a': lectures_a,
-                'total_lectures_a' : total_lectures_a,
-                'dies_factura' : dies_factura,
-                'diari_factura_actual_eur' : diari_factura_actual_eur,
-                'diari_factura_actual_kwh' : diari_factura_actual_kwh,
-                'has_autoconsum': te_autoconsum(fact, pol),
-                }
+    #     data = {
+    #             'periodes_a': periodes_a,
+    #             'lectures_a': lectures_a,
+    #             'total_lectures_a' : total_lectures_a,
+    #             'dies_factura' : dies_factura,
+    #             'diari_factura_actual_eur' : diari_factura_actual_eur,
+    #             'diari_factura_actual_kwh' : diari_factura_actual_kwh,
+    #             'has_autoconsum': te_autoconsum(fact, pol),
+    #             }
 
-        return data
+    #     return data
 
     def is_visible_readings_g_table(self, fact, pol):
         (_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, has_adjust_g, has_readings_g) = self.get_readings_data(fact)
