@@ -1,3 +1,4 @@
+import global_data
 import base_component_utils
 import base_component_data
 import logo

@@ -1853,16 +1853,16 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data['profiled_curve'] = data['factura_data'] and 'REEPROFILE' in data['factura_data']
         return data
 
-    def get_component_globals_data(self, fact, pol):
-        (periodes_a, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _) = self.get_readings_data(fact)
-        data = {
-            'num_periodes': len(periodes_a),
-            'is_6x': is_6X(pol),
-            'is_TD': is_TD(pol),
-            'is_6xTD': is_6XTD(pol),
-            'is_indexed': is_indexed(fact),
-        }
-        return data
+    # def get_component_globals_data(self, fact, pol):
+    #     (periodes_a, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _) = self.get_readings_data(fact)
+    #     data = {
+    #         'num_periodes': len(periodes_a),
+    #         'is_6x': is_6X(pol),
+    #         'is_TD': is_TD(pol),
+    #         'is_6xTD': is_6XTD(pol),
+    #         'is_indexed': is_indexed(fact),
+    #     }
+    #     return data
 
     def get_component_rectificative_banner_data(self, fact, pol):
         data = {

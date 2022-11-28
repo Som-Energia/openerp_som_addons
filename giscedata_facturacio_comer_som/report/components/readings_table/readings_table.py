@@ -9,6 +9,7 @@ class ComponentReadingsTableData(base_component_data.BaseComponentData):
         return a dictionary with all readings table component needed data
         """
         readings = self.container.readings_data
+        global_data = self.container.global_data
 
         dies_factura = (datetime.strptime(self.fact.data_final, '%Y-%m-%d') - datetime.strptime(self.fact.data_inici, '%Y-%m-%d')).days + 1
         diari_factura_actual_eur = self.fact.total_energia / (dies_factura or 1.0)
@@ -21,6 +22,6 @@ class ComponentReadingsTableData(base_component_data.BaseComponentData):
         data['dies_factura'] = dies_factura
         data['diari_factura_actual_eur'] = diari_factura_actual_eur
         data['diari_factura_actual_kwh'] = diari_factura_actual_kwh
-        data['has_autoconsum'] = self.te_autoconsum()
+        data['has_autoconsum'] = global_data.te_autoconsum
 
         return data
