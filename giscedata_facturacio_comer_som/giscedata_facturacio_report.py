@@ -2526,240 +2526,240 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         }
         return data
 
-    def get_component_energy_consumption_detail_td_data(self, fact, pol):
-        if not is_TD(pol):
-            return {}
+    # def get_component_energy_consumption_detail_td_data(self, fact, pol):
+    #     if not is_TD(pol):
+    #         return {}
 
-        adjust_reason = []
-        meters = []
-        for meter in pol.comptadors:
-            data = self.get_sub_component_energy_consumption_detail_meter_td_data(fact, pol, meter)
-            if data['is_visible']:
-                meters.append(data)
+    #     adjust_reason = []
+    #     meters = []
+    #     for meter in pol.comptadors:
+    #         data = self.get_sub_component_energy_consumption_detail_meter_td_data(fact, pol, meter)
+    #         if data['is_visible']:
+    #             meters.append(data)
 
-            adjust_reason.append(data['adjust_reason'])
+    #         adjust_reason.append(data['adjust_reason'])
 
 
-        highest_adjust_reason = self.adjust_readings_priority(adjust_reason)
-        data = {
-            'meters': meters,
-            'info': self.get_sub_component_energy_consumption_detail_td_info_data(fact, pol, highest_adjust_reason),
-        }
-        return data
+    #     highest_adjust_reason = self.adjust_readings_priority(adjust_reason)
+    #     data = {
+    #         'meters': meters,
+    #         'info': self.get_sub_component_energy_consumption_detail_td_info_data(fact, pol, highest_adjust_reason),
+    #     }
+    #     return data
 
-    def get_sub_component_energy_consumption_detail_meter_td_data(self, fact, pol, meter):
+    # def get_sub_component_energy_consumption_detail_meter_td_data(self, fact, pol, meter):
 
-        def visibility(subs):
-            return any([sub['is_visible'] for sub in subs])
+    #     def visibility(subs):
+    #         return any([sub['is_visible'] for sub in subs])
 
-        def adjust_reason(subs):
-            return [sub['adjust_reason'] for sub in subs]
+    #     def adjust_reason(subs):
+    #         return [sub['adjust_reason'] for sub in subs]
 
-        def add_last_visible(item, subs):
-            item['last_visible'] = not visibility(subs)
-            return item
+    #     def add_last_visible(item, subs):
+    #         item['last_visible'] = not visibility(subs)
+    #         return item
 
-        active = self.get_sub_component_energy_consumption_detail_td_active_data(fact, pol, meter)
-        surplus = self.get_sub_component_energy_consumption_detail_td_surplus_data(fact, pol, meter)
-        inductive = self.get_sub_component_energy_consumption_detail_td_inductive_data(fact, pol, meter)
-        capacitive = self.get_sub_component_energy_consumption_detail_td_capacitive_data(fact, pol, meter)
-        maximeter = self.get_sub_component_energy_consumption_detail_td_maximeter_data(fact, pol, meter)
+    #     active = self.get_sub_component_energy_consumption_detail_td_active_data(fact, pol, meter)
+    #     surplus = self.get_sub_component_energy_consumption_detail_td_surplus_data(fact, pol, meter)
+    #     inductive = self.get_sub_component_energy_consumption_detail_td_inductive_data(fact, pol, meter)
+    #     capacitive = self.get_sub_component_energy_consumption_detail_td_capacitive_data(fact, pol, meter)
+    #     maximeter = self.get_sub_component_energy_consumption_detail_td_maximeter_data(fact, pol, meter)
 
-        data = {
-            'name': meter.name,
-            'showing_periods': self.get_matrix_show_periods(pol),
-            'active': add_last_visible(active, [surplus, inductive, capacitive, maximeter]),
-            'surplus': add_last_visible(surplus, [inductive, capacitive, maximeter]),
-            'inductive': add_last_visible(inductive, [capacitive, maximeter]),
-            'capacitive': add_last_visible(capacitive, [maximeter]),
-            'maximeter': maximeter,
-            'is_visible': visibility([active, surplus, inductive, capacitive]),
-            'adjust_reason': self.adjust_readings_priority(adjust_reason([active, surplus, inductive, capacitive, maximeter])),
-        }
-        return data
+    #     data = {
+    #         'name': meter.name,
+    #         'showing_periods': self.get_matrix_show_periods(pol),
+    #         'active': add_last_visible(active, [surplus, inductive, capacitive, maximeter]),
+    #         'surplus': add_last_visible(surplus, [inductive, capacitive, maximeter]),
+    #         'inductive': add_last_visible(inductive, [capacitive, maximeter]),
+    #         'capacitive': add_last_visible(capacitive, [maximeter]),
+    #         'maximeter': maximeter,
+    #         'is_visible': visibility([active, surplus, inductive, capacitive]),
+    #         'adjust_reason': self.adjust_readings_priority(adjust_reason([active, surplus, inductive, capacitive, maximeter])),
+    #     }
+    #     return data
 
-    def adjust_readings_priority(self, adjust_readings_list):
-        adjust_readings_list = [adjust for adjust in adjust_readings_list if adjust != False]
-        if len(adjust_readings_list) == 0:
-            return False
+    # def adjust_readings_priority(self, adjust_readings_list):
+    #     adjust_readings_list = [adjust for adjust in adjust_readings_list if adjust != False]
+    #     if len(adjust_readings_list) == 0:
+    #         return False
 
-        adjust_auto = '98' in adjust_readings_list
-        adjust_trTD = '97' in adjust_readings_list
-        adjust_deci = '96' in adjust_readings_list
-        adjust_remaining = [adjust for adjust in adjust_readings_list if adjust not in ('98', '97', '96')]
-        if len(adjust_remaining) > 0:
-            return '99'
-        if adjust_auto:
-            return '98'
-        if adjust_trTD:
-            return '97'
-        return False
+    #     adjust_auto = '98' in adjust_readings_list
+    #     adjust_trTD = '97' in adjust_readings_list
+    #     adjust_deci = '96' in adjust_readings_list
+    #     adjust_remaining = [adjust for adjust in adjust_readings_list if adjust not in ('98', '97', '96')]
+    #     if len(adjust_remaining) > 0:
+    #         return '99'
+    #     if adjust_auto:
+    #         return '98'
+    #     if adjust_trTD:
+    #         return '97'
+    #     return False
 
-    def get_sub_component_energy_consumption_detail_td_active_data(self, fact, pol, meter):
-        (a, a, a, a, lectures_a, a, a, a, a, a, a, a, a, a, a, a, a, a, a) = self.get_readings_data(fact)
-        lectures = lectures_a
-        data = {
-            'showing_periods': self.get_matrix_show_periods(pol),
-            'is_visible': False,
-            'title': _(u"Energia Activa (kWh)"),
-            'is_active': True,
-        }
+    # def get_sub_component_energy_consumption_detail_td_active_data(self, fact, pol, meter):
+    #     (a, a, a, a, lectures_a, a, a, a, a, a, a, a, a, a, a, a, a, a, a) = self.get_readings_data(fact)
+    #     lectures = lectures_a
+    #     data = {
+    #         'showing_periods': self.get_matrix_show_periods(pol),
+    #         'is_visible': False,
+    #         'title': _(u"Energia Activa (kWh)"),
+    #         'is_active': True,
+    #     }
 
-        adjust_reason = []
-        if meter.name in lectures:
-            data['is_visible'] = len(lectures[meter.name]) > 0
-            for reading in lectures[meter.name]:
-                data[reading[0]] = {
-                    'initial': reading[1],
-                    'final': reading[2],
-                    'total': reading[3],
-                }
-                data['initial_date'] = reading[4]
-                if 'initial_type' not in data or reading[6] != u'real':
-                    data['initial_type'] = reading[6]
-                data['final_date'] = reading[5]
-                if 'final_type' not in data or reading[7] != u'real':
-                    data['final_type'] = reading[7]
-                adjust_reason.append(reading[9])
+    #     adjust_reason = []
+    #     if meter.name in lectures:
+    #         data['is_visible'] = len(lectures[meter.name]) > 0
+    #         for reading in lectures[meter.name]:
+    #             data[reading[0]] = {
+    #                 'initial': reading[1],
+    #                 'final': reading[2],
+    #                 'total': reading[3],
+    #             }
+    #             data['initial_date'] = reading[4]
+    #             if 'initial_type' not in data or reading[6] != u'real':
+    #                 data['initial_type'] = reading[6]
+    #             data['final_date'] = reading[5]
+    #             if 'final_type' not in data or reading[7] != u'real':
+    #                 data['final_type'] = reading[7]
+    #             adjust_reason.append(reading[9])
 
-        data['adjust_reason'] = self.adjust_readings_priority(adjust_reason)
-        return data
+    #     data['adjust_reason'] = self.adjust_readings_priority(adjust_reason)
+    #     return data
 
-    def get_sub_component_energy_consumption_detail_td_surplus_data(self, fact, pol, meter):
-        (a, a, a, a, a, a, a, lectures_g, a, a, a, a, a, a, a, a, a, a, a) = self.get_readings_data(fact)
-        lectures = lectures_g
-        data = {
-            'showing_periods': self.get_matrix_show_periods(pol),
-            'is_visible': False,
-            'title': _(u'Energia Excedentària (kWh)'),
-            'is_active': False,
-        }
+    # def get_sub_component_energy_consumption_detail_td_surplus_data(self, fact, pol, meter):
+    #     (a, a, a, a, a, a, a, lectures_g, a, a, a, a, a, a, a, a, a, a, a) = self.get_readings_data(fact)
+    #     lectures = lectures_g
+    #     data = {
+    #         'showing_periods': self.get_matrix_show_periods(pol),
+    #         'is_visible': False,
+    #         'title': _(u'Energia Excedentària (kWh)'),
+    #         'is_active': False,
+    #     }
 
-        adjust_reason = []
-        if meter.name in lectures:
-            data['is_visible'] = len(lectures[meter.name]) > 0 and te_autoconsum_amb_excedents(fact, pol)
-            for reading in lectures[meter.name]:
-                data[reading[0]] = {
-                    'initial': reading[1],
-                    'final': reading[2],
-                    'total': reading[3],
-                }
-                data['initial_date'] = reading[4]
-                if 'initial_type' not in data or reading[6] != u'real':
-                    data['initial_type'] = reading[6]
-                data['final_date'] = reading[5]
-                if 'final_type' not in data or reading[7] != u'real':
-                    data['final_type'] = reading[7]
-                adjust_reason.append(reading[9])
+    #     adjust_reason = []
+    #     if meter.name in lectures:
+    #         data['is_visible'] = len(lectures[meter.name]) > 0 and te_autoconsum_amb_excedents(fact, pol)
+    #         for reading in lectures[meter.name]:
+    #             data[reading[0]] = {
+    #                 'initial': reading[1],
+    #                 'final': reading[2],
+    #                 'total': reading[3],
+    #             }
+    #             data['initial_date'] = reading[4]
+    #             if 'initial_type' not in data or reading[6] != u'real':
+    #                 data['initial_type'] = reading[6]
+    #             data['final_date'] = reading[5]
+    #             if 'final_type' not in data or reading[7] != u'real':
+    #                 data['final_type'] = reading[7]
+    #             adjust_reason.append(reading[9])
 
-        data['adjust_reason'] = self.adjust_readings_priority(adjust_reason)
-        return data
+    #     data['adjust_reason'] = self.adjust_readings_priority(adjust_reason)
+    #     return data
 
-    def get_sub_component_energy_consumption_detail_td_inductive_data(self, fact, pol, meter):
-        (a, a, a, a, a, lectures_r, a, a, a, a, a, a, a, a, a, a, a, a, a) = self.get_readings_data(fact)
-        data = {
-            'showing_periods': self.get_matrix_show_periods(pol),
-            'is_visible': False,
-            'title': _(u"Energia Reactiva Inductiva (kVArh)"),
-            'adjust_reason': False,
-            'is_active': False,
-        }
-        if meter.name in lectures_r:
-            readings_list = lectures_r[meter.name]
-            for reading in readings_list:
-                data['is_visible'] = True,
-                data[reading[0]] = {
-                    'initial': reading[1],
-                    'final': reading[2],
-                    'total': reading[3],
-                }
-                data['initial_date'] = reading[4]
-                if 'initial_type' not in data or reading[6] != u'real':
-                    data['initial_type'] = reading[6]
-                data['final_date'] = reading[5]
-                if 'final_type' not in data or reading[7] != u'real':
-                    data['final_type'] = reading[7]
-                if len(reading) == 9 and reading[8] != 0.0:
-                    data['has_adjust'] = True
+    # def get_sub_component_energy_consumption_detail_td_inductive_data(self, fact, pol, meter):
+    #     (a, a, a, a, a, lectures_r, a, a, a, a, a, a, a, a, a, a, a, a, a) = self.get_readings_data(fact)
+    #     data = {
+    #         'showing_periods': self.get_matrix_show_periods(pol),
+    #         'is_visible': False,
+    #         'title': _(u"Energia Reactiva Inductiva (kVArh)"),
+    #         'adjust_reason': False,
+    #         'is_active': False,
+    #     }
+    #     if meter.name in lectures_r:
+    #         readings_list = lectures_r[meter.name]
+    #         for reading in readings_list:
+    #             data['is_visible'] = True,
+    #             data[reading[0]] = {
+    #                 'initial': reading[1],
+    #                 'final': reading[2],
+    #                 'total': reading[3],
+    #             }
+    #             data['initial_date'] = reading[4]
+    #             if 'initial_type' not in data or reading[6] != u'real':
+    #                 data['initial_type'] = reading[6]
+    #             data['final_date'] = reading[5]
+    #             if 'final_type' not in data or reading[7] != u'real':
+    #                 data['final_type'] = reading[7]
+    #             if len(reading) == 9 and reading[8] != 0.0:
+    #                 data['has_adjust'] = True
 
-        return data
+    #     return data
 
-    def get_sub_component_energy_consumption_detail_td_capacitive_data(self, fact, pol, meter):
-        (a, a, a, a, a, a, lectures_c, a, a, a, a, a, a, a, a, a, a, a, a) = self.get_readings_data(fact)
-        data = {
-            'showing_periods': self.get_matrix_show_periods(pol),
-            'is_visible': False,
-            'title': _(u"Energia Reactiva Capacitiva (kVArh)"),
-            'adjust_reason': False,
-            'is_active': False,
-        }
-        if meter.name in lectures_c:
-            readings_list = lectures_c[meter.name]
-            for reading in readings_list:
-                data['is_visible'] = True,
-                data[reading[0]] = {
-                    'initial': reading[1],
-                    'final': reading[2],
-                    'total': reading[3],
-                }
-                data['initial_date'] = reading[4]
-                if 'initial_type' not in data or reading[6] != u'real':
-                    data['initial_type'] = reading[6]
-                data['final_date'] = reading[5]
-                if 'final_type' not in data or reading[7] != u'real':
-                    data['final_type'] = reading[7]
-                if len(reading) == 9 and reading[8] != 0.0:
-                    data['has_adjust'] = True
+    # def get_sub_component_energy_consumption_detail_td_capacitive_data(self, fact, pol, meter):
+    #     (a, a, a, a, a, a, lectures_c, a, a, a, a, a, a, a, a, a, a, a, a) = self.get_readings_data(fact)
+    #     data = {
+    #         'showing_periods': self.get_matrix_show_periods(pol),
+    #         'is_visible': False,
+    #         'title': _(u"Energia Reactiva Capacitiva (kVArh)"),
+    #         'adjust_reason': False,
+    #         'is_active': False,
+    #     }
+    #     if meter.name in lectures_c:
+    #         readings_list = lectures_c[meter.name]
+    #         for reading in readings_list:
+    #             data['is_visible'] = True,
+    #             data[reading[0]] = {
+    #                 'initial': reading[1],
+    #                 'final': reading[2],
+    #                 'total': reading[3],
+    #             }
+    #             data['initial_date'] = reading[4]
+    #             if 'initial_type' not in data or reading[6] != u'real':
+    #                 data['initial_type'] = reading[6]
+    #             data['final_date'] = reading[5]
+    #             if 'final_type' not in data or reading[7] != u'real':
+    #                 data['final_type'] = reading[7]
+    #             if len(reading) == 9 and reading[8] != 0.0:
+    #                 data['has_adjust'] = True
 
-        return data
+    #     return data
 
-    def get_sub_component_energy_consumption_detail_td_maximeter_data(self, fact, pol, meter):
-        excess_lines = [l for l in fact.linia_ids if l.tipus == 'exces_potencia']
+    # def get_sub_component_energy_consumption_detail_td_maximeter_data(self, fact, pol, meter):
+    #     excess_lines = [l for l in fact.linia_ids if l.tipus == 'exces_potencia']
 
-        data = {
-            'showing_periods': self.get_matrix_show_periods(pol),
-            'is_visible': pol.facturacio_potencia=='max',
-            'title': _(u"Maxímetre (kW)"),
-            'adjust_reason': False,
-            'is_active': False,
-            'is_visible_surplus': len(excess_lines) > 0 and te_quartihoraria(pol),
-        }
+    #     data = {
+    #         'showing_periods': self.get_matrix_show_periods(pol),
+    #         'is_visible': pol.facturacio_potencia=='max',
+    #         'title': _(u"Maxímetre (kW)"),
+    #         'adjust_reason': False,
+    #         'is_active': False,
+    #         'is_visible_surplus': len(excess_lines) > 0 and te_quartihoraria(pol),
+    #     }
 
-        periodes_m = sorted(list(set([lectura.name for lectura in fact.lectures_potencia_ids])))
+    #     periodes_m = sorted(list(set([lectura.name for lectura in fact.lectures_potencia_ids])))
 
-        lectures_m = []
-        for lectura in fact.lectures_potencia_ids:
-            lectures_m.append((lectura.name, lectura.pot_contract, lectura.pot_maximetre ))
+    #     lectures_m = []
+    #     for lectura in fact.lectures_potencia_ids:
+    #         lectures_m.append((lectura.name, lectura.pot_contract, lectura.pot_maximetre ))
 
-        fact_potencia = dict([(p,0) for p in periodes_m])
-        for p in [(p.product_id.name, p.quantity) for p in excess_lines]:
-            fact_potencia.update({p[0]: max(fact_potencia.get(p[0], 0), p[1])})
+    #     fact_potencia = dict([(p,0) for p in periodes_m])
+    #     for p in [(p.product_id.name, p.quantity) for p in excess_lines]:
+    #         fact_potencia.update({p[0]: max(fact_potencia.get(p[0], 0), p[1])})
 
-        for reading in lectures_m:
-            data[reading[0]] = {
-                'contracted': reading[1],
-                'reading': reading[2],
-                'surplus': fact_potencia[reading[0]],
-            }
-        return data
+    #     for reading in lectures_m:
+    #         data[reading[0]] = {
+    #             'contracted': reading[1],
+    #             'reading': reading[2],
+    #             'surplus': fact_potencia[reading[0]],
+    #         }
+    #     return data
 
-    def get_sub_component_energy_consumption_detail_td_info_data(self, fact, pol, adjust_reason):
-        dies_factura = (datetime.strptime(fact.data_final, '%Y-%m-%d') - datetime.strptime(fact.data_inici, '%Y-%m-%d')).days + 1
-        diari_factura_actual_eur = fact.total_energia / (dies_factura or 1.0)
-        diari_factura_actual_kwh = (fact.energia_kwh * 1.0) / (dies_factura or 1.0)
-        lang = fact.lang_partner.lower()
+    # def get_sub_component_energy_consumption_detail_td_info_data(self, fact, pol, adjust_reason):
+    #     dies_factura = (datetime.strptime(fact.data_final, '%Y-%m-%d') - datetime.strptime(fact.data_inici, '%Y-%m-%d')).days + 1
+    #     diari_factura_actual_eur = fact.total_energia / (dies_factura or 1.0)
+    #     diari_factura_actual_kwh = (fact.energia_kwh * 1.0) / (dies_factura or 1.0)
+    #     lang = fact.lang_partner.lower()
 
-        data = {
-            'diari_factura_actual_eur': diari_factura_actual_eur,
-            'diari_factura_actual_kwh': diari_factura_actual_kwh,
-            'dies_factura': dies_factura,
-            'lang': lang,
-            'adjust_reason': adjust_reason,
-            'has_web': bool(pol.distribuidora.website),
-            'web_distri': pol.distribuidora.website,
-            'distri_name': pol.distribuidora.name,
-        }
-        return data
+    #     data = {
+    #         'diari_factura_actual_eur': diari_factura_actual_eur,
+    #         'diari_factura_actual_kwh': diari_factura_actual_kwh,
+    #         'dies_factura': dies_factura,
+    #         'lang': lang,
+    #         'adjust_reason': adjust_reason,
+    #         'has_web': bool(pol.distribuidora.website),
+    #         'web_distri': pol.distribuidora.website,
+    #         'distri_name': pol.distribuidora.name,
+    #     }
+    #     return data
 
     def get_component_cnmc_comparator_qr_link_data(self, fact, pol):
         # fact needs to have max_potencies_demandades for the QR to be correct

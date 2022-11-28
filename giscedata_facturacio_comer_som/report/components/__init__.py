@@ -5,3 +5,4 @@ import logo
 import company
 import readings_table
 import readings_data
+import energy_consumption_detail_td
