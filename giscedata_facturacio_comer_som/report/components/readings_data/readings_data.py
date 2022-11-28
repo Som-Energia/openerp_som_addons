@@ -55,9 +55,6 @@ class ComponentReadingsDataData(base_component_data.BaseComponentData):
         return res
 
     def get_data(self):
-
-        data = base_component_data.BaseComponentData.get_data(self)
-
         self.init_origens()
         fact = self.fact
         """
@@ -209,24 +206,24 @@ class ComponentReadingsDataData(base_component_data.BaseComponentData):
                 if l[8] != 0:
                     has_adjust_g = True
 
-        return {
-            'periodes_a': periodes_a,
-            'periodes_r': periodes_r,
-            'periodes_c': periodes_c,
-            'periodes_g': periodes_g,
-            'lectures_a': lectures_a,
-            'lectures_r': lectures_r,
-            'lectures_c': lectures_c,
-            'lectures_g': lectures_g,
-            'lectures_real_a': lectures_real_a,
-            'lectures_real_r': lectures_real_r,
-            'lectures_real_c': lectures_real_c,
-            'lectures_real_g': lectures_real_g,
-            'total_lectures_a': total_lectures_a,
-            'total_lectures_r': total_lectures_r,
-            'total_lectures_c': total_lectures_c,
-            'total_lectures_g': total_lectures_g,
-            'has_adjust_a': has_adjust_a,
-            'has_adjust_g' : has_adjust_g,
-            'has_readings_g': has_readings_g,
-        }
+        data = base_component_data.BaseComponentData.get_data(self)
+        data['periodes_a'] = periodes_a
+        data['periodes_r'] = periodes_r
+        data['periodes_c'] = periodes_c
+        data['periodes_g'] = periodes_g
+        data['lectures_a'] = lectures_a
+        data['lectures_r'] = lectures_r
+        data['lectures_c'] = lectures_c
+        data['lectures_g'] = lectures_g
+        data['lectures_real_a'] = lectures_real_a
+        data['lectures_real_r'] = lectures_real_r
+        data['lectures_real_c'] = lectures_real_c
+        data['lectures_real_g'] = lectures_real_g
+        data['total_lectures_a'] = total_lectures_a
+        data['total_lectures_r'] = total_lectures_r
+        data['total_lectures_c'] = total_lectures_c
+        data['total_lectures_g'] = total_lectures_g
+        data['has_adjust_a'] = has_adjust_a
+        data['has_adjust_g'] = has_adjust_g
+        data['has_readings_g'] = has_readings_g
+        return data
