@@ -14,6 +14,7 @@ from osv import fields, osv
 from tools.translate import _
 from tools import config
 from som_infoenergia.pdf_tools import topdf
+import unicodedata
 
 
 
@@ -37,6 +38,10 @@ def get_ssh_connection():
                 password=beedata_password)
     return ssh
 
+#Per python 3 provar unidecode
+def strip_accents(s):
+   return ''.join(c for c in unicodedata.normalize('NFD', s)
+                  if unicodedata.category(c) != 'Mn')
 
 
 ESTAT_ENVIAT = [
@@ -68,7 +73,7 @@ class SomInfoenergiaEnviament(osv.osv):
                 'name':'Lot {}, informe {}, contracte {}'.format(
                         enviament.lot_enviament.name, enviament.lot_enviament.tipus_informe.upper(), enviament.polissa_id.name
                     ),
-                'datas_fname': '{}_{}.pdf'.format(enviament.polissa_id.name, enviament.lot_enviament.name),
+                'datas_fname': strip_accents(u'{}_{}.pdf'.format(enviament.polissa_id.name, enviament.lot_enviament.name)),
                 'datas': base64.b64encode(data),
                 'res_model': 'som.infoenergia.enviament',
                 'res_id': ids
@@ -293,8 +298,12 @@ class SomInfoenergiaEnviament(osv.osv):
                 }
             if vals_w['folder'] == 'sent':
                 for _id in ids:
-                    self.write(cursor, uid, _id, {'estat':'enviat', 'data_enviament': vals_w['date_sent']})
-                    self.add_info_line(cursor, uid, _id, "Correu enviat", context)
+                    if not self.browse(cursor, uid, _id).lot_enviament.is_test:
+                        self.write(cursor, uid, _id, {'estat':'enviat', 'data_enviament': vals_w['date_sent']})
+                        self.add_info_line(cursor, uid, _id, "Correu enviat", context)
+                    else:
+                        self.add_info_line(cursor, uid, _id, "Correu de test enviat", context)
+                        self.write(cursor, uid, _id, {'estat':'obert'})
         return True
 
     def poweremail_unlink_callback(self, cursor, uid, ids, vals, context=None):
