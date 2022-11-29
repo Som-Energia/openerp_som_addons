@@ -321,14 +321,6 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                 tarifes_a_mostrar = get_comming_atr_price(cursor, uid, polissa, ctx)
             text_vigencia = ''
 
-            if not polissa.fiscal_position_id:
-                imd_obj = polissa.pool.get('ir.model.data')
-                if polissa.potencia <= 10:
-                    fp_id = imd_obj.get_object_reference(cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
-                else:
-                    fp_id = imd_obj.get_object_reference(cursor, uid, 'giscedata_facturacio', 'fp_nacional_2021_rd_17_2021')[1]
-                ctx.update({'force_fiscal_position': fp_id})
-
             cfg_obj = polissa.pool.get('res.config')
             start_date_mecanisme_ajust_gas = cfg_obj.get(
             cursor, uid, 'start_date_mecanisme_ajust_gas', '2022-10-01'
@@ -336,6 +328,17 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
             end_date_mecanisme_ajust_gas = cfg_obj.get(
                 cursor, uid, 'end_date_mecanisme_ajust_gas', '2099-12-31'
             )
+
+            start_date_iva_5 = cfg_obj.get(
+                cursor, uid, 'charge_iva_10_percent_when_start_date', '2021-06-01'
+            )
+            end_date_iva_5 = cfg_obj.get(
+                cursor, uid, 'iva_reduit_get_tariff_prices_end_date', '2022-12-31'
+            )
+            iva_5_active = eval(cfg_obj.get(
+                cursor, uid, 'charge_iva_10_percent_when_available', '0'
+            ))
+
         %>
         <div class="styled_box">
         %for dades_tarifa in tarifes_a_mostrar:
@@ -346,6 +349,18 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                     text_vigencia = _(u"(vigents fins al {})").format((datetime.strptime(dades_tarifa['date_end'], '%Y-%m-%d')).strftime('%d/%m/%Y'))
                 elif datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d') > datetime.today():
                     text_vigencia = _(u"(vigents a partir del {})").format(datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d').strftime('%d/%m/%Y'))
+
+                iva_reduit = False
+                if not polissa.fiscal_position_id:
+                    imd_obj = polissa.pool.get('ir.model.data')
+                    if iva_5_active and polissa.potencia <= 10 and dades_tarifa['date_start'] >= start_date_iva_5 and dades_tarifa['date_start'] <= end_date_iva_5:
+                        fp_id = imd_obj.get_object_reference(cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
+                        iva_reduit = True
+                        text_vigencia += " (IVA 5%, IESE 0,5%)"
+                    else:
+                        fp_id = imd_obj.get_object_reference(cursor, uid, 'giscedata_facturacio', 'fp_nacional_2012')[1]
+                        text_vigencia += " (IVA 21%, IESE 5,11%)"
+                    ctx.update({'force_fiscal_position': fp_id})
             %>
             %if text_vigencia:
                 <h5> ${_("TARIFES D'ELECTRICITAT")} ${text_vigencia}</h5>
@@ -578,7 +593,7 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                     ${_(u"Tots els preus que apareixen en aquest contracte")}
                 %endif
                 &nbsp;${_(u"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent en cada moment per a cada tipus de contracte. Actualment, d'acord amb el")}&nbsp;<a target="_blank" href="https://www.boe.es/buscar/act.php?id=BOE-A-2022-10557">${_(u"Reial Decret-llei 11/2022")}</a>, ${_(u"l’IVA aplicable serà del")}&nbsp;
-                %if polissa.potencia <= 10:
+                %if iva_5_active and polissa.potencia <= 10 and dades_tarifa['date_start'] >= start_date_iva_5 and dades_tarifa['date_start'] <= end_date_iva_5:
                     ${_(u"5% (sempre que el preu mitjà del mercat majorista del mes anterior al de facturació hagi estat superior a 45€/MWh. En cas que hagi estat inferior, l’IVA que s’aplicarà serà del 21%).")}
                 %else:
                     ${_(u"21%.")}
