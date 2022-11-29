@@ -286,16 +286,12 @@ class SomCrawlersTaskStep(osv.osv):
             import_wizard  = WizardImportAtrF1.browse(cursor, uid, import_wizard_id)
             context = {'active_ids': [import_wizard.id], 'active_id': import_wizard.id}
 
-            try:
-                import_wizard.action_import_xmls(context)
-                if import_wizard.state == 'load':
-                    import_wizard.action_send_xmls(context=context)
-                return WizardImportAtrF1.browse(cursor, uid, import_wizard_id).info
-            except Exception as e:
-                msg = "An error ocurred importing {}:{}".format("asd", "asd")
-                return msg
+            import_wizard.action_import_xmls(context)
+            if import_wizard.state == 'load':
+                import_wizard.action_send_xmls(context=context)
+            return WizardImportAtrF1.browse(cursor, uid, import_wizard_id).info
         else:
-            return False
+            raise Exception("Error intentem importar un fitxer no ZIP")
 
     def readOutputFile(self, cursor, uid, path, file_name):
         try:
