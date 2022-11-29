@@ -629,10 +629,7 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
         <div id="footer">
             <div class="city_date">
             <%
-                if polissa.data_firma_contracte:
-                    data_firma =  datetime.strptime(datetime_to_date(polissa.data_firma_contracte), '%Y-%m-%d')
-                else:
-                    data_firma =  datetime.today()
+                data_firma =  datetime.today()
             %>
                 ${company.partner_id.address[0]['city']},
                 ${_(u"a {0}".format(localize_period(data_firma, lang)))}
