@@ -356,10 +356,10 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                     if iva_5_active and polissa.potencia <= 10 and dades_tarifa['date_start'] >= start_date_iva_5 and dades_tarifa['date_start'] <= end_date_iva_5:
                         fp_id = imd_obj.get_object_reference(cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
                         iva_reduit = True
-                        text_vigencia += " (IVA 5%, IESE 0,5%)"
+                        text_vigencia += " (IVA 5%, IE 0,5%)"
                     else:
                         fp_id = imd_obj.get_object_reference(cursor, uid, 'giscedata_facturacio', 'fp_nacional_2012')[1]
-                        text_vigencia += " (IVA 21%, IESE 5,11%)"
+                        text_vigencia += " (IVA 21%, IE 5,11%)"
                     ctx.update({'force_fiscal_position': fp_id})
             %>
             %if text_vigencia:
@@ -592,13 +592,7 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                 %else:
                     ${_(u"Tots els preus que apareixen en aquest contracte")}
                 %endif
-                &nbsp;${_(u"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent en cada moment per a cada tipus de contracte. Actualment, d'acord amb el")}&nbsp;<a target="_blank" href="https://www.boe.es/buscar/act.php?id=BOE-A-2022-10557">${_(u"Reial Decret-llei 11/2022")}</a>, ${_(u"l’IVA aplicable serà del")}&nbsp;
-                %if iva_5_active and polissa.potencia <= 10 and dades_tarifa['date_start'] >= start_date_iva_5 and dades_tarifa['date_start'] <= end_date_iva_5:
-                    ${_(u"5% (sempre que el preu mitjà del mercat majorista del mes anterior al de facturació hagi estat superior a 45€/MWh. En cas que hagi estat inferior, l’IVA que s’aplicarà serà del 21%).")}
-                %else:
-                    ${_(u"21%.")}
-                %endif
-                &nbsp;${_(u"També, i seguint el Reial Decret-Llei 11/2022, els preus inclouen l’Impost Especial sobre l’Electricitat rebaixat al 0,5% (amb una quota mínima de 0,5 €/MWh o 1 €/MWh, segons correspongui).")}
+                &nbsp;${_(u"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent en cada moment per a cada tipus de contracte.")}
             </div>
         </div>
             <%

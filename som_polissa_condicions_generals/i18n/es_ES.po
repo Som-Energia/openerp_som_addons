@@ -597,9 +597,8 @@ msgstr "Todos los precios que aparecen en este contrato"
 #: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:578
 msgid ""
 "inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu"
-" vigent en cada moment per a cada tipus de contracte. Actualment, d'acord "
-"amb el"
-msgstr "incluyen el impuesto eléctrico y el IVA (IGIC en Canarias), con el tipo impositivo vigente en cada momento para cada tipo de contrato. Actualmente, de acuerdo con el"
+" vigent en cada moment per a cada tipus de contracte."
+msgstr "incluyen el impuesto eléctrico y el IVA (IGIC en Canarias), con el tipo impositivo vigente en cada momento para cada tipo de contrato."
 
 #: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:578
 msgid "Reial Decret-llei 11/2022"

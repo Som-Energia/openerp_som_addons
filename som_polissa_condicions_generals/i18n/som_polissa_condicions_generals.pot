@@ -590,7 +590,6 @@ msgstr ""
 msgid ""
 "inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus "
 "impositiu vigent en cada moment per a cada tipus de contracte. "
-"Actualment, d'acord amb el"
 msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:578
