@@ -181,7 +181,13 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         for f1_data in f1_refacturats:
             f1_id = f1_data['id']
             f1_str = '\n'.join(f1_data['refund_result'])
-            diff = " Diferència 0" if "factures AB i RE tenen mateix import, s'esborren" in f1_str else ""
+            if "factures AB i RE tenen mateix import, s'esborren" in f1_str:
+                diff = " Diferència 0"
+            elif "les factures AB i RE tenen import diferent" in f1_str:
+                diff = " Ok"
+            else:
+                diff = ""
+
             obs = f1_obj.read(cursor, uid, f1_id, ['user_observations'], context=context)['user_observations'] or ''
             f1_obj.write(cursor, uid, f1_id, {
                 'user_observations': '{}. Resultat:{}\n{}\n{}'.format(text, diff, f1_str, obs)
@@ -310,10 +316,14 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             [('init', 'Initial'), ('end', 'End')], 'State'
         ),
         'order': fields.many2one('payment.order', 'Remesa'),
-        'actions': fields.selection([('draft', 'Factures en esborrany'), ('open', 'Obrir'),
+        'actions': fields.selection([
+                        ('draft', 'Factures en esborrany'),
+                        ('open', 'Obrir'),
                         ('open-group', 'Obrir i agrupar'),
                         ('open-group-order', 'Obrir, agrupar i remesar'),
-                        ('open-group-order-send', 'Obrir, agrupar, remesar i enviar')], _("Accions:")),
+                        #('open-group-order-send', 'Obrir, agrupar, remesar i enviar')
+                        ],
+                        _("Accions:")),
         'info': fields.text(_('Informació'), readonly=True),
         'facts_generades': fields.text(),
         'max_amount': fields.float("Import màxim",
