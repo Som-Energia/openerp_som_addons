@@ -74,6 +74,11 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="iberdrola_conf"/>
         </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_t1">
+            <field name="name">Descargar Iberdrola T1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
         <record model="som.crawlers.task" id="descargar_A3_endesa">
             <field name="name">Endesa descargar A3</field>
             <field name="active">True</field>

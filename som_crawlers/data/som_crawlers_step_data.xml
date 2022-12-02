@@ -187,6 +187,20 @@
             <field name="params">{}</field>
             <field name="task_id" ref="descargar_iberdrola_d1"/>
         </record>
+        <record model="som.crawlers.task.step" id="pas_descargar_iberdrola_t1">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py", "process":"t1"}</field>
+            <field name="task_id" ref="descargar_iberdrola_t1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_iberdrola_t1">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_iberdrola_t1"/>
+        </record>
         <!--fenosa-->
         <record model="som.crawlers.task.step" id="pas_descarregar_fenosa">
             <field name="name">Descarregar fitxers</field>
