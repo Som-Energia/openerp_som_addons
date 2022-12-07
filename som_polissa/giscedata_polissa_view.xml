@@ -141,5 +141,9 @@
                 </field>
             </field>
         </record>
+        <record model="ir.actions.act_window" id="giscedata_polissa.action_polisses_all">
+            <field name="domain">[('active', '!=', None)]</field>
+            <field name="context">{}</field>
+        </record>
     </data>
 </openerp>
