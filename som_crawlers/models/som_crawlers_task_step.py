@@ -323,7 +323,7 @@ class SomCrawlersTaskStep(osv.osv):
 
             return WizardImportAtrF1.browse(cursor, uid, import_wizard_id).info
         else:
-            return False
+            raise Exception("El fitxer no té format ZIP")
 
     def readOutputFile(self, cursor, uid, path, file_name):
         try:
