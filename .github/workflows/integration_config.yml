@@ -22,7 +22,7 @@ jobs:
       # For example, pypy2 and pypy3
       fail-fast: false
       matrix:
-        python-version: [ "2.7", "3.7" ]
+        python-version: [ "2.7", "3.10" ]
     services:
       postgres:
         image: timescale/timescaledb-postgis:latest-pg12
