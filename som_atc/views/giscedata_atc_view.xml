@@ -42,5 +42,8 @@
                 </field>
             </field>
         </record>
+        <record id="giscedata_atc.all_atc_case-act" model="ir.actions.act_window">
+            <field name="context">{'active_test': False}</field>
+        </record>
     </data>
 </openerp>
