@@ -46,7 +46,7 @@
             <field name="res_model">som.crawlers.result</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('resultat_bool', '=', False),('resultat_text', 'not ilike', 'SENSE RESULTATS:%')]</field>
+            <field name="domain">[('resultat_bool', '=', False)]</field>
             <field name="view_id" ref="view_som_crawlers_result_tree"/>
         </record>
         <menuitem action='action_som_crawlers_result_fail_tree' id="menu_crawlers_fail_result"  parent="som_crawlers.menu_crawlers_folder_result"/>
