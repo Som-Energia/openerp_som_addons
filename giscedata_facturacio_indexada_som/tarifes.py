@@ -36,6 +36,8 @@ class TarifaPoolSOM(TarifaPool):
             # only if 'phf_calc_peninsula' formula is used
             res['pmd'] = 'sphdem'
             res['pc3_ree'] = 'pc3_ree'
+            if 'ajom' in res:
+                del res['ajom']
 
         return res
 
@@ -68,7 +70,13 @@ class TarifaPoolSOM(TarifaPool):
 
         # REE
         postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d")))
-        prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        if self.geom_zone == '1' or not self.geom_zone:  # Peninsula
+            prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        else:
+            filename = 'SphdemDD_{}'.format(SUBSYSTEMS_SPHDEM[self.geom_zone])
+            classname = globals()[filename]
+            sphdem = classname('C2_%(filename)s_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+            prmdiari = sphdem
 
         A = (prmdiari * 0.001)
         B = curve * 0.001
