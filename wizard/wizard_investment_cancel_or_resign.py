@@ -5,7 +5,7 @@ from osv import osv, fields
 from tools.translate import _
 import pickle
 
-class WizardInvestmentCancelOrResing(osv.osv):
+class WizardInvestmentCancelOrResing(osv.osv_memory):
 
     _name = 'wizard.generationkwh.investment.cancel.or.resign'
     _columns = {

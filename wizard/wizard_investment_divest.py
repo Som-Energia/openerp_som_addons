@@ -5,7 +5,7 @@ from osv import osv, fields
 from tools.translate import _
 import pickle
 
-class WizardInvestmentDivest(osv.osv):
+class WizardInvestmentDivest(osv.osv_memory):
 
     _name = 'wizard.generationkwh.investment.divest'
 

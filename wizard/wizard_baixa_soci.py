@@ -4,7 +4,7 @@ from osv import osv, fields
 from tools.translate import _
 import logging
 
-class WizardBaixaSoci(osv.osv):
+class WizardBaixaSoci(osv.osv_memory):
 
     _name = 'wizard.baixa.soci'
     _columns = {

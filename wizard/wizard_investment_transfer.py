@@ -4,7 +4,7 @@ from osv import osv, fields
 from tools.translate import _
 import pickle
 
-class WizardInvestmentTransfer(osv.osv):
+class WizardInvestmentTransfer(osv.osv_memory):
 
     _name = 'wizard.generationkwh.investment.transfer'
 

@@ -6,7 +6,7 @@ from osv import osv, fields
 from tools.translate import _
 
 
-class WizardInvestmentCreation(osv.osv):
+class WizardInvestmentCreation(osv.osv_memory):
 
     _name = 'wizard.generationkwh.investment.creation'
 
