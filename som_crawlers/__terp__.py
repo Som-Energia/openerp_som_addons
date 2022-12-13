@@ -2,7 +2,7 @@
     "name": "Mòdul per descarregar fitxers distribuidores electricitat",
     "description": """ """,
     "version": "0.1",
-    "author": "SomeEnergia",
+    "author": "SomEnergia",
     "category": "Master",
     "depends":[
         "base",
