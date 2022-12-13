@@ -38,14 +38,6 @@ class WizardSendReports(osv.osv_memory):
 
         return context.get('from_model', False) == 'som.infoenergia.lot.enviament'
 
-    def _get_default_subject(self, cursor, uid, context=None):
-
-        lot_id = self._get_lot_id(cursor, uid, context)
-        lot_obj = self.pool.get('som.infoenergia.lot.enviament')
-
-        lot = lot_obj.browse(cursor, uid, lot_id)
-        return lot.email_template.def_subject
-
     def send_reports(self, cursor, uid, ids, context=None):
         wiz = self.browse(cursor, uid, ids[0], context=context)
         env_obj = self.pool.get(context.get('from_model'))
@@ -88,7 +80,7 @@ class WizardSendReports(osv.osv_memory):
         'is_test': fields.boolean('Test', help=_(u"És un lot de Test?")),
         'is_from_lot': fields.boolean('Cridat des de lot', help=_(u"Accionat des de lot?")),
         'email_to': fields.char(u'E-mail on enviar els correus', size=256, help=u"Tots els enviaments s'enviaran a aquesta adreça"),
-        'email_subject': fields.char('Assumpte correu', size=200, help="Assumpte dels correus enviats"),
+        'email_subject': fields.char('Assumpte correu', size=200, help="Assumpte que substituirà el de la plantilla"),
         'allow_reenviar': fields.boolean('Reenviar correus ja enviats', help=_(u"Permetre que es reenviïn correus ja enviats?")),
         'n_max_mails': fields.integer('Màxim de correus (0 per enviar-los tots)', help=_(u"Número màxim de correus que es volen enviar. 0 per enviar-los tots")),
     }
@@ -97,7 +89,6 @@ class WizardSendReports(osv.osv_memory):
         'state': 'init',
         'is_test': _get_is_test,
         'is_from_lot': _get_is_from_lot,
-        'email_subject': _get_default_subject,
         'allow_reenviar': lambda *a: False,
         'n_max_mails': lambda *a: 0,
     }
