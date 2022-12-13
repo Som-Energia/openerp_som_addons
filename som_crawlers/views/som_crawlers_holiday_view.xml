@@ -31,7 +31,6 @@
             <field name="view_id" ref="view_som_crawlers_holiday_tree"/>
         </record>
 
-    <menuitem id="menu_som_crawlers_base" name="Som Crawlers" />
-    <menuitem action="action_som_crawlers_holiday_tree" id="menu_som_crawlers_holiday_tree" parent="som_crawlers.menu_som_crawlers_base"/>
+    <menuitem action="action_som_crawlers_holiday_tree" id="menu_som_crawlers_holiday_tree" parent="som_crawlers.menu_som_crawlers_config"/>
     </data>
 </openerp>

@@ -129,3 +129,6 @@ dmypy.json
 
 # Deploy files
 deploy/
+
+# Vim temporaly files
+*.swp
