@@ -52,7 +52,8 @@
             <field name="view_mode">tree,form</field>
             <field name="context">{'active_test': True}</field>
         </record>
-        <menuitem id="menu_crawlers_task" action="action_som_crawlers_task_tree" parent="som_crawlers.menu_som_crawlers_base"/>
+        <menuitem id="menu_crawlers_folder_task" name="Tasques" parent="som_crawlers.menu_som_crawlers_base"/>
+        <menuitem id="menu_crawlers_task" action="action_som_crawlers_task_tree" parent="som_crawlers.menu_crawlers_folder_task"/>
         <record id="action_som_crawlers_all_task_tree" model="ir.actions.act_window">
             <field name="name">Totes les tasques automàtiques</field>
             <field name="res_model">som.crawlers.task</field>
@@ -60,7 +61,7 @@
             <field name="view_mode">tree,form</field>
             <field name="context">{'active_test': False}</field>
         </record>
-        <menuitem id="menu_crawlers_all_task" action="action_som_crawlers_all_task_tree" parent="som_crawlers.menu_crawlers_task" />
+        <menuitem id="menu_crawlers_all_task" action="action_som_crawlers_all_task_tree" parent="som_crawlers.menu_crawlers_folder_task" />
         <act_window name="Resultats"
             domain="[('task_id', '=', active_id)]"
             res_model="som.crawlers.result"
@@ -76,5 +77,14 @@
             <field name="model">"som.crawlers.task</field>
             <field name="value" eval="'ir.actions.act_window,'+str(ref('act_resultats_tasca'))" />
         </record>
+        <record id="action_som_crawlers_task_fail_tree" model="ir.actions.act_window">
+            <field name="name">Tasques amb resultat incorrecte</field>
+            <field name="res_model">som.crawlers.task</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('resultat_bool', '=', False)]</field>
+            <field name="view_id" ref="view_som_crawlers_task_tree"/>
+        </record>
+        <menuitem action='action_som_crawlers_task_fail_tree' id="menu_crawlers_fail_task"  parent="som_crawlers.menu_crawlers_folder_task"/>
     </data>
 </openerp>

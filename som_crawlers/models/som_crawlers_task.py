@@ -4,6 +4,7 @@ from osv import osv, fields
 from tools.translate import _
 from oorq.decorators import job
 from enerdata.calendars import REECalendar
+from . import exceptions
 
 
 ## Class Task that describes the module and the task fields
@@ -106,6 +107,9 @@ class SomCrawlersTask(osv.osv):
             try:
                 output = classTaskStep.executar_steps(cursor,uid,taskStep.id,result_id)
                 classresult.write(cursor,uid, result_id, {'resultat_bool': True, 'resultat_text': output})
+            except exceptions.NoResultsException as e:
+                classresult.write(cursor,uid, result_id, {'resultat_bool': True, 'resultat_text': str(e)})
+                break
             except Exception as e:
                 classresult.write(cursor,uid, result_id, {'resultat_bool': False, 'resultat_text': str(e)})
                 break

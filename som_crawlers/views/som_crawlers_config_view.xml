@@ -65,6 +65,7 @@
         </record>
 
     <menuitem id="menu_som_crawlers_base" name="Som Crawlers" />
-    <menuitem action="action_configuracio_tree" id="menu_configuracio_tree" parent="som_crawlers.menu_som_crawlers_base"/>
+    <menuitem id="menu_som_crawlers_config" name="Configuracio" parent="som_crawlers.menu_som_crawlers_base"/>
+    <menuitem action="action_configuracio_tree" id="menu_configuracio_tree" parent="som_crawlers.menu_som_crawlers_config"/>
     </data>
 </openerp>

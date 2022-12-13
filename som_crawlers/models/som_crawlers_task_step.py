@@ -7,7 +7,7 @@ import os
 import pooler
 import base64
 from time import sleep
-from . import som_sftp, som_ftp
+from . import som_sftp, som_ftp, exceptions
 import zipfile
 import shutil
 import StringIO
@@ -142,6 +142,8 @@ class SomCrawlersTaskStep(osv.osv):
                 output = self.readOutputFile(cursor, uid, output_path, file_name)
                 if output == 'Files have been successfully downloaded':
                     output = self.attach_files_zip(cursor, uid, id, result_id, config_obj, output_path, task_step_params, context = context)
+                elif 'SENSE RESULTATS: ' in output:
+                    raise exceptions.NoResultsException(msg=output, add_msg_tag=False)
                 else:
                     self.attach_files_screenshot(cursor, uid, config_obj, output_path, result_id, task_step_params, context)
                     raise Exception("%s" % output)
@@ -400,7 +402,7 @@ class SomCrawlersTaskStep(osv.osv):
 
 
         if not len(active_ids):
-            raise Exception("SENSE RESULTATS: No hi ha fitxers pendents d'exportar")
+            raise exceptions.NoResultsException("No hi ha fitxers pendents d'exportar")
 
         ctx = {
             'active_ids': active_ids,
@@ -463,7 +465,7 @@ class SomCrawlersTaskStep(osv.osv):
                             files_to_download.append(remote_file_path)
 
                 if len(files_to_download) == 0:
-                    raise Exception("SENSE RESULTATS: No hi ha fitxers a descarregar")
+                    raise exceptions.NoResultsException("No hi ha fitxers a descarregar")
 
                 # Descarregarels fitxers
                 files_to_import = []
@@ -514,10 +516,10 @@ class SomCrawlersTaskStep(osv.osv):
 
             task_step_obj.task_id.write({'ultima_tasca_executada': str(task_step_obj.name)+ ' - ' + str(datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))})
             classresult.write(cursor, uid, result_id, {'resultat_bool': True})
+        except exceptions.NoResultsException as e:
+            shutil.rmtree(destination_path)
+            raise e
         except Exception as e:
-            if 'SENSE RESULTATS' in str(e):
-                shutil.rmtree(destination_path)
-                raise e
             raise Exception("DESCARREGANT: " + str(e))
 
         return output
