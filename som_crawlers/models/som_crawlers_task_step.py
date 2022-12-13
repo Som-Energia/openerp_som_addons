@@ -115,11 +115,10 @@ class SomCrawlersTaskStep(osv.osv):
         return output
 
     def attach_files_screenshot(self, cursor, uid, config_obj, path, result_id, task_step_params, context=None):
+        name = config_obj.name
         if 'process' in task_step_params:
-            name = config_obj.name + '_' + task_step_params['process']
-            path_to_screenshot = os.path.join(path, name)
-        else:
-            path_to_screenshot = os.path.join(path, config_obj.name)
+            name += '_' + task_step_params['process']
+        path_to_screenshot = os.path.join(path, 'screenShots', name)
         if os.path.exists(path_to_screenshot):
             for file_name in os.listdir(path_to_screenshot):
                 self.attach_file(cursor, uid, path_to_screenshot,
