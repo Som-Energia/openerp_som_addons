@@ -1159,16 +1159,45 @@ class InvestmentTests(testing.OOTestCase):
             investment_id = self.IrModelData.get_object_reference(
                         cursor, uid, 'som_generationkwh', 'genkwh_0002'
                         )[1]
-            inv = self.Investment.read(cursor, uid, investment_id)
-
-            aa_obj = self.openerp.pool.get('account.account')
-            aa_id = aa_obj.search(cursor, uid, [('type','!=','view'),('type','!=','closed')])
-            aa_obj.write(cursor, uid, aa_id[0], {'code': '163500000000'})
 
             amortization_ids, errors = self.Investment.amortize(cursor, uid, '2021-10-13', [investment_id])
 
             self.assertEqual(len(amortization_ids), 1)
             self.assertEqual(len(errors), 0)
+            invoice = self.Invoice.browse(cursor, uid, amortization_ids[0])
+            self.assertEqual(invoice.payment_order_id.mode.name, gkwh.amortizationPaymentMode)
+            self.assertEqual(invoice.payment_order_id.mode.tipo, 'sepa34')
+            self.assertMailLogEqual(self.MailMockup.log(cursor, uid), """\
+                logs:
+                - model: account.invoice
+                  id: {id}
+                  template: generationkwh_mail_amortitzacio
+                  from_id: [ {account_id} ]
+                """.format(
+                    id=amortization_ids[0],
+                    account_id = self._generationMailAccount(cursor, uid),
+                ))
+            self.MailMockup.deactivate(cursor, uid)
+
+    @mock.patch("som_generationkwh.investment.GenerationkwhInvestment.get_irpf_amounts")
+    def test__amortize__negativeAmortizationGKWH(self, get_irpf_mock):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            self.MailMockup.activate(cursor, uid)
+            investment_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'genkwh_0002'
+                        )[1]
+
+            get_irpf_mock.return_value = {'irpf_amount':50}
+
+            amortization_ids, errors = self.Investment.amortize(cursor, uid, '2021-10-13', [investment_id])
+
+            self.assertEqual(len(amortization_ids), 1)
+            self.assertEqual(len(errors), 0)
+            invoice = self.Invoice.browse(cursor, uid, amortization_ids[0])
+            self.assertEqual(invoice.payment_order_id.mode.name, gkwh.amortizationReceivablePaymentMode)
+            self.assertEqual(invoice.payment_order_id.mode.tipo, 'sepa19')
             self.assertMailLogEqual(self.MailMockup.log(cursor, uid), """\
                 logs:
                 - model: account.invoice
