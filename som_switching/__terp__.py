@@ -44,6 +44,7 @@
         'giscedata_atc_view.xml',
         'wizard/giscedata_switching_wizard_b1.xml',
         'wizard/wizard_close_obsolete_cases.xml',
+        'wizard/wizard_validate_d101_view.xml',
     ],
     "active": False,
     "installable": True
