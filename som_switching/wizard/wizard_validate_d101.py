@@ -55,9 +55,9 @@ class GiscedataSwitchingWizardValidateD101(osv.osv_memory):
         sw_obj = self.pool.get("giscedata.switching")
 
         wizard_vals = self.read(cursor, uid, ids,
-            ['sw_id', 'set_pending', 'is_rejected', 'rejection_comment'])
+            ['sw_id', 'set_pending', 'is_rejected', 'rejection_comment'])[0]
 
-        sw_id =  wizard_vals['sw_id'][0]
+        sw_id =  wizard_vals['sw_id']
 
         is_rejected = wizard_vals['is_rejected']
         rejection_comment = wizard_vals['rejection_comment']
