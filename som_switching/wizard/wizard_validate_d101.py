@@ -12,6 +12,8 @@ class GiscedataSwitchingWizardValidateD101(osv.osv_memory):
 
     _name = "wizard.validate.d101"
 
+    _change_reason = ''
+
     def _get_change_reason(self, cursor, uid, ids):
         sw_obj = self.pool.get("giscedata.switching")
         wizard_vals = self.read(cursor, uid, ids)[0]
@@ -324,7 +326,6 @@ class GiscedataSwitchingWizardValidateD101(osv.osv_memory):
         'con_sur2': fields.char('Cognom 2', size=256),
         'phone_num': fields.char('Telèfon', size=9),
         'phone_pre': fields.char('Prefix', size=2),
-
     }
 
     _defaults = {
