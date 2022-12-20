@@ -49,6 +49,6 @@
             <field name="view_mode">form</field>
             <field name="target">new</field>
         </record>
-        <menuitem id="menu_wizard_validate_d101_form" name="Validar D101" action="action_wizard_validate_d101_form" parent="giscedata_cups.menu_autoconsum"/>
+        <menuitem id="menu_wizard_validate_d101_form" name="Validar D101" action="action_wizard_validate_d101_form" parent="giscedata_polissa.menu_autoconsum"/>
     </data>
 </openerp>
