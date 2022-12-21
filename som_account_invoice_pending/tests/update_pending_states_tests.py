@@ -164,10 +164,6 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             if index == 1:
                 contract_name = inv_obj.read(cursor, uid, invoice_id, ['name'])['name']
 
-            res_obj.write(cursor, uid, inv_obj.read(cursor, uid, invoice_id, ['partner_id'])['partner_id'][0], {
-                'lang': 'en_US',
-            })
-
             inv_obj.write(cursor, uid, invoice_id, {
                 'name': contract_name,
             })
