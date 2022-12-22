@@ -2,10 +2,7 @@
 from datetime import datetime,timedelta
 
 def val(object):
-    try:
-        return object.val
-    except Exception as e:
-        return object
+    return getattr(object, 'val', object)
 
 def dateformat(date):
     return datetime.strptime(val(date), '%Y-%m-%d').strftime('%d/%m/%Y')
