@@ -30,7 +30,14 @@ var esgran = ${energy.is_big and 'true' or 'false'}
                     ${(_(u"La potència màxima que has fet servir en el període que va del %s fins al %s és de: Punta: <b><i>%s</i></b> kW - Vall: <b><i>%s</i></b> kW (últimes dades rebudes per l’empresa distribuïdora)")
                     % (energy.max_requested_powers[0]['data_inici'], energy.max_requested_powers[0]['data_final'], pot_p1, pot_p2))}  <br />
                 % else:
-                    ${_("Potència màxima demandada: (ho sentim, %s encara no ens ha facilitat aquestes dades).") % (energy.distri_name)}
+                    ${_("Potència màxima demandada: (ho sentim, %s encara no ens ha facilitat aquestes dades).") % (energy.distri_name)} <br />
+                % endif
+            % endif
+            % if energy.show_mean_zipcode_consumption:
+                % if energy.mean_zipcode_consumption:
+                    ${(_(u"El consum mitjà de la teva zona (CP %s) durant l’últim mes ha estat de <b>%s</b> kWh.") % (energy.zipcode, formatLang(energy.mean_zipcode_consumption, digits=0)))} <br />
+                % else:
+                    ${(_(u"La teva empresa distribuïdora no ha facilitat el consum mitjà de la teva zona (CP %s) durant l’últim mes.") % (energy.zipcode))} <br />
                 % endif
             % endif
         </p>
