@@ -35,7 +35,7 @@ var esgran = ${energy.is_big and 'true' or 'false'}
             % endif
             % if energy.show_mean_zipcode_consumption:
                 % if energy.mean_zipcode_consumption:
-                    ${(_(u"El consum mitjà de la teva zona (CP %s) durant l’últim mes ha estat de <b>%s</b> kWh.") % (energy.zipcode, formatLang(energy.mean_zipcode_consumption, digits=0)))} <br />
+                    ${(_(u"El consum mitjà de la teva zona (CP %s) durant l’últim mes ha estat de <b>%s</b> kWh.") % (energy.zipcode, formatLang(energy.mean_zipcode_consumption, digits=2)))} <br />
                 % else:
                     ${(_(u"La teva empresa distribuïdora no ha facilitat el consum mitjà de la teva zona (CP %s) durant l’últim mes.") % (energy.zipcode))} <br />
                 % endif
