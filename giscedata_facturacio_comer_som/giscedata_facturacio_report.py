@@ -26,7 +26,7 @@ BOE17_2021_dates = {
 factors_kp_change_calculation_date = '2021-10-18'
 
 mean_zipcode_consumption_dates = {
-    'start': '2022-10-18',
+    'start': '2022-12-01',
     'end': '2050-12-31',
 }
 
@@ -1100,8 +1100,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         required_max_requested_powers, max_potencies_demandades = self.max_requested_powers(pol, fact)
 
-        today = datetime.today().strftime('%Y-%m-%d')
-        if pol.tipo_medida == '05' and mean_zipcode_consumption_dates['start'] <= today < mean_zipcode_consumption_dates['end']:
+        if pol.tipo_medida == '05' and mean_zipcode_consumption_dates['start'] <= fact.data_inici < mean_zipcode_consumption_dates['end']:
             show_mean_zipcode_consumption = True
             try:
                 mean_zipcode_consumption = fact.consum_cp_ids[0].consum
