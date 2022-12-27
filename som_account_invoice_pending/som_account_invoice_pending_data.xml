@@ -360,7 +360,7 @@
             <field name="def_subject">Procedimiento corte de luz (Anexo III) / Procediment tall de llum (Annex III)</field>
             <field name="template_language">mako</field>
             <field eval="0" name="send_on_create"/>
-            <field name="lang"/>
+            <field name="lang">${object.invoice_id.partner_id.lang}</field>
             <field eval="0" name="send_on_write"/>
             <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
             <field name="def_cc">correo@certificado.lleida.net</field>
@@ -562,7 +562,7 @@ SOM ENERGIA. CORTE LUZ POR IMPAGO EN 48h. Importe pendiente: ${import_pendent}â‚
             <field name="def_subject">Corte de luz / Tall de llum</field>
             <field name="template_language">mako</field>
             <field eval="0" name="send_on_create"/>
-            <field name="lang"/>
+            <field name="lang">${object.invoice_id.partner_id.lang}</field>
             <field eval="0" name="send_on_write"/>
             <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
             <field name="def_cc">${object.polissa_id.titular.www_email}, correo@certificado.lleida.net</field>

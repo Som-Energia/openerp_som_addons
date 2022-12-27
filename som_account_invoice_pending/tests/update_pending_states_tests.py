@@ -151,6 +151,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
     def _load_data_unpaid_invoices(self, cursor, uid, invoice_semid_list=[]):
         imd_obj = self.pool.get('ir.model.data')
         inv_obj = self.pool.get('account.invoice')
+        res_obj = self.pool.get('res.partner')
         fact_obj = self.pool.get('giscedata.facturacio.factura')
 
         contract_name = ''

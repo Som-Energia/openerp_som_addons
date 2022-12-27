@@ -21,6 +21,10 @@
             <field name="ref">default_ref</field>
         </record>
 
+        <record id="base.res_partner_agrolait" model="res.partner">
+            <field name="lang">en_US</field>
+        </record>
+
         <record model="res.partner.address" id="full_address1">
             <field name="phone">(+34)665665665</field>
             <field name="street">Carretera d'Asfalt, 1 o 3</field>
