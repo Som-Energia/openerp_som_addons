@@ -24,3 +24,18 @@ class AccountPaymentTerm(osv.osv):
         return True
 
 AccountPaymentTerm()
+
+
+class AccountPaymentTermLine(osv.osv):
+    _name = "account.payment.term.line"
+    _inherit = "account.payment.term.line"
+
+    _columns = {
+        'payment_id': fields.many2one('account.payment.term', 'Payment Term', required=True, select=True, ondelete='cascade'),
+    }
+
+    _defaults = {
+        'days': lambda *a: 0,
+    }
+ 
+AccountPaymentTermLine()
