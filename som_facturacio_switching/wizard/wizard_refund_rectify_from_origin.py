@@ -13,7 +13,10 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
     _name = 'wizard.refund.rectify.from.origin'
 
 
-    def send_polissa_mail(self, cursor, uid, ids, pol_id, plantilla, context):
+    def send_polissa_mail(self, cursor, uid, ids, pol_id, is_positive_amount, context):
+        wiz = self.browse(cursor, uid, ids[0])
+        plantilla = wiz.email_template_to_pay if is_positive_amount else wiz.email_template_to_refund
+
         pem_send_wo = self.pool.get('poweremail.send.wizard')
         ctx = {
             'active_ids': [pol_id],
@@ -34,18 +37,14 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         wz_id = pem_send_wo.create(cursor, uid, params, ctx)
         result = pem_send_wo.send_mail(cursor, uid, [wz_id], ctx)
 
-    def get_email_template(self, cursor, uid, ids, facts_created_ids, context):
+    def is_positive_total_grouped_amount(self, cursor, uid, facts_created_ids, context):
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         fact_datas = fact_obj.read(cursor, uid, facts_created_ids, ['amount_total','type'], context)
         amount_total = sum(
             fact_data['amount_total'] * (1 if fact_data['type'] == 'out_invoice' else -1)
             for fact_data in fact_datas
         )
-        wiz = self.browse(cursor, uid, ids[0])
-        if amount_total >= 0.0:
-            return wiz.email_template_to_pay
-        else:
-            return wiz.email_template_to_refund
+        return amount_total >= 0.0
 
     def get_factures_client_by_dates(self, cursor, uid, ids, pol_id, data_inici, data_final, context={}):
         fact_obj = self.pool.get('giscedata.facturacio.factura')
@@ -225,9 +224,9 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                 res, msg_open = self.open_group_invoices(cursor, uid, ids, facts_created, wiz.order.id, wiz.actions, context)
                 msg.append("S'han obert les factures de la pòlissa {}. {}". format(pol_name, msg_open))
             if res and wiz.actions == 'open-group-order-send':
-                email_template = self.get_email_template(cursor, uid, ids, facts_created, context)
-                self.send_polissa_mail(cursor, uid, ids, pol_id, email_template, context)
-                msg.append("S'ha enviat el correu a la pòlissa {}.". format(pol_name))
+                is_positive_amount = self.is_positive_total_grouped_amount(cursor, uid, facts_created, context)
+                self.send_polissa_mail(cursor, uid, ids, pol_id, is_positive_amount, context)
+                msg.append("S'ha enviat el correu per {} a la pòlissa {}.".format('pagar' if is_positive_amount else 'cobrar', pol_name))
             fact_csv_result.append(['', pol_name, "Ha arribat al final del procés (obrir {} factures: {}, enviar correu: {}).".format(
                 len(facts_created), wiz.actions != 'draft' and 'Sí' or 'No', wiz.actions == 'open-group-order-send' and 'Sí' or 'No')
             ])
