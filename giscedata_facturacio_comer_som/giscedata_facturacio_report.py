@@ -1100,15 +1100,13 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         required_max_requested_powers, max_potencies_demandades = self.max_requested_powers(pol, fact)
 
-        if pol.tipo_medida == '05' and mean_zipcode_consumption_dates['start'] <= fact.data_inici < mean_zipcode_consumption_dates['end']:
-            show_mean_zipcode_consumption = True
+        mean_zipcode_consumption = 0
+        show_mean_zipcode_consumption = pol.tipo_medida == '05' and mean_zipcode_consumption_dates['start'] <= fact.data_inici < mean_zipcode_consumption_dates['end']
+        if show_mean_zipcode_consumption:
             try:
                 mean_zipcode_consumption = fact.consum_cp_ids[0].consum
-            except Exception as e:
-                mean_zipcode_consumption = 0
-        else:
-            show_mean_zipcode_consumption = False
-            mean_zipcode_consumption = 0
+            except Exception as e:  # consum_cp_ids is in another module and may be not installed or empty
+                pass
 
         data = {
                 'fact_id': fact.id,
