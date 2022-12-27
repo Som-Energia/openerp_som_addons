@@ -34,6 +34,16 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         wz_id = pem_send_wo.create(cursor, uid, params, ctx)
         result = pem_send_wo.send_mail(cursor, uid, [wz_id], ctx)
 
+    def get_email_template(self, cursor, uid, ids, facts_created_ids, context):
+        fact_obj = self.pool.get('giscedata.facturacio.factura')
+        fact_datas = fact_obj.read(cursor, uid, facts_created_ids, ['amount_total'], context)
+        amount_total = sum(fact_data['amount_total'] for fact_data in fact_datas)
+        wiz = self.browse(cursor, uid, ids[0])
+        if amount_total >= 0.0:
+            return wiz.email_template_to_pay
+        else:
+            return wiz.email_template_to_refund
+
     def get_factures_client_by_dates(self, cursor, uid, ids, pol_id, data_inici, data_final, context={}):
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         msg = ''
@@ -212,7 +222,8 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                 res, msg_open = self.open_group_invoices(cursor, uid, ids, facts_created, wiz.order.id, wiz.actions, context)
                 msg.append("S'han obert les factures de la pòlissa {}. {}". format(pol_name, msg_open))
             if res and wiz.actions == 'open-group-order-send':
-                self.send_polissa_mail(cursor, uid, ids, pol_id, wiz.email_template, context)
+                email_template = self.get_email_template(cursor, uid, ids, facts_created, context)
+                self.send_polissa_mail(cursor, uid, ids, pol_id, email_template, context)
                 msg.append("S'ha enviat el correu a la pòlissa {}.". format(pol_name))
             fact_csv_result.append(['', pol_name, "Ha arribat al final del procés (obrir {} factures: {}, enviar correu: {}).".format(
                 len(facts_created), wiz.actions != 'draft' and 'Sí' or 'No', wiz.actions == 'open-group-order-send' and 'Sí' or 'No')
@@ -227,10 +238,13 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         f1_obj = self.pool.get('giscedata.facturacio.importacio.linia')
 
         wiz = self.browse(cursor, uid, ids[0])
-        if wiz.actions == 'open-group-order-send' and not wiz.email_template:
+
+        if wiz.actions == 'open-group-order-send' and not wiz.email_template_to_pay and not wiz.email_template_to_refund:
             raise osv.except_osv(_('Error'), _('Per enviar el correu cal indicar una plantilla'))
-        if wiz.email_template and not wiz.email_template.enforce_from_account:
-            raise osv.except_osv(_('Error'), _('La plantilla no té indicat el compte des del qual enviar'))
+        if wiz.email_template_to_pay and not wiz.email_template_to_pay.enforce_from_account:
+            raise osv.except_osv(_('Error'), _('La plantilla de pagament no té indicat el compte des del qual enviar'))
+        if wiz.email_template_to_refund and not wiz.email_template_to_refund.enforce_from_account:
+            raise osv.except_osv(_('Error'), _('La plantilla de cobrament no té indicat el compte des del qual enviar'))
         if wiz.actions in ['open-group-order-send', 'open-group-order'] and not wiz.order:
             raise osv.except_osv(_('Error'), _('Per remesar les factures a pagar cal una ordre de pagament'))
 
@@ -323,15 +337,19 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                         ('open', 'Obrir'),
                         ('open-group', 'Obrir i agrupar'),
                         ('open-group-order', 'Obrir, agrupar i remesar'),
-                        #('open-group-order-send', 'Obrir, agrupar, remesar i enviar')
+                        ('open-group-order-send', 'Obrir, agrupar, remesar i enviar')
                         ],
                         _("Accions:")),
         'info': fields.text(_('Informació'), readonly=True),
         'facts_generades': fields.text(),
         'max_amount': fields.float("Import màxim",
             help="Import màxim a partir del qual les factures no s'obren i cal revisar. Si s'indica 0 no es comprova cap import"),
-        'email_template': fields.many2one(
-            'poweremail.templates', 'Plantilla del correu',
+        'email_template_to_pay': fields.many2one(
+            'poweremail.templates', 'Plantilla del correu a pagar',
+            domain="[('object_name.model', '=', 'giscedata.polissa')]"
+        ),
+        'email_template_to_refund': fields.many2one(
+            'poweremail.templates', 'Plantilla del correu a cobrar',
             domain="[('object_name.model', '=', 'giscedata.polissa')]"
         ),
         'report_file': fields.binary('Resultat', help="CSV amb el resultat"),
