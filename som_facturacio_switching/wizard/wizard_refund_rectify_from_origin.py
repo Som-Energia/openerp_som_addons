@@ -195,7 +195,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                 'user_observations': '{}. Resultat:{}\n{}\n{}'.format(text, diff, f1_str, obs)
             })
 
-    def open_polissa_invoices_send_mail(self, cursor, uid, ids, facts_by_polissa, action, context={}):
+    def open_polissa_invoices_send_mail(self, cursor, uid, ids, facts_by_polissa, context={}):
         if not isinstance(ids, (tuple, list)):
             ids = [ids]
         pol_obj = self.pool.get('giscedata.polissa')
@@ -208,14 +208,14 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             pol_id = pol_obj.search(cursor, uid, [('name','=',pol_name)], context={'active_test': False})[0]
             res = False
 
-            if action != 'draft':
-                res, msg_open = self.open_group_invoices(cursor, uid, ids, facts_created, wiz.order.id, action, context)
+            if wiz.actions != 'draft':
+                res, msg_open = self.open_group_invoices(cursor, uid, ids, facts_created, wiz.order.id, wiz.actions, context)
                 msg.append("S'han obert les factures de la pòlissa {}. {}". format(pol_name, msg_open))
-            if res and action == 'open-group-order-send':
+            if res and wiz.actions == 'open-group-order-send':
                 self.send_polissa_mail(cursor, uid, ids, pol_id, wiz.email_template, context)
                 msg.append("S'ha enviat el correu a la pòlissa {}.". format(pol_name))
             fact_csv_result.append(['', pol_name, "Ha arribat al final del procés (obrir {} factures: {}, enviar correu: {}).".format(
-                len(facts_created), action != 'draft' and 'Sí' or 'No', action == 'open-group-order-send' and 'Sí' or 'No')
+                len(facts_created), wiz.actions != 'draft' and 'Sí' or 'No', wiz.actions == 'open-group-order-send' and 'Sí' or 'No')
             ])
         return msg, fact_csv_result
 
@@ -288,7 +288,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                 fact_csv_result.append([origen, pol_name, "Hi ha hagut algun problema, cal revisar."])
 
         if f1_refacturats and wiz.actions != 'draft':
-            msg_open_send, csv_open_send = self.open_polissa_invoices_send_mail(cursor, uid, ids, facts_by_polissa, wiz.actions, context)
+            msg_open_send, csv_open_send = self.open_polissa_invoices_send_mail(cursor, uid, ids, facts_by_polissa, context)
             msg += msg_open_send
             fact_csv_result += csv_open_send
             self.save_info_into_f1_after_refacturacio(cursor, uid, f1_refacturats, context=context)
