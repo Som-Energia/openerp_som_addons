@@ -185,6 +185,8 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                 diff = " Diferència 0"
             elif "les factures AB i RE tenen import diferent" in f1_str:
                 diff = " Ok"
+            elif "generationkwh." in f1_str:
+                diff = " Té GkWh"
             else:
                 diff = ""
 
