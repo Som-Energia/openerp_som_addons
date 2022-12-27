@@ -36,8 +36,11 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
 
     def get_email_template(self, cursor, uid, ids, facts_created_ids, context):
         fact_obj = self.pool.get('giscedata.facturacio.factura')
-        fact_datas = fact_obj.read(cursor, uid, facts_created_ids, ['amount_total'], context)
-        amount_total = sum(fact_data['amount_total'] for fact_data in fact_datas)
+        fact_datas = fact_obj.read(cursor, uid, facts_created_ids, ['amount_total','type'], context)
+        amount_total = sum(
+            fact_data['amount_total'] * (1 if fact_data['type'] == 'out_invoice' else -1)
+            for fact_data in fact_datas
+        )
         wiz = self.browse(cursor, uid, ids[0])
         if amount_total >= 0.0:
             return wiz.email_template_to_pay
@@ -239,8 +242,8 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
 
         wiz = self.browse(cursor, uid, ids[0])
 
-        if wiz.actions == 'open-group-order-send' and not wiz.email_template_to_pay and not wiz.email_template_to_refund:
-            raise osv.except_osv(_('Error'), _('Per enviar el correu cal indicar una plantilla'))
+        if wiz.actions == 'open-group-order-send' and not (wiz.email_template_to_pay and wiz.email_template_to_refund):
+            raise osv.except_osv(_('Error'), _('Per enviar el correu cal indicar les plantilles'))
         if wiz.email_template_to_pay and not wiz.email_template_to_pay.enforce_from_account:
             raise osv.except_osv(_('Error'), _('La plantilla de pagament no té indicat el compte des del qual enviar'))
         if wiz.email_template_to_refund and not wiz.email_template_to_refund.enforce_from_account:
