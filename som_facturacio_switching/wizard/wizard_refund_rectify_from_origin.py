@@ -89,25 +89,31 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
 
         return len(lect_prev_id + lect_final_id)
 
-    def refund_rectify_if_needed(self, cursor, uid, ids, f_ids, context={}):
+    def refund_rectify_if_needed(self, cursor, uid, f_ids, context={}):
         wiz_ranas_o = self.pool.get('wizard.ranas')
-        fact_obj = self.pool.get('giscedata.facturacio.factura')
 
         ctx={'active_ids':f_ids, 'active_id':f_ids[0]}
         wiz_id = wiz_ranas_o.create(cursor, uid, {}, context=ctx)
         fres_resultat = wiz_ranas_o.action_rectificar(cursor, uid, wiz_id, context=ctx)
-        msg = []
+        return fres_resultat
 
-        f_res_info = fact_obj.read(cursor, uid, fres_resultat, ['rectifying_id','amount_untaxed','invoice_id', 'is_gkwh'])
+    def delete_draft_invoices_if_needed(self, cursor, uid, fres_resultat, f_ids, context={}):
+        msg = []
+        fact_obj = self.pool.get('giscedata.facturacio.factura')
+        f_res_info = fact_obj.read(cursor, uid, fres_resultat, ['rectifying_id','amount_untaxed','invoice_id', 'is_gkwh', 'linies_generacio'])
 
         #Eliminem les que no cal rectificar (import AB == import RE)
         for initial_id in f_ids:
-            inv_initial_info = fact_obj.read(cursor, uid, initial_id, ['invoice_id', 'number', 'is_gkwh'])
+            inv_initial_info = fact_obj.read(cursor, uid, initial_id, ['invoice_id', 'number', 'is_gkwh', 'linies_generacio'])
             inv_id = inv_initial_info['invoice_id'][0]
             re_ab_fact_info = filter(lambda x: x['rectifying_id'][0] == inv_id, f_res_info)
             has_gkwh = any([x['is_gkwh'] for x in re_ab_fact_info])
+            has_autoconsumption = any([x['linies_generacio'] for x in re_ab_fact_info])
+
             if inv_initial_info['is_gkwh'] or has_gkwh:
                 msg.append("Per la factura numero {} no s'esborren perquè alguna de les factures té generationkwh.".format(inv_initial_info['number']))
+            elif inv_initial_info['linies_generacio'] or has_autoconsumption:
+                msg.append("Per la factura numero {} no s'esborren perquè alguna de les factures té autoconsum.".format(inv_initial_info['number']))
             elif len(set([x['amount_untaxed'] for x in re_ab_fact_info])) == 1:
                 ab_re_ids = [x['id'] for x in re_ab_fact_info]
                 fact_obj.unlink(cursor, uid, ab_re_ids)
@@ -116,7 +122,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             else:
                 msg.append("Per la factura numero {} les factures AB i RE tenen import diferent.".format(inv_initial_info['number']))
 
-        return fres_resultat, msg
+        return msg
 
     def check_max_amount(self, cursor, uid, ids, facts_ids, max_amount, context):
         fact_obj = self.pool.get('giscedata.facturacio.factura')
@@ -189,6 +195,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
 
     def save_info_into_f1_after_refacturacio(self, cursor, uid, f1_refacturats, context):
         f1_obj = self.pool.get('giscedata.facturacio.importacio.linia')
+        fact_obj = self.pool.get('giscedata.facturacio.factura')
         text = "F1 refacturat en data {}".format(datetime.today().strftime('%d-%m-%Y'))
         for f1_data in f1_refacturats:
             f1_id = f1_data['id']
@@ -201,6 +208,9 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                 diff = " Té GkWh"
             else:
                 diff = ""
+
+            if fact_obj.browse(f1_id).linies_generacio:
+                diff += " Té Auto"
 
             obs = f1_obj.read(cursor, uid, f1_id, ['user_observations'], context=context)['user_observations'] or ''
             f1_obj.write(cursor, uid, f1_id, {
@@ -282,7 +292,8 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                     fact_csv_result.append([origen, pol_name, "No té lectures per esborrar. No s'hi actua."])
                     continue
 
-                facts_created, msg_rr = self.refund_rectify_if_needed(cursor, uid, ids, facts_cli_ids, context)
+                facts_created = self.refund_rectify_if_needed(cursor, uid, facts_cli_ids, context)
+                msg_rr = self.delete_draft_invoices_if_needed(cursor, uid, facts_created, facts_cli_ids, context)
                 msg.append("S'han esborrat {} lectures de la pòlissa {} i s'han generat {} factures".format(n_lect_del, pol_name, len(facts_created)))
                 facts_generades += facts_created
                 msg += msg_rr
