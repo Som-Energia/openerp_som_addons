@@ -84,7 +84,7 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
         wiz = wiz_obj.browse(cursor, uid, wiz_id)
         self.assertEqual(
             "Pòlissa {0} per l'F1 amb origen {1}: S'han eliminat 1 factures en esborrany"
-            "\nL'F1 amb origen {1} no té res per abonar i rectificar, no s'actua".format(fact_info['polissa_id'][1],fact_info['origin']),
+            "\nL'F1 amb origen {1} no té res per abonar i rectificar perquè no hi ha factura generada, no s'actua".format(fact_info['polissa_id'][1],fact_info['origin']),
             wiz.info
         )
 
