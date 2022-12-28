@@ -195,7 +195,6 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
 
     def save_info_into_f1_after_refacturacio(self, cursor, uid, f1_refacturats, context):
         f1_obj = self.pool.get('giscedata.facturacio.importacio.linia')
-        fact_obj = self.pool.get('giscedata.facturacio.factura')
         text = "F1 refacturat en data {}".format(datetime.today().strftime('%d-%m-%Y'))
         for f1_data in f1_refacturats:
             f1_id = f1_data['id']
@@ -206,11 +205,10 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                 diff = " Ok"
             elif "generationkwh." in f1_str:
                 diff = " Té GkWh"
+            elif "autoconsum." in f1_str:
+                diff = " Té Auto"
             else:
                 diff = ""
-
-            if fact_obj.browse(f1_id).linies_generacio:
-                diff += " Té Auto"
 
             obs = f1_obj.read(cursor, uid, f1_id, ['user_observations'], context=context)['user_observations'] or ''
             f1_obj.write(cursor, uid, f1_id, {
