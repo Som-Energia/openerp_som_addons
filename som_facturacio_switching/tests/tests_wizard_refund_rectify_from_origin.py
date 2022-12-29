@@ -17,23 +17,82 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
     def tearDown(self):
         self.txn.stop()
 
-    def test_refund_rectify_by_origin_notEnforceFromAccount(self):
+    def test_refund_rectify_by_origin_notEmailTemplates(self):
+        cursor = self.cursor
+        uid = self.uid
+
+        wiz_obj = self.pool.get('wizard.refund.rectify.from.origin')
+        imd_obj = self.pool.get('ir.model.data')
+
+        ctx = {}
+
+        wiz_data = {
+            'actions': 'open-group-order-send',
+        }
+        wiz_id = wiz_obj.create(cursor, uid, wiz_data, context=ctx)
+
+        with self.assertRaises(Exception) as e:
+            wiz_obj.refund_rectify_by_origin(cursor, uid, wiz_id, context=ctx)
+        self.assertEqual(e.exception.message, "warning -- Error\n\nPer enviar el correu cal indicar les plantilles")
+
+    def test_refund_rectify_by_origin_notEnforceFromAccountPaymentTemplate(self):
         cursor = self.cursor
         uid = self.uid
 
         temp_obj = self.pool.get('poweremail.templates')
+        acc_obj = self.pool.get('poweremail.core_accounts')
         wiz_obj = self.pool.get('wizard.refund.rectify.from.origin')
         imd_obj = self.pool.get('ir.model.data')
 
-        temp_id = temp_obj.search(cursor, uid, [], limit=1)[0]
-        temp_obj.write(cursor, uid, temp_id, {'enforce_from_account': False})
+        temp_ids = temp_obj.search(cursor, uid, [], limit=2)
+        temp_pay_id = temp_ids[0]
+        temp_refund_id = temp_ids[-1]
+        acc_id = acc_obj.search(cursor, uid, [], limit=1)[0]
+
+        temp_obj.write(cursor, uid, temp_pay_id, {'enforce_from_account': False})
+        temp_obj.write(cursor, uid, temp_refund_id, {'enforce_from_account': acc_id})
         ctx = {}
 
-        wiz_id = wiz_obj.create(cursor, uid, {'send_mail': True, 'email_template': temp_id}, context=ctx)
+        wiz_data = {
+            'actions': 'open-group-order-send',
+            'email_template_to_pay': temp_pay_id,
+            'email_template_to_refund': temp_refund_id,
+        }
+        wiz_id = wiz_obj.create(cursor, uid, wiz_data, context=ctx)
 
         with self.assertRaises(Exception) as e:
             wiz_obj.refund_rectify_by_origin(cursor, uid, wiz_id, context=ctx)
-        self.assertEqual(e.exception.message, "warning -- Error\n\nLa plantilla no té indicat el compte des del qual enviar")
+        self.assertEqual(e.exception.message, "warning -- Error\n\nLa plantilla de pagament no té indicat el compte des del qual enviar")
+
+    def test_refund_rectify_by_origin_notEnforceFromAccountRefundTemplate(self):
+        cursor = self.cursor
+        uid = self.uid
+
+        temp_obj = self.pool.get('poweremail.templates')
+        acc_obj = self.pool.get('poweremail.core_accounts')
+        wiz_obj = self.pool.get('wizard.refund.rectify.from.origin')
+        imd_obj = self.pool.get('ir.model.data')
+
+
+        temp_ids = temp_obj.search(cursor, uid, [], limit=2)
+        temp_pay_id = temp_ids[0]
+        temp_refund_id = temp_ids[-1]
+        acc_id = acc_obj.search(cursor, uid, [], limit=1)[0]
+
+        temp_obj.write(cursor, uid, temp_pay_id, {'enforce_from_account': acc_id})
+        temp_obj.write(cursor, uid, temp_refund_id, {'enforce_from_account': False})
+        ctx = {}
+
+        wiz_data = {
+            'actions': 'open-group-order-send',
+            'email_template_to_pay': temp_pay_id,
+            'email_template_to_refund': temp_refund_id,
+        }
+        wiz_id = wiz_obj.create(cursor, uid, wiz_data, context=ctx)
+
+        with self.assertRaises(Exception) as e:
+            wiz_obj.refund_rectify_by_origin(cursor, uid, wiz_id, context=ctx)
+        self.assertEqual(e.exception.message, "warning -- Error\n\nLa plantilla de cobrament no té indicat el compte des del qual enviar")
 
     def test_refund_rectify_by_origin_notPaymentOrder(self):
         cursor = self.cursor
@@ -44,12 +103,11 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
 
         ctx = {}
 
-        wiz_id = wiz_obj.create(cursor, uid, {'open_invoices': True}, context=ctx)
+        wiz_id = wiz_obj.create(cursor, uid, {'actions': 'open-group-order'}, context=ctx)
 
         with self.assertRaises(Exception) as e:
             wiz_obj.refund_rectify_by_origin(cursor, uid, wiz_id, context=ctx)
         self.assertEqual(e.exception.message, "warning -- Error\n\nPer remesar les factures a pagar cal una ordre de pagament")
-
 
     def test_refund_rectify_by_origin_nothingToRefundOneDraft(self):
         cursor = self.cursor
