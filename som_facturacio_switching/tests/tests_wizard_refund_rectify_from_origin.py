@@ -89,8 +89,9 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
         )
 
     @mock.patch.object(wizard.wizard_refund_rectify_from_origin.WizardRefundRectifyFromOrigin,"refund_rectify_if_needed")
+    @mock.patch.object(wizard.wizard_refund_rectify_from_origin.WizardRefundRectifyFromOrigin,"delete_draft_invoices_if_needed")
     @mock.patch.object(wizard.wizard_refund_rectify_from_origin.WizardRefundRectifyFromOrigin,"recarregar_lectures_between_dates")
-    def test_refund_rectify_by_origin_refundOne(self, mock_lectures, mock_refund):
+    def test_refund_rectify_by_origin_refundOne(self, mock_lectures, mock_delete, mock_refund):
         cursor = self.cursor
         uid = self.uid
 
@@ -122,13 +123,15 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
 
         wiz_id = wiz_obj.create(cursor, uid, {}, context=ctx)
         mock_lectures.side_effect = lambda *x: 3
-        mock_refund.side_effect = lambda *x: [[5],'']
+        mock_refund.side_effect = lambda *x: [5]
+        mock_delete.side_effect = lambda *x: ['']
 
         wiz_obj.refund_rectify_by_origin(cursor, uid, wiz_id, context=ctx)
         mock_lectures.assert_called_with(cursor, uid, [wiz_id], fact_info['polissa_id'][0], fact_info['data_inici'], fact_info['data_final'], ctx)
-        mock_refund.assert_called_with(cursor, uid, [wiz_id], f_cli_ids, ctx)
+        mock_refund.assert_called_with(cursor, uid, f_cli_ids, ctx)
+        mock_delete.assert_called_with(cursor, uid, [5] , f_cli_ids, ctx)
         wiz = wiz_obj.browse(cursor, uid, wiz_id)
-        self.assertEqual(wiz.info, "S'han esborrat 3 lectures de la pòlissa {} i s'han generat 1 factures".format(fact_info['polissa_id'][1]))
+        self.assertEqual(wiz.info, "S'han esborrat 3 lectures de la pòlissa {} i s'han generat 1 factures\n\nLa pòlissa 0001C té alguna factura inicial oberta. No continua el procés".format(fact_info['polissa_id'][1], fact_info['polissa_id'][1]))
 
     @mock.patch.object(wizard.wizard_refund_rectify_from_origin.WizardRefundRectifyFromOrigin,"recarregar_lectures_between_dates")
     def test_refund_rectify_by_origin_noLectures(self, mock_lectures):
