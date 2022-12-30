@@ -14,13 +14,21 @@ Actualment no hi ha un estil definit pel codi del repositori. Això comporta que
 
 El codi ha de complir els següents requisits:
 
-- Passar `Flake8`
-- Complir `PEP8`
+- Passar `Flake8` (complir `PEP8`)
 - XML i YAML sense errors
-- Les línies no poden superar els 88 caràcters
+- Les línies no poden superar els 120 caràcters
 
+### Decisió mida fitxers
 
-S'ha de passar una comprovació del format del codi per poder fer _merge_. Aquesta comprovació es faria amb el següent `pre-commit` adaptat per Python 2.7. La comprovació la faria GitHub Actions com fa l'organització OCA ([Exemple](https://github.com/OCA/account-analytic/blob/14.0/.github/workflows/pre-commit.yml)):
+La llargada de mida que defineix PEP8 és de 79, que considerem massa poc. També vam considerar una llargada de 88 que és la que fa servir per defecte `black` (formatador de Python 3), però analitzant el codi del repositori també ens va resultar curt.
+
+Finalment, després d'analitzar diferents llargades en fitxers del repositori i tenint en compte el principi "Explicit is better than implicit" de "Zen of Python", vam consensuar: que la llargada de línia adequada per la llegibilitat del codi del repositori seria de 120 caràcters.
+
+### Comprovació a GitHub Actions
+
+S'ha de passar una comprovació del format del codi per poder fer _merge_. Aquesta comprovació es faria amb el següent `pre-commit` adaptat per Python 2.7.
+
+La comprovació la faria GitHub Actions com fa l'organització OCA ([Exemple](https://github.com/OCA/account-analytic/blob/14.0/.github/workflows/pre-commit.yml)). Si algun formatador modifica algun fitxer o alguna comprovació no es compleix la comprovació amb GitHub Actions seria fallida:
 
 ```
 default_language_version:
@@ -52,18 +60,16 @@ repos:
     hooks:
       - id: flake8
         name: flake8
-
 ```
 
 S'apliquen les següents configuracions (fitxer `setup.cfg` dins del repositori):
 
-
 ```
 [pycodestyle]
-max-line-length = 88
+max-line-length = 120
 
 [flake8]
-max-line-length = 88
+max-line-length = 120
 max-complexity = 18
 
 select = B,C,E,F,W
@@ -72,16 +78,16 @@ per-file-ignores=
     __init__.py:F401
 ```
 
-La llargada de mida que defineix PEP8 és de 79, que considerem massa poc. S'ha decidit fer servir una llargada de 88 que és la que fa servir per defecte `black` (descartat per incompatibilitat amb Python 2).
+### Desenvolupament
 
-Pel que fa a formatar el codi al desenvolupar és una decisió pròpia de cada persona desenvolupadora. Dues formes en les quals es podria fer són les següents:
+Pel que fa a formatar el codi al desenvolupar és una decisió pròpia de cada persona desenvolupadora. Dues formes en les quals es podria fer són les següents (o fer servir les dues alhora):
 
-### Integrat amb VSCode
+**Integrat amb VSCode**
 
-- Instal·lem extensió de Python
-- Instal·lem `autopep8` i `flake8` al `venv` de `erp`
-- Activem el `venv` de `erp` a VSCode (barra blava de baix a la dreta dins d'un fitxer Python)
-- A la configuració `settings.json` definim el següent:
+1. Instal·lem l'extensió de Python
+2. Instal·lem `autopep8` i `flake8` al `venv` de `erp`
+3. Activem el `venv` de `erp` a VSCode (barra blava de baix a la dreta dins d'un fitxer Python)
+4. A la configuració de VSCode `settings.json` definim el següent:
 
 ```
 {
@@ -100,12 +106,16 @@ Pel que fa a formatar el codi al desenvolupar és una decisió pròpia de cada p
 
 Al programar veurem els errors que ens marca `flake8` i al guardar se'ns formata automàticament el codi amb `autopep8`. Aquestes dues eines tindran en compte la configuració del fitxer `setup.cfg` del repositori.
 
-### Amb l'eina `pre-commit`
+**Amb l'eina `pre-commit`**
 
-- Instal·lem `pre-commit` al `venv` de `erp`: `pip install pre-commit`
-- Activem el `pre-commit` dins el repositori: `pre-commit install`
+1. Instal·lem `pre-commit` al `venv` de `erp`: `pip install pre-commit`
+2. Activem el `pre-commit` dins el repositori: `pre-commit install`
 
-Al fer un _commit_ passarà les mateixes comprovacions que el GitHub Actions (les del fitxer `.pre-commit-config.yaml`). Si alguna comprovació no es compleix no es fa el _commit_. A més, ens formatarà el codi automàticament (tampoc fa el _commit_ i si modifica fitxers no queden _staged_)
+Al fer un _commit_ ens formatarà el codi automàticament amb `autoflake` i `autopep8`. També farà les comprovacions amb `flake8` i algunes altres pels XML i fitxer YAML.
+
+- Si algun formatador fa algun canvi o no passen totes les comprovacions el _commit_ no es farà.
+- Els fitxers modificats pel `pre-commit` queden _unstaged_.
+- Fa el mateix que farà el GitHub Actions (definit al fitxer`.pre-commit-config.yaml`).
 
 ## Conseqüències
 
