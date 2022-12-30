@@ -18,7 +18,7 @@ El codi ha de complir els següents requisits:
 - XML i YAML sense errors
 - Les línies no poden superar els 120 caràcters
 
-### Decisió mida fitxers
+### Decisió llargada línies
 
 La llargada de mida que defineix PEP8 és de 79, que considerem massa poc. També vam considerar una llargada de 88 que és la que fa servir per defecte `black` (formatador de Python 3), però analitzant el codi del repositori també ens va resultar curt.
 
@@ -28,7 +28,7 @@ Finalment, després d'analitzar diferents llargades en fitxers del repositori i 
 
 S'ha de passar una comprovació del format del codi per poder fer _merge_. Aquesta comprovació es faria amb el següent `pre-commit` adaptat per Python 2.7.
 
-La comprovació la faria GitHub Actions com fa l'organització OCA ([Exemple](https://github.com/OCA/account-analytic/blob/14.0/.github/workflows/pre-commit.yml)). Si algun formatador modifica algun fitxer o alguna comprovació no es compleix la comprovació amb GitHub Actions seria fallida:
+La comprovació la faria GitHub Actions com fa l'organització OCA ([Exemple](https://github.com/OCA/account-analytic/blob/14.0/.github/workflows/pre-commit.yml)). Si algun formatador modifica algun fitxer o alguna comprovació no es compleix, la comprovació amb GitHub Actions seria fallida:
 
 ```
 default_language_version:
@@ -115,7 +115,7 @@ Al fer un _commit_ ens formatarà el codi automàticament amb `autoflake` i `aut
 
 - Si algun formatador fa algun canvi o no passen totes les comprovacions el _commit_ no es farà.
 - Els fitxers modificats pel `pre-commit` queden _unstaged_.
-- Fa el mateix que farà el GitHub Actions (definit al fitxer`.pre-commit-config.yaml`).
+- Fa el mateix que farà el GitHub Actions (definit al fitxer `.pre-commit-config.yaml`).
 
 ## Conseqüències
 
