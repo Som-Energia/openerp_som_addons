@@ -12,6 +12,26 @@ class WizardSubtypeR1(osv.osv_memory):
     _name = 'wizard.subtype.r1'
     _inherit = 'wizard.subtype.r1'
 
+    def default_get(self, cursor, uid, fields, context=None):
+        if context is None:
+            context = {}
+
+        res = super(WizardSubtypeR1, self).default_get(
+            cursor, uid, fields, context
+        )
+
+        if len(fields) == 2 and fields[0] == 'tipus' and fields[1] == 'subtipus_id':
+            return res
+
+        if ('extra_values' in context and 'ref_model' in context['extra_values'] and
+                context['extra_values']['ref_model'] == 'giscedata.atc' and 'ref_id' in context['extra_values']):
+            atc_obj = self.pool.get('giscedata.atc')
+            atc_channel_data = atc_obj.read(cursor, uid, context['extra_values']['ref_id'][0], ['canal_id'])
+            atc_channel_id = atc_channel_data['canal_id'][0]
+            if atc_channel_id in [1, 2, 3, 4]:
+                res['tipus_reclamant'] = '01'
+        return res
+
     def action_create_r1_case_from_dict(self, cursor, uid, polissa_id, dict_fields, context=None):
         # Els hem de borrar perque a dins del create_r1 es fa un write directe
         # d'aquest diccionari a un r1.01
