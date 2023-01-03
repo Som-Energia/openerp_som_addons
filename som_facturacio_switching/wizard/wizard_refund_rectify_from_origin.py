@@ -8,10 +8,13 @@ from StringIO import StringIO
 from tools.translate import _
 
 
+def get_today():
+    return datetime.today().strftime("%d-%m-%Y")
+
+
 class WizardRefundRectifyFromOrigin(osv.osv_memory):
 
     _name = 'wizard.refund.rectify.from.origin'
-
 
     def send_polissa_mail(self, cursor, uid, ids, pol_id, is_positive_amount, context):
         wiz = self.browse(cursor, uid, ids[0])
@@ -194,7 +197,6 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         csv_file.close()
 
     def save_info_into_f1_after_refacturacio(self, cursor, uid, f1_refacturats, context):
-        f1_obj = self.pool.get('giscedata.facturacio.importacio.linia')
         text = "F1 refacturat en data {}".format(datetime.today().strftime('%d-%m-%Y'))
         for f1_data in f1_refacturats:
             f1_id = f1_data['id']
@@ -210,10 +212,15 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             else:
                 diff = ""
 
-            obs = f1_obj.read(cursor, uid, f1_id, ['user_observations'], context=context)['user_observations'] or ''
-            f1_obj.write(cursor, uid, f1_id, {
-                'user_observations': '{}. Resultat:{}\n{}\n{}'.format(text, diff, f1_str, obs)
-            })
+            message = '{}. Resultat:{}\n{}'.format(text, diff, f1_str)
+            self.add_f1_observation(cursor, uid, f1_id, message, context)
+
+    def add_f1_observation(self, cursor, uid, f1_id, text, context):
+        f1_obj = self.pool.get('giscedata.facturacio.importacio.linia')
+        obs = f1_obj.read(cursor, uid, f1_id, ['user_observations'], context=context)['user_observations'] or ''
+        f1_obj.write(cursor, uid, f1_id, {
+            'user_observations': '{}\n{}'.format(text, obs)
+        })
 
     def open_polissa_invoices_send_mail(self, cursor, uid, ids, facts_by_polissa, context={}):
         if not isinstance(ids, (tuple, list)):
@@ -244,7 +251,6 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         if not isinstance(ids, (tuple, list)):
             ids = [ids]
 
-        fact_obj = self.pool.get('giscedata.facturacio.factura')
         f1_obj = self.pool.get('giscedata.facturacio.importacio.linia')
 
         wiz = self.browse(cursor, uid, ids[0])
@@ -282,6 +288,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                 if not facts_cli_ids:
                     msg.append('L\'F1 amb origen {} no té res per abonar i rectificar perquè no hi ha factura generada, no s\'actua'.format(origen))
                     fact_csv_result.append([origen, pol_name, "No té res per abonar i rectificar perquè no hi ha factura generada, no s\'actua"])
+                    self.add_f1_observation(cursor, uid, _id, "F1 NO refacturat en data {} per falta de factura generada".format(get_today()), context)
                     continue
 
                 n_lect_del = self.recarregar_lectures_between_dates(cursor, uid, ids, pol_id, f1.fecha_factura_desde, f1.fecha_factura_hasta, context)
@@ -323,7 +330,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
 
     def has_open_initial_invoices(self, cursor, uid, ids, facts_cli_ids):
         fact_obj = self.pool.get('giscedata.facturacio.factura')
-        fact_states = fact_obj.read(cursor, uid, facts_cli_ids,['state'])
+        fact_states = fact_obj.read(cursor, uid, facts_cli_ids, ['state'])
         return 'open' in [x['state'] for x in fact_states]
 
     def _show_invoices(self, cursor, uid, ids, context=None):
