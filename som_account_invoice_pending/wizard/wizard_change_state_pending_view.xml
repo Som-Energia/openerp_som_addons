@@ -7,11 +7,11 @@
             <field name="type">form</field>
             <field name="inherit_id" ref="account_invoice_pending.view_wizard_change_pending_form"/>
             <field name="arch" type="xml">
-                <field name="action_set_next_pending" position="after">
+                <button name="action_set_next_pending" position="after">
                     <group colspan="2" col="4" attrs="{'invisible': [('new_pending.pending_days', '!=', 0)]}">
                             <button icon="gtk-ok" name="action_set_new_pending_remember_days" string="Change remembering days" type="object"/>
                     </group>
-                </field>
+                </button>
             </field>
         </record>
     </data>
