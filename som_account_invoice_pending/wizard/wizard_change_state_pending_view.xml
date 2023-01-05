@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_wizard_change_pending_form" model="ir.ui.view">
+            <field name="name">wizard.change.pending.form</field>
+            <field name="model">wizard.change.pending</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="account_invoice_pending.view_wizard_change_pending_form"/>
+            <field name="arch" type="xml">
+                <field name="action_set_next_pending" position="after" attrs="{'invisible': [('new_pending.pending_days', '!=', 0)]}" >
+                    <button icon="gtk-ok" name="action_set_new_pending_remember_days" string="Change remembering days" type="object"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>
