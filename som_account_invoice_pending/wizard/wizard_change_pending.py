@@ -50,7 +50,7 @@ class WizardChangePending(osv.osv_memory):
         fields_to_read = ['pending_state_id', 'change_date', 'invoice_id', 'days_to_next_state', 'end_date']
         for model_id in model_ids:
             changed += 1
-            invoice_id = model_obj.read(cursor, uid, model_id, ['invoice_id'])['invoice_id']
+            invoice_id = model_obj.read(cursor, uid, model_id, ['invoice_id'])['invoice_id'][0]
             pending_state_days = default_pending_state_days
             pending_history_ids = pending_history_obj.search(
                 cursor, uid, [
@@ -64,9 +64,9 @@ class WizardChangePending(osv.osv_memory):
                 )
                 if last_history_in_same_state['end_date']:
                     days_in_prev_state = (
-                        (datetime.strptime(last_history_in_same_state['end_date'], "%Y-%m-%d")).days
-                        - (datetime.strptime(last_history_in_same_state['change_date'], "%Y-%m-%d")).days
-                    )
+                        datetime.strptime(last_history_in_same_state['end_date'], "%Y-%m-%d")
+                        - datetime.strptime(last_history_in_same_state['change_date'], "%Y-%m-%d")
+                    ).days
                     pending_state_days = pending_state_days - days_in_prev_state
 
             model_obj.set_pending(
