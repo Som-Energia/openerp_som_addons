@@ -28,7 +28,8 @@ class AccountInvoicePendingHistory(osv.osv):
         'powersms_sent_date': fields.date(u'SMS sent date', readonly=True),
         'observations': fields.char(u'Observacions', size=256),
         'days_to_next_state': fields.integer(u'Dies pel següent canvi automàtic des de la data de canvi',
-                                            help = u'Si aquest camp està buit es faran servir els dies per defecte'),
+                                            help = u'Si aquest camp està buit es faran servir els dies per defecte',
+                                            allow_none=True),
     }
 
 AccountInvoicePendingHistory()

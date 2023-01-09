@@ -25,16 +25,15 @@ class WizardChangePending(osv.osv_memory):
         if context is None:
             context = {}
 
-        model_ids = context.get('active_ids', [])
-        new_pending_id = wizard.new_pending.id
-
         wizard = self.browse(cursor, uid, ids[0])
         self._validate_wizard(wizard)
+
+        model_ids = context.get('active_ids', [])
+        new_pending_id = wizard.new_pending.id
 
         default_pending_state_days = self._get_default_pending_state_days(cursor, uid, new_pending_id)
 
         for model_id in model_ids:
-            changed += 1
             invoice_id = self._get_invoice_id_from_gff(cursor, uid, model_id, context)
             pending_state_days = self._calculate_pending_state_days(
                 cursor, uid, new_pending_id, default_pending_state_days, invoice_id)
@@ -49,8 +48,7 @@ class WizardChangePending(osv.osv_memory):
                 context
             )
 
-        wizard.write({'changed_invoices': changed,
-            'state': 'end'})
+        wizard.write({'changed_invoices': len(model_ids), 'state': 'end'})
 
     def _validate_wizard(self, wizard):
         if not wizard.new_pending:
