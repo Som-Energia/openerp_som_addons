@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from osv import osv
+from osv import osv, fields
 from datetime import datetime
 from tools.translate import _
 
@@ -7,8 +7,19 @@ from tools.translate import _
 class WizardChangePending(osv.osv_memory):
     """Wizard for changing pending state in invoices"""
 
-    _name = 'wizard.change.pending'
     _inherit = 'wizard.change.pending'
+
+    def onchange_new_pending(self, cursor, uid, ids, new_pending):
+        res = False
+        pending_obj = self.pool.get('account.invoice.pending.state')
+
+        pending_days = pending_obj.read(cursor, uid, new_pending, ['pending_days'])['pending_days']
+
+        return {'value': {'new_pending_days': pending_days},
+                'domain': {},
+                'warning': {},
+                }
+
 
     def action_set_new_pending_remember_days(self, cursor, uid, ids, context=None):
         if context is None:
@@ -82,3 +93,15 @@ class WizardChangePending(osv.osv_memory):
 
         wizard.write({'changed_invoices': changed,
                       'state': 'end'})
+
+
+    _columns = {
+        'new_pending_days': fields.integer(u'Dies pendents del nou estat'),
+    }
+
+    _defaults = {
+        'new_pending_days': lambda *a: 0,
+    }
+
+
+WizardChangePending()
