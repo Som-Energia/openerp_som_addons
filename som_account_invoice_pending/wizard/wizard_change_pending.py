@@ -37,62 +37,40 @@ class WizardChangePending(osv.osv_memory):
             )
         model_ids = context.get('active_ids', [])
         model = context['model']
-        context['eliminar_estats_anteriors'] = wizard.read(['eliminar_estats_anteriors'])[0]['eliminar_estats_anteriors']
         model_obj = self.pool.get(model)
         new_pending_id = wizard.new_pending.id
         changed = 0
 
         #Search invoice pending history for previous days in the previous state
         pending_history_obj = self.pool.get('account.invoice.pending.history')
-        result = dict.fromkeys(ids, False)
-        fields_to_read = ['pending_state_id', 'change_date', 'invoice_id', 'days_to_next_state']
-        for id in model_ids:
+        fields_to_read = ['pending_state_id', 'change_date', 'invoice_id', 'days_to_next_state', 'end_date']
+        for model_id in model_ids:
+            changed += 1
+            pstate_obj = self.pool.get('account.invoice.pending.state')
+            pending_state_days = pstate_obj.read(
+                cursor, uid, new_pending_id, ['pending_days']
+            )
             res = pending_history_obj.search(
-                cursor, uid, [('pending_state_id', '=', new_pending_id)], order='change_date desc'
+                cursor, uid, [('pending_state_id', '=', new_pending_id)], fields_to_read, order='change_date desc'
             )
             if res:
-                # We consider the last record the first one due to order
-                # statement in the model definition.
-                values = pending_history_obj.search(
-                    cursor, uid, res[0], fields_to_read)
-                result[id] = {
-                    'id': values['id'],
-                    'pending_state_id': values['pending_state_id'][0],
-                    'change_date': values['change_date'],
-                    'days_to_next_state': values['days_to_next_state']
-                }
-            else:
-                result[id] = False
+                days_in_prev_state = (datetime.strptime(res['end_date'], "%Y-%m-%d")).days - datetime.strptime(res['change_date'], "%Y-%m-%d")).days
+                pending_state_days = pending_state_days - days_in_prev_state
 
-        # Calculate the days to next state
-        pstate_obj = self.pool.get('account.invoice.pending.state')
-        for one_res in result:
-            days_in_prev_state = (datetime.today() - datetime.strptime(one_res['change_date'], "%Y-%m-%d")).days
-            pending_state_days = pstate_obj.read(
-                cursor, uid, one_res['pending_state_id'], ['pending_days']
-            )
-            days_to_next_state = pending_state_days - days_in_prev_state
-            if one_res['days_to_next_state'] is not None:
-                days_to_next_state -= pending_state_days - one_res['days_to_next_state']
-
-
-        for model_id in model_ids:
             model_obj.set_pending(
                 cursor, uid, [model_id], new_pending_id, context=context
             )
-            changed += 1
-            res = pending_history_obj.search(
+            pending_history_records = pending_history_obj.search(
                 cursor, uid, [('invoice_id', '=', model_id)]
             )
-            if res:
+            if pending_history_records:
                 # We consider the last record the first one due to order
                 # statement in the model definition.
                 pending_history_obj.write(
-                        cursor, uid, res[0], {'days_to_next_state':result[model_id]})
-
+                        cursor, uid, pending_history_records[0], {'days_to_next_state': pending_state_days})
 
         wizard.write({'changed_invoices': changed,
-                      'state': 'end'})
+            'state': 'end'})
 
 
     _columns = {
