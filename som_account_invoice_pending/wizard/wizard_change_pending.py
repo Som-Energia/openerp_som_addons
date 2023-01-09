@@ -46,29 +46,34 @@ class WizardChangePending(osv.osv_memory):
         pstate_obj = self.pool.get('account.invoice.pending.state')
         default_pending_state_days = pstate_obj.read(
             cursor, uid, new_pending_id, ['pending_days']
-        )
+        )['pending_days']
         fields_to_read = ['pending_state_id', 'change_date', 'invoice_id', 'days_to_next_state', 'end_date']
         for model_id in model_ids:
             changed += 1
+            invoice_id = model_obj.read(cursor, uid, model_id, ['invoice_id'])['invoice_id']
             pending_state_days = default_pending_state_days
             pending_history_ids = pending_history_obj.search(
-                cursor, uid, [('pending_state_id', '=', new_pending_id)], order='change_date desc'
+                cursor, uid, [
+                    ('pending_state_id', '=', new_pending_id),
+                    ('invoice_id', '=', invoice_id)
+                ], order='change_date desc'
             )
             if pending_history_ids:
                 last_history_in_same_state = pending_history_obj.read(
                     cursor, uid, pending_history_ids[0], fields_to_read
                 )
-                days_in_prev_state = (
-                    (datetime.strptime(last_history_in_same_state['end_date'], "%Y-%m-%d")).days
-                    - (datetime.strptime(last_history_in_same_state['change_date'], "%Y-%m-%d")).days
-                )
-                pending_state_days = pending_state_days - days_in_prev_state
+                if last_history_in_same_state['end_date']:
+                    days_in_prev_state = (
+                        (datetime.strptime(last_history_in_same_state['end_date'], "%Y-%m-%d")).days
+                        - (datetime.strptime(last_history_in_same_state['change_date'], "%Y-%m-%d")).days
+                    )
+                    pending_state_days = pending_state_days - days_in_prev_state
 
             model_obj.set_pending(
                 cursor, uid, [model_id], new_pending_id, context=context
             )
             pending_history_records = pending_history_obj.search(
-                cursor, uid, [('invoice_id', '=', model_id)]
+                cursor, uid, [('invoice_id', '=', invoice_id)]
             )
             if pending_history_records:
                 # We consider the last record the first one due to order
