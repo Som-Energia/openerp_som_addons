@@ -85,7 +85,7 @@ Pel que fa a formatar el codi al desenvolupar és una decisió pròpia de cada p
 **Integrat amb VSCode**
 
 1. Instal·lem l'extensió de Python
-2. Instal·lem `autopep8` i `flake8` al `venv` de `erp`
+2. Instal·lem `autopep8` (1.5.7) i `flake8` (3.9.2) al `venv` de `erp`
 3. Activem el `venv` de `erp` a VSCode (barra blava de baix a la dreta dins d'un fitxer Python)
 4. A la configuració de VSCode `settings.json` definim el següent:
 
