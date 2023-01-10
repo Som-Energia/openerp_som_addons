@@ -25,6 +25,11 @@ BOE17_2021_dates = {
 
 factors_kp_change_calculation_date = '2021-10-18'
 
+mean_zipcode_consumption_dates = {
+    'start': '2022-12-01',
+    'end': '2050-12-31',
+}
+
 # -----------------------------------
 # helper functions
 # -----------------------------------
@@ -1095,6 +1100,14 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         required_max_requested_powers, max_potencies_demandades = self.max_requested_powers(pol, fact)
 
+        mean_zipcode_consumption = 0
+        show_mean_zipcode_consumption = pol.tipo_medida == '05' and mean_zipcode_consumption_dates['start'] <= fact.data_inici < mean_zipcode_consumption_dates['end']
+        if show_mean_zipcode_consumption:
+            try:
+                mean_zipcode_consumption = fact.consum_cp_ids[0].consum
+            except Exception as e:  # consum_cp_ids is in another module and may be not installed or empty
+                pass
+
         data = {
                 'fact_id': fact.id,
                 'total_historic_eur_dia': (total_historic_eur * 1.0) / historic_dies_or_1,
@@ -1107,6 +1120,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 'max_requested_powers': max_potencies_demandades,
                 'required_max_requested_powers': required_max_requested_powers,
                 'distri_name': pol.distribuidora.name,
+                'show_mean_zipcode_consumption': show_mean_zipcode_consumption,
+                'zipcode': fact.cups_id.dp,
+                'mean_zipcode_consumption': mean_zipcode_consumption,
                 }
 
         return data
