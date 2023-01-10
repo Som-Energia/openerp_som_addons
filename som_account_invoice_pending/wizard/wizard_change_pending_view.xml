@@ -17,7 +17,7 @@
                 <button name="action_set_next_pending" position="after">
                     <field name="new_pending_days" invisible="1"/>
                     <group attrs="{'invisible': [('new_pending_days', '=', 0)]}">
-                            <button icon="gtk-ok" name="action_set_new_pending_remember_days" string="Change remembering days" type="object"/>
+                            <button icon="gtk-ok" name="action_set_new_pending_remember_days" string="Canviar recordant dies" type="object"/>
                     </group>
                 </button>
             </field>
