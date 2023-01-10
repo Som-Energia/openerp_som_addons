@@ -16,13 +16,21 @@ El codi ha de complir els següents requisits:
 
 - Passar `Flake8` (complir `PEP8`)
 - XML i YAML sense errors
-- Les línies no poden superar els 120 caràcters
+- Les línies no poden superar els 90 caràcters
 
 ### Decisió llargada línies
 
 La llargada de mida que defineix PEP8 és de 79, que considerem massa poc. També vam considerar una llargada de 88 que és la que fa servir per defecte `black` (formatador de Python 3), però analitzant el codi del repositori també ens va resultar curt.
 
-Finalment, després d'analitzar diferents llargades en fitxers del repositori i tenint en compte el principi "Explicit is better than implicit" de "Zen of Python", vam consensuar: que la llargada de línia adequada per la llegibilitat del codi del repositori seria de 120 caràcters.
+Llavors, després d'analitzar diferents llargades en fitxers del repositori i tenint en compte el principi "Explicit is better than implicit" de "Zen of Python", ens va semblar que el millor per la llegibilitat del codi del repositori seria de 120 caràcters.
+
+Tot i això, finalment, per raons d'accessibilitat i facilitar els `diff` de `git` ens vam decantar per una llargada de línia de 90 caràcters.
+
+### Decisió formatadors i comprovacions
+
+Es fa servir `autoflake` per eliminar variables sense fer servir, per eliminar _imports_ sense fer servir, etc. Amb `autopep8` formatem el codi per complir `PEP8`. Amb `flake8` es fa la comprovació final de si el codi compleix els requisits.
+
+S'ha descartat afegir `bugbear` per incompatibilitat amb Python 2. També s'ha descartat fer servir versions antigues de `black` que permeten formatar codi Python 2 des de Python 3 (les noves no ho permeten) per simplificar l'entorn.
 
 ### Comprovació a GitHub Actions
 
@@ -62,21 +70,24 @@ repos:
         name: flake8
 ```
 
-S'apliquen les següents configuracions (fitxer `setup.cfg` dins del repositori):
+S'apliquen les següents configuracions (fitxers `.flake8` i `.pycodestyle` dins del repositori):
 
 ```
 [pycodestyle]
-max-line-length = 120
+max_line_length = 90
+```
 
+```
 [flake8]
-max-line-length = 120
+max-line-length = 90
 max-complexity = 18
-
 select = B,C,E,F,W
 ignore = W503
 per-file-ignores=
-    __init__.py:F401
+    __init__.py:F401,F403
 ```
+
+_Permetem 'star imports' als fitxers `__init__.py` per no haver d'importar un per un tots els testos._
 
 ### Desenvolupament
 
@@ -104,7 +115,7 @@ Pel que fa a formatar el codi al desenvolupar és una decisió pròpia de cada p
 }
 ```
 
-Al programar veurem els errors que ens marca `flake8` i al guardar se'ns formata automàticament el codi amb `autopep8`. Aquestes dues eines tindran en compte la configuració del fitxer `setup.cfg` del repositori.
+Al programar veurem els errors que ens marca `flake8` i al guardar se'ns formata automàticament el codi amb `autopep8`. Aquestes dues eines tindran en compte la configuració dels fitxers `.flake8` i `.pycodestyle` del repositori.
 
 **Amb l'eina `pre-commit`**
 
