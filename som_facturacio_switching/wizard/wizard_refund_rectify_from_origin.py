@@ -53,9 +53,11 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         msg = ''
         facts_cli_ids = fact_obj.search(cursor, uid, [
-            ('polissa_id', '=', pol_id), ('type','=', 'out_invoice'),
-            ('refund_by_id', '=', False), ('data_inici','<', data_final),
-            ('data_final','>', data_inici)
+            ('polissa_id', '=', pol_id),
+            ('type', 'in', ['out_invoice', 'out_refund']),
+            ('refund_by_id', '=', False),
+            ('data_inici', '<', data_final),
+            ('data_final', '>', data_inici)
             ], order='data_inici asc')
 
         f_cli_rectificar_draft = fact_obj.search(cursor, uid, [
