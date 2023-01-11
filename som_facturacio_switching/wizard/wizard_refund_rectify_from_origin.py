@@ -127,7 +127,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             else:
                 msg.append("Per la factura numero {} les factures AB i RE tenen import diferent.".format(inv_initial_info['number']))
 
-        return msg
+        return msg, fres_resultat
 
     def check_max_amount(self, cursor, uid, ids, facts_ids, max_amount, context):
         fact_obj = self.pool.get('giscedata.facturacio.factura')
@@ -300,7 +300,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                     continue
 
                 facts_created = self.refund_rectify_if_needed(cursor, uid, facts_cli_ids, context)
-                msg_rr = self.delete_draft_invoices_if_needed(cursor, uid, facts_created, facts_cli_ids, context)
+                msg_rr, facts_created = self.delete_draft_invoices_if_needed(cursor, uid, facts_created, facts_cli_ids, context)
                 msg.append("S'han esborrat {} lectures de la pòlissa {} i s'han generat {} factures".format(n_lect_del, pol_name, len(facts_created)))
                 facts_generades += facts_created
                 msg += msg_rr
