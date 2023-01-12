@@ -41,9 +41,9 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
     def get_contract_ids(self, cursor, uid, contracts):
         pol_obj = self.pool.get('giscedata.polissa')
 
-        # only 3.0TD and 6.xTD
+        # only 3.0TD and 6.xTD and TDVE
         search_params = [('tarifa.codi_ocsum', 'in', [
-                          '019', '020', '021', '022', '023'])]
+                          '019', '020', '021', '022', '023', '024','025'])]
         if contracts:
             search_params.append(('name', 'in', contracts))
 
