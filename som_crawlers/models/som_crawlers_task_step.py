@@ -148,6 +148,8 @@ class SomCrawlersTaskStep(osv.osv):
                     datetime.now().strftime("%Y-%m-%d_%H_%M_%S_%f") + ".txt"
                 args_str = self.create_script_args(
                     config_obj, task_step_params, file_name)
+                if 'days_of_margin' in context:
+                    args_str['-d'] = str(context['days_of_margin'])
                 os.system("{} {} {}".format(
                     path_python, script_path, args_str))
                 output_path = self.get_output_path(cursor, uid)
