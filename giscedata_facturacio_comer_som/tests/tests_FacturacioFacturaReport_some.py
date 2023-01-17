@@ -53,7 +53,7 @@ class Tests_FacturacioFacturaReport_base(testing.OOTestCase):
     def get_smart_component(self, f_id):
         fac = self.factura_obj.browse(self.cursor, self.uid, f_id)
         pol = self.polissa_obj.browse(self.cursor, self.uid, fac.polissa_id.id)
-        return SmartInvoiceDataContainer(self.cursor, self.uid, {}, fac, pol, {})
+        return SmartInvoiceDataContainer(self.cursor, self.uid, self.openerp, fac, pol, {})
 
     def setup_langs(self):
         lang_obj = self.model('res.lang')
@@ -162,7 +162,7 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
     def test__som_report_comp_logo__no_soci(self):
         f_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
 
-        result = self.r_obj.get_component_logo_data(**self.bfp(f_id))
+        result = dict(self.get_smart_component(f_id).logo)
         self.assertYamlfy(result)
         self.assertEquals(result ,{
             'logo': 'logo_som.png',
@@ -203,12 +203,18 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
 
         p_id = 23
-        self.partner_obj.write(self.cursor, self.uid, p_id, {'ref': 'S12345'})
+        self.setup_langs()
+        self.partner_obj.write(self.cursor, self.uid, p_id, {
+            'ref': 'S12345',
+            'lang': 'ca_ES',
+        })
         self.polissa_obj.write(self.cursor, self.uid, f.polissa_id.id, {'soci': p_id})
+        self.factura_obj.write(self.cursor, self.uid, f.id, {'partner_id': p_id})
 
-        result = self.r_obj.get_component_logo_data(**self.bfp(f_id))
+        result = dict(self.get_smart_component(f_id).logo)
         self.assertYamlfy(result)
         self.assertEquals(result , {
+            'is_visible': True,
             'logo': 'logo_som.png',
             'has_agreement_partner': False})
 
