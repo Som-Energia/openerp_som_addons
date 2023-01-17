@@ -22,7 +22,8 @@
                                 <field name="order" domain="[('type','=','payable'),('state','=','draft')]" colspan="2"/>
                             </group>
                             <group colspan="4" col="4" attrs="{'invisible': [('actions', '!=', 'open-group-order-send')]}">
-                                <field name="email_template" colspan="2"/>
+                                <field name="email_template_to_pay" colspan="2"/>
+                                <field name="email_template_to_refund" colspan="2"/>
                             </group>
                         </group>
                         <button special="cancel" string="Cancel·lar" icon="gtk-close"/>
