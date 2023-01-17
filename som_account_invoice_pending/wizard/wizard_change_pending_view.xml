@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_wizard_change_pending_form" model="ir.ui.view">
+            <field name="name">wizard.som_account_invoice_pending.change.pending.form</field>
+            <field name="model">wizard.change.pending</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="account_invoice_pending.view_wizard_change_pending_form"/>
+            <field name="arch" type="xml">
+                <field name="new_pending" position="replace">
+                    <field name="new_pending" colspan="4"
+                                domain="[('process_id', '=', process_id)]"
+                                context="{'active_test': False}"
+                                on_change="onchange_new_pending(new_pending)">
+                    </field>
+                </field>
+                <button name="action_set_next_pending" position="after">
+                    <field name="new_pending_days" invisible="1"/>
+                    <group attrs="{'invisible': [('new_pending_days', '=', 0)]}">
+                            <button icon="gtk-ok" name="action_set_new_pending_remember_days" string="Canviar recordant dies" type="object"/>
+                    </group>
+                </button>
+            </field>
+        </record>
+    </data>
+</openerp>

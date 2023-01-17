@@ -10,6 +10,14 @@ class AccountInvoicePendingHistory(osv.osv):
     _name = 'account.invoice.pending.history'
     _inherit = 'account.invoice.pending.history'
 
+    def _days_to_string(self, cr, uid, ids, field_name, unknow_none, context):
+        invoice_pending_history_records = self.read(cr,uid,ids, ['id', 'days_to_next_state'], context)
+        res={}
+        for record in invoice_pending_history_records:
+            days = record['days_to_next_state']
+            res[record['id']] = str(days if days is not False else '')
+        return res
+
     def historize(self, cursor, uid, ids, message=''):
         """sets text to observations field"""
         if not isinstance(ids, (tuple,list)):
@@ -26,7 +34,13 @@ class AccountInvoicePendingHistory(osv.osv):
             'powersms.smsbox', u'SMS', required=False
         ),
         'powersms_sent_date': fields.date(u'SMS sent date', readonly=True),
-        'observations': fields.char(u'Observacions', size=256)
+        'observations': fields.char(u'Observacions', size=256),
+        'days_to_next_state': fields.integer(u'Dies pel següent canvi automàtic', required=False),
+        'days_to_next_state_string': fields.function(
+            _days_to_string, type='char', size=128, method=True,
+            string=u'Dies pel següent canvi automàtic des de la data de canvi',
+            help = u'Si aquest camp està buit es faran servir els dies per defecte',
+        ),
     }
 
 AccountInvoicePendingHistory()

@@ -10,6 +10,18 @@
                 <field name="end_date" position="after">
                     <field name="powersms_sent_date"/>
                     <field name="observations"/>
+                    <field name="days_to_next_state_string"/>
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="account_invoice_pending_history_form">
+            <field name="name">account.invoice.pending.history.form</field>
+            <field name="model">account.invoice.pending.history</field>
+            <field name="inherit_id" ref="account_invoice_pending.account_invoice_pending_history_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml" >
+                <field name="end_date" position="after">
+                    <field name="days_to_next_state_string"/>
                 </field>
             </field>
         </record>

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from osv import osv
+from datetime import datetime, timedelta, date
 from som_account_invoice_pending_exceptions import (
     UpdateWaitingFor48hException,
     UpdateWaitingCancelledContractsException,
@@ -12,6 +13,37 @@ import logging
 class UpdatePendingStates(osv.osv_memory):
     _name = 'update.pending.states'
     _inherit = 'update.pending.states'
+
+    def update_state(self, cursor, uid, invoice_id, history_values):
+        pstate_obj = self.pool.get('account.invoice.pending.state')
+        inv_obj = self.pool.get('account.invoice')
+        hist_obj = self.pool.get('account.invoice.pending.history')
+
+        fields_to_read = ['pending_days', 'is_last', 'pending_days_type']
+        pstate = pstate_obj.read(
+            cursor, uid, history_values['pending_state_id'], fields_to_read
+        )
+        history = hist_obj.read(
+            cursor, uid, history_values['id'], ['days_to_next_state']
+        )
+
+        days_to_next_state = history['days_to_next_state'] if history['days_to_next_state'] is not None else pstate['pending_days']
+
+        change_date = datetime.strptime(
+            history_values['change_date'], '%Y-%m-%d'
+        ).date()
+        current_date = date.today()
+
+        if pstate['pending_days_type'] == 'business':
+            from workalendar.europe import Spain
+            due_date = Spain().add_working_days(
+                change_date, days_to_next_state
+            )
+        else:
+            due_date = (change_date + timedelta(days=days_to_next_state))
+
+        if current_date >= due_date and not pstate['is_last']:
+            inv_obj.go_on_pending(cursor, uid, [invoice_id])
 
     def update_invoices(self, cursor, uid, context=None):
         super(UpdatePendingStates,
