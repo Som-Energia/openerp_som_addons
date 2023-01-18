@@ -592,6 +592,14 @@ class UpdatePendingStates(osv.osv_memory):
                     self.send_sms(cursor, uid, factura_id, sms_template_id, current_state_id, context)
                 except Exception as e:
                     raise SMSException(e)
+                else:
+                    factura = fact_obj.browse(cursor, uid, factura_id)
+                    old_comment = factura.comment if factura.comment else ''
+                    new_comment = '{} (auto.): Enviat correu previ advocats + SMS.\n'.format(
+                        datetime.now().strftime("%Y-%m-%d"))
+                    fact_obj.write(cursor, uid, factura_id, {
+                                   'comment': new_comment + old_comment})
+
 
                 fact_obj.set_pending(cursor, uid, [factura_id], next_state)
                 logger.info(
