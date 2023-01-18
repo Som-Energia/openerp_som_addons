@@ -142,28 +142,72 @@ for account.invoice in objects:
     </br>
     <table>
         <tr>
-            <th colspan="2"><b>${_(u"Amortització Actual: ")}${data.amortizationName} </b> </th>
+            <th colspan="2"><b>${_(u"Amortització del préstec: ")}${data.amortizationName} </b> </th>
         </tr>
         <tr>
-            <td>
-                ${_(u"Import: ")}${format_currency(data.amortValue,'EUR', locale='es_ES')}<br>
-                ${_(u"IRPF 19% ")}${data.previousYear}${_(u": ")}-${format_currency(data.irpfAmount,'EUR', locale='es_ES')}<br>
-                ${_(u"Import net: ")}${data.amortizationAmount} €
-            </td>
+            <td> ${_(u"Pagament núm: ")} ${data.amortizationNumPayment} de ${data.amortizationTotalPayments}</td>
+            <td> ${_(u"Import: ")}${format_currency(data.amortValue,'EUR', locale='es_ES')}</td>
+        </tr>
+        <tr>
+            <td> ${_(u"Import pendent de retornar: ")}${data.inversionPendingCapital} € </td>
             <td> ${_(u"Data: ")}${data.amortizationDate} </td>
         </tr>
         <tr>
-            <td> ${_(u"Pagament nº: ")} ${data.amortizationNumPayment} de ${data.amortizationTotalPayments}</td>
-            <td> ${_(u"Pendent de retornar: ")}${data.inversionPendingCapital} € </td>
-        </tr>
-        <tr>
-            <td colspan="2"> <p id="warning24">${_(u"Recordeu: el pagament nº 24 serà doble")}</p></td>
+            <td colspan="2"> <p id="warning24">${_(u"Recorda: el pagament nº 24 serà doble")}</p></td>
         </tr>
     </table>
     </br>
     <table>
         <tr>
-            <th colspan="2"><b> ${_(u"Compte on es realizarà l'ingrés")}</b></th>
+            <th colspan="2"><b>${_(u"Aplicació de la tarifa Generation kWh als teus usos d’energia (any ")}${data.previousYear}${_(u")")}</b></th>
+        </tr>
+        <tr>
+            <td> ${_(u"Quantitat d’energia facturada a preu Generation kWh")}</td>
+            <td> </td>
+        </tr>
+        <tr>
+            <td> ${_(u"Contractes on s’ha aplicat aquesta tarifa")}</td>
+            <td> </td>
+        </tr>
+        <tr>
+            <td> ${_(u"Import facturat amb tarifa Generation kWh")}</td>
+            <td> </td>
+        </tr>
+        <tr>
+            <td> ${_(u"El que hauria costat sense aplicar-hi la tarifa Generation kWh")}</td>
+            <td> </td>
+        </tr>
+        <tr>
+            <td> ${_(u"Estalvi obtingut (guany en espècie)")}</td>
+            <td> </td>
+        </tr>
+        <tr>
+            <td> ${_(u"Retenció IRPF o impost de societats (19% sobre l’estalvi)")}</td>
+            <td> ${format_currency(data.irpfAmount,'EUR', locale='es_ES')}</td>
+        </tr>
+    </table>
+    </br>
+    <table>
+        <tr>
+            <th colspan="2"><b>${_(u"Liquidació final")}</b></th>
+        </tr>
+        <tr>
+            <td> ${_(u"Amortització del préstec")}</td>
+            <td> ${format_currency(data.amortValue,'EUR', locale='es_ES')}</td>
+        </tr>
+        <tr>
+            <td> ${_(u"retenció IRPF o impost de societats")}</td>
+            <td> ${format_currency(data.irpfAmount,'EUR', locale='es_ES')}</td>
+        </tr>
+        <tr>
+            <td> ${_(u"Import a retornar a Som Energia")}<br>${_(u"Import al teu favor")}</td>
+            <td> ${data.amortizationAmount}</td>
+        </tr>
+    </table>
+    </br>
+    <table>
+        <tr>
+            <th colspan="2"><b> ${_(u"Compte on es realizarà l'ingrés/càrrec")}</b></th>
         </tr>
         <tr>
             <td id="account"> ${data.inversionBankAccount} </td>
