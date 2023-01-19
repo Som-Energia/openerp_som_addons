@@ -61,6 +61,7 @@ class AccountInvoice(osv.osv):
         investment_id = Investment.search(cursor, uid, [('name','=', invoice['origin'])])
         investment_obj = Investment.read(cursor, uid, investment_id)
         member_id = investment_obj[0]['member_id'][0]
+
         irpf_values = Investment.get_irpf_amounts(cursor, uid, investment_id[0], member_id, previous_year)
         amort_product_id = IrModelData.get_object_reference(cursor, uid, 'som_generationkwh', 'genkwh_product_amortization')[1]
         amort_value = 0
@@ -85,8 +86,14 @@ class AccountInvoice(osv.osv):
         report.amortizationDate = dateFormat(mutable_information.amortizationDate)
         report.amortizationNumPayment = mutable_information.amortizationNumber
         report.irpfAmount = irpf_values['irpf_amount']
+        report.irpfSaving = irpf_values['irpf_saving']
         report.previousYear = previous_year
         report.amortValue = amort_value
+        report.totalAmountSaving = irpf_values['total_amount_saving']
+        report.totalGenerationKwh = irpf_values['total_generation_kwh']
+        report.totalGenerationAmount = irpf_values['total_generation_amount']
+        report.totalAmountNoGeneration = irpf_values['total_amount_no_generation']
+
         return report
 
 AccountInvoice()

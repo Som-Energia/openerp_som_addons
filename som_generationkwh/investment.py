@@ -588,6 +588,43 @@ class GenerationkwhInvestment(osv.osv):
 
         return total_amount_saving
 
+    def get_total_generation_invoiced_partner(self, cursor, uid, partner_id, start_date, end_date):
+        """
+        :param partner_id: In this function, partner_id is the partner of Investment, not the Parnter of Invoice.
+        """
+        gilo_obj = self.pool.get('generationkwh.invoice.line.owner')
+        gffl_obj = self.pool.get('giscedata.facturacio.factura.linia')
+        q = OOQuery(gilo_obj, cursor, uid)
+
+        search_params = [('owner_id.id', '=', partner_id),
+                         ('factura_id.invoice_id.date_invoice', '>=', start_date),
+                         ('factura_id.invoice_id.date_invoice', '<=', end_date)]
+
+        sql = q.select(['id','saving_gkw_amount','factura_line_id']).where(search_params)
+        cursor.execute(*sql)
+        gilo_results = cursor.dictfetchall()
+
+        total_amount_saving = 0
+        total_generation_kwh = 0
+        total_generation_amount = 0
+
+        for gilo_result in gilo_results:
+            res = gilo_obj.browse(cursor, uid, gilo_result['id'])
+            gilo_line  = gilo_obj.browse(cursor, uid, gilo_result['id'])
+            line = gffl_obj.read(cursor, uid, gilo_line.factura_line_id.id)
+
+            total_amount_saving += gilo_result['saving_gkw_amount']
+            total_generation_kwh += line['quantity']
+            total_generation_amount += line['price_subtotal']
+
+        res = {
+            'total_amount_saving': total_amount_saving,
+            'total_generation_kwh': total_generation_kwh,
+            'total_generation_amount': total_generation_amount,
+            'total_amount_no_generation': total_amount_saving + total_generation_amount,
+        }
+
+        return res
 
     def get_irpf_amounts(self, cursor, uid, investment_id, member_id, year=None):
         Invoice = self.pool.get('account.invoice')
@@ -595,6 +632,8 @@ class GenerationkwhInvestment(osv.osv):
         GenerationkwhInvoiceLineOwner = self.pool.get('generationkwh.invoice.line.owner')
         Soci = self.pool.get('somenergia.soci')
         partner_id = Soci.read(cursor, uid, member_id, ['partner_id'])['partner_id'][0]
+
+        import pudb;pu.db
 
         #obtenir total factures Generation any anterior
         if not year:
@@ -605,6 +644,7 @@ class GenerationkwhInvestment(osv.osv):
         start_date = str(year) + '-01-01'
         end_date = str(year) + '-12-31'
         total_amount_saving = self.get_total_saving_partner(cursor, uid, partner_id, start_date, end_date)
+        total_data = self.get_total_generation_invoiced_partner(cursor, uid, partner_id, start_date, end_date)
 
         #obtenir total accions inverions
         total_dayshares_year = 1
@@ -621,7 +661,7 @@ class GenerationkwhInvestment(osv.osv):
         ret_values = {}
         ret_values['irpf_amount'] = round((daysharesactual * total_amount_saving / total_dayshares_year) * gkwh.irpfTaxValue,2)
         ret_values['irpf_saving'] = total_amount_saving
-
+        ret_values.update(total_data)
         return ret_values
 
 
