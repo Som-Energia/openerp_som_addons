@@ -27,7 +27,6 @@
         font-family:Arial, Helvetica, sans-serif;
         color:#666;
         font-size:12px;
-        text-shadow: 1px 1px 0px #fff;
         background:#e0e0e0;
         margin-left:auto;
         margin-right:auto;
@@ -43,13 +42,11 @@
         box-shadow: 0 1px 2px #d1d1d1;
     }
     table th {
+        color: black;
         padding:10px 25px;
         border-top:1px solid #fafafa;
         border-bottom:1px solid #e0e0e0;
-
-        background: #ededed;
-        background: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#ebebeb));
-        background: -moz-linear-gradient(top,  #ededed,  #ebebeb);
+        background: #86bc25;
     }
     table th:first-child {
         text-align: center;
