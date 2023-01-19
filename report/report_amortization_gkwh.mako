@@ -163,7 +163,7 @@ for account.invoice in objects:
         </tr>
         <tr>
             <td> ${_(u"Quantitat d’energia facturada a preu Generation kWh")}</td>
-            <td> </td>
+            <td> ${formatLang(data.totalGenerationKwh,digits=0)} kWh</td>
         </tr>
         <tr>
             <td> ${_(u"Contractes on s’ha aplicat aquesta tarifa")}</td>
@@ -171,15 +171,15 @@ for account.invoice in objects:
         </tr>
         <tr>
             <td> ${_(u"Import facturat amb tarifa Generation kWh")}</td>
-            <td> </td>
+            <td> ${format_currency(data.totalGenerationAmount,'EUR', locale='es_ES')}</td>
         </tr>
         <tr>
             <td> ${_(u"El que hauria costat sense aplicar-hi la tarifa Generation kWh")}</td>
-            <td> </td>
+            <td> ${format_currency(data.totalAmountNoGeneration,'EUR', locale='es_ES')}</td>
         </tr>
         <tr>
             <td> ${_(u"Estalvi obtingut (guany en espècie)")}</td>
-            <td> </td>
+            <td> ${format_currency(data.totalAmountSaving,'EUR', locale='es_ES')}</td>
         </tr>
         <tr>
             <td> ${_(u"Retenció IRPF o impost de societats (19% sobre l’estalvi)")}</td>
@@ -201,7 +201,7 @@ for account.invoice in objects:
         </tr>
         <tr>
             <td> ${_(u"Import a retornar a Som Energia")}<br>${_(u"Import al teu favor")}</td>
-            <td> ${data.amortizationAmount}</td>
+            <td> ${format_currency(data.amortizationAmount,'EUR', locale='es_ES')}</td>
         </tr>
     </table>
     </br>
