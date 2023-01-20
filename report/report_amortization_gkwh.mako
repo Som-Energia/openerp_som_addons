@@ -16,7 +16,9 @@
         margin-left: 10px;
     }
     .logos {
-        float: left;
+        display: flex;
+        justify-content: center;
+        text-align:center;
     }
     table a:link {
         color: #666;
@@ -97,9 +99,10 @@
         text-align: center;
     }
     #cabecera{
-        float: right;
+        float: center;
         padding-top: 20px;
-        text-align: right;
+        text-align: center;
+        font-family:Arial, Helvetica, sans-serif;
     }
     #warning24{
         font-size: 75%;
@@ -116,12 +119,14 @@ for account.invoice in objects:
     <div class="logos">
         <img src="${addons_path}/som_generationkwh/report/Logo-SomEnergia-blanco-quadrado-250x250px.jpg" />
         <img src="${addons_path}/som_generationkwh/report/Logo_Generation-04-Horizontal.jpg" />
-        <p id="cabecera"><b>Liquidació GenerationkWh</b><br>Emisió: ${data.receiptDate} </ p>
+    </ div>
+    <div>
+        <p id="cabecera"><b>Liquidació GenerationkWh</b><br>Emissió: ${data.receiptDate} </ p>
     </ div>
     <div>
     <table>
         <tr>
-            <th colspan="2"><b>${_(u"Dades Préstec Generation kWh: ")} ${data.inversionName}</b></th>
+            <th colspan="2"><b>${_(u"Dades préstec Generation kWh: ")} ${data.inversionName}</b></th>
         </tr>
         <tr>
             <td colspan="2"> ${_(u"Titular: ")}${data.ownerName}</td>
@@ -198,7 +203,7 @@ for account.invoice in objects:
         </tr>
         <tr>
             <td> ${_(u"Import a retornar a Som Energia")}<br>${_(u"Import al teu favor")}</td>
-            <td> ${format_currency(data.amortizationAmount,'EUR', locale='es_ES')}</td>
+            <td> ${data.amortizationAmount} €</td>
         </tr>
     </table>
     </br>
