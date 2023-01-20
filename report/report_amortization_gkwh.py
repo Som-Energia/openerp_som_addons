@@ -93,6 +93,7 @@ class AccountInvoice(osv.osv):
         report.totalGenerationKwh = irpf_values['total_generation_kwh']
         report.totalGenerationAmount = irpf_values['total_generation_amount']
         report.totalAmountNoGeneration = irpf_values['total_amount_no_generation']
+        report.totalContractsWithGkWh = irpf_values['total_contracts_with_gkWh']
 
         return report
 
