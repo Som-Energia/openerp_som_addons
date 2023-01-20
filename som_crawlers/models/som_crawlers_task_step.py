@@ -161,7 +161,7 @@ class SomCrawlersTaskStep(osv.osv):
                 else:
                     self.attach_files_screenshot(
                         cursor, uid, config_obj, output_path, result_id, task_step_params, context)
-                    raise Exception("%s" % output)
+                    raise Exception("Error al descarregar fitxers: %s" % output)
             else:
                 output = 'File or directory doesn\'t exist'
         else:
@@ -408,7 +408,7 @@ class SomCrawlersTaskStep(osv.osv):
                 if output != 'Files have been successfully uploaded':
                     self.attach_files_screenshot(
                         cursor, uid, config_obj, path, result_id, task_step_params, context)
-                    raise Exception("%s" % output)
+                    raise Exception("Error al pujar fitxers: %s" % output)
             else:
                 output = 'File or directory doesn\'t exist'
         else:
