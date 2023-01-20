@@ -169,7 +169,11 @@ for account.invoice in objects:
         </tr>
         <tr>
             <td> ${_(u"Contractes on s’ha aplicat aquesta tarifa")}</td>
-            <td> </td>
+            <td>
+            %for contract,info in sorted(data.totalContractsWithGkWh.iteritems()):
+                ${formatLang(info['kWh'],digits=0)}${_(" kWh : contracte ")}${contract} - ${info['address']}<br>
+            %endfor
+            </td>
         </tr>
         <tr>
             <td> ${_(u"Import facturat amb tarifa Generation kWh")}</td>

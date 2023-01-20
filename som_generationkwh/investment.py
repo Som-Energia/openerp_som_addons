@@ -607,21 +607,28 @@ class GenerationkwhInvestment(osv.osv):
         total_amount_saving = 0
         total_generation_kwh = 0
         total_generation_amount = 0
+        contracts = {}
 
         for gilo_result in gilo_results:
-            res = gilo_obj.browse(cursor, uid, gilo_result['id'])
             gilo_line  = gilo_obj.browse(cursor, uid, gilo_result['id'])
             line = gffl_obj.read(cursor, uid, gilo_line.factura_line_id.id)
 
             total_amount_saving += gilo_result['saving_gkw_amount']
             total_generation_kwh += line['quantity']
             total_generation_amount += line['price_subtotal']
+            pol_name = gilo_line.factura_id.polissa_id.name
+            pol_dire = gilo_line.factura_id.polissa_id.cups_direccio
+            if pol_name in contracts:
+                contracts[pol_name]['kWh'] = contracts[pol_name]['kWh'] + line['quantity']
+            else:
+                contracts[pol_name] = {'address': pol_dire, 'kWh': line['quantity']}
 
         res = {
             'total_amount_saving': total_amount_saving,
             'total_generation_kwh': total_generation_kwh,
             'total_generation_amount': total_generation_amount,
             'total_amount_no_generation': total_amount_saving + total_generation_amount,
+            'total_contracts_with_gkWh': contracts,
         }
 
         return res
@@ -632,8 +639,6 @@ class GenerationkwhInvestment(osv.osv):
         GenerationkwhInvoiceLineOwner = self.pool.get('generationkwh.invoice.line.owner')
         Soci = self.pool.get('somenergia.soci')
         partner_id = Soci.read(cursor, uid, member_id, ['partner_id'])['partner_id'][0]
-
-        import pudb;pu.db
 
         #obtenir total factures Generation any anterior
         if not year:
