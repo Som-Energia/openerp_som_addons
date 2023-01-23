@@ -6,6 +6,7 @@ from osv.osv import except_osv
 from destral.transaction import Transaction
 import mock
 from giscedata_switching.tests.common_tests import TestSwitchingImport
+import unittest
 
 from .. import wizard
 
@@ -325,6 +326,7 @@ class TestWizardValidateD101(TestSwitchingImport):
             self.assertEqual(d102.sw_id.id, d1_id)
             self.assertEqual(d102.sw_id.state, 'done')
 
+    @unittest.skip("Waiting for ATR3.0")
     def test__create_case_m1_01_motiu_06__S_R(self):
         with Transaction().start(self.database) as txn:
             uid = txn.user

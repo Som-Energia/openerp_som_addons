@@ -25,10 +25,21 @@ class GiscedataSwitchingWizardValidateD101(osv.osv_memory):
         id_pas = int(pas_id.split(',')[1])
         self._change_reason = d101_obj.read(cursor, uid, id_pas, ['motiu_canvi'])['motiu_canvi']
 
+    def isAutoconsum(self, cursor, uid):
+        """
+        Pending CNMC
+        """
+        return False
+
     def mod_con_wizard_default_values(self, cursor, uid, ids, context=None):
+        """
+        Method prepared to add default values
+        """
         res = {"mod_autoconsum": True}
 
-        if self._change_reason == '06':
+        isAutoconsum = self.isAutoconsum(cursor, uid)
+
+        if isAutoconsum and self._change_reason == '06':
             values = {
                 "generate_new_contract": 'exists',
                 "change_adm": 1,
