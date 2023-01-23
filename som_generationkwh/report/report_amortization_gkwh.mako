@@ -12,8 +12,7 @@
     ${css}
     img {
         width: 120px;
-        height: 120px;
-        margin-left: 10px;
+        height: 75px;
     }
     .logos {
         display: flex;
@@ -32,7 +31,7 @@
         background:#e0e0e0;
         margin-left:auto;
         margin-right:auto;
-        width: 60%;
+        width: 66%;
         border:#ccc 1px solid;
 
         -moz-border-radius:3px;
@@ -100,7 +99,6 @@
     }
     #cabecera{
         float: center;
-        padding-top: 20px;
         text-align: center;
         font-family:Arial, Helvetica, sans-serif;
     }
@@ -117,11 +115,11 @@ for account.invoice in objects:
  setLang(account.invoice.lang_partner)
 %>
     <div class="logos">
-        <img src="${addons_path}/som_generationkwh/report/Logo-SomEnergia-blanco-quadrado-250x250px.jpg" />
-        <img src="${addons_path}/som_generationkwh/report/Logo_Generation-04-Horizontal.jpg" />
+        <img src="${addons_path}/som_generationkwh/report/Logo-SomEnergia-blanco-quadrado-250x250px.png" />
+        <img src="${addons_path}/som_generationkwh/report/Logo_Generation-04-Horizontal.png" />
     </ div>
     <div>
-        <p id="cabecera"><b>Liquidació GenerationkWh</b><br>Emissió: ${data.receiptDate} </ p>
+        <p id="cabecera"><b>Liquidació Generation kWh</b><br>Emissió: ${data.receiptDate} </ p>
     </ div>
     <div>
     <table>
@@ -202,18 +200,29 @@ for account.invoice in objects:
             <td> ${format_currency(data.amortValue,'EUR', locale='es_ES')}</td>
         </tr>
         <tr>
-            <td> ${_(u"retenció IRPF o impost de societats")}</td>
+            <td> ${_(u"Retenció IRPF o impost de societats")}</td>
             <td> ${format_currency(data.irpfAmount,'EUR', locale='es_ES')}</td>
         </tr>
         <tr>
-            <td> ${_(u"Import a retornar a Som Energia")}<br>${_(u"Import al teu favor")}</td>
+            <td>
+            %if data.amortizationAmount > 0:
+            ${_(u"Import al teu favor")}</td>
+            %else:
+            ${_(u"Import a retornar a Som Energia")}
+            %endif
             <td> ${data.amortizationAmount} €</td>
         </tr>
     </table>
     </br>
     <table>
         <tr>
-            <th colspan="2"><b> ${_(u"Compte on es realizarà l'ingrés/càrrec")}</b></th>
+            <th colspan="2"><b>
+            %if data.amortizationAmount > 0:
+            ${_(u"Compte on es realizarà l'ingrés")}
+            %else:
+            ${_(u"Compte on es realizarà el càrrec")}
+            %endif
+            </b></th>
         </tr>
         <tr>
             <td id="account"> ${data.inversionBankAccount} </td>
