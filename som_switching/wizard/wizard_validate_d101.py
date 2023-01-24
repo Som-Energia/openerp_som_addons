@@ -163,6 +163,9 @@ class GiscedataSwitchingWizardValidateD101(osv.osv_memory):
             rebuig_obj.write(cursor, uid, [d102.rebuig_ids[-1].id], {
                 "desc_rebuig": d102.rebuig_ids[-1].desc_rebuig + ": {}".format(rejection_comment)
             })
+
+            d1.write({'state': 'draft'})
+
             if set_pending:
                 d1.write({'validacio_pendent':True})
                 d102.write({'validacio_pendent':True})
