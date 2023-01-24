@@ -27,7 +27,7 @@ class UpdatePendingStates(osv.osv_memory):
             cursor, uid, history_values['id'], ['days_to_next_state']
         )
 
-        days_to_next_state = history['days_to_next_state'] if history['days_to_next_state'] is not None else pstate['pending_days']
+        days_to_next_state = history['days_to_next_state'] if history['days_to_next_state'] is not False else pstate['pending_days']
 
         change_date = datetime.strptime(
             history_values['change_date'], '%Y-%m-%d'
