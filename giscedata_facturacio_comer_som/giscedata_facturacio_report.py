@@ -1962,7 +1962,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             lines_data[block]['data'] = data_desde
             lines_data[block]['days'] = (datetime.strptime(l.data_fins,'%Y-%m-%d') - datetime.strptime(l.data_desde,'%Y-%m-%d')).days + 1
             lines_data[block]['date_from'] = dateformat(l.data_desde)
-            lines_data[block]['date_to'] = dateformat(l.data_fins)
+            lines_data[block]['date_to_d'] = val(l.data_fins) if 'date_to_d' not in lines_data[block] or lines_data[block]['date_to_d'] < val(l.data_fins) else lines_data[block]['date_to_d']
+            lines_data[block]['date_to'] = dateformat(lines_data[block]['date_to_d'])
 
         lines_data = [lines_data[k] for k in sorted(lines_data.keys())]
         return lines_data
