@@ -927,7 +927,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 'power': pol.potencia,
                 'powers': sorted([ (potencia.periode_id.name, potencia.potencia) for potencia in pol.potencies_periode ], key=lambda l:l[0]),
                 'is_autoconsum': te_autoconsum(fact, pol), # fact.te_autoconsum
-                'autoconsum': pol.autoconsumo,
+                'autoconsum': pol.tipus_autoconsum,
                 'autoconsum_cau': pol.autoconsum_id.cau if pol.autoconsum_id else '',
                 'is_autoconsum_colectiu': te_autoconsum_collectiu(fact, pol), #fact.te_autoconsum and fact.polissa_id.autoconsum_id and fact.polissa_id.autoconsum_id.collectiu
                 'autoconsum_colectiu_repartiment': float(pol.coef_repartiment),

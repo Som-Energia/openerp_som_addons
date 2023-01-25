@@ -33,7 +33,7 @@ class WizardAddContractsLot(osv.osv_memory):
             'end_date': [('data_alta', '<=', wiz.end_date)],
             'comer_fare': [('llista_preu', 'ilike', '%{}%'.format(wiz.comer_fare))],
             'access_fare': [('tarifa', 'ilike', '%{}%'.format(wiz.access_fare))],
-            'autoconsum': [('autoconsumo','!=','00'), ('autoconsumo', '!=', False)] if wiz.autoconsum == 'all' else [('autoconsumo', '=', wiz.autoconsum)],
+            'autoconsum': [('tipus_autoconsum','!=','00'), ('tipus_autoconsum', '!=', False)] if wiz.autoconsum == 'all' else [('tipus_autoconsum', '=', wiz.autoconsum)],
             'tipo_medida': [('tipo_medida', 'ilike', '%{}%'.format(wiz.tipo_medida))],
             'category': [('category_id','!=',False), ('category_id.name','ilike', '%{}%'.format(wiz.category))],
         }

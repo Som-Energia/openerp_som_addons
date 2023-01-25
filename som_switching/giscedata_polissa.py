@@ -35,12 +35,12 @@ class GiscedataPolissaModcontractual(osv.osv):
 
         super(GiscedataPolissaModcontractual, self).aplicar_modificacio(cursor, uid, mod_id, polissa_id)
 
-        fields_to_read = ['autoconsumo', 'autoconsum_id', 'data_inici']
+        fields_to_read = ['tipus_autoconsum', 'autoconsum_id', 'data_inici']
 
         modcon_info = self.read(cursor, uid, mod_id, fields_to_read)
 
 
-        if modcon_info['autoconsumo'] != '00' or modcon_info['autoconsum_id']:
+        if modcon_info['tipus_autoconsum'] != '00' or modcon_info['autoconsum_id']:
             polissa_obj = self.pool.get('giscedata.polissa')
             if not polissa_id:
                 polissa_id = self.browse(cursor, uid, mod_id).polissa_id.id

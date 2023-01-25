@@ -418,12 +418,12 @@ def get_new_tariff(polissa):
                     </tr>
                 </table>
                 <%
-                    autoconsum = polissa.autoconsumo
+                    autoconsum = polissa.tipus_autoconsum
                     if autoconsum and autoconsum in TABLA_113_dict:
                         autoconsum = TABLA_113_dict[autoconsum]
                 %>
 
-                <div class="padding_top padding_left"><b>${_(u"Tipus de contracte: ")}</b> ${CONTRACT_TYPES[polissa.contract_type]} ${"({0})".format(autoconsum) if polissa.autoconsumo != '00' else ""}</div>
+                <div class="padding_top padding_left"><b>${_(u"Tipus de contracte: ")}</b> ${CONTRACT_TYPES[polissa.contract_type]} ${"({0})".format(autoconsum) if polissa.tipus_autoconsum != '00' else ""}</div>
             </div>
         </div>
 
