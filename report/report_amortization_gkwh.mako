@@ -218,9 +218,9 @@ for account.invoice in objects:
         <tr>
             <th colspan="2"><b>
             %if data.amortizationAmount > 0:
-            ${_(u"Compte on es realizarà l'ingrés")}
+            ${_(u"Compte on es realitzarà l'ingrés")}
             %else:
-            ${_(u"Compte on es realizarà el càrrec")}
+            ${_(u"Compte on es realitzarà el càrrec")}
             %endif
             </b></th>
         </tr>
