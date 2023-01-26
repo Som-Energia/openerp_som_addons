@@ -4,21 +4,28 @@
 # 
 # Translators:
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
-# Som Energia  <itcrowd@somenergia.coop>, 2020, 2021.
+# Som Energia  <itcrowd@somenergia.coop>, 2020, 2021, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2021-12-02 10:44+0000\n"
-"PO-Revision-Date: 2021-12-02 09:45+0000\n"
+"POT-Creation-Date: 2023-01-26 17:30+0000\n"
+"PO-Revision-Date: 2023-01-26 16:34+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.9.1\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: som_generationkwh
+#: help:wizard.factures.liquidacio.interessos,interest_rate:0
+msgid ""
+"El valor d'aquest camp està definit amb una variable de configuració "
+"(som_aportacions_interest)"
+msgstr "El valor de este campo está definido con una variable de configuración (som_aportacions_interest)"
 
 #. module: som_generationkwh
 #: field:somenergia.soci,gkwh_comments:0
@@ -32,6 +39,11 @@ msgid ""
 "contractes de GenerationKWH? Aquesta acció enviará una peticó a Signaturit "
 "per a un procés de signatura digital per a cada contracte."
 msgstr "¿Estás seguro de querer iniciar el proceso de Signaturit para las siguientes contratos de GenerationkWh? Esta acción enviará una petición Signaturit para un proceso de firma digital para cada contrato."
+
+#. module: som_generationkwh
+#: field:wizard.factures.liquidacio.interessos,date_invoice:0
+msgid "Data factura"
+msgstr "Fecha factura"
 
 #. module: som_generationkwh
 #: view:generationkwh.emission:0
@@ -49,15 +61,10 @@ msgid "Invalid model name in the action definition."
 msgstr "Invalid model name in the action definition."
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/investment.py:810
+#: code:addons/som_generationkwh/investment.py:862
 #, python-format
 msgid "Amortització fins a {amortization_date:%d/%m/%Y} de {investment} "
 msgstr "Amortitzación hasta a {amortization_date:%d/%m/%Y} de {investment} "
-
-#. module: som_generationkwh
-#: model:ir.actions.act_window,name:som_generationkwh.action_send_retencio_estalvi_to_members
-msgid "Enviament massiu certificat de retenció sobre rendiment"
-msgstr "Envio masivo certificado retencion sobre rendimiento."
 
 #. module: som_generationkwh
 #: field:generationkwh.emission,name:0 field:generationkwh.investment,name:0
@@ -100,14 +107,14 @@ msgid "Inversor que ha comprat les accions"
 msgstr "Inversor que ha comprado las acciones"
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/somenergia_soci.py:213
+#: code:addons/som_generationkwh/somenergia_soci.py:216
 msgid "El soci té factures pendents."
 msgstr "El socio tiene facturas pendientes."
 
 #. module: som_generationkwh
-#: view:send.retencio.estalvi.to.members.wizard:0
-msgid "Enviar correus"
-msgstr "Enviar correos"
+#: help:generationkwh.emission,type:0
+msgid "Type of the emission."
+msgstr "Type of the emission."
 
 #. module: som_generationkwh
 #: constraint:product.category:0
@@ -116,6 +123,7 @@ msgstr "Error ! You can not create recursive categories."
 
 #. module: som_generationkwh
 #: field:generationkwh.invoice.line.owner,factura_id:0
+#: field:generationkwh.right.usage.line,factura_id:0
 msgid "Factura"
 msgstr "Factura"
 
@@ -184,7 +192,7 @@ msgid "Compte pont per conciliar moviments"
 msgstr "Cuenta puente para conciliar movimentos"
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/somenergia_soci.py:193
+#: code:addons/som_generationkwh/somenergia_soci.py:194
 msgid "Ja ha estat donat de baixa anteriorment!"
 msgstr "Ya ha sido dado de baja anteriormente!"
 
@@ -211,14 +219,19 @@ msgid "Error: UOS must be in a different category than the UOM"
 msgstr "Error: UOS must be in a different category than the UOM"
 
 #. module: som_generationkwh
+#: field:wizard.factures.liquidacio.interessos,date_start:0
+msgid "Data inici"
+msgstr "Fecha inicio"
+
+#. module: som_generationkwh
+#: field:wizard.factures.liquidacio.interessos,interest_rate:0
+msgid "Interès anual (%)"
+msgstr "Interés anual (%)"
+
+#. module: som_generationkwh
 #: code:addons/som_generationkwh/investment_strategy.py:178
 msgid "Desinversió total de {investment} a {date} "
 msgstr "Desinversión total de {investment} a {date} "
-
-#. module: som_generationkwh
-#: model:ir.model,name:som_generationkwh.model_send_retencio_estalvi_to_members_wizard
-msgid "send.retencio.estalvi.to.members.wizard"
-msgstr "send.retencio.estalvi.to.members.wizard"
 
 #. module: som_generationkwh
 #: model:ir.module.module,description:som_generationkwh.module_meta_information
@@ -342,7 +355,6 @@ msgstr "Cargo / Càrrec Capital Social Ref. ${object.name}"
 
 #. module: som_generationkwh
 #: model:ir.module.module,shortdesc:som_generationkwh.module_meta_information
-#: model:ir.ui.menu,name:som_generationkwh.menu_gkwh_base
 #: model:product.category,name:som_generationkwh.categ_gkwh_t20A
 #: model:product.category,name:som_generationkwh.categ_gkwh_t20A_new
 #: model:product.category,name:som_generationkwh.categ_gkwh_t20DHA
@@ -357,6 +369,7 @@ msgstr "Cargo / Càrrec Capital Social Ref. ${object.name}"
 #: model:product.category,name:som_generationkwh.categ_gkwh_t31A_LB
 #: model:product.category,name:som_generationkwh.categ_gkwh_t61
 #: model:product.category,name:som_generationkwh.categ_gkwh_t61TD
+#: model:product.category,name:som_generationkwh.categ_gkwh_t61TDVE
 #: model:product.category,name:som_generationkwh.categ_gkwh_t61a
 #: model:product.category,name:som_generationkwh.categ_gkwh_t61b
 #: model:product.category,name:som_generationkwh.categ_gkwh_t62
@@ -368,11 +381,6 @@ msgstr "Cargo / Càrrec Capital Social Ref. ${object.name}"
 #: view:giscedata.facturacio.factura:0 view:somenergia.soci:0
 msgid "Generation kWh"
 msgstr "Generation kWh"
-
-#. module: som_generationkwh
-#: field:send.retencio.estalvi.to.members.wizard,total_sent:0
-msgid "Total enviats"
-msgstr "Total enviados"
 
 #. module: som_generationkwh
 #: model:poweremail.templates,def_subject:som_generationkwh.generationkwh_mail_creacio
@@ -415,6 +423,11 @@ msgid ""
 "Escull la acció que vols realitzar sobre les {0} inversions seleccionades "
 "amb data {1}. Només es canviaràn les que estiguin en l'estat addient"
 msgstr "Escoge la acción que quieres realizar sobre las {0} inversiones seleccionadas con fecha {1}. Solo se cambiaran las que estén en estado adiente"
+
+#. module: som_generationkwh
+#: field:wizard.factures.liquidacio.interessos,open_invoices:0
+msgid "Obrir factures, afegir a remesa i notificar per correu."
+msgstr "Abrir facturas, añadir a remesa y notificar por correo."
 
 #. module: som_generationkwh
 #: selection:generationkwh.emission,type:0
@@ -472,10 +485,9 @@ msgid "Import amortitzat"
 msgstr "Importe amortizado"
 
 #. module: som_generationkwh
-#: model:ir.actions.act_window,name:som_generationkwh.action_gkwh_invoice_line_owner_tree
-#: model:ir.ui.menu,name:som_generationkwh.menu_gkwh_invoice_line_owner_tree
-msgid "Generation kWh assignats a factures"
-msgstr "Generation kWh assignados a factures"
+#: model:poweremail.templates,def_subject:som_generationkwh.aportacio_interest_notification_mail
+msgid "Liquidació interessos aportació voluntària"
+msgstr "Liquidación intereses aportación voluntaria"
 
 #. module: som_generationkwh
 #: field:somenergia.soci,assignment_ids:0 view:somenergia.soci:0
@@ -491,11 +503,6 @@ msgstr "Energia"
 #: view:wizard.baixa.soci:0
 msgid "La baixa s'ha efectuat correctament"
 msgstr "La baja se ha efectuado correctamente"
-
-#. module: som_generationkwh
-#: view:send.retencio.estalvi.to.members.wizard:0
-msgid "No s'ha fet cap enviament"
-msgstr "No se ha hecho ningún envio"
 
 #. module: som_generationkwh
 #: model:ir.actions.act_window,name:som_generationkwh.action_wizard_generationkwh_investment_divest
@@ -519,6 +526,14 @@ msgid "generationkwh.dealer"
 msgstr "generationkwh.dealer"
 
 #. module: som_generationkwh
+#: code:addons/som_generationkwh/investment_strategy.py:826
+#, python-format
+msgid ""
+"Interessos des de {date_start:%d/%m/%Y} fins a {date_end:%d/%m/%Y} de "
+"{investment} "
+msgstr "Intereses desde {date_start:%d/%m/%Y} hasta {date_end:%d/%m/%Y} de {investment} "
+
+#. module: som_generationkwh
 #: help:generationkwh.investment,signed_date:0
 msgid "Quin dia es va firmar el contracte de GKWH"
 msgstr "Que día se firmó el contrato de GKWH"
@@ -539,6 +554,7 @@ msgid "Inversor"
 msgstr "Inversor"
 
 #. module: som_generationkwh
+#: model:ir.ui.menu,name:som_generationkwh.menu_gkwh_base
 #: model:product.template,name:som_generationkwh.apo_product_ae_product_template
 #: selection:generationkwh.emission,type:0
 msgid "Aportacions"
@@ -591,6 +607,7 @@ msgid "Limits campanya"
 msgstr "Limites campaña"
 
 #. module: som_generationkwh
+#: field:wizard.factures.liquidacio.interessos,err:0
 #: field:wizard.generationkwh.investment.amortization,errors:0
 #: field:wizard.generationkwh.investment.amortization,output:0
 msgid "Missatges d'error"
@@ -628,6 +645,11 @@ msgid "generationkwh.invoice.line.owner"
 msgstr "generationkwh.invoice.line.owner"
 
 #. module: som_generationkwh
+#: model:ir.actions.report.xml,name:som_generationkwh.report_llibre_registre_socis_summary
+msgid "Resum del Llibre Registre Socis"
+msgstr "Resumen del Libro Registro Socios"
+
+#. module: som_generationkwh
 #: field:generationkwh.investment,nshares:0
 msgid "Nombre d'accions"
 msgstr "Número de acciones"
@@ -663,9 +685,9 @@ msgid "Oberta"
 msgstr "Oberta"
 
 #. module: som_generationkwh
-#: help:generationkwh.emission,type:0
-msgid "Type of the emission."
-msgstr "Type of the emission."
+#: view:wizard.factures.liquidacio.interessos:0
+msgid "Generar interessos aportacions"
+msgstr "Generar intereses aportaciones"
 
 #. module: som_generationkwh
 #: help:generationkwh.emission,irpf_product_id:0
@@ -683,6 +705,11 @@ msgid "wizard.llibre.registre.socis"
 msgstr "wizard.llibre.registre.socis"
 
 #. module: som_generationkwh
+#: field:wizard.factures.liquidacio.interessos,res_ids:0
+msgid "Llistat de factures"
+msgstr "Listado de facturas"
+
+#. module: som_generationkwh
 #: view:wizard.generationkwh.investment.transfer:0
 msgid "Transferir aportació"
 msgstr "Transferir aportación"
@@ -691,6 +718,18 @@ msgstr "Transferir aportación"
 #: constraint:somenergia.soci:0
 msgid "You cannot have same VAT for two active members!"
 msgstr "You cannot have same VAT for two active members!"
+
+#. module: som_generationkwh
+#: field:generationkwh.right.usage.line,quantity:0
+msgid "KWh utilitzats"
+msgstr "KWh utilizados"
+
+#. module: som_generationkwh
+#: model:poweremail.templates,def_subject:som_generationkwh.aportacio_mail_transmissio
+msgid ""
+"Transmissió d'aportació / Transmisión de aportación al capital social Som "
+"Enegia Ref. ${object.name}"
+msgstr "Transmisión de aportación / Transmisión de aportación al capital social Som Enegia Ref. ${object.name}"
 
 #. module: som_generationkwh
 #: help:generationkwh.assignment,contract_id:0
@@ -703,6 +742,11 @@ msgid "Invalid XML for View Architecture!"
 msgstr "Invalid XML for View Architecture!"
 
 #. module: som_generationkwh
+#: field:generationkwh.right.usage.line,datetime:0
+msgid "Data generació drets"
+msgstr "Fecha generación derechos"
+
+#. module: som_generationkwh
 #: field:generationkwh.emission,current_total_amount_invested:0
 msgid "Total invertit"
 msgstr "Total invertido"
@@ -711,11 +755,6 @@ msgstr "Total invertido"
 #: field:generationkwh.mailmockup,log:0
 msgid "Mail logs"
 msgstr "Mail logs"
-
-#. module: som_generationkwh
-#: constraint:account.fiscalyear:0
-msgid "Error ! The duration of the Fiscal Year is invalid. "
-msgstr "Error ! The duration of the Fiscal Year is invalid. "
 
 #. module: som_generationkwh
 #: field:somenergia.soci,gkwh_assignment_notified:0
@@ -775,11 +814,12 @@ msgid "Operacions"
 msgstr "Operaciones"
 
 #. module: som_generationkwh
-#: model:ir.actions.act_window,name:som_generationkwh.action_gkwh_investment_tree
-#: model:ir.ui.menu,name:som_generationkwh.menu_gkwh_investment_tree
-#: view:generationkwh.investment:0
-msgid "Inversions en Generation kWh"
-msgstr "Inversión en Generation kWh"
+#: field:generationkwh.remainder,n_shares:0
+#: field:generationkwh.remainder,remainder_wh:0
+#: field:generationkwh.remainder,target_day:0
+#: field:wizard.generationkwh.sign.signaturit,failed_records:0
+msgid "unknown"
+msgstr "unknown"
 
 #. module: som_generationkwh
 #: model:ir.model,name:som_generationkwh.model_generationkwh_testhelper
@@ -810,7 +850,7 @@ msgid "Set to done"
 msgstr "Set to done"
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/somenergia_soci.py:220
+#: code:addons/som_generationkwh/somenergia_soci.py:223
 msgid "El soci té al menys un contracte actiu."
 msgstr "El soci tiene almenos un contrato activo."
 
@@ -949,11 +989,11 @@ msgid ""
 msgstr "\n<!doctype html>\n<html>\n<body>\n<img width='130' height='65' src=\"https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png\">\n<br/><br/>\n<%\nSoci = object.pool.get('somenergia.soci')\nPartner = object.pool.get('res.partner')\nPartnerBank = object.pool.get('res.partner.bank')\nsoci_id = object.member_id.id\nsoci_obj = Soci.read(object._cr, object._uid, soci_id)\npart_obj = Partner.read(object._cr,object._uid,soci_obj['partner_id'][0])\nbank_obj = PartnerBank.read(object._cr, object._uid, part_obj['bank_inversions'][0])\nlang = part_obj['lang']\nname = part_obj['name']\niban = bank_obj['iban']\namount_currency= int(object.nshares) * 100\n\nnom_pagador = ''\nes_empresa = Partner.vat_es_empresa(object._cr, object._uid, object.member_id.vat)\nif not es_empresa:\n    nom_pagador =' ' + Partner.separa_cognoms(object._cr, object._uid, object.member_id.name)['nom']\n%>\n\n<%\nfrom mako.template import Template\ndef render(text_to_render, object_):\n    templ = Template(text_to_render)\n    return templ.render_unicode(\n        object=object_,\n        format_exceptions=True\n    )\nt_obj = object.pool.get('poweremail.templates')\nmd_obj = object.pool.get('ir.model.data')\ntemplate_id = md_obj.get_object_reference(\n                    object._cr, object._uid,  'som_poweremail_common_templates', 'common_template_legal_footer'\n                )[1]\ntext_legal = render(t_obj.read(\n    object._cr, object._uid, [template_id], ['def_body_text'])[0]['def_body_text'],\n    object\n)\n%>\n<br/>\n% if lang != \"es_ES\":\nBenvolgut/da${nom_pagador},<br/>\n<br/>\nEt confirmem que hem rebut correctament la teva sol•licitud per fer una aportació voluntària al capital social de Som Energia, amb les següents dades:<br/>\n<br/>\nSoci/Sòcia: ${name}<br/>\nCompte de càrrec: ${iban[:-4]}****<br/>\nImport aportació: ${int(abs(amount_currency))} €<br/>\n<br/>\n% if es_empresa:\n<p>Et recordem que per fer l'aportació en nom d'una persona jurídica has d'estar documentalment acreditat. </p>\n<p>Per aquesta raó, necessitem que ens responguis aquest correu adjuntant la següent documentació addicional:</p>\n<ul>\n    <li>el teu DNI (en tant que persona representant de la persona jurídica) </li>\n    <li>escriptures de poders de representació vigents </li>\n    <li>escriptura constitutiva i, si escau, escriptura de titularitat real </li>\n    <li>número CNAE activitat econòmica </li>\n</ul>\n<p>Un cop rebuda i verificada la documentació, procedirem a realitzar el corresponent càrrec en compte per l'import que ens has sol.licitat.</p>\n% else:\nEn els propers dies rebràs el càrrec bancari en aquest compte, siusplau verifica que totes les dades facilitades són correctes i que disposes dels diners, per tal que no hi hagi cap incidència en el gir del rebut.<br/>\n<br/>\nUn cop verificada la validesa del pagament realitzat rebràs una nova notificació confirmant l'aportació realitzada i detallant les condicions particulars de la teva aportació.<br/>\n<br/>\nAgrair la teva implicació amb la cooperativa i informar-te que per a qualsevol dubte o aclariment pots consultar el web <a href=\"https://www.somenergia.coop/ca\">www.somenergia.coop</a> o bé mitjançant un mail a <a href=\"mailto:aporta@somenergia.coop\">aporta@somenergia.coop</a>.<br/>\n<br/>\nRecorda que també pots participar de la Generació kWh per generar la teva energia a partir de nous projectes col•lectius de generació. Consulta el web <a href=\"https://www.generationkwh.org/ca\">www.generationkwh.org</a>.<br/>\n<br/>\nPots fer córrer la veu explicant el projecte a familiars i amics/gues. Com més siguem, més energia verda generarem!<br/>\n<br/>\n% endif\nMoltes gràcies i bona energia!<br/>\n<br/>\nAtentament,<br/>\n<br/>\n<br/>\nSom Energia, SCCL<br/>\n<a href=\"https://www.somenergia.coop/ca\">www.somenergia.coop</a><br/>\n% endif\n% if lang != \"ca_ES\" and lang != \"es_ES\":\n<br/><HR align=\"LEFT\" size=\"1\" width=\"400\" color=\"Black\" noshade><br/>\n% endif\n% if lang != \"ca_ES\":\nApreciado/a${nom_pagador},<br/>\n<br/>\nTe confirmamos que hemos recibido correctamente tu solicitud para realizar una aportación voluntaria al capital social de Som Energia, con los siguientes datos:<br/>\n<br/>\nSocio/a: ${name}<br/>\nCuenta de cargo: ${iban[:-4]}****<br/>\nImporte aportación: ${int(abs(amount_currency))} €<br/>\n<br/>\n% if es_empresa:\n<p>Te recordamos que para hacer la aportación en nombre de una persona jurídica tienes que estar documentalmente acreditado.</p>\n<p>Es por esta razón que necesitamos que respondas este correo adjuntando la siguiente documentación:</p>\n<ul>\n    <li>tu DNI (en tanto que persona representante de la persona jurídica)</li>\n    <li>escrituras de poderes de representación vigentes</li>\n    <li>escritura constitutiva y si procede, escritura de titularidad real</li>\n    <li>número CNAE actividad económica</li>\n</ul>\n<p>Una vez recibida y verificada la doncumentación, procederemos a realizar el correspondiente cargo en cuenta por el importe que nos has solicitado.</p>\n% else:\nEn los próximos dias recibirás el cargo bancario en esta cuenta, por favor verifica que todos los datos facilitados sean correctos y dispones del dinero, para evitar cualquier incidencia en el giro del recibo.<br/>\n<br/>\nUna vez verificada la validez del pago realizado recibirás una nueva notificación confirmando la aportación realizada y detallando las condiciones particulares de tu aportación.<br/>\nAgradecer tu implicación con la cooperativa y informarte que para cualquier duda o aclaración puedes consultar nuestra web <a href=\"https://www.somenergia.coop\">www.somenergia.coop</a> o enviarnos un correo electrónico a <a href=\"mailto:aporta@somenergia.coop\">aporta@somenergia.coop</a><br/>\n<br/>\nRecuerda que también puedes participar de la Generación kWh para generar tu energía con nuevos proyectos colectivos de generación. Consulta la web <a href=\"https://www.generationkwh.org/es\">www.generationkwh.org</a>.<br/>\n<br/>\nHaz que corra la voz explicando el proyecto a familiares y amigos. Cuantos más seamos, más energía verde generaremos!<br/>\n<br/>\n% endif\n¡Muchas gracias y buena energía!<br/>\n<br/>\nAtentamente,<br/>\n<br/>\n<br/>\nSom Energia, SCCL<br/>\n<a href=\"https://www.somenergia.coop\">www.somenergia.coop</a><br/>\n% endif\n<br/>\n${text_legal}\n</body>\n</html>\n"
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/somenergia_soci.py:192
-#: code:addons/som_generationkwh/somenergia_soci.py:199
-#: code:addons/som_generationkwh/somenergia_soci.py:207
-#: code:addons/som_generationkwh/somenergia_soci.py:213
-#: code:addons/som_generationkwh/somenergia_soci.py:220
+#: code:addons/som_generationkwh/somenergia_soci.py:193
+#: code:addons/som_generationkwh/somenergia_soci.py:201
+#: code:addons/som_generationkwh/somenergia_soci.py:210
+#: code:addons/som_generationkwh/somenergia_soci.py:216
+#: code:addons/som_generationkwh/somenergia_soci.py:223
 msgid "El soci no pot ser donat de baixa!"
 msgstr "El soci no puede ser dado de baja!"
 
@@ -963,17 +1003,11 @@ msgid "Es desactivarà la inversió {0} amb data {1}"
 msgstr "Se desactivará la inversión {0} con fecha {1}"
 
 #. module: som_generationkwh
-#: field:generationkwh.remainder,n_shares:0
-#: field:generationkwh.remainder,remainder_wh:0
-#: field:generationkwh.remainder,target_day:0
-#: field:wizard.generationkwh.sign.signaturit,failed_records:0
-msgid "unknown"
-msgstr "unknown"
-
-#. module: som_generationkwh
-#: view:send.retencio.estalvi.to.members.wizard:0
-msgid "Enviar certificats als socis"
-msgstr "Enviar certificado a los socios"
+#: model:ir.actions.act_window,name:som_generationkwh.action_gkwh_investment_tree
+#: model:ir.ui.menu,name:som_generationkwh.menu_gkwh_investment_tree
+#: view:generationkwh.investment:0
+msgid "Inversions en Generation kWh"
+msgstr "Inversión en Generation kWh"
 
 #. module: som_generationkwh
 #: code:addons/som_generationkwh/wizard/wizard_aeat193_from_gkwh_invoices.py:97
@@ -993,12 +1027,18 @@ msgid "Activació i desactivació de inversions"
 msgstr "Activación y desactivación de inversiones"
 
 #. module: som_generationkwh
+#: model:ir.actions.act_window,name:som_generationkwh.action_wizard_factures_liquidacio_interessos_form
+#: model:ir.actions.act_window,name:som_generationkwh.action_wizard_factures_liquidacio_interessos_menu_item_form
+msgid "Assistent liquidació interessos"
+msgstr "Asistente liquidación intereses"
+
+#. module: som_generationkwh
 #: field:generationkwh.assignment,contract_id:0
 msgid "Contracte"
 msgstr "Contracto"
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/investment.py:1402
+#: code:addons/som_generationkwh/investment.py:1478
 msgid "Inversió {investment} "
 msgstr "Inversión {investment} "
 
@@ -1018,28 +1058,32 @@ msgid "Ip d'origen"
 msgstr "Ip de origen"
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/investment.py:495
+#: code:addons/som_generationkwh/investment.py:497
 msgid "S'ha {0} la inversió {1}"
 msgstr "Se ha {0} la inversión {1}"
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/giscedata_facturacio.py:636
+#: code:addons/som_generationkwh/giscedata_facturacio.py:723
 msgid ""
 "Cálcul del preu de descompte segons RD 17/2021 per a 2 periodes no "
 "implementat"
 msgstr "Calculo del precio de descuento según RD 17/2021 para 2 periodos no implementado"
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/giscedata_facturacio.py:453
+#: code:addons/som_generationkwh/giscedata_facturacio.py:481
 msgid "{0} GkWh"
 msgstr "{0} GkWh"
 
 #. module: som_generationkwh
-#: view:send.retencio.estalvi.to.members.wizard:0
-msgid ""
-"Aquesta acció inicia l'enviament massiu  dels certificats de retenció sobre "
-"l'estalvi de l'any:"
-msgstr "Esta acción inicia el envío masivo de los certificados de retención sobre el ahorro del año:"
+#: field:generationkwh.right.usage.line,line_owner:0
+msgid "Propietari drets GkWh factura"
+msgstr "Propietario derechos GkWh factura"
+
+#. module: som_generationkwh
+#: view:generationkwh.emission:0
+#: view:wizard.generationkwh.investment.transfer:0
+msgid "Cancel"
+msgstr "Cancel"
 
 #. module: som_generationkwh
 #: model:poweremail.templates,def_subject:som_generationkwh.generationkwh_assignment_notification_mail
@@ -1104,6 +1148,11 @@ msgid "Data inicial"
 msgstr "Fecha inicial"
 
 #. module: som_generationkwh
+#: model:ir.ui.menu,name:som_generationkwh.menu_wizard_factures_liquidacio_interessos
+msgid "Factures liquidacions interessos aportacions"
+msgstr "Facturas liquidaciones intereses aportaciones"
+
+#. module: som_generationkwh
 #: model:ir.actions.act_window,name:som_generationkwh.action_generationkwh_kwh_per_share_tree
 #: model:ir.ui.menu,name:som_generationkwh.menu_generationkwh_kwh_per_share_tree
 #: view:generationkwh.kwh.per.share:0
@@ -1121,6 +1170,11 @@ msgid "Estat del contracte seleccionat"
 msgstr "Estado del contrato seleccionado"
 
 #. module: som_generationkwh
+#: view:wizard.factures.liquidacio.interessos:0
+msgid "Assistent de creació de factures - liquidació interessos"
+msgstr "Asistente de creación de facturas - liquidación intereses"
+
+#. module: som_generationkwh
 #: model:poweremail.templates,def_subject:som_generationkwh.email_baixa_soci
 msgid "Confirmació baixa persona sòcia / Confirmación baja persona socia"
 msgstr "Confirmació baixa persona sòcia / Confirmación baja persona socia"
@@ -1136,6 +1190,11 @@ msgid "Motiu pel qual es podra fer servir el mandato"
 msgstr "Motivo por el cual se podrá utilizar el mandato"
 
 #. module: som_generationkwh
+#: view:wizard.generationkwh.investment.amortization:0
+msgid "Mostrar remesa"
+msgstr "Mostrar remesa"
+
+#. module: som_generationkwh
 #: field:wizard.llibre.registre.socis,name:0
 msgid "Nom fitxer"
 msgstr "Nombre fichero"
@@ -1149,10 +1208,16 @@ msgstr "Socios con Generation kWh"
 #. module: som_generationkwh
 #: model:poweremail.templates,file_name:som_generationkwh.aportacio_mail_creacio
 #: model:poweremail.templates,file_name:som_generationkwh.aportacio_mail_pagament
+#: model:poweremail.templates,file_name:som_generationkwh.aportacio_mail_transmissio
 #: model:poweremail.templates,file_name:som_generationkwh.generationkwh_mail_creacio
 #: model:poweremail.templates,file_name:som_generationkwh.generationkwh_mail_pagament
 msgid "${object.name}"
 msgstr "${object.name}"
+
+#. module: som_generationkwh
+#: field:generationkwh.investment,last_interest_paid_date:0
+msgid "Darrera data interessos"
+msgstr "Última fecha intereses"
 
 #. module: som_generationkwh
 #: model:poweremail.templates,def_body_text:som_generationkwh.email_baixa_soci
@@ -1252,6 +1317,11 @@ msgid "generationkwh.mailmockup"
 msgstr "generationkwh.mailmockup"
 
 #. module: som_generationkwh
+#: view:generationkwh.right.usage.line:0
+msgid "Drets usats a una linia de factura"
+msgstr "Derechos usados en una línea de factura"
+
+#. module: som_generationkwh
 #: view:wizard.llibre.registre.socis:0
 msgid "Imprimeix Llibre Registre Socis"
 msgstr "Imprime Libro Registro Socios"
@@ -1262,7 +1332,7 @@ msgid "Llibre Registre Socis"
 msgstr "Libro Registro Socios"
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/giscedata_facturacio.py:631
+#: code:addons/som_generationkwh/giscedata_facturacio.py:718
 msgid ""
 "Cálcul del preu de descompte segons RD 17/2021 no implementat per a la "
 "tarifa {}"
@@ -1405,26 +1475,24 @@ msgid "Certificat de retenció sobre el rendiment de GenerationkWh"
 msgstr "Certificado de retención sobre el rendimiento de GenerationkWh"
 
 #. module: som_generationkwh
+#: code:addons/som_generationkwh/wizard/wizard_factures_liquidacio_interessos.py:82
+msgid "Error !"
+msgstr "Error !"
+
+#. module: som_generationkwh
 #: model:ir.model,name:som_generationkwh.model_generationkwh_emission
 msgid "generationkwh.emission"
 msgstr "generationkwh.emission"
 
 #. module: som_generationkwh
-#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_30A_product_template
-#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_30TDVE_product_template
-#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_30TD_product_template
-#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_31A_LB_product_template
-#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_31A_product_template
-#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_61TD_product_template
-#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_61_product_template
-#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_61a_product_template
-#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_61b_product_template
-#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_62_product_template
-#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_63_product_template
-#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_64_product_template
-#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_65_product_template
-msgid "P5"
-msgstr "P5"
+#: model:product.template,name:som_generationkwh.apo_product_int_product_template
+msgid "Interessos Aportacions"
+msgstr "Intereses Aportaciones"
+
+#. module: som_generationkwh
+#: code:addons/som_generationkwh/wizard/wizard_aeat193_from_gkwh_invoices.py:91
+msgid "No s'han trobat adreces pel partner amb VAT {} i ID {}"
+msgstr "No se han encotrado direcciones para partner con VAT {} y ID {}"
 
 #. module: som_generationkwh
 #: field:generationkwh.assignment,cups_direction:0
@@ -1432,15 +1500,21 @@ msgid "Direcció CUPS"
 msgstr "Dirección CUPS"
 
 #. module: som_generationkwh
+#: view:wizard.factures.liquidacio.interessos:0
+msgid "Factures d'aportacions"
+msgstr "Facturas de aportaciones"
+
+#. module: som_generationkwh
 #: view:wizard.generationkwh.investment.amortization:0
 msgid "Previsualitza"
 msgstr "Previsualitza"
 
 #. module: som_generationkwh
-#: field:generationkwh.investment,actions_log:0
-#: field:generationkwh.investment,log:0
-msgid "Història"
-msgstr "Història"
+#: help:wizard.factures.liquidacio.interessos,open_invoices:0
+msgid ""
+"Marca aquesta opció per obrir les factures, afegir-les a la remesa i "
+"notificar per correu electronic."
+msgstr "Marca esta opción para abrir facturas, añadirlas a la remesa y notificar por correo electrónico."
 
 #. module: som_generationkwh
 #: view:wizard.generationkwh.investment.cancel.or.resign:0
@@ -1458,6 +1532,7 @@ msgstr "Assistent de cancel·lació o renúncia"
 #: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_30TD_product_template
 #: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_31A_LB_product_template
 #: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_31A_product_template
+#: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_61TDVE_product_template
 #: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_61TD_product_template
 #: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_61_product_template
 #: model:product.template,name:som_generationkwh.p2_gkwh_tarifa_61a_product_template
@@ -1478,6 +1553,7 @@ msgstr "P2"
 #: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_30TD_product_template
 #: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_31A_LB_product_template
 #: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_31A_product_template
+#: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_61TDVE_product_template
 #: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_61TD_product_template
 #: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_61_product_template
 #: model:product.template,name:som_generationkwh.p3_gkwh_tarifa_61a_product_template
@@ -1502,6 +1578,7 @@ msgstr "P3"
 #: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_30TD_product_template
 #: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_31A_LB_product_template
 #: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_31A_product_template
+#: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_61TDVE_product_template
 #: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_61TD_product_template
 #: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_61_product_template
 #: model:product.template,name:som_generationkwh.p1_gkwh_tarifa_61a_product_template
@@ -1519,6 +1596,7 @@ msgstr "P1"
 #: model:product.template,name:som_generationkwh.p6_gkwh_tarifa_30TD_product_template
 #: model:product.template,name:som_generationkwh.p6_gkwh_tarifa_31A_LB_product_template
 #: model:product.template,name:som_generationkwh.p6_gkwh_tarifa_31A_product_template
+#: model:product.template,name:som_generationkwh.p6_gkwh_tarifa_61TDVE_product_template
 #: model:product.template,name:som_generationkwh.p6_gkwh_tarifa_61TD_product_template
 #: model:product.template,name:som_generationkwh.p6_gkwh_tarifa_61_product_template
 #: model:product.template,name:som_generationkwh.p6_gkwh_tarifa_61a_product_template
@@ -1536,6 +1614,7 @@ msgstr "P6"
 #: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_30TD_product_template
 #: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_31A_LB_product_template
 #: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_31A_product_template
+#: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_61TDVE_product_template
 #: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_61TD_product_template
 #: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_61_product_template
 #: model:product.template,name:som_generationkwh.p4_gkwh_tarifa_61a_product_template
@@ -1548,9 +1627,22 @@ msgid "P4"
 msgstr "P4"
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/wizard/wizard_aeat193_from_gkwh_invoices.py:91
-msgid "No s'han trobat adreces pel partner amb VAT {} i ID {}"
-msgstr "No se han encotrado direcciones para partner con VAT {} y ID {}"
+#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_30A_product_template
+#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_30TDVE_product_template
+#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_30TD_product_template
+#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_31A_LB_product_template
+#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_31A_product_template
+#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_61TDVE_product_template
+#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_61TD_product_template
+#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_61_product_template
+#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_61a_product_template
+#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_61b_product_template
+#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_62_product_template
+#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_63_product_template
+#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_64_product_template
+#: model:product.template,name:som_generationkwh.p5_gkwh_tarifa_65_product_template
+msgid "P5"
+msgstr "P5"
 
 #. module: som_generationkwh
 #: model:ir.model,name:som_generationkwh.model_wizard_generationkwh_sign_signaturit
@@ -1563,16 +1655,26 @@ msgid "Factures de la inversió"
 msgstr "Facturas de la inversión"
 
 #. module: som_generationkwh
-#: view:generationkwh.emission:0
-#: view:wizard.generationkwh.investment.transfer:0
-msgid "Cancel"
-msgstr "Cancel"
+#: help:generationkwh.emission,amortization_product_id:0
+msgid "Producte de la línia de l'amortització dins la factura de la inversió"
+msgstr "Producto de la linia de la amortización dentro de la factura de la inversion"
+
+#. module: som_generationkwh
+#: field:wizard.factures.liquidacio.interessos,calc:0
+msgid "Missatges de càlcul"
+msgstr "Mensajes de cálculo"
 
 #. module: som_generationkwh
 #: model:product.category,name:som_generationkwh.categ_inversions
 #: field:somenergia.soci,investment_ids:0 view:somenergia.soci:0
 msgid "Inversions"
 msgstr "Inversiones"
+
+#. module: som_generationkwh
+#: model:ir.actions.act_window,name:som_generationkwh.action_gkwh_invoice_line_owner_tree
+#: model:ir.ui.menu,name:som_generationkwh.menu_gkwh_invoice_line_owner_tree
+msgid "Generation kWh assignats a factures"
+msgstr "Generation kWh assignados a factures"
 
 #. module: som_generationkwh
 #: model:ir.model,name:som_generationkwh.model_wizard_generationkwh_investment_activation
@@ -1583,6 +1685,20 @@ msgstr "wizard.generationkwh.investment.activation"
 #: view:wizard.generationkwh.investment.amortization:0
 msgid "Previsualització de resultats"
 msgstr "Previsualitzación de resultados"
+
+#. module: som_generationkwh
+#: field:generationkwh.invoice.line.owner,right_usage_lines:0
+msgid "Drets emprats"
+msgstr "Derechos empleados"
+
+#. module: som_generationkwh
+#: view:wizard.factures.liquidacio.interessos:0
+msgid ""
+"En aquest primer pas encara no es generen factures. Només es fara un càlcul "
+"i es mostrarà un resum abans de crear cap factura. A continuació podràs "
+"triar entre les factures només per a les persones sòcies seleccionades o bé "
+"per a totes."
+msgstr "En ese primer paso todavía no se generan facturas. Sólo se realizará un cálculo y se mostrará un resumen antes de crear ninguna factura. A continuación podrás elegir entre las facturas sólo para las personas socias seleccionadas o para todas."
 
 #. module: som_generationkwh
 #: view:wizard.generationkwh.investment.divest:0
@@ -1627,7 +1743,7 @@ msgid "Data última factura"
 msgstr "Fecha última factura"
 
 #. module: som_generationkwh
-#: view:send.retencio.estalvi.to.members.wizard:0 view:wizard.baixa.soci:0
+#: view:wizard.baixa.soci:0 view:wizard.factures.liquidacio.interessos:0
 #: view:wizard.generationkwh.sign.signaturit:0
 msgid "Cancel·lar"
 msgstr "Cancelar"
@@ -1649,14 +1765,18 @@ msgid "Activa"
 msgstr "Activa"
 
 #. module: som_generationkwh
+#: model:poweremail.templates,def_body_text:som_generationkwh.aportacio_mail_transmissio
+msgid ""
+"\n"
+"<!doctype html>\n"
+"<html><body>Text per defecte</body>\n"
+"</html>"
+msgstr "\n<!doctype html>\n<html><body>Texto por defecto</body>\n</html>"
+
+#. module: som_generationkwh
 #: field:generationkwh.emission,start_date:0
 msgid "Data d'inici"
 msgstr "Fecha de inicio"
-
-#. module: som_generationkwh
-#: view:send.retencio.estalvi.to.members.wizard:0
-msgid "E-mails enviats correctament"
-msgstr "E-mails enviados correctamente"
 
 #. module: som_generationkwh
 #: help:giscedata.polissa,te_assignacio_gkwh:0
@@ -1664,6 +1784,11 @@ msgid ""
 "El contracte té assignacions de GKWH, sense tenir en compte la prioritat ni "
 "data fi."
 msgstr "El contrato tiene asignaciones de GKWH, sin tener en cuenta la prioridad ni la data fín."
+
+#. module: som_generationkwh
+#: model:ir.model,name:som_generationkwh.model_generationkwh_right_usage_line
+msgid "generationkwh.right.usage.line"
+msgstr "generationkwh.right.usage.line"
 
 #. module: som_generationkwh
 #: field:wizard.generationkwh.investment.activation,action:0
@@ -1719,6 +1844,12 @@ msgid "No s'ha pogut efectuar la baixa"
 msgstr "No se ha podido efectuar la baja"
 
 #. module: som_generationkwh
+#: field:generationkwh.investment,actions_log:0
+#: field:generationkwh.investment,log:0
+msgid "Història"
+msgstr "Història"
+
+#. module: som_generationkwh
 #: constraint:ir.model:0
 msgid ""
 "The Object name must start with x_ and not contain any special character !"
@@ -1728,16 +1859,6 @@ msgstr "The Object name must start with x_ and not contain any special character
 #: model:ir.model,name:som_generationkwh.model_wizard_generationkwh_investment_cancel_or_resign
 msgid "wizard.generationkwh.investment.cancel.or.resign"
 msgstr "wizard.generationkwh.investment.cancel.or.resign"
-
-#. module: som_generationkwh
-#: view:generationkwh.emission:0
-msgid "Confirm"
-msgstr "Confirm"
-
-#. module: som_generationkwh
-#: selection:send.retencio.estalvi.to.members.wizard,state:0
-msgid "Init"
-msgstr "Init"
 
 #. module: som_generationkwh
 #: field:generationkwh.invoice.line.owner,owner_id:0
@@ -1757,7 +1878,7 @@ msgid "Afegir generation kwh a AEAT mod193"
 msgstr "Añadir  generation kwh a AEAT mod193"
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/somenergia_soci.py:200
+#: code:addons/som_generationkwh/somenergia_soci.py:202
 msgid "El soci té inversions de generation actives."
 msgstr "El socio tiene inversiones de generation activas."
 
@@ -1841,6 +1962,11 @@ msgid "Generar factura de desinversió i remesar"
 msgstr "Generar factura de desinversión y remesar"
 
 #. module: som_generationkwh
+#: field:generationkwh.right.usage.line,owner_id:0
+msgid "Propietari"
+msgstr "Propietario"
+
+#. module: som_generationkwh
 #: code:addons/som_generationkwh/investment_sign.py:31
 msgid ""
 "Es necessita una adreça de correu electrònic\n"
@@ -1851,6 +1977,12 @@ msgstr "Se necesita una dirección de correo electrónico⏎\n                  
 #: field:generationkwh.investment,signed_date:0
 msgid "Data de firma"
 msgstr "Fecha de firma"
+
+#. module: som_generationkwh
+#: code:addons/som_generationkwh/investment_sign.py:30
+#: code:addons/som_generationkwh/investment_sign.py:64
+msgid "Error!"
+msgstr "Error!"
 
 #. module: som_generationkwh
 #: view:wizard.generationkwh.investment.divest:0
@@ -1872,6 +2004,11 @@ msgstr "Generation kWh Som Enegia Ref. ${object.number or ''}"
 #: help:generationkwh.emission,expiration_years:0
 msgid "Anys que dura el prèstec"
 msgstr "Años que dura el préstamo"
+
+#. module: som_generationkwh
+#: view:generationkwh.right.usage.line:0
+msgid "Total"
+msgstr "Total"
 
 #. module: som_generationkwh
 #: field:generationkwh.assignment,priority:0
@@ -1956,16 +2093,6 @@ msgid "generationkwh.investment"
 msgstr "generationkwh.investment"
 
 #. module: som_generationkwh
-#: field:send.retencio.estalvi.to.members.wizard,fiscal_year:0
-msgid "Any fiscal"
-msgstr "Año fiscal"
-
-#. module: som_generationkwh
-#: selection:send.retencio.estalvi.to.members.wizard,state:0
-msgid "Ok"
-msgstr "Ok"
-
-#. module: som_generationkwh
 #: field:wizard.generationkwh.investment.creation,iban:0
 msgid "Compte iban"
 msgstr "Cuenta iban"
@@ -1976,10 +2103,10 @@ msgid "You can not create move line on closed account."
 msgstr "You can not create move line on closed account."
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/investment_sign.py:30
-#: code:addons/som_generationkwh/investment_sign.py:64
-msgid "Error!"
-msgstr "Error!"
+#: model:ir.actions.act_window,name:som_generationkwh.act_right_usage_line_by_factura
+#: model:ir.actions.act_window,name:som_generationkwh.act_right_usage_line_by_partner
+msgid "Drets GKWH usats"
+msgstr "Derechos GKWH usados"
 
 #. module: som_generationkwh
 #: model:ir.model,name:som_generationkwh.model_generationkwh_remainder_testhelper
@@ -1995,6 +2122,11 @@ msgstr "Contracto Aportaciones Capital Social"
 #: field:generationkwh.kwh.per.share,version_start_date:0
 msgid "Data Valor"
 msgstr "Fecha Valor"
+
+#. module: som_generationkwh
+#: view:wizard.factures.liquidacio.interessos:0
+msgid "Sortir"
+msgstr "Salir"
 
 #. module: som_generationkwh
 #: model:ir.actions.act_window,name:som_generationkwh.action_wizard_generationkwh_investment_payment
@@ -2034,9 +2166,14 @@ msgid "Assignaments a contracte de Generation kWh"
 msgstr "Assignación a contrato de Generation kWh"
 
 #. module: som_generationkwh
-#: view:wizard.generationkwh.investment.amortization:0
-msgid "Mostrar remesa"
-msgstr "Mostrar remesa"
+#: view:generationkwh.emission:0
+msgid "Confirm"
+msgstr "Confirm"
+
+#. module: som_generationkwh
+#: model:ir.model,name:som_generationkwh.model_wizard_factures_liquidacio_interessos
+msgid "wizard.factures.liquidacio.interessos"
+msgstr "wizard.factures.liquidacio.interessos"
 
 #. module: som_generationkwh
 #: help:generationkwh.assignment,member_id:0
@@ -2044,6 +2181,7 @@ msgid "Soci que va comprar accions Generation kWh i els assigna"
 msgstr "Socio que compró acciones Generation kWh y las asigna"
 
 #. module: som_generationkwh
+#: field:wizard.factures.liquidacio.interessos,state:0
 #: field:wizard.generationkwh.investment.amortization,state:0
 msgid "Estat"
 msgstr "Estado"
@@ -2065,8 +2203,14 @@ msgstr "Ahorro Generation"
 
 #. module: som_generationkwh
 #: model:account.journal,name:som_generationkwh.apo_fact_journal
+#: code:addons/som_generationkwh/wizard/wizard_factures_liquidacio_interessos.py:118
 msgid "Factures Aportacions"
 msgstr "Facturas Aportaciones"
+
+#. module: som_generationkwh
+#: help:generationkwh.investment,last_interest_paid_date:0
+msgid "Darrer data fins la que s'han pagat interessos d'aquesta inversió"
+msgstr "Última fecha hasta la que se han pagado intereses de esta inversión"
 
 #. module: som_generationkwh
 #: help:generationkwh.investment,actions_log:0
@@ -2089,6 +2233,7 @@ msgid "Data final limit inversió per la campanya"
 msgstr "Fecha final límite inversión de la campanya"
 
 #. module: som_generationkwh
+#: field:wizard.factures.liquidacio.interessos,date_end:0
 #: field:wizard.generationkwh.investment.amortization,date_end:0
 #: field:wizard.llibre.registre.socis,date_to:0
 msgid "Data final"
@@ -2175,19 +2320,9 @@ msgid "Emission State"
 msgstr "Emission State"
 
 #. module: som_generationkwh
-#: field:send.retencio.estalvi.to.members.wizard,state:0
-msgid "Progress State"
-msgstr "Progress State"
-
-#. module: som_generationkwh
 #: view:wizard.generationkwh.investment.creation:0
 msgid "Creació de inversion"
 msgstr "Creación de inversión"
-
-#. module: som_generationkwh
-#: view:send.retencio.estalvi.to.members.wizard:0
-msgid "D'acord"
-msgstr "De acuerdo"
 
 #. module: som_generationkwh
 #: help:generationkwh.assignment,contract_last_invoiced:0
@@ -2226,11 +2361,6 @@ msgid "Num. Factura"
 msgstr "Num. Factura"
 
 #. module: som_generationkwh
-#: selection:send.retencio.estalvi.to.members.wizard,state:0
-msgid "Error"
-msgstr "Error"
-
-#. module: som_generationkwh
 #: help:generationkwh.remainder,n_shares:0
 msgid "Number of shares"
 msgstr "Number of shares"
@@ -2256,14 +2386,14 @@ msgid ""
 msgstr "Invalid period ! Some periods overlap or the date period is not in the scope of the fiscal year. "
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/somenergia_soci.py:207
+#: code:addons/som_generationkwh/somenergia_soci.py:210
 msgid "El soci té aportacions actives."
 msgstr "El socio tiene aportacions activas."
 
 #. module: som_generationkwh
-#: help:generationkwh.emission,amortization_product_id:0
-msgid "Producte de la línia de l'amortització dins la factura de la inversió"
-msgstr "Producto de la linia de la amortización dentro de la factura de la inversion"
+#: constraint:account.fiscalyear:0
+msgid "Error ! The duration of the Fiscal Year is invalid. "
+msgstr "Error ! The duration of the Fiscal Year is invalid. "
 
 #. module: som_generationkwh
 #: view:wizard.generationkwh.investment.transfer:0
@@ -2279,6 +2409,11 @@ msgstr "Producto de la línia del capital dentro la factura de inversión"
 #: selection:generationkwh.emission,state:0
 msgid "Realitzat"
 msgstr "Realizado"
+
+#. module: som_generationkwh
+#: view:wizard.factures.liquidacio.interessos:0
+msgid "Informació"
+msgstr "Información"
 
 #. module: som_generationkwh
 #: field:generationkwh.emission,amortization_product_id:0
@@ -2313,7 +2448,7 @@ msgid "Renunciar"
 msgstr "Renunciar"
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/investment.py:859
+#: code:addons/som_generationkwh/investment.py:911
 msgid ""
 "Retenció IRPF sobre l'estalvi del Generationkwh de {retention_date:%Y} de "
 "{investment} "
@@ -2343,6 +2478,12 @@ msgid "Amortitzar"
 msgstr "Amortizar"
 
 #. module: som_generationkwh
+#: code:addons/som_generationkwh/wizard/wizard_factures_liquidacio_interessos.py:80
+msgid ""
+"Aquesta acció només es pot aplicar sobre aportacions al capital social."
+msgstr "Esta acción sólo puede aplicarse sobre aportaciones al capital social."
+
+#. module: som_generationkwh
 #: field:generationkwh.emission,mandate_name:0
 msgid "Nom de mandato"
 msgstr "Nombre de mandato"
@@ -2358,6 +2499,7 @@ msgid "Retenció IRPF estalvi Generation kWh"
 msgstr "Retención IRPF ahorro  Generation kWh"
 
 #. module: som_generationkwh
+#: model:poweremail.templates,def_body_text:som_generationkwh.aportacio_interest_notification_mail
 #: model:poweremail.templates,def_body_text:som_generationkwh.generationkwh_assignment_notification_mail
 #: model:poweremail.templates,def_body_text:som_generationkwh.generationkwh_mail_amortitzacio
 #: model:poweremail.templates,def_body_text:som_generationkwh.generationkwh_mail_creacio
@@ -2376,8 +2518,8 @@ msgid "Liquidació préstec Generation kWh"
 msgstr "Liquidación préstamo Generation kWh"
 
 #: rml:som_generationkwh/report/report_amortization_gkwh.mako:127
-msgid "Dades Préstec Generation kWh: "
-msgstr "Datos Préstamo Generation kWh: "
+msgid "Dades préstec Generation kWh: "
+msgstr "Datos préstamo Generation kWh: "
 
 #: rml:som_generationkwh/report/report_amortization_gkwh.mako:130
 msgid "Titular: "
@@ -2400,44 +2542,93 @@ msgid "Data venciment: "
 msgstr "Fecha vencimiento: "
 
 #: rml:som_generationkwh/report/report_amortization_gkwh.mako:145
-msgid "Amortització Actual: "
-msgstr "Amortización Actual: "
+msgid "Amortització del préstec: "
+msgstr "Amortización del préstamo: "
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:148
+msgid "Pagament núm: "
+msgstr "Pago núm: "
 
 #: rml:som_generationkwh/report/report_amortization_gkwh.mako:149
 msgid "Import: "
 msgstr "Importe: "
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:150
-msgid "IRPF 19% "
-msgstr "IRPF 19% "
-
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:150
-msgid ": "
-msgstr ": "
-
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:151
-msgid "Import net: "
-msgstr "Importe neto: "
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:152
+msgid "Import pendent de retornar: "
+msgstr "Importe pendiente de devolver: "
 
 #: rml:som_generationkwh/report/report_amortization_gkwh.mako:153
 msgid "Data: "
 msgstr "Fecha: "
 
 #: rml:som_generationkwh/report/report_amortization_gkwh.mako:156
-msgid "Pagament nº: "
-msgstr "Pago nº: "
+msgid "Recorda: el pagament nº 24 serà doble"
+msgstr "Recuerda: el pago nº 24 será doble"
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:157
-msgid "Pendent de retornar: "
-msgstr "Pendiente de devolver: "
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:162
+msgid "Aplicació de la tarifa Generation kWh als teus usos d’energia (any "
+msgstr "Aplicación de la tarifa Generation kWh a tus usos de energía (año  "
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:160
-msgid "Recordeu: el pagament nº 24 serà doble"
-msgstr "Recuerde: el pago nº 24 será doble"
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:162
+msgid ")"
+msgstr ")"
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:166
-msgid "Compte on es realizarà l'ingrés"
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:165
+msgid "Quantitat d’energia facturada a preu Generation kWh"
+msgstr "Cantidad de energía facturada a precio Generation kWh"
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:169
+msgid "Contractes on s’ha aplicat aquesta tarifa"
+msgstr "Contratos en los que se ha aplicado esta tarifa"
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:172
+msgid " kWh : contracte "
+msgstr " kWh : contrato "
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:177
+msgid "Import facturat amb tarifa Generation kWh"
+msgstr "Importe facturado con tarifa Generation kWh"
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:181
+msgid "El que hauria costat sense aplicar-hi la tarifa Generation kWh"
+msgstr "Lo que habría costado sin aplicar la tarifa Generation kWh"
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:185
+msgid "Estalvi obtingut (guany en espècie)"
+msgstr "Ahorro obtenido (ganancia en especie)"
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:189
+#, python-format
+msgid "Retenció IRPF o impost de societats (19% sobre l’estalvi)"
+msgstr "Retención IRPF o impuesto de sociedades (19% sobre el ahorro)"
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:196
+msgid "Liquidació final"
+msgstr "Liquidación final"
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:199
+msgid "Amortització del préstec"
+msgstr "Amortización del préstamo"
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:203
+msgid "Retenció IRPF o impost de societats"
+msgstr "Retención IRPF o impuesto de sociedades"
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:209
+msgid "Import al teu favor"
+msgstr "Importe a tu favor"
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:211
+msgid "Import a retornar a Som Energia"
+msgstr "Importe a devolver a Som Energia"
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:221
+msgid "Compte on es realitzarà l'ingrés"
 msgstr "Cuenta donde se realizará el ingreso"
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:223
+msgid "Compte on es realitzarà el càrrec"
+msgstr "Cuenta donde se realizará el cargo"
 
 #: rml:som_generationkwh/report/report_contract_apo.mako:205
 msgid "gener"
@@ -2981,6 +3172,11 @@ msgid ""
 "ciutat de Girona, excepte en aquells supòsits que es disposi una altra cosa "
 "de forma imperativa per la normativa aplicable a l’efecte."
 msgstr "9.5 Todas las controversias que puedan surgir en relación con este contrato se someterán a la jurisdicción de los juzgados y tribunales de la ciudad de Girona, excepto en aquellos supuestos en los que se disponga de otra manera de forma imperativa por la normativa aplicable al efecto."
+
+#: rml:som_generationkwh/report/report_llibre_registre_socis_summary.mako:66
+#, python-format
+msgid "%s €"
+msgstr "%s €"
 
 #: rml:som_generationkwh/report/report_retencions_gkwh.mako:160
 msgid "CIF:"
