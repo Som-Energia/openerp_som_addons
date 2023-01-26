@@ -103,15 +103,16 @@ class SomCrawlersTask(osv.osv):
         task_steps_list = task_obj.task_step_ids
         task_steps_list.sort(key=lambda x: x.sequence)
         result_id = classresult.create(cursor,uid,{'task_id': id,'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M")})
+        output = ''
         for taskStep in task_steps_list:
             try:
-                output = classTaskStep.executar_steps(cursor,uid,taskStep.id,result_id)
+                output += classTaskStep.executar_steps(cursor,uid,taskStep.id,result_id)
                 classresult.write(cursor,uid, result_id, {'resultat_bool': True, 'resultat_text': output})
             except exceptions.NoResultsException as e:
-                classresult.write(cursor,uid, result_id, {'resultat_bool': True, 'resultat_text': str(e)})
+                classresult.write(cursor,uid, result_id, {'resultat_bool': True, 'resultat_text': "La tasca " + taskStep.name + ' ' + str(e)})
                 break
             except Exception as e:
-                classresult.write(cursor,uid, result_id, {'resultat_bool': False, 'resultat_text': str(e)})
+                classresult.write(cursor,uid, result_id, {'resultat_bool': False, 'resultat_text': "La tasca " + taskStep.name + ' Ha petat per ' + str(e) + "\n Les altres tasques:" + output})
                 break
 
         self.schedule_next_execution(cursor, uid, id, context)

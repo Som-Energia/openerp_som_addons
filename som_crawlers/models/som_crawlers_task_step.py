@@ -129,8 +129,6 @@ class SomCrawlersTaskStep(osv.osv):
         task_step_obj = self.browse(cursor, uid, id)
         task_step_params = json.loads(task_step_obj.params)
         path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../')
-        classresult.write(cursor, uid, result_id, {
-                          'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M:%S")})
         output = ''
 
         if 'nom_fitxer' in task_step_params:
@@ -154,7 +152,7 @@ class SomCrawlersTaskStep(osv.osv):
                 output = self.readOutputFile(
                     cursor, uid, output_path, file_name)
                 if output == 'Files have been successfully downloaded':
-                    output = self.attach_files_zip(
+                    output += self.attach_files_zip(
                         cursor, uid, id, result_id, config_obj, output_path, task_step_params, context=context)
                 elif 'SENSE RESULTATS: ' in output:
                     raise exceptions.NoResultsException(msg=output, add_msg_tag=False)
@@ -169,7 +167,6 @@ class SomCrawlersTaskStep(osv.osv):
         task_step_obj.task_id.write({'ultima_tasca_executada': str(
             task_step_obj.name) + ' - ' + str(datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))})
         classresult.write(cursor, uid, result_id, {'resultat_bool': True})
-
         return output
 
     def import_xml_files(self, cursor, uid, id, result_id, nivell=10, context=None):
@@ -180,8 +177,6 @@ class SomCrawlersTaskStep(osv.osv):
         classresult = self.pool.get('som.crawlers.result')
         attachment_obj = self.pool.get('ir.attachment')
         classresult.write(cursor, uid, result_id, {'resultat_bool': False})
-        classresult.write(cursor, uid, result_id, {
-                          'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M:%S")})
         result_obj = classresult.browse(cursor, uid, result_id)
         attachment_id = result_obj.zip_name.id
         task_step_obj = self.browse(cursor, uid, id)
