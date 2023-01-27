@@ -325,6 +325,8 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             msg_open_send, csv_open_send = self.open_polissa_invoices_send_mail(cursor, uid, ids, facts_by_polissa, context)
             msg += msg_open_send
             fact_csv_result += csv_open_send
+
+        if f1_refacturats:
             self.save_info_into_f1_after_refacturacio(cursor, uid, f1_refacturats, context=context)
 
         self.write_report(cursor, uid, ids, fact_csv_result, context)
