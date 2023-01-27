@@ -129,8 +129,8 @@ class SomCrawlersTaskStep(osv.osv):
         task_step_obj = self.browse(cursor, uid, id)
         task_step_params = json.loads(task_step_obj.params)
         path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../')
-        output = ''
 
+        output = ""
         if 'nom_fitxer' in task_step_params:
             config_obj = self.pool.get('som.crawlers.task').id_del_portal_config(
                 cursor, uid, task_step_obj.task_id.id, context)
@@ -152,14 +152,14 @@ class SomCrawlersTaskStep(osv.osv):
                 output = self.readOutputFile(
                     cursor, uid, output_path, file_name)
                 if output == 'Files have been successfully downloaded':
-                    output += self.attach_files_zip(
+                    output += "\n" + self.attach_files_zip(
                         cursor, uid, id, result_id, config_obj, output_path, task_step_params, context=context)
                 elif 'SENSE RESULTATS: ' in output:
                     raise exceptions.NoResultsException(msg=output, add_msg_tag=False)
                 else:
                     self.attach_files_screenshot(
                         cursor, uid, config_obj, output_path, result_id, task_step_params, context)
-                    raise Exception("Error al descarregar fitxers: %s" % output)
+                    raise Exception(output)
             else:
                 output = 'File or directory doesn\'t exist'
         else:
