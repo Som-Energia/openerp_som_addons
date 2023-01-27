@@ -95,7 +95,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
                 with self.assertRaises(Exception) as context:
                     self.taskStep.import_xml_files(cursor, uid, crawler_task_step_id, result_id)
                 #check result
-                self.assertTrue('don\'t exist id attachment' in context.exception)
+                self.assertTrue("Don't exist attachment ID" in context.exception.message)
 
 
     def no_test_import_xml_files_entrada_zip_prova_sortida_import_donee(self):
