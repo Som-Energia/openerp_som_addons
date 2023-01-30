@@ -775,6 +775,6 @@ class UpdatePendingStates(osv.osv_memory):
                         if 'Bo Social' in process_name:
                             self.update_waiting_for_annex_cancelled_contracts(cursor, uid, fact_id, traspas_advocats_bs, context)
                         self.update_waiting_for_annex_cancelled_contracts(cursor, uid, fact_id, traspas_advocats_dp, context)
-                    fact_obj.set_pending(cursor, uid, fact_id, waiting_notif_id)
+                    fact_obj.set_pending(cursor, uid, [fact_id], waiting_notif_id)
 
 UpdatePendingStates()
