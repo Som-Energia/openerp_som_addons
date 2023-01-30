@@ -768,13 +768,13 @@ class UpdatePendingStates(osv.osv_memory):
                                                     ('pending_state.weight', '>', correct_weight)])
             if len(inv_list) >= 2:
                 for invoice_id in inv_list:
-                    inv_number = inv_obj.browse(cursor, uid, invoice_id).number
-                    fact_id = fact_obj.search(cursor, uid, [('number', '=', inv_number)])[0]
-                    polissa = fact_obj.browse(cursor, uid, fact_id).polissa_id
+                    inv_number = inv_obj.browse(cursor, uid, invoice_id).number #quan es fan testos és False perquè les factures de destral no tene number
+                    fact_id = fact_obj.search(cursor, uid, [('number', '=', inv_number)])
+                    polissa = fact_obj.browse(cursor, uid, fact_id[0]).polissa_id
                     if polissa.state == 'baixa':
                         if 'Bo Social' in process_name:
-                            self.update_waiting_for_annex_cancelled_contracts(cursor, uid, fact_id, traspas_advocats_bs, context)
-                        self.update_waiting_for_annex_cancelled_contracts(cursor, uid, fact_id, traspas_advocats_dp, context)
-                    fact_obj.set_pending(cursor, uid, [fact_id], waiting_notif_id)
+                            self.update_waiting_for_annex_cancelled_contracts(cursor, uid, fact_id[0], traspas_advocats_bs, context)
+                        self.update_waiting_for_annex_cancelled_contracts(cursor, uid, fact_id[0], traspas_advocats_dp, context)
+                    fact_obj.set_pending(cursor, uid, fact_id, waiting_notif_id)
 
 UpdatePendingStates()
