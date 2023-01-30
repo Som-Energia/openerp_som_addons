@@ -9,6 +9,19 @@ class GiscedataSwitchingHelpers(osv.osv):
     _name = 'giscedata.switching.helpers'
     _inherit = 'giscedata.switching.helpers'
 
+    def activar_polissa_from_m1_canvi_titular_subrogacio(self, cursor, uid, sw_id, context=None):
+        res = super(GiscedataSwitchingHelpers, self).activar_polissa_from_m1_canvi_titular_subrogacio(
+            cursor, uid, sw_id, context=context
+        )
+
+        sw_obj = self.pool.get('giscedata.switching')
+        payment_mode_o = self.pool.get('payment.mode')
+        payment_mode_id = payment_mode_o.search(cursor, uid, [('name', '=', 'ENGINYERS')])
+        sw = sw_obj.browse(cursor, uid, sw_id, context=context)
+        sw.cups_polissa_id.write({'payment_mode_id': payment_mode_id[0]})
+
+        return res
+
     def tancar_reclamacio_cac(self, cursor, uid, sw_id, context=None):
         """
         Quan  s'importa o activa un R1-05 que:

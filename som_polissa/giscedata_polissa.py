@@ -342,6 +342,27 @@ class GiscedataPolissa(osv.osv):
 
         return res
 
+    def wkf_activa(self, cursor, uid, ids):
+        if not isinstance(ids, list):
+            ids = [ids]
+
+        payment_mode_o = self.pool.get('payment.mode')
+        payment_mode_id = payment_mode_o.search(cursor, uid, [('name', '=', 'ENGINYERS')])
+        self.write(cursor, uid, ids, {'payment_mode_id': payment_mode_id[0]})
+
+        return super(GiscedataPolissa, self).wkf_activa(cursor, uid, ids)
+
+    def copy_data(self, cursor, uid, id, default=None, context=None):
+        if context is None:
+            context = {}
+
+        if default is None:
+            default = {}
+
+        payment_mode_o = self.pool.get('payment.mode')
+        payment_mode_id = payment_mode_o.search(cursor, uid, [('name', '=', 'ENGINYERS')])
+        default.update({'payment_mode_id': payment_mode_id[0]})
+        return super(GiscedataPolissa, self).copy_data(cursor, uid, id, default, context=context)
 
     _columns = {
         'info_gestio_endarrerida': fields.text('Informació gestió endarrerida'),
