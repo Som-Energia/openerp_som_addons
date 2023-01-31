@@ -1634,6 +1634,7 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                 'days': 30,
                 'date_from': '01/06/2021',
                 'date_to': '30/06/2021',
+                'date_to_d': '2021-06-30',
             }])
 
     @mock.patch.object(giscedata_facturacio_report, 'is_2XTD')
@@ -1728,6 +1729,7 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                         'days': 31,
                         'date_from': '01/05/2021',
                         'date_to': '31/05/2021',
+                        'date_to_d': '2021-05-31',
                     },{
                         'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
                         'P2': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
@@ -1739,6 +1741,209 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                         'days': 30,
                         'date_from': '01/06/2021',
                         'date_to': '30/06/2021',
+                        'date_to_d': '2021-06-30',
+                    },
+                ],
+            })
+
+    @mock.patch.object(giscedata_facturacio_report, 'is_2XTD')
+    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_atr_price')
+    def test__get_sub_component_invoice_details_td_data_4_power_lines_2_periods_2_blocks_incomplete(self, get_atr_price_mock_function, is_2XTD_mock_function):
+        get_atr_price_mock_function.return_value = 10.0
+        is_2XTD_mock_function.return_value = True
+
+        f_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
+
+        self.linia_f_obj.create(self.cursor, self.uid,
+            {
+                'name': 'P1',
+                'quantity': 1.0,
+                'price_subtotal': 10.0,
+                'price_unit_multi': 1,
+                'price_unit': 1,
+                'extra': 1,
+                'multi': 1,
+                'factura_id': f_id,
+                'tipus': 'potencia',
+                'product_id': 0,
+                'account_id': 1,
+                'data_desde': '2021-05-01',
+                'data_fins': '2021-05-31'
+            })
+
+        self.linia_f_obj.create(self.cursor, self.uid,
+            {
+                'name': 'P2',
+                'quantity': 1.0,
+                'price_subtotal': 10.0,
+                'price_unit_multi': 1,
+                'price_unit': 1,
+                'extra': 1,
+                'multi': 1,
+                'factura_id': f_id,
+                'tipus': 'potencia',
+                'product_id': 0,
+                'account_id': 1,
+                'data_desde': '2021-05-01',
+                'data_fins': '2021-06-30'
+            })
+
+        self.linia_f_obj.create(self.cursor, self.uid,
+            {
+                'name': 'P1',
+                'quantity': 1.0,
+                'price_subtotal': 10.0,
+                'price_unit_multi': 1,
+                'price_unit': 1,
+                'multi': 1,
+                'factura_id': f_id,
+                'tipus': 'potencia',
+                'product_id': 1,
+                'account_id': 1,
+                'data_desde': '2021-06-01',
+                'data_fins': '2021-06-30'
+            })
+
+        result = self.r_obj.get_sub_component_invoice_details_td_power_data(**self.bfp(f_id))
+
+        self.assertYamlfy(result)
+        self.assertEquals(result, {
+            'header_multi': 6,
+            'showing_periods': ['P1', 'P2', 'P3'],
+            'power_lines_data': [
+                    {
+                        'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                        'P2': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                        'multi': 1.0,
+                        'days_per_year': 365,
+                        'total': 2.0,
+                        'origin': 'sense lectura',
+                        'data': '2021-05-01',
+                        'days': 61,
+                        'date_from': '01/05/2021',
+                        'date_to': '30/06/2021',
+                        'date_to_d': '2021-06-30',
+                    },{
+                        'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                        'multi': 1.0,
+                        'days_per_year': 365,
+                        'total': 1.0,
+                        'origin': 'sense lectura',
+                        'data': '2021-06-01',
+                        'days': 30,
+                        'date_from': '01/06/2021',
+                        'date_to': '30/06/2021',
+                        'date_to_d': '2021-06-30',
+                    },
+                ],
+            })
+
+    @mock.patch.object(giscedata_facturacio_report, 'is_2XTD')
+    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_atr_price')
+    def test__get_sub_component_invoice_details_td_data_4_power_lines_3_periods_2_blocks_incomplete(self, get_atr_price_mock_function, is_2XTD_mock_function):
+        get_atr_price_mock_function.return_value = 10.0
+        is_2XTD_mock_function.return_value = True
+
+        f_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
+
+        self.linia_f_obj.create(self.cursor, self.uid,
+            {
+                'name': 'P1',
+                'quantity': 1.0,
+                'price_subtotal': 10.0,
+                'price_unit_multi': 1,
+                'price_unit': 1,
+                'extra': 1,
+                'multi': 1,
+                'factura_id': f_id,
+                'tipus': 'potencia',
+                'product_id': 0,
+                'account_id': 1,
+                'data_desde': '2021-05-01',
+                'data_fins': '2021-05-31'
+            })
+
+        self.linia_f_obj.create(self.cursor, self.uid,
+            {
+                'name': 'P2',
+                'quantity': 1.0,
+                'price_subtotal': 10.0,
+                'price_unit_multi': 1,
+                'price_unit': 1,
+                'extra': 1,
+                'multi': 1,
+                'factura_id': f_id,
+                'tipus': 'potencia',
+                'product_id': 0,
+                'account_id': 1,
+                'data_desde': '2021-05-01',
+                'data_fins': '2021-06-30'
+            })
+
+        self.linia_f_obj.create(self.cursor, self.uid,
+            {
+                'name': 'P3',
+                'quantity': 1.0,
+                'price_subtotal': 10.0,
+                'price_unit_multi': 1,
+                'price_unit': 1,
+                'extra': 1,
+                'multi': 1,
+                'factura_id': f_id,
+                'tipus': 'potencia',
+                'product_id': 0,
+                'account_id': 1,
+                'data_desde': '2021-05-01',
+                'data_fins': '2021-06-30'
+            })
+
+        self.linia_f_obj.create(self.cursor, self.uid,
+            {
+                'name': 'P1',
+                'quantity': 1.0,
+                'price_subtotal': 10.0,
+                'price_unit_multi': 1,
+                'price_unit': 1,
+                'multi': 1,
+                'factura_id': f_id,
+                'tipus': 'potencia',
+                'product_id': 1,
+                'account_id': 1,
+                'data_desde': '2021-06-01',
+                'data_fins': '2021-06-30'
+            })
+
+        result = self.r_obj.get_sub_component_invoice_details_td_power_data(**self.bfp(f_id))
+
+        self.assertYamlfy(result)
+        self.assertEquals(result, {
+            'header_multi': 6,
+            'showing_periods': ['P1', 'P2', 'P3'],
+            'power_lines_data': [
+                    {
+                        'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                        'P2': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                        'P3': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                        'multi': 1.0,
+                        'days_per_year': 365,
+                        'total': 3.0,
+                        'origin': 'sense lectura',
+                        'data': '2021-05-01',
+                        'days': 61,
+                        'date_from': '01/05/2021',
+                        'date_to': '30/06/2021',
+                        'date_to_d': '2021-06-30',
+                    },{
+                        'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                        'multi': 1.0,
+                        'days_per_year': 365,
+                        'total': 1.0,
+                        'origin': 'sense lectura',
+                        'data': '2021-06-01',
+                        'days': 30,
+                        'date_from': '01/06/2021',
+                        'date_to': '30/06/2021',
+                        'date_to_d': '2021-06-30',
                     },
                 ],
             })
@@ -1869,6 +2074,7 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                         'days': 30,
                         'date_from': '01/06/2021',
                         'date_to': '30/06/2021',
+                        'date_to_d': '2021-06-30',
                     },
                 ],
             })
@@ -2101,6 +2307,7 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                         'days': 30,
                         'date_from': '01/05/2021',
                         'date_to': '30/05/2021',
+                        'date_to_d': '2021-05-30',
                     },{
                         'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
                         'P2': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
@@ -2116,6 +2323,7 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                         'days': 30,
                         'date_from': '01/06/2021',
                         'date_to': '30/06/2021',
+                        'date_to_d': '2021-06-30',
                     },
                 ],
             })
