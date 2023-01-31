@@ -146,6 +146,8 @@ class SomCrawlersTaskStep(osv.osv):
                     datetime.now().strftime("%Y-%m-%d_%H_%M_%S_%f") + ".txt"
                 args_str = self.create_script_args(
                     config_obj, task_step_params, file_name)
+                if 'days_of_margin' in context:
+                    args_str['-d'] = str(context['days_of_margin'])
                 os.system("{} {} {}".format(
                     path_python, script_path, args_str))
                 output_path = self.get_output_path(cursor, uid)
@@ -194,7 +196,7 @@ class SomCrawlersTaskStep(osv.osv):
                     att = attachment_obj.browse(cursor, uid, attachment_id)
                     content = att.datas
                     file_name = att.name
-                output = self.import_wizard(cursor, uid, file_name, content)
+                output = self.import_wizard(cursor, uid, id, file_name, content)
             except (TypeError, CorruptGridFile, NoFile) as e:
                 sleep(100)
                 output = self.import_xml_files(
@@ -302,7 +304,7 @@ class SomCrawlersTaskStep(osv.osv):
 
         return output
 
-    def import_wizard(self, cursor, uid, file_name, file_content):
+    def import_wizard(self, cursor, uid, id, file_name, file_content):
         if file_name.endswith('.zip'):
             values = {'filename': file_name, 'file': file_content}
             WizardImportAtrF1 = self.pool.get('wizard.import.atr.and.f1')

@@ -90,8 +90,8 @@ class WizardExecutarTascaTests(testing.OOTestCase):
                 cursor = txn.cursor
                 uid = txn.user
                 crawler_task_step_id = self.Data.get_object_reference(cursor, uid, 'som_crawlers', 'demo_taskStep_6')[1]
-                #try test
                 result_id = self.Data.get_object_reference(cursor, uid, 'som_crawlers', 'demo_result_2')[1]
+                #try test
                 with self.assertRaises(Exception) as context:
                     self.taskStep.import_xml_files(cursor, uid, crawler_task_step_id, result_id)
                 #check result
