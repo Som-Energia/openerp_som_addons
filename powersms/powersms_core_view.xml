@@ -13,13 +13,14 @@
                     </group>
                     <notebook colspan="4">
                         <page string="Outgoing">
+                            <field name="provider_sel"/>
                             <separator string="Server Information" colspan="4" />
-                            <group col="2" colspan="2">
+                            <group col="2" colspan="2" attrs="{'invisible': [('provider_sel', '!=', 'send_sms_lleida')]}">>
                                 <field name="user" select="2" colspan="2" />
                                 <field name="api_server" select="1" colspan="2" />
                                 <field name="tel_id" select="1" colspan="2" />
                             </group>
-                            <group col="2" colspan="2">
+                            <group col="2" colspan="2" attrs="{'invisible': [('provider_sel', '!=', 'send_sms_lleida')]}">
                                 <field name="api_uname" select="1" colspan="2" />
                                 <field name="api_pass" password="True" colspan="2" />
                                 <button name="check_outgoing_connection" type="object" string="Check Outgoing Connection" />

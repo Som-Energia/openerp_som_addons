@@ -9,6 +9,9 @@ class PowersmsCoreAccounts(osv.osv):
     """
     _name = "powersms.core_accounts"
 
+    def _get_provider_sel(self, cursor, uid, context={}):
+        return [('send_sms_lleida', 'LLeida NET SMS')]
+
     def check_numbers(self, cr, uid, ids, numbers):
         box_obj = self.pool.get('powersms.smsbox')
         if box_obj.check_mobile(numbers):
@@ -44,7 +47,12 @@ class PowersmsCoreAccounts(osv.osv):
         for account_id in ids:
             account = self.browse(cr, uid, account_id, context)
             try:
-                self.send_sms_lleida(cr, uid, ids, numbers_to, body, from_name)
+                method = self.provider_sel[0]
+                if not method:
+                    raise Exception(
+                        'Sending method not found for this account. Provider not defined or not configured'
+                    )
+                res = getattr(self, method)(cr, uid, ids, numbers_to, body, from_name)
                 return True
             except Exception as error:
                 logger.notifyChannel(
@@ -104,6 +112,7 @@ class PowersmsCoreAccounts(osv.osv):
                         string="Allowed User Groups",
                         help="Only users from these groups will be " \
                         "allowed to send SMS from this ID."),
+        'provider_sel': fields.selection(_get_provider_sel, 'Proveïdor de servei'),
     }
 
     _defaults = {
@@ -111,6 +120,7 @@ class PowersmsCoreAccounts(osv.osv):
             'res.users').read(cursor, user, user, ['name'], context)['name'],
          'state':lambda * a:'draft',
          'user':lambda self, cursor, user, context:user,
+         'provider_sel': lambda *a: 'send_sms_lleida',
     }
     _sql_constraints = [
         (
