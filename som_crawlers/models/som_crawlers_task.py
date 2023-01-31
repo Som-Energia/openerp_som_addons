@@ -103,16 +103,30 @@ class SomCrawlersTask(osv.osv):
         task_steps_list = task_obj.task_step_ids
         task_steps_list.sort(key=lambda x: x.sequence)
         result_id = classresult.create(cursor,uid,{'task_id': id,'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M")})
+
+        output = ""
+        resultat_correcte = False
         for taskStep in task_steps_list:
+            resultat = "[" + taskStep.name + "]: "
             try:
-                output = classTaskStep.executar_steps(cursor,uid,taskStep.id,result_id)
-                classresult.write(cursor,uid, result_id, {'resultat_bool': True, 'resultat_text': output})
+                resultat += classTaskStep.executar_steps(
+                    cursor, uid, taskStep.id, result_id)
+                resultat_correcte = True
             except exceptions.NoResultsException as e:
-                classresult.write(cursor,uid, result_id, {'resultat_bool': True, 'resultat_text': str(e)})
+                resultat += str(e)
+                resultat_correcte = True
                 break
             except Exception as e:
-                classresult.write(cursor,uid, result_id, {'resultat_bool': False, 'resultat_text': str(e)})
+                resultat += "ERROR " + str(e)
                 break
+            finally:
+                output = resultat + "\n\n" + output
+
+        classresult.write(cursor, uid, result_id,
+                          {
+                              'resultat_bool': resultat_correcte,
+                              'resultat_text': output
+                          })
 
         self.schedule_next_execution(cursor, uid, id, context)
 
