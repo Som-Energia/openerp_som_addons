@@ -1395,6 +1395,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                         'tax_type': tax_type,
                     })
         else:
+            fiscal_position = False
             for l in fact.tax_line:
                 if 'IVA' not in l.name and 'IGIC' not in l.name:
                     iese_lines.append({
