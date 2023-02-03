@@ -7,6 +7,8 @@ from base.res.partner.partner import _lang_get
 from tools.misc import cache
 from service.security import Sudo
 from datetime import datetime
+from som_leads.validators.fields_validators import FieldsValidators
+from som_leads.exceptions import leads_exceptions
 
 class SomSociCrmLead(osv.OsvInherits):
 
@@ -15,6 +17,7 @@ class SomSociCrmLead(osv.OsvInherits):
     _order = "id desc"
     _description = _(u"Somenergia Soci CRM Leads")
 
+    _required_fields = ['nom', 'cognom', 'dni', 'tel', 'email','cp', 'provincia', 'adreca', 'municipi']
 
     lead_partner_adr_to_adr = {
         'address_zip': 'zip',
@@ -54,6 +57,7 @@ class SomSociCrmLead(osv.OsvInherits):
     def create(self, cursor, uid, vals, context=None):
         if vals is None:
             vals = {}
+
         new_vals = self._clean_and_fill_values(cursor, uid, vals, context=context)
 
         for camp, valor in new_vals.items():
@@ -185,29 +189,34 @@ class SomSociCrmLead(osv.OsvInherits):
             id = id[0]
 
         stage = self.browse(cr, uid, id).stage_id
+        result = []
         if stage:
             stage = stage.id
             stage_obj = self.pool.get('crm.case.stage')
             method = stage_obj.read(cr, uid, stage, ['method'])['method']
             if method:
                 func = getattr(self, method)
-                result = func(cr, uid, [id], context)
+                try:
+                    result = func(cr, uid, [id], context)
+                except Exception as e:
+                    raise e
+        return result
 
 
     def stage_next(self, cr, uid, ids, context=None):
         crm_obj = self.pool.get('crm.case')
-        err = []
+        res = []
         for _id in ids:
             lead = self.browse(cr, uid, _id)
-            if lead.state != 'open':
-                err.append(_id)
+            if lead.state != 'open' and lead.stage_id:
+                error_text = _(u"El lead amb ID: {} no està en estat obert".format(_id))
+                raise leads_exceptions.InvalidLeadState('ERROR', error_text, [error_text])
                 continue
-            self.run_method(cr, uid, _id, context)
-            res = crm_obj.stage_next(cr, uid, [lead.crm_id.id], context)
-        if err:
-            raise osv.except_osv(
-                _(u"ERROR"), _(u"Els leads amb ID's: {} no estan en estat Obert".format(err))
-            )
+            try:
+                res = self.run_method(cr, uid, _id, context)
+                crm_obj.stage_next(cr, uid, [lead.crm_id.id], context)
+            except Exception as e:
+                raise e
         return res
 
     def stage_previous(self, cr, uid, ids, context=None):
@@ -240,9 +249,9 @@ class SomSociCrmLead(osv.OsvInherits):
 
         info = self._check_and_get_mandatory_fields(cursor, uid, crml_id, mandatory_fields, opt_fields, context=context)
 
-
         aid = None
         tids = partner_o.search(cursor, uid, [('vat', '=', info['partner_vat'])])
+
         if len(tids):
             tid = tids[0]
             res = _(u"Se ha encontrado un titular con numero de documento {0}, no se creara una nueva ficha de empresa. ").format(info['partner_vat'])
@@ -293,7 +302,7 @@ class SomSociCrmLead(osv.OsvInherits):
         if aid:
             self.write(cursor, uid, [crml_id], {'partner_address_id': aid}, context=context)
 
-        return res
+        return tid
 
     def create_entity_soci(self, cursor, uid, crml_id, context=None):
         if context is None:
@@ -304,17 +313,17 @@ class SomSociCrmLead(osv.OsvInherits):
         soci_o = self.pool.get("somenergia.soci")
         partner_id = self.read(cursor, uid, crml_id, ['partner_id'])['partner_id'][0]
         soci_id = soci_o.search(cursor, uid, [('partner_id', '=', partner_id), ('baixa','=', False)], context=context)
-        res = ''
         if soci_id:
-            return _(u"S'ha trobat un soci amb el partner_id {} i està actiu.").format(partner_id)
+            error_text = _(u"S'ha trobat un soci amb el partner_id {} i està actiu.").format(partner_id)
+            raise leads_exceptions.MemberExistsException(_(u"Error al crear el soci"), error_text, [error_text])
+
         else:
             soci_id = soci_o.create_one_soci(cursor, uid, partner_id, context)
-            res = _(u"S'ha creat o activat el soci")
         if isinstance(soci_id, (list, tuple)):
             soci_id = soci_id[0]
         self.write(cursor, uid, [crml_id], {'soci_id': soci_id}, context=context)
 
-        return res
+        return soci_id
 
     def create_mandatory_apo_invoice(self, cursor, uid, crml_id, context=None):
         if context is None:
@@ -337,11 +346,15 @@ class SomSociCrmLead(osv.OsvInherits):
         #TODO: al log de l'apo s'escriu Facturada i remesada i no és veritat.
         invoice_ids, errors = investment_o.create_initial_invoices(cursor, uid, [investment_id], context)
 
-        self.write(cursor, uid, [crml_id], {
-            'investment_id': investment_id, 'invoice_id': invoice_ids[0]
-        }, context=context)
+        if not errors:
+            self.write(cursor, uid, [crml_id], {
+                'investment_id': investment_id, 'invoice_id': invoice_ids[0]
+            }, context=context)
 
-        return 'TODO'
+        else:
+            raise leads_exceptions.InvesmentException(_(u"Error al crear la factura"), _(u"No s'han creat les factures."), errors)
+
+        return invoice_ids
 
     def add_invoice_payment_order(self, cursor, uid, crml_id, context=None):
         if not context:
@@ -366,7 +379,6 @@ class SomSociCrmLead(osv.OsvInherits):
         imd_o = self.pool.get('ir.model.data')
         a_period_o = self.pool.get('account.period')
         invoice_o = self.pool.get('account.invoice')
-        import pudb; pu.db
         date_now = datetime.now().strftime('%Y-%m-%d')
         period_id = a_period_o.find(cursor, uid, dt=date_now)[0]
 
@@ -482,7 +494,8 @@ class SomSociCrmLead(osv.OsvInherits):
         for f in mandatory_fields:
             if not res.get(f) and f in self._columns.keys() and self._columns[f]._type != 'boolean':
                 field_name = self._columns[f].string
-                raise osv.except_osv(_(u"Faltan Datos"), _(u"Se debe completar el campo '{0}'.").format(field_name))
+                error_text = _(u"Se debe completar el campo '{0}'.").format(field_name)
+                raise leads_exceptions.MandatoryieldsException(_(u"Fltan Datos"), error_text, error_text)
 
         res.update(self.read(cursor, uid, crml_id, other_fields))
         del res['id']
@@ -494,19 +507,24 @@ class SomSociCrmLead(osv.OsvInherits):
         """
         if not isinstance(ids, (tuple, list)):
             ids = [ids]
-        all_msgs = []
-        for crm_id in ids:
-            crm_msg = [""]
-            msg = self.create_entity_partner(cursor, uid, crm_id, context)
-            crm_msg.append(msg)
-            msg = self.create_entity_soci(cursor, uid, crm_id, context)
-            crm_msg.append(msg)
-            msg = self.create_mandatory_apo_invoice(cursor, uid, crm_id, context)
-            crm_msg.append(msg)
-            all_msgs.append("\n * ".join(crm_msg))
+        entities_ids = []
 
-        res = "\n\n\n".join(all_msgs)
-        return res
+        for crm_id in ids:
+            try:
+                partner_id = self.create_entity_partner(cursor, uid, crm_id, context)
+                soci_id = self.create_entity_soci(cursor, uid, crm_id, context)
+                invoice_ids = self.create_mandatory_apo_invoice(cursor, uid, crm_id, context)
+            except Exception as e:
+                raise osv.except_osv(_(u"Create entities has failed"), _(u"with exception '{0}'.").format(e))
+                continue
+            else:
+                entity = {}
+                entity['partner_id'] = partner_id
+                entity['soci_id'] = soci_id
+                entity['invoice_ids'] = invoice_ids
+                entities_ids.append(entity)
+
+        return entities_ids
 
 
     def change_leads_stage_when_paid_and_payment_order(self, cursor, uid, ids):
@@ -529,21 +547,81 @@ class SomSociCrmLead(osv.OsvInherits):
         """ Remesar la factura """
         pass
 
-    def validate_fields(self, cursor, uid, ids, context={}):
+    def validate_fields(self, cursor, uid, vals, context={}):
         """
             Comprovar que les dades entrades són correctes i
             la persona fisica/jurídica es pot fer socia
         """
-        pass
+        validator = FieldsValidators()
 
-    def create_new_member(self, cursor, uid, ids, context={}):
+        error = []
+
+        if not validator.validate_vat(vals['vat']):
+           error.append("Invalid value of vat")
+
+        if not validator.validate_email(vals['email']):
+            error.append("Invalid email value")
+
+        if not validator.validate_iban(vals['iban']):
+            error.append("Invalid iban value")
+
+        if not validator.validate_phone(vals['phone']):
+            error.append("Invalid phone value")
+
+        if not validator.validate_phone(vals['phone2']):
+            error.append("Invalid phone2 value")
+
+        if not validator.validate_address(cursor, uid, self, vals['state_id'], vals['city_id']):
+            error.append("Invalid address value")
+
+        if not validator.validate_payment_method(cursor, uid, self, vals['payment_method']):
+            error.append("Invalid payment method value")
+
+        if error:
+            raise leads_exceptions.InvalidParametersException('Invalid parameters', 'Invalid parameters', error[0])
+
+        return True
+
+    def create_new_member(self, cursor, uid, vals, context={}):
         """
-            Crear el lead i passar-lo en estat obert
+            Crear lead en estat obert
             Si el lead és de tipus pagament per TPV: no fa res
             Si el lead és per pagar remesat: passa  l'estat que crea les entitats i retorna un codi soci.
         """
+        try:
+            self.validate_fields(cursor, uid, vals)
+        except leads_exceptions.InvalidParametersException as e:
+            return e
 
-        pass
+        imd_o = self.pool.get('ir.model.data')
+
+        if vals['payment_method'] == 'RECIBO_CSB':
+            vals['section_id'] = imd_o.get_object_reference(cursor, uid, 'som_leads', 'alta_socies_section_crm_leads')[1]
+
+        lead_id = self.create(cursor, uid, vals)
+
+        try:
+            self._check_and_get_mandatory_fields(cursor, uid, lead_id, self._required_fields, [], context=context)
+        except leads_exceptions.MandatoryFieldsException as e:
+            return e
+
+        self.write(cursor, uid, [lead_id], {'state': 'open'})
+
+        try:
+            res = self.stage_next(cursor, uid, [lead_id], context=context)
+            lead = self.read(cursor, uid, lead_id)
+            result = {
+                'member_code': res['soci_id'],
+                'lead_id': lead_id
+            }
+        except leads_exceptions.InvalidLeadState as e:
+            return e
+        except leads_exceptions.MemberExistsException as e:
+            return e
+        except leads_exceptions.InvestmentException as e:
+            return e
+
+        return result
 
     def payment_successful(self, cursor, uid, ids, context={}):
         """

@@ -31,6 +31,8 @@
             <field name="address_email">correus@correu.com</field>
             <field name="address_phone">972972972</field>
             <field name="address_mobile">+34666111222</field>
+            <field name="state">open</field>
+            <field name="stage_id">1</field>
         </record>
 
         <record id="crm_lead_alta_socia_tpv" model="crm.case">
@@ -54,6 +56,8 @@
             <field name="address_email">correu2@correu.com</field>
             <field name="address_phone">972973973</field>
             <field name="address_mobile">+34666111222</field>
+            <field name="state">open</field>
+            <field name="stage_id">1</field>
         </record>
     </data>
 </openerp>

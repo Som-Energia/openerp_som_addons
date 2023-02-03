@@ -18,6 +18,7 @@
     ],
     "init_xml": [],
     "demo_xml": [
+        "demo/som_leads_demo_data.xml",
     ],
     "update_xml": [
         "som_leads_data.xml",
