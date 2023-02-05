@@ -13,14 +13,13 @@ class header:
         # bloc per traure una línea amb la tarifa i potencies per periode
         tarifa_code = pol_data.tarifa_codi
         list_potencies = []
-        str_tarifa_potencies_periode = ""
+        str_potencia_contractada = ""
         str_potencies_periode = ""        
         for periode_potencia_id in pol_data.potencies_periode:
             period_name = periode_potencia_id.periode_id.name
             potencia = periode_potencia_id.potencia
-            str_potencies_periode += "{} - "
-
-
+            str_potencies_periode += " {} {} kW".format(period_name, potencia)
+        str_potencia_contractada =  tarifa_code + str_potencies_periode
 
         return {
             'type': 'header',
@@ -32,5 +31,6 @@ class header:
             'distribuidora': pol_data.distribuidora.name,
             'distribuidora_contract_number': pol_data.ref_dist,
             'cups': pol_data.cups.name,
+            'contracted_energy': str_potencia_contractada,
             'cups_address': pol_data.cups_direccio,
         }
