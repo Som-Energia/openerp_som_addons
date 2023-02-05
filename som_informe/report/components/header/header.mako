@@ -11,6 +11,7 @@
         <br/>
     %endif
     ${_(u"<b>CUPS:</b>")} ${d.cups}<br />
+    ${_(u"<b>Potència contractada:</b>")} ${d.contracted_energy}<br />
     ${_(u"<b>Adreça CUPS:</b>")} ${d.cups_address}<br />
     ${_(u"<b>Data d'alta amb Som Energia:</b>")} ${d.data_alta}<br />
     %if d.data_baixa:
