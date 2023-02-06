@@ -83,7 +83,7 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
             pol_item['Excés potència'] += fact.total_exces_potencia * factor
             pol_item['Excedents'] += fact.total_generacio * factor
             for line in fact.linies_generacio:
-                if 'Saldo excedentes de autoconsumo' in line:
+                if 'Saldo excedentes de autoconsumo' in line.name:
                     pol_item['Excedents saldo compensació'] += line.price_subtotal * factor
                 else:
                     pol_item['Excedents generats totals'] += line.price_subtotal * factor
