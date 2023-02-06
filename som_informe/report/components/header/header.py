@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 from ..component_utils import dateformat
 
 class header:
