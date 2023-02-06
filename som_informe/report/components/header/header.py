@@ -19,7 +19,7 @@ class header:
             dict_potencies = {}
             dict_potencies['periode'] = periode_potencia_id.periode_id.name
             dict_potencies['potencia'] = periode_potencia_id.potencia
-            list_potencies['potencies'].append(dict_potencies)
+            list_potencies.append(dict_potencies)
             
 
         return {
@@ -32,7 +32,7 @@ class header:
             'distribuidora': pol_data.distribuidora.name,
             'distribuidora_contract_number': pol_data.ref_dist,
             'cups': pol_data.cups.name,
-            'contracted_energy': dict_potencies,
+            'potencies': list_potencies,
             'cups_address': pol_data.cups_direccio,
             'tarifa': tarifa_code,
         }
