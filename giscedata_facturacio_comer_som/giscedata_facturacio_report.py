@@ -1152,7 +1152,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         This component is used in 2 diferents locations according to
         'location' variable.
         """
-        dphone = self.get_distri_phone(pol)
+        dphone = self.get_distri_phone(pol) or ' '
         cphone = fact.company_id.partner_id.address[0].phone
 
         (periodes_a, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _) = self.get_readings_data(fact)
@@ -1176,7 +1176,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         This component is used in 2 diferents locations according to
         'location' variable.
         """
-        dphone = self.get_distri_phone(pol)
+        dphone = self.get_distri_phone(pol) or ' '
         cphone = fact.company_id.partner_id.address[0].phone
 
         data = {
@@ -1395,6 +1395,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                         'tax_type': tax_type,
                     })
         else:
+            fiscal_position = False
             for l in fact.tax_line:
                 if 'IVA' not in l.name and 'IGIC' not in l.name:
                     iese_lines.append({
