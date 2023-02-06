@@ -11,7 +11,15 @@
         <br/>
     %endif
     ${_(u"<b>CUPS:</b>")} ${d.cups}<br />
-    ${_(u"<b>Potència contractada:</b>")} ${d.contracted_energy}<br />
+    ${_(u"<b>Potència contractada:</b>")} ${d.tarifa}
+    %if len(d.potencies) == 2:
+        ${_(u" Punta: %s; Vall %s") % (d.potencies[0]['potencia'],d.potencies[1]['potencia'])}<br/>
+    %elif d.potencies:
+        % for pot in d.potencies[:-1]:
+            ${_(u" %s : %s;") % (pot['periode'], pot['potencia'])}
+        %endfor
+        ${_(u"%s : %s") % (d.potencies[-1]['periode'], d.potencies[-1]['potencia'])}<br/>
+    %endif
     ${_(u"<b>Adreça CUPS:</b>")} ${d.cups_address}<br />
     ${_(u"<b>Data d'alta amb Som Energia:</b>")} ${d.data_alta}<br />
     %if d.data_baixa:
