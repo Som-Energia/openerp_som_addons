@@ -33,16 +33,23 @@ class FieldsValidators():
     def validate_iban(self, iban):
         return iban_validator.is_valid(iban)
     
-    def validate_address(self, cursor, uid, obj, state_code, city_code):
+    def validate_state(self, cursor, uid, obj, state_id):
         state_obj = obj.pool.get('res.country.state')
-        state = state_obj.read(cursor, uid, state_code)
+        state = state_obj.read(cursor, uid, state_id)
+        return bool(state)
+
+    def validate_city(self, cursor, uid, obj, state_id, city_id):
         city_obj = obj.pool.get('res.municipi')
-        city = city_obj.read(cursor, uid, city_code)
-        if not state or not city:
+        city = city_obj.read(cursor, uid, city_id)
+        if not city:
+            return False
+        if city.state != state_id:
             return False
         return True
 
     def validate_payment_method(self,cursor, uid, obj, payment_method):
+        if payment_method == 'remesa':
+            payment_method = 'RECIBO_CSB'
         payment_obj = obj.pool.get('payment.type')
         payment_ids = payment_obj.search(cursor, uid, [('code','=',payment_method)])
         if not payment_ids:
