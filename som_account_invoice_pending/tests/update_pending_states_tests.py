@@ -830,4 +830,5 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         factura = fact_obj.browse(cursor, uid, self.invoice_1_id)
         self.assertEqual(mock_mail.call_count, 1)
         self.assertEqual(mock_sms.call_count, 1)
+        self.assertIn("(auto.): Enviat correu previ advocats + SMS.", factura.comment)
         self.assertEqual(factura.pending_state.id, self.traspas_advocats_dp)
