@@ -206,7 +206,6 @@ class SomSociCrmLead(osv.OsvInherits):
         for _id in ids:
             lead = self.browse(cr, uid, _id)
             if lead.state != 'open' and lead.stage_id:
-                error_text = _(u"El lead amb ID: {} no està en estat obert".format(_id))
                 raise leads_exceptions.InvalidLeadState(_id)
             res = self.run_method(cr, uid, _id, context)
             crm_obj.stage_next(cr, uid, [lead.crm_id.id], context)
@@ -489,11 +488,10 @@ class SomSociCrmLead(osv.OsvInherits):
         missing_fields=[]
         for f in mandatory_fields:
             if not res.get(f) and f in self._columns.keys() and self._columns[f]._type != 'boolean':
-                field_name = self._columns[f].string
-            else:
-                missing_fields+=field_name
+                missing_fields+= self._columns[f].string
+
         if missing_fields:
-                raise leads_exceptions.MissingMandatoryFields(missing_fields)
+            raise leads_exceptions.MissingMandatoryFields(missing_fields)
 
         res.update(self.read(cursor, uid, crml_id, other_fields))
         del res['id']
@@ -592,8 +590,7 @@ class SomSociCrmLead(osv.OsvInherits):
         except leads_exceptions.LeadException as e:
             cursor.rollback(savepoint)
             return dict(
-                error=e.error_list,
-                error_code=e.code,
+                e.to_dict(),
                 trace=self.traceback_info(e),
             )
 
@@ -601,7 +598,7 @@ class SomSociCrmLead(osv.OsvInherits):
             cursor.rollback(savepoint)
             return dict(
                 error=str(e),
-                error_code="Unexpected",
+                code="Unexpected",
                 trace=self.traceback_info(e),
             )
 

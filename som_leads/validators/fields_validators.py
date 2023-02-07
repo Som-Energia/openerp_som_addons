@@ -43,7 +43,7 @@ class FieldsValidators():
         city = city_obj.read(cursor, uid, city_id)
         if not city:
             return False
-        if city.state != state_id:
+        if city['state'][0] != state_id:
             return False
         return True
 

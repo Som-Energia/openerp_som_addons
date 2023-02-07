@@ -167,25 +167,47 @@ class FieldsValidatorsTests(testing.OOTestCase):
         self.assertFalse(result1)
         self.assertFalse(result2)
 
-    def test__validate_address_ok(self):
+    def test__validate_state_ok(self):
         validator = FieldsValidators()
 
-        state_code = 20 #Spain
-        city_code = 2524 #Girona
-        result1 = validator.validate_address(self.cursor, self.uid, self.leads_obj, state_code, city_code)
+        state_id = 20 # Girona (prov)
+        result = validator.validate_state(self.cursor, self.uid, self.leads_obj, state_id)
 
-        self.assertTrue(result1)
+        self.assertTrue(result)
 
-    def test__validate_address_not_ok(self):
+    def test__validate_state_not_ok(self):
         validator = FieldsValidators()
 
-        result1 = validator.validate_address(self.cursor, self.uid, self.leads_obj, 20, 0)
-        result2 = validator.validate_address(self.cursor, self.uid, self.leads_obj, 0, 2524)
-        result3 = validator.validate_address(self.cursor, self.uid, self.leads_obj, 0, 0)
+        result = validator.validate_state(self.cursor, self.uid, self.leads_obj, 0)
 
-        self.assertFalse(result1)
-        self.assertFalse(result2)
-        self.assertFalse(result3)
+        self.assertFalse(result)
+
+    def test__validate_city_ok(self):
+        validator = FieldsValidators()
+
+        state_id = 20 # Girona province
+        city_id = 2524 # Girona
+        result = validator.validate_city(self.cursor, self.uid, self.leads_obj, state_id, city_id)
+
+        self.assertTrue(result)
+
+    def test__validate_city_not_ok(self):
+        validator = FieldsValidators()
+        bad_city_id = 0
+        bad_state_id = 0
+        state_id = 20 # Girona province
+        city_within_state_id = 2512 # Figueres
+        city_out_of_state_id = 4367 # Mostoles
+
+        self.assertFalse(validator.validate_city(self.cursor, self.uid, self.leads_obj,
+            state_id, bad_city_id # Bad city!!
+        ))
+        self.assertFalse(validator.validate_city(self.cursor, self.uid, self.leads_obj,
+            bad_state_id, city_within_state_id # Bad state!!
+        ))
+        self.assertFalse(validator.validate_city(self.cursor, self.uid, self.leads_obj,
+            state_id, city_out_of_state_id # City of another state!!
+        ))
 
     def test__validate_payment_method_ok(self):
         validator = FieldsValidators()
