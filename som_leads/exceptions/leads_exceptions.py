@@ -63,7 +63,7 @@ class MemberExists(LeadException):
 
     def to_dict(self):
         return dict(
-            super(InvalidLeadState, self).to_dict(),
+            super(MemberExists, self).to_dict(),
             partner_id=self.partner_id,
         )
 

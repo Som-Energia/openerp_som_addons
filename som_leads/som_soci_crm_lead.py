@@ -17,7 +17,16 @@ class SomSociCrmLead(osv.OsvInherits):
     _order = "id desc"
     _description = _(u"Somenergia Soci CRM Leads")
 
-    _required_fields = ['nom', 'cognom', 'dni', 'tel', 'email','cp', 'provincia', 'adreca', 'municipi']
+    _required_fields = [
+        'partner_nom',
+        'iban',
+        'partner_vat',
+        'address_phone',
+        'address_email',
+        'address_zip',
+        'address_state_id',
+        'address_municipi_id',
+    ]
 
     lead_partner_adr_to_adr = {
         'address_zip': 'zip',
@@ -87,11 +96,12 @@ class SomSociCrmLead(osv.OsvInherits):
     def _clean_and_fill_values(self, cursor, uid, values, context=None):
         if context is None:
             context = {}
+
         sobreescriure_sempre = ['partner_vat', 'cups', 'iban', 'distribuidora_vat'
                                 ] + context.get("sobreescriure_sempre_extra", [])
         new_vals = {}
         # Camps del titular
-        partner_vat = values.get("partner_vat")
+        partner_vat = values.get('partner_vat')
         if partner_vat and len(partner_vat) <= 9:
             new_vals['partner_vat'] = ("ES" + partner_vat).upper()
 
@@ -236,21 +246,21 @@ class SomSociCrmLead(osv.OsvInherits):
         municipi_o = self.pool.get("res.municipi")
 
         adr_partner_fields = self.lead_partner_adr_to_adr.keys()
-        opt_fields = adr_partner_fields[:]
-        opt_fields.extend(['partner_lang'])
+        optional_field = list(adr_partner_fields)+['partner_lang']
         mandatory_fields = ['partner_vat', 'partner_nom']
 
-        info = self._check_and_get_mandatory_fields(cursor, uid, crml_id, mandatory_fields, opt_fields, context=context)
+        fields_content = self._extract_fields(cursor, uid, crml_id, mandatory_fields + optional_field)
+        self._check_mandatory_fields(mandatory_fields, fields_content)
 
         aid = None
-        tids = partner_o.search(cursor, uid, [('vat', '=', info['partner_vat'])])
+        tids = partner_o.search(cursor, uid, [('vat', '=', fields_content['partner_vat'])])
 
         if len(tids):
             tid = tids[0]
-            res = _(u"Se ha encontrado un titular con numero de documento {0}, no se creara una nueva ficha de empresa. ").format(info['partner_vat'])
+            res = _(u"Se ha encontrado un titular con numero de documento {0}, no se creara una nueva ficha de empresa. ").format(fields_content['partner_vat'])
             # Comprovem si l'adreça tamb existeix
             sp = [('partner_id', '=', tid)]
-            for f, val in info.iteritems():
+            for f, val in fields_content.iteritems():
                 if f not in self.lead_partner_adr_to_adr.keys():
                     continue
                 if isinstance(val, (list, tuple)):
@@ -267,19 +277,19 @@ class SomSociCrmLead(osv.OsvInherits):
             crear_address = True
 
             create_vals = {
-                'name': info['partner_nom'],
-                'vat': info['partner_vat'],
-                'lang': info['partner_lang']
+                'name': fields_content['partner_nom'],
+                'vat': fields_content['partner_vat'],
+                'lang': fields_content['partner_lang']
             }
             tid = partner_o.create(cursor, uid, create_vals)
-            res = _(u"Se ha creado un nuevo titular con numero de documento {0}. ").format(info['partner_vat'])
+            res = _(u"Se ha creado un nuevo titular con numero de documento {0}. ").format(fields_content['partner_vat'])
 
         if tid:
             self.write(cursor, uid, [crml_id], {'partner_id': tid}, context=context)
 
         if crear_address:
-            create_vals = {'name': info['partner_nom'], 'partner_id': tid}
-            for fname, fval in info.iteritems():
+            create_vals = {'name': fields_content['partner_nom'], 'partner_id': tid}
+            for fname, fval in fields_content.iteritems():
                 if not fval:
                     continue
                 if isinstance(fval, (list, tuple)):
@@ -420,7 +430,8 @@ class SomSociCrmLead(osv.OsvInherits):
                 'iban_owner_email'
             ]
 
-        info = self._check_and_get_mandatory_fields(cursor, uid, crml_id, mandatory_fields, other_fields=['iban'], context=context)
+        info = self._extract_fields(cursor, uid, crml_id, mandatory_fields + ['iban'])
+        self._check_mandatory_fields(mandatory_fields, info)
 
         pinfo = payment_mode_o.read(cursor, uid, info['payment_mode_id'][0], ['require_bank_account', 'type'])
         if not pinfo.get("require_bank_account") and not info['iban']:
@@ -476,44 +487,38 @@ class SomSociCrmLead(osv.OsvInherits):
         bank_o.create(cursor, uid, values)
         return _(u"Se ha creado una nueva cuenta bancaria con IBAN {0}.").format(info['iban'])
 
-    def _check_and_get_mandatory_fields(self, cursor, uid, crml_id, mandatory_fields=[], other_fields=[], context=None):
-        if context is None:
-            context = {}
-        if isinstance(crml_id, (list, tuple)):
-            crml_id = crml_id[0]
-        if not mandatory_fields:
-            res = {'id': crml_id}
-        else:
-            res = self.read(cursor, uid, crml_id, mandatory_fields)
-        missing_fields=[]
-        for f in mandatory_fields:
-            if not res.get(f) and f in self._columns.keys() and self._columns[f]._type != 'boolean':
-                missing_fields+= self._columns[f].string
-
+    def _check_mandatory_fields(self, mandatory_fields=[], vals=[]):
+        missing_fields = [
+            f for f in mandatory_fields
+            if (
+                f not in vals
+                or not vals[f]
+            ) and (
+                f in self._columns
+                and self._columns[f]._type != 'boolean'
+                # TODO: check if default value available?
+            )
+        ]
         if missing_fields:
             raise leads_exceptions.MissingMandatoryFields(missing_fields)
 
-        res.update(self.read(cursor, uid, crml_id, other_fields))
-        del res['id']
-        return res
+    def _extract_fields(self, cursor, uid, crml_id, fields=[]):
+        lead_fields = self.read(cursor, uid, crml_id, fields)
+        del lead_fields['id']
+        return lead_fields
 
     def create_entities(self, cursor, uid, id, context={}):
         """
         Creació de les entitats: partner, soci, inversió, factura
         """
-        try:
-            partner_id = self.create_entity_partner(cursor, uid, id, context)
-            soci_id = self.create_entity_soci(cursor, uid, id, context)
-            invoice_ids = self.create_mandatory_apo_invoice(cursor, uid, id, context)
-        except leads_exceptions.MemberExists as e:
-            raise e
-        except leads_exceptions.ContributionInvoiceError as e:
-            raise e
-        else:
-            entity = {}
-            entity['partner_id'] = partner_id
-            entity['soci_id'] = soci_id
-            entity['invoice_ids'] = invoice_ids
+        partner_id = self.create_entity_partner(cursor, uid, id, context)
+        soci_id = self.create_entity_soci(cursor, uid, id, context)
+        invoice_ids = self.create_mandatory_apo_invoice(cursor, uid, id, context)
+
+        entity = {}
+        entity['partner_id'] = partner_id
+        entity['soci_id'] = soci_id
+        entity['invoice_ids'] = invoice_ids
         return entity
 
 
@@ -546,26 +551,26 @@ class SomSociCrmLead(osv.OsvInherits):
 
         error_fields = []
 
-        if not validator.validate_vat(vals['vat']):
-           error_fields.append("Invalid value of vat")
+        if not validator.validate_vat(vals['partner_vat']):
+           error_fields.append("partner_vat")
 
-        if not validator.validate_email(vals['email']):
-            error_fields.append("email")
+        if not validator.validate_email(vals['address_email']):
+            error_fields.append("address_email")
 
         if not validator.validate_iban(vals['iban']):
             error_fields.append("iban")
 
-        if not validator.validate_phone(vals['phone']):
-            error_fields.append("phone")
+        if not validator.validate_phone(vals['address_phone']):
+            error_fields.append("address_phone")
 
-        if not validator.validate_phone(vals['phone2']):
-            error_fields.append("phone2")
+        if not validator.validate_phone(vals['address_mobile']):
+            error_fields.append("address_mobile")
 
-        if not validator.validate_state(cursor, uid, self, vals['state_id']):
-            error_fields.append("state_id")
+        if not validator.validate_state(cursor, uid, self, vals['address_state_id']):
+            error_fields.append("address_state_id")
 
-        if not validator.validate_city(cursor, uid, self, vals['state_id'], vals['city_id']):
-            error_fields.append("city_id")
+        if not validator.validate_city(cursor, uid, self, vals['address_state_id'], vals['address_municipi_id']):
+            error_fields.append("address_municipi_id")
 
         if not validator.validate_payment_method(cursor, uid, self, vals['payment_method']):
             error_fields.append("payment_method")
@@ -574,6 +579,14 @@ class SomSociCrmLead(osv.OsvInherits):
             raise leads_exceptions.InvalidParameters(error_fields)
 
         return True
+
+    def get_section_id(self, cursor, uid, payment_method):
+        section_id_match = {
+            'remesa' : 'alta_socies_section_crm_leads',
+            'tpv' : 'alta_socies_tpv_section_crm_leads',
+        }
+        imd_o = self.pool.get('ir.model.data')
+        return imd_o.get_object_reference(cursor, uid, 'som_leads', section_id_match[payment_method])[1]
 
     def traceback_info(self, exception):
         import traceback
@@ -593,7 +606,6 @@ class SomSociCrmLead(osv.OsvInherits):
                 e.to_dict(),
                 trace=self.traceback_info(e),
             )
-
         except Exception as e:
             cursor.rollback(savepoint)
             return dict(
@@ -609,25 +621,22 @@ class SomSociCrmLead(osv.OsvInherits):
             Si el lead és de tipus pagament per TPV: no fa res
             Si el lead és per pagar remesat: passa  l'estat que crea les entitats i retorna un codi soci.
         """
-        import pudb; pu.db
         self.validate_fields(cursor, uid, vals)
 
-        imd_o = self.pool.get('ir.model.data')
+        self._check_mandatory_fields(self._required_fields, vals)
 
-        #if vals['payment_method'] == 'RECIBO_CSB':
-        if vals['payment_method'] == 'remesa':
-            vals['section_id'] = imd_o.get_object_reference(cursor, uid, 'som_leads', 'alta_socies_section_crm_leads')[1]
+        #vals['payment_method'] == 'RECIBO_CSB':
+        vals['section_id'] = self.get_section_id(cursor, uid, vals['payment_method'])
 
         lead_id = self.create(cursor, uid, vals)
 
-        self._check_and_get_mandatory_fields(cursor, uid, lead_id, self._required_fields, [], context=context)
         self.write(cursor, uid, [lead_id], {'state': 'open'})
 
         res = self.stage_next(cursor, uid, [lead_id], context=context)
 
         lead = self.read(cursor, uid, lead_id)
         result = {
-            'member_code': res[0]['soci_id'],
+            'member_code': res['soci_id'],
             'lead_id': lead_id
         }
 
