@@ -95,8 +95,8 @@ class SomLeadsTests(testing.OOTestCase):
         # Create partner
         partner_post_result = self.partner_obj.search(self.cursor, self.uid, partner_search_params)
         address_post_result = self.address_obj.search(self.cursor, self.uid, address_search_params)
-        self.assertTrue(partner_post_result, [lead.partner_id.id])
-        self.assertTrue(address_post_result, [lead.partner_address_id.id])
+        self.assertEqual(partner_post_result, [lead.partner_id.id])
+        self.assertEqual(address_post_result, [lead.partner_address_id.id])
 
         # Create soci
         soci_id = self.soci_obj.search(self.cursor, self.uid, [('partner_id', '=', lead.partner_id.id)])[0]
@@ -121,14 +121,14 @@ class SomLeadsTests(testing.OOTestCase):
             is_juridic=True,
             partner_nom="myname",
             address_phone="652385827",
-            address_mobile="652385827",
+            address_mobile="652385828",
             address_email="my.email@test.com",
             address_zip="17003",
             address_state_id=20,
             address_nv="mystreet, 10",
             address_municipi_id=2524,
-            lang="ca_ES",
-            payment_method="remesa",
+            partner_lang="en_US",
+            payment_method="RECIBO_CSB",
             iban="ES2320383592502299212874",
             name="myname",
         )
@@ -170,20 +170,21 @@ class SomLeadsTests(testing.OOTestCase):
 
         partner_id = self.partner_obj.search(self.cursor, self.uid, partner_search_params)[0]
         address_id = self.address_obj.search(self.cursor, self.uid, address_search_params)[0]
-        self.assertTrue(partner_id, lead.partner_id.id)
-        self.assertTrue(address_id, lead.partner_address_id.id)
+        self.assertEqual(partner_id, lead.partner_id.id)
+        self.assertEqual(address_id, lead.partner_address_id.id)
 
         partner = self.partner_obj.browse(self.cursor, self.uid, partner_id)
-        self.assertTrue(partner['name'], "myname")
+        self.assertEqual(partner['name'], "myname")
+        self.assertEqual(partner['lang'], 'en_US')
 
         address = self.address_obj.browse(self.cursor, self.uid, address_id)
-        self.assertTrue(address['phone'], "652385827")
-        self.assertTrue(address['mobile'], "652385827")
-        self.assertTrue(address['email'], "my.email@test.com")
-        self.assertTrue(address['state_id'], 20)
-        self.assertTrue(address['zip'], "17003")
-        self.assertTrue(address['street'], "mystreet, 10")
-        self.assertTrue(address['id_municipi'], 2524)
+        self.assertEqual(address['phone'], "652385827")
+        self.assertEqual(address['mobile'], "652385828")
+        self.assertEqual(address['email'], "my.email@test.com")
+        self.assertEqual(address['state_id'].id, 20)
+        self.assertEqual(address['zip'], "17003")
+        self.assertEqual(address['street'], "mystreet, 10")
+        self.assertEqual(address['id_municipi'].id, 2524)
 
     def test__create_new_member__whenCreateSoci(self):
         result = self.leads_obj.create_new_member(self.cursor, self.uid, self.default_vals())
@@ -205,7 +206,7 @@ class SomLeadsTests(testing.OOTestCase):
         apo = self.investment_obj.browse(self.cursor, self.uid, apo_id)
         self.assertEqual(apo_id, lead.investment_id.id)
         self.assertFalse(apo.draft)
-        self.assertTrue(apo.nshares, 1)
+        self.assertEqual(apo.nshares, 1)
 
     def test__create_new_member__whenCreateInvoice(self):
         result = self.leads_obj.create_new_member(self.cursor, self.uid, self.default_vals())

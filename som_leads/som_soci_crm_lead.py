@@ -21,6 +21,7 @@ class SomSociCrmLead(osv.OsvInherits):
         'partner_nom',
         'iban',
         'partner_vat',
+        'partner_lang',
         'address_phone',
         'address_email',
         'address_zip',
@@ -279,10 +280,12 @@ class SomSociCrmLead(osv.OsvInherits):
             create_vals = {
                 'name': fields_content['partner_nom'],
                 'vat': fields_content['partner_vat'],
-                'lang': fields_content['partner_lang']
+                'lang': fields_content['partner_lang'],
             }
             tid = partner_o.create(cursor, uid, create_vals)
-            res = _(u"Se ha creado un nuevo titular con numero de documento {0}. ").format(fields_content['partner_vat'])
+            res = _(u"Se ha creado un nuevo titular con numero de documento {0}. ").format(
+                fields_content['partner_vat']
+            )
 
         if tid:
             self.write(cursor, uid, [crml_id], {'partner_id': tid}, context=context)
@@ -581,10 +584,10 @@ class SomSociCrmLead(osv.OsvInherits):
         return True
 
     def get_section_id(self, cursor, uid, payment_method):
-        section_id_match = {
-            'remesa' : 'alta_socies_section_crm_leads',
-            'tpv' : 'alta_socies_tpv_section_crm_leads',
-        }
+        section_id_match = dict(
+            RECIBO_CSB='alta_socies_section_crm_leads',
+            TPV='alta_socies_tpv_section_crm_leads',
+        )
         imd_o = self.pool.get('ir.model.data')
         return imd_o.get_object_reference(cursor, uid, 'som_leads', section_id_match[payment_method])[1]
 
@@ -625,13 +628,16 @@ class SomSociCrmLead(osv.OsvInherits):
 
         self._check_mandatory_fields(self._required_fields, vals)
 
-        #vals['payment_method'] == 'RECIBO_CSB':
         vals['section_id'] = self.get_section_id(cursor, uid, vals['payment_method'])
 
         lead_id = self.create(cursor, uid, vals)
 
         self.write(cursor, uid, [lead_id], {'state': 'open'})
 
+        # Create entities and stage running process
+        res = self.stage_next(cursor, uid, [lead_id], context=context)
+
+        # Order payment
         res = self.stage_next(cursor, uid, [lead_id], context=context)
 
         lead = self.read(cursor, uid, lead_id)

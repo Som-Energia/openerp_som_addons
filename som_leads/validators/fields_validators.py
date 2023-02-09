@@ -48,8 +48,6 @@ class FieldsValidators():
         return True
 
     def validate_payment_method(self,cursor, uid, obj, payment_method):
-        if payment_method == 'remesa':
-            payment_method = 'RECIBO_CSB'
         payment_obj = obj.pool.get('payment.type')
         payment_ids = payment_obj.search(cursor, uid, [('code','=',payment_method)])
         if not payment_ids:
