@@ -5,6 +5,7 @@ import mock
 from osv import osv
 from giscedata_switching.tests.common_tests import TestSwitchingImport
 from destral.patch import PatchNewCursors
+from giscedata_polissa.tests import utils
 
 class TestActivacioB1(TestSwitchingImport):
 
@@ -113,6 +114,11 @@ class TestActivacioB1(TestSwitchingImport):
             self.ResConfig.set(cursor, uid, 'sw_allow_baixa_polissa_from_cn_without_invoice', '1')
 
             contract_id = self.get_contract_id(txn, 'polissa_tarifa_018')
+            contract_obj_id = self.Polissa.browse(cursor, uid,[contract_id])[0]            
+            if contract_obj_id.state == 'esborrany':
+                contract_obj_id.send_signal([
+                    'validar', 'contracte'
+                ])
 
             b1 = self.get_b1_05(txn, contract_id, {'polissa_xml_id': 'polissa_tarifa_018'})
             with PatchNewCursors():
@@ -134,7 +140,6 @@ class TestActivacioB1(TestSwitchingImport):
             uid = txn.user
 
             self.ResConfig.set(cursor, uid, 'sw_allow_baixa_polissa_from_cn_without_invoice', '0')
-
             contract_id = self.get_contract_id(txn)
             #import pudb;pu.db
             # remove all other contracts
