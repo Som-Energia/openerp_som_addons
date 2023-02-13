@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2023-02-10 13:03+0000\n"
-"PO-Revision-Date: 2023-02-10 13:03+0000\n"
+"POT-Creation-Date: 2023-02-13 11:34+0000\n"
+"PO-Revision-Date: 2023-02-13 11:34+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -21,18 +21,19 @@ msgid "Gestió de cobraments"
 msgstr ""
 
 #. module: som_informe
-#: view:wizard.create.technical.report:0
-msgid "Generar Report"
+#: code:addons/som_informe/report/components/InvoiceFE/InvoiceFE.py:11
+#: code:addons/som_informe/report/components/InvoiceFE/InvoiceFE.py:14
+msgid "Energia reactiva capcitiva"
 msgstr ""
 
 #. module: som_informe
-#: constraint:ir.model:0
-msgid "The Object name must start with x_ and not contain any special character !"
+#: code:addons/som_informe/report/components/InvoiceFE/InvoiceFE.py:8
+msgid "Energia activa sortint"
 msgstr ""
 
 #. module: som_informe
-#: model:ir.actions.act_window,name:som_informe.action_som_informe_report
-msgid "Wizard creacio informe oficina consum"
+#: code:addons/som_informe/report/components/InvoiceFE/InvoiceFE.py:9
+msgid "Excessos de potència"
 msgstr ""
 
 #. module: som_informe
@@ -41,8 +42,23 @@ msgid "Totes dels del periode"
 msgstr ""
 
 #. module: som_informe
+#: code:addons/som_informe/report/components/InvoiceFE/InvoiceFE.py:7
+msgid "Energia activa entrant"
+msgstr ""
+
+#. module: som_informe
 #: model:ir.module.module,shortdesc:som_informe.module_meta_information
 msgid "Mòdul per crear informes per Consum"
+msgstr ""
+
+#. module: som_informe
+#: view:wizard.create.technical.report:0
+msgid "Generar Report"
+msgstr ""
+
+#. module: som_informe
+#: model:ir.actions.act_window,name:som_informe.action_som_informe_report
+msgid "Wizard creacio informe oficina consum"
 msgstr ""
 
 #. module: som_informe
@@ -56,15 +72,23 @@ msgid "Invalid model name in the action definition."
 msgstr ""
 
 #. module: som_informe
-#: model:ir.module.module,description:som_informe.module_meta_information
-msgid ""
-"\n"
-"    "
+#: constraint:ir.model:0
+msgid "The Object name must start with x_ and not contain any special character !"
+msgstr ""
+
+#. module: som_informe
+#: view:wizard.create.technical.report:0
+msgid "Factura"
 msgstr ""
 
 #. module: som_informe
 #: selection:wizard.create.technical.report,state:0
 msgid "Estat Final"
+msgstr ""
+
+#. module: som_informe
+#: code:addons/som_informe/report/components/InvoiceFE/InvoiceFE.py:10
+msgid "Potència màxima"
 msgstr ""
 
 #. module: som_informe
@@ -85,6 +109,11 @@ msgstr ""
 #. module: som_informe
 #: model:ir.model,name:som_informe.model_wizard_create_technical_report
 msgid "wizard.create.technical.report"
+msgstr ""
+
+#. module: som_informe
+#: field:wizard.create.technical.report,lang:0
+msgid "Language"
 msgstr ""
 
 #. module: som_informe
@@ -148,13 +177,18 @@ msgid "Data desde"
 msgstr ""
 
 #. module: som_informe
-#: field:wizard.create.technical.report,mostra_B2:0
-msgid "B2"
+#: code:addons/som_informe/report/components/InvoiceFE/InvoiceFE.py:13
+msgid "Energia reactiva en quadrant 3"
 msgstr ""
 
 #. module: som_informe
-#: field:wizard.create.technical.report,lang:0
-msgid "Language"
+#: code:addons/som_informe/report/components/InvoiceFE/InvoiceFE.py:12
+msgid "Energia reactiva en quadrant 2"
+msgstr ""
+
+#. module: som_informe
+#: model:ir.actions.act_window,name:som_informe.action_som_informe_report_from_polissa
+msgid "Generar informe automàtic Som"
 msgstr ""
 
 #. module: som_informe
@@ -199,8 +233,10 @@ msgid "Mostra bloc de Factura"
 msgstr ""
 
 #. module: som_informe
-#: view:wizard.create.technical.report:0
-msgid "Factura"
+#: model:ir.module.module,description:som_informe.module_meta_information
+msgid ""
+"\n"
+"    "
 msgstr ""
 
 #. module: som_informe
@@ -209,8 +245,8 @@ msgid "B1"
 msgstr ""
 
 #. module: som_informe
-#: model:ir.actions.act_window,name:som_informe.action_som_informe_report_from_polissa
-msgid "Generar informe automàtic Som"
+#: field:wizard.create.technical.report,mostra_B2:0
+msgid "B2"
 msgstr ""
 
 #. module: som_informe

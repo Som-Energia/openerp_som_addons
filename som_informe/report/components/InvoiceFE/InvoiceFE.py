@@ -1,16 +1,17 @@
 # -*- encoding: utf-8 -*-
 from datetime import date
 from ..component_utils import dateformat, get_description, get_invoice_line, get_unit_magnitude
+from tools.translate import _
 
 magnitud_description = {
-    'AE' : 'Energía activa entrante',
-    'AS' : 'Energía activa saliente',
-    'EP' : 'Excesos de potencia',
-    'PM' : 'Potencia máxima',
-    'R1' : 'Energía reactiva inductiva',
-    'R2' : 'Energía reactiva en cuadrante 2',
-    'R3' : 'Energía reactiva en cuadrante 3',
-    'R4' : 'Energía reactiva capcitiva',
+    'AE' : _('Energia activa entrant'),
+    'AS' : _('Energia activa sortint'),
+    'EP' : _('Excessos de potència'),
+    'PM' : _('Potència màxima'),
+    'R1' : _('Energia reactiva capcitiva'),
+    'R2' : _('Energia reactiva en quadrant 2'),
+    'R3' : _('Energia reactiva en quadrant 3'),
+    'R4' : _('Energia reactiva capcitiva'),
 }
 
 

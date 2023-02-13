@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2023-02-10 13:03+0000\n"
-"PO-Revision-Date: 2023-02-10 12:08+0000\n"
+"POT-Creation-Date: 2023-02-13 11:34+0000\n"
+"PO-Revision-Date: 2023-02-13 10:37+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -25,20 +25,20 @@ msgid "Gestió de cobraments"
 msgstr "Gestión de cobros"
 
 #. module: som_informe
-#: view:wizard.create.technical.report:0
-msgid "Generar Report"
-msgstr "Generar Report"
+#: code:addons/som_informe/report/components/InvoiceFE/InvoiceFE.py:11
+#: code:addons/som_informe/report/components/InvoiceFE/InvoiceFE.py:14
+msgid "Energia reactiva capcitiva"
+msgstr "Energía reactiva capcitiva"
 
 #. module: som_informe
-#: constraint:ir.model:0
-msgid ""
-"The Object name must start with x_ and not contain any special character !"
-msgstr "The Object name must start with x_ and not contain any special character !"
+#: code:addons/som_informe/report/components/InvoiceFE/InvoiceFE.py:8
+msgid "Energia activa sortint"
+msgstr "Energía activa saliente"
 
 #. module: som_informe
-#: model:ir.actions.act_window,name:som_informe.action_som_informe_report
-msgid "Wizard creacio informe oficina consum"
-msgstr "Wizard creacion informe oficina consumo"
+#: code:addons/som_informe/report/components/InvoiceFE/InvoiceFE.py:9
+msgid "Excessos de potència"
+msgstr "Excesos de potencia"
 
 #. module: som_informe
 #: selection:wizard.create.technical.report,mostrar_cobraments_factures:0
@@ -46,9 +46,24 @@ msgid "Totes dels del periode"
 msgstr "Todas desde el período"
 
 #. module: som_informe
+#: code:addons/som_informe/report/components/InvoiceFE/InvoiceFE.py:7
+msgid "Energia activa entrant"
+msgstr "Energía activa entrante"
+
+#. module: som_informe
 #: model:ir.module.module,shortdesc:som_informe.module_meta_information
 msgid "Mòdul per crear informes per Consum"
 msgstr "Módulo para crear informes para Consumo"
+
+#. module: som_informe
+#: view:wizard.create.technical.report:0
+msgid "Generar Report"
+msgstr "Generar Report"
+
+#. module: som_informe
+#: model:ir.actions.act_window,name:som_informe.action_som_informe_report
+msgid "Wizard creacio informe oficina consum"
+msgstr "Wizard creacion informe oficina consumo"
 
 #. module: som_informe
 #: view:wizard.create.technical.report:0
@@ -61,16 +76,25 @@ msgid "Invalid model name in the action definition."
 msgstr "Invalid model name in the action definition."
 
 #. module: som_informe
-#: model:ir.module.module,description:som_informe.module_meta_information
+#: constraint:ir.model:0
 msgid ""
-"\n"
-"    "
-msgstr "\n    "
+"The Object name must start with x_ and not contain any special character !"
+msgstr "The Object name must start with x_ and not contain any special character !"
+
+#. module: som_informe
+#: view:wizard.create.technical.report:0
+msgid "Factura"
+msgstr "Factura"
 
 #. module: som_informe
 #: selection:wizard.create.technical.report,state:0
 msgid "Estat Final"
 msgstr "Estado final"
+
+#. module: som_informe
+#: code:addons/som_informe/report/components/InvoiceFE/InvoiceFE.py:10
+msgid "Potència màxima"
+msgstr "Potencia máxima"
 
 #. module: som_informe
 #: field:wizard.create.technical.report,mostra_cobraments:0
@@ -91,6 +115,11 @@ msgstr "Informe Consumo"
 #: model:ir.model,name:som_informe.model_wizard_create_technical_report
 msgid "wizard.create.technical.report"
 msgstr "wizard.create.technical.report"
+
+#. module: som_informe
+#: field:wizard.create.technical.report,lang:0
+msgid "Language"
+msgstr "Lenguaje"
 
 #. module: som_informe
 #: model:ir.ui.menu,name:som_informe.menu_som_informe_report
@@ -153,14 +182,19 @@ msgid "Data desde"
 msgstr "Fecha desde"
 
 #. module: som_informe
-#: field:wizard.create.technical.report,mostra_B2:0
-msgid "B2"
-msgstr "B2"
+#: code:addons/som_informe/report/components/InvoiceFE/InvoiceFE.py:13
+msgid "Energia reactiva en quadrant 3"
+msgstr "Energía reactiva en cuadrante 3"
 
 #. module: som_informe
-#: field:wizard.create.technical.report,lang:0
-msgid "Language"
-msgstr "Lenguaje"
+#: code:addons/som_informe/report/components/InvoiceFE/InvoiceFE.py:12
+msgid "Energia reactiva en quadrant 2"
+msgstr "Energía reactiva en cuadrante 2"
+
+#. module: som_informe
+#: model:ir.actions.act_window,name:som_informe.action_som_informe_report_from_polissa
+msgid "Generar informe automàtic Som"
+msgstr "Generar informe automático Som"
 
 #. module: som_informe
 #: field:wizard.create.technical.report,mostra_quadre_resum_factures:0
@@ -204,9 +238,11 @@ msgid "Mostra bloc de Factura"
 msgstr "Muestra bloque de Factura"
 
 #. module: som_informe
-#: view:wizard.create.technical.report:0
-msgid "Factura"
-msgstr "Factura"
+#: model:ir.module.module,description:som_informe.module_meta_information
+msgid ""
+"\n"
+"    "
+msgstr "\n    "
 
 #. module: som_informe
 #: field:wizard.create.technical.report,mostra_B1:0
@@ -214,9 +250,9 @@ msgid "B1"
 msgstr "B1"
 
 #. module: som_informe
-#: model:ir.actions.act_window,name:som_informe.action_som_informe_report_from_polissa
-msgid "Generar informe automàtic Som"
-msgstr "Generar informe automático Som"
+#: field:wizard.create.technical.report,mostra_B2:0
+msgid "B2"
+msgstr "B2"
 
 #. module: som_informe
 #: field:wizard.create.technical.report,mostra_quadre_resum_lectures:0
