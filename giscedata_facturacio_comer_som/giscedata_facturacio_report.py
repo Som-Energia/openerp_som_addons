@@ -1672,7 +1672,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         total_altres += total_extra
 
-        total_energia = fact.total_energia - total_extra
+        total_energia = sum([l.price_subtotal for l in fact.linies_energia])
+        total_energia = total_energia - total_extra
 
         data = {
             'total_exces_consumida': total_exces_consumida,
