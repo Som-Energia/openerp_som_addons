@@ -216,7 +216,7 @@ class SomLeadsTests(testing.OOTestCase):
         apo_id = self.investment_obj.search(self.cursor, self.uid, [('member_id','=', lead.soci_id.id)])[0]
         apo = self.investment_obj.browse(self.cursor, self.uid, apo_id)
         inv_id = self.invoice_obj.search(self.cursor, self.uid, [
-            ('partner_id', '=', lead.partner_id.id), ('origin', '=', apo.name), ('state','=', 'draft')
+            ('partner_id', '=', lead.partner_id.id), ('origin', '=', apo.name), ('state','=', 'open')
         ])
         self.assertTrue(inv_id)
 
@@ -230,3 +230,88 @@ class SomLeadsTests(testing.OOTestCase):
         self.assertEqual(exception_vals['error'],
             u"S'ha trobat un soci amb el partner_id {} i està actiu.".format(exception_vals['partner_id'])
         )
+
+    @mock.patch("som_leads.som_soci_crm_lead.SomSociCrmLead.create_entities")
+    def test__on_exit_filled_form__create_entities_is_called(self, mocked_func):
+        a_valid_stage_name = 'Formulari omplert'
+        a_valid_open_state = 'open'
+        self.cls_obj = self.openerp.pool.get('crm.case.stage')
+        crm_lead_stage_id = self.cls_obj.search(self.cursor, self.uid, [('name','=', a_valid_stage_name)])[0]
+        lead_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_leads', 'som_leads_alta_socia1')[1]
+        self.leads_obj.write(self.cursor, self.uid, [lead_id],
+            {
+                'stage_id': crm_lead_stage_id,
+                'state': a_valid_open_state
+            }
+        )
+
+        self.leads_obj.on_exit_filled_form(self.cursor, self.uid, [lead_id])
+
+        mocked_func.assert_called_with(self.cursor, self.uid, [lead_id], {})
+
+    @mock.patch("som_leads.som_soci_crm_lead.SomSociCrmLead.create_entities")
+    def test__on_exit_filled_form__create_entities_is_not_called(self, mocked_func):
+        an_invalid_stage_name = 'Remesat'
+        a_valid_open_state = 'open'
+        self.cls_obj = self.openerp.pool.get('crm.case.stage')
+        crm_lead_stage_id = self.cls_obj.search(self.cursor, self.uid, [('name','=', an_invalid_stage_name)])[0]
+        lead_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_leads', 'som_leads_alta_socia1')[1]
+        self.leads_obj.write(self.cursor, self.uid, [lead_id],
+            {
+                'stage_id': crm_lead_stage_id,
+                'state': a_valid_open_state
+            }
+        )
+
+        self.leads_obj.on_exit_filled_form(self.cursor, self.uid, [lead_id])
+
+        mocked_func.assert_not_called()
+
+    @mock.patch("som_leads.som_soci_crm_lead.SomSociCrmLead.add_invoice_payment_order")
+    def test__on_exit_proces_en_curs__add_invoice_payment_order_is_called(self, mocked_func):
+        a_valid_stage_name = 'Procés en curs'
+        a_valid_open_state = 'open'
+        self.cls_obj = self.openerp.pool.get('crm.case.stage')
+        crm_lead_stage_id = self.cls_obj.search(self.cursor, self.uid, [('name','=', a_valid_stage_name)])[0]
+        lead_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_leads', 'som_leads_alta_socia1')[1]
+        self.leads_obj.write(self.cursor, self.uid, [lead_id],
+            {
+                'stage_id': crm_lead_stage_id,
+                'state': a_valid_open_state
+            }
+        )
+
+        self.leads_obj.on_exit_proces_en_curs(self.cursor, self.uid, [lead_id])
+
+        mocked_func.assert_called_with(self.cursor, self.uid, [lead_id], {})
+
+    @mock.patch("som_leads.som_soci_crm_lead.SomSociCrmLead.add_invoice_payment_order")
+    def test__on_exit_proces_en_curs__add_invoice_payment_order_is_not_called(self, mocked_func):
+        an_invalid_stage_name = 'Procés en curs TPV'
+        a_valid_open_state = 'open'
+        self.cls_obj = self.openerp.pool.get('crm.case.stage')
+        crm_lead_stage_id = self.cls_obj.search(self.cursor, self.uid, [('name','=', an_invalid_stage_name)])[0]
+
+        lead_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_leads', 'som_leads_alta_socia1')[1]
+        self.leads_obj.write(self.cursor, self.uid, [lead_id],
+            {
+                'stage_id': crm_lead_stage_id,
+                'state': a_valid_open_state
+            }
+        )
+
+        self.leads_obj.on_exit_proces_en_curs(self.cursor, self.uid, [lead_id])
+
+        mocked_func.assert_not_called()
+
+    @mock.patch("som_leads.som_soci_crm_lead.SomSociCrmLead.add_invoice_payment_order")
+    @mock.patch("som_leads.som_soci_crm_lead.SomSociCrmLead.create_entities")
+    def test__create_new_member__calls_required_stages(self, mock_create_entites, mock_add_invoice_payment_order):
+        result = self.leads_obj.create_new_member(self.cursor, self.uid, self.default_vals())
+        expected_lead_id = result['lead_id']
+        mock_create_entites.assert_called_with(self.cursor, self.uid, [expected_lead_id], {})
+        mock_add_invoice_payment_order.assert_called_with(self.cursor, self.uid, [expected_lead_id], {})

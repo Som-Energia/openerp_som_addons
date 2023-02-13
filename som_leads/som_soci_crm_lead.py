@@ -65,6 +65,7 @@ class SomSociCrmLead(osv.OsvInherits):
         return crm_obj.unlink(cursor, uid, crm_ids, context=context)
 
     def create(self, cursor, uid, vals, context=None):
+
         if vals is None:
             vals = {}
 
@@ -194,34 +195,32 @@ class SomSociCrmLead(osv.OsvInherits):
 
         return res
 
-
     def run_method(self, cr, uid, id, context):
         if isinstance(id, (tuple, list)):
             id = id[0]
 
         stage = self.browse(cr, uid, id).stage_id
-        result = []
         if stage:
             stage = stage.id
             stage_obj = self.pool.get('crm.case.stage')
             method = stage_obj.read(cr, uid, stage, ['method'])['method']
             if method:
                 func = getattr(self, method)
-                result = func(cr, uid, [id], context)
-        return result
-
+                func(cr, uid, [id], context)
+                return True
+        return False
 
     def stage_next(self, cr, uid, ids, context=None):
         crm_obj = self.pool.get('crm.case')
-        res = []
+        stage_next_exists = False
         for _id in ids:
             lead = self.browse(cr, uid, _id)
             if lead.state != 'open' and lead.stage_id:
                 raise leads_exceptions.InvalidLeadState(_id)
-            res = self.run_method(cr, uid, _id, context)
+            stage_next_exists = self.run_method(cr, uid, _id, context)
             crm_obj.stage_next(cr, uid, [lead.crm_id.id], context)
 
-        return res
+        return stage_next_exists
 
     def stage_previous(self, cr, uid, ids, context=None):
         raise osv.except_osv(
@@ -598,7 +597,6 @@ class SomSociCrmLead(osv.OsvInherits):
         return traceback.format_exception(exc_type, exc_value, exc_tb)
 
     def create_new_member_www(self, cursor, uid, vals, context={}):
-        import pudb; pu.db
         savepoint = 'create_new_member_{}'.format(id(cursor))
         cursor.savepoint(savepoint)
         try:
@@ -617,6 +615,12 @@ class SomSociCrmLead(osv.OsvInherits):
                 trace=self.traceback_info(e),
             )
 
+    def on_exit_filled_form(self, cursor, uid, lead_id, context={}):
+        self.stage_next(cursor, uid, lead_id, context=context)
+
+    def on_exit_proces_en_curs(self, cursor, uid, lead_id, context={}):
+        self.stage_next(cursor, uid, lead_id, context=context)
+
     def create_new_member(self, cursor, uid, vals, context={}):
         """
             Entry point.
@@ -634,19 +638,38 @@ class SomSociCrmLead(osv.OsvInherits):
 
         self.write(cursor, uid, [lead_id], {'state': 'open'})
 
-        # Create entities and stage running process
-        res = self.stage_next(cursor, uid, [lead_id], context=context)
+        if vals['payment_method'] == 'RECIBO_CSB':
+            self.on_exit_filled_form(cursor, uid, [lead_id], context)
+            self.on_exit_proces_en_curs(cursor, uid, [lead_id], context)
 
-        # Order payment
-        res = self.stage_next(cursor, uid, [lead_id], context=context)
+            lead = self.read(cursor, uid, lead_id)
+            return dict(
+                member_code=lead['soci_id'],
+                lead_id=lead_id,
+            )
 
-        lead = self.read(cursor, uid, lead_id)
-        result = {
-            'member_code': res['soci_id'],
-            'lead_id': lead_id
-        }
+        return dict(error="TPV not yet implemented")
 
-        return result
+
+        # create_new_member:
+        #   if payment_method == remesa:
+        #        Crea lead
+        #        Crea entitats
+        #        Crea payment order
+        #        Retorna informacio de socia
+        #   if payment_method == tpv:
+        #        Crea lead
+        #        Crear transacccio tpv
+        #        Retorna informació id lead + info transacccio
+
+
+        # member_tpv_payment_completed:
+        #     validate payment info
+        #     recuperar el lead
+        #     comprovar que esta pagat
+        #     crear entitats
+        #     marcar com a pagada la factura
+
 
     def payment_successful(self, cursor, uid, ids, context={}):
         """
@@ -745,7 +768,6 @@ SomSociCrmLead()
 
 
 #TODO: mode de pagament i grup de pagament, com encaixa: mode pagament VISA-TPV
-#TODO: gestionar errors
 #TODO: afegir i reordenar camps a la vista
 #TODO: qui envia el correu de alta socia?
 #TODO: quin tipus pagament han de tenir les pagades en targeta?
