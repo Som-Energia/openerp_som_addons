@@ -16,6 +16,7 @@
         "som_switching",
         "som_generationkwh",
         "giscedata_repercussio_mecanismo_ajuste_gas",
+        "giscedata_polissa_view.xml"
     ],
     "init_xml": [],
     "demo_xml": [],

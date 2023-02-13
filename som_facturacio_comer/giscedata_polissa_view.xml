@@ -13,5 +13,42 @@
                 </field>
             </field>
         </record>
+
+        <!-- Modificacions de la vista de impagats -->
+        <record model="ir.ui.view" id="view_giscedata_polissa_deute_som_tree">
+            <field name="name">giscedata_polissa_deute_som.tree</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_facturacio_impagat_comer.view_giscedata_polissa_deute_tree"/>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='cups']" position="replace"/>
+                <xpath expr="//field[@name='distribuidora']" position="replace"/>
+                <xpath expr="//field[@name='user_id']" position="replace"/>
+                <xpath expr="//field[@name='debt_amount']" position="replace"/>
+                <xpath expr="//field[@name='llista_preu']" position="replace"/>
+                <xpath expr="//field[@name='unpaid_invoices']" position="replace"/>
+                <xpath expr="//field[@name='lot_facturacio']" position="replace"/>
+                <xpath expr="//field[@name='facturacio_suspesa']" position="replace"/>
+                <xpath expr="//field[@name='lectura_en_baja']" position="replace"/>
+                <xpath expr="//field[@name='direccio_pagament']" position="replace"/>
+                <xpath expr="//field[@name='pending_state']" position="after">
+                    <field name="resum_observacions_comptables"/>
+                    <field name="data_ultima_factura" select="1"/>
+                </xpath>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_giscedata_polissa_deute_som_form">
+            <field name="name">giscedata_polissa_deute_som.form</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_polissa.view_polisses_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@string='Facturació']" position="after">
+                    <page string="Comptabilitat">
+                        <field name="observacions_comptables" select="1"/>
+                    </page>
+                </xpath>
+            </field>
+        </record>
 	</data>
 </openerp>
