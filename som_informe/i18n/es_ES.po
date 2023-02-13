@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2023-02-13 11:34+0000\n"
-"PO-Revision-Date: 2023-02-13 10:37+0000\n"
+"POT-Creation-Date: 2023-02-13 12:14+0000\n"
+"PO-Revision-Date: 2023-02-13 11:16+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -25,10 +25,9 @@ msgid "Gestió de cobraments"
 msgstr "Gestión de cobros"
 
 #. module: som_informe
-#: code:addons/som_informe/report/components/InvoiceFE/InvoiceFE.py:11
-#: code:addons/som_informe/report/components/InvoiceFE/InvoiceFE.py:14
-msgid "Energia reactiva capcitiva"
-msgstr "Energía reactiva capcitiva"
+#: view:wizard.create.technical.report:0
+msgid "Generar Report"
+msgstr "Generar Report"
 
 #. module: som_informe
 #: code:addons/som_informe/report/components/InvoiceFE/InvoiceFE.py:8
@@ -56,9 +55,9 @@ msgid "Mòdul per crear informes per Consum"
 msgstr "Módulo para crear informes para Consumo"
 
 #. module: som_informe
-#: view:wizard.create.technical.report:0
-msgid "Generar Report"
-msgstr "Generar Report"
+#: model:ir.actions.act_window,name:som_informe.action_som_informe_report_from_polissa
+msgid "Generar informe automàtic Som"
+msgstr "Generar informe automático Som"
 
 #. module: som_informe
 #: model:ir.actions.act_window,name:som_informe.action_som_informe_report
@@ -117,11 +116,6 @@ msgid "wizard.create.technical.report"
 msgstr "wizard.create.technical.report"
 
 #. module: som_informe
-#: field:wizard.create.technical.report,lang:0
-msgid "Language"
-msgstr "Lenguaje"
-
-#. module: som_informe
 #: model:ir.ui.menu,name:som_informe.menu_som_informe_report
 msgid "Informe automàtic Som"
 msgstr "Informe automático Som"
@@ -135,6 +129,11 @@ msgstr "La lista de precio no es compatible con la tarifa de acceso."
 #: field:wizard.create.technical.report,mostra_A3:0
 msgid "A3"
 msgstr "A3"
+
+#. module: som_informe
+#: code:addons/som_informe/report/components/InvoiceFE/InvoiceFE.py:11
+msgid "Energia reactiva inductiva"
+msgstr "Energía reactiva inductiva"
 
 #. module: som_informe
 #: field:wizard.create.technical.report,mostra_reclama:0
@@ -192,9 +191,9 @@ msgid "Energia reactiva en quadrant 2"
 msgstr "Energía reactiva en cuadrante 2"
 
 #. module: som_informe
-#: model:ir.actions.act_window,name:som_informe.action_som_informe_report_from_polissa
-msgid "Generar informe automàtic Som"
-msgstr "Generar informe automático Som"
+#: field:wizard.create.technical.report,lang:0
+msgid "Language"
+msgstr "Lenguaje"
 
 #. module: som_informe
 #: field:wizard.create.technical.report,mostra_quadre_resum_factures:0
@@ -243,6 +242,11 @@ msgid ""
 "\n"
 "    "
 msgstr "\n    "
+
+#. module: som_informe
+#: code:addons/som_informe/report/components/InvoiceFE/InvoiceFE.py:14
+msgid "Energia reactiva capacitiva"
+msgstr "Energía reactiva capacitiva"
 
 #. module: som_informe
 #: field:wizard.create.technical.report,mostra_B1:0

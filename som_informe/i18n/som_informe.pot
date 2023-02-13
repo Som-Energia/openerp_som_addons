@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2023-02-13 11:34+0000\n"
-"PO-Revision-Date: 2023-02-13 11:34+0000\n"
+"POT-Creation-Date: 2023-02-13 12:14+0000\n"
+"PO-Revision-Date: 2023-02-13 12:14+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -21,9 +21,8 @@ msgid "Gestió de cobraments"
 msgstr ""
 
 #. module: som_informe
-#: code:addons/som_informe/report/components/InvoiceFE/InvoiceFE.py:11
-#: code:addons/som_informe/report/components/InvoiceFE/InvoiceFE.py:14
-msgid "Energia reactiva capcitiva"
+#: view:wizard.create.technical.report:0
+msgid "Generar Report"
 msgstr ""
 
 #. module: som_informe
@@ -52,8 +51,8 @@ msgid "Mòdul per crear informes per Consum"
 msgstr ""
 
 #. module: som_informe
-#: view:wizard.create.technical.report:0
-msgid "Generar Report"
+#: model:ir.actions.act_window,name:som_informe.action_som_informe_report_from_polissa
+msgid "Generar informe automàtic Som"
 msgstr ""
 
 #. module: som_informe
@@ -112,11 +111,6 @@ msgid "wizard.create.technical.report"
 msgstr ""
 
 #. module: som_informe
-#: field:wizard.create.technical.report,lang:0
-msgid "Language"
-msgstr ""
-
-#. module: som_informe
 #: model:ir.ui.menu,name:som_informe.menu_som_informe_report
 msgid "Informe automàtic Som"
 msgstr ""
@@ -129,6 +123,11 @@ msgstr ""
 #. module: som_informe
 #: field:wizard.create.technical.report,mostra_A3:0
 msgid "A3"
+msgstr ""
+
+#. module: som_informe
+#: code:addons/som_informe/report/components/InvoiceFE/InvoiceFE.py:11
+msgid "Energia reactiva inductiva"
 msgstr ""
 
 #. module: som_informe
@@ -187,8 +186,8 @@ msgid "Energia reactiva en quadrant 2"
 msgstr ""
 
 #. module: som_informe
-#: model:ir.actions.act_window,name:som_informe.action_som_informe_report_from_polissa
-msgid "Generar informe automàtic Som"
+#: field:wizard.create.technical.report,lang:0
+msgid "Language"
 msgstr ""
 
 #. module: som_informe
@@ -237,6 +236,11 @@ msgstr ""
 msgid ""
 "\n"
 "    "
+msgstr ""
+
+#. module: som_informe
+#: code:addons/som_informe/report/components/InvoiceFE/InvoiceFE.py:14
+msgid "Energia reactiva capacitiva"
 msgstr ""
 
 #. module: som_informe

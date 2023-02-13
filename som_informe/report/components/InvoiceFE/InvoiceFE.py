@@ -8,10 +8,10 @@ magnitud_description = {
     'AS' : _('Energia activa sortint'),
     'EP' : _('Excessos de potència'),
     'PM' : _('Potència màxima'),
-    'R1' : _('Energia reactiva capcitiva'),
+    'R1' : _('Energia reactiva inductiva'),
     'R2' : _('Energia reactiva en quadrant 2'),
     'R3' : _('Energia reactiva en quadrant 3'),
-    'R4' : _('Energia reactiva capcitiva'),
+    'R4' : _('Energia reactiva capacitiva'),
 }
 
 
