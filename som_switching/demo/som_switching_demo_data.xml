@@ -3,7 +3,7 @@
     <data>
         <record  model="giscedata.atc" id="cas_atc_0001">
             <field name="name">ccc</field>
-            <field name="provincia">20</field>
+            <field name="provincia" ref="l10n_ES_toponyms.ES17"/>
             <field name="section_id">1</field>
             <field name="sector">electric</field>
             <field name="subtipus_id">1</field>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import zipfile
 import glob
-
+from datetime import datetime
 from osv import osv
 
 class WizardImportAtrAndF1(osv.osv_memory):
@@ -14,7 +14,6 @@ class WizardImportAtrAndF1(osv.osv_memory):
         Creates a temporal zip file and returns it's **opened** handler.
         :param prefix: prefix of the temporal zip name
         """
-
         if prefix == 'F1_':
             wizard = self.browse(cursor, uid, ids[0])
             tmp_filename = wizard.filename
@@ -28,9 +27,22 @@ class WizardImportAtrAndF1(osv.osv_memory):
             )
             zip_handler = zipfile.ZipFile(tmp_zip, 'w')
         else:
-            zip_handler = super(WizardImportAtrAndF1, self)._create_tmp_zip(
-                cursor, uid, ids, directory, prefix, context
+            # zip_handler = super(WizardImportAtrAndF1, self)._create_tmp_zip(
+            #     cursor, uid, ids, directory, prefix, context
+            # )
+
+            """
+            Creates a temporal zip file and returns it's **opened** handler.
+            :param prefix: prefix of the temporal zip name
+            """
+            tmp_zip = open('{temporal_folder}/{pref}{date}.zip'.format(
+                temporal_folder=directory, pref=prefix,
+                date=datetime.strftime(datetime.today(), '%Y%m%d_%H%M%S')),
+                'w+'
             )
+            zip_handler = zipfile.ZipFile(tmp_zip, 'w')
+            # return zip_handler
+
         return zip_handler
 
 WizardImportAtrAndF1()
