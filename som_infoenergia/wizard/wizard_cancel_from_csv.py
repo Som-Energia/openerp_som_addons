@@ -18,7 +18,7 @@ class WizardCancelFromCSV(osv.osv_memory):
         'name': fields.char('Filename', size=256),
         'csv_file': fields.binary('CSV File', required=True, help=_(u"Número de pòlissa de les pòlisses de les quals se'n vol cancel·lar l'enviament")),
         'state': fields.selection(STATES, _(u'Estat del wizard de cancelar enviaments des de CSV')),
-        'reason': fields.text(_('Comentari'), size=256),
+        'reason': fields.text(_('Comentari'), size=256, required=True),
     }
     _defaults = {
         'state': 'init',
