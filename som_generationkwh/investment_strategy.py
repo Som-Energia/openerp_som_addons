@@ -147,7 +147,6 @@ class InvestmentActions(ErpWrapper):
             cursor, uid, [], 'in_invoice', partner_id,
         ).get('value', {}))
 
-
         vals.update({
             'partner_id': partner_id,
             'type': 'in_invoice',
@@ -160,6 +159,7 @@ class InvestmentActions(ErpWrapper):
             #'check_total': to_be_divested,
             # TODO: Remove the GENKWHID stuff when fully migrated, error instead
             'origin': investment.name or 'GENKWHID{}'.format(investment.id),
+            'origin_date_invoice': date_invoice,
             'reference': invoice_name,
             'date_invoice': date_invoice,
         })
@@ -808,6 +808,7 @@ class AportacionsActions(InvestmentActions):
             #'check_total': to_be_interized + (irpf_amount * -1),
             # TODO: Remove the GENKWHID stuff when fully migrated, error instead
             'origin': investment.name or 'GENKWHID{}'.format(investment.id),
+            'origin_date_invoice': date_invoice,
             'reference': invoice_name,
             'date_invoice': date_invoice,
         })

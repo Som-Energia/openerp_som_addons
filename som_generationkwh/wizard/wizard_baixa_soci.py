@@ -18,6 +18,9 @@ class WizardBaixaSoci(osv.osv_memory):
     def baixa_soci(self, cursor, uid, ids, context=None, send_mail=False):
         soci_obj = self.pool.get('somenergia.soci')
         soci_id = context['active_ids']
+        if isinstance(ids, list):
+            ids = ids[0]
+        wizard = self.browse(cursor, uid, ids, context)
 
         if not isinstance(soci_id, list):
             soci_id = [soci_id]
@@ -27,12 +30,11 @@ class WizardBaixaSoci(osv.osv_memory):
         try:
             soci_obj.verifica_baixa_soci(cursor, uid, soci_id[0], context)
         except osv.except_osv as e:
-            self.write(cursor, uid, ids, {'state':'error',
-                                          'info': e.message})
+            wizard.write({'state':'error', 'info': e.message})
         else:
             if send_mail:
                 self.send_mail(cursor, uid, soci_id[0])
-            self.write(cursor, uid, ids, {'state':'ok'})
+            wizard.write({'state':'ok'})
 
 
     def baixa_soci_and_send_mail(self, cursor, uid, ids, context=None):
