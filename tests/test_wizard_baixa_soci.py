@@ -24,7 +24,7 @@ class TestWizardBaixaSoci(testing.OOTestCase):
     @mock.patch("som_generationkwh.somenergia_soci.SomenergiaSoci.arxiva_socia_mailchimp_async")
     def test__baixa_soci__allowed(self, mailchimp_mock):
         member_id = self.IrModelData.get_object_reference(
-            self.cursor, self.uid, 'som_generationkwh', 'soci_0003' 
+            self.cursor, self.uid, 'som_generationkwh', 'soci_0003'
         )[1]
         self.Soci.write(self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
         context = {'active_ids':[member_id]}
@@ -38,7 +38,7 @@ class TestWizardBaixaSoci(testing.OOTestCase):
 
     def test__baixa_soci__notAllowed(self):
         member_id = self.IrModelData.get_object_reference(
-            self.cursor, self.uid, 'som_generationkwh', 'soci_0001' 
+            self.cursor, self.uid, 'som_generationkwh', 'soci_0001'
         )[1]
         self.Soci.write(self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
         context = {'active_ids':[member_id]}
@@ -53,7 +53,7 @@ class TestWizardBaixaSoci(testing.OOTestCase):
     @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
     def test__baixa_soci_and_send_mail__allowed(self, mocked_send_mail, mailchimp_mock):
         member_id = self.IrModelData.get_object_reference(
-            self.cursor, self.uid, 'som_generationkwh', 'soci_0003' 
+            self.cursor, self.uid, 'som_generationkwh', 'soci_0003'
         )[1]
         template_id = self.IrModelData.get_object_reference(
             self.cursor, self.uid, 'som_generationkwh', 'email_baixa_soci'
@@ -86,7 +86,7 @@ class TestWizardBaixaSoci(testing.OOTestCase):
     @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
     def test__baixa_soci_and_send_mail__notAllowed(self, mocked_send_mail):
         member_id = self.IrModelData.get_object_reference(
-            self.cursor, self.uid, 'som_generationkwh', 'soci_0001' 
+            self.cursor, self.uid, 'som_generationkwh', 'soci_0001'
         )[1]
         self.Soci.write(self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
 
