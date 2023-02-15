@@ -11,36 +11,36 @@
             </record>
         </data>
         <data noupdate="1">
-            <record id="alta_socies_crm_lead_stage_0" model="crm.case.stage">
+            <record id="new_member_cmr_lead_filled_form" model="crm.case.stage">
                 <field name="name">Formulari omplert</field>
                 <field eval="[(6,0,[ref('alta_socies_section_crm_leads'), ref('alta_socies_tpv_section_crm_leads')])]" name="section_ids"/>
                 <field name="sequence" eval="1000"/>
                 <field name="method">create_entities</field>
             </record>
-            <record id="alta_socies_crm_lead_stage_1" model="crm.case.stage">
+            <record id="new_member_crm_lead_process_in_progress" model="crm.case.stage">
                 <field name="name">Procés en curs</field>
                 <field eval="[(6,0,[ref('alta_socies_section_crm_leads')])]" name="section_ids"/>
                 <field name="sequence" eval="1010"/>
                 <field name="method">add_invoice_payment_order</field>
             </record>
-            <record id="alta_socies_crm_lead_stage_tpv_1" model="crm.case.stage">
+            <record id="new_member_crm_lead_process_in_progress_tpv" model="crm.case.stage">
                 <field name="name">Procés en curs TPV</field>
                 <field eval="[(6,0,[ref('alta_socies_tpv_section_crm_leads')])]" name="section_ids"/>
                 <field name="sequence" eval="1010"/>
                 <field name="method">pay_invoice_tpv</field>
             </record>
-            <record id="alta_socies_crm_lead_stage_2" model="crm.case.stage">
+            <record id="new_member_crm_lead_payment_ordered" model="crm.case.stage">
                 <field name="name">Remesat</field>
                 <field eval="[(6,0,[ref('alta_socies_section_crm_leads')])]" name="section_ids"/>
                 <field name="sequence" eval="1020"/>
                 <field name="method"></field>
             </record>
-            <record id="alta_socies_crm_lead_stage_3" model="crm.case.stage">
+            <record id="new_member_crm_lead_payed" model="crm.case.stage">
                 <field name="name">Pagat</field>
                 <field eval="[(6,0,[ref('alta_socies_section_crm_leads'), ref('alta_socies_tpv_section_crm_leads')])]" name="section_ids"/>
                 <field name="sequence" eval="1030"/>
             </record>
-            <record id="alta_socies_crm_lead_stage_4" model="crm.case.stage">
+            <record id="new_member_crm_lead_unpayed" model="crm.case.stage">
                 <field name="name">Impagat</field>
                 <field eval="[(6,0,[ref('alta_socies_section_crm_leads'), ref('alta_socies_tpv_section_crm_leads')])]" name="section_ids"/>
                 <field name="sequence" eval="1040"/>

@@ -615,11 +615,22 @@ class SomSociCrmLead(osv.OsvInherits):
                 trace=self.traceback_info(e),
             )
 
-    def on_exit_filled_form(self, cursor, uid, lead_id, context={}):
-        self.stage_next(cursor, uid, lead_id, context=context)
+    def check_valid_stage(self, cursor, uid, lead_id, expected_stage):
+        imd_obj = self.pool.get('ir.model.data')
+        crm_lead_stage_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_leads', expected_stage)[1]
+        lead = self.browse(cursor, uid, lead_id[0])
+        return lead.stage_id.id == crm_lead_stage_id
 
-    def on_exit_proces_en_curs(self, cursor, uid, lead_id, context={}):
-        self.stage_next(cursor, uid, lead_id, context=context)
+    def begin_payment_process(self, cursor, uid, lead_id, context={}):
+        a_valid_stage_name = 'new_member_cmr_lead_filled_form'
+        if self.check_valid_stage(cursor,uid,lead_id,a_valid_stage_name):
+            self.stage_next(cursor, uid, lead_id, context=context)
+
+    def mark_as_orderded_payment(self, cursor, uid, lead_id, context={}):
+        a_valid_stage_name = 'new_member_crm_lead_process_in_progress'
+        if self.check_valid_stage(cursor,uid,lead_id,a_valid_stage_name):
+            self.stage_next(cursor, uid, lead_id, context=context)
 
     def create_new_member(self, cursor, uid, vals, context={}):
         """
@@ -639,8 +650,8 @@ class SomSociCrmLead(osv.OsvInherits):
         self.write(cursor, uid, [lead_id], {'state': 'open'})
 
         if vals['payment_method'] == 'RECIBO_CSB':
-            self.on_exit_filled_form(cursor, uid, [lead_id], context)
-            self.on_exit_proces_en_curs(cursor, uid, [lead_id], context)
+            self.begin_payment_process(cursor, uid, [lead_id], context)
+            self.mark_as_orderded_payment(cursor, uid, [lead_id], context)
 
             lead = self.read(cursor, uid, lead_id)
             return dict(

@@ -232,11 +232,11 @@ class SomLeadsTests(testing.OOTestCase):
         )
 
     @mock.patch("som_leads.som_soci_crm_lead.SomSociCrmLead.create_entities")
-    def test__on_exit_filled_form__create_entities_is_called(self, mocked_func):
-        a_valid_stage_name = 'Formulari omplert'
+    def test__begin_payment_process__create_entities_is_called(self, mocked_func):
+        a_valid_stage_name = 'new_member_cmr_lead_filled_form'
         a_valid_open_state = 'open'
-        self.cls_obj = self.openerp.pool.get('crm.case.stage')
-        crm_lead_stage_id = self.cls_obj.search(self.cursor, self.uid, [('name','=', a_valid_stage_name)])[0]
+        crm_lead_stage_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_leads', a_valid_stage_name)[1]
         lead_id = self.imd_obj.get_object_reference(
             self.cursor, self.uid, 'som_leads', 'som_leads_alta_socia1')[1]
         self.leads_obj.write(self.cursor, self.uid, [lead_id],
@@ -246,16 +246,16 @@ class SomLeadsTests(testing.OOTestCase):
             }
         )
 
-        self.leads_obj.on_exit_filled_form(self.cursor, self.uid, [lead_id])
+        self.leads_obj.begin_payment_process(self.cursor, self.uid, [lead_id])
 
         mocked_func.assert_called_with(self.cursor, self.uid, [lead_id], {})
 
     @mock.patch("som_leads.som_soci_crm_lead.SomSociCrmLead.create_entities")
-    def test__on_exit_filled_form__create_entities_is_not_called(self, mocked_func):
-        an_invalid_stage_name = 'Remesat'
+    def test__begin_payment_process_create_entities_is_not_called(self, mocked_func):
+        an_invalid_stage_name = 'new_member_crm_lead_payment_ordered'
         a_valid_open_state = 'open'
-        self.cls_obj = self.openerp.pool.get('crm.case.stage')
-        crm_lead_stage_id = self.cls_obj.search(self.cursor, self.uid, [('name','=', an_invalid_stage_name)])[0]
+        crm_lead_stage_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_leads', an_invalid_stage_name)[1]
         lead_id = self.imd_obj.get_object_reference(
             self.cursor, self.uid, 'som_leads', 'som_leads_alta_socia1')[1]
         self.leads_obj.write(self.cursor, self.uid, [lead_id],
@@ -265,16 +265,16 @@ class SomLeadsTests(testing.OOTestCase):
             }
         )
 
-        self.leads_obj.on_exit_filled_form(self.cursor, self.uid, [lead_id])
+        self.leads_obj.begin_payment_process(self.cursor, self.uid, [lead_id])
 
         mocked_func.assert_not_called()
 
     @mock.patch("som_leads.som_soci_crm_lead.SomSociCrmLead.add_invoice_payment_order")
-    def test__on_exit_proces_en_curs__add_invoice_payment_order_is_called(self, mocked_func):
-        a_valid_stage_name = 'Procés en curs'
+    def test__mark_as_orderded_payment__add_invoice_payment_order_is_called(self, mocked_func):
+        a_valid_stage_name = 'new_member_crm_lead_process_in_progress'
         a_valid_open_state = 'open'
-        self.cls_obj = self.openerp.pool.get('crm.case.stage')
-        crm_lead_stage_id = self.cls_obj.search(self.cursor, self.uid, [('name','=', a_valid_stage_name)])[0]
+        crm_lead_stage_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_leads', a_valid_stage_name)[1]
         lead_id = self.imd_obj.get_object_reference(
             self.cursor, self.uid, 'som_leads', 'som_leads_alta_socia1')[1]
         self.leads_obj.write(self.cursor, self.uid, [lead_id],
@@ -284,12 +284,12 @@ class SomLeadsTests(testing.OOTestCase):
             }
         )
 
-        self.leads_obj.on_exit_proces_en_curs(self.cursor, self.uid, [lead_id])
+        self.leads_obj.mark_as_orderded_payment(self.cursor, self.uid, [lead_id])
 
         mocked_func.assert_called_with(self.cursor, self.uid, [lead_id], {})
 
     @mock.patch("som_leads.som_soci_crm_lead.SomSociCrmLead.add_invoice_payment_order")
-    def test__on_exit_proces_en_curs__add_invoice_payment_order_is_not_called(self, mocked_func):
+    def test__mark_as_orderded_payment__add_invoice_payment_order_is_not_called(self, mocked_func):
         an_invalid_stage_name = 'Procés en curs TPV'
         a_valid_open_state = 'open'
         self.cls_obj = self.openerp.pool.get('crm.case.stage')
@@ -304,7 +304,7 @@ class SomLeadsTests(testing.OOTestCase):
             }
         )
 
-        self.leads_obj.on_exit_proces_en_curs(self.cursor, self.uid, [lead_id])
+        self.leads_obj.mark_as_orderded_payment(self.cursor, self.uid, [lead_id])
 
         mocked_func.assert_not_called()
 
