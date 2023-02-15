@@ -1190,7 +1190,6 @@ class InvestmentTests(testing.OOTestCase):
                         )[1]
 
             get_irpf_mock.return_value = {'irpf_amount':50}
-
             amortization_ids, errors = self.Investment.amortize(cursor, uid, '2021-10-13', [investment_id])
 
             self.assertEqual(len(amortization_ids), 1)
