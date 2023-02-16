@@ -751,9 +751,8 @@ class AportacionsActions(InvestmentActions):
         product_uom_id = product.uom_id.id
 
         # The journal
-        journal_id = Journal.search(cursor, uid, [
-            ('code','=','APO_FACT')
-            ])[0]
+        IrModel = self.erp.pool.get('ir.model.data')
+        journal_id = IrModel._get_obj(self.cursor, self.uid, 'som_generationkwh', 'apo_journal').id
 
         # The payment type
         payment_type_id = PaymentType.search(cursor, uid, [
