@@ -600,7 +600,7 @@ class SomSociCrmLead(osv.OsvInherits):
         savepoint = 'create_new_member_{}'.format(id(cursor))
         cursor.savepoint(savepoint)
         try:
-            self.create_new_member(cursor, uid, vals, context)
+            return self.create_new_member(cursor, uid, vals, context)
         except leads_exceptions.LeadException as e:
             cursor.rollback(savepoint)
             return dict(
@@ -660,27 +660,6 @@ class SomSociCrmLead(osv.OsvInherits):
             )
 
         return dict(error="TPV not yet implemented")
-
-
-        # create_new_member:
-        #   if payment_method == remesa:
-        #        Crea lead
-        #        Crea entitats
-        #        Crea payment order
-        #        Retorna informacio de socia
-        #   if payment_method == tpv:
-        #        Crea lead
-        #        Crear transacccio tpv
-        #        Retorna informació id lead + info transacccio
-
-
-        # member_tpv_payment_completed:
-        #     validate payment info
-        #     recuperar el lead
-        #     comprovar que esta pagat
-        #     crear entitats
-        #     marcar com a pagada la factura
-
 
     def payment_successful(self, cursor, uid, ids, context={}):
         """
@@ -780,6 +759,5 @@ SomSociCrmLead()
 
 #TODO: mode de pagament i grup de pagament, com encaixa: mode pagament VISA-TPV
 #TODO: afegir i reordenar camps a la vista
-#TODO: qui envia el correu de alta socia?
 #TODO: quin tipus pagament han de tenir les pagades en targeta?
 #TODO: quin journal: TPV - SOCIS: compte deure: Arquia: 5720, i el haver: 100

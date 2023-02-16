@@ -41,23 +41,19 @@ class SomLeadsTests(testing.OOTestCase):
 
     @mock.patch("som_leads.som_soci_crm_lead.SomSociCrmLead.create_entities")
     def test__create_entities__isCalled(self, mocked_func):
-        imd_obj = self.openerp.pool.get('ir.model.data')
-        leads_obj = self.openerp.pool.get('som.soci.crm.lead')
-        lead_id = imd_obj.get_object_reference(
+        lead_id = self.imd_obj.get_object_reference(
             self.cursor, self.uid, 'som_leads', 'som_leads_alta_socia1')[1]
-        leads_obj.write(self.cursor, self.uid, [lead_id], {'state':'open', 'stage_id':1})
-        res = leads_obj.stage_next(self.cursor, self.uid, [lead_id])
+        self.leads_obj.write(self.cursor, self.uid, [lead_id], {'state':'open', 'stage_id':1})
+        res = self.leads_obj.stage_next(self.cursor, self.uid, [lead_id])
         self.assertTrue(res)
         mocked_func.assert_called_with(self.cursor, self.uid, [lead_id], None)
 
     def test__stage_next__exception(self):
-        imd_obj = self.openerp.pool.get('ir.model.data')
-        leads_obj = self.openerp.pool.get('som.soci.crm.lead')
-        lead_id = imd_obj.get_object_reference(
+        lead_id = self.imd_obj.get_object_reference(
             self.cursor, self.uid, 'som_leads', 'som_leads_alta_socia1')[1]
-        leads_obj.write(self.cursor, self.uid, [lead_id], {'state':'draft'})
+        self.leads_obj.write(self.cursor, self.uid, [lead_id], {'state':'draft'})
         with self.assertRaises(InvalidLeadState) as ctx:
-            leads_obj.stage_next(self.cursor, self.uid, [lead_id])
+            self.leads_obj.stage_next(self.cursor, self.uid, [lead_id])
         self.assertEqual(ctx.exception.to_dict()['error'],
             'El lead amb ID: 1 no està en estat obert'
         )
@@ -290,10 +286,10 @@ class SomLeadsTests(testing.OOTestCase):
 
     @mock.patch("som_leads.som_soci_crm_lead.SomSociCrmLead.add_invoice_payment_order")
     def test__mark_as_orderded_payment__add_invoice_payment_order_is_not_called(self, mocked_func):
-        an_invalid_stage_name = 'Procés en curs TPV'
+        an_invalid_stage_name = 'new_member_crm_lead_process_in_progress_tpv'
         a_valid_open_state = 'open'
-        self.cls_obj = self.openerp.pool.get('crm.case.stage')
-        crm_lead_stage_id = self.cls_obj.search(self.cursor, self.uid, [('name','=', an_invalid_stage_name)])[0]
+        crm_lead_stage_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_leads', an_invalid_stage_name)[1]
 
         lead_id = self.imd_obj.get_object_reference(
             self.cursor, self.uid, 'som_leads', 'som_leads_alta_socia1')[1]
