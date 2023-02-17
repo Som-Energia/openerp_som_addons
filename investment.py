@@ -790,9 +790,14 @@ class GenerationkwhInvestment(osv.osv):
             ])[0]
 
         # The payment type
-        payment_type_id = PaymentType.search(cursor, uid, [
-            ('code', '=', 'TRANSFERENCIA_CSB'),
-            ])[0]
+        if invoice_type == 'out_invoice':
+            payment_type_id = PaymentType.search(cursor, uid, [
+                ('code', '=', 'RECIBO_CSB'),
+                ])[0]
+        else:
+            payment_type_id = PaymentType.search(cursor, uid, [
+                ('code', '=', 'TRANSFERENCIA_CSB'),
+                ])[0]
 
         errors = []
         def error(message):
@@ -849,6 +854,16 @@ class GenerationkwhInvestment(osv.osv):
             'reference': invoice_name,
             'date_invoice': date_invoice,
         })
+
+
+        if invoice_type == 'out_invoice':
+            mandate_id = self.get_or_create_payment_mandate(cursor, uid,
+                partner_id, partner.bank_inversions.iban,
+                'AMORTITZACIO COBRAR GENERATION kWh', gkwh.creditorCode)
+
+            vals.update({
+                'mandate': mandate_id,
+            })
 
         invoice_id = Invoice.create(cursor, uid, vals)
         Invoice.write(cursor,uid, invoice_id,{'sii_to_send':False})
