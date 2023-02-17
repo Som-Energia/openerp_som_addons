@@ -755,7 +755,7 @@ class GenerationkwhInvestment(osv.osv):
 
         investment = self.browse(cursor, uid, investment_id)
 
-        date_invoice = str(date.today())
+        date_invoice = datetime.now().strftime('%Y-%m-%d')
         year = amortization_date.split('-')[0]
 
         invoice_type, factor = ('out_invoice',-1) if to_be_amortized < irpf_amount else ('in_invoice', 1)
@@ -1385,7 +1385,7 @@ class GenerationkwhInvestment(osv.osv):
 
         invoice_ids = []
 
-        date_invoice = str(date.today())
+        date_invoice = datetime.now().strftime('%Y-%m-%d')
 
         # The payment type
         payment_type_id = PaymentType.search(cursor, uid, [
