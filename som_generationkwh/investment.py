@@ -862,7 +862,7 @@ class GenerationkwhInvestment(osv.osv):
                 'AMORTITZACIO COBRAR GENERATION kWh', gkwh.creditorCode)
 
             vals.update({
-                'mandate': mandate_id,
+                'mandate_id': mandate_id,
             })
 
         invoice_id = Invoice.create(cursor, uid, vals)
