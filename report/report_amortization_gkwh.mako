@@ -205,7 +205,7 @@ for account.invoice in objects:
         </tr>
         <tr>
             <td>
-            %if data.amortizationAmount > 0:
+            %if data.invoiceType == "in_invoice":
             ${_(u"Import al teu favor")}</td>
             %else:
             ${_(u"Import a retornar a Som Energia")}
@@ -217,7 +217,7 @@ for account.invoice in objects:
     <table>
         <tr>
             <th colspan="2"><b>
-            %if data.amortizationAmount > 0:
+            %if data.invoiceType == "in_invoice":
             ${_(u"Compte on es realitzarà l'ingrés")}
             %else:
             ${_(u"Compte on es realitzarà el càrrec")}
