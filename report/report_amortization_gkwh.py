@@ -40,8 +40,8 @@ class AccountInvoice(osv.osv):
             'amount_total',
             'name',
             'partner_bank',
-            'origin'
-            'type'
+            'origin',
+            'type',
             ])
 
         if not invoice:
