@@ -142,7 +142,7 @@ class TestActivacioM1(TestSwitchingImport):
     @mock.patch("giscedata_lectures_switching.giscedata_lectures.GiscedataLecturesSwitchingHelper.move_meters_of_contract")
     def test_ct_traspas_baixa_mailchimp_ok(self, mock_lectures, mock_mailchimp_function):
         with Transaction().start(self.database) as txn:
-            
+
             cursor = txn.cursor
             uid = txn.user
 
@@ -153,11 +153,11 @@ class TestActivacioM1(TestSwitchingImport):
             pol_ids = self.Polissa.search(cursor, uid,
                 [('id', '!=', contract_id), ('titular', '=', old_partner_id)])
             self.Polissa.write(cursor, uid, pol_ids, {
-                'titular': False, 
+                'titular': False,
                 'data_baixa': '2099-01-01'
             })
 
-            m1 = self.get_m1_05_traspas(txn, contract_id)            
+            m1 = self.get_m1_05_traspas(txn, contract_id)
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, m1)
 
@@ -178,9 +178,8 @@ class TestActivacioM1(TestSwitchingImport):
             uid = txn.user
 
             mock_lectures.return_value = []
-            # import pudb;pu.db
             contract_id = self.get_contract_id(txn, 'polissa_tarifa_018')
-            # actualitze 'data_baixa' per a que no falle el test per la restricció de dates 
+            # actualitze 'data_baixa' per a que no falle el test per la restricció de dates
             #'giscedata_polissa_modcontractual_date_coherence'
             contract_002_id = self.get_contract_id(txn, 'polissa_0002')
             self.Polissa.write(cursor, uid, [contract_002_id], {
