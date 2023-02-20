@@ -147,7 +147,6 @@ class GiscedataSwitching(osv.osv):
     _inherit = 'giscedata.switching'
 
     def activa_cas_atr(self, cursor, uid, sw, context=None):
-        # import pudb;pu.db
         if context is None:
             context = {}
         act_obj = self.pool.get("giscedata.switching.activation.config")
