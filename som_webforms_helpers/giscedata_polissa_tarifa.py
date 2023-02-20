@@ -89,7 +89,7 @@ class GiscedataPolissaTarifa(osv.osv):
 
     def get_tariff_prices(self, cursor, uid, tariff_id, municipi_id, max_power,
                           fiscal_position_id=None, with_taxes=False,
-                          date=False, context=None):
+                          date_from=False, date_to=False, context=None):
         """
             Returns a dictionary with the prices of the given tariff.
             Example of return value:
@@ -122,6 +122,8 @@ class GiscedataPolissaTarifa(osv.osv):
         fp_obj = self.pool.get('account.fiscal.position')
         uom_obj = self.pool.get('product.uom')
         prod_obj = self.pool.get('product.product')
+        prod_pricelist_obj = self.pool.get('product.pricelist')
+        pricelist_version_obj = self.pool.get('product.pricelist.version')
         prop_obj = self.pool.get('ir.property')
         conf_obj = self.pool.get('res.config')
         imd_obj = self.pool.get('ir.model.data')
@@ -133,26 +135,28 @@ class GiscedataPolissaTarifa(osv.osv):
             cursor, uid, municipi_id=municipi_id,
             pricelist_list=pricelist_list, context=context)
 
-        if not date:
-            pricelist = pricelist_municipi
-            date = datetime.today().strftime('%Y-%m-%d')
-        else:
-            pricelist = []
-            for item in pricelist_municipi:
-                versions = item.version_id
-                for version in versions:
-                    date_start = version.date_start
-                    date_end = version.date_end
-                    if (not date_start or date_start <= date) and \
-                        (not date_end or date_end >= date):
-                        pricelist.append(item)
+        if not date_from and not date_to:
+            date_from = date_to = datetime.today().strftime('%Y-%m-%d')
+
+        price_version_list = []
+        for item in pricelist_municipi:
+            versions = item.version_id
+            for version in versions:
+                date_start = version.date_start
+                date_end = version.date_end
+                if version.active and (not date_end or date_from <= date_end) and \
+                    (not date_start or date_to >= date_start):
+                    price_version_list.append(version)
 
         fiscal_position = None
         if not fiscal_position_id:
-            end_iva_reduit = conf_obj.get(
+            start_date_iva_reduit = conf_obj.get(
+              cursor, uid, 'iva_reduit_get_tariff_prices_start_date', '2021-06-01'
+            )
+            end_date_iva_reduit = conf_obj.get(
               cursor, uid, 'iva_reduit_get_tariff_prices_end_date', '2099-12-31'
             )
-            if date <= end_iva_reduit and max_power <= 10000:
+            if (date_from <= end_date_iva_reduit and date_to >= start_date_iva_reduit) and max_power <= 10000:
                 fiscal_position_id = imd_obj.get_object_reference(cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
             else:
                 prop_id = prop_obj.search(cursor,uid,[('name','=','property_account_position'),('res_id','=',False)])
@@ -164,68 +168,77 @@ class GiscedataPolissaTarifa(osv.osv):
         if fiscal_position_id:
             fiscal_position = fp_obj.browse(cursor, uid, fiscal_position_id)
 
-        if not pricelist:
+        if not price_version_list:
             raise osv.except_osv(
                 'Warning !',
                 'Tariff pricelist not found'
             )
 
-        pricelist = pricelist[0]
-
         periods = self.__get_all_periods(cursor, uid, tariff, context)
 
-        preus = {}  # dictionary to be returned
-        for period in periods:
+        price_by_date_range = []
+        for price_version in price_version_list:
 
-            if period['tipus'] not in preus:
-                preus[period['tipus']] = {}
+            product_price_list = price_version.pricelist_id
 
-            product_id = period['product_id']
+            preus = {}  # dictionary to be returned
+            for period in periods:
 
-            # taxes for gkwh are calculated later and taxes for autoconsum
-            # are not calculated
-            apply_taxes = with_taxes and period['tipus'] not in ['gkwh']
+                if period['tipus'] not in preus:
+                    preus[period['tipus']] = {}
 
-            value, discount, uom_id = pricelist.get_atr_price(
-                tipus=period['tipus'], product_id=product_id,
-                fiscal_position=fiscal_position, context=context,
-                with_taxes=apply_taxes, direccio_pagament=None,
-                titular=None
-            )
+                product_id = period['product_id']
 
-            # apply taxes of the energy term to gkwh price
-            if with_taxes and period['tipus'] == 'gkwh':
-                value = prod_obj.add_taxes(
-                    cursor, uid, period['taxes_product_id'], value,
-                    fiscal_position, direccio_pagament=None,
+                # taxes for gkwh are calculated later and taxes for autoconsum
+                # are not calculated
+                apply_taxes = with_taxes and period['tipus'] not in ['gkwh']
+
+                context = {'date': date_from}
+                value, discount, uom_id = product_price_list.get_atr_price(
+                    tipus=period['tipus'], product_id=product_id,
+                    fiscal_position=fiscal_position, context=context,
+                    with_taxes=apply_taxes, direccio_pagament=None,
                     titular=None
                 )
 
-            # units of measure
-            uom = uom_obj.browse(cursor, uid, uom_id)
-            preus[period['tipus']][period['name']] = {
+                # apply taxes of the energy term to gkwh price
+                if with_taxes and period['tipus'] == 'gkwh':
+                    value = prod_obj.add_taxes(
+                        cursor, uid, period['taxes_product_id'], value,
+                        fiscal_position, direccio_pagament=None,
+                        titular=None
+                    )
+
+                # units of measure
+                uom = uom_obj.browse(cursor, uid, uom_id)
+                preus[period['tipus']][period['name']] = {
+                    'value': round(value, config.get('price_accuracy', 6)),
+                    'uom': '€/{}'.format(uom.name if uom.name != 'PCE' else 'kWh')
+                }
+
+            value, uom = self.get_bo_social_price(
+                cursor, uid, product_price_list, fiscal_position=fiscal_position, with_taxes=with_taxes, context=context
+            )
+            preus['bo_social'] = {
                 'value': round(value, config.get('price_accuracy', 6)),
-                'uom': '€/{}'.format(uom.name if uom.name != 'PCE' else 'kWh')
+                'uom': '€/{}'.format(uom.name)
             }
 
-        value, uom = self.get_bo_social_price(
-            cursor, uid, pricelist, fiscal_position=fiscal_position, with_taxes=with_taxes, context=context
-        )
-        preus['bo_social'] = {
-            'value': round(value, config.get('price_accuracy', 6)),
-            'uom': '€/{}'.format(uom.name)
-        }
+            value, uom = self.get_comptador_price(
+                cursor, uid, product_price_list, fiscal_position=fiscal_position, with_taxes=with_taxes, context=context
+            )
+            preus['comptador'] = {
+                'value': round(value, config.get('price_accuracy', 6)),
+                'uom': '€/{}'.format(uom.name.split('/')[1])
+            }
 
-        value, uom = self.get_comptador_price(
-            cursor, uid, pricelist, fiscal_position=fiscal_position, with_taxes=with_taxes, context=context
-        )
-        preus['comptador'] = {
-            'value': round(value, config.get('price_accuracy', 6)),
-            #'uom': '€/{}'.format(uom.name.split('/')[1])
-            'uom': '€{}'.format(('/' + uom.name.split('/')[1]) if '/' in uom.name else '')
-        }
+            preus['version_name'] = price_version.name
+            preus['start_date'] = price_version.date_start
+            preus['end_date'] = price_version.date_end
 
-        return preus
+            price_by_date_range.append(preus)
+
+        return price_by_date_range
 
     def get_period_from_date(self, cursor, uid, ids, tariff_name, period_datetime):
         dt = datetime.strptime(period_datetime, '%Y-%m-%d %H:%M:%S')
