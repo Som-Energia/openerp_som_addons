@@ -1152,7 +1152,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         This component is used in 2 diferents locations according to
         'location' variable.
         """
-        dphone = self.get_distri_phone(pol)
+        dphone = self.get_distri_phone(pol) or ' '
         cphone = fact.company_id.partner_id.address[0].phone
 
         (periodes_a, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _) = self.get_readings_data(fact)
@@ -1176,7 +1176,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         This component is used in 2 diferents locations according to
         'location' variable.
         """
-        dphone = self.get_distri_phone(pol)
+        dphone = self.get_distri_phone(pol) or ' '
         cphone = fact.company_id.partner_id.address[0].phone
 
         data = {
@@ -1395,6 +1395,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                         'tax_type': tax_type,
                     })
         else:
+            fiscal_position = False
             for l in fact.tax_line:
                 if 'IVA' not in l.name and 'IGIC' not in l.name:
                     iese_lines.append({
@@ -1671,7 +1672,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         total_altres += total_extra
 
-        total_energia = fact.total_energia - total_extra
+        total_energia = sum([l.price_subtotal for l in fact.linies_energia])
+        total_energia = total_energia - total_extra
 
         data = {
             'total_exces_consumida': total_exces_consumida,
@@ -2467,7 +2469,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             return {'is_visible': False}
 
         # Repartiment segons BOE
-        rep_BOE = {'r': 47.93, 'd': 37.89, 't': 14.04, 'o': 0.14}
+        rep_BOE = {'r': 0.0, 'd': 81.0, 't': 18.0, 'o': 1.0}
 
         pie_total = round(fact.amount_total,2)
         pie_renting = round(fact.total_lloguers,2)

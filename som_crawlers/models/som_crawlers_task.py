@@ -128,7 +128,8 @@ class SomCrawlersTask(osv.osv):
                               'resultat_text': output
                           })
 
-        self.schedule_next_execution(cursor, uid, id, context)
+        if resultat_correcte or "[S'ha fet click a descarregar: True]" in output:
+            self.schedule_next_execution(cursor, uid, id, context)
 
     def schedule_next_execution(self, cursor, uid, id, context=None):
         ir_obj = self.pool.get('ir.model.data')

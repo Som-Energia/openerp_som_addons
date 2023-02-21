@@ -4,7 +4,7 @@
     ${_(u"<b>Tipus factura:</b> %s") % (d.tipo_factura)}<br/>
     ${_(u"<b>Data factura:</b> %s") % (d.invoice_date)}<br/>
     ${_(u"<b>Número factura:</b> %s") % (d.invoice_number)}<br/>
-    ${_(u"<b>Núm. de sèrie del EdM (Equip de Mesura):</b> %s") % (d.numero_edm)}<br/>
+    ${_(u"<b>Núm. de sèrie de l'EdM (Equip de Mesura):</b> %s") % (d.numero_edm)}<br/>
     ${_(u"<b>Dies facturats:</b> %s") % (d.invoiced_days)}<br/>
     ${_(u"<b>Potència:</b>")}
     %if len(d.potencies) == 2:
@@ -27,9 +27,9 @@
      <table style="width:100%;font-size:14px">
         <tr style="text-align:center;font-weight:bold">
             <td style="width:15%">${_(u"Tipus d'energia")}</td>
-            <td style="width:12%">${_(u"Orígen lectura inicial")}</td>
+            <td style="width:12%">${_(u"Origen lectura inicial")}</td>
             <td style="width:12%">${_(u"Lectura Inicial (kWh)")}</td>
-            <td style="width:12%">${_(u"Orígen lectura final")}</td>
+            <td style="width:12%">${_(u"Origen lectura final")}</td>
             <td style="width:12%">${_(u"Lectura final (kWh)")}</td>
             <td style="width:12%">${_(u"Consum entre lectures (kWh)")}</td>
             <td style="width:12%">${_(u"Origen consum facturat")}</td>
@@ -53,7 +53,7 @@
         <br>
         <table style="width:100%;font-size:14px">
             <tr style="text-align:center;font-weight:bold">
-                <td style="width:15%">${_(u"Periode maxímetre")}</td>
+                <td style="width:15%">${_(u"Període maxímetre")}</td>
                 <td style="width:15%">${_(u"Potència contractada")}</td>
                 <td style="width:15%">${_(u"Potència maxímetre")}</td>
                 <td style="width:15%">${_(u"Potència excedida")}</td>

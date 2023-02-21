@@ -4,16 +4,16 @@
     ${_(u"<b>Tipus factura:</b> Rectificadora (%s)") % (d.invoice_type)}<br/>
     ${_(u"<b>Data factura:</b> %s") % (d.invoice_date)}<br/>
     ${_(u"<b>Número factura:</b> %s") % (d.invoice_number)}<br/>
-    ${_(u"<b>Núm. de sèrie del EdM (Equip de Mesura):</b> %s") % (d.numero_edm)}<br/>
+    ${_(u"<b>Núm. de sèrie de l'EdM (Equip de Mesura):</b> %s") % (d.numero_edm)}<br/>
     ${_(u"<b>Inici període:</b> %s") % (d.date_from)}<br/>
     ${_(u"<b>Fi període:</b> %s") % (d.date_to)}<br/>
     ${_(u"<b>Factura que rectifica:</b> %s") % (d.rectifies_invoice)}<br/>
     <table style="width:100%;font-size:14px">
         <tr style="text-align:center;font-weight:bold">
             <td style="width:12%">${_(u"Tipus d'energia")}</td>
-            <td style="width:9%">${_(u"Orígen lectura inicial")}</td>
+            <td style="width:9%">${_(u"Origen lectura inicial")}</td>
             <td style="width:10%">${_(u"Lectura Inicial")}</td>
-            <td style="width:9%">${_(u"Orígen lectura final")}</td>
+            <td style="width:9%">${_(u"Origen lectura final")}</td>
             <td style="width:10%">${_(u"Lectura final")}</td>
             <td style="width:12%">${_(u"Consum entre lectures")}</td>
             <td style="width:12%">${_(u"Ajustes consumo")}</td>

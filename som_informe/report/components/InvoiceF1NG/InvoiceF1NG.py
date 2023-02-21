@@ -77,11 +77,5 @@ class InvoiceF1NG:
                     dict_linia['total'] = linia_extra.price_subtotal
                     result['linies_extra'].append(dict_linia)
 
-        #estaven aqui però no al mako
-        # result['invoiced_days'] = invoice.dies
-        # result['invoiced_energy'] = invoice.energia_kwh
-        # result['amount_base'] = invoice.amount_untaxed
-        # result['amount_total'] = invoice.amount_total
-
         return result
 
