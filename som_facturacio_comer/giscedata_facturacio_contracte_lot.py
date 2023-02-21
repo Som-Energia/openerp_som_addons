@@ -151,7 +151,7 @@ class GiscedataFacturacioContracteLot(osv.osv):
     _columns = {
         'polissa_distribuidora': fields.related('polissa_id', 'distribuidora', type='many2one', relation='res.partner',
                                 string='Distribuidora', readonly=True),
-        'autoconsum': fields.related('polissa_id', 'autoconsumo', type='selection',
+        'autoconsum': fields.related('polissa_id', 'tipus_autoconsum', type='selection',
                                selection=TIPO_AUTOCONSUMO_SEL, string='Autoconsum', readonly=True),
         'tarifaATR': fields.related('polissa_id', 'tarifa', 'name',
                                 type='char', string=_('Tarifa Accés'), readonly=True),

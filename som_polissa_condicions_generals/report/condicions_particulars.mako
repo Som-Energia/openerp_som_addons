@@ -237,12 +237,12 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
             <div class="peatge_access_content">
                 <div class="padding_left"><b>${_(u"Peatge de transport i distribució: ")}</b>${clean(polissa.tarifa_codi)}</div>
                 <%
-                    autoconsum = polissa.autoconsumo
+                    autoconsum = polissa.tipus_autoconsum
                     if autoconsum and autoconsum in TABLA_113_dict:
                         autoconsum = TABLA_113_dict[autoconsum]
                 %>
 
-                <div class="padding_bottom padding_left"><b>${_(u"Tipus de contracte: ")}</b> ${CONTRACT_TYPES[polissa.contract_type]} ${"({0})".format(autoconsum) if polissa.autoconsumo != '00' else ""}</div>
+                <div class="padding_bottom padding_left"><b>${_(u"Tipus de contracte: ")}</b> ${CONTRACT_TYPES[polissa.contract_type]} ${"({0})".format(autoconsum) if polissa.tipus_autoconsum != '00' else ""}</div>
 
                 <table class="taula_custom new_taula_custom">
                     <tr style="background-color: #878787;">
@@ -539,7 +539,7 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                         %endif
                     </tr>
                     %endif
-                    %if polissa.autoconsumo != '00':
+                    %if polissa.tipus_autoconsum != '00':
                     <tr>
                         <td><span class="bold">${_("(2) Autoconsum (€/kWh)")}</span></td>
                         %if polissa.mode_facturacio == 'index':
@@ -566,7 +566,7 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                 %if polissa.te_assignacio_gkwh:
                     <span class="bold">(1) </span> ${_("Terme d'energia en cas de participar-hi, segons condicions del contracte GenerationkWh.")}<br/>
                 %endif
-                %if polissa.autoconsumo != '00':
+                %if polissa.tipus_autoconsum != '00':
                     <span class="bold">(2) </span> ${_("Preu de la compensació d'excedents, si és aplicable.")}
                 %endif
                 </div>
