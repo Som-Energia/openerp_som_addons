@@ -7,16 +7,20 @@ class GiscedataPolissaTarifa(osv.osv):
     _name = 'giscedata.polissa.tarifa'
     _inherit = 'giscedata.polissa.tarifa'
 
-    def __get_all_periods(self, cursor, uid, tarifa, context):
+    def __get_all_periods(self, cursor, uid, tarifa, product_id, context):
         facturador_obj = self.pool.get('giscedata.facturacio.facturador')
         fact_obj = self.pool.get('giscedata.facturacio.factura')
-        period_obj = self.pool.get('giscedata.polissa.tarifa.periodes')
+        tarifa_periodes_obj = self.pool.get('giscedata.polissa.tarifa.periodes')
         periods = []
-        ctx = {'sense_agrupar': True, 'date': False}
-        periodes_tarifa = tarifa.get_periodes(context=ctx).values()
-        periodes_tarifa.extend(tarifa.get_periodes('tp', context=ctx).values())
+        search_args = [
+            ('tarifa.id', '=', tarifa.id),
+            ('tipus','in',['tp', 'te', 'tr', 'ep']),
+            ('product_id.id','=',product_id)
+            ]
+        periodes_tarifa = tarifa_periodes_obj.search(cursor, uid, search_args)
+
         # tariff.periodes only contain power (tp) and energy (te) terms
-        for periode in period_obj.browse(cursor, uid, periodes_tarifa):
+        for periode in tarifa_periodes_obj.browse(cursor, uid, periodes_tarifa):
             # build a dictionary list with the information needed to
             # calculate prices
             periods.append({
@@ -40,11 +44,13 @@ class GiscedataPolissaTarifa(osv.osv):
         periodes_ac = facturador_obj.get_productes_autoconsum(
             cursor, uid, tipus="excedent", context=context
         )
-        periods.append({
-            'name': 'P1',
-            'tipus': 'ac',
-            'product_id': periodes_ac['P1']
-        })
+
+        if periodes_ac['P1'] == product_id:
+            periods.append({
+                'name': 'P1',
+                'tipus': 'ac',
+                'product_id': periodes_ac['P1']
+            })
 
         return periods
 
@@ -174,47 +180,50 @@ class GiscedataPolissaTarifa(osv.osv):
                 'Tariff pricelist not found'
             )
 
-        periods = self.__get_all_periods(cursor, uid, tariff, context)
-
         price_by_date_range = []
         for price_version in price_version_list:
 
+            preus = {}  # dictionary to be returned
+
             product_price_list = price_version.pricelist_id
 
-            preus = {}  # dictionary to be returned
-            for period in periods:
+            for item in price_version.items_id:
 
-                if period['tipus'] not in preus:
-                    preus[period['tipus']] = {}
+                product_id = item.product_id.id
 
-                product_id = period['product_id']
+                periods = self.__get_all_periods(cursor, uid, tariff, product_id, context)
 
-                # taxes for gkwh are calculated later and taxes for autoconsum
-                # are not calculated
-                apply_taxes = with_taxes and period['tipus'] not in ['gkwh']
+                for period in periods:
 
-                context = {'date': date_from}
-                value, discount, uom_id = product_price_list.get_atr_price(
-                    tipus=period['tipus'], product_id=product_id,
-                    fiscal_position=fiscal_position, context=context,
-                    with_taxes=apply_taxes, direccio_pagament=None,
-                    titular=None
-                )
+                    if period['tipus'] not in preus:
+                        preus[period['tipus']] = {}
 
-                # apply taxes of the energy term to gkwh price
-                if with_taxes and period['tipus'] == 'gkwh':
-                    value = prod_obj.add_taxes(
-                        cursor, uid, period['taxes_product_id'], value,
-                        fiscal_position, direccio_pagament=None,
+                    # taxes for gkwh are calculated later and taxes for autoconsum
+                    # are not calculated
+                    apply_taxes = with_taxes and period['tipus'] not in ['gkwh']
+
+                    context = {'date': price_version.date_start}
+                    value, discount, uom_id = product_price_list.get_atr_price(
+                        tipus=period['tipus'], product_id=period['product_id'],
+                        fiscal_position=fiscal_position, context=context,
+                        with_taxes=apply_taxes, direccio_pagament=None,
                         titular=None
                     )
 
-                # units of measure
-                uom = uom_obj.browse(cursor, uid, uom_id)
-                preus[period['tipus']][period['name']] = {
-                    'value': round(value, config.get('price_accuracy', 6)),
-                    'uom': '€/{}'.format(uom.name if uom.name != 'PCE' else 'kWh')
-                }
+                    # apply taxes of the energy term to gkwh price
+                    if with_taxes and period['tipus'] == 'gkwh':
+                        value = prod_obj.add_taxes(
+                            cursor, uid, period['taxes_product_id'], value,
+                            fiscal_position, direccio_pagament=None,
+                            titular=None
+                        )
+
+                    # units of measure
+                    uom = uom_obj.browse(cursor, uid, uom_id)
+                    preus[period['tipus']][period['name']] = {
+                        'value': round(value, config.get('price_accuracy', 6)),
+                        'uom': '€/{}'.format(uom.name if uom.name != 'PCE' else 'kWh')
+                    }
 
             value, uom = self.get_bo_social_price(
                 cursor, uid, product_price_list, fiscal_position=fiscal_position, with_taxes=with_taxes, context=context
