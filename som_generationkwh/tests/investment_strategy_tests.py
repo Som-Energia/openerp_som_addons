@@ -188,7 +188,7 @@ class InvestmentStrategyTests(testing.OOTestCase):
                   product_id: '[APO_INT] Interessos Aportacions'
                   invoice_line_tax_id:
                   - {invoice_line_tax_id}
-                journal_id: Factures Aportacions
+                journal_id: Factures Liquidació Aportacions
                 mandate_id: False
                 name: {investment_name}-INT{year}
                 number: {investment_name}-INT{year}
@@ -294,7 +294,7 @@ class InvestmentStrategyTests(testing.OOTestCase):
                   product_id: '[APO_INT] Interessos Aportacions'
                   invoice_line_tax_id:
                   - {invoice_line_tax_id}
-                journal_id: Factures Aportacions
+                journal_id: Factures Liquidació Aportacions
                 mandate_id: False
                 name: {investment_name}-INT{year}
                 number: {investment_name}-INT{year}
