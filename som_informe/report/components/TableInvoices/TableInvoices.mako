@@ -11,7 +11,7 @@ ${_(u"<b>A continuació es mostra un resum de les factures emeses per Som Energi
         <td style="width:10%">${_(u"Data factura")}</td>
         <td style="width:10%">${_(u"Data inici període facturat")}</td>
         <td style="width:10%">${_(u"Data final període facturat")}</td>
-        <td style="width:10%">${_(u"Màxima potència contractada (kW)")}</td>
+        <td style="width:10%">${_(u"Màxima Potència contractada (kW)")}</td>
         <td style="width:10%">${_(u"Energia facturada (kWh)")}</td>
         <td style="width:10%">${_(u"Energia exportada -excedents- (kWh)")}</td>
         <td style="width:10%">${_(u"Origen consum")}</td>

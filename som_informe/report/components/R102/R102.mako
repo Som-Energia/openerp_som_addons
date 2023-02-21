@@ -7,10 +7,10 @@
     ${_(u"<b>Codi de la sol·licitud:</b> %s") % (d.codi_solicitud)}<br/>
     ${_(u"<b>Data creació:</b> %s") % (d.create)}<br/>
     % if d.rebuig:
-        ${_(u"<b>Acceptació o rebuig per part de la distribuïdor:</b> Rebuig")}<br/>
+        ${_(u"<b>Acceptació o rebuig per part de la distribuïdora:</b> Rebuig")}<br/>
         ${_(u"<b>Descripció del Rebuig:</b> %s") % (d.motiu_rebuig)}<br/>
     % else:
-        ${_(u"<b>Acceptació o rebuig per part de la distribuïdor:</b> Acceptació")}<br/>
+        ${_(u"<b>Acceptació o rebuig per part de la distribuïdora:</b> Acceptació")}<br/>
     % endif
     % if d.rebuig:
         ${_(u"<b>Data de rebuig:</b> %s") % (d.data_rebuig)}<br/>
