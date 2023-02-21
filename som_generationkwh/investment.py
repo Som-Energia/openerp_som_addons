@@ -758,6 +758,8 @@ class GenerationkwhInvestment(osv.osv):
         date_invoice = str(date.today())
         year = amortization_date.split('-')[0]
 
+        invoice_type, factor = ('out_invoice',-1) if to_be_amortized < irpf_amount else ('in_invoice', 1)
+
         # The partner
         partner_id = investment.member_id.partner_id.id
         partner = Partner.browse(cursor, uid, partner_id)
@@ -788,9 +790,14 @@ class GenerationkwhInvestment(osv.osv):
             ])[0]
 
         # The payment type
-        payment_type_id = PaymentType.search(cursor, uid, [
-            ('code', '=', 'TRANSFERENCIA_CSB'),
-            ])[0]
+        if invoice_type == 'out_invoice':
+            payment_type_id = PaymentType.search(cursor, uid, [
+                ('code', '=', 'RECIBO_CSB'),
+                ])[0]
+        else:
+            payment_type_id = PaymentType.search(cursor, uid, [
+                ('code', '=', 'TRANSFERENCIA_CSB'),
+                ])[0]
 
         errors = []
         def error(message):
@@ -828,12 +835,12 @@ class GenerationkwhInvestment(osv.osv):
         # Default invoice fields for given partne
         vals = {}
         vals.update(Invoice.onchange_partner_id(
-            cursor, uid, [], 'in_invoice', partner_id,
+            cursor, uid, [], invoice_type, partner_id,
         ).get('value', {}))
 
         vals.update({
             'partner_id': partner_id,
-            'type': 'in_invoice',
+            'type': invoice_type,
             'name': invoice_name,
             'number': invoice_name,
             'journal_id': journal_id,
@@ -848,6 +855,16 @@ class GenerationkwhInvestment(osv.osv):
             'date_invoice': date_invoice,
         })
 
+
+        if invoice_type == 'out_invoice':
+            mandate_id = self.get_or_create_payment_mandate(cursor, uid,
+                partner_id, partner.bank_inversions.iban,
+                'AMORTITZACIO COBRAR GENERATION kWh', gkwh.creditorCode)
+
+            vals.update({
+                'mandate_id': mandate_id,
+            })
+
         invoice_id = Invoice.create(cursor, uid, vals)
         Invoice.write(cursor,uid, invoice_id,{'sii_to_send':False})
 
@@ -856,7 +873,7 @@ class GenerationkwhInvestment(osv.osv):
                 product=product_id,
                 uom=product_uom_id,
                 partner_id=partner_id,
-                type='in_invoice',
+                type=invoice_type,
                 ).get('value', {}),
             invoice_id = invoice_id,
             name = _('Amortització fins a {amortization_date:%d/%m/%Y} de {investment} ').format(
@@ -865,7 +882,7 @@ class GenerationkwhInvestment(osv.osv):
                 ),
             note = investmentMemento.dump(),
             quantity = 1,
-            price_unit = to_be_amortized,
+            price_unit = to_be_amortized * factor,
             product_id = product_id,
             # partner specific account, was generic from product
             account_id = partner.property_account_gkwh.id,
@@ -878,10 +895,10 @@ class GenerationkwhInvestment(osv.osv):
         InvoiceLine.create(cursor, uid, line)
 
         retention_date = isodate(amortization_date) - relativedelta(years=1)
-        self.irpfRetentionLine(cursor, uid, investment, irpf_amount, invoice_id, retention_date, investmentMemento)
+        self.irpfRetentionLine(cursor, uid, investment, irpf_amount*factor, invoice_id, retention_date, investmentMemento)
 
         Invoice.write(cursor,uid, invoice_id, dict(
-            check_total = to_be_amortized - irpf_amount,
+            check_total = (to_be_amortized - irpf_amount)*factor,
             ))
 
         return invoice_id, errors

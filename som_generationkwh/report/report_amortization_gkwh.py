@@ -40,7 +40,8 @@ class AccountInvoice(osv.osv):
             'amount_total',
             'name',
             'partner_bank',
-            'origin'
+            'origin',
+            'type',
             ])
 
         if not invoice:
@@ -89,6 +90,7 @@ class AccountInvoice(osv.osv):
         report.irpfSaving = irpf_values['irpf_saving']
         report.previousYear = previous_year
         report.amortValue = amort_value
+        report.invoiceType = invoice['type']
         report.totalAmountSaving = irpf_values['total_amount_saving']
         report.totalGenerationKwh = irpf_values['total_generation_kwh']
         report.totalGenerationAmount = irpf_values['total_generation_amount']
