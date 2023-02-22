@@ -14,29 +14,34 @@
             </field>
         </record>
 
-        <!-- Modificacions de la vista de impagats -->
+        <!-- Nova vista de impagats -->
         <record model="ir.ui.view" id="view_giscedata_polissa_deute_som_tree">
             <field name="name">giscedata_polissa_deute_som.tree</field>
             <field name="model">giscedata.polissa</field>
             <field name="inherit_id" ref="giscedata_facturacio_impagat_comer.view_giscedata_polissa_deute_tree"/>
             <field name="type">tree</field>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='cups']" position="replace"/>
-                <xpath expr="//field[@name='distribuidora']" position="replace"/>
-                <xpath expr="//field[@name='user_id']" position="replace"/>
-                <xpath expr="//field[@name='debt_amount']" position="replace"/>
-                <xpath expr="//field[@name='llista_preu']" position="replace"/>
-                <xpath expr="//field[@name='unpaid_invoices']" position="replace"/>
-                <xpath expr="//field[@name='lot_facturacio']" position="replace"/>
-                <xpath expr="//field[@name='facturacio_suspesa']" position="replace"/>
-                <xpath expr="//field[@name='lectura_en_baja']" position="replace"/>
-                <xpath expr="//field[@name='direccio_pagament']" position="replace"/>
-                <xpath expr="//field[@name='pending_state']" position="after">
+                <field name="pending_state" position="after">
                     <field name="resum_observacions_comptables"/>
                     <field name="data_ultima_factura" select="1"/>
-                </xpath>
+                </field>
             </field>
         </record>
+
+        <record model="ir.actions.act_window" id="action_giscedata_polissa_deute_som_tree">
+            <field name="name">Contractes amb deute (Comptabilitat)</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">giscedata.polissa</field>
+            <field name="domain">[('debt_amount', '>', 0)]</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_giscedata_polissa_deute_som_tree"/>
+            <field name="context">{'active_test': False}</field>
+        </record>
+
+        <menuitem name="Contractes amb deute (Comptabilitat)" action="action_giscedata_polissa_deute_som_tree" id="menu_view_giscedata_polissa_deute_som_tree"
+                  parent="giscedata_facturacio_impagat.menu_giscedata_polissa_deute_tree"/>
+
         <record model="ir.ui.view" id="view_giscedata_polissa_deute_som_form">
             <field name="name">giscedata_polissa_deute_som.form</field>
             <field name="model">giscedata.polissa</field>
