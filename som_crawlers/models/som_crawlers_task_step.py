@@ -90,16 +90,21 @@ class SomCrawlersTaskStep(osv.osv):
         os.remove(full_path)
         return attachment_id
 
+    def get_directory_name(self, cursor, uid, config_obj, task_step_params):
+        name = config_obj.name
+        if 'process' in task_step_params:
+            name += '_' + task_step_params['process']
+        return name
+
     # attached files [zip]
     def attach_files_zip(self, cursor, uid, id, result_id, config_obj, path, task_step_params, context=None):
         classresult = self.pool.get('som.crawlers.result')
 
-        output = ''
-        if 'process' in task_step_params:
-            name = config_obj.name + '_' + task_step_params['process']
-            path_to_zip = os.path.join(path, name)
-        else:
-            path_to_zip = os.path.join(path, config_obj.name)
+        output = ""
+
+        name = self.get_directory_name(cursor, uid, config_obj, task_step_params)
+        path_to_zip = os.path.join(path, name)
+
         if not os.path.exists(path_to_zip):
             output = "zip directory doesn\'t exist"
         else:
@@ -114,11 +119,19 @@ class SomCrawlersTaskStep(osv.osv):
                     output = "files succesfully attached"
         return output
 
-    def attach_files_screenshot(self, cursor, uid, config_obj, path, result_id, task_step_params, context=None):
-        name = config_obj.name
-        if 'process' in task_step_params:
-            name += '_' + task_step_params['process']
+    def delete_files_screenshot(self, cursor, uid, config_obj, path, task_step_params):
+        name = self.get_directory_name(cursor, uid, config_obj, task_step_params)
         path_to_screenshot = os.path.join(path, 'screenShots', name)
+
+        if os.path.exists(path_to_screenshot):
+            for file_name in os.listdir(path_to_screenshot):
+                full_path = os.path.join(path_to_screenshot, file_name)
+                os.remove(full_path)
+
+    def attach_files_screenshot(self, cursor, uid, config_obj, path, result_id, task_step_params, context=None):
+        name = self.get_directory_name(cursor, uid, config_obj, task_step_params)
+        path_to_screenshot = os.path.join(path, 'screenShots', name)
+
         if os.path.exists(path_to_screenshot):
             for file_name in os.listdir(path_to_screenshot):
                 self.attach_file(cursor, uid, path_to_screenshot,
@@ -155,6 +168,8 @@ class SomCrawlersTaskStep(osv.osv):
                     output += "\n" + self.attach_files_zip(
                         cursor, uid, id, result_id, config_obj, output_path, task_step_params, context=context)
                 elif 'SENSE RESULTATS: ' in output:
+                    self.delete_files_screenshot(
+                        cursor, uid, config_obj, output_path, task_step_params)
                     raise exceptions.NoResultsException(msg=output, add_msg_tag=False)
                 else:
                     self.attach_files_screenshot(
