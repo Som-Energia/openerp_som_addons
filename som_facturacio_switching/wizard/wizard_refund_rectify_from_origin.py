@@ -56,6 +56,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             ('polissa_id', '=', pol_id),
             ('type', 'in', ['out_invoice', 'out_refund']),
             ('refund_by_id', '=', False),
+            ('rectificative_type', '!=', 'B'),
             ('data_inici', '<', data_final),
             ('data_final', '>', data_inici)
             ], order='data_inici asc')
