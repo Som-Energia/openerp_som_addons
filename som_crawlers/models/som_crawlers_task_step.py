@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
+from datetime import datetime, date
 from osv import osv, fields
 from tools.translate import _
 import json
@@ -100,23 +100,31 @@ class SomCrawlersTaskStep(osv.osv):
     def attach_files_zip(self, cursor, uid, id, result_id, config_obj, path, task_step_params, context=None):
         classresult = self.pool.get('som.crawlers.result')
 
-        output = ""
-
         name = self.get_directory_name(cursor, uid, config_obj, task_step_params)
         path_to_zip = os.path.join(path, name)
 
+        output = ""
         if not os.path.exists(path_to_zip):
             output = "zip directory doesn\'t exist"
         else:
             if len(os.listdir(path_to_zip)) == 0:
                 output = "Directori doesn\'t contain any ZIP"
             else:
+                today = date.today()
                 for file_name in os.listdir(path_to_zip):
+                    mod_date = date.fromtimestamp(
+                        os.path.getmtime(os.path.join(path_to_zip, file_name))
+                    )
+                    if mod_date != today:
+                        output += "Found old file named {} at {}, NOT ATTACHED!\n".format(
+                            file_name, os.uname()[1])
+                        continue
+
                     attachment_id = self.attach_file(
                         cursor, uid, path_to_zip, file_name, result_id, context)
                     classresult.write(cursor, uid, result_id, {
                                       'zip_name': attachment_id})
-                    output = "files succesfully attached"
+                    output += "File {} succesfully attached\n".format(file_name)
         return output
 
     def delete_files_screenshot(self, cursor, uid, config_obj, path, task_step_params):
