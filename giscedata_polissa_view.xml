@@ -9,7 +9,7 @@
             <field name="priority">100</field>
             <field name="arch" type="xml">
                 <field name="donatiu" position="after">
-                    <field name="te_assignacio_gkwh" readonly="1"/>
+                    <field name="te_assignacio_gkwh" readonly="1" select="2"/>
                 </field>
             </field>
         </record>
@@ -20,7 +20,7 @@
             <field name="inherit_id" ref="giscedata_facturacio.giscedata_polissa_facturacio_tree"/>
             <field name="arch" type="xml">
                 <field name="lectura_en_baja" position="after" >
-                    <field name="te_assignacio_gkwh" select="2"/>
+                    <field name="te_assignacio_gkwh"/>
                 </field>
             </field>
         </record>
