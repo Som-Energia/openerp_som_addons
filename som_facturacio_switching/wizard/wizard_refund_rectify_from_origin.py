@@ -296,6 +296,11 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             pol_id = f1.polissa_id.id
             pol_name = f1.polissa_id.name
             try:
+                if f1.type_factura != 'R':
+                    msg.append("La pòlissa {}, que té l'F1 amb origen {}, l'F1 no és tipus rectificatiu. No s'actua.".format(pol_name, origen))
+                    fact_csv_result.append([origen, pol_name, "F1 no és tipus rectificatiu"])
+                    continue
+
                 if f1.polissa_id.facturacio_suspesa:
                     msg.append('La pòlissa {}, que té l\'F1 amb origen {}, té facturació suspesa. No s\'actua.'.format(pol_name, origen))
                     fact_csv_result.append([origen, pol_name, "Pòlissa amb facturació suspesa"])
