@@ -226,7 +226,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
 
             result = self.taskStep.attach_files_zip(cursor, uid, crawler_taskStep_id, result_id, crawler_config_obj, path_desti, taskStepParams, context=None)
 
-            self.assertEqual(result,'files succesfully attached')
+            self.assertEqual(result,'File anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip succesfully attached\n')
 
 
     """  Create args for script test --> sortida string arguments
