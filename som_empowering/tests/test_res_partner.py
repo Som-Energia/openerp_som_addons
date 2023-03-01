@@ -146,6 +146,15 @@ class ResPartnerTest(testing.OOTestCase):
         self.set_role(self.contract1, self.payer2, 'administradora')
         self.assertRelated(self.contract1, self.payer2, 'administradora')
 
+    def test_related_contracts__multiple_roles(self):
+        # Both owner2 and payer2 are related to c2 with one of those roles
+        self.assertRelated(self.contract2, self.owner2, 'titular', 'pagador')
+        self.assertRelated(self.contract2, self.payer2, 'titular', 'pagador')
+        # Neither role is taken by owner1
+        self.assertUnrelated(self.contract2, self.owner1, 'titular', 'pagador')
+        # Neither role is taken by notified1 in c1
+        self.assertUnrelated(self.contract1, self.notified1, 'titular', 'pagador')
+
 
     def get_token(self, partner):
         return self.ResPartner.read(self.cursor, self.uid, partner, ['empowering_token'])['empowering_token']
