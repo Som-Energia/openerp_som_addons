@@ -180,7 +180,7 @@ class ResPartnerTest(testing.OOTestCase):
         token2 = self.get_token(self.owner2)
         self.assertNotEqual(token1, token2)
 
-    def _test_assign_token__twice_keepsSame(self):
+    def test_assign_token__twice_keepsSame(self):
         self.ResPartner.assign_token(self.cursor, self.uid, [self.owner1])
         token = self.get_token(self.owner1)
         self.ResPartner.assign_token(self.cursor, self.uid, [self.owner1])

@@ -27,11 +27,13 @@ class ResPartner(osv.osv):
     def assign_token(self, cursor, uid, ids, context=None):
         """Assign a new token to the partner
         """
-        for id in ids:
-            token = generate_token()
-            self.write(cursor, uid, id, {
-                'empowering_token': token
-            })
+        for partner in self.read(cursor, uid, ids, ['empowering_token']):
+            token = partner['empowering_token']
+            if not token:
+                token = generate_token()
+                self.write(cursor, uid, partner['id'], {
+                    'empowering_token': token
+                })
         return True
 
         m = mdbpool.get_db()
