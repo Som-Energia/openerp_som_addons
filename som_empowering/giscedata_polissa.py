@@ -35,16 +35,14 @@ class GiscedataPolissa(osv.osv):
     def write(self, cursor, uid, ids, vals, context=None):
         """Assign new token if partner not have
         """
+
+        partners_to_update = self._modified_partners(cursor, uid, ids, vals)
+
         res = super(GiscedataPolissa, self).write(cursor, uid, ids, vals, context)
 
-        partner_obj = self.pool.get('res.partner')
-        partners_to_update_token=set()
-        if 'titular' in vals:
-            partners_to_update_token.add(vals['titular'])
-        if 'pagador' in vals:
-            partners_to_update_token.add(vals['pagador'])
-
-        partner_obj.assign_token(cursor, uid, list(partners_to_update_token), context)
+        if partners_to_update:
+            partner_obj = self.pool.get('res.partner')
+            partner_obj.assign_token(cursor, uid, partners_to_update, context)
 
         return res
 
