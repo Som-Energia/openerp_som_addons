@@ -30,7 +30,7 @@ class ResPartner(osv.osv):
         m = mdbpool.get_db()
         polissa_obj = self.pool.get('giscedata.polissa')
         # TODO: consider notifica and administradora
-        # TODO: move out as config if used elsewhere
+        # TODO: unify definition with GiscedataPolissa._modified_partners
         allowed_relations = [
             'titular',
             'pagador',

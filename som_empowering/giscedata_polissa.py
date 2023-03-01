@@ -10,6 +10,7 @@ class GiscedataPolissa(osv.osv):
         Given some fields to be changed in a set of contracts,
         it returns the partners that will need to update their token.
         """
+        # TODO: unify definition with the one in ResPartner.assign_token
         allowed_relations = [
             'pagador',
             'titular',
