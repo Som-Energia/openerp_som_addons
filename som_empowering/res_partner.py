@@ -27,12 +27,32 @@ class ResPartner(osv.osv):
     def assign_token(self, cursor, uid, ids, context=None):
         """Assign a new token to the partner
         """
+        m = mdbpool.get_db()
+        polissa_obj = self.pool.get('giscedata.polissa')
+        empowering_enabled_relations = [
+            'titular',
+            'pagador',
+        ]
         for partner in self.read(cursor, uid, ids, ['empowering_token']):
             token = partner['empowering_token']
+            allowed_ids = self.related_contracts(
+                cursor, uid, partner['id'], empowering_enabled_relations
+            )
+            allowed = [
+                dict(
+                    name=x.name,
+                    cups=x.cups.name,
+                )
+                for x in polissa_obj.browse(cursor, uid, allowed_ids) or []
+            ]
             if not token:
                 token = generate_token()
                 self.write(cursor, uid, partner['id'], {
                     'empowering_token': token
+                })
+                m.tokens.insert({
+                    'token': token,
+                    'allowed_contracts': allowed,
                 })
         return True
 

@@ -165,6 +165,13 @@ class ResPartnerTest(testing.OOTestCase):
             for x in self.db.tokens.find({'token': token})
         ]
 
+    def name_and_cups(self, contract_id):
+        contract = self.GiscedataPolissa.read(self.cursor, self.uid, contract_id, ['name', 'cups'])
+        return dict(
+            name=contract['name'],
+            cups=contract['cups'][1],
+        )
+
     def test_assign_token__beforeAssigningOne(self):
         token = self.get_token(self.owner1)
         self.assertEqual(token, False)
@@ -180,17 +187,20 @@ class ResPartnerTest(testing.OOTestCase):
         token2 = self.get_token(self.owner2)
         self.assertNotEqual(token1, token2)
 
-    def test_assign_token__twice_keepsSame(self):
+    def test_assign_token__twice_keepsSameToken(self):
         self.ResPartner.assign_token(self.cursor, self.uid, [self.owner1])
         token = self.get_token(self.owner1)
         self.ResPartner.assign_token(self.cursor, self.uid, [self.owner1])
         new_token = self.get_token(self.owner1)
         self.assertEqual(new_token, token)
 
-    def _test_assign_token__setsContractList(self):
-        self.assertNsEqual(self.token_info(token), """
-            hola: tu
-        """)
+    def test_assign_token__setsContractList(self):
+        self.ResPartner.assign_token(self.cursor, self.uid, [self.owner1])
+        token = self.get_token(self.owner1)
+        token_info = self.token_info(token)
+        mongo_contracts = token_info[0]['allowed_contracts']
+        self.assertIn(self.name_and_cups(self.contract1), mongo_contracts)
+        self.assertNotIn(self.name_and_cups(self.contract2), mongo_contracts)
 
 
 
