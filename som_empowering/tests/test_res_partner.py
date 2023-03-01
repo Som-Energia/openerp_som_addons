@@ -303,6 +303,11 @@ class ResPartnerTest(testing.OOTestCase):
         )
         self.assertItemsEqual(result, [self.owner1])
 
-    # TODO: remove duplicated
-
+    def test_modified_partners__duplicatedRemoved(self):
+        result = self.contract_modified_partners(
+            [self.contract1, self.contract2],
+            titular=self.notified1,
+            pagador=self.notified1,
+        )
+        self.assertItemsEqual(result, [self.notified1, self.owner1, self.owner2, self.payer2])
 

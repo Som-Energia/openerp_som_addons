@@ -12,7 +12,7 @@ class GiscedataPolissa(osv.osv):
         """
         if type(ids) not in (list, tuple):
             ids=[ids]
-        result = []
+        result = set()
         relations = ['pagador', 'titular']
         polisses = self.read(cursor, uid, ids, relations)
         for relation in relations:
@@ -23,10 +23,10 @@ class GiscedataPolissa(osv.osv):
                 if oldpartner == newpartner:
                     continue
                 if oldpartner:
-                    result.append(oldpartner)
+                    result.add(oldpartner)
                 if newpartner:
-                    result.append(newpartner)
-        return result
+                    result.add(newpartner)
+        return list(result)
 
     def write(self, cursor, uid, ids, vals, context=None):
         """Assign new token if partner not have
