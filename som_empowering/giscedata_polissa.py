@@ -10,11 +10,14 @@ class GiscedataPolissa(osv.osv):
         Given some fields to be changed in a set of contracts,
         it returns the partners that will need to update their token.
         """
+        if type(ids) not in (list, tuple):
+            ids=[ids]
         result = []
         for relation in ['pagador', 'titular']:
             if relation not in vals: continue
-            polissa = self.read(cursor, uid, ids, [relation])
-            result.append(polissa[relation][0])
+            polisses = self.read(cursor, uid, ids, [relation])
+            for polissa in polisses:
+                result.append(polissa[relation][0])
         return result
 
     def write(self, cursor, uid, ids, vals, context=None):
