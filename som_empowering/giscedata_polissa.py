@@ -21,7 +21,7 @@ class GiscedataPolissa(osv.osv):
                 if polissa[relation][0] == vals[relation]:
                     continue
                 result.append(polissa[relation][0])
-                if vals.get(relation, None):
+                if vals[relation]:
                     result.append(vals[relation])
         return result
 
