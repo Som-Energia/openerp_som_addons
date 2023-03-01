@@ -233,6 +233,9 @@ class ResPartnerTest(testing.OOTestCase):
         token = self.get_token(self.owner1)
         self.ResPartner.clear_token(self.cursor, self.uid, [self.owner1])
         self.ResPartner.clear_token(self.cursor, self.uid, [self.owner1])
-        self.token_contracts(token)
+        # Removed from mongo
+        with self.assertRaises(AssertionError):
+            # expected to raise because length is 0
+            self.token_contracts(token)
 
 
