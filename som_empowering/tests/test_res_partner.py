@@ -293,6 +293,16 @@ class ResPartnerTest(testing.OOTestCase):
         )
         self.assertItemsEqual(result, [])
 
+    def test_modified_partners__previouslyUnrelated(self):
+        self.GiscedataPolissa.write(self.cursor, self.uid,
+            self.contract1, dict(titular=False)
+        )
+        result = self.contract_modified_partners(
+            self.contract1,
+            titular=self.owner1,
+        )
+        self.assertItemsEqual(result, [self.owner1])
+
     # TODO: remove duplicated
     # TODO: current value is none, exclude
 

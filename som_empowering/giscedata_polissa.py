@@ -18,9 +18,11 @@ class GiscedataPolissa(osv.osv):
         for relation in relations:
             if relation not in vals: continue
             for polissa in polisses:
-                if polissa[relation][0] == vals[relation]:
+                oldpartner = polissa[relation][0] if polissa[relation] else False
+                if oldpartner == vals[relation]:
                     continue
-                result.append(polissa[relation][0])
+                if oldpartner:
+                    result.append(oldpartner)
                 if vals[relation]:
                     result.append(vals[relation])
         return result
