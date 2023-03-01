@@ -18,7 +18,6 @@ class GiscedataPolissa(osv.osv):
         if not relations: return []
         polisses = self.read(cursor, uid, ids, relations)
         for relation in relations:
-            if relation not in vals: continue
             newpartner = vals[relation]
             for polissa in polisses:
                 oldpartner = polissa[relation][0] if polissa[relation] else False
