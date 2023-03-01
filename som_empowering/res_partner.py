@@ -29,14 +29,16 @@ class ResPartner(osv.osv):
         """
         m = mdbpool.get_db()
         polissa_obj = self.pool.get('giscedata.polissa')
-        empowering_enabled_relations = [
+        # TODO: consider notifica and administradora
+        # TODO: move out as config if used elsewhere
+        allowed_relations = [
             'titular',
             'pagador',
         ]
         for partner in self.read(cursor, uid, ids, ['empowering_token']):
             token = partner['empowering_token']
             allowed_ids = self.related_contracts(
-                cursor, uid, partner['id'], empowering_enabled_relations
+                cursor, uid, partner['id'], allowed_relations
             )
             allowed = [
                 dict(
