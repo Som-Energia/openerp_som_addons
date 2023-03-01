@@ -21,7 +21,6 @@ class ResPartnerTest(testing.OOTestCase):
     def setUp(self):
         self.maxDiff = None
         self.databasename = 'som_empowering_test'
-        self.collection = 'tokens'
         c = pymongo.MongoClient()
         c.drop_database(self.databasename)
         self.db = c[self.databasename]
