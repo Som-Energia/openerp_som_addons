@@ -266,3 +266,11 @@ class ResPartnerTest(testing.OOTestCase):
         )
         self.assertEqual(result, [self.owner2])
 
+    def test_modified_partners__unsetOwnerPayer_updatesFormerBoth(self):
+        result = self.contract_modified_partners(
+            self.contract2,
+            titular=False,
+            pagador=False,
+        )
+        self.assertEqual(result, [self.payer2, self.owner2])
+

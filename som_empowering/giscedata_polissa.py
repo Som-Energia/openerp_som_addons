@@ -10,13 +10,14 @@ class GiscedataPolissa(osv.osv):
         Given some fields to be changed in a set of contracts,
         it returns the partners that will need to update their token.
         """
+        result = []
         if 'pagador' in vals:
             polissa = self.read(cursor, uid, ids, ['pagador'])
-            return [polissa['pagador'][0]]
+            result.append(polissa['pagador'][0])
         if 'titular' in vals:
             polissa = self.read(cursor, uid, ids, ['titular'])
-            return [polissa['titular'][0]]
-        return []
+            result.append(polissa['titular'][0])
+        return result
 
     def write(self, cursor, uid, ids, vals, context=None):
         """Assign new token if partner not have
