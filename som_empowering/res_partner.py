@@ -63,25 +63,15 @@ class ResPartner(osv.osv):
                 })
         return True
 
+    def clear_token(self, cursor, uid, ids, context=None):
+        """Clear the token for the partner including mongo
+        """
         m = mdbpool.get_db()
         for partner in self.read(cursor, uid, ids, ['empowering_token']):
             m.tokens.remove({'token': partner['empowering_token']})
-            token = generate_token()
             self.write(cursor, uid, [partner['id']], {
-                'empowering_token': token
+                'empowering_token': False
             })
-            allowed = polissa_obj.search(cursor, uid, [
-                '|',
-                    ('titular.id', '=', partner['id']),
-                    ('pagador.id', '=', partner['id'])
-            ])
-            if allowed:
-                allowed = [{'name': x.name, 'cups': x.cups.name}
-                           for x in polissa_obj.browse(cursor, uid, allowed)]
-                m.tokens.insert({
-                    'token': token,
-                    'allowed_contracts': allowed
-                })
         return True
 
     _columns = {

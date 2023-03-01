@@ -211,11 +211,28 @@ class ResPartnerTest(testing.OOTestCase):
         self.assertNotIn(self.name_and_cups(self.contract1), token_contracts)
 
         self.ResPartner.assign_token(self.cursor, self.uid, [self.owner1])
+        token = self.get_token(self.owner1)
         token_contracts = self.token_contracts(token)
         self.assertIn(self.name_and_cups(self.contract1), token_contracts)
         self.assertNotIn(self.name_and_cups(self.contract2), token_contracts)
 
+    def test_clear_token(self):
+        self.ResPartner.assign_token(self.cursor, self.uid, [self.owner1])
+        token = self.get_token(self.owner1)
+        self.ResPartner.clear_token(self.cursor, self.uid, [self.owner1])
+        # Removed from mongo
+        with self.assertRaises(AssertionError):
+            # expected to raise because length is 0
+            self.token_contracts(token)
+        # Removed from partner
+        token2 = self.get_token(self.owner1)
+        self.assertFalse(token2)
 
-
+    def test_clear_token_twice(self):
+        self.ResPartner.assign_token(self.cursor, self.uid, [self.owner1])
+        token = self.get_token(self.owner1)
+        self.ResPartner.clear_token(self.cursor, self.uid, [self.owner1])
+        self.ResPartner.clear_token(self.cursor, self.uid, [self.owner1])
+        self.token_contracts(token)
 
 
