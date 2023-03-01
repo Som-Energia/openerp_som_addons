@@ -19,10 +19,6 @@ class GiscedataPolissa(osv.osv):
             partner_token = partner_obj.read(cursor, uid, vals['pagador'], ['empowering_token'])
             partner_obj.assign_token(cursor, uid, [vals['pagador']], context)
 
-        if 'notificador' in vals:
-            partner_token = partner_obj.read(cursor, uid, vals['notificador'], ['empowering_token'])
-            partner_obj.assign_token(cursor, uid, [vals['notificador']], context)
-
         return res
 
 GiscedataPolissa()
