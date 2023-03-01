@@ -14,6 +14,8 @@ class GiscedataPolissa(osv.osv):
             ids=[ids]
         result = set()
         relations = ['pagador', 'titular']
+        relations = list(set(vals.keys()).intersection(relations))
+        if not relations: return []
         polisses = self.read(cursor, uid, ids, relations)
         for relation in relations:
             if relation not in vals: continue
