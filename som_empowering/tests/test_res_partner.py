@@ -159,13 +159,13 @@ class ResPartnerTest(testing.OOTestCase):
     def get_token(self, partner):
         return self.ResPartner.read(self.cursor, self.uid, partner, ['empowering_token'])['empowering_token']
 
-    def token_info(self, token):
+    def token_contracts(self, token):
         result = [
             ns(x,_id=str(x['_id']))
             for x in self.db.tokens.find({'token': token})
         ]
         self.assertEqual(len(result), 1)
-        return result
+        return result[0]['allowed_contracts']
 
     def name_and_cups(self, contract_id):
         contract = self.GiscedataPolissa.read(self.cursor, self.uid, contract_id, ['name', 'cups'])
@@ -199,25 +199,21 @@ class ResPartnerTest(testing.OOTestCase):
     def test_assign_token__setsContractList(self):
         self.ResPartner.assign_token(self.cursor, self.uid, [self.owner1])
         token = self.get_token(self.owner1)
-        token_info = self.token_info(token)
-        mongo_contracts = token_info[0]['allowed_contracts']
-        self.assertIn(self.name_and_cups(self.contract1), mongo_contracts)
-        self.assertNotIn(self.name_and_cups(self.contract2), mongo_contracts)
+        token_contracts = self.token_contracts(token)
+        self.assertIn(self.name_and_cups(self.contract1), token_contracts)
+        self.assertNotIn(self.name_and_cups(self.contract2), token_contracts)
 
-    def test_assign_token__updatesContractList(self):
+    def test_assign_token__ifAlreadyThere_updatesContractList(self):
         self.ResPartner.assign_token(self.cursor, self.uid, [self.owner1])
         token = self.get_token(self.owner1)
         self.db.tokens.update({'token': token},{'$set': {'allowed_contracts': []}})
-        token_info = self.token_info(token)
-        mongo_contracts = token_info[0]['allowed_contracts']
-        self.assertNotIn(self.name_and_cups(self.contract1), mongo_contracts)
+        token_contracts = self.token_contracts(token)
+        self.assertNotIn(self.name_and_cups(self.contract1), token_contracts)
 
         self.ResPartner.assign_token(self.cursor, self.uid, [self.owner1])
-        token_info = self.token_info(token)
-        mongo_contracts = token_info[0]['allowed_contracts']
-        self.assertIn(self.name_and_cups(self.contract1), mongo_contracts)
-        self.assertNotIn(self.name_and_cups(self.contract2), mongo_contracts)
-
+        token_contracts = self.token_contracts(token)
+        self.assertIn(self.name_and_cups(self.contract1), token_contracts)
+        self.assertNotIn(self.name_and_cups(self.contract2), token_contracts)
 
 
 
