@@ -45,7 +45,12 @@ class ResPartner(osv.osv):
                 )
                 for x in polissa_obj.browse(cursor, uid, allowed_ids) or []
             ]
-            if not token:
+            if token:
+                m.tokens.update(
+                    dict(token=token),
+                    {'$set': dict(allowed_contracts=allowed)}
+                )
+            else:
                 token = generate_token()
                 self.write(cursor, uid, partner['id'], {
                     'empowering_token': token
