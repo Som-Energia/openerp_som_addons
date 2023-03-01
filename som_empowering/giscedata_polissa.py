@@ -11,11 +11,13 @@ class GiscedataPolissa(osv.osv):
         res = super(GiscedataPolissa, self).write(cursor, uid, ids, vals, context)
 
         partner_obj = self.pool.get('res.partner')
+        partners_to_update_token=set()
         if 'titular' in vals:
-            partner_obj.assign_token(cursor, uid, [vals['titular']], context)
-
+            partners_to_update_token.add(vals['titular'])
         if 'pagador' in vals:
-            partner_obj.assign_token(cursor, uid, [vals['pagador']], context)
+            partners_to_update_token.add(vals['pagador'])
+
+        partner_obj.assign_token(cursor, uid, list(partners_to_update_token), context)
 
         return res
 
