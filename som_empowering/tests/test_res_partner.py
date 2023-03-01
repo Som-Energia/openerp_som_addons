@@ -304,6 +304,5 @@ class ResPartnerTest(testing.OOTestCase):
         self.assertItemsEqual(result, [self.owner1])
 
     # TODO: remove duplicated
-    # TODO: current value is none, exclude
 
 

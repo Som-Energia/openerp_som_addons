@@ -17,14 +17,15 @@ class GiscedataPolissa(osv.osv):
         polisses = self.read(cursor, uid, ids, relations)
         for relation in relations:
             if relation not in vals: continue
+            newpartner = vals[relation]
             for polissa in polisses:
                 oldpartner = polissa[relation][0] if polissa[relation] else False
-                if oldpartner == vals[relation]:
+                if oldpartner == newpartner:
                     continue
                 if oldpartner:
                     result.append(oldpartner)
-                if vals[relation]:
-                    result.append(vals[relation])
+                if newpartner:
+                    result.append(newpartner)
         return result
 
     def write(self, cursor, uid, ids, vals, context=None):
