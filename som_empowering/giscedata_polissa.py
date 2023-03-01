@@ -11,6 +11,8 @@ class GiscedataPolissa(osv.osv):
         it returns the partners that will need to update their token.
         """
         # TODO: unify definition with the one in ResPartner.assign_token
+        # TODO: notifica not suported (is a partner address)
+        # TODO: consider administradora as allowed_relations
         allowed_relations = [
             'pagador',
             'titular',

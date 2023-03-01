@@ -14,6 +14,13 @@ class ResPartner(osv.osv):
 
 
     def related_contracts(self, cursor, uid, id, relations, context=None):
+        """
+        Given a partner and a set of relations,
+        returns ids of the contracts the partner
+        has those relations with.
+        Relations can be any partner field in polissa,
+        or 'notifica' for direccio_notificacio.partner_id.
+        """
         relation_map=dict(
             notifica='direccio_notificacio.partner_id',
         )

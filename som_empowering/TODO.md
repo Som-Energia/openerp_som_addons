@@ -1,0 +1,4 @@
+- check whether the report is still used in order to remove it or not
+- unify the lists of relations allowed to view infoenergia (in partner and polissa)
+- consider administradora a relation for infoenergia
+- consider notifica as relation (half implemented)
