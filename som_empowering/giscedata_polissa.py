@@ -18,6 +18,8 @@ class GiscedataPolissa(osv.osv):
             polisses = self.read(cursor, uid, ids, [relation])
             for polissa in polisses:
                 result.append(polissa[relation][0])
+            if vals.get(relation, None):
+                result.append(vals[relation])
         return result
 
     def write(self, cursor, uid, ids, vals, context=None):

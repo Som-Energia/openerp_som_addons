@@ -279,3 +279,10 @@ class ResPartnerTest(testing.OOTestCase):
         )
         self.assertItemsEqual(result, [self.owner1, self.owner2])
 
+    def test_modified_partners__newRelated_updated(self):
+        result = self.contract_modified_partners(
+            self.contract1,
+            titular=self.payer2,
+        )
+        self.assertItemsEqual(result, [self.owner1, self.payer2])
+
