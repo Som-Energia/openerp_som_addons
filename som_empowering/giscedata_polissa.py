@@ -18,9 +18,11 @@ class GiscedataPolissa(osv.osv):
         for relation in relations:
             if relation not in vals: continue
             for polissa in polisses:
+                if polissa[relation][0] == vals[relation]:
+                    continue
                 result.append(polissa[relation][0])
-            if vals.get(relation, None):
-                result.append(vals[relation])
+                if vals.get(relation, None):
+                    result.append(vals[relation])
         return result
 
     def write(self, cursor, uid, ids, vals, context=None):

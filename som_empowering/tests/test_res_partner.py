@@ -286,7 +286,13 @@ class ResPartnerTest(testing.OOTestCase):
         )
         self.assertItemsEqual(result, [self.owner1, self.payer2])
 
-    # TODO: value matches, do not update
+    def test_modified_partners__sameValue_ignored(self):
+        result = self.contract_modified_partners(
+            self.contract1,
+            titular=self.owner1,
+        )
+        self.assertItemsEqual(result, [])
+
     # TODO: remove duplicated
     # TODO: current value is none, exclude
 
