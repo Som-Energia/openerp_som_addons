@@ -8,7 +8,6 @@ from yamlns import ns
 
 class ResPartnerTest(testing.OOTestCase):
 
-
     def get_reference(self, semantic_id):
         return self.IrModelData.get_object_reference(
             self.cursor, self.uid, 
@@ -238,4 +237,25 @@ class ResPartnerTest(testing.OOTestCase):
             # expected to raise because length is 0
             self.token_contracts(token)
 
+    def contract_modified_partners(self, ids, **vals):
+        return list(sorted(
+            self.GiscedataPolissa._modified_partners(
+                self.cursor, self.uid, ids,
+                vals
+            )
+        ))
+
+    def test_modified_partners__non_partner_attribute__empty(self):
+        result = self.contract_modified_partners(
+            self.contract1,
+            name="newvalue",
+        )
+        self.assertEqual(result, [])
+
+    def test_modified_partners__unsetPayer_updatesFormer(self):
+        result = self.contract_modified_partners(
+            self.contract2,
+            pagador=False,
+        )
+        self.assertEqual(result, [self.payer2])
 
