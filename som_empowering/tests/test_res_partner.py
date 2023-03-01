@@ -83,11 +83,11 @@ class ResPartnerTest(testing.OOTestCase):
             notified=None
         )
         notify_address = getid(polissa['direccio_notificacio'])
-
         if notify_address:
             address = self.ResPartnerAddress.read(
                 self.cursor, self.uid, notify_address)
             result.notified=getid(address['partner_id'])
+
         return result
 
     def test_fixtures(self):
@@ -110,6 +110,8 @@ class ResPartnerTest(testing.OOTestCase):
                 ),
             )
         )
+
+    # partner.related_contracts
 
     def test_related_contracts__titular(self):
         # Contract is just in the related of the owner
@@ -173,6 +175,8 @@ class ResPartnerTest(testing.OOTestCase):
             cups=contract['cups'][1],
         )
 
+    # partner.assign_token
+
     def test_assign_token__beforeAssigningOne(self):
         token = self.get_token(self.owner1)
         self.assertEqual(token, False)
@@ -215,6 +219,8 @@ class ResPartnerTest(testing.OOTestCase):
         self.assertIn(self.name_and_cups(self.contract1), token_contracts)
         self.assertNotIn(self.name_and_cups(self.contract2), token_contracts)
 
+    # partner.clear_token
+
     def test_clear_token(self):
         self.ResPartner.assign_token(self.cursor, self.uid, [self.owner1])
         token = self.get_token(self.owner1)
@@ -236,6 +242,8 @@ class ResPartnerTest(testing.OOTestCase):
         with self.assertRaises(AssertionError):
             # expected to raise because length is 0
             self.token_contracts(token)
+
+    # polissa.contract_modified
 
     def contract_modified_partners(self, ids, **vals):
         return self.GiscedataPolissa._modified_partners(
