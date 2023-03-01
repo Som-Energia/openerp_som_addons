@@ -286,3 +286,8 @@ class ResPartnerTest(testing.OOTestCase):
         )
         self.assertItemsEqual(result, [self.owner1, self.payer2])
 
+    # TODO: value matches, do not update
+    # TODO: remove duplicated
+    # TODO: current value is none, exclude
+
+

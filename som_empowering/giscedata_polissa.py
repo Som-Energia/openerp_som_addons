@@ -13,9 +13,10 @@ class GiscedataPolissa(osv.osv):
         if type(ids) not in (list, tuple):
             ids=[ids]
         result = []
-        for relation in ['pagador', 'titular']:
+        relations = ['pagador', 'titular']
+        polisses = self.read(cursor, uid, ids, relations)
+        for relation in relations:
             if relation not in vals: continue
-            polisses = self.read(cursor, uid, ids, [relation])
             for polissa in polisses:
                 result.append(polissa[relation][0])
             if vals.get(relation, None):
