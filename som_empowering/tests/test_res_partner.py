@@ -238,33 +238,31 @@ class ResPartnerTest(testing.OOTestCase):
             self.token_contracts(token)
 
     def contract_modified_partners(self, ids, **vals):
-        return list(sorted(
-            self.GiscedataPolissa._modified_partners(
-                self.cursor, self.uid, ids,
-                vals
-            )
-        ))
+        return self.GiscedataPolissa._modified_partners(
+            self.cursor, self.uid, ids,
+            vals
+        )
 
     def test_modified_partners__non_partner_attribute__empty(self):
         result = self.contract_modified_partners(
             self.contract1,
             name="newvalue",
         )
-        self.assertEqual(result, [])
+        self.assertItemsEqual(result, [])
 
     def test_modified_partners__unsetPayer_updatesFormer(self):
         result = self.contract_modified_partners(
             self.contract2,
             pagador=False,
         )
-        self.assertEqual(result, [self.payer2])
+        self.assertItemsEqual(result, [self.payer2])
 
     def test_modified_partners__unsetOwner_updatesFormer(self):
         result = self.contract_modified_partners(
             self.contract2,
             titular=False,
         )
-        self.assertEqual(result, [self.owner2])
+        self.assertItemsEqual(result, [self.owner2])
 
     def test_modified_partners__unsetOwnerPayer_updatesFormerBoth(self):
         result = self.contract_modified_partners(
@@ -272,5 +270,5 @@ class ResPartnerTest(testing.OOTestCase):
             titular=False,
             pagador=False,
         )
-        self.assertEqual(result, [self.payer2, self.owner2])
+        self.assertItemsEqual(result, [self.payer2, self.owner2])
 
