@@ -34,6 +34,7 @@ class ResPartnerTest(testing.OOTestCase):
         self.cursor = self.txn.cursor
         self.uid = self.txn.user
         self.addCleanup(self.txn.stop)
+
         self.pool = self.openerp.pool
         self.IrModelData = self.pool.get('ir.model.data')
         self.ResPartner = self.pool.get('res.partner')
@@ -41,14 +42,14 @@ class ResPartnerTest(testing.OOTestCase):
         self.GiscedataPolissa = self.pool.get('giscedata.polissa')
 
         self.contract1 = self.get_reference('giscedata_polissa.polissa_gisce')
-        self.contract2 = self.get_reference('giscedata_polissa.polissa_0001')
-        # owner of contract1, no other roles on contract 1, unrelated to contract2
         self.owner1 = self.get_reference('base.res_partner_gisce')
+        # owner1 is also payer of contract1
         self.notified1 =  self.get_reference('base.res_partner_9')
-        # payer of contract2, no other roles on contract 2, unrelated to contract1
+
+        self.contract2 = self.get_reference('giscedata_polissa.polissa_0001')
         self.owner2 = self.get_reference('base.res_partner_c2c')
         self.payer2 = self.get_reference('base.res_partner_agrolait')
-        # giscedata_polissa.polissa_0001
+        # payer2 is also notified of contract2
 
     def tearDown(self):
         c = pymongo.MongoClient()
