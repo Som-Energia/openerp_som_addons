@@ -11,12 +11,10 @@ class GiscedataPolissa(osv.osv):
         it returns the partners that will need to update their token.
         """
         result = []
-        if 'pagador' in vals:
-            polissa = self.read(cursor, uid, ids, ['pagador'])
-            result.append(polissa['pagador'][0])
-        if 'titular' in vals:
-            polissa = self.read(cursor, uid, ids, ['titular'])
-            result.append(polissa['titular'][0])
+        for relation in ['pagador', 'titular']:
+            if relation not in vals: continue
+            polissa = self.read(cursor, uid, ids, [relation])
+            result.append(polissa[relation][0])
         return result
 
     def write(self, cursor, uid, ids, vals, context=None):
