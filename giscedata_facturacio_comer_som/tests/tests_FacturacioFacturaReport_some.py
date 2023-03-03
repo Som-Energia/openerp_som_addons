@@ -1529,10 +1529,8 @@ class Tests_FacturacioFacturaReport_partner_info(Tests_FacturacioFacturaReport_b
                 'pol_name': u'Camptocamp',
                 'vat':  u'B82420654',
                 'is_out_refund': False,
-                'partner_name': u'Agrolait',
-                'partner_CIF': u'B83677229',
                 'payment_type': u'TRANSFERENCIA_SBC',
-                'cc_name': u'ES12345678901234123*****',
+                'cc_name': u'**** **** **** **** **** 1234',
                 'bank_name': u''
                })
 
