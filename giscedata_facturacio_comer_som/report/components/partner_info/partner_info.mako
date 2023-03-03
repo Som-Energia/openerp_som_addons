@@ -15,8 +15,6 @@
             % if not pi.is_out_refund:
                 <h1>${_(u"DADES DE PAGAMENT")}</h1>
             % endif
-            <p>${_(u"Titular compte bancari:")} <span style="font-weight: bold;">${pi.partner_name}</span> <br />
-            ${_(u"NIF/CIF:")} <span style="font-weight: bold;">${pi.partner_CIF}</span> <br />
             ${_(u"Entitat bancària:")} <span style="font-weight: bold;">${pi.bank_name}</span> <br />
             ${_(u"Núm. compte bancari:")} <span style="font-weight: bold;">${pi.cc_name}</span> <br />
               </p>

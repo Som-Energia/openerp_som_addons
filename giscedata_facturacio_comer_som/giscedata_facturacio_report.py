@@ -1712,7 +1712,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         bank_name = _(u"")
         if pol.tipo_pago.code != 'TRANSFERENCIA_CSB':
             if fact.partner_bank:
-                cc_name = fact.partner_bank.iban[:-5]+"*****"
+                cc_name = "**** " * 5 + fact.partner_bank.iban[-4:]
                 if fact.partner_bank.bank:
                     bank_name = fact.partner_bank.bank.name
         else:
@@ -1722,8 +1722,6 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'pol_name': pol.titular.name,
             'vat': pol.titular.vat.replace('ES',''),
             'is_out_refund': fact.invoice_id.type == 'out_refund',
-            'partner_name': fact.partner_id.name,
-            'partner_CIF': fact.partner_id.vat.replace('ES',''),
             'payment_type': pol.tipo_pago.code,
             'cc_name': cc_name,
             'bank_name': bank_name
