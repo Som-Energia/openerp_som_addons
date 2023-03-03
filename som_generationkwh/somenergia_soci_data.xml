@@ -22,7 +22,7 @@
             <field name="lang"/>
             <field eval="0" name="send_on_write"/>
             <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
-            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Info Som Energia')]"/>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('email_id','=', 'info@somenergia.coop')]"/>
             <field name="def_body_text"><![CDATA[<!doctype html>
                 <html>
 <head><meta charset='utf8'></head><body>
