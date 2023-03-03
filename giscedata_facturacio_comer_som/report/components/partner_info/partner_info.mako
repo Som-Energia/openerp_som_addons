@@ -15,9 +15,10 @@
             % if not pi.is_out_refund:
                 <h1>${_(u"DADES DE PAGAMENT")}</h1>
             % endif
-            ${_(u"Entitat bancària:")} <span style="font-weight: bold;">${pi.bank_name}</span> <br />
-            ${_(u"Núm. compte bancari:")} <span style="font-weight: bold;">${pi.cc_name}</span> <br />
-              </p>
+            <p>
+                ${_(u"Entitat bancària:")} <span style="font-weight: bold;">${pi.bank_name}</span> <br />
+                ${_(u"Núm. compte bancari:")} <span style="font-weight: bold;">${pi.cc_name}</span> <br />
+            </p>
             <hr />
             % if not pi.is_out_refund:
                 % if pi.payment_type != 'TRANSFERENCIA_CSB':
