@@ -51,13 +51,13 @@ class WizardBaixaSoci(osv.osv_memory):
         template = power_email_tmpl_obj.read(cursor, uid, template_id)
 
         email_from = False
-        template_name = 'Info Som Energia'
+        email_account_id = 'info@somenergia.coop'
 
-        if template.get(template_name, False):
+        if template.get(email_account_id, False):
             email_from = template.get('enforce_from_account')[0]
 
         if not email_from:
-            email_from = account_obj.search(cursor, uid, [('name', '=', template_name)])[0]
+            email_from = account_obj.search(cursor, uid, [('email_id', '=', email_account_id)])[0]
 
         email_params = dict({
             'email_from': email_from,
