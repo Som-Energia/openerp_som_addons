@@ -324,7 +324,7 @@ class GiscedataPolissaTarifa(osv.osv):
             for value, unit, cosfi_desc in reactive_prices:
                 preus[self._desc_tipus['tr']][cosfi_desc]  = {
                     'value': round(value, config.get('price_accuracy', 6)),
-                    'unit': '€/{}'.unit
+                    'unit': '€/{}'.format(unit)
                 }
 
             value, uom = self.get_bo_social_price(
