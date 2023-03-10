@@ -219,6 +219,26 @@ class ResPartnerTest(testing.OOTestCase):
         self.assertIn(self.name_and_cups(self.contract1), token_contracts)
         self.assertNotIn(self.name_and_cups(self.contract2), token_contracts)
 
+    def test_assign_token__whenTokenExistsInErpButMongoIsMissing(self):
+        # This case is common in testing: in testing, we update postgres
+        # data but not mongo documents
+
+        # Given that there is a token in postgress
+        self.ResPartner.assign_token(self.cursor, self.uid, [self.owner1])
+        token = self.get_token(self.owner1)
+        # But there is no token in mongo
+        self.db.tokens.delete_many({'token': token})
+
+        # When we reassign the token
+        self.ResPartner.assign_token(self.cursor, self.uid, [self.owner1])
+        # Then the token is kept
+        token2 = self.get_token(self.owner1)
+        self.assertEqual(token, token2)
+        # And the mongo token has been regenerate with the proper contracts
+        token_contracts = self.token_contracts(token)
+        self.assertIn(self.name_and_cups(self.contract1), token_contracts)
+        self.assertNotIn(self.name_and_cups(self.contract2), token_contracts)
+
     # partner.clear_token
 
     def test_clear_token(self):
