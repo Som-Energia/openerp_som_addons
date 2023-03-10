@@ -38,9 +38,9 @@ class GiscedataPolissaTarifa(osv.osv):
                         cursor, uid, periode.product_id.id, context=context
                     )
                 if product_gkwh_id:
-                    products.append(('gkwh', product_gkwh_id))
+                    products.append(('gkwh', product_gkwh_id, periode.product_id.id))
             if periode.product_reactiva_id:
-                products.append(('tr', periode.product_reactiva_id.id))
+                products.append(('tr', False, periode.product_reactiva_id.id))
             if periode.product_exces_pot_id:
                 products.append(('ep', periode.product_exces_pot_id.id))
             if periode.product_exces_pot_max_id:
@@ -100,28 +100,6 @@ class GiscedataPolissaTarifa(osv.osv):
                     titular=None)
 
         return price, prod.uom_id
-
-    def get_reactiva_cosfi_prices(self, cursor, uid, pricelist,
-                          fiscal_position=None, with_taxes=False,
-                          context=None):
-        imd_obj = self.pool.get('ir.model.data')
-        prod_obj = self.pool.get('product.product')
-        fact_obj = self.pool.get('giscedata.facturacio.facturador')
-
-        p_cosfi_id = imd_obj.get_object_reference(cursor, uid, 'giscedata_facturacio', 'product_cosfi')[1]
-
-        price_cosfi = []
-
-        for cosfi in self._cosfi:
-            price = fact_obj.calc_cosfi_price(cursor, uid, cosfi[0], pricelist.id, context)
-            price_cosfi.append({'cosfi': cosfi, 'price': price})
-
-            prod = prod_obj.browse(cursor, uid, p_cosfi_id)
-            if with_taxes:
-                price = prod.add_taxes(price, fiscal_position, direccio_pagament=None,
-                        titular=None)
-
-        return price_cosfi
 
     def _get_som_price_version_list(self, cursor, uid, municipi_id, pricelist_list, date_from, date_to, context):
         municipi_obj = self.pool.get('res.municipi')
@@ -184,7 +162,18 @@ class GiscedataPolissaTarifa(osv.osv):
 
         return fiscal_position
 
-    def get_reactiva_price(self, cursor, uid, general_price_version_list, price_version, fiscal_position, with_taxes, context):
+    def get_reactiva_cosfi_prices(self, cursor, uid, pricelist, context=None):
+        fact_obj = self.pool.get('giscedata.facturacio.facturador')
+
+        price_cosfi = []
+
+        for cosfi in self._cosfi:
+            price = fact_obj.calc_cosfi_price(cursor, uid, cosfi[0], pricelist.id, context)
+            price_cosfi.append({'cosfi': cosfi, 'price': price})
+
+        return price_cosfi
+
+    def get_reactiva_price(self, cursor, uid, general_price_version_list, price_version, context):
         reactiva_prices = []
         general_price_version_list_in_range = [
             item for item in general_price_version_list
@@ -194,13 +183,13 @@ class GiscedataPolissaTarifa(osv.osv):
         for general_price_version in general_price_version_list_in_range:
 
             cosfi_items =  self.get_reactiva_cosfi_prices(
-                cursor, uid, general_price_version.pricelist_id, fiscal_position=fiscal_position, with_taxes=with_taxes, context=context
+                cursor, uid, general_price_version.pricelist_id, context=context
             )
             for cosfi_item in cosfi_items:
                 cosfi_desc = "{}-{}".format(general_price_version.name, cosfi_item['cosfi'][1])
                 cosfi_value = cosfi_item['price']
 
-                reactiva_price = (cosfi_value, '€/kVArh', cosfi_desc)
+                reactiva_price = (cosfi_value, 'kVArh', cosfi_desc)
                 reactiva_prices.append(reactiva_price)
 
         return reactiva_prices
@@ -256,19 +245,26 @@ class GiscedataPolissaTarifa(osv.osv):
             cursor, uid, fiscal_position_id, max_power, date_from, date_to)
 
         if not som_price_version_list:
-            raise osv.except_osv(
-                'Warning !',
-                'Tariff pricelist not found'
-            )
+            return [dict(
+                error= 'Tariff pricelist not found'
+            )]
 
         periodes_products = self.get_products(cursor, uid, tariff, context=None)
 
         price_by_date_range = []
         for price_version in som_price_version_list:
 
+            context = {
+                'date': price_version.date_start,
+            }
+
             preus = {}  # dictionary to be returned
 
             product_price_list = price_version.pricelist_id
+
+            reactive_prices_without_taxes = self.get_reactiva_price(
+                cursor, uid, general_price_version_list, price_version, context
+            )
 
             items_ids = [item for item in price_version.items_id if item.base == -3]
 
@@ -291,41 +287,55 @@ class GiscedataPolissaTarifa(osv.osv):
                     if self._desc_tipus[tipus] not in preus:
                         preus[self._desc_tipus[tipus]] = {}
 
-                    # taxes for gkwh are calculated later and taxes for autoconsum
-                    # are not calculated
-                    apply_taxes = with_taxes and tipus not in ['gkwh']
+                    if tipus != 'tr':
+                        # taxes for gkwh are calculated later and taxes for autoconsum
+                        # are not calculated
+                        apply_taxes = with_taxes and tipus not in ['gkwh']
 
-                    context = {'date': price_version.date_start}
-                    value, discount, uom_id = product_price_list.get_atr_price(
-                        tipus=tipus, product_id=product_tipus_id,
-                        fiscal_position=fiscal_position, context=context,
-                        with_taxes=apply_taxes, direccio_pagament=None,
-                        titular=None
-                    )
+                        value, discount, uom_id = product_price_list.get_atr_price(
+                            tipus=tipus, product_id=product_tipus_id,
+                            fiscal_position=fiscal_position, context=context,
+                            with_taxes=apply_taxes, direccio_pagament=None,
+                            titular=None
+                        )
 
-                    # apply taxes of the energy term to gkwh price
-                    if with_taxes and tipus == 'gkwh':
+                    if tipus == 'gkwh' and with_taxes:
+                        tax_product = tipus_product[2]
+
                         value = prod_obj.add_taxes(
-                            cursor, uid, product_tipus_id, value,
+                            cursor, uid, tax_product, value,
                             fiscal_position, direccio_pagament=None,
                             titular=None
                         )
 
-                    # units of measure
-                    uom = uom_obj.browse(cursor, uid, uom_id)
-                    preus[self._desc_tipus[tipus]][name] = {
-                        'value': round(value, config.get('price_accuracy', 6)),
-                        'unit': '€/{}'.format(uom.name if uom.name != 'PCE' else 'kWh')
-                    }
+                    reactive_prices = []
+                    if tipus == 'tr':
+                        if with_taxes:
+                            tax_product = tipus_product[2]
 
-            reactive_prices = self.get_reactiva_price(
-                cursor, uid, general_price_version_list, price_version, fiscal_position=fiscal_position, with_taxes=with_taxes, context=context
-            )
-            for value, unit, cosfi_desc in reactive_prices:
-                preus[self._desc_tipus['tr']][cosfi_desc]  = {
-                    'value': round(value, config.get('price_accuracy', 6)),
-                    'unit': '€/{}'.format(unit)
-                }
+                            for reactive_price in reactive_prices_without_taxes:
+                                reactive_price_list = list(reactive_price)
+                                reactive_price_list[0] = prod_obj.add_taxes(
+                                    cursor, uid, tax_product, reactive_price_list[0],
+                                    fiscal_position, direccio_pagament=None,
+                                    titular=None
+                                )
+                                reactive_prices.append(tuple(reactive_price_list))
+                        else:
+                            reactive_prices = reactive_prices_without_taxes
+
+                        for value, unit, cosfi_desc in reactive_prices:
+                            preus[self._desc_tipus['tr']][cosfi_desc]  = {
+                                'value': round(value, config.get('price_accuracy', 6)),
+                                'unit': '€/{}'.format(unit)
+                            }
+                    else:
+                        # units of measure
+                        uom = uom_obj.browse(cursor, uid, uom_id)
+                        preus[self._desc_tipus[tipus]][name] = {
+                            'value': round(value, config.get('price_accuracy', 6)),
+                            'unit': '€/{}'.format(uom.name if uom.name != 'PCE' else 'kWh')
+                        }
 
             value, uom = self.get_bo_social_price(
                 cursor, uid, product_price_list, fiscal_position=fiscal_position, with_taxes=with_taxes, context=context

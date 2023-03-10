@@ -42,10 +42,9 @@ class tarifes_tests(testing.OOTestCase):
             tariff_id = self.imd_obj.get_object_reference(
                 cursor, uid, 'giscedata_polissa', 'tarifa_20A_test')[1]
 
-            with self.assertRaises(Exception) as e:
-                model.get_tariff_prices(cursor, uid, tariff_id, 5386, None, False, '1999-12-01', '1999-12-01')
+            result = model.get_tariff_prices(cursor, uid, tariff_id, 5386, None, False, '1999-12-01', '1999-12-01')
 
-            self.assertEqual(e.exception.value, 'Tariff pricelist not found')
+            self.assertEqual(result[0]['error'], 'Tariff pricelist not found')
 
     def test__get_tariff_prices__valid_date_range_date_tariff_into_range(self):
 
