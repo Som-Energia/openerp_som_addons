@@ -186,10 +186,11 @@ class GiscedataPolissaTarifa(osv.osv):
                 cursor, uid, general_price_version.pricelist_id, context=context
             )
             for cosfi_item in cosfi_items:
-                cosfi_desc = "{}-{}".format(general_price_version.name, cosfi_item['cosfi'][1])
-                cosfi_value = cosfi_item['price']
+                cosfi_desc = general_price_version.name
+                cosfi_value = cosfi_item['cosfi'][1]
+                cosfi_price = cosfi_item['price']
 
-                reactiva_price = (cosfi_value, 'kVArh', cosfi_desc)
+                reactiva_price = (cosfi_price, 'kVArh', cosfi_desc, cosfi_value)
                 reactiva_prices.append(reactiva_price)
 
         return reactiva_prices
@@ -324,9 +325,12 @@ class GiscedataPolissaTarifa(osv.osv):
                         else:
                             reactive_prices = reactive_prices_without_taxes
 
-                        for value, unit, cosfi_desc in reactive_prices:
-                            preus[self._desc_tipus['tr']][cosfi_desc]  = {
-                                'value': round(value, config.get('price_accuracy', 6)),
+                        for cosfi_price, unit, cosfi_desc, cosfi_value in reactive_prices:
+                            if not cosfi_desc in preus[self._desc_tipus['tr']]:
+                                preus[self._desc_tipus['tr']][cosfi_desc] = {}
+
+                            preus[self._desc_tipus['tr']][cosfi_desc][cosfi_value] = {
+                                'value': round(cosfi_price, config.get('price_accuracy', 6)),
                                 'unit': '€/{}'.format(unit)
                             }
                     else:
