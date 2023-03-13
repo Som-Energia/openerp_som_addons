@@ -117,8 +117,12 @@ class Tests_FacturacioFacturaReport_fill_and_find(Tests_FacturacioFacturaReport_
             self.assertEquals(method.im_class.__name__,
                               'giscedata.facturacio.factura.report')
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'cleanup_data')
-    def test__fill_all_components_data__test_some_of_them(self, cleanup_data_function_mock):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'cleanup_data',
+    )
+    def test__fill_all_components_data__test_some_of_them(
+            self, cleanup_data_function_mock):
 
         cleanup_data_function_mock.return_value = False
 
@@ -175,9 +179,9 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
         self.get_fixture('giscedata_polissa', 'polissa_0001')
 
         print "+-" * 50
-        print f.polissa_id
-        print f.polissa_id.soci
-        print f.polissa_id.id
+        # print f.polissa_id
+        # print f.polissa_id.soci
+        # print f.polissa_id.id
 
         p = self.partner_obj.browse(self.cursor, self.uid, 23)
         self.partner_obj.write(self.cursor, self.uid, p.id, {'ref': 'S019753'})
@@ -189,7 +193,7 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
             polissa.return_value = 'S019753'
 
             print "*" * 50
-            print f.polissa_id.soci
+            # print f.polissa_id.soci
 
             result = self.r_obj.get_component_logo_data(**self.bfp(f_id))
             self.assertYamlfy(result)
@@ -329,7 +333,8 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
 
     @mock.patch.object(giscedata_facturacio_report, 'te_autoconsum')
     @mock.patch.object(giscedata_facturacio_report, 'te_gkwh')
-    def test__som_report_comp_flags_no_ghwk_no_auto(self, te_gkwh_mock_function, te_autoconsum_mock_function):
+    def test__som_report_comp_flags_no_ghwk_no_auto(
+            self, te_gkwh_mock_function, te_autoconsum_mock_function):
         f_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
         p_id = f.partner_id.id
@@ -352,7 +357,8 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
 
     @mock.patch.object(giscedata_facturacio_report, 'te_autoconsum')
     @mock.patch.object(giscedata_facturacio_report, 'te_gkwh')
-    def test__som_report_comp_flags_no_ghwk_auto_ca(self, te_gkwh_mock_function, te_autoconsum_mock_function):
+    def test__som_report_comp_flags_no_ghwk_auto_ca(
+            self, te_gkwh_mock_function, te_autoconsum_mock_function):
         f_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
         p_id = f.partner_id.id
@@ -375,7 +381,8 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
 
     @mock.patch.object(giscedata_facturacio_report, 'te_autoconsum')
     @mock.patch.object(giscedata_facturacio_report, 'te_gkwh')
-    def test__som_report_comp_flags_no_ghwk_auto_es(self, te_gkwh_mock_function, te_autoconsum_mock_function):
+    def test__som_report_comp_flags_no_ghwk_auto_es(
+            self, te_gkwh_mock_function, te_autoconsum_mock_function):
         f_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
         p_id = f.partner_id.id
@@ -398,7 +405,8 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
 
     @mock.patch.object(giscedata_facturacio_report, 'te_autoconsum')
     @mock.patch.object(giscedata_facturacio_report, 'te_gkwh')
-    def test__som_report_comp_flags_ghwk_no_auto(self, te_gkwh_mock_function, te_autoconsum_mock_function):
+    def test__som_report_comp_flags_ghwk_no_auto(
+            self, te_gkwh_mock_function, te_autoconsum_mock_function):
         f_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
         partner_id = f.partner_id.id
@@ -421,7 +429,8 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
 
     @mock.patch.object(giscedata_facturacio_report, 'te_autoconsum')
     @mock.patch.object(giscedata_facturacio_report, 'te_gkwh')
-    def test__som_report_comp_flags_ghwk_auto_ca(self, te_gkwh_mock_function, te_autoconsum_mock_function):
+    def test__som_report_comp_flags_ghwk_auto_ca(
+            self, te_gkwh_mock_function, te_autoconsum_mock_function):
         f_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
         partner_id = f.partner_id.id
@@ -444,7 +453,8 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
 
     @mock.patch.object(giscedata_facturacio_report, 'te_autoconsum')
     @mock.patch.object(giscedata_facturacio_report, 'te_gkwh')
-    def test__som_report_comp_flags_ghwk_auto_es(self, te_gkwh_mock_function, te_autoconsum_mock_function):
+    def test__som_report_comp_flags_ghwk_auto_es(
+            self, te_gkwh_mock_function, te_autoconsum_mock_function):
         f_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
         partner_id = f.partner_id.id
@@ -549,13 +559,22 @@ class Tests_FacturacioFacturaReport_renovation_date(Tests_FacturacioFacturaRepor
         self.assertTrue(result == '2023-01-27')
 
 
-class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFacturaReport_base):
+class Tests_FacturacioFacturaReport_contract_data_component(
+        Tests_FacturacioFacturaReport_base):
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'is_visible_readings_g_table')
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'is_visible_readings_g_table',
+    )
     @mock.patch.object(giscedata_facturacio_report, 'get_renovation_date')
     @mock.patch.object(giscedata_facturacio_report, 'te_autoconsum_collectiu')
     @mock.patch.object(giscedata_facturacio_report, 'te_autoconsum')
-    def test_som_report_comp_contract_data_20A_no_auto(self, te_autoconsum_mock_function, te_autoconsum_collectiu_mock_function, get_renovation_date_mock_function, is_visible_readings_g_table_mock_function):
+    def test_som_report_comp_contract_data_20A_no_auto(
+        self, te_autoconsum_mock_function,
+        te_autoconsum_collectiu_mock_function,
+        get_renovation_date_mock_function,
+        is_visible_readings_g_table_mock_function,
+    ):
         f_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
 
         is_visible_readings_g_table_mock_function.return_value = True
@@ -586,11 +605,19 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
             'small_text': False,
         })
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'is_visible_readings_g_table')
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'is_visible_readings_g_table',
+    )
     @mock.patch.object(giscedata_facturacio_report, 'get_renovation_date')
     @mock.patch.object(giscedata_facturacio_report, 'te_autoconsum_collectiu')
     @mock.patch.object(giscedata_facturacio_report, 'te_autoconsum')
-    def test_som_report_comp_contract_data_20A_amb_auto(self, te_autoconsum_mock_function, te_autoconsum_collectiu_mock_function, get_renovation_date_mock_function, is_visible_readings_g_table_mock_function):
+    def test_som_report_comp_contract_data_20A_amb_auto(
+        self, te_autoconsum_mock_function,
+        te_autoconsum_collectiu_mock_function,
+        get_renovation_date_mock_function,
+        is_visible_readings_g_table_mock_function,
+    ):
         f_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         p_id = self.get_fixture('giscedata_polissa', 'polissa_autoconsum_01')
         self.factura_obj.write(self.cursor, self.uid, f_id, {'polissa_id': p_id})
@@ -627,9 +654,16 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
 
 class Tests_FacturacioFacturaReport_readings_table(Tests_FacturacioFacturaReport_base):
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_readings_data')
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_readings_data',
+    )
     @mock.patch.object(giscedata_facturacio_report, 'te_autoconsum')
-    def test__som_report_comp_readings_tables__days_equal_zero(self, te_autoconsum_mock_function, get_readings_data_mock_function):
+    def test__som_report_comp_readings_tables__days_equal_zero(
+        self,
+        te_autoconsum_mock_function,
+        get_readings_data_mock_function,
+    ):
         get_readings_data_mock_function.return_value = (
             1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)
         te_autoconsum_mock_function.return_value = True
@@ -653,9 +687,16 @@ class Tests_FacturacioFacturaReport_readings_table(Tests_FacturacioFacturaReport
             'has_autoconsum': True,
         })
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_readings_data')
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_readings_data',
+    )
     @mock.patch.object(giscedata_facturacio_report, 'te_autoconsum')
-    def test__som_report_comp_readings_tables__days_equal_ten(self, te_autoconsum_mock_function, get_readings_data_mock_function):
+    def test__som_report_comp_readings_tables__days_equal_ten(
+        self,
+        te_autoconsum_mock_function,
+        get_readings_data_mock_function,
+    ):
         get_readings_data_mock_function.return_value = (
             1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)
         te_autoconsum_mock_function.return_value = False
@@ -681,11 +722,18 @@ class Tests_FacturacioFacturaReport_readings_table(Tests_FacturacioFacturaReport
         })
 
 
-class Tests_FacturacioFacturaReport_energy_consumption_graphic(Tests_FacturacioFacturaReport_base):
+class Tests_FacturacioFacturaReport_energy_consumption_graphic(
+        Tests_FacturacioFacturaReport_base):
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_readings_data')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_historic_data')
-    def test__som_report_comp_ecg__days_equal_one(self, get_historic_data_mock_function, get_readings_data_mock_function):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_readings_data')
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_historic_data')
+    def test__som_report_comp_ecg__days_equal_one(
+        self,
+        get_historic_data_mock_function,
+        get_readings_data_mock_function,
+    ):
         get_historic_data_mock_function.return_value = (
             [{
                 'consum': 10,
@@ -723,9 +771,15 @@ class Tests_FacturacioFacturaReport_energy_consumption_graphic(Tests_FacturacioF
             'average_30_days': 0.0,
         })
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_readings_data')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_historic_data')
-    def test__som_report_comp_ecg__days_equal_ten(self, get_historic_data_mock_function, get_readings_data_mock_function):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_readings_data')
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_historic_data')
+    def test__som_report_comp_ecg__days_equal_ten(
+        self,
+        get_historic_data_mock_function,
+        get_readings_data_mock_function
+    ):
         get_historic_data_mock_function.return_value = (
             [{
                 'consum': 10,
@@ -766,8 +820,10 @@ class Tests_FacturacioFacturaReport_energy_consumption_graphic(Tests_FacturacioF
 
 class Tests_FacturacioFacturaReport_meters(Tests_FacturacioFacturaReport_base):
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_readings_data')
-    def test__som_report_comp_meters__without_readings(self, get_readings_data_mock_function):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_readings_data')
+    def test__som_report_comp_meters__without_readings(
+            self, get_readings_data_mock_function):
         get_readings_data_mock_function.return_value = (
             1, 2, 3, 4, [], 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)
 
@@ -785,18 +841,22 @@ class Tests_FacturacioFacturaReport_meters(Tests_FacturacioFacturaReport_base):
             'lectures_real_a': 9
         })
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_readings_data')
-    def test__som_report_comp_meters__without_real_readings_down(self, get_readings_data_mock_function):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_readings_data')
+    def test__som_report_comp_meters__without_real_readings_down(
+        self, get_readings_data_mock_function
+    ):
 
         lectures_a = ({0: {0: [0, 1, 2, 3, 4, 5, 6, 'casa']}})
         lectures_real_a = {0: [1, 2]}
-        get_readings_data_mock_function.return_value = ([1, 2, 3], 2, 3, 4,
-                                                        lectures_a,
-                                                        6,
-                                                        7,
-                                                        8,
-                                                        lectures_real_a,
-                                                        10, 11, 12, 13, 14, 15, 16, 17, 18, 19)
+        get_readings_data_mock_function.return_value = (
+            [1, 2, 3],
+            2, 3, 4,
+            lectures_a,
+            6, 7, 8,
+            lectures_real_a,
+            10, 11, 12, 13, 14, 15, 16, 17, 18, 19
+        )
 
         f_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
 
@@ -812,18 +872,23 @@ class Tests_FacturacioFacturaReport_meters(Tests_FacturacioFacturaReport_base):
             'lectures_real_a': lectures_real_a
         })
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_readings_data')
-    def test__som_report_comp_meters__without_real_readings_up(self, get_readings_data_mock_function):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_readings_data')
+    def test__som_report_comp_meters__without_real_readings_up(
+        self, get_readings_data_mock_function
+    ):
 
         lectures_a = ({0: {0: [0, 1, 2, 3, 4, 5, 6, 'casa']}})
         lectures_real_a = {0: [1, 2]}
-        get_readings_data_mock_function.return_value = ([1, 2], 2, 3, 4,
-                                                        lectures_a,
-                                                        6,
-                                                        7,
-                                                        8,
-                                                        lectures_real_a,
-                                                        10, 11, 12, 13, 14, 15, 16, 17, 18, 19)
+        get_readings_data_mock_function.return_value = (
+            [1, 2], 2, 3, 4,
+            lectures_a,
+            6,
+            7,
+            8,
+            lectures_real_a,
+            10, 11, 12, 13, 14, 15, 16, 17, 18, 19
+        )
 
         f_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
 
@@ -840,11 +905,17 @@ class Tests_FacturacioFacturaReport_meters(Tests_FacturacioFacturaReport_base):
         })
 
 
-class Tests_FacturacioFacturaReport_emergency_complaints(Tests_FacturacioFacturaReport_base):
+class Tests_FacturacioFacturaReport_emergency_complaints(
+    Tests_FacturacioFacturaReport_base
+):
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_readings_data')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_distri_phone')
-    def test__som_report_comp_emergency_complaints__no_agreement_partner(self, get_distri_phone_mock_funtion, get_readings_data_mock_function):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_readings_data')
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_distri_phone')
+    def test__som_report_comp_emergency_complaints__no_agreement_partner(
+        self, get_distri_phone_mock_funtion, get_readings_data_mock_function
+    ):
         get_readings_data_mock_function.return_value = (
             [1, 2], 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)
         get_distri_phone_mock_funtion.return_value = '123456789'
@@ -875,9 +946,13 @@ class Tests_FacturacioFacturaReport_emergency_complaints(Tests_FacturacioFactura
             'comer_phone': u'(+32).81.81.37.00'
         })
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_readings_data')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_distri_phone')
-    def test__som_report_comp_emergency_complaints__agreement_partner(self, get_distri_phone_mock_funtion, get_readings_data_mock_function):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_readings_data')
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_distri_phone')
+    def test__som_report_comp_emergency_complaints__agreement_partner(
+        self, get_distri_phone_mock_funtion, get_readings_data_mock_function
+    ):
         get_readings_data_mock_function.return_value = (
             [1, 2], 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)
         get_distri_phone_mock_funtion.return_value = '123456789'
@@ -910,11 +985,22 @@ class Tests_FacturacioFacturaReport_emergency_complaints(Tests_FacturacioFactura
         })
 
 
-class Tests_FacturacioFacturaReport_invoice_details_power(Tests_FacturacioFacturaReport_base):
+class Tests_FacturacioFacturaReport_invoice_details_power(
+    Tests_FacturacioFacturaReport_base
+):
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_tarifa_elect_atr')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_total_excess_power_consumed')
-    def test__som_report_comp_invoice_details_power__without_linies_potencia(self, get_total_excess_power_consumed_mock_function, get_tarifa_elect_atr_mock_function):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_tarifa_elect_atr',
+    )
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_total_excess_power_consumed',
+    )
+    def test__som_report_comp_invoice_details_power__without_linies_potencia(
+        self, get_total_excess_power_consumed_mock_function,
+        get_tarifa_elect_atr_mock_function,
+    ):
 
         get_total_excess_power_consumed_mock_function.return_value = [0.0, False]
         get_tarifa_elect_atr_mock_function.return_value = 'res_id'
@@ -941,10 +1027,24 @@ class Tests_FacturacioFacturaReport_invoice_details_power(Tests_FacturacioFactur
             'is_power_tolls_visible': False,
         })
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_tarifa_elect_atr')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_atr_price')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_total_excess_power_consumed')
-    def test__som_report_comp_invoice_details_power__with_linies_potencia(self, get_total_excess_power_consumed_mock_function, get_atr_price_mock_function, get_tarifa_elect_atr_mock_function):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_tarifa_elect_atr',
+    )
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_atr_price',
+    )
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_total_excess_power_consumed',
+    )
+    def test__som_report_comp_invoice_details_power__with_linies_potencia(
+        self,
+        get_total_excess_power_consumed_mock_function,
+        get_atr_price_mock_function,
+        get_tarifa_elect_atr_mock_function,
+    ):
 
         get_total_excess_power_consumed_mock_function.return_value = [10.0, False]
         get_atr_price_mock_function.return_value = 10.0
@@ -980,14 +1080,34 @@ class Tests_FacturacioFacturaReport_invoice_details_power(Tests_FacturacioFactur
             'total_exces_consumida': 10.0,
             'is_6X': False,
             'atr_power_lines': {
-                u'li': {'atrprice_subtotal': 0.0, 'price': 10.0, 'multi': 1.0, 'days_per_year': 365, 'quantity': 100.0}
+                u'li': {
+                    'atrprice_subtotal': 0.0,
+                    'price': 10.0,
+                    'multi': 1.0,
+                    'days_per_year': 365,
+                    'quantity': 100.0,
+                }
             }
         })
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_tarifa_elect_atr')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_atr_price')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_total_excess_power_consumed')
-    def test__som_report_comp_invoice_details_power__with_linies_potencia_leap_year(self, get_total_excess_power_consumed_mock_function, get_atr_price_mock_function, get_tarifa_elect_atr_mock_function):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_tarifa_elect_atr',
+    )
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_atr_price',
+    )
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_total_excess_power_consumed',
+    )
+    def test__som_report_comp_invoice_details_power__with_linies_potencia_leap_year(
+        self,
+        get_total_excess_power_consumed_mock_function,
+        get_atr_price_mock_function,
+        get_tarifa_elect_atr_mock_function,
+    ):
 
         get_total_excess_power_consumed_mock_function.return_value = [10.0, False]
         get_atr_price_mock_function.return_value = 10.0
@@ -1022,16 +1142,32 @@ class Tests_FacturacioFacturaReport_invoice_details_power(Tests_FacturacioFactur
             'total_exces_consumida': 10.0,
             'is_6X': False,
             'atr_power_lines': {
-                u'li': {'atrprice_subtotal': 0.0, 'price': 10.0, 'multi': 1.0, 'days_per_year': 366, 'quantity': 100.0}
+                u'li': {
+                    'atrprice_subtotal': 0.0,
+                    'price': 10.0,
+                    'multi': 1.0,
+                    'days_per_year': 366,
+                    'quantity': 100.0,
+                }
             }
         })
 
 
-class Tests_FacturacioFacturaReport_invoice_details_energy(Tests_FacturacioFacturaReport_base):
+class Tests_FacturacioFacturaReport_invoice_details_energy(
+        Tests_FacturacioFacturaReport_base):
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_real_energy_lines')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_tarifa_elect_atr')
-    def test__som_report_comp_invoice_details_energy__without_energy_lines(self, get_tarifa_elect_atr_mock_function, get_real_energy_lines_mock_function):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_real_energy_lines',
+    )
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_tarifa_elect_atr',
+    )
+    def test__som_report_comp_invoice_details_energy__without_energy_lines(
+        self, get_tarifa_elect_atr_mock_function,
+        get_real_energy_lines_mock_function,
+    ):
 
         get_tarifa_elect_atr_mock_function.return_value = 'res_id'
         get_real_energy_lines_mock_function.return_value = []
@@ -1052,11 +1188,28 @@ class Tests_FacturacioFacturaReport_invoice_details_energy(Tests_FacturacioFactu
             'is_new_tariff_message_visible': False
         })
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_lines_in_extralines')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_gkwh_owner')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_atr_price')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_tarifa_elect_atr')
-    def test__som_report_comp_invoice_details_energy__with_energy_lines(self, get_tarifa_elect_atr_mock_function, get_atr_price_mock_function, get_gkwh_owner_mock_function, get_lines_in_extralines_mock_function):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_lines_in_extralines',
+    )
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_gkwh_owner',
+    )
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_atr_price',
+    )
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_tarifa_elect_atr',
+    )
+    def test__som_report_comp_invoice_details_energy__with_energy_lines(
+        self, get_tarifa_elect_atr_mock_function,
+        get_atr_price_mock_function,
+        get_gkwh_owner_mock_function,
+        get_lines_in_extralines_mock_function,
+    ):
 
         get_tarifa_elect_atr_mock_function.return_value = 'res_id'
         get_atr_price_mock_function.return_value = 10.0
@@ -1097,11 +1250,19 @@ class Tests_FacturacioFacturaReport_invoice_details_energy(Tests_FacturacioFactu
         })
 
 
-class Tests_FacturacioFacturaReport_invoice_details_generation(Tests_FacturacioFacturaReport_base):
+class Tests_FacturacioFacturaReport_invoice_details_generation(
+        Tests_FacturacioFacturaReport_base):
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_autoconsum_excedents_product_id')
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_autoconsum_excedents_product_id',
+    )
     @mock.patch.object(giscedata_facturacio_report, 'te_autoconsum')
-    def test__som_report_comp_invoice_details_generation__without_generation_lines(self, te_autoconsum_mock_function, get_autoconsum_excedents_product_id_mock_function):
+    def test__som_report_comp_invoice_details_generation__without_generation_lines(
+        self,
+        te_autoconsum_mock_function,
+        get_autoconsum_excedents_product_id_mock_function,
+    ):
         te_autoconsum_mock_function.return_value = False
         get_autoconsum_excedents_product_id_mock_function.return_value = 1
 
@@ -1116,9 +1277,16 @@ class Tests_FacturacioFacturaReport_invoice_details_generation(Tests_FacturacioF
             'has_autoconsum': False,
         })
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_autoconsum_excedents_product_id')
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_autoconsum_excedents_product_id',
+    )
     @mock.patch.object(giscedata_facturacio_report, 'te_autoconsum')
-    def test__som_report_comp_invoice_details_generation__with_generation_lines_without_auto(self, te_autoconsum_mock_function, get_autoconsum_excedents_product_id_mock_function):
+    def test_somreport_comp_invoice_details_generation_with_generation_lines_without_auto(
+        self,
+        te_autoconsum_mock_function,
+        get_autoconsum_excedents_product_id_mock_function,
+    ):
         te_autoconsum_mock_function.return_value = False
         get_autoconsum_excedents_product_id_mock_function.return_value = 1
 
@@ -1150,10 +1318,15 @@ class Tests_FacturacioFacturaReport_invoice_details_generation(Tests_FacturacioF
         })
 
 
-class Tests_FacturacioFacturaReport_invoice_details_reactive(Tests_FacturacioFacturaReport_base):
+class Tests_FacturacioFacturaReport_invoice_details_reactive(
+        Tests_FacturacioFacturaReport_base):
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_tarifa_elect_atr')
-    def test__som_report_comp_invoice_details_reactive__without_reactive_lines(self, get_tarifa_elect_atr_mock_function):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_tarifa_elect_atr',
+    )
+    def test__som_report_comp_invoice_details_reactive__without_reactive_lines(
+            self, get_tarifa_elect_atr_mock_function):
         get_tarifa_elect_atr_mock_function.return_value = 'res_id'
 
         f_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
@@ -1166,9 +1339,14 @@ class Tests_FacturacioFacturaReport_invoice_details_reactive(Tests_FacturacioFac
             'is_visible': False,
         })
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_atr_price')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_tarifa_elect_atr')
-    def test__som_report_comp_invoice_details_reactive__with_reactive_lines(self, get_tarifa_elect_atr_mock_function, get_atr_price_mock_function):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_atr_price')
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_tarifa_elect_atr'
+    )
+    def test__som_report_comp_invoice_details_reactive__with_reactive_lines(
+            self, get_tarifa_elect_atr_mock_function, get_atr_price_mock_function):
         get_tarifa_elect_atr_mock_function.return_value = 'res_id'
         get_atr_price_mock_function.return_value = 10.0
 
@@ -1201,10 +1379,15 @@ class Tests_FacturacioFacturaReport_invoice_details_reactive(Tests_FacturacioFac
         })
 
 
-class Tests_FacturacioFacturaReport_invoice_details_other_concepts(Tests_FacturacioFacturaReport_base):
+class Tests_FacturacioFacturaReport_invoice_details_other_concepts(
+        Tests_FacturacioFacturaReport_base):
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_lines_in_extralines')
-    def test__som_report_comp_invoice_details_other_concepts__without_other_lines(self, get_lines_in_extralines_mock_function):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_lines_in_extralines'
+    )
+    def test__som_report_comp_invoice_details_other_concepts__without_other_lines(
+            self, get_lines_in_extralines_mock_function):
 
         get_lines_in_extralines_mock_function.return_value = []
         f_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
@@ -1237,8 +1420,12 @@ class Tests_FacturacioFacturaReport_invoice_details_other_concepts(Tests_Factura
             'amount_total': 10.0
         })
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_lines_in_extralines')
-    def test__som_report_comp_invoice_details_other_concepts__with_lloguer(self, get_lines_in_extralines_mock_function):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_lines_in_extralines'
+    )
+    def test__som_report_comp_invoice_details_other_concepts__with_lloguer(
+            self, get_lines_in_extralines_mock_function):
 
         get_lines_in_extralines_mock_function.return_value = []
         f_id = self.get_fixture('giscedata_facturacio', 'factura_0008')
@@ -1286,7 +1473,8 @@ class Tests_FacturacioFacturaReport_invoice_details_other_concepts(Tests_Factura
         })
 
 
-class Tests_FacturacioFacturaReport_invoice_details_comments(Tests_FacturacioFacturaReport_base):
+class Tests_FacturacioFacturaReport_invoice_details_comments(
+        Tests_FacturacioFacturaReport_base):
 
     def test__som_report_comp_invoice_details_comments__without_comments(self):
 
@@ -1331,7 +1519,8 @@ class Tests_FacturacioFacturaReport_invoice_details_comments(Tests_FacturacioFac
         })
 
 
-class Tests_FacturacioFacturaReport_amount_destination(Tests_FacturacioFacturaReport_base):
+class Tests_FacturacioFacturaReport_amount_destination(
+        Tests_FacturacioFacturaReport_base):
 
     def test__som_report_comp_amount_destination__without_altres_lines(self):
 
@@ -1391,14 +1580,25 @@ class Tests_FacturacioFacturaReport_amount_destination(Tests_FacturacioFacturaRe
         })
 
 
-class Tests_FacturacioFacturaReport_reactive_readings_table(Tests_FacturacioFacturaReport_base):
+class Tests_FacturacioFacturaReport_reactive_readings_table(
+        Tests_FacturacioFacturaReport_base):
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'is_visible_reactive_and_maximeter')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'is_visible_reactive')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_readings_data')
-    def test__som_report_comp_reactive_readings_table__with_readings(self, get_readings_data_mock_function,
-                                                                     is_visible_reactive_mock_function,
-                                                                     is_visible_reactive_and_maximeter_mock_function):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'is_visible_reactive_and_maximeter'
+    )
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'is_visible_reactive'
+    )
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_readings_data')
+    def test__som_report_comp_reactive_readings_table__with_readings(
+        self,
+        get_readings_data_mock_function,
+        is_visible_reactive_mock_function,
+        is_visible_reactive_and_maximeter_mock_function
+    ):
         get_readings_data_mock_function.return_value = (
             1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)
         is_visible_reactive_mock_function.return_value = True
@@ -1419,15 +1619,27 @@ class Tests_FacturacioFacturaReport_reactive_readings_table(Tests_FacturacioFact
         })
 
 
-class Tests_FacturacioFacturaReport_maximeter_readings_table(Tests_FacturacioFacturaReport_base):
+class Tests_FacturacioFacturaReport_maximeter_readings_table(
+        Tests_FacturacioFacturaReport_base):
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'is_visible_reactive_and_maximeter')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'is_visible_reactive')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_readings_data')
-    def test__som_report_comp_maximeter_readings_table__with_readings_without_exces_potencia(self,
-                                                                                             get_readings_data_mock_function,
-                                                                                             is_visible_reactive_mock_function,
-                                                                                             is_visible_reactive_and_maximeter_mock_function):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'is_visible_reactive_and_maximeter'
+    )
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'is_visible_reactive'
+    )
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_readings_data'
+    )
+    def test_somreport_comp_maximeter_readings_table_with_readings_without_exces_potencia(
+        self,
+        get_readings_data_mock_function,
+        is_visible_reactive_mock_function,
+        is_visible_reactive_and_maximeter_mock_function
+    ):
         get_readings_data_mock_function.return_value = (
             1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)
         is_visible_reactive_mock_function.return_value = True
@@ -1449,13 +1661,24 @@ class Tests_FacturacioFacturaReport_maximeter_readings_table(Tests_FacturacioFac
             'fact_potencia': {},
         })
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'is_visible_reactive_and_maximeter')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'is_visible_reactive')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_readings_data')
-    def test__som_report_comp_maximeter_readings_table__with_readings_with_exces_potencia(self,
-                                                                                          get_readings_data_mock_function,
-                                                                                          is_visible_reactive_mock_function,
-                                                                                          is_visible_reactive_and_maximeter_mock_function):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'is_visible_reactive_and_maximeter',
+    )
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'is_visible_reactive',
+    )
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_readings_data',
+    )
+    def test__som_report_comp_maximeter_readings_table__with_readings_with_exces_potencia(
+        self,
+        get_readings_data_mock_function,
+        is_visible_reactive_mock_function,
+        is_visible_reactive_and_maximeter_mock_function,
+    ):
         get_readings_data_mock_function.return_value = (
             1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)
         is_visible_reactive_mock_function.return_value = True
@@ -1523,9 +1746,13 @@ class Tests_FacturacioFacturaReport_invoice_info(Tests_FacturacioFacturaReport_b
 
 class Tests_FacturacioFacturaReport_invoice_summary(Tests_FacturacioFacturaReport_base):
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_extra_energy_lines')
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_extra_energy_lines'
+    )
     @mock.patch.object(giscedata_facturacio_report, 'te_autoconsum')
-    def test__som_report_comp_invoice_summary__only_energy(self, te_autoconsum_mock_function, get_extra_energy_lines_mock_function):
+    def test__som_report_comp_invoice_summary__only_energy(
+            self, te_autoconsum_mock_function, get_extra_energy_lines_mock_function):
         te_autoconsum_mock_function.return_value = False
         get_extra_energy_lines_mock_function.return_value = []
 
@@ -1589,7 +1816,8 @@ class Tests_FacturacioFacturaReport_partner_info(Tests_FacturacioFacturaReport_b
         })
 
 
-class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaReport_base):
+class Tests_FacturacioFacturaReport_invoice_details_td(
+        Tests_FacturacioFacturaReport_base):
 
     # TODO
     # get_matrix_show_periods
@@ -1599,8 +1827,12 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
     # get_sub_component_invoice_details_td_power_charges_data
     # get_component_invoice_details_info_td_data
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_tarifa_elect_atr')
-    def test__get_sub_component_invoice_details_td_power_tolls_data_dummy(self, get_tarifa_elect_atr_mock_function):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_tarifa_elect_atr'
+    )
+    def test__get_sub_component_invoice_details_td_power_tolls_data_dummy(
+            self, get_tarifa_elect_atr_mock_function):
         get_tarifa_elect_atr_mock_function.return_value = 'res_id'
 
         f_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
@@ -1615,8 +1847,12 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
             'dies': 0,
         })
 
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_tarifa_elect_atr')
-    def test__get_sub_component_invoice_details_td_power_charges_data_dummy(self, get_tarifa_elect_atr_mock_function):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+        'get_tarifa_elect_atr',
+    )
+    def test__get_sub_component_invoice_details_td_power_charges_data_dummy(
+            self, get_tarifa_elect_atr_mock_function):
         get_tarifa_elect_atr_mock_function.return_value = 'res_id'
 
         f_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
@@ -1633,8 +1869,10 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
         })
 
     @mock.patch.object(giscedata_facturacio_report, 'is_2XTD')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_atr_price')
-    def test__get_sub_component_invoice_details_td_2_power_lines_2_periods_1_block(self, get_atr_price_mock_function, is_2XTD_mock_function):
+    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+                       'get_atr_price')
+    def test__get_sub_component_invoice_details_td_2_power_lines_2_periods_1_block(
+            self, get_atr_price_mock_function, is_2XTD_mock_function):
         get_atr_price_mock_function.return_value = 10.0
         is_2XTD_mock_function.return_value = True
 
@@ -1679,8 +1917,10 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
             fact_pol['fact'], fact_pol['pol'], fact_pol['fact'].linies_potencia)
 
         self.assertEquals(result, [{
-            'P1': {'quantity': 1, 'atr_price': 10.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'price_unit': 1.0, 'extra': 1.0},
-            'P2': {'quantity': 1, 'atr_price': 10.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'price_unit': 1.0, 'extra': 1.0},
+            'P1': {'quantity': 1, 'atr_price': 10.0, 'price_subtotal': 1.0,
+                   'price_unit_multi': 1.0, 'price_unit': 1.0, 'extra': 1.0},
+            'P2': {'quantity': 1, 'atr_price': 10.0, 'price_subtotal': 1.0,
+                   'price_unit_multi': 1.0, 'price_unit': 1.0, 'extra': 1.0},
             'multi': 1.0,
             'days_per_year': 365,
             'total': 2.0,
@@ -1693,8 +1933,10 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
         }])
 
     @mock.patch.object(giscedata_facturacio_report, 'is_2XTD')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_atr_price')
-    def test__get_sub_component_invoice_details_td_data_4_power_lines_2_periods_2_blocks(self, get_atr_price_mock_function, is_2XTD_mock_function):
+    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+                       'get_atr_price')
+    def test__get_sub_component_invoice_details_td_data_4_power_lines_2_periods_2_blocks(
+            self, get_atr_price_mock_function, is_2XTD_mock_function):
         get_atr_price_mock_function.return_value = 10.0
         is_2XTD_mock_function.return_value = True
 
@@ -1775,8 +2017,22 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
             'showing_periods': ['P1', 'P2', 'P3'],
             'power_lines_data': [
                 {
-                    'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
-                    'P2': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P1': {
+                        'extra': 1.0,
+                        'price_unit': 1.0,
+                        'price_subtotal': 1.0,
+                        'price_unit_multi': 1.0,
+                        'atr_price': 10.0,
+                        'quantity': 1.0
+                    },
+                    'P2': {
+                        'extra': 1.0,
+                        'price_unit': 1.0,
+                        'price_subtotal': 1.0,
+                        'price_unit_multi': 1.0,
+                        'atr_price': 10.0,
+                        'quantity': 1.0
+                    },
                     'multi': 1.0,
                     'days_per_year': 365,
                     'total': 2.0,
@@ -1787,8 +2043,22 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                     'date_to': '31/05/2021',
                     'date_to_d': '2021-05-31',
                 }, {
-                    'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
-                    'P2': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P1': {
+                        'extra': 1.0,
+                        'price_unit': 1.0,
+                        'price_subtotal': 1.0,
+                        'price_unit_multi': 1.0,
+                        'atr_price': 10.0,
+                        'quantity': 1.0
+                    },
+                    'P2': {
+                        'extra': 1.0,
+                        'price_unit': 1.0,
+                        'price_subtotal': 1.0,
+                        'price_unit_multi': 1.0,
+                        'atr_price': 10.0,
+                        'quantity': 1.0
+                    },
                     'multi': 1.0,
                     'days_per_year': 365,
                     'total': 2.0,
@@ -1803,8 +2073,10 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
         })
 
     @mock.patch.object(giscedata_facturacio_report, 'is_2XTD')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_atr_price')
-    def test__get_sub_component_invoice_details_td_data_4_power_lines_2_periods_2_blocks_incomplete(self, get_atr_price_mock_function, is_2XTD_mock_function):
+    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+                       'get_atr_price')
+    def test_get_subcomponent_invoicedetails_tddata_4powerlines2periods2blocks_incomplete(
+            self, get_atr_price_mock_function, is_2XTD_mock_function):
         get_atr_price_mock_function.return_value = 10.0
         is_2XTD_mock_function.return_value = True
 
@@ -1869,8 +2141,10 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
             'showing_periods': ['P1', 'P2', 'P3'],
             'power_lines_data': [
                 {
-                    'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
-                    'P2': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0,
+                           'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P2': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0,
+                           'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
                     'multi': 1.0,
                     'days_per_year': 365,
                     'total': 2.0,
@@ -1881,7 +2155,8 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                     'date_to': '30/06/2021',
                     'date_to_d': '2021-06-30',
                 }, {
-                    'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0,
+                           'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
                     'multi': 1.0,
                     'days_per_year': 365,
                     'total': 1.0,
@@ -1896,8 +2171,10 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
         })
 
     @mock.patch.object(giscedata_facturacio_report, 'is_2XTD')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_atr_price')
-    def test__get_sub_component_invoice_details_td_data_4_power_lines_3_periods_2_blocks_incomplete(self, get_atr_price_mock_function, is_2XTD_mock_function):
+    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+                       'get_atr_price')
+    def test_get_subcomponent_invoicedetails_tddata_4powerlines3periods2blocks_incomplete(
+            self, get_atr_price_mock_function, is_2XTD_mock_function):
         get_atr_price_mock_function.return_value = 10.0
         is_2XTD_mock_function.return_value = True
 
@@ -1979,9 +2256,12 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
             'showing_periods': ['P1', 'P2', 'P3'],
             'power_lines_data': [
                 {
-                    'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
-                    'P2': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
-                    'P3': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0,
+                           'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P2': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0,
+                           'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P3': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0,
+                           'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
                     'multi': 1.0,
                     'days_per_year': 365,
                     'total': 3.0,
@@ -1992,7 +2272,8 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                     'date_to': '30/06/2021',
                     'date_to_d': '2021-06-30',
                 }, {
-                    'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0,
+                           'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
                     'multi': 1.0,
                     'days_per_year': 365,
                     'total': 1.0,
@@ -2007,8 +2288,10 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
         })
 
     @mock.patch.object(giscedata_facturacio_report, 'is_2XTD')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_atr_price')
-    def test__get_sub_component_invoice_details_td_power_data_6_power_lines_6_periods_1_block(self, get_atr_price_mock_function, is_2XTD_mock_function):
+    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+                       'get_atr_price')
+    def test_get_subcomponent_invoice_details_td_power_data_6powerlines_6periods_1block(
+            self, get_atr_price_mock_function, is_2XTD_mock_function):
         get_atr_price_mock_function.return_value = 10.0
         is_2XTD_mock_function.return_value = False
 
@@ -2119,12 +2402,18 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
             'showing_periods': ['P1', 'P2', 'P3', 'P4', 'P5', 'P6'],
             'power_lines_data': [
                 {
-                    'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
-                    'P2': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
-                    'P3': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
-                    'P4': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
-                    'P5': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
-                    'P6': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0,
+                           'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P2': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0,
+                           'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P3': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0,
+                           'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P4': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0,
+                           'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P5': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0,
+                           'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P6': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0,
+                           'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
                     'multi': 1,
                     'days_per_year': 365,
                     'total': 6.0,
@@ -2139,8 +2428,10 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
         })
 
     @mock.patch.object(giscedata_facturacio_report, 'is_2XTD')
-    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_atr_price')
-    def test__get_sub_component_invoice_details_td_power_data_12_power_lines_6_periods_2_block(self, get_atr_price_mock_function, is_2XTD_mock_function):
+    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+                       'get_atr_price')
+    def test_get_subcomponent_invoice_details_td_powerdata_12powerlines_6periods_2block(
+            self, get_atr_price_mock_function, is_2XTD_mock_function):
         get_atr_price_mock_function.return_value = 10.0
         is_2XTD_mock_function.return_value = False
 
@@ -2353,12 +2644,18 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
             'showing_periods': ['P1', 'P2', 'P3', 'P4', 'P5', 'P6'],
             'power_lines_data': [
                 {
-                    'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
-                    'P2': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
-                    'P3': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
-                    'P4': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
-                    'P5': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
-                    'P6': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0,
+                           'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P2': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0,
+                           'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P3': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0,
+                           'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P4': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0,
+                           'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P5': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0,
+                           'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P6': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0,
+                           'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
                     'multi': 1,
                     'days_per_year': 365,
                     'total': 6.0,
@@ -2369,12 +2666,18 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                     'date_to': '30/05/2021',
                     'date_to_d': '2021-05-30',
                 }, {
-                    'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
-                    'P2': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
-                    'P3': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
-                    'P4': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
-                    'P5': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
-                    'P6': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0,
+                           'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P2': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0,
+                           'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P3': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0,
+                           'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P4': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0,
+                           'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P5': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0,
+                           'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                    'P6': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0,
+                           'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
                     'multi': 1,
                     'days_per_year': 365,
                     'total': 6.0,
