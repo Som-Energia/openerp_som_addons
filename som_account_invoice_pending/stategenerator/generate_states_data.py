@@ -13,27 +13,24 @@ on semid.res_id=state.id
 and semid.model='account.invoice.pending.state'
 order by id;
 """
-with open('states.tsv', encoding='utf8') as tsv:
+with open("states.tsv", encoding="utf8") as tsv:
     lines = tsv.readlines()
-    header = lines[0].split('\t')
+    header = lines[0].split("\t")
     content = lines[1:]
     states = [
-        ns(
-            (k.strip(), v.strip())
-            for k, v in zip(header, line.split('\t'))
-        )
+        ns((k.strip(), v.strip()) for k, v in zip(header, line.split("\t")))
         for line in sorted(content)
     ]
 
-ns(data=states).dump('states.yaml')
+ns(data=states).dump("states.yaml")
 
-defaultProcessModule = 'account_invoice_pending'
-defaultProcess = 'default_pending_state_process'
-defaultProcessFull = '{}.{}'.format(defaultProcessModule, defaultProcess)
+defaultProcessModule = "account_invoice_pending"
+defaultProcess = "default_pending_state_process"
+defaultProcessFull = "{}.{}".format(defaultProcessModule, defaultProcess)
 
-bonoSocialProcessModule = 'giscedata_facturacio_comer_bono_social'
-bonoSocialProcess = 'bono_social_pending_state_process'
-bonoSocialProcessFull = '{}.{}'.format(bonoSocialProcessModule, bonoSocialProcess)
+bonoSocialProcessModule = "giscedata_facturacio_comer_bono_social"
+bonoSocialProcess = "bono_social_pending_state_process"
+bonoSocialProcessFull = "{}.{}".format(bonoSocialProcessModule, bonoSocialProcess)
 
 pendingDaysTypeTemplate = u"""\
             <field name="pending_days_type">{}</field>
@@ -61,18 +58,23 @@ xmlfooter = u"""\
 """
 
 
-with open('states.xml', 'w', encoding='utf8') as xml:
+with open("states.xml", "w", encoding="utf8") as xml:
     xml.write(xmlheader)
     for state in states:
-        if state.module != 'som_account_invoice_pending':
+        if state.module != "som_account_invoice_pending":
             continue
         process = defaultProcessFull
-        if state.process_id == 'Bo Social':
+        if state.process_id == "Bo Social":
             process = bonoSocialProcessFull
-        xml.write(fragment.format(
-            process_sem_id=process,
-            pendingDaysTypeLine=pendingDaysTypeTemplate.format(
-                state.pending_days_type) if state.pending_days_type else '',
-            **state
-        ))
+        xml.write(
+            fragment.format(
+                process_sem_id=process,
+                pendingDaysTypeLine=pendingDaysTypeTemplate.format(
+                    state.pending_days_type
+                )
+                if state.pending_days_type
+                else "",
+                **state
+            )
+        )
     xml.write(xmlfooter)

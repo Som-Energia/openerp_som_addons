@@ -15,11 +15,11 @@
     "init_xml": [],
     "demo_xml": [],
     "update_xml": [
-        'som_autofactura_task_view.xml',
-        'som_autofactura_data.xml',
-        'wizard/wizard_autofactura.xml',
-        'security/ir.model.access.csv',
+        "som_autofactura_task_view.xml",
+        "som_autofactura_data.xml",
+        "wizard/wizard_autofactura.xml",
+        "security/ir.model.access.csv",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

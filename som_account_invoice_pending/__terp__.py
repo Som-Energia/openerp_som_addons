@@ -13,7 +13,7 @@
         "powersms",
         "giscedata_facturacio_impagat_comer",
         "www_som",
-        "poweremail"
+        "poweremail",
     ],
     "init_xml": [],
     "demo_xml": [
@@ -29,5 +29,5 @@
         "account_invoice_pending_view.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

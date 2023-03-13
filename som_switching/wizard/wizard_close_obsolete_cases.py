@@ -62,7 +62,7 @@ class WizardCloseObsoleteCases(osv.osv_memory):
     _defaults = {
         "state": lambda *a: "init",
         "info": _get_info_default,
-        "result": lambda *a: '0',
+        "result": lambda *a: "0",
     }
 
 

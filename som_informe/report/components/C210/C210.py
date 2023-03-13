@@ -8,7 +8,7 @@ class C210(ProcesC2.ProcesC2):
 
     def get_data(self, wiz, cursor, uid, step):
         result = ProcesC2.ProcesC2.get_data(self, wiz, cursor, uid, step)
-        result['type'] = 'C210'
-        result['data_acceptacio'] = dateformat(step.data_acceptacio)
+        result["type"] = "C210"
+        result["data_acceptacio"] = dateformat(step.data_acceptacio)
 
         return result

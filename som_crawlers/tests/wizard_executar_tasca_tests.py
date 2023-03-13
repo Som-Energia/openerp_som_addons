@@ -13,24 +13,25 @@ class WizardExecutarTascaTests(testing.OOTestCase):
     #   @param self The object pointer
     def setUp(self):
         self.pool = self.openerp.pool
-        self.Configuracio = self.pool.get('som.crawlers.config')
-        self.Data = self.pool.get('ir.model.data')
-        self.task = self.pool.get('som.crawlers.task')
-        self.taskStep = self.pool.get('som.crawlers.task.step')
-        self.result = self.pool.get('som.crawlers.result')
-        self.wiz = self.pool.get('wizard.executar.tasca')
+        self.Configuracio = self.pool.get("som.crawlers.config")
+        self.Data = self.pool.get("ir.model.data")
+        self.task = self.pool.get("som.crawlers.task")
+        self.taskStep = self.pool.get("som.crawlers.task.step")
+        self.result = self.pool.get("som.crawlers.result")
+        self.wiz = self.pool.get("wizard.executar.tasca")
 
-        pathFileActual = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')
-        os.system('mkdir ' + pathFileActual + '/demo/tmp')
-        os.system('mkdir ' + pathFileActual + '/demo/tmp/anselmo')
-        os.system('rm -f ' + pathFileActual + '/spiders')
-        os.system('mkdir ' + pathFileActual + '/spiders')
-        os.system('mkdir ' + pathFileActual + '/spiders/selenium_spiders')
-        os.system('mkdir ' + pathFileActual + '/spiders/selenium_spiders/tmp/')
-        os.system('mkdir ' + pathFileActual + '/spiders/selenium_spiders/tmp/anselmo')
+        pathFileActual = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..")
+        os.system("mkdir " + pathFileActual + "/demo/tmp")
+        os.system("mkdir " + pathFileActual + "/demo/tmp/anselmo")
+        os.system("rm -f " + pathFileActual + "/spiders")
+        os.system("mkdir " + pathFileActual + "/spiders")
+        os.system("mkdir " + pathFileActual + "/spiders/selenium_spiders")
+        os.system("mkdir " + pathFileActual + "/spiders/selenium_spiders/tmp/")
+        os.system("mkdir " + pathFileActual + "/spiders/selenium_spiders/tmp/anselmo")
 
     def tearDown(self):
         pass
+
     """
     Function that tests if after trying to download files,
     the result is "Falta especificar nom fitxer"
@@ -44,15 +45,18 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             crawler_task_step_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'demo_taskStep_3')[1]
+                cursor, uid, "som_crawlers", "demo_taskStep_3"
+            )[1]
             # set values
             result_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'demo_result_1')[1]
+                cursor, uid, "som_crawlers", "demo_result_1"
+            )[1]
             # try test
             resultat = self.taskStep.download_files(
-                cursor, uid, crawler_task_step_id, result_id)
+                cursor, uid, crawler_task_step_id, result_id
+            )
             # check result
-            self.assertEqual(resultat, 'Falta especificar nom fitxer')
+            self.assertEqual(resultat, "Falta especificar nom fitxer")
 
     """
     Function that tests if after trying to download files,
@@ -65,15 +69,18 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             crawler_task_step_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'demo_taskStep_5')[1]
+                cursor, uid, "som_crawlers", "demo_taskStep_5"
+            )[1]
             # set values
             result_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'demo_result_1')[1]
+                cursor, uid, "som_crawlers", "demo_result_1"
+            )[1]
             # try test
             result = self.taskStep.download_files(
-                cursor, uid, crawler_task_step_id, result_id)
+                cursor, uid, crawler_task_step_id, result_id
+            )
             # check result
-            self.assertEqual(result, 'File or directory doesn\'t exist')
+            self.assertEqual(result, "File or directory doesn't exist")
             # objecte.browse(... + id) per llegir el objecte al complet.
 
     @unittest.skip("Needs refactor")
@@ -82,15 +89,18 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             crawler_task_step_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'demo_taskStep_1')[1]
+                cursor, uid, "som_crawlers", "demo_taskStep_1"
+            )[1]
             # try test
             result_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'demo_result_1')[1]
+                cursor, uid, "som_crawlers", "demo_result_1"
+            )[1]
             # try test
             result = self.taskStep.download_files(
-                cursor, uid, crawler_task_step_id, result_id)
+                cursor, uid, crawler_task_step_id, result_id
+            )
             # check result
-            self.assertEqual(result, 'files succesfully attached')
+            self.assertEqual(result, "files succesfully attached")
             # objecte.browse(... + id) per llegir el objecte al complet.
 
     # import_xml_files
@@ -104,13 +114,16 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             crawler_task_step_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'demo_taskStep_6')[1]
+                cursor, uid, "som_crawlers", "demo_taskStep_6"
+            )[1]
             result_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'demo_result_2')[1]
+                cursor, uid, "som_crawlers", "demo_result_2"
+            )[1]
             # try test
             with self.assertRaises(Exception) as context:
                 self.taskStep.import_xml_files(
-                    cursor, uid, crawler_task_step_id, result_id)
+                    cursor, uid, crawler_task_step_id, result_id
+                )
             # check result
             self.assertTrue("Don't exist attachment ID" in context.exception.message)
 
@@ -121,34 +134,39 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             uid = txn.user
             # set values
             crawler_taskStep_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'demo_taskStep_8')[1]
+                cursor, uid, "som_crawlers", "demo_taskStep_8"
+            )[1]
             crawler_taskStep_obj = self.taskStep.browse(cursor, uid, crawler_taskStep_id)
             result_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'demo_result_4')[1]
+                cursor, uid, "som_crawlers", "demo_result_4"
+            )[1]
 
-            zip_basename = 'anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip'
+            zip_basename = "anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip"
             pathToZip = zipfile.ZipFile(
-                '~/src/openerp_som_addons/som_crawlers/demo/zip_demo_2/' + zip_basename)
-            with open(pathToZip, 'r') as f:
+                "~/src/openerp_som_addons/som_crawlers/demo/zip_demo_2/" + zip_basename
+            )
+            with open(pathToZip, "r") as f:
                 content = f.read()
             attachment = {
-                'name': zip_basename,
-                'datas': base64.b64encode(content),
-                'datas_fname': zip_basename,
-                'res_model': 'som.crawlers.task',
-                'res_id': crawler_taskStep_obj.task_id.id,
+                "name": zip_basename,
+                "datas": base64.b64encode(content),
+                "datas_fname": zip_basename,
+                "res_model": "som.crawlers.task",
+                "res_id": crawler_taskStep_obj.task_id.id,
             }
 
-            attachment_id = self.pool.get('ir.attachment').create(
-                cursor, uid, attachment, context=None)
-            result = self.pool.get('som.crawlers.result')
-            result.write(cursor, uid, result_id, {'zip_name': attachment_id})
+            attachment_id = self.pool.get("ir.attachment").create(
+                cursor, uid, attachment, context=None
+            )
+            result = self.pool.get("som.crawlers.result")
+            result.write(cursor, uid, result_id, {"zip_name": attachment_id})
 
             # 'som.crawler.task.step' import_wizard
             result = self.taskStep.import_xml_files(
-                cursor, uid, crawler_taskStep_id, result_id)
+                cursor, uid, crawler_taskStep_id, result_id
+            )
 
-            self.assertEqual(result, 'Successful import')
+            self.assertEqual(result, "Successful import")
 
     @unittest.skip("Needs refactor")
     def test_executar_una_tasca(self):
@@ -156,12 +174,13 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             crawler_task_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'demo_accions_planificades_1')[1]
+                cursor, uid, "som_crawlers", "demo_accions_planificades_1"
+            )[1]
 
             result = self.wiz.executar_tasca(cursor, uid, crawler_task_id, context=None)
 
             # check result --> comparacio
-            self.assertEqual(result, {'type': 'ir.actions.act_window_close'})
+            self.assertEqual(result, {"type": "ir.actions.act_window_close"})
 
     # id del portal config
     """ Id portal config tests --> suucessful result
@@ -172,9 +191,11 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             crawler_task_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'demo_accions_planificades_2')[1]
+                cursor, uid, "som_crawlers", "demo_accions_planificades_2"
+            )[1]
             crawler_config_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'anselmo_conf')[1]
+                cursor, uid, "som_crawlers", "anselmo_conf"
+            )[1]
             crawler_config_obj = self.Configuracio.browse(cursor, uid, crawler_config_id)
 
             result = self.task.id_del_portal_config(cursor, uid, crawler_task_id)
@@ -189,9 +210,11 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             crawler_task_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'demo_accions_planificades_1')[1]
+                cursor, uid, "som_crawlers", "demo_accions_planificades_1"
+            )[1]
             crawler_config_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'demo1_conf')[1]
+                cursor, uid, "som_crawlers", "demo1_conf"
+            )[1]
             crawler_config_obj = self.Configuracio.browse(cursor, uid, crawler_config_id)
 
             result = self.task.id_del_portal_config(cursor, uid, crawler_task_id)
@@ -202,17 +225,20 @@ class WizardExecutarTascaTests(testing.OOTestCase):
         # @param self The object pointer"""
 
     def test_attach_files_zip_entrada_path_inexistent_sortida_zip_directory_no_existeix(
-        self
+        self,
     ):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
             crawler_taskStep_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'demo_taskStep_1')[1]
+                cursor, uid, "som_crawlers", "demo_taskStep_1"
+            )[1]
             crawler_config_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'anselmo_conf')[1]
+                cursor, uid, "som_crawlers", "anselmo_conf"
+            )[1]
             result_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'demo_result_2')[1]
+                cursor, uid, "som_crawlers", "demo_result_2"
+            )[1]
             crawler_config_obj = self.Configuracio.browse(cursor, uid, crawler_config_id)
             pathFileActual = os.path.dirname(os.path.realpath(__file__))
             taskStepParams = {}
@@ -221,13 +247,14 @@ class WizardExecutarTascaTests(testing.OOTestCase):
                 cursor,
                 uid,
                 crawler_taskStep_id,
-                result_id, crawler_config_obj,
+                result_id,
+                crawler_config_obj,
                 pathFileActual,
                 taskStepParams,
-                context=None
+                context=None,
             )
 
-            self.assertEqual(result, 'zip directory doesn\'t exist')
+            self.assertEqual(result, "zip directory doesn't exist")
 
     """Attach files zip tests --> directori es buit.
         # @param self The object pointer"""
@@ -237,14 +264,18 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             crawler_taskStep_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'demo_taskStep_1')[1]
+                cursor, uid, "som_crawlers", "demo_taskStep_1"
+            )[1]
             crawler_config_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'anselmo_conf')[1]
+                cursor, uid, "som_crawlers", "anselmo_conf"
+            )[1]
             result_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'demo_result_2')[1]
+                cursor, uid, "som_crawlers", "demo_result_2"
+            )[1]
             crawler_config_obj = self.Configuracio.browse(cursor, uid, crawler_config_id)
-            empty_path = os.path.join(os.path.dirname(
-                os.path.realpath(__file__)), 'anselmo')
+            empty_path = os.path.join(
+                os.path.dirname(os.path.realpath(__file__)), "anselmo"
+            )
             current_path = os.path.dirname(os.path.realpath(__file__))
             os.mkdir(empty_path)
             taskStepParams = {}
@@ -256,42 +287,47 @@ class WizardExecutarTascaTests(testing.OOTestCase):
                 crawler_config_obj,
                 current_path,
                 taskStepParams,
-                context=None
+                context=None,
             )
             os.rmdir(empty_path)
-            self.assertEqual(result, 'Directori doesn\'t contain any ZIP')
+            self.assertEqual(result, "Directori doesn't contain any ZIP")
 
     """ Attach files zip test --> file successfully attached
         # @param self The object pointer"""
 
     # si que dona ok, pero al no tenir el zip donara fail pq fem remove
     def test_attach_files_zip_entrada_config_prova_sortida_files_successfuly_attached(
-        self
+        self,
     ):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
             result_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'demo_result_3')[1]
+                cursor, uid, "som_crawlers", "demo_result_3"
+            )[1]
             crawler_config_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'anselmo_conf')[1]
+                cursor, uid, "som_crawlers", "anselmo_conf"
+            )[1]
             crawler_taskStep_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'demo_taskStep_8')[1]
+                cursor, uid, "som_crawlers", "demo_taskStep_8"
+            )[1]
             crawler_config_obj = self.Configuracio.browse(cursor, uid, crawler_config_id)
             pathFileActual = os.path.join(
-                os.path.dirname(os.path.realpath(__file__)), '..')
-            path_desti = os.path.join(os.path.dirname(
-                os.path.realpath(__file__)), 'tmpDir')
-            create_path = os.path.join(path_desti, 'anselmo')
+                os.path.dirname(os.path.realpath(__file__)), ".."
+            )
+            path_desti = os.path.join(
+                os.path.dirname(os.path.realpath(__file__)), "tmpDir"
+            )
+            create_path = os.path.join(path_desti, "anselmo")
             if not os.path.exists(create_path):
                 os.mkdir(path_desti)
                 os.mkdir(create_path)
             os.system(
-                'cp '
+                "cp "
                 + pathFileActual
-                + '/demo/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip '
+                + "/demo/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip "
                 + path_desti
-                + '/anselmo/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip'
+                + "/anselmo/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip"
             )
             taskStepParams = {}
 
@@ -303,38 +339,43 @@ class WizardExecutarTascaTests(testing.OOTestCase):
                 crawler_config_obj,
                 path_desti,
                 taskStepParams,
-                context=None
+                context=None,
             )
 
             self.assertEqual(
                 result,
                 "File anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip "
-                + "succesfully attached\n"
+                + "succesfully attached\n",
             )
 
     """  Create args for script test --> sortida string arguments
          # @param self The object pointer"""
 
     def test__create_script_args__entrada_config_prova_sortida_string_arguments(self):
-        expected = "-pr None -u usuariProva -d 80 -f prova.txt " \
-            + "-url 'https://egymonluments.gov.eg/en/museums/egyptian-museum' " \
-            + "-p contraProva -c Selenium -b firefox -n prova1 " \
-            + "-fltr 'https://egymonuments.gov.eg/en/collections/kawit-sarcophagus-4' " \
+        expected = (
+            "-pr None -u usuariProva -d 80 -f prova.txt "
+            + "-url 'https://egymonluments.gov.eg/en/museums/egyptian-museum' "
+            + "-p contraProva -c Selenium -b firefox -n prova1 "
+            + "-fltr 'https://egymonuments.gov.eg/en/collections/kawit-sarcophagus-4' "
             + "-nfp False -url-upload 'False'"
+        )
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
             crawler_config_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'demo1_conf')[1]
+                cursor, uid, "som_crawlers", "demo1_conf"
+            )[1]
             crawler_taskStep_id = self.Data.get_object_reference(
-                cursor, uid, 'som_crawlers', 'demo_taskStep_9')[1]
+                cursor, uid, "som_crawlers", "demo_taskStep_9"
+            )[1]
             taskStep_obj = self.taskStep.browse(cursor, uid, crawler_taskStep_id)
             taskStepParams = json.loads(taskStep_obj.params)
             crawler_config_obj = self.Configuracio.browse(cursor, uid, crawler_config_id)
             fileName = "prova.txt"
 
             result = self.taskStep.create_script_args(
-                crawler_config_obj, taskStepParams, fileName)
+                crawler_config_obj, taskStepParams, fileName
+            )
 
             self.assertEqual(set(result.split()), set(expected.split()))
 
@@ -347,23 +388,28 @@ class WizardExecutarTascaTests(testing.OOTestCase):
 
             result = self.taskStep.readOutputFile(cursor, uid, path, filename)
 
-            self.assertEqual("[Errno 2] No such file or directory: '"
-                             + path + '/' + filename + "'", result)
+            self.assertEqual(
+                "[Errno 2] No such file or directory: '" + path + "/" + filename + "'",
+                result,
+            )
 
     def test_readOutPutFile_entrada_path_zip_demo_2_sortida_ok(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
-            path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../demo/tmp')
+            path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../demo/tmp")
             filename = "anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip"
             os.system(
-                'cp '
+                "cp "
                 + path
-                + '/../anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip '
-                + path + '/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip')
+                + "/../anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip "
+                + path
+                + "/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip"
+            )
 
             result = self.taskStep.readOutputFile(cursor, uid, path, filename)
 
             self.assertNotEqual(
-                "[Errno 2] No such file or directory: '"
-                + path + '/' + filename + "'", result)
+                "[Errno 2] No such file or directory: '" + path + "/" + filename + "'",
+                result,
+            )

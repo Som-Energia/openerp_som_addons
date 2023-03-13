@@ -30,5 +30,5 @@
         "wizard/wizard_refund_rectify_from_origin_view.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

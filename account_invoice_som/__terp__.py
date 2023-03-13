@@ -10,7 +10,7 @@
         "account_invoice_base",
         "account_payment_extension",
         "poweremail",
-        "giscedata_remeses"
+        "giscedata_remeses",
     ],
     "init_xml": [],
     "demo_xml": [
@@ -24,5 +24,5 @@
         "security/ir.model.access.csv",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

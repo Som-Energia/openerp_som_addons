@@ -19,5 +19,5 @@
         "giscedata_polissa_view.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

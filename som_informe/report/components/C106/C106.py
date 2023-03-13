@@ -8,7 +8,7 @@ class C106(ProcesC1.ProcesC1):
 
     def get_data(self, wiz, cursor, uid, step):
         result = ProcesC1.ProcesC1.get_data(self, wiz, cursor, uid, step)
-        result['type'] = 'C106'
-        result['data_activacio'] = dateformat(step.data_activacio)
+        result["type"] = "C106"
+        result["data_activacio"] = dateformat(step.data_activacio)
 
         return result

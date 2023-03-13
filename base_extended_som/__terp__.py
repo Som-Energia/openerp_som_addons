@@ -13,8 +13,7 @@
     "demo_xml": [
         "demo/poweremail_demo_data.xml",
     ],
-    "update_xml": [
-    ],
+    "update_xml": [],
     "active": False,
-    "installable": True
+    "installable": True,
 }

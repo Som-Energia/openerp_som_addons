@@ -9,4 +9,4 @@ O = Client(**dbconfig.erppeek)
 
 active_ids = O.SomCrawlersTask.search()  # TODO: Just imports, not exports
 wiz = O.WizardExecutarTasca.create({})
-wiz.executar_tasca(context={'active_ids': active_ids})
+wiz.executar_tasca(context={"active_ids": active_ids})

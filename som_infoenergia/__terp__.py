@@ -16,9 +16,7 @@
         "som_generationkwh",
     ],
     "init_xml": [],
-    "demo_xml": [
-        "tests/som_infoenergia_demo.xml"
-    ],
+    "demo_xml": ["tests/som_infoenergia_demo.xml"],
     "update_xml": [
         "som_infoenergia_report.xml",
         "som_infoenergia_sepa.xml",
@@ -38,5 +36,5 @@
         "wizard/wizard_create_enviaments_from_partner_view.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

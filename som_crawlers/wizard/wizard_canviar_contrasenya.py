@@ -20,7 +20,8 @@ class WizardCanviarContrasenya(osv.osv_memory):
         wizard = self.browse(cursor, uid, ids[0])
         for id in active_ids:
             conf_obj.canviar_contrasenya(
-                cursor, uid, id, wizard.contrasenya, context=context)
+                cursor, uid, id, wizard.contrasenya, context=context
+            )
 
         return {"type": "ir.actions.act_window_close"}
 

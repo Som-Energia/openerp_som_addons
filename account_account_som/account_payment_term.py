@@ -12,8 +12,10 @@ class AccountPaymentTerm(osv.osv):
         id = super(AccountPaymentTerm, self).create(cr, uid, vals, context=context)
         result = self.browse(cr, uid, id)
         if not result.line_ids:
-            raise osv.except_osv(_("Falta dia de pagament!"), _(
-                "Els terminis de pagament han de tenir almenys un dia definit."))
+            raise osv.except_osv(
+                _("Falta dia de pagament!"),
+                _("Els terminis de pagament han de tenir almenys un dia definit."),
+            )
         return id
 
     def write(self, cr, uid, ids, vals, context=None):
@@ -21,8 +23,10 @@ class AccountPaymentTerm(osv.osv):
         for _id in ids:
             result = self.browse(cr, uid, _id)
             if not result.line_ids:
-                raise osv.except_osv(_("Falta dia de pagament!"), _(
-                    "Els terminis de pagament han de tenir almenys un dia definit."))
+                raise osv.except_osv(
+                    _("Falta dia de pagament!"),
+                    _("Els terminis de pagament han de tenir almenys un dia definit."),
+                )
         return True
 
 
@@ -34,11 +38,17 @@ class AccountPaymentTermLine(osv.osv):
     _inherit = "account.payment.term.line"
 
     _columns = {
-        'payment_id': fields.many2one('account.payment.term', 'Payment Term', required=True, select=True, ondelete='cascade'),
+        "payment_id": fields.many2one(
+            "account.payment.term",
+            "Payment Term",
+            required=True,
+            select=True,
+            ondelete="cascade",
+        ),
     }
 
     _defaults = {
-        'days': lambda *a: 0,
+        "days": lambda *a: 0,
     }
 
 

@@ -13,10 +13,10 @@
     "init_xml": [],
     "demo_xml": [],
     "update_xml": [
-        'som_documents_sensibles_view.xml',
-        'som_documents_sensibles_data.xml',
-        'security/ir.model.access.csv',
+        "som_documents_sensibles_view.xml",
+        "som_documents_sensibles_data.xml",
+        "security/ir.model.access.csv",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

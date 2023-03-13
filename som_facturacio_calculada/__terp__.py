@@ -17,5 +17,5 @@
         "wizard/wizard_crear_lectures_calculades_view.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

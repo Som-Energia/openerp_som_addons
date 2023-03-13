@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 class SomAccountInvoicePendingError(Exception):
     """Base class for other exceptions"""
 
@@ -43,7 +44,6 @@ class MailException(SomAccountInvoicePendingError):
 
 
 class UpdateWaitingFor48hException(SomAccountInvoicePendingError):
-
     def __init__(self, msg):
         super(SomAccountInvoicePendingError, self).__init__(msg)
         self.msg = msg
@@ -56,7 +56,6 @@ class UpdateWaitingFor48hException(SomAccountInvoicePendingError):
 
 
 class UpdateWaitingForAnnexIVException(SomAccountInvoicePendingError):
-
     def __init__(self, msg):
         super(SomAccountInvoicePendingError, self).__init__(msg)
         self.msg = msg
@@ -69,7 +68,6 @@ class UpdateWaitingForAnnexIVException(SomAccountInvoicePendingError):
 
 
 class UpdateWaitingCancelledContractsException(SomAccountInvoicePendingError):
-
     def __init__(self, msg):
         super(SomAccountInvoicePendingError, self).__init__(msg)
         self.msg = msg

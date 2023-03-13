@@ -19,7 +19,7 @@
         "l10n_ES_remesas",
         "account",
         "c2c_webkit_report",
-        "giscedata_facturacio"
+        "giscedata_facturacio",
     ],
     "init_xml": [],
     "demo_xml": [],
@@ -30,8 +30,8 @@
         "payment_view.xml",
         "wizard/wizard_liquidacio_interessos_view.xml",
         "security/som_inversions_security.xml",
-        "security/ir.model.access.csv"
+        "security/ir.model.access.csv",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

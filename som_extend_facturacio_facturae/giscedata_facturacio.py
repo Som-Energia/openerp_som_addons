@@ -7,14 +7,12 @@ from tools.translate import _
 
 
 class GiscedataFacturacioFactura(osv.osv):
-    """Extend bill information available.
-    """
-    _name = 'giscedata.facturacio.factura'
-    _inherit = 'giscedata.facturacio.factura'
+    """Extend bill information available."""
 
-    _columns = {
-        'has_facturae': fields.boolean(_(u'Facturae'))
-    }
+    _name = "giscedata.facturacio.factura"
+    _inherit = "giscedata.facturacio.factura"
+
+    _columns = {"has_facturae": fields.boolean(_(u"Facturae"))}
 
 
 GiscedataFacturacioFactura()

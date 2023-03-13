@@ -30,5 +30,5 @@
         "wizard/wizard_massive_create_r1029_view.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

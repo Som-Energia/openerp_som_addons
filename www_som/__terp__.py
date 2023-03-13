@@ -26,5 +26,5 @@ Mòdul per la integració de l'oficina virtual
         "wizard/wizard_model_list_from_file_data.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }
