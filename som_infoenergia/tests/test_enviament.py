@@ -20,7 +20,8 @@ class EnviamentTests(testing.OOTestCase):
 
     @unittest.skip('Pending refactor to remove empowering_profile_id from polissa')
     @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
-    def test_send_single_report_not_emp_allow_recieve_mail_infoenergia(self, mocked_send_mail):
+    def test_send_single_report_not_emp_allow_recieve_mail_infoenergia(
+            self, mocked_send_mail):
         imd_obj = self.openerp.pool.get('ir.model.data')
         env_obj = self.openerp.pool.get('som.infoenergia.enviament')
         pol_obj = self.openerp.pool.get('giscedata.polissa')
@@ -174,7 +175,8 @@ class EnviamentTests(testing.OOTestCase):
         mocked_send_mail.assert_called_with(
             context={'src_model': 'som.infoenergia.enviament',
                      'src_rec_ids': [enviament_id],
-                     'allow_reenviar': True, 'template_id': enviament.lot_enviament.email_template.id,
+                     'allow_reenviar': True,
+                     'template_id': enviament.lot_enviament.email_template.id,
                      'active_id': enviament_id
                      })
 

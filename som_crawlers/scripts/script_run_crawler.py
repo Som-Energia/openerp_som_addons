@@ -1,4 +1,3 @@
-
 # This script runs a crawler
 
 # Imports
@@ -6,12 +5,16 @@ import click
 import os
 import importlib
 
+
 # Arguments passed through the os systemm call
-
-
 @click.command()
 @click.option('-u', '--user', help='Username of the portal.', required=False)
-@click.option('-n', '--name', prompt='Crawler portal name', help='The person to greet.', required=False)
+@click.option(
+    '-n', '--name',
+    prompt='Crawler portal name',
+    help='The person to greet.',
+    required=False,
+)
 @click.option('-p', '--password', help='Password of the portal.', required=False)
 @click.option('-f', '--file', help='Log file name', required=False)
 @click.option('-url', '--url', help='URL of the portal.', required=False)
@@ -23,19 +26,36 @@ import importlib
 @click.option('-pr', '--process', help='Process to download', required=False)
 @click.option('-url-upload', '--url-upload', help='Upload URL', required=False)
 @click.option('-fp', '--file-path', help='Upload file path.', required=False)
-# Function that runs de crawler of the crawler saves the user and the date when it was modified and returns the new password.
-# @param user Username of the portal
-# @param name Crawler portal name
-# @param password Password of the portal
-# @param file Log file name
-# @param url URL of the portal
-# @param filters Filters
-# @param crawler Selenium crawler
-# @param days Days of margin
-# @param pfiles Pending files only
-# @param browser Browser
-# @return Exception or string if everything passed successfully
-def crawl(user, name, password, file, url, filters, crawler, days, pfiles, browser, process, url_upload, file_path=None):
+def crawl(
+    user,
+    name,
+    password,
+    file,
+    url,
+    filters,
+    crawler,
+    days,
+    pfiles,
+    browser,
+    process,
+    url_upload,
+    file_path=None,
+):
+    """
+    Function that runs de crawler of the crawler saves the user and the date when it was
+    modified and returns the new password.
+        @param user Username of the portal
+        @param name Crawler portal name
+        @param password Password of the portal
+        @param file Log file name
+        @param url URL of the portal
+        @param filters Filters
+        @param crawler Selenium crawler
+        @param days Days of margin
+        @param pfiles Pending files only
+        @param browser Browser
+        @return Exception or string if everything passed successfully
+    """
     path = os.path.dirname(os.path.abspath(__file__))
     if not os.path.exists("/tmp/outputFiles/"):
         os.mkdir("/tmp/outputFiles/")
@@ -44,7 +64,18 @@ def crawl(user, name, password, file, url, filters, crawler, days, pfiles, brows
         crawler_conf = {'crawler': crawler, 'days_of_margin': days,
                         'pending_files_only': pfiles, 'browser': browser}
         portalCreds = buildPortalCreds(
-            user, password, url, filters, crawler, days, pfiles, browser, process, url_upload, file_path)
+            user,
+            password,
+            url,
+            filters,
+            crawler,
+            days,
+            pfiles,
+            browser,
+            process,
+            url_upload,
+            file_path,
+        )
         selenium_spiders_path = os.path.join(
             path, "../spiders/selenium_spiders")
         if process != 'None':
@@ -69,7 +100,19 @@ def crawl(user, name, password, file, url, filters, crawler, days, pfiles, brows
         f.close()
 
 
-def buildPortalCreds(user, password, url, filters, crawler, days, pfiles, browser, process, url_upload, file_path):
+def buildPortalCreds(
+    user,
+    password,
+    url,
+    filters,
+    crawler,
+    days,
+    pfiles,
+    browser,
+    process,
+    url_upload,
+    file_path,
+):
     portalCreds = dict()
     portalCreds['username'] = user
     portalCreds['password'] = password

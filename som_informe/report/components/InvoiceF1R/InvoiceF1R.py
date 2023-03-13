@@ -1,4 +1,9 @@
-from ..component_utils import dateformat, get_description, get_invoice_line, get_unit_magnitude
+from ..component_utils import (
+    dateformat,
+    get_description,
+    get_invoice_line,
+    get_unit_magnitude
+)
 
 
 class InvoiceF1R:
@@ -16,7 +21,10 @@ class InvoiceF1R:
         f1_id = f1_obj.search(cursor, uid, search_params)
         f1 = f1_obj.browse(cursor, uid, f1_id[0])
 
-        result['numero_edm'] = f1.importacio_lectures_ids[0].comptador if f1.importacio_lectures_ids else ""
+        if f1.importacio_lectures_ids:
+            result['numero_edm'] = f1.importacio_lectures_ids[0].comptador
+        else:
+            result['numero_edm'] = ""
 
         # camps obligats per estructura
         result['type'] = 'InvoiceF1R'
@@ -29,9 +37,11 @@ class InvoiceF1R:
             f1.f1_date) if f1 else dateformat(invoice.date_invoice)
         result['invoice_number'] = invoice.origin
         result['date_from'] = dateformat(
-            invoice.data_inici) if invoice.data_inici else dateformat(invoice.date_invoice)
+            invoice.data_inici) if invoice.data_inici else dateformat(
+                invoice.date_invoice)
         result['date_to'] = dateformat(
-            invoice.data_final) if invoice.data_final else dateformat(invoice.date_invoice)
+            invoice.data_final) if invoice.data_final else dateformat(
+                invoice.date_invoice)
         # a testing F.Origen Rectificada/Anulada esta buit a totes :)
         result['rectifies_invoice'] = invoice.ref.origin
 

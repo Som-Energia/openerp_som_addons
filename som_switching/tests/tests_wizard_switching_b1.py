@@ -17,7 +17,8 @@ class TestsWzardSwitchingB1(testing.OOTestCase):
 
     def tests__wizardSwitchingB1__without_phone_number(self):
         """
-        Test wizard without phone number, case ATR B1 is created phone number equal to partner phone number
+        Test wizard without phone number,
+        case ATR B1 is created phone number equal to partner phone number
         """
         cursor = self.cursor
         uid = self.uid

@@ -10,15 +10,18 @@ class FacturacioExtra(osv.osv):
     _inherit = 'giscedata.facturacio.extra'
     _order = 'id desc'
 
-    def _ff_has_last_invoice_search(self, cursor, uid, obj, field_name, arg, context=None):
+    def _ff_has_last_invoice_search(
+            self, cursor, uid, obj, field_name, arg, context=None):
         if not arg:
             return []
         else:
             fact_obj = self.pool.get('giscedata.facturacio.factura')
-            pol_ids = self.q(cursor, uid).read(['polissa_id']).where([
-                ('polissa_id.state', '=', 'baixa'), ('amount_pending',
-                                                     '!=', 0), ('polissa_id.active', '=', False)
-            ])
+            pol_ids = self.q(cursor, uid).read(['polissa_id']).where(
+                [
+                    ('polissa_id.state', '=', 'baixa'),
+                    ('amount_pending', '!=', 0),
+                    ('polissa_id.active', '=', False)
+                ])
             pol_ids = [x['polissa_id'] for x in pol_ids]
             pol_fact_ids = fact_obj.q(cursor, uid).read(['polissa_id']).where([
                 ('polissa_id', 'in', pol_ids),
@@ -135,7 +138,7 @@ class FacturacioExtra(osv.osv):
                 SELECT DISTINCT extra_id FROM giscedata_facturacio_importacio_linia_extra liex
                 LEFT JOIN giscedata_facturacio_importacio_linia imli ON imli.id = liex.linia_id
                 WHERE imli.create_date::DATE {} '{}'
-                '''.format(arg[0][1], arg[0][2]))
+                '''.format(arg[0][1], arg[0][2]))  # noqa: E501
 
                 res_ids = cursor.fetchall()
 
@@ -158,20 +161,46 @@ class FacturacioExtra(osv.osv):
         return res
 
     _columns = {
-        'has_last_invoice': fields.function(_ff_has_last_invoice, method=True, type='boolean',
-                                            string="Té darrera factura", fnct_search=_ff_has_last_invoice_search,
-                                            readonly=True),
+        'has_last_invoice': fields.function(
+            _ff_has_last_invoice,
+            method=True,
+            type='boolean',
+            string="Té darrera factura",
+            fnct_search=_ff_has_last_invoice_search,
+            readonly=True,
+        ),
         'data_baixa_polissa': fields.related('polissa_id', 'data_baixa', type='date',
                                              string='Data baixa pòlissa', readonly=True),
-        'is_invoiced': fields.function(_ff_is_invoiced, method=True, type='boolean',
-                                       string="Ja en factura", fnct_search=_ff_is_invoiced_search,
-                                       readonly=True),
-        'data_invoiced': fields.function(_ff_data_invoiced, type='date', method=True, string='Data factura',
-                                         fnct_search=_ff_data_invoiced_search),
-        'origin_invoice': fields.function(_ff_origin_number, type='char', size=30,
-                                          method=True, string='Fitxer origen', fnct_search=_ff_origin_number_search),
-        'data_origen': fields.function(_ff_data_origen, type='datetime', method=True, string='Data fitxer origen',
-                                       fnct_search=_ff_data_origen_search),
+        'is_invoiced': fields.function(
+            _ff_is_invoiced,
+            method=True,
+            type='boolean',
+            string="Ja en factura",
+            fnct_search=_ff_is_invoiced_search,
+            readonly=True,
+        ),
+        'data_invoiced': fields.function(
+            _ff_data_invoiced,
+            type='date',
+            method=True,
+            string='Data factura',
+            fnct_search=_ff_data_invoiced_search
+        ),
+        'origin_invoice': fields.function(
+            _ff_origin_number,
+            type='char',
+            size=30,
+            method=True,
+            string='Fitxer origen',
+            fnct_search=_ff_origin_number_search
+        ),
+        'data_origen': fields.function(
+            _ff_data_origen,
+            type='datetime',
+            method=True,
+            string='Data fitxer origen',
+            fnct_search=_ff_data_origen_search
+        ),
     }
 
 

@@ -31,7 +31,7 @@ ERROR_CODES = {
         'skip_error': True
     },
     '05': {
-        'msg': u"[05] La data final de l'última modificació contractual és anterior al dia d'avui",
+        'msg': u"[05] La data final de l'última modificació contractual és anterior al dia d'avui",  # noqa: 501
         'skip_error': False
     },
     '99': {
@@ -141,7 +141,16 @@ class GiscedataPolissa(osv.osv):
             res_partner_obj.write(cursor, uid, partner_id, {
                                   'category_id': [(4, admin_cat.id)]})
 
-    def add_contract_administrator(self, cursor, uid, polissa_id, partner_id, permissions, is_legal_representative=False, context=None):
+    def add_contract_administrator(
+        self,
+        cursor,
+        uid,
+        polissa_id,
+        partner_id,
+        permissions,
+        is_legal_representative=False,
+        context=None,
+    ):
         if context is None:
             context = {}
 
@@ -176,8 +185,12 @@ class GiscedataPolissa(osv.osv):
 
             self.add_administrator_category(cursor, uid, partner_id)
 
-            result = self.create_modcon(cursor, uid, polissa_id,
-                                        {'administradora': partner_id, "administradora_permissions": permissions})
+            result = self.create_modcon(
+                cursor,
+                uid,
+                polissa_id,
+                {'administradora': partner_id, "administradora_permissions": permissions},
+            )
 
             if result.get('error', '') != '':
                 return result
@@ -191,7 +204,8 @@ class GiscedataPolissa(osv.osv):
                 "error": False
             }
             return {
-                'modification': self.register_ov_admin_modification(cursor, uid, polissa_id, vals),
+                'modification': self.register_ov_admin_modification(
+                    cursor, uid, polissa_id, vals),
                 'error': None,
                 'error_msg': ''
             }
@@ -215,8 +229,12 @@ class GiscedataPolissa(osv.osv):
 
             if administradora:
                 self.remove_administrator_category(cursor, uid, administradora[0])
-                result = self.create_modcon(cursor, uid, polissa_id,
-                                            {'administradora': None, "administradora_permissions": None})
+                result = self.create_modcon(
+                    cursor,
+                    uid,
+                    polissa_id,
+                    {'administradora': None, "administradora_permissions": None},
+                )
 
                 if result.get('error', '') != '':
                     return result
@@ -236,7 +254,8 @@ class GiscedataPolissa(osv.osv):
                 "error": False
             }
             return {
-                'modification': self.register_ov_admin_modification(cursor, uid, polissa_id, vals),
+                'modification': self.register_ov_admin_modification(
+                    cursor, uid, polissa_id, vals),
                 'error': None,
                 'error_msg': ''
             }

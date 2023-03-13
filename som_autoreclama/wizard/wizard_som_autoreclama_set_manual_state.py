@@ -19,11 +19,11 @@ class WizardSomAutoreclamaSetManualState(osv.osv_memory):
             try:
                 h_obj.historize(cursor, uid, atc_id, wiz.next_state_id.id,
                                 None, False, context)
-                info += _("Cas {} estat canviat manualment a '{}'\n").format(atc_id,
-                                                                             wiz.next_state_id.name)
+                info += _("Cas {} estat canviat manualment a '{}'\n").format(
+                    atc_id, wiz.next_state_id.name)
             except Exception as e:
-                info += _("Cas {} error al canviar manualment a '{}' : {}\n").format(atc_id,
-                                                                                     wiz.next_state_id.name, e.message)
+                info += _("Cas {} error al canviar manualment a '{}' : {}\n").format(
+                    atc_id, wiz.next_state_id.name, e.message)
 
         self.write(cursor, uid, ids, {'state': 'end', 'info': info})
         return True

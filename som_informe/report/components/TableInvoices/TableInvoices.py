@@ -38,10 +38,12 @@ class TableInvoices:
             lect_vals = lectura_obj.read(cursor, uid, lect_ids,
                                          ['name', 'origen_comer_id', 'origen_id'])
             for lect in lect_vals:
-                # En funció dels origens, escrivim el text
-                # Si Estimada (40) o Sin Lectura (99) i Estimada (ES): Estimada Somenergia
-                # Si Estimada (40) o Sin Lectura (99) i F1/Q1/etc...(!ES): Estimada distribuïdora
-                # La resta: Real
+                """
+                En funció dels origens, escrivim el text
+                Si Estimada (40) o Sin Lectura (99) i Estimada (ES): Estimada Somenergia
+                Si Estimada (40) o Sin Lectura (99) i F1/Q1/etc...(!ES): Estimada distribuïdora
+                La resta: Real
+                """  # noqa: E501
                 origen_txt = "real"
                 if lect['origen_id'][0] in [estimada_id, sin_lectura_id]:
                     if lect['origen_comer_id'][0] == estimada_som_id:
@@ -63,17 +65,31 @@ class TableInvoices:
         fact_obj = wiz.pool.get('giscedata.facturacio.factura')
         for invoice_id in invoice_ids:
             invoice = fact_obj.browse(cursor, uid, invoice_id)
-            if invoice.type in ('out_invoice', 'out_refund') and invoice.state in ('paid', 'open'):
+            if (
+                invoice.type in ('out_invoice', 'out_refund')
+                and invoice.state in ('paid', 'open')
+            ):
                 linia_taula = {}
                 linia_taula['invoice_number'] = invoice.number
                 linia_taula['date'] = dateformat(invoice.date_invoice)
                 linia_taula['date_from'] = dateformat(invoice.data_inici)
                 if invoice.data_inici:
-                    if not result['date_from'] or datetime.strptime(invoice.data_inici, '%Y-%m-%d') < datetime.strptime(result['date_from'], '%d-%m-%Y'):
+                    if (
+                        not result['date_from']
+                        or (
+                            datetime.strptime(invoice.data_inici, '%Y-%m-%d')
+                            < datetime.strptime(result['date_from'], '%d-%m-%Y')
+                        )
+                    ):
                         result['date_from'] = dateformat(invoice.data_inici)
                 linia_taula['date_to'] = dateformat(invoice.data_final)
                 if invoice.data_final:
-                    if not result['date_to'] or datetime.strptime(invoice.data_final, '%Y-%m-%d') > datetime.strptime(result['date_to'], '%d-%m-%Y'):
+                    if (
+                        not result['date_to']
+                        or (
+                            datetime.strptime(invoice.data_final, '%Y-%m-%d')
+                            > datetime.strptime(result['date_to'], '%d-%m-%Y'))
+                    ):
                         result['date_to'] = dateformat(invoice.data_final)
                 linia_taula['max_power'] = invoice.potencia_max or 0
                 linia_taula['invoiced_energy'] = invoice.energia_kwh or 0
@@ -87,20 +103,34 @@ class TableInvoices:
     def get_invoice_origin(self, cursor, uid, invoice):
         readings = {}
         lectures = invoice.lectures_energia_ids
-        if lectures != None:
+        if lectures is not None:
             for lectura in lectures:
                 origens = self.get_origen_lectura(cursor, uid, lectura)
                 if '(P1)' in lectura.name:
                     data = str(datetime.strptime(lectura.data_anterior,
                                '%Y-%m-%d').date() + timedelta(days=1))
                     origin = (u'estimada')
-                    if origens[lectura.data_anterior] == 'real' and origens[lectura.data_actual] == 'real':
+                    if (
+                            origens[lectura.data_anterior] == 'real'
+                            and origens[lectura.data_actual] == 'real'):
                         origin = (u'real')
-                    elif (origens[lectura.data_anterior] == 'estimada distribuïdora' or origens[lectura.data_anterior] == 'real') and origens[lectura.data_actual] == 'calculada segons CCH':
+                    elif (
+                        (
+                            origens[lectura.data_anterior] == 'estimada distribuïdora'
+                            or origens[lectura.data_anterior] == 'real'
+                        )
+                            and origens[lectura.data_actual] == 'calculada segons CCH'):
                         origin = (u'calculada')
-                    elif origens[lectura.data_anterior] == 'calculada segons CCH' and (origens[lectura.data_actual] == 'calculada segons CCH' or origens[lectura.data_actual] == 'real'):
+                    elif (
+                        origens[lectura.data_anterior] == 'calculada segons CCH'
+                        and (
+                            origens[lectura.data_actual] == 'calculada segons CCH'
+                            or origens[lectura.data_actual] == 'real')
+                    ):
                         origin = (u'calculada')
 
                     readings[data] = origin
 
-            return readings[invoice.data_inici] if invoice.data_inici in readings else (u'sense lectura')
+            return readings[invoice.data_inici] if invoice.data_inici in readings else (
+                u'sense lectura'
+            )

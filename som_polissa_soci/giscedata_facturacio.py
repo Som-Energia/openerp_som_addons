@@ -59,7 +59,8 @@ class GiscedataFacturacioFacturador(osv.osv):
             factures_creades_modificables = [
                 f['id']
                 for f in factures_dates if
-                f['data_inici'] >= start_date_bo_social and f['data_inici'] <= end_date_bo_social
+                f['data_inici'] >= start_date_bo_social
+                and f['data_inici'] <= end_date_bo_social
             ]
 
         if factures_creades_modificables:
@@ -70,16 +71,20 @@ class GiscedataFacturacioFacturador(osv.osv):
                 cursor, uid, 'som_invoice_bo_social_journal_codes', [
                     'ENERGIA', 'ENERGIA.R']
             )
-            for fact in fact_obj.browse(cursor, uid, factures_creades_modificables, context):
+            for fact in fact_obj.browse(
+                cursor, uid, factures_creades_modificables, context
+            ):
                 if fact.journal_id.code in journal_codes:
                     if fact.polissa_id.donatiu:
                         # si la factura és del diari d'energia s'afegeix la línia de
                         # factura rel·lacionada amb el producte donatiu
                         ctx.update({'lang': fact.partner_id.lang})
                         p_br = product_obj.browse(cursor, uid, pdona_id, ctx)
-                        # identificar la línia d'energia excloent el preu del MAG (RD 10/2022)
-                        kwh = sum([x.quantity for x in fact.linia_ids
-                                   if x.tipus == 'energia' and x.product_id.code != 'RMAG'])
+                        # identificar la línia d'energia excloent el preu del MAG
+                        kwh = sum([
+                            x.quantity for x in fact.linia_ids
+                            if x.tipus == 'energia' and x.product_id.code != 'RMAG'
+                        ])
                         vals = {'data_desde': fact.data_inici,
                                 'data_fins': fact.data_final,
                                 'force_price': 0.01,
@@ -91,17 +96,23 @@ class GiscedataFacturacioFacturador(osv.osv):
                                 'name': p_br.description}
                         self.crear_linia(cursor, uid, fact.id, vals, ctx)
                     # Only invoices with start date after 'start_date_bo_social'
-                    if fes_bo_social and fact.data_inici >= start_date_bo_social and fact.data_inici <= end_date_bo_social:
+                    if (
+                        fes_bo_social
+                        and fact.data_inici >= start_date_bo_social
+                        and fact.data_inici <= end_date_bo_social
+                    ):
                         dmn = [
-                            ('pricelist_id', '=', fact.llista_preu.id), ('active', '=', True),
+                            ('pricelist_id', '=', fact.llista_preu.id),
+                            ('active', '=', True),
                             '|',
                             '|',
                             '|',
                             # El primer detecta aquest cas:
                             # factura:       |-------------|
                             # l.preus: ...---------|
-                            '&', ('date_end', '>=', fact.data_inici), ('date_end',
-                                                                       '<=', fact.data_final),
+                            '&',
+                            ('date_end', '>=', fact.data_inici),
+                            ('date_end', '<=', fact.data_final),
                             # El segon detecta aquest altre cas:
                             # factura:       |-------------|
                             # l.preus:             |-------------|
@@ -111,18 +122,20 @@ class GiscedataFacturacioFacturador(osv.osv):
                             # Tant el primer com el segon domini detecten aquest:
                             # factura:       |-------------|
                             # l.preus:          |-------|
-                            '&', ('date_start', '>=',
-                                  fact.data_inici), ('date_start', '<=', fact.data_final),
+                            '&',
+                            ('date_start', '>=', fact.data_inici),
+                            ('date_start', '<=', fact.data_final),
                             # El tercer detecta aquest cas:
                             # factura:       |-------------|
                             # l.preus:   |---------------------|
-                            '&', ('date_start', '<=', fact.data_inici), ('date_end',
-                                                                         '>=', fact.data_final),
+                            '&', ('date_start', '<=', fact.data_inici),
+                            ('date_end', '>=', fact.data_final),
                             # I aquest últim:
                             # factura:       |-------------|
                             # l.preus:   |---------------------...
-                            '&', ('date_start', '<=',
-                                  fact.data_inici), ('date_end', '=', False),
+                            '&',
+                            ('date_start', '<=', fact.data_inici),
+                            ('date_end', '=', False),
                         ]
                         pricelist_version_ids = pricelist_version_o.search(
                             cursor, uid, dmn, context=context
