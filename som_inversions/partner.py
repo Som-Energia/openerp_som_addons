@@ -14,4 +14,5 @@ class ResPartner(osv.osv):
                                            'Banc interessos', required=False),
     }
 
+
 ResPartner()

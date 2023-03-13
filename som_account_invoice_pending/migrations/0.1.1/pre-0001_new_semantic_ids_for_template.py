@@ -1,6 +1,5 @@
 # coding=utf-8
 from oopgrade import DataMigration
-from addons import get_module_resource
 
 
 def up(cursor, installed_version):
@@ -20,7 +19,7 @@ def up(cursor, installed_version):
                 <field name="state">approved</field>
                 <field name="smtpport">587</field>
             </record>
-            
+
             <record model="poweremail.templates" id="email_impagats_annex3">
                 <field name="name">Impagats: Procediment tall de llum Annex 3</field>
                 <field name="object_name" model="ir.model" search="[('name', '=', 'giscedata.facturacio.factura')]"/>

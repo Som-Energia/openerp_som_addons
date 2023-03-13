@@ -1,5 +1,5 @@
 class energy_prices:
-    
+
     def get_data(self, cursor, uid, object, extra_text, context):
 
         if object.lang == 'es_ES':
@@ -11,4 +11,4 @@ class energy_prices:
         return {
             'k_plus_D': extra_text.get("marge", "ERROR EXTRA TEXT: sense marge"),
             'link': link,
-            }
+        }

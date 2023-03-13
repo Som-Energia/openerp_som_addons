@@ -15,8 +15,8 @@ def sync_perms():
         idx += 1
         allowed = c.GiscedataPolissa.search_reader([
             '|',
-                ('titular.id', '=', partner['id']),
-                ('pagador.id', '=', partner['id'])
+            ('titular.id', '=', partner['id']),
+            ('pagador.id', '=', partner['id'])
         ], ['name'])
         if allowed:
             allowed = [x['name'] for x in allowed]

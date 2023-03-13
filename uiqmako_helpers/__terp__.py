@@ -10,13 +10,13 @@
     "version": "0-dev",
     "author": "SomEnergia",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "base",
     ],
     "init_xml": [],
     "demo_xml": [
     ],
-    "update_xml":[
+    "update_xml": [
         "security/ir.model.access.csv",
     ],
     "active": False,

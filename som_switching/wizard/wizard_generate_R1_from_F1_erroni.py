@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from gestionatr.defs import *
-from gestionatr.input.messages.R1 import get_minimum_fields
-from osv import osv, fields, orm
+from osv import fields, osv
 from tools.translate import _
-import xml.etree.ElementTree as ET
 
 
 class WizardGenerateR1FromF1Erroni(osv.osv_memory):
@@ -66,7 +63,8 @@ class WizardGenerateR1FromF1Erroni(osv.osv_memory):
         # "Data_Usuari_Reclamació (codi Cas) SUBTIPUS. Generat el pas R1-01”
         subtipus_info_str = "{0}-{1}".format(subtipus_info['type'], subtipus_info['name'])
         user_name = user_obj.read(cursor, uid, uid, ['name'])['name']
-        sw_code = sw_obj.read(cursor, uid, res[-1], ['codi_sollicitud'])['codi_sollicitud']
+        sw_code = sw_obj.read(cursor, uid, res[-1],
+                              ['codi_sollicitud'])['codi_sollicitud']
         new_text = _(u"{0}, {1}, Reclamació {2}: SUBTIPUS {3}. Generat el pas R1-01\n\n").format(
             datetime.today().strftime("%d-%m-%Y"), user_name, sw_code,
             subtipus_info_str

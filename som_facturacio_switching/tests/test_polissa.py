@@ -2,7 +2,6 @@
 from destral import testing
 from destral.transaction import Transaction
 from mock import patch, PropertyMock
-from osv import osv
 
 
 class TestsEscullLlistaPreus(testing.OOTestCase):
@@ -50,9 +49,9 @@ class TestsEscullLlistaPreus(testing.OOTestCase):
         pricelist_list = self.get_demo_pricelist_list()
 
         with patch.object(
-                pol.cups.id_municipi.subsistema_id, 'code',
-                new_callable=PropertyMock(return_value="PE")
-            ) as mock:
+            pol.cups.id_municipi.subsistema_id, 'code',
+            new_callable=PropertyMock(return_value="PE")
+        ) as mock:
             result = pol.escull_llista_preus(pricelist_list)
 
             # pricelist_20A_SOM is the first one
@@ -63,9 +62,9 @@ class TestsEscullLlistaPreus(testing.OOTestCase):
         pricelist_list = self.get_demo_pricelist_list()
 
         with patch.object(
-                pol.cups.id_municipi.subsistema_id, 'code',
-                new_callable=PropertyMock(return_value="TF")
-            ) as mock:
+            pol.cups.id_municipi.subsistema_id, 'code',
+            new_callable=PropertyMock(return_value="TF")
+        ) as mock:
             result = pol.escull_llista_preus(pricelist_list)
 
             # pricelist_20A_SOM_INSULAR is the second one
@@ -75,12 +74,12 @@ class TestsEscullLlistaPreus(testing.OOTestCase):
         imd_obj = self.model('ir.model.data')
 
         pol = self.get_demo_contract()
-        pricelist_list = self.get_demo_pricelist_list()
+        self.get_demo_pricelist_list()
 
         with patch.object(
-                pol.cups.id_municipi.subsistema_id, 'code',
-                new_callable=PropertyMock(return_value="TF")
-            ) as mock:
+            pol.cups.id_municipi.subsistema_id, 'code',
+            new_callable=PropertyMock(return_value="TF")
+        ) as mock:
 
             default_pricelist_id = imd_obj.get_object_reference(
                 self.cursor, self.uid, 'giscedata_facturacio', 'pricelist_tarifas_electricidad'

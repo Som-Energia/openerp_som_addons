@@ -31,4 +31,5 @@ def up(cursor, installed_version):
 def down(cursor, installed_version):
     pass
 
+
 migrate = up

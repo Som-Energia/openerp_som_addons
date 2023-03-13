@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
-from gestionatr.defs import *
-from gestionatr.input.messages.R1 import get_minimum_fields
-from osv import osv, fields, orm
-from tools.translate import _
-import xml.etree.ElementTree as ET
+from osv import fields, osv
 
 
 class GiscedataSwitchingWizardR101(osv.osv_memory):
@@ -28,7 +23,8 @@ class GiscedataSwitchingWizardR101(osv.osv_memory):
             }
         })
 
-        res = super(GiscedataSwitchingWizardR101, self).action_create_atr_case(cursor, uid, ids, context=context)
+        res = super(GiscedataSwitchingWizardR101, self).action_create_atr_case(
+            cursor, uid, ids, context=context)
         fact_obj = self.pool.get("giscedata.facturacio.factura")
         pol_obj = self.pool.get("giscedata.polissa")
         factinfo = fact_obj.read(cursor, uid, winfo['invoice'], ['polissa_id'])
@@ -58,5 +54,6 @@ class GiscedataSwitchingWizardR101(osv.osv_memory):
         'facturacio_suspesa': _default_facturacio_suspesa,
         'refacturacio_pendent': _default_refacturacio_pendent,
     }
+
 
 GiscedataSwitchingWizardR101()

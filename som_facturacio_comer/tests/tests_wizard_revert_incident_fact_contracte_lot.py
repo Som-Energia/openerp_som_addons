@@ -3,8 +3,9 @@ from destral import testing
 from destral.transaction import Transaction
 from destral.patch import PatchNewCursors
 
-from giscedata_polissa.tests import utils as utils_polissa, crear_modcon
-import mock, os
+import mock
+import os
+
 
 class TestRevertIncidentFactContracteLot(testing.OOTestCase):
     def setUp(self):
@@ -24,13 +25,14 @@ class TestRevertIncidentFactContracteLot(testing.OOTestCase):
         uid = self.uid
         imd_obj = self.openerp.pool.get('ir.model.data')
         contract_obj = self.openerp.pool.get('giscedata.polissa')
-        lectura_obj = self.openerp.pool.get('giscedata.lectures.lectura')
+        self.openerp.pool.get('giscedata.lectures.lectura')
         fact_obj = self.openerp.pool.get('giscedata.facturacio.factura')
         lot_obj = self.openerp.pool.get('giscedata.facturacio.lot')
         clot_obj = self.openerp.pool.get('giscedata.facturacio.contracte_lot')
-        clot_fact_obj = self.openerp.pool.get('giscedata.facturacio.contracte_lot.factura')
+        self.openerp.pool.get('giscedata.facturacio.contracte_lot.factura')
         conf_obj = self.openerp.pool.get('res.config')
-        contract_id = imd_obj.get_object_reference(cursor, uid, 'giscedata_polissa', 'polissa_tarifa_018')[1]
+        contract_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_polissa', 'polissa_tarifa_018')[1]
 
         # Configurem algunes variables
         conf_obj.set(cursor, uid, "inici_final_use_lot", 0)
@@ -45,7 +47,8 @@ class TestRevertIncidentFactContracteLot(testing.OOTestCase):
 
         # Intentem valida i facturar a traves del lot de facturacio per facturar el mes 05
         # Validacio
-        contracte_lot_id = clot_obj.search(cursor, uid, [('polissa_id', '=', contract_id), ('lot_id', '=', lot_id)])
+        contracte_lot_id = clot_obj.search(
+            cursor, uid, [('polissa_id', '=', contract_id), ('lot_id', '=', lot_id)])
         self.assertEqual(len(contracte_lot_id), 1)
         contracte_lot_id = contracte_lot_id[0]
         clot_obj.write(cursor, uid, contracte_lot_id, {'state': 'obert'})
@@ -65,7 +68,7 @@ class TestRevertIncidentFactContracteLot(testing.OOTestCase):
 
         # Comprovem la factura creada
         factura_id = fact_obj.search(cursor, uid, [('lot_facturacio', '=', lot_id)])
-        invoice = fact_obj.browse(cursor, uid, factura_id)[0]
+        fact_obj.browse(cursor, uid, factura_id)[0]
         return contracte_lot_id, contract_id
 
     @mock.patch("som_facturacio_comer.wizard.wizard_revert_incident_fact_contracte_lot.WizardRevertIncidentFactCLot.delete_lot_factures_lectures")
@@ -77,7 +80,8 @@ class TestRevertIncidentFactContracteLot(testing.OOTestCase):
         fact_obj = self.openerp.pool.get('giscedata.facturacio.factura')
         clot_obj = self.openerp.pool.get('giscedata.facturacio.contracte_lot')
         wiz_obj = self.openerp.pool.get('wizard.revert.incident.fact.c_lot')
-        other_fact_id = imd_obj.get_object_reference(cursor, uid, 'giscedata_facturacio', 'factura_0001')[1]
+        other_fact_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_facturacio', 'factura_0001')[1]
         c_lot_id, pol_id = self._create_c_lot_facturar()
         fact_obj.write(cursor, uid, other_fact_id, {'polissa_id': pol_id})
         clot_obj.write(cursor, uid, c_lot_id, {'state': 'facturat_incident'})
@@ -92,7 +96,8 @@ class TestRevertIncidentFactContracteLot(testing.OOTestCase):
         self.assertEqual(mock_delete.call_count, 0)
 
         self.assertTrue(u"Pòlisses on actuar: 0\n" in wiz.info)
-        self.assertTrue("Pòlissa {} té factures però no té Data última lectura facturada Real. No s'hi actua\n".format(pol_id) in wiz.info)
+        self.assertTrue("Pòlissa {} té factures però no té Data última lectura facturada Real. No s'hi actua\n".format(
+            pol_id) in wiz.info)
 
     @mock.patch("som_facturacio_comer.wizard.wizard_revert_incident_fact_contracte_lot.WizardRevertIncidentFactCLot.delete_lot_factures_lectures")
     def test_do_action__incident_no_data_ultima_lectura_no_fact(self, mock_delete):
@@ -116,7 +121,6 @@ class TestRevertIncidentFactContracteLot(testing.OOTestCase):
 
         self.assertTrue(u"Pòlisses on actuar: 1\n" in wiz.info)
 
-
     def test_delete_lot_factures_lectures__not_delete_lectures(self):
         cursor = self.cursor
         uid = self.uid
@@ -130,10 +134,10 @@ class TestRevertIncidentFactContracteLot(testing.OOTestCase):
         clot_obj.write(cursor, uid, c_lot_id, {'state': 'facturat_incident'})
 
         clot = clot_obj.browse(cursor, uid, c_lot_id)
-        lect_pre =  lect_obj.search(cursor, uid, [
-                ('comptador.polissa', '=', clot.polissa_id.id),
-                ('comptador.active', '=', True),
-            ])
+        lect_pre = lect_obj.search(cursor, uid, [
+            ('comptador.polissa', '=', clot.polissa_id.id),
+            ('comptador.active', '=', True),
+        ])
 
         context = {'active_id': c_lot_id, 'active_ids': [c_lot_id]}
         vals = {'delete_lectures': False}
@@ -141,17 +145,19 @@ class TestRevertIncidentFactContracteLot(testing.OOTestCase):
         wiz = wiz_obj.browse(cursor, uid, wiz_id)
 
         context = {'delete_lectures': False}
-        wiz.delete_lot_factures_lectures(pol_id=clot.polissa_id.id, lot_id=clot.lot_id.id, c_lot_id=c_lot_id, context=context)
+        wiz.delete_lot_factures_lectures(
+            pol_id=clot.polissa_id.id, lot_id=clot.lot_id.id, c_lot_id=c_lot_id, context=context)
 
-        lot_fact_ids = fact_obj.search(cursor, uid, [('lot_facturacio','=', clot.lot_id.id), ('polissa_id', '=', clot.polissa_id.id)])
+        lot_fact_ids = fact_obj.search(cursor, uid, [(
+            'lot_facturacio', '=', clot.lot_id.id), ('polissa_id', '=', clot.polissa_id.id)])
         clot = clot_obj.browse(cursor, uid, c_lot_id)
         self.assertEqual(lot_fact_ids, [])
         self.assertEqual(clot.state, 'obert')
 
-        lect_post =  lect_obj.search(cursor, uid, [
-                ('comptador.polissa', '=', clot.polissa_id.id),
-                ('comptador.active', '=', True),
-            ])
+        lect_post = lect_obj.search(cursor, uid, [
+            ('comptador.polissa', '=', clot.polissa_id.id),
+            ('comptador.active', '=', True),
+        ])
         self.assertEqual(lect_pre, lect_post)
 
     def test_delete_lot_factures_lectures__delete_lectures_no_data_ultima_lect(self):
@@ -174,16 +180,18 @@ class TestRevertIncidentFactContracteLot(testing.OOTestCase):
         wiz = wiz_obj.browse(cursor, uid, wiz_id)
 
         context = {'delete_lectures': True}
-        wiz.delete_lot_factures_lectures(pol_id=clot.polissa_id.id, lot_id=clot.lot_id.id, c_lot_id=c_lot_id, context=context)
+        wiz.delete_lot_factures_lectures(
+            pol_id=clot.polissa_id.id, lot_id=clot.lot_id.id, c_lot_id=c_lot_id, context=context)
 
-        lot_fact_ids = fact_obj.search(cursor, uid, [('lot_facturacio','=', clot.lot_id.id), ('polissa_id', '=', clot.polissa_id.id)])
+        lot_fact_ids = fact_obj.search(cursor, uid, [(
+            'lot_facturacio', '=', clot.lot_id.id), ('polissa_id', '=', clot.polissa_id.id)])
         clot = clot_obj.browse(cursor, uid, c_lot_id)
         self.assertEqual(lot_fact_ids, [])
         self.assertEqual(clot.state, 'obert')
 
-        lect_post =  lect_obj.search(cursor, uid, [
-                ('comptador.polissa', '=', clot.polissa_id.id),
-            ])
+        lect_post = lect_obj.search(cursor, uid, [
+            ('comptador.polissa', '=', clot.polissa_id.id),
+        ])
         self.assertEqual(lect_post, [])
 
     def test_delete_lot_factures_lectures__delete_lectures_si_data_ultima_lect(self):
@@ -199,11 +207,12 @@ class TestRevertIncidentFactContracteLot(testing.OOTestCase):
         c_lot_id, pol_id = self._create_c_lot_facturar()
         clot_obj.write(cursor, uid, c_lot_id, {'state': 'facturat_incident'})
         clot = clot_obj.browse(cursor, uid, c_lot_id)
-        pol_obj.write(cursor, uid, clot.polissa_id.id, {'data_ultima_lectura': '2021-06-01'})
-        lect_pre =  lect_obj.search(cursor, uid, [
-                ('comptador.polissa', '=', clot.polissa_id.id),
-                ('name', '>', '2021-06-01')
-            ])
+        pol_obj.write(cursor, uid, clot.polissa_id.id, {
+                      'data_ultima_lectura': '2021-06-01'})
+        lect_pre = lect_obj.search(cursor, uid, [
+            ('comptador.polissa', '=', clot.polissa_id.id),
+            ('name', '>', '2021-06-01')
+        ])
         self.assertTrue(lect_pre)
 
         context = {'active_id': c_lot_id, 'active_ids': [c_lot_id]}
@@ -212,18 +221,20 @@ class TestRevertIncidentFactContracteLot(testing.OOTestCase):
         wiz = wiz_obj.browse(cursor, uid, wiz_id)
 
         context = {'delete_lectures': True}
-        wiz.delete_lot_factures_lectures(pol_id=clot.polissa_id.id, lot_id=clot.lot_id.id, c_lot_id=c_lot_id, context=context)
+        wiz.delete_lot_factures_lectures(
+            pol_id=clot.polissa_id.id, lot_id=clot.lot_id.id, c_lot_id=c_lot_id, context=context)
 
-        lot_fact_ids = fact_obj.search(cursor, uid, [('lot_facturacio','=', clot.lot_id.id), ('polissa_id', '=', clot.polissa_id.id)])
+        lot_fact_ids = fact_obj.search(cursor, uid, [(
+            'lot_facturacio', '=', clot.lot_id.id), ('polissa_id', '=', clot.polissa_id.id)])
         clot = clot_obj.browse(cursor, uid, c_lot_id)
 
         self.assertEqual(lot_fact_ids, [])
         self.assertEqual(clot.state, 'obert')
 
-        lect_post =  lect_obj.search(cursor, uid, [
-                ('comptador.polissa', '=', clot.polissa_id.id),
-                ('name', '>', '2021-06-01')
-            ])
+        lect_post = lect_obj.search(cursor, uid, [
+            ('comptador.polissa', '=', clot.polissa_id.id),
+            ('name', '>', '2021-06-01')
+        ])
         self.assertEqual(lect_post, [])
 
     def test_delete_lectures__not_lot_factures(self):
@@ -240,16 +251,17 @@ class TestRevertIncidentFactContracteLot(testing.OOTestCase):
         clot_obj.write(cursor, uid, c_lot_id, {'state': 'finalitzat'})
         clot = clot_obj.browse(cursor, uid, c_lot_id)
 
-        pre_lot_fact_ids = fact_obj.search(cursor, uid, [('lot_facturacio','=', clot.lot_id.id), ('polissa_id', '=', clot.polissa_id.id)])
+        pre_lot_fact_ids = fact_obj.search(cursor, uid, [(
+            'lot_facturacio', '=', clot.lot_id.id), ('polissa_id', '=', clot.polissa_id.id)])
         fact_obj.unlink(cursor, uid, pre_lot_fact_ids)
 
-        pol_obj.write(cursor, uid, clot.polissa_id.id, {'data_ultima_lectura': '2021-06-01'})
-        lect_pre =  lect_obj.search(cursor, uid, [
-                ('comptador.polissa', '=', clot.polissa_id.id),
-                ('name', '>', '2021-06-01')
-            ])
+        pol_obj.write(cursor, uid, clot.polissa_id.id, {
+                      'data_ultima_lectura': '2021-06-01'})
+        lect_pre = lect_obj.search(cursor, uid, [
+            ('comptador.polissa', '=', clot.polissa_id.id),
+            ('name', '>', '2021-06-01')
+        ])
         self.assertTrue(lect_pre)
-
 
         context = {'active_id': c_lot_id, 'active_ids': [c_lot_id]}
         vals = {'delete_lectures': True}
@@ -257,14 +269,15 @@ class TestRevertIncidentFactContracteLot(testing.OOTestCase):
         wiz = wiz_obj.browse(cursor, uid, wiz_id)
 
         context = {'delete_lectures': True}
-        wiz.delete_lot_factures_lectures(pol_id=clot.polissa_id.id, lot_id=clot.lot_id.id, c_lot_id=c_lot_id, context=context)
+        wiz.delete_lot_factures_lectures(
+            pol_id=clot.polissa_id.id, lot_id=clot.lot_id.id, c_lot_id=c_lot_id, context=context)
 
         clot = clot_obj.browse(cursor, uid, c_lot_id)
 
         self.assertEqual(clot.state, 'obert')
 
-        lect_post =  lect_obj.search(cursor, uid, [
-                ('comptador.polissa', '=', clot.polissa_id.id),
-                ('name', '>', '2021-06-01')
-            ])
+        lect_post = lect_obj.search(cursor, uid, [
+            ('comptador.polissa', '=', clot.polissa_id.id),
+            ('name', '>', '2021-06-01')
+        ])
         self.assertEqual(lect_post, [])

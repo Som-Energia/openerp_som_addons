@@ -11,26 +11,37 @@ class GiscedataAtc(osv.osv):
     _order = 'id desc'
 
     def get_autoreclama_data(self, cursor, uid, id, context=None):
-        data = self.read(cursor, uid, id, ['business_days_with_same_agent', 'subtipus_id', 'agent_actual', 'state'], context)
+        data = self.read(cursor, uid, id, [
+            'business_days_with_same_agent',
+            'subtipus_id',
+            'agent_actual',
+            'state',
+        ], context
+        )
         # agent_actual = '10' is ditri
+        distri_days = 0
+        if data['agent_actual'] == '10':
+            distri_days = data['business_days_with_same_agent']
         return {
-            'distri_days': data['business_days_with_same_agent'] if data['agent_actual'] == '10' else 0,
+            'distri_days': distri_days,
             'subtipus_id': data['subtipus_id'][0],
             'agent_actual': data['agent_actual'],
             'state': data['state'],
-            }
+        }
 
     # Automatic ATC + R1-029 from existing ATC / Entry poiut
     def create_ATC_R1_029_from_atc_via_wizard(self, cursor, uid, atc_id, context=None):
         channel_obj = self.pool.get('res.partner.canal')
-        canal_id = channel_obj.search(cursor, uid, [('name', 'ilike', 'intercambi')], context=context)[0]
+        canal_id = channel_obj.search(
+            cursor, uid, [('name', 'ilike', 'intercambi')], context=context)[0]
 
         subtr_obj = self.pool.get('giscedata.subtipus.reclamacio')
-        subtr_id = subtr_obj.search(cursor, uid, [('name', '=', '029')], context=context)[0]
+        subtr_id = subtr_obj.search(
+            cursor, uid, [('name', '=', '029')], context=context)[0]
 
         imd_obj = self.pool.get('ir.model.data')
         initial_state_id = imd_obj.get_object_reference(
-                cursor, uid, 'som_autoreclama', 'automated_state_workflow_atc'
+            cursor, uid, 'som_autoreclama', 'automated_state_workflow_atc'
         )[1]
 
         atc = self.browse(cursor, uid, atc_id, context)
@@ -40,9 +51,18 @@ class GiscedataAtc(osv.osv):
             sw_obj = self.pool.get('giscedata.switching')
             original_sw = sw_obj.browse(cursor, uid, original_sw_id, context)
             if original_sw.state != 'open':
-                raise Exception(_(u"S'ha intentat generar un cas ATC amb R1 029 a partir del cas ATR {} amb R1 {} no oberta!").format(atc_id, original_sw_id))
+                raise Exception(
+                    _(
+                        u"S'ha intentat generar un cas ATC amb R1 029 a partir"
+                        u" del cas ATR {} amb R1 {} no oberta!"
+                    ).format(atc_id, original_sw_id)
+                )
         else:
-            raise Exception(_(u"S'ha intentat generar un cas ATC amb R1 029 a partir del cas ATR {} sense R1 associada!").format(atc_id))
+            raise Exception(
+                _(
+                    u"S'ha intentat generar un cas ATC amb R1 029 a partir del cas ATR {}"
+                    u" sense R1 associada!").format(atc_id)
+            )
 
         new_case_data = {
             'polissa_id': atc.polissa_id.id,
@@ -57,7 +77,9 @@ class GiscedataAtc(osv.osv):
             'autoreclama_history_initial_state_id': initial_state_id,
             'orginal_sw_id': original_sw_id,
         }
-        return self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
+        return self.create_general_atc_r1_case_via_wizard(
+            cursor, uid, new_case_data, context
+        )
 
     # Automatic ATC + [R1] from dictonary / Entry poiut
     def create_general_atc_r1_case_via_wizard(self, cursor, uid, case_data, context=None):
@@ -70,9 +92,13 @@ class GiscedataAtc(osv.osv):
         ctx['active_ids'] = [case_data['polissa_id']]  # id de la polissa
         ctx['active_id'] = case_data['polissa_id']     # id de la polissa
         if case_data.get('autoreclama_history_initial_state_id', False):
-            ctx['autoreclama_history_initial_state_id'] = case_data['autoreclama_history_initial_state_id']
+            ctx['autoreclama_history_initial_state_id'] = case_data[
+                'autoreclama_history_initial_state_id'
+            ]
         if case_data.get('autoreclama_history_initial_date', False):
-            ctx['autoreclama_history_initial_date'] = case_data['autoreclama_history_initial_date']
+            ctx['autoreclama_history_initial_date'] = case_data[
+                'autoreclama_history_initial_date'
+            ]
 
         params = {
             'canal_id': case_data['canal_id'],
@@ -88,29 +114,35 @@ class GiscedataAtc(osv.osv):
 
         atcw_obj = self.pool.get('wizard.create.atc.from.polissa')
         wiz_id = atcw_obj.create(cursor, uid, params, ctx)
-        atcw_obj.create_atc_case_from_view(cursor, uid, [wiz_id], ctx)  # creates the ATC case
+        atcw_obj.create_atc_case_from_view(
+            cursor, uid, [wiz_id], ctx)  # creates the ATC case
 
         gen_cases = atcw_obj.read(cursor, uid, wiz_id, ['generated_cases'], ctx)[0]
-        atc_id = gen_cases['generated_cases'][0]                        # gets the new ATC case id
+        # gets the new ATC case id
+        atc_id = gen_cases['generated_cases'][0]
 
         if case_data.get('crear_cas_r1', False):
             open_r1_wiz = atcw_obj.open_r1_wizard(cursor, uid, [wiz_id], ctx)
 
             r1atcw_ctx = open_r1_wiz['context']
-            r1atcw_obj = self.pool.get(open_r1_wiz['res_model'])  # wizard.generate.r1.from.atc.case
+            # wizard.generate.r1.from.atc.case
+            r1atcw_obj = self.pool.get(open_r1_wiz['res_model'])
             r1atcw_id = r1atcw_obj.create(cursor, uid, {}, r1atcw_ctx)
-            generate_r1_wiz = r1atcw_obj.generate_r1(cursor, uid, [r1atcw_id], r1atcw_ctx)  # Generates the R1 for the ATC case
+            generate_r1_wiz = r1atcw_obj.generate_r1(
+                cursor, uid, [r1atcw_id], r1atcw_ctx)  # Generates the R1 for the ATC case
 
             r1w_ctx = eval(generate_r1_wiz['context'])
             r1w_obj = self.pool.get(generate_r1_wiz['res_model'])  # "wizard.create.r1"
             r1w_id = r1w_obj.create(cursor, uid, {}, r1w_ctx)
-            subtype_r1_wiz = r1w_obj.action_subtype_fields_view(cursor, uid, [r1w_id], r1w_ctx)  # obtain subtype wizard R1
+            subtype_r1_wiz = r1w_obj.action_subtype_fields_view(
+                cursor, uid, [r1w_id], r1w_ctx)  # obtain subtype wizard R1
 
             sr1w_obj = self.pool.get(subtype_r1_wiz['res_model'])  # "wizard.subtype.r1"
             if 'orginal_sw_id' in case_data:
                 r1w_ctx['from_sw_id'] = case_data['orginal_sw_id']
             sr1w_id = sr1w_obj.create(cursor, uid, {}, r1w_ctx)
-            r1_result = sr1w_obj.action_create_r1_case(cursor, uid, [sr1w_id], r1w_ctx)  # create subtype R1 for example:029  # USE OLD CONTEXT!
+            # create subtype R1 for example:029  # USE OLD CONTEXT!
+            sr1w_obj.action_create_r1_case(cursor, uid, [sr1w_id], r1w_ctx)
 
         return atc_id
 
@@ -123,11 +155,13 @@ class GiscedataAtc(osv.osv):
 
         imd_obj = self.pool.get('ir.model.data')
         initial_state_id = imd_obj.get_object_reference(
-                cursor, uid, 'som_autoreclama', 'correct_state_workflow_atc'
+            cursor, uid, 'som_autoreclama', 'correct_state_workflow_atc'
         )[1]
 
-        initial_state_id = context.get('autoreclama_history_initial_state_id', initial_state_id)
-        initial_date = context.get('autoreclama_history_initial_date', date.today().strftime("%Y-%m-%d"))
+        initial_state_id = context.get(
+            'autoreclama_history_initial_state_id', initial_state_id)
+        initial_date = context.get(
+            'autoreclama_history_initial_date', date.today().strftime("%Y-%m-%d"))
 
         atch_obj = self.pool.get('som.autoreclama.state.history.atc')
         atch_obj.create(
@@ -179,7 +213,8 @@ class GiscedataAtc(osv.osv):
         return result
 
     # Autoreclama history management functions
-    def _get_last_autoreclama_state_from_history(self, cursor, uid, ids, field_name, arg, context=None):
+    def _get_last_autoreclama_state_from_history(
+            self, cursor, uid, ids, field_name, arg, context=None):
         result = {k: {} for k in ids}
         last_lines = self.get_current_autoreclama_state_info(cursor, uid, ids)
         for id in ids:

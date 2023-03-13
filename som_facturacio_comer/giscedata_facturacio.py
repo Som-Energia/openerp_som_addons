@@ -36,7 +36,8 @@ class GiscedataFacturacioFacturador(osv.osv):
             discount_product = product_obj.browse(cursor, uid, product_ids[1])
         else:
             discount_product = product_obj.browse(cursor, uid, product_ids[0])
-        line_desc = "{} {} {}".format(discount_product.description, line.product_id.name, line.tipus)
+        line_desc = "{} {} {}".format(
+            discount_product.description, line.product_id.name, line.tipus)
         vals = {
             'data_desde': line.data_desde,
             'data_fins': line.data_fins,

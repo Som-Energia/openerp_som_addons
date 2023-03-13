@@ -1,6 +1,7 @@
 from ..component_utils import get_description
 from ..ProcesD1 import ProcesD1
 
+
 class D101(ProcesD1.ProcesD1):
     def __init__(self):
         ProcesD1.ProcesD1.__init__(self)
@@ -23,17 +24,17 @@ class D101(ProcesD1.ProcesD1):
             else:
                 aux = gen.identificador
             result['generadors'].append({
-                    'potencia_instalada' : gen.pot_installada_gen,
-                    'tec_generador' : gen.tec_generador,
-                    'tipus_instalacio' : get_description(gen.tipus_installacio, "TABLA_129"),
-                    'SSAA' : gen.ssaa,
-                    'ref_cadastre' : gen.ref_cadastre_inst_gen,
-                    'nom' : gen.nom,
-                    'cognom1' : gen.cognom_1,
-                    'cognom2' : gen.cognom_2,
-                    'email_contacte' : gen.email,
-                    'tipus_document' : get_description(gen.tipus_identificador, "TABLA_6"),
-                    'document' : aux
-                })
+                'potencia_instalada': gen.pot_installada_gen,
+                'tec_generador': gen.tec_generador,
+                'tipus_instalacio': get_description(gen.tipus_installacio, "TABLA_129"),
+                'SSAA': gen.ssaa,
+                'ref_cadastre': gen.ref_cadastre_inst_gen,
+                'nom': gen.nom,
+                'cognom1': gen.cognom_1,
+                'cognom2': gen.cognom_2,
+                'email_contacte': gen.email,
+                'tipus_document': get_description(gen.tipus_identificador, "TABLA_6"),
+                'document': aux
+            })
         result['comentaris'] = step.comentaris
         return result

@@ -8,7 +8,7 @@
     "version": "0-dev",
     "author": "GISCE",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "base",
         "base_extended",
         "account_payment_extension",
@@ -18,7 +18,7 @@
     ],
     "init_xml": [],
     "demo_xml": [],
-    "update_xml":[
+    "update_xml": [
         "partner_view.xml",
         "account_chart.xml",
         "partner_data.xml"

@@ -43,7 +43,7 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
 
         # only 3.0TD and 6.xTD and TDVE
         search_params = [('tarifa.codi_ocsum', 'in', [
-                          '019', '020', '021', '022', '023', '024','025'])]
+                          '019', '020', '021', '022', '023', '024', '025'])]
         if contracts:
             search_params.append(('name', 'in', contracts))
 
@@ -52,7 +52,7 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
         return [int(x) for x in pol_ids]
 
     def find_invoices(self, cursor, uid, ids, pol_ids, from_date, to_date):
-        wiz = self.browse(cursor, uid, ids[0])
+        self.browse(cursor, uid, ids[0])
 
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         pol_obj = self.pool.get('giscedata.polissa')
@@ -62,11 +62,11 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
         for pol_id in pol_ids:
             pol = pol_obj.browse(cursor, uid, pol_id)
             subitem = OrderedDict([('Contracte', pol.name), ('Tarifa Comercialitzadora', pol.llista_preu.name if pol.llista_preu else ''), ('Indexada', 'Indexada' if pol.llista_preu and 'indexada' in pol.llista_preu.name.lower(
-            ) else 'No'), ('Energia activa', 0), ('MAG', 0), ('Penalització reactiva', 0), ('Potència', 0), ('Excés potència', 0), ('Excedents', 0), ('Excedents generats totals', 0),('Excedents saldo compensació', 0), ('Lloguer comptador', 0), ('IVA', 0), ('IGIC', 0), ('IESE', 0), ('Altres', 0), ('TOTAL', 0)])
+            ) else 'No'), ('Energia activa', 0), ('MAG', 0), ('Penalització reactiva', 0), ('Potència', 0), ('Excés potència', 0), ('Excedents', 0), ('Excedents generats totals', 0), ('Excedents saldo compensació', 0), ('Lloguer comptador', 0), ('IVA', 0), ('IGIC', 0), ('IESE', 0), ('Altres', 0), ('TOTAL', 0)])
             items[pol_id] = subitem
 
         fact_ids = fact_obj.search(cursor, uid, [('polissa_id.id', 'in', pol_ids), ('data_inici', '>=', from_date), ('data_final', '<=', to_date),
-                                ('type', 'in', ['out_invoice', 'out_refund']), ('state', '!=', 'draft')])
+                                                 ('type', 'in', ['out_invoice', 'out_refund']), ('state', '!=', 'draft')])
 
         for fact_id in fact_ids:
             fact = fact_obj.browse(cursor, uid, fact_id)
@@ -131,9 +131,10 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
 
         if len(items) > 0:
             file_name, mfile = self.create_csv(items.values(), from_date, to_date)
-            wiz.write({'file_name': file_name, 'file': mfile, 'state':'done'})
+            wiz.write({'file_name': file_name, 'file': mfile, 'state': 'done'})
         else:
-            raise osv.except_osv(_("No s'ha generat l'informe !"), _("No s'han trobat factures per aquestes dates i/o contractes!"))
+            raise osv.except_osv(_("No s'ha generat l'informe !"), _(
+                "No s'han trobat factures per aquestes dates i/o contractes!"))
 
     def set_to_date(self, start_date):
         day_initial_date = int(start_date.strftime("%d"))
@@ -147,8 +148,10 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
         res = {'value': {}}
         if start_date:
             start_date = datetime.strptime(start_date, "%Y-%m-%d")
-            res['value']['to_date'] = datetime.strftime(self.set_to_date(start_date), '%Y-%m-%d')
-            res['value']['from_date'] = datetime.strftime(self.set_from_date(start_date), '%Y-%m-%d')
+            res['value']['to_date'] = datetime.strftime(
+                self.set_to_date(start_date), '%Y-%m-%d')
+            res['value']['from_date'] = datetime.strftime(
+                self.set_from_date(start_date), '%Y-%m-%d')
         return res
 
     _columns = {

@@ -14,13 +14,15 @@ class WizardSomAutoreclamaGeneratedAtc(osv.osv_memory):
         if not context:
             context = {}
 
-        atc_ids = context.get('active_ids',[])
+        atc_ids = context.get('active_ids', [])
         generated_atc_ids = []
 
         for atc_id in atc_ids:
-            h_ids = atc_obj.read(cursor, uid, atc_id, ['autoreclama_history_ids'], context=context)['autoreclama_history_ids']
+            h_ids = atc_obj.read(cursor, uid, atc_id, ['autoreclama_history_ids'], context=context)[
+                'autoreclama_history_ids']
             for h_id in h_ids:
-                h_data = h_obj.read(cursor, uid, h_id, ['generated_atc_id'], context=context)
+                h_data = h_obj.read(cursor, uid, h_id, [
+                                    'generated_atc_id'], context=context)
                 if 'generated_atc_id' in h_data and h_data['generated_atc_id']:
                     generated_atc_ids.append(h_data['generated_atc_id'][0])
 

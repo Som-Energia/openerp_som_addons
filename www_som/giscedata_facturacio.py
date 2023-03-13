@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 from osv import osv
-from tools import cache
 from ast import literal_eval
 
 _WWW_TIPUS_FACTURA = {
-     'ordinaria': 'ORDINARIA',
-     'abonadora': 'ABONADORA',
-     'rectificadora': 'RECTIFICADORA',
+    'ordinaria': 'ORDINARIA',
+    'abonadora': 'ABONADORA',
+    'rectificadora': 'RECTIFICADORA',
 }
 
 _WWW_ESTAT_PAGAMENT = {
@@ -15,6 +14,7 @@ _WWW_ESTAT_PAGAMENT = {
     'en_proces': 'EN_PROCES',
     'error': 'ERROR',
 }
+
 
 class GiscedataFacturacioFactura(osv.osv):
 
@@ -25,10 +25,10 @@ class GiscedataFacturacioFactura(osv.osv):
         inv_obj = self.pool.get('giscedata.facturacio.factura')
         inv_data = inv_obj.browse(cursor, uid, inv_id)
         return self._www_estat_pagament_ov(cursor, uid, inv_data)
-    
+
     def www_estat_pagament_ov(self, cursor, uid, ids, context=None):
         """
-        1)Si té estat oberta i té estat pedent (Correcte): 'EN_PROCES' 
+        1)Si té estat oberta i té estat pedent (Correcte): 'EN_PROCES'
         2)Si té estat oberta i té estat pendent (llistat_NO_pagables): 'EN_PROCES'
         3)Si té estat oberta i forma part d'una agrupació: 'EN_PROCES'
         4)Si té estat oberta i el residual és diferent al amount_total: 'EN_PROCES'
@@ -46,7 +46,8 @@ class GiscedataFacturacioFactura(osv.osv):
         inv_group = inv.group_move_id
         ps_correct = literal_eval(cfg.get(cursor, uid, 'cobraments_ps_correcte', '[]'))
         ps_fraccio = literal_eval(cfg.get(cursor, uid, 'cobraments_ps_fraccio', '[]'))
-        ps_no_pagables = literal_eval(cfg.get(cursor, uid, 'cobraments_ps_no_pagable', '[]'))
+        ps_no_pagables = literal_eval(
+            cfg.get(cursor, uid, 'cobraments_ps_no_pagable', '[]'))
 
         if inv_state == 'open':
             partial = inv.amount_total != inv.residual

@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-import os, datetime, csv
-from dateutil.relativedelta import relativedelta
+import datetime
+import os
 from paramiko import SSHClient, AutoAddPolicy
-import tempfile, shutil
+import tempfile
+import shutil
 import base64
 from scp import SCPClient
 import shutil
-from StringIO import StringIO
 
 from autoworker import AutoWorker
 from oorq.decorators import job, create_jobs_group
@@ -15,7 +15,6 @@ from tools.translate import _
 from tools import config
 from som_infoenergia.pdf_tools import topdf
 import unicodedata
-
 
 
 def get_ssh_connection():
@@ -38,15 +37,17 @@ def get_ssh_connection():
                 password=beedata_password)
     return ssh
 
-#Per python 3 provar unidecode
+# Per python 3 provar unidecode
+
+
 def strip_accents(s):
-   return ''.join(c for c in unicodedata.normalize('NFD', s)
-                  if unicodedata.category(c) != 'Mn')
+    return ''.join(c for c in unicodedata.normalize('NFD', s)
+                   if unicodedata.category(c) != 'Mn')
 
 
 ESTAT_ENVIAT = [
     ('preesborrany', "Pre Esborrany"),
-    ('esborrany','Esborrany'),
+    ('esborrany', 'Esborrany'),
     ('obert', 'Obert'),
     ('error', 'Error'),
     ('encuat', 'Encuat per enviar'),
@@ -61,18 +62,18 @@ class SomInfoenergiaEnviament(osv.osv):
 
     def _attach_pdf(self, cursor, uid, ids, filepath):
         if isinstance(ids, (tuple, list)):
-                ids = ids[0]
+            ids = ids[0]
         enviament = self.browse(cursor, uid, ids)
         attachment_obj = self.pool.get('ir.attachment')
         attachment_to_delete = attachment_obj.search(cursor, uid,
-            [('res_id', '=', ids), ('res_model', '=', 'som.infoenergia.enviament')])
+                                                     [('res_id', '=', ids), ('res_model', '=', 'som.infoenergia.enviament')])
 
         with open(filepath, 'r') as pdf_file:
             data = pdf_file.read()
             values = {
-                'name':'Lot {}, informe {}, contracte {}'.format(
-                        enviament.lot_enviament.name, enviament.lot_enviament.tipus_informe.upper(), enviament.polissa_id.name
-                    ),
+                'name': 'Lot {}, informe {}, contracte {}'.format(
+                    enviament.lot_enviament.name, enviament.lot_enviament.tipus_informe.upper(), enviament.polissa_id.name
+                ),
                 'datas_fname': strip_accents(u'{}_{}.pdf'.format(enviament.polissa_id.name, enviament.lot_enviament.name)),
                 'datas': base64.b64encode(data),
                 'res_model': 'som.infoenergia.enviament',
@@ -126,7 +127,7 @@ class SomInfoenergiaEnviament(osv.osv):
 
             self._attach_pdf(cursor, uid, ids, output_filepath)
             now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            env.write({'estat': 'obert','data_informe':now})
+            env.write({'estat': 'obert', 'data_informe': now})
             self.add_info_line(cursor, uid, ids, 'PDF descarregat correctament', context)
         except Exception as e:
             env.write({'estat': 'error'})
@@ -135,16 +136,18 @@ class SomInfoenergiaEnviament(osv.osv):
 
     def render_header_data(self, cursor, uid, env_id, pdf_filepath, output_dir, context=None):
         base_dir = os.path.dirname(os.path.abspath(__file__))
-        template_name = os.path.join(base_dir, os.path.join('report', 'infoenergia_header.mako'))
+        template_name = os.path.join(base_dir, os.path.join(
+            'report', 'infoenergia_header.mako'))
         enviament = self.browse(cursor, uid, env_id)
         pol_obj = self.pool.get('giscedata.polissa')
         partner_obj = self.pool.get('res.partner')
 
         dades_linia_enviament = {
-                    'contract_name': enviament.polissa_id.name,
-                    'report': pdf_filepath,
-                    }
-        pol_data = pol_obj.read(cursor, uid, enviament.polissa_id.id, ['cups', 'titular', 'cups_direccio', 'persona_fisica'])
+            'contract_name': enviament.polissa_id.name,
+            'report': pdf_filepath,
+        }
+        pol_data = pol_obj.read(cursor, uid, enviament.polissa_id.id, [
+                                'cups', 'titular', 'cups_direccio', 'persona_fisica'])
         name_surnames = pol_data['titular'][1]
         if pol_data['persona_fisica'] == 'NI':
             name_surnames = partner_obj.separa_cognoms(cursor, uid, name_surnames)
@@ -153,7 +156,7 @@ class SomInfoenergiaEnviament(osv.osv):
                 'surname': ' '.join(name_surnames['cognoms'])
             })
         else:
-            dades_linia_enviament.update({'name': name_surnames, 'surname':''})
+            dades_linia_enviament.update({'name': name_surnames, 'surname': ''})
 
         dades_linia_enviament.update({
             'cups': pol_data['cups'][1],
@@ -164,10 +167,10 @@ class SomInfoenergiaEnviament(osv.osv):
         path_aux = tempfile.mkdtemp()
         try:
             new_report = topdf.customize(
-                report = dades_linia_enviament,
-                template_name = template_name,
-                path_aux = path_aux,
-                path_output = output_dir
+                report=dades_linia_enviament,
+                template_name=template_name,
+                path_aux=path_aux,
+                path_output=output_dir
             )
             with open(new_report, 'rb') as report_file:
                 pdf_data = base64.b64encode(report_file.read())
@@ -178,7 +181,6 @@ class SomInfoenergiaEnviament(osv.osv):
             raise Exception("Render Header Failed: " + str(e))
         shutil.rmtree(path_aux)
 
-
     def send_reports(self, cursor, uid, ids, context=None):
         if context is None:
             context = {}
@@ -188,7 +190,7 @@ class SomInfoenergiaEnviament(osv.osv):
         if not isinstance(ids, (tuple, list)):
             ids = [ids]
 
-        lot_name = self.read(cursor, uid, ids[0],['lot_enviament'])['lot_enviament'][1]
+        lot_name = self.read(cursor, uid, ids[0], ['lot_enviament'])['lot_enviament'][1]
         job_ids = []
         for _id in ids:
             j = self.send_single_report_async(
@@ -204,10 +206,12 @@ class SomInfoenergiaEnviament(osv.osv):
                 lot_name, len(ids)
             ), 'infoenergia.infoenergia_send', job_ids
         )
-        amax_proc = int(self.pool.get("res.config").get(cursor, uid, "infoenergia_send_tasks_max_procs", "0"))
+        amax_proc = int(self.pool.get("res.config").get(
+            cursor, uid, "infoenergia_send_tasks_max_procs", "0"))
         if not amax_proc:
             amax_proc = None
-        aw = AutoWorker(queue='infoenergia_send', default_result_ttl=24 * 3600, max_procs=amax_proc)
+        aw = AutoWorker(queue='infoenergia_send',
+                        default_result_ttl=24 * 3600, max_procs=amax_proc)
         aw.work()
 
     def send_single_report(self, cursor, uid, _id, context=None):
@@ -235,7 +239,7 @@ class SomInfoenergiaEnviament(osv.osv):
             return
 
         attachment_id = attach_obj.search(cursor, uid,
-        [('res_id', '=', _id), ('res_model', '=', 'som.infoenergia.enviament')])
+                                          [('res_id', '=', _id), ('res_model', '=', 'som.infoenergia.enviament')])
         if attachment_id:
             attachment_id = attachment_id[0]
         else:
@@ -264,8 +268,8 @@ class SomInfoenergiaEnviament(osv.osv):
         vals = {'from': tmpl.enforce_from_account.id,
                 'attachment_ids': [(6, 0, [attachment_id])]}
         if context.get('email_to', False):
-            vals.update({'to':context.get('email_to')})
-            vals.update({'bcc':''})
+            vals.update({'to': context.get('email_to')})
+            vals.update({'bcc': ''})
         if context.get('email_subject', False):
             vals.update({'subject': context.get('email_subject')})
         pe_send_obj.write(cursor, uid, [send_id], vals, context=ctx)
@@ -282,7 +286,8 @@ class SomInfoenergiaEnviament(osv.osv):
         """
         origin_ids = context.get('pe_callback_origin_ids', {})
         for _id in ids:
-            self.write(cursor, uid, _id, {'estat':'encuat', 'mail_id': origin_ids.get(_id, False)})
+            self.write(cursor, uid, _id, {'estat': 'encuat',
+                       'mail_id': origin_ids.get(_id, False)})
             self.add_info_line(cursor, uid, _id, "Correu encuat per enviar", context)
         return True
 
@@ -293,17 +298,19 @@ class SomInfoenergiaEnviament(osv.osv):
             context = {}
         if 'date_mail' in vals and 'folder' in vals:
             vals_w = {
-                    'date_sent': vals['date_mail'],
-                    'folder': vals['folder']
-                }
+                'date_sent': vals['date_mail'],
+                'folder': vals['folder']
+            }
             if vals_w['folder'] == 'sent':
                 for _id in ids:
                     if not self.browse(cursor, uid, _id).lot_enviament.is_test:
-                        self.write(cursor, uid, _id, {'estat':'enviat', 'data_enviament': vals_w['date_sent']})
+                        self.write(cursor, uid, _id, {
+                                   'estat': 'enviat', 'data_enviament': vals_w['date_sent']})
                         self.add_info_line(cursor, uid, _id, "Correu enviat", context)
                     else:
-                        self.add_info_line(cursor, uid, _id, "Correu de test enviat", context)
-                        self.write(cursor, uid, _id, {'estat':'obert'})
+                        self.add_info_line(
+                            cursor, uid, _id, "Correu de test enviat", context)
+                        self.write(cursor, uid, _id, {'estat': 'obert'})
         return True
 
     def poweremail_unlink_callback(self, cursor, uid, ids, vals, context=None):
@@ -311,7 +318,7 @@ class SomInfoenergiaEnviament(osv.osv):
         d'un enviament.
         """
         for _id in ids:
-            self.write(cursor, uid, _id, {'estat':'obert'})
+            self.write(cursor, uid, _id, {'estat': 'obert'})
             self.add_info_line(cursor, uid, _id, "Correu eliminat de la bústia", context)
         return True
 
@@ -322,18 +329,17 @@ class SomInfoenergiaEnviament(osv.osv):
         mail_id = self.read(cursor, uid, id[0], ['mail_id'])['mail_id'][0]
         return {
             'name': 'Reenviar',
-            'view_type':'form',
-            'view_mode':'form',
-            #'views' : [(view_id,'form')],
-            'res_model':'poweremail.mailbox',
-            'view_id':False,
-            #'view_id':view_id,
-            'type':'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            # 'views' : [(view_id,'form')],
+            'res_model': 'poweremail.mailbox',
+            'view_id': False,
+            # 'view_id':view_id,
+            'type': 'ir.actions.act_window',
             'res_id': mail_id,
             'target': 'new',
-            #'context': context,
+            # 'context': context,
         }
-
 
     def _ff_te_autoconsum(self, cursor, uid, ids, field_name, args, context):
         res = {}
@@ -343,50 +349,51 @@ class SomInfoenergiaEnviament(osv.osv):
             if not 'polissa_id' in pol or not pol['polissa_id']:
                 res[item] = False
             else:
-                auto_type = gp_obj.read(cursor, uid, pol['polissa_id'][0], ['autoconsumo'])['autoconsumo']
+                auto_type = gp_obj.read(cursor, uid, pol['polissa_id'][0], [
+                                        'autoconsumo'])['autoconsumo']
                 res[item] = auto_type != '00'
 
         return res
 
     _columns = {
         'polissa_id': fields.many2one('giscedata.polissa', _('Contracte'),
-            ondelete='restrict',
-            select=True, pol_rel='no'),
+                                      ondelete='restrict',
+                                      select=True, pol_rel='no'),
         'lang': fields.related('polissa_id', 'titular', 'lang',
-            type='char',
-            help=_("Idioma del partner titular de la pòlissa"),
-            string=_('Idioma'),
-            readonly=True),
+                               type='char',
+                               help=_("Idioma del partner titular de la pòlissa"),
+                               string=_('Idioma'),
+                               readonly=True),
         'name': fields.related('polissa_id', 'name',
-            type='char',
-            string=_('Num Polissa'),
-            readonly=True),
+                               type='char',
+                               string=_('Num Polissa'),
+                               readonly=True),
         'autoconsum': fields.function(
             _ff_te_autoconsum, store=True, type='boolean', string=_("Té Autoproducció"),
             readonly=True, method=True),
         'tarifa': fields.related('polissa_id', 'tarifa', 'name',
-            type='char',
-            string=_('Tarifa'),
-            readonly=True),
+                                 type='char',
+                                 string=_('Tarifa'),
+                                 readonly=True),
         'estat': fields.selection(ESTAT_ENVIAT, _('Estat'),
-            required=True),
+                                  required=True),
         'lot_enviament': fields.many2one('som.infoenergia.lot.enviament', _('Lot Enviament'),
-            required=True,
-            ondelete='restrict',
-            select=True),
+                                         required=True,
+                                         ondelete='restrict',
+                                         select=True),
         'mail_id': fields.many2one(
             'poweremail.mailbox', 'Mail', ondelete='set null'
         ),
         'tipus_informe_lot': fields.related('lot_enviament', 'tipus_informe',
-            type='char',
-            string=_('Tipus d\'informe lot'),
-            readonly=True),
+                                            type='char',
+                                            string=_('Tipus d\'informe lot'),
+                                            readonly=True),
         'found_in_search': fields.boolean(_("La pòlissa relacionada estava present a alguna cerca")),
-        'data_enviament':  fields.date(_("Data enviament"), allow_none=True),
-        'data_informe':  fields.date(_("Data de l'informe"), allow_none=True),
+        'data_enviament': fields.date(_("Data enviament"), allow_none=True),
+        'data_informe': fields.date(_("Data de l'informe"), allow_none=True),
         'pdf_filename': fields.char(_('Nom fitxer PDF'), size=256),
         'info': fields.text(_(u'Informació Adicional'),
-            help=_(u"Inclou qualsevol informació adicional, com els errors del Shera")),
+                            help=_(u"Inclou qualsevol informació adicional, com els errors del Shera")),
         'num_polissa_csv': fields.char(_('Número contracte CSV Beedata'), size=10),
         'body_text': fields.text(_(u"Cos de l'e-mail enviat per Beedata"))
     }
@@ -395,5 +402,6 @@ class SomInfoenergiaEnviament(osv.osv):
         'estat': lambda *a: 'esborrany',
         'found_in_search': lambda *a: False,
     }
+
 
 SomInfoenergiaEnviament()

@@ -1,6 +1,7 @@
 from ..component_utils import dateformat, get_description
 from ..ProcesB1 import ProcesB1
 
+
 class B101(ProcesB1.ProcesB1):
     def __init__(self):
         ProcesB1.ProcesB1.__init__(self)
@@ -17,5 +18,5 @@ class B101(ProcesB1.ProcesB1):
         if start_date:
             result['day'] = dateformat(start_date)
             result['date'] = start_date
-        
+
         return result

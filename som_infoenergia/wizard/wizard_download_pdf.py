@@ -8,13 +8,14 @@ STATES = [
     ('finished', 'Estat Final')
 ]
 
+
 class WizardDownloadPdf(osv.osv_memory):
     _name = 'wizard.infoenergia.download.pdf'
 
     _columns = {
         'state': fields.selection(STATES, _(u'Estat del wizard de baixada de PDF')),
         'force_download_pdf': fields.boolean('Forçar baixada pdfs ja baixats',
-            help=_(u"Es tornaran a baixar els PDFs dels Enviaments en estat Obert")),
+                                             help=_(u"Es tornaran a baixar els PDFs dels Enviaments en estat Obert")),
     }
 
     _defaults = {

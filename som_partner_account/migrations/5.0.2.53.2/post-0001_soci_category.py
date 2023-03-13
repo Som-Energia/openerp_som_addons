@@ -4,6 +4,7 @@
 import netsvc
 import pooler
 
+
 def migrate(cursor, installed_version):
     uid = 1
     logger = netsvc.Logger()

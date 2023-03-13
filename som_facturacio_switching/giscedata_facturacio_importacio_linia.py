@@ -9,6 +9,7 @@ import logging
 
 TIPO_AUTOCONSUMO_SEL = [(ac[0], '[{}] - {}'.format(ac[0], ac[1])) for ac in TABLA_113]
 
+
 class GiscedataFacturacioImportacioLinia(osv.osv):
     _name = 'giscedata.facturacio.importacio.linia'
     _inherit = 'giscedata.facturacio.importacio.linia'
@@ -20,19 +21,19 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
         if not context:
             context = {}
         lin_ext = self.pool.get(
-                    'giscedata.facturacio.importacio.linia.extra')
+            'giscedata.facturacio.importacio.linia.extra')
         ext = self.pool.get('giscedata.facturacio.extra')
         lin_ext_id = lin_ext.search(cursor, uid, [('linia_id', '=', lid)])
         if lin_ext_id:
             lin_ext_obj = lin_ext.read(cursor, uid, lin_ext_id, ['extra_id'])
             ext_ids = [x['extra_id'][0] for x in lin_ext_obj]
-            ext_info = ext.read(cursor, uid, ext_ids, ['amount_invoiced', 'total_amount_invoiced'])
+            ext_info = ext.read(cursor, uid, ext_ids, [
+                                'amount_invoiced', 'total_amount_invoiced'])
             if any([x for x in ext_info if x.get('amount_invoiced', 0.0) != 0.0]) or \
                any([x for x in ext_info if x.get('total_amount_invoiced', 0.0) != 0.0]):
                 raise osv.except_osv('Error', _('No es pot eliminar el Fitxer importat per que hi ha almenys '
                                                 'una línia extra amb import ja facturat'))
             ext.unlink(cursor, uid, ext_ids, context)
-
 
     def get_header_dict(self, xml_data):
         vals = super(GiscedataFacturacioImportacioLinia, self).get_header_dict(xml_data)
@@ -95,7 +96,7 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
             for idx, arg in enumerate(args):
                 if len(arg) == 3:
                     field, operator, match = arg
-                    if exact_origin and field == 'invoice_number_text' and isinstance(match,(unicode,str)):
+                    if exact_origin and field == 'invoice_number_text' and isinstance(match, (unicode, str)):
                         if not '%' in match:
                             operator = '='
                         args[idx] = (field, operator, match)
@@ -115,7 +116,6 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
             line_ids = [x['id'] for x in sorted_list]
             self.process_line(cursor, uid, line_ids, context=context)
 
-
     def do_reimport_f1(self, cursor, uid, data=None, context=None):
         if not context:
             context = {}
@@ -133,7 +133,8 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
             code = error_code.get('code', '')
             text = error_code.get('text', '')
             _ids = self.search(cursor, uid, [
-                ('state','=','erroni'), ('info', 'ilike','%[{}]%{}%'.format(code, text)),('fecha_factura','>=',date_to_check)
+                ('state', '=', 'erroni'), ('info', 'ilike', '%[{}]%{}%'.format(
+                    code, text)), ('fecha_factura', '>=', date_to_check)
             ])
             f1_ids += _ids
 
@@ -151,9 +152,11 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
         for f1_info in self.read(cursor, uid, ids, ['cups_id', 'fecha_factura_desde']):
             if f1_info['cups_id'] and f1_info['fecha_factura_desde']:
                 data_inici_factura = datetime.strftime(
-                    datetime.strptime(f1_info['fecha_factura_desde'], '%Y-%m-%d') + timedelta(days=1),
-                '%Y-%m-%d')
-                pol_id = cups_obj.find_most_recent_polissa(cursor, uid, f1_info['cups_id'][0], data_inici_factura)
+                    datetime.strptime(f1_info['fecha_factura_desde'],
+                                      '%Y-%m-%d') + timedelta(days=1),
+                    '%Y-%m-%d')
+                pol_id = cups_obj.find_most_recent_polissa(
+                    cursor, uid, f1_info['cups_id'][0], data_inici_factura)
                 res[f1_info['id']] = pol_id[f1_info['cups_id'][0]]
         return res
 
@@ -188,4 +191,6 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
             'polissa_id', 'data_ultima_lectura', type="date", string="Data ultima lect. facturada pòlissa", readonly=True
         )
     }
+
+
 GiscedataFacturacioImportacioLinia()

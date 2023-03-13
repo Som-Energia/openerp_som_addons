@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """Classes pel mòdul giscedata_cups (General)."""
-from osv import osv, fields
+from osv import osv
 from tools.translate import _
-from datetime import datetime, timedelta
 
 
 class GiscedataCupsPs(osv.osv):
@@ -44,5 +43,6 @@ class GiscedataCupsPs(osv.osv):
         llista.append(vals)
 
         return llista
+
 
 GiscedataCupsPs()

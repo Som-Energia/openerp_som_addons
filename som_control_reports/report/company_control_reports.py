@@ -15,6 +15,7 @@ class report_webkit_html(report_sxw.rml_parse):
             'addons_path': config['addons_path'],
         })
 
+
 webkit_report.WebKitParser(
     'report.som.company.control',
     'res.company',

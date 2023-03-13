@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from osv import osv, fields
+from osv import osv
 from tools.translate import _
 
 
@@ -30,11 +30,11 @@ class WizardAutofactura(osv.osv_memory):
             'context': {'active_test': False},
             'type': 'ir.actions.act_window',
             'view_id': self.pool.get('ir.ui.view').search(
-                        cursor, uid, [
-                            ('name', '=', 'som.autofactura.task.step.tree')
-                        ],
-                        context=context
-                    ),
+                cursor, uid, [
+                    ('name', '=', 'som.autofactura.task.step.tree')
+                ],
+                context=context
+            ),
 
         }
 

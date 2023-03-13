@@ -17,6 +17,7 @@ class report_webkit_html(report_sxw.rml_parse):
             'addons_path': config['addons_path'],
         })
 
+
 webkit_report.WebKitParser(
     'report.som.enviament.massiu',
     'som.enviament.massiu',
@@ -35,7 +36,8 @@ class OnDemandDataGenerator:
         self.cache = {}
 
     def factory_data_extractor(self, component_name):
-        exec("from components."+component_name+" import "+component_name+";extractor = "+component_name+"."+component_name+"()")
+        exec("from components." + component_name + " import " + component_name
+             + ";extractor = " + component_name + "." + component_name + "()")
         return extractor
 
     def __getattr__(self, name):
@@ -70,5 +72,6 @@ class ReportIndexedOffer(osv.osv_memory):
 
     _columns = {}
     _defaults = {}
+
 
 ReportIndexedOffer()

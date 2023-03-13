@@ -1,11 +1,11 @@
 from osv import osv
 from yamlns import namespace as ns
 import pooler
-from osv.expression import OOQuery
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 from report import report_sxw
 from tools import config
 from c2c_webkit_report import webkit_report
+
 
 class AccountInvoice(osv.osv):
     _name = 'account.invoice'
@@ -45,7 +45,7 @@ class AccountInvoice(osv.osv):
         return data
 
     def report_liquidacions_data(self, cursor, uid, ids):
-        inv = self.browse(cursor,uid,ids[0])
+        inv = self.browse(cursor, uid, ids[0])
         data = ns()
         data.lines = []
         for line in inv.invoice_line:
@@ -60,10 +60,10 @@ class AccountInvoice(osv.osv):
             ))
 
         data.total = inv.amount_untaxed
-        data.tax_lines= []
+        data.tax_lines = []
         for tax in inv.tax_line:
             data.tax_lines.append(ns(
-                name= ' '.join(tax.name.split(' ')[1:]),
+                name=' '.join(tax.name.split(' ')[1:]),
                 amount=tax.amount
             ))
 
@@ -78,7 +78,9 @@ class AccountInvoice(osv.osv):
 
         return data
 
+
 AccountInvoice()
+
 
 def get_somenergia_partner_info(cursor, uid):
     pool = pooler.get_pool(cursor.dbname)
@@ -86,14 +88,15 @@ def get_somenergia_partner_info(cursor, uid):
     ResPartnerAdress = pool.get('res.partner.address')
     som_partner_id = 1  # ResPartner.search(cursor, uid, [('vat','=','ESF55091367')])
     som_partner = ResPartner.read(cursor, uid, som_partner_id, ['name', 'vat', 'address'])
-    som_address = ResPartnerAdress.read(cursor, uid, som_partner['address'][0], ['street', 'zip', 'city'])
+    som_address = ResPartnerAdress.read(
+        cursor, uid, som_partner['address'][0], ['street', 'zip', 'city'])
     data = ns()
     data.address_city = som_address['city']
     data.address_zip = som_address['zip']
     data.address_street = som_address['street']
     data.partner_name = som_partner['name']
     data.partner_vat = som_partner['vat']
-    
+
     return data
 
 
@@ -142,4 +145,3 @@ webkit_report.WebKitParser(
     'som_inversions/report/report_generationkwh_doc.mako',
     parser=report_webkit_html
 )
-

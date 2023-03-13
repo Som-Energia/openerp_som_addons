@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from destral import testing
-import unittest
 from destral.transaction import Transaction
+
 
 class tarifes_tests(testing.OOTestCase):
 
@@ -28,7 +28,8 @@ class tarifes_tests(testing.OOTestCase):
             tariff_id = self.imd_obj.get_object_reference(
                 cursor, uid, 'giscedata_polissa', 'tarifa_20A_test')[1]
 
-            result = model.get_tariff_prices(cursor, uid, tariff_id, 5386, None, False, '2021-12-01')
+            result = model.get_tariff_prices(
+                cursor, uid, tariff_id, 5386, None, False, '2021-12-01')
             self.assertTrue(result)
 
     def test__get_tariff_prices_invalid_date(self):
@@ -45,6 +46,7 @@ class tarifes_tests(testing.OOTestCase):
                 cursor, uid, 'giscedata_polissa', 'tarifa_20A_test')[1]
 
             with self.assertRaises(Exception) as e:
-                model.get_tariff_prices(cursor, uid, tariff_id, 5386, None, False, '1999-12-01')
+                model.get_tariff_prices(cursor, uid, tariff_id,
+                                        5386, None, False, '1999-12-01')
 
             self.assertEqual(e.exception.value, 'Tariff pricelist not found')

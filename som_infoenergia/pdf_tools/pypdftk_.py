@@ -45,6 +45,7 @@ def run_command(command, shell=False):
     p = check_output(command, shell=shell)
     return p.split('\n')
 
+
 try:
     run_command([PDFTK_PATH])
 except OSError:
@@ -147,6 +148,7 @@ def gen_xfdf(datas={}):
     f.close()
     return out_file
 
+
 def replace_page(pdf_path, page_number, pdf_to_insert_path):
     '''
     Replace a page in a PDF (pdf_path) by the PDF pointed by pdf_to_insert_path.
@@ -162,6 +164,7 @@ def replace_page(pdf_path, page_number, pdf_to_insert_path):
     shutil.copy(output_temp, pdf_path)
     os.remove(output_temp)
 
+
 def add_custom(custom, input_, output_):
     '''
     Replace a page in a PDF (pdf_path) by the PDF pointed by pdf_to_insert_path.
@@ -175,6 +178,7 @@ def add_custom(custom, input_, output_):
     shutil.copy(output_temp, output_)
     os.remove(output_temp)
 
+
 def stamp(pdf_path, stamp_pdf_path, output_pdf_path=None):
     '''
     Applies a stamp (from stamp_pdf_path) to the PDF file in pdf_path. Useful for watermark purposes.
@@ -184,6 +188,7 @@ def stamp(pdf_path, stamp_pdf_path, output_pdf_path=None):
     args = [PDFTK_PATH, pdf_path, 'multistamp', stamp_pdf_path, 'output', output]
     run_command(args)
     return output
+
 
 def update_metadata(pdf_path, metadata_path, output_pdf_path):
     args = [PDFTK_PATH, pdf_path, 'update_info', metadata_path, 'output', output_pdf_path]

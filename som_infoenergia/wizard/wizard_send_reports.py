@@ -7,10 +7,11 @@ STATES = [
     ('finished', 'Estat Final'),
 ]
 
+
 class WizardSendReports(osv.osv_memory):
     _name = 'wizard.infoenergia.send.reports'
 
-    def _get_lot_id(self,cursor, uid, context):
+    def _get_lot_id(self, cursor, uid, context):
         if context is None:
             return False
 
@@ -20,11 +21,13 @@ class WizardSendReports(osv.osv_memory):
         elif context.get('from_model') == 'som.infoenergia.enviament':
             env_obj = self.pool.get('som.infoenergia.enviament')
             env_id = context.get('active_id', 0)
-            lot_id = env_obj.read(cursor, uid, env_id, ['lot_enviament'])['lot_enviament'][0]
+            lot_id = env_obj.read(cursor, uid, env_id, ['lot_enviament'])[
+                'lot_enviament'][0]
         elif context.get('from_model') == 'som.enviament.massiu':
             env_obj = self.pool.get('som.enviament.massiu')
             env_id = context.get('active_id', 0)
-            lot_id = env_obj.read(cursor, uid, env_id, ['lot_enviament'])['lot_enviament'][0]
+            lot_id = env_obj.read(cursor, uid, env_id, ['lot_enviament'])[
+                'lot_enviament'][0]
         return lot_id
 
     def _get_is_test(self, cursor, uid, context=None):
@@ -32,7 +35,7 @@ class WizardSendReports(osv.osv_memory):
         lot_id = self._get_lot_id(cursor, uid, context)
         lot_obj = self.pool.get('som.infoenergia.lot.enviament')
 
-        return lot_obj.read(cursor, uid, lot_id,['is_test'])['is_test']
+        return lot_obj.read(cursor, uid, lot_id, ['is_test'])['is_test']
 
     def _get_is_from_lot(self, cursor, uid, context=None):
 
@@ -48,11 +51,13 @@ class WizardSendReports(osv.osv_memory):
             allowed_states.append('enviat')
         if wiz.is_test:
             if not wiz.email_to:
-                raise osv.except_osv(_(u'ERROR'), "Cal indicar l'email destinatari de l'enviament")
+                raise osv.except_osv(
+                    _(u'ERROR'), "Cal indicar l'email destinatari de l'enviament")
             ctx.update({'email_to': wiz.email_to, 'email_subject': wiz.email_subject})
 
         if wiz.n_max_mails < 0:
-            raise osv.except_osv(_(u'ERROR'), "El número màxim de correus no pot ser negatiu!")
+            raise osv.except_osv(
+                _(u'ERROR'), "El número màxim de correus no pot ser negatiu!")
 
         env_ids = []
         if context.get('from_model') == 'som.infoenergia.lot.enviament':
@@ -66,7 +71,7 @@ class WizardSendReports(osv.osv_memory):
             else:
                 raise osv.except_osv(_(u'ERROR'), "Tipus de lot desconegut")
             env_ids = env_obj.search(cursor, uid, [
-                ('lot_enviament', '=', lot_id), ('estat','in', allowed_states)
+                ('lot_enviament', '=', lot_id), ('estat', 'in', allowed_states)
             ], limit=wiz.n_max_mails)
         elif context.get('from_model') in ['som.infoenergia.enviament', 'som.enviament.massiu']:
             env_ids = context.get('active_ids', [])

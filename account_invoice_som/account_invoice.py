@@ -40,11 +40,11 @@ class AccountInvoice(osv.osv):
             for idx, arg in enumerate(args):
                 if len(arg) == 3:
                     field, operator, match = arg
-                    if exact_number and field == 'number' and isinstance(match,(unicode,str)):
+                    if exact_number and field == 'number' and isinstance(match, (unicode, str)):
                         if not '%' in match:
                             operator = '='
                         args[idx] = (field, operator, match)
-                    if exact_origin and field == 'origin' and isinstance(match,(unicode,str)):
+                    if exact_origin and field == 'origin' and isinstance(match, (unicode, str)):
                         if not '%' in match:
                             operator = '='
                         args[idx] = (field, operator, match)
@@ -52,7 +52,8 @@ class AccountInvoice(osv.osv):
 
     def _auto_init(self, cr, context={}):
         result = super(AccountInvoice, self)._auto_init(cr, context)
-        cr.execute('SELECT indexname FROM pg_indexes WHERE indexname = \'account_invoice_number_index\'')
+        cr.execute(
+            'SELECT indexname FROM pg_indexes WHERE indexname = \'account_invoice_number_index\'')
         if not cr.fetchone():
             cr.execute('CREATE INDEX account_invoice_number_index ON account_invoice(number)')
         return result

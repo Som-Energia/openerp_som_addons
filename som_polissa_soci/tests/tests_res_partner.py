@@ -4,6 +4,7 @@ from destral.transaction import Transaction
 import mock
 import mailchimp_marketing
 
+
 class SomenergiaSociTests(testing.OOTestCase):
 
     def setUp(self):
@@ -26,15 +27,17 @@ class SomenergiaSociTests(testing.OOTestCase):
 
         partner_id = self.IrModelData.get_object_reference(
             self.cursor, self.uid, 'som_polissa_soci', 'res_partner_nosoci1'
-            )[1]
-        address_list = self.ResPartner.read(self.cursor, self.uid, partner_id, ['address'])['address']
+        )[1]
+        address_list = self.ResPartner.read(
+            self.cursor, self.uid, partner_id, ['address'])['address']
 
         mock_get_list_id.return_value = 'id'
         mock_mailchimp_client.return_value = 'MAILCHIMP_CLIENT'
 
         self.ResPartner.arxiva_client_mailchimp(self.cursor, self.uid, partner_id)
 
-        mock_archieve.assert_called_with(self.cursor, self.uid, address_list, 'id', 'MAILCHIMP_CLIENT')
+        mock_archieve.assert_called_with(
+            self.cursor, self.uid, address_list, 'id', 'MAILCHIMP_CLIENT')
 
     @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.archieve_mail_in_list")
     @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.get_mailchimp_list_id")
@@ -42,15 +45,17 @@ class SomenergiaSociTests(testing.OOTestCase):
     def test__arxiva_client_mailchimp__withManyAddress(self, mock_mailchimp_client, mock_get_list_id, mock_archieve):
         partner_id = self.IrModelData.get_object_reference(
             self.cursor, self.uid, 'som_polissa_soci', 'res_partner_nosoci2'
-            )[1]
-        address_list = self.ResPartner.read(self.cursor, self.uid, partner_id, ['address'])['address']
+        )[1]
+        address_list = self.ResPartner.read(
+            self.cursor, self.uid, partner_id, ['address'])['address']
 
         mock_get_list_id.return_value = 'id'
         mock_mailchimp_client.return_value = 'MAILCHIMP_CLIENT'
 
         self.ResPartner.arxiva_client_mailchimp(self.cursor, self.uid, partner_id)
 
-        mock_archieve.assert_called_with(self.cursor, self.uid, sorted(address_list), 'id', 'MAILCHIMP_CLIENT')
+        mock_archieve.assert_called_with(self.cursor, self.uid, sorted(
+            address_list), 'id', 'MAILCHIMP_CLIENT')
 
     @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.archieve_mail_in_list")
     @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.get_mailchimp_list_id")
@@ -59,11 +64,10 @@ class SomenergiaSociTests(testing.OOTestCase):
 
         partner_id = self.IrModelData.get_object_reference(
             self.cursor, self.uid, 'som_polissa_soci', 'res_partner_soci'
-            )[1]
+        )[1]
         mock_get_list_id.return_value = 'id'
         mock_mailchimp_client.return_value = 'MAILCHIMP_CLIENT'
 
         self.ResPartner.arxiva_client_mailchimp(self.cursor, self.uid, partner_id)
 
         mock_archieve.assert_not_called()
-

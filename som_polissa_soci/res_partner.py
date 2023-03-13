@@ -5,6 +5,7 @@ from osv import osv
 from oorq.decorators import job
 from tools import config
 
+
 class ResPartner(osv.osv):
     """ Class to manage Mailchimp lists subscriptions"""
 
@@ -24,7 +25,8 @@ class ResPartner(osv.osv):
 
         res_partner_obj = self.pool.get('res.partner')
         soci_obj = self.pool.get('somenergia.soci')
-        is_member = soci_obj.search(cursor, uid, [('partner_id','=', ids), ('baixa','=', False)])
+        is_member = soci_obj.search(
+            cursor, uid, [('partner_id', '=', ids), ('baixa', '=', False)])
         if is_member:
             return
 
@@ -33,18 +35,20 @@ class ResPartner(osv.osv):
         MAILCHIMP_CLIENT = MailchimpMarketing.Client(
             dict(api_key=config.options.get('mailchimp_apikey'),
                  server=config.options.get('mailchimp_server_prefix')
-            ))
+                 ))
 
         res_partner_address_obj = self.pool.get('res.partner.address')
         conf_obj = self.pool.get('res.config')
 
-
         list_name = conf_obj.get(
             cursor, uid, 'mailchimp_clients_list', None)
 
-        list_id = res_partner_address_obj.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
+        list_id = res_partner_address_obj.get_mailchimp_list_id(
+            list_name, MAILCHIMP_CLIENT)
 
         address_list = res_partner_obj.read(cursor, uid, ids, ['address'])['address']
-        res_partner_address_obj.archieve_mail_in_list(cursor, uid, address_list, list_id, MAILCHIMP_CLIENT)
+        res_partner_address_obj.archieve_mail_in_list(
+            cursor, uid, address_list, list_id, MAILCHIMP_CLIENT)
+
 
 ResPartner()

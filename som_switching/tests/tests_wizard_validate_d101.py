@@ -10,6 +10,7 @@ import unittest
 
 from .. import wizard
 
+
 class TestWizardValidateD101(TestSwitchingImport):
     def create_d1_case_at_step_01(self, txn):
         self.switch(txn, 'distri')
@@ -80,12 +81,13 @@ class TestWizardValidateD101(TestSwitchingImport):
 
             motiu_obj = self.openerp.pool.get('giscedata.switching.motiu.rebuig')
             motiu_rebuig_id = motiu_obj.search(cursor, uid, [('name', '=', 'F1')])
-            motiu_rebuig_text = motiu_obj.read(cursor, uid, motiu_rebuig_id[0], ['text'])['text']
+            motiu_rebuig_text = motiu_obj.read(
+                cursor, uid, motiu_rebuig_id[0], ['text'])['text']
 
             rejection_description = motiu_rebuig_text + ": {}".format(rejection_comment)
 
             d1 = sw_obj.browse(cursor, uid, d1_id)
-            d102 = d102_obj.browse(cursor,uid, d102_id)
+            d102 = d102_obj.browse(cursor, uid, d102_id)
 
             self.assertEqual(d102.sw_id.id, d1_id)
             self.assertTrue(d102.rebuig)
@@ -117,10 +119,11 @@ class TestWizardValidateD101(TestSwitchingImport):
             wiz_id = wiz_validate_obj.create(cursor, uid, wiz_init)
             wiz = wiz_validate_obj.browse(cursor, uid, wiz_id)
 
-            d102_id = wiz._create_step_d1_02_autoconsum(d1_id, is_rejected=False, set_pending=True)
+            d102_id = wiz._create_step_d1_02_autoconsum(
+                d1_id, is_rejected=False, set_pending=True)
 
             d1 = sw_obj.browse(cursor, uid, d1_id)
-            d102 = d102_obj.browse(cursor,uid, d102_id)
+            d102 = d102_obj.browse(cursor, uid, d102_id)
 
             self.assertEqual(d102.sw_id.id, d1_id)
             self.assertFalse(d102.rebuig)
@@ -154,13 +157,14 @@ class TestWizardValidateD101(TestSwitchingImport):
                 'step_is_rejectable': True,
                 'check_repeated': True,
             }
-            wiz_step_id = wiz_step_obj.create(cursor, uid, params, context={'active_ids': [d1_id]})
+            wiz_step_id = wiz_step_obj.create(
+                cursor, uid, params, context={'active_ids': [d1_id]})
             wiz_step = wiz_step_obj.browse(cursor, uid, wiz_step_id)
             wiz_step.action_create_steps(context={'active_ids': [d1_id]})
             wiz_step = wiz_step.browse()[0]
             sw_obj.write(cursor, uid, [d1_id], {'additional_info': 'Autoconsum'})
 
-            #wizard to test
+            # wizard to test
             wiz_validate_obj = self.openerp.pool.get('wizard.validate.d101')
 
             wiz_init = {
@@ -186,9 +190,9 @@ class TestWizardValidateD101(TestSwitchingImport):
             uid = txn.user
             cursor = txn.cursor
 
-            sw_obj = self.openerp.pool.get('giscedata.switching')
-            m101_obj = self.openerp.pool.get('giscedata.switching.m1.01')
-            wiz_step_obj = self.openerp.pool.get('wizard.create.step')
+            self.openerp.pool.get('giscedata.switching')
+            self.openerp.pool.get('giscedata.switching.m1.01')
+            self.openerp.pool.get('wizard.create.step')
             wiz_validate_obj = self.openerp.pool.get('wizard.validate.d101')
 
             pol_id = self.get_contract_id(txn)
@@ -200,10 +204,11 @@ class TestWizardValidateD101(TestSwitchingImport):
                 'sw_id': d1_id
             }
             wiz_id = wiz_validate_obj.create(cursor, uid, wiz_init)
-            wiz = wiz_validate_obj.browse(cursor, uid, wiz_id)
+            wiz_validate_obj.browse(cursor, uid, wiz_id)
 
             with self.assertRaises(except_osv) as error:
-                wiz_validate_obj._create_case_m1_01_autoconsum(cursor, uid, wiz_id, pol_id)
+                wiz_validate_obj._create_case_m1_01_autoconsum(
+                    cursor, uid, wiz_id, pol_id)
 
             self.assertIn(
                 u"Alerta, la modalitat d\'autoconsum no ha estat acceptada pel client, vols seguir?",
@@ -214,7 +219,7 @@ class TestWizardValidateD101(TestSwitchingImport):
         with Transaction().start(self.database) as txn:
             uid = txn.user
             cursor = txn.cursor
-            sw_obj = self.openerp.pool.get('giscedata.switching')
+            self.openerp.pool.get('giscedata.switching')
             d102_obj = self.openerp.pool.get('giscedata.switching.d1.02')
             d1_id = self.create_d1_case_at_step_01(txn)
 
@@ -237,11 +242,12 @@ class TestWizardValidateD101(TestSwitchingImport):
 
             motiu_obj = self.openerp.pool.get('giscedata.switching.motiu.rebuig')
             motiu_rebuig_id = motiu_obj.search(cursor, uid, [('name', '=', 'F1')])
-            motiu_rebuig_text = motiu_obj.read(cursor, uid, motiu_rebuig_id[0], ['text'])['text']
+            motiu_rebuig_text = motiu_obj.read(
+                cursor, uid, motiu_rebuig_id[0], ['text'])['text']
 
             rejection_description = motiu_rebuig_text + ": {}".format(rejection_comment)
 
-            d102 = d102_obj.browse(cursor,uid, d102_id)
+            d102 = d102_obj.browse(cursor, uid, d102_id)
 
             self.assertEqual(d102.sw_id.id, d1_id)
             self.assertTrue(d102.rebuig)
@@ -260,7 +266,7 @@ class TestWizardValidateD101(TestSwitchingImport):
 
             sw_obj = self.openerp.pool.get('giscedata.switching')
             d102_obj = self.openerp.pool.get('giscedata.switching.d1.02')
-            m101_obj = self.openerp.pool.get('giscedata.switching.m1.01')
+            self.openerp.pool.get('giscedata.switching.m1.01')
             wiz_validate_obj = self.openerp.pool.get('wizard.validate.d101')
 
             d1_id = self.create_d1_case_at_step_01(txn)
@@ -285,7 +291,7 @@ class TestWizardValidateD101(TestSwitchingImport):
             self.assertTrue(d102.validacio_pendent)
 
             historize_msg = "Hi ha hagut un error al generar el cas M1 després d'acceptar " + \
-                    "el D1-01 mitjançant l'assistent de validació"
+                "el D1-01 mitjançant l'assistent de validació"
             self.assertEqual(
                 d102.sw_id.history_line[0].description.split(":")[0].strip(),
                 historize_msg
@@ -320,8 +326,8 @@ class TestWizardValidateD101(TestSwitchingImport):
 
             sw_id = d102_obj.read(cursor, uid, d102_id, ['sw_id'])['sw_id'][0]
             sw_obj.write(cursor, uid, sw_id, {"state": "done"})
-            
-            d102 = d102_obj.browse(cursor,uid, d102_id)
+
+            d102 = d102_obj.browse(cursor, uid, d102_id)
 
             self.assertEqual(d102.sw_id.id, d1_id)
             self.assertEqual(d102.sw_id.state, 'done')
@@ -336,10 +342,10 @@ class TestWizardValidateD101(TestSwitchingImport):
 
             pol_id = self.get_contract_id(txn)
 
-            #wizard to test
+            # wizard to test
             sw_obj = self.openerp.pool.get('giscedata.switching')
             d101_obj = self.openerp.pool.get('giscedata.switching.d1.01')
-            d102_obj = self.openerp.pool.get('giscedata.switching.d1.02')
+            self.openerp.pool.get('giscedata.switching.d1.02')
             wiz_validate_obj = self.openerp.pool.get('wizard.validate.d101')
 
             d1_id = self.create_d1_case_at_step_01(txn)
@@ -354,7 +360,7 @@ class TestWizardValidateD101(TestSwitchingImport):
             }
             wiz_id = wiz_validate_obj.create(cursor, uid, wiz_init)
             wiz = wiz_validate_obj.browse(cursor, uid, wiz_id)
-            
+
             wiz.validate_d101_autoconsum()
 
             m1_id = wiz.read(['generated_m1'])[0]['generated_m1']
@@ -364,7 +370,8 @@ class TestWizardValidateD101(TestSwitchingImport):
             self.assertEqual(m1.state, 'draft')
             self.assertEqual(len(m1.step_ids), 1)
             self.assertEqual(m1.polissa_ref_id.id, pol_id)
-            self.assertEqual(m1.additional_info[0:48], '(S)[R] Mod. Acord repartiment/fitxer coeficients')
+            self.assertEqual(
+                m1.additional_info[0:48], '(S)[R] Mod. Acord repartiment/fitxer coeficients')
             id_pas = int(m1.step_ids[0].pas_id.split(',')[1])
             pas = m101_obj.browse(cursor, uid, id_pas)
             self.assertEqual(pas.sollicitudadm, 'S')

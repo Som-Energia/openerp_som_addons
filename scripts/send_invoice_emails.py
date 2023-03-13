@@ -5,6 +5,7 @@ from erppeek import Client
 import logging
 import dbconfig
 
+
 def setup_log(instance, filename):
     log_file = filename
     logger = logging.getLogger(instance)
@@ -14,15 +15,18 @@ def setup_log(instance, filename):
     logger.addHandler(hdlr)
     logger.setLevel(logging.INFO)
 
+
 def get_current_lot(c):
     # gets only current open lot
-    return c.GiscedataFacturacioLot.search([('state','=','obert')])
+    return c.GiscedataFacturacioLot.search([('state', '=', 'obert')])
+
 
 def get_lots(c):
     # gets current lot and previous one
     return c.GiscedataFacturacioLot.search(
-        [('state','in',('obert', 'tancat'))], 0, 2, 'data_inici desc'
+        [('state', 'in', ('obert', 'tancat'))], 0, 2, 'data_inici desc'
     )
+
 
 @click.command()
 def send_emails():
@@ -40,16 +44,17 @@ def send_emails():
         logger.info('*** Sending emails of lot {0}:'.format(lot.name))
 
         context = {'active_id': lot.id}
-        wiz = c.WizardFacturesPerEmail.create({},context=context)
+        wiz = c.WizardFacturesPerEmail.create({}, context=context)
         logger.info(wiz.info)
         sys.stdout.write(wiz.info)
         sys.stdout.write('\n')
-        res = c.WizardFacturesPerEmail.action_enviar_lot_per_mail([wiz.id], context=context)
+        res = c.WizardFacturesPerEmail.action_enviar_lot_per_mail(
+            [wiz.id], context=context)
         wiz = c.WizardFacturesPerEmail.get(wiz.id)
         logger.info(wiz.info)
         sys.stdout.write(wiz.info)
         sys.stdout.write('\n')
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     send_emails()

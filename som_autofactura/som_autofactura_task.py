@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 import netsvc
-import pooler
 from tools.translate import _
 from time import sleep
 from base_extended.base_extended import MultiprocessBackground
 import ast
-import json
 
 
 class SomAutofacturaTask(osv.osv):
@@ -25,7 +23,7 @@ class SomAutofacturaTask(osv.osv):
         step_obj = self.pool.get('som.autofactura.task.step')
         some_task_done = False
         ctx_sch = {'active_test': False}
-        for step_id in step_obj.search(cursor, uid, [('task_id', '=' , ids)], order="sequence", context=ctx_sch):
+        for step_id in step_obj.search(cursor, uid, [('task_id', '=', ids)], order="sequence", context=ctx_sch):
             step = step_obj.browse(cursor, uid, step_id, context)
             if step.active == False and some_task_done:
                 break
@@ -72,14 +70,16 @@ class SomAutofacturaTaskStep(osv.osv):
         task = self.browse(cursor, uid, ids[0])
         logger = netsvc.Logger()
 
-        logger.notifyChannel("som_autofactura", netsvc.LOG_INFO, "executing {}.{}".format(task.object_name.model, task.function))
+        logger.notifyChannel("som_autofactura", netsvc.LOG_INFO, "executing {}.{}".format(
+            task.object_name.model, task.function))
         if 'wizard' in task.object_name.model:
             wiz_obj = self.pool.get(task.object_name.model)
             wiz_id = wiz_obj.create(cursor, uid, ast.literal_eval(task.params), context)
             wiz = wiz_obj.browse(cursor, uid, wiz_id)
             function = getattr(wiz, task.function)
             result = function(context=context)
-            logger.notifyChannel("som_autofactura", netsvc.LOG_INFO, "executed {}.{}".format(task.object_name.model, task.function))
+            logger.notifyChannel("som_autofactura", netsvc.LOG_INFO, "executed {}.{}".format(
+                task.object_name.model, task.function))
 
         elif '_button' in task.function:
             lot_obj = self.pool.get('giscedata.facturacio.lot')
@@ -88,36 +88,42 @@ class SomAutofacturaTaskStep(osv.osv):
             function = getattr(obj, task.function)
             context['validar_i_facturar'] = False
             result = function(cursor, uid, lot_ids, context)
-            logger.notifyChannel("som_autofactura", netsvc.LOG_INFO, "executed {}.{}".format(task.object_name.model, task.function))
+            logger.notifyChannel("som_autofactura", netsvc.LOG_INFO, "executed {}.{}".format(
+                task.object_name.model, task.function))
         else:
-            logger.notifyChannel("som_autofactura", netsvc.LOG_INFO, "unknown task to execute {}.{}".format(task.object_name.model, task.function))
+            logger.notifyChannel("som_autofactura", netsvc.LOG_INFO, "unknown task to execute {}.{}".format(
+                task.object_name.model, task.function))
 
         return result
 
     def _wait_until_task_done(self, cursor, uid, ids, context):
         conf_obj = self.pool.get('res.config')
-        seconds_sleep = int(conf_obj.get(cursor, uid, 'som_autofactura_wait_time_task', 300))
+        seconds_sleep = int(conf_obj.get(
+            cursor, uid, 'som_autofactura_wait_time_task', 300))
 
         task = self.browse(cursor, uid, ids[0])
         logger = netsvc.Logger()
-        logger.notifyChannel("som_autofactura", netsvc.LOG_INFO, "waiting for {}.{}".format(task.object_name.model, task.function))
+        logger.notifyChannel("som_autofactura", netsvc.LOG_INFO, "waiting for {}.{}".format(
+            task.object_name.model, task.function))
 
         if 'obrir_factures_button' in task.function:
             gff_obj = self.pool.get('giscedata.facturacio.factura')
-            gff_draft = len(gff_obj.search(cursor, uid, [('state','=','draft')]))
+            gff_draft = len(gff_obj.search(cursor, uid, [('state', '=', 'draft')]))
             gff_draft_old = gff_draft + 1
             while(gff_draft != gff_draft_old):
                 gff_draft_old = gff_draft
                 sleep(seconds_sleep)
-                gff_draft = len(gff_obj.search(cursor, uid, [('state','=','draft')]))
+                gff_draft = len(gff_obj.search(cursor, uid, [('state', '=', 'draft')]))
         else:
             oorq_obj = self.pool.get('oorq.jobs.group')
             prev_work_not_finish = True
             while(prev_work_not_finish):
                 sleep(seconds_sleep)
-                prev_work_not_finish = oorq_obj.search(cursor, uid, [('active','=',True), ('name', 'ilike', task.autoworker_task_name)])
+                prev_work_not_finish = oorq_obj.search(
+                    cursor, uid, [('active', '=', True), ('name', 'ilike', task.autoworker_task_name)])
 
-        logger.notifyChannel("som_autofactura", netsvc.LOG_INFO, "done {}.{}".format(task.object_name.model, task.function))
+        logger.notifyChannel("som_autofactura", netsvc.LOG_INFO,
+                             "done {}.{}".format(task.object_name.model, task.function))
         return True
 
     _columns = {

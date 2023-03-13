@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 
+
 class GiscedataPolissa(osv.osv):
     """Pòlissa per afegir els camps de necessita rebut amb la factura en paper i observacions.
     """
     _name = 'giscedata.polissa'
     _inherit = 'giscedata.polissa'
-
 
     _columns = {
         'postal_rebut': fields.boolean(
@@ -34,7 +34,9 @@ class GiscedataPolissa(osv.osv):
         'postal_rebut': lambda *a: False
     }
 
+
 GiscedataPolissa()
+
 
 class GiscedataPolissaModcontractual(osv.osv):
     """Modificació Contractual d'una Pòlissa."""

@@ -16,7 +16,8 @@ class FacturacioExtra(osv.osv):
         else:
             fact_obj = self.pool.get('giscedata.facturacio.factura')
             pol_ids = self.q(cursor, uid).read(['polissa_id']).where([
-                ('polissa_id.state', '=', 'baixa'),('amount_pending', '!=', 0),('polissa_id.active', '=', False)
+                ('polissa_id.state', '=', 'baixa'), ('amount_pending',
+                                                     '!=', 0), ('polissa_id.active', '=', False)
             ])
             pol_ids = [x['polissa_id'] for x in pol_ids]
             pol_fact_ids = fact_obj.q(cursor, uid).read(['polissa_id']).where([
@@ -29,7 +30,8 @@ class FacturacioExtra(osv.osv):
             if arg[0][2]:
                 res_ids = self.search(cursor, uid, [('polissa_id', 'in', pol_fact_ids)])
             else:
-                res_ids = self.search(cursor, uid, [('polissa_id', 'not in', pol_fact_ids)])
+                res_ids = self.search(
+                    cursor, uid, [('polissa_id', 'not in', pol_fact_ids)])
             return [('id', 'in', res_ids)]
 
     def _ff_has_last_invoice(self, cursor, uid, ids, field_name, arg, context=None):
@@ -42,7 +44,7 @@ class FacturacioExtra(osv.osv):
                 ('polissa_id.state', '=', 'baixa'),
                 ('polissa_id.active', '=', False),
                 ('data_final', '=', Field('polissa_id.data_baixa')),
-                ])
+            ])
             res[id] = bool(fact_ids)
         return res
 
@@ -59,7 +61,8 @@ class FacturacioExtra(osv.osv):
     def _ff_is_invoiced(self, cursor, uid, ids, field_name, arg, context=None):
         res = dict.fromkeys(ids, False)
         for id in ids:
-            factura_ids = self.read(cursor, uid, id, ['factura_linia_ids'])['factura_linia_ids']
+            factura_ids = self.read(cursor, uid, id, ['factura_linia_ids'])[
+                'factura_linia_ids']
             res[id] = bool(len(factura_ids))
         return res
 
@@ -112,9 +115,11 @@ class FacturacioExtra(osv.osv):
         linia_extra_obj = self.pool.get('giscedata.facturacio.importacio.linia.extra')
         for id in ids:
             fact_number = False
-            linia_id = linia_extra_obj.q(cursor, uid).read(['linia_id']).where([('extra_id', '=', id)])
+            linia_id = linia_extra_obj.q(cursor, uid).read(
+                ['linia_id']).where([('extra_id', '=', id)])
             if len(linia_id) and linia_id[0].get('linia_id', False):
-                linia_origen = linia_obj.read(cursor, uid, linia_id[0]['linia_id'], ['invoice_number_text'])
+                linia_origen = linia_obj.read(
+                    cursor, uid, linia_id[0]['linia_id'], ['invoice_number_text'])
                 if linia_origen:
                     fact_number = linia_origen.get('invoice_number_text', False)
             res[id] = fact_number
@@ -142,9 +147,11 @@ class FacturacioExtra(osv.osv):
         linia_extra_obj = self.pool.get('giscedata.facturacio.importacio.linia.extra')
         for id in ids:
             data_carrega = False
-            linia_id = linia_extra_obj.q(cursor, uid).read(['linia_id']).where([('extra_id', '=', id)])
+            linia_id = linia_extra_obj.q(cursor, uid).read(
+                ['linia_id']).where([('extra_id', '=', id)])
             if len(linia_id) and linia_id[0].get('linia_id', False):
-                linia_origen = linia_obj.read(cursor, uid, linia_id[0]['linia_id'], ['data_carrega'])
+                linia_origen = linia_obj.read(
+                    cursor, uid, linia_id[0]['linia_id'], ['data_carrega'])
                 if linia_origen:
                     data_carrega = linia_origen.get('data_carrega', False)
             res[id] = data_carrega
@@ -155,12 +162,12 @@ class FacturacioExtra(osv.osv):
                                             string="Té darrera factura", fnct_search=_ff_has_last_invoice_search,
                                             readonly=True),
         'data_baixa_polissa': fields.related('polissa_id', 'data_baixa', type='date',
-                                            string='Data baixa pòlissa', readonly=True),
+                                             string='Data baixa pòlissa', readonly=True),
         'is_invoiced': fields.function(_ff_is_invoiced, method=True, type='boolean',
                                        string="Ja en factura", fnct_search=_ff_is_invoiced_search,
                                        readonly=True),
         'data_invoiced': fields.function(_ff_data_invoiced, type='date', method=True, string='Data factura',
-                                       fnct_search=_ff_data_invoiced_search),
+                                         fnct_search=_ff_data_invoiced_search),
         'origin_invoice': fields.function(_ff_origin_number, type='char', size=30,
                                           method=True, string='Fitxer origen', fnct_search=_ff_origin_number_search),
         'data_origen': fields.function(_ff_data_origen, type='datetime', method=True, string='Data fitxer origen',
@@ -169,4 +176,3 @@ class FacturacioExtra(osv.osv):
 
 
 FacturacioExtra()
-

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
-import som_autoreclama_state_condition
 import json
 import logging
 import traceback
@@ -16,7 +15,8 @@ class SomAutoreclamaState(osv.osv):
         logger = logging.getLogger('openerp.som_autoreclama')
         msg_head = _(u"Acció canvi d'estat per cas ATC {}, ").format(atc_id)
 
-        state_data = self.read(cursor, uid, state_id, ['name', 'active', 'generate_atc_parameters'])
+        state_data = self.read(cursor, uid, state_id, [
+                               'name', 'active', 'generate_atc_parameters'])
         state_actv = state_data['active']
         state_name = state_data['name']
         if not state_actv:
@@ -42,14 +42,16 @@ class SomAutoreclamaState(osv.osv):
                 new_atc_id = model_method(cursor, uid, atc_id, context)
         except Exception as e:
             tb = traceback.format_exc()
-            msg = _(u"Execució d'accions del estat {} genera ERROR {}").format(state_name, e.message)
-            logger.info('**** CAPTURED '+'*'*45)
+            msg = _(u"Execució d'accions del estat {} genera ERROR {}").format(
+                state_name, e.message)
+            logger.info('**** CAPTURED ' + '*' * 45)
             logger.info(msg_head + msg)
             logger.info(tb)
-            logger.info('**** CAPTURED '+'*'*45)
+            logger.info('**** CAPTURED ' + '*' * 45)
             return {'do_change': False, 'message': msg + "\n" + tb}
 
-        msg = _(u'Estat {} executat, nou atc creat amb id {}').format(state_name, new_atc_id)
+        msg = _(u'Estat {} executat, nou atc creat amb id {}').format(
+            state_name, new_atc_id)
         logger.info(msg_head + msg)
         return {'do_change': True, 'message': msg, 'created_atc': new_atc_id}
 
@@ -71,13 +73,13 @@ class SomAutoreclamaState(osv.osv):
         try:
             parameters = json.loads(value)
             self.write(cursor, uid, ids, {'generate_atc_parameters': parameters})
-        except ValueError as e:
+        except ValueError:
             pass
 
     def check_correct_json(self, cursor, uid, ids, generate_atc_parameters_text):
         try:
             params = json.loads(generate_atc_parameters_text)
-        except ValueError as e:
+        except ValueError:
             return {
                 'warning': {
                     'title': _(u'Atenció!'),

@@ -15,8 +15,8 @@ class ResPartner(osv.osv):
         current_year = datetime.today().year
         inv_obj = self.pool.get('account.invoice')
         search_params = [('partner_id', '=', ids),
-                         ('date_invoice','>=', '{}-01-01'.format(current_year)),
-                         ('date_invoice','<=', '{}-12-31'.format(current_year)),
+                         ('date_invoice', '>=', '{}-01-01'.format(current_year)),
+                         ('date_invoice', '<=', '{}-12-31'.format(current_year)),
                          ('type', '=', 'in_invoice'),
                          ('number', 'ilike', '%INT{}'.format(current_year)),
                          '|',
@@ -61,7 +61,9 @@ class ResPartner(osv.osv):
         data['year'] = (datetime.now() - timedelta(days=365)).year
         return data
 
+
 ResPartner()
+
 
 def get_somenergia_partner_info(cursor, uid):
     pool = pooler.get_pool(cursor.dbname)
@@ -69,13 +71,13 @@ def get_somenergia_partner_info(cursor, uid):
     ResPartnerAdress = pool.get('res.partner.address')
     som_partner_id = 1  # ResPartner.search(cursor, uid, [('vat','=','ESF55091367')])
     som_partner = ResPartner.read(cursor, uid, som_partner_id, ['name', 'vat', 'address'])
-    som_address = ResPartnerAdress.read(cursor, uid, som_partner['address'][0], ['street', 'zip', 'city'])
+    som_address = ResPartnerAdress.read(
+        cursor, uid, som_partner['address'][0], ['street', 'zip', 'city'])
     data = {}
     data['address_city'] = som_address['city']
     data['address_zip'] = som_address['zip']
     data['address_street'] = som_address['street']
     data['partner_name'] = som_partner['name']
     data['partner_vat'] = som_partner['vat']
-    
-    return data
 
+    return data

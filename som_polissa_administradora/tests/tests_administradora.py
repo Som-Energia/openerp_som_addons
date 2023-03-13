@@ -2,14 +2,12 @@
 
 from destral import testing
 from destral.transaction import Transaction
-import xml.etree.ElementTree as ET
-from datetime import datetime
 
-from osv import fields
 from osv.osv import except_osv
 
 from .. import res_partner, giscedata_polissa
 import mock
+
 
 class TestPolissaAdministradora(testing.OOTestCase):
 
@@ -69,11 +67,11 @@ class TestPolissaAdministradora(testing.OOTestCase):
         self.assertIn(admin_cat, new_partner.category_id)
         self.assertTrue(new_partner.ref)
         self.assertTrue(new_partner.ref.startswith('A'))
-    
+
     @mock.patch.object(giscedata_polissa.GiscedataPolissa, "validate_partner")
     def test_add_contract_administrator__polissa_invalid_partner(self, mock_validate_partner):
         pol_obj = self.model('giscedata.polissa')
-        res_partner_obj = self.model('res.partner')
+        self.model('res.partner')
 
         partner_id = 1
         polissa_id = 1
@@ -91,7 +89,7 @@ class TestPolissaAdministradora(testing.OOTestCase):
         mock_validate_partner.side_effect = validate_partner
 
         result = pol_obj.add_contract_administrator(
-                self.cursor, self.uid, polissa_id, partner_id, permissions, is_representative, context={})
+            self.cursor, self.uid, polissa_id, partner_id, permissions, is_representative, context={})
 
         self.assertEqual(result['error'], '01')
 
@@ -99,7 +97,7 @@ class TestPolissaAdministradora(testing.OOTestCase):
     @mock.patch.object(giscedata_polissa.GiscedataPolissa, "read")
     @mock.patch.object(giscedata_polissa.GiscedataPolissa, "validate_partner")
     def test_add_contract_administrator__polissa_without_administradora(self, mock_validate_partner,
-            mock_read_polissa, mock_create_modcon_polissa):
+                                                                        mock_read_polissa, mock_create_modcon_polissa):
         pol_obj = self.model('giscedata.polissa')
         res_partner_obj = self.model('res.partner')
         admin_mod_obj = self.model('som.admin.modification')
@@ -113,7 +111,7 @@ class TestPolissaAdministradora(testing.OOTestCase):
         mock_read_polissa.return_value = {
             'administradora': None,
             'titular': [titular_id]
-        }     
+        }
         mock_validate_partner.return_value = {}
         mock_create_modcon_polissa.return_value = {}
 
@@ -128,7 +126,7 @@ class TestPolissaAdministradora(testing.OOTestCase):
         self.assertEqual(admin_mod.permissions, permissions)
         self.assertEqual(admin_mod.is_legal_representative, is_representative)
 
-        titular = res_partner_obj.browse(self.cursor, self.uid, titular_id)
+        res_partner_obj.browse(self.cursor, self.uid, titular_id)
         partner = res_partner_obj.browse(self.cursor, self.uid, partner_id)
 
         admin_cat = pol_obj.get_admin_cat(self.cursor, self.uid)
@@ -147,13 +145,13 @@ class TestPolissaAdministradora(testing.OOTestCase):
     @mock.patch.object(giscedata_polissa.GiscedataPolissa, "remove_administrator_category")
     @mock.patch.object(giscedata_polissa.GiscedataPolissa, "validate_partner")
     def test_add_contract_administrator__polissa_with_administradora(self, mock_validate_partner,
-                                                                            mock_remove_administrator_category,
-                                                                            mock_read_polissa, 
-                                                                            mock_create_modcon_polissa, 
-                                                                            mock_search_polissa,
-                                                                            mock_read_res_partner):  
+                                                                     mock_remove_administrator_category,
+                                                                     mock_read_polissa,
+                                                                     mock_create_modcon_polissa,
+                                                                     mock_search_polissa,
+                                                                     mock_read_res_partner):
         pol_obj = self.model('giscedata.polissa')
-        res_partner_obj = self.model('res.partner')
+        self.model('res.partner')
         admin_mod_obj = self.model('som.admin.modification')
 
         titular_id = 3
@@ -164,7 +162,7 @@ class TestPolissaAdministradora(testing.OOTestCase):
         mock_read_polissa.return_value = {
             'administradora': [2],
             'titular': [titular_id]
-        }   
+        }
         mock_search_polissa.return_value = {
             'administradora': [2]
         }
@@ -174,7 +172,7 @@ class TestPolissaAdministradora(testing.OOTestCase):
             'category_id': [(4, admin_cat.id)],
             'name': 'Test',
             'vat': '12345678Z'
-        }  
+        }
         mock_validate_partner.return_value = {}
 
         def remove_administrator_category_mock(cursor, uid, partner_id):
@@ -198,18 +196,18 @@ class TestPolissaAdministradora(testing.OOTestCase):
         self.assertEqual(admin_mod.permissions, permissions)
         self.assertEqual(admin_mod.is_legal_representative, is_representative)
 
-        pol_obj.remove_administrator_category.assert_called_once_with(self.cursor, self.uid, 2)
+        pol_obj.remove_administrator_category.assert_called_once_with(
+            self.cursor, self.uid, 2)
 
         pol_obj.create_modcon.assert_called_once_with(
             self.cursor, self.uid, polissa_id,
             {"administradora": partner_id, 'administradora_permissions': permissions}
         )
 
-
     @mock.patch.object(giscedata_polissa.GiscedataPolissa, "read")
     @mock.patch.object(giscedata_polissa.GiscedataPolissa, "validate_partner")
     def test_add_contract_administrator__polissa_with_same_administradora(self, mock_validate_partner,
-                                                                            mock_read_polissa):  
+                                                                          mock_read_polissa):
         pol_obj = self.model('giscedata.polissa')
 
         partner_id = 1
@@ -218,11 +216,11 @@ class TestPolissaAdministradora(testing.OOTestCase):
         permissions = 'manage'
         mock_read_polissa.return_value = {
             'administradora': [1, "Pepito"]
-        }   
+        }
         mock_validate_partner.return_value = {}
 
         result = pol_obj.add_contract_administrator(
-                self.cursor, self.uid, polissa_id, partner_id, permissions, is_representative, context={})
+            self.cursor, self.uid, polissa_id, partner_id, permissions, is_representative, context={})
 
         self.assertEqual(result['error'], '03')
 
@@ -231,23 +229,22 @@ class TestPolissaAdministradora(testing.OOTestCase):
     @mock.patch.object(giscedata_polissa.GiscedataPolissa, "read")
     @mock.patch.object(giscedata_polissa.GiscedataPolissa, "remove_administrator_category")
     def test_remove_contract_administrator(self, mock_remove_administrator_category,
-                                            mock_read_polissa,
-                                            mock_create_modcon_polissa,
-                                            mock_read_res_partner):
+                                           mock_read_polissa,
+                                           mock_create_modcon_polissa,
+                                           mock_read_res_partner):
         pol_obj = self.model('giscedata.polissa')
-        res_partner_obj = self.model('res.partner')
+        self.model('res.partner')
 
-        partner_id = 1
         polissa_id = 1
         mock_read_polissa.return_value = {
             'administradora': [1],
             'titular': [2]
-        }   
+        }
         admin_cat = pol_obj.get_admin_cat(self.cursor, self.uid)
         mock_read_res_partner.return_value = {
             'id': 1,
             'category_id': [(4, admin_cat.id)]
-        }  
+        }
 
         def remove_administrator_category_mock(cursor, uid, partner_id):
             pass
@@ -259,11 +256,13 @@ class TestPolissaAdministradora(testing.OOTestCase):
 
         mock_create_modcon_polissa.side_effect = create_modcon_polissa_mock
 
-        result = pol_obj.remove_contract_administrator(self.cursor, self.uid, polissa_id, context={})
-        
-        self.assertTrue(result) 
+        result = pol_obj.remove_contract_administrator(
+            self.cursor, self.uid, polissa_id, context={})
 
-        pol_obj.remove_administrator_category.assert_called_once_with(self.cursor, self.uid, 1)
+        self.assertTrue(result)
+
+        pol_obj.remove_administrator_category.assert_called_once_with(
+            self.cursor, self.uid, 1)
 
         pol_obj.create_modcon.assert_called_once_with(
             self.cursor, self.uid, polissa_id,
@@ -335,15 +334,15 @@ class TestPolissaAdministradora(testing.OOTestCase):
     @mock.patch.object(res_partner.ResPartner, "write")
     @mock.patch.object(res_partner.ResPartner, "read")
     def test_become_owner__member_to_owner(self, mock_res_partner_read, mock_res_partner_write):
-        pol_obj = self.model('giscedata.polissa')
+        self.model('giscedata.polissa')
         res_partner_obj = self.model('res.partner')
 
         partner_id = 1
 
         imd_obj = self.model('ir.model.data')
         soci_cat = imd_obj._get_obj(self.cursor, self.uid,
-            'som_partner_account',
-            'res_partner_category_soci')
+                                    'som_partner_account',
+                                    'res_partner_category_soci')
 
         mock_res_partner_read.return_value = {
             'id': partner_id,

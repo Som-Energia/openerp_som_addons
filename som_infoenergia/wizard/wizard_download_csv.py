@@ -9,9 +9,9 @@ STATES = [
     ('finished', 'Estat Final')
 ]
 
+
 class WizardDownloadCSV(osv.osv_memory):
     _name = 'wizard.infoenergia.download.csv'
-
 
     def download_csv(self, cursor, uid, ids, context=None):
         wiz = self.browse(cursor, uid, ids[0], context=context)
@@ -34,5 +34,6 @@ class WizardDownloadCSV(osv.osv_memory):
     _defaults = {
         'state': 'init'
     }
+
 
 WizardDownloadCSV()

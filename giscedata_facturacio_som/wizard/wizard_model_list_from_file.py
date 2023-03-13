@@ -8,6 +8,7 @@ if ('giscedata.facturacio.extra', _(u'Extra Lines')):
         ('giscedata.facturacio.extra', _(u'Extra Lines')),
     )
 
+
 class WizardModelListFromFile(osv.osv_memory):
     """Wizard"""
     _name = 'wizard.model.list.from.file'

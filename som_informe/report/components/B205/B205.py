@@ -1,6 +1,7 @@
 from ..component_utils import dateformat, get_description
 from ..ProcesB2 import ProcesB2
 
+
 class B205(ProcesB2.ProcesB2):
     def __init__(self):
         ProcesB2.ProcesB2.__init__(self)

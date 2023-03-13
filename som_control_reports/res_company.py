@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from osv import osv, fields
+from osv import osv
 import pooler
 
 
@@ -36,73 +36,73 @@ class ResCompany(osv.osv):
         part_obj = pool.get('res.partner')
         fact_obj = pool.get('giscedata.facturacio.factura')
         #lang = pool.get('res.lang')
-        #Search for lang
+        # Search for lang
         #lang_code = context.get('lang', False)
         #lang_id = lang.search(cursor, uid, [('code', '=', lang_code)])
 
         today_dt = datetime.datetime.today()
         ahir_dt = today_dt - relativedelta(days=1)
-        ahir = datetime.datetime.strftime(ahir_dt,'%Y-%m-%d')
+        ahir = datetime.datetime.strftime(ahir_dt, '%Y-%m-%d')
         six_months = today_dt + relativedelta(months=-6)
-        ## TODO date_wizard per implmentar
+        # TODO date_wizard per implmentar
         date_wizard = ahir
 
         datas = {}
 
-        #Comercialitzacio general
-        pol_ids = pol_obj.search(cursor, uid, [])
+        # Comercialitzacio general
+        pol_obj.search(cursor, uid, [])
         solicituts = len(pol_obj.search(cursor, uid, [
-            ('data_firma_contracte','<=',date_wizard),
-            ]))
+            ('data_firma_contracte', '<=', date_wizard),
+        ]))
         activats = len(pol_obj.search(cursor, uid, [
-                ('state', '=', 'activa'),
-                ('data_firma_contracte', '<=', date_wizard),
-            ]))
+            ('state', '=', 'activa'),
+            ('data_firma_contracte', '<=', date_wizard),
+        ]))
         baixes = len(pol_obj.search(cursor, uid, [
-                ('active','=',0),
-                ('data_firma_contracte', '<=', date_wizard),
-            ]))
+            ('active', '=', 0),
+            ('data_firma_contracte', '<=', date_wizard),
+        ]))
         comercilizacio_general = {
             _(u'a. solicituts'): solicituts,
             _(u'b. sol·licituds contracte donats de baixa'): baixes,
             _(u'c. sol·licituds contractes activats'): activats,
         }
 
-        #Interes Cooperativa
+        # Interes Cooperativa
         socis = len(part_obj.search(cursor, uid, [
-                ('category_id.id','=','8'),
-                ('date','<=',date_wizard),
-            ]))
+            ('category_id.id', '=', '8'),
+            ('date', '<=', date_wizard),
+        ]))
         # TODO controlar si <= o <
         # TODO definir data des de quan
         socis_nous = len(part_obj.search(cursor, uid, [
-                ('date','>',six_months),
-                ('date','<=',date_wizard),
-                ('category_id.id','=','8'),
-            ]))
+            ('date', '>', six_months),
+            ('date', '<=', date_wizard),
+            ('category_id.id', '=', '8'),
+        ]))
         socis_de_baixa = len(part_obj.search(cursor, uid, [
-                ('ref','like','S0'),
-                ('active','=',False),
-                ('date', '<=', date_wizard),
-            ]))
+            ('ref', 'like', 'S0'),
+            ('active', '=', False),
+            ('date', '<=', date_wizard),
+        ]))
         ratio_contractes_soci = round(
-            float(socis) / float(solicituts),4)*100
+            float(socis) / float(solicituts), 4) * 100
         ratio_contractes_soci = str(ratio_contractes_soci) + " %"
         solicituts_donatius = len(pol_obj.search(cursor, uid, [
-                ('donatiu','=','True'),
-                ('data_firma_contracte', '<=', date_wizard),
-            ]))
+            ('donatiu', '=', 'True'),
+            ('data_firma_contracte', '<=', date_wizard),
+        ]))
         ratio_donatius = round(
-            float(solicituts_donatius) / float(solicituts),4)*100
+            float(solicituts_donatius) / float(solicituts), 4) * 100
         ratio_donatius = str(ratio_donatius) + " %"
         solicituts_cooperatives = len(pol_obj.search(cursor, uid, [
-                ('titular_nif','like','ESF'),
-                ('data_firma_contracte', '<=', date_wizard),
-            ]))
+            ('titular_nif', 'like', 'ESF'),
+            ('data_firma_contracte', '<=', date_wizard),
+        ]))
         solicituts_asociacions = len(pol_obj.search(cursor, uid, [
-                ('titular_nif','like','ESG'),
-                ('data_firma_contracte', '<=', date_wizard),
-            ]))
+            ('titular_nif', 'like', 'ESG'),
+            ('data_firma_contracte', '<=', date_wizard),
+        ]))
         interes_cooperativa = {
             _(u'a. socies total'): socis,
             _(u'b. socies nous'): socis_nous,
@@ -115,22 +115,22 @@ class ResCompany(osv.osv):
 
         # Administracio Publica
         socis_ajuntaments = len(part_obj.search(cursor, uid, [
-                ('category_id.id','=','8'),
-                ('date','<=',date_wizard),
-                ('vat','like','ESP')
-            ]))
+            ('category_id.id', '=', '8'),
+            ('date', '<=', date_wizard),
+            ('vat', 'like', 'ESP')
+        ]))
         solicituts_ajuntaments = len(pol_obj.search(cursor, uid, [
-                ('titular_nif','like','ESP'),
-                ('data_firma_contracte', '<=', date_wizard),
-            ]))
+            ('titular_nif', 'like', 'ESP'),
+            ('data_firma_contracte', '<=', date_wizard),
+        ]))
 
         def count_diff_ajuntaments():
             pol_diff = []
             pol_ids = pol_obj.search(cursor, uid, [
                 ('data_firma_contracte', '<=', date_wizard),
-                ('titular_nif','like','ESP')])
+                ('titular_nif', 'like', 'ESP')])
             pol_reads = pol_obj.read(cursor, uid,
-                pol_ids,['titular_nif'])
+                                     pol_ids, ['titular_nif'])
             for pol_read in pol_reads:
                 if pol_read['titular_nif'] not in pol_diff:
                     pol_diff.append(pol_read['titular_nif'])
@@ -146,39 +146,39 @@ class ResCompany(osv.osv):
 
         # Contractes especiales
         solicituts_30A = len(pol_obj.search(cursor, uid, [
-                ('tarifa', '=', '3.0A'),
-                ('data_firma_contracte', '<=', date_wizard),
-            ]))
+            ('tarifa', '=', '3.0A'),
+            ('data_firma_contracte', '<=', date_wizard),
+        ]))
         activats_30A = len(pol_obj.search(cursor, uid, [
-                ('tarifa', '=', '3.0A'),
-                ('state', '=', 'activa'),
-                ('data_firma_contracte', '<=', date_wizard),
-            ]))
+            ('tarifa', '=', '3.0A'),
+            ('state', '=', 'activa'),
+            ('data_firma_contracte', '<=', date_wizard),
+        ]))
         solicituts_31A = len(pol_obj.search(cursor, uid, [
-                ('tarifa', 'in', ['3.1A','3.1A LB']),
-                ('data_firma_contracte', '<=', date_wizard),
-            ]))
+            ('tarifa', 'in', ['3.1A', '3.1A LB']),
+            ('data_firma_contracte', '<=', date_wizard),
+        ]))
         solicituts_CCVV = len(pol_obj.search(cursor, uid, [
-                ('titular_nif','like','ESH'),
-                ('data_firma_contracte', '<=', date_wizard),
-            ]))
+            ('titular_nif', 'like', 'ESH'),
+            ('data_firma_contracte', '<=', date_wizard),
+        ]))
         # TODO Poner var associaciones en algun sitio
         solicituts_ccvv_30 = len(pol_obj.search(cursor, uid, [
-                ('tarifa', '=', '3.0A'),
-                ('titular_nif','like','ESH'),
-                ('data_firma_contracte', '<=', date_wizard),
-            ]))
+            ('tarifa', '=', '3.0A'),
+            ('titular_nif', 'like', 'ESH'),
+            ('data_firma_contracte', '<=', date_wizard),
+        ]))
 
         solicituts_asociacions_30 = len(pol_obj.search(cursor, uid, [
-                ('tarifa', '=', '3.0A'),
-                ('titular_nif','like','ESG'),
-                ('data_firma_contracte', '<=', date_wizard),
-            ]))
+            ('tarifa', '=', '3.0A'),
+            ('titular_nif', 'like', 'ESG'),
+            ('data_firma_contracte', '<=', date_wizard),
+        ]))
         solicituts_ajuntaments_30 = len(pol_obj.search(cursor, uid, [
-                ('tarifa', '=', '3.0A'),
-                ('titular_nif','like','ESP'),
-                ('data_firma_contracte', '<=', date_wizard),
-            ]))
+            ('tarifa', '=', '3.0A'),
+            ('titular_nif', 'like', 'ESP'),
+            ('data_firma_contracte', '<=', date_wizard),
+        ]))
         contractes_especials = {
             _(u'a. sol·licituds tarifa 3.0A'): solicituts_30A,
             _(u'b. sol·licituds activades 3.0A'): activats_30A,
@@ -192,8 +192,8 @@ class ResCompany(osv.osv):
         # Facturacio
         if date_wizard == ahir:
             contractes_endarrerits = len(pol_obj.search(cursor, uid, [
-                    ('facturacio_endarrerida','=','True'),
-                ]))
+                ('facturacio_endarrerida', '=', 'True'),
+            ]))
             ratio_contractes_endarrerits = round(
                 float(contractes_endarrerits) / float(solicituts), 4) * 100
             ratio_contractes_endarrerits = str(ratio_contractes_endarrerits) + " %"
@@ -208,41 +208,43 @@ class ResCompany(osv.osv):
         }
 
         # Impagaments
-        polisses_1_6f = len(fact_obj.search(cursor, uid,  [
-                ('pending_state','not in',(1,18))
-            ]))
-        fact_1f = len(fact_obj.search(cursor, uid,  [
-                ('pending_state','like','1F')
-            ]))
-        fact_2f = len(fact_obj.search(cursor, uid,  [
-                ('pending_state','like','2F')
-            ]))
-        fact_3f = len(fact_obj.search(cursor, uid,  [
-                ('pending_state','like','3F')
-            ]))
-        fact_4f = len(fact_obj.search(cursor, uid,  [
-                ('pending_state','like','4F')
-            ]))
-        fact_5f = len(fact_obj.search(cursor, uid,  [
-                ('pending_state','like','5F')
-            ]))
-        fact_6f = len(fact_obj.search(cursor, uid,  [
-                ('pending_state','like','6F')
-            ]))
+        polisses_1_6f = len(fact_obj.search(cursor, uid, [
+            ('pending_state', 'not in', (1, 18))
+        ]))
+        fact_1f = len(fact_obj.search(cursor, uid, [
+            ('pending_state', 'like', '1F')
+        ]))
+        fact_2f = len(fact_obj.search(cursor, uid, [
+            ('pending_state', 'like', '2F')
+        ]))
+        fact_3f = len(fact_obj.search(cursor, uid, [
+            ('pending_state', 'like', '3F')
+        ]))
+        fact_4f = len(fact_obj.search(cursor, uid, [
+            ('pending_state', 'like', '4F')
+        ]))
+        fact_5f = len(fact_obj.search(cursor, uid, [
+            ('pending_state', 'like', '5F')
+        ]))
+        fact_6f = len(fact_obj.search(cursor, uid, [
+            ('pending_state', 'like', '6F')
+        ]))
+
         def totalPendent(months_quantity):
             data_filtre_dt = today_dt + relativedelta(months=-months_quantity)
-            data_filtre = datetime.datetime.strftime(data_filtre_dt,'%Y-%m-%d')
+            data_filtre = datetime.datetime.strftime(data_filtre_dt, '%Y-%m-%d')
             totalMoney = 0
-            fact_total_pendent_ids = fact_obj.search(cursor, uid,  [
-                    ('pending_state','not in',(1,18)), #Correctes i correcte amb devolució
-                    ('date_invoice','<=',data_filtre),
-                    ('state','=','open')
-                ])
+            fact_total_pendent_ids = fact_obj.search(cursor, uid, [
+                # Correctes i correcte amb devolució
+                ('pending_state', 'not in', (1, 18)),
+                ('date_invoice', '<=', data_filtre),
+                ('state', '=', 'open')
+            ])
             fact_reads = fact_obj.read(cursor, uid,
-                        fact_total_pendent_ids, ['residual'])
+                                       fact_total_pendent_ids, ['residual'])
             for fact_read in fact_reads:
                 totalMoney = totalMoney + fact_read['residual']
-            return round(totalMoney,2)
+            return round(totalMoney, 2)
 
         saldo_total = totalPendent(0)
         saldo_1_mes = totalPendent(1)
@@ -266,26 +268,26 @@ class ResCompany(osv.osv):
 
         # Gestio de contractes
         acceptats_oberts = len(sw_obj.search(cursor, uid, [
-                ('proces_id.name', 'in', ['C1', 'C2']),
-                ('state', '=', 'open'),
-                ('rebuig', '=', False),
-                ('step_id.name', '=', '02'),
-            ]))
+            ('proces_id.name', 'in', ['C1', 'C2']),
+            ('state', '=', 'open'),
+            ('rebuig', '=', False),
+            ('step_id.name', '=', '02'),
+        ]))
 
         activats_oberts = len(sw_obj.search(cursor, uid, [
-                ('proces_id.name', 'in', ['C1', 'C2']),
-                ('state', '=', 'open'),
-                ('step_id.name', 'in', ['05', '07']),
-            ]))
+            ('proces_id.name', 'in', ['C1', 'C2']),
+            ('state', '=', 'open'),
+            ('step_id.name', 'in', ['05', '07']),
+        ]))
         sol_ok = activats + acceptats_oberts + activats_oberts
-        sol_problematiques = solicituts-sol_ok
+        sol_problematiques = solicituts - sol_ok
         contractes_6m = len(pol_obj.search(cursor, uid, [
-                ('data_firma_contracte','<',six_months),
-                ('state','=','esborrany'),
-            ]))
+            ('data_firma_contracte', '<', six_months),
+            ('state', '=', 'esborrany'),
+        ]))
         solicituts_erronies = len(pol_obj.search(cursor, uid, [
-                ('data_firma_contracte', '=', False)
-            ]))
+            ('data_firma_contracte', '=', False)
+        ]))
         canvi_titular = 'NO IMPLEMENTAT'
         canvi_pottar = 'NO IMPLEMENTAT'
         if date_wizard != ahir:
@@ -310,11 +312,11 @@ class ResCompany(osv.osv):
                       '5. Facturació': facturacio,
                       '6. Impagats': impagaments,
                       '7. Gestió de contractes': gestio_contractes,
-                })
+                      })
         return date_wizard, datas
-        
+
         def get_translate_dict_description(self, datas):
-            
+
             translate_id = {
                 'solicituts_erronies': 'solicitudes erroneas',
                 'solicituts': 'solicitudes',
@@ -326,7 +328,7 @@ class ResCompany(osv.osv):
                 'acceptats': 'solicitudes contratos aceptados',
                 'activats': 'solicitudes contratos activados',
             }
-            return translate_id 
-        
-        
+            return translate_id
+
+
 ResCompany()

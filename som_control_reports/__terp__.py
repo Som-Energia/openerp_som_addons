@@ -9,14 +9,14 @@
     "version": "2.103.13",
     "author": "SOM ENERGIA",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "base",
         "som_polissa_soci",
         "giscedata_switching"
     ],
     "init_xml": [],
     "demo_xml": [],
-    "update_xml":[
+    "update_xml": [
         "som_control_reports_report.xml"
     ],
     "active": False,

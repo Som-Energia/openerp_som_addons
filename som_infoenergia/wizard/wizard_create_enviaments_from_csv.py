@@ -12,6 +12,7 @@ STATES = [
     ('finished', 'Estat Final')
 ]
 
+
 class WizardCancelFromCSV(osv.osv_memory):
     _name = 'wizard.create.enviaments.from.csv'
     _columns = {
@@ -33,18 +34,18 @@ class WizardCancelFromCSV(osv.osv_memory):
         vals = {'from_model': 'polissa_id'}
         csv_file = StringIO(base64.b64decode(wiz.csv_file))
         reader = csv.reader(csv_file)
-        linies= list(reader)
+        linies = list(reader)
         n_linies = len(linies)
         start = 0
         header = []
-        if n_linies>0 and not linies[0][0].isdigit():
+        if n_linies > 0 and not linies[0][0].isdigit():
             if ';' in linies[0][0]:
                 header = linies[0][0].split(';')
             else:
                 header = linies[0]
-            start=1
+            start = 1
 
-        pol_list= []
+        pol_list = []
         result = {}
         for line in linies[start:]:
             if ';' in line[0]:
@@ -60,13 +61,14 @@ class WizardCancelFromCSV(osv.osv_memory):
             if result_extra_info:
                 result[line[0]] = result_extra_info
         if result:
-            vals['extra_text'] =  result
+            vals['extra_text'] = result
 
         lot_id = context.get('active_id', [])
-        pol_ids = pol_obj.search(cursor, uid, [('name','in', pol_list)])
+        pol_ids = pol_obj.search(cursor, uid, [('name', 'in', pol_list)])
         lot_obj.create_enviaments_from_object_list(cursor, uid, lot_id, pol_ids, vals)
         msg = _(u"Es crearan els enviaments de {} pòlisses en segon pla".format(len(pol_ids)))
         wiz.write({'state': "finished", 'info': msg})
         return True
+
 
 WizardCancelFromCSV()

@@ -3,7 +3,8 @@
 from destral import testing
 from destral.transaction import Transaction
 
-from datetime import date,datetime,timedelta
+from datetime import date, timedelta
+
 
 class TestPolissaWwwAutolectura(testing.OOTestCase):
 
@@ -37,8 +38,8 @@ class TestPolissaWwwAutolectura(testing.OOTestCase):
         self.txn.stop()
 
     # Helper functions
-    def create_lect_pool(self,pol_id,
-        date,period,lect_type,value,observations,origen_comer_code,origin_code):
+    def create_lect_pool(self, pol_id,
+                         date, period, lect_type, value, observations, origen_comer_code, origin_code):
         return self.create_lect(
             pol_id,
             date,
@@ -50,8 +51,8 @@ class TestPolissaWwwAutolectura(testing.OOTestCase):
             origin_code,
             True)
 
-    def create_lect_fact(self,pol_id,
-        date,period,lect_type,value,observations,origen_comer_code,origin_code):
+    def create_lect_fact(self, pol_id,
+                         date, period, lect_type, value, observations, origen_comer_code, origin_code):
         return self.create_lect(
             pol_id,
             date,
@@ -63,8 +64,8 @@ class TestPolissaWwwAutolectura(testing.OOTestCase):
             origin_code,
             False)
 
-    def create_lect(self,pol_id,
-        date,period,lect_type,value,observations,origen_comer_code,origin_code,pool):
+    def create_lect(self, pol_id,
+                    date, period, lect_type, value, observations, origen_comer_code, origin_code, pool):
         # avaliable codes for origin_comer_code
         # ['Q1','F1','MA','OV','AL','ES','AT','CC']
 
@@ -80,7 +81,7 @@ class TestPolissaWwwAutolectura(testing.OOTestCase):
             ('polissa.id', '=', pol_id),
             ('name', '=', pol_val['comptador'])]
         meter_ids = self.meter_obj.search(
-            self.cursor, self.uid,meter_search)
+            self.cursor, self.uid, meter_search)
         if not meter_ids:
             return None
 
@@ -105,22 +106,22 @@ class TestPolissaWwwAutolectura(testing.OOTestCase):
             [('codi', '=', origin_code)])[0]
 
         vals = {'comptador': meter_ids[0],
-            'name': date,
-            'periode': period_ids[0],
-            'tipus': lect_type,
-            'lectura': value,
-            'observacions': observations,
-            'origen_comer_id': origin_comer_ids[0],
-            'origen_id': origin_id,
-            }
+                'name': date,
+                'periode': period_ids[0],
+                'tipus': lect_type,
+                'lectura': value,
+                'observacions': observations,
+                'origen_comer_id': origin_comer_ids[0],
+                'origen_id': origin_id,
+                }
         if pool:
-            return self.pool_lect_obj.create(self.cursor,self.uid,vals)
+            return self.pool_lect_obj.create(self.cursor, self.uid, vals)
         else:
-            return self.fact_lect_obj.create(self.cursor,self.uid,vals)
+            return self.fact_lect_obj.create(self.cursor, self.uid, vals)
 
     def change_polissa_power_method(self, pol_id, method):
         self.pol_obj.write(self.cursor, self.uid,
-            pol_id, {'facturacio_potencia': method})
+                           pol_id, {'facturacio_potencia': method})
 
     def test_www_ultimes_lectures_reals_retorna_reals_i_estimades(self):
         pol_obj = self.openerp.pool.get('giscedata.polissa')
@@ -132,10 +133,10 @@ class TestPolissaWwwAutolectura(testing.OOTestCase):
             pol_id, str(test_date), 'P1', 'A', 22287, 'test', 'OV', '50')
 
         b = self.create_lect_pool(
-            pol_id, str(test_date-timedelta(days=31)), 'P1', 'A', 33387, 'test', 'OV', '40')
+            pol_id, str(test_date - timedelta(days=31)), 'P1', 'A', 33387, 'test', 'OV', '40')
 
         c = self.create_lect_pool(
-            pol_id, str(test_date-timedelta(days=61)), 'P1', 'A', 99987, 'test', 'OV', '99')
+            pol_id, str(test_date - timedelta(days=61)), 'P1', 'A', 99987, 'test', 'OV', '99')
 
         res = pol_obj.www_ultimes_lectures_reals(self.cursor, self.uid, pol_id)
         kw_lects = [i['lectura'] for i in res]

@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
-from gestionatr.defs import *
-from gestionatr.input.messages.R1 import get_minimum_fields
-from osv import osv, fields, orm
-from tools.translate import _
-import xml.etree.ElementTree as ET
+from gestionatr.defs import imd_obj
+from osv import osv
 
 
 class WizardAtcMultiChange(osv.osv_memory):
@@ -23,7 +19,7 @@ class WizardAtcMultiChange(osv.osv_memory):
             cursor, uid, 'giscedata_switching', 'crm_case_section_autoconsum'
         )[1]
 
-    def _do_additional_actions(self, cursor, uid, case_ids, resultat,  context=None):
+    def _do_additional_actions(self, cursor, uid, case_ids, resultat, context=None):
         if not context:
             context = {}
         case_obj = self.pool.get('giscedata.atc')
@@ -40,7 +36,7 @@ class WizardAtcMultiChange(osv.osv_memory):
             if case.section_id.id == section_autoconsum_id:
                 if resultat == '01':
                     sw_model, sw_id = case.ref.split(',')
-                    res = sw_obj.notifica_a_client(cursor, uid, int(sw_id))
+                    sw_obj.notifica_a_client(cursor, uid, int(sw_id))
                 elif resultat == '02':
                     partner_to_delete = case.partner_id.id
                     gen_partner = imd_obj.get_object_reference(
@@ -53,12 +49,15 @@ class WizardAtcMultiChange(osv.osv_memory):
                         'email_from': False,
                     })
                     # Let's remove partner from generators
-                    gen_ids = gen_obj.search(cursor, uid, [('partner_id', '=', partner_to_delete)])
+                    gen_ids = gen_obj.search(
+                        cursor, uid, [('partner_id', '=', partner_to_delete)])
                     gen_obj.write(cursor, uid, gen_ids, {'partner_id': gen_partner})
 
                     # Let's remove related partner events
-                    event_ids = part_event_obj.search(cursor, uid, [('partner_id', '=', partner_to_delete)])
-                    part_event_obj.write(cursor, uid, event_ids, {'partner_id': gen_partner})
+                    event_ids = part_event_obj.search(
+                        cursor, uid, [('partner_id', '=', partner_to_delete)])
+                    part_event_obj.write(cursor, uid, event_ids, {
+                                         'partner_id': gen_partner})
 
                     # At last let's delete the partner
                     partner_obj.unlink(cursor, uid, partner_to_delete)
@@ -81,15 +80,17 @@ class WizardAtcMultiChange(osv.osv_memory):
         for case in case_obj.browse(cursor, uid, case_ids, context=context):
             if case.section_id.id == section_autoconsum_id and case.subtipus_id.id == subtipus_id:
                 sw_model, sw_id = case.ref.split(',')
-                noti_pendent = sw_obj.read(cursor, uid, int(sw_id), [])['notificacio_pendent']
+                noti_pendent = sw_obj.read(cursor, uid, int(sw_id), [])[
+                    'notificacio_pendent']
                 res = sw_obj.notifica_a_client(cursor, uid, int(sw_id),
-                    template='notificacioTractamentDadesGeneradorAutoconsum')
+                                               template='notificacioTractamentDadesGeneradorAutoconsum')
                 if noti_pendent:
                     d101_ids = d101_obj.search(cursor, uid, [('sw_id', '=', int(sw_id))])
                     if len(d101_ids):
-                        d101_obj.write(cursor, uid, d101_ids[0], {'notificacio_pendent': True})
+                        d101_obj.write(cursor, uid, d101_ids[0], {
+                                       'notificacio_pendent': True})
                         res = sw_obj.notifica_a_client(cursor, uid, int(sw_id),
-                            template='notificacioTractamentDadesTitularDiferentContracte')
+                                                       template='notificacioTractamentDadesTitularDiferentContracte')
 
         return True
 

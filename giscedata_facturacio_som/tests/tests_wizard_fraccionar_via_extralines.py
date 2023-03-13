@@ -2,6 +2,7 @@
 from destral import testing
 import mock
 
+
 class TestWizardFraccionarViaExtralines(testing.OOTestCaseWithCursor):
 
     def load_models(self, cursor, uid):
@@ -18,17 +19,17 @@ class TestWizardFraccionarViaExtralines(testing.OOTestCaseWithCursor):
         uid = self.uid
         self.load_models(cursor, uid)
         values = {
-            'first_term_payment':True,
+            'first_term_payment': True,
             'ntermes': 4,
-            }
+        }
         context = {'active_ids': [self.factura_id]}
         wiz_id = self.wiz_obj.create(cursor, uid, values, context)
         wizard = self.wiz_obj.browse(cursor, uid, wiz_id)
         self.wiz_obj.action_fraccionar_via_extralines(cursor, uid, [wiz_id], context)
 
         factura = self.fact_obj.browse(cursor, uid, self.factura_id)
-        expected_total =  (3/4.)*(factura.amount_total)
-        fraccionar_via_extraline_mock.assert_called_with(mock.ANY, mock.ANY, factura.id, values['ntermes']-1,
+        expected_total = (3 / 4.) * (factura.amount_total)
+        fraccionar_via_extraline_mock.assert_called_with(mock.ANY, mock.ANY, factura.id, values['ntermes'] - 1,
                                                          wizard.data_inici, mock.ANY, amount=expected_total, context=context,
                                                          journal_id=wizard.journal_id.id)
 
@@ -38,16 +39,16 @@ class TestWizardFraccionarViaExtralines(testing.OOTestCaseWithCursor):
         uid = self.uid
         self.load_models(cursor, uid)
         values = {
-            'first_term_payment':False,
+            'first_term_payment': False,
             'ntermes': 4,
-            }
+        }
         context = {'active_ids': [self.factura_id]}
         wiz_id = self.wiz_obj.create(cursor, uid, values, context)
         wizard = self.wiz_obj.browse(cursor, uid, wiz_id)
         self.wiz_obj.action_fraccionar_via_extralines(cursor, uid, [wiz_id], context)
 
         factura = self.fact_obj.browse(cursor, uid, self.factura_id)
-        expected_total =  factura.amount_total
+        factura.amount_total
         fraccionar_via_extraline_mock.assert_called_with(mock.ANY, mock.ANY, factura.id, values['ntermes'],
                                                          wizard.data_inici, mock.ANY, context=context,
                                                          journal_id=wizard.journal_id.id)

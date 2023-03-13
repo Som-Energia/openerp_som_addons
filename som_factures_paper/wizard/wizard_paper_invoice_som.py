@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
 import json
 import netsvc
 import tempfile
@@ -25,6 +25,7 @@ STATES = [
     ('done', 'Estat Final'),
 ]
 
+
 class ProgressJobsPool(JobsPool):
 
     def __init__(self, wizard):
@@ -35,6 +36,7 @@ class ProgressJobsPool(JobsPool):
     def all_done(self):
         self.wizard.write({'progress': self.progress})
         return super(ProgressJobsPool, self).all_done
+
 
 class WizardPaperInvoiceSom(osv.osv_memory):
     _name = 'wizard.paper.invoice.som'
@@ -53,7 +55,7 @@ class WizardPaperInvoiceSom(osv.osv_memory):
     _defaults = {
         'state': lambda *a: 'init',
         'file_name': lambda *a: 'factures.zip',
-        'date_to': lambda *a: (datetime.today()-timedelta(days=1)).strftime("%Y-%m-%d")
+        'date_to': lambda *a: (datetime.today() - timedelta(days=1)).strftime("%Y-%m-%d")
     }
 
     def search_invoices(self, cursor, uid, ids, context=None):
@@ -67,14 +69,15 @@ class WizardPaperInvoiceSom(osv.osv_memory):
 
         ctxt = context.copy()
         ctxt['active_test'] = False
-        pol_ids = pol_obj.search(cursor, uid, [('enviament', '!=', 'email')], context=ctxt)
+        pol_ids = pol_obj.search(
+            cursor, uid, [('enviament', '!=', 'email')], context=ctxt)
         fact_ids = fact_obj.search(cursor, uid, [
             ('polissa_id', 'in', pol_ids),
             ('date_invoice', '>=', wiz.date_from),
             ('date_invoice', '<=', wiz.date_to),
             ('state', 'in', ('open', 'paid')),
             ('type', 'in', ('out_refund', 'out_invoice')),
-            ], context=context)
+        ], context=context)
 
         fact_datas = fact_obj.read(cursor, uid, fact_ids, ['number'])
         fact_names = ', '.join([f['number'] for f in fact_datas])
@@ -109,9 +112,11 @@ class WizardPaperInvoiceSom(osv.osv_memory):
         fact_ids = json.loads(wiz.invoice_ids)
         tmp_dir = tempfile.mkdtemp()
 
-        failed_invoices, info_inv = self.generate_inv(cursor, uid, wiz, fact_ids, tmp_dir, context)
-        clean_invoices = list(set(fact_ids)-set(failed_invoices))
-        info_csv = self.generate_csv(cursor, uid, wiz, clean_invoices, tmp_dir, 'Adreces.csv', context)
+        failed_invoices, info_inv = self.generate_inv(
+            cursor, uid, wiz, fact_ids, tmp_dir, context)
+        clean_invoices = list(set(fact_ids) - set(failed_invoices))
+        info_csv = self.generate_csv(
+            cursor, uid, wiz, clean_invoices, tmp_dir, 'Adreces.csv', context)
         info_reb = self.generate_reb(cursor, uid, wiz, clean_invoices, tmp_dir, context)
 
         wiz.write({
@@ -132,8 +137,9 @@ class WizardPaperInvoiceSom(osv.osv_memory):
                 fact.number,
                 fact.polissa_id.direccio_notificacio.name,
             ).encode('latin-1')
-            j_pool.add_job(self.render_to_file(cursor, uid, [fact_id], report, dirname, file_name, context))
-            wiz.write({'progress': (float(factura_done+1) / len(fact_ids)) * 98})
+            j_pool.add_job(self.render_to_file(
+                cursor, uid, [fact_id], report, dirname, file_name, context))
+            wiz.write({'progress': (float(factura_done + 1) / len(fact_ids)) * 98})
 
         j_pool.join()
 
@@ -145,7 +151,8 @@ class WizardPaperInvoiceSom(osv.osv_memory):
         if failed_invoice:
             fact_data = fact_obj.read(cursor, uid, failed_invoice, ["number"])
             facts = ', '.join([f['number'] for f in fact_data])
-            info = u'Les següents {} factures han tingut error: {}'.format(len(failed_invoice), facts)
+            info = u'Les següents {} factures han tingut error: {}'.format(
+                len(failed_invoice), facts)
         else:
             info = u"{} factures generades correctament.".format(len(fact_ids))
 
@@ -248,7 +255,8 @@ class WizardPaperInvoiceSom(osv.osv_memory):
                 fact.number,
                 fact.polissa_id.direccio_notificacio.name,
             )
-            j_pool.add_job(self.render_to_file(cursor, uid, [fact_id], report, dirname, file_name, context))
+            j_pool.add_job(self.render_to_file(
+                cursor, uid, [fact_id], report, dirname, file_name, context))
 
         wiz.write({'progress': 100})
         j_pool.join()
@@ -261,7 +269,8 @@ class WizardPaperInvoiceSom(osv.osv_memory):
         if failed_invoice:
             fact_data = fact_obj.read(cursor, uid, failed_invoice, ["number"])
             facts = ', '.join([f['number'] for f in fact_data])
-            info = u'Els següents {} rebuts han tingut error: {}'.format(len(failed_invoice), facts)
+            info = u'Els següents {} rebuts han tingut error: {}'.format(
+                len(failed_invoice), facts)
         else:
             info = u"{} Rebuts generats correctament.".format(len(facts_with_rebs_ids))
 

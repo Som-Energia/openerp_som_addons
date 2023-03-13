@@ -13,14 +13,15 @@ class main():
     def _get_swift_code(self, cursor, uid, iban):
         res_bank_obj = self.pool.get('res.partner.bank')
 
-        pbank_ids = res_bank_obj.search(cursor, uid, [('iban','=', iban)])
+        pbank_ids = res_bank_obj.search(cursor, uid, [('iban', '=', iban)])
         if not pbank_ids:
             return ''
 
         return res_bank_obj.browse(cursor, uid, pbank_ids[0]).bank.bic
 
     def _is_business(self, cursor, uid, object):
-        vat = object.debtor_vat[2:] if object.debtor_vat.startswith('ES') else object.debtor_vat
+        vat = object.debtor_vat[2:] if object.debtor_vat.startswith(
+            'ES') else object.debtor_vat
         vat_is_company = vat[0] not in '0123456789KLMXYZ'
         if not isinstance(object.reference, str):
             return vat_is_company
@@ -30,7 +31,7 @@ class main():
             return vat_is_company
 
         pol_o = self.get('giscedata.polissa')
-        cnae_is_domestic = pol_o.read(cursor, uid, obj_id,['cnae'])['cnae'][1] == '9820'
+        cnae_is_domestic = pol_o.read(cursor, uid, obj_id, ['cnae'])['cnae'][1] == '9820'
 
         return vat_is_company or not cnae_is_domestic
 
@@ -62,9 +63,9 @@ class main():
         som_par = par_obj.browse(cursor, uid, 1)
 
         # creditor data
-        data['creditor_code'] = "ES24000F55091367" #object.creditor_code
-        data['order_reference'] = ""#object.name
-        data['creditor_name'] = "SOM ENERGIA SCCL" #object.creditor_id.name
+        data['creditor_code'] = "ES24000F55091367"  # object.creditor_code
+        data['order_reference'] = ""  # object.name
+        data['creditor_name'] = "SOM ENERGIA SCCL"  # object.creditor_id.name
         data.update(self._get_formatted_address(cursor, uid, som_par.address[0]))
 
         # debtor data

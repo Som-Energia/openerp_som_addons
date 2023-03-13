@@ -2,10 +2,8 @@
 
 from destral import testing
 from destral.transaction import Transaction
-import xml.etree.ElementTree as ET
-from datetime import date, datetime, timedelta
 import mock
-from osv import fields
+
 
 class TestWizardAccountBalance(testing.OOTestCase):
 
@@ -28,7 +26,8 @@ class TestWizardAccountBalance(testing.OOTestCase):
         imd_obj = self.openerp.pool.get('ir.model.data')
         aa_obj = self.openerp.pool.get('account.account')
         account_list = aa_obj.search(cursor, uid, [])
-        menu_id = imd_obj.get_object_reference(cursor, uid, 'account_account_som', 'menu_account_balance_full_report_som')[1]
+        menu_id = imd_obj.get_object_reference(
+            cursor, uid, 'account_account_som', 'menu_account_balance_full_report_som')[1]
         values = {
             'date_from': '2021-01-01',
             'display_account_level': 0,
@@ -64,9 +63,9 @@ class TestWizardAccountBalance(testing.OOTestCase):
                 'display_account': 'bal_all',
                 'fiscalyear': 1,
                 'context': {'lang': False,
-                    'active_ids': [menu_id],
-                    'tz': False, 'active_id': menu_id
-                }
+                            'active_ids': [menu_id],
+                            'tz': False, 'active_id': menu_id
+                            }
             }
         })
 
@@ -78,7 +77,8 @@ class TestWizardAccountBalance(testing.OOTestCase):
         imd_obj = self.openerp.pool.get('ir.model.data')
         aa_obj = self.openerp.pool.get('account.account')
         account_list = aa_obj.search(cursor, uid, [])
-        menu_id = imd_obj.get_object_reference(cursor, uid, 'account_account_som', 'menu_account_balance_full_report_som')[1]
+        menu_id = imd_obj.get_object_reference(
+            cursor, uid, 'account_account_som', 'menu_account_balance_full_report_som')[1]
         values = {
             'date_from': '2021-01-01',
             'display_account_level': 0,
@@ -114,14 +114,15 @@ class TestWizardAccountBalance(testing.OOTestCase):
                 'display_account': 'bal_all',
                 'fiscalyear': 1,
                 'context': {'lang': False,
-                    'active_ids': [menu_id],
-                    'tz': False, 'active_id': menu_id
-                }
+                            'active_ids': [menu_id],
+                            'tz': False, 'active_id': menu_id
+                            }
             },
 
             'email_to': 'fabien@pinckaers.com',
             'from': 1,
         }
-        mock_waiting_report.assert_called_with( mock.ANY, mock.ANY, [wiz_id], 'account.balance.full', expected_datas, context)
+        mock_waiting_report.assert_called_with(
+            mock.ANY, mock.ANY, [wiz_id], 'account.balance.full', expected_datas, context)
 
         self.assertTrue(result)

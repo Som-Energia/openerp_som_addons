@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
-from osv.osv import except_osv
 
 import datetime
 
@@ -28,11 +27,11 @@ ERROR_CODES = {
         'skip_error': True
     },
     '04': {
-        'msg':  u"[04] La pòlissa no té persona administradora assignada",
+        'msg': u"[04] La pòlissa no té persona administradora assignada",
         'skip_error': True
     },
     '05': {
-        'msg':  u"[05] La data final de l'última modificació contractual és anterior al dia d'avui",
+        'msg': u"[05] La data final de l'última modificació contractual és anterior al dia d'avui",
         'skip_error': False
     },
     '99': {
@@ -46,7 +45,7 @@ class GiscedataPolissa(osv.osv):
     """Pòlissa per afegir el camp d'administradora.
     """
     _name = 'giscedata.polissa'
-    _inherit = 'giscedata.polissa'        
+    _inherit = 'giscedata.polissa'
 
     def register_ov_admin_modification(self, cursor, uid, polissa_id, vals):
         """
@@ -72,7 +71,8 @@ class GiscedataPolissa(osv.osv):
             }
 
         last_modcon = pol.modcontractuals_ids[0]
-        data_final_modcon = datetime.datetime.strptime(last_modcon.data_final, "%Y-%m-%d").date()
+        data_final_modcon = datetime.datetime.strptime(
+            last_modcon.data_final, "%Y-%m-%d").date()
         if datetime.date.today() > data_final_modcon:
             return {
                 'modification': None,
@@ -101,7 +101,7 @@ class GiscedataPolissa(osv.osv):
 
     def validate_partner(self, cursor, uid, partner_id):
         res_partner_obj = self.pool.get('res.partner')
-        
+
         partner = False
         if partner_id:
             partner = res_partner_obj.browse(cursor, uid, partner_id)
@@ -112,30 +112,34 @@ class GiscedataPolissa(osv.osv):
                 'error': '01',
                 'error_msg': ERROR_CODES['01']['msg']
             }
-        
+
         return {}
 
     def get_admin_cat(self, cursor, uid):
         imd_obj = self.pool.get('ir.model.data')
         return imd_obj._get_obj(cursor, uid,
-                'som_polissa_administradora',
-                'res_partner_category_administradora')
+                                'som_polissa_administradora',
+                                'res_partner_category_administradora')
 
     def remove_administrator_category(self, cursor, uid, partner_id):
-        administrated_contracts = self.search(cursor, uid, [("administradora", "=", partner_id)])
+        administrated_contracts = self.search(
+            cursor, uid, [("administradora", "=", partner_id)])
 
         if len(administrated_contracts) == 1:
             admin_cat = self.get_admin_cat(cursor, uid)
             res_partner_obj = self.pool.get('res.partner')
-            res_partner_obj.write(cursor, uid, partner_id, {'category_id': [(3, admin_cat.id)]})
+            res_partner_obj.write(cursor, uid, partner_id, {
+                                  'category_id': [(3, admin_cat.id)]})
 
     def add_administrator_category(self, cursor, uid, partner_id):
-        res_partner_obj = self.pool.get('res.partner')      
-        partner_categories = res_partner_obj.read(cursor, uid, partner_id, ['category_id'])
+        res_partner_obj = self.pool.get('res.partner')
+        partner_categories = res_partner_obj.read(
+            cursor, uid, partner_id, ['category_id'])
         admin_cat = self.get_admin_cat(cursor, uid)
 
         if admin_cat.id not in partner_categories['category_id']:
-            res_partner_obj.write(cursor, uid, partner_id, {'category_id': [(4, admin_cat.id)]})
+            res_partner_obj.write(cursor, uid, partner_id, {
+                                  'category_id': [(4, admin_cat.id)]})
 
     def add_contract_administrator(self, cursor, uid, polissa_id, partner_id, permissions, is_legal_representative=False, context=None):
         if context is None:
@@ -157,7 +161,8 @@ class GiscedataPolissa(osv.osv):
                     'error_msg': ERROR_CODES['02']['msg']
                 }
 
-            administradora = self.read(cursor, uid, polissa_id, ['administradora'])['administradora']
+            administradora = self.read(cursor, uid, polissa_id, ['administradora'])[
+                'administradora']
 
             if administradora and administradora[0] == partner_id:
                 return {
@@ -168,11 +173,11 @@ class GiscedataPolissa(osv.osv):
 
             if administradora and administradora[0] != partner_id:
                 self.remove_administrator_category(cursor, uid, administradora[0])
-            
+
             self.add_administrator_category(cursor, uid, partner_id)
-        
+
             result = self.create_modcon(cursor, uid, polissa_id,
-                {'administradora': partner_id, "administradora_permissions": permissions})
+                                        {'administradora': partner_id, "administradora_permissions": permissions})
 
             if result.get('error', '') != '':
                 return result
@@ -205,12 +210,13 @@ class GiscedataPolissa(osv.osv):
             if isinstance(polissa_id, (list, tuple)):
                 polissa_id = polissa_id[0]
 
-            administradora = self.read(cursor, uid, polissa_id, ['administradora'])['administradora']
+            administradora = self.read(cursor, uid, polissa_id, ['administradora'])[
+                'administradora']
 
             if administradora:
                 self.remove_administrator_category(cursor, uid, administradora[0])
                 result = self.create_modcon(cursor, uid, polissa_id,
-                    {'administradora': None, "administradora_permissions": None})
+                                            {'administradora': None, "administradora_permissions": None})
 
                 if result.get('error', '') != '':
                     return result

@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-￼<openerp>
+<openerp>
 ￼    <data>
 ￼        <record id="aeat_347_report_1" model="l10n.es.aeat.mod347.report">
 ￼            <field name="received_cash_limit">6000.00</field>
@@ -68,4 +68,4 @@
 ￼            <field name="bussiness_real_state_rent">false</field>
 ￼        </record>
 ￼	</data>
-￼</openerp>
+</openerp>

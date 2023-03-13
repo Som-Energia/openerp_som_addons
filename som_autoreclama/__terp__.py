@@ -10,14 +10,14 @@
     "version": "0-dev",
     "author": "SOM ENERGIA",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "base",
         "giscedata_subtipus_reclamacio",
         "som_switching",
     ],
     "init_xml": [],
     "demo_xml": [],
-    "update_xml":[
+    "update_xml": [
         "som_autoreclama_state_data.xml",
         "som_autoreclama_state_view.xml",
         "wizard/wizard_som_autoreclama_execute_step_view.xml",

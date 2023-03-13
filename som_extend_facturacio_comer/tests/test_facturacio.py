@@ -56,7 +56,7 @@ class TestsFacturacioValidation(testing.OOTestCase):
         imd_obj = self.openerp.pool.get('ir.model.data')
         fact_obj = self.openerp.pool.get('giscedata.facturacio.factura')
         validator_obj = self.openerp.pool.get('giscedata.facturacio.validation.validator')
-        pol_o = self.openerp.pool.get('giscedata.polissa')
+        self.openerp.pool.get('giscedata.polissa')
         f1_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_facturacio', 'factura_0006'
         )[1]

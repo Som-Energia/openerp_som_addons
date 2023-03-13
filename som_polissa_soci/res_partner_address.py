@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from osv import osv, fields
+from osv import osv
 from tools.translate import _
 
-from osv.orm import browse_record
 import logging
 from hashlib import md5
 import mailchimp_marketing as MailchimpMarketing
@@ -35,7 +34,7 @@ FIELDS_SOCIS = {
     'CodiPostal': 'MMERGE7',
     'Idioma': 'MMERGE8',
     'Empresa': 'MMERGE9',
-    'Telefon': 'MMERGE10', # (###)###-####
+    'Telefon': 'MMERGE10',  # (###)###-####
     'Comarca': 'MMERGE11',
     'NIF': 'MMERGE1',
     'comunitat_autonoma': 'MMERGE13',
@@ -63,9 +62,9 @@ class ResPartnerAddress(osv.osv):
             ids = [ids]
 
         MAILCHIMP_CLIENT = MailchimpMarketing.Client(
-                dict(api_key=config.options.get('mailchimp_apikey'),
-                    server=config.options.get('mailchimp_server_prefix')
-            ))
+            dict(api_key=config.options.get('mailchimp_apikey'),
+                 server=config.options.get('mailchimp_server_prefix')
+                 ))
         if 'email' in vals:
             for _id in ids:
                 old_email = self.read(cursor, uid, _id, ["email"])["email"]
@@ -74,9 +73,11 @@ class ResPartnerAddress(osv.osv):
                     continue
 
                 if not email:
-                    self.unsubscribe_client_email_in_all_lists_async(cursor, uid, _id, old_email, MAILCHIMP_CLIENT)
+                    self.unsubscribe_client_email_in_all_lists_async(
+                        cursor, uid, _id, old_email, MAILCHIMP_CLIENT)
                 else:
-                    self.update_client_email_in_all_lists_async(cursor, uid, _id, old_email, email, MAILCHIMP_CLIENT)
+                    self.update_client_email_in_all_lists_async(
+                        cursor, uid, _id, old_email, email, MAILCHIMP_CLIENT)
 
         return super(ResPartnerAddress, self).write(cursor, uid, ids, vals, context=context)
 
@@ -93,11 +94,12 @@ class ResPartnerAddress(osv.osv):
         raise osv.except_osv(
             _('Error'),
             _("List: <{}> not found".format(list_name)
-        ))
+              ))
 
     @job(queue="mailchimp_tasks")
     def archieve_mail_in_list(self, cursor, uid, ids, list_id, mailchimp_conn, context=None):
-        self.archieve_mail_in_list_sync(cursor, uid, ids, list_id, mailchimp_conn, context=None)
+        self.archieve_mail_in_list_sync(
+            cursor, uid, ids, list_id, mailchimp_conn, context=None)
 
     def archieve_mail_in_list_sync(self, cursor, uid, ids, list_id, mailchimp_conn, context=None):
         if not isinstance(ids, (list, tuple)):
@@ -117,27 +119,29 @@ class ResPartnerAddress(osv.osv):
                 )
             except ApiClientError as error:
                 if error.status_code == 404:
-                    logger.warning("L'API no ha permès arxivar l'email {}. "\
-                        "Error comú quan el mail no es troba a la llista: "\
-                            "Error de l'API: {}".format(email, error.text))
+                    logger.warning("L'API no ha permès arxivar l'email {}. "
+                                   "Error comú quan el mail no es troba a la llista: "
+                                   "Error de l'API: {}".format(email, error.text))
                 elif error.status_code == 405:
-                    logger.warning("L'API no ha permès arxivar l'email {}. "\
-                        "Error comú quan el mail ja ha estat arxivat de la llista: "\
-                        "Error de l'API: {}".format(email, error.text))
+                    logger.warning("L'API no ha permès arxivar l'email {}. "
+                                   "Error comú quan el mail ja ha estat arxivat de la llista: "
+                                   "Error de l'API: {}".format(email, error.text))
                 else:
                     raise osv.except_osv(
                         _('Error'),
                         _("Error archieving email {}:\n{}".format(email, error.text)
-                    ))
+                          ))
             else:
                 logger.info("Email arxivat: {}".format(email))
 
     def fill_merge_fields_clients(self, cursor, uid, id, context=None):
         partner_obj = self.pool.get('res.partner')
         municipi_obj = self.pool.get('res.municipi')
-        ca_obj = self.pool.get('res.comunitat.autonoma')
-        partner_data = self.read(cursor, uid, id, ['partner_id', 'email', 'zip', 'id_municipi'])
-        partner_fields = partner_obj.read(cursor, uid, partner_data['partner_id'][0], ['name', 'lang'])
+        self.pool.get('res.comunitat.autonoma')
+        partner_data = self.read(
+            cursor, uid, id, ['partner_id', 'email', 'zip', 'id_municipi'])
+        partner_fields = partner_obj.read(
+            cursor, uid, partner_data['partner_id'][0], ['name', 'lang'])
 
         mailchimp_member = {
             'email_address': partner_data['email'],
@@ -145,14 +149,15 @@ class ResPartnerAddress(osv.osv):
             'merge_fields': {
                 FIELDS_NO_MEMBERS['name']: partner_fields['name'],
                 FIELDS_NO_MEMBERS['lang']: partner_fields['lang'],
-                FIELDS_NO_MEMBERS['surname']:  partner_fields['name'].split(',')[0],
+                FIELDS_NO_MEMBERS['surname']: partner_fields['name'].split(',')[0],
                 FIELDS_NO_MEMBERS['firstname']: partner_fields['name'].split(',')[-1],
                 FIELDS_NO_MEMBERS['email']: partner_data['email'],
                 FIELDS_NO_MEMBERS['zip_code']: partner_data['zip'],
             }}
 
         if partner_data['id_municipi']:
-            municipi_data = municipi_obj.browse(cursor, uid, partner_data['id_municipi'][0])
+            municipi_data = municipi_obj.browse(
+                cursor, uid, partner_data['id_municipi'][0])
             comarca_name = ''
             if municipi_data.comarca:
                 comarca_name = municipi_data.comarca.name
@@ -170,9 +175,11 @@ class ResPartnerAddress(osv.osv):
     def fill_merge_fields_soci(self, cursor, uid, id, context=None):
         partner_obj = self.pool.get('res.partner')
         municipi_obj = self.pool.get('res.municipi')
-        ca_obj = self.pool.get('res.comunitat.autonoma')
-        partner_data = self.read(cursor, uid, id, ['partner_id', 'email', 'zip', 'id_municipi', 'mobile', 'phone'])
-        partner_fields = partner_obj.read(cursor, uid, partner_data['partner_id'][0], ['name', 'lang', 'vat', 'ref'])
+        self.pool.get('res.comunitat.autonoma')
+        partner_data = self.read(
+            cursor, uid, id, ['partner_id', 'email', 'zip', 'id_municipi', 'mobile', 'phone'])
+        partner_fields = partner_obj.read(cursor, uid, partner_data['partner_id'][0], [
+                                          'name', 'lang', 'vat', 'ref'])
 
         mailchimp_member = {
             'email_address': partner_data['email'],
@@ -188,7 +195,8 @@ class ResPartnerAddress(osv.osv):
             }}
 
         if partner_data['id_municipi']:
-            municipi_data = municipi_obj.browse(cursor, uid, partner_data['id_municipi'][0])
+            municipi_data = municipi_obj.browse(
+                cursor, uid, partner_data['id_municipi'][0])
             comarca_name = ''
             if municipi_data.comarca:
                 comarca_name = municipi_data.comarca.name
@@ -211,23 +219,25 @@ class ResPartnerAddress(osv.osv):
                 mailchimp_conn.lists.add_list_member(
                     list_id, client_data)
             except ApiClientError as e:
-                if e.status_code == 400 and e.text.title ==  "Member Exists":
-                    logger.warning("El correu {} que intentem subscriure ja esta subscrit."\
-                    "Error de l'API: {}".format(client_data['email_address'], e.text))
+                if e.status_code == 400 and e.text.title == "Member Exists":
+                    logger.warning("El correu {} que intentem subscriure ja esta subscrit."
+                                   "Error de l'API: {}".format(client_data['email_address'], e.text))
                 else:
                     raise osv.except_osv(
                         _('Error'),
                         _("Error en subscriure l'email {}:\n{}".format(client_data['email_address'], e.text)
-                    ))
+                          ))
 
     @job(queue="mailchimp_tasks")
     def update_client_email_in_all_lists_async(self, cursor, uid, ids, old_email, email, mailchimp_conn, context=None):
-        self.update_client_email_in_all_lists(cursor, uid, ids, old_email, email, mailchimp_conn, context=None)
+        self.update_client_email_in_all_lists(
+            cursor, uid, ids, old_email, email, mailchimp_conn, context=None)
 
     def update_client_email_in_all_lists(self, cursor, uid, ids, old_email, email, mailchimp_conn, context=None):
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
-        logger = logging.getLogger('openerp.{0}.update_client_email_in_all_lists'.format(__name__))
+        logger = logging.getLogger(
+            'openerp.{0}.update_client_email_in_all_lists'.format(__name__))
 
         all_lists = mailchimp_conn.lists.get_all_lists(
             fields=['lists.id,lists.name'],
@@ -261,7 +271,7 @@ class ResPartnerAddress(osv.osv):
                         list_id, subscriber_hash, client_data)
                 except ApiClientError as e:
                     logger.warning("Error en update l'email {} en la llista {}:\n{}".format(client_data['email_address'],
-                        mchimp_list["name"], e.text))
+                                                                                            mchimp_list["name"], e.text))
                 else:
                     mailchimp_conn.lists.create_list_member_note(
                         list_id, new_subscriber_hash, {
@@ -269,17 +279,19 @@ class ResPartnerAddress(osv.osv):
                         }
                     )
                     logger.info("L'email {} s'ha actualitzat en la llista {}".format(client_data['email_address'],
-                        mchimp_list["name"]))
+                                                                                     mchimp_list["name"]))
 
     @job(queue="mailchimp_tasks")
     def unsubscribe_client_email_in_all_lists_async(self, cursor, uid, ids, old_email, mailchimp_conn, context=None):
-        self.unsubscribe_client_email_in_all_lists(cursor, uid, ids, old_email, mailchimp_conn, context=None)
+        self.unsubscribe_client_email_in_all_lists(
+            cursor, uid, ids, old_email, mailchimp_conn, context=None)
 
     def unsubscribe_client_email_in_all_lists(self, cursor, uid, ids, old_email, mailchimp_conn, context=None):
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
 
-        logger = logging.getLogger('openerp.{0}.unsubscribe_client_email_in_all_lists'.format(__name__))
+        logging.getLogger(
+            'openerp.{0}.unsubscribe_client_email_in_all_lists'.format(__name__))
 
         all_lists = mailchimp_conn.lists.get_all_lists(
             fields=['lists.id,lists.name'],
@@ -290,5 +302,6 @@ class ResPartnerAddress(osv.osv):
         for mchimp_list in all_lists:
             list_id = mchimp_list['id']
             self.archieve_mail_in_list_sync(cursor, uid, ids, list_id, mailchimp_conn)
+
 
 ResPartnerAddress()

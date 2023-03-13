@@ -12,7 +12,7 @@ O = Client(**dbconfig.erppeek)
 
 
 # Obtenir la llista de resultats a tractar
-craw_ids = O.SomCrawlersTask.search([('resultat_bool','=',False)])
+craw_ids = O.SomCrawlersTask.search([('resultat_bool', '=', False)])
 
 total_crawlers = 0
 total_reintents = 0
@@ -37,20 +37,22 @@ for craw_id in craw_ids:
         for attachment_id in attachment_ids:
             attachment = O.IrAttachment.browse(attachment_id)
             try:
-                output += craw.task_step_ids[-1].import_wizard(attachment.name, attachment.datas)
+                output += craw.task_step_ids[-1].import_wizard(
+                    attachment.name, attachment.datas)
             except Exception as e:
-                output += "Error carregant el fitxer {}: {} \n".format(attachment.name, str(e))
+                output += "Error carregant el fitxer {}: {} \n".format(
+                    attachment.name, str(e))
                 result = False
             else:
                 total_correctes += 1
 
-        output  += "\n{} reimportats correctament".format(total_correctes)
+        output += "\n{} reimportats correctament".format(total_correctes)
         # Afegir nou resultat al crawler
         O.SomCrawlersResult.create({'task_id': craw_id,
-            'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M"),
-            'resultat_bool': result,
-            'resultat_text': output,
-        })
+                                    'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M"),
+                                    'resultat_bool': result,
+                                    'resultat_text': output,
+                                    })
 
 print """
     Hem trobat {} crawlers per reimportar.

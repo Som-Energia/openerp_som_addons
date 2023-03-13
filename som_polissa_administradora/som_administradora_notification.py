@@ -39,7 +39,7 @@ class SomAdministradoraModification(osv.osv):
         claimant_ids = modi_obj.search(cursor, uid, [
             ('claimant.name', 'ilike', '%{}%'.format(search_str))
         ])
-        return [('id', 'in', info_ids + pol_ids + old_admin_ids + new_admin_ids  + claimant_ids)]
+        return [('id', 'in', info_ids + pol_ids + old_admin_ids + new_admin_ids + claimant_ids)]
 
     _columns = {
         'name': fields.function(_ff_info,
@@ -89,13 +89,13 @@ class SomAdministradoraNotification(osv.osv):
             'res.partner',
             u'Receptor de la notificació (Titular o Administradora)',
             readonly=True),
-        'receptor_nif': fields.related('receptor','vat', type='char',
-                                    string='NIF receptor', readonly=True),
+        'receptor_nif': fields.related('receptor', 'vat', type='char',
+                                       string='NIF receptor', readonly=True),
         'pending_notification': fields.boolean(
             'E-mail de notificació pendent d\'enviar'),
         "modification": fields.many2many('som.admin.modification',
-            'som_admin_noti_modi_rel',
-            'admin_noti_id', 'admin_modi_id', 'Modificacions'),
+                                         'som_admin_noti_modi_rel',
+                                         'admin_noti_id', 'admin_modi_id', 'Modificacions'),
         'template_id': fields.many2one(
             'poweremail.templates',
             u'Plantilla de Poweremail a enviar',
@@ -112,7 +112,7 @@ class SomAdministradoraNotification(osv.osv):
             values['name'] = "Administradora notification"
 
         return super(SomAdministradoraNotification, self).create(cursor, uid, values,
-                                                      context=context)
+                                                                 context=context)
 
     def notificacio_valida(self, cursor, uid, noti_id):
         """Retorna True si alguna de les modificacions no té error
@@ -121,7 +121,8 @@ class SomAdministradoraNotification(osv.osv):
         admin_noti_obj = self.pool.get("som.admin.notification")
         admin_mod_obj = self.pool.get("som.admin.modification")
 
-        modi_ids = admin_noti_obj.read(cursor, uid, noti_id , ['modification'])['modification']
+        modi_ids = admin_noti_obj.read(cursor, uid, noti_id, ['modification'])[
+            'modification']
 
         for modi_id in modi_ids:
             if not admin_mod_obj.read(cursor, uid, modi_id, ['error'])['error']:
@@ -154,7 +155,7 @@ class SomAdministradoraNotification(osv.osv):
         params = {'state': 'single', 'priority': '0', 'from': ctx['from']}
 
         pwswz_id = pwswz_obj.create(cursor, uid, params, ctx)
-        pwemb_id = pwswz_obj.save_to_mailbox(cursor, uid, [pwswz_id], ctx)
+        pwswz_obj.save_to_mailbox(cursor, uid, [pwswz_id], ctx)
 
         return True
 
@@ -169,13 +170,13 @@ class SomAdministradoraNotification(osv.osv):
         if context is None:
             context = {}
         meta = context.get('meta')
-        attach_obj = self.pool.get('ir.attachment')
-        mail_obj = self.pool.get('poweremail.mailbox')
+        self.pool.get('ir.attachment')
+        self.pool.get('poweremail.mailbox')
         noti_obj = self.pool.get('som.admin.notification')
         for noti_id in ids:
             if not meta:
                 meta = {}
-            model = meta[noti_id].get('model', False)
+            meta[noti_id].get('model', False)
             if 'folder' in vals and 'date_mail' in vals:
                 if vals.get('folder', False) == 'sent':
                     noti_obj.write(cursor, uid, noti_id, {

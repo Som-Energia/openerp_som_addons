@@ -1,6 +1,7 @@
 from ..component_utils import dateformat
 from ..ProcesE1 import ProcesE1
 
+
 class E104(ProcesE1.ProcesE1):
     def __init__(self):
         ProcesE1.ProcesE1.__init__(self)

@@ -16,10 +16,14 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
         cursor, uid, pool = (self.txn.cursor, self.txn.user, self.openerp.pool)
         pl_item_o = pool.get('product.pricelist.item')
         product_bs_id = self.get_object_id('som_polissa_soci', 'bosocial_BS01')
-        pl_version15_id = self.get_object_id('giscedata_tarifas_peajes_20150101', 'boe_312_2014')
-        pl_version16_id = self.get_object_id('giscedata_tarifas_peajes_20160101', 'boe_302_2015')
-        pl_version17_id = self.get_object_id('giscedata_tarifas_peajes_20170101', 'boe_314_2016')
-        pl_version18_id = self.get_object_id('giscedata_tarifas_peajes_20180101', 'boe_314_2017')
+        pl_version15_id = self.get_object_id(
+            'giscedata_tarifas_peajes_20150101', 'boe_312_2014')
+        pl_version16_id = self.get_object_id(
+            'giscedata_tarifas_peajes_20160101', 'boe_302_2015')
+        pl_version17_id = self.get_object_id(
+            'giscedata_tarifas_peajes_20170101', 'boe_314_2016')
+        pl_version18_id = self.get_object_id(
+            'giscedata_tarifas_peajes_20180101', 'boe_314_2017')
 
         self.preu15 = 0.02
         self.preu16 = 0.01
@@ -29,8 +33,8 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
         # Afegim una regla a la llista de preus base (versió del 2015): la del
         # producte de BS.
         pl_item_cv = {
-            'product_id': product_bs_id,    'price_version_id': pl_version15_id,
-            'base_price': self.preu15,      'base': -3,  # Pricelist item price
+            'product_id': product_bs_id, 'price_version_id': pl_version15_id,
+            'base_price': self.preu15, 'base': -3,  # Pricelist item price
         }
         pl_item_o.create(cursor, uid, pl_item_cv)
         # El mateix d'abans pero per la versió del 2016
@@ -72,7 +76,8 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
         linia_factura_o = pool.get('giscedata.facturacio.factura.linia')
 
         polissa_id = self.get_object_id('giscedata_polissa', 'polissa_0001')
-        journal_id = self.get_object_id('giscedata_facturacio', 'facturacio_journal_energia')
+        journal_id = self.get_object_id(
+            'giscedata_facturacio', 'facturacio_journal_energia')
         partner_id = self.get_object_id('base', 'res_partner_agrolait')
         product_bs_id = self.get_object_id('som_polissa_soci', 'bosocial_BS01')
 
@@ -94,8 +99,8 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
 
         # Facturem
         wiz_cv = {
-            'polissa_id': polissa_id,           'journal_id': journal_id,
-            'date_start': data_lectura_inici,   'date_end': data_lectura_final,
+            'polissa_id': polissa_id, 'journal_id': journal_id,
+            'date_start': data_lectura_inici, 'date_end': data_lectura_final,
         }
         wiz_id = wiz_o.create(cursor, uid, wiz_cv)
         wiz_o.action_manual_invoice(cursor, uid, [wiz_id])
@@ -110,7 +115,8 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
         self.assertEqual(len(linia_bs_ids), 1)
 
         # Comprovem que el preu és l'adequat
-        linia_factura_v = linia_factura_o.read(cursor, uid, linia_bs_ids[0], ['price_subtotal'])
+        linia_factura_v = linia_factura_o.read(
+            cursor, uid, linia_bs_ids[0], ['price_subtotal'])
         self.assertEqual(linia_factura_v['price_subtotal'], (30 + 1) * self.preu16)
 
     def test_add_bono_social_lines_case_b(self):
@@ -130,7 +136,8 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
         linia_factura_o = pool.get('giscedata.facturacio.factura.linia')
 
         polissa_id = self.get_object_id('giscedata_polissa', 'polissa_0001')
-        journal_id = self.get_object_id('giscedata_facturacio', 'facturacio_journal_energia')
+        journal_id = self.get_object_id(
+            'giscedata_facturacio', 'facturacio_journal_energia')
         partner_id = self.get_object_id('base', 'res_partner_agrolait')
         product_bs_id = self.get_object_id('som_polissa_soci', 'bosocial_BS01')
 
@@ -139,7 +146,7 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
 
         # Configurem la pòlissa per tal de poder activar-la i facturar-la.
         polissa_wv = {
-            'data_ultima_lectura': data_lectura_inici,  'soci': partner_id,
+            'data_ultima_lectura': data_lectura_inici, 'soci': partner_id,
             'data_baixa': data_lectura_final
         }
         polissa_o.write(cursor, uid, polissa_id, polissa_wv)
@@ -153,8 +160,8 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
 
         # Facturem
         wiz_cv = {
-            'polissa_id': polissa_id,           'journal_id': journal_id,
-            'date_start': data_lectura_inici,   'date_end': data_lectura_final,
+            'polissa_id': polissa_id, 'journal_id': journal_id,
+            'date_start': data_lectura_inici, 'date_end': data_lectura_final,
         }
         wiz_id = wiz_o.create(cursor, uid, wiz_cv)
         wiz_o.action_manual_invoice(cursor, uid, [wiz_id])
@@ -170,10 +177,11 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
 
         # Comprovem que el preu és l'adequat
         import_linies = {
-            '2016': (333 + 1) * self.preu16,    '2017': (30 + 1) * self.preu17
+            '2016': (333 + 1) * self.preu16, '2017': (30 + 1) * self.preu17
         }
         linia_factura_f = ['price_subtotal', 'data_desde']
-        linia_factura_vs = linia_factura_o.read(cursor, uid, linia_bs_ids, linia_factura_f)
+        linia_factura_vs = linia_factura_o.read(
+            cursor, uid, linia_bs_ids, linia_factura_f)
         for linia_factura_v in linia_factura_vs:
             year = linia_factura_v['data_desde'][:4]
             self.assertEqual(linia_factura_v['price_subtotal'], import_linies[year])
@@ -197,7 +205,8 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
         linia_factura_o = pool.get('giscedata.facturacio.factura.linia')
 
         polissa_id = self.get_object_id('giscedata_polissa', 'polissa_0001')
-        journal_id = self.get_object_id('giscedata_facturacio', 'facturacio_journal_energia')
+        journal_id = self.get_object_id(
+            'giscedata_facturacio', 'facturacio_journal_energia')
         partner_id = self.get_object_id('base', 'res_partner_agrolait')
         lectura_id = self.get_object_id('giscedata_facturacio', 'lectura_0006')
         product_bs_id = self.get_object_id('som_polissa_soci', 'bosocial_BS01')
@@ -207,7 +216,7 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
 
         # Configurem la pòlissa per tal de poder activar-la i facturar-la.
         polissa_wv = {
-            'data_ultima_lectura': data_lectura_inici,  'soci': partner_id,
+            'data_ultima_lectura': data_lectura_inici, 'soci': partner_id,
             'data_baixa': data_lectura_final
         }
         polissa_o.write(cursor, uid, polissa_id, polissa_wv)
@@ -226,8 +235,8 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
 
         # Facturem
         wiz_cv = {
-            'polissa_id': polissa_id,           'journal_id': journal_id,
-            'date_start': data_lectura_inici,   'date_end': data_lectura_final,
+            'polissa_id': polissa_id, 'journal_id': journal_id,
+            'date_start': data_lectura_inici, 'date_end': data_lectura_final,
         }
         wiz_id = wiz_o.create(cursor, uid, wiz_cv)
         wiz_o.action_manual_invoice(cursor, uid, [wiz_id])
@@ -243,11 +252,12 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
 
         # Comprovem que el preu és l'adequat
         import_linies = {
-            '2016': (333 + 1) * self.preu16,    '2017': (364 + 1) * self.preu17,
+            '2016': (333 + 1) * self.preu16, '2017': (364 + 1) * self.preu17,
             '2018': (30 + 1) * self.preu18,
         }
         linia_factura_f = ['price_subtotal', 'data_desde']
-        linia_factura_vs = linia_factura_o.read(cursor, uid, linia_bs_ids, linia_factura_f)
+        linia_factura_vs = linia_factura_o.read(
+            cursor, uid, linia_bs_ids, linia_factura_f)
         for linia_factura_v in linia_factura_vs:
             year = linia_factura_v['data_desde'][:4]
             self.assertAlmostEqual(linia_factura_v['price_subtotal'], import_linies[year])
@@ -270,11 +280,15 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
         pl_version_o = pool.get('product.pricelist.version')
 
         polissa_id = self.get_object_id('giscedata_polissa', 'polissa_0001')
-        journal_id = self.get_object_id('giscedata_facturacio', 'facturacio_journal_energia')
+        journal_id = self.get_object_id(
+            'giscedata_facturacio', 'facturacio_journal_energia')
         partner_id = self.get_object_id('base', 'res_partner_agrolait')
-        pl_version16_id = self.get_object_id('giscedata_tarifas_peajes_20160101', 'boe_302_2015')
-        pl_version17_id = self.get_object_id('giscedata_tarifas_peajes_20170101', 'boe_314_2016')
-        pl_version18_id = self.get_object_id('giscedata_tarifas_peajes_20180101', 'boe_314_2017')
+        pl_version16_id = self.get_object_id(
+            'giscedata_tarifas_peajes_20160101', 'boe_302_2015')
+        pl_version17_id = self.get_object_id(
+            'giscedata_tarifas_peajes_20170101', 'boe_314_2016')
+        pl_version18_id = self.get_object_id(
+            'giscedata_tarifas_peajes_20180101', 'boe_314_2017')
         product_bs_id = self.get_object_id('som_polissa_soci', 'bosocial_BS01')
 
         data_lectura_inici = '2016-02-02'
@@ -290,7 +304,7 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
 
         # Configurem la pòlissa per tal de poder activar-la i facturar-la.
         polissa_wv = {
-            'data_ultima_lectura': data_lectura_inici,  'soci': partner_id,
+            'data_ultima_lectura': data_lectura_inici, 'soci': partner_id,
         }
         polissa_o.write(cursor, uid, polissa_id, polissa_wv)
 
@@ -303,8 +317,8 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
 
         # Facturem
         wiz_cv = {
-            'polissa_id': polissa_id,           'journal_id': journal_id,
-            'date_start': data_lectura_inici,   'date_end': data_lectura_final,
+            'polissa_id': polissa_id, 'journal_id': journal_id,
+            'date_start': data_lectura_inici, 'date_end': data_lectura_final,
         }
         wiz_id = wiz_o.create(cursor, uid, wiz_cv)
         wiz_o.action_manual_invoice(cursor, uid, [wiz_id])
@@ -338,11 +352,14 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
         linia_factura_o = pool.get('giscedata.facturacio.factura.linia')
 
         polissa_id = self.get_object_id('giscedata_polissa', 'polissa_0001')
-        journal_id = self.get_object_id('giscedata_facturacio', 'facturacio_journal_energia')
+        journal_id = self.get_object_id(
+            'giscedata_facturacio', 'facturacio_journal_energia')
         partner_id = self.get_object_id('base', 'res_partner_agrolait')
         product_bs_id = self.get_object_id('som_polissa_soci', 'bosocial_BS01')
-        pl_version17_id = self.get_object_id('giscedata_tarifas_peajes_20170101', 'boe_314_2016')
-        pl_version18_id = self.get_object_id('giscedata_tarifas_peajes_20180101', 'boe_314_2017')
+        pl_version17_id = self.get_object_id(
+            'giscedata_tarifas_peajes_20170101', 'boe_314_2016')
+        pl_version18_id = self.get_object_id(
+            'giscedata_tarifas_peajes_20180101', 'boe_314_2017')
 
         data_lectura_inici = '2016-02-02'
         data_lectura_final = '2017-01-31'
@@ -356,7 +373,7 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
 
         # Configurem la pòlissa per tal de poder activar-la i facturar-la.
         polissa_wv = {
-            'data_ultima_lectura': data_lectura_inici,  'soci': partner_id,
+            'data_ultima_lectura': data_lectura_inici, 'soci': partner_id,
             'data_baixa': data_lectura_final
         }
         polissa_o.write(cursor, uid, polissa_id, polissa_wv)
@@ -370,8 +387,8 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
 
         # Facturem
         wiz_cv = {
-            'polissa_id': polissa_id,           'journal_id': journal_id,
-            'date_start': data_lectura_inici,   'date_end': data_lectura_final,
+            'polissa_id': polissa_id, 'journal_id': journal_id,
+            'date_start': data_lectura_inici, 'date_end': data_lectura_final,
         }
         wiz_id = wiz_o.create(cursor, uid, wiz_cv)
         wiz_o.action_manual_invoice(cursor, uid, [wiz_id])
@@ -405,18 +422,21 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
         linia_factura_o = pool.get('giscedata.facturacio.factura.linia')
 
         polissa_id = self.get_object_id('giscedata_polissa', 'polissa_0001')
-        journal_id = self.get_object_id('giscedata_facturacio', 'facturacio_journal_energia')
+        journal_id = self.get_object_id(
+            'giscedata_facturacio', 'facturacio_journal_energia')
         partner_id = self.get_object_id('base', 'res_partner_agrolait')
         product_bs_id = self.get_object_id('som_polissa_soci', 'bosocial_BS01')
-        pl_version16_id = self.get_object_id('giscedata_tarifas_peajes_20160101', 'boe_302_2015')
+        pl_version16_id = self.get_object_id(
+            'giscedata_tarifas_peajes_20160101', 'boe_302_2015')
         data_lectura_inici = '2016-02-02'
         data_lectura_final = '2017-01-31'
 
-        end_plv_16 = pl_version_o.read(cursor, uid, pl_version16_id, ['date_end'])['date_end']
+        end_plv_16 = pl_version_o.read(cursor, uid, pl_version16_id, [
+                                       'date_end'])['date_end']
 
         # Configurem la pòlissa per tal de poder activar-la i facturar-la.
         polissa_wv = {
-            'data_ultima_lectura': data_lectura_inici,  'soci': partner_id,
+            'data_ultima_lectura': data_lectura_inici, 'soci': partner_id,
             'data_baixa': data_lectura_final
         }
         polissa_o.write(cursor, uid, polissa_id, polissa_wv)
@@ -431,8 +451,8 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
 
         # Facturem
         wiz_cv = {
-            'polissa_id': polissa_id,           'journal_id': journal_id,
-            'date_start': data_lectura_inici,   'date_end': data_lectura_final,
+            'polissa_id': polissa_id, 'journal_id': journal_id,
+            'date_start': data_lectura_inici, 'date_end': data_lectura_final,
         }
         wiz_id = wiz_o.create(cursor, uid, wiz_cv)
         wiz_o.action_manual_invoice(cursor, uid, [wiz_id])
@@ -450,7 +470,8 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
         # Comprovem que el preu és l'adequat
         import_linia = (333 + 1) * self.preu16
         linia_factura_f = ['price_subtotal', 'data_desde']
-        linia_factura_v = linia_factura_o.read(cursor, uid, linia_bs_ids[0], linia_factura_f)
+        linia_factura_v = linia_factura_o.read(
+            cursor, uid, linia_bs_ids[0], linia_factura_f)
         self.assertEqual(linia_factura_v['price_subtotal'], import_linia)
 
     def test_add_bono_social_lines_case_g(self):
@@ -471,18 +492,20 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
         linia_factura_o = pool.get('giscedata.facturacio.factura.linia')
 
         polissa_id = self.get_object_id('giscedata_polissa', 'polissa_0001')
-        journal_id = self.get_object_id('giscedata_facturacio', 'facturacio_journal_energia')
+        journal_id = self.get_object_id(
+            'giscedata_facturacio', 'facturacio_journal_energia')
         partner_id = self.get_object_id('base', 'res_partner_agrolait')
         product_bs_id = self.get_object_id('som_polissa_soci', 'bosocial_BS01')
-        pl_version16_id = self.get_object_id('giscedata_tarifas_peajes_20160101', 'boe_302_2015')
+        pl_version16_id = self.get_object_id(
+            'giscedata_tarifas_peajes_20160101', 'boe_302_2015')
         data_lectura_inici = '2016-02-02'
         data_lectura_final = '2017-01-31'
 
-        end_plv_16 = pl_version_o.read(cursor, uid, pl_version16_id, ['date_end'])['date_end']
+        pl_version_o.read(cursor, uid, pl_version16_id, ['date_end'])['date_end']
 
         # Configurem la pòlissa per tal de poder activar-la i facturar-la.
         polissa_wv = {
-            'data_ultima_lectura': data_lectura_inici,  'soci': partner_id,
+            'data_ultima_lectura': data_lectura_inici, 'soci': partner_id,
             'data_baixa': data_lectura_final
         }
         polissa_o.write(cursor, uid, polissa_id, polissa_wv)
@@ -497,8 +520,8 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
 
         # Facturem
         wiz_cv = {
-            'polissa_id': polissa_id,           'journal_id': journal_id,
-            'date_start': data_lectura_inici,   'date_end': data_lectura_final,
+            'polissa_id': polissa_id, 'journal_id': journal_id,
+            'date_start': data_lectura_inici, 'date_end': data_lectura_final,
         }
         wiz_id = wiz_o.create(cursor, uid, wiz_cv)
         wiz_o.action_manual_invoice(cursor, uid, [wiz_id])

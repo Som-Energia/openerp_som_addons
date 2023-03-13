@@ -18,7 +18,8 @@ class GoogleDriveManager(osv.osv_memory):
     def getCredentials(self, cursor, uid, context={}):
         config = self.pool.get('res.config')
         token_file = config.get(cursor, uid, 'google_drive_token_file', 'token.pickle')
-        client_secret_file = config.get(cursor, uid, 'google_drive_client_secret_file', 'client_secrets.json')
+        client_secret_file = config.get(
+            cursor, uid, 'google_drive_client_secret_file', 'client_secrets.json')
         creds = None
         # The file token.pickle stores the user's access and refresh tokens, and is
         # created automatically when the authorization flow completes for the first
@@ -48,7 +49,8 @@ class GoogleDriveManager(osv.osv_memory):
         }
 
         service = build('drive', 'v3', credentials=cred)
-        media = MediaFileUpload(document_path,  mimetype='text/html', resumable=True)
+        media = MediaFileUpload(document_path, mimetype='text/html', resumable=True)
         return service.files().create(body=file_metadata, media_body=media).execute()
+
 
 GoogleDriveManager()

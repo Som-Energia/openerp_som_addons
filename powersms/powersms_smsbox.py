@@ -12,6 +12,7 @@ import six
 
 LOGGER = netsvc.Logger()
 
+
 class PowersmsSMSbox(osv.osv):
     _name = "powersms.smsbox"
     _description = 'Power SMS SMSbox included all type inbox,outbox,junk..'
@@ -21,7 +22,7 @@ class PowersmsSMSbox(osv.osv):
     callbacks = {'create': 'powersms_create_callback',
                  'write': 'powersms_write_callback',
                  'unlink': 'powersms_unlink_callback',
-                }
+                 }
 
     def powersms_callback(self, cursor, uid, ids, func, vals=None, context=None):
         """Crida el callback callbacks[func] del reference de ids
@@ -60,10 +61,10 @@ class PowersmsSMSbox(osv.osv):
             try:
                 if vals:
                     getattr(src, self.callbacks[func])(cursor, uid,
-                                                ids_cbk[model], vals, ctx)
+                                                       ids_cbk[model], vals, ctx)
                 else:
                     getattr(src, self.callbacks[func])(cursor, uid,
-                                                ids_cbk[model], ctx)
+                                                       ids_cbk[model], ctx)
             except AttributeError:
                 pass
 
@@ -111,12 +112,13 @@ class PowersmsSMSbox(osv.osv):
             select = [ids]
         valid_select = []
         for id in select:
-            res = self.validate_referenced_object_exists(cursor, uid, [id], fields, context=None)
+            res = self.validate_referenced_object_exists(
+                cursor, uid, [id], fields, context=None)
             if res:
                 valid_select.append(id)
             else:
                 super(PowersmsSMSbox,
-                        self).unlink(cursor, uid, [id], context)
+                      self).unlink(cursor, uid, [id], context)
         ret = []
         if valid_select:
             ret = super(PowersmsSMSbox,
@@ -133,7 +135,7 @@ class PowersmsSMSbox(osv.osv):
             vals['meta'] = json.dumps(meta)
         self.powersms_callback(cursor, uid, ids, 'write', vals, context)
         ret = super(PowersmsSMSbox,
-                     self).write(cursor, uid, ids, vals, context)
+                    self).write(cursor, uid, ids, vals, context)
         return ret
 
     def unlink(self, cursor, uid, ids, context=None):
@@ -141,7 +143,7 @@ class PowersmsSMSbox(osv.osv):
             context = {}
         self.powersms_callback(cursor, uid, ids, 'unlink', context=context)
         ret = super(PowersmsSMSbox,
-                     self).unlink(cursor, uid, ids, context)
+                    self).unlink(cursor, uid, ids, context)
         return ret
 
     def _get_models(self, cursor, uid, context={}):
@@ -157,10 +159,9 @@ class PowersmsSMSbox(osv.osv):
             self.send_all_sms(cursor, user, context=context)
         except Exception, e:
             LOGGER.notifyChannel(
-                                 _("Power SMS"),
-                                 netsvc.LOG_ERROR,
-                                 _("Error sending sms: %s") % str(e))
-
+                _("Power SMS"),
+                netsvc.LOG_ERROR,
+                _("Error sending sms: %s") % str(e))
 
     def send_all_sms(self, cr, uid, ids=None, context=None):
         if ids is None:
@@ -168,7 +169,7 @@ class PowersmsSMSbox(osv.osv):
         if context is None:
             context = {}
         #8888888888888 SENDS SMS IN OUTBOX 8888888888888888888#
-        #get ids of smss in outbox
+        # get ids of smss in outbox
         filters = [('folder', '=', 'outbox'), ('state', '!=', 'sending')]
         if 'filters' in context.keys():
             for each_filter in context['filters']:
@@ -186,13 +187,13 @@ class PowersmsSMSbox(osv.osv):
         db = pooler.get_db_only(cr.dbname)
         cr_tmp = db.cursor()
         try:
-            self.write(cr_tmp, uid, ids, {'state':'sending'}, context)
+            self.write(cr_tmp, uid, ids, {'state': 'sending'}, context)
             cr_tmp.commit()
         except:
             cr_tmp.rollback()
         finally:
             cr_tmp.close()
-        #send sms one by one
+        # send sms one by one
         if ids:
             self.async_send_this_sms(cr, uid, ids, context)
         return True
@@ -205,13 +206,14 @@ class PowersmsSMSbox(osv.osv):
         if ids is None:
             ids = []
         #8888888888888 SENDS THIS SMS IN OUTBOX 8888888888888888888#
-        #send sms one by one
+        # send sms one by one
         if not context:
             context = {}
         core_obj = self.pool.get('powersms.core_accounts')
         for id in ids:
             try:
-                values = self.read(cr, uid, id, [], context) #Values will be a dictionary of all entries in the record ref by id
+                # Values will be a dictionary of all entries in the record ref by id
+                values = self.read(cr, uid, id, [], context)
                 result = core_obj.send_sms(
                     cr, uid, [values['psms_account_id'][0]],
                     values.get('psms_from', u'') or u'',
@@ -220,16 +222,18 @@ class PowersmsSMSbox(osv.osv):
                     context=context
                 )
                 if result == True:
-                    self.write(cr, uid, id, {'folder':'sent', 'state':'sent', 'date_sms':time.strftime("%Y-%m-%d %H:%M:%S")}, context)
+                    self.write(cr, uid, id, {'folder': 'sent', 'state': 'sent', 'date_sms': time.strftime(
+                        "%Y-%m-%d %H:%M:%S")}, context)
                     self.historise(cr, uid, [id], "SMS sent successfully", context)
                 else:
                     self.historise(cr, uid, [id], result, context, error=True)
-                    self.write(cr, uid, id, {'state':'na'}, context)
+                    self.write(cr, uid, id, {'state': 'na'}, context)
             except Exception as error:
                 logger = netsvc.Logger()
-                logger.notifyChannel(_("Power SMS"), netsvc.LOG_ERROR, _("Sending of SMS %s failed. Probable Reason: Could not login to server\nError: %s") % (id, error))
+                logger.notifyChannel(_("Power SMS"), netsvc.LOG_ERROR, _(
+                    "Sending of SMS %s failed. Probable Reason: Could not login to server\nError: %s") % (id, error))
                 self.historise(cr, uid, [id], error, context, error=True)
-                self.write(cr, uid, id, {'state':'na'}, context)
+                self.write(cr, uid, id, {'state': 'na'}, context)
         return True
 
     def historise(self, cr, uid, ids, message='', context=None, error=False):
@@ -264,48 +268,49 @@ class PowersmsSMSbox(osv.osv):
         return self.check_mobile(sms['psms_to'])
 
     _columns = {
-            'psms_account_id' :fields.many2one(
-                            'powersms.core_accounts',
-                            'User account',
-                            required=True),
-            'psms_from':fields.char(
-                            'From',
-                            size=64),
-            'date_sms':fields.datetime(
-                            'Rec/Sent Date'),
-            'psms_to':fields.char(
-                            'Recepient (To)',
-                            size=250,),
-            'psms_body_text':fields.text(
-                            'Standard Body (Text)'),
-            'state':fields.selection([
-                            ('read', 'Read'),
-                            ('unread', 'Un-Read'),
-                            ('na', 'Not Applicable'),
-                            ('sending', 'Sending'),
-                            ('sent', 'Sent'),
-                            ], 'Status', required=True),
-            'folder':fields.selection([
-                            ('inbox', 'Inbox'),
-                            ('drafts', 'Drafts'),
-                            ('outbox', 'Outbox'),
-                            ('trash', 'Trash'),
-                            ('followup', 'Follow Up'),
-                            ('sent', 'Sent Items'),
-                            ('error', 'Error'),
-                            ], 'Folder', required=True),
-            'history':fields.text(
-                            'History',
-                            readonly=True,
-                            store=True),
-            'reference': fields.reference('Source Object', selection=_get_models,
-                                        size=128),
-            'meta': fields.text('Meta information')
-        }
+        'psms_account_id': fields.many2one(
+            'powersms.core_accounts',
+            'User account',
+            required=True),
+        'psms_from': fields.char(
+            'From',
+            size=64),
+        'date_sms': fields.datetime(
+            'Rec/Sent Date'),
+        'psms_to': fields.char(
+            'Recepient (To)',
+            size=250,),
+        'psms_body_text': fields.text(
+            'Standard Body (Text)'),
+        'state': fields.selection([
+            ('read', 'Read'),
+            ('unread', 'Un-Read'),
+            ('na', 'Not Applicable'),
+            ('sending', 'Sending'),
+            ('sent', 'Sent'),
+        ], 'Status', required=True),
+        'folder': fields.selection([
+            ('inbox', 'Inbox'),
+            ('drafts', 'Drafts'),
+            ('outbox', 'Outbox'),
+            ('trash', 'Trash'),
+            ('followup', 'Follow Up'),
+            ('sent', 'Sent Items'),
+            ('error', 'Error'),
+        ], 'Folder', required=True),
+        'history': fields.text(
+            'History',
+            readonly=True,
+            store=True),
+        'reference': fields.reference('Source Object', selection=_get_models,
+                                      size=128),
+        'meta': fields.text('Meta information')
+    }
 
     _defaults = {
         'state': lambda * a: 'na',
         'folder': lambda * a: 'outbox',
     }
+
 
 PowersmsSMSbox()

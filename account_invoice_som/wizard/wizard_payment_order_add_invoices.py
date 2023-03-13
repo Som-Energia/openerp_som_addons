@@ -26,6 +26,7 @@ INVOICES_STATES = [
     ('all', _('Totes'))
 ]
 
+
 class WizardPaymentOrderAddInvoices(osv.osv_memory):
     _name = 'wizard.payment.order.add.invoices'
 
@@ -36,13 +37,13 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
         wiz = self.browse(cursor, uid, ids[0])
         search_params = []
 
-        search_params_relation =  {
+        search_params_relation = {
             'invoice_state': [('state', '=', wiz.invoice_state)],
             'init_date': [('date_due', '>=', wiz.init_date)],
             'end_date': [('date_due', '<=', wiz.end_date)],
             'invoice_type': [('type', '=', wiz.invoice_type)],
             'fiscal_position': [('fiscal_position', '=', wiz.fiscal_position.id)],
-            'payment_type': [('payment_type','=', wiz.payment_type.id)],
+            'payment_type': [('payment_type', '=', wiz.payment_type.id)],
             'pending_state_text': [('pending_state', 'like', '{}%'.format(wiz.pending_state_text))]
         }
 
@@ -54,17 +55,18 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
         if not wiz.allow_re:
             search_params += [('rectificative_type', '!=', 'R')]
 
-        res_ids = inv_obj.search(cursor, uid, search_params + [('payment_order_id','=',False)])
+        res_ids = inv_obj.search(cursor, uid, search_params
+                                 + [('payment_order_id', '=', False)])
         values = {
             'len_result': 'La cerca ha trobat {} resultats'.format(len(res_ids)),
-            'state':'step',
+            'state': 'step',
             'total_facts_to_add': len(res_ids),
             'res_ids': res_ids
         }
         self.write(cursor, uid, ids, values)
 
     def add_invoices_with_limit(self, cursor, uid, ids, context=None):
-        wiz = self.browse(cursor, uid, ids[0])
+        self.browse(cursor, uid, ids[0])
 
         self.write(cursor, uid, ids, {
             'len_result': u'La tasca s\'ha encuat de forma asíncrona',
@@ -84,12 +86,12 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
         inv_obj = self.pool.get('account.invoice')
         order = order_obj.browse(cursor, uid, order_id)
         jobs_ids = []
-        
+
         for inv_id in inv_ids:
             j = inv_obj.afegeix_a_remesa_async(cursor, uid, [inv_id], order_id,
-                                                context)
+                                               context)
             jobs_ids.append(j.id)
-        
+
         create_jobs_group(
             cursor.dbname, uid,
             _(u'Remesa {} - afegint {} factures a la remesa').format(
@@ -116,19 +118,19 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
         'order': fields.many2one('payment.order', 'Remesa', select=True),
         'len_result': fields.char('Resultat de la cerca', size=256),
         'total_facts_to_add': fields.integer(_('Num. de factures a incloure'),
-            help='Numero de factures per afegir a la remesa'),
+                                             help='Numero de factures per afegir a la remesa'),
         'res_ids': fields.json("Dades d\'us per l\'assistent"),
         'pending_state_text': fields.char('Estat pendent', size=256),
         'init_date': fields.date(_('Data inici')),
         'end_date': fields.date(_('Data final')),
-        'invoice_state': fields.selection([(False, '')]+INVOICES_STATES, _('Estat')),
-        'invoice_type': fields.selection([(False, '')]+ INVOICE_TYPES, _('Tipus')),
+        'invoice_state': fields.selection([(False, '')] + INVOICES_STATES, _('Estat')),
+        'invoice_type': fields.selection([(False, '')] + INVOICE_TYPES, _('Tipus')),
         'fiscal_position': fields.many2one('account.fiscal.position', 'Posició Fiscal'),
         'payment_type': fields.many2one('payment.type', 'Tipus de pagament'),
         'allow_grouped': fields.boolean('Permetre agrupacions',
-            help='Activar aquesta opció admet factures agrupades'),
+                                        help='Activar aquesta opció admet factures agrupades'),
         'allow_re': fields.boolean('Permetre rectificadores',
-            help='Activar aquesta opció admet factures rectificadores')
+                                   help='Activar aquesta opció admet factures rectificadores')
     }
 
     _defaults = {
@@ -142,5 +144,6 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
         'allow_grouped': False,
         'allow_re': False
     }
+
 
 WizardPaymentOrderAddInvoices()

@@ -43,15 +43,14 @@ class WizardOpenFacturesSendMail(osv.osv_memory):
                 for factura in sorted_factures:
                     factura_id = factura['id']
                     fact_obj.invoice_open(cursor, uid,
-                                                [factura_id], context=context)
+                                          [factura_id], context=context)
                 tmp_cr.commit()
                 open_facts += f_ids
             except Exception as exc:
-                    logger.error("Error obrint la factura %s: %s ", factura['id'], exc)
-                    tmp_cr.rollback()
+                logger.error("Error obrint la factura %s: %s ", factura['id'], exc)
+                tmp_cr.rollback()
             finally:
                 tmp_cr.close()
-
 
         if not open_facts:
             raise osv.except_osv(_('Error!'), ("No s'ha pogut obrir cap factura!"))
@@ -84,11 +83,9 @@ class WizardOpenFacturesSendMail(osv.osv_memory):
                 context=context
             ),
             'target': 'new',
-		}
+        }
 
         return res
-
-
 
     _columns = {
         'state': fields.selection(
@@ -98,5 +95,6 @@ class WizardOpenFacturesSendMail(osv.osv_memory):
     _defaults = {
         'state': lambda *a: 'init'
     }
+
 
 WizardOpenFacturesSendMail()

@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
-from ooquery.expression import Field
 from addons import get_module_resource
 from osv import osv, fields
 from addons.giscedata_facturacio.giscedata_polissa import _get_polissa_from_energy_invoice
@@ -29,7 +27,8 @@ TARIFF_MAPPING = {
     "6.1A": "6.1TD",
     "6.1B": "6.2TD"
 }
- 
+
+
 class GiscedataPolissa(osv.osv):
     _name = 'giscedata.polissa'
     _inherit = 'giscedata.polissa'
@@ -45,11 +44,12 @@ class GiscedataPolissa(osv.osv):
         cnae_obj = self.pool.get('giscemisc.cnae')
 
         if "cnae" in vals and vals['cnae']:
-             cnaes_ssaa = eval(cfg_obj.get(cursor, uid, 'sw_cnae_ssaa', '["3515", "3516", "3518", "3519"]'))
-             cnae_name = cnae_obj.read(cursor, uid, vals['cnae'], ["name"])["name"]
+            cnaes_ssaa = eval(cfg_obj.get(cursor, uid, 'sw_cnae_ssaa',
+                              '["3515", "3516", "3518", "3519"]'))
+            cnae_name = cnae_obj.read(cursor, uid, vals['cnae'], ["name"])["name"]
 
-             if cnae_name in cnaes_ssaa:
-                 vals['contract_type'] = '05'
+            if cnae_name in cnaes_ssaa:
+                vals['contract_type'] = '05'
 
         return vals
 
@@ -70,7 +70,8 @@ class GiscedataPolissa(osv.osv):
             context = {}
 
         conf_obj = self.pool.get('res.config')
-        change_contract_type = int(conf_obj.get(cursor, uid, "onchange_contract_type_by_cnae", 0))
+        change_contract_type = int(conf_obj.get(
+            cursor, uid, "onchange_contract_type_by_cnae", 0))
         if change_contract_type:
             vals = self.update_contract_type(cursor, uid, vals, context=context)
         res = super(GiscedataPolissa, self).write(cursor, uid, ids, vals, context=context)
@@ -124,7 +125,8 @@ class GiscedataPolissa(osv.osv):
     def get_new_tariff(self, cursor, uid, ids):
         if not isinstance(ids, list):
             ids = [ids]
-        res = dict.fromkeys([str(_id) for _id in ids], {'tarifa_codi':'', 'potencies':[]})
+        res = dict.fromkeys([str(_id) for _id in ids], {
+                            'tarifa_codi': '', 'potencies': []})
         for pol in self.browse(cursor, uid, ids):
             pol_reads = self.read(cursor, uid, pol['id'], ['tarifa_codi', 'tensio'])
             if pol_reads['tarifa_codi'].startswith("3.1") and pol_reads['tensio'] > 30000:
@@ -138,7 +140,8 @@ class GiscedataPolissa(osv.osv):
             for potencia_periode in pol['potencies_periode']:
                 potencies_periode.append(potencia_periode.potencia)
 
-            res[str(pol['id'])]['potencies'] = self.get_new_potencies(potencies_periode, new_tariff_code) if potencies_periode != [] else []
+            res[str(pol['id'])]['potencies'] = self.get_new_potencies(
+                potencies_periode, new_tariff_code) if potencies_periode != [] else []
 
         return res
 
@@ -248,13 +251,13 @@ class GiscedataPolissa(osv.osv):
         return [('id', 'in', self._get_fact_enderrerida_ids(cursor, uid, context=context))]
 
     def _ff_fact_endarrerida(self, cursor, uid, ids, field_name, args, context=None):
-
         """ Marquem una factura com a endarrerida:
                 * Fa més de 1.33 * facturacio dies que no es factura
                 * La pólissa no té cap factura fa 1.33 * facturacio
                   dies que està facturada
         """
-        res = super(GiscedataPolissa, self)._ff_fact_endarrerida(cursor, uid, ids, field_name, args, context=context)
+        res = super(GiscedataPolissa, self)._ff_fact_endarrerida(
+            cursor, uid, ids, field_name, args, context=context)
         pol_ids = self._get_fact_enderrerida_ids(cursor, uid, context=context)
         res.update(dict.fromkeys(pol_ids, True))
         return res
@@ -295,35 +298,35 @@ class GiscedataPolissa(osv.osv):
             categories_ids = []
             pol = self.browse(cursor, uid, _id)
 
-            if pol.cnae.name not in ['9810','9820']:
+            if pol.cnae.name not in ['9810', '9820']:
                 cnae_eie = True
             if partner_obj.is_enterprise_vat(pol.titular.vat):
                 nif_eie = True
 
             if cnae_eie and nif_eie:
-                categories_ids.append((4,eie_id))
-                categories_ids.append((4,eie_cnae_vat_id))
-                categories_ids.append((3,eie_cnae_id))
-                categories_ids.append((3,domestic_id))
-                categories_ids.append((3,eie_vat_id))
+                categories_ids.append((4, eie_id))
+                categories_ids.append((4, eie_cnae_vat_id))
+                categories_ids.append((3, eie_cnae_id))
+                categories_ids.append((3, domestic_id))
+                categories_ids.append((3, eie_vat_id))
             elif cnae_eie and not nif_eie:
-                categories_ids.append((4,eie_id))
-                categories_ids.append((4,eie_cnae_id))
-                categories_ids.append((3,domestic_id))
-                categories_ids.append((3,eie_cnae_vat_id))
-                categories_ids.append((3,eie_vat_id))
+                categories_ids.append((4, eie_id))
+                categories_ids.append((4, eie_cnae_id))
+                categories_ids.append((3, domestic_id))
+                categories_ids.append((3, eie_cnae_vat_id))
+                categories_ids.append((3, eie_vat_id))
             elif not cnae_eie and nif_eie:
-                categories_ids.append((4,eie_id))
-                categories_ids.append((4,eie_vat_id))
-                categories_ids.append((3,domestic_id))
-                categories_ids.append((3,eie_cnae_id))
-                categories_ids.append((3,eie_cnae_vat_id))
+                categories_ids.append((4, eie_id))
+                categories_ids.append((4, eie_vat_id))
+                categories_ids.append((3, domestic_id))
+                categories_ids.append((3, eie_cnae_id))
+                categories_ids.append((3, eie_cnae_vat_id))
             else:
-                categories_ids.append((4,domestic_id))
-                categories_ids.append((3,eie_id))
-                categories_ids.append((3,eie_vat_id))
-                categories_ids.append((3,eie_cnae_id))
-                categories_ids.append((3,eie_cnae_vat_id))
+                categories_ids.append((4, domestic_id))
+                categories_ids.append((3, eie_id))
+                categories_ids.append((3, eie_vat_id))
+                categories_ids.append((3, eie_cnae_id))
+                categories_ids.append((3, eie_cnae_vat_id))
 
             polissa_obj.write(cursor, uid, [_id], {'category_id': categories_ids})
 
@@ -333,12 +336,14 @@ class GiscedataPolissa(osv.osv):
 
         res = dict.fromkeys(ids, 0)
         if ids:
-            pols_dates = self.read(cursor, uid, ids, ['data_ultima_lectura', 'data_ultima_lectura_f1', 'data_alta'])
+            pols_dates = self.read(
+                cursor, uid, ids, ['data_ultima_lectura', 'data_ultima_lectura_f1', 'data_alta'])
             for p_dates in pols_dates:
                 data_desde = p_dates['data_ultima_lectura'] or p_dates['data_alta']
                 data_fins = p_dates['data_ultima_lectura_f1']
                 if data_fins and data_desde:
-                    res[p_dates['id']] = (datetime.strptime(data_fins, '%Y-%m-%d') - datetime.strptime(data_desde, '%Y-%m-%d')).days
+                    res[p_dates['id']] = (datetime.strptime(
+                        data_fins, '%Y-%m-%d') - datetime.strptime(data_desde, '%Y-%m-%d')).days
 
         return res
 

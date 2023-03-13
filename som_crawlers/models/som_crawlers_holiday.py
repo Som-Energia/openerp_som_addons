@@ -8,16 +8,17 @@ class SomCrawlersHoliday(osv.osv):
     _order = 'date desc'
 
     def is_working_day(self, cursor, uid, date):
-        res = self.search(cursor, uid, [('date','=',date)])
+        res = self.search(cursor, uid, [('date', '=', date)])
         return not res
 
     def is_leaving_day(self, cursor, uid, date):
-        res = self.search(cursor, uid, [('date','=',date)])
+        res = self.search(cursor, uid, [('date', '=', date)])
         return res
 
     _columns = {
         'description': fields.char('Descripcio', size=100),
         'date': fields.date('Data'),
     }
+
 
 SomCrawlersHoliday()

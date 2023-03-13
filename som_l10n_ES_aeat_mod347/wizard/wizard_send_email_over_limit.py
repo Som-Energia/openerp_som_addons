@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from tools.translate import _
 from osv import osv, fields
 
 
@@ -23,7 +22,8 @@ class SendEmailOverLimitWizard(osv.osv_memory):
     def send_email_to_partner_records(self, cursor, uid, ids, context=None):
         active_id = context.get("active_id")
         report_obj = self.pool.get("l10n.es.aeat.mod347.report")
-        ret_value = report_obj.send_email_clients_import_over_limit(cursor, uid, [active_id], context)
+        ret_value = report_obj.send_email_clients_import_over_limit(
+            cursor, uid, [active_id], context)
 
         if ret_value:
             self.write(cursor, uid, ids, {'state': 'ok'})
@@ -44,5 +44,6 @@ class SendEmailOverLimitWizard(osv.osv_memory):
         'fiscal_year': _get_fiscal_year,
         'calculation_date': _get_calculation_date
     }
+
 
 SendEmailOverLimitWizard()

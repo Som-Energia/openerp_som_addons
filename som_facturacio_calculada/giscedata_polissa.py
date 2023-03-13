@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-from osv import osv, orm
+from osv import osv
 from datetime import datetime, timedelta
 from tools.translate import _
 from oorq.decorators import job
+
 
 class GiscedataPolissaCalculada(osv.osv):
     """
@@ -25,10 +26,12 @@ class GiscedataPolissaCalculada(osv.osv):
         ctx = {'incrementar_n_retrocedir': False}
         for _id in ids:
 
-            lot_id = self.read(cursor, uid, _id, ['lot_facturacio'], context)['lot_facturacio'][0]
+            lot_id = self.read(cursor, uid, _id, ['lot_facturacio'], context)[
+                'lot_facturacio'][0]
             if lot_id > last_lot_id:
                 wiz_id = wiz_retrocedir_o.create(cursor, uid, {}, context=context)
-                wiz_retrocedir_o.move_one_contract_to_prev_lot(cursor, uid, [wiz_id], _id, context=ctx)
+                wiz_retrocedir_o.move_one_contract_to_prev_lot(
+                    cursor, uid, [wiz_id], _id, context=ctx)
 
     def _check_conditions_polissa_calculades(self, cursor, uid, id, context):
         if isinstance(id, (tuple, list)):
@@ -47,14 +50,15 @@ class GiscedataPolissaCalculada(osv.osv):
             return False, _(u"té GenerationKWh")
         if pol.autoconsumo != '00':
             return False, _(u"té Autoconsum")
-        if pol.facturacio_potencia == 'max': #!= 'icp'
+        if pol.facturacio_potencia == 'max':  # != 'icp'
             return False, _(u"té Maximetre")
         if pol.tg != '1':
             return False, _(u"no té telegestió")
         if pol.cnae.name != '9820':
             return False, _(u"no es un CNAE acceptat")
         gp_cat_o = self.pool.get('giscedata.polissa.category')
-        gp_pobresa_id = gp_cat_o.search(cursor, uid, [('name', 'ilike', '%Pobresa Energ%')])
+        gp_pobresa_id = gp_cat_o.search(
+            cursor, uid, [('name', 'ilike', '%Pobresa Energ%')])
         if gp_pobresa_id and pol.category_id and gp_pobresa_id in [x.id for x in pol.category_id]:
             return False, _(u"té Pobresa Energètica")
 
@@ -105,7 +109,7 @@ class GiscedataPolissaCalculada(osv.osv):
                 break
 
         data_ultima_lectura_factura_21 = add_days(data_ultima_lectura_factura, 21)
-        if  data_ultima_lectura_lectures >= data_ultima_lectura_factura_21:
+        if data_ultima_lectura_lectures >= data_ultima_lectura_factura_21:
             return False, _(u", data de lectura calculada ({}) igual o major a data d'ultima factura no calculada + 21 ({})".format(
                 data_ultima_lectura_lectures,
                 data_ultima_lectura_factura_21)
@@ -123,7 +127,6 @@ class GiscedataPolissaCalculada(osv.osv):
             return False, _(u" te algun cas ATR no finalitzat")
 
         return True, _(u" ok")
-
 
     def crear_lectura_data(self, cursor, uid, _id, measure_date, start_date, mtr_id, lc_origin, context=None):
         wiz_measures_curve_o = self.pool.get('wizard.measures.from.curve')
@@ -165,12 +168,14 @@ class GiscedataPolissaCalculada(osv.osv):
         )[1]
         mtr_o = self.pool.get('giscedata.lectures.comptador')
 
-        pol_data = self.read(cursor, uid, _id, ['name', 'data_ultima_lectura', 'data_ultima_lectura_f1'])
+        pol_data = self.read(cursor, uid, _id, [
+                             'name', 'data_ultima_lectura', 'data_ultima_lectura_f1'])
         pol_name = pol_data['name']
         data_ultima_lect = pol_data['data_ultima_lectura']
         data_ultima_lectura_f1 = pol_data['data_ultima_lectura_f1']
 
-        crear_lectures, text = self._check_conditions_polissa_calculades(cursor, uid, _id, context=context)
+        crear_lectures, text = self._check_conditions_polissa_calculades(
+            cursor, uid, _id, context=context)
         if not crear_lectures:
             return _(u"La pòlissa {} no compleix les condicions perquè {}".format(pol_name, text))
 
@@ -182,7 +187,8 @@ class GiscedataPolissaCalculada(osv.osv):
                 data_ultima_lect)
             )
 
-        crear_lectures, text = self._check_conditions_lectures_calculades(cursor, uid, _id, context=context)
+        crear_lectures, text = self._check_conditions_lectures_calculades(
+            cursor, uid, _id, context=context)
         if not crear_lectures:
             return _(u"La pòlissa {} {}".format(pol_name, text))
 
@@ -195,22 +201,23 @@ class GiscedataPolissaCalculada(osv.osv):
         data_seguent_lect_14 = add_days(data_ultima_lect, 14)
         data_seguent_lect_21 = add_days(data_ultima_lect, 21)
 
-        today = datetime.today().strftime("%Y-%m-%d")
+        datetime.today().strftime("%Y-%m-%d")
 
         for _date in [data_seguent_lect_21, data_seguent_lect_14, data_seguent_lect_7]:
             if _date > today_str() or _date > add_days(data_ultima_lectura_f1, 21):
                 continue
-            lect_created, msg = self.crear_lectura_data(cursor, uid, _id, _date, start_date, mtr_id, lc_origin, context)
+            lect_created, msg = self.crear_lectura_data(
+                cursor, uid, _id, _date, start_date, mtr_id, lc_origin, context)
             if lect_created:
                 self.retrocedir_lot(cursor, uid, [_id], context=context)
                 return _(u"La polissa {} té lectures creades en data {}".format(pol_name, _date))
             elif msg == 'error' and context.get('raise_error', True):
-                raise osv.except_osv(_('Error'), _(u"La pòlissa {} no pot generar lectures per error inesperat de wizard {}.".format(pol_name,str(e))))
+                raise osv.except_osv(_('Error'), _(
+                    u"La pòlissa {} no pot generar lectures per error inesperat de wizard {}.".format(pol_name, str(e))))
             elif msg == 'error':
-                return _(u"La pòlissa {} no pot generar lectures per error inesperat de wizard {}.".format(pol_name,str(e)))
+                return _(u"La pòlissa {} no pot generar lectures per error inesperat de wizard {}.".format(pol_name, str(e)))
 
         return _(u"La pòlissa {} no pot generar lectures per falta de corba.".format(pol_name))
-
 
     def crear_lectures_calculades(self, cursor, uid, ids, context=None):
         if not context:
@@ -219,7 +226,7 @@ class GiscedataPolissaCalculada(osv.osv):
 
         msgs = []
         for _id in ids:
-            result = self.crear_lectura_calculada(cursor, uid , _id, context)
+            result = self.crear_lectura_calculada(cursor, uid, _id, context)
             msgs.append(result)
 
         return msgs
@@ -228,11 +235,11 @@ class GiscedataPolissaCalculada(osv.osv):
     def crear_lectura_calculades_async(self, cursor, uid, pol_id, context=None):
         return self.crear_lectura_calculada(cursor, uid, pol_id, context=None)
 
-
     _columns = {
     }
 
     _defaults = {
     }
+
 
 GiscedataPolissaCalculada()

@@ -2,6 +2,7 @@
 from osv import osv
 from tools.translate import _
 
+
 class GiscedataCupsPs(osv.osv):
     """Classe d'un CUPS (Punt de servei)."""
 
@@ -38,16 +39,17 @@ class GiscedataCupsPs(osv.osv):
 
         vals = [
             {'priority': 5,
-            'model': 'giscedata.polissa',
-            'func': 'get_consum_anual_consum_lectures',
-            'origen': 'consums'},
+             'model': 'giscedata.polissa',
+             'func': 'get_consum_anual_consum_lectures',
+             'origen': 'consums'},
             {'priority': 4,
-            'model': 'giscedata.polissa',
-            'func': 'get_consum_anual_factures',
-            'origen': 'factures'}
+             'model': 'giscedata.polissa',
+             'func': 'get_consum_anual_factures',
+             'origen': 'factures'}
         ]
-        llista+=vals
+        llista += vals
 
         return llista
+
 
 GiscedataCupsPs()

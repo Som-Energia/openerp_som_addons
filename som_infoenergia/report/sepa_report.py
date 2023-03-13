@@ -5,6 +5,7 @@ from report import report_sxw
 from tools import config
 from yamlns import namespace as ns
 
+
 class report_webkit_html(report_sxw.rml_parse):
     def __init__(self, cursor, uid, name, context):
         super(report_webkit_html, self).__init__(cursor, uid, name,
@@ -15,12 +16,14 @@ class report_webkit_html(report_sxw.rml_parse):
             'addons_path': config['addons_path'],
         })
 
+
 webkit_report.WebKitParser(
     'report.som.enviament.massiu',
     'som.enviament.massiu',
     'som_infoenergia/sepa_template/sepa.mako',
     parser=report_webkit_html
 )
+
 
 class OnDemandDataGenerator:
     def __init__(self, cursor, uid, object, extra_text, context):
@@ -32,7 +35,8 @@ class OnDemandDataGenerator:
         self.cache = {}
 
     def factory_data_extractor(self, component_name):
-        exec("from components."+component_name+" import "+component_name+";extractor = "+component_name+"."+component_name+"()")
+        exec("from components." + component_name + " import " + component_name
+             + ";extractor = " + component_name + "." + component_name + "()")
         return extractor
 
     def __getattr__(self, name):
@@ -47,6 +51,7 @@ class OnDemandDataGenerator:
             self.cache[name] = ns.loads(ns(data).dump())
 
         return self.cache[name]
+
 
 class SepaReport(osv.osv_memory):
     _name = 'sepa.report'
@@ -63,5 +68,6 @@ class SepaReport(osv.osv_memory):
 
     _columns = {}
     _defaults = {}
+
 
 SepaReport()

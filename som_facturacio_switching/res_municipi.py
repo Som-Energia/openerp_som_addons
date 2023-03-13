@@ -23,4 +23,5 @@ class ResMunicipi(osv.osv):
 
         return filtered_list
 
+
 ResMunicipi()

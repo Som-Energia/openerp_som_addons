@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
-import json
 
-from osv import osv, fields, orm
-from tools.translate import _
-from gestionatr.defs import TABLA_81
-from gestionatr.input.messages.R1 import get_minimum_fields
+from osv import fields, osv
 
 
 class WizardR101FromMultipleContracts(osv.osv_memory):
@@ -17,18 +12,21 @@ class WizardR101FromMultipleContracts(osv.osv_memory):
             context = {}
 
         ctx = context.copy()
-        info = self.read(cursor, uid, ids, ['facturacio_suspesa', 'refacturacio_pendent'], context=context)[0]
+        info = self.read(cursor, uid, ids, [
+                         'facturacio_suspesa', 'refacturacio_pendent'], context=context)[0]
         info.pop('id')
         ctx.update({'extra_r1_vals': info})
 
-        res = super(WizardR101FromMultipleContracts, self).create_r1_from_contracts(cursor, uid, ids, context=ctx)
+        res = super(WizardR101FromMultipleContracts, self).create_r1_from_contracts(
+            cursor, uid, ids, context=ctx)
 
         return res
 
     def onchange_subtipus(self, cursor, uid, ids, subtipus, context=None):
         if context is None:
             context = {}
-        res = super(WizardR101FromMultipleContracts, self).onchange_subtipus(cursor, uid, ids, subtipus, context=context)
+        res = super(WizardR101FromMultipleContracts, self).onchange_subtipus(
+            cursor, uid, ids, subtipus, context=context)
         if subtipus:
             subtipus_obj = self.pool.get('giscedata.subtipus.reclamacio')
             subinfo = subtipus_obj.read(

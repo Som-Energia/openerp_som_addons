@@ -8,7 +8,7 @@
     "version": "0-dev",
     "author": "GISCE",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "giscedata_facturacio_comer",
         "giscedata_lectures_estimacio",
         "giscedata_polissa_category",
@@ -19,7 +19,7 @@
     "demo_xml": [
         "res_partner_demo_data.xml"
     ],
-    "update_xml":[
+    "update_xml": [
         "giscedata_polissa_view.xml",
         "giscedata_facturacio_data.xml",
         "giscedata_polissa_category_data.xml",

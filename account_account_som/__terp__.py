@@ -8,14 +8,14 @@
     "version": "0.1",
     "author": "GISCE",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "account",
         "account_financial_report",
         "async_reports",
     ],
     "init_xml": [],
     "demo_xml": [],
-    "update_xml":[
+    "update_xml": [
         "account_view.xml",
         "wizard/wizard_account_balance_report_view.xml",
         "security/ir.model.access.csv",

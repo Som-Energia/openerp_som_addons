@@ -10,9 +10,9 @@ STATES = [
     ('finished', 'Estat Final')
 ]
 
+
 class WizardCrearLecuresCalculades(osv.osv_memory):
     _name = 'wizard.crear.lectures.calculades'
-
 
     def create_lectures_async(self, cursor, uid, ids, pol_ids, context={}):
         pol_o = self.pool.get('giscedata.polissa')
@@ -28,10 +28,12 @@ class WizardCrearLecuresCalculades(osv.osv_memory):
                 len(pol_ids)
             ), 'invoicing.facturacio_calculada', job_ids
         )
-        amax_proc = int(self.pool.get("res.config").get(cursor, uid, "facturacio_calculada_tasks_max_procs", "0"))
+        amax_proc = int(self.pool.get("res.config").get(
+            cursor, uid, "facturacio_calculada_tasks_max_procs", "0"))
         if not amax_proc:
             amax_proc = None
-        aw = AutoWorker(queue='facturacio_calculada', default_result_ttl=24 * 3600, max_procs=amax_proc)
+        aw = AutoWorker(queue='facturacio_calculada',
+                        default_result_ttl=24 * 3600, max_procs=amax_proc)
         aw.work()
 
     def crear_lectures_moure_lot(self, cursor, uid, ids, context=None):
@@ -45,7 +47,7 @@ class WizardCrearLecuresCalculades(osv.osv_memory):
                 cursor, uid, 'som_facturacio_calculada', 'cat_gp_factura_calc'
             )[1]
 
-            pol_ids = pol_o.search(cursor, uid, [('category_id','in', cat_id)])
+            pol_ids = pol_o.search(cursor, uid, [('category_id', 'in', cat_id)])
             if pol_ids:
                 self.create_lectures_async(cursor, uid, ids, pol_ids, context)
                 result = ["S'ha creat la tasca en segon pla"]
@@ -62,5 +64,6 @@ class WizardCrearLecuresCalculades(osv.osv_memory):
         'state': 'init',
         'info': lambda *a: ""
     }
+
 
 WizardCrearLecuresCalculades()

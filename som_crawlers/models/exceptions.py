@@ -10,6 +10,7 @@ class CrawlingProcessException(Exception):
     def __str__(self):
         return self.msg
 
+
 class NoResultsException(CrawlingProcessException):
     def __init__(self, msg, download_was_clicked=False, add_msg_tag=True):
         tag = ''

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
-from dateutil import parser
 
 from osv import osv
 from osv import fields
@@ -44,7 +43,7 @@ class GiscedataPolissa(osv.osv):
             search_params = [('polissa.id', '=', polissa_id),
                              ('name', '=', comptador_name)]
             comptador_id = comptador_obj.search(
-                cursor, uid, search_params, 0, 0, False, {'active_test':False})
+                cursor, uid, search_params, 0, 0, False, {'active_test': False})
             if comptador_id:
                 comptador_id = comptador_id[0]
         return comptador_id
@@ -72,8 +71,8 @@ class GiscedataPolissa(osv.osv):
         if not comptador_name['comptador']:
             search_params = [('polissa.id', '=', polissa_id)]
             llista_comptadors = comptador_obj.search(
-                cursor, uid, search_params, 0, 0, False, {'active_test':False})
-            llista_comptadors.sort(reverse = True)
+                cursor, uid, search_params, 0, 0, False, {'active_test': False})
+            llista_comptadors.sort(reverse=True)
             comptador_name = comptador_obj.read(
                 cursor, uid, llista_comptadors[0], ['name'])
             comptador_id = self._www_get_comptador_id(
@@ -88,7 +87,7 @@ class GiscedataPolissa(osv.osv):
         limit_lectures = int(conf_obj.get(
             cursor, uid, 'www_limit_lectures', '5'))
         lect_ids = pool_lect_obj.search(
-            cursor, uid, search_params, 0, limit_lectures, 'name desc', {'active_test':False})
+            cursor, uid, search_params, 0, limit_lectures, 'name desc', {'active_test': False})
         read_fields = ['name', 'periode', 'lectura', 'origen_id']
         for lectura in pool_lect_obj.read(cursor, uid, lect_ids, read_fields):
             data = datetime.strptime(lectura['name'], '%Y-%m-%d')
@@ -109,10 +108,11 @@ class GiscedataPolissa(osv.osv):
                              })
         return lectures
 
-
     _columns = {
         'www_current_pagament': fields.function(_www_current_pagament,
-                                        string='Pagament corrent portal',
-                                        type='boolean', method=True),
+                                                string='Pagament corrent portal',
+                                                type='boolean', method=True),
     }
+
+
 GiscedataPolissa()

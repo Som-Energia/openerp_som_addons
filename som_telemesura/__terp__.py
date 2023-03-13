@@ -6,7 +6,7 @@
     "version": "0-dev",
     "author": "GISCE-TI",
     "category": "",
-    "depends":[
+    "depends": [
         "giscedata_telemesura"
     ],
     "init_xml": [],

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from osv import osv, fields
-from tools.translate import _
+
 
 class FacturacioExtra(osv.osv):
 
@@ -10,10 +10,11 @@ class FacturacioExtra(osv.osv):
 
     _columns = {
         'polissa_state': fields.related('polissa_id', 'state',
-                       type='char',
-                       string='Estat pòlissa',
-                       readonly=True),
+                                        type='char',
+                                        string='Estat pòlissa',
+                                        readonly=True),
     }
+
 
 FacturacioExtra()
 
@@ -45,6 +46,7 @@ class GiscedataPolissa(osv.osv):
 
         return super(GiscedataPolissa, self).do_extra_actions_fix_facturacurta_fc01(cursor, uid, fact_ids, context=context)
 
+
 GiscedataPolissa()
 
 
@@ -60,12 +62,13 @@ class WizardFacturesPerEmail(osv.osv_memory):
         eo = self.pool.get("giscedata.facturacio.factura.send.email")
         eids = eo.search(cursor, uid, [('enviat', '=', False)])
         if eids:
-            ctx['extra_factura_ids'] = [x['factura_id'][0] for x in eo.read(cursor, uid, eids, ['factura_id'])]
-        res = super(WizardFacturesPerEmail, self).action_enviar_lot_per_mail(cursor, uid, ids, context=ctx)
+            ctx['extra_factura_ids'] = [x['factura_id'][0]
+                                        for x in eo.read(cursor, uid, eids, ['factura_id'])]
+        res = super(WizardFacturesPerEmail, self).action_enviar_lot_per_mail(
+            cursor, uid, ids, context=ctx)
         if eids:
             eo.write(cursor, uid, eids, {'enviat': True})
         return res
 
 
 WizardFacturesPerEmail()
-

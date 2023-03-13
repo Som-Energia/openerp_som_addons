@@ -21,12 +21,12 @@ mandate_obj = c.model('payment.mandate')
 mandate_new = mandate_obj.browse(mandate_id)
 
 fact_obj = c.model('giscedata.facturacio.factura')
-fact_id = fact_obj.search([('number','=',fact_number)])
+fact_id = fact_obj.search([('number', '=', fact_number)])
 fact = fact_obj.browse(fact_id[0])
 
-   
+
 def change_account_invoice(invoice, vals, to_write_vals):
-    
+
     address = vals['address']
     bank = vals['bank']
     partner = vals['partner']
@@ -43,12 +43,12 @@ def change_account_invoice(invoice, vals, to_write_vals):
         'partner_bank': bank,
         'partner_id': partner,
         'mandate_id': mandate
-            }
+    }
 
     print 'ai_vals ', ai_vals
-    
+
     if to_write_vals:
-        ai_obj.write(ai.id, ai_vals) 
+        ai_obj.write(ai.id, ai_vals)
 
         print 'Ai changed values: '
         print 'address_contact_id ', ai.address_contact_id
@@ -58,12 +58,12 @@ def change_account_invoice(invoice, vals, to_write_vals):
         print 'mandate_id ', ai.mandate_id
     else:
         print 'NOT to write values'
-  
+
 
 if partner_new and fact:
     print 'Parter and fact exists ', partner_new.name, fact.number
 
-    ## Main invoice
+    # Main invoice
 
     print 'Old values: '
     print 'address_contact_id ', fact.address_contact_id
@@ -82,7 +82,7 @@ if partner_new and fact:
     print 'fact_vals ', fact_vals
 
     if write_vals:
-        fact_obj.write(fact.id,fact_vals) 
+        fact_obj.write(fact.id, fact_vals)
 
         print 'Fact changed values: '
         print 'address_contact_id ', fact.address_contact_id
@@ -92,17 +92,17 @@ if partner_new and fact:
         print 'mandate_id ', fact.mandate_id
     else:
         print 'NOT to write values'
-        
+
     vals = {
         'address': address_new[0].id,
         'bank': bank_new[0].id,
         'partner': partner_new.id,
         'mandate': mandate_new.id
     }
-    
+
     ## invoice_id (account.invoice)
     change_account_invoice(fact.invoice_id, vals, write_vals)
-    
+
 else:
     print 'Partner or fact does not exists'
 
@@ -127,7 +127,7 @@ inner join account_move m on m.id = l.move_id
 where m.ref = 'FE2200231739'
 
 begin;
-update payment_line 
+update payment_line
 set partner_id = 204530
 from (
 select p.id as p_id

@@ -3,11 +3,7 @@ from destral import testing
 import unittest
 from destral.transaction import Transaction
 
-from expects import *
-import osv
 
-import csv
-import os
 import mock
 
 
@@ -39,13 +35,13 @@ class EnviamentTests(testing.OOTestCase):
         pol_id = enviament.polissa_id.id
 
         pol_obj.write(cursor, uid, pol_id,
-            {'data_baixa': False, 'emp_allow_recieve_mail_infoenergia': False}
-        )
+                      {'data_baixa': False, 'emp_allow_recieve_mail_infoenergia': False}
+                      )
         enviament.send_single_report()
 
         self.assertEqual(
             env_obj.read(cursor, uid, enviament_id, ['estat'])['estat'], 'cancellat'
-            )
+        )
         mocked_send_mail.assert_not_called()
 
     @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
@@ -64,13 +60,13 @@ class EnviamentTests(testing.OOTestCase):
         pol_id = enviament.polissa_id.id
 
         pol_obj.write(cursor, uid, pol_id,
-            {'data_baixa': False}
-        )
+                      {'data_baixa': False}
+                      )
         enviament.send_single_report()
 
         self.assertEqual(
             env_obj.read(cursor, uid, enviament_id, ['estat'])['estat'], 'error'
-            )
+        )
         mocked_send_mail.assert_not_called()
 
     @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
@@ -89,13 +85,13 @@ class EnviamentTests(testing.OOTestCase):
         pol_id = enviament.polissa_id.id
 
         pol_obj.write(cursor, uid, pol_id,
-            {'data_baixa': '2020-01-01'}
-        )
+                      {'data_baixa': '2020-01-01'}
+                      )
         enviament.send_single_report()
 
         self.assertEqual(
             env_obj.read(cursor, uid, enviament_id, ['estat'])['estat'], 'baixa'
-            )
+        )
         mocked_send_mail.assert_not_called()
 
     @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
@@ -114,13 +110,13 @@ class EnviamentTests(testing.OOTestCase):
         pol_id = enviament.polissa_id.id
 
         pol_obj.write(cursor, uid, pol_id,
-            {'active': False}
-        )
+                      {'active': False}
+                      )
         enviament.send_single_report()
 
         self.assertEqual(
             env_obj.read(cursor, uid, enviament_id, ['estat'])['estat'], 'baixa'
-            )
+        )
         mocked_send_mail.assert_not_called()
 
     @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
@@ -136,18 +132,18 @@ class EnviamentTests(testing.OOTestCase):
         )[1]
         enviament = env_obj.browse(cursor, uid, enviament_id)
 
-        enviament.write({'estat':'enviat'})
+        enviament.write({'estat': 'enviat'})
 
         pol_id = enviament.polissa_id.id
 
         pol_obj.write(cursor, uid, pol_id,
-            {'data_baixa': False}
-        )
+                      {'data_baixa': False}
+                      )
         enviament.send_single_report()
 
         self.assertEqual(
             env_obj.read(cursor, uid, enviament_id, ['estat'])['estat'], 'enviat'
-            )
+        )
         mocked_send_mail.assert_not_called()
 
     @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
@@ -163,24 +159,24 @@ class EnviamentTests(testing.OOTestCase):
         )[1]
         enviament = env_obj.browse(cursor, uid, enviament_id)
 
-        enviament.write({'estat':'enviat'})
+        enviament.write({'estat': 'enviat'})
 
         pol_id = enviament.polissa_id.id
 
         pol_obj.write(cursor, uid, pol_id,
-            {'data_baixa': False}
-        )
-        enviament.send_single_report(context={'allow_reenviar':True})
+                      {'data_baixa': False}
+                      )
+        enviament.send_single_report(context={'allow_reenviar': True})
 
         self.assertEqual(
             env_obj.read(cursor, uid, enviament_id, ['estat'])['estat'], 'enviat'
-            )
+        )
         mocked_send_mail.assert_called_with(
             context={'src_model': 'som.infoenergia.enviament',
-            'src_rec_ids': [enviament_id],
-            'allow_reenviar': True, 'template_id': enviament.lot_enviament.email_template.id,
-            'active_id': enviament_id
-        })
+                     'src_rec_ids': [enviament_id],
+                     'allow_reenviar': True, 'template_id': enviament.lot_enviament.email_template.id,
+                     'active_id': enviament_id
+                     })
 
     @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
     def test_send_single_report_ok(self, mocked_send_mail):
@@ -198,19 +194,19 @@ class EnviamentTests(testing.OOTestCase):
         pol_id = enviament.polissa_id.id
 
         pol_obj.write(cursor, uid, pol_id,
-            {'data_baixa': False}
-        )
+                      {'data_baixa': False}
+                      )
         enviament.send_single_report()
 
         self.assertEqual(
             env_obj.read(cursor, uid, enviament_id, ['estat'])['estat'], 'obert'
-            )
+        )
         mocked_send_mail.assert_called_with(
             context={'src_model': 'som.infoenergia.enviament',
-            'src_rec_ids': [enviament_id],
-            'template_id': enviament.lot_enviament.email_template.id,
-            'active_id': enviament_id
-        })
+                     'src_rec_ids': [enviament_id],
+                     'template_id': enviament.lot_enviament.email_template.id,
+                     'active_id': enviament_id
+                     })
 
     @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
     def test_send_single_report_email_subject_context(self, mocked_send_mail):
@@ -228,21 +224,21 @@ class EnviamentTests(testing.OOTestCase):
         pol_id = enviament.polissa_id.id
 
         pol_obj.write(cursor, uid, pol_id,
-            {'data_baixa': False}
-        )
-        ctx = {'email_subject':'Test subject', 'email_to':'test@test.test'}
+                      {'data_baixa': False}
+                      )
+        ctx = {'email_subject': 'Test subject', 'email_to': 'test@test.test'}
         enviament.send_single_report(context=ctx)
 
         self.assertEqual(
             env_obj.read(cursor, uid, enviament_id, ['estat'])['estat'], 'obert'
-            )
+        )
         mocked_send_mail.assert_called_with(
             context={'src_model': 'som.infoenergia.enviament',
-            'src_rec_ids': [enviament_id],
-            'template_id': enviament.lot_enviament.email_template.id,
-            'email_to': 'test@test.test', 'email_subject': 'Test subject',
-            'active_id': enviament_id
-        })
+                     'src_rec_ids': [enviament_id],
+                     'template_id': enviament.lot_enviament.email_template.id,
+                     'email_to': 'test@test.test', 'email_subject': 'Test subject',
+                     'active_id': enviament_id
+                     })
 
     def test_add_info_line__single_env_infoenergia(self):
         imd_obj = self.openerp.pool.get('ir.model.data')
@@ -311,5 +307,3 @@ class EnviamentTests(testing.OOTestCase):
         info_post_1 = env_obj.read(self.cursor, self.uid, enviaments[1], ['info'])['info']
         self.assertTrue(u'Test add info line\n{}'.format(info_pre_0) in info_post_0)
         self.assertTrue(u'Test add info line\n{}'.format(info_pre_1) in info_post_1)
-
-

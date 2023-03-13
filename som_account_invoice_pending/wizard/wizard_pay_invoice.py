@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from osv import osv
-from tools.translate import _
 from ast import literal_eval
 from oorq.decorators import job
 from tools import config
+
 
 class WizardPayInvoice(osv.osv_memory):
 
@@ -25,7 +25,7 @@ class WizardPayInvoice(osv.osv_memory):
         fact_id = context.get('active_id', False)
         factura = fact_obj.browse(cursor, uid, fact_id)
         tpv_journal = ir_md_obj.get_object_reference(cursor, uid,
-                      'som_account_invoice_pending', 'tpv_journal')[1]
+                                                     'som_account_invoice_pending', 'tpv_journal')[1]
         wiz = self.browse(cursor, uid, ids)
 
         cfg_obj = self.pool.get('res.config')
@@ -39,7 +39,7 @@ class WizardPayInvoice(osv.osv_memory):
         wiz = self.browse(cursor, uid, ids)
         old_comment = factura.comment if factura.comment else ''
         new_comment = wiz.comment or '' + "\n"
-        fact_obj.write(cursor, uid, fact_id, {'comment': new_comment + old_comment })
+        fact_obj.write(cursor, uid, fact_id, {'comment': new_comment + old_comment})
 
     def mail_avis_cobraments(self, cursor, uid, ids, fact_ids, context=None):
         """Enviament individual
@@ -71,9 +71,9 @@ class WizardPayInvoice(osv.osv_memory):
         email_wizard_obj = self.pool.get('poweremail.send.wizard')
 
         wiz_vals = {
-                    'state': context['state'],
-                    'priority': context['priority'],
-                    'from': context['from'],
+            'state': context['state'],
+            'priority': context['priority'],
+            'from': context['from'],
         }
         pe_wiz = email_wizard_obj.create(cursor, uid, wiz_vals,
                                          context=context)
@@ -82,5 +82,6 @@ class WizardPayInvoice(osv.osv_memory):
     @job(queue=config.get('poweremail_render_queue', 'poweremail'))
     def action_mail_avis_cobraments_async(self, cursor, uid, id, context=None):
         self.action_mail_avis_cobraments(cursor, uid, id, context)
+
 
 WizardPayInvoice()

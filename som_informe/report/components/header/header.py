@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 from ..component_utils import dateformat
 
+
 class header:
     def __init__(self):
         pass
@@ -13,14 +14,13 @@ class header:
 
         # bloc per traure una línea amb la tarifa i potencies per periode
         tarifa_code = pol_data.tarifa_codi
-        
+
         list_potencies = []
         for periode_potencia_id in pol_data.potencies_periode:
             dict_potencies = {}
             dict_potencies['periode'] = periode_potencia_id.periode_id.name
             dict_potencies['potencia'] = periode_potencia_id.potencia
             list_potencies.append(dict_potencies)
-            
 
         return {
             'type': 'header',

@@ -1,4 +1,3 @@
-from datetime import date
 
 
 def get_gkwh_atr_price(cursor, uid, polissa, pname, context, with_taxes=False):
@@ -14,8 +13,8 @@ def get_gkwh_atr_price(cursor, uid, polissa, pname, context, with_taxes=False):
 
     pricelist = polissa['llista_preu']
     price_atr, discount, uom = pricelist.get_atr_price('gkwh', product_id, polissa.fiscal_position_id,
-                                    with_taxes=False, direccio_pagament=polissa.direccio_pagament,
-                                    titular=polissa.titular, context=context)
+                                                       with_taxes=False, direccio_pagament=polissa.direccio_pagament,
+                                                       titular=polissa.titular, context=context)
 
     preu_final = price_atr
     if with_taxes:

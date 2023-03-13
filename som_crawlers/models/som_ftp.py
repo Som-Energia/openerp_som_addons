@@ -1,4 +1,4 @@
-from ftplib import FTP, FTP_TLS, FTP_PORT
+from ftplib import FTP
 import os
 
 

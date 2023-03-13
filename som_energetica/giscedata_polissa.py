@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-from osv import osv, fields
+from osv import osv
 from tools import cache
 import netsvc
+
 
 class GiscedataPolissa(osv.osv):
     """Per gestionar els
@@ -23,7 +24,6 @@ class GiscedataPolissa(osv.osv):
         return imd_obj.get_object_reference(
             cursor, uid, 'som_energetica', 'res_partner_energetica'
         )[1]
-
 
     def is_energetica(self, cursor, uid, contract_id, context=None):
         """
@@ -82,18 +82,18 @@ class GiscedataPolissa(osv.osv):
                 partners_list.append(contract.administradora.id)
 
             if contract.bank and \
-                contract.bank.partner_id and \
-                cat_energetica_id not in [x.id for x in contract.bank.partner_id.category_id]:
+                    contract.bank.partner_id and \
+                    cat_energetica_id not in [x.id for x in contract.bank.partner_id.category_id]:
                 partners_list.append(contract.bank.partner_id.id)
 
             if contract.direccio_pagament and \
-                contract.direccio_pagament.partner_id and \
-                cat_energetica_id not in [x.id for x in contract.direccio_pagament.partner_id.category_id]:
+                    contract.direccio_pagament.partner_id and \
+                    cat_energetica_id not in [x.id for x in contract.direccio_pagament.partner_id.category_id]:
                 partners_list.append(contract.direccio_pagament.partner_id.id)
 
             if contract.direccio_notificacio and \
-                contract.direccio_notificacio.partner_id and \
-                cat_energetica_id not in [x.id for x in contract.direccio_notificacio.partner_id.category_id]:
+                    contract.direccio_notificacio.partner_id and \
+                    cat_energetica_id not in [x.id for x in contract.direccio_notificacio.partner_id.category_id]:
                 partners_list.append(contract.direccio_notificacio.partner_id.id)
 
         return list(set(partners_list))
@@ -141,5 +141,6 @@ class GiscedataPolissa(osv.osv):
             self.set_energetica(cursor, uid, [res_id], context)
 
         return res_id
+
 
 GiscedataPolissa()

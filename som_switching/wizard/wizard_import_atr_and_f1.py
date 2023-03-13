@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import zipfile
-import glob
 
 from osv import osv
+
 
 class WizardImportAtrAndF1(osv.osv_memory):
 
@@ -19,11 +19,12 @@ class WizardImportAtrAndF1(osv.osv_memory):
             wizard = self.browse(cursor, uid, ids[0])
             tmp_filename = wizard.filename
             if '/' in tmp_filename:
-                tmp_filename = tmp_filename.split('/')[-1] #when file from massive_importer file_name can contains subfolders
+                # when file from massive_importer file_name can contains subfolders
+                tmp_filename = tmp_filename.split('/')[-1]
             tmp_zip = open('{temporal_folder}/{pref}{filename}'.format(
-                temporal_folder = directory,
+                temporal_folder=directory,
                 pref=prefix,
-                filename = tmp_filename),
+                filename=tmp_filename),
                 'w+'
             )
             zip_handler = zipfile.ZipFile(tmp_zip, 'w')
@@ -32,5 +33,6 @@ class WizardImportAtrAndF1(osv.osv_memory):
                 cursor, uid, ids, directory, prefix, context
             )
         return zip_handler
+
 
 WizardImportAtrAndF1()

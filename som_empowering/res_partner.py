@@ -25,8 +25,8 @@ class ResPartner(osv.osv):
             })
             allowed = polissa_obj.search(cursor, uid, [
                 '|',
-                    ('titular.id', '=', partner['id']),
-                    ('pagador.id', '=', partner['id'])
+                ('titular.id', '=', partner['id']),
+                ('pagador.id', '=', partner['id'])
             ])
             if allowed:
                 allowed = [{'name': x.name, 'cups': x.cups.name}
@@ -40,5 +40,6 @@ class ResPartner(osv.osv):
     _columns = {
         'empowering_token': fields.char('Empowering token', readonly=True, size=256)
     }
+
 
 ResPartner()

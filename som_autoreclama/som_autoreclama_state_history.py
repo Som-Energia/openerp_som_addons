@@ -27,14 +27,14 @@ class SomAutoreclamaStateHistoryAtc(SomAutoreclamaStateHistory):
         h_ids = self.search(cursor, uid, [
             ('atc_id', '=', atc_id),
             ('end_date', '=', False),
-            ],
+        ],
             context=context
         )
         if h_ids:
             self.write(cursor, uid, h_ids,
-                {'end_date': current_date},
-                context=context
-            )
+                       {'end_date': current_date},
+                       context=context
+                       )
 
         new_atc = {
             'atc_id': atc_id,

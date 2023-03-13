@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-from destral import testing
 from destral.transaction import Transaction
 import mock
-from osv import osv
 from giscedata_switching.tests.common_tests import TestSwitchingImport
 from destral.patch import PatchNewCursors
+
 
 class TestActivacioM1(TestSwitchingImport):
 
@@ -20,11 +19,12 @@ class TestActivacioM1(TestSwitchingImport):
 
     def get_m1_01_ct(self, txn, contract_id, tipus, context=None):
         if not context:
-            context={}
+            context = {}
         uid = txn.user
         cursor = txn.cursor
         self.switch(txn, 'comer')
-        context['extra_vals'] = {'data_alta': "2017-01-31", "lot_facturacio": False, 'data_baixa': False}
+        context['extra_vals'] = {'data_alta': "2017-01-31",
+                                 "lot_facturacio": False, 'data_baixa': False}
 
         # create step 01
         self.change_polissa_comer(txn)
@@ -37,12 +37,14 @@ class TestActivacioM1(TestSwitchingImport):
         pt_obj = self.openerp.pool.get('payment.type')
         step = self.M101.browse(cursor, uid, step_id)
 
-        old_partner_id = step.sw_id.titular_polissa.id
+        step.sw_id.titular_polissa.id
         new_partner_id = self.IrModelData.get_object_reference(
             cursor, uid, 'som_polissa_soci', 'res_partner_nosoci2'
-            )[1]
-        new_partner_vat = self.ResPartner.read(cursor, uid, new_partner_id, ['vat'])['vat'][2:]
-        new_partner_address =  self.ResPartnerAddress.search(cursor, uid, [('partner_id','=',new_partner_id)])[0]
+        )[1]
+        new_partner_vat = self.ResPartner.read(
+            cursor, uid, new_partner_id, ['vat'])['vat'][2:]
+        new_partner_address = self.ResPartnerAddress.search(
+            cursor, uid, [('partner_id', '=', new_partner_id)])[0]
         m101 = self.M101.browse(cursor, uid, step_id)
         m101.write({
             'sollicitudadm': "S",
@@ -51,11 +53,12 @@ class TestActivacioM1(TestSwitchingImport):
             'direccio_pagament': new_partner_address,
             'direccio_notificacio': new_partner_address,
             'codi_document': new_partner_vat,
-            'tipo_pago': pt_obj.search(cursor,uid,[],limit=1)[0],
+            'tipo_pago': pt_obj.search(cursor, uid, [], limit=1)[0],
         })
         other_polissa_id = self.Polissa.search(cursor, uid,
-            [('id', '!=', contract_id), ('state', '=','esborrany')], limit=1)[-1]
-        self.Switching.write(cursor, uid, m101.sw_id.id, {'ref': 'giscedata.polissa,{}'.format(other_polissa_id)})
+                                               [('id', '!=', contract_id), ('state', '=', 'esborrany')], limit=1)[-1]
+        self.Switching.write(cursor, uid, m101.sw_id.id, {
+                             'ref': 'giscedata.polissa,{}'.format(other_polissa_id)})
         return self.Switching.browse(cursor, uid, m101.sw_id.id, {"browse_reference": True})
 
     def get_m1_02_ct(self, txn, contract_id, tipus, context=None):
@@ -63,7 +66,7 @@ class TestActivacioM1(TestSwitchingImport):
         cursor = txn.cursor
         m1 = self.get_m1_01_ct(txn, contract_id, tipus)
 
-        polissa = m1.cups_polissa_id
+        m1.cups_polissa_id
 
         self.ResConfig.set(cursor, uid, 'sw_m1_S_with_service_order', '0')
         self.ResConfig.set(cursor, uid, 'sw_m1_owner_change_subrogacio_new_contract', '0')
@@ -98,9 +101,10 @@ class TestActivacioM1(TestSwitchingImport):
 
             contract_id = self.get_contract_id(txn)
             # remove all other contracts
-            old_partner_id = self.Polissa.read(cursor, uid, contract_id, ['titular'])['titular'][0]
+            old_partner_id = self.Polissa.read(
+                cursor, uid, contract_id, ['titular'])['titular'][0]
             pol_ids = self.Polissa.search(cursor, uid,
-                [('id', '!=', contract_id), ('titular', '=', old_partner_id)])
+                                          [('id', '!=', contract_id), ('titular', '=', old_partner_id)])
             self.Polissa.write(cursor, uid, pol_ids, {'titular': False})
 
             m1 = self.get_m1_02_ct(txn, contract_id, 'S')
@@ -116,7 +120,6 @@ class TestActivacioM1(TestSwitchingImport):
             ]
             self.assertTrue(any([expected_result in desc for desc in history_line_desc]))
 
-
     @mock.patch("som_polissa_soci.res_partner.ResPartner.arxiva_client_mailchimp_async")
     def test_ct_subrogacio_baixa_mailchimp_error__more_than_one_contract(self, mock_function):
         with Transaction().start(self.database) as txn:
@@ -125,7 +128,8 @@ class TestActivacioM1(TestSwitchingImport):
 
             contract_id = self.get_contract_id(txn, 'polissa_tarifa_018')
 
-            m1 = self.get_m1_02_ct(txn, contract_id, 'S', {'polissa_xml_id': 'polissa_tarifa_018'})
+            m1 = self.get_m1_02_ct(txn, contract_id, 'S', {
+                                   'polissa_xml_id': 'polissa_tarifa_018'})
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, m1)
 
@@ -149,9 +153,10 @@ class TestActivacioM1(TestSwitchingImport):
             mock_lectures.return_value = []
             contract_id = self.get_contract_id(txn)
             # remove all other contracts
-            old_partner_id = self.Polissa.read(cursor, uid, contract_id, ['titular'])['titular'][0]
+            old_partner_id = self.Polissa.read(
+                cursor, uid, contract_id, ['titular'])['titular'][0]
             pol_ids = self.Polissa.search(cursor, uid,
-                [('id', '!=', contract_id), ('titular', '=', old_partner_id)])
+                                          [('id', '!=', contract_id), ('titular', '=', old_partner_id)])
             self.Polissa.write(cursor, uid, pol_ids, {
                 'titular': False,
                 'data_baixa': '2099-01-01'
@@ -180,13 +185,14 @@ class TestActivacioM1(TestSwitchingImport):
             mock_lectures.return_value = []
             contract_id = self.get_contract_id(txn, 'polissa_tarifa_018')
             # actualitze 'data_baixa' per a que no falle el test per la restricció de dates
-            #'giscedata_polissa_modcontractual_date_coherence'
+            # 'giscedata_polissa_modcontractual_date_coherence'
             contract_002_id = self.get_contract_id(txn, 'polissa_0002')
             self.Polissa.write(cursor, uid, [contract_002_id], {
                 'data_baixa': '2099-01-01'
             })
 
-            m1 = self.get_m1_05_traspas(txn, contract_id, {'polissa_xml_id': 'polissa_tarifa_018'})
+            m1 = self.get_m1_05_traspas(
+                txn, contract_id, {'polissa_xml_id': 'polissa_tarifa_018'})
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, m1)
 

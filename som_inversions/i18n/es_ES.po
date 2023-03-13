@@ -1,7 +1,7 @@
 # Translation of OpenERP Server.
 # This file contains the translation of the following modules:
 # * som_inversions
-# 
+#
 # Translators:
 #   <>, 2018.
 # Agustí Fita <afita@gisce.net>, 2017.

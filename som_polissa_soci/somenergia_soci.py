@@ -3,11 +3,11 @@
 from __future__ import absolute_import
 
 from osv import osv, fields
-from tools.translate import _
 
 from osv.orm import browse_record
 import logging
 import pooler
+
 
 class SomenergiaSoci(osv.osv):
     """ Class to manage GkWh info in User interface"""
@@ -45,10 +45,11 @@ class SomenergiaSoci(osv.osv):
     def create_one_soci(self, cursor, uid, partner_id, context=None):
         """ Creates only one soci (member) from a partner """
         if isinstance(partner_id, (tuple, list)):
-            ids = partner_id[0]
+            partner_id[0]
 
         vals = {'partner_id': partner_id}
-        soci_id = self.search(cursor, uid, [('partner_id','=',partner_id)], context=context)
+        soci_id = self.search(
+            cursor, uid, [('partner_id', '=', partner_id)], context=context)
         if soci_id:
             self.write(cursor, uid, soci_id[0], {'baixa': False, 'data_baixa_soci': None})
         else:
@@ -124,10 +125,10 @@ class SomenergiaSoci(osv.osv):
         for soci in self.browse(cursor, user, ids):
             if soci.partner_id.vat:
                 cursor.execute(
-                    "SELECT rp.id "\
-                    "FROM somenergia_soci ss "\
-                    "INNER JOIN res_partner rp on rp.id=ss.partner_id "\
-                    "WHERE rp.vat = '"+ soci.partner_id.vat + "' "\
+                    "SELECT rp.id "
+                    "FROM somenergia_soci ss "
+                    "INNER JOIN res_partner rp on rp.id=ss.partner_id "
+                    "WHERE rp.vat = '" + soci.partner_id.vat + "' "
                     "AND ss.data_baixa_soci IS NULL AND ss.baixa IS FALSE"
                 )
                 soci_with_vat = cursor.fetchall()
@@ -154,5 +155,5 @@ class SomenergiaSoci(osv.osv):
     _sql_constraints = [('partner_id_uniq', 'unique(partner_id)',
                          'Ja existeix un soci per aquest client')]
 
-SomenergiaSoci()
 
+SomenergiaSoci()

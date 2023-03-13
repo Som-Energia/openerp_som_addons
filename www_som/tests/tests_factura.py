@@ -9,6 +9,7 @@ import json
 def remove_ids(results):
     return remove_from(results, ['id', 'amount_total', 'enviat', 'visible'])
 
+
 def remove_from(results, to_remove):
     for result in results:
         for item in to_remove:
@@ -50,32 +51,45 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
         self.cursor = self.txn.cursor
         self.uid = self.txn.user
 
-        self.correct_ps_id = self.imd_obj.get_object_reference(self.cursor, self.uid, 'account_invoice_pending', 'default_invoice_pending_state')[1]
-        self.fraccio_ps_id = self.imd_obj.get_object_reference(self.cursor, self.uid, 'som_account_invoice_pending', 'pacte_fraccio_pending_state')[1]
-        self.no_pagable_ps_id = self.imd_obj.get_object_reference(self.cursor, self.uid, 'som_account_invoice_pending', 'pacte_fraccio_pending_state')[1]
+        self.correct_ps_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, 'account_invoice_pending', 'default_invoice_pending_state')[1]
+        self.fraccio_ps_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_account_invoice_pending', 'pacte_fraccio_pending_state')[1]
+        self.no_pagable_ps_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_account_invoice_pending', 'pacte_fraccio_pending_state')[1]
 
         self.ps_correct = []
         for module, name in [('giscedata_facturacio_comer_bono_social', 'correct_bono_social_pending_state'),
-            ('account_invoice_pending', 'default_invoice_pending_state')]:
-            self.ps_correct.append(str(self.imd_obj.get_object_reference( self.cursor, self.uid, module, name)[1]))
+                             ('account_invoice_pending', 'default_invoice_pending_state')]:
+            self.ps_correct.append(str(self.imd_obj.get_object_reference(
+                self.cursor, self.uid, module, name)[1]))
 
         self.ps_fraccio = []
         for module, name in [('som_account_invoice_pending', 'pacte_fraccio_pending_state'),
-            ('som_account_invoice_pending', 'default_pacte_fraccio_pending_state'),
-            ('som_account_invoice_pending', 'fracc_manual_bo_social_pending_state'),
-            ('som_account_invoice_pending', 'fracc_manual_default_pending_state')]:
-            self.ps_fraccio.append(str(self.imd_obj.get_object_reference( self.cursor, self.uid, module, name)[1]))
+                             ('som_account_invoice_pending',
+                              'default_pacte_fraccio_pending_state'),
+                             ('som_account_invoice_pending',
+                              'fracc_manual_bo_social_pending_state'),
+                             ('som_account_invoice_pending', 'fracc_manual_default_pending_state')]:
+            self.ps_fraccio.append(str(self.imd_obj.get_object_reference(
+                self.cursor, self.uid, module, name)[1]))
 
         self.ps_no_pagables = []
         for module, name in [('som_account_invoice_pending', 'pacte_fraccio_pending_state'),
-            ('som_account_invoice_pending', 'default_pacte_fraccio_pending_state'),
-            ('som_account_invoice_pending', 'fracc_manual_bo_social_pending_state'),
-            ('som_account_invoice_pending', 'fracc_manual_default_pending_state')]:
-            self.ps_no_pagables.append(str(self.imd_obj.get_object_reference( self.cursor, self.uid, module, name)[1]))
+                             ('som_account_invoice_pending',
+                              'default_pacte_fraccio_pending_state'),
+                             ('som_account_invoice_pending',
+                              'fracc_manual_bo_social_pending_state'),
+                             ('som_account_invoice_pending', 'fracc_manual_default_pending_state')]:
+            self.ps_no_pagables.append(
+                str(self.imd_obj.get_object_reference(self.cursor, self.uid, module, name)[1]))
 
-        self.cfg.set(self.cursor, self.uid, 'cobraments_ps_correcte', '[{}]'.format(','.join(self.ps_correct)))
-        self.cfg.set(self.cursor, self.uid, 'cobraments_ps_fraccio', '[{}]'.format(','.join(self.ps_fraccio)))
-        self.cfg.set(self.cursor, self.uid, 'cobraments_ps_no_pagable', '[{}]'.format(','.join(self.ps_no_pagables)))
+        self.cfg.set(self.cursor, self.uid, 'cobraments_ps_correcte',
+                     '[{}]'.format(','.join(self.ps_correct)))
+        self.cfg.set(self.cursor, self.uid, 'cobraments_ps_fraccio',
+                     '[{}]'.format(','.join(self.ps_fraccio)))
+        self.cfg.set(self.cursor, self.uid, 'cobraments_ps_no_pagable',
+                     '[{}]'.format(','.join(self.ps_no_pagables)))
 
     def tearDown(self):
         self.txn.stop()
@@ -181,7 +195,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             cursor, uid,
             fact_id,
             ['data_inici', 'data_final', 'number']
-            )
+        )
 
         head = context.pop('number_head')
         return self.create_invoice(
@@ -282,7 +296,8 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
         meter_id = self.prepare_contract(pol_id, '2017-01-01', '2017-02-15')
         self.create_measure(meter_id, '2017-02-15', 8000)
         self.create_measure(meter_id, '2017-03-15', 8600)
-        self.create_invoice(pol_id, meter_id, '2017-02-18', '2017-03-17', 'FE0001', {'state': 'paid'})
+        self.create_invoice(pol_id, meter_id, '2017-02-18',
+                            '2017-03-17', 'FE0001', {'state': 'paid'})
 
         results = remove_ids(self.fact_obj.www_ultimes_factures(
             self.cursor,
@@ -298,7 +313,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-03-17',
             'estat_pagament': 'PAGADA',
             'tipus': 'ORDINARIA',
-            })
+        })
 
     def test_www_ultimes_factures__2ok_ok(self):
         pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
@@ -307,8 +322,10 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
         self.create_measure(meter_id, '2017-02-15', 8000)
         self.create_measure(meter_id, '2017-03-15', 8600)
         self.create_measure(meter_id, '2017-04-15', 9000)
-        self.create_invoice(pol_id, meter_id, '2017-02-18', '2017-03-17', 'FE0001', {'state': 'paid'})
-        self.create_invoice(pol_id, meter_id, '2017-03-18', '2017-04-17', 'FE0002', {'state': 'paid'})
+        self.create_invoice(pol_id, meter_id, '2017-02-18',
+                            '2017-03-17', 'FE0001', {'state': 'paid'})
+        self.create_invoice(pol_id, meter_id, '2017-03-18',
+                            '2017-04-17', 'FE0002', {'state': 'paid'})
 
         results = remove_ids(self.fact_obj.www_ultimes_factures(
             self.cursor,
@@ -324,7 +341,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-04-17',
             'estat_pagament': 'PAGADA',
             'tipus': 'ORDINARIA',
-            })
+        })
         self.assertEqual(results[1], {
             'polissa_id': 1,
             'number': u'FE0001',
@@ -333,7 +350,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-03-17',
             'estat_pagament': 'PAGADA',
             'tipus': 'ORDINARIA',
-            })
+        })
 
     def test_www_ultimes_factures__2ok_1draft_ok(self):
         pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
@@ -343,9 +360,12 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
         self.create_measure(meter_id, '2017-03-15', 8600)
         self.create_measure(meter_id, '2017-04-15', 9000)
         self.create_measure(meter_id, '2017-05-15', 9350)
-        self.create_invoice(pol_id, meter_id, '2017-02-18', '2017-03-17', 'FE0001', {'state': 'paid'})
-        self.create_invoice(pol_id, meter_id, '2017-03-18', '2017-04-17', 'FE0002', {'state': 'paid'})
-        self.create_invoice(pol_id, meter_id, '2017-04-10', '2017-05-10', 'FE0003', {'state': 'draft'})
+        self.create_invoice(pol_id, meter_id, '2017-02-18',
+                            '2017-03-17', 'FE0001', {'state': 'paid'})
+        self.create_invoice(pol_id, meter_id, '2017-03-18',
+                            '2017-04-17', 'FE0002', {'state': 'paid'})
+        self.create_invoice(pol_id, meter_id, '2017-04-10',
+                            '2017-05-10', 'FE0003', {'state': 'draft'})
 
         results = remove_ids(self.fact_obj.www_ultimes_factures(
             self.cursor,
@@ -361,7 +381,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-04-17',
             'estat_pagament': 'PAGADA',
             'tipus': 'ORDINARIA',
-            })
+        })
         self.assertEqual(results[1], {
             'polissa_id': 1,
             'number': u'FE0001',
@@ -370,7 +390,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-03-17',
             'estat_pagament': 'PAGADA',
             'tipus': 'ORDINARIA',
-            })
+        })
 
     def test_www_ultimes_factures__3ok_ok(self):
         pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
@@ -380,9 +400,12 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
         self.create_measure(meter_id, '2017-03-15', 8600)
         self.create_measure(meter_id, '2017-04-15', 9000)
         self.create_measure(meter_id, '2017-05-15', 9350)
-        self.create_invoice(pol_id, meter_id, '2017-02-18', '2017-03-17', 'FE0001', {'state': 'paid'})
-        self.create_invoice(pol_id, meter_id, '2017-03-18', '2017-04-17', 'FE0002', {'state': 'paid'})
-        self.create_invoice(pol_id, meter_id, '2017-04-18', '2017-05-17', 'FE0003', {'state': 'paid'})
+        self.create_invoice(pol_id, meter_id, '2017-02-18',
+                            '2017-03-17', 'FE0001', {'state': 'paid'})
+        self.create_invoice(pol_id, meter_id, '2017-03-18',
+                            '2017-04-17', 'FE0002', {'state': 'paid'})
+        self.create_invoice(pol_id, meter_id, '2017-04-18',
+                            '2017-05-17', 'FE0003', {'state': 'paid'})
 
         results = remove_ids(self.fact_obj.www_ultimes_factures(
             self.cursor,
@@ -398,7 +421,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-05-17',
             'estat_pagament': 'PAGADA',
             'tipus': 'ORDINARIA',
-            })
+        })
         self.assertEqual(results[1], {
             'polissa_id': 1,
             'number': u'FE0002',
@@ -407,7 +430,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-04-17',
             'estat_pagament': 'PAGADA',
             'tipus': 'ORDINARIA',
-            })
+        })
         self.assertEqual(results[2], {
             'polissa_id': 1,
             'number': u'FE0001',
@@ -416,7 +439,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-03-17',
             'estat_pagament': 'PAGADA',
             'tipus': 'ORDINARIA',
-            })
+        })
 
     def test_www_ultimes_factures__3ok_and_1ab_ok(self):
         pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
@@ -426,9 +449,12 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
         self.create_measure(meter_id, '2017-03-15', 8600)
         self.create_measure(meter_id, '2017-04-15', 9000)
         self.create_measure(meter_id, '2017-05-15', 9350)
-        self.create_invoice(pol_id, meter_id, '2017-02-18', '2017-03-17', 'FE0001', {'state': 'paid'})
-        self.create_invoice(pol_id, meter_id, '2017-03-18', '2017-04-17', 'FE0002', {'state': 'paid'})
-        inv3_id = self.create_invoice(pol_id, meter_id, '2017-04-18', '2017-05-17', 'FE0003', {'state': 'paid'})
+        self.create_invoice(pol_id, meter_id, '2017-02-18',
+                            '2017-03-17', 'FE0001', {'state': 'paid'})
+        self.create_invoice(pol_id, meter_id, '2017-03-18',
+                            '2017-04-17', 'FE0002', {'state': 'paid'})
+        inv3_id = self.create_invoice(
+            pol_id, meter_id, '2017-04-18', '2017-05-17', 'FE0003', {'state': 'paid'})
         self.create_invoice_ab(pol_id, meter_id, inv3_id, {'state': 'paid'})
 
         results = remove_ids(self.fact_obj.www_ultimes_factures(
@@ -445,7 +471,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-05-17',
             'estat_pagament': 'PAGADA',
             'tipus': 'ABONADORA',
-            })
+        })
         self.assertEqual(results[1], {
             'polissa_id': 1,
             'number': u'FE0003',
@@ -454,7 +480,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-05-17',
             'estat_pagament': 'PAGADA',
             'tipus': 'ORDINARIA',
-            })
+        })
         self.assertEqual(results[2], {
             'polissa_id': 1,
             'number': u'FE0002',
@@ -463,7 +489,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-04-17',
             'estat_pagament': 'PAGADA',
             'tipus': 'ORDINARIA',
-            })
+        })
         self.assertEqual(results[3], {
             'polissa_id': 1,
             'number': u'FE0001',
@@ -472,7 +498,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-03-17',
             'estat_pagament': 'PAGADA',
             'tipus': 'ORDINARIA',
-            })
+        })
 
     def test_www_ultimes_factures__3ok_and_1ab_1re_ok(self):
         pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
@@ -482,9 +508,12 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
         self.create_measure(meter_id, '2017-03-15', 8600)
         self.create_measure(meter_id, '2017-04-15', 9000)
         self.create_measure(meter_id, '2017-05-15', 9350)
-        self.create_invoice(pol_id, meter_id, '2017-02-18', '2017-03-17', 'FE0001', {'state': 'paid'})
-        self.create_invoice(pol_id, meter_id, '2017-03-18', '2017-04-17', 'FE0002', {'state': 'paid'})
-        inv3_id = self.create_invoice(pol_id, meter_id, '2017-04-18', '2017-05-17', 'FE0003', {'state': 'paid'})
+        self.create_invoice(pol_id, meter_id, '2017-02-18',
+                            '2017-03-17', 'FE0001', {'state': 'paid'})
+        self.create_invoice(pol_id, meter_id, '2017-03-18',
+                            '2017-04-17', 'FE0002', {'state': 'paid'})
+        inv3_id = self.create_invoice(
+            pol_id, meter_id, '2017-04-18', '2017-05-17', 'FE0003', {'state': 'paid'})
         self.create_invoice_ab(pol_id, meter_id, inv3_id, {'state': 'paid'})
         self.create_invoice_re(pol_id, meter_id, inv3_id, {'state': 'paid'})
 
@@ -502,7 +531,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-05-17',
             'estat_pagament': 'PAGADA',
             'tipus': 'RECTIFICADORA',
-            })
+        })
         self.assertEqual(results[1], {
             'polissa_id': 1,
             'number': u'AB-FE0003',
@@ -511,7 +540,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-05-17',
             'estat_pagament': 'PAGADA',
             'tipus': 'ABONADORA',
-            })
+        })
         self.assertEqual(results[2], {
             'polissa_id': 1,
             'number': u'FE0003',
@@ -520,7 +549,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-05-17',
             'estat_pagament': 'PAGADA',
             'tipus': 'ORDINARIA',
-            })
+        })
         self.assertEqual(results[3], {
             'polissa_id': 1,
             'number': u'FE0002',
@@ -529,7 +558,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-04-17',
             'estat_pagament': 'PAGADA',
             'tipus': 'ORDINARIA',
-            })
+        })
         self.assertEqual(results[4], {
             'polissa_id': 1,
             'number': u'FE0001',
@@ -538,7 +567,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-03-17',
             'estat_pagament': 'PAGADA',
             'tipus': 'ORDINARIA',
-            })
+        })
 
     def test_www_ultimes_factures__3ok_and_1ab_1re_2_not_visible_ok(self):
         pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
@@ -548,10 +577,14 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
         self.create_measure(meter_id, '2017-03-15', 8600)
         self.create_measure(meter_id, '2017-04-15', 9000)
         self.create_measure(meter_id, '2017-05-15', 9350)
-        self.create_invoice(pol_id, meter_id, '2017-02-18', '2017-03-17', 'FE0001', {'state': 'paid'})
-        self.create_invoice(pol_id, meter_id, '2017-03-18', '2017-04-17', 'FE0002', {'state': 'paid'})
-        inv3_id = self.create_invoice(pol_id, meter_id, '2017-04-18', '2017-05-17', 'FE0003', {'state': 'paid', 'visible_ov': False})
-        self.create_invoice_ab(pol_id, meter_id, inv3_id, {'state': 'paid', 'visible_ov': False})
+        self.create_invoice(pol_id, meter_id, '2017-02-18',
+                            '2017-03-17', 'FE0001', {'state': 'paid'})
+        self.create_invoice(pol_id, meter_id, '2017-03-18',
+                            '2017-04-17', 'FE0002', {'state': 'paid'})
+        inv3_id = self.create_invoice(
+            pol_id, meter_id, '2017-04-18', '2017-05-17', 'FE0003', {'state': 'paid', 'visible_ov': False})
+        self.create_invoice_ab(pol_id, meter_id, inv3_id, {
+                               'state': 'paid', 'visible_ov': False})
         self.create_invoice_re(pol_id, meter_id, inv3_id, {'state': 'paid'})
 
         results = remove_ids(self.fact_obj.www_ultimes_factures(
@@ -568,7 +601,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-05-17',
             'estat_pagament': 'PAGADA',
             'tipus': 'RECTIFICADORA',
-            })
+        })
         self.assertEqual(results[1], {
             'polissa_id': 1,
             'number': u'AB-FE0003',
@@ -577,7 +610,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-05-17',
             'estat_pagament': 'PAGADA',
             'tipus': 'ABONADORA',
-            })
+        })
         self.assertEqual(results[2], {
             'polissa_id': 1,
             'number': u'FE0003',
@@ -586,7 +619,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-05-17',
             'estat_pagament': 'PAGADA',
             'tipus': 'ORDINARIA',
-            })
+        })
         self.assertEqual(results[3], {
             'polissa_id': 1,
             'number': u'FE0002',
@@ -595,7 +628,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-04-17',
             'estat_pagament': 'PAGADA',
             'tipus': 'ORDINARIA',
-            })
+        })
         self.assertEqual(results[4], {
             'polissa_id': 1,
             'number': u'FE0001',
@@ -604,7 +637,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-03-17',
             'estat_pagament': 'PAGADA',
             'tipus': 'ORDINARIA',
-            })
+        })
 
     def test_www_ultimes_factures__3ok_sent_not_paid_ok(self):
         pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
@@ -614,9 +647,12 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
         self.create_measure(meter_id, '2017-03-15', 8600)
         self.create_measure(meter_id, '2017-04-15', 9000)
         self.create_measure(meter_id, '2017-05-15', 9350)
-        self.create_invoice(pol_id, meter_id, '2017-02-18', '2017-03-17', 'FE0001', {'state': 'open'})
-        self.create_invoice(pol_id, meter_id, '2017-03-18', '2017-04-17', 'FE0002', {'state': 'open'})
-        self.create_invoice(pol_id, meter_id, '2017-04-18', '2017-05-17', 'FE0003', {'state': 'open'})
+        self.create_invoice(pol_id, meter_id, '2017-02-18',
+                            '2017-03-17', 'FE0001', {'state': 'open'})
+        self.create_invoice(pol_id, meter_id, '2017-03-18',
+                            '2017-04-17', 'FE0002', {'state': 'open'})
+        self.create_invoice(pol_id, meter_id, '2017-04-18',
+                            '2017-05-17', 'FE0003', {'state': 'open'})
 
         results = remove_ids(self.fact_obj.www_ultimes_factures(
             self.cursor,
@@ -632,7 +668,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-05-17',
             'estat_pagament': 'EN_PROCES',
             'tipus': 'ORDINARIA',
-            })
+        })
         self.assertEqual(results[1], {
             'polissa_id': 1,
             'number': u'FE0002',
@@ -641,7 +677,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-04-17',
             'estat_pagament': 'EN_PROCES',
             'tipus': 'ORDINARIA',
-            })
+        })
         self.assertEqual(results[2], {
             'polissa_id': 1,
             'number': u'FE0001',
@@ -650,7 +686,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-03-17',
             'estat_pagament': 'EN_PROCES',
             'tipus': 'ORDINARIA',
-            })
+        })
 
     def test_www_ultimes_factures__3ok_last_sent_not_paid_ok(self):
         pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
@@ -660,9 +696,12 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
         self.create_measure(meter_id, '2017-03-15', 8600)
         self.create_measure(meter_id, '2017-04-15', 9000)
         self.create_measure(meter_id, '2017-05-15', 9350)
-        self.create_invoice(pol_id, meter_id, '2017-02-18', '2017-03-17', 'FE0001', {'state': 'paid'})
-        self.create_invoice(pol_id, meter_id, '2017-03-18', '2017-04-17', 'FE0002', {'state': 'paid'})
-        self.create_invoice(pol_id, meter_id, '2017-04-18', '2017-05-17', 'FE0003', {'state': 'open'})
+        self.create_invoice(pol_id, meter_id, '2017-02-18',
+                            '2017-03-17', 'FE0001', {'state': 'paid'})
+        self.create_invoice(pol_id, meter_id, '2017-03-18',
+                            '2017-04-17', 'FE0002', {'state': 'paid'})
+        self.create_invoice(pol_id, meter_id, '2017-04-18',
+                            '2017-05-17', 'FE0003', {'state': 'open'})
 
         results = remove_ids(self.fact_obj.www_ultimes_factures(
             self.cursor,
@@ -678,7 +717,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-05-17',
             'estat_pagament': 'EN_PROCES',
             'tipus': 'ORDINARIA',
-            })
+        })
         self.assertEqual(results[1], {
             'polissa_id': 1,
             'number': u'FE0002',
@@ -687,7 +726,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-04-17',
             'estat_pagament': 'PAGADA',
             'tipus': 'ORDINARIA',
-            })
+        })
         self.assertEqual(results[2], {
             'polissa_id': 1,
             'number': u'FE0001',
@@ -696,7 +735,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-03-17',
             'estat_pagament': 'PAGADA',
             'tipus': 'ORDINARIA',
-            })
+        })
 
     def test_www_ultimes_factures__3ok_last_sent_not_paid_invisible_ok(self):
         pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
@@ -706,9 +745,12 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
         self.create_measure(meter_id, '2017-03-15', 8600)
         self.create_measure(meter_id, '2017-04-15', 9000)
         self.create_measure(meter_id, '2017-05-15', 9350)
-        self.create_invoice(pol_id, meter_id, '2017-02-18', '2017-03-17', 'FE0001', {'state': 'paid'})
-        self.create_invoice(pol_id, meter_id, '2017-03-18', '2017-04-17', 'FE0002', {'state': 'open'})
-        self.create_invoice(pol_id, meter_id, '2017-04-18', '2017-05-17', 'FE0003', {'state': 'open', 'visible_ov': False})
+        self.create_invoice(pol_id, meter_id, '2017-02-18',
+                            '2017-03-17', 'FE0001', {'state': 'paid'})
+        self.create_invoice(pol_id, meter_id, '2017-03-18',
+                            '2017-04-17', 'FE0002', {'state': 'open'})
+        self.create_invoice(pol_id, meter_id, '2017-04-18', '2017-05-17',
+                            'FE0003', {'state': 'open', 'visible_ov': False})
 
         results = remove_ids(self.fact_obj.www_ultimes_factures(
             self.cursor,
@@ -724,7 +766,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-05-17',
             'estat_pagament': 'EN_PROCES',
             'tipus': 'ORDINARIA',
-            })
+        })
         self.assertEqual(results[1], {
             'polissa_id': 1,
             'number': u'FE0002',
@@ -733,7 +775,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-04-17',
             'estat_pagament': 'EN_PROCES',
             'tipus': 'ORDINARIA',
-            })
+        })
         self.assertEqual(results[2], {
             'polissa_id': 1,
             'number': u'FE0001',
@@ -742,7 +784,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
             'data_final': '2017-03-17',
             'estat_pagament': 'PAGADA',
             'tipus': 'ORDINARIA',
-            })
+        })
 
     def test_www_ultimes_factures__AB_negatives_ok(self):
         pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
@@ -752,9 +794,12 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
         self.create_measure(meter_id, '2017-03-15', 8600)
         self.create_measure(meter_id, '2017-04-15', 9000)
         self.create_measure(meter_id, '2017-05-15', 9350)
-        inv1_id = self.create_invoice(pol_id, meter_id, '2017-02-18', '2017-03-17', 'FE0001', {'state': 'paid'})
-        inv2_id = self.create_invoice(pol_id, meter_id, '2017-03-18', '2017-04-17', 'FE0002', {'state': 'paid'})
-        inv3_id = self.create_invoice(pol_id, meter_id, '2017-04-18', '2017-05-17', 'FE0003', {'state': 'paid'})
+        inv1_id = self.create_invoice(
+            pol_id, meter_id, '2017-02-18', '2017-03-17', 'FE0001', {'state': 'paid'})
+        inv2_id = self.create_invoice(
+            pol_id, meter_id, '2017-03-18', '2017-04-17', 'FE0002', {'state': 'paid'})
+        inv3_id = self.create_invoice(
+            pol_id, meter_id, '2017-04-18', '2017-05-17', 'FE0003', {'state': 'paid'})
         self.create_invoice_ab(pol_id, meter_id, inv1_id, {'state': 'paid'})
         self.create_invoice_ab(pol_id, meter_id, inv2_id, {'state': 'paid'})
         self.create_invoice_ab(pol_id, meter_id, inv3_id, {'state': 'paid'})
@@ -814,7 +859,8 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
     def test_www_estat_pagament_ov__open_reclama_NO_PAGADA(self):
         fact_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         self.fact_obj.write(self.cursor, self.uid, fact_id, {'state': 'open'})
-        ps_id = self.get_fixture('som_account_invoice_pending', 'reclamacio_en_curs_pending_state')
+        ps_id = self.get_fixture('som_account_invoice_pending',
+                                 'reclamacio_en_curs_pending_state')
         self.set_pending_state(fact_id, ps_id)
         ret_value = self.fact_obj.www_estat_pagament_ov(self.cursor, self.uid, fact_id)
         self.assertEqual(ret_value, 'NO_PAGADA')
@@ -822,7 +868,8 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
     def test_www_estat_pagament_ov__open_1f_NO_PAGADA(self):
         fact_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         self.fact_obj.write(self.cursor, self.uid, fact_id, {'state': 'open'})
-        ps_id = self.get_fixture('som_account_invoice_pending', 'default_avis_impagament_pending_state')
+        ps_id = self.get_fixture('som_account_invoice_pending',
+                                 'default_avis_impagament_pending_state')
         self.set_pending_state(fact_id, ps_id)
         ret_value = self.fact_obj.www_estat_pagament_ov(self.cursor, self.uid, fact_id)
         self.assertEqual(ret_value, 'NO_PAGADA')
@@ -830,7 +877,8 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
     def test_www_estat_pagament_ov__open_3f_NO_PAGADA(self):
         fact_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         self.fact_obj.write(self.cursor, self.uid, fact_id, {'state': 'open'})
-        ps_id = self.get_fixture('som_account_invoice_pending', 'notificacio_tall_imminent_enviada_pending_state')
+        ps_id = self.get_fixture('som_account_invoice_pending',
+                                 'notificacio_tall_imminent_enviada_pending_state')
         self.set_pending_state(fact_id, ps_id)
         ret_value = self.fact_obj.www_estat_pagament_ov(self.cursor, self.uid, fact_id)
         self.assertEqual(ret_value, 'NO_PAGADA')
@@ -838,7 +886,8 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
     def test_www_estat_pagament_ov__open_4f_NO_PAGADA(self):
         fact_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         self.fact_obj.write(self.cursor, self.uid, fact_id, {'state': 'open'})
-        ps_id = self.get_fixture('som_account_invoice_pending', 'esperant_segona_factura_impagada_pending_state')
+        ps_id = self.get_fixture('som_account_invoice_pending',
+                                 'esperant_segona_factura_impagada_pending_state')
         self.set_pending_state(fact_id, ps_id)
         ret_value = self.fact_obj.www_estat_pagament_ov(self.cursor, self.uid, fact_id)
         self.assertEqual(ret_value, 'NO_PAGADA')
@@ -846,7 +895,8 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
     def test_www_estat_pagament_ov__open_6f_NO_PAGADA(self):
         fact_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         self.fact_obj.write(self.cursor, self.uid, fact_id, {'state': 'open'})
-        ps_id = self.get_fixture('som_account_invoice_pending', 'default_tall_pending_state')
+        ps_id = self.get_fixture('som_account_invoice_pending',
+                                 'default_tall_pending_state')
         self.set_pending_state(fact_id, ps_id)
         ret_value = self.fact_obj.www_estat_pagament_ov(self.cursor, self.uid, fact_id)
         self.assertEqual(ret_value, 'NO_PAGADA')
@@ -854,7 +904,8 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
     def test_www_estat_pagament_ov__open_7f_ADV_NO_PAGADA(self):
         fact_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         self.fact_obj.write(self.cursor, self.uid, fact_id, {'state': 'open'})
-        ps_id = self.get_fixture('som_account_invoice_pending', 'pendent_traspas_advocats_pending_state')
+        ps_id = self.get_fixture('som_account_invoice_pending',
+                                 'pendent_traspas_advocats_pending_state')
         self.set_pending_state(fact_id, ps_id)
         ret_value = self.fact_obj.www_estat_pagament_ov(self.cursor, self.uid, fact_id)
         self.assertEqual(ret_value, 'NO_PAGADA')
@@ -862,7 +913,8 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
     def test_www_estat_pagament_ov__open_no_rec_NO_PAGADA(self):
         fact_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         self.fact_obj.write(self.cursor, self.uid, fact_id, {'state': 'open'})
-        ps_id = self.get_fixture('som_account_invoice_pending', 'no_reclamable_pending_state')
+        ps_id = self.get_fixture('som_account_invoice_pending',
+                                 'no_reclamable_pending_state')
         self.set_pending_state(fact_id, ps_id)
         ret_value = self.fact_obj.www_estat_pagament_ov(self.cursor, self.uid, fact_id)
         self.assertEqual(ret_value, 'NO_PAGADA')
@@ -870,7 +922,8 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
     def test_www_estat_pagament_ov__open_pact_g_NO_PAGADA(self):
         fact_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         self.fact_obj.write(self.cursor, self.uid, fact_id, {'state': 'open'})
-        ps_id = self.get_fixture('som_account_invoice_pending', 'default_pacte_girar_pending_state')
+        ps_id = self.get_fixture('som_account_invoice_pending',
+                                 'default_pacte_girar_pending_state')
         self.set_pending_state(fact_id, ps_id)
         ret_value = self.fact_obj.www_estat_pagament_ov(self.cursor, self.uid, fact_id)
         self.assertEqual(ret_value, 'NO_PAGADA')
@@ -878,7 +931,8 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
     def test_www_estat_pagament_ov__open_pact_t_NO_PAGADA(self):
         fact_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         self.fact_obj.write(self.cursor, self.uid, fact_id, {'state': 'open'})
-        ps_id = self.get_fixture('som_account_invoice_pending', 'pacte_transferencia_pending_state')
+        ps_id = self.get_fixture('som_account_invoice_pending',
+                                 'pacte_transferencia_pending_state')
         self.set_pending_state(fact_id, ps_id)
         ret_value = self.fact_obj.www_estat_pagament_ov(self.cursor, self.uid, fact_id)
         self.assertEqual(ret_value, 'NO_PAGADA')
@@ -886,20 +940,25 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
     def test_www_estat_pagament_ov__open_pob_NO_PAGADA(self):
         fact_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         self.fact_obj.write(self.cursor, self.uid, fact_id, {'state': 'open'})
-        ps_id = self.get_fixture('som_account_invoice_pending', 'pendent_consulta_probresa_pending_state')
+        ps_id = self.get_fixture('som_account_invoice_pending',
+                                 'pendent_consulta_probresa_pending_state')
         self.set_pending_state(fact_id, ps_id)
-        payment_state = self.fact_obj.www_estat_pagament_ov(self.cursor, self.uid, fact_id)
+        payment_state = self.fact_obj.www_estat_pagament_ov(
+            self.cursor, self.uid, fact_id)
         self.assertEqual(payment_state, 'NO_PAGADA')
 
     def test_www_estat_pagament_ov__paid_correct_group_move(self):
         fact_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         self.fact_obj.write(self.cursor, self.uid, fact_id, {'state': 'paid'})
         self.create_dummy_group_move(fact_id)
-        payment_state = self.fact_obj.www_estat_pagament_ov(self.cursor, self.uid, fact_id)
+        payment_state = self.fact_obj.www_estat_pagament_ov(
+            self.cursor, self.uid, fact_id)
         self.assertEqual(payment_state, 'PAGADA')
 
         self.fact_obj.write(self.cursor, self.uid, fact_id, {'state': 'open'})
-        ps_id = self.get_fixture('som_account_invoice_pending', 'esperant_segona_factura_impagada_pending_state')
+        ps_id = self.get_fixture('som_account_invoice_pending',
+                                 'esperant_segona_factura_impagada_pending_state')
         self.set_pending_state(fact_id, ps_id)
-        payment_state = self.fact_obj.www_estat_pagament_ov(self.cursor, self.uid, fact_id)
+        payment_state = self.fact_obj.www_estat_pagament_ov(
+            self.cursor, self.uid, fact_id)
         self.assertEqual(payment_state, 'EN_PROCES')

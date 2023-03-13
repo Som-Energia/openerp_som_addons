@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
-import som_autoreclama_state
 
 
 class SomAutoreclamaStateCondition(osv.osv):
@@ -12,7 +11,7 @@ class SomAutoreclamaStateCondition(osv.osv):
 
     def fit_atc_condition(self, cursor, uid, id, data, context=None):
         cond_data = self.read(cursor, uid, id, ['subtype_id', 'days'], context=context)
-        return data['subtipus_id'] == cond_data['subtype_id'][0] and data['distri_days'] >= cond_data['days'] and data['agent_actual']=='10' and data['state']=='pending'
+        return data['subtipus_id'] == cond_data['subtype_id'][0] and data['distri_days'] >= cond_data['days'] and data['agent_actual'] == '10' and data['state'] == 'pending'
 
     _columns = {
         'priority': fields.integer(
@@ -35,14 +34,14 @@ class SomAutoreclamaStateCondition(osv.osv):
             help=_(u'Dies sense resposta de la distribuïdora')
         ),
         'state_id': fields.many2one(
-           'som.autoreclama.state',
-           _(u'Estat actual'),
-           required=True
+            'som.autoreclama.state',
+            _(u'Estat actual'),
+            required=True
         ),
         'next_state_id': fields.many2one(
-           'som.autoreclama.state',
-           _(u'Estat següent'),
-           required=True
+            'som.autoreclama.state',
+            _(u'Estat següent'),
+            required=True
         ),
     }
 

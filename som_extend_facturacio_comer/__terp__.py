@@ -5,7 +5,7 @@
     "version": "0-dev",
     "author": "Som Energia",
     "category": "Master",
-    "depends":[
+    "depends": [
         "base",
         "remeses_base",
         "giscedata_remeses",
@@ -15,7 +15,7 @@
     ],
     "init_xml": [],
     "demo_xml": [],
-    "update_xml":[
+    "update_xml": [
         "giscedata_facturacio_view.xml",
         "payment_order_data.xml",
         "wizard/wizard_change_payment_type_view.xml",

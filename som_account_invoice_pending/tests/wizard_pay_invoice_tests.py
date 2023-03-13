@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 from destral import testing
 from destral.transaction import Transaction
-from datetime import date, timedelta
+from datetime import date
 import mock
-from mock import Mock
-from osv.osv import except_osv
 from giscedata_facturacio.wizard import wizard_pay_invoice
 from som_account_invoice_pending.wizard import wizard_pay_invoice as som_wizard_pay_invoice
 
@@ -52,12 +50,12 @@ class TestWizardPayInvoice(testing.OOTestCase):
             uid = txn.user
             self._load_data_unpaid_invoice(cursor, uid)
 
-            ctx = { 'active_id': self.fact_id, 
-                    'active_ids': [self.fact_id] }
+            ctx = {'active_id': self.fact_id,
+                   'active_ids': [self.fact_id]}
 
             today = date.today().strftime('%Y%m%d')
-            vals = { 'comment': 'Pagament efectuat des de la OV. {}'.format(today),
-                     'journal_id': self.other_journal_id }
+            vals = {'comment': 'Pagament efectuat des de la OV. {}'.format(today),
+                    'journal_id': self.other_journal_id}
 
             pay_invoice_wizard = self.pay_inv_obj.create(cursor, uid, vals, context=ctx)
             wiz_id = pay_invoice_wizard
@@ -74,14 +72,15 @@ class TestWizardPayInvoice(testing.OOTestCase):
             uid = txn.user
             self._load_data_unpaid_invoice(cursor, uid)
             self.fact_obj.set_pending(cursor, uid, [self.fact_id], self.waiting_48h_def)
-            self.cfg_obj.set(cursor, uid, 'pay_alert_pending_states_som', "[{}]".format(self.tall_def))
+            self.cfg_obj.set(cursor, uid, 'pay_alert_pending_states_som',
+                             "[{}]".format(self.tall_def))
 
-            ctx = { 'active_id': self.fact_id, 
-                    'active_ids': [self.fact_id] }
+            ctx = {'active_id': self.fact_id,
+                   'active_ids': [self.fact_id]}
 
             today = date.today().strftime('%Y%m%d')
-            vals = { 'comment': 'Pagament efectuat des de la OV. {}'.format(today),
-                     'journal_id': self.other_journal_id }
+            vals = {'comment': 'Pagament efectuat des de la OV. {}'.format(today),
+                    'journal_id': self.other_journal_id}
 
             pay_invoice_wizard = self.pay_inv_obj.create(cursor, uid, vals, context=ctx)
             wiz_id = pay_invoice_wizard
@@ -98,14 +97,15 @@ class TestWizardPayInvoice(testing.OOTestCase):
             uid = txn.user
             self._load_data_unpaid_invoice(cursor, uid)
             self.fact_obj.set_pending(cursor, uid, [self.fact_id], self.tall_def)
-            self.cfg_obj.set(cursor, uid, 'pay_alert_pending_states_som', "[{}]".format(self.tall_def))
+            self.cfg_obj.set(cursor, uid, 'pay_alert_pending_states_som',
+                             "[{}]".format(self.tall_def))
 
-            ctx = { 'active_id': self.fact_id, 
-                    'active_ids': [self.fact_id] }
+            ctx = {'active_id': self.fact_id,
+                   'active_ids': [self.fact_id]}
 
             today = date.today().strftime('%Y%m%d')
-            vals = { 'comment': 'Pagament efectuat des de la OV. {}'.format(today),
-                     'journal_id': self.other_journal_id }
+            vals = {'comment': 'Pagament efectuat des de la OV. {}'.format(today),
+                    'journal_id': self.other_journal_id}
 
             pay_invoice_wizard = self.pay_inv_obj.create(cursor, uid, vals, context=ctx)
             wiz_id = pay_invoice_wizard
@@ -122,14 +122,15 @@ class TestWizardPayInvoice(testing.OOTestCase):
             uid = txn.user
             self._load_data_unpaid_invoice(cursor, uid)
             self.fact_obj.set_pending(cursor, uid, [self.fact_id], self.waiting_48h_def)
-            self.cfg_obj.set(cursor, uid, 'pay_alert_pending_states_som', "[{}]".format(self.tall_def))
+            self.cfg_obj.set(cursor, uid, 'pay_alert_pending_states_som',
+                             "[{}]".format(self.tall_def))
 
-            ctx = { 'active_id': self.fact_id, 
-                    'active_ids': [self.fact_id] }
+            ctx = {'active_id': self.fact_id,
+                   'active_ids': [self.fact_id]}
 
             today = date.today().strftime('%Y%m%d')
-            vals = { 'comment': 'Pagament efectuat des de la OV. {}'.format(today),
-                     'journal_id': self.tpv_journal_id }
+            vals = {'comment': 'Pagament efectuat des de la OV. {}'.format(today),
+                    'journal_id': self.tpv_journal_id}
 
             pay_invoice_wizard = self.pay_inv_obj.create(cursor, uid, vals, context=ctx)
             wiz_id = pay_invoice_wizard
@@ -147,14 +148,15 @@ class TestWizardPayInvoice(testing.OOTestCase):
             self._load_data_unpaid_invoice(cursor, uid)
 
             self.fact_obj.set_pending(cursor, uid, [self.fact_id], self.tall_def)
-            self.cfg_obj.set(cursor, uid, 'pay_alert_pending_states_som', "[{}]".format(self.tall_def))
+            self.cfg_obj.set(cursor, uid, 'pay_alert_pending_states_som',
+                             "[{}]".format(self.tall_def))
 
-            ctx = { 'active_id': self.fact_id, 
-                    'active_ids': [self.fact_id] }
+            ctx = {'active_id': self.fact_id,
+                   'active_ids': [self.fact_id]}
 
             today = date.today().strftime('%Y%m%d')
-            vals = { 'comment': 'Pagament efectuat des de la OV. {}'.format(today),
-                     'journal_id': self.tpv_journal_id }
+            vals = {'comment': 'Pagament efectuat des de la OV. {}'.format(today),
+                    'journal_id': self.tpv_journal_id}
 
             pay_invoice_wizard = self.pay_inv_obj.create(cursor, uid, vals, context=ctx)
             wiz_id = pay_invoice_wizard
@@ -172,14 +174,15 @@ class TestWizardPayInvoice(testing.OOTestCase):
             self._load_data_unpaid_invoice(cursor, uid)
 
             self.fact_obj.set_pending(cursor, uid, [self.fact_id], self.tall_def)
-            self.cfg_obj.set(cursor, uid, 'pay_alert_pending_states_som', "[{}]".format(self.tall_def))
+            self.cfg_obj.set(cursor, uid, 'pay_alert_pending_states_som',
+                             "[{}]".format(self.tall_def))
 
-            ctx = { 'active_id': self.fact_id, 
-                    'active_ids': [self.fact_id] }
+            ctx = {'active_id': self.fact_id,
+                   'active_ids': [self.fact_id]}
 
             today = date.today().strftime('%Y%m%d')
-            vals = { 'comment': 'Pagament efectuat des de la OV. {}'.format(today),
-                     'journal_id': self.tpv_journal_id }
+            vals = {'comment': 'Pagament efectuat des de la OV. {}'.format(today),
+                    'journal_id': self.tpv_journal_id}
 
             pay_invoice_wizard = self.pay_inv_obj.create(cursor, uid, vals, context=ctx)
             wiz_id = pay_invoice_wizard

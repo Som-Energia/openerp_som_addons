@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
-from osv.osv import except_osv
 
-import datetime
 
 class GiscedataPolissa(osv.osv):
     """Pòlissa per afegir el camp teoric_maximum_consume_gc.
@@ -12,12 +10,14 @@ class GiscedataPolissa(osv.osv):
 
     _columns = {
         'teoric_maximum_consume_gc': fields.float(
-            digits=(8,2),
+            digits=(8, 2),
             string='Teoric maximum consume Grans Contractes',
             help=u"Màxim consum mensual teòric d'un contracte amb categoria Gran Consum associat a la validació SF03.")
     }
 
+
 GiscedataPolissa()
+
 
 class GiscedataPolissaModcontractual(osv.osv):
     """Modificació Contractual d'una Pòlissa."""
@@ -25,7 +25,7 @@ class GiscedataPolissaModcontractual(osv.osv):
     _inherit = 'giscedata.polissa.modcontractual'
 
     _columns = {
-        'teoric_maximum_consume_gc': fields.float(digits=(8,2), string='Teoric maximum consume Grans Contractes')
+        'teoric_maximum_consume_gc': fields.float(digits=(8, 2), string='Teoric maximum consume Grans Contractes')
     }
 
 

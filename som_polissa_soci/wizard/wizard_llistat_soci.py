@@ -11,7 +11,7 @@ from datetime import datetime
 
 HEADERS = ['categoria', 'municipi', 'num_soci', 'nif', 'email', 'nom',
            'provincia', 'codi_postal', 'idioma', 'comarca',
-           'comunitat_autonoma',]
+           'comunitat_autonoma', ]
 
 
 class WizardLlistatSocis(osv.osv_memory):
@@ -56,5 +56,6 @@ class WizardLlistatSocis(osv.osv_memory):
     _defaults = {
         'state': lambda *a: 'init',
     }
+
 
 WizardLlistatSocis()

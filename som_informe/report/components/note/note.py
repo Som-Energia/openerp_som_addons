@@ -1,4 +1,3 @@
-from datetime import date
 
 class note:
     def __init__(self):

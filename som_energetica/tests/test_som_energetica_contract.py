@@ -2,7 +2,7 @@
 from destral import testing
 from destral.transaction import Transaction
 
-from expects import *
+from expects import be_empty, be_false, be_true, contain, equal, expect
 import osv
 
 
@@ -52,7 +52,6 @@ class EnergeticaTests(testing.OOTestCase):
 
             expect(res).to(be_false)
             expect(prod_data['default_code']).to(equal('DN01'))
-
 
             # soci energética
             self.set_soci(cursor, uid, contract_id, energetica_soci_id)
@@ -124,7 +123,7 @@ class EnergeticaTests(testing.OOTestCase):
             partner_ids = partner_obj.search(cursor, uid, [])
             bank_ids = bank_obj.search(cursor, uid, [])
             address_ids = address_obj.search(cursor, uid, [])
-            contract_obj.write(cursor, uid ,contract_id,{
+            contract_obj.write(cursor, uid, contract_id, {
                 'titular': partner_ids[-1],
                 'pagador': partner_ids[-2],
                 'altre_p': partner_ids[-3],
@@ -133,9 +132,11 @@ class EnergeticaTests(testing.OOTestCase):
                 'direccio_pagament': address_ids[-1],
                 'direccio_notificacio': address_ids[-2],
             })
-            address_obj.write(cursor, uid, address_ids[-1] , {'partner_id': partner_ids[-5]})
-            address_obj.write(cursor, uid, address_ids[-2] , {'partner_id': partner_ids[-6]})
-            bank_obj.write(cursor, uid, bank_ids[-1] , {'partner_id': partner_ids[-7]})
+            address_obj.write(
+                cursor, uid, address_ids[-1], {'partner_id': partner_ids[-5]})
+            address_obj.write(
+                cursor, uid, address_ids[-2], {'partner_id': partner_ids[-6]})
+            bank_obj.write(cursor, uid, bank_ids[-1], {'partner_id': partner_ids[-7]})
 
             bad_ids = contract_obj.get_bad_energetica_partners(
                 cursor, uid, contract_id
@@ -172,7 +173,7 @@ class EnergeticaTests(testing.OOTestCase):
             partner_ids = partner_obj.search(cursor, uid, [])
             bank_ids = bank_obj.search(cursor, uid, [])
             address_ids = address_obj.search(cursor, uid, [])
-            contract_obj.write(cursor, uid ,contract_id,{
+            contract_obj.write(cursor, uid, contract_id, {
                 'titular': partner_ids[-1],
                 'pagador': partner_ids[-1],
                 'altre_p': partner_ids[-1],
@@ -181,9 +182,11 @@ class EnergeticaTests(testing.OOTestCase):
                 'direccio_pagament': address_ids[-1],
                 'direccio_notificacio': address_ids[-2],
             })
-            address_obj.write(cursor, uid, address_ids[-1] , {'partner_id': partner_ids[-1]})
-            address_obj.write(cursor, uid, address_ids[-2] , {'partner_id': partner_ids[-1]})
-            bank_obj.write(cursor, uid, bank_ids[-1] , {'partner_id': partner_ids[-1]})
+            address_obj.write(
+                cursor, uid, address_ids[-1], {'partner_id': partner_ids[-1]})
+            address_obj.write(
+                cursor, uid, address_ids[-2], {'partner_id': partner_ids[-1]})
+            bank_obj.write(cursor, uid, bank_ids[-1], {'partner_id': partner_ids[-1]})
 
             bad_ids = contract_obj.get_bad_energetica_partners(
                 cursor, uid, contract_id

@@ -32,7 +32,8 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
 
         with self.assertRaises(Exception) as e:
             wiz_obj.refund_rectify_by_origin(cursor, uid, wiz_id, context=ctx)
-        self.assertEqual(e.exception.message, "warning -- Error\n\nPer enviar el correu cal indicar les plantilles")
+        self.assertEqual(
+            e.exception.message, "warning -- Error\n\nPer enviar el correu cal indicar les plantilles")
 
     def test_refund_rectify_by_origin_notEnforceFromAccountPaymentTemplate(self):
         cursor = self.cursor
@@ -132,7 +133,8 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
             ('data_inici', '<', fact_info['data_final']), ('data_final',
                                                            '>', fact_info['data_inici']), ('type', '=', 'out_invoice')
         ])
-        self.assertEqual(fact_obj.read(cursor, uid, f_cli_ids[0], ['state'])['state'], 'draft')
+        self.assertEqual(fact_obj.read(
+            cursor, uid, f_cli_ids[0], ['state'])['state'], 'draft')
         ctx = {'active_id': f1_id, 'active_ids': [f1_id]}
 
         wiz_id = wiz_obj.create(cursor, uid, {}, context=ctx)
@@ -258,7 +260,8 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
         fact_prov_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_facturacio', 'factura_0003'
         )[1]
-        fact_info = fact_obj.read(cursor, uid, fact_prov_id, ['origin', 'polissa_id', 'data_inici', 'data_final'])
+        fact_info = fact_obj.read(cursor, uid, fact_prov_id, [
+                                  'origin', 'polissa_id', 'data_inici', 'data_final'])
         f_cli_ids = fact_obj.search(cursor, uid, [
             ('data_inici', '<', fact_info['data_final']),
             ('data_final', '>', fact_info['data_inici']),
@@ -287,9 +290,11 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
         fact_prov_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_facturacio', 'factura_0003'
         )[1]
-        fact_info = fact_obj.read(cursor, uid, fact_prov_id, ['origin', 'polissa_id', 'data_inici', 'data_final'])
+        fact_info = fact_obj.read(cursor, uid, fact_prov_id, [
+                                  'origin', 'polissa_id', 'data_inici', 'data_final'])
         f_cli_ids = fact_obj.search(cursor, uid, [('type', '=', 'out_invoice')])
-        first_inici = datetime.strptime(fact_info['data_inici'], '%Y-%m-%d') - timedelta(days=2)
+        first_inici = datetime.strptime(
+            fact_info['data_inici'], '%Y-%m-%d') - timedelta(days=2)
         first_final = first_inici + timedelta(days=7)
         second_inici = first_final + timedelta(days=1)
         fact_obj.write(cursor, uid, f_cli_ids[0], {

@@ -2,7 +2,6 @@
 from osv import osv, fields
 import re
 
-from tools.translate import _
 
 class GiscedataPolissa(osv.osv):
     """Pòlissa per afegir el camp de soci.
@@ -22,7 +21,7 @@ class GiscedataPolissa(osv.osv):
                                                            'name'])
 
         if (polissa_vals and polissa_vals['observacions']
-            and '* consum: ' in polissa_vals['observacions']):
+                and '* consum: ' in polissa_vals['observacions']):
             observacions = polissa_vals['observacions']
             cadena = '* consum: '
             linia = [l for l in observacions.split('\n') if cadena in l][0]
@@ -68,9 +67,9 @@ class GiscedataPolissa(osv.osv):
     _columns = {
         'soci': fields.many2one('res.partner', 'Soci',
                                 states={'validar': [('required', True)]}
-        ),
+                                ),
         'soci_nif': fields.related('soci', 'vat', type='char',
-                                    string='NIF soci', readonly=True),
+                                   string='NIF soci', readonly=True),
         'donatiu': fields.boolean('Donatiu voluntari',
                                   readonly=True,
                                   states={'esborrany': [('readonly', False)],
@@ -87,5 +86,6 @@ class GiscedataPolissa(osv.osv):
     _defaults = {
         'donatiu': lambda *a: False,
     }
+
 
 GiscedataPolissa()

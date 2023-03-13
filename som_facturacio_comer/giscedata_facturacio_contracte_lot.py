@@ -3,7 +3,6 @@ from __future__ import absolute_import
 from osv import osv, fields
 from tools.translate import _
 from gestionatr.defs import TABLA_113
-from datetime import datetime
 import re
 import logging
 
@@ -42,18 +41,20 @@ class GiscedataFacturacioContracteLot(osv.osv):
     def date_invoice(self, cr, uid, id, context=None):
         """ Retorna la data de les factures """
         fact_obj = self.pool.get('giscedata.facturacio.factura')
-        contracte_lot_data = self.read(cr, uid, id, ['lot_id','polissa_id'])
+        contracte_lot_data = self.read(cr, uid, id, ['lot_id', 'polissa_id'])
         date_invoice = 0
         try:
             lot_id = contracte_lot_data['lot_id'][0]
             pol_id = contracte_lot_data['polissa_id'][0]
-            fact_ids = fact_obj.search(cr, uid, [('lot_facturacio','=', lot_id), ('polissa_id','=', pol_id)])
+            fact_ids = fact_obj.search(
+                cr, uid, [('lot_facturacio', '=', lot_id), ('polissa_id', '=', pol_id)])
             if fact_ids:
                 date_invoice = fact_obj.read(cr, uid, fact_ids[0],
-                        ['date_invoice'])['date_invoice']
+                                             ['date_invoice'])['date_invoice']
         except Exception as e:
             logger = logging.getLogger('openerp' + __name__)
-            logger.error("Error calculant el camp funcio date_invoice del contracte_lot ID {}. {}".format(id, e))
+            logger.error(
+                "Error calculant el camp funcio date_invoice del contracte_lot ID {}. {}".format(id, e))
 
         return date_invoice
 
@@ -67,17 +68,19 @@ class GiscedataFacturacioContracteLot(osv.osv):
         lot_id = contracte_lot_data['lot_id'][0]
         pol_id = contracte_lot_data['polissa_id'][0]
 
-        fact_ids = fact_obj.search(cr, uid,[('lot_facturacio','=', lot_id), ('polissa_id','=', pol_id)])
+        fact_ids = fact_obj.search(
+            cr, uid, [('lot_facturacio', '=', lot_id), ('polissa_id', '=', pol_id)])
 
         if fact_ids:
             for fact_id in fact_ids:
                 energy_readings_o = self.pool.get('giscedata.facturacio.lectures.energia')
                 reading_origin_o = self.pool.get('giscedata.lectures.origen')
 
-                energy_readings_f = ['tipus', 'name', 'factura_id','origen_id', 'ajust']
+                energy_readings_f = ['tipus', 'name', 'factura_id', 'origen_id', 'ajust']
                 dmn = [('factura_id', '=', fact_id)]
 
-                energy_reading_vs = energy_readings_o.q(cr, uid).read(energy_readings_f).where(dmn)
+                energy_reading_vs = energy_readings_o.q(
+                    cr, uid).read(energy_readings_f).where(dmn)
                 if not energy_reading_vs:
                     return 'Sense Lectures'
                 for energy_reading_v in energy_reading_vs:
@@ -96,23 +99,25 @@ class GiscedataFacturacioContracteLot(osv.osv):
 
     def te_generation(self, cr, uid, id, context=None):
         fact_obj = self.pool.get('giscedata.facturacio.factura')
-        contracte_lot_data = self.read(cr, uid, id, ['lot_id','polissa_id'])
+        contracte_lot_data = self.read(cr, uid, id, ['lot_id', 'polissa_id'])
         try:
             lot_id = contracte_lot_data['lot_id'][0]
             pol_id = contracte_lot_data['polissa_id'][0]
-            fact_ids = fact_obj.search(cr, uid, [('lot_facturacio','=', lot_id), ('polissa_id','=', pol_id)])
+            fact_ids = fact_obj.search(
+                cr, uid, [('lot_facturacio', '=', lot_id), ('polissa_id', '=', pol_id)])
             for fact_id in fact_ids:
                 te_generation = fact_obj.read(cr, uid, fact_id, ['is_gkwh'])['is_gkwh']
                 if te_generation:
                     return True
         except Exception as e:
             logger = logging.getLogger('openerp' + __name__)
-            logger.error("Error calculant el camp funcio te_generation del contracte_lot ID {}. {}".format(id, e))
+            logger.error(
+                "Error calculant el camp funcio te_generation del contracte_lot ID {}. {}".format(id, e))
 
     def _ff_gran_contracte(self, cr, uid, ids, name, args, context=None):
         res = dict.fromkeys(ids, False)
         pcat_obj = self.pool.get('giscedata.polissa.category')
-        pcat_ids = pcat_obj.search(cr, uid,[('name','=','Gran Contracte')])
+        pcat_ids = pcat_obj.search(cr, uid, [('name', '=', 'Gran Contracte')])
         for id in ids:
             contracte_lot_data = self.browse(cr, uid, id)
             polissa_id = contracte_lot_data.polissa_id
@@ -123,20 +128,22 @@ class GiscedataFacturacioContracteLot(osv.osv):
     def _get_clots_from_polissa(self, cr, uid, ids, context=None):
         """ids són els ids de pòlisses que han canviat. Hem de retornar els ids de clot que cal recalcular"""
         cl_obj = self.pool.get('giscedata.facturacio.contracte_lot')
-        return cl_obj.search(cr, uid,[('polissa_id', 'in', ids)])
+        return cl_obj.search(cr, uid, [('polissa_id', 'in', ids)])
 
     def data_final(self, cr, uid, id, context=None):
         fact_obj = self.pool.get('giscedata.facturacio.factura')
-        contracte_lot_data = self.read(cr, uid, id, ['lot_id','polissa_id'])
+        contracte_lot_data = self.read(cr, uid, id, ['lot_id', 'polissa_id'])
         try:
             lot_id = contracte_lot_data['lot_id'][0]
             pol_id = contracte_lot_data['polissa_id'][0]
-            fact_ids = fact_obj.search(cr, uid, [('lot_facturacio','=', lot_id), ('polissa_id','=', pol_id)], order='data_final desc', limit=1)
+            fact_ids = fact_obj.search(cr, uid, [(
+                'lot_facturacio', '=', lot_id), ('polissa_id', '=', pol_id)], order='data_final desc', limit=1)
             if fact_ids:
                 return fact_obj.read(cr, uid, fact_ids[0], ['data_final'])['data_final']
         except Exception as e:
             logger = logging.getLogger('openerp' + __name__)
-            logger.error("Error calculant el camp funcio te_generation del contracte_lot ID %s: %s ", id, e)
+            logger.error(
+                "Error calculant el camp funcio te_generation del contracte_lot ID %s: %s ", id, e)
 
     def _ff_update_fields(self, cr, uid, ids, name, args, context=None):
         res = {id: {'total_incidencies': 0} for id in ids}
@@ -150,62 +157,62 @@ class GiscedataFacturacioContracteLot(osv.osv):
 
     _columns = {
         'polissa_distribuidora': fields.related('polissa_id', 'distribuidora', type='many2one', relation='res.partner',
-                                string='Distribuidora', readonly=True),
+                                                string='Distribuidora', readonly=True),
         'autoconsum': fields.related('polissa_id', 'autoconsumo', type='selection',
-                               selection=TIPO_AUTOCONSUMO_SEL, string='Autoconsum', readonly=True),
+                                     selection=TIPO_AUTOCONSUMO_SEL, string='Autoconsum', readonly=True),
         'tarifaATR': fields.related('polissa_id', 'tarifa', 'name',
-                                type='char', string=_('Tarifa Accés'), readonly=True),
+                                    type='char', string=_('Tarifa Accés'), readonly=True),
         'llista_preu': fields.related('polissa_id', 'llista_preu', 'name',
-                                type='char', string=_('Tarifa Comercialitzadora'), readonly=True),
+                                      type='char', string=_('Tarifa Comercialitzadora'), readonly=True),
         'total_incidencies': fields.function(
-                                _ff_update_fields, multi='totals',
-                                string='Nombre total dincidencies',
-                                type='integer', store=_STORE_WHEN_ERRORS_ADDED, method=True),
+            _ff_update_fields, multi='totals',
+            string='Nombre total dincidencies',
+            type='integer', store=_STORE_WHEN_ERRORS_ADDED, method=True),
         'date_invoice': fields.function(
-                                _ff_update_fields, multi='totals',
-                                string='Data de la factura',
-                                type='date', size=12, store=_STORE_WHEN_INVOICE_ADDED, method=True),
+            _ff_update_fields, multi='totals',
+            string='Data de la factura',
+            type='date', size=12, store=_STORE_WHEN_INVOICE_ADDED, method=True),
         'consum_facturat': fields.function(
-                                _ff_update_fields, multi='totals',
-                                string='Origen consum facturat',
-                                type='char', size=32, store=_STORE_WHEN_INVOICE_ADDED, method=True),
+            _ff_update_fields, multi='totals',
+            string='Origen consum facturat',
+            type='char', size=32, store=_STORE_WHEN_INVOICE_ADDED, method=True),
         'data_alta_contracte': fields.related('polissa_id', 'data_alta', type='date',
-                                string=_('Data alta contracte'), readonly=True),
+                                              string=_('Data alta contracte'), readonly=True),
         'data_ultima_lectura': fields.related('polissa_id', 'data_ultima_lectura', type='date',
-                                string=_('Data ultima lectura real facturada'), readonly=True),
+                                              string=_('Data ultima lectura real facturada'), readonly=True),
         'info_gestions_massives': fields.related('polissa_id', 'info_gestions_massives', type='text',
-                                string=_('Gestions Massives'), readonly=True),
+                                                 string=_('Gestions Massives'), readonly=True),
         'mode_facturacio': fields.related('polissa_id', 'facturacio_potencia', type='char',
-                                string='Mode facturació', readonly=True),
+                                          string='Mode facturació', readonly=True),
         'canal_enviament': fields.related('polissa_id', 'enviament', type='char',
-                                string='Canal enviament', readonly=True),
+                                          string='Canal enviament', readonly=True),
         'te_generation': fields.function(
-                                _ff_update_fields, multi='totals',
-                                string='Factura té generation',
-                                type='boolean', store=_STORE_WHEN_INVOICE_ADDED, method=True),
+            _ff_update_fields, multi='totals',
+            string='Factura té generation',
+            type='boolean', store=_STORE_WHEN_INVOICE_ADDED, method=True),
         'gran_contracte': fields.function(
-                                _ff_gran_contracte, string='Gran Contract',
-                                method=True, type='boolean',
-                                store = {
-                                    'giscedata.polissa': (
-                                        _get_clots_from_polissa,
-                                        ['category_id'],
-                                        10
-                                    ),
-                                    'giscedata.facturacio.contracte_lot': (
-                                        lambda self, cr, uid, ids, context=None: ids,
-                                        ['polissa_id'],
-                                        10
-                                    )
-                                }),
+            _ff_gran_contracte, string='Gran Contract',
+            method=True, type='boolean',
+            store={
+                'giscedata.polissa': (
+                    _get_clots_from_polissa,
+                    ['category_id'],
+                    10
+                ),
+                'giscedata.facturacio.contracte_lot': (
+                    lambda self, cr, uid, ids, context=None: ids,
+                    ['polissa_id'],
+                    10
+                )
+            }),
         'data_final': fields.function(
-                                 _ff_update_fields, multi='totals', string='Data final factura',
-                                type='date', method=True, store=_STORE_WHEN_INVOICE_ADDED),
+            _ff_update_fields, multi='totals', string='Data final factura',
+            type='date', method=True, store=_STORE_WHEN_INVOICE_ADDED),
         'te_generation_polissa': fields.related('polissa_id', 'te_assignacio_gkwh', type='boolean', relation='giscedata.polissa',
-                                string=_('Pòlissa té generation'), readonly=True),
+                                                string=_('Pòlissa té generation'), readonly=True),
         'data_alta_auto': fields.related('polissa_id', 'data_alta_autoconsum', type='date', relation='giscedata.polissa',
-                                string=_('Data alta autoconsum'), readonly=True),
-        'n_retrocedir_lot':fields.integer(string='Num retrocedir', help="Número de vegades que la pòlissa en el lot s'ha retrocedit de lot", readonly=True),
+                                         string=_('Data alta autoconsum'), readonly=True),
+        'n_retrocedir_lot': fields.integer(string='Num retrocedir', help="Número de vegades que la pòlissa en el lot s'ha retrocedit de lot", readonly=True),
     }
 
     _defaults = {
@@ -215,4 +222,3 @@ class GiscedataFacturacioContracteLot(osv.osv):
 
 
 GiscedataFacturacioContracteLot()
-

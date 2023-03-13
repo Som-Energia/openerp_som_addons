@@ -100,7 +100,7 @@ class ResPartner(osv.osv):
         return res
 
     def generate_acc_code_163(self, cursor, uid, ids, parent_id=None,
-                             context=None):
+                              context=None):
         """Mètode que genera el codi pel compte comptable 163*.
         """
         if not context:
@@ -116,7 +116,7 @@ class ResPartner(osv.osv):
         return res
 
     def generate_acc_code_1714(self, cursor, uid, ids, parent_id=None,
-                             context=None):
+                               context=None):
         """Mètode que genera el codi pel compte comptable 1714*.
         """
         if not context:
@@ -132,7 +132,7 @@ class ResPartner(osv.osv):
         return res
 
     def generate_acc_code_1635(self, cursor, uid, ids, parent_id=None,
-                             context=None):
+                               context=None):
         """Mètode que genera el codi pel compte comptable 1635*.
         """
         if not context:
@@ -224,11 +224,11 @@ class ResPartner(osv.osv):
                 gen_ids.append(partner['id'])
         if gen_ids:
             aa_obj = self.pool.get('account.account')
-            ag_id = aa_obj.search(cursor, uid, [('code','=','163000000000')])
+            ag_id = aa_obj.search(cursor, uid, [('code', '=', '163000000000')])
             if ag_id:
                 for partner in self.browse(cursor, uid, ids):
                     self.write(cursor, uid, int(partner.id),
-                       {'property_account_aportacions': ag_id[0]})
+                               {'property_account_aportacions': ag_id[0]})
             else:
                 return False
         return True
@@ -250,11 +250,11 @@ class ResPartner(osv.osv):
         if not context:
             context = {}
         aa_obj = self.pool.get('account.account')
-        ag_id = aa_obj.search(cursor, uid, [('code','=','163500000000')])
+        ag_id = aa_obj.search(cursor, uid, [('code', '=', '163500000000')])
         if ag_id:
             for partner in self.browse(cursor, uid, ids):
                 self.write(cursor, uid, int(partner.id),
-                       {'property_account_gkwh': ag_id[0]})
+                           {'property_account_gkwh': ag_id[0]})
             return True
         else:
             return False
@@ -264,23 +264,23 @@ class ResPartner(osv.osv):
         soci_obj = self.pool.get('somenergia.soci')
         ir_seq = self.pool.get('ir.sequence')
         soci_cat = imd_obj._get_obj(cursor, uid,
-            'som_partner_account',
-            'res_partner_category_soci')
+                                    'som_partner_account',
+                                    'res_partner_category_soci')
 
         # Assign Member category
         partner = self.read(cursor, uid, id, ['ref', 'category_id'])
         if soci_cat.id not in partner['category_id']:
             self.write(cursor, uid, partner['id'],
-                {'category_id': [(4, soci_cat.id)]})
+                       {'category_id': [(4, soci_cat.id)]})
 
         # Assign Member ref code
-        if not partner['ref'] or partner['ref'][0]!='S':
+        if not partner['ref'] or partner['ref'][0] != 'S':
             codi = ir_seq.get(cursor, uid, 'res.partner.soci')
             self.write(cursor, uid, partner['id'], {'ref': codi})
 
         # Create Member instance
         soci_ids = soci_obj.search(cursor, uid, [
-            ('partner_id','=',partner['id']),
+            ('partner_id', '=', partner['id']),
         ], context={'active_test': False})
 
         if soci_ids:
@@ -289,27 +289,26 @@ class ResPartner(osv.osv):
                 'data_baixa_soci',
                 'comment',
             ])
-            newcomment= (
+            newcomment = (
                 _("{today:%Y-%m-%d} "
-                "Donat d'alta quan estava de baixa des de {dropoutdate}")
+                  "Donat d'alta quan estava de baixa des de {dropoutdate}")
                 .format(
                     today=datetime.date.today(),
-                    dropoutdate= soci['data_baixa_soci'],
+                    dropoutdate=soci['data_baixa_soci'],
                 )) if soci['data_baixa_soci'] else ''
 
             comment = '\n'.join([x for x in (soci['comment'], newcomment) if x])
 
             soci_obj.write(cursor, uid, soci_id, dict(
-                active = True,
-                data_baixa_soci = False,
-                baixa = False,
-                comment = comment,
-            )) 
-            
+                active=True,
+                data_baixa_soci=False,
+                baixa=False,
+                comment=comment,
+            ))
+
             return soci_id
 
         return soci_obj.create_one_soci(cursor, uid, partner['id'])
-
 
     def adopt_contracts_as_member(self, cursor, uid, partner_id, context=None):
         contract_obj = self.pool.get('giscedata.polissa')
@@ -320,10 +319,13 @@ class ResPartner(osv.osv):
         ])
         adopted_ids = []
         for contract_id in contract_ids:
-            contract = contract_obj.read(cursor, uid, contract_id, ['pagador', 'titular', 'soci'])
+            contract = contract_obj.read(cursor, uid, contract_id, [
+                                         'pagador', 'titular', 'soci'])
             if contract['soci']:
-                if contract['soci'][0] == contract['pagador'][0]: continue
-                if contract['soci'][0] == contract['titular'][0]: continue
+                if contract['soci'][0] == contract['pagador'][0]:
+                    continue
+                if contract['soci'][0] == contract['titular'][0]:
+                    continue
 
             adopted_ids.append(contract_id)
             contract_obj.write(cursor, uid, contract_id, {
@@ -346,30 +348,31 @@ class ResPartner(osv.osv):
 
     _columns = {
         'property_account_aportacions': fields.property('account.account',
-            type='many2one', relation='account.account',
-            string='Compte aportacions', method=True, view_load=True,
-            domain=[('type', '=', 'other')],
-            help="Aquest és el compte on s'apuntaran les aportacions",
-            required=False, readonly=True),
+                                                        type='many2one', relation='account.account',
+                                                        string='Compte aportacions', method=True, view_load=True,
+                                                        domain=[('type', '=', 'other')],
+                                                        help="Aquest és el compte on s'apuntaran les aportacions",
+                                                        required=False, readonly=True),
         'property_account_liquidacio': fields.property('account.account',
-            type='many2one', relation='account.account',
-            string='Compte liquidacions', method=True, view_load=True,
-            domain=[('type', '=', 'payable')],
-            help="Aquest és el compte on s'apuntaran les liquidacions "
-                 "d'aportacions",
-            required=False, readonly=True),
+                                                       type='many2one', relation='account.account',
+                                                       string='Compte liquidacions', method=True, view_load=True,
+                                                       domain=[('type', '=', 'payable')],
+                                                       help="Aquest és el compte on s'apuntaran les liquidacions "
+                                                       "d'aportacions",
+                                                       required=False, readonly=True),
         'property_account_titols': fields.property('account.account',
-            type='many2one', relation='account.account',
-            string='Compte títols', method=True, view_load=True,
-            domain=[('type', '=', 'other')],
-            help="Aquest és el compte on s'apuntaran la compra de títols",
-            required=False, readonly=True),
+                                                   type='many2one', relation='account.account',
+                                                   string='Compte títols', method=True, view_load=True,
+                                                   domain=[('type', '=', 'other')],
+                                                   help="Aquest és el compte on s'apuntaran la compra de títols",
+                                                   required=False, readonly=True),
         'property_account_gkwh': fields.property('account.account',
-            type='many2one', relation='account.account',
-            string='Compte Generation kWh', method=True, view_load=True,
-            domain=[('type', '=', 'other')],
-            help="Aquest és el compte on s'apuntarà el préstec generation kWh",
-            required=False, readonly=True),
+                                                 type='many2one', relation='account.account',
+                                                 string='Compte Generation kWh', method=True, view_load=True,
+                                                 domain=[('type', '=', 'other')],
+                                                 help="Aquest és el compte on s'apuntarà el préstec generation kWh",
+                                                 required=False, readonly=True),
     }
+
 
 ResPartner()

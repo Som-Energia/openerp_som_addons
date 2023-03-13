@@ -18,5 +18,5 @@
             <field name="args" eval="({'error_codes': [{'code':'2999', 'text': 'no file in gridfs collection'},{'code':'3044', 'text':''}], 'days_to_check': 30})"/>
         </record>
     </data>
- 
+
 </openerp>

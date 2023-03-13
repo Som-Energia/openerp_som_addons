@@ -4,16 +4,14 @@ from expects import contain
 from destral import testing
 from destral.transaction import Transaction
 from expects import expect
-from expects import raise_error
 from expects import equal
 from expects import contain
-from expects import contain_exactly
-import json
+
 
 class TestsFacturesValidation(testing.OOTestCase):
     def setUp(self):
-        fact_obj = self.openerp.pool.get('giscedata.facturacio.factura')
-        line_obj = self.openerp.pool.get('giscedata.facturacio.factura.linia')
+        self.openerp.pool.get('giscedata.facturacio.factura')
+        self.openerp.pool.get('giscedata.facturacio.factura.linia')
         warn_obj = self.openerp.pool.get(
             'giscedata.facturacio.validation.warning.template'
         )
@@ -43,7 +41,8 @@ class TestsFacturesValidation(testing.OOTestCase):
     def activate_contract(self, contract_id):
         polissa_obj = self.model('giscedata.polissa')
 
-        polissa_obj.send_signal(self.txn.cursor, self.txn.user, contract_id, ['validar', 'contracte'])
+        polissa_obj.send_signal(self.txn.cursor, self.txn.user,
+                                contract_id, ['validar', 'contracte'])
 
     def model(self, model_name):
         return self.openerp.pool.get(model_name)
@@ -59,7 +58,7 @@ class TestsFacturesValidation(testing.OOTestCase):
     def validation_warnings(self, factura_id):
         vali_obj = self.model('giscedata.facturacio.validation.validator')
         warn_obj = self.model('giscedata.facturacio.validation.warning')
-      
+
         warning_ids = vali_obj.validate_invoice(
             self.txn.cursor, self.txn.user,
             factura_id
@@ -105,7 +104,8 @@ class TestsFacturesValidation(testing.OOTestCase):
         cursor = self.txn.cursor
         uid = self.txn.user
 
-        pcat_ids = pcat_obj.search(cursor, uid, [('name','like','%'+category_name+'%')])
+        pcat_ids = pcat_obj.search(
+            cursor, uid, [('name', 'like', '%' + category_name + '%')])
         if pcat_ids:
             pcat_id = pcat_ids[0]
         else:
@@ -120,8 +120,10 @@ class TestsFacturesValidation(testing.OOTestCase):
         lo_obj = self.model('giscedata.lectures.origen')
         loc_obj = self.model('giscedata.lectures.origen_comer')
         periode_id = self.get_fixture('giscedata_polissa', 'p1_e_tarifa_20A_new')
-        origins_ids = lo_obj.search(self.txn.cursor, self.txn.user, [('codi','=', origen_code)]) if origen_code else []
-        origins_comer_ids = loc_obj.search(self.txn.cursor, self.txn.user, [('codi','=', origen_comer_code)]) if origen_code else []
+        origins_ids = lo_obj.search(self.txn.cursor, self.txn.user, [
+                                    ('codi', '=', origen_code)]) if origen_code else []
+        origins_comer_ids = loc_obj.search(self.txn.cursor, self.txn.user, [
+                                           ('codi', '=', origen_comer_code)]) if origen_code else []
 
         vals = {
             'name': date_measure,
@@ -135,7 +137,7 @@ class TestsFacturesValidation(testing.OOTestCase):
             vals['origen_id'] = origins_ids[0]
         if origins_comer_ids:
             vals['origen_comer_id'] = origins_comer_ids[0]
-        
+
         return measure_obj.create(self.txn.cursor, self.txn.user, vals)
 
     def modify_invoice(self, fact_id, pol_id, start, end, amount=1):
@@ -160,7 +162,8 @@ class TestsFacturesValidation(testing.OOTestCase):
 
         pol = polissa_obj.browse(cursor, uid, polissa_id)
         pol.send_signal(['modcontractual'])
-        polissa_obj.write(cursor, uid, polissa_id, {'teoric_maximum_consume_gc': teoric_max})
+        polissa_obj.write(cursor, uid, polissa_id, {
+                          'teoric_maximum_consume_gc': teoric_max})
         wz_crear_mc_obj = pool.get('giscedata.polissa.crear.contracte')
 
         ctx = {'active_id': polissa_id}
@@ -209,9 +212,9 @@ class TestsFacturesValidation(testing.OOTestCase):
 
     def test_check_origin_readings_by_contract_category__contract_without_category(self):
         pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
-        meter_id  = self.prepare_contract(pol_id,'2017-01-01','2017-02-18')
-        self.create_measure(meter_id,'2017-02-18',8000,'40','F1')
-        self.create_measure(meter_id,'2017-03-17',8600,'40','F1')
+        meter_id = self.prepare_contract(pol_id, '2017-01-01', '2017-02-18')
+        self.create_measure(meter_id, '2017-02-18', 8000, '40', 'F1')
+        self.create_measure(meter_id, '2017-03-17', 8600, '40', 'F1')
         inv_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         self.modify_invoice(inv_id, pol_id, '2017-02-18', '2017-03-17')
         warnings = self.validation_warnings(inv_id)
@@ -219,10 +222,10 @@ class TestsFacturesValidation(testing.OOTestCase):
 
     def test_check_origin_readings_by_contract_category__contract_with_wrong_category(self):
         pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
-        self.create_category_to_contract_by_name(pol_id,'Petit Contracte')
-        meter_id  = self.prepare_contract(pol_id,'2017-01-01','2017-02-18')
-        self.create_measure(meter_id,'2017-02-18',8000,'40','F1')
-        self.create_measure(meter_id,'2017-03-17',8600,'40','F1')
+        self.create_category_to_contract_by_name(pol_id, 'Petit Contracte')
+        meter_id = self.prepare_contract(pol_id, '2017-01-01', '2017-02-18')
+        self.create_measure(meter_id, '2017-02-18', 8000, '40', 'F1')
+        self.create_measure(meter_id, '2017-03-17', 8600, '40', 'F1')
         inv_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         self.modify_invoice(inv_id, pol_id, '2017-02-18', '2017-03-17')
         warnings = self.validation_warnings(inv_id)
@@ -230,10 +233,10 @@ class TestsFacturesValidation(testing.OOTestCase):
 
     def test_check_origin_readings_by_contract_category__contract_with_category_readings_ok(self):
         pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
-        self.create_category_to_contract_by_name(pol_id,'Gran Contracte')
-        meter_id  = self.prepare_contract(pol_id,'2017-01-01','2017-02-18')
-        self.create_measure(meter_id,'2017-02-18',8000,'40','Q1')
-        self.create_measure(meter_id,'2017-03-17',8600,'40','Q1')
+        self.create_category_to_contract_by_name(pol_id, 'Gran Contracte')
+        meter_id = self.prepare_contract(pol_id, '2017-01-01', '2017-02-18')
+        self.create_measure(meter_id, '2017-02-18', 8000, '40', 'Q1')
+        self.create_measure(meter_id, '2017-03-17', 8600, '40', 'Q1')
         inv_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         self.modify_invoice(inv_id, pol_id, '2017-02-18', '2017-03-17')
         warnings = self.validation_warnings(inv_id)
@@ -241,10 +244,10 @@ class TestsFacturesValidation(testing.OOTestCase):
 
     def test_check_origin_readings_by_contract_category__contract_with_category_all_readings_not_ok(self):
         pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
-        self.create_category_to_contract_by_name(pol_id,'Gran Contracte')
-        meter_id  = self.prepare_contract(pol_id,'2017-01-01','2017-02-18')
-        self.create_measure(meter_id,'2017-02-18',8000,'40','F1')
-        self.create_measure(meter_id,'2017-03-17',8600,'40','F1')
+        self.create_category_to_contract_by_name(pol_id, 'Gran Contracte')
+        meter_id = self.prepare_contract(pol_id, '2017-01-01', '2017-02-18')
+        self.create_measure(meter_id, '2017-02-18', 8000, '40', 'F1')
+        self.create_measure(meter_id, '2017-03-17', 8600, '40', 'F1')
         inv_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         self.modify_invoice(inv_id, pol_id, '2017-02-18', '2017-03-17')
         warnings = self.validation_warnings(inv_id)
@@ -252,10 +255,10 @@ class TestsFacturesValidation(testing.OOTestCase):
 
     def test_check_origin_readings_by_contract_category__contract_with_category_one_reading_not_ok(self):
         pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
-        self.create_category_to_contract_by_name(pol_id,'Gran Contracte')
-        meter_id  = self.prepare_contract(pol_id,'2017-01-01','2017-02-18')
-        self.create_measure(meter_id,'2017-02-18',8000,'40','F1')
-        self.create_measure(meter_id,'2017-03-17',8600,'30','Q1')
+        self.create_category_to_contract_by_name(pol_id, 'Gran Contracte')
+        meter_id = self.prepare_contract(pol_id, '2017-01-01', '2017-02-18')
+        self.create_measure(meter_id, '2017-02-18', 8000, '40', 'F1')
+        self.create_measure(meter_id, '2017-03-17', 8600, '30', 'Q1')
         inv_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         self.modify_invoice(inv_id, pol_id, '2017-02-18', '2017-03-17')
         warnings = self.validation_warnings(inv_id)
@@ -263,7 +266,7 @@ class TestsFacturesValidation(testing.OOTestCase):
 
     def test_check_min_periods_and_teoric_maximum_consum__contract_without_category(self):
         pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
-        meter_id  = self.prepare_contract(pol_id,'2017-01-01','2017-02-18')
+        self.prepare_contract(pol_id, '2017-01-01', '2017-02-18')
         inv_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         self.modify_invoice(inv_id, pol_id, '2017-02-18', '2017-03-17')
         warnings = self.validation_warnings(inv_id)
@@ -271,8 +274,8 @@ class TestsFacturesValidation(testing.OOTestCase):
 
     def test_check_min_periods_and_teoric_maximum_consum__contract_with_wrong_category(self):
         pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
-        self.create_category_to_contract_by_name(pol_id,'Petit Contracte')
-        meter_id  = self.prepare_contract(pol_id,'2017-01-01','2017-02-18')
+        self.create_category_to_contract_by_name(pol_id, 'Petit Contracte')
+        self.prepare_contract(pol_id, '2017-01-01', '2017-02-18')
         inv_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         self.modify_invoice(inv_id, pol_id, '2017-02-18', '2017-03-17')
         warnings = self.validation_warnings(inv_id)
@@ -280,8 +283,8 @@ class TestsFacturesValidation(testing.OOTestCase):
 
     def test_check_min_periods_and_teoric_maximum_consum__contract_with_category_not_periods_not_teoric(self):
         pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
-        self.create_category_to_contract_by_name(pol_id,'Gran Contracte')
-        meter_id  = self.prepare_contract(pol_id,'2017-01-01','2017-02-18')
+        self.create_category_to_contract_by_name(pol_id, 'Gran Contracte')
+        self.prepare_contract(pol_id, '2017-01-01', '2017-02-18')
         inv_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         self.modify_invoice(inv_id, pol_id, '2017-02-18', '2017-03-17')
         warnings = self.validation_warnings(inv_id)
@@ -289,8 +292,8 @@ class TestsFacturesValidation(testing.OOTestCase):
 
     def test_check_min_periods_and_teoric_maximum_consum__contract_with_category_and_teoric_zero(self):
         pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
-        self.create_category_to_contract_by_name(pol_id,'Gran Contracte')
-        meter_id  = self.prepare_contract(pol_id,'2017-01-01','2017-02-18')
+        self.create_category_to_contract_by_name(pol_id, 'Gran Contracte')
+        self.prepare_contract(pol_id, '2017-01-01', '2017-02-18')
         inv_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         self.modify_invoice(inv_id, pol_id, '2017-02-18', '2017-03-17')
         self.crear_modcon(pol_id, 0, '2017-02-18', '2017-03-17')
@@ -299,10 +302,10 @@ class TestsFacturesValidation(testing.OOTestCase):
 
     def test_check_min_periods_and_teoric_maximum_consum__contract_with_category_and_teoric_ok(self):
         pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
-        self.create_category_to_contract_by_name(pol_id,'Gran Contracte')
-        meter_id  = self.prepare_contract(pol_id,'2017-01-01','2017-02-18')
-        self.create_measure(meter_id,'2017-02-18',8000,'40','Q1')
-        self.create_measure(meter_id,'2017-03-17',8600,'40','Q1')
+        self.create_category_to_contract_by_name(pol_id, 'Gran Contracte')
+        meter_id = self.prepare_contract(pol_id, '2017-01-01', '2017-02-18')
+        self.create_measure(meter_id, '2017-02-18', 8000, '40', 'Q1')
+        self.create_measure(meter_id, '2017-03-17', 8600, '40', 'Q1')
         inv_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         self.modify_invoice(inv_id, pol_id, '2017-02-18', '2017-03-17')
         self.crear_modcon(pol_id, 500, '2017-02-18', '2018-02-17')
@@ -311,7 +314,7 @@ class TestsFacturesValidation(testing.OOTestCase):
 
     def test_check_consume_by_percentage_and_category__contract_without_category(self):
         pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
-        meter_id  = self.prepare_contract(pol_id,'2017-01-01','2017-02-18')
+        self.prepare_contract(pol_id, '2017-01-01', '2017-02-18')
         inv_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         self.modify_invoice(inv_id, pol_id, '2017-02-18', '2017-03-17')
         warnings = self.validation_warnings(inv_id)
@@ -319,8 +322,8 @@ class TestsFacturesValidation(testing.OOTestCase):
 
     def test_check_consume_by_percentage_and_category__contract_with_wrong_category(self):
         pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
-        self.create_category_to_contract_by_name(pol_id,'Petit Contracte')
-        meter_id  = self.prepare_contract(pol_id,'2017-01-01','2017-02-18')
+        self.create_category_to_contract_by_name(pol_id, 'Petit Contracte')
+        self.prepare_contract(pol_id, '2017-01-01', '2017-02-18')
         inv_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         self.modify_invoice(inv_id, pol_id, '2017-02-18', '2017-03-17')
         warnings = self.validation_warnings(inv_id)
@@ -328,8 +331,8 @@ class TestsFacturesValidation(testing.OOTestCase):
 
     def test_check_consume_by_percentage_and_category__contract_with_category_and_teoric_consumption(self):
         pol_id = self.get_fixture('giscedata_polissa', 'polissa_0001')
-        self.create_category_to_contract_by_name(pol_id,'Gran Contracte')
-        meter_id  = self.prepare_contract(pol_id,'2017-01-01','2017-02-18')
+        self.create_category_to_contract_by_name(pol_id, 'Gran Contracte')
+        self.prepare_contract(pol_id, '2017-01-01', '2017-02-18')
         inv_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
         self.modify_invoice(inv_id, pol_id, '2017-02-18', '2017-03-17')
         self.create_inv_line(inv_id, 200)
@@ -353,8 +356,8 @@ class TestsFacturesValidation(testing.OOTestCase):
         polissa = self.pol_obj.browse(cursor, uid, demo_contract_id)
         comptador = polissa.comptadors[0]
 
-        self.create_measure(comptador.id,'2016-01-02',5,'40','F1')
-        self.create_measure(comptador.id,'2016-01-25',8,'40','FG')
+        self.create_measure(comptador.id, '2016-01-02', 5, '40', 'F1')
+        self.create_measure(comptador.id, '2016-01-25', 8, '40', 'FG')
 
         # We remove other lot_contracts associated with out invoicing lot
         lot_dates = self.lot_obj.read(
@@ -366,7 +369,8 @@ class TestsFacturesValidation(testing.OOTestCase):
         )
         clot = self.cnt_lot_obj.browse(cursor, uid, cnt_lot_id)
 
-        result = self.vali_obj.check_gkwh_G_invoices(cursor, uid, clot, lot_dates['data_inici'], lot_dates['data_final'])
+        result = self.vali_obj.check_gkwh_G_invoices(
+            cursor, uid, clot, lot_dates['data_inici'], lot_dates['data_final'])
         expect(result).to(equal(None))
 
     def test_check_gkwh_G_invoices__contract_with_gkWh_f1r(self):
@@ -385,8 +389,8 @@ class TestsFacturesValidation(testing.OOTestCase):
         polissa = self.pol_obj.browse(cursor, uid, demo_contract_id)
         comptador = polissa.comptadors[0]
 
-        self.create_measure(comptador.id,'2016-01-02',5,'40','F1')
-        self.create_measure(comptador.id,'2016-01-25',8,'40','FG')
+        self.create_measure(comptador.id, '2016-01-02', 5, '40', 'F1')
+        self.create_measure(comptador.id, '2016-01-25', 8, '40', 'FG')
 
         # We remove other lot_contracts associated with out invoicing lot
         lot_dates = self.lot_obj.read(
@@ -399,7 +403,8 @@ class TestsFacturesValidation(testing.OOTestCase):
         self.assign_gkwh(polissa)
         clot = self.cnt_lot_obj.browse(cursor, uid, cnt_lot_id)
 
-        result = self.vali_obj.check_gkwh_G_invoices(cursor, uid, clot, lot_dates['data_inici'], lot_dates['data_final'])
+        result = self.vali_obj.check_gkwh_G_invoices(
+            cursor, uid, clot, lot_dates['data_inici'], lot_dates['data_final'])
         expect(result).to(equal({}))
 
     def test_check_gkwh_G_invoices__contract_with_gkWh_other_origen_comer(self):
@@ -415,8 +420,8 @@ class TestsFacturesValidation(testing.OOTestCase):
         polissa = self.pol_obj.browse(cursor, uid, demo_contract_id)
         comptador = polissa.comptadors[0]
 
-        self.create_measure(comptador.id,'2016-01-02',5,'40','F1')
-        self.create_measure(comptador.id,'2016-01-25',8,'40','F1')
+        self.create_measure(comptador.id, '2016-01-02', 5, '40', 'F1')
+        self.create_measure(comptador.id, '2016-01-25', 8, '40', 'F1')
 
         lot_id = self.cnt_lot_obj.read(
             cursor, uid, cnt_lot_id, ['lot_id']
@@ -432,7 +437,8 @@ class TestsFacturesValidation(testing.OOTestCase):
         self.assign_gkwh(polissa)
         clot = self.cnt_lot_obj.browse(cursor, uid, cnt_lot_id)
 
-        result = self.vali_obj.check_gkwh_G_invoices(cursor, uid, clot, lot_dates['data_inici'], lot_dates['data_final'])
+        result = self.vali_obj.check_gkwh_G_invoices(
+            cursor, uid, clot, lot_dates['data_inici'], lot_dates['data_final'])
         expect(result).to(equal(None))
 
     def test_check_gkwh_G_invoices__without_gkwh_other_origen_comer_id(self):
@@ -457,8 +463,8 @@ class TestsFacturesValidation(testing.OOTestCase):
         lot_dates = self.lot_obj.read(
             cursor, uid, lot_id, ['data_inici', 'data_final']
         )
-        self.create_measure(comptador.id,'2016-01-02',5,'40','F1')
-        self.create_measure(comptador.id,'2016-01-25',8,'40','F1')
+        self.create_measure(comptador.id, '2016-01-02', 5, '40', 'F1')
+        self.create_measure(comptador.id, '2016-01-25', 8, '40', 'F1')
 
         # Let's validate the contract
         self.pol_obj.send_signal(
@@ -466,5 +472,6 @@ class TestsFacturesValidation(testing.OOTestCase):
         )
         clot = self.cnt_lot_obj.browse(cursor, uid, cnt_lot_id)
         # Next step, we want to validate the lot and the SV01 should not pop
-        result = self.vali_obj.check_gkwh_G_invoices(cursor, uid, clot, lot_dates['data_inici'], lot_dates['data_final'])
+        result = self.vali_obj.check_gkwh_G_invoices(
+            cursor, uid, clot, lot_dates['data_inici'], lot_dates['data_final'])
         expect(result).to(equal(None))

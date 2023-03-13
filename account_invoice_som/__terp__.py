@@ -6,7 +6,7 @@
     "version": "2.103.13",
     "author": "GISCE",
     "category": "GISCEMaster",
-    "depends":[
+    "depends": [
         "account_invoice_base",
         "account_payment_extension",
         "poweremail",
@@ -16,7 +16,7 @@
     "demo_xml": [
         "tests/account_invoice_demo.xml",
     ],
-    "update_xml":[
+    "update_xml": [
         "account_invoice_som_report.xml",
         "account_invoice_view.xml",
         "account_invoice_data.xml",

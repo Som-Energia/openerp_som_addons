@@ -9,7 +9,7 @@ from io import open
 select state.id, state.weight, state.name, state.pending_days, state.pending_days_type, semid.module, semid.name
 from account_invoice_pending_state as state
 left join ir_model_data as semid
-on semid.res_id=state.id 
+on semid.res_id=state.id
 and semid.model='account.invoice.pending.state'
 order by id;
 """
@@ -19,8 +19,8 @@ with open('states.tsv', encoding='utf8') as tsv:
     content = lines[1:]
     states = [
         ns(
-            (k.strip(),v.strip())
-            for k,v in zip(header, line.split('\t'))
+            (k.strip(), v.strip())
+            for k, v in zip(header, line.split('\t'))
         )
         for line in sorted(content)
     ]
@@ -35,11 +35,11 @@ bonoSocialProcessModule = 'giscedata_facturacio_comer_bono_social'
 bonoSocialProcess = 'bono_social_pending_state_process'
 bonoSocialProcessFull = '{}.{}'.format(bonoSocialProcessModule, bonoSocialProcess)
 
-pendingDaysTypeTemplate=u"""\
+pendingDaysTypeTemplate = u"""\
             <field name="pending_days_type">{}</field>
 """
 
-fragment=u"""\
+fragment = u"""\
         <record model="account.invoice.pending.state" id="{module}.{id}">
             <field name="name">{name}</field>
             <field name="weight">{weight}</field>
@@ -49,13 +49,13 @@ fragment=u"""\
         </record>
 """
 
-xmlheader=u"""\
+xmlheader = u"""\
 <?xml version="1.0" encoding="UTF-8" ?>
 <openerp>
     <data noupdate="1">
         <!-- SomEnergia specific pending states -->
 """
-xmlfooter=u"""\
+xmlfooter = u"""\
     </data>
 </openerp>
 """
@@ -71,12 +71,8 @@ with open('states.xml', 'w', encoding='utf8') as xml:
             process = bonoSocialProcessFull
         xml.write(fragment.format(
             process_sem_id=process,
-            pendingDaysTypeLine=pendingDaysTypeTemplate.format(state.pending_days_type) if state.pending_days_type else '',
+            pendingDaysTypeLine=pendingDaysTypeTemplate.format(
+                state.pending_days_type) if state.pending_days_type else '',
             **state
-            ))
+        ))
     xml.write(xmlfooter)
-
-
-
-
-

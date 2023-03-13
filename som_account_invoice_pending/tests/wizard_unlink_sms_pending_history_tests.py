@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 from destral import testing
 from destral.transaction import Transaction
-from datetime import date, timedelta
-import mock
-from mock import Mock
 from osv.osv import except_osv
+
 
 class TestWizardUnlinkSMSPendingHistory(testing.OOTestCase):
 
@@ -24,14 +22,15 @@ class TestWizardUnlinkSMSPendingHistory(testing.OOTestCase):
             cursor, uid, 'giscedata_facturacio', 'factura_0001'
         )[1]
         titular_id = self.fact_obj.browse(cursor, uid, self.fact_id).partner_id.id
-        address_id = rpa_obj.search(cursor, uid, [('partner_id','=', titular_id)])
-        rpa_obj.write(cursor, uid, address_id, {'mobile':'600000000'})
+        address_id = rpa_obj.search(cursor, uid, [('partner_id', '=', titular_id)])
+        rpa_obj.write(cursor, uid, address_id, {'mobile': '600000000'})
 
         self.account_id = imd_obj.get_object_reference(
             cursor, uid, 'som_account_invoice_pending', 'cobraments_mail_account'
         )[1]
 
-        invoice_id = self.fact_obj.read(cursor, uid, self.fact_id, ['invoice_id'])['invoice_id'][0]
+        invoice_id = self.fact_obj.read(cursor, uid, self.fact_id, [
+                                        'invoice_id'])['invoice_id'][0]
         self.inv_obj.set_pending(cursor, uid, [invoice_id], waiting_48h_def)
 
     def test__unlink_sms_pending_history__ok(self):
@@ -66,7 +65,7 @@ class TestWizardUnlinkSMSPendingHistory(testing.OOTestCase):
             aiph = factura.pending_history_ids[1]
             self.assertEqual(aiph.powersms_id.id, False)
             self.assertEqual(factura.pending_history_ids[1].powersms_sent_date, False)
-            self.assertFalse(psms_obj.search(cursor, uid, [('id','=', sms_to_send)]))
+            self.assertFalse(psms_obj.search(cursor, uid, [('id', '=', sms_to_send)]))
 
     def test__unlink_sms_pending_history__not_factura_reference(self):
         with Transaction().start(self.database) as txn:
@@ -78,7 +77,8 @@ class TestWizardUnlinkSMSPendingHistory(testing.OOTestCase):
                 cursor, uid, 'powersms', 'sms_outbox_001'
             )[1]
             psms_obj = self.pool.get('powersms.smsbox')
-            psms_obj.write(cursor, uid, [p_addres_sms], {'reference':'res.partner.address,1'})
+            psms_obj.write(cursor, uid, [p_addres_sms], {
+                           'reference': 'res.partner.address,1'})
             wiz_obj = self.pool.get('wizard.unlink.sms.pending.history')
 
             context = {'active_id': p_addres_sms, 'active_ids': [p_addres_sms]}
@@ -86,8 +86,9 @@ class TestWizardUnlinkSMSPendingHistory(testing.OOTestCase):
 
             with self.assertRaises(except_osv) as error:
                 wiz_obj.unlink_sms_pending_history(cursor, uid, [wiz_id], context)
-            self.assertEqual(error.exception.message, "warning -- Error\n\nS'ha seleccionat algun SMS que no és de factura")
-            self.assertTrue(psms_obj.search(cursor, uid, [('id','=',p_addres_sms)]))
+            self.assertEqual(
+                error.exception.message, "warning -- Error\n\nS'ha seleccionat algun SMS que no és de factura")
+            self.assertTrue(psms_obj.search(cursor, uid, [('id', '=', p_addres_sms)]))
 
     def test__unlink_sms_pending_history__factura_without_pending_history(self):
         with Transaction().start(self.database) as txn:
@@ -100,9 +101,10 @@ class TestWizardUnlinkSMSPendingHistory(testing.OOTestCase):
             )[1]
             psms_obj = self.pool.get('powersms.smsbox')
             fact_id = imd_obj.get_object_reference(
-            cursor, uid, 'giscedata_facturacio', 'factura_0001'
+                cursor, uid, 'giscedata_facturacio', 'factura_0001'
             )[1]
-            psms_obj.write(cursor, uid, [p_addres_sms], {'reference':'giscedata.facturacio.factura,{}'.format(fact_id)})
+            psms_obj.write(cursor, uid, [p_addres_sms], {
+                           'reference': 'giscedata.facturacio.factura,{}'.format(fact_id)})
             factura = fact_obj.browse(cursor, uid, fact_id)
             aiph = factura.pending_history_ids
             self.assertFalse(aiph)
@@ -112,4 +114,4 @@ class TestWizardUnlinkSMSPendingHistory(testing.OOTestCase):
             wiz_id = wiz_obj.create(cursor, uid, {}, context)
             wiz_obj.unlink_sms_pending_history(cursor, uid, [wiz_id], context)
 
-            self.assertFalse(psms_obj.search(cursor, uid, [('id','=', p_addres_sms)]))
+            self.assertFalse(psms_obj.search(cursor, uid, [('id', '=', p_addres_sms)]))

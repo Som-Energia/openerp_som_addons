@@ -12,7 +12,8 @@ class AccountPaymentTerm(osv.osv):
         id = super(AccountPaymentTerm, self).create(cr, uid, vals, context=context)
         result = self.browse(cr, uid, id)
         if not result.line_ids:
-            raise osv.except_osv(_("Falta dia de pagament!"), _("Els terminis de pagament han de tenir almenys un dia definit."))
+            raise osv.except_osv(_("Falta dia de pagament!"), _(
+                "Els terminis de pagament han de tenir almenys un dia definit."))
         return id
 
     def write(self, cr, uid, ids, vals, context=None):
@@ -20,8 +21,10 @@ class AccountPaymentTerm(osv.osv):
         for _id in ids:
             result = self.browse(cr, uid, _id)
             if not result.line_ids:
-                raise osv.except_osv(_("Falta dia de pagament!"), _("Els terminis de pagament han de tenir almenys un dia definit."))
+                raise osv.except_osv(_("Falta dia de pagament!"), _(
+                    "Els terminis de pagament han de tenir almenys un dia definit."))
         return True
+
 
 AccountPaymentTerm()
 
@@ -37,5 +40,6 @@ class AccountPaymentTermLine(osv.osv):
     _defaults = {
         'days': lambda *a: 0,
     }
- 
+
+
 AccountPaymentTermLine()

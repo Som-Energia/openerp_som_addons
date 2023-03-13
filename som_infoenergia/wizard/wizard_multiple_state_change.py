@@ -9,7 +9,7 @@ STATES = [
     ('finished', 'Estat Final')
 ]
 ENV_STATES = [
-    ('esborrany','Esborrany'),
+    ('esborrany', 'Esborrany'),
     ('obert', 'Obert'),
     ('cancellat', 'Cancel·lat')
 ]
@@ -28,14 +28,14 @@ class WizardMultipleStateChange(osv.osv_memory):
         for _id in env_ids:
             old_state = env_obj.read(cursor, uid, _id, ['estat'])['estat']
             env_obj.write(cursor, uid, _id, {'estat': wiz.new_state})
-            env_obj.add_info_line(cursor, uid, _id, message + " (Estat: {} -> {})".format(states_dict[old_state], states_dict[wiz.new_state]))
+            env_obj.add_info_line(cursor, uid, _id, message + " (Estat: {} -> {})".format(
+                states_dict[old_state], states_dict[wiz.new_state]))
         wiz.write({'state': "finished"})
         return True
 
-
     _columns = {
         'state': fields.selection(STATES, _(u'Estat del wizard de baixada de CSV')),
-        'new_state': fields.selection(ENV_STATES,('Nou estat dels enviaments')),
+        'new_state': fields.selection(ENV_STATES, ('Nou estat dels enviaments')),
         'message': fields.text(_('Comentari'), size=256),
     }
 
@@ -43,5 +43,6 @@ class WizardMultipleStateChange(osv.osv_memory):
         'state': 'init',
         'message': ' ',
     }
+
 
 WizardMultipleStateChange()

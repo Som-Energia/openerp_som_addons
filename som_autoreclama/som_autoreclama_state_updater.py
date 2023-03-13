@@ -14,9 +14,9 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         search_params = [
             ('active', '=', True),
             ('state', '=', 'pending'),
-            ('agent_actual', '=', '10'), # Distri
+            ('agent_actual', '=', '10'),  # Distri
             ('autoreclama_state.is_last', '=', False),
-            ]
+        ]
         return atc_obj.search(cursor, uid, search_params)
 
     def get_autoreclama_state_name(self, cursor, uid, atc_id, context=None):
@@ -38,15 +38,18 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             if result:
                 updated.append(atc_id)
                 next_state = self.get_autoreclama_state_name(cursor, uid, atc_id, context)
-                msg += _("Cas ATC amb id {} ha canviat d'estat: {} --> {}\n").format(atc_id, actual_state, next_state)
+                msg += _("Cas ATC amb id {} ha canviat d'estat: {} --> {}\n").format(atc_id,
+                                                                                     actual_state, next_state)
                 msg += _(" - {}\n").format(message)
             elif result == False:
                 not_updated.append(atc_id)
-                msg += _("Cas ATC amb id {} no li toca canviar d'estat, estat actual: {}\n").format(atc_id, actual_state)
+                msg += _("Cas ATC amb id {} no li toca canviar d'estat, estat actual: {}\n").format(
+                    atc_id, actual_state)
                 msg += _(" - {}\n").format(message)
             else:
                 errors.append(atc_id)
-                msg += _("Cas ATC amb id {} no ha canviat d'estat per error, estat actual: {}\n").format(atc_id, actual_state)
+                msg += _("Cas ATC amb id {} no ha canviat d'estat per error, estat actual: {}\n").format(
+                    atc_id, actual_state)
                 msg += _(" - {}\n").format(message)
 
         msg += _("\n")
@@ -92,10 +95,13 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                 if do_not_execute:
                     return True, _(u'Testing')
 
-                next_state_id = cond_obj.read(cursor, uid, cond_id, ['next_state_id'], context=context)['next_state_id'][0]
-                action_result = state_obj.do_action(cursor, uid, next_state_id, atc_id, context)
+                next_state_id = cond_obj.read(cursor, uid, cond_id, ['next_state_id'], context=context)[
+                    'next_state_id'][0]
+                action_result = state_obj.do_action(
+                    cursor, uid, next_state_id, atc_id, context)
                 if action_result['do_change']:
-                    history_obj.historize(cursor, uid, atc_id, next_state_id, None, action_result.get('created_atc', False), context)
+                    history_obj.historize(cursor, uid, atc_id, next_state_id, None, action_result.get(
+                        'created_atc', False), context)
                     return True, action_result.get('message', 'No message!!')
                 else:
                     return None, action_result.get('message', 'No message!!')
@@ -113,14 +119,16 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             context = {}
 
         subject = _(u"Resultat accions batch d'autoreclama")
-        a,b,c, msg = self.state_updater(cursor, uid, context)
+        a, b, c, msg = self.state_updater(cursor, uid, context)
 
-        emails_to = filter(lambda a: bool(a), map(str.strip, data.get('emails_to', '').split(',')))
+        emails_to = filter(lambda a: bool(a), map(
+            str.strip, data.get('emails_to', '').split(',')))
         if emails_to:
             user_obj = self.pool.get('res.users')
             email_from = user_obj.browse(cursor, uid, uid).address_id.email
             email_send(email_from, emails_to, subject, msg)
 
         return True
+
 
 SomAutoreclamaStateUpdater()

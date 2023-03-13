@@ -63,7 +63,6 @@ class GiscedataFacturacioFactura(osv.osv):
         res.update(dict([(x[0], x[1]) for x in cursor.fetchall()]))
         return res
 
-
     _columns = {
         'per_enviar': fields.function(
             _fnc_per_enviar,

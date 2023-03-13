@@ -259,9 +259,9 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                         tarifa_id = gpt_obj.search(cursor, uid, [("codi_ocsum", "=", pas01.pas_id.tarifaATR)])
                         if len(tarifa_id) == 1:
                             tarifa_contractada = gpt_obj.read(cursor, uid, tarifa_id, ["name"])[0]["name"]
-                    potencies = pas01.pas_id.pot_ids if es_canvi_tecnic else polissa.potencies_periode 
+                    potencies = pas01.pas_id.pot_ids if es_canvi_tecnic else polissa.potencies_periode
                     autoconsum = pas01.pas_id.tipus_autoconsum if es_canvi_tecnic else polissa.autoconsumo
-                    
+
             %>
             <div class="peatge_access_content">
                 <div class="padding_bottom padding_left">

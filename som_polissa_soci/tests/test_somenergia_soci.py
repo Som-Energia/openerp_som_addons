@@ -1,8 +1,5 @@
 from destral import testing
 from destral.transaction import Transaction
-import netsvc
-from datetime import date
-import unittest
 from osv.orm import ValidateException
 
 
@@ -49,7 +46,7 @@ class TestSomenergiaSoci(testing.OOTestCase):
             }
             Soci.create(cursor, uid, vals_duplicate)
 
-            number_socis = len(Soci.search(cursor, uid, [('vat','=','ES50030279N')]))
+            number_socis = len(Soci.search(cursor, uid, [('vat', '=', 'ES50030279N')]))
             self.assertEqual(number_socis, 2)
 
     def test_create_partner_withOutCancelDate__allowed(self):
@@ -70,6 +67,6 @@ class TestSomenergiaSoci(testing.OOTestCase):
                 'vat': 'ES50030279N',
             }
             Soci.create(cursor, uid, vals_duplicate)
-            
-            number_socis = len(Soci.search(cursor, uid, [('vat','=','ES50030279N')]))
+
+            number_socis = len(Soci.search(cursor, uid, [('vat', '=', 'ES50030279N')]))
             self.assertEqual(number_socis, 2)

@@ -15,7 +15,8 @@ class PaymentOrder(osv.osv):
 
         factura_id = False
         if hasattr(invoice, 'id'):
-            factura_id = factura_obj.search(cursor, uid, [('invoice_id', '=', invoice.id)])
+            factura_id = factura_obj.search(
+                cursor, uid, [('invoice_id', '=', invoice.id)])
         remesa_description = super(PaymentOrder, self).pattern_remesa_description_parse_config_var(
             cursor, uid, invoice, context=context)
         additional_text = 'SOM ENERGIA SCCL'

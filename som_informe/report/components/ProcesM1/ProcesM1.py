@@ -1,5 +1,6 @@
 from ..ProcesATR import ProcesATR
 
+
 class ProcesM1(ProcesATR.ProcesATR):
 
     def __init__(self):

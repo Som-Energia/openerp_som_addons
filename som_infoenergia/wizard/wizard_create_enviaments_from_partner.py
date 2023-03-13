@@ -7,9 +7,9 @@ STATES = [
     ('finished', 'Estat Final')
 ]
 
+
 class WizardAddPartnersLot(osv.osv_memory):
     _name = 'wizard.add.partners.lot'
-
 
     def add_partners_lot(self, cursor, uid, ids, context=None):
 
@@ -25,8 +25,8 @@ class WizardAddPartnersLot(osv.osv_memory):
         wiz = self.browse(cursor, uid, ids[0])
 
         search_params = []
-        search_params_relation =  {
-            'category': [('category_id','=', wiz.category.id)],
+        search_params_relation = {
+            'category': [('category_id', '=', wiz.category.id)],
             'active': [('active', '=', wiz.active)],
             'baixa': [('baixa', '=', wiz.baixa)],
             'init_date': [('data_baixa_soci', '>=', wiz.init_date)],
@@ -41,29 +41,33 @@ class WizardAddPartnersLot(osv.osv_memory):
         if wiz.te_aportacions:
             inv_obj = self.pool.get('generationkwh.investment')
             inv_ids = inv_obj.search(cursor, uid, [('emission_id.type', '=', 'apo')])
-            member_ids =  [x['member_id'][0] for x in inv_obj.read(cursor, uid, inv_ids, ['member_id']) ]
+            member_ids = [x['member_id'][0]
+                          for x in inv_obj.read(cursor, uid, inv_ids, ['member_id'])]
             soci_obj = self.pool.get('somenergia.soci')
-            partner_ids = [ x['partner_id'][0] for x in soci_obj.read(cursor, uid, member_ids, ['partner_id']) ]
+            partner_ids = [x['partner_id'][0]
+                           for x in soci_obj.read(cursor, uid, member_ids, ['partner_id'])]
             search_params += [('id', 'in', partner_ids)]
 
         if wiz.es_soci:
             soci_obj = self.pool.get('somenergia.soci')
-            soci_ids = soci_obj.search(cursor, uid, [('data_baixa_soci','=', False)])
-            partner_ids = [ x['partner_id'][0] for x in soci_obj.read(cursor, uid, soci_ids, ['partner_id']) ]
+            soci_ids = soci_obj.search(cursor, uid, [('data_baixa_soci', '=', False)])
+            partner_ids = [x['partner_id'][0]
+                           for x in soci_obj.read(cursor, uid, soci_ids, ['partner_id'])]
             search_params += [('id', 'in', partner_ids)]
 
         res_ids = partner_obj.search(cursor, uid, search_params)
 
         self.write(cursor, uid, ids, {
-            'state':'finished',
+            'state': 'finished',
             'len_result': 'La cerca ha trobat {} resultats'.format(len(res_ids))
         })
         ctx = {'from_model': 'partner_id'}
-        lot_obj.create_enviaments_from_object_list(cursor, uid, context.get('active_id'), res_ids, ctx)
+        lot_obj.create_enviaments_from_object_list(
+            cursor, uid, context.get('active_id'), res_ids, ctx)
 
     _columns = {
         'category': fields.many2one('res.partner.category',
-            'Categoria', help=_(u"Categoria de Partner")),
+                                    'Categoria', help=_(u"Categoria de Partner")),
         'active': fields.boolean('Actiu'),
         'baixa': fields.boolean('Baixa'),
         'init_date': fields.date('Data Baixa (Inici)'),
@@ -79,5 +83,6 @@ class WizardAddPartnersLot(osv.osv_memory):
     _defaults = {
         'state': 'init',
     }
+
 
 WizardAddPartnersLot()

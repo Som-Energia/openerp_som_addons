@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from osv import osv, fields
-from tools.translate import _
-from tools import config
 
 
 class WizardSomAutoreclamaExecuteStep(osv.osv_memory):
@@ -13,7 +11,8 @@ class WizardSomAutoreclamaExecuteStep(osv.osv_memory):
             context = {}
 
         updtr_obj = self.pool.get('som.autoreclama.state.updater')
-        _, _, _, msg = updtr_obj.update_atcs_if_possible(cursor, uid, context.get('active_ids', []), context)
+        _, _, _, msg = updtr_obj.update_atcs_if_possible(
+            cursor, uid, context.get('active_ids', []), context)
         self.write(cursor, uid, ids, {'state': 'end', 'info': msg})
 
     _columns = {

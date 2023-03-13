@@ -1,5 +1,6 @@
 from datetime import datetime
 
+
 class first_page():
 
     def get_data(self, cursor, uid, object, extra_text, context):

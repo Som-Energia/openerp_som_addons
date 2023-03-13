@@ -1,5 +1,6 @@
 from ..component_utils import dateformat
 
+
 class ProcesATR():
     def __init__(self):
         pass
@@ -25,7 +26,7 @@ class ProcesATR():
     def get_step(self, wiz, cursor, uid, step, step_name):
         for sub_step in step.sw_id.step_ids:
             if sub_step.step_id.name == step_name:
-                r_model,r_id = sub_step.pas_id.split(',')
+                r_model, r_id = sub_step.pas_id.split(',')
                 model_obj = wiz.pool.get(r_model)
                 return model_obj.browse(cursor, uid, int(r_id))
         return None
@@ -35,10 +36,10 @@ class ProcesATR():
         swl_obj = step.pool.get('giscedata.switching.log')
         try:
             search_params = [
-                ('request_code','=',step.sw_id.codi_sollicitud),
-                ('tipus','=','export'),
-                ('proces','=',self.proces_name()),
-                ('pas','=', self.step_name()),
+                ('request_code', '=', step.sw_id.codi_sollicitud),
+                ('tipus', '=', 'export'),
+                ('proces', '=', self.proces_name()),
+                ('pas', '=', self.step_name()),
                 ('status', '=', 'correcte'),
             ]
             swl_ids = swl_obj.search(cursor, uid, search_params)
@@ -47,6 +48,6 @@ class ProcesATR():
                 day = swl.case_date
             else:
                 day = None
-        except Exception as e:
+        except Exception:
             day = step.date_created
         return day

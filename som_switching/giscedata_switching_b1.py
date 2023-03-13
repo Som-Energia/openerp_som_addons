@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from osv import osv, fields
+from osv import osv
+
 
 class GiscedataSwitchingB1_01(osv.osv):
     """ Classe pel pas 01
@@ -36,6 +37,8 @@ class GiscedataSwitchingB1_01(osv.osv):
             del new_vals['phone_pre']
             del new_vals['phone_num']
 
-        res = super(GiscedataSwitchingB1_01, self).config_step(cursor, uid, ids, new_vals, context=None)
+        res = super(GiscedataSwitchingB1_01, self).config_step(
+            cursor, uid, ids, new_vals, context=None)
+
 
 GiscedataSwitchingB1_01()

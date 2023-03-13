@@ -56,4 +56,5 @@ class WizardUpdateInvoiceOVCheckBox(osv.osv_memory):
         'state': lambda *a: 'init'
     }
 
+
 WizardUpdateInvoiceOVCheckBox()

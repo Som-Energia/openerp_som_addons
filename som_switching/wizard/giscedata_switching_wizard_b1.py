@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from osv import osv, fields, orm
+from osv import fields, osv
+
 
 class GiscedataSwitchingWizardB101(osv.osv_memory):
     """Wizard pel switching
@@ -12,7 +13,8 @@ class GiscedataSwitchingWizardB101(osv.osv_memory):
             context = {}
         wizard = self.browse(cursor, uid, ids[0], context)
 
-        config_vals = super(GiscedataSwitchingWizardB101, self).get_config_vals(cursor, uid, ids, context)
+        config_vals = super(GiscedataSwitchingWizardB101,
+                            self).get_config_vals(cursor, uid, ids, context)
         config_vals['phone_pre'] = wizard.phone_pre
         config_vals['phone_num'] = wizard.phone_num
         return config_vals
@@ -26,5 +28,5 @@ class GiscedataSwitchingWizardB101(osv.osv_memory):
         'phone_pre': '34',
     }
 
-GiscedataSwitchingWizardB101()
 
+GiscedataSwitchingWizardB101()

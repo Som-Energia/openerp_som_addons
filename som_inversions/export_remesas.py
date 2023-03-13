@@ -1,15 +1,10 @@
 # -*- coding: utf-8 -*-
-import pooler
-import base64
-import netsvc
 import copy
-from tools.translate import _
 from osv import osv
 
 from l10n_ES_remesas.wizard.export_remesas import FakeInvoice
 from l10n_ES_remesas.wizard.export_remesas import NoInvoiceException
 from datetime import datetime
-
 
 
 class WizardExportPaymentFile(osv.osv_memory):
@@ -73,5 +68,6 @@ class WizardExportPaymentFile(osv.osv_memory):
             return self.get_investment_fake_invoice(
                 cursor, uid, pline, context=None
             )
+
 
 WizardExportPaymentFile()

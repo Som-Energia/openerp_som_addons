@@ -3,7 +3,6 @@
 from destral import testing
 from destral.transaction import Transaction
 
-from expects import *
 import mock
 
 
@@ -25,7 +24,8 @@ class Soml10nEsAeatMod347Report(testing.OOTestCase):
             report.write({'state': 'draft'})
             report347_obj.unlink(cursor, uid, [report_id])
 
-            ret_value = report347_obj.send_email_clients_import_over_limit(cursor, uid, [report_id])
+            ret_value = report347_obj.send_email_clients_import_over_limit(cursor, uid, [
+                                                                           report_id])
             self.assertFalse(ret_value)
 
     def test_notify_clients_from_347_report__when_report_not_calculated(self):
@@ -43,7 +43,8 @@ class Soml10nEsAeatMod347Report(testing.OOTestCase):
             report = report347_obj.browse(cursor, uid, report_id)
             report.write({'state': 'draft'})
 
-            ret_value = report347_obj.send_email_clients_import_over_limit(cursor, uid, [report_id])
+            ret_value = report347_obj.send_email_clients_import_over_limit(cursor, uid, [
+                                                                           report_id])
             self.assertFalse(ret_value)
 
     def test_notify_clients_from_347_report__when_report_has_no_partners(self):
@@ -67,7 +68,8 @@ class Soml10nEsAeatMod347Report(testing.OOTestCase):
 
             partner_obj.unlink(cursor, uid, [partner_id_1, partner_id_2])
 
-            ret_value = report347_obj.send_email_clients_import_over_limit(cursor, uid, [report_id])
+            ret_value = report347_obj.send_email_clients_import_over_limit(cursor, uid, [
+                                                                           report_id])
             self.assertFalse(ret_value)
 
     def test_notify_clients_from_347_report__when_report_has_no_client_partners(self):
@@ -88,7 +90,8 @@ class Soml10nEsAeatMod347Report(testing.OOTestCase):
 
             partner_obj.unlink(cursor, uid, [partner_id_1])
 
-            ret_value = report347_obj.send_email_clients_import_over_limit(cursor, uid, [report_id])
+            ret_value = report347_obj.send_email_clients_import_over_limit(cursor, uid, [
+                                                                           report_id])
             self.assertFalse(ret_value)
 
     @mock.patch('som_l10n_ES_aeat_mod347.som_l10n_ES_aeat_mod347.SomL10nEsAeatMod347Helper.send_email')
@@ -113,7 +116,8 @@ class Soml10nEsAeatMod347Report(testing.OOTestCase):
                 cursor, uid, 'som_l10n_ES_aeat_mod347', 'aeat_347_partner_record_1'
             )[1]
 
-            ret_value = report347_obj.send_email_clients_import_over_limit(cursor, uid, [report_id])
+            ret_value = report347_obj.send_email_clients_import_over_limit(cursor, uid, [
+                                                                           report_id])
 
             self.assertTrue(ret_value)
 
@@ -121,7 +125,8 @@ class Soml10nEsAeatMod347Report(testing.OOTestCase):
                 "email_from": from_email_id,
                 "template_id": template_id
             }
-            mock_function.assert_called_with(cursor, uid, mock.ANY, partner_record_id, expected_ctx)
+            mock_function.assert_called_with(
+                cursor, uid, mock.ANY, partner_record_id, expected_ctx)
 
 
 class Soml10nEsAeatMod347Partner(testing.OOTestCase):
@@ -133,7 +138,8 @@ class Soml10nEsAeatMod347Partner(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
 
-            ret_value = partner_record_obj.send_annual_import_summary_email(cursor, uid, [])
+            ret_value = partner_record_obj.send_annual_import_summary_email(
+                cursor, uid, [])
             self.assertFalse(ret_value)
 
     def test_notify_clients_from_347_partner__when_report_not_calculated(self):
@@ -151,7 +157,8 @@ class Soml10nEsAeatMod347Partner(testing.OOTestCase):
             report = partner_record_obj.browse(cursor, uid, partner_record_id).report_id
             report.write({'state': 'draft'})
 
-            ret_value = partner_record_obj.send_annual_import_summary_email(cursor, uid, [partner_record_id])
+            ret_value = partner_record_obj.send_annual_import_summary_email(cursor, uid, [
+                                                                            partner_record_id])
             self.assertFalse(ret_value)
 
     @mock.patch('som_l10n_ES_aeat_mod347.som_l10n_ES_aeat_mod347.SomL10nEsAeatMod347Helper.send_email')
@@ -173,7 +180,8 @@ class Soml10nEsAeatMod347Partner(testing.OOTestCase):
                 cursor, uid, 'som_l10n_ES_aeat_mod347', 'aeat_347_partner_record_1'
             )[1]
 
-            ret_value = partner_record_obj.send_annual_import_summary_email(cursor, uid, [partner_record_id])
+            ret_value = partner_record_obj.send_annual_import_summary_email(cursor, uid, [
+                                                                            partner_record_id])
 
             self.assertTrue(ret_value)
 
@@ -181,4 +189,5 @@ class Soml10nEsAeatMod347Partner(testing.OOTestCase):
                 "email_from": from_email_id,
                 "template_id": template_id
             }
-            mock_function.assert_called_with(cursor, uid, mock.ANY, partner_record_id, expected_ctx)
+            mock_function.assert_called_with(
+                cursor, uid, mock.ANY, partner_record_id, expected_ctx)

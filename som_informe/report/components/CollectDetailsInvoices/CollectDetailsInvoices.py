@@ -2,6 +2,7 @@ from ..component_utils import dateformat
 
 ESTAT_PENDENT_INPAGAT_MIN = 33
 
+
 class CollectDetailsInvoices:
     def __init__(self):
         pass
@@ -30,7 +31,7 @@ class CollectDetailsInvoices:
                 'data_inici': dateformat(invoice.data_inici),
                 'data_final': dateformat(invoice.data_final),
                 'invoice_date': dateformat(invoice.date_invoice),
-                'due_date' : dateformat(invoice.date_due),
+                'due_date': dateformat(invoice.date_due),
                 'devolucio_date': dateformat(invoice.devolucio_id.date),
                 'amount_total': invoice.amount_total,
                 'pending_amount': invoice.residual,
@@ -40,7 +41,3 @@ class CollectDetailsInvoices:
             'type': 'CollectDetailsInvoices',
             'invoices_data': invoices_data
         }
-
-
-
-

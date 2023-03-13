@@ -22,7 +22,8 @@
 #
 ##############################################################################
 import base64
-import time, netsvc
+import time
+import netsvc
 from account_financial_report.utils import account_balance_utils as utils
 from datetime import datetime
 from tools.translate import _
@@ -43,7 +44,8 @@ class WizardAccountBalanceReport(osv.osv_memory):
         if user.company_id:
             company_id = user.company_id.id
         else:
-            company_id = self.pool.get('res.company').search(cr, uid, [('parent_id', '=', False)])[0]
+            company_id = self.pool.get('res.company').search(
+                cr, uid, [('parent_id', '=', False)])[0]
         fiscalyear_obj = self.pool.get('account.fiscalyear')
         form = {}
         form['company_id'] = company_id
@@ -64,16 +66,17 @@ class WizardAccountBalanceReport(osv.osv_memory):
     def _check_date(self, cr, uid, data, context=None):
         sql = """SELECT f.id, f.date_start, f.date_stop
             FROM account_fiscalyear f
-            WHERE '%s' between f.date_start and f.date_stop """%(data['form']['date_from'])
+            WHERE '%s' between f.date_start and f.date_stop """ % (data['form']['date_from'])
         cr.execute(sql)
         res = cr.dictfetchall()
         if res:
             if (data['form']['date_to'] > res[0]['date_stop'] or data['form']['date_to'] < res[0]['date_start']):
-                 raise osv.except_osv(_('UserError'), _('Date to must be set between %s and %s') % (res[0]['date_start'], res[0]['date_stop']))
+                raise osv.except_osv(_('UserError'), _('Date to must be set between %s and %s') % (
+                    res[0]['date_start'], res[0]['date_stop']))
             else:
                 return 'report'
         else:
-             raise osv.except_osv(_('UserError'),_('Date not in a defined fiscal year'))
+            raise osv.except_osv(_('UserError'), _('Date not in a defined fiscal year'))
 
     def get_account_balance_wiz_data(self, cr, uid, ids, context=None):
         if not context:
@@ -90,7 +93,7 @@ class WizardAccountBalanceReport(osv.osv_memory):
                 'state': wiz.state,
                 'account_list': [(6, 0, [item.id for item in wiz.account_list])],
                 'periods': [(6, 0, wiz.periods)],
-                'date_to':  wiz.date_to,
+                'date_to': wiz.date_to,
                 'display_account': wiz.display_account,
                 'fiscalyear': wiz.fiscalyear.id,
                 'context': context,
@@ -120,7 +123,8 @@ class WizardAccountBalanceReport(osv.osv_memory):
         csv_file += ';;Period;Period;Period;Period;F. Year;F. Year;F. Year;F. Year\n'
         csv_file += 'Code;Account;Init. Balance;Debit;Credit;Balance;Init. Balance;Debit;Credit;Balance\n\n'
 
-        lines = utils.lines(self, cr, uid, form, ids=account_ids, done=None, level=0, context=context)
+        lines = utils.lines(self, cr, uid, form, ids=account_ids,
+                            done=None, level=0, context=context)
 
         for line in lines:
             csv_file += '{};{};'.format(line['code'], line['name'])
@@ -129,13 +133,14 @@ class WizardAccountBalanceReport(osv.osv_memory):
             period_debit = utils.float_string(line['debit'])
             period_credit = utils.float_string(line['credit'])
             period_balance = utils.float_string(line['balance'])
-            csv_file += '{};{};{};{};'.format(period_init, period_debit, period_credit, period_balance)
+            csv_file += '{};{};{};{};'.format(period_init,
+                                              period_debit, period_credit, period_balance)
 
             fy_init = utils.float_string(line['balanceinit_fy'])
             fy_debit = utils.float_string(line['debit_fy'])
             fy_credit = utils.float_string(line['credit_fy'])
             fy_balance = utils.float_string(line['balance_fy'])
-            csv_file += '{};{};{};{}\n'.format(fy_init,fy_debit, fy_credit, fy_balance)
+            csv_file += '{};{};{};{}\n'.format(fy_init, fy_debit, fy_credit, fy_balance)
 
         datas['form']['file'] = csv_file
         datas['form']['name'] = 'Account balance.csv'
@@ -150,8 +155,9 @@ class WizardAccountBalanceReport(osv.osv_memory):
         if datas['form']['all_accounts']:
             all_accounts = self.pool.get('account.account').search(cr, uid, [])
             datas['form']['account_list'][0] = [6, 0, all_accounts]
-        elif datas['form']['account_list'][0] == [6,0, []]:
-             raise osv.except_osv(_("Error"), _("Account list or 'all accounts' check required"))
+        elif datas['form']['account_list'][0] == [6, 0, []]:
+            raise osv.except_osv(_("Error"), _(
+                "Account list or 'all accounts' check required"))
 
     def report_csv_print(self, cr, uid, ids, context=None):
         if not context:
@@ -165,7 +171,7 @@ class WizardAccountBalanceReport(osv.osv_memory):
         result = self._excel_create(cr, uid, ids, datas, context)
 
         wizard.write({
-            'wiz_state':'done',
+            'wiz_state': 'done',
             'filename_report': 'account_balance.csv',
             'report': base64.b64encode(result['file']),
         })
@@ -180,8 +186,8 @@ class WizardAccountBalanceReport(osv.osv_memory):
         self.check_all_accounts(cr, uid, ids, datas, context)
         result = self._excel_create(cr, uid, ids, datas, context)
 
-        #TODO: Save file to MongoDB to support workers in different server of main instance
-        timestamp =  datetime.today().strftime('%Y-%m-%d-%H:%M:%S')
+        # TODO: Save file to MongoDB to support workers in different server of main instance
+        timestamp = datetime.today().strftime('%Y-%m-%d-%H:%M:%S')
         filename = '/tmp/account_balance_' + timestamp
         file = open(filename, "wr")
         file.write(result['file'])
@@ -190,7 +196,7 @@ class WizardAccountBalanceReport(osv.osv_memory):
         async_obj = self.pool.get('async.reports')
         mail_data = async_obj.get_datas_email_params(cr, uid, datas, context)
         async_obj.send_mail(cr, uid, mail_data['from'],
-            filename, mail_data['email_to'], "account_balance.csv")
+                            filename, mail_data['email_to'], "account_balance.csv")
 
     def report_csv_send(self, cr, uid, ids, context=None):
         if not context:
@@ -202,9 +208,10 @@ class WizardAccountBalanceReport(osv.osv_memory):
         user = user_obj.browse(cr, uid, uid, context)
         info = ''
         if user.address_id and user.address_id.email:
-            info = "S'enviarà el resultat al correu associat a l'usuaria {}: ({})".format(user.login, user.address_id.email)
+            info = "S'enviarà el resultat al correu associat a l'usuaria {}: ({})".format(
+                user.login, user.address_id.email)
         wizard.write({
-            'wiz_state':'send',
+            'wiz_state': 'send',
             'info': info
         })
         datas = self.get_account_balance_wiz_data(cr, uid, ids, context)
@@ -225,7 +232,7 @@ class WizardAccountBalanceReport(osv.osv_memory):
         result, format = obj.create(cr, uid, ids, datas, context)
 
         wizard.write({
-            'wiz_state':'done',
+            'wiz_state': 'done',
             'filename_report': 'account_balance.pdf',
             'report': base64.b64encode(result),
         })
@@ -239,7 +246,8 @@ class WizardAccountBalanceReport(osv.osv_memory):
         self._get_defaults(cr, uid, ids, datas, context)
         self.check_all_accounts(cr, uid, ids, datas, context)
         async_obj = self.pool.get('async.reports')
-        async_obj.async_report_report(cr, uid, ids, 'account.balance.full', datas, context)
+        async_obj.async_report_report(
+            cr, uid, ids, 'account.balance.full', datas, context)
 
     def report_pdf_send(self, cr, uid, ids, context=None):
         if not context:
@@ -251,14 +259,14 @@ class WizardAccountBalanceReport(osv.osv_memory):
         user = user_obj.browse(cr, uid, uid, context)
         info = ''
         if user.address_id and user.address_id.email:
-            info = "S'enviarà el resultat al correu associat a l'usuaria {}: ({})".format(user.login, user.address_id.email)
+            info = "S'enviarà el resultat al correu associat a l'usuaria {}: ({})".format(
+                user.login, user.address_id.email)
         wizard.write({
-            'wiz_state':'send',
+            'wiz_state': 'send',
             'info': info
         })
         datas = self.get_account_balance_wiz_data(cr, uid, ids, context)
         self.report_pdf_send_async(cr, uid, ids, datas, context)
-
 
     _columns = {
         'company_id': fields.many2one('res.company', 'Company', required=True),
@@ -268,24 +276,24 @@ class WizardAccountBalanceReport(osv.osv_memory):
             domain=[]
         ),
         'all_accounts': fields.boolean(u"All accounts", help=u'This check will include all accounts'),
-        'state': fields.selection([('bydate','By Date'), ('byperiod','By Period'),
-            ('all','By Date and Period'), ('none','No Filter')], _(u'Date/Period Filter')),
+        'state': fields.selection([('bydate', 'By Date'), ('byperiod', 'By Period'),
+                                   ('all', 'By Date and Period'), ('none', 'No Filter')], _(u'Date/Period Filter')),
         'fiscalyear': fields.many2one('account.fiscalyear', 'Fiscal year', help=u'Keep empty to use all open fiscal years to compute the balance'),
         'periods': fields.many2many(
             'account.period', 'sw_wiz_account_period_ref',
             'wiz_account_period_id', 'account_period_id', string='Periods',
             help=u'All periods in the fiscal year if empty',
         ),
-        'display_account': fields.selection([('bal_all','All'),('bal_solde', 'With balance'),('bal_mouvement','With movements')],
-            _(u'Display accounts')
-        ),
+        'display_account': fields.selection([('bal_all', 'All'), ('bal_solde', 'With balance'), ('bal_mouvement', 'With movements')],
+                                            _(u'Display accounts')
+                                            ),
         'display_account_level': fields.integer(_(u"Up to level"), help=u'Display accounts up to this level (0 to show all)'),
         'date_from': fields.date(u"Start date", required=True),
         'date_to': fields.date(u"End date", required=True),
         'filename_report': fields.char('Nom fitxer exportat', size=256),
         'report': fields.binary('Report Result'),
         'info': fields.text('Description'),
-        'wiz_state': fields.selection([('done','Done'), ('send','Send')], "wizard state")
+        'wiz_state': fields.selection([('done', 'Done'), ('send', 'Send')], "wizard state")
     }
 
     _defaults = {
@@ -296,6 +304,7 @@ class WizardAccountBalanceReport(osv.osv_memory):
         'date_from': lambda *a: time.strftime('%Y-01-01'),
         'date_to': lambda *a: time.strftime('%Y-%m-%d'),
     }
+
 
 WizardAccountBalanceReport()
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

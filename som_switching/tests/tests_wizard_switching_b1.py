@@ -3,6 +3,7 @@
 from destral import testing
 from destral.transaction import Transaction
 
+
 class TestsWzardSwitchingB1(testing.OOTestCase):
 
     def setUp(self):
@@ -29,7 +30,7 @@ class TestsWzardSwitchingB1(testing.OOTestCase):
         )[1]
 
         pol_obj = self.pool.get('giscedata.polissa')
-        pol_obj.write(cursor, uid, pol_id, {'state' : 'activa', })
+        pol_obj.write(cursor, uid, pol_id, {'state': 'activa', })
         polissa = pol_obj.browse(cursor, uid, pol_id)
         partner_obj = self.pool.get('res.partner')
         partner_obj.write(cursor, uid, polissa.distribuidora.id, {'ref': '01'})
@@ -55,7 +56,7 @@ class TestsWzardSwitchingB1(testing.OOTestCase):
             )
 
             self.assertEqual(cas_b101.cont_telefons[0].numero, direccio.phone)
-    
+
     def tests__wizardSwitchingB1__with_phone_number(self):
         """
         Test wizard with phone number, case ATR B1 is created with phone number
@@ -71,14 +72,14 @@ class TestsWzardSwitchingB1(testing.OOTestCase):
         )[1]
 
         pol_obj = self.pool.get('giscedata.polissa')
-        pol_obj.write(cursor, uid, pol_id, {'state' : 'activa', })
+        pol_obj.write(cursor, uid, pol_id, {'state': 'activa', })
         polissa = pol_obj.browse(cursor, uid, pol_id)
         partner_obj = self.pool.get('res.partner')
         partner_obj.write(cursor, uid, polissa.distribuidora.id, {'ref': '01'})
         partner_obj.write(cursor, uid, 1, {'ref': '01'})
 
         ctx = {'contract_id': pol_id, 'from_model': 'giscedata.polissa'}
-        wiz_cv = {'motive': '01', 'phone_num':'972123456'}
+        wiz_cv = {'motive': '01', 'phone_num': '972123456'}
         wiz_id = wiz_o.create(cursor, uid, wiz_cv, context=ctx)
 
         wiz_o.genera_casos_atr(cursor, uid, [wiz_id], context=ctx)

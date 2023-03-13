@@ -1,6 +1,7 @@
 # coding=utf-8
 import logging
 
+
 def up(cursor, installed_version):
     logger = logging.getLogger('openerp.migration')
     if not installed_version:
@@ -23,7 +24,6 @@ def up(cursor, installed_version):
         """
     cursor.execute(update_query)
     logger.info("Wizard migrated")
-
 
 
 def down(cursor, installed_version):

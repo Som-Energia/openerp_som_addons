@@ -1,6 +1,7 @@
 from ..component_utils import dateformat, get_description
 from ..ProcesM1 import ProcesM1
 
+
 class M101(ProcesM1.ProcesM1):
     def __init__(self):
         ProcesM1.ProcesM1.__init__(self)
@@ -14,9 +15,10 @@ class M101(ProcesM1.ProcesM1):
         result['sol_tensio'] = step.solicitud_tensio
         result['tensio_sol'] = step.tensio_solicitada
         result['tipus_sol'] = step.sollicitudadm
-        result['potencies'] = [{'name':pot.name, 'potencia':pot.potencia} for pot in step.pot_ids if pot.potencia != 0]
-        result['tarifa'] =  get_description(step.tarifaATR, "TABLA_17")
-        result['telefons'] = [{'numero':telefon.numero} for telefon in step.telefons]
+        result['potencies'] = [{'name': pot.name, 'potencia': pot.potencia}
+                               for pot in step.pot_ids if pot.potencia != 0]
+        result['tarifa'] = get_description(step.tarifaATR, "TABLA_17")
+        result['telefons'] = [{'numero': telefon.numero} for telefon in step.telefons]
         result['canvi_titular'] = step.canvi_titular
         result['nom'] = step.nom
         result['cognom1'] = step.cognom_1
@@ -26,8 +28,9 @@ class M101(ProcesM1.ProcesM1):
             result['codi_document'] = step.codi_document[2:]
         else:
             result['codi_document'] = step.codi_document
-        result['tipus_autoconsum'] =  get_description(step.tipus_autoconsum, "TABLA_113")
-        result['control_potencia'] =  get_description(step.control_potencia, "TABLA_51", True)
+        result['tipus_autoconsum'] = get_description(step.tipus_autoconsum, "TABLA_113")
+        result['control_potencia'] = get_description(
+            step.control_potencia, "TABLA_51", True)
         result['comentaris'] = step.comentaris
         if len(step.document_ids) == 0:
             result['adjunts'] = False

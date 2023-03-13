@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 from osv import osv, fields
-from tools.translate import _
+
 
 class WizardCreateAtc(osv.osv_memory):
 
@@ -10,7 +10,8 @@ class WizardCreateAtc(osv.osv_memory):
 
         if context is None:
             context = {}
-        res = super(WizardCreateAtc, self).create_atc_case(cursor, uid, ids, from_model, context=context)
+        res = super(WizardCreateAtc, self).create_atc_case(
+            cursor, uid, ids, from_model, context=context)
         wizard = self.browse(cursor, uid, ids[0], context)
         atc_obj = self.pool.get('giscedata.atc')
         for atc_id in wizard.generated_cases:
@@ -20,7 +21,8 @@ class WizardCreateAtc(osv.osv_memory):
 
     def onchange_subtipus(self, cursor, uid, ids, subtipus_id):
 
-        res = super(WizardCreateAtc, self).onchange_subtipus(cursor, uid, ids, subtipus_id)
+        res = super(WizardCreateAtc, self).onchange_subtipus(
+            cursor, uid, ids, subtipus_id)
         section_id = res['value']['section_id']
         seccio = False
         mostrar_tag = False
@@ -34,7 +36,6 @@ class WizardCreateAtc(osv.osv_memory):
         return res
 
     def onchange_section(self, cursor, uid, ids, section_id):
-        res = False
         section_obj = self.pool.get('crm.case.section')
         seccio = section_obj.read(cursor, uid, section_id, ['code'])['code']
         if seccio:
@@ -51,4 +52,6 @@ class WizardCreateAtc(osv.osv_memory):
     _defaults = {
         'mostrar_tag': lambda *a: False,
     }
+
+
 WizardCreateAtc()

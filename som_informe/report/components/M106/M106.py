@@ -1,5 +1,6 @@
 from ..ProcesM1 import ProcesM1
 
+
 class M106(ProcesM1.ProcesM1):
     def __init__(self):
         ProcesM1.ProcesM1.__init__(self)

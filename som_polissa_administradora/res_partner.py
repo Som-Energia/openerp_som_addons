@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from osv import osv, fields
+from osv import osv
 from osv.osv import except_osv
 
 
@@ -69,21 +69,21 @@ class ResPartner(osv.osv):
 
         imd_obj = self.pool.get('ir.model.data')
         admin_cat = imd_obj._get_obj(cursor, uid,
-            'som_polissa_administradora',
-            'res_partner_category_administradora')
+                                     'som_polissa_administradora',
+                                     'res_partner_category_administradora')
 
         for partner_id in partner_ids:
             partner = self.read(cursor, uid, partner_id, ['category_id'])
             if admin_cat.id not in partner['category_id']:
                 self.write(cursor, uid, partner_id,
-                    {'category_id': [(4, admin_cat.id)]})
+                           {'category_id': [(4, admin_cat.id)]})
 
     def become_owner(self, cursor, uid, id, context=None):
         imd_obj = self.pool.get('ir.model.data')
         ir_seq = self.pool.get('ir.sequence')
         soci_cat = imd_obj._get_obj(cursor, uid,
-            'som_partner_account',
-            'res_partner_category_soci')
+                                    'som_partner_account',
+                                    'res_partner_category_soci')
         partner = self.read(cursor, uid, id, ['ref', 'category_id'])
 
         # Assign Owner ref code

@@ -46,7 +46,7 @@ class GiscedataSwitchingAparell(osv.osv):
 
         uoms = dict([(u['name'], u['id']) for u in uom_alq_vals])
 
-        #Productes de lloguer
+        # Productes de lloguer
         data_names = ['alq_cont_st_ea_mono_resto',
                       'alq_cont_st_ea_tri',
                       'alq_cont_dh_mono',
@@ -79,7 +79,7 @@ class GiscedataSwitchingAparell(osv.osv):
         pm_vals = pm_obj.read(cursor, uid, aparell_vals['pm_id'][0],
                               ['mode_lectura', 'tensio_pm'])
 
-        #DH segons Tarifa
+        # DH segons Tarifa
         es_dh = False
         es_30 = False
         if tarifaatr:
@@ -96,10 +96,10 @@ class GiscedataSwitchingAparell(osv.osv):
             if tar_vals['tipus'] == 'AT':
                 es_30 = True
 
-        #Telegestió?
+        # Telegestió?
         es_tg = pm_vals['mode_lectura'] == '4'
 
-        #Trifàsic segons potència
+        # Trifàsic segons potència
         es_trifasic = potencia and potencia in POTENCIES_TRIFASIQUES or False
         es_trifasic = es_trifasic or pm_vals['tensio_pm'] == 400
 
@@ -113,7 +113,7 @@ class GiscedataSwitchingAparell(osv.osv):
             # DH
             alq = es_trifasic and 'ALQ07' or 'ALQ06'
         else:
-            #Resta
+            # Resta
             alq = es_trifasic and 'ALQ03' or 'ALQ02'
 
         # Calculem el preu per dia
@@ -159,7 +159,8 @@ class GiscedataSwitching(osv.osv):
             helper_obj = helpercomer_obj
             whereiam = _(u'Comercializadora')
 
-        method_names = act_obj.get_activation_method(cursor, uid, sw.get_pas(), context=context)
+        method_names = act_obj.get_activation_method(
+            cursor, uid, sw.get_pas(), context=context)
         if not method_names:
             return [_(u'Atenció'),
                     _(u'Activació cas %s-%s no implementada/activada a %s.\n\n'
@@ -197,7 +198,8 @@ class GiscedataSwitching(osv.osv):
                     elif not res:
                         continue
                     else:
-                        raise Exception("ERROR", _(u"La activacio no ha retornat la informacio esperada"))
+                        raise Exception("ERROR", _(
+                            u"La activacio no ha retornat la informacio esperada"))
                     msg_h = init_str + msg
                     tmp_cursor.commit()
                 except Exception, e:
@@ -223,7 +225,8 @@ class GiscedataSwitching(osv.osv):
             try:
                 init_str = _(u"Resultat Notificacio:\n")
                 notificate_on_activate = int(
-                    self.pool.get("res.config").get(cursor, 1, "sw_notificate_on_activate", "0")
+                    self.pool.get("res.config").get(
+                        cursor, 1, "sw_notificate_on_activate", "0")
                 )
                 if notificate_on_activate and final_res[0] != "ERROR":
                     pas = sw.get_pas()
@@ -268,10 +271,12 @@ class GiscedataSwitching(osv.osv):
         result = dict.fromkeys(ids, None)
         for sw_obs in self.read(cursor, uid, ids, ['proces_id'], context=context):
             if sw_obs['proces_id'][1].lower() in ['a3', 'b1', 'm1', 'c1', 'c2']:
-                pas_obj = self.pool.get('giscedata.switching.{}.01'.format(sw_obs['proces_id'][1].lower()))
-                pas_id = pas_obj.search(cursor, uid, [('sw_id','=',sw_obs['id'])])
+                pas_obj = self.pool.get('giscedata.switching.{}.01'.format(
+                    sw_obs['proces_id'][1].lower()))
+                pas_id = pas_obj.search(cursor, uid, [('sw_id', '=', sw_obs['id'])])
                 if pas_id:
-                    result[sw_obs['id']] = pas_obj.read(cursor, uid, pas_id[0], ['data_accio'])['data_accio']
+                    result[sw_obs['id']] = pas_obj.read(
+                        cursor, uid, pas_id[0], ['data_accio'])['data_accio']
 
         return result
 
@@ -298,11 +303,11 @@ class GiscedataSwitching(osv.osv):
             _ff_get_data_accio, method=True, type="date",
             string="Data acció del pas 01",
             store={
-                'giscedata.switching.a3.01': (_get_pas_id, ['data_accio'],20),
-                'giscedata.switching.b1.01': (_get_pas_id, ['data_accio'],20),
-                'giscedata.switching.c1.01': (_get_pas_id, ['data_accio'],20),
-                'giscedata.switching.c2.01': (_get_pas_id, ['data_accio'],20),
-                'giscedata.switching.m1.01': (_get_pas_id, ['data_accio'],20),
+                'giscedata.switching.a3.01': (_get_pas_id, ['data_accio'], 20),
+                'giscedata.switching.b1.01': (_get_pas_id, ['data_accio'], 20),
+                'giscedata.switching.c1.01': (_get_pas_id, ['data_accio'], 20),
+                'giscedata.switching.c2.01': (_get_pas_id, ['data_accio'], 20),
+                'giscedata.switching.m1.01': (_get_pas_id, ['data_accio'], 20),
             }
         )
     }
@@ -310,6 +315,7 @@ class GiscedataSwitching(osv.osv):
     _defaults = {
         'user_observations': lambda *a: ''
     }
+
 
 GiscedataSwitching()
 
@@ -325,7 +331,7 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
         res = dict([(i, '') for i in ids])
 
         for f1 in self.read(cr, uid, ids, ['user_observations'],
-                                context=context):
+                            context=context):
             if f1['user_observations']:
                 usr_obs = f1['user_observations'].split('\n')
 
@@ -352,4 +358,6 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
         )
 
     }
+
+
 GiscedataFacturacioImportacioLinia()

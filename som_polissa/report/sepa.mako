@@ -59,7 +59,7 @@ data = report.sepa_particulars_data()
         By signing this mandate form, you authorise (A) the Creditor to send instructions to your bank to debit your account and (B) your bank to debit your account in accordance with the instructions from the Creditor. As part of your rights, you are entitled to a refund from your bank under the terms and conditions of your agreement with your bank. A refund must be claimed within eigth weeks starting from the date on which your account was debited. Your rights are explained in a statement that you can obtain from your bank.
         </p>
         % endif
-    </div>    
+    </div>
     <div>
         <div class="centered blau">A cumplimentar por el deudor /
             <span class="english">To be completed by the debtor</span>

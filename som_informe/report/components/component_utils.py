@@ -38,8 +38,10 @@ periode_a_name = {
     'A6': 'P6',
 }
 
+
 def get_unit_magnitude(magnitud):
     return magnitud_a_unit.get(magnitud, 'eV')
+
 
 def get_invoice_line(invoice, magnitud, periode):
     if magnitud == 'PM' and periode == '93':
@@ -55,28 +57,32 @@ def get_invoice_line(invoice, magnitud, periode):
             return l
     return None
 
-def to_date(str_date, hours = False):
+
+def to_date(str_date, hours=False):
     if not str_date:
         return None
     if not hours:
-        return datetime.strptime(str_date[0:10],'%Y-%m-%d')
-    return datetime.strptime(str_date,'%Y-%m-%d %H:%M:%S')
+        return datetime.strptime(str_date[0:10], '%Y-%m-%d')
+    return datetime.strptime(str_date, '%Y-%m-%d %H:%M:%S')
 
-def to_string(obj_date, hours = False):
+
+def to_string(obj_date, hours=False):
     if not obj_date:
         return ""
     if not hours:
         return obj_date.strftime('%d-%m-%Y')
     return obj_date.strftime('%d-%m-%Y %H:%M:%S')
 
-def dateformat(str_date, hours = False):
+
+def dateformat(str_date, hours=False):
     if not str_date:
         return ""
     if not hours:
-        return datetime.strptime(str_date[0:10],'%Y-%m-%d').strftime('%d-%m-%Y')
-    return datetime.strptime(str_date,'%Y-%m-%d %H:%M:%S').strftime('%d-%m-%Y %H:%M:%S')
+        return datetime.strptime(str_date[0:10], '%Y-%m-%d').strftime('%d-%m-%Y')
+    return datetime.strptime(str_date, '%Y-%m-%d %H:%M:%S').strftime('%d-%m-%Y %H:%M:%S')
 
-def get_description(key, table_name, on_error_return_false = False):
+
+def get_description(key, table_name, on_error_return_false=False):
     try:
         return gestion_atr_get_description(key, table_name)
     except (ValueError, KeyError):
@@ -84,19 +90,20 @@ def get_description(key, table_name, on_error_return_false = False):
             return False
         return "ERROR {} no trobat a {}.".format(key, table_name)
 
+
 def is_domestic(pol):
     for cat in pol.category_id:
         if cat.code == 'DOM':
             return True
     return False
 
+
 def is_enterprise(pol):
     return not is_domestic(pol)
+
 
 def has_category(pol, category_ids):
     for cat in pol.category_id:
         if cat.id in category_ids:
             return True
     return False
-
-

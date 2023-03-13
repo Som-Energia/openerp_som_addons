@@ -2,11 +2,9 @@
 
 from destral import testing
 from destral.transaction import Transaction
-import xml.etree.ElementTree as ET
-from datetime import date, datetime, timedelta
-import unittest
-from osv import fields
+from datetime import date
 from yamlns import namespace as ns
+
 
 class TestAccountAccountSom(testing.OOTestCase):
 
@@ -29,7 +27,6 @@ class TestAccountAccountSom(testing.OOTestCase):
             'res_partner_category_soci'
         )
         self.partner_id = self.get_ref('base', 'res_partner_c2c')
-
 
     def tearDown(self):
         self.txn.stop()
@@ -55,7 +52,7 @@ class TestAccountAccountSom(testing.OOTestCase):
         Partner.become_member(self.cursor, self.uid, self.partner_id)
 
         self.assertEqual(
-            oldCategories+[self.member_category],
+            oldCategories + [self.member_category],
             self.getCategories(self.partner_id),
         )
 
@@ -64,27 +61,26 @@ class TestAccountAccountSom(testing.OOTestCase):
 
         oldCategories = self.getCategories(self.partner_id)
         Partner.write(self.cursor, self.uid, self.partner_id,
-            {'category_id': [(4, self.member_category)]})
+                      {'category_id': [(4, self.member_category)]})
 
         Partner.become_member(self.cursor, self.uid, self.partner_id)
 
         self.assertEqual(
-            oldCategories+[self.member_category],
+            oldCategories + [self.member_category],
             self.getCategories(self.partner_id)
         )
-
 
     def test__become_member__withNoPreviousRef(self):
         Partner = self.openerp.pool.get('res.partner')
 
         Partner.write(self.cursor, self.uid, self.partner_id, dict(
-            ref = '', # No ref
+            ref='',  # No ref
         ))
 
         Partner.become_member(self.cursor, self.uid, self.partner_id)
 
         partner = Partner.read(self.cursor, self.uid,
-            self.partner_id, ['ref'])
+                               self.partner_id, ['ref'])
 
         self.assertRegexpMatches(
             partner['ref'],
@@ -95,13 +91,13 @@ class TestAccountAccountSom(testing.OOTestCase):
         Partner = self.openerp.pool.get('res.partner')
 
         Partner.write(self.cursor, self.uid, self.partner_id, dict(
-            ref = 'S666666', # Valid member ref
+            ref='S666666',  # Valid member ref
         ))
 
         Partner.become_member(self.cursor, self.uid, self.partner_id)
 
         partner = Partner.read(self.cursor, self.uid,
-            self.partner_id, ['ref'])
+                               self.partner_id, ['ref'])
 
         self.assertEqual(partner['ref'], 'S666666')
 
@@ -109,19 +105,18 @@ class TestAccountAccountSom(testing.OOTestCase):
         Partner = self.openerp.pool.get('res.partner')
 
         Partner.write(self.cursor, self.uid, self.partner_id, dict(
-            ref = 'T666666', # Valid non member ref
+            ref='T666666',  # Valid non member ref
         ))
 
         Partner.become_member(self.cursor, self.uid, self.partner_id)
 
         partner = Partner.read(self.cursor, self.uid,
-            self.partner_id, ['ref'])
+                               self.partner_id, ['ref'])
 
         self.assertRegexpMatches(
             partner['ref'],
             'S[0-9]{6}',
         )
-
 
     from plantmeter.testutils import assertNsEqual
 
@@ -143,13 +138,12 @@ class TestAccountAccountSom(testing.OOTestCase):
         member.partner_id = member.partner_id[0]
 
         self.assertNsEqual(member, ns(
-            data_baixa_soci = False,
-            baixa = False,
-            id = member_id,
-            partner_id = self.partner_id,
-            )
+            data_baixa_soci=False,
+            baixa=False,
+            id=member_id,
+            partner_id=self.partner_id,
         )
-
+        )
 
     def test__become_member__whenMemberExist_keeps(self):
         Partner = self.openerp.pool.get('res.partner')
@@ -164,7 +158,6 @@ class TestAccountAccountSom(testing.OOTestCase):
         member = Member.read(self.cursor, self.uid, member_id, ['comment'])
         self.assertEqual(member['comment'], "")
 
-
     def test__become_member__whenMemberDroppedOut(self):
         Partner = self.openerp.pool.get('res.partner')
         Member = self.openerp.pool.get('somenergia.soci')
@@ -174,12 +167,12 @@ class TestAccountAccountSom(testing.OOTestCase):
             data_baixa_soci="2010-01-01",
             baixa=True,
             comment='',
-        ))        
+        ))
 
         member_id = Partner.become_member(self.cursor, self.uid, self.partner_id)
 
         self.assertEqual(old_member_id, member_id)
-        member = Member.read(self.cursor,self.uid, member_id, [
+        member = Member.read(self.cursor, self.uid, member_id, [
             'data_baixa_soci',
             'baixa',
             'comment',
@@ -190,9 +183,9 @@ class TestAccountAccountSom(testing.OOTestCase):
             id: {id}
             comment: "{today:%Y-%m-%d} Donat d'alta quan estava de baixa des de 2010-01-01"
             """.format(
-                id=member_id,
-                today=date.today(),
-            ))
+            id=member_id,
+            today=date.today(),
+        ))
 
     def test__become_member__whenMemberDroppedOut_withPreviousComment_appends(self):
         Partner = self.openerp.pool.get('res.partner')
@@ -207,21 +200,22 @@ class TestAccountAccountSom(testing.OOTestCase):
 
         member_id = Partner.become_member(self.cursor, self.uid, self.partner_id)
 
-        member = Member.read(self.cursor,self.uid, member_id, [
+        member = Member.read(self.cursor, self.uid, member_id, [
             'comment',
         ])
         self.assertEqual(member['comment'],
-            "Previous comment\n"
-            "{today:%Y-%m-%d} Donat d'alta quan estava de baixa des de 2010-01-01"
-            .format(today=date.today()),
-            )
+                         "Previous comment\n"
+                         "{today:%Y-%m-%d} Donat d'alta quan estava de baixa des de 2010-01-01"
+                         .format(today=date.today()),
+                         )
 
     def test__become_member__whenCommentExists_doNotInsertNewLine(self):
         Partner = self.openerp.pool.get('res.partner')
         Member = self.openerp.pool.get('somenergia.soci')
 
         old_member_id = Partner.become_member(self.cursor, self.uid, self.partner_id)
-        Partner.write(self.cursor, self.uid, self.partner_id, dict(comment="Previous comment"))
+        Partner.write(self.cursor, self.uid, self.partner_id,
+                      dict(comment="Previous comment"))
 
         member_id = Partner.become_member(self.cursor, self.uid, self.partner_id)
 
@@ -229,7 +223,6 @@ class TestAccountAccountSom(testing.OOTestCase):
 
         member = Member.read(self.cursor, self.uid, member_id, ['comment'])
         self.assertEqual(member['comment'], "Previous comment")
-
 
     def test__become_member__whenInactive(self):
         Partner = self.openerp.pool.get('res.partner')
@@ -261,10 +254,9 @@ class TestAccountAccountSom(testing.OOTestCase):
             baixa: false
             comment: "Previous comment\\n{today:%Y-%m-%d} Donat d'alta quan estava de baixa des de 2010-01-01"
         """.format(
-            id = member_id,
+            id=member_id,
             today=date.today(),
         ))
-
 
     def assertContractPeople(self, contract_id, member, owner, payer):
         Contract = self.openerp.pool.get('giscedata.polissa')
@@ -283,32 +275,33 @@ class TestAccountAccountSom(testing.OOTestCase):
             soci: {member}
         """.format(**locals()))
 
-
     def test__adopt_contracts_as_member__newMemberIsContractOwner(self):
         Partner = self.openerp.pool.get('res.partner')
         Contract = self.openerp.pool.get('giscedata.polissa')
 
         Contract.write(self.cursor, self.uid, self.contract1_id, dict(
-            titular = self.adopter,
-            pagador = self.barbara,
-            soci    = self.cecilia,
+            titular=self.adopter,
+            pagador=self.barbara,
+            soci=self.cecilia,
         ))
 
-        contract_ids = Partner.adopt_contracts_as_member(self.cursor, self.uid, self.adopter)
+        contract_ids = Partner.adopt_contracts_as_member(
+            self.cursor, self.uid, self.adopter)
 
         self.assertEqual(contract_ids, [self.contract1_id])
         self.assertContractPeople(
             self.contract1_id,
-            owner = self.adopter,
-            payer = self.barbara,
-            member = self.adopter,
+            owner=self.adopter,
+            payer=self.barbara,
+            member=self.adopter,
         )
 
     def test__adopt_contracts_as_member__withNoContractsRelated(self):
         Partner = self.openerp.pool.get('res.partner')
-        Contract = self.openerp.pool.get('giscedata.polissa')
+        self.openerp.pool.get('giscedata.polissa')
 
-        contract_ids = Partner.adopt_contracts_as_member(self.cursor, self.uid, self.adopter)
+        contract_ids = Partner.adopt_contracts_as_member(
+            self.cursor, self.uid, self.adopter)
 
         self.assertEqual(contract_ids, [])
 
@@ -317,19 +310,20 @@ class TestAccountAccountSom(testing.OOTestCase):
         Contract = self.openerp.pool.get('giscedata.polissa')
 
         Contract.write(self.cursor, self.uid, self.contract1_id, dict(
-            titular = self.barbara,
-            pagador = self.adopter,
-            soci    = self.cecilia,
+            titular=self.barbara,
+            pagador=self.adopter,
+            soci=self.cecilia,
         ))
 
-        contract_ids = Partner.adopt_contracts_as_member(self.cursor, self.uid, self.adopter)
+        contract_ids = Partner.adopt_contracts_as_member(
+            self.cursor, self.uid, self.adopter)
 
         self.assertEqual(contract_ids, [self.contract1_id])
         self.assertContractPeople(
             self.contract1_id,
-            owner = self.barbara,
-            payer = self.adopter,
-            member = self.adopter,
+            owner=self.barbara,
+            payer=self.adopter,
+            member=self.adopter,
         )
 
     def test__adopt_contracts_as_member__withManyContractsRelated(self):
@@ -337,31 +331,32 @@ class TestAccountAccountSom(testing.OOTestCase):
         Contract = self.openerp.pool.get('giscedata.polissa')
 
         Contract.write(self.cursor, self.uid, self.contract1_id, dict(
-            titular = self.barbara,
-            pagador = self.adopter,
-            soci    = self.cecilia,
+            titular=self.barbara,
+            pagador=self.adopter,
+            soci=self.cecilia,
         ))
 
         Contract.write(self.cursor, self.uid, self.contract2_id, dict(
-            titular = self.adopter,
-            pagador = self.barbara,
-            soci    = self.cecilia,
+            titular=self.adopter,
+            pagador=self.barbara,
+            soci=self.cecilia,
         ))
 
-        contract_ids = Partner.adopt_contracts_as_member(self.cursor, self.uid, self.adopter)
+        contract_ids = Partner.adopt_contracts_as_member(
+            self.cursor, self.uid, self.adopter)
 
         self.assertEqual(contract_ids, [self.contract1_id, self.contract2_id])
         self.assertContractPeople(
             self.contract1_id,
-            owner = self.barbara,
-            payer = self.adopter,
-            member = self.adopter,
+            owner=self.barbara,
+            payer=self.adopter,
+            member=self.adopter,
         )
         self.assertContractPeople(
             self.contract2_id,
-            owner = self.adopter,
-            payer = self.barbara,
-            member = self.adopter,
+            owner=self.adopter,
+            payer=self.barbara,
+            member=self.adopter,
         )
 
     def test__adopt_contracts_as_member__payerIsMember_keepsIt(self):
@@ -369,19 +364,20 @@ class TestAccountAccountSom(testing.OOTestCase):
         Contract = self.openerp.pool.get('giscedata.polissa')
 
         Contract.write(self.cursor, self.uid, self.contract1_id, dict(
-            titular = self.adopter,
-            pagador = self.barbara,
-            soci    = self.barbara,
+            titular=self.adopter,
+            pagador=self.barbara,
+            soci=self.barbara,
         ))
 
-        contract_ids = Partner.adopt_contracts_as_member(self.cursor, self.uid, self.adopter)
+        contract_ids = Partner.adopt_contracts_as_member(
+            self.cursor, self.uid, self.adopter)
 
         self.assertEqual(contract_ids, [])
         self.assertContractPeople(
             self.contract1_id,
-            owner = self.adopter,
-            payer = self.barbara,
-            member = self.barbara,
+            owner=self.adopter,
+            payer=self.barbara,
+            member=self.barbara,
         )
 
     def test__adopt_contracts_as_member__ownerIsMember_keepsIt(self):
@@ -389,40 +385,41 @@ class TestAccountAccountSom(testing.OOTestCase):
         Contract = self.openerp.pool.get('giscedata.polissa')
 
         Contract.write(self.cursor, self.uid, self.contract1_id, dict(
-            titular = self.barbara,
-            pagador = self.adopter,
-            soci    = self.barbara,
+            titular=self.barbara,
+            pagador=self.adopter,
+            soci=self.barbara,
         ))
 
-        contract_ids = Partner.adopt_contracts_as_member(self.cursor, self.uid, self.adopter)
+        contract_ids = Partner.adopt_contracts_as_member(
+            self.cursor, self.uid, self.adopter)
 
         self.assertEqual(contract_ids, [])
         self.assertContractPeople(
             self.contract1_id,
-            owner = self.barbara,
-            payer = self.adopter,
-            member = self.barbara,
+            owner=self.barbara,
+            payer=self.adopter,
+            member=self.barbara,
         )
-
 
     def test__adopt_contracts_as_member__withNoPreviousMember_doesNotCrash(self):
         Partner = self.openerp.pool.get('res.partner')
         Contract = self.openerp.pool.get('giscedata.polissa')
 
         Contract.write(self.cursor, self.uid, self.contract1_id, dict(
-            titular = self.barbara,
-            pagador = self.adopter,
-            soci    = False,
+            titular=self.barbara,
+            pagador=self.adopter,
+            soci=False,
         ))
 
-        contract_ids = Partner.adopt_contracts_as_member(self.cursor, self.uid, self.adopter)
+        contract_ids = Partner.adopt_contracts_as_member(
+            self.cursor, self.uid, self.adopter)
 
         self.assertEqual(contract_ids, [self.contract1_id])
         self.assertContractPeople(
             self.contract1_id,
-            owner =  self.barbara,
-            payer =  self.adopter,
-            member = self.adopter,
+            owner=self.barbara,
+            payer=self.adopter,
+            member=self.adopter,
         )
 
     def test__button_assign_soci_seq__createsMember(self):
@@ -447,11 +444,11 @@ class TestAccountAccountSom(testing.OOTestCase):
         member.partner_id = member.partner_id[0]
 
         self.assertNsEqual(member, ns(
-            data_baixa_soci = False,
-            baixa = False,
-            id = member_id,
-            partner_id = self.partner_id,
-            )
+            data_baixa_soci=False,
+            baixa=False,
+            id=member_id,
+            partner_id=self.partner_id,
+        )
         )
 
     def test__button_assign_soci_seq__adoptsContract(self):
@@ -459,18 +456,18 @@ class TestAccountAccountSom(testing.OOTestCase):
         Contract = self.openerp.pool.get('giscedata.polissa')
 
         Contract.write(self.cursor, self.uid, self.contract1_id, dict(
-            titular = self.adopter,
-            pagador = self.cecilia,
-            soci    = self.barbara,
+            titular=self.adopter,
+            pagador=self.cecilia,
+            soci=self.barbara,
         ))
 
         Partner.button_assign_soci_seq(self.cursor, self.uid, self.adopter)
 
         self.assertContractPeople(
             self.contract1_id,
-            owner = self.adopter,
-            payer = self.cecilia,
-            member = self.adopter,
+            owner=self.adopter,
+            payer=self.cecilia,
+            member=self.adopter,
         )
 
     def test__button_assign_soci_seq__withManyMembers(self):
@@ -478,15 +475,15 @@ class TestAccountAccountSom(testing.OOTestCase):
         Contract = self.openerp.pool.get('giscedata.polissa')
 
         Contract.write(self.cursor, self.uid, self.contract1_id, dict(
-            titular = self.adopter,
-            pagador = self.cecilia,
-            soci    = self.barbara,
+            titular=self.adopter,
+            pagador=self.cecilia,
+            soci=self.barbara,
         ))
 
         Contract.write(self.cursor, self.uid, self.contract2_id, dict(
-            titular = self.cecilia,
-            pagador = self.cecilia,
-            soci    = self.barbara,
+            titular=self.cecilia,
+            pagador=self.cecilia,
+            soci=self.barbara,
         ))
 
         Partner.button_assign_soci_seq(self.cursor, self.uid, [
@@ -496,16 +493,13 @@ class TestAccountAccountSom(testing.OOTestCase):
 
         self.assertContractPeople(
             self.contract1_id,
-            owner = self.adopter,
-            payer = self.cecilia,
-            member = self.adopter,
+            owner=self.adopter,
+            payer=self.cecilia,
+            member=self.adopter,
         )
         self.assertContractPeople(
             self.contract2_id,
-            owner = self.cecilia,
-            payer = self.cecilia,
-            member = self.cecilia,
+            owner=self.cecilia,
+            payer=self.cecilia,
+            member=self.cecilia,
         )
-
-
-

@@ -1,5 +1,6 @@
 from ..component_utils import dateformat
 
+
 class InvoiceF1Unsupported:
     def __init__(self):
         pass
@@ -8,7 +9,7 @@ class InvoiceF1Unsupported:
 
         result = {}
 
-        #camps obligats per estructura
+        # camps obligats per estructura
         result['type'] = 'InvoiceF1Unsupported'
         result['date'] = invoice.date_invoice
         result['date_final'] = invoice.data_final

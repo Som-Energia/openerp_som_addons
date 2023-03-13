@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import tools
 import base64
 import csv
 import StringIO
@@ -11,7 +10,8 @@ from tools.translate import _
 
 HEADERS = ['NOMBRE_CORTO', 'NOMBRE_COMPLETO', 'MOVIL', 'EMAIL', 'ES_EMPRESA',
            'CODIGO_CLIENTE', 'TITULO', 'CONCEPTO', 'FECHA_LIMITE', 'IMPORTE',
-           'IDIOMA','CODIGO_TRANSACCION', 'DIRECCION', 'CODIGO_POSTAL', 'CIUDAD', 'PAIS']
+           'IDIOMA', 'CODIGO_TRANSACCION', 'DIRECCION', 'CODIGO_POSTAL', 'CIUDAD', 'PAIS']
+
 
 class WizardExportReturnedInvoices(osv.osv_memory):
     _name = 'wizard.export.returned.invoices'
@@ -24,8 +24,8 @@ class WizardExportReturnedInvoices(osv.osv_memory):
         res_partner_obj = self.pool.get('res.partner')
         imd_obj = self.pool.get('ir.model.data')
         default_process = imd_obj.get_object_reference(cursor, uid,
-                'account_invoice_pending',
-                'default_pending_state_process')[1]
+                                                       'account_invoice_pending',
+                                                       'default_pending_state_process')[1]
 
         llistat = []
 
@@ -36,7 +36,7 @@ class WizardExportReturnedInvoices(osv.osv_memory):
             nom_curt = res_partner_obj.separa_cognoms(cursor, uid, nom_sencer)['nom']
             email = partner.www_email
             es_empresa = 1 if factura.pending_state.process_id.id == default_process else 0
-            codi_client = partner.vat.replace('ES','')
+            codi_client = partner.vat.replace('ES', '')
             titol = "Factura {} C.{}".format(factura.number, factura.polissa_id.name)
             concepte = "Del {} al {}".format(factura.data_inici, factura.data_final)
             data_limit = datetime.strftime(date.today() + timedelta(days=15), '%Y-%m-%d')
@@ -53,8 +53,9 @@ class WizardExportReturnedInvoices(osv.osv_memory):
                 if not telefon:
                     raise
                 telefon = '34' + re.sub('[\W_]+', '', telefon)
-            except Exception as e:
-                raise osv.except_osv(_('DataError'), _("Error en trobar el telefon pel partner {}".format(nom_sencer)))
+            except Exception:
+                raise osv.except_osv(_('DataError'), _(
+                    "Error en trobar el telefon pel partner {}".format(nom_sencer)))
 
             llistat.append((nom_curt, nom_sencer, telefon, email, es_empresa, codi_client,
                            titol, concepte, data_limit, import_factura, idioma, codi_transaccio, direccio, codi_postal, ciutat, pais))
@@ -70,7 +71,8 @@ class WizardExportReturnedInvoices(osv.osv_memory):
 
         mfile = base64.b64encode(output.getvalue())
 
-        filename = ("returned_invoices_export_%s.csv" % datetime.strftime(datetime.today(), u'%Y%m%d'))
+        filename = ("returned_invoices_export_%s.csv" %
+                    datetime.strftime(datetime.today(), u'%Y%m%d'))
         wizard.write({'name': filename, 'file': mfile, 'state': 'done'})
 
     _columns = {
@@ -81,5 +83,6 @@ class WizardExportReturnedInvoices(osv.osv_memory):
     _defaults = {
         'state': lambda *a: 'init',
     }
+
 
 WizardExportReturnedInvoices()

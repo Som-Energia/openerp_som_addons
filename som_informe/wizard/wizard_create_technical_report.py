@@ -5,7 +5,7 @@ from c2c_webkit_report import webkit_report
 from report import report_sxw
 from tools import config
 import tempfile
-from datetime import date, datetime
+from datetime import date
 from yamlns import namespace as ns
 
 COLLECT_INVOICE_SELECTION = [
@@ -14,37 +14,38 @@ COLLECT_INVOICE_SELECTION = [
 ]
 
 lang_filename = {
-    'ca_ES' : 'CAT',
-    'es_ES' : 'ES',
+    'ca_ES': 'CAT',
+    'es_ES': 'ES',
 }
 
 folder_data = {
-    'R1' : {
-        'config_id' : 'google_drive_folder_technical_report_R1',
-        'config_value' : 'subfolder_R1_hash',
-        'folder_name' : 'Informes de Reclamacions'},
-    'ATR' : {
-        'config_id' : 'google_drive_folder_technical_report_ATR',
-        'config_value' : 'subfolder_ATR_hash',
-        'folder_name' : "Informes d'ATR"},
-    'FACT' : {
-        'config_id' : 'google_drive_folder_technical_report_FACT',
-        'config_value' : 'subfolder_FACT_hash',
-        'folder_name' : 'Informes de Facturació'},
-    'COBR' : {
-        'config_id' : 'google_drive_folder_technical_report_COBR',
-        'config_value' : 'subfolder_COBR_hash',
-        'folder_name' : 'Informes de Cobraments'},
-    'ERROR':{
-        'config_id' : 'google_drive_folder_technical_report',
-        'config_value' : 'folder_hash',
-        'folder_name' : 'Informes ERROR'},
+    'R1': {
+        'config_id': 'google_drive_folder_technical_report_R1',
+        'config_value': 'subfolder_R1_hash',
+        'folder_name': 'Informes de Reclamacions'},
+    'ATR': {
+        'config_id': 'google_drive_folder_technical_report_ATR',
+        'config_value': 'subfolder_ATR_hash',
+        'folder_name': "Informes d'ATR"},
+    'FACT': {
+        'config_id': 'google_drive_folder_technical_report_FACT',
+        'config_value': 'subfolder_FACT_hash',
+        'folder_name': 'Informes de Facturació'},
+    'COBR': {
+        'config_id': 'google_drive_folder_technical_report_COBR',
+        'config_value': 'subfolder_COBR_hash',
+        'folder_name': 'Informes de Cobraments'},
+    'ERROR': {
+        'config_id': 'google_drive_folder_technical_report',
+        'config_value': 'folder_hash',
+        'folder_name': 'Informes ERROR'},
 }
 
 STATES = [
     ('init', 'Estat Inicial'),
     ('finished', 'Estat Final')
 ]
+
 
 class report_webkit_html(report_sxw.rml_parse):
     def __init__(self, cursor, uid, name, context):
@@ -56,23 +57,24 @@ class report_webkit_html(report_sxw.rml_parse):
             'addons_path': config['addons_path'],
         })
 
+
 class WizardCreateTechnicalReport(osv.osv_memory):
     _name = 'wizard.create.technical.report'
 
     _columns = {
-        #Header
+        # Header
         'state': fields.selection(STATES, _(u'Estat del wizard de imprimir report')),
         'polissa': fields.many2one('giscedata.polissa', 'Contracte', required=True),
-        'lang':  fields.many2one('res.lang', 'Language', required=True, select=1, help="Llengua de l'informe tècnic"),
+        'lang': fields.many2one('res.lang', 'Language', required=True, select=1, help="Llengua de l'informe tècnic"),
         'date_from': fields.date('Data desde'),
         'date_to': fields.date('Data fins'),
-        #Reclama block
+        # Reclama block
         'mostra_reclama': fields.boolean('Mostra bloc de Reclama'),
-        #Factura block
+        # Factura block
         'mostra_factura': fields.boolean('Mostra bloc de Factura'),
         'mostra_quadre_resum_lectures': fields.boolean('Mostra quadre resum lectures'),
         'mostra_quadre_resum_factures': fields.boolean('Mostra quadre resum factures'),
-        #Gestió de Contractes block
+        # Gestió de Contractes block
         'mostra_A3': fields.boolean('A3'),
         'mostra_B1': fields.boolean('B1'),
         'mostra_B2': fields.boolean('B2'),
@@ -81,7 +83,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         'mostra_D1': fields.boolean('D1'),
         'mostra_E1': fields.boolean('E1'),
         'mostra_M1': fields.boolean('M1'),
-        #Gestió de cobraments block
+        # Gestió de cobraments block
         'mostra_cobraments': fields.boolean(u'Mostra bloc de Gestió de Cobraments'),
         'mostrar_cobraments_factures': fields.selection(COLLECT_INVOICE_SELECTION, string=u'Factures a mostrar'),
     }
@@ -103,7 +105,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         subfolder = 'ERROR'
         atr_seleccionat = False
         if wiz.mostra_A3 or wiz.mostra_B1 or wiz.mostra_B2 or wiz.mostra_C1 or \
-           wiz.mostra_C2 or wiz.mostra_D1 or wiz.mostra_E1 or wiz.mostra_M1 :
+           wiz.mostra_C2 or wiz.mostra_D1 or wiz.mostra_E1 or wiz.mostra_M1:
             atr_seleccionat = True
 
         if wiz.mostra_reclama and not atr_seleccionat:
@@ -119,16 +121,17 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             subfolder = 'ERROR'
 
         erp_config = self.pool.get('res.config')
-        folder_hash = erp_config.get(cursor, uid, folder_data[subfolder]['config_id'], folder_data[subfolder]['config_value'])
+        folder_hash = erp_config.get(
+            cursor, uid, folder_data[subfolder]['config_id'], folder_data[subfolder]['config_value'])
         folder_name = folder_data[subfolder]['folder_name']
 
         return folder_hash, folder_name
 
     def generate_report(self, cursor, uid, ids, context=None):
-        if not context: # force use the selected language in the report
+        if not context:  # force use the selected language in the report
             context = {}
 
-        lang_id = self.read(cursor, uid, ids[0],['lang'])[0]['lang']
+        lang_id = self.read(cursor, uid, ids[0], ['lang'])[0]['lang']
         lang_obj = self.pool.get('res.lang')
         lang_code = lang_obj.read(cursor, uid, lang_id, ['code'])['code']
         context['lang'] = lang_code
@@ -140,7 +143,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             'id': wiz.id,
             'report_type': 'html2html',
         }
-        #Generate technical report
+        # Generate technical report
         report_printer = webkit_report.WebKitParser(
             'report.som.informe.report',
             'wizard.create.technical.report',
@@ -152,27 +155,29 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             context=context
         )
 
-        #Upload document to Drive
+        # Upload document to Drive
         gdm_obj = self.pool.get('google.drive.manager')
         wiz = self.browse(cursor, uid, ids[0], context=context)
 
         folder_hash, folder_name = self.get_folder_data(cursor, uid, wiz)
 
-        file_name = '{}_informe_{}_{}'.format(str(date.today()), folder_name, lang_filename[lang_code])
+        file_name = '{}_informe_{}_{}'.format(
+            str(date.today()), folder_name, lang_filename[lang_code])
 
         with tempfile.NamedTemporaryFile(suffix='.html', delete=False) as t:
             t.write(document_binary[0])
             t.flush()
-            g_response = gdm_obj.uploadMediaToDrive(cursor, uid, file_name, t.name, folder_hash)
+            g_response = gdm_obj.uploadMediaToDrive(
+                cursor, uid, file_name, t.name, folder_hash)
 
         attach_obj = self.pool.get('ir.attachment')
 
         doc_id = attach_obj.create(cursor, uid, {
-            'res_model':'giscedata.polissa',
+            'res_model': 'giscedata.polissa',
             'res_id': wiz.polissa.id,
             'name': g_response['name'],
             'link': 'https://docs.google.com/document/d/' + g_response['id'],
-            }, context=context)
+        }, context=context)
 
         return {
             'domain': "[('id','=', %s)]" % str(doc_id),
@@ -216,16 +221,17 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         context['has_atr'] = len(seleccionats) > 0
         if seleccionats:
             search_params = [
-                ('cups_polissa_id', '=' , wiz.polissa.id),
+                ('cups_polissa_id', '=', wiz.polissa.id),
                 ('proces_id.name', 'in', seleccionats),
-                ]
+            ]
             if wiz.date_from:
                 search_params.append(('data_sollicitud', '>=', wiz.date_from))
             if wiz.date_to:
                 search_params.append(('data_sollicitud', '<=', wiz.date_to))
             sw_obj = self.pool.get('giscedata.switching')
             sw_ids = sw_obj.search(cursor, uid, search_params)
-            result_crono.extend(self.extract_switching_metadata(cursor, uid, sw_ids, context))
+            result_crono.extend(self.extract_switching_metadata(
+                cursor, uid, sw_ids, context))
 
         if wiz.mostra_factura or wiz.mostra_quadre_resum_lectures or wiz.mostra_quadre_resum_factures:
             fact_obj = wiz.pool.get('giscedata.facturacio.factura')
@@ -235,47 +241,60 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             if wiz.date_from:
                 search_parameters.append('|')
                 search_parameters.append(('data_inici', '>=', wiz.date_from))
-                search_parameters.append(('date_invoice','>=',wiz.date_from))
+                search_parameters.append(('date_invoice', '>=', wiz.date_from))
             if wiz.date_to:
                 search_parameters.append('|')
                 search_parameters.append(('data_final', '<=', wiz.date_to))
-                search_parameters.append(('date_invoice','<=',wiz.date_to))
+                search_parameters.append(('date_invoice', '<=', wiz.date_to))
             invoice_ids = fact_obj.search(cursor, uid, search_parameters)
             if wiz.mostra_factura:
-                result_crono.extend(self.extract_invoice_metadata(cursor, uid, wiz, invoice_ids, context))
+                result_crono.extend(self.extract_invoice_metadata(
+                    cursor, uid, wiz, invoice_ids, context))
             if wiz.mostra_quadre_resum_lectures:
-                quadre_lectures.extend(self.extract_readings_table_metadata(cursor, uid, wiz, invoice_ids , context))
+                quadre_lectures.extend(self.extract_readings_table_metadata(
+                    cursor, uid, wiz, invoice_ids, context))
             if wiz.mostra_quadre_resum_factures:
-                quadre_factures.extend(self.extract_invoices_table_metadata(cursor, uid, wiz, invoice_ids , context))
+                quadre_factures.extend(self.extract_invoices_table_metadata(
+                    cursor, uid, wiz, invoice_ids, context))
 
         if result_crono:
-            result_atr_head = self.extract_components_metadata(cursor, uid, wiz, ['atrHeader'], context)
-            result_atr_foot = self.extract_components_metadata(cursor, uid, wiz, ['atrFooter'], context)
-            result_crono = sorted(result_crono, key=lambda k: (k['date'], k['date_final']))
+            result_atr_head = self.extract_components_metadata(
+                cursor, uid, wiz, ['atrHeader'], context)
+            result_atr_foot = self.extract_components_metadata(
+                cursor, uid, wiz, ['atrFooter'], context)
+            result_crono = sorted(
+                result_crono, key=lambda k: (k['date'], k['date_final']))
             result_crono = result_atr_head + result_crono + result_atr_foot
 
         result_cobra = []
         if wiz.mostra_cobraments:
-            components_cobra = ['CollectHeader', 'CollectDetailsInvoices', 'CollectExpectedCutOffDate', 'CollectContractData']
-            result_cobra = self.extract_components_metadata(cursor, uid, wiz, components_cobra, context)
+            components_cobra = ['CollectHeader', 'CollectDetailsInvoices',
+                                'CollectExpectedCutOffDate', 'CollectContractData']
+            result_cobra = self.extract_components_metadata(
+                cursor, uid, wiz, components_cobra, context)
 
-        result_note = self.extract_components_metadata(cursor, uid, wiz, ['note'], context)
-        result_ini = self.extract_components_metadata(cursor, uid, wiz, ['header'], context)
-        result_end = self.extract_components_metadata(cursor, uid, wiz, ['footer'], context)
+        result_note = self.extract_components_metadata(
+            cursor, uid, wiz, ['note'], context)
+        result_ini = self.extract_components_metadata(
+            cursor, uid, wiz, ['header'], context)
+        result_end = self.extract_components_metadata(
+            cursor, uid, wiz, ['footer'], context)
 
-        result = result_note + result_ini + result_crono + result_cobra + quadre_lectures + quadre_factures + result_end
+        result = result_note + result_ini + result_crono + \
+            result_cobra + quadre_lectures + quadre_factures + result_end
         return [ns(item) for item in result]
 
     # data extractors
     def factory_metadata_extractor(self, component_name):
-        exec("from ..report.components."+component_name+" import "+component_name+";extractor = "+component_name+"."+component_name+"()")
+        exec("from ..report.components." + component_name + " import "
+             + component_name + ";extractor = " + component_name + "." + component_name + "()")
         return extractor
 
     def metadata_extractor(self, cursor, uid, step, context=None):
-        r_model,r_id = step.pas_id.split(',')
+        r_model, r_id = step.pas_id.split(',')
         model_obj = self.pool.get(r_model)
         pas = model_obj.browse(cursor, uid, int(r_id), context=context)
-        component_name = step.proces_id.name+step.step_id.name
+        component_name = step.proces_id.name + step.step_id.name
         extractor = self.factory_metadata_extractor(component_name)
         return extractor.get_data(self, cursor, uid, pas)
 
@@ -338,18 +357,19 @@ class WizardCreateTechnicalReport(osv.osv_memory):
                     component_name = 'InvoiceF1A'
                 elif invoice.tipo_rectificadora in ('C'):
                     component_name = 'InvoiceF1C'
-                elif invoice.tipo_rectificadora == 'BRA': #BRA invent ERP que no es vol que apareixi
+                elif invoice.tipo_rectificadora == 'BRA':  # BRA invent ERP que no es vol que apareixi
                     component_name = None
-                else: # B RA
+                else:  # B RA
                     f1_obj = wiz.pool.get('giscedata.facturacio.importacio.linia')
                     search_params = [
                         ('cups_id.id', '=', invoice.cups_id.id),
                         ('invoice_number_text', '=', invoice.origin),
                     ]
-                    f1_id = f1_obj.search(cursor,uid,search_params)
-                    if f1_id: #factura amb F1
+                    f1_id = f1_obj.search(cursor, uid, search_params)
+                    if f1_id:  # factura amb F1
                         f1 = f1_obj.browse(cursor, uid, f1_id[0])
-                        if f1.type_factura == 'R': #and invoice.ref.rectificative_type in ('N','G'): # F1 tipus R que rectifica una factura tipus N o G
+                        # and invoice.ref.rectificative_type in ('N','G'): # F1 tipus R que rectifica una factura tipus N o G
+                        if f1.type_factura == 'R':
                             component_name = 'InvoiceF1R'
                         else:
                             component_name = 'InvoiceF1Unsupported'
@@ -377,8 +397,11 @@ class WizardCreateTechnicalReport(osv.osv_memory):
 
     def get_columns(self, cursor, uid):
         pol_obj = self.pool.get('giscedata.polissa')
-        no_function_fields = [field for field in pol_obj._columns if not isinstance(pol_obj._columns[field], (fields.function, fields.related, fields.property))]
-        function_fields = [field for field in pol_obj._columns if isinstance(pol_obj._columns[field], (fields.function, fields.related, fields.property))]
+        no_function_fields = [field for field in pol_obj._columns if not isinstance(
+            pol_obj._columns[field], (fields.function, fields.related, fields.property))]
+        function_fields = [field for field in pol_obj._columns if isinstance(
+            pol_obj._columns[field], (fields.function, fields.related, fields.property))]
         return function_fields, no_function_fields
+
 
 WizardCreateTechnicalReport()

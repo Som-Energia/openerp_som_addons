@@ -5,7 +5,7 @@ from datetime import datetime
 
 from ..giscedata_polissa import PERMISSION_SELECTION, ERROR_CODES
 AVAILABLE_STATES = [
-    ('init','Init'),
+    ('init', 'Init'),
     ('admin_specified', 'Nova administradora OV especificada'),
     ('done', 'Done')
 ]
@@ -16,10 +16,10 @@ class WizardModifyOVAdmin(osv.osv_memory):
     _name = 'wizard.modify.ov.admin'
 
     def onchange_administradora(self, cursor, uid, ids, administradora_id):
-            res = {'value': {"state": "init"}}
-            if administradora_id:
-                res = {'value': {"state": "admin_specified"}}
-            return res
+        res = {'value': {"state": "init"}}
+        if administradora_id:
+            res = {'value': {"state": "admin_specified"}}
+        return res
 
     def default_get(self, cr, uid, fields, context={}):
         active_id = context.get('active_id', False)
@@ -42,9 +42,9 @@ class WizardModifyOVAdmin(osv.osv_memory):
     def annotate_legal_representative(self, cursor, uid, titular_id, repersentative_id):
         res_partner_obj = self.pool.get('res.partner')
         admin_comment = res_partner_obj.read(cursor, uid, titular_id,
-            ['comment']).get("comment", "")
+                                             ['comment']).get("comment", "")
         representative_vals = res_partner_obj.read(cursor, uid, repersentative_id,
-            ['name', 'vat'])
+                                                   ['name', 'vat'])
         data = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         message = u"Durant el procés d'assignació d'Administradora OV, aquest " +\
             u"partner va declarar en {} que el partner ".format(data) +\
@@ -54,10 +54,10 @@ class WizardModifyOVAdmin(osv.osv_memory):
         if admin_comment:
             message = admin_comment + "\n\n" + message
         res_partner_obj.write(cursor, uid, titular_id,
-            {"comment": message})
+                              {"comment": message})
 
     def create_admin_notification_modification(self, cursor, uid, partner_id,
-            ov_admin_modification, notification_receptor, semantic_id):
+                                               ov_admin_modification, notification_receptor, semantic_id):
         if partner_id is None:
             return
 
@@ -74,7 +74,7 @@ class WizardModifyOVAdmin(osv.osv_memory):
             })
 
         admin_noti_obj.write(cursor, uid, notification_receptor[partner_id],
-            {'modification': [(4, ov_admin_modification)]})
+                             {'modification': [(4, ov_admin_modification)]})
 
     def action_assignar_administradora(self, cursor, uid, ids, context=None):
         active_ids = context.get('active_ids', [])
@@ -114,7 +114,7 @@ class WizardModifyOVAdmin(osv.osv_memory):
 
             # perform assignment
             result = pol.add_contract_administrator(new_administradora_id,
-                    administradora_permissions, is_legal_representative=is_legal_representative)
+                                                    administradora_permissions, is_legal_representative=is_legal_representative)
 
             error = result.get('error', None) is not None
 
@@ -163,14 +163,15 @@ class WizardModifyOVAdmin(osv.osv_memory):
 
             # create notifications and associate with modification
             self.create_admin_notification_modification(cursor, uid, titular_id,
-                ov_admin_modification, notification_receptor, 'email_assignacio_a_titular')
+                                                        ov_admin_modification, notification_receptor, 'email_assignacio_a_titular')
             self.create_admin_notification_modification(cursor, uid, old_administradora_id,
-                ov_admin_modification, notification_receptor, 'email_desassignacio_a_administradora')
+                                                        ov_admin_modification, notification_receptor, 'email_desassignacio_a_administradora')
             self.create_admin_notification_modification(cursor, uid, new_administradora_id,
-                ov_admin_modification, notification_receptor, 'email_assignacio_a_administradora')
+                                                        ov_admin_modification, notification_receptor, 'email_assignacio_a_administradora')
 
             if is_legal_representative and titular_id not in titulars_anotats:
-                self.annotate_legal_representative(cursor, uid, titular_id, new_administradora_id)
+                self.annotate_legal_representative(
+                    cursor, uid, titular_id, new_administradora_id)
                 titulars_anotats.append(titular_id)
 
         self.write(cursor, uid, ids, {
@@ -252,9 +253,9 @@ class WizardModifyOVAdmin(osv.osv_memory):
 
             # create notifications and associate with modification
             self.create_admin_notification_modification(cursor, uid, titular_id,
-                ov_admin_modification, notification_receptor, 'email_desassignacio_a_titular')
+                                                        ov_admin_modification, notification_receptor, 'email_desassignacio_a_titular')
             self.create_admin_notification_modification(cursor, uid, old_administradora_id,
-                ov_admin_modification, notification_receptor, 'email_desassignacio_a_administradora')
+                                                        ov_admin_modification, notification_receptor, 'email_desassignacio_a_administradora')
 
         self.write(cursor, uid, ids, {
             "state": "done",
@@ -279,9 +280,9 @@ class WizardModifyOVAdmin(osv.osv_memory):
         ),
         'is_legal_representative': fields.boolean(
             'Representant legal',
-            help=u"Si s'activa, es deixarà una nota a la fitxa del titular amb el nom i VAT " +\
-                u"de l'Administradora OV, especificant que aquesta última és la representant " +\
-                u"legal del titular."
+            help=u"Si s'activa, es deixarà una nota a la fitxa del titular amb el nom i VAT "
+            + u"de l'Administradora OV, especificant que aquesta última és la representant "
+            + u"legal del titular."
         ),
         'administradora_permissions': fields.selection(
             PERMISSION_SELECTION,
@@ -298,5 +299,6 @@ class WizardModifyOVAdmin(osv.osv_memory):
         ),
         'info': fields.text('Info'),
     }
+
 
 WizardModifyOVAdmin()

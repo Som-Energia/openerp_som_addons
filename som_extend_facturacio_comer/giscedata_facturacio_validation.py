@@ -57,5 +57,5 @@ class GiscedataFacturacioValidationValidator(osv.osv):
 
         return None
 
-GiscedataFacturacioValidationValidator()
 
+GiscedataFacturacioValidationValidator()

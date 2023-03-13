@@ -18,8 +18,10 @@ class GiscedataSwitching(osv.osv):
         if not context:
             context = {}
         with PatchNewCursors():
-            res = super(GiscedataSwitching, self).importar_xml(cursor, uid, data, fname, context)
+            res = super(GiscedataSwitching, self).importar_xml(
+                cursor, uid, data, fname, context)
         return res
+
 
 GiscedataSwitching()
 
@@ -27,7 +29,7 @@ GiscedataSwitching()
 class TestsAutoActiva(testing.OOTestCase):
     def setUp(self):
         fact_obj = self.model('giscedata.facturacio.factura')
-        line_obj = self.model('giscedata.facturacio.factura.linia')
+        self.model('giscedata.facturacio.factura.linia')
         warn_obj = self.model(
             'giscedata.facturacio.validation.warning.template'
         )
@@ -60,8 +62,8 @@ class TestsAutoActiva(testing.OOTestCase):
         pricelist_obj = self.openerp.pool.get('product.pricelist')
         pricelists_ids = pricelist_obj.search(cursor, uid, [])
         tarif_obj.write(
-               cursor, uid, tarifas_ids,
-               {'llistes_preus_comptatibles': [(6, 0, pricelists_ids)]}
+            cursor, uid, tarifas_ids,
+            {'llistes_preus_comptatibles': [(6, 0, pricelists_ids)]}
         )
 
     def model(self, model_name):
@@ -203,7 +205,7 @@ class TestsAutoActiva(testing.OOTestCase):
 
         # creeem el pas
         pas_id = swpas_obj.get_step(cursor, uid, step_name, proces_name)
-        #Creant info ja crea automaticament tota la info del pas
+        # Creant info ja crea automaticament tota la info del pas
         info_vals = {
             'sw_id': sw_id,
             'proces_id': proces_id,
@@ -243,11 +245,11 @@ class TestsAutoActiva(testing.OOTestCase):
         if substep:
             substep_obj = self.model('giscedata.subtipus.reclamacio')
             substep_ids = substep_obj.search(
-                cursor, uid, [('name','=',substep)])
+                cursor, uid, [('name', '=', substep)])
             if substep_ids:
                 step_obj.write(cursor, uid, step_id, {
                     'subtipus_id': substep_ids[0],
-                    })
+                })
 
         # refresh after modifications
         step_d = step_obj.browse(cursor, uid, step_id)
@@ -267,7 +269,8 @@ class TestsAutoActiva(testing.OOTestCase):
         # pol.distribuidora.write({'ref': 4444})
         # Creem un cas ATC
         ctx = {'active_ids': [pol_id], 'from_model': 'giscedata.polissa'}
-        subtipus_id = self.openerp.pool.get("giscedata.subtipus.reclamacio").search(cursor, uid, [('name', '=', '009')])[0]
+        subtipus_id = self.openerp.pool.get("giscedata.subtipus.reclamacio").search(
+            cursor, uid, [('name', '=', '009')])[0]
         wiz_id = wiz_o.create(cursor, uid, {'subtipus_id': subtipus_id}, context=ctx)
         wiz_o.create_atc_case(cursor, uid, [wiz_id], pol_obj._name, ctx)
         wiz = wiz_o.browse(cursor, uid, wiz_id)
@@ -310,7 +313,8 @@ class TestsAutoActiva(testing.OOTestCase):
         self.assertIn("Data Creació:", last_description)
         self.assertIn("Comentaris: TEST", last_description)
         self.assertIn("Documents: Sense documents adjunts", last_description)
-        self.assertIn("Informacio Adicional: 02-009: DISCONFORMIDAD CON LECTURA FACTURADA", last_description)
+        self.assertIn(
+            "Informacio Adicional: 02-009: DISCONFORMIDAD CON LECTURA FACTURADA", last_description)
 
         data_old = '<FechaSolicitud>2016-09-29T09:39:08'
         r1_xml_path = get_module_resource(
@@ -320,7 +324,8 @@ class TestsAutoActiva(testing.OOTestCase):
         activations_ids = act_obj.search(
             cursor, uid, [], context={"active_test": False}
         )
-        act_obj.write(cursor, uid, activations_ids, {'active': True, 'is_automatic': True})
+        act_obj.write(cursor, uid, activations_ids, {
+                      'active': True, 'is_automatic': True})
 
         imd_obj = self.openerp.pool.get('ir.model.data')
 
@@ -332,7 +337,7 @@ class TestsAutoActiva(testing.OOTestCase):
         ddd = part_obj.search(cursor, uid, [('ref', '=', '4321')])
 
         activ_custom_id = imd_obj.get_object_reference(
-                cursor, uid, 'som_switching', 'sw_act_r105_cac'
+            cursor, uid, 'som_switching', 'sw_act_r105_cac'
         )[1]
 
         self.assertIn(activ_custom_id, activations_ids)
@@ -428,7 +433,8 @@ class TestsAutoActiva(testing.OOTestCase):
         pol = pol_obj.browse(cursor, uid, pol_id)
         # pol.distribuidora.write({'ref': 4444})
         # Creem un cas ATC
-        subtipus_id = self.openerp.pool.get("giscedata.subtipus.reclamacio").search(cursor, uid, [('name', '=', '009')])[0]
+        subtipus_id = self.openerp.pool.get("giscedata.subtipus.reclamacio").search(
+            cursor, uid, [('name', '=', '009')])[0]
         ctx = {'active_ids': [pol_id], 'from_model': 'giscedata.polissa'}
         wiz_id = wiz_o.create(cursor, uid, {'subtipus_id': subtipus_id}, context=ctx)
         wiz_o.create_atc_case(cursor, uid, [wiz_id], pol_obj._name, ctx)
@@ -472,7 +478,8 @@ class TestsAutoActiva(testing.OOTestCase):
         self.assertIn("Data Creació:", last_description)
         self.assertIn("Comentaris: TEST", last_description)
         self.assertIn("Documents: Sense documents adjunts", last_description)
-        self.assertIn("Informacio Adicional: 02-009: DISCONFORMIDAD CON LECTURA FACTURADA", last_description)
+        self.assertIn(
+            "Informacio Adicional: 02-009: DISCONFORMIDAD CON LECTURA FACTURADA", last_description)
 
         data_old = '<FechaSolicitud>2016-09-29T09:39:08'
         r1_xml_path = get_module_resource(
@@ -482,7 +489,8 @@ class TestsAutoActiva(testing.OOTestCase):
         activations_ids = act_obj.search(
             cursor, uid, [], context={"active_test": False}
         )
-        act_obj.write(cursor, uid, activations_ids, {'active': True, 'is_automatic': True})
+        act_obj.write(cursor, uid, activations_ids, {
+                      'active': True, 'is_automatic': True})
 
         imd_obj = self.openerp.pool.get('ir.model.data')
 
@@ -494,7 +502,7 @@ class TestsAutoActiva(testing.OOTestCase):
         ddd = part_obj.search(cursor, uid, [('ref', '=', '4321')])
 
         activ_custom_id = imd_obj.get_object_reference(
-                cursor, uid, 'som_switching', 'sw_act_r105_cac'
+            cursor, uid, 'som_switching', 'sw_act_r105_cac'
         )[1]
 
         self.assertIn(activ_custom_id, activations_ids)
@@ -631,20 +639,25 @@ class TestsAutoActiva(testing.OOTestCase):
         act_ids = act_o.search(cursor, uid, [], context={'active_test': False})
         act_o.write(cursor, uid, act_ids, {'active': True})
 
-        cac, r1 = self.crear_r1_i_cac_relacionats(self.txn, cursor, uid, context={'atc_vals': {'tancar_cac_al_finalitzar_r1': True}})
+        cac, r1 = self.crear_r1_i_cac_relacionats(self.txn, cursor, uid, context={
+                                                  'atc_vals': {'tancar_cac_al_finalitzar_r1': True}})
         self.assertEqual(cac.state, "pending")
         self.assertEqual(cac.time_tracking_id.code, "1")
         self.assertTrue(cac.tancar_cac_al_finalitzar_r1)
 
         r1.write({'codi_sollicitud': '201602231255'})
-        r1_xml_path = get_module_resource('giscedata_switching', 'tests', 'fixtures', 'r102_new.xml')
+        r1_xml_path = get_module_resource(
+            'giscedata_switching', 'tests', 'fixtures', 'r102_new.xml')
         with open(r1_xml_path, 'r') as f:
             r102_xml = f.read()
-            r102_xml = r102_xml.replace("CodigoREEEmpresaEmisora>1234", "CodigoREEEmpresaEmisora>4444")
-        r1_xml_path = get_module_resource('giscedata_switching', 'tests', 'fixtures', 'r105_new.xml')
+            r102_xml = r102_xml.replace(
+                "CodigoREEEmpresaEmisora>1234", "CodigoREEEmpresaEmisora>4444")
+        r1_xml_path = get_module_resource(
+            'giscedata_switching', 'tests', 'fixtures', 'r105_new.xml')
         with open(r1_xml_path, 'r') as f:
             r105_xml = f.read()
-            r105_xml = r105_xml.replace("CodigoREEEmpresaEmisora>1234", "CodigoREEEmpresaEmisora>4444")
+            r105_xml = r105_xml.replace(
+                "CodigoREEEmpresaEmisora>1234", "CodigoREEEmpresaEmisora>4444")
 
         # Al importar el R1-02 no hauria de passar res
         sw_obj.importar_xml(cursor, uid, r102_xml, 'r102.xml')

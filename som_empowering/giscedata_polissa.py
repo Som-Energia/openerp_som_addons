@@ -1,5 +1,5 @@
-import uuid
-from osv import osv, fields
+from osv import osv
+
 
 class GiscedataPolissa(osv.osv):
     _name = 'giscedata.polissa'
@@ -12,21 +12,25 @@ class GiscedataPolissa(osv.osv):
 
         partner_obj = self.pool.get('res.partner')
         if 'titular' in vals:
-            partner_token = partner_obj.read(cursor, uid, vals['titular'], ['empowering_token'])
+            partner_token = partner_obj.read(
+                cursor, uid, vals['titular'], ['empowering_token'])
             if not partner_token['empowering_token']:
                 partner_obj.assign_token(cursor, uid, [vals['titular']], context)
 
         if 'pagador' in vals:
-            partner_token = partner_obj.read(cursor, uid, vals['pagador'], ['empowering_token'])
+            partner_token = partner_obj.read(
+                cursor, uid, vals['pagador'], ['empowering_token'])
             if not partner_token['empowering_token']:
                 partner_obj.assign_token(cursor, uid, [vals['pagador']], context)
 
         if 'notificador' in vals:
-            partner_token = partner_obj.read(cursor, uid, vals['notificador'], ['empowering_token'])
+            partner_token = partner_obj.read(
+                cursor, uid, vals['notificador'], ['empowering_token'])
             if not partner_token['empowering_token']:
                 partner_obj.assign_token(cursor, uid, [vals['notificador']], context)
 
         return res
+
 
 GiscedataPolissa()
 # vim: et ts=4 sw=4

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from osv import osv, fields
+from osv import osv
 from datetime import datetime, timedelta
 from tools.translate import _
 
@@ -44,8 +44,8 @@ class GiscedataSwitchingHelpers(osv.osv):
         pas = sw.get_pas()
 
         autom_r1_fact = pas.subtipus_id.name in ['009', '036'] and (
-            sw.state == "pending" or
-            (sw.state == 'open' and pas.resultat == "01" and not polissa.refacturacio_pendent)
+            sw.state == "pending"
+            or (sw.state == 'open' and pas.resultat == "01" and not polissa.refacturacio_pendent)
         )
 
         if pas.subtipus_id.type != '02' or autom_r1_fact:
@@ -69,7 +69,8 @@ class GiscedataSwitchingHelpers(osv.osv):
                 polissa.assignar_seguent_lot()
 
         if autom_r1_fact:
-            subtipus_info_str = "{0}-{1}".format(pas.subtipus_id.type, pas.subtipus_id.name)
+            subtipus_info_str = "{0}-{1}".format(pas.subtipus_id.type,
+                                                 pas.subtipus_id.name)
             user_obj = self.pool.get("res.users")
             user_name = user_obj.read(cursor, uid, uid, ['name'])['name']
             sw_code = sw.codi_sollicitud
@@ -113,12 +114,12 @@ class GiscedataSwitchingHelpers(osv.osv):
         step_name = sw.step_id.name
         if not sw.finalitzat:
             info = _(u'[Baixa Mailchimp] Com que el cas (M1-%s) no està finalitzat '
-                    u'no s\'ha donat de baixa l\'antic titular.') % (step_name)
+                     u'no s\'ha donat de baixa l\'antic titular.') % (step_name)
             return (_(u'OK'), info)
 
         if sw.rebuig or step_name == '04':
             info = _(u'[Baixa Mailchimp] Aquest cas (M1-%s) està finalitzat però és un '
-                    u'rebuig. No es dona de baixa l\'antic titular.') % (step_name)
+                     u'rebuig. No es dona de baixa l\'antic titular.') % (step_name)
             return (_(u'OK'), info)
 
         pas01_info = m101_obj.read(
@@ -128,29 +129,32 @@ class GiscedataSwitchingHelpers(osv.osv):
         )
 
         if pas01_info['sollicitudadm'] not in ('S', 'A') or pas01_info['canvi_titular'] not in ('S', 'T'):
-            info = _(u'[Baixa Mailchimp] Aquest cas (M1-%s) no és d\'un canvi de titular.') % (step_name)
+            info = _(
+                u'[Baixa Mailchimp] Aquest cas (M1-%s) no és d\'un canvi de titular.') % (step_name)
             return (_(u'OK'), info)
         elif pas01_info['canvi_titular'] == 'S' and not use_new_contract:
             # si es subrogació sense nou contracte, mirem que el titular abans i
             # després de la data d'activació són diferents
             m102_obj = self.pool.get('giscedata.switching.m1.02')
 
-            data_activacio = m102_obj.read(cursor, uid, pas_actual.id, ['data_activacio'])['data_activacio']
+            data_activacio = m102_obj.read(cursor, uid, pas_actual.id, [
+                                           'data_activacio'])['data_activacio']
             data_activacio = datetime.strptime(data_activacio, "%Y-%m-%d")
-            data_previa = datetime.strftime(data_activacio - timedelta(days=1), "%Y-%m-%d")
+            data_previa = datetime.strftime(
+                data_activacio - timedelta(days=1), "%Y-%m-%d")
 
             old_titular_id = pol_obj.read(cursor, uid, sw.cups_polissa_id.id, ['titular'],
-                context={"date": data_previa})['titular'][0]
+                                          context={"date": data_previa})['titular'][0]
             actual_titular_id = sw.titular_polissa.id
 
             if old_titular_id == actual_titular_id:
                 info = _(u'[Baixa Mailchimp] El canvi pel cas (M1-%s) encara no '
-                        u's\'ha activat. No es dona de baixa l\'antic titular.') % (step_name)
+                         u's\'ha activat. No es dona de baixa l\'antic titular.') % (step_name)
                 return (_(u'OK'), info)
         elif (pas01_info['canvi_titular'] == 'T' or use_new_contract) and not sw.polissa_ref_id.active:
             # encara no s'ha activat el canvi
             info = _(u'[Baixa Mailchimp] El canvi pel cas (M1-%s) encara no '
-                    u's\'ha activat. No es dona de baixa l\'antic titular.') % (step_name)
+                     u's\'ha activat. No es dona de baixa l\'antic titular.') % (step_name)
             return (_(u'OK'), info)
         else:
             old_titular_id = sw.cups_polissa_id.titular.id
@@ -164,8 +168,8 @@ class GiscedataSwitchingHelpers(osv.osv):
         step_name = sw.step_id.name
         if not sw.finalitzat:
             info = _(u'[Baixa Mailchimp] Com que el cas (%s-%s) no està finalitzat '
-                    u'no s\'ha donat de baixa l\'antic titular.') % (
-                        sw.proces_id.name, step_name)
+                     u'no s\'ha donat de baixa l\'antic titular.') % (
+                sw.proces_id.name, step_name)
             return (_(u'OK'), info)
 
         is_cn06 = step_name == "06" and sw.proces_id.name in ["C1", "C2"]
@@ -176,7 +180,8 @@ class GiscedataSwitchingHelpers(osv.osv):
             return (_(u'OK'), info)
 
         if sw.cups_polissa_id.active:
-            info = _(u'[Baixa Mailchimp] No s\'ha donat de baixa el titular perquè la pòlissa està activa.')
+            info = _(
+                u'[Baixa Mailchimp] No s\'ha donat de baixa el titular perquè la pòlissa està activa.')
             return (_(u'OK'), info)
 
         titular_id = sw.cups_polissa_id.titular.id
@@ -185,18 +190,19 @@ class GiscedataSwitchingHelpers(osv.osv):
     def _check_and_archive_old_owner(self, cursor, uid, titular_id, context=None):
         pol_obj = self.pool.get('giscedata.polissa')
 
-        pol_actives = pol_obj.search(cursor, uid, [('titular','=',titular_id)]) #per defecte només busca les actives
+        # per defecte només busca les actives
+        pol_actives = pol_obj.search(cursor, uid, [('titular', '=', titular_id)])
         if pol_actives:
-            info = _(u"[Baixa Mailchimp] No s'ha iniciat el procés de baixa " \
-                    u"perque l'antic titular encara té pòlisses associades.")
+            info = _(u"[Baixa Mailchimp] No s'ha iniciat el procés de baixa "
+                     u"perque l'antic titular encara té pòlisses associades.")
 
             return 'OK', info
 
         partner_obj = self.pool.get('res.partner')
         partner_obj.arxiva_client_mailchimp_async(cursor, uid, titular_id)
 
-        info = _(u"[Baixa Mailchimp] S'ha iniciat el procés de baixa " \
-                u"per l'antic titular (ID %d)") % (titular_id)
+        info = _(u"[Baixa Mailchimp] S'ha iniciat el procés de baixa "
+                 u"per l'antic titular (ID %d)") % (titular_id)
 
         return 'OK', info
 

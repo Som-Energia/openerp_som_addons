@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from gestionatr.defs import *
-from gestionatr.input.messages.R1 import get_minimum_fields
-from osv import osv, fields, orm
+from osv import fields, osv
 from tools.translate import _
 import xml.etree.ElementTree as ET
 
@@ -23,10 +21,11 @@ class WizardSubtypeR1(osv.osv_memory):
         if len(fields) == 2 and fields[0] == 'tipus' and fields[1] == 'subtipus_id':
             return res
 
-        if ('extra_values' in context and 'ref_model' in context['extra_values'] and
-                context['extra_values']['ref_model'] == 'giscedata.atc' and 'ref_id' in context['extra_values']):
+        if ('extra_values' in context and 'ref_model' in context['extra_values']
+                and context['extra_values']['ref_model'] == 'giscedata.atc' and 'ref_id' in context['extra_values']):
             atc_obj = self.pool.get('giscedata.atc')
-            atc_channel_data = atc_obj.read(cursor, uid, context['extra_values']['ref_id'][0], ['canal_id'])
+            atc_channel_data = atc_obj.read(
+                cursor, uid, context['extra_values']['ref_id'][0], ['canal_id'])
             atc_channel_id = atc_channel_data['canal_id'][0]
             if atc_channel_id in [1, 2, 3, 4]:
                 res['tipus_reclamant'] = '01'
@@ -68,7 +67,8 @@ class WizardSubtypeR1(osv.osv_memory):
         # "Data_Usuari_Reclamació (codi Cas) SUBTIPUS. Generat el pas R1-01”
         subtipus_info_str = "{0}-{1}".format(subtipus_info['type'], subtipus_info['name'])
         user_name = user_obj.read(cursor, uid, uid, ['name'])['name']
-        sw_code = sw_obj.read(cursor, uid, res[-1], ['codi_sollicitud'])['codi_sollicitud']
+        sw_code = sw_obj.read(cursor, uid, res[-1],
+                              ['codi_sollicitud'])['codi_sollicitud']
         new_text = _(u"{0}, {1}, Reclamació {2}: SUBTIPUS {3}. Generat el pas R1-01\n\n").format(
             datetime.today().strftime("%d-%m-%Y"), user_name, sw_code,
             subtipus_info_str
@@ -156,5 +156,6 @@ class WizardSubtypeR1(osv.osv_memory):
         'facturacio_suspesa': _default_facturacio_suspesa,
         'refacturacio_pendent': _default_refacturacio_pendent,
     }
+
 
 WizardSubtypeR1()

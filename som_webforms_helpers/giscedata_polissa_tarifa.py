@@ -3,6 +3,7 @@ from osv import osv
 from tools import config
 from datetime import datetime
 
+
 class GiscedataPolissaTarifa(osv.osv):
     _name = 'giscedata.polissa.tarifa'
     _inherit = 'giscedata.polissa.tarifa'
@@ -49,33 +50,35 @@ class GiscedataPolissaTarifa(osv.osv):
         return periods
 
     def get_bo_social_price(self, cursor, uid, pricelist,
-                          fiscal_position=None, with_taxes=False,
-                          context=None):
+                            fiscal_position=None, with_taxes=False,
+                            context=None):
         imd_obj = self.pool.get('ir.model.data')
         prod_obj = self.pool.get('product.product')
 
-        bs_id = imd_obj.get_object_reference(cursor, uid, 'som_polissa_soci', 'bosocial_BS01')[1]
+        bs_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_polissa_soci', 'bosocial_BS01')[1]
         prod = prod_obj.browse(cursor, uid, bs_id)
 
         price = pricelist.price_get(bs_id, 1, 1, context)[pricelist.id]
         if with_taxes:
             price = prod.add_taxes(price, fiscal_position, direccio_pagament=None,
-                    titular=None)
+                                   titular=None)
 
         return price, prod.uom_id
 
     def get_comptador_price(self, cursor, uid, pricelist,
-                          fiscal_position=None, with_taxes=False,
-                          context=None):
+                            fiscal_position=None, with_taxes=False,
+                            context=None):
         imd_obj = self.pool.get('ir.model.data')
         prod_obj = self.pool.get('product.product')
 
-        comptador_id = imd_obj.get_object_reference(cursor, uid, 'giscedata_lectures', 'alq_conta_tele')[1]
+        comptador_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_lectures', 'alq_conta_tele')[1]
 
         price = pricelist.price_get(comptador_id, 1, 1, context)[pricelist.id]
 
         default_comptador_id = prod_obj.search(cursor, uid,
-                                [('default_code', '=', 'ALQ01')])
+                                               [('default_code', '=', 'ALQ01')])
 
         prod = prod_obj.browse(cursor, uid, comptador_id)
         if with_taxes:
@@ -83,7 +86,7 @@ class GiscedataPolissaTarifa(osv.osv):
                 comptador_id = default_comptador_id[0]
 
             price = prod_obj.add_taxes(cursor, uid, comptador_id, price, fiscal_position, direccio_pagament=None,
-                    titular=None)
+                                       titular=None)
 
         return price, prod.uom_id
 
@@ -144,21 +147,23 @@ class GiscedataPolissaTarifa(osv.osv):
                     date_start = version.date_start
                     date_end = version.date_end
                     if (not date_start or date_start <= date) and \
-                        (not date_end or date_end >= date):
+                            (not date_end or date_end >= date):
                         pricelist.append(item)
 
         fiscal_position = None
         if not fiscal_position_id:
             end_iva_reduit = conf_obj.get(
-              cursor, uid, 'iva_reduit_get_tariff_prices_end_date', '2099-12-31'
+                cursor, uid, 'iva_reduit_get_tariff_prices_end_date', '2099-12-31'
             )
             if date <= end_iva_reduit and max_power <= 10000:
-                fiscal_position_id = imd_obj.get_object_reference(cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
+                fiscal_position_id = imd_obj.get_object_reference(
+                    cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
             else:
-                prop_id = prop_obj.search(cursor,uid,[('name','=','property_account_position'),('res_id','=',False)])
-                if isinstance(prop_id,list):
+                prop_id = prop_obj.search(
+                    cursor, uid, [('name', '=', 'property_account_position'), ('res_id', '=', False)])
+                if isinstance(prop_id, list):
                     prop_id = prop_id[0]
-                prop=prop_obj.browse(cursor, uid, prop_id)
+                prop = prop_obj.browse(cursor, uid, prop_id)
                 if prop.value:
                     fiscal_position_id = int(prop.value.split(',')[1])
         if fiscal_position_id:
@@ -221,7 +226,7 @@ class GiscedataPolissaTarifa(osv.osv):
         )
         preus['comptador'] = {
             'value': round(value, config.get('price_accuracy', 6)),
-            #'uom': '€/{}'.format(uom.name.split('/')[1])
+            # 'uom': '€/{}'.format(uom.name.split('/')[1])
             'uom': '€{}'.format(('/' + uom.name.split('/')[1]) if '/' in uom.name else '')
         }
 

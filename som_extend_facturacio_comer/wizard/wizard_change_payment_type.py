@@ -1,6 +1,5 @@
 # -*- encoding: utf-8 -*-
 from osv import osv, fields
-from tools.translate import _
 
 
 class WizardChangePaymentType(osv.osv_memory):
@@ -47,5 +46,6 @@ class WizardChangePaymentType(osv.osv_memory):
         'state': lambda *a: 'init',
         'model': _get_default_model
     }
+
 
 WizardChangePaymentType()

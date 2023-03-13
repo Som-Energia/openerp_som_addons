@@ -31,4 +31,3 @@ print "Status (test): {}".format(status)
 for msg_idx in msgs:
     msg = O.PoweremailMailbox.browse(msg_idx)
     msg.send_this_mail()
-

@@ -3,6 +3,7 @@
 from osv import fields, osv
 from tools.translate import _
 
+
 class SomDocumentsSensiblesCategory(osv.osv):
     _name = 'som.documents.sensibles.category'
     _description = "Sensible documents category"
@@ -20,6 +21,7 @@ class SomDocumentsSensiblesCategory(osv.osv):
                          _(u'Ja existeix la categoria de document sensible.'))
                         ]
 
+
 SomDocumentsSensiblesCategory()
 
 
@@ -28,16 +30,20 @@ class SomDocumentsSensibles(osv.osv):
     _name = 'som.documents.sensibles'
 
     _columns = {
-        'name':  fields.char(_("Nom del document"), size=64, required=True),
-        'data_recepcio':  fields.date(_("Data recepcio"), required=True),
-        'darrera_data_valida':  fields.date(_("Darrera data vàlida"), required=True),
+        'name': fields.char(_("Nom del document"), size=64, required=True),
+        'data_recepcio': fields.date(_("Data recepcio"), required=True),
+        'darrera_data_valida': fields.date(_("Darrera data vàlida"), required=True),
         'partner_id': fields.many2one('res.partner', 'Client', size=64, required=True),
-        'nif': fields.related('partner_id', 'vat', type='char', string='NIF', readonly=True),
-        'categoria': fields.many2one('som.documents.sensibles.category', string="Categoria", required=True),
-        'create_uid': fields.many2one('res.users', 'Creador', readonly=True, required=False),
+        'nif': fields.related(
+            'partner_id', 'vat', type='char', string='NIF', readonly=True),
+        'categoria': fields.many2one(
+            'som.documents.sensibles.category', string="Categoria", required=True),
+        'create_uid': fields.many2one(
+            'res.users', 'Creador', readonly=True, required=False),
     }
     _defaults = {
         'name': lambda *a: 'document sensible',
     }
+
 
 SomDocumentsSensibles()

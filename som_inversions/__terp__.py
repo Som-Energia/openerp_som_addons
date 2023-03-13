@@ -12,7 +12,7 @@
     "version": "0-dev",
     "author": "GISCE",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "base",
         "som_partner_account",
         "account_payment",
@@ -23,7 +23,7 @@
     ],
     "init_xml": [],
     "demo_xml": [],
-    "update_xml":[
+    "update_xml": [
         "partner_view.xml",
         "som_inversions_data.xml",
         "som_inversions_report.xml",

@@ -82,7 +82,7 @@ class WizardLiquidacioInteressos(osv.osv_memory):
         inv_obj = self.pool.get('account.invoice')
         pt_obj = self.pool.get('payment.type')
         pt_CSB = pt_obj.search(cursor, uid, [
-                    ('code', '=', 'TRANSFERENCIA_CSB')]
+            ('code', '=', 'TRANSFERENCIA_CSB')]
         )[0]
         wiz = self.browse(cursor, uid, ids[0])
         partner = self.pool.get('res.partner').browse(cursor, uid, partner_id)
@@ -121,11 +121,11 @@ class WizardLiquidacioInteressos(osv.osv_memory):
                                                       vals['invoice_id'])
         l_vals = {}
         l_vals.update(il_obj.product_id_change(cursor, uid, [],
-            product=vals['product_id'],
-            uom=wiz.product.uom_id.id,
-            partner_id=inv.partner_id.id,
-            type='in_invoice').get('value', {})
-        )
+                                               product=vals['product_id'],
+                                               uom=wiz.product.uom_id.id,
+                                               partner_id=inv.partner_id.id,
+                                               type='in_invoice').get('value', {})
+                      )
         l_vals['invoice_line_tax_id'] = [
             (6, 0, l_vals.get('invoice_line_tax_id', []))
         ]
@@ -184,7 +184,6 @@ class WizardLiquidacioInteressos(osv.osv_memory):
             if account.code == '163000000000':
                 print("GENERIC")
 
-
             new_cursor = pooler.get_db(cursor.dbname).cursor()
             counter += 1
             if account.balance >= 0 and not wiz.force:
@@ -198,7 +197,7 @@ class WizardLiquidacioInteressos(osv.osv_memory):
             )
             msg.setdefault(key, {'err': [], 'calc': []})
             search_params = [('account_id', '=', account.id),
-                             ('period_id.special','=', False),
+                             ('period_id.special', '=', False),
                              ('move_id.date', '<=', wiz.date_end)]
 
 #            ml_ids = aml_obj.search(new_cursor, uid, search_params,
@@ -206,9 +205,11 @@ class WizardLiquidacioInteressos(osv.osv_memory):
             partners = set()
             inv_id = None
             for mls in aml_obj.q(new_cursor, uid).read(['id'], order_by=('id.asc',)).where(search_params):
-                partners.add(aml_obj.read(cursor, uid, mls['id'], ['partner_id'])['partner_id'][0])
+                partners.add(aml_obj.read(cursor, uid, mls['id'], [
+                             'partner_id'])['partner_id'][0])
             for partner in partners:
-                ml_data = aml_obj.q(new_cursor, uid).read(['id'], order_by=('id.asc',)).where(search_params + [('partner_id','=',partner)])
+                ml_data = aml_obj.q(new_cursor, uid).read(['id'], order_by=('id.asc',)).where(
+                    search_params + [('partner_id', '=', partner)])
                 ml_ids = [ml['id'] for ml in ml_data]
                 acum = 0
                 mls = [x for x in aml_obj.browse(new_cursor, uid, ml_ids)]
@@ -216,8 +217,8 @@ class WizardLiquidacioInteressos(osv.osv_memory):
                     msg[key]['calc'] += ['  No hi ha inversions']
                     continue
                 invoice_name = '%s%s%s' % (wiz.journal.code,
-                                        wiz.date_end.split('-')[0],
-                                        mls[0].partner_id.ref)
+                                           wiz.date_end.split('-')[0],
+                                           mls[0].partner_id.ref)
                 if inv_obj.search_count(new_cursor, uid, [('name', '=', invoice_name)]):
                     msg[key]['err'] += [('  Ja existeix la factura %s creada.'
                                         % invoice_name)]
@@ -226,9 +227,10 @@ class WizardLiquidacioInteressos(osv.osv_memory):
                         raise osv.except_osv(
                             _('Error'),
                             _(u'El moviment %s de la compta %s no té empresa '
-                            u'assignada') % (mls[0].name, mls[0].account_id.code)
+                              u'assignada') % (mls[0].name, mls[0].account_id.code)
                         )
-                    inv_id = self.create_invoice(new_cursor, uid, [ids[0]], mls[0].partner_id.id)
+                    inv_id = self.create_invoice(
+                        new_cursor, uid, [ids[0]], mls[0].partner_id.id)
                     inv_ids.append(inv_id)
                 year_days = isleap(int(wiz.date_end.split('-')[0])) and 366 or 365
                 for idx, ml in enumerate(mls):
@@ -257,29 +259,31 @@ class WizardLiquidacioInteressos(osv.osv_memory):
                     if acum and days:
                         res = days * (interes / year_days) * acum
                         msg[key]['calc'] += ['  De %s a %s: %s * %s/%s * %s: %s, partner_id: %s'
-                            % (start, end, days, interes, year_days, acum, res, partner)]
+                                             % (start, end, days, interes, year_days, acum, res, partner)]
                         if acum < 0:
-                            msg[key]['err'] += ['  Quantitat negativa pel partner_id %s' % (partner)]
+                            msg[key]['err'] += ['  Quantitat negativa pel partner_id %s' %
+                                                (partner)]
                         if not pre_calc:
                             vals = {
                                 'invoice_id': inv_id,
                                 'note': _('De %s a %s: %s * %s/%s * %s: %s'
-                                        % (start.strftime('%d/%m/%Y'),
-                                            end.strftime('%d/%m/%Y'),
-                                            days, interes, year_days, acum, res)),
+                                          % (start.strftime('%d/%m/%Y'),
+                                             end.strftime('%d/%m/%Y'),
+                                             days, interes, year_days, acum, res)),
                                 'name': _('De %s a %s' %
-                                        (start.strftime('%d/%m/%Y'),
-                                        end.strftime('%d/%m/%Y'))),
+                                          (start.strftime('%d/%m/%Y'),
+                                           end.strftime('%d/%m/%Y'))),
                                 'quantity': acum,
                                 'price_unit': days * (interes / year_days),
                                 'product_id': wiz.product.id
                             }
-                            #wiz.create_invoice_line(vals)
+                            # wiz.create_invoice_line(vals)
                             self.create_invoice_line(new_cursor, uid, [ids[0]], vals)
                 if not pre_calc:
                     inv_obj.button_reset_taxes(new_cursor, uid, [inv_id])
                     inv = inv_obj.browse(new_cursor, uid, inv_id)
-                    inv_obj.write(new_cursor, uid, inv_id, {'check_total': inv.amount_total})
+                    inv_obj.write(new_cursor, uid, inv_id, {
+                                  'check_total': inv.amount_total})
                     new_cursor.commit()
 
         if pre_calc:
@@ -290,9 +294,9 @@ class WizardLiquidacioInteressos(osv.osv_memory):
                         out[t] += '* Compte %s\n' % key
                         out[t] += '\n'.join(msg[key][t])
                         out[t] += '\n  %s\n' % ('-' * 75)
-            #wiz.write({'err': out['err'], 'calc': out['calc'],
+            # wiz.write({'err': out['err'], 'calc': out['calc'],
             self.write(new_cursor, uid, [ids[0]],
-                      {'err': out['err'], 'calc': out['calc'],
+                       {'err': out['err'], 'calc': out['calc'],
                        'state': 'pre_calc'})
             logger.notifyChannel(
                 'liquidacio APO', netsvc.LOG_INFO,
@@ -312,4 +316,6 @@ class WizardLiquidacioInteressos(osv.osv_memory):
                 'res_model': 'account.invoice',
                 'type': 'ir.actions.act_window'
             }
+
+
 WizardLiquidacioInteressos()

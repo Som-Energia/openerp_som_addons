@@ -5,11 +5,12 @@ ESTAT_PENDENT_INPAGAT_MIN = 33
 ANNEX_4_IDS = [41, 65]
 ANNEX_2_IDS = [45]
 
+
 class CollectExpectedCutOffDate:
     def __init__(self):
         pass
 
-    def get_data(self,cursor, uid, wiz, context):
+    def get_data(self, cursor, uid, wiz, context):
         if has_category(wiz.polissa, [11, 27]):
             return {'type': 'Empty'}
 
@@ -21,7 +22,7 @@ class CollectExpectedCutOffDate:
             ('pending_state', '>', ESTAT_PENDENT_INPAGAT_MIN),
         ]
         fact_ids = fact_obj.search(cursor, uid, search_parameters,
-            limit=1, order='date_invoice')
+                                   limit=1, order='date_invoice')
 
         if not fact_ids:
             return {'type': 'Empty'}
@@ -43,6 +44,6 @@ class CollectExpectedCutOffDate:
 
         return {
             'type': 'CollectExpectedCutOffDate',
-            'expected_cut_off_date' : cut_off_date,
-            'distri_name' : wiz.polissa.distribuidora.name,
+            'expected_cut_off_date': cut_off_date,
+            'distri_name': wiz.polissa.distribuidora.name,
         }

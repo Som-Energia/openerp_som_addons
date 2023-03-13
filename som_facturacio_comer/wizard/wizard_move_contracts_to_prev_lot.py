@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from osv import osv, fields
-from tools.translate import _
-from datetime import datetime, timedelta
-import json
+from osv import osv
+
 
 class WizardMoveContractsToPrevLot(osv.osv_memory):
     _name = 'wizard.move.contracts.prev.lot'
@@ -11,12 +9,16 @@ class WizardMoveContractsToPrevLot(osv.osv_memory):
 
     def move_one_contract_to_prev_lot(self, cursor, uid, id, pol_id, context):
         if not context:
-            contex = {}
+            pass
         clot_o = self.pool.get('giscedata.facturacio.contracte_lot')
-        clot_id = super(WizardMoveContractsToPrevLot, self).move_one_contract_to_prev_lot(cursor, uid, id, pol_id, context=context)
+        clot_id = super(WizardMoveContractsToPrevLot, self).move_one_contract_to_prev_lot(
+            cursor, uid, id, pol_id, context=context)
         if context.get('incrementar_n_retrocedir', True):
-            clot_n_retrocedit = clot_o.read(cursor, uid, clot_id, ['n_retrocedir_lot'])['n_retrocedir_lot']
-            clot_o.write(cursor, uid, [clot_id], {'n_retrocedir_lot': clot_n_retrocedit + 1})
+            clot_n_retrocedit = clot_o.read(cursor, uid, clot_id, ['n_retrocedir_lot'])[
+                'n_retrocedir_lot']
+            clot_o.write(cursor, uid, [clot_id], {
+                         'n_retrocedir_lot': clot_n_retrocedit + 1})
         return clot_id
+
 
 WizardMoveContractsToPrevLot()

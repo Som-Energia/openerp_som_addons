@@ -1,6 +1,7 @@
 from ..component_utils import dateformat
 from ..ProcesC2 import ProcesC2
 
+
 class C206(ProcesC2.ProcesC2):
     def __init__(self):
         ProcesC2.ProcesC2.__init__(self)

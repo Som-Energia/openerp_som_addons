@@ -4,9 +4,6 @@ from __future__ import absolute_import
 
 from osv import osv, fields
 from tools.translate import _
-from tools import cache
-import netsvc
-from datetime import datetime
 
 
 class GiscedataFacturacioFactura(osv.osv):
@@ -18,5 +15,6 @@ class GiscedataFacturacioFactura(osv.osv):
     _columns = {
         'has_facturae': fields.boolean(_(u'Facturae'))
     }
+
 
 GiscedataFacturacioFactura()

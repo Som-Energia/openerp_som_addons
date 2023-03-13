@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 from destral import testing
-from destral.transaction import Transaction
-from datetime import date, timedelta
 import mock
-from mock import Mock, ANY
+from mock import ANY
 from ..som_account_invoice_pending_exceptions import UpdateWaitingFor48hException, \
     UpdateWaitingCancelledContractsException, UpdateWaitingForAnnexIVException
 
@@ -151,15 +149,16 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
     def _load_data_unpaid_invoices(self, cursor, uid, invoice_semid_list=[]):
         imd_obj = self.pool.get('ir.model.data')
         inv_obj = self.pool.get('account.invoice')
-        res_obj = self.pool.get('res.partner')
+        self.pool.get('res.partner')
         fact_obj = self.pool.get('giscedata.facturacio.factura')
 
         contract_name = ''
         for index, res_id in enumerate(invoice_semid_list, start=1):
             fact_id = imd_obj.get_object_reference(
-                cursor, uid, 'giscedata_facturacio', 'factura_000'+str(index)
+                cursor, uid, 'giscedata_facturacio', 'factura_000' + str(index)
             )[1]
-            invoice_id = fact_obj.read(cursor, uid, fact_id, ['invoice_id'])['invoice_id'][0]
+            invoice_id = fact_obj.read(cursor, uid, fact_id, ['invoice_id'])[
+                'invoice_id'][0]
 
             if index == 1:
                 contract_name = inv_obj.read(cursor, uid, invoice_id, ['name'])['name']
@@ -172,7 +171,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
     def test__update_second_unpaid_invoice__two_invoices_moving(self):
         cursor = self.txn.cursor
         uid = self.txn.user
-        self._load_data_unpaid_invoices(cursor, uid, [self.waiting_unpaid_id, self.waiting_unpaid_id])
+        self._load_data_unpaid_invoices(
+            cursor, uid, [self.waiting_unpaid_id, self.waiting_unpaid_id])
         pending_obj = self.pool.get('update.pending.states')
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
@@ -190,7 +190,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
     def test__update_second_unpaid_invoice__two_invoices_not_moving(self):
         cursor = self.txn.cursor
         uid = self.txn.user
-        self._load_data_unpaid_invoices(cursor, uid, [self.def_correct_id, self.def_waiting_unpaid_id])
+        self._load_data_unpaid_invoices(
+            cursor, uid, [self.def_correct_id, self.def_waiting_unpaid_id])
         pending_obj = self.pool.get('update.pending.states')
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
@@ -238,7 +239,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
     def test__update_two_unpaid_invoice_waiting_for_annexII_same_contract(self, mock_function):
         cursor = self.txn.cursor
         uid = self.txn.user
-        self._load_data_unpaid_invoices(cursor, uid, [self.waiting_annexII, self.waiting_annexII])
+        self._load_data_unpaid_invoices(
+            cursor, uid, [self.waiting_annexII, self.waiting_annexII])
         pending_obj = self.pool.get('update.pending.states')
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
@@ -329,7 +331,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             'template_id': self.annex4_template_id,
         }
 
-        mock_mail.assert_called_once_with(cursor, uid, self.invoice_1_id, send_mail_params)
+        mock_mail.assert_called_once_with(
+            cursor, uid, self.invoice_1_id, send_mail_params)
         mock_sms.assert_called_once_with(cursor, uid, self.invoice_1_id,
                                          self.sms_annex4_template_id, self.waiting_annexIV_def, {})
 
@@ -366,7 +369,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
     def test__update_two_unpaid_invoice_waiting_for_annexIV_same_contract(self, mock_sms, mock_mail):
         cursor = self.txn.cursor
         uid = self.txn.user
-        self._load_data_unpaid_invoices(cursor, uid, [self.waiting_annexIV_def, self.waiting_annexIV_def])
+        self._load_data_unpaid_invoices(
+            cursor, uid, [self.waiting_annexIV_def, self.waiting_annexIV_def])
         pending_obj = self.pool.get('update.pending.states')
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
@@ -407,7 +411,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             'template_id': self.email_48h_template_id,
         }
 
-        mock_mail.assert_called_once_with(cursor, uid, self.invoice_1_id, send_mail_params)
+        mock_mail.assert_called_once_with(
+            cursor, uid, self.invoice_1_id, send_mail_params)
         mock_sms.assert_called_once_with(cursor, uid, self.invoice_1_id,
                                          self.sms_48h_template_id, self.waiting_48h_def, {})
 
@@ -432,7 +437,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             'template_id': self.email_48h_template_id,
         }
 
-        mock_mail.assert_called_once_with(cursor, uid, self.invoice_1_id, send_mail_params)
+        mock_mail.assert_called_once_with(
+            cursor, uid, self.invoice_1_id, send_mail_params)
         mock_sms.assert_called_once_with(cursor, uid, self.invoice_1_id,
                                          self.sms_48h_template_id, self.waiting_48h_bs, {})
 
@@ -444,7 +450,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
     def test__update_two_unpaid_invoice_waiting_for_48_same_contract_single_sms(self, mock_sms, mock_mail):
         cursor = self.txn.cursor
         uid = self.txn.user
-        self._load_data_unpaid_invoices(cursor, uid, [self.waiting_48h_def, self.waiting_48h_def])
+        self._load_data_unpaid_invoices(
+            cursor, uid, [self.waiting_48h_def, self.waiting_48h_def])
         pending_obj = self.pool.get('update.pending.states')
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
@@ -461,7 +468,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
 
         mock_mail.assert_called_with(cursor, uid, self.invoice_2_id, params)
         mock_sms.assert_called_once_with(cursor, uid, ANY,
-                                    self.sms_48h_template_id, self.waiting_48h_def, {})
+                                         self.sms_48h_template_id, self.waiting_48h_def, {})
 
         self.assertEqual(mock_mail.call_count, 2)
         self.assertEqual(mock_sms.call_count, 1)
@@ -712,11 +719,11 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
         self.assertEqual(inv_data.pending_state.id, self.annexIV_sent_def)
 
-
     def test__integration_send_email(self):
         cursor = self.txn.cursor
         uid = self.txn.user
-        self._load_data_unpaid_invoices(cursor, uid, [self.waiting_48h_def, self.waiting_48h_def])
+        self._load_data_unpaid_invoices(
+            cursor, uid, [self.waiting_48h_def, self.waiting_48h_def])
         pending_obj = self.pool.get('update.pending.states')
         pending_obj.update_waiting_for_48h(cursor, uid)
 
@@ -730,9 +737,11 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
     def test__integration_send_sms(self):
         cursor = self.txn.cursor
         uid = self.txn.user
-        self._load_data_unpaid_invoices(cursor, uid, [self.waiting_48h_def, self.waiting_48h_def])
+        self._load_data_unpaid_invoices(
+            cursor, uid, [self.waiting_48h_def, self.waiting_48h_def])
         pending_obj = self.pool.get('update.pending.states')
-        pending_obj.update_waiting_for_48h(cursor, uid, context={'create_empty_number': True})
+        pending_obj.update_waiting_for_48h(
+            cursor, uid, context={'create_empty_number': True})
 
         psms_obj = self.pool.get('powersms.smsbox')
         sms_to_send = psms_obj.search(cursor, uid, [
@@ -746,7 +755,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
     def test__sms_callback_historize_annexIV(self, mock_sms, mock_mail):
         cursor = self.txn.cursor
         uid = self.txn.user
-        self._load_data_unpaid_invoices(cursor, uid, [self.waiting_annexIV_def,self.waiting_annexIV_def])
+        self._load_data_unpaid_invoices(
+            cursor, uid, [self.waiting_annexIV_def, self.waiting_annexIV_def])
         pending_obj = self.pool.get('update.pending.states')
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         aiph_obj = self.pool.get('account.invoice.pending.history')
@@ -756,11 +766,11 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         self.assertEqual(mock_mail.call_count, 2)
         self.assertEqual(mock_sms.call_count, 1)
 
-
         first_inv = min(self.invoice_1_id, self.invoice_2_id)
         last_inv = max(self.invoice_1_id, self.invoice_2_id)
 
-        last_pending_id = min(fact_obj.read(cursor, uid, last_inv, ['pending_history_ids'])['pending_history_ids'])
+        last_pending_id = min(fact_obj.read(cursor, uid, last_inv, [
+                              'pending_history_ids'])['pending_history_ids'])
         last_pending = aiph_obj.browse(cursor, uid, last_pending_id)
 
         self.assertEqual(last_pending.observations,
@@ -771,7 +781,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
     def test__sms_callback_historize_48h(self, mock_sms, mock_mail):
         cursor = self.txn.cursor
         uid = self.txn.user
-        self._load_data_unpaid_invoices(cursor, uid, [self.waiting_48h_bs, self.waiting_48h_bs])
+        self._load_data_unpaid_invoices(
+            cursor, uid, [self.waiting_48h_bs, self.waiting_48h_bs])
         pending_obj = self.pool.get('update.pending.states')
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         aiph_obj = self.pool.get('account.invoice.pending.history')
@@ -784,7 +795,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         first_inv = min(self.invoice_1_id, self.invoice_2_id)
         last_inv = max(self.invoice_1_id, self.invoice_2_id)
 
-        last_pending_id = min(fact_obj.read(cursor, uid, last_inv, ['pending_history_ids'])['pending_history_ids'])
+        last_pending_id = min(fact_obj.read(cursor, uid, last_inv, [
+                              'pending_history_ids'])['pending_history_ids'])
         last_pending = aiph_obj.browse(cursor, uid, last_pending_id)
 
         self.assertEqual(last_pending.observations,
@@ -795,7 +807,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
     def test__sms_callback_historize_48h_with_previous_observation(self, mock_sms, mock_mail):
         cursor = self.txn.cursor
         uid = self.txn.user
-        self._load_data_unpaid_invoices(cursor, uid, [self.waiting_48h_bs, self.waiting_48h_bs])
+        self._load_data_unpaid_invoices(
+            cursor, uid, [self.waiting_48h_bs, self.waiting_48h_bs])
         pending_obj = self.pool.get('update.pending.states')
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         aiph_obj = self.pool.get('account.invoice.pending.history')
@@ -808,7 +821,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         first_inv = min(self.invoice_1_id, self.invoice_2_id)
         last_inv = max(self.invoice_1_id, self.invoice_2_id)
 
-        last_pending_id = min(fact_obj.read(cursor, uid, last_inv, ['pending_history_ids'])['pending_history_ids'])
+        last_pending_id = min(fact_obj.read(cursor, uid, last_inv, [
+                              'pending_history_ids'])['pending_history_ids'])
         last_pending = aiph_obj.browse(cursor, uid, last_pending_id)
 
         last_pending.historize(message='New message')
@@ -825,7 +839,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         pending_obj = self.pool.get('update.pending.states')
         fact_obj = self.pool.get('giscedata.facturacio.factura')
 
-        pending_obj.update_waiting_for_annex_cancelled_contracts(cursor, uid, self.invoice_1_id, self.traspas_advocats_dp, context=None)
+        pending_obj.update_waiting_for_annex_cancelled_contracts(
+            cursor, uid, self.invoice_1_id, self.traspas_advocats_dp, context=None)
 
         factura = fact_obj.browse(cursor, uid, self.invoice_1_id)
         self.assertEqual(mock_mail.call_count, 1)

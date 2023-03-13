@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*-
 
-from argparse import Namespace
 from destral import testing
-from plantmeter.testutils import assertNsEqual
 import netsvc
-from oorq.decorators import job
 from osv import osv
 from rq import job as rq_job
 from oorq.oorq import setup_redis_connection
+
 
 class AccountInvoice(osv.osv):
     _name = 'account.invoice'
     _inherit = 'account.invoice'
 
     def afegeix_a_remesa_async(self, cursor, uid, ids, order_id, context=None):
-        redis_conn = setup_redis_connection()
+        setup_redis_connection()
         self.afegeix_a_remesa(cursor, uid, ids, order_id, context=context)
         return rq_job.Job(id=0)
 
+
 AccountInvoice()
+
 
 class TestsWizardPaymentOrderAddInvoices(testing.OOTestCaseWithCursor):
 
@@ -27,7 +27,7 @@ class TestsWizardPaymentOrderAddInvoices(testing.OOTestCaseWithCursor):
         inv_obj = self.openerp.pool.get('account.invoice')
         cursor = self.cursor
         uid = self.uid
-        wiz_id = wiz_obj.create(cursor, uid, {}) 
+        wiz_id = wiz_obj.create(cursor, uid, {})
         wizard = wiz_obj.browse(cursor, uid, wiz_id)
         values = {'init_date': '',
                   'end_date': '',
@@ -39,7 +39,8 @@ class TestsWizardPaymentOrderAddInvoices(testing.OOTestCaseWithCursor):
         wizard.add_invoices_to_payment_order()
 
         all_invoices = inv_obj.search(cursor, uid, [('payment_order_id', '=', False)])
-        self.assertEqual('La cerca ha trobat {} resultats'.format(len(all_invoices)),wizard.len_result)
+        self.assertEqual('La cerca ha trobat {} resultats'.format(
+            len(all_invoices)), wizard.len_result)
 
     def test_add_invoices_to_payment_order__out_invoices_ok(self):
         wiz_obj = self.openerp.pool.get('wizard.payment.order.add.invoices')
@@ -51,15 +52,16 @@ class TestsWizardPaymentOrderAddInvoices(testing.OOTestCaseWithCursor):
         order_id = imd_obj.get_object_reference(
             self.cursor, self.uid, 'account_invoice_som', 'remesa_0001'
         )[1]
-        search_params = [('date_due','<=', '2021-04-30'), ('date_due','>=', '2021-01-01'),
-            ('type','=','out_invoice')]
-        inv_ids = inv_obj.search(cursor, uid, search_params+[('state','=', 'draft')])
+        search_params = [('date_due', '<=', '2021-04-30'), ('date_due', '>=', '2021-01-01'),
+                         ('type', '=', 'out_invoice')]
+        inv_ids = inv_obj.search(cursor, uid, search_params + [('state', '=', 'draft')])
         wf_service = netsvc.LocalService('workflow')
         for inv_id in inv_ids:
-            wf_service.trg_validate(uid, 'account.invoice', inv_id, 'invoice_open', cursor)
-        inv_ids = inv_obj.search(cursor, uid, search_params+[('state','=', 'open')])
-        
-        wiz_id = wiz_obj.create(cursor, uid, {}) 
+            wf_service.trg_validate(uid, 'account.invoice',
+                                    inv_id, 'invoice_open', cursor)
+        inv_ids = inv_obj.search(cursor, uid, search_params + [('state', '=', 'open')])
+
+        wiz_id = wiz_obj.create(cursor, uid, {})
         wizard = wiz_obj.browse(cursor, uid, wiz_id)
         values = {'init_date': '2021-01-01',
                   'end_date': '2021-04-30',
@@ -72,7 +74,7 @@ class TestsWizardPaymentOrderAddInvoices(testing.OOTestCaseWithCursor):
         wizard.add_invoices_with_limit()
 
         order = po_obj.browse(cursor, uid, order_id)
-        self.assertEqual(len(inv_ids), len(order.line_ids) )
+        self.assertEqual(len(inv_ids), len(order.line_ids))
 
     def test_add_invoices_to_payment_order__in_invoices_ok(self):
         wiz_obj = self.openerp.pool.get('wizard.payment.order.add.invoices')
@@ -84,17 +86,18 @@ class TestsWizardPaymentOrderAddInvoices(testing.OOTestCaseWithCursor):
         order_id = imd_obj.get_object_reference(
             self.cursor, self.uid, 'account_invoice_som', 'remesa_0002'
         )[1]
-        search_params = [('date_due','<=', '2021-04-30'), ('date_due','>=', '2021-01-01'),
-            ('type','=','in_invoice')]
-        inv_ids = inv_obj.search(cursor, uid, search_params+[('state','=', 'draft')])
+        search_params = [('date_due', '<=', '2021-04-30'), ('date_due', '>=', '2021-01-01'),
+                         ('type', '=', 'in_invoice')]
+        inv_ids = inv_obj.search(cursor, uid, search_params + [('state', '=', 'draft')])
         wf_service = netsvc.LocalService('workflow')
         for inv_id in inv_ids:
             inv = inv_obj.browse(cursor, uid, inv_id)
             inv.write({'check_total': inv.amount_total})
         for inv_id in inv_ids:
-            wf_service.trg_validate(uid, 'account.invoice', inv_id, 'invoice_open', cursor)
-        inv_ids = inv_obj.search(cursor, uid, search_params+[('state','=', 'open')])
-        wiz_id = wiz_obj.create(cursor, uid, {}) 
+            wf_service.trg_validate(uid, 'account.invoice',
+                                    inv_id, 'invoice_open', cursor)
+        inv_ids = inv_obj.search(cursor, uid, search_params + [('state', '=', 'open')])
+        wiz_id = wiz_obj.create(cursor, uid, {})
         wizard = wiz_obj.browse(cursor, uid, wiz_id)
         values = {'init_date': '2021-01-01',
                   'end_date': '2021-04-30',
@@ -106,26 +109,27 @@ class TestsWizardPaymentOrderAddInvoices(testing.OOTestCaseWithCursor):
         wizard.add_invoices_with_limit()
 
         order = po_obj.browse(cursor, uid, order_id)
-        
-        self.assertTrue(len(inv_ids) ==  len(order.line_ids) )
+
+        self.assertTrue(len(inv_ids) == len(order.line_ids))
 
     def test_add_invoices_to_payment_order__ag_invoices_ok(self):
         wiz_obj = self.openerp.pool.get('wizard.payment.order.add.invoices')
         inv_obj = self.openerp.pool.get('account.invoice')
-        po_obj = self.openerp.pool.get('payment.order')
+        self.openerp.pool.get('payment.order')
         imd_obj = self.openerp.pool.get('ir.model.data')
         cursor = self.cursor
         uid = self.uid
         order_id = imd_obj.get_object_reference(
             self.cursor, self.uid, 'account_invoice_som', 'remesa_0001'
         )[1]
-        search_params = [('date_due','<=', '2021-04-30'), ('date_due','>=', '2021-01-01'),
-            ('type','=','out_invoice')]
-        inv_ids = inv_obj.search(cursor, uid, search_params+[('state','=', 'draft')])
+        search_params = [('date_due', '<=', '2021-04-30'), ('date_due', '>=', '2021-01-01'),
+                         ('type', '=', 'out_invoice')]
+        inv_ids = inv_obj.search(cursor, uid, search_params + [('state', '=', 'draft')])
         wf_service = netsvc.LocalService('workflow')
         for inv_id in inv_ids:
-            wf_service.trg_validate(uid, 'account.invoice', inv_id, 'invoice_open', cursor)
-        inv_ids = inv_obj.search(cursor, uid, search_params+[('state','=', 'open')])
+            wf_service.trg_validate(uid, 'account.invoice',
+                                    inv_id, 'invoice_open', cursor)
+        inv_ids = inv_obj.search(cursor, uid, search_params + [('state', '=', 'open')])
         inv = inv_obj.browse(cursor, uid, inv_ids[0])
         inv.write({'group_move_id': 1})
         wiz_id = wiz_obj.create(cursor, uid, {})

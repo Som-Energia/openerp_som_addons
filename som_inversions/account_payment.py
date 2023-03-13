@@ -27,4 +27,5 @@ class PaymentLine(osv.osv):
             res['value']['account_id'] = line.account_id.id
         return res
 
+
 PaymentLine()
