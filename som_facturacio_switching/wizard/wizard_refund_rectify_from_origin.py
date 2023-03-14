@@ -56,6 +56,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             ('polissa_id', '=', pol_id),
             ('type', 'in', ['out_invoice', 'out_refund']),
             ('refund_by_id', '=', False),
+            ('rectificative_type', 'not in', ['B', 'A']),
             ('data_inici', '<', data_final),
             ('data_final', '>', data_inici)
             ], order='data_inici asc')
@@ -102,10 +103,26 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         fres_resultat = wiz_ranas_o.action_rectificar(cursor, uid, wiz_id, context=ctx)
         return fres_resultat
 
+    def get_invoice_total_mag(self, cursor, uid, f_id, context={}):
+        fact_obj = self.pool.get('giscedata.facturacio.factura')
+        product_obj = self.pool.get('product.product')
+        mag_product_ids = product_obj.search(cursor, uid, [('default_code', '=', 'RMAG')])
+
+        fact = fact_obj.browse(cursor, uid, f_id, context)
+        mag = 0.0
+        for energy_line in fact.linies_energia:
+            if energy_line.product_id.id in mag_product_ids:
+                mag += energy_line.price_subtotal
+
+        return mag
+
     def delete_draft_invoices_if_needed(self, cursor, uid, fres_resultat, f_ids, context={}):
         msg = []
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         f_res_info = fact_obj.read(cursor, uid, fres_resultat, ['rectifying_id','amount_untaxed','invoice_id', 'is_gkwh', 'linies_generacio'])
+        for f_res in f_res_info:
+            mag = self.get_invoice_total_mag(cursor, uid, f_res['id'], context)
+            f_res['amount_untaxed_no_mag'] = f_res['amount_untaxed'] - mag
 
         #Eliminem les que no cal rectificar (import AB == import RE)
         for initial_id in f_ids:
@@ -119,7 +136,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                 msg.append("Per la factura numero {} no s'esborren perquè alguna de les factures té generationkwh.".format(inv_initial_info['number']))
             elif inv_initial_info['linies_generacio'] or has_autoconsumption:
                 msg.append("Per la factura numero {} no s'esborren perquè alguna de les factures té autoconsum.".format(inv_initial_info['number']))
-            elif len(set([x['amount_untaxed'] for x in re_ab_fact_info])) == 1:
+            elif len(set([x['amount_untaxed_no_mag'] for x in re_ab_fact_info])) == 1:
                 ab_re_ids = [x['id'] for x in re_ab_fact_info]
                 fact_obj.unlink(cursor, uid, ab_re_ids)
                 msg.append("Per la factura numero {} les factures AB i RE tenen mateix import, s'esborren".format(inv_initial_info['number']))
@@ -279,6 +296,11 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             pol_id = f1.polissa_id.id
             pol_name = f1.polissa_id.name
             try:
+                if f1.type_factura != 'R':
+                    msg.append("La pòlissa {}, que té l'F1 amb origen {}, l'F1 no és tipus rectificatiu. No s'actua.".format(pol_name, origen))
+                    fact_csv_result.append([origen, pol_name, "F1 no és tipus rectificatiu"])
+                    continue
+
                 if f1.polissa_id.facturacio_suspesa:
                     msg.append('La pòlissa {}, que té l\'F1 amb origen {}, té facturació suspesa. No s\'actua.'.format(pol_name, origen))
                     fact_csv_result.append([origen, pol_name, "Pòlissa amb facturació suspesa"])
@@ -325,6 +347,8 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             msg_open_send, csv_open_send = self.open_polissa_invoices_send_mail(cursor, uid, ids, facts_by_polissa, context)
             msg += msg_open_send
             fact_csv_result += csv_open_send
+
+        if f1_refacturats:
             self.save_info_into_f1_after_refacturacio(cursor, uid, f1_refacturats, context=context)
 
         self.write_report(cursor, uid, ids, fact_csv_result, context)
