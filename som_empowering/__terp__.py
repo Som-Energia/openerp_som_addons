@@ -9,7 +9,6 @@
     "category": "Master",
     "depends":[
         "base",
-        "empowering_api",
         "www_som",
         "mongodb_backend"
     ],
