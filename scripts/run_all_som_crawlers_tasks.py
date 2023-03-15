@@ -2,11 +2,12 @@ from erppeek import Client
 import dbconfig
 
 """_summary_
-Executa tots les tasques actives de som_crawlers sobrescrivint el 'days_of_margin' (tasques d'importació)
+Executa tots les tasques actives de som_crawlers sobrescrivint el
+'days_of_margin' (tasques d'importació)
 """
 
-O = Client(**dbconfig.erppeek)
+client = Client(**dbconfig.erppeek)
 
-active_ids = O.SomCrawlersTask.search()  # TODO: Just imports, not exports
-wiz = O.WizardExecutarTasca.create({})
+active_ids = client.SomCrawlersTask.search()  # TODO: Just imports, not exports
+wiz = client.WizardExecutarTasca.create({})
 wiz.executar_tasca(context={"active_ids": active_ids})

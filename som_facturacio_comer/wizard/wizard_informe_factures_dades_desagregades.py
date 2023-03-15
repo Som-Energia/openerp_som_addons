@@ -207,7 +207,7 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
             "Contractes",
             size=256,
             required=False,
-            help="Entrar números de pòlissa separats amb una coma (Exemple: 0001453, 0001460)",
+            help="Entrar números de pòlissa separats amb una coma (Exemple: 0001453, 0001460)",  # noqa: E501
         ),
         "file": fields.binary("Informe"),
         "file_name": fields.char("Nom fitxer", size=32),

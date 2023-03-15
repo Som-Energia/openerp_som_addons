@@ -47,7 +47,7 @@ _invoice_supplier_renumber_form = """<?xml version="1.0"?>
                 <group colspan="4" col="4">
                     <field name="init" colspan="4" nolabel="1"/>
                 </group>
-            </form>"""
+            </form>"""  # noqa: E501
 
 _invoice_supplier_renumber_fields = {
     "company_id": {"string": "Company", "type": "many2one", "relation": "res.company"},

@@ -48,7 +48,7 @@ class OnDemandDataGenerator:
             + component_name
             + "()"
         )
-        return extractor
+        return extractor  # noqa: F821
 
     def __getattr__(self, name):
         if name not in self.cache.keys():

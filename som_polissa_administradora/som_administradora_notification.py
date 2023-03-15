@@ -6,7 +6,9 @@ from giscedata_polissa import PERMISSION_SELECTION
 
 
 class SomAdministradoraModification(osv.osv):
-    """Registra cada modificació sobre una pòlissa quan hi ha canvis d'adminsitradora OV"""
+    """
+    Registra cada modificació sobre una pòlissa quan hi ha canvis d'adminsitradora OV
+    """
 
     _name = "som.admin.modification"
 
@@ -182,7 +184,7 @@ class SomAdministradoraNotification(osv.osv):
             "openerp.{0}.poweremail_write_callback".format(__name__)
         )
         logger.info(
-            "PE callback for mark as send Admin OV notifications {0} and from user {1}".format(
+            "PE callback for mark as send Admin OV notifications {0} and from user {1}".format(  # noqa: E501
                 ids, uid
             )
         )

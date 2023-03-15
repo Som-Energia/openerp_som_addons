@@ -114,7 +114,7 @@ class PolissaLecturesCalculadesTest(testing.OOTestCase):
 
         self.assertEqual(
             result[0],
-            u"La pòlissa 0001C té lectura F1 amb data {} i data última factura {}.".format(
+            u"La pòlissa 0001C té lectura F1 amb data {} i data última factura {}.".format(  # noqa: E501
                 "2022-03-02", "2022-03-01"
             ),
         )

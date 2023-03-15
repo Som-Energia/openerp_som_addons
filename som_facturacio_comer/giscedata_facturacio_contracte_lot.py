@@ -56,7 +56,7 @@ class GiscedataFacturacioContracteLot(osv.osv):
         except Exception as e:
             logger = logging.getLogger("openerp" + __name__)
             logger.error(
-                "Error calculant el camp funcio date_invoice del contracte_lot ID {}. {}".format(
+                "Error calculant el camp funcio date_invoice del contracte_lot ID {}. {}".format(  # noqa: E501
                     id, e
                 )
             )
@@ -120,7 +120,7 @@ class GiscedataFacturacioContracteLot(osv.osv):
         except Exception as e:
             logger = logging.getLogger("openerp" + __name__)
             logger.error(
-                "Error calculant el camp funcio te_generation del contracte_lot ID {}. {}".format(
+                "Error calculant el camp funcio te_generation del contracte_lot ID {}. {}".format(  # noqa: E501
                     id, e
                 )
             )
@@ -137,7 +137,8 @@ class GiscedataFacturacioContracteLot(osv.osv):
         return res
 
     def _get_clots_from_polissa(self, cr, uid, ids, context=None):
-        """ids són els ids de pòlisses que han canviat. Hem de retornar els ids de clot que cal recalcular"""
+        """ids són els ids de pòlisses que han canviat. Hem de retornar els ids de
+        clot que cal recalcular"""
         cl_obj = self.pool.get("giscedata.facturacio.contracte_lot")
         return cl_obj.search(cr, uid, [("polissa_id", "in", ids)])
 
@@ -159,7 +160,7 @@ class GiscedataFacturacioContracteLot(osv.osv):
         except Exception as e:
             logger = logging.getLogger("openerp" + __name__)
             logger.error(
-                "Error calculant el camp funcio te_generation del contracte_lot ID %s: %s ",
+                "Error calculant el camp funcio te_generation del contracte_lot ID %s: %s ",  # noqa: E501
                 id,
                 e,
             )

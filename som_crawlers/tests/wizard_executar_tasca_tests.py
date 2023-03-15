@@ -31,7 +31,8 @@ class WizardExecutarTascaTests(testing.OOTestCase):
     def tearDown(self):
         pass
 
-    """Function that tests if after trying to download files, the result is "Falta especificar nom fitxer"
+    """Function that tests if after trying to download files,
+    the result is "Falta especificar nom fitxer"
         # @param self The object pointer"""
 
     def test_download_files_resultat_falta_especificar_nomfitxer(
@@ -41,7 +42,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
-            crawler_task_id = self.Data.get_object_reference(
+            self.Data.get_object_reference(
                 cursor, uid, "som_crawlers", "demo_accions_planificades_1"
             )[1]
             crawler_task_step_id = self.Data.get_object_reference(
@@ -58,14 +59,15 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             # check result
             self.assertEqual(resultat, "Falta especificar nom fitxer")
 
-    """Function that tests if after trying to download files, the result is that the directory does not exits
+    """Function that tests if after trying to download files,
+    the result is that the directory does not exits
         # @param self The object pointer"""
 
     def test_download_files_resultat_file_or_directory_does_not_exist(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
-            crawler_task_id = self.Data.get_object_reference(
+            self.Data.get_object_reference(
                 cursor, uid, "som_crawlers", "demo_accions_planificades_1"
             )[1]
             crawler_task_step_id = self.Data.get_object_reference(
@@ -138,7 +140,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
                 cursor, uid, "som_crawlers", "demo_result_4"
             )[1]
             pathToZip = zipfile.ZipFile(
-                "~/src/openerp_som_addons/som_crawlers/demo/zip_demo_2/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip"
+                "~/src/openerp_som_addons/som_crawlers/demo/zip_demo_2/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip"  # noqa: E501
             )
             with open(pathToZip, "r") as f:
                 content = f.read()
@@ -153,6 +155,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             attachment_id = self.pool.get("ir.attachment").create(
                 cursor, uid, attachment, context=None
             )
+            result = self.pool.get("som.crawlers.result")
             result.write(cursor, uid, result_id, {"zip_name": attachment_id})
 
             result = self.taskStep.import_xml_files(
@@ -335,7 +338,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
 
             self.assertEqual(
                 result,
-                "File anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip succesfully attached\n",
+                "File anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip succesfully attached\n",  # noqa: E501
             )
 
     """  Create args for script test --> sortida string arguments
@@ -360,7 +363,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
                 crawler_config_obj, taskStepParams, fileName
             )
 
-            result_string = "-pr None -u usuariProva -d 80 -f prova.txt -url 'https://egymonluments.gov.eg/en/museums/egyptian-museum' -p contraProva -c Selenium -b firefox -n prova1 -fltr 'https://egymonuments.gov.eg/en/collections/kawit-sarcophagus-4' -nfp False -url-upload 'False'"
+            result_string = "-pr None -u usuariProva -d 80 -f prova.txt -url 'https://egymonluments.gov.eg/en/museums/egyptian-museum' -p contraProva -c Selenium -b firefox -n prova1 -fltr 'https://egymonuments.gov.eg/en/collections/kawit-sarcophagus-4' -nfp False -url-upload 'False'"  # noqa: E501
             self.assertEqual(set(result.split()), set(result_string.split()))
 
     def test_readOutPutFile_entrada_path_inexistent_sortida_excepcio(self):

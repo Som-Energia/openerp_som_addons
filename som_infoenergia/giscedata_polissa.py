@@ -92,9 +92,6 @@ class GiscedataPolissaInfoenergia(osv.osv):
             polissa_id = polissa_id[0]
 
         fact_obj = self.pool.get("giscedata.facturacio.factura")
-        limit_date = (datetime.today() - timedelta(self.MINIM_DIES_CONSUM)).strftime(
-            "%Y-%m-%d"
-        )
         from_date = (datetime.today() - relativedelta(months=14)).strftime("%Y-%m-%d")
 
         search_params = [

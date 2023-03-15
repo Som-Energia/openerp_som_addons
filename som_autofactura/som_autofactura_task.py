@@ -27,9 +27,9 @@ class SomAutofacturaTask(osv.osv):
             cursor, uid, [("task_id", "=", ids)], order="sequence", context=ctx_sch
         ):
             step = step_obj.browse(cursor, uid, step_id, context)
-            if step.active == False and some_task_done:
+            if not step.active and some_task_done:
                 break
-            if step.active == False:
+            if not step.active:
                 continue
             step._execute_task(context=context)
             step._wait_until_task_done(context=context)

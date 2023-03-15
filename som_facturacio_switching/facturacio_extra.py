@@ -169,7 +169,7 @@ class FacturacioExtra(osv.osv):
                 SELECT DISTINCT extra_id FROM giscedata_facturacio_importacio_linia_extra liex
                 LEFT JOIN giscedata_facturacio_importacio_linia imli ON imli.id = liex.linia_id
                 WHERE imli.create_date::DATE {} '{}'
-                """.format(
+                """.format(   # noqa: E501
                         arg[0][1], arg[0][2]
                     )
                 )

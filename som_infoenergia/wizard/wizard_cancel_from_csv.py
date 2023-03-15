@@ -18,7 +18,7 @@ class WizardCancelFromCSV(osv.osv_memory):
             "CSV File",
             required=True,
             help=_(
-                u"Número de pòlissa de les pòlisses de les quals se'n vol cancel·lar l'enviament"
+                u"Número de pòlissa de les pòlisses de les quals se'n vol cancel·lar l'enviament"  # noqa: E501
             ),
         ),
         "state": fields.selection(

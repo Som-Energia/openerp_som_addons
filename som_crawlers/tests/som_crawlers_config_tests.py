@@ -23,7 +23,7 @@ class ConfiguracioTests(testing.OOTestCase):
 
     # Function that tests if the new password is the same as the old one
     # @param self The object pointe
-    def test_canviarContrasenya_contrasenya_nova_igual_contrasenya_antiga_resultat_exception(
+    def test_canviarContrasenya_contrasenya_nova_igual_contrasenya_antiga_resultat_exception(  # noqa: E501
         self,
     ):
         with Transaction().start(self.database) as txn:
@@ -37,7 +37,7 @@ class ConfiguracioTests(testing.OOTestCase):
             # set values
             password = "Admin"
             # check result
-            result = self.Configuracio.canviar_contrasenya(
+            self.Configuracio.canviar_contrasenya(
                 cursor, uid, crawler_config_id, password
             )
             with self.assertRaises(osv.except_osv) as context:

@@ -50,7 +50,7 @@ class AccountInvoice(osv.osv):
                         and field == "number"
                         and isinstance(match, (unicode, str))
                     ):
-                        if not "%" in match:
+                        if "%" not in match:
                             operator = "="
                         args[idx] = (field, operator, match)
                     if (
@@ -58,7 +58,7 @@ class AccountInvoice(osv.osv):
                         and field == "origin"
                         and isinstance(match, (unicode, str))
                     ):
-                        if not "%" in match:
+                        if "%" not in match:
                             operator = "="
                         args[idx] = (field, operator, match)
         return super(AccountInvoice, self).search(
@@ -68,7 +68,7 @@ class AccountInvoice(osv.osv):
     def _auto_init(self, cr, context={}):
         result = super(AccountInvoice, self)._auto_init(cr, context)
         cr.execute(
-            "SELECT indexname FROM pg_indexes WHERE indexname = 'account_invoice_number_index'"
+            "SELECT indexname FROM pg_indexes WHERE indexname = 'account_invoice_number_index'"  # noqa: E501
         )
         if not cr.fetchone():
             cr.execute(

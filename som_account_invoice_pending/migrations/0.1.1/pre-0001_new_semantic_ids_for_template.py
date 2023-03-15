@@ -48,7 +48,7 @@ def up(cursor, installed_version):
             </record>
         </data>
     </openerp>
-    """
+    """  # noqa: E501
 
     dm = DataMigration(
         xml_content,

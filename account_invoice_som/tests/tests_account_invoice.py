@@ -72,7 +72,7 @@ class TestAccountInvoiceSom(testing.OOTestCaseWithCursor):
         cache.clean_caches_for_db(cursor.dbname)
         res_obj.set(cursor, uid, "invoice_origin_cerca_exacte", value)
 
-    def test_search_withPercentage_active(self):
+    def test_search_withPercentage_active(self):  # noqa: F811
         self.set_invoice_origin_cerca_exacte(self.cursor, self.uid, "1")
 
         ai_ids = self.ai_obj.search(
@@ -80,7 +80,7 @@ class TestAccountInvoiceSom(testing.OOTestCaseWithCursor):
         )
         self.assertGreater(len(ai_ids), 1)
 
-    def test_search_exactExist_active(self):
+    def test_search_exactExist_active(self):  # noqa: F811
         self.set_invoice_origin_cerca_exacte(self.cursor, self.uid, "1")
 
         ai_ids = self.ai_obj.search(
@@ -89,7 +89,7 @@ class TestAccountInvoiceSom(testing.OOTestCaseWithCursor):
 
         self.assertEqual(len(ai_ids), 1)
 
-    def test_search_exactNotExist_active(self):
+    def test_search_exactNotExist_active(self):  # noqa: F811
         self.set_invoice_origin_cerca_exacte(self.cursor, self.uid, "1")
 
         ai_ids = self.ai_obj.search(
@@ -98,7 +98,7 @@ class TestAccountInvoiceSom(testing.OOTestCaseWithCursor):
 
         self.assertEqual(len(ai_ids), 0)
 
-    def test_search_withPercentage_disabled(self):
+    def test_search_withPercentage_disabled(self):  # noqa: F811
         self.set_invoice_origin_cerca_exacte(self.cursor, self.uid, "0")
 
         ai_ids = self.ai_obj.search(
@@ -107,7 +107,7 @@ class TestAccountInvoiceSom(testing.OOTestCaseWithCursor):
 
         self.assertGreater(len(ai_ids), 1)
 
-    def test_search_exactExist_disabled(self):
+    def test_search_exactExist_disabled(self):  # noqa: F811
         self.set_invoice_origin_cerca_exacte(self.cursor, self.uid, "0")
 
         ai_ids = self.ai_obj.search(
@@ -116,7 +116,7 @@ class TestAccountInvoiceSom(testing.OOTestCaseWithCursor):
 
         self.assertEqual(len(ai_ids), 1)
 
-    def test_search_exactNotExist_disabled(self):
+    def test_search_exactNotExist_disabled(self):  # noqa: F811
         self.set_invoice_origin_cerca_exacte(self.cursor, self.uid, "0")
 
         ai_ids = self.ai_obj.search(

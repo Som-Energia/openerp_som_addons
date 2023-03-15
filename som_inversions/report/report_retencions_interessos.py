@@ -35,7 +35,7 @@ class AccountInvoice(osv.osv):
             aportacions_member_ids = invest_obj.search(cursor, uid, search_params)
             aportacions_member = invest_obj.browse(cursor, uid, aportacions_member_ids)
             total_member_nshares = sum([item.nshares for item in aportacions_member])
-            data.balance = total_member_nshares * gkwh.shareValue
+            data.balance = total_member_nshares * gkwh.shareValue  # noqa: F821
 
         elif data.type == "TIT":
             aml_obj = self.pool.get("account.move.line")

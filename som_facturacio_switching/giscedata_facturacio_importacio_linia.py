@@ -69,10 +69,10 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
                 comentario = comentario[0]
                 try:
                     comentario = comentario.encode("utf-8")
-                except:
+                except Exception:
                     try:
                         comentario = comentario.decode("latin-1").encode("utf-8")
-                    except:
+                    except Exception:
                         comentario = ""
 
                 vals["comentari"] = comentario
@@ -92,7 +92,8 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
     def search(
         self, cr, user, args, offset=0, limit=None, order=None, context=None, count=False
     ):
-        """Funció per fer cerques per origin (invoice_number_text) exacte, enlloc d'amb 'ilike'."""
+        """Funció per fer cerques per origin (invoice_number_text) exacte,
+        enlloc d'amb 'ilike'."""
         exact_origin = self.exact_origin_search(cr, user, context=context)
         if exact_origin:
             for idx, arg in enumerate(args):
@@ -103,7 +104,7 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
                         and field == "invoice_number_text"
                         and isinstance(match, (unicode, str))
                     ):
-                        if not "%" in match:
+                        if "%" not in match:
                             operator = "="
                         args[idx] = (field, operator, match)
         return super(GiscedataFacturacioImportacioLinia, self).search(
@@ -119,7 +120,7 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
                 f1_dict[cups_id] = []
             f1_dict[cups_id].append(f1)
 
-        for _, f1ns in f1_dict.items():
+        for clau, f1ns in f1_dict.items():
             sorted_list = sorted(f1ns, key=lambda x: x["fecha_factura_desde"])
             line_ids = [x["id"] for x in sorted_list]
             self.process_line(cursor, uid, line_ids, context=context)
@@ -152,7 +153,7 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
         if f1_ids:
             self.reimport_f1_by_cups(cursor, uid, f1_ids, context=context)
         logger.info(
-            "Iniciada la reimportació de {} fitxers, amb data factura entre {} i avui ({})".format(
+            "Iniciada la reimportació de {} fitxers, amb data factura entre {} i avui ({})".format(  # noqa: E501
                 len(f1_ids), date_to_check, datetime.today().strftime("%Y-%m-%d")
             )
         )

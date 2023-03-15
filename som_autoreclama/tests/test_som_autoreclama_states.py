@@ -976,7 +976,8 @@ class SomAutoreclamaDoActionTest(SomAutoreclamaEzATC_Test):
         self.assertEqual(pre_atc_data, str(atc.read()))
 
         atc_obj.browse(self.cursor, self.uid, new_atc_id)
-        # automated atc creation covered by test_create_ATC_R1_029_from_atc_via_wizard__from_atr
+        # automated atc creation covered by
+        # test_create_ATC_R1_029_from_atc_via_wizard__from_atr
 
     def test_do_action__error(self):
         atc_obj = self.get_model("giscedata.atc")
@@ -993,7 +994,7 @@ class SomAutoreclamaDoActionTest(SomAutoreclamaEzATC_Test):
             self.uid,
             state_id,
             {
-                "generate_atc_parameters_text": '{"model": "giscedata.atc", "method": "create_ATC_R1_029_from_atc_via_wizard_ERROR"}',
+                "generate_atc_parameters_text": '{"model": "giscedata.atc", "method": "create_ATC_R1_029_from_atc_via_wizard_ERROR"}',  # noqa: E501
             },
         )
         state = state_obj.browse(self.cursor, self.uid, state_id)

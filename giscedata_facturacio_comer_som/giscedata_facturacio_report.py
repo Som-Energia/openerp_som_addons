@@ -856,7 +856,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 )
             else:
                 return polissa.distribuidora.address[0].phone
-        except:
+       except Exception:
             return polissa.distribuidora.www_phone
 
     def get_atr_price(self, fact, tarifa, linia):

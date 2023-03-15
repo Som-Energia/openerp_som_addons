@@ -9,6 +9,7 @@ from tools.config import config
 import tools
 from oorq.decorators import job
 import six
+import json
 
 LOGGER = netsvc.Logger()
 
@@ -186,7 +187,7 @@ class PowersmsSMSbox(osv.osv):
         try:
             self.write(cr_tmp, uid, ids, {"state": "sending"}, context)
             cr_tmp.commit()
-        except:
+        except Exception:
             cr_tmp.rollback()
         finally:
             cr_tmp.close()
@@ -221,7 +222,7 @@ class PowersmsSMSbox(osv.osv):
                     values.get("psms_body_text", u"") or u"",
                     context=context,
                 )
-                if result == True:
+                if result:
                     self.write(
                         cr,
                         uid,
@@ -243,7 +244,7 @@ class PowersmsSMSbox(osv.osv):
                     _("Power SMS"),
                     netsvc.LOG_ERROR,
                     _(
-                        "Sending of SMS %s failed. Probable Reason: Could not login to server\nError: %s"
+                        "Sending of SMS %s failed. Probable Reason: Could not login to server\nError: %s"  # noqa: E501
                     )
                     % (id, error),
                 )

@@ -11,7 +11,8 @@ class WizardCanviarDiesDeMarge(osv.osv_memory):
     # Module name
     _name = "wizard.canviar.dies.de.marge"
 
-    # Wizard function that changes the days of margin of a configuration which id is activated
+    # Wizard function that changes the days of margin of a configuration which
+    # id is activated
     # @param self The object pointer
     # @param cursor The database pointer
     # @param uid The current user

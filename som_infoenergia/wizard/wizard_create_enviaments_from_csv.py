@@ -18,7 +18,7 @@ class WizardCancelFromCSV(osv.osv_memory):
             _(u"Fitxer CSV"),
             required=True,
             help=_(
-                u"Número de pòlissa de les pòlisses de les quals se'n vol crear un enviament"
+                u"Número de pòlissa de les pòlisses de les quals se'n vol crear un enviament"  # noqa: E501
             ),
         ),
         "state": fields.selection(

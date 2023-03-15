@@ -56,7 +56,8 @@ class TestUnlinkATC(TestSwitchingImport):
 
     def test__case_cancel_ATC_with_R101_enviament_pendentFalse__NoCancelATC(self):
         """
-        Test case_cancel for atc 'pending' with R101 without enviament_pendent, ATC is not cancelled
+        Test case_cancel for atc 'pending' with R101 without enviament_pendent,
+        ATC is not cancelled
         """
         atc_o = self.pool.get("giscedata.atc")
         imd_obj = self.openerp.pool.get("ir.model.data")
@@ -81,7 +82,7 @@ class TestUnlinkATC(TestSwitchingImport):
 
         self.assertEqual(
             atc_e.value,
-            "Cas ATC {} no es pot cancel·lar: R1 01 està pendent del pas finalitzador".format(
+            "Cas ATC {} no es pot cancel·lar: R1 01 està pendent del pas finalitzador".format(  # noqa: E501
                 atc_id
             ),
         )
@@ -92,7 +93,8 @@ class TestUnlinkATC(TestSwitchingImport):
 
     def test__case_cancel_ATC_with_R101_enviament_pendentTrue__CancelATC(self):
         """
-        Test case_cancel for atc 'pending' with R101 with enviament_pendent, ATC is cancelled
+        Test case_cancel for atc 'pending' with R101 with enviament_pendent,
+        ATC is cancelled
         """
         atc_o = self.pool.get("giscedata.atc")
         imd_obj = self.openerp.pool.get("ir.model.data")
@@ -285,7 +287,7 @@ class TestUnlinkATC(TestSwitchingImport):
 
         self.assertEqual(
             atc_e.value,
-            u"Cas ATC {} no es pot cancel·lar: R1 02 està pendent del pas finalitzador".format(
+            u"Cas ATC {} no es pot cancel·lar: R1 02 està pendent del pas finalitzador".format(  # noqa: E501
                 atc_id
             ),
         )
@@ -391,7 +393,7 @@ class TestUnlinkATC(TestSwitchingImport):
 
         self.assertEqual(
             atc_e.value,
-            "Cas ATC {} no es pot cancel·lar: R1 03 està pendent del pas finalitzador".format(
+            "Cas ATC {} no es pot cancel·lar: R1 03 està pendent del pas finalitzador".format(  # noqa: E501
                 atc_id
             ),
         )
@@ -439,7 +441,7 @@ class TestUnlinkATC(TestSwitchingImport):
 
         self.assertEqual(
             atc_e.value,
-            "Cas ATC {} no es pot cancel·lar: R1 04 en estat Obert - ERROR MANUAL -".format(
+            "Cas ATC {} no es pot cancel·lar: R1 04 en estat Obert - ERROR MANUAL -".format(  # noqa: E501
                 atc_id
             ),
         )
@@ -563,7 +565,7 @@ class TestUnlinkATC(TestSwitchingImport):
 
         self.assertEqual(
             atc_e.value,
-            u"Cas ATC {} no es pot cancel·lar: R1 05 l'heu de revisar i tancar - Error manual R1 no oberta".format(
+            u"Cas ATC {} no es pot cancel·lar: R1 05 l'heu de revisar i tancar - Error manual R1 no oberta".format(  # noqa: E501
                 atc_id
             ),
         )
@@ -639,7 +641,7 @@ class TestUnlinkATC(TestSwitchingImport):
 
         self.assertEqual(
             atc_e.value,
-            "Cas ATC {} no es pot cancel·lar: R1 08 no pots cancel·lar una cancel·lació, cal esperar a rebre pas 09 de distribuïdora".format(
+            "Cas ATC {} no es pot cancel·lar: R1 08 no pots cancel·lar una cancel·lació, cal esperar a rebre pas 09 de distribuïdora".format(  # noqa: E501
                 atc_id
             ),
         )
@@ -700,7 +702,7 @@ class TestUnlinkATC(TestSwitchingImport):
 
         self.assertEqual(
             atc_e.value,
-            "Cas ATC {} no es pot cancel·lar: R1 08 no pots cancel·lar una cancel·lació, cal esperar a rebre pas 09 de distribuïdora".format(
+            "Cas ATC {} no es pot cancel·lar: R1 08 no pots cancel·lar una cancel·lació, cal esperar a rebre pas 09 de distribuïdora".format(  # noqa: E501
                 atc_id
             ),
         )
@@ -778,7 +780,7 @@ class TestUnlinkATC(TestSwitchingImport):
 
         self.assertEqual(
             atc_e.value,
-            "Cas ATC {} no es pot cancel·lar: R1 09 d'acceptació s'ha de tancar i no cancel·lar".format(
+            "Cas ATC {} no es pot cancel·lar: R1 09 d'acceptació s'ha de tancar i no cancel·lar".format(  # noqa: E501
                 atc_id
             ),
         )
@@ -877,7 +879,7 @@ class TestUnlinkATC(TestSwitchingImport):
 
         self.assertEqual(
             atc_e.value,
-            "Cas ATC {} no es pot cancel·lar: R1 09 de rebuig no es pot cancel·lar ni tancar".format(
+            "Cas ATC {} no es pot cancel·lar: R1 09 de rebuig no es pot cancel·lar ni tancar".format(  # noqa: E501
                 atc_id
             ),
         )
@@ -906,7 +908,7 @@ class TestUnlinkATC(TestSwitchingImport):
 
         self.assertEqual(
             atc_e.value,
-            "Cas ATC {} no es pot cancel·lar: L'estat no és Pendent, Esborrany o Obert".format(
+            "Cas ATC {} no es pot cancel·lar: L'estat no és Pendent, Esborrany o Obert".format(  # noqa: E501
                 atc_id
             ),
         )

@@ -130,7 +130,7 @@ class WizardAccountBalanceReport(osv.osv_memory):
 
         csv_file += "\n"
         csv_file += ";;Period;Period;Period;Period;F. Year;F. Year;F. Year;F. Year\n"
-        csv_file += "Code;Account;Init. Balance;Debit;Credit;Balance;Init. Balance;Debit;Credit;Balance\n\n"
+        csv_file += "Code;Account;Init. Balance;Debit;Credit;Balance;Init. Balance;Debit;Credit;Balance\n\n"  # noqa: E501
 
         lines = utils.lines(
             self, cr, uid, form, ids=account_ids, done=None, level=0, context=context
@@ -200,7 +200,8 @@ class WizardAccountBalanceReport(osv.osv_memory):
         self.check_all_accounts(cr, uid, ids, datas, context)
         result = self._excel_create(cr, uid, ids, datas, context)
 
-        # TODO: Save file to MongoDB to support workers in different server of main instance
+        # TODO: Save file to MongoDB to support workers in different
+        # server of main instance
         timestamp = datetime.today().strftime("%Y-%m-%d-%H:%M:%S")
         filename = "/tmp/account_balance_" + timestamp
         file = open(filename, "wr")

@@ -1,3 +1,5 @@
+# flake8: noqa
+
 import configdb
 from erppeek import Client as Client
 
@@ -32,7 +34,7 @@ def change_account_invoice(invoice, vals, to_write_vals):
     partner = vals["partner"]
     mandate = vals["mandate"]
 
-    ## invoice_id (account.invoice)
+    # invoice_id (account.invoice)
 
     ai_obj = c.model("account.invoice")
     ai = ai_obj.browse(invoice.id)
@@ -100,7 +102,7 @@ if partner_new and fact:
         "mandate": mandate_new.id,
     }
 
-    ## invoice_id (account.invoice)
+    # invoice_id (account.invoice)
     change_account_invoice(fact.invoice_id, vals, write_vals)
 
 else:

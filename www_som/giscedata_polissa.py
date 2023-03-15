@@ -24,7 +24,7 @@ class GiscedataPolissa(osv.osv):
             search = [
                 ("state", "=", "open"),
                 ("polissa_id", "=", polissa_id),
-                ("type", "like", "out\_"),
+                ("type", "like", "out\_"),  # noqa: W605
             ]
             invoices_open = factura_obj.search(cursor, uid, search)
             if invoices_open:

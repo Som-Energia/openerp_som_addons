@@ -60,7 +60,8 @@ class InvoiceFE:
             for lect in lect_vals:
                 # En funció dels origens, escrivim el text
                 # Si Estimada (40) o Sin Lectura (99) i Estimada (ES): Estimada Somenergia
-                # Si Estimada (40) o Sin Lectura (99) i F1/Q1/etc...(!ES): Estimada distribuïdora
+                # Si Estimada (40) o Sin Lectura (99) i F1/Q1/etc...(!ES):
+                #   Estimada distribuïdora
                 # La resta: Real
                 origen_txt = "real"
                 if lect["origen_id"][0] in [estimada_id, sin_lectura_id]:
@@ -107,10 +108,10 @@ class InvoiceFE:
         result["date_to"] = dateformat(invoice.data_final)
         result["other_concepts"] = []
         altres_lines = [
-            l
-            for l in invoice.linia_ids
-            if l.tipus in ("altres", "cobrament")
-            and l.invoice_line_id.product_id.code
+            line
+            for line in invoice.linia_ids
+            if line.tipus in ("altres", "cobrament")
+            and line.invoice_line_id.product_id.code
             not in ("DN01", "BS01", "DESC1721", "DESC1721ENE", "DESC1721POT")
         ]
         for altra_linia in altres_lines:
@@ -156,7 +157,7 @@ class InvoiceFE:
             result["lectures"].append(dict_lectura)
 
         excess_lines = {"P1": 0, "P2": 0, "P3": 0, "P4": 0, "P5": 0, "P6": 0}
-        lines = [l for l in invoice.linia_ids if l.tipus == "exces_potencia"]
+        lines = [line for line in invoice.linia_ids if line.tipus == "exces_potencia"]
         result["maximetre"] = False
         if lines:
             result["maximetre"] = True

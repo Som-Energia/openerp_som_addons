@@ -577,10 +577,10 @@ class WizardCancelFromCSVTestsAndAddContractsLot(testing.OOTestCase):
         wiz_info = wiz_obj.read(self.cursor, self.uid, [wiz_id], ["info"])[0]["info"]
         self.assertEqual(wiz_info, "Es crearan els enviaments de 2 pòlisses en segon pla")
 
-    @mock.patch(
+    @mock.patch(  # noqa: F811
         "som_infoenergia.som_infoenergia_lot.SomInfoenergiaLotEnviament.create_enviaments_from_object_list"  # noqa: E501
     )
-    def test_create_enviaments_from_csv__massive_extra_info_2(self, mock_create):
+    def test_create_enviaments_from_csv__massive_extra_info(self, mock_create):
         wiz_obj = self.openerp.pool.get("wizard.create.enviaments.from.csv")
         imd_obj = self.openerp.pool.get("ir.model.data")
         pol_obj = self.openerp.pool.get("giscedata.polissa")
