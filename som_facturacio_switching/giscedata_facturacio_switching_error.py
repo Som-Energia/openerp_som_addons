@@ -8,7 +8,7 @@ class GiscedataFacturacioSwitchingValidator(osv.osv):
     _name = "giscedata.facturacio.switching.validator"
     _inherit = "giscedata.facturacio.switching.validator"
 
-    def check_consum_lectures_facturat_incoherent(
+    def check_consum_lectures_facturat_incoherent(  # noqa: C901
         self, cursor, uid, line, f1, parameters=None
     ):
         if not parameters:
@@ -26,7 +26,8 @@ class GiscedataFacturacioSwitchingValidator(osv.osv):
             # Per les regularitzadores i complementaries tampoc
             if fact_xml.datos_factura.tipo_factura in ["G", "C"]:
                 continue
-            # per les tarifes noves amb lectures antiues. TODO: podriem aplicar percentatges del BOE i fer el check
+            # per les tarifes noves amb lectures antiues.
+            # TODO: podriem aplicar percentatges del BOE i fer el check
             if fact_xml.te_lectures_pre_td_amb_tarifa_td():
                 continue
             # Per les anuladores de regularitzadores i complementaries

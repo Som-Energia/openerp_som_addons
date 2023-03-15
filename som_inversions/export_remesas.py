@@ -61,7 +61,7 @@ class WizardExportPaymentFile(osv.osv_memory):
             return super(WizardExportPaymentFile, self).get_invoice(
                 cursor, uid, line, context=context
             )
-        except NoInvoiceException, e:
+        except NoInvoiceException:
             line_obj = self.pool.get("payment.line")
             if isinstance(line, (int, long)):
                 pline = line_obj.browse(cursor, uid, line, context=context)

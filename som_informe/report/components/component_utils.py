@@ -51,9 +51,9 @@ def get_invoice_line(invoice, magnitud, periode):
     if not name or not tipus:
         return None
 
-    for l in invoice.linia_ids:
-        if l.name == name and l.tipus == tipus:
-            return l
+    for linia in invoice.linia_ids:
+        if linia.name == name and linia.tipus == tipus:
+            return linia
     return None
 
 

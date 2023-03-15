@@ -154,11 +154,11 @@ class TestPolissaWwwAutolectura(testing.OOTestCase):
         test_date = date.today() - timedelta(days=1)
         self.change_polissa_power_method(pol_id, "icp")
 
-        a = self.create_lect_pool(
+        self.create_lect_pool(
             pol_id, str(test_date), "P1", "A", 22287, "test", "OV", "50"
         )
 
-        b = self.create_lect_pool(
+        self.create_lect_pool(
             pol_id,
             str(test_date - timedelta(days=31)),
             "P1",
@@ -169,7 +169,7 @@ class TestPolissaWwwAutolectura(testing.OOTestCase):
             "40",
         )
 
-        c = self.create_lect_pool(
+        self.create_lect_pool(
             pol_id,
             str(test_date - timedelta(days=61)),
             "P1",

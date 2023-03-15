@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+# flake8: noqa
+
 from osv import osv
 from yamlns import namespace as ns
 from datetime import datetime, timedelta

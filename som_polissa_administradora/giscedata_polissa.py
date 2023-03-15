@@ -25,7 +25,7 @@ ERROR_CODES = {
         "skip_error": True,
     },
     "05": {
-        "msg": u"[05] La data final de l'última modificació contractual és anterior al dia d'avui",
+        "msg": u"[05] La data final de l'última modificació contractual és anterior al dia d'avui",  # noqa: E501
         "skip_error": False,
     },
     "99": {"msg": u"[99] Error desconegut: %s", "skip_error": False},
