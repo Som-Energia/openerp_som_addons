@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from osv import osv, fields
-from datetime import datetime
 
 AVAILABLE_STATES = [("init", "Init"), ("done", "Done")]
 

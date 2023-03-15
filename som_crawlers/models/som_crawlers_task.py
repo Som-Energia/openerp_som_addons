@@ -7,9 +7,9 @@ from enerdata.calendars import REECalendar
 from . import exceptions
 
 
-## Class Task that describes the module and the task fields
+# Class Task that describes the module and the task fields
 class SomCrawlersTask(osv.osv):
-    ## Module name
+    # Module name
     _name = "som.crawlers.task"
 
     def _change_result(self, cursor, uid, ids, context):
@@ -53,7 +53,7 @@ class SomCrawlersTask(osv.osv):
         "som.crawlers.result": (_change_result, ["resultat_bool", "resultat_text"], 10)
     }
 
-    ## Columns field
+    # Columns field
     _columns = {
         "name": fields.char(
             _(u"Nom"),
@@ -117,7 +117,7 @@ class SomCrawlersTask(osv.osv):
             store=_STORE_WHEN_RESULT_MODIFIED,
         ),
     }
-    ## Default values of a column
+    # Default values of a column
     _defaults = {
         "active": lambda *a: False,
         "data_proxima_execucio": datetime.now().strftime("%Y-%m-%d_%H:%M"),

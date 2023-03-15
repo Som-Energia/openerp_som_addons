@@ -1,6 +1,6 @@
 # Translation of OpenERP Server.
 # This file contains the translation of the following modules:
-# 
+#
 # Translators:
 # Agustí Fita <afita@gisce.net>, 2013, 2014, 2017, 2018.
 msgid ""

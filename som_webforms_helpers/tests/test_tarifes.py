@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from destral import testing
-import unittest
 from destral.transaction import Transaction
 
 

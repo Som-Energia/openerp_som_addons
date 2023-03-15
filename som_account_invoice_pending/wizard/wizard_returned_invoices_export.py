@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import tools
 import base64
 import csv
 import StringIO
@@ -71,7 +70,7 @@ class WizardExportReturnedInvoices(osv.osv_memory):
                 if not telefon:
                     raise
                 telefon = "34" + re.sub("[\W_]+", "", telefon)
-            except Exception as e:
+            except Exception:
                 raise osv.except_osv(
                     _("DataError"),
                     _("Error en trobar el telefon pel partner {}".format(nom_sencer)),

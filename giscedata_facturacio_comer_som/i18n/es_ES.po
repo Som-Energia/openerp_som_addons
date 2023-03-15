@@ -1,7 +1,7 @@
 # Translation of OpenERP Server.
 # This file contains the translation of the following modules:
 # * giscedata_facturacio_comer_som
-# 
+#
 # Translators:
 #   <>, 2017, 2018, 2019, 2020.
 # Agustí Fita <afita@gisce.net>, 2018.

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from destral import testing
 from destral.transaction import Transaction
-from destral.patch import PatchNewCursors
-import mock
 
 
 class TestOpenFacturesSendMail(testing.OOTestCase):

@@ -3,7 +3,6 @@ from __future__ import absolute_import
 from osv import osv, fields
 from tools.translate import _
 from gestionatr.defs import TABLA_113
-from datetime import datetime
 import re
 import logging
 

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from destral import testing
 from destral.transaction import Transaction
-from datetime import date, timedelta
 from yamlns.testutils import assertNsEqual
 
 
@@ -39,7 +38,7 @@ class TestPendingStatesData(testing.OOTestCase):
             active: true
             is_last: true
             template_id: false
-            name: Pendent consulta advocats 
+            name: Pendent consulta advocats
             pending_days: 0
             pending_days_type: natural
             process_id: Default Process

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from osv import osv
-from tools import cache
 from ast import literal_eval
 
 _WWW_TIPUS_FACTURA = {

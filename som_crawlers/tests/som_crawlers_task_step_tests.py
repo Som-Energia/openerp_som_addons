@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from destral import testing
-from osv import osv
 from destral.transaction import Transaction
 import os
 

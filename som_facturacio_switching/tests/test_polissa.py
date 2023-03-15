@@ -2,7 +2,6 @@
 from destral import testing
 from destral.transaction import Transaction
 from mock import patch, PropertyMock
-from osv import osv
 
 
 class TestsEscullLlistaPreus(testing.OOTestCase):
@@ -78,7 +77,7 @@ class TestsEscullLlistaPreus(testing.OOTestCase):
         imd_obj = self.model("ir.model.data")
 
         pol = self.get_demo_contract()
-        pricelist_list = self.get_demo_pricelist_list()
+        self.get_demo_pricelist_list()
 
         with patch.object(
             pol.cups.id_municipi.subsistema_id,

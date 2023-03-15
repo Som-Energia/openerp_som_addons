@@ -3,11 +3,7 @@ from destral import testing
 import unittest
 from destral.transaction import Transaction
 
-from expects import *
-import osv
 
-import csv
-import os
 import mock
 
 

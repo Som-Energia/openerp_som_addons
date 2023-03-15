@@ -1,5 +1,4 @@
-import uuid
-from osv import osv, fields
+from osv import osv
 
 
 class GiscedataPolissa(osv.osv):

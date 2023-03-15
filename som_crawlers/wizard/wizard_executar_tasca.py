@@ -1,24 +1,23 @@
 # -*- coding: utf-8 -*-
 from osv import osv
-from tools.translate import _
 from datetime import datetime
 
-## Describes the module that executes a general task
+# Describes the module that executes a general task
 # @author Ikram Ahdadouche El Idrissi
 # @author Dalila Jbilou Kouhous
 
-## Describes the module and contains the function that changes the password
+# Describes the module and contains the function that changes the password
 
 
 class WizardExecutarTasca(osv.osv_memory):
 
-    ## Module name
+    # Module name
     _name = "wizard.executar.tasca"
 
     """Function that gets gets that task, task result and task step, and executes a task  """
 
     def executar_tasca(self, cursor, uid, ids, context=None):  # tasca individual
-        ##obtenim l'objecte tasca
+        # obtenim l'objecte tasca
         task = self.pool.get("som.crawlers.task")
         if not context:
             return False
@@ -34,7 +33,7 @@ class WizardExecutarTasca(osv.osv_memory):
         return {"type": "ir.actions.act_window_close"}
 
     def executar_tasca_crawlers_cron(self, cursor, uid, id, context=None):  # tasca cron
-        ##obtenim l'objecte tasca
+        # obtenim l'objecte tasca
         task_obj = self.pool.get("som.crawlers.task")
         active_ids = task_obj.search(cursor, uid, [])
         for id in active_ids:

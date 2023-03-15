@@ -63,7 +63,7 @@ def change_account_invoice(invoice, vals, to_write_vals):
 if partner_new and fact:
     print "Parter and fact exists ", partner_new.name, fact.number
 
-    ## Main invoice
+    # Main invoice
 
     print "Old values: "
     print "address_contact_id ", fact.address_contact_id
@@ -127,7 +127,7 @@ inner join account_move m on m.id = l.move_id
 where m.ref = 'FE2200231739'
 
 begin;
-update payment_line 
+update payment_line
 set partner_id = 204530
 from (
 select p.id as p_id

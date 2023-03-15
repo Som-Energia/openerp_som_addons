@@ -2,7 +2,7 @@
 from destral import testing
 from destral.transaction import Transaction
 
-from expects import *
+from expects import be_empty, be_false, be_true, contain, equal, expect
 import osv
 
 

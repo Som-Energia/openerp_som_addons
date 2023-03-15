@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
-import json
 
-from osv import osv, fields, orm
-from tools.translate import _
-from gestionatr.defs import TABLA_81
-from gestionatr.input.messages.R1 import get_minimum_fields
+from osv import fields, osv
 
 
 class WizardR101FromMultipleContracts(osv.osv_memory):

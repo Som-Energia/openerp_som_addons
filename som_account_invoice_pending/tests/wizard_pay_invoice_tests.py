@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 from destral import testing
 from destral.transaction import Transaction
-from datetime import date, timedelta
+from datetime import date
 import mock
-from mock import Mock
-from osv.osv import except_osv
 from giscedata_facturacio.wizard import wizard_pay_invoice
 from som_account_invoice_pending.wizard import (
     wizard_pay_invoice as som_wizard_pay_invoice,

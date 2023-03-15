@@ -1,6 +1,5 @@
 # coding=utf-8
 
-from gettext import dgettext
 import logging
 import pooler
 from datetime import date, timedelta

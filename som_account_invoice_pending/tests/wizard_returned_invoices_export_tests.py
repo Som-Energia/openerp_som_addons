@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 from destral import testing
 from destral.transaction import Transaction
-from datetime import date, timedelta
-import mock
-from mock import Mock
 from osv.osv import except_osv
 
 
@@ -42,7 +39,7 @@ class TestWizardReturnedInvoicesExport(testing.OOTestCase):
             context = {"active_ids": [self.invoice_1_id, self.invoice_2_id]}
             with self.assertRaises(except_osv) as cm:
                 wiz_id = self.wiz_obj.create(cursor, uid, {})
-                wiz = self.wiz_obj.browse(cursor, uid, wiz_id)
+                self.wiz_obj.browse(cursor, uid, wiz_id)
                 self.wiz_obj.returned_invoices_export(
                     cursor, uid, [wiz_id], context=context
                 )

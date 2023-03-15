@@ -1,7 +1,7 @@
 ## Objectiu
 
 
-## Targeta on es demana o Incidència 
+## Targeta on es demana o Incidència
 
 
 ## Comportament antic

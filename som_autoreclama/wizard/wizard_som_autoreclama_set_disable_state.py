@@ -2,8 +2,6 @@
 
 from osv import osv, fields
 from tools.translate import _
-from tools import config
-from datetime import datetime
 
 
 class WizardSomAutoreclamaSetDisableState(osv.osv_memory):

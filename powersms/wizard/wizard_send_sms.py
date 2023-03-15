@@ -1,5 +1,4 @@
 from osv import osv, fields
-import tools
 
 
 class PowersmsSendWizard(osv.osv_memory):
@@ -112,7 +111,7 @@ class PowersmsSendWizard(osv.osv_memory):
         return {"type": "ir.actions.act_window_close"}
 
     def save_to_smsbox(self, cr, uid, ids, context=None):
-        model_obj = self.pool.get("ir.model")
+        self.pool.get("ir.model")
         if context is None:
             context = {}
 

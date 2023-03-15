@@ -3,9 +3,6 @@
 from destral import testing
 from destral.transaction import Transaction
 import xml.etree.ElementTree as ET
-from datetime import date, datetime, timedelta
-
-from osv import fields
 
 
 class TestAccountAccountSom(testing.OOTestCase):

@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*-
-import json
 from destral import testing
 from osv import osv
 from destral.transaction import Transaction
-import os
-import base64
-import zipfile
 
 
 class ConfiguracioTests(testing.OOTestCase):
 
-    ## Functiom that set up all the module dependencies
+    # Functiom that set up all the module dependencies
     # @param self The object pointer
 
     def setUp(self):
@@ -25,7 +21,7 @@ class ConfiguracioTests(testing.OOTestCase):
     def tearDown(self):
         pass
 
-    ## Function that tests if the new password is the same as the old one
+    # Function that tests if the new password is the same as the old one
     # @param self The object pointe
     def test_canviarContrasenya_contrasenya_nova_igual_contrasenya_antiga_resultat_exception(
         self,
@@ -55,7 +51,7 @@ class ConfiguracioTests(testing.OOTestCase):
                 in context.exception,
             )
 
-    ## Function that tests if the modification password gets an ok result
+    # Function that tests if the modification password gets an ok result
     # @param self The object pointer
     def test_canviarContrasenya_nova_resultat_ok(self):
         with Transaction().start(self.database) as txn:

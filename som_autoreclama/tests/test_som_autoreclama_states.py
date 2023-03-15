@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from destral import testing
 from destral.transaction import Transaction
-from expects import *
 from datetime import date, timedelta
 import mock
 
@@ -832,7 +831,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         self.assertTrue(int(message[44:46]) >= 59)
 
     def test_update_atc_if_possible__do_action_test(self):
-        atc_obj = self.get_model("giscedata.atc")
+        self.get_model("giscedata.atc")
 
         atc_id = self.build_atc(log_days=60, subtype="001", r1=True)
 
@@ -976,7 +975,7 @@ class SomAutoreclamaDoActionTest(SomAutoreclamaEzATC_Test):
         self.assertEqual(pre_atc_state_name, atc.autoreclama_state.name)
         self.assertEqual(pre_atc_data, str(atc.read()))
 
-        new_atc = atc_obj.browse(self.cursor, self.uid, new_atc_id)
+        atc_obj.browse(self.cursor, self.uid, new_atc_id)
         # automated atc creation covered by test_create_ATC_R1_029_from_atc_via_wizard__from_atr
 
     def test_do_action__error(self):
@@ -997,7 +996,6 @@ class SomAutoreclamaDoActionTest(SomAutoreclamaEzATC_Test):
                 "generate_atc_parameters_text": '{"model": "giscedata.atc", "method": "create_ATC_R1_029_from_atc_via_wizard_ERROR"}',
             },
         )
-        error_message = u"'crm.case' object has no attribute 'create_ATC_R1_029_from_atc_via_wizard_ERROR'"
         state = state_obj.browse(self.cursor, self.uid, state_id)
 
         atc = atc_obj.browse(self.cursor, self.uid, atc_id)

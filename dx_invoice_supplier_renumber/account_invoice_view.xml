@@ -19,10 +19,10 @@
             	</field>
             </field>
        </record>
-       
+
        <wizard id="wizard_invoice_supplier_renumber" menu="False" model="account.invoice" name="invoice.supplier.renumber" string="Invoice Supplier Renumber"/>
        <menuitem action="wizard_invoice_supplier_renumber" id="menu_wizard_invoice_supplier_renumber" parent="account.menu_account_end_year_treatments" type="wizard"/>
-       
-       
+
+
     </data>
 </openerp>

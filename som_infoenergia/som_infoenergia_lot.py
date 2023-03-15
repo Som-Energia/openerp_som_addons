@@ -1,19 +1,16 @@
 # -*- coding: utf-8 -*-
-import os, datetime, csv
-from dateutil.relativedelta import relativedelta
+import os
+import datetime
+import csv
 from paramiko import SSHClient, AutoAddPolicy
-import tempfile, shutil
 import base64
 from scp import SCPClient
-import shutil
-from StringIO import StringIO
 
 from autoworker import AutoWorker
 from oorq.decorators import job, create_jobs_group
 from osv import fields, osv
 from tools.translate import _
 from tools import config
-from som_infoenergia.pdf_tools import topdf
 
 TIPUS_LOT = [
     ("infoenergia", "Infoenergia"),

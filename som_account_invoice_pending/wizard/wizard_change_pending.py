@@ -10,7 +10,6 @@ class WizardChangePending(osv.osv_memory):
     _inherit = "wizard.change.pending"
 
     def onchange_new_pending(self, cursor, uid, ids, new_pending):
-        res = False
         pending_obj = self.pool.get("account.invoice.pending.state")
 
         pending_days = pending_obj.read(cursor, uid, new_pending, ["pending_days"])[

@@ -1,5 +1,4 @@
 # -*- encoding: utf-8 -*-
-from datetime import date
 from ..component_utils import (
     dateformat,
     get_description,

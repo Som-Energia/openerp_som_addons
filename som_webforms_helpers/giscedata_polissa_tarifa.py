@@ -269,7 +269,7 @@ class GiscedataPolissaTarifa(osv.osv):
         )
         preus["comptador"] = {
             "value": round(value, config.get("price_accuracy", 6)),
-            #'uom': '€/{}'.format(uom.name.split('/')[1])
+            # 'uom': '€/{}'.format(uom.name.split('/')[1])
             "uom": "€{}".format(
                 ("/" + uom.name.split("/")[1]) if "/" in uom.name else ""
             ),

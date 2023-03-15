@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
-from dateutil import parser
 
 from osv import osv
 from osv import fields

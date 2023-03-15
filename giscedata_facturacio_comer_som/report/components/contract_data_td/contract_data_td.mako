@@ -37,7 +37,7 @@ autoconsum_text = TABLA_113_dict[cd.autoconsum] if cd.autoconsum in TABLA_113_di
         <h1>${_(u"DADES DEL CONTRACTE")}</h1>
         <div class="contract_data_container">
             <div class="contract_data_adreca">
-                ${_(u"Adreça de subministrament:")} <span style="font-weight: bold;">${cd.cups_direction}</span> 
+                ${_(u"Adreça de subministrament:")} <span style="font-weight: bold;">${cd.cups_direction}</span>
             </div>
             <div class="contract_data_column">
                 <p>

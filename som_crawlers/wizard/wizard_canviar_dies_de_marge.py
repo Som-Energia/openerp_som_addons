@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
-from tools.translate import _
 
 # @author Ikram Ahdadouche El Idrissi
 # @author Dalila Jbilou Kouhous
-## Describes the module and contains the function that changes the password
+# Describes the module and contains the function that changes the password
+
+
 class WizardCanviarDiesDeMarge(osv.osv_memory):
 
-    ## Module name
+    # Module name
     _name = "wizard.canviar.dies.de.marge"
 
-    ## Wizard function that changes the days of margin of a configuration which id is activated
+    # Wizard function that changes the days of margin of a configuration which id is activated
     # @param self The object pointer
     # @param cursor The database pointer
     # @param uid The current user
@@ -23,7 +24,7 @@ class WizardCanviarDiesDeMarge(osv.osv_memory):
         if not context:
             return False
 
-        ##Control ids
+        # Control ids
         if not isinstance(ids, (tuple, list)):
             ids = [ids]
 
@@ -31,7 +32,7 @@ class WizardCanviarDiesDeMarge(osv.osv_memory):
         days_of_margin = wiz.days_of_margin
 
         active_ids = context.get("active_ids")
-        ##Load the module
+        # Load the module
         classconf = self.pool.get("som.crawlers.config")
         for id in active_ids:
             classconf.canviar_dies_de_marge(
@@ -40,7 +41,7 @@ class WizardCanviarDiesDeMarge(osv.osv_memory):
 
         return {"type": "ir.actions.act_window_close"}
 
-    ##Column definition : dies de marge nous, the user puts the margin days
+    # Column definition : dies de marge nous, the user puts the margin days
     _columns = {
         "days_of_margin": fields.char(
             "Dies de marge",

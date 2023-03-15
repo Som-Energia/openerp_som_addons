@@ -2,9 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-from datetime import datetime
 from mako.template import Template
-from mako import exceptions
 import pdfkit
 import pypdftk_ as pypdftk
 

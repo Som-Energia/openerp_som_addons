@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from argparse import Namespace
 from destral import testing
-from plantmeter.testutils import assertNsEqual
 import netsvc
-from oorq.decorators import job
 from osv import osv
 from rq import job as rq_job
 from oorq.oorq import setup_redis_connection
@@ -15,7 +12,7 @@ class AccountInvoice(osv.osv):
     _inherit = "account.invoice"
 
     def afegeix_a_remesa_async(self, cursor, uid, ids, order_id, context=None):
-        redis_conn = setup_redis_connection()
+        setup_redis_connection()
         self.afegeix_a_remesa(cursor, uid, ids, order_id, context=context)
         return rq_job.Job(id=0)
 
@@ -129,7 +126,7 @@ class TestsWizardPaymentOrderAddInvoices(testing.OOTestCaseWithCursor):
     def test_add_invoices_to_payment_order__ag_invoices_ok(self):
         wiz_obj = self.openerp.pool.get("wizard.payment.order.add.invoices")
         inv_obj = self.openerp.pool.get("account.invoice")
-        po_obj = self.openerp.pool.get("payment.order")
+        self.openerp.pool.get("payment.order")
         imd_obj = self.openerp.pool.get("ir.model.data")
         cursor = self.cursor
         uid = self.uid

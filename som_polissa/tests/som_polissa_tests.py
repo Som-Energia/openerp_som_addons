@@ -2,10 +2,7 @@
 
 from destral import testing
 from destral.transaction import Transaction
-import unittest
-from osv import fields
 import mock
-from mock import Mock, ANY
 
 
 class TestSomPolissa(testing.OOTestCase):
@@ -83,16 +80,16 @@ class TestSomPolissa(testing.OOTestCase):
 
     @mock.patch("som_polissa.giscedata_polissa.GiscedataPolissa.set_category_eie")
     def test__set_category_eie_on_change_contract(self, mock_func):
-        oldCategories1 = self.getCategories(self.contract1_id)
+        self.getCategories(self.contract1_id)
         titular_id = self.get_ref("som_polissa", "res_partner_domestic")
         vals = {"titular": titular_id}
-        pol = self.polissa_obj.write(self.cursor, self.uid, self.contract1_id, vals)
+        self.polissa_obj.write(self.cursor, self.uid, self.contract1_id, vals)
 
         self.assertEqual(mock_func.call_count, 1)
 
     @mock.patch("som_polissa.giscedata_polissa.GiscedataPolissa.set_category_eie")
     def test__set_category_eie_on_create_contract(self, mock_func):
-        oldCategories1 = self.getCategories(self.contract1_id)
+        self.getCategories(self.contract1_id)
         titular_id = self.get_ref("som_polissa", "res_partner_domestic")
         cups_id = self.get_ref("giscedata_cups", "cups_tarifa_018")
         tensio_id = self.get_ref("giscedata_tensions", "tensio_127")
@@ -108,6 +105,6 @@ class TestSomPolissa(testing.OOTestCase):
             "state": "esborrany",
             "data_alta": "2021-06-01",
         }
-        pol = self.polissa_obj.create(self.cursor, self.uid, vals)
+        self.polissa_obj.create(self.cursor, self.uid, vals)
 
         self.assertEqual(mock_func.call_count, 1)

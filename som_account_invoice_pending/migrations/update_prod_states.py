@@ -3,11 +3,13 @@
    també insereix una nova linia a IrModelData per als estats creats
    a mà"""
 
-import sys, logging
-import configdb, erppeek
+import sys
+import logging
+import configdb
+import erppeek
 
 from yamlns import namespace as ns
-from consolemsg import step, success, warn, error
+from consolemsg import step, warn
 from io import open
 
 
@@ -34,7 +36,7 @@ def migrate():
 
     logger.info(
         """
-        Updating account.invoice.pending.state items that were created 
+        Updating account.invoice.pending.state items that were created
         manually. This will add a pending_days_type value (On those
         null assigned).
     """

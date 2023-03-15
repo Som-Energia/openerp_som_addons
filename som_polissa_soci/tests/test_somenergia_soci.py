@@ -1,8 +1,5 @@
 from destral import testing
 from destral.transaction import Transaction
-import netsvc
-from datetime import date
-import unittest
 from osv.orm import ValidateException
 
 

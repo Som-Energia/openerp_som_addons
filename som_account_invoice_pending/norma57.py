@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from datetime import datetime, timedelta, date
 
 from osv import osv, fields
-from osv.expression import OOQuery
-import logging
 
 
 class Norma57FileLine(osv.osv):

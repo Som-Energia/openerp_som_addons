@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import hashlib
 import mock
 
 from destral import testing

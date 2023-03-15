@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import zipfile
-import glob
 
 from osv import osv
 

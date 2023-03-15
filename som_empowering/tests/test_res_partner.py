@@ -1,6 +1,5 @@
 from destral import testing
 import unittest
-from mongodb_backend.mongodb2 import mdbpool
 import mock
 import pymongo
 from destral.transaction import Transaction

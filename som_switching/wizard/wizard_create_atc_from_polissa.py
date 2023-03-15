@@ -1,6 +1,5 @@
 # -*- encoding: utf-8 -*-
 from osv import osv, fields
-from tools.translate import _
 
 
 class WizardCreateAtc(osv.osv_memory):
@@ -39,7 +38,6 @@ class WizardCreateAtc(osv.osv_memory):
         return res
 
     def onchange_section(self, cursor, uid, ids, section_id):
-        res = False
         section_obj = self.pool.get("crm.case.section")
         seccio = section_obj.read(cursor, uid, section_id, ["code"])["code"]
         if seccio:

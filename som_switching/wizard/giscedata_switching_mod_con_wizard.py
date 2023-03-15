@@ -1,29 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 from osv import osv, fields
-from tools.translate import _
-from gestionatr.defs import (
-    TABLA_17,
-    TABLA_53,
-    CONTROL_POTENCIA,
-    PERSONA,
-    TIPUS_DOCUMENT,
-    TARIFES_SEMPRE_MAX,
-    TARIFES_6_PERIODES,
-    SEL_CONFIG_MODCON_WIZ_TYPE,
-    TABLA_8,
-)
-from enerdata.contracts.tariff import (
-    get_tariff_by_code,
-    NotPositivePower,
-    IncorrectPowerNumber,
-    IncorrectMaxPower,
-    NotAscendingPowers,
-    NotNormalizedPower,
-)
-import vatnumber
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 
 
 class GiscedataSwitchingModConWizard(osv.osv_memory):

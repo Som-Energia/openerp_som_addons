@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from osv import osv, fields
+from osv import osv
 
 
 class GiscedataSwitchingR1_01(osv.osv):

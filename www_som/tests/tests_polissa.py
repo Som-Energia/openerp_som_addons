@@ -3,7 +3,7 @@
 from destral import testing
 from destral.transaction import Transaction
 
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 
 
 class TestPolissaWwwAutolectura(testing.OOTestCase):

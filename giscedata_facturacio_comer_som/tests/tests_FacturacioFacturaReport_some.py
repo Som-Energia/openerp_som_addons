@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from operator import attrgetter
 import mock
 import unittest
 from destral import testing
@@ -178,7 +177,7 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
     @mock.patch("som_polissa_soci.giscedata_polissa.GiscedataPolissa")
     def test__som_report_comp_logo__energetica_mock(self, patch):
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
-        p_id = self.get_fixture("giscedata_polissa", "polissa_0001")
+        self.get_fixture("giscedata_polissa", "polissa_0001")
 
         print "+-" * 50
         print f.polissa_id
@@ -886,14 +885,14 @@ class Tests_FacturacioFacturaReport_energy_consumption_graphic(
                 "data_inici": "2020-09-10",
             },
         )
-        f = self.factura_obj.browse(self.cursor, self.uid, f_id)
+        self.factura_obj.browse(self.cursor, self.uid, f_id)
 
         result = self.r_obj.get_component_energy_consumption_graphic_data(
             **self.bfp(f_id)
         )
         fp = self.bfp(f_id)
         fact = fp["fact"]
-        pol = fp["pol"]
+        fp["pol"]
 
         self.assertYamlfy(result)
         self.assertEquals(
@@ -963,14 +962,14 @@ class Tests_FacturacioFacturaReport_energy_consumption_graphic(
                 "data_inici": "2019-09-01",
             },
         )
-        f = self.factura_obj.browse(self.cursor, self.uid, f_id)
+        self.factura_obj.browse(self.cursor, self.uid, f_id)
 
         result = self.r_obj.get_component_energy_consumption_graphic_data(
             **self.bfp(f_id)
         )
         fp = self.bfp(f_id)
         fact = fp["fact"]
-        pol = fp["pol"]
+        fp["pol"]
 
         self.assertYamlfy(result)
         self.assertEquals(
@@ -1294,7 +1293,7 @@ class Tests_FacturacioFacturaReport_invoice_details_power(
                 "linies_potencia": linies_potencia,
             },
         )
-        f = self.factura_obj.browse(self.cursor, self.uid, f_id)
+        self.factura_obj.browse(self.cursor, self.uid, f_id)
 
         result = self.r_obj.get_component_invoice_details_power_data(**self.bfp(f_id))
 
@@ -1347,7 +1346,7 @@ class Tests_FacturacioFacturaReport_invoice_details_power(
             },
         )
 
-        f = self.factura_obj.browse(self.cursor, self.uid, f_id)
+        self.factura_obj.browse(self.cursor, self.uid, f_id)
 
         result = self.r_obj.get_component_invoice_details_power_data(**self.bfp(f_id))
 
@@ -1417,7 +1416,7 @@ class Tests_FacturacioFacturaReport_invoice_details_power(
             },
         )
 
-        f = self.factura_obj.browse(self.cursor, self.uid, f_id)
+        self.factura_obj.browse(self.cursor, self.uid, f_id)
 
         result = self.r_obj.get_component_invoice_details_power_data(**self.bfp(f_id))
 
@@ -1529,8 +1528,6 @@ class Tests_FacturacioFacturaReport_invoice_details_energy(
                 "data_desde": "2012-09-01",
             },
         )
-
-        atr_linies_energia = {}
 
         result = self.r_obj.get_component_invoice_details_energy_data(**self.bfp(f_id))
 
@@ -2162,7 +2159,7 @@ class Tests_FacturacioFacturaReport_invoice_info(Tests_FacturacioFacturaReport_b
     def test__som_report_comp_invoice_info__without_agreement(self):
 
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
-        f = self.factura_obj.browse(self.cursor, self.uid, f_id)
+        self.factura_obj.browse(self.cursor, self.uid, f_id)
 
         self.factura_obj.write(
             self.cursor, self.uid, f_id, {"date_due": "01/01/2016", "number": "0001/F"}

@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 import netsvc
-import pooler
 from tools.translate import _
 from time import sleep
 from base_extended.base_extended import MultiprocessBackground
 import ast
-import json
 
 
 class SomAutofacturaTask(osv.osv):

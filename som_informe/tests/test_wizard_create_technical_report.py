@@ -2,7 +2,6 @@
 from destral import testing
 import unittest
 from destral.transaction import Transaction
-from expects import *
 
 
 class WizardCreateTechnicalReportTests(testing.OOTestCase):

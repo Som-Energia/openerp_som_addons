@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import unittest
 import mock
 from destral import testing
 from destral.transaction import Transaction
@@ -46,7 +45,7 @@ class powersms_tests(testing.OOTestCase):
                 cursor, uid, "powersms", "sms_outbox_001"
             )[1]
 
-            response = psb.historise(cursor, uid, [sms_id], u"SMS sent successfully")
+            psb.historise(cursor, uid, [sms_id], u"SMS sent successfully")
 
             history = psb.read(cursor, uid, sms_id, ["history"])
             self.assertTrue(u"SMS sent successfully" in history["history"])

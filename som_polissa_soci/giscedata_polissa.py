@@ -2,8 +2,6 @@
 from osv import osv, fields
 import re
 
-from tools.translate import _
-
 
 class GiscedataPolissa(osv.osv):
     """Pòlissa per afegir el camp de soci."""

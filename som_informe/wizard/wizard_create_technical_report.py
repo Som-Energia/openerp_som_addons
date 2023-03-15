@@ -5,7 +5,7 @@ from c2c_webkit_report import webkit_report
 from report import report_sxw
 from tools import config
 import tempfile
-from datetime import date, datetime
+from datetime import date
 from yamlns import namespace as ns
 
 COLLECT_INVOICE_SELECTION = [

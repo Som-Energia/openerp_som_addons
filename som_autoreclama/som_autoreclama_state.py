@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
-import som_autoreclama_state_condition
 import json
 import logging
 import traceback
@@ -81,13 +80,13 @@ class SomAutoreclamaState(osv.osv):
         try:
             parameters = json.loads(value)
             self.write(cursor, uid, ids, {"generate_atc_parameters": parameters})
-        except ValueError as e:
+        except ValueError:
             pass
 
     def check_correct_json(self, cursor, uid, ids, generate_atc_parameters_text):
         try:
             params = json.loads(generate_atc_parameters_text)
-        except ValueError as e:
+        except ValueError:
             return {
                 "warning": {
                     "title": _(u"Atenció!"),

@@ -79,4 +79,3 @@
         <div class="detail_description_subtotal">${_(u"%s &euro;") % formatLang(id_other.amount_total)}</div>
     </div>
     <br />
-    

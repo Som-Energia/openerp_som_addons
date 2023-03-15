@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
-from gestionatr.defs import *
-from gestionatr.input.messages.R1 import get_minimum_fields
-from osv import osv, fields, orm
-from tools.translate import _
-import xml.etree.ElementTree as ET
+from osv import fields, osv
 
 
 class GiscedataSwitchingWizardR101(osv.osv_memory):

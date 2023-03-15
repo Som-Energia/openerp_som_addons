@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from osv import osv, fields, orm
+from osv import fields, osv
 
 
 class GiscedataSwitchingWizardB101(osv.osv_memory):

@@ -63,7 +63,7 @@ class TestWizardFraccionarViaExtralines(testing.OOTestCaseWithCursor):
         self.wiz_obj.action_fraccionar_via_extralines(cursor, uid, [wiz_id], context)
 
         factura = self.fact_obj.browse(cursor, uid, self.factura_id)
-        expected_total = factura.amount_total
+        factura.amount_total
         fraccionar_via_extraline_mock.assert_called_with(
             mock.ANY,
             mock.ANY,

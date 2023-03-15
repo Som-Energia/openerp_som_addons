@@ -5,7 +5,6 @@ from som_account_invoice_pending_exceptions import (
     UpdateWaitingFor48hException,
     UpdateWaitingCancelledContractsException,
     UpdateWaitingForAnnexIVException,
-    MailException,
     SMSException,
 )
 import logging
