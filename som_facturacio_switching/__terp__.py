@@ -8,7 +8,7 @@
     "version": "2.107.6",
     "author": "GISCE",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "base",
         "som_polissa",
         "som_switching",
@@ -30,5 +30,5 @@
         "wizard/wizard_refund_rectify_from_origin_view.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

@@ -4,5 +4,5 @@ class atrHeader:
 
     def get_data(self, cursor, uid, wiz, context):
         return {
-            'type': 'atrHeader',
+            "type": "atrHeader",
         }

@@ -3,27 +3,23 @@
 from osv import osv, fields
 from datetime import datetime
 
-AVAILABLE_STATES = [
-    ('init','Init'),
-    ('done', 'Done')
-]
+AVAILABLE_STATES = [("init", "Init"), ("done", "Done")]
+
 
 class WizardNotifyOVAdmin(osv.osv_memory):
 
-    _name = 'wizard.notify.ov.admin'
+    _name = "wizard.notify.ov.admin"
 
     def default_get(self, cursor, uid, fields, context={}):
-        active_ids = context.get('active_ids', False)
+        active_ids = context.get("active_ids", False)
 
-        res = super(WizardNotifyOVAdmin, self).default_get(
-            cursor, uid, fields, context
-        )
+        res = super(WizardNotifyOVAdmin, self).default_get(cursor, uid, fields, context)
         if not active_ids:
             return res
 
         admin_noti_obj = self.pool.get("som.admin.notification")
 
-        def elipsis(text, length = 100):            
+        def elipsis(text, length=100):
             if len(text) > length:
                 return text[:length] + "..."
             return text
@@ -35,13 +31,13 @@ class WizardNotifyOVAdmin(osv.osv_memory):
             if noti.info:
                 info += ", Info: {}".format(elipsis(noti.info))
             info += "\n"
-            
-        res["state"] = 'init'
+
+        res["state"] = "init"
         res["info"] = info
         return res
 
     def send_email(self, cursor, uid, ids, context=None):
-        active_ids = context.get('active_ids', [])
+        active_ids = context.get("active_ids", [])
 
         if not active_ids:
             return {}
@@ -49,27 +45,24 @@ class WizardNotifyOVAdmin(osv.osv_memory):
         admin_noti_obj = self.pool.get("som.admin.notification")
 
         info = ""
- 
+
         for noti_id in active_ids:
             try:
                 admin_noti_obj.send_email(cursor, uid, noti_id)
-                info += 'Notificació amb id {}, encuada\n'.format(noti_id)
+                info += "Notificació amb id {}, encuada\n".format(noti_id)
             except Exception as e:
-                info += 'Notificació amb id {}, error: {}\n'.format(noti_id, e.message.replace('\n', ' - '))
+                info += "Notificació amb id {}, error: {}\n".format(
+                    noti_id, e.message.replace("\n", " - ")
+                )
 
-        self.write(cursor, uid, ids, {
-            "state": "done",
-            "info": info
-        })
+        self.write(cursor, uid, ids, {"state": "done", "info": info})
 
         return
 
     _columns = {
-        'state': fields.selection(
-            selection=AVAILABLE_STATES,
-            string='Estat'
-        ),
-        'info': fields.text('Info'),
+        "state": fields.selection(selection=AVAILABLE_STATES, string="Estat"),
+        "info": fields.text("Info"),
     }
+
 
 WizardNotifyOVAdmin()

@@ -8,14 +8,10 @@
     "version": "2.103.13",
     "author": "GISCE",
     "category": "SomEnergia",
-    "depends":[
-        "base"
-    ],
+    "depends": ["base"],
     "init_xml": [],
     "demo_xml": [],
-    "update_xml":[
-        "som_partner_seq_data.xml"
-    ],
+    "update_xml": ["som_partner_seq_data.xml"],
     "active": False,
-    "installable": True
+    "installable": True,
 }

@@ -5,22 +5,22 @@
     "version": "0-dev",
     "author": "Som Energia",
     "category": "Master",
-    "depends":[
+    "depends": [
         "base",
         "remeses_base",
         "giscedata_remeses",
         "giscedata_facturacio_comer",
         "giscedata_facturacio_impagat",
-        "giscedata_facturacio_comer_bono_social"
+        "giscedata_facturacio_comer_bono_social",
     ],
     "init_xml": [],
     "demo_xml": [],
-    "update_xml":[
+    "update_xml": [
         "giscedata_facturacio_view.xml",
         "payment_order_data.xml",
         "wizard/wizard_change_payment_type_view.xml",
-        "security/ir.model.access.csv"
+        "security/ir.model.access.csv",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

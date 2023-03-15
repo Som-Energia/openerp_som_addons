@@ -27,9 +27,9 @@ class WizardCanviarUsuari(osv.osv_memory):
     _columns = {
         "usuari": fields.char(
             "Usuari",
-            size = 64,
-            required = True,
-            help = "El nou nom d'usuari",
+            size=64,
+            required=True,
+            help="El nou nom d'usuari",
         ),
     }
 

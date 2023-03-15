@@ -20,16 +20,18 @@ class WizardCanviarContrasenya(osv.osv_memory):
         conf_obj = self.pool.get("som.crawlers.config")
         wizard = self.browse(cursor, uid, ids[0])
         for id in active_ids:
-            conf_obj.canviar_contrasenya(cursor, uid, id, wizard.contrasenya, context=context)
+            conf_obj.canviar_contrasenya(
+                cursor, uid, id, wizard.contrasenya, context=context
+            )
 
         return {"type": "ir.actions.act_window_close"}
 
     _columns = {
         "contrasenya": fields.char(
             "Contrasenya",
-            size = 64,
-            required = True,
-            help = "La nova contrasenya",
+            size=64,
+            required=True,
+            help="La nova contrasenya",
         ),
     }
 

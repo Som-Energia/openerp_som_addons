@@ -6,13 +6,10 @@
     "version": "0-dev",
     "author": "GISCE-TI",
     "category": "",
-    "depends":[
-        "giscedata_telemesura"
-    ],
+    "depends": ["giscedata_telemesura"],
     "init_xml": [],
     "demo_xml": [],
-    "update_xml": [
-    ],
+    "update_xml": [],
     "active": False,
-    "installable": True
+    "installable": True,
 }

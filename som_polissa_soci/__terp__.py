@@ -8,18 +8,14 @@
     "version": "0-dev",
     "author": "GISCE",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "giscedata_facturacio_comer",
         "giscedata_lectures_estimacio",
         "giscedata_polissa_category",
     ],
-    "init_xml": [
-        "res_partner_data.xml"
-    ],
-    "demo_xml": [
-        "res_partner_demo_data.xml"
-    ],
-    "update_xml":[
+    "init_xml": ["res_partner_data.xml"],
+    "demo_xml": ["res_partner_demo_data.xml"],
+    "update_xml": [
         "giscedata_polissa_view.xml",
         "giscedata_facturacio_data.xml",
         "giscedata_polissa_category_data.xml",
@@ -34,5 +30,5 @@
         "wizard/wizard_unsubscribe_soci_mailchimp.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }
