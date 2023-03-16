@@ -51,17 +51,27 @@ class PowersmsCoreAccounts(osv.osv):
         if context is None:
             context = {}
         logger = netsvc.Logger()
+
+        # TODO
+        # - Check if numbers_to is a list, for the current code calls numbers_to will be one but better
+        # if we allow multiple numbers
+        if not self.check_numbers(cr, uid, ids, numbers_to):
+            raise Exception("Incorrect cell number: " + numbers_to)
+
         # Try to send the e-mail from each allowed account
         # Only one mail is sent
+        # TODO
+        # - Fix this logic, if for example we provide 3 accounts and first raise exception the other 2
+        #   will not be tried
         for account_id in ids:
             account = self.browse(cr, uid, account_id, context)
             try:
-                self.send_sms_lleida(cr, uid, ids, numbers_to, body, from_name)
+                account.provider_id.send_sms(account_id, from_name, numbers_to, body=body, context=context)
                 return True
             except Exception as error:
                 logger.notifyChannel(
                     _("Power SMS"), netsvc.LOG_ERROR,
-                    _("Could not create mail "
+                    _("Could not create SMS "
                       "from Account \"{account.name}\".\n"
                       "Description: {error}").format(**locals())
                 )
@@ -104,18 +114,19 @@ class PowersmsCoreAccounts(osv.osv):
                         size=120, invisible=True,
                         required=False, readonly=True,
                         states={'draft':[('readonly', False)]}),
-        'state':fields.selection([
+        'state': fields.selection([
                                   ('draft', 'Initiated'),
                                   ('suspended', 'Suspended'),
                                   ('approved', 'Approved')
                                   ],
                         'Account Status', required=True, readonly=True),
-        'allowed_groups':fields.many2many(
+        'allowed_groups': fields.many2many(
                         'res.groups',
                         'account_group_rel', 'templ_id', 'group_id',
                         string="Allowed User Groups",
                         help="Only users from these groups will be " \
                         "allowed to send SMS from this ID."),
+        'provider_id': fields.many2one('powersms.provider', 'SMS Provide')
     }
 
     _defaults = {
