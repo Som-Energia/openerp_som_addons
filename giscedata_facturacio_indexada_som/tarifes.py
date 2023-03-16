@@ -31,6 +31,7 @@ class TarifaPoolSOM(TarifaPool):
             res['k'] = 'k'
             res['d'] = 'd'
             res['si'] = 'si'
+            res['ct3'] = 'ct3'
 
         if self.phf_function in ('phf_calc_balears', 'phf_calc_canaries'):
             # only if 'phf_calc_peninsula' formula is used
@@ -223,17 +224,29 @@ class TarifaPoolSOM(TarifaPool):
             'C2_%(fname)s_%(postfix)s' % locals(), esios_token
         )
 
+        # CT3
+        if start_date.strftime("%Y-%m-%d") >= '2023-02-01':
+            ct3 = CT3('C2_ct3_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        else:
+            ct3 = 0
+
         # Sobrecostes REE = Coste total - Coste medio desvíos
-        coste_total = Component(data=grcosdnc.start_date, version=grcosdnc.version)
-        coste_total.load(grcosdnc.indicators[GRCOSDNC_MAGNS[12]])
         coste_medio_desvios = Component(data=grcosdnc.start_date, version=grcosdnc.version)
+        coste_total = Component(data=grcosdnc.start_date, version=grcosdnc.version)
+        ingresos_srad = Component(data=grcosdnc.start_date, version=grcosdnc.version)
+
         coste_medio_desvios.load(grcosdnc.indicators[GRCOSDNC_MAGNS[8]])
-        sobrecostes_ree = coste_total - coste_medio_desvios
+        if start_date.strftime("%Y-%m-%d") >= '2022-11-01':
+            coste_total.load(grcosdnc.indicators[GRCOSDNC_MAGNS_2022_11[15]])
+            ingresos_srad.load(grcosdnc.indicators[GRCOSDNC_MAGNS_2022_11[14]])
+        else:
+            coste_total.load(grcosdnc.indicators[GRCOSDNC_MAGNS[12]])
+        sobrecostes_ree = coste_total - coste_medio_desvios - ingresos_srad
 
         # MAJ RDL 10/2022
         maj_activated = self.conf.get('maj_activated', 0)
 
-        A = ((prmdiari + sobrecostes_ree + si) * 0.001) + pc3_boe + (omie * 0.001) + h
+        A = ((prmdiari + sobrecostes_ree + si + ct3) * 0.001) + pc3_boe + (omie * 0.001) + h
 
         # Use AJOM if invoice includes june'22 or later days and variable is activated
         if maj_activated and (
