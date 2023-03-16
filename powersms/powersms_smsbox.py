@@ -1,5 +1,6 @@
 import netsvc
 import os
+from six import string_types
 from osv import osv, fields
 import pooler
 import re
@@ -9,6 +10,7 @@ from tools.config import config
 import tools
 from oorq.decorators import job
 import six
+import json
 
 LOGGER = netsvc.Logger()
 
@@ -37,7 +39,7 @@ class PowersmsSMSbox(osv.osv):
         ctx['meta'] = {}
         if vals:
             init_meta = vals.get('meta', {}) or {}
-            if isinstance(init_meta, basestring):
+            if isinstance(init_meta, string_types):
                 init_meta = json.loads(init_meta)
         else:
             init_meta = {}
@@ -155,12 +157,11 @@ class PowersmsSMSbox(osv.osv):
         """
         try:
             self.send_all_sms(cursor, user, context=context)
-        except Exception, e:
+        except Exception as e:
             LOGGER.notifyChannel(
                                  _("Power SMS"),
                                  netsvc.LOG_ERROR,
                                  _("Error sending sms: %s") % str(e))
-
 
     def send_all_sms(self, cr, uid, ids=None, context=None):
         if ids is None:
@@ -219,7 +220,7 @@ class PowersmsSMSbox(osv.osv):
                     values.get('psms_body_text', u'') or u'',
                     context=context
                 )
-                if result == True:
+                if result is True:
                     self.write(cr, uid, id, {'folder':'sent', 'state':'sent', 'date_sms':time.strftime("%Y-%m-%d %H:%M:%S")}, context)
                     self.historise(cr, uid, [id], "SMS sent successfully", context)
                 else:
