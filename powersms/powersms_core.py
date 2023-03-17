@@ -2,7 +2,6 @@
 from osv import osv, fields
 from tools.translate import _
 import netsvc
-from lleida_net.sms import Client
 import base64
 
 class PowersmsCoreAccounts(osv.osv):
