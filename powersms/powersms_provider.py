@@ -9,7 +9,7 @@ class PowersmsProvider(osv.osv):
     def _get_provider_function(self, cursor, uid, _id, context=None):
         function_pattern = self.read(
             cursor, uid, _id, ['function_pattern_code'], context=context
-        )['function_pattern']
+        )['function_pattern_code']
         return 'send_sms_{function_pattern}'.format(function_pattern=function_pattern)
 
     def send_sms_default(self, cursor, uid, _id, account_id, from_name, numbers_to, body='', context=None):
