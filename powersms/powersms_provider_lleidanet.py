@@ -5,10 +5,10 @@ from osv import osv, fields
 class PowersmsProviderLleidaNet(osv.osv):
     _inherit = 'powersms.provider'
 
-    def send_sms_lleida(self, cr, uid, ids, number_to, message, from_name, context=None):
+    def send_sms_lleida(self, cursor, uid, _id, account_id, from_name, numbers_to, body='', context=None):
         from lleida_net.sms import Client
         account_obj = self.pool.get('powersms.core_accounts')
-        values = account_obj.read(cr, uid, ids, ['api_uname', 'api_pass'])
+        values = account_obj.read(cursor, uid, account_id, ['api_uname', 'api_pass'])
         c = Client(user=str(values['api_uname']), password=str(values['api_pass']))
         headers = {'content-type': 'application/x-www-form-urlencoded', 'accept': 'application/json'}
         response = c.API.post(
@@ -16,9 +16,9 @@ class PowersmsProviderLleidaNet(osv.osv):
             resource='',
             json={
                 "sms": {
-                    "txt": message,
+                    "txt": body,
                     "dst": {
-                        "num": number_to,
+                        "num": numbers_to,
                     },
                     "src": from_name,
                 }
