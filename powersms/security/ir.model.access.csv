@@ -11,3 +11,6 @@
 "access_wizard_send_settings_manager","powersms.send.wizard","model_powersms_send_wizard","res_groups_psmsmanager",1,1,1,1
 "access_wizard_send_external_users","powersms.send.wizard","model_powersms_send_wizard","res_groups_psmsuserse",1,1,1,1
 "access_wizard_send_internal_users","powersms.send.wizard","model_powersms_send_wizard","res_groups_psmsusersi",1,1,1,1
+"access_powersms_provider_use","powersms.provider","model_powersms_provider","powersms.res_groups_psmsuserse",1,1,1,0
+"access_powersms_provider_usi","powersms.provider","model_powersms_provider","powersms.res_groups_psmsusersi",1,1,1,0
+"access_powersms_provider_man","powersms.provider","model_powersms_provider","powersms.res_groups_psmsmanager",1,1,1,1
