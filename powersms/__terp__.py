@@ -12,7 +12,7 @@
     "init_xml": [],
     "update_xml": [
         'security/powersms_security.xml',
-        'security/ir.model.access.csv',
+        'powersms_provider_data.xml',
         'powersms_core_view.xml',
         'powersms_template_view.xml',
         'powersms_smsbox_view.xml',
@@ -20,6 +20,7 @@
         'wizard/wizard_send_sms_view.xml',
         'powersms_data.xml',
         'powersms_scheduler_data.xml',
+        'security/ir.model.access.csv'
     ],
     "installable": True,
     "active": False,
