@@ -18,6 +18,7 @@
                                 <field name="user" select="2" colspan="2" />
                                 <field name="api_server" select="1" colspan="2" />
                                 <field name="tel_id" select="1" colspan="2" />
+                                <field name="provider_id" select="1" colspan="2" />
                             </group>
                             <group col="2" colspan="2">
                                 <field name="api_uname" select="1" colspan="2" />
@@ -46,6 +47,7 @@
             <field name="arch" type="xml">
                 <tree string="SMS Server">
                     <field name="name" select="1" />
+                    <field name="provider_id" select="1"/>
                     <field name="tel_id" select="1" />
                     <field name="api_uname" select="1" />
                     <field name="user" select="1" />
