@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
-    <data noupdate="1">
+    <data>
         <record id="powersms_provider_lleidanet" model="powersms.provider">
             <field name="name">Lleida Net</field>
             <field name="function_pattern_code">lleida</field>
