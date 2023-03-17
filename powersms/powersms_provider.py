@@ -37,7 +37,7 @@ class PowersmsProvider(osv.osv):
     }
     _sql_constraints = [
         ('name_uniq', 'unique (name)', 'Provider must be unique'),
-        ('code_uniq', 'unique (code)', 'Function pattern must be unique')
+        ('code_uniq', 'unique (function_pattern_code)', 'Function pattern must be unique')
     ]
 
 
