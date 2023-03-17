@@ -125,7 +125,7 @@ class PowersmsCoreAccounts(osv.osv):
                         string="Allowed User Groups",
                         help="Only users from these groups will be " \
                         "allowed to send SMS from this ID."),
-        'provider_id': fields.many2one('powersms.provider', 'SMS Provide')
+        'provider_id': fields.many2one('powersms.provider', 'SMS Provider')
     }
 
     _defaults = {
