@@ -24,7 +24,7 @@ class PowersmsProvider(osv.osv):
 
         function_name = self._get_provider_function(cursor, uid, _id, context=context)
 
-        return getattr(self, function_name, 'send_sms_default')(
+        return getattr(self, function_name, self.send_sms_default)(
             cursor, uid, _id, account_id, from_name, numbers_to, body, context=context
         )
 
