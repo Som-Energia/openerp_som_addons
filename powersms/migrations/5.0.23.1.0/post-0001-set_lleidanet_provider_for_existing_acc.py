@@ -30,6 +30,13 @@ def up(cursor, installed_version):
     load_data_records(
         cursor, 'powersms', 'powersms_provider_data.xml', ['powersms_provider_lleidanet']
     )
+    load_data_records(
+        cursor, 'powersms', 'powersms_core_view.xml', ['powersms_core_accounts_form']
+    )
+    load_data_records(
+        cursor, 'powersms', 'powersms_core_view.xml', ['powersms_core_accounts_tree']
+    )
+
     logger.info('Provider data loaded!')
 
     logger.info('Setting lleida as default for all existing accounts')
