@@ -145,6 +145,19 @@ class PowersmsTemplates(osv.osv):
         else:
             return message
 
+    def create_report(self, cursor, user, template, record_ids, context=None):
+        import netsvc
+        if context is None:
+            context = {}
+        report_obj = self.pool.get('ir.actions.report.xml')
+        report_name = report_obj.read(
+            cursor, user, template.report_template.id, ['report_name'], context=context
+        )['report_name']
+        report_name = 'report.' + report_name
+        service = netsvc.LocalService(report_name)
+        data = {'model': template.model_int_name}
+        _result, _format = service.create(cursor, user, record_ids, data, context=context)
+        return _result, _format
 
     _columns = {
         'name': fields.char('Name of Template', size=100, required=True),
@@ -217,6 +230,8 @@ class PowersmsTemplates(osv.osv):
                     "result is True the SMS will be send if it false the SMS "
                     "won't be send.\n"
                     "Example : o.type == 'out_invoice' and o.number and o.number[:3]<>'os_' "),
+        'report_template': fields.many2one('ir.actions.report.xml', 'Report to send'),
+
     }
 
     _defaults = {
@@ -226,5 +241,6 @@ class PowersmsTemplates(osv.osv):
     _sql_constraints = [
         ('name', 'unique (name)', _('The template name must be unique!'))
     ]
+
 
 PowersmsTemplates()

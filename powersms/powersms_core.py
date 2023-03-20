@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+from __future__ import absolute_import, unicode_literals
 from osv import osv, fields
 from tools.translate import _
 import netsvc
@@ -46,9 +46,27 @@ class PowersmsCoreAccounts(osv.osv):
         resposta = c.API.post(resource='', json=json_body, headers=headers)
         return resposta.result['code'] == 200 and resposta.result['status'] == u'Success'
 
-    def send_sms(self, cr, uid, ids, from_name, numbers_to, body='', context=None):
+    def send_sms(self, cr, uid, ids, from_name, numbers_to, body='', payload=None, context=None):
         if context is None:
             context = {}
+        if payload is None:
+            payload = {}
+
+        def payload_parser(_payload):
+            from base64 import b64decode
+            import tempfile
+            import os
+            file_paths = []
+            for file_name in _payload.keys():
+                # Decode b64 from raw base64 attachment and write it to a buffer
+                extension = '.{}'.format(file_name.split('.')[-1])
+                f_name = file_name.replace(extension, '')
+                fd, path = tempfile.mkstemp(prefix=f_name, suffix=extension)
+                os.write(fd, b64decode(_payload[file_name]))
+                os.close(fd)
+                file_paths.append(path)
+            return file_paths
+
         logger = netsvc.Logger()
 
         # TODO
@@ -64,8 +82,11 @@ class PowersmsCoreAccounts(osv.osv):
         #   will not be tried
         for account_id in ids:
             account = self.browse(cr, uid, account_id, context)
+
             try:
-                account.provider_id.send_sms(account_id, from_name, numbers_to, body=body, context=context)
+                account.provider_id.send_sms(
+                    account_id, from_name, numbers_to, body=body, files=payload_parser(payload), context=context
+                )
                 return True
             except Exception as error:
                 logger.notifyChannel(
