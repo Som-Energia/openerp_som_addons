@@ -5,7 +5,7 @@ from osv import osv, fields
 class PowersmsProviderLleidaNet(osv.osv):
     _inherit = 'powersms.provider'
 
-    def send_sms_lleida(self, cursor, uid, _id, account_id, from_name, numbers_to, body='', context=None):
+    def send_sms_lleida(self, cursor, uid, _id, account_id, from_name, numbers_to, body='', files=None, context=None):
         from lleida_net.sms import Client
         account_obj = self.pool.get('powersms.core_accounts')
         values = account_obj.read(cursor, uid, account_id, ['api_uname', 'api_pass'])

@@ -12,11 +12,11 @@ class PowersmsProvider(osv.osv):
         )['function_pattern_code']
         return 'send_sms_{function_pattern}'.format(function_pattern=function_pattern)
 
-    def send_sms_default(self, cursor, uid, _id, account_id, from_name, numbers_to, body='', context=None):
+    def send_sms_default(self, cursor, uid, _id, account_id, from_name, numbers_to, body='', files=None, context=None):
         function_name = self._get_provider_function(cursor, uid, _id, context=context)
         raise osv.except_osv(_("Programing Error"), _("Method {} not defined".format(function_name)))
 
-    def send_sms(self, cursor, uid, _id, account_id, from_name, numbers_to, body='', context=None):
+    def send_sms(self, cursor, uid, _id, account_id, from_name, numbers_to, body='', files=None, context=None):
         if isinstance(_id, (tuple, list)):
             if len(_id) != 1:
                 raise osv.except_osv(_("Programing Error"), _("Multiple providers to send same sms"))
@@ -25,7 +25,7 @@ class PowersmsProvider(osv.osv):
         function_name = self._get_provider_function(cursor, uid, _id, context=context)
 
         return getattr(self, function_name, self.send_sms_default)(
-            cursor, uid, _id, account_id, from_name, numbers_to, body, context=context
+            cursor, uid, _id, account_id, from_name, numbers_to, body, files, context=context
         )
 
     _columns = {
