@@ -91,6 +91,14 @@ class PowersmsSendWizard(osv.osv_memory):
 
         return {'type': 'ir.actions.act_window_close'}
 
+    def get_end_value(self, cr, uid, src_rec_id, value, template, context=None):
+        if context is None:
+            context = {}
+        if len(context['src_rec_ids']) > 1:  # Multiple sms: Gets value from the template
+            return self.get_value(cr, uid, template, value, context, src_rec_id)
+        else:
+            return value
+
     def create_report_attachment(self, cr, uid, template, vals, screen_vals, sms_id, report_record_ids, src_rec_id, context=None):
         import netsvc
         import base64
@@ -111,20 +119,21 @@ class PowersmsSendWizard(osv.osv_memory):
             service = netsvc.LocalService(reportname)
             if template.report_template.context:
                 context.update(eval(template.report_template.context))
-            if screen_vals['single_email'] and len(report_record_ids) > 1:
-                # The optional attachment will be generated as a single file for all these records
-                (result, format) = service.create(cr, uid, report_record_ids, data, context=context)
-            else:
-                (result, format) = service.create(cr, uid, [src_rec_id], data, context=context)
+            # if screen_vals['single_email'] and len(report_record_ids) > 1:
+            #     # The optional attachment will be generated as a single file for all these records
+            #     (result, format) = service.create(cr, uid, report_record_ids, data, context=context)
+            # else:
+            (result, format) = service.create(cr, uid, [src_rec_id], data, context=context)
+
             attach_vals = {
-                'name': _('%s (Email Attachment)') % tools.ustr(vals['pem_subject']),
+                'name': _('%s (Email Attachment)') % tools.ustr(template.name),
                 'datas': base64.b64encode(result),
                 'datas_fname': tools.ustr(
                     self.get_end_value(
-                        cr, uid, src_rec_id, screen_vals['report'], template, context=context
+                        cr, uid, src_rec_id, reportname, template, context=context
                     ) or _('Report')
                 ) + "." + format,
-                'description': vals['pem_body_text'] or _("No Description"),
+                'description': vals['psms_body_text'] or _("No Description"),
                 'res_model': 'powersms.mailbox',
                 'res_id': sms_id
             }
