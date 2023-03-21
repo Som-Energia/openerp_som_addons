@@ -2,6 +2,7 @@
 from destral import testing
 import unittest
 from destral.transaction import Transaction
+from datetime import datetime
 
 class tarifes_tests(testing.OOTestCase):
 
@@ -45,7 +46,7 @@ class tarifes_tests(testing.OOTestCase):
 
             result = model.get_tariff_prices(cursor, uid, tariff_id, 5386, 15000, None, False, False, '1999-12-01', '1999-12-01')
 
-            self.assertEqual(result[0]['error'], 'Tariff pricelist not found')
+            self.assertEqual(result['error'], 'Tariff pricelist not found')
 
     def test__get_tariff_prices__valid_date_range_date_tariff_into_range(self):
 
@@ -155,8 +156,10 @@ class tarifes_tests(testing.OOTestCase):
 
             tariff = tariff_obj.browse(cursor, uid, tariff_id)
 
-            result = tariff_obj.get_tariff_prices(cursor, uid, tariff_id, 5386, 15000, None, False, False, '2023-01-15', '2023-01-15')
-            prices = {'prices': [{'bo_social': {'unit': '\xe2\x82\xac/dia', 'value': 0.0},
+            today = datetime.today().strftime('%Y-%m-%d')
+
+            result = tariff_obj.get_tariff_prices(cursor, uid, tariff_id, 5386, 15000, None, False, False, today, today)
+            prices = {'current': {'bo_social': {'unit': '\xe2\x82\xac/dia', 'value': 0.0},
                 'comptador': {'unit': '\xe2\x82\xac/mes', 'value': 0.0},
                 'end_date': False,
                 'energia': {u'P1': {'unit': '\xe2\x82\xac/kWh', 'value': 0.342},
@@ -170,8 +173,8 @@ class tarifes_tests(testing.OOTestCase):
                     u'P2': {'unit': '\xe2\x82\xac/kW/dia', 'value': 0.008666}},
                 'reactiva': {},
                 'start_date': '2023-01-01',
-                'version_name': u'2.0TD_SOM 2023-01-01'}],
-                'tariff_id': 26}
+                'version_name': u'2.0TD_SOM 2023-01-01'},
+                'history': []}
 
             self.assertEqual(result, prices)
 
@@ -189,22 +192,22 @@ class tarifes_tests(testing.OOTestCase):
 
             result = tariff_obj.get_tariff_prices(cursor, uid, tariff_id, 5386, 15000, None, False, False,'2022-10-15', '2023-01-15')
 
-            prices = {'prices': [{'bo_social': {'unit': '\xe2\x82\xac/dia', 'value': 0.0},
+            prices = {'current': {'bo_social': {'unit': '\xe2\x82\xac/dia', 'value': 0.0},
                 'comptador': {'unit': '\xe2\x82\xac/mes', 'value': 0.0},
                 'end_date': False,
                 'energia': {u'P1': {'unit': '\xe2\x82\xac/kWh', 'value': 0.342},
-                    u'P2': {'unit': '\xe2\x82\xac/kWh', 'value': 0.281},
-                    u'P3': {'unit': '\xe2\x82\xac/kWh', 'value': 0.234}},
+                u'P2': {'unit': '\xe2\x82\xac/kWh', 'value': 0.281},
+                u'P3': {'unit': '\xe2\x82\xac/kWh', 'value': 0.234}},
                 'fiscal_position': False,
                 'generation_kWh': {u'P1': {'unit': '\xe2\x82\xac/kWh', 'value': 0.17},
-                    u'P2': {'unit': '\xe2\x82\xac/kWh', 'value': 0.12},
-                    u'P3': {'unit': '\xe2\x82\xac/kWh', 'value': 0.095}},
+                u'P2': {'unit': '\xe2\x82\xac/kWh', 'value': 0.12},
+                u'P3': {'unit': '\xe2\x82\xac/kWh', 'value': 0.095}},
                 'potencia': {u'P1': {'unit': '\xe2\x82\xac/kW/dia', 'value': 0.074529},
-                    u'P2': {'unit': '\xe2\x82\xac/kW/dia', 'value': 0.008666}},
+                u'P2': {'unit': '\xe2\x82\xac/kW/dia', 'value': 0.008666}},
                 'reactiva': {},
                 'start_date': '2023-01-01',
                 'version_name': u'2.0TD_SOM 2023-01-01'},
-                {'bo_social': {'unit': '\xe2\x82\xac/dia', 'value': 0.0},
+                'history': [{'bo_social': {'unit': '\xe2\x82\xac/dia', 'value': 0.0},
                 'comptador': {'unit': '\xe2\x82\xac/mes', 'value': 0.0},
                 'end_date': '2022-12-31',
                 'energia': {u'P1': {'unit': '\xe2\x82\xac/kWh', 'value': 0.242},
@@ -217,8 +220,7 @@ class tarifes_tests(testing.OOTestCase):
                 'potencia': {u'P1': {'unit': '\xe2\x82\xac/kW/dia', 'value': 0.047132},
                     u'P2': {'unit': '\xe2\x82\xac/kW/dia', 'value': 0.005926}},
                 'start_date': '2022-06-01',
-                'version_name': u'2.0TD_SOM 2022-06-01'}],
-                'tariff_id': 26}
+                'version_name': u'2.0TD_SOM 2022-06-01'}]}
 
             self.assertEqual(result, prices)
 
@@ -327,15 +329,15 @@ class tarifes_tests(testing.OOTestCase):
             pricelists = [pricelist for pricelist in pplv_obj.browse(cursor, uid, pricelists_ids)]
 
             fiscal_positions = [
-                ('2000-01-01','2999-31-12',1),
+                ('2000-01-01','2999-12-31',1),
                 ('2022-10-01','2022-12-31',2)
             ]
 
             result = tariff_obj._combine_pricelist_fiscal_position(pricelists, fiscal_positions)
 
             expected_result = [
-                (pplv_obj.browse(cursor, uid, 9),1),
-                (pplv_obj.browse(cursor, uid, 9),2),
-                (pplv_obj.browse(cursor, uid, 8),1)
+                (pplv_obj.browse(cursor, uid, 9),{'fp': 1, 'fp_date_start': '2000-01-01','fp_date_end': '2999-12-31'}),
+                (pplv_obj.browse(cursor, uid, 9),{'fp': 2, 'fp_date_start': '2022-10-01','fp_date_end': '2022-12-31'}),
+                (pplv_obj.browse(cursor, uid, 8),{'fp': 1, 'fp_date_start': '2000-01-01','fp_date_end': '2999-12-31'})
             ]
             self.assertEqual(result, expected_result)

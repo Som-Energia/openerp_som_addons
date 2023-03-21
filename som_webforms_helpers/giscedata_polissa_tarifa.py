@@ -272,10 +272,16 @@ class GiscedataPolissaTarifa(osv.osv):
             for pl in pricelists:
                 for fp_date_start, fp_date_end, fp in ordered_fiscal_position:
                     if fp_date_end >= pl.date_start or pl.date_end or fp_date_start <= pl.date_end:
-                        pricelist_data.append(tuple((pl, fp)))
+                        fp = dict (
+                            fp = fp,
+                            fp_date_start = fp_date_start,
+                            fp_date_end = fp_date_end
+                        )
+
+                        pricelist_data.append((pl, fp))
         else:
             for pl in pricelists:
-                pricelist_data.append(tuple((pl, None)))
+                pricelist_data.append((pl, None))
 
         return pricelist_data
 
@@ -325,31 +331,37 @@ class GiscedataPolissaTarifa(osv.osv):
             cursor, uid, municipi_id, pricelist_list, date_from, date_to, context)
 
         if not som_price_version_list:
-            return [dict(
+            return dict(
                 error= 'Tariff pricelist not found'
-            )]
+            )
 
         general_price_version_list = self._get_general_price_version_list(
             cursor, uid, pricelist_list, date_from, date_to)
 
-        if not max_power:
-            max_power = self._get_max_power_by_tariff(tariff.name)
+        fiscal_positions_data = []
+        if with_taxes:
+            if not max_power:
+                max_power = self._get_max_power_by_tariff(tariff.name)
 
-        fiscal_position_data = self._get_fiscal_position(cursor, uid, fiscal_position_id,
-            date_from, date_to, max_power, municipi_id, home)
+            fiscal_positions_data = self._get_fiscal_position(cursor, uid, fiscal_position_id,
+                date_from, date_to, max_power, municipi_id, home)
 
-        som_price_list_version_data = self._combine_pricelist_fiscal_position(som_price_version_list, fiscal_position_data)
+        som_price_list_version_data = self._combine_pricelist_fiscal_position(som_price_version_list, fiscal_positions_data)
 
         periodes_products = self.get_products(cursor, uid, tariff, context=None)
 
-        price_by_date_range = {'tariff_id': tariff_id, 'prices':[]}
-        for price_version, fiscal_position in som_price_list_version_data:
+        price_by_date_range = {'current': {}, 'history':[]}
+        for price_version, fiscal_position_data in som_price_list_version_data:
 
             context['date'] = price_version.date_start
 
             preus = {}  # dictionary to be returned
 
             product_price_list = price_version.pricelist_id
+
+            fiscal_position = None
+            if fiscal_position_data:
+                fiscal_position = fiscal_position_data['fp']
 
             reactive_prices_without_taxes = self._get_reactiva_price(
                 cursor, uid, general_price_version_list, price_version, context
@@ -446,9 +458,18 @@ class GiscedataPolissaTarifa(osv.osv):
                 preus['version_name'] = price_version.name
                 preus['start_date'] = price_version.date_start
                 preus['end_date'] = price_version.date_end
-                preus['fiscal_position'] = fiscal_position.name if fiscal_position else False
+                preus['fiscal_position'] = False
+                if fiscal_position_data:
+                    preus['fiscal_position'] = {
+                        'name': fiscal_position_data['fp'].name,
+                        'date_from': fiscal_position_data['fp_date_start'],
+                        'date_to': fiscal_position_data['fp_date_end']
+                     }
 
-            price_by_date_range['prices'].append(preus)
+            if not price_version.date_end:
+                price_by_date_range['current'] = preus
+            else:
+                price_by_date_range['history'].append(preus)
 
         return price_by_date_range
 
@@ -491,10 +512,11 @@ class GiscedataPolissaTarifa(osv.osv):
 
     def get_tariff_prices_by_contract_id(self, cursor, uid, contract_id, with_taxes=False, context=None):
         pol_obj = self.pool.get('giscedata.polissa')
+        rp_obj = self.pool.get('res.partner')
 
         polissa = pol_obj.browse(cursor, uid, contract_id)
         municipi_id = polissa.titular.address[0].id_municipi.id
-        home = True if polissa.tipus_vivenda == 'habiual' else False
+        home = False if rp_obj.is_enterprise_vat(polissa.titular.vat) else True
         modcontractuals = polissa.modcontractuals_ids
 
         modcon_data = []
@@ -506,7 +528,7 @@ class GiscedataPolissaTarifa(osv.osv):
 
         pricelist_data = self._get_dades_modcontractuals(modcon_data)
 
-        prices_by_contract = []
+        prices_by_contract = {}
 
         for tariff_id, fiscal_position_id, max_power, date_from, date_to in pricelist_data:
 
@@ -515,7 +537,12 @@ class GiscedataPolissaTarifa(osv.osv):
             price_by_date_range = self.get_tariff_prices(cursor, uid, int(tariff_id), municipi_id, max_power,
                             int(fiscal_position_id), with_taxes, home,
                             date_from, date_to, context)
-            prices_by_contract.append(price_by_date_range)
+
+            if not str(tariff_id) in prices_by_contract:
+                prices_by_contract[str(tariff_id)] = {'currrent':{}, 'history':[]}
+
+            prices_by_contract[str(tariff_id)]['current'] = price_by_date_range['current']
+            prices_by_contract[str(tariff_id)]['history'].extend(price_by_date_range['history'])
 
         return prices_by_contract
 
