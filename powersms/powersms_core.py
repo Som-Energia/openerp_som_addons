@@ -84,10 +84,9 @@ class PowersmsCoreAccounts(osv.osv):
             account = self.browse(cr, uid, account_id, context)
 
             try:
-                account.provider_id.send_sms(
+                return bool(account.provider_id.send_sms(
                     account_id, from_name, numbers_to, body=body, files=payload_parser(payload), context=context
-                )
-                return True
+                ))
             except Exception as error:
                 logger.notifyChannel(
                     _("Power SMS"), netsvc.LOG_ERROR,
