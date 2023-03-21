@@ -179,11 +179,11 @@ for account.invoice in objects:
         </tr>
         <tr>
             <td> ${_(u"El que hauria costat sense aplicar-hi la tarifa Generation kWh")}</td>
-            <td> ${format_currency(data.totalAmountNoGeneration,'EUR', locale='es_ES')}</td>
+            <td> ${format_currency(data.irpfSaving + data.totalGenerationAmount,'EUR', locale='es_ES')}</td>
         </tr>
         <tr>
             <td> ${_(u"Estalvi obtingut (guany en espècie)")}</td>
-            <td> ${format_currency(data.totalAmountSaving,'EUR', locale='es_ES')}</td>
+            <td> ${format_currency(data.irpfSaving,'EUR', locale='es_ES')}</td>
         </tr>
         <tr>
             <td> ${_(u"Retenció IRPF o impost de societats (19% sobre l’estalvi)")}</td>
