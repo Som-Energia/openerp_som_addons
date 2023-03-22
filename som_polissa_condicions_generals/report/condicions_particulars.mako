@@ -493,7 +493,7 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                                 <span>${_(u"PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + K] + PTD + CA")}</span>
                                 <br/>
                                 <span class="normal_font_weight">${_(u"on el marge de comercialització")}</span>
-                                <span>&nbsp;${("(K) = %s €/kWh</B>") % formatLang((polissa.coeficient_k + polissa.coeficient_d) / 1000.0, digits=3)}</span>
+                                <span>&nbsp;${("(K) = %s €/kWh</B>") % formatLang((polissa.coeficient_k + polissa.coeficient_d) / 1000.0, digits=6)}</span>
                             </td>
                         %else:
                             %for p in periodes_energia:
