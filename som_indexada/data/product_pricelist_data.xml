@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="0">
+        <record model="product.pricelist" id="pricelist_indexada_peninsula">
+            <field name="name">Indexada Península</field>
+            <field name="type">sale</field>
+            <field name="currency_id" ref="base.EUR"/>
+        </record>
+        <record model="product.pricelist" id="pricelist_indexada_balears">
+            <field name="name">Indexada Balears</field>
+            <field name="type">sale</field>
+            <field name="currency_id" ref="base.EUR"/>
+        </record>
+        <record model="product.pricelist" id="pricelist_indexada_canaries">
+            <field name="name">Indexada Canàries</field>
+            <field name="type">sale</field>
+            <field name="currency_id" ref="base.EUR"/>
+        </record>
+    </data>
+</openerp>
