@@ -539,7 +539,7 @@ class GiscedataPolissaTarifa(osv.osv):
                             date_from, date_to, context)
 
             if not str(tariff_id) in prices_by_contract:
-                prices_by_contract[str(tariff_id)] = {'currrent':{}, 'history':[]}
+                prices_by_contract[str(tariff_id)] = {'history':[]}
 
             prices_by_contract[str(tariff_id)]['current'] = price_by_date_range['current']
             prices_by_contract[str(tariff_id)]['history'].extend(price_by_date_range['history'])
