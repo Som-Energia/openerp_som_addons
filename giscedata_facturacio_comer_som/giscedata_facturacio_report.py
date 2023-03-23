@@ -1905,6 +1905,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'other_concepts': self.get_sub_component_invoice_details_td_other_concepts_data(fact, pol),
             'excess_power_maximeter': self.get_sub_component_invoice_details_td_excess_power_maximeter(fact, pol),
             'excess_power_quarterhours': self.get_sub_component_invoice_details_td_excess_power_quarterhours(fact, pol),
+            'bo_social_2023': self.get_sub_component_invoice_details_td_bo_social_2023_data(fact, pol),
             'generation': self.get_sub_component_invoice_details_td_generation_data(fact, pol),
             'inductive': self.get_sub_component_invoice_details_td_inductive_data(fact, pol),
             'capacitive': self.get_sub_component_invoice_details_td_capacitive_data(fact, pol),
@@ -2388,6 +2389,28 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'excess_data': excess_data,
             'is_visible': True,
             'header_multi':4*(len(excess_data)),
+        }
+        return data
+
+    def get_sub_component_invoice_details_td_bo_social_2023_data(self, fact, pol):
+        days = 0.0
+        price_per_day = 0.0
+        subtotal = 0.0
+        visible = False
+
+        for l in fact.linia_ids:
+            if l.tipus in 'altres' and l.invoice_line_id.product_id.code == 'RBS':
+                days += l.quantity
+                price_per_day = l.price_unit
+                subtotal += l.price_subtotal
+                visible = True
+
+        data = {
+            'is_visible': visible,
+            'number_of_columns': len(self.get_matrix_show_periods(pol)) + 1,
+            'days':days,
+            'price_per_day': price_per_day,
+            'subtotal': subtotal,
         }
         return data
 

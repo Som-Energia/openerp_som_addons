@@ -29,6 +29,7 @@
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls/invoice_details_td_energy_tolls.mako" args="id=id.energy_tolls" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges/invoice_details_td_energy_charges.mako" args="id=id.energy_charges" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_discount_BOE17_2021/invoice_details_td_energy_discount_BOE17_2021.mako" args="id=id.energy_discount_BOE17_2021" />
+    <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_bo_social_2023/invoice_details_td_bo_social_2023.mako" args="bs=id.bo_social_2023" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_generation/invoice_details_td_generation.mako" args="id=id.generation" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_inductive/invoice_details_td_inductive.mako" args="id=id.inductive" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_capacitive/invoice_details_td_capacitive.mako" args="id=id.capacitive" />
