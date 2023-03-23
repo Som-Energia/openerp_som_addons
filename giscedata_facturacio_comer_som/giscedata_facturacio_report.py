@@ -1352,7 +1352,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     'price_unit_multi': l.price_unit_multi,
                     'price_subtotal': l.price_subtotal,
                 })
-            if l.tipus in ('altres', 'cobrament') and l.invoice_line_id.product_id.code not in ('DN01', 'BS01', 'DESC1721', 'DESC1721ENE', 'DESC1721POT'):
+            if l.tipus in ('altres', 'cobrament') and l.invoice_line_id.product_id.code not in ('DN01', 'BS01', 'DESC1721', 'DESC1721ENE', 'DESC1721POT', 'RBS'):
                 altres_lines.append({
                     'name': l.name,
                     'price_subtotal': l.price_subtotal,
@@ -1658,7 +1658,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         donatiu_lines = [l for l in fact.linia_ids if l.tipus in 'altres'
                         and l.invoice_line_id.product_id.code == 'DN01']
         altres_lines = [l for l in fact.linia_ids if l.tipus in ('altres', 'cobrament')
-                        and l.invoice_line_id.product_id.code not in ('DN01', 'BS01')]
+                        and l.invoice_line_id.product_id.code not in ('DN01', 'BS01', 'RBS')]
 
         extra_energy_lines = self.get_extra_energy_lines(fact, pol)
 
@@ -1705,6 +1705,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data['total_boe17_2021'] += self.get_sub_component_invoice_details_td_energy_discount_BOE17_2021_data(fact, pol)['total']
         total_altres = data['total_altres'] - data['total_boe17_2021']
         data['total_altres'] = total_altres if abs(total_altres) > 0.001 else 0
+        bosocial2023_lines = [l for l in fact.linia_ids if l.tipus in 'altres'
+                             and l.invoice_line_id.product_id.code == 'RBS']
+        data['total_bosocial2023'] = sum([l.price_subtotal for l in bosocial2023_lines])
         return data
 
     def get_component_partner_info_data(self, fact, pol):
