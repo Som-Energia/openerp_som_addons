@@ -267,6 +267,9 @@ class TarifaPoolSOM(TarifaPool):
         H = curve * 0.001
         component = H * G
 
+        if start_date.strftime("%Y-%m-%d") < '2023-02-01':
+            ct3 = None
+
         audit_keys = self.get_available_audit_coefs()
         for key in self.conf.get('audit', []):
             if key not in self.audit_data.keys():
