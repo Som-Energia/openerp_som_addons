@@ -28,6 +28,19 @@ class GiscedataPolissaTarifa(osv.osv):
         'gkwh': 'generation_kWh'
     }
     def get_products(self, cursor, uid, tarifa, context=None):
+        """
+        Obtains products for a tariff.
+        There are instances for each energy('te') and power('tp') item and its respectives periods (P1, P2, P3, ...),
+        from which product_id are obtained.
+        Also each one of these instances can contains other products related with: autoconsum, excedent, reactive, gkwh.
+        Output dictionary format:
+            key: product_id (for each instance 'te', 'tp', and its periods)
+            {
+                'name': period name (P1, P2, P3, ...)
+                'products': list of tuples (tipus, product_id) where tipus can be one key of _desc_tipus dictionary
+            }
+        This output format allows to recover correspondig products for a concrete pricelist version
+        """
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         facturador_obj = self.pool.get('giscedata.facturacio.facturador')
         periode_productes = {}
@@ -67,6 +80,9 @@ class GiscedataPolissaTarifa(osv.osv):
     def get_bo_social_price(self, cursor, uid, pricelist,
                           fiscal_position=None, with_taxes=False,
                           context=None):
+        """
+        Price for the bosocial is a specific item of the pricelist
+        """
         imd_obj = self.pool.get('ir.model.data')
         prod_obj = self.pool.get('product.product')
 
@@ -83,6 +99,9 @@ class GiscedataPolissaTarifa(osv.osv):
     def get_comptador_price(self, cursor, uid, pricelist,
                           fiscal_position=None, with_taxes=False,
                           context=None):
+        """
+        Price for the merter is a specific item of the pricelist
+        """
         imd_obj = self.pool.get('ir.model.data')
         prod_obj = self.pool.get('product.product')
 
@@ -104,6 +123,9 @@ class GiscedataPolissaTarifa(osv.osv):
         return price, prod.uom_id
 
     def _get_som_price_version_list(self, cursor, uid, municipi_id, pricelist_list, date_from, date_to, context):
+        """
+        Somenergia pricelist depends on state is INSULAR or PENINSULAR which is detrmined by municipi_id.
+        """
         municipi_obj = self.pool.get('res.municipi')
         pricelist_municipi = municipi_obj.filter_compatible_pricelists(
             cursor, uid, municipi_id=municipi_id,
@@ -122,6 +144,9 @@ class GiscedataPolissaTarifa(osv.osv):
         return price_version_list
 
     def _get_general_price_version_list(self, cursor, uid, pricelist_list, date_from, date_to):
+        """
+        Some prices are calculated using other pricelists different from somenergia pricelists
+        """
         pricelist_general = [item for item in pricelist_list if item.name == 'TARIFAS ELECTRICIDAD']
 
         general_price_version_list = []
@@ -174,6 +199,9 @@ class GiscedataPolissaTarifa(osv.osv):
         return fiscal_position_data
 
     def _get_fiscal_position_igic(self, cursor, uid, date_from, date_to, home):
+        """
+        IGIC is different for individual living place or enterprise
+        """
         conf_obj = self.pool.get('res.config')
         fp_obj = self.pool.get('account.fiscal.position')
 
@@ -195,6 +223,11 @@ class GiscedataPolissaTarifa(osv.osv):
         return fiscal_position_data
 
     def _get_fiscal_position(self, cursor, uid, fiscal_position_id, date_from, date_to, max_power, municipi_id, home):
+        """
+        Fiscal position depends on the contract.
+        But when general prices are calculated fiscal position is different for CANARIAS(IGIC) and PENINSULA.
+        Also because of a BOE fiscal position was reduced during some months.
+        """
         municipi_obj = self.pool.get('res.municipi')
         fp_obj = self.pool.get('account.fiscal.position')
 
@@ -232,6 +265,10 @@ class GiscedataPolissaTarifa(osv.osv):
         return price_cosfi
 
     def _get_reactiva_price(self, cursor, uid, general_price_version_list, price_version, context):
+        """
+        Energy reactive prices are calculated using a pricelist different from somenergia pricelists.
+        general_price_version_list_in_range contains pricelist versions in the range of somenergia pricelist dates.
+        """
         reactiva_prices = []
         general_price_version_list_in_range = [
             item for item in general_price_version_list
@@ -254,6 +291,9 @@ class GiscedataPolissaTarifa(osv.osv):
         return reactiva_prices
 
     def _get_max_power_by_tariff(self, tariff_name):
+        """
+        Use enerdata module to obtain max_power of a tariff
+        """
         tariff_max_power = None
         tarifa_enerdata = get_tariff_by_code(tariff_name)
         if tarifa_enerdata:
@@ -263,6 +303,10 @@ class GiscedataPolissaTarifa(osv.osv):
         return tariff_max_power
 
     def _combine_pricelist_fiscal_position(self, pricelists, fiscal_positions):
+        """
+        Fiscal_positions are necessary to calculate taxes of prodducts in a pricelist
+        This fuction combine pricelists with fiscal_positions depending on dates
+        """
         pricelist_data = []
 
         if fiscal_positions:
@@ -474,6 +518,11 @@ class GiscedataPolissaTarifa(osv.osv):
         return price_by_date_range
 
     def _validate_modcons(self, modcon_data):
+        """
+        Validate that modcon_data are continuous.
+        date_start of next modcon_data is equal to
+        date_end of current modcon plus 1 day
+        """
         consistent_data = True
         ant = modcon_data[0]
 
@@ -488,7 +537,23 @@ class GiscedataPolissaTarifa(osv.osv):
         return consistent_data
 
     def _get_dades_modcontractuals(self, modcon_data):
-
+        """
+        modcon_data format: (tariff_id, fiscal_position_id, potencia, date_start, date_end)
+        Order contract modifications by date_start and date_end
+        Validate that contract modifications are continuous
+        Reduce contract modifications: while tariff_id, fiscal_postion_id and potencia remain the same
+            modify date_end. For example:
+            input:
+                (43, False, 3.4, '2021-06-01', '2023-11-21'),
+                (1, False, 3.4, '2019-09-02', '2021-05-31'),
+                (1, False, 6.6, '2014-12-17', '2019-09-01'),
+                (1, False, 6.6, '2014-09-17', '2014-12-16'),
+                (1, False, 6.6, '2011-11-22', '2014-09-16')
+            output:
+                (43, False, 3.4, '2021-06-01', '2023-11-21'),
+                (1, False, 3.4, '2019-09-02', '2021-05-31'),
+                (1, False, 6.6, '2011-11-22', '2019-09-01')
+        """
         ordered_modcon_data = sorted(modcon_data, key=lambda element: (element[3], element[4]))
 
         consistent_data = self._validate_modcons(ordered_modcon_data)
@@ -511,6 +576,14 @@ class GiscedataPolissaTarifa(osv.osv):
         return reduced_modcon_data
 
     def get_tariff_prices_by_contract_id(self, cursor, uid, contract_id, with_taxes=False, context=None):
+        """
+        Return a dictionary with the prices for each historic and current tariffs of the contract
+        Format of return value:
+            key: tariff_id
+            values: a dictionary with 'current' and 'history' items
+            'current': can be {} or prices of current price list
+            'history': a list of dictionaries one for each pricelist version
+        """
         pol_obj = self.pool.get('giscedata.polissa')
         rp_obj = self.pool.get('res.partner')
 
@@ -519,6 +592,7 @@ class GiscedataPolissaTarifa(osv.osv):
         home = False if rp_obj.is_enterprise_vat(polissa.titular.vat) else True
         modcontractuals = polissa.modcontractuals_ids
 
+        #Add fiscal_postion value to modcon_data tuple or False
         modcon_data = []
         for mod in modcontractuals:
             fiscal_position = False
