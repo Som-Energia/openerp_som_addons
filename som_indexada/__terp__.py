@@ -20,6 +20,7 @@
     "update_xml":[
         "wizard/wizard_change_to_indexada.xml",
         "data/product_pricelist_data.xml",
+        "data/res_partner_category_data.xml",
     ],
     "active": False,
     "installable": True

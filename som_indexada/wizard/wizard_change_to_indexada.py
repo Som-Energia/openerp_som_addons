@@ -31,7 +31,7 @@ class WizardChangeToIndexada(osv.osv_memory):
 
         return new_pricelist_id
 
-    def validate_polissa_can_indexada(self, cursor, uid, polissa):
+    def validate_polissa_can_indexada(self, cursor, uid, polissa, context=None):
         sw_obj = self.pool.get('giscedata.switching')
         if polissa.state != 'activa':
             msg = (u'La pòlissa {} no està activa')
@@ -55,8 +55,7 @@ class WizardChangeToIndexada(osv.osv_memory):
             msg = (u'La pòlissa {} té casos ATR en curs')
             raise osv.except_osv('Error', msg.format(polissa.name))
 
-
-    def change_to_indexada(self, cursor, uid, ids, context=None): #TODO el vat
+    def change_to_indexada(self, cursor, uid, ids, context=None):
         '''update data_firma_contracte in polissa
         and data_inici in modcontractual'''
         modcon_obj = self.pool.get('giscedata.polissa.modcontractual')
@@ -91,14 +90,15 @@ class WizardChangeToIndexada(osv.osv_memory):
             'state': 'pendent',
             'modcontractual_ant': prev_modcon.id,
         })
-        new_modcon = modcon_obj.create(cursor, uid, new_modcon_vals)
+        new_modcon_id = modcon_obj.create(cursor, uid, new_modcon_vals)
 
         modcon_obj.write(cursor, uid, prev_modcon.id, {
-            'modcontractual_seg': new_modcon,
+            'modcontractual_seg': new_modcon_id,
             'state': 'baixa2',
         })
 
         wizard.write({'state': 'end'})
+        return new_modcon_id
 
     _columns = {
         'state': fields.selection([('init', 'Init'),

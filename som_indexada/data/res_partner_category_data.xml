@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="0">
+        <record id="res_partner_category_indexada_prova_pilot" model="res.partner.category">
+            <field name="name">Prova pilot indexada</field>
+        </record>
+    </data>
+</openerp>
