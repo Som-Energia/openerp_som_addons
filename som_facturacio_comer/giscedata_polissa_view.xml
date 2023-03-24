@@ -75,9 +75,6 @@
                 <xpath expr="//field[@name='journal']" position="attributes">
                     <attribute name="readonly">1</attribute>
                 </xpath>
-                <xpath expr="//field[@name='tipo']" position="attributes">
-                    <attribute name="readonly">1</attribute>
-                </xpath>
                 <xpath expr="//field[@name='require_bank_account']" position="attributes">
                     <attribute name="readonly">1</attribute>
                 </xpath>
