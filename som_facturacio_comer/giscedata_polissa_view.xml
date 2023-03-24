@@ -81,10 +81,32 @@
                 <xpath expr="//field[@name='require_bank_account']" position="attributes">
                     <attribute name="readonly">1</attribute>
                 </xpath>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_payment_mode_form_require_bank_account">
+            <field name="name">payment.mode.form.require_bank_account</field>
+            <field name="model">payment.mode</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="account_payment_extension.view_payment_mode_form_require_bank_account"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='require_bank_account']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_payment_mode_form_remesas">
+            <field name="name">payment.mode.form</field>
+            <field name="model">payment.mode</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="l10n_ES_remesas.view_payment_mode_form_remesas"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='tipo']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
                 <xpath expr="//field[@name='partner_id']" position="attributes">
                     <attribute name="readonly">1</attribute>
                 </xpath>
-                <xpath expr="//field[@name='bank_id']" position="attributes">
+                <xpath expr="//field[@name='cif']" position="attributes">
                     <attribute name="readonly">1</attribute>
                 </xpath>
                 <xpath expr="//field[@name='nombre']" position="attributes">
