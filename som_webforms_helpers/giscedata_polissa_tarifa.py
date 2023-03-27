@@ -4,6 +4,7 @@ from tools import config
 from datetime import datetime, timedelta
 from enerdata.contracts import get_tariff_by_code
 from enerdata.contracts.normalized_power import NormalizedPower
+from som_webforms_helpers.exceptions import som_webforms_exceptions
 
 class GiscedataPolissaTarifa(osv.osv):
     _name = 'giscedata.polissa.tarifa'
@@ -329,6 +330,33 @@ class GiscedataPolissaTarifa(osv.osv):
 
         return pricelist_data
 
+    def traceback_info(self, exception):
+        import traceback
+        import sys
+        exc_type, exc_value, exc_tb = sys.exc_info()
+        return traceback.format_exception(exc_type, exc_value, exc_tb)
+
+    def get_tariff_prices_www(self, cursor, uid, tariff_id, municipi_id, max_power=None,
+                          fiscal_position_id=None, with_taxes=False, home=True,
+                          date_from=False, date_to=False, context=None):
+        try:
+            return self.get_tariff_prices(cursor, uid, tariff_id, municipi_id, max_power,
+                          fiscal_position_id, with_taxes, home,
+                          date_from, date_to, context)
+        except som_webforms_exceptions.SomWebformsException as e:
+            return dict(
+                error=e.text,
+                error_code=e.code,
+                trace=self.traceback_info(e),
+            )
+
+        except Exception as e:
+            return dict(
+                error=str(e),
+                error_code="Unexpected",
+                trace=self.traceback_info(e),
+            )
+
     def get_tariff_prices(self, cursor, uid, tariff_id, municipi_id, max_power=None,
                           fiscal_position_id=None, with_taxes=False, home=True,
                           date_from=False, date_to=False, context=None):
@@ -368,16 +396,15 @@ class GiscedataPolissaTarifa(osv.osv):
         tariff = tariff_obj.browse(cursor, uid, tariff_id)
         pricelist_list = tariff.llistes_preus_comptatibles
 
+        today = datetime.today().strftime('%Y-%m-%d')
         if not date_from and not date_to:
-            date_from = date_to = datetime.today().strftime('%Y-%m-%d')
+            date_from = date_to = today
 
         som_price_version_list = self._get_som_price_version_list(
             cursor, uid, municipi_id, pricelist_list, date_from, date_to, context)
 
         if not som_price_version_list:
-            return dict(
-                error= 'Tariff pricelist not found'
-            )
+            raise som_webforms_exceptions.TariffNonExists()
 
         general_price_version_list = self._get_general_price_version_list(
             cursor, uid, pricelist_list, date_from, date_to)
@@ -510,7 +537,7 @@ class GiscedataPolissaTarifa(osv.osv):
                         'date_to': fiscal_position_data['fp_date_end']
                      }
 
-            if not price_version.date_end:
+            if not price_version.date_end or price_version.date_end >= today:
                 price_by_date_range['current'] = preus
             else:
                 price_by_date_range['history'].append(preus)
@@ -558,6 +585,9 @@ class GiscedataPolissaTarifa(osv.osv):
 
         consistent_data = self._validate_modcons(ordered_modcon_data)
 
+        if not consistent_data:
+            raise som_webforms_exceptions.InvalidModcons()
+
         reduced_modcon_data = []
         if consistent_data:
             ant = list(ordered_modcon_data[0])
@@ -575,6 +605,23 @@ class GiscedataPolissaTarifa(osv.osv):
 
         return reduced_modcon_data
 
+    def get_tariff_prices_by_contract_id_www(self, cursor, uid, contract_id, with_taxes=False, context=None):
+        try:
+            return self.get_tariff_prices_by_contract_id(cursor, uid, contract_id, with_taxes, context)
+        except som_webforms_exceptions.SomWebformsException as e:
+            return dict(
+                error=e.text,
+                error_code=e.code,
+                trace=self.traceback_info(e),
+            )
+
+        except Exception as e:
+            return dict(
+                error=str(e),
+                error_code="Unexpected",
+                trace=self.traceback_info(e),
+            )
+
     def get_tariff_prices_by_contract_id(self, cursor, uid, contract_id, with_taxes=False, context=None):
         """
         Return a dictionary with the prices for each historic and current tariffs of the contract
@@ -588,9 +635,13 @@ class GiscedataPolissaTarifa(osv.osv):
         rp_obj = self.pool.get('res.partner')
 
         polissa = pol_obj.browse(cursor, uid, contract_id)
+
         municipi_id = polissa.titular.address[0].id_municipi.id
         home = False if rp_obj.is_enterprise_vat(polissa.titular.vat) else True
         modcontractuals = polissa.modcontractuals_ids
+
+        if not modcontractuals:
+            raise som_webforms_exceptions.ContractWithoutModcons()
 
         #Add fiscal_postion value to modcon_data tuple or False
         modcon_data = []

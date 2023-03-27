@@ -3,6 +3,7 @@ from destral import testing
 import unittest
 from destral.transaction import Transaction
 from datetime import datetime
+from ..exceptions.som_webforms_exceptions import (TariffNonExists)
 
 class tarifes_tests(testing.OOTestCase):
 
@@ -34,7 +35,7 @@ class tarifes_tests(testing.OOTestCase):
     def test__get_tariff_prices__invalid_date(self):
         """
         Checks that given a tariff and a date there are not prices in that date
-        :return: warning.
+        :return: error.
         """
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
@@ -44,9 +45,30 @@ class tarifes_tests(testing.OOTestCase):
             tariff_id = self.imd_obj.get_object_reference(
                 cursor, uid, 'giscedata_polissa', 'tarifa_20A_test')[1]
 
-            result = model.get_tariff_prices(cursor, uid, tariff_id, 5386, 15000, None, False, False, '1999-12-01', '1999-12-01')
+            with self.assertRaises(TariffNonExists) as ctx:
+                model.get_tariff_prices(cursor, uid, tariff_id, 5386, 15000, None, False, False, '1999-12-01', '1999-12-01')
 
-            self.assertEqual(result['error'], 'Tariff pricelist not found')
+            self.assertEqual(ctx.exception.to_dict()['error'], 'Tariff pricelist not found')
+
+    def test__get_tariff_prices_by_contract_id__no_titular(self):
+        """
+        Checks that given a contract without titular an error is launched
+        :return: error.
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            model = self.tariff_model
+            pol_obj = self.pool.get('giscedata.polissa')
+
+            polissa_id = self.imd_obj.get_object_reference(
+                cursor, uid, 'giscedata_polissa', 'polissa_0001')[1]
+            pol_obj.write(cursor, uid, [polissa_id], {'titular':False})
+
+            result = model.get_tariff_prices_by_contract_id_www(cursor, uid, polissa_id, False)
+
+            self.assertTrue(result['error'])
 
     def test__get_tariff_prices__valid_date_range_date_tariff_into_range(self):
 
