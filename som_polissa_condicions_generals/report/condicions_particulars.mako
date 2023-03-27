@@ -358,7 +358,7 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                         iva_reduit = True
                         text_vigencia += " (IVA 5%, IE 0,5%)"
                     else:
-                        fp_id = imd_obj.get_object_reference(cursor, uid, 'giscedata_facturacio', 'fp_nacional_2012')[1]
+                        fp_id = imd_obj.get_object_reference(cursor, uid, 'giscedata_facturacio', 'fp_nacional_2021_rd_17_2021')[1]
                         text_vigencia += " (IVA 21%, IE 0,5%)"
                     ctx.update({'force_fiscal_position': fp_id})
             %>
