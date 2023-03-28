@@ -225,7 +225,7 @@ class TarifaPoolSOM(TarifaPool):
         )
 
         # CT3
-        if start_date.strftime("%Y-%m-%d") >= '2023-02-01':
+        if start_date.strftime("%Y-%m-%d") >= '2023-02-15':
             ct3 = CT3('C2_ct3_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         else:
             ct3 = 0
@@ -267,7 +267,7 @@ class TarifaPoolSOM(TarifaPool):
         H = curve * 0.001
         component = H * G
 
-        if start_date.strftime("%Y-%m-%d") < '2023-02-01':
+        if start_date.strftime("%Y-%m-%d") < '2023-02-15':
             ct3 = None
 
         audit_keys = self.get_available_audit_coefs()
