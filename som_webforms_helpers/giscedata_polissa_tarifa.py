@@ -239,18 +239,19 @@ class GiscedataPolissaTarifa(osv.osv):
         fiscal_position_reduced_data = self._get_fiscal_position_reduced(cursor, uid, max_power, date_from, date_to)
         fiscal_position_data.extend(fiscal_position_reduced_data)
 
-        if not fiscal_position_id:
-            municipi = municipi_obj.browse(cursor, uid, municipi_id)
-            if municipi.subsistema_id.code != 'PE':
-                # IGIC
-                fiscal_position_igic_data = self._get_fiscal_position_igic(cursor, uid, date_from, date_to, home)
-                fiscal_position_data.extend(fiscal_position_igic_data)
+        if not fiscal_position_reduced_data:
+            if not fiscal_position_id:
+                municipi = municipi_obj.browse(cursor, uid, municipi_id)
+                if municipi.subsistema_id.code != 'PE':
+                    # IGIC
+                    fiscal_position_igic_data = self._get_fiscal_position_igic(cursor, uid, date_from, date_to, home)
+                    fiscal_position_data.extend(fiscal_position_igic_data)
+                else:
+                    fiscal_position_default_data = self._get_default_fiscal_position_id(cursor, uid, date_from, date_to)
+                    fiscal_position_data.extend(fiscal_position_default_data)
             else:
-                fiscal_position_default_data = self._get_default_fiscal_position_id(cursor, uid, date_from, date_to)
-                fiscal_position_data.extend(fiscal_position_default_data)
-        else:
-            fiscal_position = fp_obj.browse(cursor, uid, fiscal_position_id)
-            fiscal_position_data.append((date_from, date_to, fiscal_position))
+                fiscal_position = fp_obj.browse(cursor, uid, fiscal_position_id)
+                fiscal_position_data.append((date_from, date_to, fiscal_position))
 
         return fiscal_position_data
 
