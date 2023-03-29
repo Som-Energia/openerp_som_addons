@@ -499,7 +499,7 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                                         today = datetime.today().strftime("%Y-%m-%d")
                                         vlp = None
                                         for lp in polissa.llista_preu.version_id:
-                                            if lp.date_start <= today and (lp.date_end == False or lp.date_end >= today):
+                                            if lp.date_start.val <= today and (not lp.date_end or lp.date_end.val >= today):
                                                 vlp = lp
                                                 break
                                         if vlp:
