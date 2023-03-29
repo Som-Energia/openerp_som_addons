@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from osv import osv
+from som_indexada.exceptions import indexada_exceptions
 
 class SomIndexadaWebformsHelpers(osv.osv_memory):
 
@@ -24,10 +25,10 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                 pricelist_id =  wiz_o.calculate_new_pricelist(cursor, uid, polissa, context=context)
                 return pricelist_obj.read(cursor, uid, pricelist_id, ['name'])['name']
 
-            except osv.except_osv as e:
+            except indexada_exceptions.IndexadaException as e:
                 cursor.rollback(savepoint)
                 return dict(
-                    error=str(e),
+                    e.to_dict(),
                     trace=self.traceback_info(e),
                 )
             except Exception as e:
@@ -46,10 +47,10 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                 context = {'active_id': polissa_id}
                 wiz_id = wiz_o.create(cursor, uid, {}, context=context)
                 return wiz_o.change_to_indexada(cursor, uid, [wiz_id], context=context)
-            except osv.except_osv as e:
+            except indexada_exceptions.IndexadaException as e:
                 cursor.rollback(savepoint)
                 return dict(
-                    error=str(e),
+                    e.to_dict(),
                     trace=self.traceback_info(e),
                 )
             except Exception as e:
