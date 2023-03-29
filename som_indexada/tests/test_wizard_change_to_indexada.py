@@ -4,6 +4,7 @@ from destral.transaction import Transaction
 from datetime import timedelta, date, datetime
 from giscedata_switching.tests.common_tests import TestSwitchingImport
 from osv import osv, fields
+from som_indexada.exceptions import indexada_exceptions
 
 class TestChangeToIndexada(TestSwitchingImport):
 
@@ -38,9 +39,9 @@ class TestChangeToIndexada(TestSwitchingImport):
         wiz_o = self.pool.get('wizard.change.to.indexada')
 
         wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
-        with self.assertRaises(osv.except_osv) as error:
+        with self.assertRaises(indexada_exceptions.PolissaNotActive) as error:
             wiz_o.change_to_indexada(self.cursor, self.uid, [wiz_id], context=context)
-        self.assertEqual(error.exception.value, u"La pòlissa 0018 no està activa")
+        self.assertEqual(error.exception.to_dict()['error'], u"Pòlissa 0018 not active")
 
     def test_change_to_indexada_modcon_pendent_polissa(self):
         wiz_o = self.pool.get('wizard.change.to.indexada')
@@ -49,9 +50,25 @@ class TestChangeToIndexada(TestSwitchingImport):
         wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
 
         wiz_o.change_to_indexada(self.cursor, self.uid, [wiz_id], context=context)
-        with self.assertRaises(osv.except_osv) as error:
+        with self.assertRaises(indexada_exceptions.PolissaModconPending) as error:
             wiz_o.change_to_indexada(self.cursor, self.uid, [wiz_id], context=context)
-        self.assertEqual(error.exception.value, u"La pòlissa 0018 ja té una modificació contractual pendent")
+        self.assertEqual(error.exception.to_dict()['error'], u"Pòlissa 0018 already has a pending modcon")
+
+    def test_change_to_indexada_already_indexed_polissa(self):
+        wiz_o = self.pool.get('wizard.change.to.indexada')
+        polissa_id = self.open_polissa('polissa_tarifa_018')
+        polissa_obj = self.pool.get('giscedata.polissa')
+        polissa_obj.write(self.cursor, self.uid, polissa_id,
+                          {'mode_facturacio': 'index'})
+
+        context = {'active_id': polissa_id}
+        wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
+
+        with self.assertRaises(indexada_exceptions.PolissaAlreadyIndexed) as error:
+            wiz_o.change_to_indexada(self.cursor, self.uid, [wiz_id], context=context)
+        self.assertEqual(error.exception.to_dict()['error'], u"Pòlissa 0018 already indexed")
+
+
 
     def test_change_to_indexada_atr_en_curs_polissa(self):
         polissa_obj = self.pool.get('giscedata.polissa')
@@ -69,9 +86,9 @@ class TestChangeToIndexada(TestSwitchingImport):
         step_id = self.create_case_and_step(
             self.cursor, self.uid, polissa_id, 'M1', '01'
         )
-        with self.assertRaises(osv.except_osv) as error:
+        with self.assertRaises(indexada_exceptions.PolissaSimultaneousATR) as error:
             wiz_o.change_to_indexada(self.cursor, self.uid, [wiz_id], context=context)
-        self.assertEqual(error.exception.value, u"La pòlissa 0018 té casos ATR en curs")
+        self.assertEqual(error.exception.to_dict()['error'], u"Pòlissa 0018 with simultaneous ATR")
 
     def test_change_to_indexada_one_polissa(self):
         polissa_obj = self.pool.get('giscedata.polissa')

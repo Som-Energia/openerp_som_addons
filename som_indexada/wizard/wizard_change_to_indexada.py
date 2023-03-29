@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 from datetime import timedelta, date
+from som_indexada.exceptions import indexada_exceptions
 
 class WizardChangeToIndexada(osv.osv_memory):
 
@@ -22,11 +23,9 @@ class WizardChangeToIndexada(osv.osv_memory):
         IrModel = self.pool.get('ir.model.data')
 
         new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_indexada_peninsula').id
-        #TODO: Dependre del modul que introdueix el fiscal_position_id
-        if polissa.fiscal_position_id:
-            if 'Canarias' in polissa.fiscal_position_id.name:
-                new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_indexada_canaries').id
-        elif 'INSULAR' in polissa.tarifa.name:
+        if polissa.fiscal_position_id in [19, 25, 33, 34, 38, 39]:
+            new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_indexada_canaries').id
+        elif 'INSULAR' in polissa.llista_preu.name:
             new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_indexada_balears').id
 
         return new_pricelist_id
@@ -34,16 +33,13 @@ class WizardChangeToIndexada(osv.osv_memory):
     def validate_polissa_can_indexada(self, cursor, uid, polissa, context=None):
         sw_obj = self.pool.get('giscedata.switching')
         if polissa.state != 'activa':
-            msg = (u'La pòlissa {} no està activa')
-            raise osv.except_osv('Error', msg.format(polissa.name))
+            raise indexada_exceptions.PolissaNotActive(polissa.name)
         prev_modcon = polissa.modcontractuals_ids[0]
         if prev_modcon.state == 'pendent':
-            msg = (u'La pòlissa {} ja té una modificació contractual pendent')
-            raise osv.except_osv('Error', msg.format(polissa.name))
+            raise indexada_exceptions.PolissaModconPending(polissa.name)
 
         if polissa.mode_facturacio == 'index':
-            msg = (u'La pòlissa {} ja té tarifa indexada')
-            raise osv.except_osv('Error', msg.format(polissa.name))
+            raise indexada_exceptions.PolissaAlreadyIndexed(polissa.name)
 
         res = sw_obj.search(cursor, uid, [
                 ('polissa_ref_id', '=', polissa.id),
@@ -52,8 +48,7 @@ class WizardChangeToIndexada(osv.osv_memory):
             ])
 
         if res:
-            msg = (u'La pòlissa {} té casos ATR en curs')
-            raise osv.except_osv('Error', msg.format(polissa.name))
+            raise indexada_exceptions.PolissaSimultaneousATR(polissa.name)
 
     def change_to_indexada(self, cursor, uid, ids, context=None):
         '''update data_firma_contracte in polissa
