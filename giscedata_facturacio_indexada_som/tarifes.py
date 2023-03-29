@@ -241,12 +241,12 @@ class TarifaPoolSOM(TarifaPool):
             ingresos_srad.load(grcosdnc.indicators[GRCOSDNC_MAGNS_2022_11[14]])
         else:
             coste_total.load(grcosdnc.indicators[GRCOSDNC_MAGNS[12]])
-        sobrecostes_ree = coste_total - coste_medio_desvios - ingresos_srad
+        sobrecostes_ree = coste_total - coste_medio_desvios + ingresos_srad
 
         # MAJ RDL 10/2022
         maj_activated = self.conf.get('maj_activated', 0)
 
-        A = ((prmdiari + sobrecostes_ree + si + ct3) * 0.001) + pc3_boe + (omie * 0.001) + h
+        A = ((prmdiari + sobrecostes_ree + si - ct3) * 0.001) + pc3_boe + (omie * 0.001) + h
 
         # Use AJOM if invoice includes june'22 or later days and variable is activated
         if maj_activated and (
