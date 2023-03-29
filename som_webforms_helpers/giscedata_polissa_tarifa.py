@@ -645,7 +645,7 @@ class GiscedataPolissaTarifa(osv.osv):
             polissa = pol_obj.browse(cursor, uid, contract_id)
 
             municipi_id = polissa.titular.address[0].id_municipi.id
-            home = False if rp_obj.is_enterprise_vat(polissa.titular.vat) else True
+            home = rp_obj.is_enterprise_vat(polissa.titular.vat)
             modcontractuals = polissa.modcontractuals_ids
 
             if not modcontractuals:
