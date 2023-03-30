@@ -55,7 +55,7 @@ class WizardCancelFromCSV(osv.osv_memory):
             i = 1
             result_extra_info = {}
             for column in line[1:]:
-                result_extra_info[header[i]] = column
+                result_extra_info[header[i]] = int(column) if column.isdigit() else column
                 i += 1
             if result_extra_info:
                 result[line[0]] = result_extra_info
