@@ -662,10 +662,13 @@ class GenerationkwhInvestment(osv.osv):
         #regla de tres amb accions inversió actual
         inv_actual = self.read(cursor, uid, investment_id, ['first_effective_date','last_effective_date','nshares'])
         daysharesactual = self.get_dayshares_investmentyear(cursor, uid, inv_actual, start_date, end_date)
+        irpf_actual_saving = daysharesactual * total_amount_saving / total_dayshares_year
 
         ret_values = {}
-        ret_values['irpf_amount'] = round((daysharesactual * total_amount_saving / total_dayshares_year) * gkwh.irpfTaxValue,2)
         ret_values['irpf_saving'] = total_amount_saving
+        ret_values['irpf_actual_saving'] = round(irpf_actual_saving, 2)
+        ret_values['irpf_amount'] = round(irpf_actual_saving * gkwh.irpfTaxValue, 2)
+
         ret_values.update(total_data)
         return ret_values
 

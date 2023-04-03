@@ -157,6 +157,23 @@ for account.invoice in objects:
         </tr>
     </table>
     </br>
+
+    %if data.countInvestmentsGkwh > 1:
+        <table>
+            <tr>
+                <th colspan="2"><b>${_(u"Resultat aplicació tarifa Generation kWh amb l'aportació: ")} ${data.inversionName}</b></th>
+            </tr>
+            <tr>
+                <td> ${_(u"Estalvi obtingut (rendiment en espècie)")}</td>
+                <td> ${format_currency(data.savingActualInvestment,'EUR', locale='es_ES')}</td>
+            </tr>
+            <tr>
+                <td> ${_(u"Retenció IRPF o impost de societats (19% sobre l’estalvi)")}</td>
+                <td> ${format_currency(data.irpfAmount,'EUR', locale='es_ES')}</td>
+            </tr>
+        </table>
+    %endif
+
     <table>
         <tr>
             <th colspan="2"><b>${_(u"Aplicació de la tarifa Generation kWh als teus usos d’energia (any ")}${data.previousYear}${_(u")")}</b></th>
@@ -181,14 +198,16 @@ for account.invoice in objects:
             <td> ${_(u"El que hauria costat sense aplicar-hi la tarifa Generation kWh")}</td>
             <td> ${format_currency(data.irpfSaving + data.totalGenerationAmount,'EUR', locale='es_ES')}</td>
         </tr>
-        <tr>
-            <td> ${_(u"Estalvi obtingut (guany en espècie)")}</td>
-            <td> ${format_currency(data.irpfSaving,'EUR', locale='es_ES')}</td>
-        </tr>
-        <tr>
-            <td> ${_(u"Retenció IRPF o impost de societats (19% sobre l’estalvi)")}</td>
-            <td> ${format_currency(data.irpfAmount,'EUR', locale='es_ES')}</td>
-        </tr>
+        %if data.countInvestmentsGkwh == 1:
+            <tr>
+                <td> ${_(u"Estalvi obtingut (guany en espècie)")}</td>
+                <td> ${format_currency(data.irpfSaving,'EUR', locale='es_ES')}</td>
+            </tr>
+            <tr>
+                <td> ${_(u"Retenció IRPF o impost de societats (19% sobre l’estalvi)")}</td>
+                <td> ${format_currency(data.irpfAmount,'EUR', locale='es_ES')}</td>
+            </tr>
+        %endif
     </table>
     </br>
     <table>
