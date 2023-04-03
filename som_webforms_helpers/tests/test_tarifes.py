@@ -29,7 +29,7 @@ class tarifes_tests(testing.OOTestCase):
             model = self.tariff_model
             tariff_id = self.imd_obj.get_object_reference(
                 cursor, uid, 'giscedata_polissa', 'tarifa_20A_test')[1]
-            result = model.get_tariff_prices(cursor, uid, tariff_id, 5386, 15000, None, False, False, '2021-12-01', '2021-12-01')
+            result = model.get_tariff_prices_by_range(cursor, uid, tariff_id, 5386, 15000, None, False, False, '2021-12-01', '2021-12-01')
             self.assertTrue(result)
 
     def test__get_tariff_prices__invalid_date(self):
@@ -46,7 +46,7 @@ class tarifes_tests(testing.OOTestCase):
                 cursor, uid, 'giscedata_polissa', 'tarifa_20A_test')[1]
 
             with self.assertRaises(TariffNonExists) as ctx:
-                model.get_tariff_prices(cursor, uid, tariff_id, 5386, 15000, None, False, False, '1999-12-01', '1999-12-01')
+                model.get_tariff_prices_by_range(cursor, uid, tariff_id, 5386, 15000, None, False, False, '1999-12-01', '1999-12-01')
 
             self.assertEqual(ctx.exception.to_dict()['error'], 'Tariff pricelist not found')
 
@@ -161,7 +161,7 @@ class tarifes_tests(testing.OOTestCase):
             model = self.tariff_model
             tariff_id = self.imd_obj.get_object_reference(
                 cursor, uid, 'giscedata_polissa', 'tarifa_20A_test')[1]
-            result = model.get_tariff_prices(cursor, uid, tariff_id, 5386, 15000, None, False, False, False, False)
+            result = model.get_tariff_prices_by_range(cursor, uid, tariff_id, 5386, 15000, None, False, False, False, False)
             self.assertTrue(result)
 
     def test__get_tariff_prices__tariff_concret_day_OK(self):
@@ -180,7 +180,7 @@ class tarifes_tests(testing.OOTestCase):
 
             today = datetime.today().strftime('%Y-%m-%d')
 
-            result = tariff_obj.get_tariff_prices(cursor, uid, tariff_id, 5386, 15000, None, False, False, today, today)
+            result = tariff_obj.get_tariff_prices_by_range(cursor, uid, tariff_id, 5386, 15000, None, False, False, today, today)
             prices = {'current': {'bo_social': {'unit': '\xe2\x82\xac/dia', 'value': 0.0},
                 'comptador': {'unit': '\xe2\x82\xac/mes', 'value': 0.0},
                 'end_date': False,
@@ -212,7 +212,7 @@ class tarifes_tests(testing.OOTestCase):
             tariff_id = self.imd_obj.get_object_reference(
                 cursor, uid, 'som_webforms_helpers', 'tarifa_20TD_test')[1]
 
-            result = tariff_obj.get_tariff_prices(cursor, uid, tariff_id, 5386, 15000, None, False, False,'2022-10-15', '2023-01-15')
+            result = tariff_obj.get_tariff_prices_by_range(cursor, uid, tariff_id, 5386, 15000, None, False, False,'2022-10-15', '2023-01-15')
 
             prices = {'current': {'bo_social': {'unit': '\xe2\x82\xac/dia', 'value': 0.0},
                 'comptador': {'unit': '\xe2\x82\xac/mes', 'value': 0.0},
@@ -363,3 +363,33 @@ class tarifes_tests(testing.OOTestCase):
                 (pplv_obj.browse(cursor, uid, 8),{'fp': 1, 'fp_date_start': '2000-01-01','fp_date_end': '2999-12-31'})
             ]
             self.assertEqual(result, expected_result)
+
+    def test__get_tariff_prices__current_tariff_OK(self):
+        """
+        Get an active tariff
+        :return: a dictionary with the prices of the given tariff.
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            tariff_obj = self.tariff_model
+            tariff_id = self.imd_obj.get_object_reference(
+                cursor, uid, 'som_webforms_helpers', 'tarifa_20TD_test')[1]
+
+            result = tariff_obj.get_tariff_prices(cursor, uid, tariff_id, 5386, 15000, None, False,'2022-10-15')
+
+            prices = {'bo_social': {'uom': '\xe2\x82\xac/dia', 'value': 0.0},
+                'comptador': {'uom': '\xe2\x82\xac/mes', 'value': 0.0},
+                'end_date': '2022-12-31',
+                'gkwh': {u'P1': {'uom': '\xe2\x82\xac/kWh', 'value': 0.0},
+                u'P2': {'uom': '\xe2\x82\xac/kWh', 'value': 0.0},
+                u'P3': {'uom': '\xe2\x82\xac/kWh', 'value': 0.182}},
+                'start_date': '2022-06-01',
+                u'te': {u'P1': {'uom': '\xe2\x82\xac/kWh', 'value': 0.242},
+                u'P2': {'uom': '\xe2\x82\xac/kWh', 'value': 0.181},
+                u'P3': {'uom': '\xe2\x82\xac/kWh', 'value': 0.182}},
+                u'tp': {u'P1': {'uom': '\xe2\x82\xac/kW/dia', 'value': 0.047132},
+                u'P2': {'uom': '\xe2\x82\xac/kW/dia', 'value': 0.005926}},
+                'version_name': u'2.0TD_SOM 2022-06-01'}
+
+            self.assertEqual(result, prices)
