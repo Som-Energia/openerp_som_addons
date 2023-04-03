@@ -32,7 +32,7 @@
 .usercups {
   position: absolute;
   top: 71px;
-  left: 252px;
+  left: 292px;
 }
 </style>
 <div class="absolute">
