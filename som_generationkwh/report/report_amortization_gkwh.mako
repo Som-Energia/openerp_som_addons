@@ -94,6 +94,15 @@
     table tr:last-child td {
         border-bottom:0;
     }
+    p.blocktext {
+	font-family:Arial, Helvetica, sans-serif;
+        color:#666;
+        font-size:12px;
+        margin-left:auto;
+        margin-right:auto;
+        width: 66%;
+        border-bottom:0;
+    }
     #account{
         text-align: center;
     }
@@ -105,6 +114,9 @@
     #warning24{
         font-size: 75%;
         vertical-align: text-bottom;
+    }
+    .keep-together {
+  	page-break-inside: avoid;
     }
 
     </style>
@@ -198,7 +210,15 @@ for account.invoice in objects:
                 <td> ${_(u"El que hauria costat sense aplicar-hi la tarifa Generation kWh")}</td>
                 <td> ${format_currency(data.irpfSaving + data.totalGenerationAmount,'EUR', locale='es_ES')}</td>
             </tr>
-        </table>
+       	    <tr>
+                <td> ${_(u"Estalvi obtingut (guany en espècie)")}</td>
+                <td> ${format_currency(data.irpfSaving,'EUR', locale='es_ES')}</td>
+            </tr>
+            <tr>
+                <td> ${_(u"Retenció IRPF o impost de societats (19% sobre l’estalvi)")}</td>
+                <td> ${format_currency(data.irpfAmount,'EUR', locale='es_ES')}</td>
+            </tr>
+	</table>
         </br>
     %endif
 
@@ -241,11 +261,11 @@ for account.invoice in objects:
     </table>
     %if data.countInvestmentsGkwh > 1:
         </br>
-        <div>
-            <p>A continuació et resumim com ha anat l’aplicació de la tarifa Generation kWh l’any 2022, tenint en compte totes les teves aportacions:</p>
-        </ div>
+        <div >
+      	    <p class="blocktext">${_(u"A continuació et resumim com ha anat l’aplicació de la tarifa Generation kWh l’any ")}${data.previousYear}${_(u", tenint en compte totes les teves aportacions:")}</p>
+	</ div>
         </br>
-        <table>
+        <table class="keep-together">
             <tr>
                 <th colspan="2"><b>${_(u"RESUM APLICACIÓ TARIFA GENERATION KWH (any ")}${data.previousYear}${_(u")")}</b></th>
             </tr>
