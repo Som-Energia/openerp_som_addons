@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-    <data noupdate="0">
+    <data noupdate="1">
         <record model="poweremail.templates" id="email_canvi_tarifa_a_indexada">
             <field name="name">Email canvi tarifa a indexada</field>
             <field name="object_name" model="ir.model" search="[('name', '=', 'giscedata.polissa')]"/>

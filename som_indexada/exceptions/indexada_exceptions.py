@@ -77,3 +77,17 @@ class PolissaSimultaneousATR(IndexadaException):
             super(PolissaSimultaneousATR, self).to_dict(),
             polissa_number=self.polissa_number,
         )
+
+class FailSendEmail(IndexadaException):
+    def __init__(self, polissa_number):
+        super(FailSendEmail, self).__init__(
+            title=_('Email fail'),
+            text=_("Failed to send email to Pòlissa {}").format(polissa_number),
+        )
+        self.polissa_number = polissa_number
+
+    def to_dict(self):
+        return dict(
+            super(FailSendEmail, self).to_dict(),
+            polissa_number=self.polissa_number,
+        )

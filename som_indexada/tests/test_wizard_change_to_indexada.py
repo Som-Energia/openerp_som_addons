@@ -63,7 +63,6 @@ class TestChangeToIndexada(TestSwitchingImport):
 
         context = {'active_id': polissa_id}
         wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
-
         with self.assertRaises(indexada_exceptions.PolissaAlreadyIndexed) as error:
             wiz_o.change_to_indexada(self.cursor, self.uid, [wiz_id], context=context)
         self.assertEqual(error.exception.to_dict()['error'], u"Pòlissa 0018 already indexed")
@@ -105,7 +104,7 @@ class TestChangeToIndexada(TestSwitchingImport):
         prev_modcontactual_id = polissa_obj.read(self.cursor, self.uid, polissa_id, ['modcontractuals_ids'])['modcontractuals_ids'][1]
 
 
-        new_pricelist_id = IrModel._get_obj(self.cursor, self.uid, 'som_indexada', 'pricelist_indexada_peninsula').id
+        new_pricelist_id = IrModel._get_obj(self.cursor, self.uid, 'som_indexada', 'pricelist_indexada_20td_peninsula').id
 
         modcon_act = modcon_obj.read(self.cursor, self.uid, modcontactual_id, [
             'data_inici',
@@ -113,8 +112,6 @@ class TestChangeToIndexada(TestSwitchingImport):
             'mode_facturacio',
             'mode_facturacio_generacio',
             'llista_preu',
-            'coeficient_k',
-            'coeficient_d',
             'active',
             'state',
             'modcontractual_ant',
@@ -129,8 +126,6 @@ class TestChangeToIndexada(TestSwitchingImport):
             'mode_facturacio': 'index',
             'mode_facturacio_generacio': 'index',
             'llista_preu': new_pricelist_id,
-            'coeficient_k': 4.82,
-            'coeficient_d': 0.3,
             'active': True,
             'state': 'pendent',
             'modcontractual_ant': prev_modcontactual_id,
@@ -152,7 +147,7 @@ class TestChangeToIndexada(TestSwitchingImport):
         prev_modcontactual_id = polissa_obj.read(self.cursor, self.uid, polissa_id, ['modcontractuals_ids'])['modcontractuals_ids'][1]
 
 
-        new_pricelist_id = IrModel._get_obj(self.cursor, self.uid, 'som_indexada', 'pricelist_indexada_peninsula').id
+        new_pricelist_id = IrModel._get_obj(self.cursor, self.uid, 'som_indexada', 'pricelist_indexada_20td_peninsula').id
 
         modcon_act = modcon_obj.read(self.cursor, self.uid, modcontactual_id, [
             'data_inici',
@@ -160,8 +155,6 @@ class TestChangeToIndexada(TestSwitchingImport):
             'mode_facturacio',
             'mode_facturacio_generacio',
             'llista_preu',
-            'coeficient_k',
-            'coeficient_d',
             'active',
             'state',
             'modcontractual_ant',
@@ -177,10 +170,10 @@ class TestChangeToIndexada(TestSwitchingImport):
             'mode_facturacio': 'index',
             'mode_facturacio_generacio': 'index',
             'llista_preu': new_pricelist_id,
-            'coeficient_k': 4.82,
-            'coeficient_d': 0.3,
             'active': True,
             'state': 'pendent',
             'modcontractual_ant': prev_modcontactual_id,
             'autoconsumo': '41',
         })
+
+#TODO 3.0 6.1, enviament mails

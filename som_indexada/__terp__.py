@@ -8,9 +8,11 @@
     "category": "SomEnergia",
     "depends":[
         "base",
+        "base_extended_som",
         "giscedata_facturacio_indexada_som",
         "giscedata_polissa",
         "giscedata_polissa_comer",
+        "giscedata_polissa_category",
         "giscedata_lectures_pool",
         "giscedata_facturacio_iese",
         "giscedata_switching",
@@ -22,6 +24,7 @@
         "data/product_pricelist_data.xml",
         "data/giscedata_polissa_category_data.xml",
         "data/email_template_data.xml",
+        "security/ir.model.access.csv",
     ],
     "active": False,
     "installable": True
