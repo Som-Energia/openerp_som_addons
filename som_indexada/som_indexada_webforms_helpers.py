@@ -63,16 +63,14 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
 
     def has_indexada_prova_pilot_category_www(self, cursor, uid, polissa_id):
         polissa_obj = self.pool.get('giscedata.polissa')
-        polissa = polissa_obj.browse(cursor, uid, polissa_id)
 
-        res_partner_obj = self.pool.get('res.partner')
-        partner_categories = res_partner_obj.read(cursor, uid, polissa.titular.id, ['category_id'])
+        polissa_categories = polissa_obj.read(cursor, uid, polissa_id, ['category_id'])
         imd_obj = self.pool.get('ir.model.data')
         prova_pilot_cat = imd_obj._get_obj(cursor, uid,
                 'som_indexada',
-                'res_partner_category_indexada_prova_pilot')
+                'category_indexada_prova_pilot')
 
-        if prova_pilot_cat.id in partner_categories['category_id']:
+        if prova_pilot_cat.id in polissa_categories['category_id']:
             return True
         return False
 
