@@ -5,6 +5,7 @@ from datetime import timedelta, date, datetime
 from giscedata_switching.tests.common_tests import TestSwitchingImport
 from osv import osv, fields
 from som_indexada.exceptions import indexada_exceptions
+import mock
 
 class TestChangeToIndexada(TestSwitchingImport):
 
@@ -43,7 +44,8 @@ class TestChangeToIndexada(TestSwitchingImport):
             wiz_o.change_to_indexada(self.cursor, self.uid, [wiz_id], context=context)
         self.assertEqual(error.exception.to_dict()['error'], u"Pòlissa 0018 not active")
 
-    def test_change_to_indexada_modcon_pendent_polissa(self):
+    @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
+    def test_change_to_indexada_modcon_pendent_polissa(self, mocked_send_mail):
         wiz_o = self.pool.get('wizard.change.to.indexada')
         polissa_id = self.open_polissa('polissa_tarifa_018')
         context = {'active_id': polissa_id}
@@ -53,6 +55,24 @@ class TestChangeToIndexada(TestSwitchingImport):
         with self.assertRaises(indexada_exceptions.PolissaModconPending) as error:
             wiz_o.change_to_indexada(self.cursor, self.uid, [wiz_id], context=context)
         self.assertEqual(error.exception.to_dict()['error'], u"Pòlissa 0018 already has a pending modcon")
+        IrModel = self.pool.get('ir.model.data')
+
+        template_id = IrModel.get_object_reference(
+            self.cursor, self.uid, 'som_indexada', 'email_canvi_tarifa_a_indexada'
+        )[1]
+        account_obj = self.pool.get('poweremail.core_accounts')
+        email_from = account_obj.search(self.cursor, self.uid, [('email_id', '=', 'info@somenergia.coop')])[0]
+        expected_ctx = {
+                'active_ids': [polissa_id],
+                'active_id': polissa_id,
+                'template_id': template_id,
+                'src_model': 'giscedata.polissa',
+                'src_rec_ids': [polissa_id],
+                'from': email_from,
+                'state': 'single',
+                'priority': '0',
+            }
+        mocked_send_mail.assert_called_with(self.cursor, self.uid, mock.ANY, expected_ctx)
 
     def test_change_to_indexada_already_indexed_polissa(self):
         wiz_o = self.pool.get('wizard.change.to.indexada')
@@ -89,7 +109,8 @@ class TestChangeToIndexada(TestSwitchingImport):
             wiz_o.change_to_indexada(self.cursor, self.uid, [wiz_id], context=context)
         self.assertEqual(error.exception.to_dict()['error'], u"Pòlissa 0018 with simultaneous ATR")
 
-    def test_change_to_indexada_one_polissa(self):
+    @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
+    def test_change_to_indexada_one_polissa(self, mocked_send_mail):
         polissa_obj = self.pool.get('giscedata.polissa')
         modcon_obj = self.pool.get('giscedata.polissa.modcontractual')
         wiz_o = self.pool.get('wizard.change.to.indexada')
@@ -130,9 +151,27 @@ class TestChangeToIndexada(TestSwitchingImport):
             'state': 'pendent',
             'modcontractual_ant': prev_modcontactual_id,
         })
+        IrModel = self.pool.get('ir.model.data')
 
+        template_id = IrModel.get_object_reference(
+            self.cursor, self.uid, 'som_indexada', 'email_canvi_tarifa_a_indexada'
+        )[1]
+        account_obj = self.pool.get('poweremail.core_accounts')
+        email_from = account_obj.search(self.cursor, self.uid, [('email_id', '=', 'info@somenergia.coop')])[0]
+        expected_ctx = {
+                'active_ids': [polissa_id],
+                'active_id': polissa_id,
+                'template_id': template_id,
+                'src_model': 'giscedata.polissa',
+                'src_rec_ids': [polissa_id],
+                'from': email_from,
+                'state': 'single',
+                'priority': '0',
+            }
+        mocked_send_mail.assert_called_with(self.cursor, self.uid, mock.ANY, expected_ctx)
 
-    def test_change_to_indexada_one_polissa_with_auto(self):
+    @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
+    def test_change_to_indexada_one_polissa_with_auto(self, mocked_send_mail):
         polissa_obj = self.pool.get('giscedata.polissa')
         modcon_obj = self.pool.get('giscedata.polissa.modcontractual')
         wiz_o = self.pool.get('wizard.change.to.indexada')
@@ -175,5 +214,23 @@ class TestChangeToIndexada(TestSwitchingImport):
             'modcontractual_ant': prev_modcontactual_id,
             'autoconsumo': '41',
         })
+        IrModel = self.pool.get('ir.model.data')
 
-#TODO 3.0 6.1, enviament mails
+        template_id = IrModel.get_object_reference(
+            self.cursor, self.uid, 'som_indexada', 'email_canvi_tarifa_a_indexada'
+        )[1]
+        account_obj = self.pool.get('poweremail.core_accounts')
+        email_from = account_obj.search(self.cursor, self.uid, [('email_id', '=', 'info@somenergia.coop')])[0]
+        expected_ctx = {
+                'active_ids': [polissa_id],
+                'active_id': polissa_id,
+                'template_id': template_id,
+                'src_model': 'giscedata.polissa',
+                'src_rec_ids': [polissa_id],
+                'from': email_from,
+                'state': 'single',
+                'priority': '0',
+            }
+        mocked_send_mail.assert_called_with(self.cursor, self.uid, mock.ANY, expected_ctx)
+
+#TODO 3.0, 6.1, canaries, balears, enviament mails?
