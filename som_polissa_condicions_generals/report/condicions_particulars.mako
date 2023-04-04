@@ -493,7 +493,22 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                                 <span>${_(u"PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + K] + PTD + CA")}</span>
                                 <br/>
                                 <span class="normal_font_weight">${_(u"on el marge de comercialització")}</span>
-                                <span>&nbsp;${("(K) = %s €/kWh</B>") % formatLang((polissa.coeficient_k + polissa.coeficient_d) / 1000.0, digits=6)}</span>
+                                <%
+                                    coeficient_k = polissa.coeficient_k + polissa.coeficient_d
+                                    if coeficient_k == 0:
+                                        today = datetime.today().strftime("%Y-%m-%d")
+                                        vlp = None
+                                        for lp in polissa.llista_preu.version_id:
+                                            if lp.date_start.val <= today and (not lp.date_end or lp.date_end.val >= today):
+                                                vlp = lp
+                                                break
+                                        if vlp:
+                                            for item in vlp.items_id:
+                                                if item.name == 'Coeficient K':
+                                                    coeficient_k = item.base_price
+                                                    break
+                                %>
+                                <span>&nbsp;${("(K) = %s €/kWh</B>") % formatLang((coeficient_k) / 1000.0, digits=6)}</span>
                             </td>
                         %else:
                             %for p in periodes_energia:
