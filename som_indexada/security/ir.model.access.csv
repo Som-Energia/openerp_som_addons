@@ -1,0 +1,3 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_wizard_change_to_indexada_rcwd","wizard.change.to.indexada","model_wizard_change_to_indexada","base.group_user",1,1,1,1
+"access_som_indexada_webforms_helpers_rcwd","som.indexada.webforms.helpers","model_som_indexada_webforms_helpers","base.group_user",1,1,1,1
