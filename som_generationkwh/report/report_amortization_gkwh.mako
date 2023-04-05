@@ -94,6 +94,15 @@
     table tr:last-child td {
         border-bottom:0;
     }
+    p.blocktext {
+	font-family:Arial, Helvetica, sans-serif;
+        color:#666;
+        font-size:12px;
+        margin-left:auto;
+        margin-right:auto;
+        width: 66%;
+        border-bottom:0;
+    }
     #account{
         text-align: center;
     }
@@ -105,6 +114,9 @@
     #warning24{
         font-size: 75%;
         vertical-align: text-bottom;
+    }
+    .keep-together {
+  	page-break-inside: avoid;
     }
 
     </style>
@@ -146,7 +158,7 @@ for account.invoice in objects:
         </tr>
         <tr>
             <td> ${_(u"Pagament núm: ")} ${data.amortizationNumPayment} de ${data.amortizationTotalPayments}</td>
-            <td> ${_(u"Import: ")}${format_currency(data.amortValue,'EUR', locale='es_ES')}</td>
+            <td> ${_(u"Import: ")}${format_currency(data.amortValueUnsigned,'EUR', locale='es_ES')}</td>
         </tr>
         <tr>
             <td> ${_(u"Import pendent de retornar: ")}${data.inversionPendingCapital} € </td>
@@ -157,51 +169,70 @@ for account.invoice in objects:
         </tr>
     </table>
     </br>
-    <table>
-        <tr>
-            <th colspan="2"><b>${_(u"Aplicació de la tarifa Generation kWh als teus usos d’energia (any ")}${data.previousYear}${_(u")")}</b></th>
-        </tr>
-        <tr>
-            <td> ${_(u"Quantitat d’energia facturada a preu Generation kWh")}</td>
-            <td> ${formatLang(data.totalGenerationKwh,digits=0)} kWh</td>
-        </tr>
-        <tr>
-            <td> ${_(u"Contractes on s’ha aplicat aquesta tarifa")}</td>
-            <td>
-            %for contract,info in sorted(data.totalContractsWithGkWh.iteritems()):
-                ${formatLang(info['kWh'],digits=0)}${_(" kWh : contracte ")}${contract} - ${info['address']}<br>
-            %endfor
-            </td>
-        </tr>
-        <tr>
-            <td> ${_(u"Import facturat amb tarifa Generation kWh")}</td>
-            <td> ${format_currency(data.totalGenerationAmount,'EUR', locale='es_ES')}</td>
-        </tr>
-        <tr>
-            <td> ${_(u"El que hauria costat sense aplicar-hi la tarifa Generation kWh")}</td>
-            <td> ${format_currency(data.irpfSaving + data.totalGenerationAmount,'EUR', locale='es_ES')}</td>
-        </tr>
-        <tr>
-            <td> ${_(u"Estalvi obtingut (guany en espècie)")}</td>
-            <td> ${format_currency(data.irpfSaving,'EUR', locale='es_ES')}</td>
-        </tr>
-        <tr>
-            <td> ${_(u"Retenció IRPF o impost de societats (19% sobre l’estalvi)")}</td>
-            <td> ${format_currency(data.irpfAmount,'EUR', locale='es_ES')}</td>
-        </tr>
-    </table>
-    </br>
+
+    %if data.countInvestmentsGkwh > 1:
+        <table>
+            <tr>
+                <th colspan="2"><b>${_(u"Resultat aplicació tarifa Generation kWh amb l'aportació: ")} ${data.inversionName}</b></th>
+            </tr>
+            <tr>
+                <td> ${_(u"Estalvi obtingut (rendiment en espècie)")}</td>
+                <td> ${format_currency(data.savingActualInvestment,'EUR', locale='es_ES')}</td>
+            </tr>
+            <tr>
+                <td> ${_(u"Retenció IRPF o impost de societats (19% sobre l’estalvi)")}</td>
+                <td> ${format_currency(data.irpfAmount,'EUR', locale='es_ES')}</td>
+            </tr>
+        </table>
+        </br>
+    %else:
+        <table>
+            <tr>
+                <th colspan="2"><b>${_(u"Aplicació de la tarifa Generation kWh als teus usos d’energia (any ")}${data.previousYear}${_(u")")}</b></th>
+            </tr>
+            <tr>
+                <td> ${_(u"Quantitat d’energia facturada a preu Generation kWh")}</td>
+                <td> ${formatLang(data.totalGenerationKwh,digits=0)} kWh</td>
+            </tr>
+            <tr>
+                <td> ${_(u"Contractes on s’ha aplicat aquesta tarifa")}</td>
+                <td>
+                %for contract,info in sorted(data.totalContractsWithGkWh.iteritems()):
+                    ${formatLang(info['kWh'],digits=0)}${_(" kWh : contracte ")}${contract} - ${info['address']}<br>
+                %endfor
+                </td>
+            </tr>
+            <tr>
+                <td> ${_(u"Import facturat amb tarifa Generation kWh")}</td>
+                <td> ${format_currency(data.totalGenerationAmount,'EUR', locale='es_ES')}</td>
+            </tr>
+            <tr>
+                <td> ${_(u"El que hauria costat sense aplicar-hi la tarifa Generation kWh")}</td>
+                <td> ${format_currency(data.irpfSaving + data.totalGenerationAmount,'EUR', locale='es_ES')}</td>
+            </tr>
+       	    <tr>
+                <td> ${_(u"Estalvi obtingut (guany en espècie)")}</td>
+                <td> ${format_currency(data.irpfSaving,'EUR', locale='es_ES')}</td>
+            </tr>
+            <tr>
+                <td> ${_(u"Retenció IRPF o impost de societats (19% sobre l’estalvi)")}</td>
+                <td> ${format_currency(data.irpfAmount,'EUR', locale='es_ES')}</td>
+            </tr>
+	</table>
+        </br>
+    %endif
+
     <table>
         <tr>
             <th colspan="2"><b>${_(u"Liquidació final")}</b></th>
         </tr>
         <tr>
             <td> ${_(u"Amortització del préstec")}</td>
-            <td> ${format_currency(data.amortValue,'EUR', locale='es_ES')}</td>
+            <td> ${format_currency(data.amortValueUnsigned,'EUR', locale='es_ES')}</td>
         </tr>
         <tr>
             <td> ${_(u"Retenció IRPF o impost de societats")}</td>
-            <td> ${format_currency(data.irpfAmount,'EUR', locale='es_ES')}</td>
+            <td> ${format_currency(data.irpfAmountLiqTotal,'EUR', locale='es_ES')}</td>
         </tr>
         <tr>
             <td>
@@ -228,6 +259,42 @@ for account.invoice in objects:
             <td id="account"> ${data.inversionBankAccount} </td>
         </tr>
     </table>
+    %if data.countInvestmentsGkwh > 1:
+        </br>
+        <div >
+      	    <p class="blocktext">${_(u"A continuació et resumim com ha anat l’aplicació de la tarifa Generation kWh l’any ")}${data.previousYear}${_(u", tenint en compte totes les teves aportacions:")}</p>
+	</ div>
+        </br>
+        <table class="keep-together">
+            <tr>
+                <th colspan="2"><b>${_(u"RESUM APLICACIÓ TARIFA GENERATION KWH (any ")}${data.previousYear}${_(u")")}</b></th>
+            </tr>
+            <tr>
+                <td> ${_(u"Quantitat d’energia facturada a preu Generation kWh")}</td>
+                <td> ${formatLang(data.totalGenerationKwh,digits=0)} kWh</td>
+            </tr>
+            <tr>
+                <td> ${_(u"Contractes on s’ha aplicat aquesta tarifa")}</td>
+                <td>
+                %for contract,info in sorted(data.totalContractsWithGkWh.iteritems()):
+                    ${formatLang(info['kWh'],digits=0)}${_(" kWh : contracte ")}${contract} - ${info['address']}<br>
+                %endfor
+                </td>
+            </tr>
+            <tr>
+                <td> ${_(u"Import facturat amb tarifa Generation kWh")}</td>
+                <td> ${format_currency(data.totalGenerationAmount,'EUR', locale='es_ES')}</td>
+            </tr>
+            <tr>
+                <td> ${_(u"El que hauria costat sense aplicar-hi la tarifa Generation kWh")}</td>
+                <td> ${format_currency(data.irpfSaving + data.totalGenerationAmount,'EUR', locale='es_ES')}</td>
+            </tr>
+            <tr>
+                <td> ${_(u"Estalvi total obtingut (rendiment en espècie)")}</td>
+                <td> ${format_currency(data.irpfSaving,'EUR', locale='es_ES')}</td>
+            </tr>
+        </table>
+    %endif
     </div>
 </body>
 </html>

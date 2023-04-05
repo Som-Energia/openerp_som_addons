@@ -71,6 +71,11 @@ class AccountInvoice(osv.osv):
             if line.product_id.id == amort_product_id:
                 amort_value += line.price_subtotal
 
+        investment_gkwh_ids = Investment.search(cursor, uid, [
+            ('member_id', '=', member_id),
+            ('emission_id.type', '=', 'genkwh')
+        ])
+
         report.receiptDate = dateFormat(invoice['date_invoice'])
         # TODO: non spanish vats not covered by tests
         report.ownerNif = partner['vat'][2:] if partner['vat'][:2]=='ES' else partner['vat']
@@ -87,15 +92,21 @@ class AccountInvoice(osv.osv):
         report.amortizationDate = dateFormat(mutable_information.amortizationDate)
         report.amortizationNumPayment = mutable_information.amortizationNumber
         report.irpfAmount = irpf_values['irpf_amount']
+        report.irpfAmountLiqTotal = (-1 * irpf_values['irpf_amount'])
         report.irpfSaving = irpf_values['irpf_saving']
         report.previousYear = previous_year
         report.amortValue = amort_value
+        report.amortValueUnsigned = abs(amort_value)
         report.invoiceType = invoice['type']
-        report.totalAmountSaving = irpf_values['total_amount_saving']
+        # no està ben calculat -> ens basem millor en irpfSaving
+        # report.totalAmountSaving = irpf_values['total_amount_saving']
         report.totalGenerationKwh = irpf_values['total_generation_kwh']
         report.totalGenerationAmount = irpf_values['total_generation_amount']
         report.totalAmountNoGeneration = irpf_values['total_amount_no_generation']
         report.totalContractsWithGkWh = irpf_values['total_contracts_with_gkWh']
+
+        report.countInvestmentsGkwh = len(investment_gkwh_ids)
+        report.savingActualInvestment = irpf_values['irpf_actual_saving']
 
         return report
 
