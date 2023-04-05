@@ -603,6 +603,54 @@ class GenerationkwhInvestment(osv.osv):
         sql = q.select(['id','saving_gkw_amount','factura_line_id']).where(search_params)
         cursor.execute(*sql)
         gilo_results = cursor.dictfetchall()
+        results = {
+            d['factura_line_id']: (d['id'], d['saving_gkw_amount']) for d in gilo_results
+        }
+
+        total_amount_saving = 0
+        total_generation_kwh = 0
+        total_generation_amount = 0
+        contracts = {}
+
+        for item in results.items():
+            gilo_line  = gilo_obj.browse(cursor, uid, item[1][0])
+            line = gffl_obj.read(cursor, uid, item[0])
+
+            total_amount_saving += item[1][1]
+            total_generation_kwh += line['quantity']
+            total_generation_amount += line['price_subtotal']
+            pol_name = gilo_line.factura_id.polissa_id.name
+            pol_dire = gilo_line.factura_id.polissa_id.cups_direccio
+            if pol_name in contracts:
+                contracts[pol_name]['kWh'] = contracts[pol_name]['kWh'] + line['quantity']
+            else:
+                contracts[pol_name] = {'address': pol_dire, 'kWh': line['quantity']}
+
+        res = {
+            'total_amount_saving': total_amount_saving,
+            'total_generation_kwh': total_generation_kwh,
+            'total_generation_amount': total_generation_amount,
+            'total_amount_no_generation': total_amount_saving + total_generation_amount,
+            'total_contracts_with_gkWh': contracts,
+        }
+
+        return res
+
+    def get_total_generation_invoiced_partner_old(self, cursor, uid, partner_id, start_date, end_date):
+        """
+        :param partner_id: In this function, partner_id is the partner of Investment, not the Parnter of Invoice.
+        """
+        gilo_obj = self.pool.get('generationkwh.invoice.line.owner')
+        gffl_obj = self.pool.get('giscedata.facturacio.factura.linia')
+        q = OOQuery(gilo_obj, cursor, uid)
+
+        search_params = [('owner_id.id', '=', partner_id),
+                         ('factura_id.invoice_id.date_invoice', '>=', start_date),
+                         ('factura_id.invoice_id.date_invoice', '<=', end_date)]
+
+        sql = q.select(['id','saving_gkw_amount','factura_line_id']).where(search_params)
+        cursor.execute(*sql)
+        gilo_results = cursor.dictfetchall()
 
         total_amount_saving = 0
         total_generation_kwh = 0
