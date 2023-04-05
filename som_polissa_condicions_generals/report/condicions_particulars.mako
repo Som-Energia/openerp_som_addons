@@ -187,8 +187,9 @@ CONTRACT_TYPES = dict(TABLA_9)
 
         <%
             dict_titular = get_titular_data(pas01, polissa)
-
             periodes_energia, periodes_potencia = [], []
+            ultima_modcon = polissa.modcontractuals_ids[0]
+            modcon_pendent_indexada = ultima_modcon.state == 'pendent' and ultima_modcon.mode_facturacio == 'index'
         %>
         <div class="contact_info">
             <div class="persona_titular styled_box ${"width33" if dict_titular['diferent'] else "width49"}">
@@ -387,7 +388,9 @@ CONTRACT_TYPES = dict(TABLA_9)
         <div class="styled_box">
         %for dades_tarifa in tarifes_a_mostrar:
             <%
-                if not data_final and dades_tarifa['date_end']:
+                if modcon_pendent_indexada:
+                    text_vigencia = ''
+                elif not data_final and dades_tarifa['date_end']:
                     text_vigencia = _(u"(vigents fins al {})").format(dades_tarifa['date_end'])
                 elif dades_tarifa['date_end'] and dades_tarifa['date_start']:
                     text_vigencia = _(u"(vigents fins al {})").format((datetime.strptime(dades_tarifa['date_end'], '%Y-%m-%d')).strftime('%d/%m/%Y'))
@@ -519,7 +522,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                     %endif
                     <tr>
                         <td class="bold">${_("Terme energia (€/kWh)")}</td>
-                        %if polissa.mode_facturacio == 'index':
+                        %if polissa.mode_facturacio or modcon_pendent_indexada == 'index':
                             <td class="center reset_line_height" colspan="6">
                                 <span class="normal_font_weight">
                                     %if lang ==  'ca_ES':
