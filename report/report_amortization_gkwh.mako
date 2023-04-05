@@ -158,7 +158,7 @@ for account.invoice in objects:
         </tr>
         <tr>
             <td> ${_(u"Pagament núm: ")} ${data.amortizationNumPayment} de ${data.amortizationTotalPayments}</td>
-            <td> ${_(u"Import: ")}${format_currency(data.amortValue,'EUR', locale='es_ES')}</td>
+            <td> ${_(u"Import: ")}${format_currency(data.amortValueUnsigned,'EUR', locale='es_ES')}</td>
         </tr>
         <tr>
             <td> ${_(u"Import pendent de retornar: ")}${data.inversionPendingCapital} € </td>
@@ -228,11 +228,11 @@ for account.invoice in objects:
         </tr>
         <tr>
             <td> ${_(u"Amortització del préstec")}</td>
-            <td> ${format_currency(data.amortValue,'EUR', locale='es_ES')}</td>
+            <td> ${format_currency(data.amortValueUnsigned,'EUR', locale='es_ES')}</td>
         </tr>
         <tr>
             <td> ${_(u"Retenció IRPF o impost de societats")}</td>
-            <td> ${format_currency(data.irpfAmount,'EUR', locale='es_ES')}</td>
+            <td> ${format_currency(data.irpfAmountLiqTotal,'EUR', locale='es_ES')}</td>
         </tr>
         <tr>
             <td>
