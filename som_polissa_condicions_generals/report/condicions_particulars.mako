@@ -66,7 +66,6 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
     }
 
 def get_potencies(pas01, polissa):
-    #tot el codi de tarifa contractada es redundant?
     res = {}
     if pas01:
         es_canvi_tecnic = pas01.pas_id.sollicitudadm == "N"
@@ -286,8 +285,8 @@ CONTRACT_TYPES = dict(TABLA_9)
             %>
             <div class="peatge_access_content">
                 <div class="padding_left"><b>${_(u"Peatge de transport i distribució: ")}</b>${clean(polissa.tarifa_codi)}</div>
-                <div class="padding_bottom padding_left"><b>${_(u"Tipus de contracte: ")}</b> ${CONTRACT_TYPES[polissa.contract_type]} ${"({0})".format(dict_pot['autoconsum']) if polissa.autoconsumo != '00' else ""}</div>
-
+                <div class="padding_left"><b>${_(u"Tipus de contracte: ")}</b> ${CONTRACT_TYPES[polissa.contract_type]} ${"({0})".format(dict_pot['autoconsum']) if polissa.autoconsumo != '00' else ""}</div>
+                <div class="padding_bottom padding_left"><b>${_(u"Tarifa comercialitzadora: ")}</b> ${clean(polissa.llista_preu.name)}</div>
                 <table class="taula_custom new_taula_custom">
                     <tr style="background-color: #878787;">
                         <th></th>
@@ -524,16 +523,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                         %if polissa.mode_facturacio == 'index' or modcon_pendent_indexada:
                             <td class="center reset_line_height" colspan="6">
                                 <span class="normal_font_weight">
-                                    %if lang ==  'ca_ES':
-                                        <a target="_blank" href="https://www.somenergia.coop/documentacio_EiE/CA_EiE_Explica_Tarifa%20Indexada%20per%20Entitats%20i%20Empreses_Som%20Energia.pdf">
-                                            <b>${_(u"Tarifa indexada")}</b>
-                                        </a>
-                                    %else:
-                                        <a target="_blank" href="https://www.somenergia.coop/documentacio_EiE/ES_EiE_Explica_Tarifa%20Indexada%20para%20Entidades%20y%20Empresas_Som%20Energia.pdf">
-                                            <b>${_(u"Tarifa indexada")}</b>
-                                        </a>
-                                    %endif
-                                    ${_(u" - el preu horari es calcula d'acord amb la fórmula:")}
+                                    <b>${_(u"Tarifa indexada")}</b>${_(u"(2) - el preu horari (PH) es calcula d'acord amb la fórmula:")}
                                 </span>
                                 <br/>
                                 <span>${_(u"PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + K] + PTD + CA")}</span>
@@ -602,12 +592,10 @@ CONTRACT_TYPES = dict(TABLA_9)
                     %endif
                     %if polissa.autoconsumo != '00':
                     <tr>
-                        <td><span class="bold">${_("(2) Autoconsum (€/kWh)")}</span></td>
-                        %if polissa.mode_facturacio == 'index':
+                        <td><span class="bold auto">${_("Excedents d'autoconsum (€/kWh)")}</span></td>
+                        %if polissa.mode_facturacio == 'index' or modcon_pendent_indexada:
                             <td class="center reset_line_height" colspan="6">
-                                <span class="normal_font_weight">${_(u"Tarifa indexada - el preu es calcula d'acord amb la fórmula:")}</span>
-                                <br/>
-                                <span>${_(u"Import excedents = Suma horària (kWh excedentaris h <sub>i</sub> * PHM <sub>i</sub> )")}</span>
+                                <span class="normal_font_weight">${_(u"Tarifa indexada(2) - el preu horari de la compensació d'excedents és igual al PHM")}</span>
                             </td>
                         %else:
                             %if polissa.llista_preu:
@@ -627,8 +615,8 @@ CONTRACT_TYPES = dict(TABLA_9)
                 %if polissa.te_assignacio_gkwh:
                     <span class="bold">(1) </span> ${_("Terme d'energia en cas de participar-hi, segons condicions del contracte GenerationkWh.")}<br/>
                 %endif
-                %if polissa.autoconsumo != '00':
-                    <span class="bold">(2) </span> ${_("Preu de la compensació d'excedents, si és aplicable.")}
+                %if polissa.mode_facturacio == 'index' or modcon_pendent_indexada:
+                    <span class="bold">(2) </span> ${_("Pots consultar el significat de les variables a les condicions específiques que trobaràs a continuació.")}
                 %endif
                 </div>
                 %if polissa.mode_facturacio != 'index' and dades_tarifa['date_start'] >= start_date_mecanisme_ajust_gas and \
