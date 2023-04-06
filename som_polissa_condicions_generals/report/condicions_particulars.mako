@@ -120,10 +120,9 @@ CONTRACT_TYPES = dict(TABLA_9)
     %for obj in objects:
         <%
             if obj._name == 'giscedata.switching':
-                pool = cas.pool
-                pol_obj = pool.get('giscedata.polissa')
-                polissa = pol_obj.browse(cas._cr, cas._uid, cas.cups_polissa_id.id)
-                pas01 = get_pas01(cas)
+                pol_obj = obj.pool.get('giscedata.polissa')
+                polissa = pol_obj.browse(cursor, uid, obj.cups_polissa_id.id)
+                pas01 = get_pas01(obj)
             elif obj._name == 'giscedata.polissa':
                 polissa = obj
                 pas01 = False
@@ -378,7 +377,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                 cursor, uid, 'charge_iva_10_percent_when_start_date', '2021-06-01'
             )
             end_date_iva_5 = cfg_obj.get(
-                cursor, uid, 'iva_reduit_get_tariff_prices_end_date', '2022-12-31'
+                cursor, uid, 'iva_reduit_get_tariff_prices_end_date', '2023-12-31'
             )
             iva_5_active = eval(cfg_obj.get(
                 cursor, uid, 'charge_iva_10_percent_when_available', '0'
@@ -522,7 +521,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                     %endif
                     <tr>
                         <td class="bold">${_("Terme energia (€/kWh)")}</td>
-                        %if polissa.mode_facturacio or modcon_pendent_indexada == 'index':
+                        %if polissa.mode_facturacio == 'index' or modcon_pendent_indexada:
                             <td class="center reset_line_height" colspan="6">
                                 <span class="normal_font_weight">
                                     %if lang ==  'ca_ES':
@@ -546,7 +545,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                                         today = datetime.today().strftime("%Y-%m-%d")
                                         vlp = None
                                         for lp in polissa.llista_preu.version_id:
-                                            if lp.date_start.val <= today and (not lp.date_end or lp.date_end.val >= today):
+                                            if lp.date_start <= today and (not lp.date_end or lp.date_end >= today):
                                                 vlp = lp
                                                 break
                                         if vlp:
