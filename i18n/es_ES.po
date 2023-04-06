@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2023-01-26 17:30+0000\n"
-"PO-Revision-Date: 2023-01-26 16:34+0000\n"
+"POT-Creation-Date: 2023-04-06 08:26+0000\n"
+"PO-Revision-Date: 2023-04-06 06:34+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -58,10 +58,10 @@ msgstr "Tiene asignaciones GWKH"
 #. module: som_generationkwh
 #: constraint:ir.actions.act_window:0
 msgid "Invalid model name in the action definition."
-msgstr "Invalid model name in the action definition."
+msgstr "Nombre de modelo no válido en la definición de acción."
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/investment.py:862
+#: code:addons/som_generationkwh/investment.py:930
 #, python-format
 msgid "Amortització fins a {amortization_date:%d/%m/%Y} de {investment} "
 msgstr "Amortitzación hasta a {amortization_date:%d/%m/%Y} de {investment} "
@@ -79,7 +79,7 @@ msgstr "Antención"
 #. module: som_generationkwh
 #: constraint:account.period:0
 msgid "Error ! The duration of the Period(s) is/are invalid. "
-msgstr "Error ! The duration of the Period(s) is/are invalid. "
+msgstr "Error! La duración del Periodo(s) es invalida. "
 
 #. module: som_generationkwh
 #: selection:wizard.generationkwh.investment.activation,action:0
@@ -119,7 +119,7 @@ msgstr "Type of the emission."
 #. module: som_generationkwh
 #: constraint:product.category:0
 msgid "Error ! You can not create recursive categories."
-msgstr "Error ! You can not create recursive categories."
+msgstr "¡Error! No se pueden crear categorías recursivas."
 
 #. module: som_generationkwh
 #: field:generationkwh.invoice.line.owner,factura_id:0
@@ -216,7 +216,7 @@ msgstr "No se ha notificado ningún contrato GenerationKwh porqué algunos contr
 #. module: som_generationkwh
 #: constraint:product.template:0
 msgid "Error: UOS must be in a different category than the UOM"
-msgstr "Error: UOS must be in a different category than the UOM"
+msgstr "Error: UOS debe estar en una categoría diferente a la UOM"
 
 #. module: som_generationkwh
 #: field:wizard.factures.liquidacio.interessos,date_start:0
@@ -497,7 +497,7 @@ msgstr "Assignaciones"
 #. module: som_generationkwh
 #: view:giscedata.facturacio.factura:0
 msgid "Energia"
-msgstr "Energia"
+msgstr "Energía"
 
 #. module: som_generationkwh
 #: view:wizard.baixa.soci:0
@@ -574,7 +574,7 @@ msgstr "Aportació / Aportación al capital social Som Enegia Ref. ${object.name
 #. module: som_generationkwh
 #: constraint:product.product:0
 msgid "Error: Invalid ean code"
-msgstr "Error: Invalid ean code"
+msgstr "Error: Código EAN no válido"
 
 #. module: som_generationkwh
 #: field:giscedata.facturacio.factura,gkwh_linia_ids:0
@@ -672,7 +672,7 @@ msgstr "Limite en € en aportaciones por persona"
 #. module: som_generationkwh
 #: constraint:account.account:0
 msgid "Error ! You can not create recursive accounts."
-msgstr "Error ! You can not create recursive accounts."
+msgstr "Error! No puedes crear cuentas recursivamente"
 
 #. module: som_generationkwh
 #: view:wizard.generationkwh.investment.amortization:0
@@ -739,7 +739,7 @@ msgstr "Contracte que te els drets per utilitzar els kWh generats"
 #. module: som_generationkwh
 #: constraint:ir.ui.view:0
 msgid "Invalid XML for View Architecture!"
-msgstr "Invalid XML for View Architecture!"
+msgstr "¡XML inválido para la definición de la vista!"
 
 #. module: som_generationkwh
 #: field:generationkwh.right.usage.line,datetime:0
@@ -806,7 +806,7 @@ msgstr "Día en que se cierra la campaña. Si se deja vacío, es ilimitada"
 #. module: som_generationkwh
 #: constraint:payment.mode:0
 msgid "The SEPA creditor code is not correct"
-msgstr "The SEPA creditor code is not correct"
+msgstr "El código de acreedor de SEPA no es correcto"
 
 #. module: som_generationkwh
 #: view:generationkwh.emission:0
@@ -1038,7 +1038,7 @@ msgid "Contracte"
 msgstr "Contracto"
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/investment.py:1478
+#: code:addons/som_generationkwh/investment.py:1546
 msgid "Inversió {investment} "
 msgstr "Inversión {investment} "
 
@@ -1710,7 +1710,7 @@ msgstr "Muestra facturas"
 #: constraint:product.template:0
 msgid ""
 "Error: The default UOM and the purchase UOM must be in the same category."
-msgstr "Error: The default UOM and the purchase UOM must be in the same category."
+msgstr "Error: La UOM por defecto y la UOM de compra debe estar en la misma categoría."
 
 #. module: som_generationkwh
 #: model:ir.model,name:som_generationkwh.model_wizard_aeat193_from_gkwh_invoices
@@ -1853,7 +1853,7 @@ msgstr "Història"
 #: constraint:ir.model:0
 msgid ""
 "The Object name must start with x_ and not contain any special character !"
-msgstr "The Object name must start with x_ and not contain any special character !"
+msgstr "¡El nombre del objeto debe empezar con x_ y no contener ningún carácter especial!"
 
 #. module: som_generationkwh
 #: model:ir.model,name:som_generationkwh.model_wizard_generationkwh_investment_cancel_or_resign
@@ -2383,7 +2383,7 @@ msgstr "Crear"
 msgid ""
 "Invalid period ! Some periods overlap or the date period is not in the scope"
 " of the fiscal year. "
-msgstr "Invalid period ! Some periods overlap or the date period is not in the scope of the fiscal year. "
+msgstr "Periodo invalido! Algunos periodos se solapan o la fecha no se encuentra dentro del año fiscal. "
 
 #. module: som_generationkwh
 #: code:addons/som_generationkwh/somenergia_soci.py:210
@@ -2393,7 +2393,7 @@ msgstr "El socio tiene aportacions activas."
 #. module: som_generationkwh
 #: constraint:account.fiscalyear:0
 msgid "Error ! The duration of the Fiscal Year is invalid. "
-msgstr "Error ! The duration of the Fiscal Year is invalid. "
+msgstr "Error! La duración del Año Fiscal es invalida. "
 
 #. module: som_generationkwh
 #: view:wizard.generationkwh.investment.transfer:0
@@ -2448,7 +2448,7 @@ msgid "Renunciar"
 msgstr "Renunciar"
 
 #. module: som_generationkwh
-#: code:addons/som_generationkwh/investment.py:911
+#: code:addons/som_generationkwh/investment.py:979
 msgid ""
 "Retenció IRPF sobre l'estalvi del Generationkwh de {retention_date:%Y} de "
 "{investment} "
@@ -2517,118 +2517,151 @@ msgstr "Acciones activas"
 msgid "Liquidació préstec Generation kWh"
 msgstr "Liquidación préstamo Generation kWh"
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:127
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:139
 msgid "Dades préstec Generation kWh: "
 msgstr "Datos préstamo Generation kWh: "
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:130
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:142
 msgid "Titular: "
 msgstr "Titular: "
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:134
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:146
 msgid "NIF: "
 msgstr "NIF: "
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:135
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:147
 msgid "Import Inicial: "
 msgstr "Importe Inicial: "
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:138
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:150
 msgid "Data formalització: "
 msgstr "Fecha formalización: "
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:139
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:151
 msgid "Data venciment: "
 msgstr "Fecha vencimiento: "
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:145
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:157
 msgid "Amortització del préstec: "
 msgstr "Amortización del préstamo: "
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:148
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:160
 msgid "Pagament núm: "
 msgstr "Pago núm: "
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:149
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:161
 msgid "Import: "
 msgstr "Importe: "
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:152
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:164
 msgid "Import pendent de retornar: "
 msgstr "Importe pendiente de devolver: "
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:153
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:165
 msgid "Data: "
 msgstr "Fecha: "
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:156
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:168
 msgid "Recorda: el pagament nº 24 serà doble"
 msgstr "Recuerda: el pago nº 24 será doble"
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:162
-msgid "Aplicació de la tarifa Generation kWh als teus usos d’energia (any "
-msgstr "Aplicación de la tarifa Generation kWh a tus usos de energía (año  "
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:176
+msgid "Resultat aplicació tarifa Generation kWh amb l'aportació: "
+msgstr "Resultado aplicación tarifa Generation kWh con la aportación: "
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:162
-msgid ")"
-msgstr ")"
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:179
+msgid "Estalvi obtingut (rendiment en espècie)"
+msgstr "Ahorro obtenido (rendimiento en especie)"
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:165
-msgid "Quantitat d’energia facturada a preu Generation kWh"
-msgstr "Cantidad de energía facturada a precio Generation kWh"
-
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:169
-msgid "Contractes on s’ha aplicat aquesta tarifa"
-msgstr "Contratos en los que se ha aplicado esta tarifa"
-
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:172
-msgid " kWh : contracte "
-msgstr " kWh : contrato "
-
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:177
-msgid "Import facturat amb tarifa Generation kWh"
-msgstr "Importe facturado con tarifa Generation kWh"
-
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:181
-msgid "El que hauria costat sense aplicar-hi la tarifa Generation kWh"
-msgstr "Lo que habría costado sin aplicar la tarifa Generation kWh"
-
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:185
-msgid "Estalvi obtingut (guany en espècie)"
-msgstr "Ahorro obtenido (ganancia en especie)"
-
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:189
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:183
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:218
 #, python-format
 msgid "Retenció IRPF o impost de societats (19% sobre l’estalvi)"
 msgstr "Retención IRPF o impuesto de sociedades (19% sobre el ahorro)"
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:196
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:191
+msgid "Aplicació de la tarifa Generation kWh als teus usos d’energia (any "
+msgstr "Aplicación de la tarifa Generation kWh a tus usos de energía (año  "
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:191
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:270
+msgid ")"
+msgstr ")"
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:194
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:273
+msgid "Quantitat d’energia facturada a preu Generation kWh"
+msgstr "Cantidad de energía facturada a precio Generation kWh"
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:198
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:277
+msgid "Contractes on s’ha aplicat aquesta tarifa"
+msgstr "Contratos en los que se ha aplicado esta tarifa"
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:201
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:280
+msgid " kWh : contracte "
+msgstr " kWh : contrato "
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:206
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:285
+msgid "Import facturat amb tarifa Generation kWh"
+msgstr "Importe facturado con tarifa Generation kWh"
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:210
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:289
+msgid "El que hauria costat sense aplicar-hi la tarifa Generation kWh"
+msgstr "Lo que habría costado sin aplicar la tarifa Generation kWh"
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:214
+msgid "Estalvi obtingut (guany en espècie)"
+msgstr "Ahorro obtenido (ganancia en especie)"
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:227
 msgid "Liquidació final"
 msgstr "Liquidación final"
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:199
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:230
 msgid "Amortització del préstec"
 msgstr "Amortización del préstamo"
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:203
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:234
 msgid "Retenció IRPF o impost de societats"
 msgstr "Retención IRPF o impuesto de sociedades"
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:209
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:240
 msgid "Import al teu favor"
 msgstr "Importe a tu favor"
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:211
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:242
 msgid "Import a retornar a Som Energia"
 msgstr "Importe a devolver a Som Energia"
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:221
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:252
 msgid "Compte on es realitzarà l'ingrés"
 msgstr "Cuenta donde se realizará el ingreso"
 
-#: rml:som_generationkwh/report/report_amortization_gkwh.mako:223
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:254
 msgid "Compte on es realitzarà el càrrec"
 msgstr "Cuenta donde se realizará el cargo"
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:265
+msgid ""
+"A continuació et resumim com ha anat l’aplicació de la tarifa Generation kWh"
+" l’any "
+msgstr "A continuación te resumimos cómo ha ido la aplicación de la tarifa Generation kWh el año "
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:265
+msgid ", tenint en compte totes les teves aportacions:"
+msgstr ", teniendo en cuenta todas tus aportaciones:"
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:270
+msgid "RESUM APLICACIÓ TARIFA GENERATION KWH (any "
+msgstr "RESUMEN APLICACIÓN TARIFA GENERATION KWH (año "
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:293
+msgid "Estalvi total obtingut (rendiment en espècie)"
+msgstr "Ahorro total obtenido (rendimiento en especie)"
 
 #: rml:som_generationkwh/report/report_contract_apo.mako:205
 msgid "gener"
