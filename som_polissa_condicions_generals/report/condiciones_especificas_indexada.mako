@@ -118,7 +118,8 @@
 
 <p>SOM ENERGIA, SCCL, ha puesto a disposición de la contratante las presentes Condiciones Específicas previamente a su contratación a través de su página web <a href="http://www.somenergia.coop"><em>www.somenergia.coop</em></a>. Estas han sido suscritas mediante sistemas de contratación electrónica, y se ha remitido un ejemplar en soporte duradero a la contratante una vez finalizada la contratación.</p>
 
-<p>En Girona, a [fecha de contratación online del producto, o, si no es posible por limitaciones del ERP, fecha de emisión de las condiciones específicas]</p>
+<% date = objects[0].modcontractuals_ids[0].data_inici%>
+<p>En Girona, a ${date}</p>
 
 </div>
 
