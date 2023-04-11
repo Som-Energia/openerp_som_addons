@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2023-04-06 08:26+0000\n"
-"PO-Revision-Date: 2023-04-06 06:34+0000\n"
+"POT-Creation-Date: 2023-04-11 13:07+0000\n"
+"PO-Revision-Date: 2023-04-11 13:02+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -2517,6 +2517,14 @@ msgstr "Acciones activas"
 msgid "Liquidació préstec Generation kWh"
 msgstr "Liquidación préstamo Generation kWh"
 
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:134
+msgid "Liquidació Generation kWh"
+msgstr "Liquidación Generation kWh"
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:134
+msgid "Emissió: "
+msgstr "Emisión: "
+
 #: rml:som_generationkwh/report/report_amortization_gkwh.mako:139
 msgid "Dades préstec Generation kWh: "
 msgstr "Datos préstamo Generation kWh: "
@@ -2570,8 +2578,12 @@ msgid "Resultat aplicació tarifa Generation kWh amb l'aportació: "
 msgstr "Resultado aplicación tarifa Generation kWh con la aportación: "
 
 #: rml:som_generationkwh/report/report_amortization_gkwh.mako:179
-msgid "Estalvi obtingut (rendiment en espècie)"
-msgstr "Ahorro obtenido (rendimiento en especie)"
+msgid "Estalvi obtingut l'any "
+msgstr "Ahorro obtenido el año "
+
+#: rml:som_generationkwh/report/report_amortization_gkwh.mako:179
+msgid " (rendiment en espècie)"
+msgstr " (rendimiento en especie)"
 
 #: rml:som_generationkwh/report/report_amortization_gkwh.mako:183
 #: rml:som_generationkwh/report/report_amortization_gkwh.mako:218
