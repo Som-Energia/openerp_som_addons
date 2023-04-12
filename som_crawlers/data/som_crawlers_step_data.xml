@@ -91,7 +91,6 @@
             <field name="params">{}</field>
             <field name="task_id" ref="descargar_meliana"/>
         </record>
-
         <!--Serrania-->
         <record model="som.crawlers.task.step" id="pas_descargar_serrania">
             <field name="name">Descarregar fitxers</field>
@@ -107,8 +106,6 @@
             <field name="params">{}</field>
             <field name="task_id" ref="descargar_serrania"/>
         </record>
-
-
         <!--Iberdrola-->
         <record model="som.crawlers.task.step" id="pas_descargar_iberdrola_contratacion">
             <field name="name">Descarregar fitxers</field>
@@ -917,6 +914,21 @@
             <field name="function">import_ftp_xml_files</field>
             <field name="params">{"clean_zip": "True"}</field>
             <field name="task_id" ref="descarregar_datacenter_ftp_f1"/>
+        </record>
+        <!-- SCQ -->
+        <record model="som.crawlers.task.step" id="pas_descarregar_scq">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descarregar_scq"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_scq">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descarregar_scq"/>
         </record>
     </data>
 </openerp>
