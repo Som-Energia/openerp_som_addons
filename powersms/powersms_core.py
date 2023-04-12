@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
 import netsvc
@@ -16,27 +17,41 @@ class PowersmsCoreAccounts(osv.osv):
             return True
         return False
 
+    def _get_json_body(self, number_to, message, from_name, context=None):
+        special_characters = [
+            u"€",
+        ]
+        dict_sms = {
+            "txt": message,
+        }
+        if any(special_char in message for special_char in special_characters):
+            message_result = base64.b64encode(message.encode('utf-16'))
+            dict_sms = {
+                "charset":"utf-16",
+                "data_coding":"unicode",
+                "txt": base64.b64encode(message.encode('utf-16')),
+            }
+        json_body = {
+            "sms": dict_sms,
+            "dst": {
+                "num": number_to,
+            },
+            "src": from_name,
+        }
+        return json_body
+
+
     def send_sms_lleida(self, cr, uid, ids, number_to, message, from_name, context=None):
         if isinstance(ids, list):
             ids = ids[0]
         if not self.check_numbers(cr, uid, ids, number_to):
             raise Exception("Incorrect cell number: " + number_to)
-        message_encoded = base64.b64encode(message.encode('utf-16'))
 
         values = self.read(cr, uid, ids, ['api_uname', 'api_pass'])
         c = Client(user=str(values['api_uname']), password=str(values['api_pass']))
         headers = {'content-type': 'application/x-www-form-urlencoded', 'accept': 'application/json'}
-        resposta = c.API.post(resource='',json={
-            "sms": {
-                "charset":"utf-16",
-                "data_coding":"unicode",
-                "txt": message_encoded,
-                "dst": {
-                    "num": number_to,
-                },
-                "src": from_name,
-            }
-        }, headers=headers)
+        json_body = self._get_json_body(number_to, message, from_name, context)
+        resposta = c.API.post(resource='',json= json_body)
         return resposta.result['code'] == 200 and resposta.result['status'] == u'Success'
 
     def send_sms(self, cr, uid, ids, from_name, numbers_to, body='', context=None):
