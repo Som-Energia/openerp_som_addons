@@ -33,7 +33,7 @@
     <p>Sent <em><strong>h</strong></em><sub><em><strong>i </strong></em></sub>cada una de les hores del període de facturació en qüestió.</p>
     <p>Sent PH el preu horari de l'energia calculat seguint la fórmula següent:</p>
     <blockquote><strong>PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + K] + PTD + CA</strong></blockquote>
-    
+
     <p style="page-break-after:always;"></p>
     <br>
     <br>
@@ -115,7 +115,9 @@
 
 <p>SOM ENERGIA, SCCL, ha posat a la disposició de la contractant aquestes Condicions Específiques prèviament a la seva contractació a través de la seva pàgina web <a href="http://www.somenergia.coop"><em>www.somenergia.coop</em></a>. Aquestes han estat subscrites mitjançant sistemes de contractació electrònica, i s'ha remès un exemplar en suport durador a la contractant una vegada finalitzada la contractació.</p>
 
-<% date = objects[0].modcontractuals_ids[0].data_inici%>
+<%
+from datetime import date
+date = date.today()%>
 <p>Girona, a ${date}</p>
 
 </div>
