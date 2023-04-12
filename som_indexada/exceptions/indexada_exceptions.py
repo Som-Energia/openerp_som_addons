@@ -91,3 +91,17 @@ class FailSendEmail(IndexadaException):
             super(FailSendEmail, self).to_dict(),
             polissa_number=self.polissa_number,
         )
+
+class KCoefficientNotFound(IndexadaException):
+    def __init__(self, pricelist_id):
+        super(KCoefficientNotFound, self).__init__(
+            title=_('K_Coefient not found'),
+            text=_("K_Coeficint not found for pricelist id {}").format(pricelist_id),
+        )
+        self.pricelist_id = pricelist_id
+
+    def to_dict(self):
+        return dict(
+            super(KCoefficientNotFound, self).to_dict(),
+            pricelist_id=self.pricelist_id,
+        )

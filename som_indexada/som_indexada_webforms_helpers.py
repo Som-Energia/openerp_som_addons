@@ -1,10 +1,32 @@
 # -*- coding: utf-8 -*-
 from osv import osv
 from som_indexada.exceptions import indexada_exceptions
+from datetime import datetime
 
 class SomIndexadaWebformsHelpers(osv.osv_memory):
 
     _name = 'som.indexada.webforms.helpers'
+
+
+    def get_k_from_pricelist(self, cursor, uid, pricelist_id):
+        pricelist_obj = self.pool.get('product.pricelist')
+        pricelist = pricelist_obj.browse(cursor, uid, pricelist_id)
+        today = datetime.today().strftime("%Y-%m-%d")
+        vlp = None
+        coefficient_k = None
+        for lp in pricelist.version_id:
+            if lp.date_start.val <= today and (not lp.date_end or lp.date_end.val >= today):
+                vlp = lp
+                break
+        if vlp:
+            for item in vlp.items_id:
+                if item.name == 'Coeficient K':
+                    coefficient_k = item.base_price
+                    break
+        if coefficient_k != None:
+            return coefficient_k
+        else:
+            raise indexada_exceptions.KCoefficientNotFound(pricelist_id)
 
     def traceback_info(self, exception):
         import traceback
@@ -23,7 +45,10 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                 wiz_id = wiz_o.create(cursor, uid, {}, context=context)
                 wiz_o.validate_polissa_can_indexada(cursor, uid, polissa)
                 pricelist_id =  wiz_o.calculate_new_pricelist(cursor, uid, polissa, context=context)
-                return pricelist_obj.read(cursor, uid, pricelist_id, ['name'])['name']
+                pricelist_name =  pricelist_obj.read(cursor, uid, pricelist_id, ['name'])['name']
+                coefficient_k = self.get_k_from_pricelist(cursor, uid, pricelist_id)/1000
+                return {'tariff_name': pricelist_name,
+                        'k_coefficient_eurkwh': coefficient_k}
 
             except indexada_exceptions.IndexadaException as e:
                 cursor.rollback(savepoint)
