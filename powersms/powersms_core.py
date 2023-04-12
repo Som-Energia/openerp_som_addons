@@ -2,6 +2,7 @@ from osv import osv, fields
 from tools.translate import _
 import netsvc
 from lleida_net.sms import Client
+import base64
 
 class PowersmsCoreAccounts(osv.osv):
     """
@@ -20,13 +21,16 @@ class PowersmsCoreAccounts(osv.osv):
             ids = ids[0]
         if not self.check_numbers(cr, uid, ids, number_to):
             raise Exception("Incorrect cell number: " + number_to)
+        message_encoded = base64.b64encode(message.encode('utf-16'))
 
         values = self.read(cr, uid, ids, ['api_uname', 'api_pass'])
         c = Client(user=str(values['api_uname']), password=str(values['api_pass']))
         headers = {'content-type': 'application/x-www-form-urlencoded', 'accept': 'application/json'}
         resposta = c.API.post(resource='',json={
             "sms": {
-                "txt": message,
+                "charset":"utf-16",
+                "data_coding":"unicode",
+                "txt": message_encoded,
                 "dst": {
                     "num": number_to,
                 },
