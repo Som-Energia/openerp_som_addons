@@ -25,7 +25,6 @@ class PowersmsCoreAccounts(osv.osv):
             "txt": message,
         }
         if any(special_char in message for special_char in special_characters):
-            message_result = base64.b64encode(message.encode('utf-16'))
             dict_sms = {
                 "charset":"utf-16",
                 "data_coding":"unicode",
