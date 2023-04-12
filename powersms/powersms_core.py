@@ -30,13 +30,7 @@ class PowersmsCoreAccounts(osv.osv):
                 "data_coding":"unicode",
                 "txt": base64.b64encode(message.encode('utf-16')),
             }
-        json_body = {
-            "sms": dict_sms,
-            "dst": {
-                "num": number_to,
-            },
-            "src": from_name,
-        }
+        json_body = {"sms": dict(dst={"num": number_to}, src=from_name, **dict_sms)}
         return json_body
 
 
