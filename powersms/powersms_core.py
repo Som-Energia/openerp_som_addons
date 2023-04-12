@@ -44,7 +44,7 @@ class PowersmsCoreAccounts(osv.osv):
         c = Client(user=str(values['api_uname']), password=str(values['api_pass']))
         headers = {'content-type': 'application/x-www-form-urlencoded', 'accept': 'application/json'}
         json_body = self._get_json_body(number_to, message, from_name, context)
-        resposta = c.API.post(resource='',json= json_body)
+        resposta = c.API.post(resource='', json=json_body, headers=headers)
         return resposta.result['code'] == 200 and resposta.result['status'] == u'Success'
 
     def send_sms(self, cr, uid, ids, from_name, numbers_to, body='', context=None):
