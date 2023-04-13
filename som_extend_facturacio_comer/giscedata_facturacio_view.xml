@@ -34,7 +34,7 @@
             <field name="model">giscedata.facturacio.factura</field>
             <field name="inherit_id" ref="giscedata_facturacio.view_factura_tree"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='origin']" position="after">
+                <xpath expr="//field[@name='origin_date_invoice']" position="after">
                     <field name="comment"/>
                 </xpath>
             </field>
