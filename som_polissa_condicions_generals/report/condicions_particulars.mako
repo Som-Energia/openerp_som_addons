@@ -535,7 +535,11 @@ CONTRACT_TYPES = dict(TABLA_9)
                                     if coeficient_k == 0:
                                         today = datetime.today().strftime("%Y-%m-%d")
                                         vlp = None
-                                        for lp in polissa.llista_preu.version_id:
+                                        if modcon_pendent_indexada:
+                                            llista_preus = ultima_modcon.llista_preu.version_id
+                                        else:
+                                            llista_preus = polissa.llista_preu.version_id
+                                        for lp in llista_preus:
                                             if lp.date_start <= today and (not lp.date_end or lp.date_end >= today):
                                                 vlp = lp
                                                 break
