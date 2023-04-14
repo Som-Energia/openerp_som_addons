@@ -282,11 +282,12 @@ CONTRACT_TYPES = dict(TABLA_9)
             <h5> ${_("PEATGE I CÀRRECS (definits a la Circular de la CNMC 3/2020 i al Reial decret 148/2021)")} </h5>
             <%
                 dict_pot = get_potencies(pas01, polissa)
+                tarifa_a_mostrar = polissa.llista_preu.name if not modcon_pendent_indexada else ultima_modcon.llista_preu.name
             %>
             <div class="peatge_access_content">
                 <div class="padding_left"><b>${_(u"Peatge de transport i distribució: ")}</b>${clean(polissa.tarifa_codi)}</div>
                 <div class="padding_left"><b>${_(u"Tipus de contracte: ")}</b> ${CONTRACT_TYPES[polissa.contract_type]} ${"({0})".format(dict_pot['autoconsum']) if polissa.autoconsumo != '00' else ""}</div>
-                <div class="padding_bottom padding_left"><b>${_(u"Tarifa comercialitzadora: ")}</b> ${clean(polissa.llista_preu.name)}</div>
+                <div class="padding_bottom padding_left"><b>${_(u"Tarifa comercialitzadora: ")}</b> ${clean(tarifa_a_mostrar)}</div>
                 <table class="taula_custom new_taula_custom">
                     <tr style="background-color: #878787;">
                         <th></th>
