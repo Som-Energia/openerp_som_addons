@@ -149,6 +149,7 @@ class WizardChangeToIndexada(osv.osv_memory):
             'modcontractual_seg': new_modcon_id,
             'state': 'baixa2',
         })
+        cursor.commit()
         self.send_indexada_modcon_created_email(cursor, uid, polissa)
 
         wizard.write({'state': 'end'})
