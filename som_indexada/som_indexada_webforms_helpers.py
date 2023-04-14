@@ -15,7 +15,7 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
         vlp = None
         coefficient_k = None
         for lp in pricelist.version_id:
-            if lp.date_start.val <= today and (not lp.date_end or lp.date_end.val >= today):
+            if lp.date_start <= today and (not lp.date_end or lp.date_end >= today):
                 vlp = lp
                 break
         if vlp:
