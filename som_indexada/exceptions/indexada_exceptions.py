@@ -95,8 +95,8 @@ class FailSendEmail(IndexadaException):
 class KCoefficientNotFound(IndexadaException):
     def __init__(self, pricelist_id):
         super(KCoefficientNotFound, self).__init__(
-            title=_('K_Coefient not found'),
-            text=_("K_Coeficint not found for pricelist id {}").format(pricelist_id),
+            title=_('K_Coefficient not found'),
+            text=_("K_Coefficient not found for pricelist id {}").format(pricelist_id),
         )
         self.pricelist_id = pricelist_id
 
