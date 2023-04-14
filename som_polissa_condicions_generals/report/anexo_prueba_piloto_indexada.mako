@@ -3,6 +3,7 @@
 <div id="titol">
     <h2 style="font-size: 13px;">ANEXO A LAS CONDICIONES ESPECIFICAS DE CONTRATACION DE LA TARIFA INDEXADA (PRUEBA PILOTO) </h2>
 </div>
+<div class="content_generals">
 
 <p><strong>1.</strong> La prueba piloto de la tarifa indexada (en adelante, la “Prueba Piloto”) se rige por las Condiciones Generales del Contrato de Suministro de SOM ENERGIA, SCCL, así como por las Condiciones Específicas de la Tarifa Indexada, sin perjuicio de las particularidades que se establecen en las cláusulas del presente anexo, aplicables exclusivamente durante la vigencia de la Prueba Piloto.</p>
 
@@ -17,3 +18,5 @@
 <p>Tal y como se estipula en la cláusula anterior, al contrato de suministro formalizado antes de la contratación de la Prueba Piloto se le aplicarán las modificaciones aprobadas por SOM ENERGIA, SCCL, durante el periodo en que haya estado en suspensión.</p>
 
 <p><strong>6.</strong> De acuerdo con las Condiciones Específicas de la Tarifa Indexada, las partes acuerdan que la Prueba Piloto de la tarifa indexada se empezará a aplicar a partir del primer día del ciclo de facturación siguiente a la fecha de las Condiciones Específicas y Particulares de Contratación. En caso de que alguna de las partes resuelva anticipadamente la Prueba Piloto y recupere a todos sus efectos el contrato de suministro suspendido, la tarifa estipulada en este último contrato (teniendo en cuenta las modificaciones efectuadas durante periodo de suspensión) se aplicará a partir de la siguiente factura que se emita.</p>
+
+</div>

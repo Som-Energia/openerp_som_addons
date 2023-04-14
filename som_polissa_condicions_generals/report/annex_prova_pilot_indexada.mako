@@ -4,6 +4,8 @@
     <h2 style="font-size: 13px;">ANNEX A LES CONDICIONS ESPECIFIQUES DE CONTRACTACIO DE LA TARIFA INDEXADA (PROVA PILOT)</h2>
 </div>
 
+<div class="content_generals">
+
 <p><strong>1.</strong> La prova pilot de la tarifa indexada (d’ara endavant, la “Prova Pilot”) es regeix per les Condicions Generals del Contracte de Subministrament de SOM ENERGIA, SCCL, així com per les Condicions Específiques de la Tarifa Indexada, sens perjudici de les particularitats que s’estableixen en les clàusules d’aquest annex, aplicables exclusivament durant la vigència de la Prova Pilot.</p>
 
 <p><strong>2.</strong> La Prova Pilot començarà el dia 17/04/2023 i tindrà una durada limitada de 2 mesos des de l’inici, prorrogable automàticament per períodes d’1 mes, i com a màxim fins al  31/12/2023. Serà accessible per a un nombre limitat de contractes de subministrament, seleccionats per SOM ENERGIA, SCCL, amb la sol·licitud prèvia per part de les persones titulars.</p>
@@ -17,3 +19,5 @@
 <p>Tal com s’estipula a la clàusula anterior, al contracte de subministrament formalitzat abans de la contractació de la Prova Pilot se li aplicaran les modificacions aprovades per SOM ENERGIA, SCCL, durant el període en què hagi estat en suspensió.</p>
 
 <p><strong>6.</strong> D’acord amb les Condicions Específiques de la Tarifa Indexada, les parts acorden que la Prova Pilot de la Tarifa Indexada es començarà a aplicar a partir del primer dia del cicle de facturació següent a la data de les Condicions Específiques i Particulars de Contractació. En cas que alguna de les parts resolgui anticipadament la Prova Pilot i recuperi a tots els efectes el contracte de subministrament suspès, la tarifa estipulada en aquest darrer contracte (tenint en compte les modificacions efectuades durant període de suspensió) s’aplicarà a partir de la següent factura que s’emeti.</p>
+
+</div>

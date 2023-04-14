@@ -721,13 +721,17 @@ CONTRACT_TYPES = dict(TABLA_9)
     %if lang == 'ca_ES':
         <%include file="/som_polissa_condicions_generals/report/condicions_generals.mako"/>
         %if polissa.mode_facturacio == 'index' or modcon_pendent_indexada:
+            <p style="page-break-after:always;"></p>
             <%include file="/som_polissa_condicions_generals/report/condicions_especifiques_indexada.mako"/>
+            <p style="page-break-after:always;"></p>
             <%include file="/som_polissa_condicions_generals/report/annex_prova_pilot_indexada.mako"/>
         %endif
     %else:
         <%include file="/som_polissa_condicions_generals/report/condiciones_generales.mako"/>
         %if polissa.mode_facturacio == 'index' or modcon_pendent_indexada:
+            <p style="page-break-after:always;"></p>
             <%include file="/som_polissa_condicions_generals/report/condiciones_especificas_indexada.mako"/>
+            <p style="page-break-after:always;"></p>
             <%include file="/som_polissa_condicions_generals/report/anexo_prueba_piloto_indexada.mako"/>
         %endif
     %endif
