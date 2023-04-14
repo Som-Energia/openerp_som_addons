@@ -24,7 +24,7 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                     coefficient_k = item.base_price
                     break
         if coefficient_k != None:
-            return coefficient_k
+            return coefficient_k/1000
         else:
             raise indexada_exceptions.KCoefficientNotFound(pricelist_id)
 
@@ -46,7 +46,7 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                 wiz_o.validate_polissa_can_indexada(cursor, uid, polissa)
                 pricelist_id =  wiz_o.calculate_new_pricelist(cursor, uid, polissa, context=context)
                 pricelist_name =  pricelist_obj.read(cursor, uid, pricelist_id, ['name'])['name']
-                coefficient_k = self.get_k_from_pricelist(cursor, uid, pricelist_id)/1000
+                coefficient_k = self.get_k_from_pricelist(cursor, uid, pricelist_id)
                 return {'tariff_name': pricelist_name,
                         'k_coefficient_eurkwh': coefficient_k}
 
