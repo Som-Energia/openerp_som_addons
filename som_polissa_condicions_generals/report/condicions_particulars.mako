@@ -529,7 +529,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                                 <br/>
                                 <span>${_(u"PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + K] + PTD + CA")}</span>
                                 <br/>
-                                <span class="normal_font_weight">${_(u"on el marge de comercialització")}</span>
+                                <span class="normal_font_weight">${_(u"on la franja de la cooperativa")}</span>
                                 <%
                                     coeficient_k = polissa.coeficient_k + polissa.coeficient_d
                                     if coeficient_k == 0:
@@ -723,21 +723,32 @@ CONTRACT_TYPES = dict(TABLA_9)
 
     %endfor
     <p style="page-break-after:always;"></p>
+    <%
+        prova_pilot_indexada = False
+        for category in polissa.category_id:
+            if category.name == "Prova pilot indexada":
+                prova_pilot_indexada = True
+                break
+    %>
     %if lang == 'ca_ES':
         <%include file="/som_polissa_condicions_generals/report/condicions_generals.mako"/>
         %if polissa.mode_facturacio == 'index' or modcon_pendent_indexada:
             <p style="page-break-after:always;"></p>
             <%include file="/som_polissa_condicions_generals/report/condicions_especifiques_indexada.mako"/>
-            <p style="page-break-after:always;"></p>
-            <%include file="/som_polissa_condicions_generals/report/annex_prova_pilot_indexada.mako"/>
+            %if prova_pilot_indexada:
+                <p style="page-break-after:always;"></p>
+                <%include file="/som_polissa_condicions_generals/report/annex_prova_pilot_indexada.mako"/>
+            %endif
         %endif
     %else:
         <%include file="/som_polissa_condicions_generals/report/condiciones_generales.mako"/>
         %if polissa.mode_facturacio == 'index' or modcon_pendent_indexada:
             <p style="page-break-after:always;"></p>
             <%include file="/som_polissa_condicions_generals/report/condiciones_especificas_indexada.mako"/>
-            <p style="page-break-after:always;"></p>
-            <%include file="/som_polissa_condicions_generals/report/anexo_prueba_piloto_indexada.mako"/>
+            %if prova_pilot_indexada:
+                <p style="page-break-after:always;"></p>
+                <%include file="/som_polissa_condicions_generals/report/anexo_prueba_piloto_indexada.mako"/>
+            %endif
         %endif
     %endif
 </body>
