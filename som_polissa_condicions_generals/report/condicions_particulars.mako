@@ -624,7 +624,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                     <span class="bold">(2) </span> ${_("Pots consultar el significat de les variables a les condicions específiques que trobaràs a continuació.")}
                 %endif
                 </div>
-                %if polissa.mode_facturacio != 'index' and dades_tarifa['date_start'] >= start_date_mecanisme_ajust_gas and \
+                %if (polissa.mode_facturacio != 'index' and not modcon_pendent_indexada) and dades_tarifa['date_start'] >= start_date_mecanisme_ajust_gas and \
                     (not dades_tarifa['date_end'] or dades_tarifa['date_end'] <= end_date_mecanisme_ajust_gas):
                     <div class="avis_rmag">
                         ${_(u"A més del preu fix associat al cost de l'energia, establert per Som Energia i publicat a la nostra pàgina web, la factura inclourà un import variable associat al mecanisme d'ajust establert al")}
@@ -641,7 +641,7 @@ CONTRACT_TYPES = dict(TABLA_9)
         </div>
         <div class="styled_box padding_bottom">
             <div class="center avis_impostos">
-                %if polissa.mode_facturacio == 'index':
+                %if polissa.mode_facturacio == 'index' or modcon_pendent_indexada:
                     ${_(u"Els preus del terme de potència")}
                 %else:
                     ${_(u"Tots els preus que apareixen en aquest contracte")}
