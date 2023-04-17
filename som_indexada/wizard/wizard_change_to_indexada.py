@@ -76,8 +76,7 @@ class WizardChangeToIndexada(osv.osv_memory):
 
         email_from = False
         email_account_id = 'info@somenergia.coop'
-        email_account_name = "Som Energia - Modificacions"
-        if template.get(email_account_name, False):
+        if template.get('enforce_from_account', False):
             email_from = template.get('enforce_from_account')[0]
         if not email_from:
             email_from = account_obj.search(cursor, uid, [('email_id', '=', email_account_id)])[0]
