@@ -282,11 +282,12 @@ CONTRACT_TYPES = dict(TABLA_9)
             <h5> ${_("PEATGE I CÀRRECS (definits a la Circular de la CNMC 3/2020 i al Reial decret 148/2021)")} </h5>
             <%
                 dict_pot = get_potencies(pas01, polissa)
+                tarifa_a_mostrar = polissa.llista_preu.name if not modcon_pendent_indexada else ultima_modcon.llista_preu.name
             %>
             <div class="peatge_access_content">
                 <div class="padding_left"><b>${_(u"Peatge de transport i distribució: ")}</b>${clean(polissa.tarifa_codi)}</div>
                 <div class="padding_left"><b>${_(u"Tipus de contracte: ")}</b> ${CONTRACT_TYPES[polissa.contract_type]} ${"({0})".format(dict_pot['autoconsum']) if polissa.autoconsumo != '00' else ""}</div>
-                <div class="padding_bottom padding_left"><b>${_(u"Tarifa comercialitzadora: ")}</b> ${clean(polissa.llista_preu.name)}</div>
+                <div class="padding_bottom padding_left"><b>${_(u"Tarifa comercialitzadora: ")}</b> ${clean(tarifa_a_mostrar)}</div>
                 <table class="taula_custom new_taula_custom">
                     <tr style="background-color: #878787;">
                         <th></th>
@@ -528,13 +529,17 @@ CONTRACT_TYPES = dict(TABLA_9)
                                 <br/>
                                 <span>${_(u"PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + K] + PTD + CA")}</span>
                                 <br/>
-                                <span class="normal_font_weight">${_(u"on el marge de comercialització")}</span>
+                                <span class="normal_font_weight">${_(u"on la franja de la cooperativa")}</span>
                                 <%
                                     coeficient_k = polissa.coeficient_k + polissa.coeficient_d
                                     if coeficient_k == 0:
                                         today = datetime.today().strftime("%Y-%m-%d")
                                         vlp = None
-                                        for lp in polissa.llista_preu.version_id:
+                                        if modcon_pendent_indexada:
+                                            llista_preus = ultima_modcon.llista_preu.version_id
+                                        else:
+                                            llista_preus = polissa.llista_preu.version_id
+                                        for lp in llista_preus:
                                             if lp.date_start <= today and (not lp.date_end or lp.date_end >= today):
                                                 vlp = lp
                                                 break
@@ -619,7 +624,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                     <span class="bold">(2) </span> ${_("Pots consultar el significat de les variables a les condicions específiques que trobaràs a continuació.")}
                 %endif
                 </div>
-                %if polissa.mode_facturacio != 'index' and dades_tarifa['date_start'] >= start_date_mecanisme_ajust_gas and \
+                %if (polissa.mode_facturacio != 'index' and not modcon_pendent_indexada) and dades_tarifa['date_start'] >= start_date_mecanisme_ajust_gas and \
                     (not dades_tarifa['date_end'] or dades_tarifa['date_end'] <= end_date_mecanisme_ajust_gas):
                     <div class="avis_rmag">
                         ${_(u"A més del preu fix associat al cost de l'energia, establert per Som Energia i publicat a la nostra pàgina web, la factura inclourà un import variable associat al mecanisme d'ajust establert al")}
@@ -636,7 +641,7 @@ CONTRACT_TYPES = dict(TABLA_9)
         </div>
         <div class="styled_box padding_bottom">
             <div class="center avis_impostos">
-                %if polissa.mode_facturacio == 'index':
+                %if polissa.mode_facturacio == 'index' or modcon_pendent_indexada:
                     ${_(u"Els preus del terme de potència")}
                 %else:
                     ${_(u"Tots els preus que apareixen en aquest contracte")}
@@ -718,17 +723,32 @@ CONTRACT_TYPES = dict(TABLA_9)
 
     %endfor
     <p style="page-break-after:always;"></p>
+    <%
+        prova_pilot_indexada = False
+        for category in polissa.category_id:
+            if category.name == "Prova pilot indexada":
+                prova_pilot_indexada = True
+                break
+    %>
     %if lang == 'ca_ES':
         <%include file="/som_polissa_condicions_generals/report/condicions_generals.mako"/>
         %if polissa.mode_facturacio == 'index' or modcon_pendent_indexada:
+            <p style="page-break-after:always;"></p>
             <%include file="/som_polissa_condicions_generals/report/condicions_especifiques_indexada.mako"/>
-            <%include file="/som_polissa_condicions_generals/report/annex_prova_pilot_indexada.mako"/>
+            %if prova_pilot_indexada:
+                <p style="page-break-after:always;"></p>
+                <%include file="/som_polissa_condicions_generals/report/annex_prova_pilot_indexada.mako"/>
+            %endif
         %endif
     %else:
         <%include file="/som_polissa_condicions_generals/report/condiciones_generales.mako"/>
         %if polissa.mode_facturacio == 'index' or modcon_pendent_indexada:
+            <p style="page-break-after:always;"></p>
             <%include file="/som_polissa_condicions_generals/report/condiciones_especificas_indexada.mako"/>
-            <%include file="/som_polissa_condicions_generals/report/anexo_prueba_piloto_indexada.mako"/>
+            %if prova_pilot_indexada:
+                <p style="page-break-after:always;"></p>
+                <%include file="/som_polissa_condicions_generals/report/anexo_prueba_piloto_indexada.mako"/>
+            %endif
         %endif
     %endif
 </body>
