@@ -69,7 +69,7 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
             cursor.savepoint(savepoint)
             try:
                 wiz_o = self.pool.get('wizard.change.to.indexada')
-                context = {'active_id': polissa_id}
+                context = {'active_id': polissa_id, 'webapps': True}
                 wiz_id = wiz_o.create(cursor, uid, {}, context=context)
                 return wiz_o.change_to_indexada(cursor, uid, [wiz_id], context=context)
             except indexada_exceptions.IndexadaException as e:
