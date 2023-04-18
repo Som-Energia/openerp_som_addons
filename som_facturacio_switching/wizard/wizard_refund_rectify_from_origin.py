@@ -8,6 +8,8 @@ from StringIO import StringIO
 from tools.translate import _
 
 
+INVOICE_DIFERENCE_MAG_TOLERANCE = 0.02
+
 def get_today():
     return datetime.today().strftime("%d-%m-%Y")
 
@@ -140,6 +142,11 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                 ab_re_ids = [x['id'] for x in re_ab_fact_info]
                 fact_obj.unlink(cursor, uid, ab_re_ids)
                 msg.append("Per la factura numero {} les factures AB i RE tenen mateix import, s'esborren".format(inv_initial_info['number']))
+                fres_resultat = list(set(fres_resultat) - set(ab_re_ids))
+            elif len(re_ab_fact_info) == 2 and abs(re_ab_fact_info[0]['amount_untaxed_no_mag'] - re_ab_fact_info[-1]['amount_untaxed_no_mag']) < INVOICE_DIFERENCE_MAG_TOLERANCE:
+                ab_re_ids = [x['id'] for x in re_ab_fact_info]
+                fact_obj.unlink(cursor, uid, ab_re_ids)
+                msg.append("Per la factura numero {} les factures AB i RE tenen quasi el mateix import, s'esborren".format(inv_initial_info['number']))
                 fres_resultat = list(set(fres_resultat) - set(ab_re_ids))
             else:
                 msg.append("Per la factura numero {} les factures AB i RE tenen import diferent.".format(inv_initial_info['number']))
