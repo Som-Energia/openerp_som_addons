@@ -8,6 +8,8 @@ from StringIO import StringIO
 from tools.translate import _
 
 
+INVOICE_DIFFERENCE_MAG_TOLERANCE = 0.02
+
 def get_today():
     return datetime.today().strftime("%d-%m-%Y")
 
@@ -140,6 +142,11 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                 ab_re_ids = [x['id'] for x in re_ab_fact_info]
                 fact_obj.unlink(cursor, uid, ab_re_ids)
                 msg.append("Per la factura numero {} les factures AB i RE tenen mateix import, s'esborren".format(inv_initial_info['number']))
+                fres_resultat = list(set(fres_resultat) - set(ab_re_ids))
+            elif len(re_ab_fact_info) == 2 and abs(re_ab_fact_info[0]['amount_untaxed_no_mag'] - re_ab_fact_info[-1]['amount_untaxed_no_mag']) < INVOICE_DIFFERENCE_MAG_TOLERANCE:
+                ab_re_ids = [x['id'] for x in re_ab_fact_info]
+                fact_obj.unlink(cursor, uid, ab_re_ids)
+                msg.append("Per la factura numero {} les factures AB i RE tenen quasi el mateix import, s'esborren".format(inv_initial_info['number']))
                 fres_resultat = list(set(fres_resultat) - set(ab_re_ids))
             else:
                 msg.append("Per la factura numero {} les factures AB i RE tenen import diferent.".format(inv_initial_info['number']))
@@ -326,6 +333,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                 msg.append("S'han esborrat {} lectures de la pòlissa {} i s'han generat {} factures".format(n_lect_del, pol_name, len(facts_created)))
                 facts_generades += facts_created
                 msg += msg_rr
+                f1_refacturats.append({'id': _id ,'refund_result': msg_rr})
                 if wiz.max_amount:
                     facts_over_limit = self.check_max_amount(cursor, uid, ids, facts_created, wiz.max_amount, context)
                     if facts_over_limit:
@@ -338,7 +346,6 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                     continue
                 facts_by_polissa.setdefault(pol_name, []).extend(facts_created)
 
-                f1_refacturats.append({'id': _id ,'refund_result': msg_rr})
             except Exception as e:
                 msg.append("Error processant la factura amb origen {}: {}".format(origen, str(e)))
                 fact_csv_result.append([origen, pol_name, "Hi ha hagut algun problema, cal revisar."])
