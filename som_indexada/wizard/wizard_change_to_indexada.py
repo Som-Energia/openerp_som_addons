@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 from datetime import timedelta, date
+from oorq.oorq import AsyncMode
 from som_indexada.exceptions import indexada_exceptions
 
 class WizardChangeToIndexada(osv.osv_memory):
@@ -92,12 +93,11 @@ class WizardChangeToIndexada(osv.osv_memory):
                 'from': email_from,
                 'state': 'single',
                 'priority': '0',
-                'save_async': False,
             }
 
             params = {'state': 'single', 'priority': '0', 'from': ctx['from']}
             wiz_id = wiz_send_obj.create(cursor, uid, params, ctx)
-            return wiz_send_obj.save_to_mailbox(cursor, uid, [wiz_id], ctx)
+            return wiz_send_obj.send_mail(cursor, uid, [wiz_id], ctx)
 
         except Exception as e:
             raise indexada_exceptions.FailSendEmail(polissa.name)
@@ -137,20 +137,21 @@ class WizardChangeToIndexada(osv.osv_memory):
             'active': True,
             'state': 'pendent',
             'modcontractual_ant': prev_modcon.id,
-            'name': str(int(prev_modcon.name)+1),
+            'name': str(int(prev_modcon.name)+1)
         })
         if coefs:
             new_modcon_vals.update({
             'coeficient_k': coefs['k'],
             'coeficient_d': coefs['d'],
             })
-        new_modcon_id = modcon_obj.create(cursor, uid, new_modcon_vals)
+        with AsyncMode('sync') as asmode:
+            new_modcon_id = modcon_obj.create(cursor, uid, new_modcon_vals)
 
-        modcon_obj.write(cursor, uid, prev_modcon.id, {
-            'modcontractual_seg': new_modcon_id,
-            'state': 'baixa2',
-        })
-        self.send_indexada_modcon_created_email(cursor, uid, polissa)
+            modcon_obj.write(cursor, uid, prev_modcon.id, {
+                'modcontractual_seg': new_modcon_id,
+                'state': 'baixa2',
+            })
+            self.send_indexada_modcon_created_email(cursor, uid, polissa)
 
         wizard.write({'state': 'end'})
         return new_modcon_id
