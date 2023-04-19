@@ -92,11 +92,12 @@ class WizardChangeToIndexada(osv.osv_memory):
                 'from': email_from,
                 'state': 'single',
                 'priority': '0',
+                'save_async': False,
             }
 
             params = {'state': 'single', 'priority': '0', 'from': ctx['from']}
             wiz_id = wiz_send_obj.create(cursor, uid, params, ctx)
-            return wiz_send_obj.send_mail(cursor, uid, [wiz_id], ctx)
+            return wiz_send_obj.save_to_mailbox(cursor, uid, [wiz_id], ctx)
 
         except Exception as e:
             raise indexada_exceptions.FailSendEmail(polissa.name)
@@ -136,6 +137,7 @@ class WizardChangeToIndexada(osv.osv_memory):
             'active': True,
             'state': 'pendent',
             'modcontractual_ant': prev_modcon.id,
+            'name': str(int(prev_modcon.name)+1),
         })
         if coefs:
             new_modcon_vals.update({
@@ -148,8 +150,6 @@ class WizardChangeToIndexada(osv.osv_memory):
             'modcontractual_seg': new_modcon_id,
             'state': 'baixa2',
         })
-        if context.get('webapps', False):
-            cursor.commit()
         self.send_indexada_modcon_created_email(cursor, uid, polissa)
 
         wizard.write({'state': 'end'})
