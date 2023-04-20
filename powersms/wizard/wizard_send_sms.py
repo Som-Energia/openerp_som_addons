@@ -119,10 +119,7 @@ class PowersmsSendWizard(osv.osv_memory):
             service = netsvc.LocalService(reportname)
             if template.report_template.context:
                 context.update(eval(template.report_template.context))
-            # if screen_vals['single_email'] and len(report_record_ids) > 1:
-            #     # The optional attachment will be generated as a single file for all these records
-            #     (result, format) = service.create(cr, uid, report_record_ids, data, context=context)
-            # else:
+
             (result, format) = service.create(cr, uid, [src_rec_id], data, context=context)
 
             attach_vals = {
