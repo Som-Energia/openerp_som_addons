@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from osv import osv
-
+from oorq.oorq import AsyncMode
 class GiscedataPolissa(osv.osv):
 
     _name = 'giscedata.polissa'
@@ -18,8 +18,7 @@ class GiscedataPolissa(osv.osv):
 
         email_from = False
         email_account_id = 'info@somenergia.coop'
-        email_account_name = "Modificacions Contractuals"
-        if template.get(email_account_name, False):
+        if template.get('enforce_from_account', False):
             email_from = template.get('enforce_from_account')[0]
         if not email_from:
             email_from = account_obj.search(cursor, uid, [('email_id', '=', email_account_id)])[0]
@@ -45,10 +44,11 @@ class GiscedataPolissa(osv.osv):
             raise e
 
     def _do_previous_actions_on_activation(self, cursor, uid, mc_id, context=None):
-        res = super(GiscedataPolissa, self)._do_previous_actions_on_activation(cursor, uid, mc_id, context)
-        modcon_obj = self.pool.get('giscedata.polissa.modcontractual')
-        modcon = modcon_obj.read(cursor, uid, mc_id, ['state', 'polissa_id', 'mode_facturacio'])
-        if res == 'OK' and modcon['state'] == 'active' and modcon['mode_facturacio'] == 'index':
-            self.send_indexada_modcon_activated_email(cursor, uid, modcon['polissa_id'])
+        with AsyncMode('sync') as asmode:
+            res = super(GiscedataPolissa, self)._do_previous_actions_on_activation(cursor, uid, mc_id, context)
+            modcon_obj = self.pool.get('giscedata.polissa.modcontractual')
+            modcon = modcon_obj.read(cursor, uid, mc_id, ['state', 'polissa_id', 'mode_facturacio'])
+            if res == 'OK' and modcon['state'] == 'active' and modcon['mode_facturacio'] == 'index':
+                self.send_indexada_modcon_activated_email(cursor, uid, modcon['polissa_id'])
 
 
