@@ -107,6 +107,7 @@ class WizardChangeToIndexada(osv.osv_memory):
         '''update data_firma_contracte in polissa
         and data_inici in modcontractual'''
         modcon_obj = self.pool.get('giscedata.polissa.modcontractual')
+        pricelist_obj = self.pool.get('product.pricelist')
 
         wizard = self.browse(cursor, uid, ids[0])
         polissa = wizard.polissa_id
@@ -117,6 +118,7 @@ class WizardChangeToIndexada(osv.osv_memory):
         self.validate_polissa_can_indexada(cursor, uid, polissa)
         coefs = self.calculate_k_d_coeficients(cursor, uid)
         new_pricelist_id = self.calculate_new_pricelist(cursor, uid, polissa)
+        new_pricelist = pricelist_obj.browse(cursor, uid, new_pricelist_id, context={'prefetch': False})
 
         prev_modcon = polissa.modcontractuals_ids[0]
         modcon_obj.write(cursor, uid, prev_modcon.id, {
@@ -126,6 +128,10 @@ class WizardChangeToIndexada(osv.osv_memory):
         new_modcon_vals = modcon_obj.copy_data(
             cursor, uid, prev_modcon.id
         )[0]
+        new_observacions = (
+            u'* Modcon canvi a indexada:\n '
+            u'Nova tarifa comer: {0}'
+        ).format(new_pricelist.name)
         new_modcon_vals.update({
             'data_inici': date.today() + timedelta(days=1),
             'data_final': date.today() + timedelta(days=365),
@@ -137,7 +143,8 @@ class WizardChangeToIndexada(osv.osv_memory):
             'active': True,
             'state': 'pendent',
             'modcontractual_ant': prev_modcon.id,
-            'name': str(int(prev_modcon.name)+1)
+            'name': str(int(prev_modcon.name)+1),
+            'observacions': new_observacions,
         })
         if coefs:
             new_modcon_vals.update({

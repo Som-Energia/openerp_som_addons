@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 from osv import osv
-from oorq.oorq import AsyncMode
-class GiscedataPolissa(osv.osv):
+class GiscedataPolissaModcontractual(osv.osv):
 
-    _name = 'giscedata.polissa'
-    _inherit = 'giscedata.polissa'
+    _name = 'giscedata.polissa.modcontractual'
+    _inherit = 'giscedata.polissa.modcontractual'
 
     def send_indexada_modcon_activated_email(self, cursor, uid, polissa_id):
         ir_model_data = self.pool.get('ir.model.data')
@@ -44,11 +43,13 @@ class GiscedataPolissa(osv.osv):
             raise e
 
     def _do_previous_actions_on_activation(self, cursor, uid, mc_id, context=None):
-        with AsyncMode('sync') as asmode:
-            res = super(GiscedataPolissa, self)._do_previous_actions_on_activation(cursor, uid, mc_id, context)
-            modcon_obj = self.pool.get('giscedata.polissa.modcontractual')
-            modcon = modcon_obj.read(cursor, uid, mc_id, ['state', 'polissa_id', 'mode_facturacio'])
-            if res == 'OK' and modcon['state'] == 'active' and modcon['mode_facturacio'] == 'index':
-                self.send_indexada_modcon_activated_email(cursor, uid, modcon['polissa_id'])
+        res = super(GiscedataPolissaModcontractual, self)._do_previous_actions_on_activation(cursor, uid, mc_id, context)
+        modcon_obj = self.pool.get('giscedata.polissa.modcontractual')
+        modcon = modcon_obj.browse(cursor, uid, mc_id, context={'prefetch': False})
+        if res == 'OK' and modcon.state == 'actiu' and (modcon.mode_facturacio == 'index' and modcon.modcontractual_ant.mode_facturacio != 'index'):
+            self.send_indexada_modcon_activated_email(cursor, uid, modcon.polissa_id)
+        return res
+
+GiscedataPolissaModcontractual()
 
 
