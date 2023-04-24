@@ -27,21 +27,21 @@ class WizardChangeToIndexada(osv.osv_memory):
         if polissa.tarifa_codi == "2.0TD":
             new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_indexada_20td_peninsula').id
             if polissa.fiscal_position_id in [19, 25, 33, 34, 38, 39]:
-                new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_indexada_20td_balears').id
-            elif 'INSULAR' in polissa.llista_preu.name:
                 new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_indexada_20td_canaries').id
+            elif 'INSULAR' in polissa.llista_preu.name:
+                new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_indexada_20td_balears').id
         elif polissa.tarifa_codi == "3.0TD":
             new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_indexada_30td_peninsula').id
             if polissa.fiscal_position_id in [19, 25, 33, 34, 38, 39]:
-                new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_indexada_30td_balears').id
-            elif 'INSULAR' in polissa.llista_preu.name:
                 new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_indexada_30td_canaries').id
+            elif 'INSULAR' in polissa.llista_preu.name:
+                new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_indexada_30td_balears').id
         elif polissa.tarifa_codi == "6.1TD":
             new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_indexada_61td_peninsula').id
             if polissa.fiscal_position_id in [19, 25, 33, 34, 38, 39]:
-                new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_indexada_61td_balears').id
-            elif 'INSULAR' in polissa.llista_preu.name:
                 new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_indexada_61td_canaries').id
+            elif 'INSULAR' in polissa.llista_preu.name:
+                new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_indexada_61td_balears').id
 
         return new_pricelist_id
 
