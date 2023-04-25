@@ -549,7 +549,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                                                     coeficient_k = item.base_price
                                                     break
                                 %>
-                                <span>&nbsp;${("(K) = %s €/kWh</B>") % formatLang((coeficient_k) / 1000.0, digits=6)}</span>
+                                <span>&nbsp;${("(K) = %s €/kWh</B>") % formatLang(coeficient_k, digits=6)}</span>
                             </td>
                         %else:
                             %for p in periodes_energia:
