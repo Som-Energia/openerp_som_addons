@@ -6,14 +6,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2021-08-10 10:07+0000\n"
-"PO-Revision-Date: 2021-08-10 10:07+0000\n"
+"POT-Creation-Date: 2023-04-19 09:29+0000\n"
+"PO-Revision-Date: 2023-04-19 09:29+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: \n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.9.1\n"
 
 #. module: som_polissa_condicions_generals_m101
 #: model:ir.module.module,shortdesc:som_polissa_condicions_generals_m101.module_meta_information
@@ -266,351 +266,439 @@ msgstr ""
 msgid "Contracte"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:25
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:41
 msgid "Sense Autoconsum"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:26
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:42
 msgid "Autoconsum Tipus 1"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:27
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:43
 msgid "Autoconsum tipus 2 (segons l'Art. 13. 2. a) RD 900/2015)"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:28
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:44
 msgid "Autoconsum tipus 2 (segons l'Art. 13. 2. b) RD 900/2015)"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:29
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:45
 msgid "Serveis auxiliars de generació lligada a un autoconsum tipus 2"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:30
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:46
 msgid "Sense Excedents Individual - Consum"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:31
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:47
 msgid "Sense Excedents Col·lectiu - Consum"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:32
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:48
 msgid "Sense Excedents Col·lectiu amb acord de compensació – Consum"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:33
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:49
 msgid "Amb excedents i compensació Individual-Consum"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:34
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:50
 msgid "Amb excedents i compensació Col·lectiu-Consum"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:35
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:51
 msgid "Amb excedents i compensació Col·lectiu a través de xarxa - Consum"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:36
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:52
 msgid ""
 "Amb excedents sense compensació Individual sense cte. de Serv. Aux. en "
 "Xarxa Interior - Consum"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:37
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:53
 msgid ""
 "Amb excedents sense compensació Col·lectiu sense cte. de Serv. Aux. en "
 "Xarxa Interior - Consum"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:38
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:54
 msgid ""
 "Amb excedents sense compensació Individual amb cte. de Serv. Aux. en "
 "Xarxa Interior - Consum"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:39
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:55
 msgid ""
 "Amb excedents sense compensació individual amb cte. de Serv. Aux. en "
 "Xarxa Interior - Serv. Aux."
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:40
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:56
 msgid "Amb excedents sense compensació Col·lectiu / en Xarxa Interior - Consum"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:41
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:57
 msgid ""
 "Amb excedents sense compensació Col·lectiu / en Xarxa Interior - Serv. "
 "Aux."
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:42
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:58
 msgid ""
 "Amb excedents sense compensació Individual amb cte. de Serv. Aux. a "
 "través de xarxa - Consum"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:43
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:59
 msgid ""
 "Amb excedents sense compensació individual amb cte. de Serv. Aux. a "
 "través de xarxa - Serv. Aux."
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:44
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:60
 msgid "Amb excedents sense compensació Col·lectiu a través de xarxa - Consum"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:45
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:61
 msgid "Amb excedents sense compensació Col·lectiu a través de xarxa - Serv. Aux."
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:46
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:62
 msgid ""
 "Amb excedents sense compensació Individual amb cte. de Serv. Aux. a "
 "través de xarxa i xarxa interior - Consum"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:47
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:63
 msgid ""
 "Amb excedents sense compensació individual amb cte. de Serv. Aux. a "
 "través de xarxa i xarxa interior - Serv. Aux."
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:48
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:64
 msgid ""
 "Amb excedents sense compensació Col·lectiu amb cte. de Serv. Aux. a "
 "través de xarxa i xarxa interior - Consum"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:49
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:65
 msgid ""
 "Amb excedents sense compensació Col·lectiu amb cte. de Serv. Aux. a "
 "través de xarxa i xarxa interior - SSAA"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:103
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:138
 msgid "Som Energia, SCCL"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:104
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:139
 msgid "CIF:"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:104
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:139
 msgid " F55091367"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:105
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:140
 msgid "Domicili:"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:105
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:140
 msgid " C/Pic de Peguera, 9 (1a planta)<br/>17003, Girona"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:106
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:141
 msgid "Adreça electrònica:"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:106
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:141
 msgid " info@somenergia.coop"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:110
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:145
 msgid "DADES DEL CONTRACTE"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:117
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:152
 msgid "Contracte núm.: "
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:118
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:153
 msgid "Data d'inici del subministrament: "
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:125
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:160
 msgid "Data de renovació del subministrament: "
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:136
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:171
 msgid ""
 "CONDICIONS PARTICULARS DEL CONTRACTE DE SUBMINISTRAMENT D'ENERGIA "
 "ELÈCTRICA"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:143
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:178
 msgid "LES DADES D'AQUEST CONTRACTE ESTAN PENDENTS DE VALIDACIÓ."
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:146
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:181
 msgid "Tarifes vigents en el moment d’activació del contracte."
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:164
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:194
 msgid "PERSONA TITULAR"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:166
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:212
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:196
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:242
 msgid "Nom/Raó social: "
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:168
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:198
 msgid "NIF/CIF: "
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:170
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:189
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:214
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:200
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:219
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:244
 msgid "Adreça: "
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:172
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:216
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:202
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:246
 msgid "Codi postal i municipi: "
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:174
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:191
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:222
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:204
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:221
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:252
 msgid "Província i país: "
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:176
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:228
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:206
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:258
 msgid "Adreça electrònica: "
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:178
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:234
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:208
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:264
 msgid "Telèfon: "
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:180
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:240
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:210
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:270
 msgid "Telèfon 2: "
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:186
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:216
 msgid "DADES DEL PUNT DE SUBMINISTRAMENT"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:193
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:223
 msgid "CUPS: "
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:195
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:225
 msgid "CNAE: "
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:197
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:227
 msgid "Contracte d'accés: "
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:199
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:229
 msgid "Activitat principal: "
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:201
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:231
 msgid "Empresa distribuïdora: "
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:203
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:233
 msgid "Tensió Nominal (V): "
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:210
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:240
 msgid "DADES DE CONTACTE"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:251
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:282
 msgid ""
 "PEATGE I CÀRRECS (definits a la Circular de la CNMC 3/2020 i al Reial "
 "decret 148/2021)"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:267
-msgid "Tarifa contractada: "
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:288
+msgid "Peatge de transport i distribució: "
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:275
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:377
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:441
-msgid "Punta"
-msgstr ""
-
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:277
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:379
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:443
-msgid "Vall"
-msgstr ""
-
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:291
-msgid "Potència contractada (kW):"
-msgstr ""
-
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:341
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:289
 msgid "Tipus de contracte: "
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:345
-msgid "TARIFES D'ELECTRICITAT"
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:290
+msgid "Tarifa comercialitzadora: "
+msgstr ""
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:295
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:449
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:514
+msgid "Punta"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:297
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:451
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:516
+msgid "Vall"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:311
+msgid "Potència contractada (kW):"
 msgstr ""
 
 #: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:393
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:395
+msgid "(vigents fins al {})"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:397
+msgid "(vigents a partir del {})"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:412
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:414
+msgid "TARIFES D'ELECTRICITAT"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:465
 msgid "Terme potència (€/kW i any)"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:442
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:515
 msgid "Pla"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:450
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:523
 msgid "Terme energia (€/kWh)"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:471
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:527
+msgid "Tarifa indexada"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:527
+msgid "(2) - el preu horari (PH) es calcula d'acord amb la fórmula:"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:530
+msgid ""
+"PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + K] + "
+"PTD + CA"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:532
+msgid "on la franja de la cooperativa"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:577
 msgid "(1) GenerationkWh (€/kWh)"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:492
-msgid "(2) Autoconsum (€/kWh)"
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:600
+msgid "Excedents d'autoconsum (€/kWh)"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:505
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:603
+msgid ""
+"Tarifa indexada(2) - el preu horari de la compensació d'excedents és "
+"igual al PHM"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:621
 msgid ""
 "Terme d'energia en cas de participar-hi, segons condicions del contracte "
 "GenerationkWh."
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:506
-msgid "Preu de la compensació d'excedents, si és aplicable."
-msgstr ""
-
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:508
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:624
 msgid ""
-"Aquests preus inclouen l'impost elèctric i l'IVA (IGIC a Canàries) sense "
-"prejudici de les exempcions o bonificacions que puguin ser d'aplicació. "
-"Pots consultar altres conceptes que poden ser d'aplicació, com ara, el "
-"lloguer de comptador, el recàrrec per potència demandada o el recàrrec "
-"per energia reactiva, a la "
+"Pots consultar el significat de les variables a les condicions "
+"específiques que trobaràs a continuació."
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:510
-msgid "pàgina de tarifes"
-msgstr ""
-
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:512
-msgid "página de tarifas"
-msgstr ""
-
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:514
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:630
 msgid ""
-" del nostre web, on també trobaràs més informació sobre els períodes "
-"tarifaris."
+"A més del preu fix associat al cost de l'energia, establert per Som "
+"Energia i publicat a la nostra pàgina web, la factura inclourà un import "
+"variable associat al mecanisme d'ajust establert al"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:537
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:632
+msgid ""
+"Aquest import el calcularem per a cada període de facturació. Ponderarem "
+"el preu de cada hora del mecanisme d'ajust ("
+msgstr ""
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:632
+msgid "publicat per OMIE"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:633
+msgid ") en funció del repartiment horari energètic d'un consumidor/a tipus ("
+msgstr ""
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:633
+msgid "publicat per Red Eléctrica de"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:635
+msgid "segons la"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:635
+msgid "Resolució de 23/12/2021"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:636
+msgid ""
+"). El preu obtingut el multiplicarem, en cada factura, per l'energia "
+"total consumida en el període de facturació. El mecanisme d’ajust al gas "
+"no aplica per als contractes de les Illes Canàries ni Balears, i tampoc "
+"aplica a la tarifa Generation kWh."
+msgstr ""
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:645
+msgid "Els preus del terme de potència"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:647
+msgid "Tots els preus que apareixen en aquest contracte"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:649
+msgid ""
+"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus "
+"impositiu vigent en cada moment per a cada tipus de contracte."
+msgstr ""
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:672
+msgid "DADES DE PAGAMENT"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:676
+msgid "Persona titular del compte: "
+msgstr ""
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:677
+msgid "NIF: "
+msgstr ""
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:680
+msgid "Nº de compte bancari (IBAN): **** **** **** ****"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:685
 msgid ""
 "Al contractar s’accepten aquestes Condicions Particulars i les Condicions"
 " Generals, que es poden consultar a les pàgines següents. Si ens cal "
@@ -619,39 +707,23 @@ msgid ""
 "prevaldrà el que estigui previst en aquestes Condicions Particulars."
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:541
-msgid "DADES DE PAGAMENT"
-msgstr ""
-
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:545
-msgid "Persona titular del compte: "
-msgstr ""
-
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:546
-msgid "NIF:"
-msgstr ""
-
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:549
-msgid "Nº de compte bancari (IBAN): "
-msgstr ""
-
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:561
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:694
 msgid "a {0}"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:564
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:697
 msgid "La persona clienta:"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:566
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:699
 msgid "Acceptat digitalment via formulari web"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:571
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:704
 msgid "La comercialitzadora"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:582
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:715
 msgid ""
 "Aquestes Condicions Particulars estan condicionades a possibles "
 "modificacions amb la finalitat d'ajustar-les a les condicions tècniques "
