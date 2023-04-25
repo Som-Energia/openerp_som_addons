@@ -531,7 +531,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                                 <br/>
                                 <span class="normal_font_weight">${_(u"on la franja de la cooperativa")}</span>
                                 <%
-                                    coeficient_k = polissa.coeficient_k + polissa.coeficient_d
+                                    coeficient_k = (polissa.coeficient_k + polissa.coeficient_d)/1000
                                     if coeficient_k == 0:
                                         today = datetime.today().strftime("%Y-%m-%d")
                                         vlp = None
