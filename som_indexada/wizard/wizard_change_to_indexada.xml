@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_change_to_indexada" model="ir.ui.view">
+            <field name="name">wizard.change.to.indexada.form</field>
+            <field name="model">wizard.change.to.indexada</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Canviar la polissa a indexada">
+                    <field name="state" invisible="1"/>
+                    <group attrs="{'invisible': [('state','!=','init')]}">
+                        <field name="polissa_id" colspan="4" width="250" readonly="True"/>
+                        <group colspan="4" col="2">
+                            <button icon="gtk-close" special="cancel" string="Cancel·lar" type="object"/>
+                            <button name="change_to_indexada"
+                                    icon="gtk-ok" string="Endavant" type="object"/>
+                        </group>
+                    </group>
+                    <group attrs="{'invisible': [('state','!=','end')]}">
+                        <label string="S'ha passat la polissa a indexada" colspan="4"/>
+                        <newline/>
+                        <button icon="gtk-close" special="cancel" string="Finalitzar" type="object" colspan="4"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+         <record id="action_change_to_indexada" model="ir.actions.act_window">
+            <field name="name">Wizard canviar polissa a indexada</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.change.to.indexada</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="domain">[]</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_change_to_indexada"/>
+        </record>
+        <record id="wizard_change_to_indexada" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Canviar les polisses a indexada</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_change_to_indexada'))" />
+        </record>
+    </data>
+</openerp>
