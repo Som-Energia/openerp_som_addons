@@ -31,7 +31,7 @@
                     <field name="llista_preu" select="1"/>
                     <field name="date_invoice" select="1"/>
                     <field name="consum_facturat" select="2"/>
-                    <field name="total_incidencies" select="2"/>
+                    <field name="total_incidencies" select="1"/>
                     <field name="data_alta_contracte" select="2"/>
                     <field name="data_ultima_lectura" select="2"/>
                     <field name="mode_facturacio" select="2"/>
