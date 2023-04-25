@@ -115,7 +115,7 @@ class GiscedataPolissaInfoenergia(osv.osv):
         if consum_anual < 0 or consum_anual > 10000000:
             return False
 
-        return consum_anual*365/n_dies
+        return consum_anual
 
     _columns = {
         'emp_allow_send_data': fields.boolean('Permetre compartir dades amb BeeData',
