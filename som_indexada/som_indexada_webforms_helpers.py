@@ -24,7 +24,7 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                     coefficient_k = item.base_price
                     break
         if coefficient_k != None:
-            return coefficient_k/1000
+            return coefficient_k
         else:
             raise indexada_exceptions.KCoefficientNotFound(pricelist_id)
 
