@@ -134,20 +134,26 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             has_gkwh = any([x['is_gkwh'] for x in re_ab_fact_info])
             has_autoconsumption = any([x['linies_generacio'] for x in re_ab_fact_info])
 
-            if inv_initial_info['is_gkwh'] or has_gkwh:
-                msg.append("Per la factura numero {} no s'esborren perquè alguna de les factures té generationkwh.".format(inv_initial_info['number']))
-            elif inv_initial_info['linies_generacio'] or has_autoconsumption:
-                msg.append("Per la factura numero {} no s'esborren perquè alguna de les factures té autoconsum.".format(inv_initial_info['number']))
-            elif len(set([x['amount_untaxed_no_mag'] for x in re_ab_fact_info])) == 1:
-                ab_re_ids = [x['id'] for x in re_ab_fact_info]
-                fact_obj.unlink(cursor, uid, ab_re_ids)
-                msg.append("Per la factura numero {} les factures AB i RE tenen mateix import, s'esborren".format(inv_initial_info['number']))
-                fres_resultat = list(set(fres_resultat) - set(ab_re_ids))
+            if len(set([x['amount_untaxed_no_mag'] for x in re_ab_fact_info])) == 1:
+                if inv_initial_info['linies_generacio'] or has_autoconsumption:
+                    msg.append("Per la factura numero {} no s'esborren perquè alguna de les factures té autoconsum.".format(inv_initial_info['number']))
+                elif inv_initial_info['is_gkwh'] or has_gkwh:
+                    msg.append("Per la factura numero {} no s'esborren perquè alguna de les factures té generationkwh.".format(inv_initial_info['number']))
+                else:
+                    ab_re_ids = [x['id'] for x in re_ab_fact_info]
+                    fact_obj.unlink(cursor, uid, ab_re_ids)
+                    msg.append("Per la factura numero {} les factures AB i RE tenen mateix import, s'esborren".format(inv_initial_info['number']))
+                    fres_resultat = list(set(fres_resultat) - set(ab_re_ids))
             elif len(re_ab_fact_info) == 2 and abs(re_ab_fact_info[0]['amount_untaxed_no_mag'] - re_ab_fact_info[-1]['amount_untaxed_no_mag']) < INVOICE_DIFFERENCE_MAG_TOLERANCE:
-                ab_re_ids = [x['id'] for x in re_ab_fact_info]
-                fact_obj.unlink(cursor, uid, ab_re_ids)
-                msg.append("Per la factura numero {} les factures AB i RE tenen quasi el mateix import, s'esborren".format(inv_initial_info['number']))
-                fres_resultat = list(set(fres_resultat) - set(ab_re_ids))
+                if inv_initial_info['linies_generacio'] or has_autoconsumption:
+                    msg.append("Per la factura numero {} no s'esborren perquè alguna de les factures té autoconsum.".format(inv_initial_info['number']))
+                elif inv_initial_info['is_gkwh'] or has_gkwh:
+                    msg.append("Per la factura numero {} no s'esborren perquè alguna de les factures té generationkwh.".format(inv_initial_info['number']))
+                else:
+                    ab_re_ids = [x['id'] for x in re_ab_fact_info]
+                    fact_obj.unlink(cursor, uid, ab_re_ids)
+                    msg.append("Per la factura numero {} les factures AB i RE tenen quasi mateix import, s'esborren".format(inv_initial_info['number']))
+                    fres_resultat = list(set(fres_resultat) - set(ab_re_ids))
             else:
                 msg.append("Per la factura numero {} les factures AB i RE tenen import diferent.".format(inv_initial_info['number']))
 
@@ -229,6 +235,8 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             f1_str = '\n'.join(f1_data['refund_result'])
             if "factures AB i RE tenen mateix import, s'esborren" in f1_str:
                 diff = " Diferència 0"
+            elif "les factures AB i RE tenen quasi mateix import" in f1_str:
+                diff = " Diferència +- 0"
             elif "les factures AB i RE tenen import diferent" in f1_str:
                 diff = " Ok"
             elif "generationkwh." in f1_str:
