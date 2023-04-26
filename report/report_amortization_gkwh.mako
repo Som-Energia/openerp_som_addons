@@ -131,7 +131,7 @@ for account.invoice in objects:
         <img src="${addons_path}/som_generationkwh/report/Logo_Generation-04-Horizontal.png" />
     </ div>
     <div>
-        <p id="cabecera"><b>Liquidació Generation kWh</b><br>Emissió: ${data.receiptDate} </ p>
+        <p id="cabecera"><b>${_(u"Liquidació Generation kWh")}</b><br>${_(u"Emissió: ")} ${data.receiptDate} </ p>
     </ div>
     <div>
     <table>
@@ -176,7 +176,7 @@ for account.invoice in objects:
                 <th colspan="2"><b>${_(u"Resultat aplicació tarifa Generation kWh amb l'aportació: ")} ${data.inversionName}</b></th>
             </tr>
             <tr>
-                <td> ${_(u"Estalvi obtingut (rendiment en espècie)")}</td>
+                <td> ${_(u"Estalvi obtingut l'any ")}${data.previousYear}${_(u" (rendiment en espècie)")}</td>
                 <td> ${format_currency(data.savingActualInvestment,'EUR', locale='es_ES')}</td>
             </tr>
             <tr>
