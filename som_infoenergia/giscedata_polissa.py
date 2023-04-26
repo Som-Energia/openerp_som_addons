@@ -79,8 +79,12 @@ class GiscedataPolissaInfoenergia(osv.osv):
             polissa_id = polissa_id[0]
 
         fact_obj = self.pool.get('giscedata.facturacio.factura')
-
-        f_id = fact_obj.search(cursor, uid, [('polissa_id','=',polissa_id)])
+        search_params = [
+            ('polissa_id', '=', polissa_id),
+            ('state', '!=', 'draft'),
+            ('type', 'in', ['out_invoice', 'out_refund'])
+        ]
+        f_id = fact_obj.search(cursor, uid, search_params, limit=1, order='id desc')
         if not f_id:
             return False
 
