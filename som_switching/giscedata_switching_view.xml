@@ -88,14 +88,11 @@
         <record id="view_r1_custom_som_historize_tree" model="ir.ui.view">
             <field name="name">giscedata.facturacio.importacio.linia.add.page.obs.tree</field>
             <field name="model">giscedata.facturacio.importacio.linia</field>
+            <field name="type">tree</field>
             <field name="inherit_id" ref="giscedata_facturacio_switching.view_importacio_linia_general_tree"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='codi_sollicitud']" position="before">
                     <field name="last_observation_line"/>
-                </xpath>
-                <xpath expr="//field[@name='invoice_number_text']" position="after">
-                    <field name="fecha_factura_desde"/>
-                    <field name="fecha_factura_hasta"/>
                 </xpath>
             </field>
         </record>

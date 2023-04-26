@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="0">
+        <record id="category_indexada_prova_pilot" model="giscedata.polissa.category">
+            <field name="name">Prova pilot indexada</field>
+            <field name="complete_name">Prova pilot indexada</field>
+            <field name="active">True</field>
+            <field name="code">PPI</field>
+        </record>
+    </data>
+</openerp>
