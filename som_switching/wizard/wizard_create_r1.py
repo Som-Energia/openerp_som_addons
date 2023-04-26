@@ -102,17 +102,6 @@ class WizardSubtypeR1(osv.osv_memory):
 
         pol_obj.write(cursor, uid, polissa_id, pol_vals)
 
-        # Borrar reclamacions associades al pas sense factura associada
-        sw_id = sw_obj.browse(cursor, uid, res[-1])
-        if len(sw_id.step_ids) > 0:
-            pas_id = sw_id.step_ids[0].pas_id
-            model, index = pas_id.split(",")
-            m_obj = self.pool.get(model)
-            reclamacio_ids = m_obj.browse(cursor, uid, int(index)).reclamacio_ids
-            for reclamacio_id in reclamacio_ids:
-                if not reclamacio_id.num_factura:
-                    reclamacio_id.unlink()
-
         return res
 
     def fields_view_get(self, cursor, uid, view_id=None, view_type='form',
