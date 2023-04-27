@@ -15,7 +15,7 @@ class ResPartner(osv.osv):
         aeat193_record_obj = self.pool.get('l10n.es.aeat.mod193.record')
         search_params = [
             ('partner_id', '=', ids[0]),
-            ('report_id.name', '=', 'TITOLS'),
+            ('report_id.company_name', '=', 'TITOLS'),
             ('fiscal_year_id.name', '=', data.year),
         ]
         aeat193_record = aeat193_record_obj.search(
