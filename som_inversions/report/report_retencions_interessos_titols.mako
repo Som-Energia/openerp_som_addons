@@ -4,7 +4,7 @@
     import logging
     logger = logging.getLogger('openerp')
     report = objects[0]
-    data = report.report_retencions_data()
+    data = report.report_retencions_data_titols()
     setLang(data.lang)
 %>
 

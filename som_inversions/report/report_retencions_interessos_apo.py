@@ -8,7 +8,7 @@ class ResPartner(osv.osv):
     _name = 'res.partner'
     _inherit = 'res.partner'
 
-    def report_retencions_data(self, cursor, uid, ids):
+    def report_retencions_data_apo(self, cursor, uid, ids):
         aeat193_record_obj = self.pool.get('l10n.es.aeat.mod193.record')
         investment_obj = self.pool.get('generationkwh.investment')
         partner = self.browse(cursor, uid, ids[0])
