@@ -64,5 +64,17 @@
             <field name="name">Préstec Generation kWh</field>
             <field name="report_webkit">som_inversions/report/report_generationkwh_doc.mako</field>
         </record>
+        <record id="report_retencions_interessos_titols" model="ir.actions.report.xml">
+            <field name="report_type">webkit</field>
+            <field name="report_name">retencions.interessos.titols</field>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field eval="0" name="auto"/>
+            <field eval="0" name="header"/>
+            <field name="model">res.partner</field>
+            <field name="type">ir.actions.report.xml</field>
+            <field name="name">Retencions d'interessos títols</field>
+            <field name="report_webkit">som_inversions/report/report_retencions_interessos_titols.mako</field>
+        </record>
   </data>
 </openerp>
