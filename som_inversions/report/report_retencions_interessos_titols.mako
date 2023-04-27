@@ -148,7 +148,7 @@
 
     %for investment in objects :
     <%
-    setLang(report.partner_id.lang)
+    setLang(report.lang)
     %>
 <div class="capsalera">
   <div class="fila">
