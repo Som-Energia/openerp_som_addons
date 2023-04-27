@@ -1,7 +1,7 @@
 from osv import osv
 from yamlns import namespace as ns
 import pooler
-
+import datetime
 
 class ResPartner(osv.osv):
     _name = 'res.partner'
@@ -9,16 +9,23 @@ class ResPartner(osv.osv):
 
     def report_retencions_data(self, cursor, uid, ids):
         partner = self.browse(cursor, uid, ids[0])
-        import pudb;pu.db
-        aeat193_record_obj = self.pool.get('l10n.es.aeat.mod193.report')
         data = ns()
+        data.year = str(datetime.date.today().year - 1)
+        import pudb;pu.db
+        aeat193_record_obj = self.pool.get('l10n.es.aeat.mod193.record')
+        search_params = [
+            ('partner_id', '=', ids[0]),
+            ('report_id.name', '=', 'TITOLS'),
+            ('fiscal_year_id.name', '=', data.year),
+        ]
+        aeat193_record = aeat193_record_obj.search(
+            cursor, uid, search_params, limit=1)[0]
         data.lang = partner.lang
         data.somenergia = get_somenergia_partner_info(cursor, uid)
-        # data.year = inv.date_invoice.split('-')[0]
         data.partner_name = partner.name
         data.partner_vat = partner.vat[2:]
-        # data.amount_untaxed = inv.amount_untaxed
-        # data.amount_tax = abs(inv.amount_tax)
+        data.amount_untaxed = aeat193_record.amount_untaxed
+        data.amount_tax = abs(aeat193_record.amount_tax)
         data.date_last_date_previous_year = '{}-12-31'.format(data.year)
         data.balance = 0
 
