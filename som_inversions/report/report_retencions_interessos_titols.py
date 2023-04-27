@@ -13,7 +13,6 @@ class ResPartner(osv.osv):
         partner = self.browse(cursor, uid, ids[0])
         data = ns()
         data.year = str(datetime.date.today().year - 1)
-        import pudb; pu.db
 
         search_params = [
             ('partner_id', '=', ids[0]),
@@ -38,7 +37,7 @@ class ResPartner(osv.osv):
         data.amount_untaxed = aeat193_record[0].amount_base if aeat193_record else 0
         data.amount_tax = abs(aeat193_record[0].amount_tax) if aeat193_record else 0
         data.date_last_date_previous_year = '{}-12-31'.format(data.year)
-        data.balance = 0
+        data.balance = 0  # no more titles left from 2022 on
 
         return data
 

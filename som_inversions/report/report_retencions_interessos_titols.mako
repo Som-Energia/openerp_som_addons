@@ -5,6 +5,7 @@
     logger = logging.getLogger('openerp')
     report = objects[0]
     data = report.report_retencions_data()
+    setLang(data.lang)
 %>
 
 <html>
@@ -145,11 +146,6 @@
     </style>
 </head>
 <body>
-
-    %for investment in objects :
-    <%
-    setLang(report.lang)
-    %>
 <div class="capsalera">
   <div class="fila">
     <div class="LogoPpal">
@@ -224,7 +220,5 @@
     <p class="TextPeu">${_(u"Som Energia, SCCL, CIF F55091367 | Domicili Pic de Peguera, 11 A 28 - 17003 - Girona | aporta@somenergia.coop | www.somenergia.coop")}</p>
   </div>
 </div>
-
-    %endfor
 </body>
 </html>
