@@ -35,7 +35,7 @@ class ResPartner(osv.osv):
         data.somenergia = get_somenergia_partner_info(cursor, uid)
         data.partner_name = partner.name
         data.partner_vat = partner.vat[2:]
-        data.amount_untaxed = aeat193_record[0].amount_untaxed if aeat193_record else 0
+        data.amount_untaxed = aeat193_record[0].amount_base if aeat193_record else 0
         data.amount_tax = abs(aeat193_record[0].amount_tax) if aeat193_record else 0
         data.date_last_date_previous_year = '{}-12-31'.format(data.year)
         data.balance = 0
