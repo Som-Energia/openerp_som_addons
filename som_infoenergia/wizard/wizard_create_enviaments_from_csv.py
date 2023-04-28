@@ -36,12 +36,12 @@ class WizardCancelFromCSV(osv.osv_memory):
             context = {}
 
         lot_obj = self.pool.get('som.infoenergia.lot.enviament')
-        model_obj = self.pool.get(model_name)
         wiz = self.browse(cursor, uid, ids[0], context=context)
 
         model_name = 'res.partner' if wiz.model_name == 'partner' else 'giscedata.polissa'
         model_id = 'partner_id' if wiz.model_name == 'partner' else 'polissa_id'
         field_search = 'ref' if wiz.model_name == 'partner' else 'name'
+        model_obj = self.pool.get(model_name)
 
         vals = {'from_model': model_id}
         csv_file = StringIO(base64.b64decode(wiz.csv_file))
