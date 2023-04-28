@@ -2,6 +2,7 @@ from osv import osv
 from yamlns import namespace as ns
 import pooler
 import datetime
+import generationkwh.investmentmodel as gkwh
 
 
 class ResPartner(osv.osv):
