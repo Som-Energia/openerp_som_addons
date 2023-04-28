@@ -9,7 +9,7 @@
                 <form string="Crea enviaments des de CSV">
                     <field name="state" invisible="1"/>
                     <group attrs="{'invisible': [('state', '!=', 'init')]}">
-                        <label string="Crear enviaments de les pòlisses indicades al CSV" colspan="4"/>
+                        <label string="Crear enviaments de les entitats indicades al CSV" colspan="4"/>
                         <label string="Format del CSV: a la primera columna hi ha d'haver els números dels contractes o dels partners, un a cada fila. Les següents columnes que hi hagi, les guardarà en un diccionari de dades al camp 'Informació Extra'" colspan="4"/>
                         <field name="csv_file" colspan="4" filename="name" string="Arxiu CSV"/>
                         <field name="model_name" colspan="4"/>
