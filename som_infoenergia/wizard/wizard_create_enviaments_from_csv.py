@@ -24,7 +24,7 @@ class WizardCancelFromCSV(osv.osv_memory):
         'csv_file': fields.binary(_(u'Fitxer CSV'), required=True, help=_(u"Número de pòlissa de les pòlisses o número de partners dels quals se'n vol crear un enviament")),
         'state': fields.selection(STATES, _(u'Estat del wizard de crear enviaments des de CSV')),
         'info': fields.text(_(u'Informació'), help=_(u"Només es creen enviaments de pòlisses Activa=Si"), size=256, readonly=True),
-        'model_name': fields.selection(STATES, _(u'Tipus de model a importar')),
+        'model_name': fields.selection(FROM_MODEL, _(u'Tipus de model a importar')),
     }
     _defaults = {
         'state': 'init',
