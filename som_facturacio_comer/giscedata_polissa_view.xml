@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
-	<data>
+    <data>
         <!-- Fer readonly el camp del MAG de pòlissa-->
         <record model="ir.ui.view" id="giscedata_polissa_mag_readonly_som_tree">
             <field name="name">giscedata.polissa.mag.readonly.som.tree</field>
@@ -8,10 +8,62 @@
             <field name="type">tree</field>
             <field name="inherit_id" ref="giscedata_repercussio_mecanismo_ajuste_gas.view_giscedata_polissa_form"/>
             <field name="arch" type="xml">
-                <field name="coef_repercusio_gas" position="replace" >
+                <field name="coef_repercusio_gas" position="replace">
                     <field name="coef_repercusio_gas" readonly="1"/>
                 </field>
             </field>
         </record>
-	</data>
+
+        <!-- Fer readonly elis camps del Gruo de Pagament-->
+        <record model="ir.ui.view" id="view_payment_mode_form_readonly">
+            <field name="name">payment.mode.form.readonly</field>
+            <field name="model">payment.mode</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="account_payment.view_payment_mode_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='type']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='name']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='journal']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='active']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+            </field>
+	</record>
+        <record model="ir.ui.view" id="view_payment_mode_form_remesas_readonly">
+            <field name="name">payment.mode.form.remesas.readonly</field>
+            <field name="model">payment.mode</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="l10n_ES_remesas.view_payment_mode_form_remesas"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='bank_id']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+		<xpath expr="//field[@name='cif']" position="attributes">
+			<attribute name="readonly">1</attribute>
+                </xpath>
+		<xpath expr="//field[@name='nombre']" position="attributes">
+			<attribute name="readonly">1</attribute>
+                </xpath>
+		<xpath expr="//field[@name='sufijo']" position="attributes">
+			<attribute name="readonly">1</attribute>
+                </xpath>
+		<xpath expr="//field[@name='sepa_creditor_code']" position="attributes">
+			<attribute name="readonly">1</attribute>
+                </xpath>
+		<xpath expr="//field[@name='ine']" position="attributes">
+			<attribute name="readonly">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
 </openerp>
