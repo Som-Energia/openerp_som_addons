@@ -12,25 +12,37 @@ STATES = [
     ('finished', 'Estat Final')
 ]
 
+FROM_MODEL = [
+    ('polissa', 'Número de pòlissa'),
+    ('partner', 'Número de partner'),
+]
+
 class WizardCancelFromCSV(osv.osv_memory):
     _name = 'wizard.create.enviaments.from.csv'
     _columns = {
         'name': fields.char(_(u'Nom del fitxer'), size=256),
-        'csv_file': fields.binary(_(u'Fitxer CSV'), required=True, help=_(u"Número de pòlissa de les pòlisses de les quals se'n vol crear un enviament")),
+        'csv_file': fields.binary(_(u'Fitxer CSV'), required=True, help=_(u"Número de pòlissa de les pòlisses o número de partners dels quals se'n vol crear un enviament")),
         'state': fields.selection(STATES, _(u'Estat del wizard de crear enviaments des de CSV')),
         'info': fields.text(_(u'Informació'), help=_(u"Només es creen enviaments de pòlisses Activa=Si"), size=256, readonly=True),
+        'model_name': fields.selection(STATES, _(u'Tipus de model a importar')),
     }
     _defaults = {
         'state': 'init',
+        'model_name': 'polissa',
     }
 
     def create_from_file(self, cursor, uid, ids, context=None):
         if context is None:
             context = {}
+
+        model_name = 'res.partner' if self.model_id == 'partner' else 'giscedata.polissa'
+        model_id = 'partner_id' if self.model_id == 'partner' else 'polissa_id'
+        field_search = 'ref' if self.model_id == 'partner' else 'name'
+
         lot_obj = self.pool.get('som.infoenergia.lot.enviament')
-        pol_obj = self.pool.get('giscedata.polissa')
+        model_obj = self.pool.get(model_name)
         wiz = self.browse(cursor, uid, ids[0], context=context)
-        vals = {'from_model': 'polissa_id'}
+        vals = {'from_model': model_id}
         csv_file = StringIO(base64.b64decode(wiz.csv_file))
         reader = csv.reader(csv_file)
         linies= list(reader)
@@ -44,12 +56,12 @@ class WizardCancelFromCSV(osv.osv_memory):
                 header = linies[0]
             start=1
 
-        pol_list= []
+        item_list = []
         result = {}
         for line in linies[start:]:
             if ';' in line[0]:
                 line = line[0].split(';')
-            pol_list.append(line[0])
+            item_list.append(line[0])
             if not header:
                 continue
             i = 1
@@ -60,12 +72,12 @@ class WizardCancelFromCSV(osv.osv_memory):
             if result_extra_info:
                 result[line[0]] = result_extra_info
         if result:
-            vals['extra_text'] =  result
+            vals['extra_text'] = result
 
         lot_id = context.get('active_id', [])
-        pol_ids = pol_obj.search(cursor, uid, [('name','in', pol_list)])
-        lot_obj.create_enviaments_from_object_list(cursor, uid, lot_id, pol_ids, vals)
-        msg = _(u"Es crearan els enviaments de {} pòlisses en segon pla".format(len(pol_ids)))
+        item_ids = model_obj.search(cursor, uid, [(field_search, 'in', item_list)])
+        lot_obj.create_enviaments_from_object_list(cursor, uid, lot_id, item_ids, vals)
+        msg = _(u"Es crearan els enviaments de {} pòlisses en segon pla".format(len(item_ids)))
         wiz.write({'state': "finished", 'info': msg})
         return True
 
