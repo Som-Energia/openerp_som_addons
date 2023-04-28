@@ -35,9 +35,9 @@ class WizardCancelFromCSV(osv.osv_memory):
         if context is None:
             context = {}
 
-        model_name = 'res.partner' if self.model_id == 'partner' else 'giscedata.polissa'
-        model_id = 'partner_id' if self.model_id == 'partner' else 'polissa_id'
-        field_search = 'ref' if self.model_id == 'partner' else 'name'
+        model_name = 'res.partner' if self.model_name == 'partner' else 'giscedata.polissa'
+        model_id = 'partner_id' if self.model_name == 'partner' else 'polissa_id'
+        field_search = 'ref' if self.model_name == 'partner' else 'name'
 
         lot_obj = self.pool.get('som.infoenergia.lot.enviament')
         model_obj = self.pool.get(model_name)
