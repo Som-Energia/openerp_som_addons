@@ -4,9 +4,9 @@
         <record  model="giscedata.atc" id="cas_atc_0001">
             <field name="name">ccc</field>
             <field name="provincia" ref="l10n_ES_toponyms.ES17"/>
-            <field name="section_id">1</field>
+            <field name="section_id" eval="1"/>
             <field name="sector">electric</field>
-            <field name="subtipus_id">1</field>
+            <field name="subtipus_id" eval="1"/>
             <field name="reclamante">06</field>
             <field name="agent_actual">06</field>
 		</record>
