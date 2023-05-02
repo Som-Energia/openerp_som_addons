@@ -90,7 +90,7 @@
             <field name="number_increment">1</field>
         </record>
     </data>
-    <data noupdate="1">
+    <data noupdate="0">
         <record model="poweremail.templates" id="email_certificat_retencions_titols">
             <field name="name">Liquidacions - Certificats retencions títols</field>
             <field name="object_name" model="ir.model"
@@ -98,7 +98,7 @@
             <field eval="0" name="save_to_drafts" />
             <field name="model_int_name">som.enviament.massiu</field>
             <field name="def_to">
-                ${object.partner_id.address[0].email}}
+                ${object.partner_id.address[0].email}
             </field>
             <field eval="0" name="auto_email" />
             <field eval="0" name="single_email" />
@@ -129,7 +129,7 @@
             <field eval="0" name="save_to_drafts" />
             <field name="model_int_name">som.enviament.massiu</field>
             <field name="def_to">
-                ${object.partner_id.address[0].email}}
+                ${object.partner_id.address[0].email}
             </field>
             <field eval="0" name="auto_email" />
             <field eval="0" name="single_email" />
