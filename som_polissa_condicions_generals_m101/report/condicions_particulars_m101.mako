@@ -181,13 +181,18 @@ CONTRACT_TYPES = dict(TABLA_9)
                     ${_(u"Tarifes vigents en el moment d’activació del contracte.")}
                 </h3>
             </div>
+            <%
+                ultima_modcon = None
+                modcon_pendent_indexada = False
+            %>
         %endif
 
         <%
             dict_titular = get_titular_data(pas01, polissa)
             periodes_energia, periodes_potencia = [], []
-            ultima_modcon = polissa.modcontractuals_ids[0]
-            modcon_pendent_indexada = ultima_modcon.state == 'pendent' and ultima_modcon.mode_facturacio == 'index'
+            if polissa.state != 'esborrany':
+                ultima_modcon = polissa.modcontractuals_ids[0]
+                modcon_pendent_indexada = ultima_modcon.state == 'pendent' and ultima_modcon.mode_facturacio == 'index'
         %>
         <div class="contact_info">
             <div class="persona_titular styled_box ${"width33" if dict_titular['diferent'] else "width49"}">
