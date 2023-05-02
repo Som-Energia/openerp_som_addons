@@ -43,10 +43,18 @@
             <field name="inherit_id" ref="account_invoice_pending.view_invoice_pending_form"/>
             <field name="type">form</field>
             <field name="arch" type="xml" >
-                <xpath expr="//field[@name='pending_state']" position="attributes">
+                <xpath expr="//field[@name='pending_state_date']" position="attributes">
                     <attribute name="select">1</attribute>
                 </xpath>
-                <xpath expr="//field[@name='pending_state_date']" position="attributes">
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_factura_pendent_signed_tree">
+            <field name="name">giscedata.facturacio.factura.pendent.signed.tree</field>
+            <field name="model">giscedata.facturacio.factura</field>
+            <field name="inherit_id" ref="giscedata_facturacio_impagat.view_factura_pendent_signed_tree"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml" >
+                <xpath expr="//field[@name='pending_state']" position="attributes">
                     <attribute name="select">1</attribute>
                 </xpath>
             </field>
