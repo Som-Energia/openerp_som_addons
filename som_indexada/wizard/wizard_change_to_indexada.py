@@ -139,7 +139,7 @@ class WizardChangeToIndexada(osv.osv_memory):
         prev_modcon = polissa.modcontractuals_ids[0]
         if prev_modcon.state == 'pendent':
             raise indexada_exceptions.PolissaModconPending(polissa.name)
-        if change_type == "form_period_to_index" and polissa.mode_facturacio == 'index':
+        if change_type == "from_period_to_index" and polissa.mode_facturacio == 'index':
             raise indexada_exceptions.PolissaAlreadyIndexed(polissa.name)
         if change_type == "from_index_to_period" and polissa.mode_facturacio == 'atr':
             # TODO CANVIAR EXCEPCIÓ
