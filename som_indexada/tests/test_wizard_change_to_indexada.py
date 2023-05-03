@@ -36,7 +36,7 @@ class TestChangeToIndexada(TestSwitchingImport):
         polissa_id = imd_obj.get_object_reference(
             self.cursor, self.uid, 'giscedata_polissa', 'polissa_tarifa_018'
         )[1]
-        context = {'active_id': polissa_id}
+        context = {'active_id': polissa_id, 'change_type': 'from_period_to_index'}
         wiz_o = self.pool.get('wizard.change.to.indexada')
 
         wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
@@ -48,7 +48,7 @@ class TestChangeToIndexada(TestSwitchingImport):
     def test_change_to_indexada_modcon_pendent_polissa(self, mocked_send_mail):
         wiz_o = self.pool.get('wizard.change.to.indexada')
         polissa_id = self.open_polissa('polissa_tarifa_018')
-        context = {'active_id': polissa_id}
+        context = {'active_id': polissa_id, 'change_type': 'from_period_to_index'}
         wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
 
         wiz_o.change_to_indexada(self.cursor, self.uid, [wiz_id], context=context)
@@ -81,7 +81,7 @@ class TestChangeToIndexada(TestSwitchingImport):
         polissa_obj.write(self.cursor, self.uid, polissa_id,
                           {'mode_facturacio': 'index'})
 
-        context = {'active_id': polissa_id}
+        context = {'active_id': polissa_id, 'change_type': 'from_period_to_index'}
         wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
         with self.assertRaises(indexada_exceptions.PolissaAlreadyIndexed) as error:
             wiz_o.change_to_indexada(self.cursor, self.uid, [wiz_id], context=context)
@@ -100,7 +100,7 @@ class TestChangeToIndexada(TestSwitchingImport):
         polissa_obj.send_signal(self.cursor, self.uid, [polissa_id], [
             'validar', 'contracte'
         ])
-        context = {'active_id': polissa_id}
+        context = {'active_id': polissa_id, 'change_type': 'from_period_to_index'}
         wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
         step_id = self.create_case_and_step(
             self.cursor, self.uid, polissa_id, 'M1', '01'
@@ -117,7 +117,7 @@ class TestChangeToIndexada(TestSwitchingImport):
         IrModel = self.pool.get('ir.model.data')
 
         polissa_id = self.open_polissa('polissa_tarifa_018')
-        context = {'active_id': polissa_id}
+        context = {'active_id': polissa_id, 'change_type': 'from_period_to_index'}
         wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
 
         wiz_o.change_to_indexada(self.cursor, self.uid, [wiz_id], context=context)
@@ -178,7 +178,7 @@ class TestChangeToIndexada(TestSwitchingImport):
         IrModel = self.pool.get('ir.model.data')
 
         polissa_id = self.open_polissa('polissa_tarifa_018_autoconsum_41')
-        context = {'active_id': polissa_id}
+        context = {'active_id': polissa_id, 'change_type': 'from_period_to_index'}
         wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
 
         wiz_o.change_to_indexada(self.cursor, self.uid, [wiz_id], context=context)
