@@ -61,9 +61,6 @@ class WizardChangeToIndexada(osv.osv_memory):
     def _default_polissa_id(self, cursor, uid, context=None):
         '''Llegim la pólissa'''
         #import pudb; pu.db
-        change_type = False
-        IrModel = self.pool.get('ir.model.data')
-        new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_periode_test').id
         polissa_id = False
         if context:
             polissa_id = context.get('active_id', False)
