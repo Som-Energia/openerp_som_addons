@@ -24,7 +24,7 @@
                 </form>
             </field>
         </record>
-         <record id="action_change_to_indexada" model="ir.actions.act_window">
+        <record id="action_change_to_indexada" model="ir.actions.act_window">
             <field name="name">Wizard canviar polissa a indexada</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wizard.change.to.indexada</field>
@@ -32,8 +32,21 @@
             <field name="view_mode">form</field>
             <field name="domain">[]</field>
             <field name="target">new</field>
+            <field name="context">{'change_type':'from_period_to_index'}</field>
             <field name="view_id" ref="view_change_to_indexada"/>
         </record>
+        <record id="action_change_to_periode" model="ir.actions.act_window">
+            <field name="name">Wizard canviar polissa a periode</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.change.to.indexada</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="domain">[]</field>
+            <field name="context">{'change_type':'from_index_to_period'}</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_change_to_indexada"/>
+        </record>
+
         <record id="wizard_change_to_indexada" model="ir.values">
             <field name="object" eval="1"/>
             <field name="name">Canviar les polisses a indexada</field>
@@ -41,6 +54,14 @@
             <field name="key">action</field>
             <field name="model">giscedata.polissa</field>
             <field name="value" eval="'ir.actions.act_window,'+str(ref('action_change_to_indexada'))" />
+        </record>
+        <record id="wizard_change_to_periode" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Canviar les polisses a periode</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_change_to_periode'))" />
         </record>
     </data>
 </openerp>
