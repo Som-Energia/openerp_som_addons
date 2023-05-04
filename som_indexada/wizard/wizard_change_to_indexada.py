@@ -87,7 +87,7 @@ class WizardChangeToIndexada(osv.osv_memory):
             dict_tarifa_codis = TARIFA_CODIS_INDEXADA
 
         if tarifa_codi not in dict_tarifa_codis:
-            raise Exception("no exists tarifa")
+            raise indexada_exceptions.TariffCodeNotSupported(tarifa_codi)
 
         # TODO no basar-nos amb el nom???
         if polissa.fiscal_position_id in FISCAL_POSITIONS_CANARIES:
@@ -164,7 +164,6 @@ class WizardChangeToIndexada(osv.osv_memory):
         except Exception as e:
             raise indexada_exceptions.FailSendEmail(polissa.name)
 
-
     def change_to_indexada(self, cursor, uid, ids, context=None):
         '''update data_firma_contracte in polissa
         and data_inici in modcontractual'''
@@ -174,7 +173,6 @@ class WizardChangeToIndexada(osv.osv_memory):
         wizard = self.browse(cursor, uid, ids[0])
         polissa = wizard.polissa_id
         change_type = wizard.change_type
-        import pudb; pu.db
         if not context:
             context = {}
 
