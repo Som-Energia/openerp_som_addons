@@ -241,7 +241,7 @@ class TarifaPoolSOM(TarifaPool):
             ingresos_srad.load(grcosdnc.indicators[GRCOSDNC_MAGNS_2022_11[14]])
         else:
             coste_total.load(grcosdnc.indicators[GRCOSDNC_MAGNS[12]])
-        sobrecostes_ree = coste_total - coste_medio_desvios + ingresos_srad
+        sobrecostes_ree = coste_total - coste_medio_desvios - ingresos_srad
 
         # MAJ RDL 10/2022
         maj_activated = self.conf.get('maj_activated', 0)
