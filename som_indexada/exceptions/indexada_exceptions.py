@@ -118,3 +118,17 @@ class KCoefficientNotFound(IndexadaException):
             super(KCoefficientNotFound, self).to_dict(),
             pricelist_id=self.pricelist_id,
         )
+
+class TariffCodeNotSupported(IndexadaException):
+    def __init__(self, tariff_code):
+        super(TariffCodeNotSupported, self).__init__(
+            title=_("Tariff code not supported"),
+            text=_("Change with tariff code {} not supported").format(tariff_code),
+        )
+        self.tariff_code = tariff_code
+
+    def to_dict(self):
+        return dict(
+            super(TariffCodeNotSupported, self).to_dict(),
+            tariff_code=self.tariff_code,
+        )
