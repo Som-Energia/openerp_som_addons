@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="product.pricelist" id="pricelist_periodes_20td_peninsula">
+            <field name="name">Periodes 2.0TD Península</field>
+            <field name="type">sale</field>
+            <field name="currency_id" ref="base.EUR"/>
+        </record>
+    </data>
+</openerp>
