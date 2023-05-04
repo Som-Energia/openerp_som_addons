@@ -25,18 +25,18 @@ TARIFA_CODIS_INDEXADA = {
 
 TARIFA_CODIS_PERIODES = {
     "2.0TD": {
-        "peninsula": "pricelist_periodes_20td_peninsula",
-        "canaries": "pricelist_periodes_20td_insular",
+        "peninsula": "pricelist_periodes_20td_peninsula", # id 101
+        "canaries": "pricelist_periodes_20td_insular", # id 120
         "balears": "pricelist_periodes_20td_insular",
     },
     "3.0TD": {
-        "peninsula": "pricelist_periodes_30td_peninsula",
-        "canaries": "pricelist_periodes_30td_insular",
+        "peninsula": "pricelist_periodes_30td_peninsula", # id 102
+        "canaries": "pricelist_periodes_30td_insular", # id 121
         "balears": "pricelist_periodes_30td_insular",
     },
     "6.1TD": {
-        "peninsula": "pricelist_periodes_61td_peninsula",
-        "canaries": "pricelist_periodes_61td_insular",
+        "peninsula": "pricelist_periodes_61td_peninsula", # id 103
+        "canaries": "pricelist_periodes_61td_insular", # id 122
         "balears": "pricelist_periodes_61td_insular",
     }
 }
@@ -60,7 +60,6 @@ class WizardChangeToIndexada(osv.osv_memory):
 
     def _default_polissa_id(self, cursor, uid, context=None):
         '''Llegim la pólissa'''
-        #import pudb; pu.db
         polissa_id = False
         if context:
             polissa_id = context.get('active_id', False)
@@ -68,7 +67,6 @@ class WizardChangeToIndexada(osv.osv_memory):
 
     def _default_change_type(self, cursor, uid, context=None):
         '''Llegim el tipus de canvi'''
-        #import pudb; pu.db
         change_type = False
         if context:
             change_type = context.get('change_type', False)
@@ -78,30 +76,6 @@ class WizardChangeToIndexada(osv.osv_memory):
         # k and d come from pricelist
         res = {}
         return res
-
-    def calculate_new_pricelist_old(self, cursor, uid, polissa, context=None):
-        IrModel = self.pool.get('ir.model.data')
-        # TODO TDVE?
-        if polissa.tarifa_codi == "2.0TD":
-            new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_indexada_20td_peninsula').id
-            if polissa.fiscal_position_id in [19, 25, 33, 34, 38, 39]:
-                new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_indexada_20td_canaries').id
-            elif 'INSULAR' in polissa.llista_preu.name:
-                new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_indexada_20td_balears').id
-        elif polissa.tarifa_codi == "3.0TD":
-            new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_indexada_30td_peninsula').id
-            if polissa.fiscal_position_id in [19, 25, 33, 34, 38, 39]:
-                new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_indexada_30td_canaries').id
-            elif 'INSULAR' in polissa.llista_preu.name:
-                new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_indexada_30td_balears').id
-        elif polissa.tarifa_codi == "6.1TD":
-            new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_indexada_61td_peninsula').id
-            if polissa.fiscal_position_id in [19, 25, 33, 34, 38, 39]:
-                new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_indexada_61td_canaries').id
-            elif 'INSULAR' in polissa.llista_preu.name:
-                new_pricelist_id = IrModel._get_obj(cursor, uid, 'som_indexada', 'pricelist_indexada_61td_balears').id
-
-        return new_pricelist_id
 
     def calculate_new_pricelist(self, cursor, uid, polissa, change_type, context=None):
         IrModel = self.pool.get('ir.model.data')
