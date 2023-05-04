@@ -67,9 +67,9 @@ class WizardChangeToIndexada(osv.osv_memory):
 
     def _default_change_type(self, cursor, uid, context=None):
         '''Llegim el tipus de canvi'''
-        change_type = False
+        change_type = "from_period_to_index"
         if context:
-            change_type = context.get('change_type', False)
+            change_type = context.get("change_type", "from_period_to_index")
         return change_type
 
     def calculate_k_d_coeficients(self, cursor, uid, context=None):
