@@ -63,6 +63,19 @@ class PolissaAlreadyIndexed(IndexadaException):
             super(PolissaAlreadyIndexed, self).to_dict(),
             polissa_number=self.polissa_number,
         )
+class PolissaAlreadyPeriod(IndexadaException):
+    def __init__(self, polissa_number):
+        super(PolissaAlreadyPeriod, self).__init__(
+            title=_('Already period'),
+            text=_("Pòlissa {} already period").format(polissa_number),
+        )
+        self.polissa_number = polissa_number
+
+    def to_dict(self):
+        return dict(
+            super(PolissaAlreadyPeriod, self).to_dict(),
+            polissa_number=self.polissa_number,
+        )
 
 class PolissaSimultaneousATR(IndexadaException):
     def __init__(self, polissa_number):
