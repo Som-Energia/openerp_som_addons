@@ -142,8 +142,7 @@ class WizardChangeToIndexada(osv.osv_memory):
         if change_type == "from_period_to_index" and polissa.mode_facturacio == 'index':
             raise indexada_exceptions.PolissaAlreadyIndexed(polissa.name)
         if change_type == "from_index_to_period" and polissa.mode_facturacio == 'atr':
-            # TODO CANVIAR EXCEPCIÓ
-            raise indexada_exceptions.PolissaAlreadyIndexed(polissa.name)
+            raise indexada_exceptions.PolissaAlreadyPeriod(polissa.name)
 
         res = sw_obj.search(cursor, uid, [
                 ('polissa_ref_id', '=', polissa.id),
