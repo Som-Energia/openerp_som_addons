@@ -28,6 +28,7 @@
         "security/ir.model.access.csv",
         "giscedata_facturacio_switching_cron.xml",
         "wizard/wizard_refund_rectify_from_origin_view.xml",
+        "giscedata_facturacio_switching_view.xml",
     ],
     "active": False,
     "installable": True
