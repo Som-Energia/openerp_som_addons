@@ -50,13 +50,14 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                 cursor,
                 uid,
                 polissa,
-                change_type
+                change_type,
             )
             pricelist_id = wiz_o.calculate_new_pricelist(
                 cursor,
                 uid,
                 polissa,
-                context=context
+                change_type,
+                context=context,
             )
             pricelist_name = pricelist_obj.read(
                 cursor,
