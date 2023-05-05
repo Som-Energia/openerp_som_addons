@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <!-- Fer readonly el camp factura_rectificadora-->
+        <record model="ir.ui.view" id="view_importacio_linia_form_som">
+            <field name="name">giscedata.facturacio.importacio.linia.form.som</field>
+            <field name="model">giscedata.facturacio.importacio.linia</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="giscedata_facturacio_switching.view_importacio_linia_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='factura_rectificada']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
