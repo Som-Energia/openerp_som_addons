@@ -63,6 +63,19 @@ class PolissaAlreadyIndexed(IndexadaException):
             super(PolissaAlreadyIndexed, self).to_dict(),
             polissa_number=self.polissa_number,
         )
+class PolissaAlreadyPeriod(IndexadaException):
+    def __init__(self, polissa_number):
+        super(PolissaAlreadyPeriod, self).__init__(
+            title=_('Already period'),
+            text=_("Pòlissa {} already period").format(polissa_number),
+        )
+        self.polissa_number = polissa_number
+
+    def to_dict(self):
+        return dict(
+            super(PolissaAlreadyPeriod, self).to_dict(),
+            polissa_number=self.polissa_number,
+        )
 
 class PolissaSimultaneousATR(IndexadaException):
     def __init__(self, polissa_number):
@@ -104,4 +117,18 @@ class KCoefficientNotFound(IndexadaException):
         return dict(
             super(KCoefficientNotFound, self).to_dict(),
             pricelist_id=self.pricelist_id,
+        )
+
+class TariffCodeNotSupported(IndexadaException):
+    def __init__(self, tariff_code):
+        super(TariffCodeNotSupported, self).__init__(
+            title=_("Tariff code not supported"),
+            text=_("Change with tariff code {} not supported").format(tariff_code),
+        )
+        self.tariff_code = tariff_code
+
+    def to_dict(self):
+        return dict(
+            super(TariffCodeNotSupported, self).to_dict(),
+            tariff_code=self.tariff_code,
         )
