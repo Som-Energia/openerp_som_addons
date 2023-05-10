@@ -35,22 +35,21 @@ class GiscedataPolissaModcontractual(osv.osv):
 
         super(GiscedataPolissaModcontractual, self).aplicar_modificacio(cursor, uid, mod_id, polissa_id)
 
-        fields_to_read = ['autoconsumo', 'autoconsum_id', 'data_inici']
+        fields_to_read = ['autoconsumo', 'data_inici', 'modcontractual_ant', 'polissa_id']
 
         modcon_info = self.read(cursor, uid, mod_id, fields_to_read)
+        if modcon_info.get('modcontractual_ant'):
+            modcon_ant_info = self.read(cursor, uid, modcon_info['modcontractual_ant'][0], fields_to_read)
+            auto_changes = modcon_ant_info.get('autoconsumo') != modcon_info['autoconsumo']
+        else:
+            auto_changes = modcon_info['autoconsumo'] != '00'
 
-
-        if modcon_info['autoconsumo'] != '00' or modcon_info['autoconsum_id']:
+        if auto_changes:
             polissa_obj = self.pool.get('giscedata.polissa')
-            if not polissa_id:
-                polissa_id = self.browse(cursor, uid, mod_id).polissa_id.id
-
-            pol_data_alta_autoconsum = polissa_obj.read(cursor, uid, polissa_id, ['data_alta_autoconsum'])['data_alta_autoconsum']
-            if not pol_data_alta_autoconsum:
-                polissa_obj.write(cursor, uid, [polissa_id],
-                    {'data_alta_autoconsum': modcon_info['data_inici']},
-                    context={'skip_cnt_llista_preu_compatible': True}
-                )
+            polissa_obj.write(cursor, uid, [modcon_info['polissa_id'][0]],
+                {'data_alta_autoconsum': modcon_info['data_inici']},
+                context={'skip_cnt_llista_preu_compatible': True}
+            )
 
 
 GiscedataPolissaModcontractual()
