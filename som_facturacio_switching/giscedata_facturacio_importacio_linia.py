@@ -49,12 +49,6 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
         if tarifaATR:
             vals['tarifa_atr'] = tarifaATR[0]
 
-        codiRectificadaAnulada = re.findall(
-            '<CodigoFacturaRectificadaAnulada>(.*)</CodigoFacturaRectificadaAnulada>', xml_data
-        )
-        if codiRectificadaAnulada:
-            vals['codi_rectificada_anulada'] = codiRectificadaAnulada[0]
-
         if vals['type_factura'] == 'C':
             expedient = re.findall(
                 '<NumeroExpediente>(.*)</NumeroExpediente>', xml_data
@@ -175,9 +169,6 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
             help=u'Tipus de autoconsum informat a l\'F1'
         ),
         'tarifa_atr': fields.selection(TABLA_17, u'Tarifa', readonly=True),
-        'codi_rectificada_anulada': fields.char(
-            'F. Origen Rectificada/Anulada', size=30, readonly=True
-        ),
         'num_expedient': fields.char(_(u'Núm. Expedient'), size=16, readonly=True),
         'comentari': fields.text(_(u'Comentari de l\'F1'), readonly=True),
         'polissa_id': fields.function(
