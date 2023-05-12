@@ -33,18 +33,10 @@
                             <field name="potencia"/>
                             <field name="nocutoff"/>
                             <field name="unpaid_invoices"/>
-                            <field name="coef_repercusio_gas"/>
-                            <field name="enviament"/>
                             <field name="data_ultima_lectura"/>
-                            <field name="data_ultima_lectura_f1"/>
-                            <field name="dies_lectures_facturada_f1"/>
                             <field name="refacturacio_pendent"/>
                             <field name="data_alta"/>
                             <field name="observacio_suspesa"/>
-                            <field name="data_alta_autoconsum"/>
-                            <field name="te_assignacio_gkwh"/>
-                            <field name="comptador"/>
-                            <field name="potencia_generacio"/>
                             <field name="resum_observacions_comptables"/>
                             <field name="data_ultima_factura" />
                         </tree>
