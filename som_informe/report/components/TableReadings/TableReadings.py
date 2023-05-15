@@ -48,7 +48,7 @@ class TableReadings:
                     linia_taula['invoiced_energy'] = invoice.energia_kwh or 0
                     linia_taula['exported_energy'] = invoice.generacio_kwh or 0
                     linia_taula['invoiced_days'] = invoice.dies or 0
-                    linia_taula['rectifying_invoice'] = invoice.rectifying_id.origin if invoice.rectifying_id else False
+                    linia_taula['rectifying_invoice'] = invoice.rectifying_id.origin if invoice.rectifying_id else ""
 
                     result['taula'].append(linia_taula)
 
