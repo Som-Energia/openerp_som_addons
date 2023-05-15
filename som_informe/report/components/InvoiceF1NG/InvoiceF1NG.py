@@ -44,7 +44,7 @@ class InvoiceF1NG:
 
         result['distribuidora'] = f1.distribuidora_id.name if f1 else "Sense F1 relacionat"
         result['invoice_type'] = invoice.rectificative_type
-        result['invoice_date'] = dateformat(invoice.date_invoice)
+        result['invoice_date'] = dateformat(invoice.origin_date_invoice)
         result['invoice_number'] = invoice.origin
         result['date_from'] = dateformat(invoice.data_inici)
         result['date_to'] = dateformat(invoice.data_final)
