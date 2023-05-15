@@ -12,6 +12,7 @@ ${_(u"<b>A continuació es mostra un resum de les factures emeses per %s (fitxer
         <td style="width:10%">${_(u"Energia facturada (kWh)")}</td>
         <td style="width:10%">${_(u"Energia exportada -excedents- (kWh)")}</td>
         <td style="width:10%">${_(u"Dies facturats")}</td>
+        <td style="width:10%">${_(u"Factura que anul·la o rectifica")}</td>
     </tr>
     % for linia in d.taula:
         <tr style="text-align:center">
@@ -23,6 +24,7 @@ ${_(u"<b>A continuació es mostra un resum de les factures emeses per %s (fitxer
             <td style="width:10%">${_(u"%s") % (formatLang(linia['invoiced_energy'], digits=2))}</td>
             <td style="width:10%">${_(u"%s") % (formatLang(linia['exported_energy'], digits=2))}</td>
             <td style="width:10%">${_(u"%s") % (linia['invoiced_days'])}</td>
+            <td style="width:10%">${_(u"%s") % (linia['rectifying_invoice'])}</td>
         </tr>
     % endfor
 </table>
