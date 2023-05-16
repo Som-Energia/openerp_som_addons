@@ -111,6 +111,33 @@ class GiscedataPolissaInfoenergia(osv.osv):
 
         return consum_anual*365/n_dies
 
+    def get_consum_anual_pdf(self, cursor, uid, polissa_id, context=None):
+        """Calculem el consum anual a partir del consum de la factura en pdf"""
+
+        if isinstance(polissa_id, (tuple, list)):
+            polissa_id = polissa_id[0]
+
+        fact_obj = self.pool.get('giscedata.facturacio.factura')
+        rprt_obj = self.pool.get('giscedata.facturacio.factura.report')
+
+        ids = fact_obj.search(cursor, uid, [
+                ('polissa_id', '=', polissa_id),
+                ('state', '!=', 'draft'),
+                ('type', 'in', ['out_refund', 'out_invoice']),
+                ], limit=1, order="id DESC")
+
+        if not ids:
+            return False
+
+        conany = False
+        try:
+            data = rprt_obj.get_components_data(cursor, uid, [ids[0]])
+            conany = data[data.keys()[0]].energy_consumption_graphic_td.total_any
+        except Exception:
+            pass
+
+        return conany
+
     _columns = {
         'emp_allow_send_data': fields.boolean('Permetre compartir dades amb BeeData',
                                   help="Compartir dades a través de l'API amb BeeData"),
