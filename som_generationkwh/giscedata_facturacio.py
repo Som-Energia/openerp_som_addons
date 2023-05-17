@@ -443,6 +443,10 @@ class GiscedataFacturacioFactura(osv.osv):
                 )
                 line_quantity = line_vals['quantity']
 
+                # TODO: Can we check if this is a regularization line?
+                if line_quantity < 0:
+                    continue
+
                 gkwh_quantity_dict = gkwh_dealer_obj.use_kwh(
                     cursor, uid, contract_id, start_date, end_date, fare,
                     period, line_quantity
