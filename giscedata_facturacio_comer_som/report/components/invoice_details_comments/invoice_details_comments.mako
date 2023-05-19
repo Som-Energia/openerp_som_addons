@@ -8,7 +8,7 @@
         %endif
         ${_(u"Si vols conèixer el detall de les teves dades horàries d’ús d’electricitat i de potència i disposes d’un comptador amb la telegestió activada, t’animem a registrar-te i accedir gratuïtament al portal web de la teva empresa distribuïdora: ")}
         %if id_comments.has_web:
-            <a href="${id_comments.web_distri}">${id_comments.web_distri}</a> 
+            <a href="${id_comments.web_distri}">${id_comments.web_distri}</a>
         %else:
             <i>${_(u"(Ho sentim, %s encara no ens ha facilitat l’enllaç al portal)") % id_comments.distri_name }</i>
         %endif

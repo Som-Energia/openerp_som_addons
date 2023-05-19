@@ -2,14 +2,12 @@
 from osv import osv
 from tools.translate import _
 
+
 class IndexadaException(osv.except_osv):
-    def __init__(self,  title, text):
-        super(IndexadaException, self).__init__(
-            title,
-            text
-        )
+    def __init__(self, title, text):
+        super(IndexadaException, self).__init__(title, text)
         # ERP error reporting as fatal error, not a discardable warning
-        self.exc_type = 'error'
+        self.exc_type = "error"
         self._message = text
 
     @property
@@ -22,10 +20,11 @@ class IndexadaException(osv.except_osv):
             error=self._message,
         )
 
+
 class PolissaNotActive(IndexadaException):
     def __init__(self, polissa_number):
         super(PolissaNotActive, self).__init__(
-            title=_('Pòlissa not active'),
+            title=_("Pòlissa not active"),
             text=_("Pòlissa {} not active").format(polissa_number),
         )
         self.polissa_number = polissa_number
@@ -36,10 +35,11 @@ class PolissaNotActive(IndexadaException):
             polissa_number=self.polissa_number,
         )
 
+
 class PolissaModconPending(IndexadaException):
     def __init__(self, polissa_number):
         super(PolissaModconPending, self).__init__(
-            title=_('Pending modcon'),
+            title=_("Pending modcon"),
             text=_("Pòlissa {} already has a pending modcon").format(polissa_number),
         )
         self.polissa_number = polissa_number
@@ -50,10 +50,11 @@ class PolissaModconPending(IndexadaException):
             polissa_number=self.polissa_number,
         )
 
+
 class PolissaAlreadyIndexed(IndexadaException):
     def __init__(self, polissa_number):
         super(PolissaAlreadyIndexed, self).__init__(
-            title=_('Already indexed'),
+            title=_("Already indexed"),
             text=_("Pòlissa {} already indexed").format(polissa_number),
         )
         self.polissa_number = polissa_number
@@ -63,10 +64,12 @@ class PolissaAlreadyIndexed(IndexadaException):
             super(PolissaAlreadyIndexed, self).to_dict(),
             polissa_number=self.polissa_number,
         )
+
+
 class PolissaAlreadyPeriod(IndexadaException):
     def __init__(self, polissa_number):
         super(PolissaAlreadyPeriod, self).__init__(
-            title=_('Already period'),
+            title=_("Already period"),
             text=_("Pòlissa {} already period").format(polissa_number),
         )
         self.polissa_number = polissa_number
@@ -77,10 +80,11 @@ class PolissaAlreadyPeriod(IndexadaException):
             polissa_number=self.polissa_number,
         )
 
+
 class PolissaSimultaneousATR(IndexadaException):
     def __init__(self, polissa_number):
         super(PolissaSimultaneousATR, self).__init__(
-            title=_('Simultaneous ATR'),
+            title=_("Simultaneous ATR"),
             text=_("Pòlissa {} with simultaneous ATR").format(polissa_number),
         )
         self.polissa_number = polissa_number
@@ -91,10 +95,11 @@ class PolissaSimultaneousATR(IndexadaException):
             polissa_number=self.polissa_number,
         )
 
+
 class FailSendEmail(IndexadaException):
     def __init__(self, polissa_number):
         super(FailSendEmail, self).__init__(
-            title=_('Email fail'),
+            title=_("Email fail"),
             text=_("Failed to send email to Pòlissa {}").format(polissa_number),
         )
         self.polissa_number = polissa_number
@@ -105,10 +110,11 @@ class FailSendEmail(IndexadaException):
             polissa_number=self.polissa_number,
         )
 
+
 class KCoefficientNotFound(IndexadaException):
     def __init__(self, pricelist_id):
         super(KCoefficientNotFound, self).__init__(
-            title=_('K_Coefficient not found'),
+            title=_("K_Coefficient not found"),
             text=_("K_Coefficient not found for pricelist id {}").format(pricelist_id),
         )
         self.pricelist_id = pricelist_id
@@ -118,6 +124,7 @@ class KCoefficientNotFound(IndexadaException):
             super(KCoefficientNotFound, self).to_dict(),
             pricelist_id=self.pricelist_id,
         )
+
 
 class TariffCodeNotSupported(IndexadaException):
     def __init__(self, tariff_code):

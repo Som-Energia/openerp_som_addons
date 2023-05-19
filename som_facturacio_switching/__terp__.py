@@ -8,7 +8,7 @@
     "version": "2.107.6",
     "author": "GISCE",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "base",
         "som_polissa",
         "som_switching",
@@ -31,5 +31,5 @@
         "giscedata_facturacio_switching_view.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

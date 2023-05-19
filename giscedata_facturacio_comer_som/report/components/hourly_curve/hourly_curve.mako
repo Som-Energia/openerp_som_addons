@@ -3,7 +3,7 @@
 <style>
 <%include file="hourly_curve.css" />
 </style>
-<% 
+<%
 import csv
 from giscedata_facturacio_indexada.report.report_indexada_helpers import getCsvData, colorPicker, getAxisAndData
 from collections import namedtuple

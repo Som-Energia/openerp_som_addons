@@ -86,10 +86,20 @@ class SomCrawlersConfig(osv.osv):
                     update_date=datetime.now(),
                     user=username,
                 )
-                + message + "\n" + old_log
+                + message
+                + "\n"
+                + old_log
             )
 
-            self.write(cursor, uid, id, {"log": log,}, context=None)
+            self.write(
+                cursor,
+                uid,
+                id,
+                {
+                    "log": log,
+                },
+                context=None,
+            )
 
     """canvia la contrasenya d'un portal i retorna la nova contrasenya
         @param self The object pointer
@@ -100,6 +110,7 @@ class SomCrawlersConfig(osv.osv):
         @param context None certain data to pass
         @return New password value
     """
+
     def canviar_contrasenya(self, cursor, uid, ids, contrasenya, context=None):
         contrasenya_antiga = self.browse(cursor, uid, ids, context=context).contrasenya
 
@@ -115,7 +126,10 @@ class SomCrawlersConfig(osv.osv):
             self.write(cursor, uid, ids, {"contrasenya": contrasenya}, context=None)
             message = (
                 "S'ha actualitzat la contrasenya: \""
-                + str(contrasenya_antiga) + '" -> "' + str(contrasenya) + '"'
+                + str(contrasenya_antiga)
+                + '" -> "'
+                + str(contrasenya)
+                + '"'
             )
             self._log(cursor, uid, ids, message)
 
@@ -143,9 +157,21 @@ class SomCrawlersConfig(osv.osv):
                 "Torna a introduir un usuari diferent a l'anterior",
             )
         else:
-            self.write(cursor, uid, ids, {"usuari": usuari,}, context=None)
+            self.write(
+                cursor,
+                uid,
+                ids,
+                {
+                    "usuari": usuari,
+                },
+                context=None,
+            )
             message = (
-                "S'ha actualitzat l'usuari: \"" + str(usuari_antic) + '" -> "' + str(usuari) + '"'
+                "S'ha actualitzat l'usuari: \""
+                + str(usuari_antic)
+                + '" -> "'
+                + str(usuari)
+                + '"'
             )
             self._log(cursor, uid, ids, message)
 
@@ -169,7 +195,10 @@ class SomCrawlersConfig(osv.osv):
         else:
             self.write(cursor, uid, ids, {"days_of_margin": days}, context=None)
             message = (
-                "S'ha actualitzat els dies de marge: " + str(days_old) + " -> " + str(days)
+                "S'ha actualitzat els dies de marge: "
+                + str(days_old)
+                + " -> "
+                + str(days)
             )
             self._log(cursor, uid, ids, message)
 

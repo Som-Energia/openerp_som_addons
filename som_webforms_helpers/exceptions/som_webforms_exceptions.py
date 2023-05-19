@@ -1,10 +1,9 @@
-
 # -*- coding: utf-8 -*-
-from tools.translate import _
+
 
 class SomWebformsException(Exception):
     def __init__(self, text):
-        self.exc_type = 'error'
+        self.exc_type = "error"
         self.text = text
 
     @property
@@ -17,11 +16,11 @@ class SomWebformsException(Exception):
             error=self.text,
         )
 
+
 class TariffNonExists(SomWebformsException):
     def __init__(self):
-        super(TariffNonExists, self).__init__(
-            text="Tariff pricelist not found"
-        )
+        super(TariffNonExists, self).__init__(text="Tariff pricelist not found")
+
 
 class ContractWithoutModcons(SomWebformsException):
     def __init__(self):
@@ -29,8 +28,7 @@ class ContractWithoutModcons(SomWebformsException):
             text="Contract without modcontractual"
         )
 
+
 class InvalidModcons(SomWebformsException):
     def __init__(self):
-        super(InvalidModcons, self).__init__(
-            text="Contract with invalid modcons"
-        )
+        super(InvalidModcons, self).__init__(text="Contract with invalid modcons")

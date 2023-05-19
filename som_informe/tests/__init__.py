@@ -1,1 +1,1 @@
-from  test_wizard_create_technical_report import *
+from test_wizard_create_technical_report import *

@@ -5,16 +5,15 @@
     "version": "0-dev",
     "author": "Som Energia",
     "category": "Generic Modules",
-    "depends":[
+    "depends": [
         "base_extended",
         "poweremail",
     ],
     "init_xml": [],
-    "demo_xml":[
+    "demo_xml": [
         "demo/poweremail_demo_data.xml",
     ],
-    "update_xml":[
-    ],
+    "update_xml": [],
     "active": False,
-    "installable": True
+    "installable": True,
 }

@@ -21,5 +21,5 @@
         "generic_templates_data.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

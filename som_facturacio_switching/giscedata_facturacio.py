@@ -8,17 +8,17 @@ from tools.misc import cache
 
 class GiscedataFacturacioFactura(osv.osv):
     """Classe per la factura de comercialitzadora."""
-    _name = 'giscedata.facturacio.factura'
-    _inherit = 'giscedata.facturacio.factura'
+
+    _name = "giscedata.facturacio.factura"
+    _inherit = "giscedata.facturacio.factura"
 
     @cache(timeout=10)
-    def _fnc_per_enviar(self, cursor, uid, ids, field_name, args,
-                        context=None):
-        """Retorna si una factura està marcada per enviar o no.
-        """
-        res = dict([(x, 'email') for x in ids])
+    def _fnc_per_enviar(self, cursor, uid, ids, field_name, args, context=None):
+        """Retorna si una factura està marcada per enviar o no."""
+        res = dict([(x, "email") for x in ids])
 
-        cursor.execute("""
+        cursor.execute(
+            """
             select
               f.id,
               p.enviament
@@ -30,10 +30,13 @@ class GiscedataFacturacioFactura(osv.osv):
             where
               f.id in %s
               and p.state = 'baixa'
-        """, (tuple(ids), ))
+        """,
+            (tuple(ids),),
+        )
         res.update(dict([(x[0], x[1]) for x in cursor.fetchall()]))
 
-        cursor.execute("""
+        cursor.execute(
+            """
             select
               f.id,
               m.enviament
@@ -44,10 +47,13 @@ class GiscedataFacturacioFactura(osv.osv):
             where
               f.id in %s
               and f.data_final between m.data_inici and m.data_final
-        """, (tuple(ids), ))
+        """,
+            (tuple(ids),),
+        )
         res.update(dict([(x[0], x[1]) for x in cursor.fetchall()]))
 
-        cursor.execute("""
+        cursor.execute(
+            """
             select
               f.id,
               m.enviament
@@ -59,20 +65,21 @@ class GiscedataFacturacioFactura(osv.osv):
             where
               f.id in %s
               and i.date_invoice between m.data_inici and m.data_final
-        """, (tuple(ids), ))
+        """,
+            (tuple(ids),),
+        )
         res.update(dict([(x[0], x[1]) for x in cursor.fetchall()]))
         return res
 
-
     _columns = {
-        'per_enviar': fields.function(
+        "per_enviar": fields.function(
             _fnc_per_enviar,
             method=True,
-            type='selection',
-            selection=[('email', 'E-mail'), ('postal', 'Correu postal')],
-            string='Tipus d\'enviament',
+            type="selection",
+            selection=[("email", "E-mail"), ("postal", "Correu postal")],
+            string="Tipus d'enviament",
             store=True,
-            select=2
+            select=2,
         ),
     }
 

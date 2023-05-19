@@ -9,19 +9,21 @@ from yamlns import namespace as ns
 
 class report_webkit_html(report_sxw.rml_parse):
     def __init__(self, cursor, uid, name, context):
-        super(report_webkit_html, self).__init__(cursor, uid, name,
-                                                 context=context)
-        self.localcontext.update({
-            'cursor': cursor,
-            'uid': uid,
-            'addons_path': config['addons_path'],
-        })
+        super(report_webkit_html, self).__init__(cursor, uid, name, context=context)
+        self.localcontext.update(
+            {
+                "cursor": cursor,
+                "uid": uid,
+                "addons_path": config["addons_path"],
+            }
+        )
+
 
 webkit_report.WebKitParser(
-    'report.som.enviament.massiu',
-    'som.enviament.massiu',
-    'som_infoenergia/report/report_indexed_offer.mako',
-    parser=report_webkit_html
+    "report.som.enviament.massiu",
+    "som.enviament.massiu",
+    "som_infoenergia/report/report_indexed_offer.mako",
+    parser=report_webkit_html,
 )
 
 
@@ -35,25 +37,32 @@ class OnDemandDataGenerator:
         self.cache = {}
 
     def factory_data_extractor(self, component_name):
-        exec("from components."+component_name+" import "+component_name+";extractor = "+component_name+"."+component_name+"()")
+        exec (
+            "from components."
+            + component_name
+            + " import "
+            + component_name
+            + ";extractor = "
+            + component_name
+            + "."
+            + component_name
+            + "()"
+        )
         return extractor
 
     def __getattr__(self, name):
         if name not in self.cache.keys():
             extractor = self.factory_data_extractor(name)
             data = extractor.get_data(
-                self.cursor,
-                self.uid,
-                self.object,
-                self.extra_text,
-                self.context)
+                self.cursor, self.uid, self.object, self.extra_text, self.context
+            )
             self.cache[name] = ns.loads(ns(data).dump())
 
         return self.cache[name]
 
 
 class ReportIndexedOffer(osv.osv_memory):
-    _name = 'report.indexed.offer'
+    _name = "report.indexed.offer"
 
     def get_report_data(self, cursor, uid, objects, context=None):
         datas = []
@@ -70,5 +79,6 @@ class ReportIndexedOffer(osv.osv_memory):
 
     _columns = {}
     _defaults = {}
+
 
 ReportIndexedOffer()
