@@ -26,7 +26,6 @@ class powersms_tests(testing.OOTestCase):
             uid = txn.user
             psb = self.openerp.pool.get("powersms.smsbox")
             nsms_outbox_pre = psb.search(cursor, uid, [("folder", "=", "outbox")])
-            nsms_sent_pre = psb.search(cursor, uid, [("folder", "=", "sent")])
 
             psb.run_sms_scheduler(cursor, uid, {})
 
@@ -159,7 +158,8 @@ class powersms_send_wizard_tests(testing.OOTestCase):
 
     def test__powersm_send_wizard_save_to_smsbox__empty_numbers(self):
         """
-        Checks if when create_empty_number = False, and 'to' is empty, the sms is not created
+        Checks if when create_empty_number = False, and 'to' is empty,
+        the sms is not created
         :return:
         """
         with Transaction().start(self.database) as txn:

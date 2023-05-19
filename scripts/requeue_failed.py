@@ -18,8 +18,8 @@ EXECINFO_TO_DELETE = [
     "es mes petita que la data inicial",
     "ValueError: start date not found in coefficients",
     "No s'han trobat versions de preus",
-    "InFailedSqlTransaction: current transaction is aborted, commands ignored until end of transaction block",
-    "RepresenterError: ('cannot represent an object', <osv.orm.browse_null object at 0x7f3148f11a90>)",
+    "InFailedSqlTransaction: current transaction is aborted, commands ignored until end of transaction block",  # noqa: E501
+    "RepresenterError: ('cannot represent an object', <osv.orm.browse_null object at 0x7f3148f11a90>)",  # noqa: E501
 ]
 
 redis_conn = from_url(sys.argv[1])
@@ -37,9 +37,9 @@ def main(redis_conn, interval, max_attempts):
         for job_id in fq.get_job_ids():
             try:
                 job = Job.fetch(job_id)
-            except:
+            except Exception:
                 print(
-                    "Job {} not exist anymore. We will delete from FailedJobRegistry".format(
+                    "Job {} not exist anymore. We will delete from FailedJobRegistry".format(  # noqa: E501
                         job_id
                     )
                 )
@@ -50,9 +50,6 @@ def main(redis_conn, interval, max_attempts):
                     print("We cannot delete job in FailedJobRegistry")
                     print(job_id)
                     print(e)
-            # if not job.meta.get('requeue', True):
-            #    print("Job {} of Queue {} was marked as job.meta.requeue=false but we requeue it.".format(job_id, queue.name))
-            #    #continue
             if job.is_finished:
                 key_registry = fq.key
                 redis_conn.zrem(key_registry, job_id)

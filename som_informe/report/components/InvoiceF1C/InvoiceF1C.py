@@ -3,8 +3,6 @@ from ..component_utils import (
     dateformat,
 )
 
-# from .. .. ..erp.addons.gisce.GISCEMaster.giscedata_facturacio.defs import TIPO_FACTURA_SELECTION
-
 
 class InvoiceF1C:
     def __init__(self):

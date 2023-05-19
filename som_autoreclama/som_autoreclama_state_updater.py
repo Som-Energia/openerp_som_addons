@@ -46,7 +46,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                     atc_id, actual_state, next_state
                 )
                 msg += _(" - {}\n").format(message)
-            elif result == False:
+            elif result is False:
                 not_updated.append(atc_id)
                 msg += _(
                     "Cas ATC amb id {} no li toca canviar d'estat, estat actual: {}\n"
@@ -55,7 +55,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             else:
                 errors.append(atc_id)
                 msg += _(
-                    "Cas ATC amb id {} no ha canviat d'estat per error, estat actual: {}\n"
+                    "Cas ATC amb id {} no ha canviat d'estat per error, estat actual: {}\n"  # noqa: E501
                 ).format(atc_id, actual_state)
                 msg += _(" - {}\n").format(message)
 

@@ -39,10 +39,12 @@ class TableInvoices:
                 cursor, uid, lect_ids, ["name", "origen_comer_id", "origen_id"]
             )
             for lect in lect_vals:
-                # En funció dels origens, escrivim el text
-                # Si Estimada (40) o Sin Lectura (99) i Estimada (ES): Estimada Somenergia
-                # Si Estimada (40) o Sin Lectura (99) i F1/Q1/etc...(!ES): Estimada distribuïdora
-                # La resta: Real
+                """
+                En funció dels origens, escrivim el text
+                Si Estimada (40) o Sin Lectura (99) i Estimada (ES): Estimada Somenergia
+                Si Estimada (40) o Sin Lectura (99) i F1/Q1/etc...(!ES): Estimada distribuïdora
+                La resta: Real
+                """  # noqa: E501
                 origen_txt = "real"
                 if lect["origen_id"][0] in [estimada_id, sin_lectura_id]:
                     if lect["origen_comer_id"][0] == estimada_som_id:
@@ -95,7 +97,7 @@ class TableInvoices:
     def get_invoice_origin(self, cursor, uid, invoice):
         readings = {}
         lectures = invoice.lectures_energia_ids
-        if lectures != None:
+        if lectures is not None:
             for lectura in lectures:
                 origens = self.get_origen_lectura(cursor, uid, lectura)
                 if "(P1)" in lectura.name:

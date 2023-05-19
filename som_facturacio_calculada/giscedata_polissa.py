@@ -119,7 +119,7 @@ class GiscedataPolissaCalculada(osv.osv):
         data_ultima_lectura_factura_21 = add_days(data_ultima_lectura_factura, 21)
         if data_ultima_lectura_lectures >= data_ultima_lectura_factura_21:
             return False, _(
-                u", data de lectura calculada ({}) igual o major a data d'ultima factura no calculada + 21 ({})".format(
+                u", data de lectura calculada ({}) igual o major a data d'ultima factura no calculada + 21 ({})".format(  # noqa: E501
                     data_ultima_lectura_lectures, data_ultima_lectura_factura_21
                 )
             )
@@ -208,7 +208,7 @@ class GiscedataPolissaCalculada(osv.osv):
         if data_ultima_lect and data_ultima_lect < data_ultima_lectura_f1:
             self.retrocedir_lot(cursor, uid, _id, context)
             return _(
-                u"La pòlissa {} té lectura F1 amb data {} i data última factura {}.".format(
+                u"La pòlissa {} té lectura F1 amb data {} i data última factura {}.".format(  # noqa: E501
                     pol_name, data_ultima_lectura_f1, data_ultima_lect
                 )
             )
@@ -246,15 +246,15 @@ class GiscedataPolissaCalculada(osv.osv):
                 raise osv.except_osv(
                     _("Error"),
                     _(
-                        u"La pòlissa {} no pot generar lectures per error inesperat de wizard {}.".format(
-                            pol_name, str(e)
+                        u"La pòlissa {} no pot generar lectures per error inesperat de wizard.".format(  # noqa: E501
+                            pol_name
                         )
                     ),
                 )
             elif msg == "error":
                 return _(
-                    u"La pòlissa {} no pot generar lectures per error inesperat de wizard {}.".format(
-                        pol_name, str(e)
+                    u"La pòlissa {} no pot generar lectures per error inesperat de wizard.".format(  # noqa: E501
+                        pol_name
                     )
                 )
 

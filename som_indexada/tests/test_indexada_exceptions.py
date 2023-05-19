@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
-from ..exceptions.indexada_exceptions import IndexadaException, PolissaAlreadyIndexed, PolissaModconPending, PolissaNotActive, PolissaSimultaneousATR
+from ..exceptions.indexada_exceptions import (
+    IndexadaException,
+    PolissaAlreadyIndexed,
+    PolissaModconPending,
+    PolissaNotActive,
+    PolissaSimultaneousATR,
+)
 import unittest
 
 

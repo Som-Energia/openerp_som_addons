@@ -284,7 +284,7 @@ class TestWizardGestioTextToPolissa(testing.OOTestCaseWithCursor):
         wiz_id = wiz_o.create(self.cursor, self.uid, wiz_init, context=context)
 
         with self.assertRaises(osv.except_osv) as exception_context:
-            result = wiz_o.get_polisses_ids(
+            wiz_o.get_polisses_ids(
                 self.cursor, self.uid, [wiz_id], context=context
             )
 

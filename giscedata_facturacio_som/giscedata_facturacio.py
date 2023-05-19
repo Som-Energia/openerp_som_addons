@@ -44,7 +44,7 @@ class GiscedataFacturacio(osv.osv):
                         and field == "number"
                         and isinstance(match, (unicode, str))
                     ):
-                        if not "%" in match:
+                        if "%" not in match:
                             operator = "="
                         args[idx] = (field, operator, match)
                     if (
@@ -52,7 +52,7 @@ class GiscedataFacturacio(osv.osv):
                         and field == "origin"
                         and isinstance(match, (unicode, str))
                     ):
-                        if not "%" in match:
+                        if "%" not in match:
                             operator = "="
                         args[idx] = (field, operator, match)
         return super(GiscedataFacturacio, self).search(

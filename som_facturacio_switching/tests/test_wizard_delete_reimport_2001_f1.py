@@ -29,7 +29,7 @@ class TestWizardDeleteReimport2001f1(testing.OOTestCaseWithCursor):
         context = {"active_ids": [f1_id]}
         wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
 
-        result = wiz_o.delete_reimport(self.cursor, self.uid, [wiz_id], context=context)
+        wiz_o.delete_reimport(self.cursor, self.uid, [wiz_id], context=context)
         info = wiz_o.browse(self.cursor, self.uid, wiz_id).info
         self.assertEqual(info, "Errors:\nF1 amb origen 282302 no és erroni\n\n")
 
@@ -81,11 +81,11 @@ class TestWizardDeleteReimport2001f1(testing.OOTestCaseWithCursor):
         context = {"active_ids": [f1_id]}
         wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
 
-        result = wiz_o.delete_reimport(self.cursor, self.uid, [wiz_id], context=context)
+        wiz_o.delete_reimport(self.cursor, self.uid, [wiz_id], context=context)
         info = wiz_o.browse(self.cursor, self.uid, wiz_id).info
         self.assertEqual(
             info,
-            "Errors:\nPer l'origen 282302 hi ha un F1 correcte sense warning 2002, ID: {}\n"
+            "Errors:\nPer l'origen 282302 hi ha un F1 correcte sense warning 2002, ID: {}\n"  # noqa: E501
             "Per l'origen 282302 es podrien esborrar els F1 ns []\n\n".format(f1_id_2),
         )
 
@@ -168,11 +168,11 @@ class TestWizardDeleteReimport2001f1(testing.OOTestCaseWithCursor):
         context = {"active_ids": [f1_id]}
         wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
 
-        result = wiz_o.delete_reimport(self.cursor, self.uid, [wiz_id], context=context)
+        wiz_o.delete_reimport(self.cursor, self.uid, [wiz_id], context=context)
         info = wiz_o.browse(self.cursor, self.uid, wiz_id).info
         self.assertEqual(
             info,
-            "Errors:\nPer l'origen 282302 hi ha un F1 correcte sense warning 2002, ID: {}\n"
+            "Errors:\nPer l'origen 282302 hi ha un F1 correcte sense warning 2002, ID: {}\n"  # noqa: E501
             "Per l'origen 282302 es podrien esborrar els F1 ns [{}L]\n\n".format(
                 f1_id_2, f1_id_3
             ),
@@ -203,7 +203,7 @@ class TestWizardDeleteReimport2001f1(testing.OOTestCaseWithCursor):
         context = {"active_ids": [f1_id]}
         wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
 
-        result = wiz_o.delete_reimport(self.cursor, self.uid, [wiz_id], context=context)
+        wiz_o.delete_reimport(self.cursor, self.uid, [wiz_id], context=context)
         info = wiz_o.browse(self.cursor, self.uid, wiz_id).info
         self.assertEqual(info, "Errors:\nF1 amb origen 282302 no té error 2001\n\n")
 
@@ -255,15 +255,15 @@ class TestWizardDeleteReimport2001f1(testing.OOTestCaseWithCursor):
         context = {"active_ids": [f1_id]}
         wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
 
-        result = wiz_o.delete_reimport(self.cursor, self.uid, [wiz_id], context=context)
+        wiz_o.delete_reimport(self.cursor, self.uid, [wiz_id], context=context)
         info = wiz_o.browse(self.cursor, self.uid, wiz_id).info
         self.assertEqual(
             info,
-            "Errors:\nF1 amb origen 282302 té una factura de proveïdor no en esborrany\n\n",
+            "Errors:\nF1 amb origen 282302 té una factura de proveïdor no en esborrany\n\n",  # noqa: E501
         )
 
     @mock.patch(
-        "giscedata_facturacio_switching.wizard.giscedata_facturacio_switching_wizard.GiscedataFacturacioSwitchingWizard.sub_action_importar_f1"
+        "giscedata_facturacio_switching.wizard.giscedata_facturacio_switching_wizard.GiscedataFacturacioSwitchingWizard.sub_action_importar_f1"  # noqa: E501
     )
     def test_delete_reimport_delete(self, mocked):
         imd_obj = self.pool.get("ir.model.data")
@@ -326,7 +326,7 @@ class TestWizardDeleteReimport2001f1(testing.OOTestCaseWithCursor):
         context = {"active_ids": [f1_id]}
         wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
 
-        result = wiz_o.delete_reimport(self.cursor, self.uid, [wiz_id], context=context)
+        wiz_o.delete_reimport(self.cursor, self.uid, [wiz_id], context=context)
 
         post_f1_ids = f1_o.search(
             self.cursor,
@@ -351,6 +351,6 @@ class TestWizardDeleteReimport2001f1(testing.OOTestCaseWithCursor):
         f1 = f1_o.browse(self.cursor, self.uid, f1_id)
 
         self.assertEqual(
-            u'Reimportat mitjançant l\'acció de "(2001) Eliminar F1 mateix origen i reimportar"\n',
+            u'Reimportat mitjançant l\'acció de "(2001) Eliminar F1 mateix origen i reimportar"\n',  # noqa: E501
             f1.user_observations,
         )

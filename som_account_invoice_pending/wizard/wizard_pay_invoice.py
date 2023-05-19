@@ -12,7 +12,9 @@ class WizardPayInvoice(osv.osv_memory):
     _inherit = "facturacio.pay.invoice"
 
     def action_pay_and_reconcile(self, cursor, uid, ids, context=None):
-        """Enviament d'un avís en donar per pagades factures amb un estat pendent concret"""
+        """
+        Enviament d'un avís en donar per pagades factures amb un estat pendent concret
+        """
         if not context:
             context = {}
 

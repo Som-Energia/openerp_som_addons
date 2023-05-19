@@ -19,7 +19,7 @@ def crear_modcon(pool, cursor, uid, polissa_id, values, ini, fi):
 
     wz_id_mod = wz_crear_mc_obj.create(cursor, uid, params, ctx)
     wiz_mod = wz_crear_mc_obj.browse(cursor, uid, wz_id_mod, ctx)
-    res = wz_crear_mc_obj.onchange_duracio(
+    wz_crear_mc_obj.onchange_duracio(
         cursor, uid, [wz_id_mod], wiz_mod.data_inici, wiz_mod.duracio, ctx
     )
     wiz_mod.write({"data_inici": ini, "data_final": fi})

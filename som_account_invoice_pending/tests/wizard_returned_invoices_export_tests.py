@@ -37,7 +37,7 @@ class TestWizardReturnedInvoicesExport(testing.OOTestCase):
             )
 
             context = {"active_ids": [self.invoice_1_id, self.invoice_2_id]}
-            with self.assertRaises(except_osv) as cm:
+            with self.assertRaises(except_osv):
                 wiz_id = self.wiz_obj.create(cursor, uid, {})
                 self.wiz_obj.browse(cursor, uid, wiz_id)
                 self.wiz_obj.returned_invoices_export(

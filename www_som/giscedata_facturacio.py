@@ -26,7 +26,7 @@ class GiscedataFacturacioFactura(osv.osv):
         inv_data = inv_obj.browse(cursor, uid, inv_id)
         return self._www_estat_pagament_ov(cursor, uid, inv_data)
 
-    def www_estat_pagament_ov(self, cursor, uid, ids, context=None):
+    def www_estat_pagament_ov(self, cursor, uid, ids, context=None):  # noqa: F811
         """
         1)Si té estat oberta i té estat pedent (Correcte): 'EN_PROCES'
         2)Si té estat oberta i té estat pendent (llistat_NO_pagables): 'EN_PROCES'
@@ -36,7 +36,7 @@ class GiscedataFacturacioFactura(osv.osv):
         6)Si té estat realitzat i té estat pendent (llistat_Fraccionaments) 'EN_PROCES'
         7)Si té estat realitzat: 'PAGADA'
         8)Altrament: 'ERROR'
-        """
+        """  # noqa: E501
         cfg = self.pool.get("res.config")
         if isinstance(ids, (list, tuple)):
             ids = ids[0]

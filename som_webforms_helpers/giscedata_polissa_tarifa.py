@@ -39,7 +39,7 @@ class GiscedataPolissaTarifa(osv.osv):
                 'products': list of tuples (tipus, product_id) where tipus can be one key of _desc_tipus dictionary
             }
         This output format allows to recover correspondig products for a concrete pricelist version
-        """
+        """  # noqa: E501
         fact_obj = self.pool.get("giscedata.facturacio.factura")
         facturador_obj = self.pool.get("giscedata.facturacio.facturador")
         periode_productes = {}
@@ -143,7 +143,7 @@ class GiscedataPolissaTarifa(osv.osv):
     ):
         """
         Somenergia pricelist depends on state is INSULAR or PENINSULAR which is detrmined by municipi_id.
-        """
+        """  # noqa: E501
         municipi_obj = self.pool.get("res.municipi")
         pricelist_municipi = municipi_obj.filter_compatible_pricelists(
             cursor,
@@ -173,7 +173,7 @@ class GiscedataPolissaTarifa(osv.osv):
     ):
         """
         Some prices are calculated using other pricelists different from somenergia pricelists
-        """
+        """  # noqa: E501
         pricelist_general = [
             item for item in pricelist_list if item.name == "TARIFAS ELECTRICIDAD"
         ]
@@ -284,7 +284,7 @@ class GiscedataPolissaTarifa(osv.osv):
         Fiscal position depends on the contract.
         But when general prices are calculated fiscal position is different for CANARIAS(IGIC) and PENINSULA.
         Also because of a BOE fiscal position was reduced during some months.
-        """
+        """  # noqa: E501
         municipi_obj = self.pool.get("res.municipi")
         fp_obj = self.pool.get("account.fiscal.position")
 
@@ -336,7 +336,7 @@ class GiscedataPolissaTarifa(osv.osv):
         """
         Energy reactive prices are calculated using a pricelist different from somenergia pricelists.
         general_price_version_list_in_range contains pricelist versions in the range of somenergia pricelist dates.
-        """
+        """  # noqa: E501
         reactiva_prices = []
         general_price_version_list_in_range = [
             item
@@ -460,7 +460,7 @@ class GiscedataPolissaTarifa(osv.osv):
                 trace=self.traceback_info(e),
             )
 
-    def get_tariff_prices_by_range(
+    def get_tariff_prices_by_range(  # noqa: C901
         self,
         cursor,
         uid,
@@ -638,7 +638,7 @@ class GiscedataPolissaTarifa(osv.osv):
                                 cosfi_desc,
                                 cosfi_value,
                             ) in reactive_prices:
-                                if not cosfi_desc in preus[self._desc_tipus["tr"]]:
+                                if cosfi_desc not in preus[self._desc_tipus["tr"]]:
                                     preus[self._desc_tipus["tr"]][cosfi_desc] = {}
 
                                 preus[self._desc_tipus["tr"]][cosfi_desc][cosfi_value] = {
@@ -708,7 +708,7 @@ class GiscedataPolissaTarifa(osv.osv):
         except Exception as e:
             raise e
 
-    def get_tariff_prices(
+    def get_tariff_prices(  # noqa: C901
         self,
         cursor,
         uid,
@@ -878,7 +878,7 @@ class GiscedataPolissaTarifa(osv.osv):
                             reactive_prices = reactive_prices_without_taxes
 
                         for cosfi_price, unit, cosfi_desc, cosfi_value in reactive_prices:
-                            if not cosfi_desc in preus["tr"]:
+                            if cosfi_desc not in preus["tr"]:
                                 preus["tr"][cosfi_desc] = {}
 
                             preus["tr"][cosfi_desc][cosfi_value] = {
@@ -967,7 +967,7 @@ class GiscedataPolissaTarifa(osv.osv):
                 (43, False, 3.4, '2021-06-01', '2023-11-21'),
                 (1, False, 3.4, '2019-09-02', '2021-05-31'),
                 (1, False, 6.6, '2011-11-22', '2019-09-01')
-        """
+        """  # noqa: E501
         ordered_modcon_data = sorted(
             modcon_data, key=lambda element: (element[3], element[4])
         )
@@ -1025,7 +1025,7 @@ class GiscedataPolissaTarifa(osv.osv):
             values: a dictionary with 'current' and 'history' items
             'current': can be {} or prices of current price list
             'history': a list of dictionaries one for each pricelist version
-        """
+        """  # noqa: E501
         pol_obj = self.pool.get("giscedata.polissa")
         rp_obj = self.pool.get("res.partner")
 

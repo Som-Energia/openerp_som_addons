@@ -98,7 +98,7 @@ class Soml10nEsAeatMod347Report(testing.OOTestCase):
             self.assertFalse(ret_value)
 
     @mock.patch(
-        "som_l10n_ES_aeat_mod347.som_l10n_ES_aeat_mod347.SomL10nEsAeatMod347Helper.send_email"
+        "som_l10n_ES_aeat_mod347.som_l10n_ES_aeat_mod347.SomL10nEsAeatMod347Helper.send_email"  # noqa: E501
     )
     def test_notify_clients_from_347_report__when_report_with_client_partners(
         self, mock_function
@@ -169,7 +169,7 @@ class Soml10nEsAeatMod347Partner(testing.OOTestCase):
             self.assertFalse(ret_value)
 
     @mock.patch(
-        "som_l10n_ES_aeat_mod347.som_l10n_ES_aeat_mod347.SomL10nEsAeatMod347Helper.send_email"
+        "som_l10n_ES_aeat_mod347.som_l10n_ES_aeat_mod347.SomL10nEsAeatMod347Helper.send_email"  # noqa: E501
     )
     def test_notify_clients_from_347_partner__when_report_with_partners(
         self, mock_function

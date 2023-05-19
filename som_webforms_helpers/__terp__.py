@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "Webforms Helpers for Som Energia",
-    "description": """Aquest mòdul afegeix funcions per donar suport a l'API de Webforms""",
+    "description": """Aquest mòdul afegeix funcions per donar suport a l'API de Webforms""",  # noqa: E501
     "version": "2.103.13",
     "author": "SOMEnergia",
     "category": "Master",

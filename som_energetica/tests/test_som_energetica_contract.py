@@ -101,10 +101,6 @@ class EnergeticaTests(testing.OOTestCase):
             bank_obj = self.openerp.pool.get("res.partner.bank")
             imd_obj = self.openerp.pool.get("ir.model.data")
 
-            cat_energetica_id = imd_obj.get_object_reference(
-                cursor, uid, "som_energetica", "res_partner_category_energetica"
-            )[1]
-
             contract_id = imd_obj.get_object_reference(
                 cursor, uid, "giscedata_polissa", "polissa_0001"
             )[1]
@@ -152,10 +148,6 @@ class EnergeticaTests(testing.OOTestCase):
             address_obj = self.openerp.pool.get("res.partner.address")
             bank_obj = self.openerp.pool.get("res.partner.bank")
             imd_obj = self.openerp.pool.get("ir.model.data")
-
-            cat_energetica_id = imd_obj.get_object_reference(
-                cursor, uid, "som_energetica", "res_partner_category_energetica"
-            )[1]
 
             contract_id = imd_obj.get_object_reference(
                 cursor, uid, "giscedata_polissa", "polissa_0001"

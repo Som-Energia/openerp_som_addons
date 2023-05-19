@@ -82,7 +82,8 @@ class GiscedataFacturacioFacturador(osv.osv):
                         # factura rel·lacionada amb el producte donatiu
                         ctx.update({"lang": fact.partner_id.lang})
                         p_br = product_obj.browse(cursor, uid, pdona_id, ctx)
-                        # identificar la línia d'energia excloent el preu del MAG (RD 10/2022)
+                        # identificar la línia d'energia excloent
+                        # el preu del MAG (RD 10/2022)
                         kwh = sum(
                             [
                                 x.quantity

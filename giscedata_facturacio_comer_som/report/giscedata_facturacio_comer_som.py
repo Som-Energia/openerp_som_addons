@@ -102,6 +102,6 @@ class FacturaReportSomWebkitParserHTML(webkit_report.WebKitParser):
 FacturaReportSomWebkitParserHTML(
     "report.giscedata.facturacio.factura",
     "giscedata.facturacio.factura",
-    "giscedata_facturacio_comer_som/report/report_giscedata_facturacio_factura_comer.mako",
+    "giscedata_facturacio_comer_som/report/report_giscedata_facturacio_factura_comer.mako",  # noqa: E501
     parser=report_webkit_html,
 )

@@ -1,7 +1,7 @@
 import configdb
 from erppeek import Client
 
-O = Client(**configdb.erppeek)
+O = Client(**configdb.erppeek)  # noqa: E741
 
 msgs = O.PoweremailMailbox.search([("folder", "=", "drafts")])
 

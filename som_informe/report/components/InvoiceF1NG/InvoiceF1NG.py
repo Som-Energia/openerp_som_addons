@@ -30,9 +30,6 @@ class InvoiceF1NG:
 
         result = {}
         f1_obj = wiz.pool.get("giscedata.facturacio.importacio.linia")
-        facturacio_imp_linia_obj = wiz.pool.get(
-            "giscedata.facturacio.importacio.linia.factura"
-        )
 
         search_params = [
             ("cups_id.id", "=", invoice.cups_id.id),

@@ -479,7 +479,7 @@ class SomInfoenergiaLotEnviament(osv.osv):
             "poweremail.templates",
             "Plantilla del correu del lot",
             required=True,
-            domain="[('object_name.model', 'in', ['som.enviament.massiu','som.infoenergia.enviament'])]",
+            domain="[('object_name.model', 'in', ['som.enviament.massiu','som.infoenergia.enviament'])]",  # noqa: E501
         ),
         "total_env_csv": fields.function(
             _ff_totals,
@@ -509,7 +509,7 @@ class SomInfoenergiaLotEnviament(osv.osv):
             readonly=True,
             type="integer",
             method=True,
-            help="S'ha realitzat l'acció d'enviar i el procés en segon pla té la tasca pendent",
+            help="S'ha realitzat l'acció d'enviar i el procés en segon pla té la tasca pendent",  # noqa: E501
         ),
         "total_oberts": fields.function(
             _ff_totals,
@@ -529,7 +529,7 @@ class SomInfoenergiaLotEnviament(osv.osv):
         "total_preesborrany": fields.function(
             _ff_totals,
             string="Enviaments en pre-esborrany",
-            help="Enviaments que s'han creat des d'una pòlissa i no s'han descarregat en cap CSV",
+            help="Enviaments que s'han creat des d'una pòlissa i no s'han descarregat en cap CSV",  # noqa: E501
             readonly=True,
             type="integer",
             method=True,
@@ -540,7 +540,7 @@ class SomInfoenergiaLotEnviament(osv.osv):
             readonly=True,
             type="integer",
             method=True,
-            help="Ja sigui perquè la pòlissa té l'enviament deshabilitat, s'ha cancel·lat a través d'una acció...",
+            help="Ja sigui perquè la pòlissa té l'enviament deshabilitat, s'ha cancel·lat a través d'una acció...",  # noqa: E501
         ),
         "total_baixa": fields.function(
             _ff_totals,
@@ -563,7 +563,7 @@ class SomInfoenergiaLotEnviament(osv.osv):
             readonly=True,
             type="float",
             method=True,
-            help="Indica quants enviaments s'han trobat en algun CSV descarregat de Beedata",
+            help="Indica quants enviaments s'han trobat en algun CSV descarregat de Beedata",  # noqa: E501
         ),
         "pdf_download_progress": fields.function(
             _ff_progress,
@@ -639,7 +639,7 @@ class SomInfoenergiaLotEnviament(osv.osv):
         ),
         "total_env_csv_in_search": fields.function(
             _ff_totals,
-            string="Enviaments totals informats en algun CSV descarregat de Beedata trobats en cerca",
+            string="Enviaments totals informats en algun CSV descarregat de Beedata trobats en cerca",  # noqa: E501
             readonly=True,
             type="integer",
             method=True,

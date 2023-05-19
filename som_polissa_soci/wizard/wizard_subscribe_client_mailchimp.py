@@ -75,7 +75,7 @@ class WizardSubscribeClientMailchimp(osv.osv_memory):
 
     _defaults = {
         "info": _(
-            u'Aquest assitent subscriu el Client a la llista de Mailchimp de "Clients No Socis"'
+            u'Aquest assitent subscriu el Client a la llista de Mailchimp de "Clients No Socis"'  # noqa: E501
         ),
         "state": lambda *a: "init",
     }

@@ -53,7 +53,7 @@ class TestsEscullLlistaPreus(testing.OOTestCase):
             pol.cups.id_municipi.subsistema_id,
             "code",
             new_callable=PropertyMock(return_value="PE"),
-        ) as mock:
+        ):
             result = pol.escull_llista_preus(pricelist_list)
 
             # pricelist_20A_SOM is the first one
@@ -67,7 +67,7 @@ class TestsEscullLlistaPreus(testing.OOTestCase):
             pol.cups.id_municipi.subsistema_id,
             "code",
             new_callable=PropertyMock(return_value="TF"),
-        ) as mock:
+        ):
             result = pol.escull_llista_preus(pricelist_list)
 
             # pricelist_20A_SOM_INSULAR is the second one
@@ -83,7 +83,7 @@ class TestsEscullLlistaPreus(testing.OOTestCase):
             pol.cups.id_municipi.subsistema_id,
             "code",
             new_callable=PropertyMock(return_value="TF"),
-        ) as mock:
+        ):
 
             default_pricelist_id = imd_obj.get_object_reference(
                 self.cursor,

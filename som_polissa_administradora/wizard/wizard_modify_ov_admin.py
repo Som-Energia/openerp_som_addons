@@ -301,7 +301,7 @@ class WizardModifyOVAdmin(osv.osv_memory):
                 old_administradora_name = partner_obj.read(
                     cursor, uid, old_administradora_id, ["name"]
                 )["name"]
-                msg = u"- S'ha desassignat el partner '{}' (ID {}) de la pòlissa {}\n".format(
+                msg = u"- S'ha desassignat el partner '{}' (ID {}) de la pòlissa {}\n".format(  # noqa: E501
                     old_administradora_name, old_administradora_id, pol.name
                 )
 
@@ -343,8 +343,8 @@ class WizardModifyOVAdmin(osv.osv_memory):
         "claimant": fields.many2one("res.partner", "Sol·licitant"),
         "is_legal_representative": fields.boolean(
             "Representant legal",
-            help=u"Si s'activa, es deixarà una nota a la fitxa del titular amb el nom i VAT "
-            + u"de l'Administradora OV, especificant que aquesta última és la representant "
+            help=u"Si s'activa, es deixarà una nota a la fitxa del titular amb el nom i VAT "  # noqa: E501
+            + u"de l'Administradora OV, especificant que aquesta última és la representant "  # noqa: E501
             + u"legal del titular.",
         ),
         "administradora_permissions": fields.selection(

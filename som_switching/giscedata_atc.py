@@ -52,7 +52,7 @@ class GiscedataAtc(osv.osv):
     def unlink(self, cursor, uid, ids, context=None):
         return self.case_cancel(cursor, uid, ids, context)
 
-    def case_cancel(self, cursor, uid, ids, *args):
+    def case_cancel(self, cursor, uid, ids, *args):  # noqa: C901
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
 
@@ -72,12 +72,12 @@ class GiscedataAtc(osv.osv):
                 atc.state == "pending"
                 and atc.process_step == "01"
                 and r1
-                and r1.enviament_pendent == False
+                and r1.enviament_pendent is False
             ):
                 raise osv.except_osv(
                     _(u"Warning"),
                     _(
-                        u"Cas ATC {} no es pot cancel·lar: R1 01 està pendent del pas finalitzador"
+                        u"Cas ATC {} no es pot cancel·lar: R1 01 està pendent del pas finalitzador"  # noqa: E501
                     ).format(atc_id),
                 )
 
@@ -87,7 +87,7 @@ class GiscedataAtc(osv.osv):
                     raise osv.except_osv(
                         _(u"Warning"),
                         _(
-                            u"Cas ATC {} no es pot cancel·lar: R1 02 l'heu de revisar i tancar"
+                            u"Cas ATC {} no es pot cancel·lar: R1 02 l'heu de revisar i tancar"  # noqa: E501
                         ).format(atc_id),
                     )
 
@@ -95,7 +95,7 @@ class GiscedataAtc(osv.osv):
                     raise osv.except_osv(
                         _(u"Warning"),
                         _(
-                            u"Cas ATC {} no es pot cancel·lar: R1 02 està pendent del pas finalitzador"
+                            u"Cas ATC {} no es pot cancel·lar: R1 02 està pendent del pas finalitzador"  # noqa: E501
                         ).format(atc_id),
                     )
 
@@ -111,7 +111,7 @@ class GiscedataAtc(osv.osv):
                 raise osv.except_osv(
                     _(u"Warning"),
                     _(
-                        u"Cas ATC {} no es pot cancel·lar: R1 03 està pendent del pas finalitzador"
+                        u"Cas ATC {} no es pot cancel·lar: R1 03 està pendent del pas finalitzador"  # noqa: E501
                     ).format(atc_id),
                 )
 
@@ -119,7 +119,7 @@ class GiscedataAtc(osv.osv):
                 raise osv.except_osv(
                     _(u"Warning"),
                     _(
-                        u"Cas ATC {} no es pot cancel·lar: R1 04 en estat Obert - ERROR MANUAL -"
+                        u"Cas ATC {} no es pot cancel·lar: R1 04 en estat Obert - ERROR MANUAL -"  # noqa: E501
                     ).format(atc_id),
                 )
 
@@ -136,14 +136,14 @@ class GiscedataAtc(osv.osv):
                     raise osv.except_osv(
                         _(u"Warning"),
                         _(
-                            u"Cas ATC {} no es pot cancel·lar: R1 05 l'heu de revisar i tancar - Error manual R1 no oberta"
+                            u"Cas ATC {} no es pot cancel·lar: R1 05 l'heu de revisar i tancar - Error manual R1 no oberta"  # noqa: E501
                         ).format(atc_id),
                     )
                 else:
                     raise osv.except_osv(
                         _(u"Warning"),
                         _(
-                            u"Cas ATC {} no es pot cancel·lar: R1 05 l'heu de revisar i tancar"
+                            u"Cas ATC {} no es pot cancel·lar: R1 05 l'heu de revisar i tancar"  # noqa: E501
                         ).format(atc_id),
                     )
 
@@ -151,7 +151,7 @@ class GiscedataAtc(osv.osv):
                 raise osv.except_osv(
                     _(u"Warning"),
                     _(
-                        u"Cas ATC {} no es pot cancel·lar: R1 08 no pots cancel·lar una cancel·lació, cal esperar a rebre pas 09 de distribuïdora"
+                        u"Cas ATC {} no es pot cancel·lar: R1 08 no pots cancel·lar una cancel·lació, cal esperar a rebre pas 09 de distribuïdora"  # noqa: E501
                     ).format(atc_id),
                 )
 
@@ -160,14 +160,14 @@ class GiscedataAtc(osv.osv):
                     raise osv.except_osv(
                         _(u"Warning"),
                         _(
-                            u"Cas ATC {} no es pot cancel·lar: R1 09 de rebuig no es pot cancel·lar ni tancar"
+                            u"Cas ATC {} no es pot cancel·lar: R1 09 de rebuig no es pot cancel·lar ni tancar"  # noqa: E501
                         ).format(atc_id),
                     )
                 else:
                     raise osv.except_osv(
                         _(u"Warning"),
                         _(
-                            u"Cas ATC {} no es pot cancel·lar: R1 09 d'acceptació s'ha de tancar i no cancel·lar"
+                            u"Cas ATC {} no es pot cancel·lar: R1 09 d'acceptació s'ha de tancar i no cancel·lar"  # noqa: E501
                         ).format(atc_id),
                     )
 
@@ -175,12 +175,12 @@ class GiscedataAtc(osv.osv):
                 raise osv.except_osv(
                     _(u"Warning"),
                     _(
-                        u"Cas ATC {} no es pot cancel·lar: L'estat no és Pendent, Esborrany o Obert"
+                        u"Cas ATC {} no es pot cancel·lar: L'estat no és Pendent, Esborrany o Obert"  # noqa: E501
                     ).format(atc_id),
                 )
 
             cancel_ids.append(atc_id)
-            if atc.process_step == "01" and r1 and r1.enviament_pendent == True:
+            if atc.process_step == "01" and r1 and r1.enviament_pendent is True:
                 cancel_r1_ids.append(r1.id)
 
         if cancel_ids:

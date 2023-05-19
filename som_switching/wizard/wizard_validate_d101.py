@@ -57,7 +57,7 @@ class GiscedataSwitchingWizardValidateD101(osv.osv_memory):
         Returns a tuple with 2 values:
             - If the D102 is a rejection step , returns (D102_ID, None)
             - If the D102 is an accepted step, returns (D102_ID, M1_ID)
-        """
+        """  # noqa: E501
         if not context:
             context = {}
 

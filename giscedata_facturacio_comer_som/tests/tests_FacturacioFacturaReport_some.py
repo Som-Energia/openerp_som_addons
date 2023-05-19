@@ -180,9 +180,6 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
         self.get_fixture("giscedata_polissa", "polissa_0001")
 
         print "+-" * 50
-        print f.polissa_id
-        print f.polissa_id.soci
-        print f.polissa_id.id
 
         p = self.partner_obj.browse(self.cursor, self.uid, 23)
         self.partner_obj.write(self.cursor, self.uid, p.id, {"ref": "S019753"})
@@ -194,7 +191,6 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
             polissa.return_value = "S019753"
 
             print "*" * 50
-            print f.polissa_id.soci
 
             result = self.r_obj.get_component_logo_data(**self.bfp(f_id))
             self.assertYamlfy(result)
@@ -653,7 +649,7 @@ class Tests_FacturacioFacturaReport_contract_data_component(
                 "pricelist": u"TARIFAS ELECTRICIDAD",
                 "autoconsum_cau": "",
                 "is_autoconsum_colectiu": False,
-                "cups_direction": u"carrer inventat 1 1 1 1 aclaridor 00001 (Poble de Prova)",
+                "cups_direction": u"carrer inventat 1 1 1 1 aclaridor 00001 (Poble de Prova)",  # noqa: E501
                 "autoconsum_colectiu_repartiment": 100.0,
                 "cnae": u"0111",
                 "power_invoicing_type": True,
@@ -703,7 +699,7 @@ class Tests_FacturacioFacturaReport_contract_data_component(
                 "pricelist": u"TARIFAS ELECTRICIDAD",
                 "autoconsum_cau": u"ES0318363477145938GEA000",
                 "is_autoconsum_colectiu": False,
-                "cups_direction": u"carrer inventat 1 1 1 1 aclaridor 00001 (Poble de Prova)",
+                "cups_direction": u"carrer inventat 1 1 1 1 aclaridor 00001 (Poble de Prova)",  # noqa: E501
                 "autoconsum_colectiu_repartiment": 100.0,
                 "cnae": u"0111",
                 "power_invoicing_type": False,
@@ -1588,7 +1584,7 @@ class Tests_FacturacioFacturaReport_invoice_details_generation(
         "get_autoconsum_excedents_product_id",
     )
     @mock.patch.object(giscedata_facturacio_report, "te_autoconsum")
-    def test__som_report_comp_invoice_details_generation__with_generation_lines_without_auto(
+    def test__som_report_comp_invoice_details_generation__with_generation_lines_without_auto(  # noqa: E501
         self,
         te_autoconsum_mock_function,
         get_autoconsum_excedents_product_id_mock_function,
@@ -2031,7 +2027,7 @@ class Tests_FacturacioFacturaReport_maximeter_readings_table(
     @mock.patch.object(
         giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_readings_data"
     )
-    def test__som_report_comp_maximeter_readings_table__with_readings_without_exces_potencia(
+    def test__som_report_comp_maximeter_readings_table__with_readings_without_exces_potencia(  # noqa: E501
         self,
         get_readings_data_mock_function,
         is_visible_reactive_mock_function,
@@ -2584,7 +2580,7 @@ class Tests_FacturacioFacturaReport_invoice_details_td(
     @mock.patch.object(
         giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_atr_price"
     )
-    def test__get_sub_component_invoice_details_td_data_4_power_lines_2_periods_2_blocks_incomplete(
+    def test__get_sub_component_invoice_details_td_data_4_power_lines_2_periods_2_blocks_incomplete(  # noqa: E501
         self, get_atr_price_mock_function, is_2XTD_mock_function
     ):
         get_atr_price_mock_function.return_value = 10.0
@@ -2716,7 +2712,7 @@ class Tests_FacturacioFacturaReport_invoice_details_td(
     @mock.patch.object(
         giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_atr_price"
     )
-    def test__get_sub_component_invoice_details_td_data_4_power_lines_3_periods_2_blocks_incomplete(
+    def test__get_sub_component_invoice_details_td_data_4_power_lines_3_periods_2_blocks_incomplete(  # noqa: E501
         self, get_atr_price_mock_function, is_2XTD_mock_function
     ):
         get_atr_price_mock_function.return_value = 10.0
@@ -2876,7 +2872,7 @@ class Tests_FacturacioFacturaReport_invoice_details_td(
     @mock.patch.object(
         giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_atr_price"
     )
-    def test__get_sub_component_invoice_details_td_power_data_6_power_lines_6_periods_1_block(
+    def test__get_sub_component_invoice_details_td_power_data_6_power_lines_6_periods_1_block(  # noqa: E501
         self, get_atr_price_mock_function, is_2XTD_mock_function
     ):
         get_atr_price_mock_function.return_value = 10.0
@@ -3076,7 +3072,7 @@ class Tests_FacturacioFacturaReport_invoice_details_td(
     @mock.patch.object(
         giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_atr_price"
     )
-    def test__get_sub_component_invoice_details_td_power_data_12_power_lines_6_periods_2_block(
+    def test__get_sub_component_invoice_details_td_power_data_12_power_lines_6_periods_2_block(  # noqa: E501
         self, get_atr_price_mock_function, is_2XTD_mock_function
     ):
         get_atr_price_mock_function.return_value = 10.0

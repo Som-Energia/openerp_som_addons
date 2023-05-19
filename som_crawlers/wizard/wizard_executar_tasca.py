@@ -14,7 +14,9 @@ class WizardExecutarTasca(osv.osv_memory):
     # Module name
     _name = "wizard.executar.tasca"
 
-    """Function that gets gets that task, task result and task step, and executes a task  """
+    """
+    Function that gets gets that task, task result and task step, and executes a task
+    """
 
     def executar_tasca(self, cursor, uid, ids, context=None):  # tasca individual
         # obtenim l'objecte tasca
@@ -39,7 +41,7 @@ class WizardExecutarTasca(osv.osv_memory):
         for id in active_ids:
             # obtenim una tasca
             task = task_obj.browse(cursor, uid, id)
-            if task.data_proxima_execucio == False:
+            if task.data_proxima_execucio is False:
                 task_obj.write(
                     cursor,
                     uid,
@@ -47,7 +49,7 @@ class WizardExecutarTasca(osv.osv_memory):
                     {"data_proxima_execucio": datetime.now().strftime("%Y-%m-%d_%H:%M")},
                 )
             if (
-                task.data_proxima_execucio != False
+                task.data_proxima_execucio is not False
                 and datetime.strptime(task.data_proxima_execucio, "%Y-%m-%d %H:%M:%S")
                 <= datetime.now()
             ):

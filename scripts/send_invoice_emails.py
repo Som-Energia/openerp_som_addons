@@ -48,7 +48,7 @@ def send_emails():
         logger.info(wiz.info)
         sys.stdout.write(wiz.info)
         sys.stdout.write("\n")
-        res = c.WizardFacturesPerEmail.action_enviar_lot_per_mail(
+        c.WizardFacturesPerEmail.action_enviar_lot_per_mail(
             [wiz.id], context=context
         )
         wiz = c.WizardFacturesPerEmail.get(wiz.id)

@@ -6,7 +6,6 @@ import tempfile
 import shutil
 import base64
 from scp import SCPClient
-import shutil
 
 from autoworker import AutoWorker
 from oorq.decorators import job, create_jobs_group
@@ -115,7 +114,7 @@ class SomInfoenergiaEnviament(osv.osv):
 
         if not env.polissa_id:
             env.write({"estat": "error"})
-            message = u"ERROR: No es pot descarregar el PDF perque l'enviament no té cap pòlissa associada"
+            message = u"ERROR: No es pot descarregar el PDF perque l'enviament no té cap pòlissa associada"  # noqa: E501
             self.add_info_line(cursor, uid, ids, message, context)
             return
         if env.estat not in to_download:
@@ -362,10 +361,6 @@ class SomInfoenergiaEnviament(osv.osv):
         return True
 
     def resend_email(self, cursor, uid, id, context=None):
-        md_obj = self.pool.get("ir.model.data")
-        view_id = md_obj.get_object_reference(
-            cursor, uid, "poweremail", "poweremail_mailbox_form"
-        )[1]
         mail_id = self.read(cursor, uid, id[0], ["mail_id"])["mail_id"][0]
         return {
             "name": "Reenviar",
@@ -386,7 +381,7 @@ class SomInfoenergiaEnviament(osv.osv):
         gp_obj = self.pool.get("giscedata.polissa")
         for item in ids:
             pol = self.read(cursor, uid, item, ["polissa_id"])
-            if not "polissa_id" in pol or not pol["polissa_id"]:
+            if "polissa_id" not in pol or not pol["polissa_id"]:
                 res[item] = False
             else:
                 auto_type = gp_obj.read(

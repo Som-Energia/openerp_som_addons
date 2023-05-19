@@ -31,7 +31,7 @@ class LotEnviamentTests(testing.OOTestCase):
         return results
 
     @mock.patch(
-        "som_infoenergia.som_infoenergia_lot.SomInfoenergiaLotEnviament.create_enviaments_from_csv"
+        "som_infoenergia.som_infoenergia_lot.SomInfoenergiaLotEnviament.create_enviaments_from_csv"  # noqa: E501
     )
     def test_create_enviaments_from_csv_file(self, mocked_create_enviaments_from_csv):
         imd_obj = self.openerp.pool.get("ir.model.data")
@@ -61,8 +61,8 @@ class LotEnviamentTests(testing.OOTestCase):
             {},
         )
 
-    @mock.patch(
-        "som_infoenergia.som_infoenergia_lot.SomInfoenergiaLotEnviament.create_enviaments_from_csv"
+    @mock.patch(  # noqa: F811
+        "som_infoenergia.som_infoenergia_lot.SomInfoenergiaLotEnviament.create_enviaments_from_csv"  # noqa: E501
     )
     def test_create_enviaments_from_csv_file(self, mocked_create_enviaments_from_csv):
         imd_obj = self.openerp.pool.get("ir.model.data")
@@ -401,7 +401,7 @@ class LotEnviamentTests(testing.OOTestCase):
         )
         self.assertEqual(len(post_enviaments), 1)
 
-    def test_create_single_enviament_from_object_lot_tipus_altres_from_partner_already_exist(
+    def test_create_single_enviament_from_object_lot_tipus_altres_from_partner_already_exist(  # noqa: E501
         self,
     ):
         imd_obj = self.openerp.pool.get("ir.model.data")

@@ -239,7 +239,7 @@ class WizardChangeToIndexada(osv.osv_memory):
                     "coeficient_d": coefs["d"],
                 }
             )
-        with AsyncMode("sync") as asmode:
+        with AsyncMode("sync"):
             new_modcon_id = modcon_obj.create(cursor, uid, new_modcon_vals)
 
             modcon_obj.write(

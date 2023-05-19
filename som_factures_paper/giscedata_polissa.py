@@ -3,7 +3,9 @@ from osv import osv, fields
 
 
 class GiscedataPolissa(osv.osv):
-    """Pòlissa per afegir els camps de necessita rebut amb la factura en paper i observacions."""
+    """
+    Pòlissa per afegir els camps de necessita rebut amb la factura en paper i observacions.
+    """  # noqa: E501
 
     _name = "giscedata.polissa"
     _inherit = "giscedata.polissa"

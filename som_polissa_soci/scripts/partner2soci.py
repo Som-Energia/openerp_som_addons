@@ -3,7 +3,7 @@ from erppeek import Client
 
 dbname, port, user, pwd = sys.argv[1:]
 
-O = Client("http://localhost:{0}".format(port), dbname, user, pwd)
+O = Client("http://localhost:{0}".format(port), dbname, user, pwd)  # noqa: E741
 
 soci_category = O.ResPartnerCategory.search([("name", "=", "Soci")])
 

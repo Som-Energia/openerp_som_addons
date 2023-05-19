@@ -8,7 +8,7 @@ Reimporta fitxers ZIPs trobats en Resultats de som_crawlers que han acabat amb F
 Aquest script s'ha d'executar després de la pimera onada de crawlers (7 hores)
 """
 
-O = Client(**dbconfig.erppeek)
+O = Client(**dbconfig.erppeek)  # noqa: E741
 
 
 # Obtenir la llista de resultats a tractar

@@ -58,10 +58,12 @@ class InvoiceFE:
                 cursor, uid, lect_ids, ["name", "origen_comer_id", "origen_id"]
             )
             for lect in lect_vals:
-                # En funció dels origens, escrivim el text
-                # Si Estimada (40) o Sin Lectura (99) i Estimada (ES): Estimada Somenergia
-                # Si Estimada (40) o Sin Lectura (99) i F1/Q1/etc...(!ES): Estimada distribuïdora
-                # La resta: Real
+                """
+                En funció dels origens, escrivim el text
+                Si Estimada (40) o Sin Lectura (99) i Estimada (ES): Estimada Somenergia
+                Si Estimada (40) o Sin Lectura (99) i F1/Q1/etc...(!ES): Estimada distribuïdora
+                La resta: Real
+                """  # noqa: E501
                 origen_txt = "real"
                 if lect["origen_id"][0] in [estimada_id, sin_lectura_id]:
                     if lect["origen_comer_id"][0] == estimada_som_id:
@@ -108,7 +110,7 @@ class InvoiceFE:
         result["other_concepts"] = []
         altres_lines = [
             l
-            for l in invoice.linia_ids
+            for l in invoice.linia_ids  # noqa: E741
             if l.tipus in ("altres", "cobrament")
             and l.invoice_line_id.product_id.code
             not in ("DN01", "BS01", "DESC1721", "DESC1721ENE", "DESC1721POT")
@@ -156,7 +158,7 @@ class InvoiceFE:
             result["lectures"].append(dict_lectura)
 
         excess_lines = {"P1": 0, "P2": 0, "P3": 0, "P4": 0, "P5": 0, "P6": 0}
-        lines = [l for l in invoice.linia_ids if l.tipus == "exces_potencia"]
+        lines = [l for l in invoice.linia_ids if l.tipus == "exces_potencia"]  # noqa: E741, E501
         result["maximetre"] = False
         if lines:
             result["maximetre"] = True

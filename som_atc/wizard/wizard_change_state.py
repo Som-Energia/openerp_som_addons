@@ -94,7 +94,7 @@ class WizardAtcMultiChange(osv.osv_memory):
                 noti_pendent = sw_obj.read(cursor, uid, int(sw_id), [])[
                     "notificacio_pendent"
                 ]
-                res = sw_obj.notifica_a_client(
+                sw_obj.notifica_a_client(
                     cursor,
                     uid,
                     int(sw_id),
@@ -106,7 +106,7 @@ class WizardAtcMultiChange(osv.osv_memory):
                         d101_obj.write(
                             cursor, uid, d101_ids[0], {"notificacio_pendent": True}
                         )
-                        res = sw_obj.notifica_a_client(
+                        sw_obj.notifica_a_client(
                             cursor,
                             uid,
                             int(sw_id),

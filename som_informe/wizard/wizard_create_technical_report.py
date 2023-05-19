@@ -220,7 +220,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
         }
 
     # data generation
-    def get_data(self, cursor, uid, id, context=None):
+    def get_data(self, cursor, uid, id, context=None):  # noqa: C901
         if not context:
             context = {}
 
@@ -358,7 +358,7 @@ class WizardCreateTechnicalReport(osv.osv_memory):
             + component_name
             + "()"
         )
-        return extractor
+        return extractor  # noqa: F821
 
     def metadata_extractor(self, cursor, uid, step, context=None):
         r_model, r_id = step.pas_id.split(",")
@@ -442,7 +442,8 @@ class WizardCreateTechnicalReport(osv.osv_memory):
                         f1 = f1_obj.browse(cursor, uid, f1_id[0])
                         if (
                             f1.type_factura == "R"
-                        ):  # and invoice.ref.rectificative_type in ('N','G'): # F1 tipus R que rectifica una factura tipus N o G
+                        ):  # and invoice.ref.rectificative_type in ('N','G'):
+                            # F1 tipus R que rectifica una factura tipus N o G
                             component_name = "InvoiceF1R"
                         else:
                             component_name = "InvoiceF1Unsupported"

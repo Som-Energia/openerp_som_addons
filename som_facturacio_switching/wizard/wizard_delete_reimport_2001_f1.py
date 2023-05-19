@@ -16,7 +16,7 @@ class WizardDeleteReimport2001F1(osv.osv_memory):
                 uid,
                 f1_info["id"],
                 {
-                    "user_observations": "Reimportat mitjançant l'acció de \"(2001) Eliminar "
+                    "user_observations": "Reimportat mitjançant l'acció de \"(2001) Eliminar "  # noqa: E501
                     'F1 mateix origen i reimportar"\n{}'.format(
                         f1_info["user_observations"] or ""
                     )
@@ -44,7 +44,7 @@ class WizardDeleteReimport2001F1(osv.osv_memory):
                 not f1.error_ids or "2002" not in [x.name for x in f1.error_ids]
             ):
                 error_list.append(
-                    "Per l'origen {} hi ha un F1 correcte sense warning 2002, ID: {}".format(
+                    "Per l'origen {} hi ha un F1 correcte sense warning 2002, ID: {}".format(  # noqa: E501
                         origin, f1.id
                     )
                 )
@@ -99,7 +99,7 @@ class WizardDeleteReimport2001F1(osv.osv_memory):
 
             if no_draft_fact:
                 error_msg.append(
-                    u"F1 amb origen {} té una factura de proveïdor no en esborrany".format(
+                    u"F1 amb origen {} té una factura de proveïdor no en esborrany".format(  # noqa: E501
                         f1.invoice_number_text
                     )
                 )

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
         <record model="ir.header_webkit" id="invoice_webkit_header">
@@ -20,40 +20,41 @@
         <record id="account.account_invoices" model="ir.actions.report.xml">
             <field name="report_type">webkit</field>
             <field name="report_name">account.invoice</field>
-            <field eval="[(6,0,[])]" name="groups_id"/>
-            <field eval="0" name="multi"/>
-            <field eval="0" name="auto"/>
-            <field eval="0" name="header"/>
+            <field eval="[(6,0,[])]" name="groups_id" />
+            <field eval="0" name="multi" />
+            <field eval="0" name="auto" />
+            <field eval="0" name="header" />
             <field name="model">account.invoice</field>
             <field name="type">ir.actions.report.xml</field>
             <field name="name">Factura</field>
             <field name="report_webkit"
-                   eval="'account_invoice_som/report/account_invoice_som.mako'"/>
-            <field name="webkit_header" ref="invoice_webkit_header"/>
-            <field name="report_rml" eval="False"/>
+                eval="'account_invoice_som/report/account_invoice_som.mako'" />
+            <field name="webkit_header" ref="invoice_webkit_header" />
+            <field name="report_rml" eval="False" />
         </record>
     </data>
     <data noupdate="1">
         <!-- Plantilla inscripció per compres col·lectives -->
         <record model="poweremail.templates" id="email_self_consumption_registration">
             <field name="name">Factura Inscripció Compra col·lectiva</field>
-            <field name="object_name" model="ir.model" search="[('model', '=', 'account.invoice')]"/>
-            <field eval="0" name="save_to_drafts"/>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'account.invoice')]" />
+            <field eval="0" name="save_to_drafts" />
             <field name="model_int_name">account.invoice</field>
-            <field eval="0" name="use_filter"/>
+            <field eval="0" name="use_filter" />
             <field name="file_name">${object.number}</field>
-            <field name="report_template" model="ir.actions.report.xml" search="[('name', '=', 'Factura')]"/>
+            <field name="report_template" model="ir.actions.report.xml"
+                search="[('name', '=', 'Factura')]" />
             <field name="def_to">${object.partner_id.address[0].email}</field>
-            <field eval="0" name="auto_email"/>
-            <field eval="0" name="single_email"/>
-            <field eval="0" name="use_sign"/>
+            <field eval="0" name="auto_email" />
+            <field eval="0" name="single_email" />
+            <field eval="0" name="use_sign" />
             <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
             <field name="def_subject">Factura inscripció compra autoproducció</field>
             <field name="template_language">mako</field>
-            <field eval="0" name="send_on_create"/>
+            <field eval="0" name="send_on_create" />
             <field name="lang">${object.lang_partner}</field>
             <field name="copyvalue">${object.number}</field>
-            <field eval="0" name="send_on_write"/>
+            <field eval="0" name="send_on_write" />
             <field name="def_body_text">
                 <![CDATA[
 <!doctype html>
@@ -158,25 +159,25 @@ ${text_legal}
             </field>
         </record>
 
-<!-- Plantilla Account Invoice confirmació pagada -->
+        <!-- Plantilla Account Invoice confirmació pagada -->
         <record model="poweremail.templates" id="email_notif_account_invoice_pagada">
             <field name="name">Avis transferencia rebuda (comptab. i fin.)</field>
-            <field name="object_name" model="ir.model" search="[('model', '=', 'account.invoice')]"/>
-            <field eval="0" name="save_to_drafts"/>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'account.invoice')]" />
+            <field eval="0" name="save_to_drafts" />
             <field name="model_int_name">account.invoice</field>
-            <field eval="0" name="use_filter"/>
+            <field eval="0" name="use_filter" />
             <field name="file_name">${object.number}</field>
             <field name="def_to">${object.partner_id.address[0].email}</field>
-            <field eval="0" name="auto_email"/>
-            <field eval="0" name="single_email"/>
-            <field eval="0" name="use_sign"/>
+            <field eval="0" name="auto_email" />
+            <field eval="0" name="single_email" />
+            <field eval="0" name="use_sign" />
             <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
             <field name="def_subject">Factura pagada ${object.number}</field>
             <field name="template_language">mako</field>
-            <field eval="0" name="send_on_create"/>
+            <field eval="0" name="send_on_create" />
             <field name="lang">${object.lang_partner}</field>
             <field name="copyvalue">${object.number}</field>
-            <field eval="0" name="send_on_write"/>
+            <field eval="0" name="send_on_write" />
             <field name="def_body_text">
                 <![CDATA[
                     <!doctype html><html><head><meta charset="utf-8"/><html>
@@ -197,7 +198,7 @@ try:
     nom_pagador =' ' + p_obj.separa_cognoms(object._cr, object._uid, polissa.pagador.name)['nom']
   else:
     nom_pagador = ''
-except:
+except Exception:
   nom_pagador = ''
 %>
 Hola${nom_pagador},

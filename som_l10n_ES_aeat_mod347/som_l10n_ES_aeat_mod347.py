@@ -12,7 +12,7 @@ class SomL10nEsAeatMod347Report(osv.osv):
         """
         Send email to the clients from report l10n.es.aeat.mod347.report.
         This report includes clients and providers with an annual invoice total over an specific limit.
-        """
+        """  # noqa: E501
         if len(report_ids) != 1:
             return False
         else:
