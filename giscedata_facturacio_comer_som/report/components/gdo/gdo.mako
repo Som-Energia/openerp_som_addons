@@ -22,9 +22,16 @@
                     <tr>
                         <td>${_(u"Minihidràulica")}</td><td>${formatLang(gdo.hydraulics, digits=0)}</td>
                     </tr>
-                    <tr>
-                        <td>${_(u"Biogàs")}</td><td>${formatLang(gdo.biogas, digits=0)}</td>
-                    </tr>
+                    %if gdo.biogas:
+                        <tr>
+                            <td>${_(u"Biogàs")}</td><td>${formatLang(gdo.biogas, digits=0)}</td>
+                        </tr>
+                    %endif
+                    %if gdo.biomassa:
+                        <tr>
+                            <td>${_(u"Biomassa")}</td><td>${formatLang(gdo.biomassa, digits=0)}</td>
+                        </tr>
+                    %endif
                     </tbody>
                     <tfoot>
                     <tr>
