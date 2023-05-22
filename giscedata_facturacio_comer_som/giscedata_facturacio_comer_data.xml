@@ -82,7 +82,7 @@ div.back{
         <record model="res.config" id="component_gdo_data">
             <field name="name">component_gdo_data</field>
             <field name="description">Valors de la taula de Garantia d'Origen (gdo)</field>
-            <field name="value">{'wind_power':311913,'photovoltaic':115113,'hydraulics':61134,'biomassa':5974,'total': 494134,'year': '2022'}</field>
+            <field name="value">{'wind_power':311913,'photovoltaic':115113,'hydraulics':61134,'biomassa':5974,'biogas':0,'total': 494134,'year': '2022'}</field>
         </record>
     </data>
 </openerp>
