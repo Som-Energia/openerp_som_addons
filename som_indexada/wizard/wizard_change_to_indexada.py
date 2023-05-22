@@ -90,8 +90,10 @@ class WizardChangeToIndexada(osv.osv_memory):
             raise indexada_exceptions.TariffCodeNotSupported(tarifa_codi)
 
         # TODO no basar-nos amb el nom???
-        if polissa.fiscal_position_id in FISCAL_POSITIONS_CANARIES:
-            location = "canaries"
+
+        if polissa.fiscal_position_id:
+            if polissa.fiscal_position_id.id in FISCAL_POSITIONS_CANARIES:
+                location = "canaries"
         elif 'INSULAR' in polissa.llista_preu.name or 'balears' in polissa.llista_preu.name:
             location = "balears"
         else:
