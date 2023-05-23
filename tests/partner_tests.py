@@ -202,4 +202,109 @@ class PartnerTests(testing.OOTestCase):
                 'contract_state': u'esborrany', 'member_id': member_id, 'member_name': u'Gil, Pere',
                 'priority': 0}])
 
+
+    def test__www_set_generationkwh_assignment_order(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1')[1]
+            member_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'soci_0001')[1]
+            polissa_id_1 = self.IrModelData.get_object_reference(
+                cursor, uid, 'giscedata_polissa', 'polissa_0001')[1]
+            polissa_id_2 = self.IrModelData.get_object_reference(
+                cursor, uid, 'giscedata_polissa', 'polissa_0002')[1]
+            polissa_id_3 = self.IrModelData.get_object_reference(
+                cursor, uid, 'giscedata_polissa', 'polissa_0003')[1]
+            assignment_1 = self.GenerationkWhAssignment.create(
+                cursor, uid,
+                {'member_id': member_id, 'contract_id': polissa_id_1, 'priority': 0}
+            )
+            assignment_2 = self.GenerationkWhAssignment.create(
+                cursor, uid,
+                {'member_id': member_id, 'contract_id': polissa_id_2, 'priority': 1}
+            )
+            assignment_3 = self.GenerationkWhAssignment.create(
+                cursor, uid,
+                {'member_id': member_id, 'contract_id': polissa_id_3, 'priority': 2}
+            )
+
+            assig_list = self.partner_obj.www_set_generationkwh_assignment_order(
+                cursor, uid, partner_id, [assignment_3, assignment_2, assignment_1])
+
+            self.assertEqual(len(assig_list), 3)
+            self.assertEqual(assig_list[0]['priority'], 0)
+            self.assertEqual(assig_list[0]['contract_id'], polissa_id_3)
+            self.assertEqual(assig_list[1]['priority'], 1)
+            self.assertEqual(assig_list[1]['contract_id'], polissa_id_2)
+            self.assertEqual(assig_list[2]['priority'], 2)
+            self.assertEqual(assig_list[2]['contract_id'], polissa_id_1)
+
+
+    def test__www_set_generationkwh_assignment_order_same_member(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1')[1]
+            member_id_1 = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'soci_0001')[1]
+            member_id_2 = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'soci_0002')[1]
+            polissa_id_1 = self.IrModelData.get_object_reference(
+                cursor, uid, 'giscedata_polissa', 'polissa_0001')[1]
+            polissa_id_2 = self.IrModelData.get_object_reference(
+                cursor, uid, 'giscedata_polissa', 'polissa_0002')[1]
+
+            assignment_1 = self.GenerationkWhAssignment.create(
+                cursor, uid,
+                {'member_id': member_id_1, 'contract_id': polissa_id_1, 'priority': 0}
+            )
+            assignment_2 = self.GenerationkWhAssignment.create(
+                cursor, uid,
+                {'member_id': member_id_2, 'contract_id': polissa_id_2, 'priority': 1}
+            )
+
+            with self.assertRaises(Exception) as e:
+                self.partner_obj.www_set_generationkwh_assignment_order(
+                    cursor, uid, partner_id, [assignment_2, assignment_1])
+            self.assertEqual(e.exception.message, u"There are different member_ids")
+
+
+    def test__www_set_generationkwh_assignment_order_all_assignments(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1')[1]
+            member_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'soci_0001')[1]
+            polissa_id_1 = self.IrModelData.get_object_reference(
+                cursor, uid, 'giscedata_polissa', 'polissa_0001')[1]
+            polissa_id_2 = self.IrModelData.get_object_reference(
+                cursor, uid, 'giscedata_polissa', 'polissa_0002')[1]
+
+            self.GenerationkWhAssignment.create(
+                cursor, uid,
+                {'member_id': member_id, 'contract_id': polissa_id_1, 'priority': 0}
+            )
+            assignment_2 = self.GenerationkWhAssignment.create(
+                cursor, uid,
+                {'member_id': member_id, 'contract_id': polissa_id_2, 'priority': 1}
+            )
+
+            with self.assertRaises(Exception) as e:
+                self.partner_obj.www_set_generationkwh_assignment_order(
+                    cursor, uid, partner_id, [assignment_2])
+            self.assertEqual(
+                e.exception.message, u"You need to order all the assignments at once")
+
+            with self.assertRaises(Exception) as e:
+                self.partner_obj.www_set_generationkwh_assignment_order(
+                    cursor, uid, partner_id, [assignment_2, assignment_2])
+            self.assertEqual(
+                e.exception.message, u"You need to order all the assignments at once")
+
+
 # vim: et ts=4 sw=4
