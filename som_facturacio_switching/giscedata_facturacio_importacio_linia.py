@@ -8,6 +8,7 @@ from tools import cache
 import logging
 
 TIPO_AUTOCONSUMO_SEL = [(ac[0], '[{}] - {}'.format(ac[0], ac[1])) for ac in TABLA_113]
+IMPORT_PHASE_1 = 10  # 10 = Fase de càrrega XML
 
 class GiscedataFacturacioImportacioLinia(osv.osv):
     _name = 'giscedata.facturacio.importacio.linia'
@@ -130,6 +131,13 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
                 ('state','=','erroni'), ('info', 'ilike','%[{}]%{}%'.format(code, text)),('fecha_factura','>=',date_to_check)
             ])
             f1_ids += _ids
+
+        _ids = self.search(cursor, uid, [
+            ('state', 'not in', ["erroni", "incident"]),
+            ('import_phase', '=', IMPORT_PHASE_1),
+            ('fecha_factura', '>=', date_to_check),
+        ])
+        f1_ids += _ids
 
         if f1_ids:
             self.reimport_f1_by_cups(cursor, uid, f1_ids, context=context)
