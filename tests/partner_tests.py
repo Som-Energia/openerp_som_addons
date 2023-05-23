@@ -3,9 +3,6 @@ from destral import testing
 from destral.transaction import Transaction
 from destral.patch import PatchNewCursors
 from yamlns import namespace as ns
-import netsvc
-import time
-import random
 
 
 class PartnerTests(testing.OOTestCase):

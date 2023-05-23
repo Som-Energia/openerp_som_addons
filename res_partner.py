@@ -57,18 +57,6 @@ class ResPartner(osv.osv):
             for x in Assignments.read(cursor, uid, assignment_ids, [])
         ], key=lambda x: (x['priority'],x['id']))
 
-        def delete_rel(cursor, uid, categ_id, res_partner_id):
-            cursor.execute('delete from res_partner_category_rel where category_id=%s and partner_id=%s',(categ_id, res_partner_id))
-        
-        res_users = self.pool.get('res.users')
-        usuari = res_users.read(cursor, uid, uid, ['name'])['name']
-        old_comment = soci_obj.read(cursor, uid, [member_id], ['comment'])[0]['comment']
-        old_comment = old_comment + '\n' if old_comment else '' 
-        comment =  "{}Baixa efectuada a data {} per: {}".format(old_comment, today, usuari)
-        soci_obj.write(cursor, uid, [member_id], {'baixa': True,
-                                                'data_baixa_soci': today,
-                                                'comment': comment })
-        delete_rel(cursor, uid, soci_category_id, res_partner_id)
 
 
 
