@@ -22,7 +22,8 @@
 #
 ##############################################################################
 import base64
-import time, netsvc
+import time
+import netsvc
 from account_financial_report.utils import account_balance_utils as utils
 from datetime import datetime
 from tools.translate import _
