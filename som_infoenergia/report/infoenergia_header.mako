@@ -5,6 +5,9 @@
 </head>
 <body>
 <style>
+    <%
+       name = customer['name'] + customer['surname']
+    %>
 .absolute {
   position: absolute;
   top: 56px;
@@ -18,26 +21,33 @@
   line-height: 18px;
 }
 .username, .useradress, .usercups {
-  width: 300px;
+  width: 270px;
   display: block;
   padding-bottom: 5px;
+  overflow: hidden;
 }
 .useradress {
   position:absolute;
   top: 36px;
   left: 5px;
-  font-size: 0.8em;
+  %if len(customer['address']) > 85:
+      font-size: 0.6em;
+  %else:
+      font-size: 0.8em;
+  %endif
   width: 230px;
 }
 .usercups {
   position: absolute;
+  font-size: 0.8em;
   top: 71px;
-  left: 292px;
+  left: 330px;
+  color: #505050;
 }
 </style>
 <div class="absolute">
     <span class="username">
-    <strong>${customer['name']} ${customer['surname']}</strong>
+    <strong>${name[:70]}</strong>
     </span>
     <span class="useradress">
     ${customer['address']}
