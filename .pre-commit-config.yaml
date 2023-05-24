@@ -16,7 +16,6 @@ repos:
           - --ignore-init-module-imports
           - --in-place
           - --remove-all-unused-imports
-          - --remove-duplicate-keys
           - --remove-unused-variables
   - repo: https://github.com/pre-commit/mirrors-autopep8
     rev: v1.5.7
