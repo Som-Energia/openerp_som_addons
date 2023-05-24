@@ -61,7 +61,7 @@ class WizardPaymentOrderAddInvoices(osv.osv_memory):
         self.write(cursor, uid, ids, values)
 
     def add_invoices_with_limit(self, cursor, uid, ids, context=None):
-        wiz = self.browse(cursor, uid, ids[0])
+        self.browse(cursor, uid, ids[0])
 
         self.write(
             cursor,
