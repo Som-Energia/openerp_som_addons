@@ -133,7 +133,7 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
             f1_ids += _ids
 
         _ids = self.search(cursor, uid, [
-            ('state', 'not in', ["erroni", "incident"]),
+            ('state', '=', False),
             ('import_phase', '=', IMPORT_PHASE_1),
             ('fecha_factura', '>=', date_to_check),
         ])
