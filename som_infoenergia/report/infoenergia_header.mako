@@ -21,7 +21,7 @@
   line-height: 18px;
 }
 .username, .useradress, .usercups {
-  width: 250px;
+  width: 235px;
   display: block;
   padding-bottom: 5px;
   overflow: hidden;
@@ -33,8 +33,8 @@
 %endif
 .useradress {
   position:absolute;
-  top: 36px;
-  left: 5px;
+  top: 35px;
+  left: 0px;
   %if len(customer['address']) > 85:
       font-size: 0.6em;
   %else:
@@ -45,9 +45,13 @@
 .usercups {
   position: absolute;
   font-size: 0.8em;
-  top: 71px;
-  left: 330px;
+  top: 70px;
+  left: 285px;
   color: #505050;
+}
+.username {
+  position: absolute;
+  left: 0px;
 }
 </style>
 <div class="absolute">
