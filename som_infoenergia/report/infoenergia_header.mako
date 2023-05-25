@@ -21,11 +21,16 @@
   line-height: 18px;
 }
 .username, .useradress, .usercups {
-  width: 270px;
+  width: 250px;
   display: block;
   padding-bottom: 5px;
   overflow: hidden;
 }
+%if len(name) > 30:
+  .username {
+    font-size: 0.6em;
+  }
+%endif
 .useradress {
   position:absolute;
   top: 36px;
@@ -47,7 +52,7 @@
 </style>
 <div class="absolute">
     <span class="username">
-    <strong>${name[:70]}</strong>
+    <strong>${name}</strong>
     </span>
     <span class="useradress">
     ${customer['address']}
