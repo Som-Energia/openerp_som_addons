@@ -44,10 +44,10 @@ class WizardAfegirContracteBateriaVirtual(osv.osv_memory):
                     _("Estas intentant afegir més d'una pólissa a la bateria virtual com a origen")
                 )
 
-            polissa_descompte_ids = bat_obj.read(cursor, uid, self_vals['bateria_id'],
-                                                 ['polissa_descompte_ids'])['polissa_descompte_ids']
+            origen_ids = bat_obj.read(cursor, uid, self_vals['bateria_id'],
+                                                 ['origen_ids'])['origen_ids']
             # Intentem afegir una polissa com a origen a una bateria virtual que ja te origen
-            if polissa_descompte_ids:
+            if origen_ids:
                 raise osv.except_osv(
                     _("Error"),
                     _("La bateria virtual seleccionada ja te origen.")
