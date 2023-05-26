@@ -3,7 +3,9 @@ from osv import osv
 from som_indexada.exceptions import indexada_exceptions
 
 
-class PolissaBase(osv.osv):
+class GiscedataPolissa(osv.osv):
+
+    _inherit = 'giscedata.polissa'
 
     def send_signal(self, cursor, uid, ids, signals):
         polissa_obj = self.pool.get('giscedata.polissa')
@@ -14,6 +16,9 @@ class PolissaBase(osv.osv):
             if pol.modcontractuals_ids[0].state == 'pendent':
                 raise indexada_exceptions.PolissaModconPending(pol.name)
             else:
-                super(PolissaBase, self).send_signal(
+                super(GiscedataPolissa, self).send_signal(
                     cursor, uid, p_id, signals
                 )
+
+
+GiscedataPolissa()

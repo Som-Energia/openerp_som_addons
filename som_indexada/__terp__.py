@@ -16,7 +16,6 @@
         "giscedata_lectures_pool",
         "giscedata_facturacio_iese",
         "giscedata_switching",
-        "polissa_base",
     ],
     "init_xml": [],
     "demo_xml": [
