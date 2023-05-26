@@ -187,6 +187,9 @@ class WizardChangeToIndexada(osv.osv_memory):
             cursor, uid, new_pricelist_id, context={'prefetch': False})
 
         prev_modcon = polissa.modcontractuals_ids[0]
+        modcon_obj.write(cursor, uid, prev_modcon.id, {
+            'data_final': date.today(),
+        })
 
         new_modcon_vals = modcon_obj.copy_data(
             cursor, uid, prev_modcon.id
