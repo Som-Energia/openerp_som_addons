@@ -872,6 +872,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 'photovoltaic': 75672,
                 'hydraulics': 30034,
                 'biogas': 7194,
+                'biomassa': 0,
                 'total': 472290,
                 'lang': '{}',
                 'graph': 'gdo_graf_{}_2020.png',
