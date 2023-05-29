@@ -125,6 +125,7 @@ class SomEnviamentMassiu(osv.osv):
         if isinstance(_id, (tuple, list)):
             _id = _id[0]
 
+        attach_obj = self.pool.get('ir.attachment')
         pe_send_obj = self.pool.get('poweremail.send.wizard')
         enviament = self.browse(cursor, uid, _id, context=context)
         allowed_states = ['obert']
@@ -150,6 +151,15 @@ class SomEnviamentMassiu(osv.osv):
             vals.update({'bcc':''})
         if context.get('email_subject', False):
             vals.update({'subject': context.get('email_subject')})
+        attachment_id = attach_obj.search(
+            cursor,
+            uid,
+            [('res_id', '=', _id), ('res_model', '=', 'som.enviament.massiu')],
+        )
+        if attachment_id:
+            vals.update({
+                'attachment_ids': [(6, 0, [attachment_id[0]])]
+            })
         pe_send_obj.write(cursor, uid, [send_id], vals, context=ctx)
         sender = pe_send_obj.browse(cursor, uid, send_id, context=ctx)
         sender.send_mail(context=ctx)
