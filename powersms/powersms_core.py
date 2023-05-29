@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
+from __future__ import absolute_import, unicode_literals
 from osv import osv, fields
 from tools.translate import _
 import netsvc
-from lleida_net.sms import Client
-import base64
 
 class PowersmsCoreAccounts(osv.osv):
     """
@@ -17,51 +15,51 @@ class PowersmsCoreAccounts(osv.osv):
             return True
         return False
 
-    def _get_json_body(self, number_to, message, from_name, context=None):
-        special_characters = [
-            u"€",
-        ]
-        dict_sms = {
-            "txt": message,
-        }
-        if any(special_char in message for special_char in special_characters):
-            dict_sms = {
-                "charset":"utf-16",
-                "data_coding":"unicode",
-                "txt": base64.b64encode(message.encode('utf-16')),
-            }
-        json_body = {"sms": dict(dst={"num": number_to}, src=from_name, **dict_sms)}
-        return json_body
-
-
-    def send_sms_lleida(self, cr, uid, ids, number_to, message, from_name, context=None):
-        if isinstance(ids, list):
-            ids = ids[0]
-        if not self.check_numbers(cr, uid, ids, number_to):
-            raise Exception("Incorrect cell number: " + number_to)
-
-        values = self.read(cr, uid, ids, ['api_uname', 'api_pass'])
-        c = Client(user=str(values['api_uname']), password=str(values['api_pass']))
-        headers = {'content-type': 'application/x-www-form-urlencoded', 'accept': 'application/json'}
-        json_body = self._get_json_body(number_to, message, from_name, context)
-        resposta = c.API.post(resource='', json=json_body, headers=headers)
-        return resposta.result['code'] == 200 and resposta.result['status'] == u'Success'
-
-    def send_sms(self, cr, uid, ids, from_name, numbers_to, body='', context=None):
+    def send_sms(self, cr, uid, ids, from_name, numbers_to, body='', payload=None, context=None):
         if context is None:
             context = {}
+        if payload is None:
+            payload = {}
+
+        def payload_parser(_payload):
+            from base64 import b64decode
+            import tempfile
+            import os
+            file_paths = []
+            for file_name in _payload.keys():
+                # Decode b64 from raw base64 attachment and write it to a buffer
+                extension = '.{}'.format(file_name.split('.')[-1])
+                f_name = file_name.replace(extension, '')
+                fd, path = tempfile.mkstemp(prefix=f_name, suffix=extension)
+                os.write(fd, b64decode(_payload[file_name]))
+                os.close(fd)
+                file_paths.append(path)
+            return file_paths
+
         logger = netsvc.Logger()
+
+        # TODO
+        # - Check if numbers_to is a list, for the current code calls numbers_to will be one but better
+        # if we allow multiple numbers
+        if not self.check_numbers(cr, uid, ids, numbers_to):
+            raise Exception("Incorrect cell number: " + numbers_to)
+
         # Try to send the e-mail from each allowed account
         # Only one mail is sent
+        # TODO
+        # - Fix this logic, if for example we provide 3 accounts and first raise exception the other 2
+        #   will not be tried
         for account_id in ids:
             account = self.browse(cr, uid, account_id, context)
+
             try:
-                self.send_sms_lleida(cr, uid, ids, numbers_to, body, from_name)
-                return True
+                return bool(account.provider_id.send_sms(
+                    account_id, from_name, numbers_to, body=body, files=payload_parser(payload), context=context
+                ))
             except Exception as error:
                 logger.notifyChannel(
                     _("Power SMS"), netsvc.LOG_ERROR,
-                    _("Could not create mail "
+                    _("Could not create SMS "
                       "from Account \"{account.name}\".\n"
                       "Description: {error}").format(**locals())
                 )
@@ -104,18 +102,19 @@ class PowersmsCoreAccounts(osv.osv):
                         size=120, invisible=True,
                         required=False, readonly=True,
                         states={'draft':[('readonly', False)]}),
-        'state':fields.selection([
+        'state': fields.selection([
                                   ('draft', 'Initiated'),
                                   ('suspended', 'Suspended'),
                                   ('approved', 'Approved')
                                   ],
                         'Account Status', required=True, readonly=True),
-        'allowed_groups':fields.many2many(
+        'allowed_groups': fields.many2many(
                         'res.groups',
                         'account_group_rel', 'templ_id', 'group_id',
                         string="Allowed User Groups",
                         help="Only users from these groups will be " \
                         "allowed to send SMS from this ID."),
+        'provider_id': fields.many2one('powersms.provider', 'SMS Provider')
     }
 
     _defaults = {
