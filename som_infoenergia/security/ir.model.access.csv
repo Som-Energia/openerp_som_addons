@@ -41,3 +41,6 @@
 "access_wizard_add_partners_lot_rcwd","wizard.add.partners.lot","model_wizard_add_partners_lot","som_infoenergia.group_infoenergia_u",1,1,1,1
 "access_wizard_add_partners_lot_rcw","wizard.add.partners.lot","model_wizard_add_partners_lot","som_infoenergia.group_infoenergia_w",1,1,1,0
 "access_wizard_add_partners_lot_r","wizard.add.partners.lot","model_wizard_add_partners_lot","som_infoenergia.group_infoenergia_r",1,0,0,0
+"access_wizard_create_attachments_from_zip_rcwd","wizard.create.attachments.from.zip","model_wizard_create_attachments_from_zip","som_infoenergia.group_infoenergia_u",1,1,1,1
+"access_wizard_create_attachments_from_zip_rcw","wizard.create.attachments.from.zip","model_wizard_create_attachments_from_zip","som_infoenergia.group_infoenergia_w",1,1,1,0
+"access_wizard_create_attachments_from_zip_r","wizard.create.attachments.from.zip","model_wizard_create_attachments_from_zip","som_infoenergia.group_infoenergia_r",1,0,0,0
