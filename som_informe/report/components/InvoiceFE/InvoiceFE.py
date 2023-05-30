@@ -86,7 +86,7 @@ class InvoiceFE:
             result['tipo_factura'] = 'Factura cliente'
         elif invoice.type == 'out_refund':
             result['tipo_factura'] = 'Factura rectificativa (abono) de cliente'
-        result['invoice_date'] = dateformat(invoice.date_invoice)
+        result['invoice_date'] = dateformat(invoice.origin_date_invoice)
         result['invoice_number'] = invoice.number
         result['numero_edm'] = invoice.comptadors[0].name if invoice.comptadors else "Factura sense comptador associat"
         result['invoiced_days'] = invoice.dies

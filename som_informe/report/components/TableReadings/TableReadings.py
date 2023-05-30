@@ -35,7 +35,7 @@ class TableReadings:
                         result['distribuidora'] = f1.distribuidora_id.name if f1 else "Sense F1 relacionat"
                     linia_taula['invoice_number'] = invoice.origin
                     linia_taula['date'] = dateformat(f1.f1_date) if f1 else dateformat(invoice.date_invoice)
-                    linia_taula['tipus_factura'] = invoice.tipo_rectificadora
+                    linia_taula['tipus_factura'] = "R" if invoice.tipo_rectificadora == "RA" else invoice.tipo_rectificadora
                     linia_taula['date_from'] = dateformat(invoice.data_inici)
                     if invoice.data_inici:
                         if not result['date_from'] or datetime.strptime(invoice.data_inici,'%Y-%m-%d') < datetime.strptime(result['date_from'],'%d-%m-%Y'):
@@ -48,6 +48,7 @@ class TableReadings:
                     linia_taula['invoiced_energy'] = invoice.energia_kwh or 0
                     linia_taula['exported_energy'] = invoice.generacio_kwh or 0
                     linia_taula['invoiced_days'] = invoice.dies or 0
+                    linia_taula['rectifying_invoice'] = invoice.rectifying_id.origin if invoice.rectifying_id else ""
 
                     result['taula'].append(linia_taula)
 
