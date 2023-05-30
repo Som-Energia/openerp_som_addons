@@ -102,13 +102,7 @@ class GiscedataPolissaInfoenergia(osv.osv):
         if not fact_ids:
             return False
 
-        fact_infos = fact_obj.read(cursor, uid, fact_ids, ['energia_kwh', 'type', 'data_inici', 'data_final'])
-        fact_infos.sort(key=lambda x: x['data_inici'])
-        n_dies = datetime.strptime(fact_infos[-1]['data_final'], '%Y-%m-%d') - datetime.strptime(fact_infos[0]['data_inici'], '%Y-%m-%d')
-        n_dies = n_dies.days
-        if n_dies < self.MINIM_DIES_CONSUM:
-            return False
-
+        fact_infos = fact_obj.read(cursor, uid, fact_ids, ['energia_kwh', 'type'])
         consum_anual = 0
         for fact_info in fact_infos:
             if fact_info['type'] == 'out_invoice':
