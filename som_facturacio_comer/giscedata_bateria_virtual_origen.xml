@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_giscedata_bateria_virtual_percentatges">
+            <field name="name">giscedata.bateria.virtual.origen</field>
+            <field name="model">giscedata.bateria.virtual.origen</field>
+			<field name="inherit_id" ref="giscedata_facturacio_bateria_virtual.view_bateries_virtuals_origens_form" />
+            <field name="arch" type="xml">
+                <field name="gestio_acumulacio" position="after">
+                    <field name="percentatges_acumulacio" colspan="2"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>
+

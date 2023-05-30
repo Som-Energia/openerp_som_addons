@@ -32,6 +32,8 @@
         "giscedata_facturacio_data.xml",
         "giscedata_lectures_view.xml",
         "giscedata_polissa_view.xml",
+        "giscedata_bateria_virtual_origen.xml",
+        "giscedata_facturacio_bateria_virtual",
     ],
     "active": False,
     "installable": True
