@@ -49,8 +49,8 @@ class WizardCreateAttachmentsFromZip(osv.osv_memory):
             for env_id in env_ids:
                 try:
                     env = env_obj.browse(cursor, uid, env_id)
-                    filename_cat = "contracte_" + env.polissa_id.name + ".pdf"
-                    filename_es = "contrato_" + env.polissa_id.name + ".pdf"
+                    filename_cat = "CONTRACTE_" + env.polissa_id.name + ".pdf"
+                    filename_es = "CONTRATO_" + env.polissa_id.name + ".pdf"
                     if filename_cat in filenames:
                         filepath = os.path.join(tmp_dir, filename_cat)
                         env.attach_pdf(filepath, filename_cat)
