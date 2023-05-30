@@ -25,18 +25,18 @@ TARIFA_CODIS_INDEXADA = {
 
 TARIFA_CODIS_PERIODES = {
     "2.0TD": {
-        "peninsula": "pricelist_periodes_20td_peninsula", # id 101
-        "canaries": "pricelist_periodes_20td_insular", # id 120
+        "peninsula": "pricelist_periodes_20td_peninsula",  # id 101
+        "canaries": "pricelist_periodes_20td_insular",  # id 120
         "balears": "pricelist_periodes_20td_insular",
     },
     "3.0TD": {
-        "peninsula": "pricelist_periodes_30td_peninsula", # id 102
-        "canaries": "pricelist_periodes_30td_insular", # id 121
+        "peninsula": "pricelist_periodes_30td_peninsula",  # id 102
+        "canaries": "pricelist_periodes_30td_insular",  # id 121
         "balears": "pricelist_periodes_30td_insular",
     },
     "6.1TD": {
-        "peninsula": "pricelist_periodes_61td_peninsula", # id 103
-        "canaries": "pricelist_periodes_61td_insular", # id 122
+        "peninsula": "pricelist_periodes_61td_peninsula",  # id 103
+        "canaries": "pricelist_periodes_61td_insular",  # id 122
         "balears": "pricelist_periodes_61td_insular",
     }
 }
@@ -53,6 +53,7 @@ CHANGE_AUX_VALUES = {
 }
 
 FISCAL_POSITIONS_CANARIES = [19, 25, 33, 34, 38, 39]
+
 
 class WizardChangeToIndexada(osv.osv_memory):
 
@@ -121,10 +122,10 @@ class WizardChangeToIndexada(osv.osv_memory):
             raise indexada_exceptions.PolissaAlreadyPeriod(polissa.name)
 
         res = sw_obj.search(cursor, uid, [
-                ('polissa_ref_id', '=', polissa.id),
-                ('state', 'in', ['open', 'draft', 'pending']),
-                ('proces_id.name', '!=', 'R1'),
-            ])
+            ('polissa_ref_id', '=', polissa.id),
+            ('state', 'in', ['open', 'draft', 'pending']),
+            ('proces_id.name', '!=', 'R1'),
+        ])
 
         if res:
             raise indexada_exceptions.PolissaSimultaneousATR(polissa.name)
@@ -179,9 +180,11 @@ class WizardChangeToIndexada(osv.osv_memory):
             context = {}
 
         self.validate_polissa_can_change(cursor, uid, polissa, change_type)
-        coefs = self.calculate_k_d_coeficients(cursor, uid) if change_type == 'from_period_to_index' else None
+        coefs = self.calculate_k_d_coeficients(
+            cursor, uid) if change_type == 'from_period_to_index' else None
         new_pricelist_id = self.calculate_new_pricelist(cursor, uid, polissa, change_type)
-        new_pricelist = pricelist_obj.browse(cursor, uid, new_pricelist_id, context={'prefetch': False})
+        new_pricelist = pricelist_obj.browse(
+            cursor, uid, new_pricelist_id, context={'prefetch': False})
 
         prev_modcon = polissa.modcontractuals_ids[0]
         modcon_obj.write(cursor, uid, prev_modcon.id, {
@@ -211,16 +214,12 @@ class WizardChangeToIndexada(osv.osv_memory):
         })
         if coefs:
             new_modcon_vals.update({
-            'coeficient_k': coefs['k'],
-            'coeficient_d': coefs['d'],
+                'coeficient_k': coefs['k'],
+                'coeficient_d': coefs['d'],
             })
         with AsyncMode('sync') as asmode:
             new_modcon_id = modcon_obj.create(cursor, uid, new_modcon_vals)
 
-            modcon_obj.write(cursor, uid, prev_modcon.id, {
-                'modcontractual_seg': new_modcon_id,
-                'state': 'baixa2',
-            })
             self.send_indexada_modcon_created_email(cursor, uid, polissa)
 
         wizard.write({'state': 'end'})
@@ -247,5 +246,6 @@ class WizardChangeToIndexada(osv.osv_memory):
         'change_type': _default_change_type,
         'state': lambda *a: 'init',
     }
+
 
 WizardChangeToIndexada()
