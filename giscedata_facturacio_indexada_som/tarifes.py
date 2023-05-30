@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from libfacturacioatr.pool.tarifes import *
 from libfacturacioatr.tarifes import *
+from osv import osv
 
 
 class TarifaPoolSOM(TarifaPool):
@@ -216,7 +217,6 @@ class TarifaPoolSOM(TarifaPool):
         postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"),
                               end_date.strftime("%Y%m%d")))
         prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
-        grcosdnc = Grcosdnc('C2_grcosdnc_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         si = SI('C2_si_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
         fname = self.perdclass.name
@@ -230,18 +230,16 @@ class TarifaPoolSOM(TarifaPool):
         else:
             ct3 = 0
 
-        # Sobrecostes REE = Coste total - Coste medio desvíos
-        coste_medio_desvios = Component(data=grcosdnc.start_date, version=grcosdnc.version)
-        coste_total = Component(data=grcosdnc.start_date, version=grcosdnc.version)
-        ingresos_srad = Component(data=grcosdnc.start_date, version=grcosdnc.version)
+        # Sobrecostes REE
+        compodem = MonthlyCompodem('C2_monthlycompodem_%(postfix)s' % locals(), esios_token)
+        srad = SRAD('C2_srad_%(postfix)s' % locals(), esios_token)
 
-        coste_medio_desvios.load(grcosdnc.indicators[GRCOSDNC_MAGNS[8]])
-        if start_date.strftime("%Y-%m-%d") >= '2022-11-01':
-            coste_total.load(grcosdnc.indicators[GRCOSDNC_MAGNS_2022_11[15]])
-            ingresos_srad.load(grcosdnc.indicators[GRCOSDNC_MAGNS_2022_11[14]])
-        else:
-            coste_total.load(grcosdnc.indicators[GRCOSDNC_MAGNS[12]])
-        sobrecostes_ree = coste_total - coste_medio_desvios - ingresos_srad
+        sobrecostes_ree = (
+                compodem.get_component("RT3") + compodem.get_component("RT6") + compodem.get_component("BS3") +
+                compodem.get_component("EXD") + compodem.get_component("IN7") + compodem.get_component("CFP") +
+                compodem.get_component("BALX") + compodem.get_component("DSV") + compodem.get_component("PS3") +
+                compodem.get_component("IN3") + srad
+        )
 
         # MAJ RDL 10/2022
         maj_activated = self.conf.get('maj_activated', 0)
