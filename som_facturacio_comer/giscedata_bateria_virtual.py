@@ -11,10 +11,11 @@ STATES_GESTIO_ACUMULACIO = [
 
 class GiscedataBateriaVirtualOrigen(osv.osv):
     _name = "giscedata.bateria.virtual.origen"
-    _inherit = "giscedata.bateria.virtual.origen"
+    _inherit = 'giscedata.bateria.virtual.origen'
 
     _columns = {
         'gestio_descomptes': fields.selection(STATES_GESTIO_ACUMULACIO, 'Gestió dels descomptes'),
+        'percentatges_acumulacio': fields.one2many('giscedata.bateria.virtual.percentatges.acumulacio', 'percentatge_acumulacio_id', 'Percentatges acumulacio'),
     }
 
     _defaults = {
