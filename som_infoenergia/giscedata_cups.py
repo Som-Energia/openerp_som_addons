@@ -11,6 +11,7 @@ class GiscedataCupsPs(osv.osv):
     _NEW_ORIGENS_CONANY = [
         ('consums', _(u'Historic consums')),
         ('factures', _(u'Historic factures')),
+        ('pdf', _(u'Pdf última factura')),
     ]
 
     def __init__(self, pool, cursor):
@@ -44,7 +45,11 @@ class GiscedataCupsPs(osv.osv):
             {'priority': 4,
             'model': 'giscedata.polissa',
             'func': 'get_consum_anual_factures',
-            'origen': 'factures'}
+            'origen': 'factures'},
+            {'priority': 3,
+            'model': 'giscedata.polissa',
+            'func': 'get_consum_anual_pdf',
+            'origen': 'pdf'}
         ]
         llista+=vals
 
