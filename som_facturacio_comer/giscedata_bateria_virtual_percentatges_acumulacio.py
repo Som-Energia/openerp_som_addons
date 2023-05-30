@@ -14,8 +14,9 @@ class GiscedataBateriaVirtualPercentatgesAcumulacio(osv.osv):
 
     _columns = {
         'percentatge': fields.integer('Pecentatge', help=_("Percentatge que acumula la bateria virtual")),
-        'data_inici': fields.datetime(_("Data inici")),
-        'data_fi': fields.datetime(_("Data fi")),
+        'data_inici': fields.date(_("Data inici")),
+        'data_fi': fields.date(_("Data fi")),
+        'origen_id': fields.many2one('giscedata.bateria.virtual.origen', 'Origen')
 
     }
 
