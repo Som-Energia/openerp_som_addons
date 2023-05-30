@@ -10,7 +10,7 @@
     "version": "0-dev",
     "author": "SomEnergia",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "poweremail_references",
         "som_polissa_soci",
         "som_generationkwh",
@@ -19,7 +19,7 @@
     "demo_xml": [
         "tests/som_infoenergia_demo.xml"
     ],
-    "update_xml":[
+    "update_xml": [
         "som_infoenergia_report.xml",
         "som_infoenergia_sepa.xml",
         "som_infoenergia_data.xml",
@@ -36,6 +36,7 @@
         "wizard/wizard_cancel_from_csv_view.xml",
         "wizard/wizard_create_enviaments_from_csv_view.xml",
         "wizard/wizard_create_enviaments_from_partner_view.xml",
+        "wizard/wizard_create_attachments_from_zip_view.xml",
     ],
     "active": False,
     "installable": True
