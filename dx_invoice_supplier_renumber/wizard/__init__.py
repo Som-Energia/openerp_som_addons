@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (c) 2010 Domatix Technologies  S.L. (http://www.domatix.com) 
+#    Copyright (c) 2010 Domatix Technologies  S.L. (http://www.domatix.com)
 #                       info <info@domatix.com>
 #                        Angel Moya <angel.moya@domatix.com>
 #
