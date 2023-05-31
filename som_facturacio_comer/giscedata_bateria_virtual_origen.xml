@@ -36,7 +36,7 @@
             <field name="arch" type="xml">
                 <field name="gestio_acumulacio" position="after">
                     <newline/>
-                    <group colspan="4">
+                    <group colspan="4" attrs="{'invisible':[('gestio_acumulacio','!=','percentatge')]}">
                         <field name="percentatges_acumulacio" nolabel="1"/>
                     </group>
                 </field>
