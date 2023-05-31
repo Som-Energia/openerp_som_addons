@@ -21,7 +21,7 @@ def up(cursor, installed_version):
     ##UPDATAR UN MODUL NOU AL CREAR-LO O AFEGIR UNA COLUMNA##
     logger.info("Creating table: giscedata.bateria.virtual.percentatges.acumulacio")
     pool.get("giscedata.bateria.virtual.percentatges.acumulacio")._auto_init(cursor, context={'module': 'som_facturacio_comer'})
-    logger.info("Table created succesfully.")
+    logger.info("Table created succesfully")
 
     ##UPATAR UN XML SENCER##
     logger.info("Updating XML som_facturacio_comer/giscedata_bateria_virtual_origen.xml")
