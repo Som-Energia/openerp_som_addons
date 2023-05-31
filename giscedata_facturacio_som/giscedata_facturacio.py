@@ -34,11 +34,11 @@ class GiscedataFacturacio(osv.osv):
                 if len(arg) == 3:
                     field, operator, match = arg
                     if exact_number and field == "number" and isinstance(match, (unicode, str)):
-                        if not "%" in match:
+                        if "%" not in match:
                             operator = "="
                         args[idx] = (field, operator, match)
                     if exact_origin and field == "origin" and isinstance(match, (unicode, str)):
-                        if not "%" in match:
+                        if "%" not in match:
                             operator = "="
                         args[idx] = (field, operator, match)
         return super(GiscedataFacturacio, self).search(

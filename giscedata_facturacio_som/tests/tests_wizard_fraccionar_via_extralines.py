@@ -13,7 +13,7 @@ class TestWizardFraccionarViaExtralines(testing.OOTestCaseWithCursor):
         )[1]
 
     @mock.patch(
-        "giscedata_facturacio.giscedata_facturacio.GiscedataFacturacioFactura.fraccionar_via_extralines"
+        "giscedata_facturacio.giscedata_facturacio.GiscedataFacturacioFactura.fraccionar_via_extralines"  # noqa: E501
     )
     def test_action_fraccionar_via_extralines_with_first_term_payment(
         self, fraccionar_via_extraline_mock
@@ -45,7 +45,7 @@ class TestWizardFraccionarViaExtralines(testing.OOTestCaseWithCursor):
         )
 
     @mock.patch(
-        "giscedata_facturacio.giscedata_facturacio.GiscedataFacturacioFactura.fraccionar_via_extralines"
+        "giscedata_facturacio.giscedata_facturacio.GiscedataFacturacioFactura.fraccionar_via_extralines"  # noqa: E501
     )
     def test_action_fraccionar_via_extralines_without_first_term_payment(
         self, fraccionar_via_extraline_mock
