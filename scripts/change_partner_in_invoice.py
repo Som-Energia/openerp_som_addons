@@ -32,7 +32,7 @@ def change_account_invoice(invoice, vals, to_write_vals):
     partner = vals["partner"]
     mandate = vals["mandate"]
 
-    ## invoice_id (account.invoice)
+    # invoice_id (account.invoice)
 
     ai_obj = c.model("account.invoice")
     ai = ai_obj.browse(invoice.id)
@@ -100,7 +100,7 @@ if partner_new and fact:
         "mandate": mandate_new.id,
     }
 
-    ## invoice_id (account.invoice)
+    # invoice_id (account.invoice)
     change_account_invoice(fact.invoice_id, vals, write_vals)
 
 else:
@@ -115,7 +115,7 @@ begin;
 update account_move_line
 set partner_id = 204530
 from (
-	select l.id as line_id from account_move m inner join account_move_line l on l.move_id = m.id where m.ref = 'FE2200231739'
+    select l.id as line_id from account_move m inner join account_move_line l on l.move_id = m.id where m.ref = 'FE2200231739'
 ) as subquery
 where id = subquery.line_id
 
@@ -137,4 +137,4 @@ inner join account_move m on m.id = l.move_id
 where m.ref = 'FE2200231739'
 ) as subquery
 where id = subquery.p_id
-"""
+"""  # noqa: E501
