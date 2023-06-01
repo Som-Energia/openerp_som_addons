@@ -40,8 +40,6 @@ class GiscedataBateriaVirtualOrigen(osv.osv):
 
         descompte_data = descompte_total[0]
         descompte_preu = descompte_total[1]
-
-        # todo: crec que es fa en una pr que no esta a testing
         descompte_ref = descompte_total[2]
 
         percetatge_acum_id = self.get_percentatge_acumulacio_from_date(cursor, uid, id, descompte_data)
