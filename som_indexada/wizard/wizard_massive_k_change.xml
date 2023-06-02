@@ -12,27 +12,19 @@
                         <label string="Canviar K des de CSV"
                             colspan="4" />
                         <label
-                            string="Format del CSV: a la primera columna hi ha d'haver els números dels contractes, un a cada fila. Les següents columnes que hi hagi, les guardarà en un diccionari de dades al camp 'Informació Extra'"
+                            string="Format del CSV: a la primera columna hi ha d'haver els números dels contractes, un a cada fila. Les següents columnes que hi hagi han de correspondre al valors K, D i H"
                             colspan="4" />
                         <field name="csv_file" colspan="4" filename="name" string="Arxiu CSV" />
-                        <field name="enviament_name" colspan="4" string="Nom del enviament massiu" />
                         <button special="cancel" string="Sortir" icon="gtk-cancel" />
                         <button name="change_k_from_csv" type="object" string="Canviar K"
                             icon="gtk-execute" />
                     </group>
-                    <group attrs="{'invisible': [('state', '!=', 'finished')]}">
-                        <field name="info" colspan="4" />
+                    <group attrs="{'invisible': [('state', '!=', 'end')]}">
                         <button special="cancel" string="Sortir" icon="gtk-ok" />
                     </group>
                 </form>
             </field>
         </record>
-        <menuitem
-            action="action_wizard_massive_k_change"
-            id="menu_massive_k_change"
-            name="Canviar K des de CSV"
-            parent="giscedata_polissa.menu_principal"
-            sequence="10" />
         <record model="ir.actions.act_window" id="action_wizard_massive_k_change">
             <field name="name">Canviar K des de CSV</field>
             <field name="type">ir.actions.act_window</field>
@@ -41,7 +33,7 @@
             <field name="target">new</field>
             <field name="view_id" ref="view_wizard_massive_k_change_form" />
         </record>
-        <record id="values_infoenergia_create_from_csv_form" model="ir.values">
+        <record id="values_wizard_massive_k_change" model="ir.values">
             <field name="object" eval="1" />
             <field name="name">Canviar K des de CSV</field>
             <field name="key2">client_action_multi</field>
@@ -50,5 +42,11 @@
             <field name="value"
                 eval="'ir.actions.act_window,'+str(ref('action_wizard_massive_k_change'))" />
         </record>
+        <menuitem
+            action="action_wizard_massive_k_change"
+            id="menu_massive_k_change"
+            name="Canviar K des de CSV"
+            parent="giscedata_polissa.menu_principal"
+            sequence="10"/>
     </data>
 </openerp>
