@@ -105,8 +105,8 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                 trace=self.traceback_info(e),
             )
 
-    def change_tariff_www(self, cursor, uid, polissa_id, context=None):
-        savepoint = 'change_tariff_{}'.format(id(cursor))
+    def change_pricelist_www(self, cursor, uid, polissa_id, context=None):
+        savepoint = 'change_pricelist_{}'.format(id(cursor))
         cursor.savepoint(savepoint)
         try:
             change_type = self._get_change_type(cursor, uid, polissa_id)
