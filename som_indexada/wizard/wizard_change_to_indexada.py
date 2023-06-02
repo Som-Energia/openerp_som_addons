@@ -94,18 +94,15 @@ class WizardChangeToIndexada(osv.osv_memory):
             xml_id_prov_balears,
         ).id
 
-        sql = """
-            select gcp.id
+        sql_array = """
+            select array_agg(gcp.id) as cup_ids
             from giscedata_cups_ps gcp
             inner join res_municipi rm on rm.id = gcp.id_municipi
             inner join res_country_state rcs on rcs.id = rm.state
             where rcs.id = %s and gcp.active=True
         """
-        # cursor.execute("SELECT array_agg(a.id) as acc_ids FROM account_account a WHERE company_id = %s", (company_id,))
-        cursor.execute(sql, (id_prov_balears,))
-        list_dict_aux = cursor.dictfetchall()
-        # res = list_dict_aux.values()
-        res = [d['id'] for d in list_dict_aux]
+        cursor.execute(sql_array, (id_prov_balears,))
+        res = cursor.dictfetchone()['cup_ids']
         return res
 
     def _get_location_polissa(self, cursor, uid, polissa):
