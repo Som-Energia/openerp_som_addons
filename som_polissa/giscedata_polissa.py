@@ -29,6 +29,15 @@ TARIFF_MAPPING = {
     "6.1A": "6.1TD",
     "6.1B": "6.2TD"
 }
+
+TABLA_130 = [('A', u'EdM Bidireccional en PF'),
+             ('B', u'EdM Bidireccional en PF y EdM gen. Neta'),
+             ('C', u'EdM Consumo Total y EdM bidireccional gen. Neta'),
+             ('D', u'EdM Consumo Total y EdM gen bruta y EdM SSAA'),
+             ('E', u'Configuración singular'), ]
+
+TABLA_131 = [('01', u'Consumo'),
+             ('02', u'Servicios Auxiliares'), ]
  
 class GiscedataPolissa(osv.osv):
     _name = 'giscedata.polissa'
@@ -364,6 +373,74 @@ class GiscedataPolissa(osv.osv):
         default.update({'payment_mode_id': payment_mode_id[0]})
         return super(GiscedataPolissa, self).copy_data(cursor, uid, id, default, context=context)
 
+    def _get_data_alta_auto(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+        ac_obj = self.pool.get('giscedata.autoconsum')
+        res = dict.fromkeys(ids, False)
+        for pol_id in ids:
+            data_alta_auto = ac_obj.q(cursor, uid).read(['data_alta']).where([('polissa_id', '=', pol_id)])[0]['data_alta']
+            res[pol_id] = data_alta_auto
+        return res
+
+    def _get_data_baixa_auto(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+
+        ac_obj = self.pool.get('giscedata.autoconsum')
+        res = dict.fromkeys(ids, False)
+
+        for pol_id in ids:
+            data_baixa_auto = ac_obj.q(cursor, uid).read(['data_baixa']).where([('polissa_id', '=', pol_id)])[0]['data_baixa']
+            res[pol_id] = data_baixa_auto
+
+        return res
+
+    def _get_ssaa(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+
+        acg_obj = self.pool.get('giscedata.autoconsum.generador')
+        ac_obj = self.pool.get('giscedata.autoconsum')
+        res = dict.fromkeys(ids, False)
+
+        for pol_id in ids:
+            generador_id = ac_obj.q(cursor, uid).read(['generador_id']).where([('polissa_id', '=', pol_id)])[0]['generador_id']
+            ssaa = acg_obj.read(cursor, uid, generador_id, ['ssaa'], context=context)
+            if ssaa.get('ssaa'):
+                res[pol_id] = True
+
+        return res
+
+    def _get_provincia_cups(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+
+        cups_obj = self.pool.get('giscedata.cups.ps')
+        res = dict.fromkeys(ids, False)
+
+        for pol_id in ids:
+            provincia = cups_obj.q(cursor, uid).read(['id_provincia']).where([('polissa_polissa', '=', pol_id)])[0]['id_provincia'][1]
+            res[pol_id] = provincia
+
+        return res
+
+
+    def _get_tipus_cups(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+
+        ac_cups_obj = self.pool.get('giscedata.autoconsum.cups.autoconsum')
+        res = dict.fromkeys(ids, False)
+        for pol_id in ids:
+            ac_id = self.read(cursor, uid, pol_id, ['autoconsum_id'], context=context)
+
+            if ac_id.get('autoconsum_id'):
+                tipus_cups = ac_cups_obj.q(cursor, uid).read(['tipus_cups']).where([('autoconsum_id', '=', ac_id)])[0]['tipus_cups']
+                res[pol_id] = tipus_cups
+
+        return res
+
     _columns = {
         'info_gestio_endarrerida': fields.text('Informació gestió endarrerida'),
         'info_gestio_endarrerida_curta': fields.function(
@@ -391,6 +468,18 @@ class GiscedataPolissa(osv.osv):
                 )
             }
         ),
+        'bateria_activa': fields.boolean('Bateria activa'),
+        'data_activacio_bateria': fields.date('Data activació bateria'),
+        'esquema_mesura': fields.selection(TABLA_130, 'Esquema mesura'),
+        'ssaa': fields.function(_get_ssaa, method=True, string=u"SSAA", type="boolean"),
+        'data_alta_auto': fields.function(_get_data_alta_auto, method=True, type="date",
+            string="Data alta auto"),
+        'data_baixa_auto': fields.function(_get_data_baixa_auto, method=True, type="date",
+            string="Data baixa auto"),
+        'cups_np': fields.function(_get_provincia_cups, method=True, type="char", string='Provincia (CUPS)',
+            size=24),
+        'tipus_cups': fields.function(_get_tipus_cups, method=True, selection=TABLA_131, string='Tipus CUPS',
+            readonly=True, type="selection")
     }
 
 

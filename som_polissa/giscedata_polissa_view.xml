@@ -141,5 +141,76 @@
                 </field>
             </field>
         </record>
+        <record model="ir.ui.view" id="view_giscedata_polissa_cau_tree">
+            <field name="name">giscedata_polissa_cau_tree</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="type">tree</field>
+            <field name="priority" eval="1"/>
+            <field name="arch" type="xml">
+                <tree string="CAU">
+                    <field name="titular"/>
+                    <field name="autoconsum_id"/>
+                    <field name="name"/>
+                    <field name="cups"/>
+                    <field name="is_autoconsum_collectiu"/>
+                    <field name="tipus_cups"/>
+                    <field name="ssaa"/>
+                    <field name="state"/>
+                    <field name="tarifa"/>
+                    <field name="llista_preu"/>
+                    <field name="data_alta"/>
+                    <field name="data_alta_auto"/>
+                    <field name="ac_state"/>
+                     <field name="data_baixa_auto"/>
+                    <field name="data_baixa"/>
+                    <field name="facturacio_suspesa"/>
+                    <field name="data_ultima_factura"/>
+                    <field name="data_ultima_lectura_f1"/>
+                    <field name="dies_lectures_facturada_f1"/>
+                    <field name="bateria_activa"/>
+                    <field name="data_activacio_bateria"/>
+                    <field name="cups_np"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_giscedata_polissa_cau_som_tree">
+            <field name="name">CAU</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">giscedata.polissa</field>
+            <field name="domain">[('autoconsumo', '!=', '00')]</field>
+            <field name="view_type">tree</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_giscedata_polissa_cau_tree"/>
+            <field name="context">{'active_test': False}</field>
+        </record>
+        <menuitem name="CAU" id="menu_view_giscedata_polissa_cau_tree"
+                  parent="giscedata_polissa.menu_polisses"
+                  action="action_giscedata_polissa_cau_som_tree"/>
+
+         <record model="ir.ui.view" id="view_giscedata_polissa_form_inherit">
+            <field name="name">giscedata.polissa.form.inherit</field>
+            <field name="model">giscedata.polissa</field>
+			<field name="inherit_id" ref="giscedata_polissa.view_polisses_form" />
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <field name="titular" position="after">
+                    <field name="esquema_mesura" invisible="1" select="2"/>
+                    <field name="bateria_activa" invisible="1" select="2"/>
+                    <field name="data_activacio_bateria" invisible="1" select="2"/>
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_giscedata_polissa_tree_inherit">
+            <field name="name">giscedata.polissa.tree.inherit</field>
+            <field name="model">giscedata.polissa</field>
+			<field name="inherit_id" ref="giscedata_polissa.view_polisses_tree" />
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <field name="potencia_generacio" position="after">
+                    <field name="bateria_activa"/>
+                    <field name="data_activacio_bateria"/>
+                </field>
+            </field>
+        </record>
     </data>
 </openerp>
