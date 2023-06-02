@@ -28,7 +28,7 @@ def up(cursor, installed_version):
                        "view_giscedata_polissa_form_inherit",
                        "view_giscedata_polissa_tree_inherit"]
     load_data_records(
-        cursor, 'giscedata_switching_comer', 'giscedata_switching_data.xml', list_of_records, mode='update'
+        cursor, 'som_polissa', 'giscedata_polissa_view.xml', list_of_records, mode='update'
     )
     logger.info("giscedata_switching_data.xml successfully updated")
 
