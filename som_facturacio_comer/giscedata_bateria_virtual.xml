@@ -4,12 +4,12 @@
         <record model="ir.ui.view" id="view_som_bateria_virtual_tree">
             <field name="name">view.som.bateria.virtual.tree</field>
             <field name="model">giscedata.bateria.virtual</field>
-            <field name="type">form</field>
-            <field name="inherit_id" ref="giscedata_facturacio_bateria_virtual.giscegas_polissa.view_bateries_virtuals_tree"/>
+            <field name="type">tree</field>
+            <field name="inherit_id" ref="giscedata_facturacio_bateria_virtual.view_bateries_virtuals_tree"/>
             <field name="arch" type="xml">
-                <field name="titular_nif" position="total_descompte_bateria">
-                    <field name="origen_ids"/>
+                <field name="total_descompte_bateria" position="after">
                     <field name="receptor_info"/>
+                    <field name="origen_info"/>
                     <field name="data_inici_descomptes"/>
                 </field>
             </field>
