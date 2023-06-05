@@ -373,17 +373,19 @@ class GiscedataPolissa(osv.osv):
         default.update({'payment_mode_id': payment_mode_id[0]})
         return super(GiscedataPolissa, self).copy_data(cursor, uid, id, default, context=context)
 
-    def _get_data_alta_auto(self, cursor, uid, ids, context=None):
+    def _get_data_alta_auto(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
             context = {}
         ac_obj = self.pool.get('giscedata.autoconsum')
         res = dict.fromkeys(ids, False)
         for pol_id in ids:
-            data_alta_auto = ac_obj.q(cursor, uid).read(['data_alta']).where([('polissa_id', '=', pol_id)])[0]['data_alta']
-            res[pol_id] = data_alta_auto
+            autoconsum_id = self.read(cursor, uid, pol_id, ['autoconsum_id'], context=context)['autoconsum_id']
+            if autoconsum_id:
+                data_alta_auto = ac_obj.read(cursor, uid, autoconsum_id[0], ['data_alta'], context=context)['data_alta']
+                res[pol_id] = data_alta_auto
         return res
 
-    def _get_data_baixa_auto(self, cursor, uid, ids, context=None):
+    def _get_data_baixa_auto(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
             context = {}
 
@@ -391,12 +393,15 @@ class GiscedataPolissa(osv.osv):
         res = dict.fromkeys(ids, False)
 
         for pol_id in ids:
-            data_baixa_auto = ac_obj.q(cursor, uid).read(['data_baixa']).where([('polissa_id', '=', pol_id)])[0]['data_baixa']
-            res[pol_id] = data_baixa_auto
+            autoconsum_id = self.read(cursor, uid, pol_id, ['autoconsum_id'], context=context)['autoconsum_id']
+            if autoconsum_id:
+                data_baixa_auto = ac_obj.read(cursor, uid, autoconsum_id[0], ['data_baixa'], context=context)
+                if data_baixa_auto.get('data_baixa'):
+                    res[pol_id] = data_baixa_auto['data_baixa']
 
         return res
 
-    def _get_ssaa(self, cursor, uid, ids, context=None):
+    def _get_ssaa(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
             context = {}
 
@@ -405,14 +410,18 @@ class GiscedataPolissa(osv.osv):
         res = dict.fromkeys(ids, False)
 
         for pol_id in ids:
-            generador_id = ac_obj.q(cursor, uid).read(['generador_id']).where([('polissa_id', '=', pol_id)])[0]['generador_id']
-            ssaa = acg_obj.read(cursor, uid, generador_id, ['ssaa'], context=context)
-            if ssaa.get('ssaa'):
-                res[pol_id] = True
+            autoconsum_id = self.read(cursor, uid, pol_id, ['autoconsum_id'], context=context)['autoconsum_id']
+            if autoconsum_id:
+                autoconsum_id = autoconsum_id[0]
+                generador_id = acg_obj.search(cursor, uid, [('autoconsum_id', '=', autoconsum_id)], context=context)
+                if generador_id:
+                    ssaa = acg_obj.read(cursor, uid, generador_id[0], ['ssaa'], context=context)
+                    if ssaa.get('ssaa'):
+                        res[pol_id] = True
 
         return res
 
-    def _get_provincia_cups(self, cursor, uid, ids, context=None):
+    def _get_provincia_cups(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
             context = {}
 
@@ -420,24 +429,26 @@ class GiscedataPolissa(osv.osv):
         res = dict.fromkeys(ids, False)
 
         for pol_id in ids:
-            provincia = cups_obj.q(cursor, uid).read(['id_provincia']).where([('polissa_polissa', '=', pol_id)])[0]['id_provincia'][1]
-            res[pol_id] = provincia
+            provincia = cups_obj.q(cursor, uid).read(['id_provincia']).where([('polissa_polissa', '=', pol_id)])
+            if provincia:
+                provincia = provincia[0]['id_provincia'][1]
+                res[pol_id] = provincia
 
         return res
 
-
-    def _get_tipus_cups(self, cursor, uid, ids, context=None):
+    def _get_tipus_cups(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
             context = {}
 
         ac_cups_obj = self.pool.get('giscedata.autoconsum.cups.autoconsum')
         res = dict.fromkeys(ids, False)
         for pol_id in ids:
-            ac_id = self.read(cursor, uid, pol_id, ['autoconsum_id'], context=context)
-
-            if ac_id.get('autoconsum_id'):
-                tipus_cups = ac_cups_obj.q(cursor, uid).read(['tipus_cups']).where([('autoconsum_id', '=', ac_id)])[0]['tipus_cups']
-                res[pol_id] = tipus_cups
+            ac_id = self.read(cursor, uid, pol_id, ['autoconsum_id'], context=context)['autoconsum_id']
+            if ac_id:
+                ac_cups_id = ac_cups_obj.search(cursor, uid, [('autoconsum_id', '=', ac_id[0])], context=context)
+                if ac_cups_id:
+                    tipus_cups = ac_cups_obj.read(cursor, uid, ac_cups_id[0], ['tipus_cups'], context=context)['tipus_cups']
+                    res[pol_id] = tipus_cups
 
         return res
 
