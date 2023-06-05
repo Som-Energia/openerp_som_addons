@@ -147,7 +147,7 @@
             <field name="type">tree</field>
             <field name="priority" eval="1"/>
             <field name="arch" type="xml">
-                <tree string="CAU">
+                <tree string="Contractes amb autoconsum 2">
                     <field name="titular"/>
                     <field name="autoconsum_id"/>
                     <field name="name"/>
@@ -161,7 +161,7 @@
                     <field name="data_alta"/>
                     <field name="data_alta_auto"/>
                     <field name="ac_state"/>
-                     <field name="data_baixa_auto"/>
+                    <field name="data_baixa_auto"/>
                     <field name="data_baixa"/>
                     <field name="facturacio_suspesa"/>
                     <field name="data_ultima_factura"/>
@@ -174,16 +174,16 @@
             </field>
         </record>
         <record model="ir.actions.act_window" id="action_giscedata_polissa_cau_som_tree">
-            <field name="name">CAU</field>
+            <field name="name">Contractes amb autoconsum 2</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">giscedata.polissa</field>
             <field name="domain">[('autoconsumo', '!=', '00')]</field>
-            <field name="view_type">tree</field>
+            <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="view_giscedata_polissa_cau_tree"/>
             <field name="context">{'active_test': False}</field>
+            <field name="view_id" ref="view_giscedata_polissa_cau_tree"/>
         </record>
-        <menuitem name="CAU" id="menu_view_giscedata_polissa_cau_tree"
+        <menuitem name="Contractes amb autoconsum 2" id="menu_view_giscedata_polissa_cau_tree"
                   parent="giscedata_polissa.menu_polisses"
                   action="action_giscedata_polissa_cau_som_tree"/>
 
