@@ -31,8 +31,9 @@ class GiscedataPolissa(osv.osv):
         for pol_id in ids:
             fact_date = fact_obj.q(cursor, uid).read(['date_invoice'],
                                                      order_by=['invoice_id.date_invoice.desc'],
-                                                     limit=1).where([('polissa_id', '=', pol_id)])[0]['date_invoice']
-            res[pol_id] = fact_date
+                                                     limit=1).where([('polissa_id', '=', pol_id)])
+            if len(fact_date):
+                res[pol_id] = fact_date[0].get('date_invoice')
 
         return res
 
