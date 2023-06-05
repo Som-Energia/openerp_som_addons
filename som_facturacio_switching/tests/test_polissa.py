@@ -26,16 +26,23 @@ class TestsEscullLlistaPreus(testing.OOTestCase):
             self.cursor, self.uid, 'giscedata_polissa', 'polissa_0001'
         )[1]
 
-        return pol_obj.browse(self.cursor, self.uid, pol_id)
+        tariff_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, 'giscedata_polissa', 'tarifa_20TD'
+        )[1]
+
+        pol = pol_obj.browse(self.cursor, self.uid, pol_id)
+        pol_obj.write(self.cursor, self.uid, pol_id, {"tarifa": tariff_id})
+
+        return pol
 
     def get_demo_pricelist_list(self):
         imd_obj = self.model('ir.model.data')
 
         pricelist_som_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, 'som_facturacio_switching', 'pricelist_20A_SOM'
+            self.cursor, self.uid, 'som_indexada', 'pricelist_periodes_20td_peninsula'
         )[1]
         pricelist_som_insular_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, 'som_facturacio_switching', 'pricelist_20A_SOM_INSULAR'
+            self.cursor, self.uid, 'som_indexada', 'pricelist_periodes_20td_insular'
         )[1]
         pricelist_electricidad_id = imd_obj.get_object_reference(
             self.cursor, self.uid, 'giscedata_facturacio', 'pricelist_tarifas_electricidad'
@@ -75,12 +82,11 @@ class TestsEscullLlistaPreus(testing.OOTestCase):
         imd_obj = self.model('ir.model.data')
 
         pol = self.get_demo_contract()
-        pricelist_list = self.get_demo_pricelist_list()
 
         with patch.object(
                 pol.cups.id_municipi.subsistema_id, 'code',
                 new_callable=PropertyMock(return_value="TF")
-            ) as mock:
+        ):
 
             default_pricelist_id = imd_obj.get_object_reference(
                 self.cursor, self.uid, 'giscedata_facturacio', 'pricelist_tarifas_electricidad'

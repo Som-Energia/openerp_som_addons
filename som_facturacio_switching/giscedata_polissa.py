@@ -42,8 +42,6 @@ class GiscedataPolissa(osv.osv):
             # if we get an exception is because we haven't found a list price, so, empy list
             pass
 
-        som_llista = [pricelist_id]
-
         # si li passem una list de només una pólissa, retorna la llista única
         return super(GiscedataPolissa,
                      self).escull_llista_preus(cursor, uid, id, som_llista,

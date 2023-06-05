@@ -103,7 +103,7 @@ class WizardChangeToIndexada(osv.osv_memory):
         """
         cursor.execute(sql_array, (id_prov_balears,))
         res = cursor.dictfetchone()['cup_ids']
-        return res
+        return res or []
 
     def _get_location_polissa(self, cursor, uid, polissa):
         if polissa.fiscal_position_id:
@@ -128,13 +128,12 @@ class WizardChangeToIndexada(osv.osv_memory):
             raise indexada_exceptions.TariffCodeNotSupported(tarifa_codi)
 
         location = self._get_location_polissa(cursor, uid, polissa)
-        import pudb; pu.db
         new_pricelist_id = IrModel._get_obj(
             cursor,
             uid,
             'som_indexada',
             dict_pricelist_codis[tarifa_codi][location],
-        ).id
+        )
 
         return new_pricelist_id
 

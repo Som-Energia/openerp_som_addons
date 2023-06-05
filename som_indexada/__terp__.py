@@ -20,6 +20,7 @@
     "init_xml": [],
     "demo_xml": [
         "demo/product_pricelist_demo_data.xml",
+        "demo/polissa_demo_data.xml",
     ],
     "update_xml":[
         "wizard/wizard_change_to_indexada.xml",
