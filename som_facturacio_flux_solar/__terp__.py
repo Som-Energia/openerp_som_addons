@@ -15,6 +15,7 @@
     "demo_xml": [],
     "update_xml": [
         "giscedata_bateria_virtual.xml",
+        "giscedata_bateria_virtual_origen.xml",
     ],
     "active": False,
     "installable": True
