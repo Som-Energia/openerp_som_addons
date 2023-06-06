@@ -1,0 +1,1 @@
+import giscedata_bateria_virtual
