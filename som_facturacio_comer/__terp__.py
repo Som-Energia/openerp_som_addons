@@ -16,7 +16,6 @@
         "som_switching",
         "som_generationkwh",
         "giscedata_repercussio_mecanismo_ajuste_gas",
-        "giscedata_facturacio_bateria_virtual",
     ],
     "init_xml": [],
     "demo_xml": [],
@@ -32,7 +31,6 @@
         "giscedata_facturacio_data.xml",
         "giscedata_lectures_view.xml",
         "giscedata_polissa_view.xml",
-        "giscedata_bateria_virtual_origen.xml",
     ],
     "active": False,
     "installable": True
