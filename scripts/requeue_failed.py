@@ -67,9 +67,9 @@ def main(redis_conn, interval, max_attempts):
                     print(job.description)
                     print(job.exc_info)
                     if queue.name in QUEUES_TO_DELETE_AFETER_REQUE:
-                        print("deleting: %s from %s (Requeue)" % ( job.id, job.origin ))
+                        print("deleting: %s from %s (Requeue)" % (job.id, job.origin))
                         key_registry = fq.key
-                        redis_conn.zrem(key_registry,job_id)
+                        redis_conn.zrem(key_registry, job_id)
                     continue
                 else:
                     ago = (times.now() - job.enqueued_at).seconds
