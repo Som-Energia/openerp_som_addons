@@ -4,6 +4,7 @@ import re
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from tools.translate import _
+from tools import email_send
 
 class GiscedataPolissaInfoenergia(osv.osv):
     """
@@ -137,6 +138,73 @@ class GiscedataPolissaInfoenergia(osv.osv):
             pass
 
         return conany
+
+    def _conany_updater(self, cursor, uid, context=None):
+        msg = []
+        msg.append('Cercant polisses a updatar')
+        domain = [
+            ('state', '=', 'activa'),
+            ('tarifa_codi', 'like', '3%')
+        ]
+        contracts3_ids = self.search(cursor, uid, domain)
+        msg.append('Trobades {} polisses 3.X'.format(len(contracts3_ids)))
+        domain = [
+            ('state', '=', 'activa'),
+            ('tarifa_codi', 'like', '6%')
+        ]
+        contracts6_ids = self.search(cursor, uid, domain)
+        msg.append('Trobades {} polisses 6.X'.format(len(contracts6_ids)))
+
+        contracts_ids = contracts3_ids + contracts6_ids
+        msg.append('Trobades {} polisses candidates'.format(len(contracts_ids)))
+
+        failed = []
+        contracts_cups_id = []
+        for contract in self.read(cursor, uid, contracts_ids, ['id', 'cups']):
+            try:
+                contracts_cups_id.append(contract['cups'][0])
+            except Exception as e:
+                failed.append(('contract read', contract['id'], str(e)))
+
+        cups_search = [
+            ('conany_origen', '!=', 'manual'),
+            ('id', 'in', contracts_cups_id),
+        ]
+        cups_obj = self.pool.get('giscedata.cups.ps')
+        toupdate_cups_id = cups_obj.search(cursor, uid, cups_search)
+        msg.append('Trobats {} cups a updatar'.format(len(toupdate_cups_id)))
+
+        cups_updated = 0
+        for cups_id in toupdate_cups_id:
+            try:
+                cups_obj.omple_consum_anual(cursor, uid, cups_id)
+                cups_updated += 1
+            except Exception as e:
+                failed.append(('cups update', cups_id, str(e)))
+
+        msg.append('Updatats {} cups'.format(cups_updated))
+        msg = '\n'.join(msg)
+        msg += "\n\nErrors\n"
+        for fail in failed:
+            msg += "{} {} {}\n".format(fail[0], fail[1], fail[2])
+
+        return msg
+
+    def _cronjob_conany_updater_mail_text(self, cursor, uid, data=None, context=None):
+        if not data:
+            data = {}
+        if not context:
+            context = {}
+
+        subject = _(u"Resultat accions update de consum anual")
+        msg = self._conany_updater(cursor, uid, context)
+        emails_to = filter(lambda a: bool(a), map(str.strip, data.get('emails_to', '').split(',')))
+        if emails_to:
+            user_obj = self.pool.get('res.users')
+            email_from = user_obj.browse(cursor, uid, uid).address_id.email
+            email_send(email_from, emails_to, subject, msg)
+
+        return True
 
     _columns = {
         'emp_allow_send_data': fields.boolean('Permetre compartir dades amb BeeData',
