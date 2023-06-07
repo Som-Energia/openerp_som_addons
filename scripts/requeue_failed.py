@@ -9,10 +9,10 @@ from rq.registry import FailedJobRegistry
 from datetime import datetime
 import argparse
 
-INTERVAL = 7200  # Seconds
+INTERVAL = 1200  # Seconds
 MAX_ATTEMPTS = 5
-QUEUES_TO_REQUEUE = ["cups_cch", "tm_validate", "make_invoices"]
-QUEUES_TO_DELETE = ["jobspool-autoworker"]
+QUEUES_TO_REQUEUE = ["cups_cch", "tm_validate", "sii"]
+QUEUES_TO_DELETE = ["jobspool-autoworker", "profiling", "make_invoices"]
 EXECINFO_TO_DELETE = [
     "Work-horse process was terminated unexpectedly",
     "es mes petita que la data inicial",
@@ -20,7 +20,10 @@ EXECINFO_TO_DELETE = [
     "No s'han trobat versions de preus",
     "InFailedSqlTransaction: current transaction is aborted, commands ignored until end of transaction block",  # noqa: E501
     "RepresenterError: ('cannot represent an object', <osv.orm.browse_null object at 0x7f3148f11a90>)",  # noqa: E501
+    "You try to write on an record that doesn't exist",
+    "cursor, uid, line_id, ['import_phase'])['import_phase']\nTypeError: 'bool' object has no attribute '__getitem__'",  # noqa: E501
 ]
+QUEUES_TO_DELETE_AFETER_REQUE = ["sii"]
 
 redis_conn = from_url(sys.argv[1])
 use_connection(redis_conn)
@@ -63,6 +66,10 @@ def main(redis_conn, interval, max_attempts):
                     )
                     print(job.description)
                     print(job.exc_info)
+                    if queue.name in QUEUES_TO_DELETE_AFETER_REQUE:
+                        print("deleting: %s from %s (Requeue)" % ( job.id, job.origin ))
+                        key_registry = fq.key
+                        redis_conn.zrem(key_registry,job_id)
                     continue
                 else:
                     ago = (times.now() - job.enqueued_at).seconds
@@ -80,6 +87,7 @@ def main(redis_conn, interval, max_attempts):
             ):
                 try:
                     print("deleting: %s from %s (Requeue)" % (job.id, job.origin))
+                    print(job.exc_info)
                     key_registry = fq.key
                     redis_conn.zrem(key_registry, job_id)
                     continue
