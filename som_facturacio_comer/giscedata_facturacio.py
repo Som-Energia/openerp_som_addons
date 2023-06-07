@@ -50,19 +50,5 @@ class GiscedataFacturacioFacturador(osv.osv):
 
         return vals
 
-    def search_polissa_segons_vals(self, cursor, uid, fact_vals, context=None):
-        polissa_bat_obj = self.pool.get("giscedata.bateria.virtual.polissa")
-        res = polissa_bat_obj.search(
-            cursor, uid, [
-                ('polissa_id', '=', fact_vals['polissa_id'][0]),
-                ('data_inici', '>=', fact_vals['data_inici']),
-                ('gestio_descomptes', '!=', 'no_aplicar'),
-                '|',
-                ('data_final', '>', fact_vals['data_final']),
-                ('data_final', '=', False),
-            ], context=context
-        )
-        return res
-
 
 GiscedataFacturacioFacturador()
