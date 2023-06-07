@@ -6,5 +6,15 @@
             <field name="type">sale</field>
             <field name="currency_id" ref="base.EUR"/>
         </record>
+
+        <record model="product.pricelist" id="pricelist_periodes_20td_peninsula">
+            <field name="name">2.0TD (SOM2)</field>
+            <field name="type">sale</field>
+        </record>
+        <record model="product.pricelist" id="pricelist_periodes_20td_insular">
+            <field name="name">2.0TD (SOM2_INSULAR)</field>
+            <field name="type">sale</field>
+        </record>
+
     </data>
 </openerp>

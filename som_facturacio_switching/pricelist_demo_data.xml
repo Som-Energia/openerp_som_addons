@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+
         <record model="product.pricelist" id="pricelist_20A_SOM">
             <field name="name">2.0A_SOM</field>
             <field name="type">sale</field>
@@ -9,5 +10,13 @@
             <field name="name">2.0A_SOM_INSULAR</field>
             <field name="type">sale</field>
         </record>
+
+        <record model="giscedata.polissa.tarifa" id="giscedata_polissa.tarifa_20TD">
+            <field name="llistes_preus_comptatibles" eval="[(4,ref('som_indexada.pricelist_periodes_20td_peninsula'))]"/>
+        </record>
+        <record model="giscedata.polissa.tarifa" id="giscedata_polissa.tarifa_20TD">
+            <field name="llistes_preus_comptatibles" eval="[(4,ref('som_indexada.pricelist_periodes_20td_insular'))]"/>
+        </record>
+
     </data>
 </openerp>

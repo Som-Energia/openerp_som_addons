@@ -27,10 +27,20 @@ class GiscedataPolissa(osv.osv):
 
         contract = self.browse(cursor, uid, contract_id, context=context)
 
-        som_llista = llista[:]
-        if len(llista) > 1:
-            som_llista = contract.cups.id_municipi.filter_compatible_pricelists(
-                som_llista, context)
+        som_llista = []
+        try:
+            wiz_o = self.pool.get('wizard.change.to.indexada')
+            pricelist_id = wiz_o.get_new_pricelist(
+                    cursor,
+                    uid,
+                    contract,
+                    context=context,
+                )
+            if pricelist_id in llista:
+                som_llista = [pricelist_id]
+        except Exception:
+            # if we get an exception is because we haven't found a list price, so, empy list
+            pass
 
         # si li passem una list de només una pólissa, retorna la llista única
         return super(GiscedataPolissa,

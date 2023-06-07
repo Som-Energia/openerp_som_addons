@@ -27,5 +27,11 @@
             <field name="tg">1</field>
             <field name="autoconsumo">00</field>
         </record>
+        <record model="payment.mode" id="payment_mode_enginyers">
+            <field name="name">ENGINYERS</field>
+            <field name="type" ref="account_payment.payment_type_demo"/>
+            <field name="bank_id" ref="base.main_bank"/>
+            <field name="journal" model="account.journal" search="[('type','=','cash')]"/>
+        </record>
     </data>
 </openerp>
