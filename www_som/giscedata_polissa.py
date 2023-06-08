@@ -110,6 +110,44 @@ class GiscedataPolissa(osv.osv):
         return lectures
 
 
+    def www_check_modifiable_polissa(self, cursor, uid, polissa_id, context=None):
+        """
+        Things to check before allowing modcons to the contract.
+        - Contract doesn't have ANY pending modcons
+        - Contract doesn't have ANY pending ATR cases
+        """
+        if context is None:
+            context = {}
+
+        sw_obj = self.pool.get('giscedata.switching')
+
+        polissa = self.browse(cursor, uid, polissa_id, context=context)
+
+        res = {
+            'info': 'The contract can be modifiable',
+            'modifiable': True
+        }
+
+        prev_modcon = polissa.modcontractuals_ids[0]
+        if prev_modcon.state == 'pendent':
+            res['modifiable'] = False
+            res['info'] = "Contract {} already has a pending modcon".format(
+                polissa.name
+            )
+
+        atr_case = sw_obj.search(cursor, uid, [
+            ('polissa_ref_id', '=', polissa.id),
+            ('state', 'in', ['open', 'draft', 'pending']),
+            ('proces_id.name', '!=', 'R1'),
+        ])
+
+        if atr_case:
+            res['modifiable'] = False
+            res['info'] = 'Contract {} with simultaneous ATR'.format(polissa.name)
+
+        return res
+
+
     _columns = {
         'www_current_pagament': fields.function(_www_current_pagament,
                                         string='Pagament corrent portal',
