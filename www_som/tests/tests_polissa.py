@@ -2,6 +2,7 @@
 
 from destral import testing
 from destral.transaction import Transaction
+from som_indexada.exceptions import indexada_exceptions
 
 from datetime import date,datetime,timedelta
 
@@ -182,16 +183,15 @@ class TestPolissaWwwAutolectura(testing.OOTestCase):
             'ref_contracte': pol_id,
         }
 
-        sw_id = self.sw_obj.create(
+        self.sw_obj.create(
             self.cursor, self.uid, sw_params, context=ctx
         )
 
-        res = self.pol_obj.www_check_modifiable_polissa(
-            self.cursor, self.uid, pol_id, context=ctx
-        )
-
-        self.assertEqual(res['modifiable'], True)
-        self.assertEqual(res['info'], 'The contract can be modifiable')
+        with self.assertRaises(indexada_exceptions.PolissaSimultaneousATR) as error:
+            self.pol_obj.www_check_modifiable_polissa(
+                self.cursor, self.uid, pol_id, context=ctx
+            )
+        self.assertEqual(error.exception.to_dict()['error'], u"Pòlissa 0018 with simultaneous ATR")
 
 
     def test_www_check_modifiable_polissa_not_modifiable_for_pending_modcon(self):
@@ -212,10 +212,11 @@ class TestPolissaWwwAutolectura(testing.OOTestCase):
             self.cursor, self.uid, pol_id, values, today_plus_10_days, today_plus_100_days, context=ctx
         )
 
-        res = self.pol_obj.www_check_modifiable_polissa(self.cursor, self.uid, pol_id, context=ctx)
-
-        self.assertEqual(res['modifiable'], False)
-        self.assertEqual(res['info'], 'Contract 0018 already has a pending modcon')
+        with self.assertRaises(indexada_exceptions.PolissaModconPending) as error:
+            self.pol_obj.www_check_modifiable_polissa(
+                self.cursor, self.uid, pol_id, context=ctx
+            )
+        self.assertEqual(error.exception.to_dict()['error'], u"Pòlissa 0018 already has a pending modcon")
 
 
     def test_www_check_modifiable_polissa_modifiable(self):
@@ -227,5 +228,20 @@ class TestPolissaWwwAutolectura(testing.OOTestCase):
 
         res = self.pol_obj.www_check_modifiable_polissa(self.cursor, self.uid, pol_id, context=ctx)
 
-        self.assertEqual(res['modifiable'], True)
-        self.assertEqual(res['info'], 'The contract can be modifiable')
+        self.assertEqual(res, True)
+
+
+    def test_www_check_modifiable_polissa_not_modifiable_for_not_active(self):
+        pol_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, 'giscedata_polissa', 'polissa_tarifa_018'
+        )[1]
+
+        ctx = {
+            'lang': 'en_US'
+        }
+
+        with self.assertRaises(indexada_exceptions.PolissaNotActive) as error:
+            self.pol_obj.www_check_modifiable_polissa(
+                self.cursor, self.uid, pol_id, context=ctx
+            )
+        self.assertEqual(error.exception.to_dict()['error'], u"Pòlissa 0018 not active")
