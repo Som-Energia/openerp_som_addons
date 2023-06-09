@@ -145,6 +145,7 @@ class GiscedataPolissaInfoenergia(osv.osv):
 
     def _conany_updater(self, cursor, uid, context=None):
         msg = []
+        msg.append(str(datetime.today()))
         msg.append('Cercant polisses a updatar')
         domain = [
             ('state', '=', 'activa'),
@@ -187,10 +188,12 @@ class GiscedataPolissaInfoenergia(osv.osv):
                 failed.append(('cups update', cups_id, str(e)))
 
         msg.append('Updatats {} cups'.format(cups_updated))
+        msg.append(str(datetime.today()))
         msg = '\n'.join(msg)
-        msg += "\n\nErrors\n"
-        for fail in failed:
-            msg += "{} {} {}\n".format(fail[0], fail[1], fail[2])
+        if failed:
+            msg += "\n\nErrors\n"
+            for fail in failed:
+                msg += "{} {} {}\n".format(fail[0], fail[1], fail[2])
 
         return msg
 
