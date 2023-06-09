@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
 from dateutil import parser
+from som_indexada.exceptions import indexada_exceptions
 
 from osv import osv
 from osv import fields
@@ -123,17 +124,12 @@ class GiscedataPolissa(osv.osv):
 
         polissa = self.browse(cursor, uid, polissa_id, context=context)
 
-        res = {
-            'info': 'The contract can be modifiable',
-            'modifiable': True
-        }
+        if polissa.state != 'activa':
+            raise indexada_exceptions.PolissaNotActive(polissa.name)
 
         prev_modcon = polissa.modcontractuals_ids[0]
         if prev_modcon.state == 'pendent':
-            res['modifiable'] = False
-            res['info'] = "Contract {} already has a pending modcon".format(
-                polissa.name
-            )
+            raise indexada_exceptions.PolissaModconPending(polissa.name)
 
         atr_case = sw_obj.search(cursor, uid, [
             ('polissa_ref_id', '=', polissa.id),
@@ -142,10 +138,9 @@ class GiscedataPolissa(osv.osv):
         ])
 
         if atr_case:
-            res['modifiable'] = False
-            res['info'] = 'Contract {} with simultaneous ATR'.format(polissa.name)
+            raise indexada_exceptions.PolissaSimultaneousATR(polissa.name)
 
-        return res
+        return True
 
 
     _columns = {
@@ -153,4 +148,5 @@ class GiscedataPolissa(osv.osv):
                                         string='Pagament corrent portal',
                                         type='boolean', method=True),
     }
+
 GiscedataPolissa()
