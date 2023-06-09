@@ -181,6 +181,7 @@ class TestPolissaWwwAutolectura(testing.OOTestCase):
             'proces_id': proces_id,
             'cups_polissa_id': pol_id,
             'ref_contracte': pol_id,
+            'polissa_ref_id': pol_id,
         }
 
         self.sw_obj.create(
