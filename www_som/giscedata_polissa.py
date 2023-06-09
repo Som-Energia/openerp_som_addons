@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
 from dateutil import parser
+from som_indexada.exceptions import indexada_exceptions
 
 from osv import osv
 from osv import fields
@@ -110,9 +111,42 @@ class GiscedataPolissa(osv.osv):
         return lectures
 
 
+    def www_check_modifiable_polissa(self, cursor, uid, polissa_id, context=None):
+        """
+        Things to check before allowing modcons to the contract.
+        - Contract doesn't have ANY pending modcons
+        - Contract doesn't have ANY pending ATR cases
+        """
+        if context is None:
+            context = {}
+
+        sw_obj = self.pool.get('giscedata.switching')
+
+        polissa = self.browse(cursor, uid, polissa_id, context=context)
+
+        if polissa.state != 'activa':
+            raise indexada_exceptions.PolissaNotActive(polissa.name)
+
+        prev_modcon = polissa.modcontractuals_ids[0]
+        if prev_modcon.state == 'pendent':
+            raise indexada_exceptions.PolissaModconPending(polissa.name)
+
+        atr_case = sw_obj.search(cursor, uid, [
+            ('polissa_ref_id', '=', polissa.id),
+            ('state', 'in', ['open', 'draft', 'pending']),
+            ('proces_id.name', '!=', 'R1'),
+        ])
+
+        if atr_case:
+            raise indexada_exceptions.PolissaSimultaneousATR(polissa.name)
+
+        return True
+
+
     _columns = {
         'www_current_pagament': fields.function(_www_current_pagament,
                                         string='Pagament corrent portal',
                                         type='boolean', method=True),
     }
+
 GiscedataPolissa()

@@ -6,16 +6,16 @@
     "version": "2.103.13",
     "author": "SomEnergia",
     "category": "GISCE extend",
-    "depends":[
+    "depends": [
         "giscedata_facturacio",
     ],
     "init_xml": [],
     "demo_xml": [],
-    "update_xml":[
+    "update_xml": [
         "wizard/wizard_fraccionar_via_extralines_view.xml",
         "wizard/wizard_model_list_from_file_data.xml",
         "giscedata_facturacio_data.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

@@ -34,7 +34,7 @@ def strip_accents(s):
 class SomEnviamentMassiu(osv.osv):
     _name = 'som.enviament.massiu'
 
-    def attach_pdf(self, cursor, uid, ids, filepath):
+    def attach_pdf(self, cursor, uid, ids, filepath, filename):
         if isinstance(ids, (tuple, list)):
             ids = ids[0]
         enviament = self.browse(cursor, uid, ids)
@@ -52,12 +52,7 @@ class SomEnviamentMassiu(osv.osv):
                         enviament.lot_enviament.name,
                         enviament.polissa_id.name
                 ),
-                'datas_fname': strip_accents(
-                    u'{}_{}.pdf'.format(
-                        enviament.polissa_id.name,
-                        enviament.lot_enviament.name
-                    )
-                ),
+                'datas_fname': filename,
                 'datas': base64.b64encode(data),
                 'res_model': 'som.enviament.massiu',
                 'res_id': ids,

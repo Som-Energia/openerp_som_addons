@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (c) 2010 Domatix Technologies  S.L. (http://www.domatix.com) 
+#    Copyright (c) 2010 Domatix Technologies  S.L. (http://www.domatix.com)
 #                       info <info@domatix.com>
 #                        Angel Moya <angel.moya@domatix.com>
 #
@@ -22,24 +22,21 @@
 #
 ##############################################################################
 
-from osv import fields,osv
+from osv import fields, osv
 
-    
+
 class account_invoice(osv.osv):
     _inherit = "account.invoice"
     _columns = {
-                'sequence_number': fields.integer('Sequence Number', readonly=True, select=True),
-                }
+        "sequence_number": fields.integer("Sequence Number", readonly=True, select=True),
+    }
 
-    
     def renumber(self, cr, uid, ids, init, context=None):
-        
-        
+
         i = init or 0
         for invoice_id in ids:
-            self.write(cr, uid, invoice_id, {'sequence_number':i}, context=context)
+            self.write(cr, uid, invoice_id, {"sequence_number": i}, context=context)
             i += 1
-        
+
 
 account_invoice()
-

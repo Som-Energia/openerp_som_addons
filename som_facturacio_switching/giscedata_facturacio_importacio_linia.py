@@ -108,7 +108,8 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
         for _, f1ns in f1_dict.items():
             sorted_list = sorted(f1ns, key=lambda x: x['fecha_factura_desde'])
             line_ids = [x['id'] for x in sorted_list]
-            self.process_line(cursor, uid, line_ids, context=context)
+            for line in line_ids:
+                self.process_line(cursor, uid, line, context=context)
 
 
     def do_reimport_f1(self, cursor, uid, data=None, context=None):
