@@ -79,8 +79,18 @@ class GiscedataPolissaInfoenergia(osv.osv):
             polissa_id = polissa_id[0]
 
         fact_obj = self.pool.get('giscedata.facturacio.factura')
-        limit_date = (datetime.today() - timedelta(self.MINIM_DIES_CONSUM)).strftime('%Y-%m-%d')
-        from_date = (datetime.today() - relativedelta(months=14)).strftime('%Y-%m-%d')
+        search_params = [
+            ('polissa_id', '=', polissa_id),
+            ('state', '!=', 'draft'),
+            ('type', 'in', ['out_invoice', 'out_refund'])
+        ]
+        f_id = fact_obj.search(cursor, uid, search_params, limit=1, order='id desc')
+        if not f_id:
+            return False
+
+        data_final = fact_obj.read(cursor, uid, f_id[0], ['data_final'])['data_final']
+        today = datetime.strptime(data_final, '%Y-%m-%d')
+        from_date = (today - relativedelta(months=12, days=15)).strftime('%Y-%m-%d')
 
         search_params = [
             ('polissa_id', '=', polissa_id),
@@ -92,13 +102,7 @@ class GiscedataPolissaInfoenergia(osv.osv):
         if not fact_ids:
             return False
 
-        fact_infos = fact_obj.read(cursor, uid, fact_ids, ['energia_kwh', 'type', 'data_inici', 'data_final'])
-        fact_infos.sort(key=lambda x: x['data_inici'])
-        n_dies = datetime.strptime(fact_infos[-1]['data_final'], '%Y-%m-%d') - datetime.strptime(fact_infos[0]['data_inici'], '%Y-%m-%d')
-        n_dies = n_dies.days
-        if n_dies < self.MINIM_DIES_CONSUM:
-            return False
-
+        fact_infos = fact_obj.read(cursor, uid, fact_ids, ['energia_kwh', 'type'])
         consum_anual = 0
         for fact_info in fact_infos:
             if fact_info['type'] == 'out_invoice':
@@ -109,7 +113,7 @@ class GiscedataPolissaInfoenergia(osv.osv):
         if consum_anual < 0 or consum_anual > 10000000:
             return False
 
-        return consum_anual*365/n_dies
+        return consum_anual
 
     _columns = {
         'emp_allow_send_data': fields.boolean('Permetre compartir dades amb BeeData',
