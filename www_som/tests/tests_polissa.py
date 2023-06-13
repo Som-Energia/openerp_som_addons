@@ -188,11 +188,13 @@ class TestPolissaWwwAutolectura(testing.OOTestCase):
             self.cursor, self.uid, sw_params, context=ctx
         )
 
-        with self.assertRaises(indexada_exceptions.PolissaSimultaneousATR) as error:
-            self.pol_obj.www_check_modifiable_polissa(
-                self.cursor, self.uid, pol_id, context=ctx
-            )
-        self.assertEqual(error.exception.to_dict()['error'], u"Pòlissa 0018 with simultaneous ATR")
+        result = self.pol_obj.www_check_modifiable_polissa(
+            self.cursor, self.uid, pol_id, context=ctx
+        )
+
+        self.assertEqual(result['error'], u"Pòlissa 0018 with simultaneous ATR")
+        self.assertEqual(result['code'], u"PolissaSimultaneousATR")
+
 
 
     def test_www_check_modifiable_polissa_not_modifiable_for_pending_modcon(self):
@@ -213,11 +215,11 @@ class TestPolissaWwwAutolectura(testing.OOTestCase):
             self.cursor, self.uid, pol_id, values, today_plus_10_days, today_plus_100_days, context=ctx
         )
 
-        with self.assertRaises(indexada_exceptions.PolissaModconPending) as error:
-            self.pol_obj.www_check_modifiable_polissa(
-                self.cursor, self.uid, pol_id, context=ctx
-            )
-        self.assertEqual(error.exception.to_dict()['error'], u"Pòlissa 0018 already has a pending modcon")
+        result = self.pol_obj.www_check_modifiable_polissa(
+            self.cursor, self.uid, pol_id, context=ctx
+        )
+        self.assertEqual(result['error'], u"Pòlissa 0018 already has a pending modcon")
+        self.assertEqual(result['code'], u"PolissaModconPending")
 
 
     def test_www_check_modifiable_polissa_modifiable(self):
@@ -227,9 +229,9 @@ class TestPolissaWwwAutolectura(testing.OOTestCase):
             'lang': 'en_US'
         }
 
-        res = self.pol_obj.www_check_modifiable_polissa(self.cursor, self.uid, pol_id, context=ctx)
+        result = self.pol_obj.www_check_modifiable_polissa(self.cursor, self.uid, pol_id, context=ctx)
 
-        self.assertEqual(res, True)
+        self.assertEqual(result, True)
 
 
     def test_www_check_modifiable_polissa_not_modifiable_for_not_active(self):
@@ -241,8 +243,8 @@ class TestPolissaWwwAutolectura(testing.OOTestCase):
             'lang': 'en_US'
         }
 
-        with self.assertRaises(indexada_exceptions.PolissaNotActive) as error:
-            self.pol_obj.www_check_modifiable_polissa(
-                self.cursor, self.uid, pol_id, context=ctx
-            )
-        self.assertEqual(error.exception.to_dict()['error'], u"Pòlissa 0018 not active")
+        result = self.pol_obj.www_check_modifiable_polissa(
+            self.cursor, self.uid, pol_id, context=ctx
+        )
+        self.assertEqual(result['error'], u"Pòlissa 0018 not active")
+        self.assertEqual(result['code'], u"PolissaNotActive")

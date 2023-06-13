@@ -110,6 +110,11 @@ class GiscedataPolissa(osv.osv):
                              })
         return lectures
 
+    def _traceback_info(self, exception):
+        import traceback
+        import sys
+        exc_type, exc_value, exc_tb = sys.exc_info()
+        return traceback.format_exception(exc_type, exc_value, exc_tb)
 
     def www_check_modifiable_polissa(self, cursor, uid, polissa_id, context=None):
         """
@@ -117,31 +122,43 @@ class GiscedataPolissa(osv.osv):
         - Contract doesn't have ANY pending modcons
         - Contract doesn't have ANY pending ATR cases
         """
+
         if context is None:
             context = {}
 
         sw_obj = self.pool.get('giscedata.switching')
 
-        polissa = self.browse(cursor, uid, polissa_id, context=context)
+        try:
+            polissa = self.browse(cursor, uid, polissa_id, context=context)
 
-        if polissa.state != 'activa':
-            raise indexada_exceptions.PolissaNotActive(polissa.name)
+            if polissa.state != 'activa':
+                raise indexada_exceptions.PolissaNotActive(polissa.name)
 
-        prev_modcon = polissa.modcontractuals_ids[0]
-        if prev_modcon.state == 'pendent':
-            raise indexada_exceptions.PolissaModconPending(polissa.name)
+            prev_modcon = polissa.modcontractuals_ids[0]
+            if prev_modcon.state == 'pendent':
+                raise indexada_exceptions.PolissaModconPending(polissa.name)
 
-        atr_case = sw_obj.search(cursor, uid, [
-            ('polissa_ref_id', '=', polissa.id),
-            ('state', 'in', ['open', 'draft', 'pending']),
-            ('proces_id.name', '!=', 'R1'),
-        ])
+            atr_case = sw_obj.search(cursor, uid, [
+                ('polissa_ref_id', '=', polissa.id),
+                ('state', 'in', ['open', 'draft', 'pending']),
+                ('proces_id.name', '!=', 'R1'),
+            ])
 
-        if atr_case:
-            raise indexada_exceptions.PolissaSimultaneousATR(polissa.name)
+            if atr_case:
+                raise indexada_exceptions.PolissaSimultaneousATR(polissa.name)
+        except indexada_exceptions.IndexadaException as e:
+            return dict(
+                e.to_dict(),
+                trace=self._traceback_info(e),
+            )
+        except Exception as e:
+            return dict(
+                error=str(e),
+                code="Unexpected",
+                trace=self._traceback_info(e),
+            )
 
         return True
-
 
     _columns = {
         'www_current_pagament': fields.function(_www_current_pagament,
