@@ -116,7 +116,7 @@ class GiscedataPolissa(osv.osv):
         exc_type, exc_value, exc_tb = sys.exc_info()
         return traceback.format_exception(exc_type, exc_value, exc_tb)
 
-    def www_check_modifiable_polissa(self, cursor, uid, polissa_id, context=None):
+    def www_check_modifiable_polissa(self, cursor, uid, polissa_id, skip_atr_check=False, context=None):
         """
         Things to check before allowing modcons to the contract.
         - Contract doesn't have ANY pending modcons
@@ -144,7 +144,7 @@ class GiscedataPolissa(osv.osv):
                 ('proces_id.name', '!=', 'R1'),
             ])
 
-            if atr_case:
+            if atr_case and not skip_atr_check:
                 raise indexada_exceptions.PolissaSimultaneousATR(polissa.name)
         except indexada_exceptions.IndexadaException as e:
             return dict(

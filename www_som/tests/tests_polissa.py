@@ -196,6 +196,33 @@ class TestPolissaWwwAutolectura(testing.OOTestCase):
         self.assertEqual(result['code'], u"PolissaSimultaneousATR")
 
 
+    def test_www_check_modifiable_polissa_modifiable_atr_skip_check(self):
+        pol_id = self._open_polissa('polissa_tarifa_018')
+
+        ctx = {
+            'lang': 'en_US'
+        }
+
+        proces_id = self.swproc_obj.search(
+            self.cursor, self.uid, [('name', '=', 'M1')]
+        )[0]
+
+        sw_params = {
+            'proces_id': proces_id,
+            'cups_polissa_id': pol_id,
+            'ref_contracte': pol_id,
+            'polissa_ref_id': pol_id,
+        }
+
+        self.sw_obj.create(
+            self.cursor, self.uid, sw_params, context=ctx
+        )
+
+        result = self.pol_obj.www_check_modifiable_polissa(
+            self.cursor, self.uid, pol_id, skip_atr_check=True, context=ctx
+        )
+
+        self.assertEqual(result, True)
 
     def test_www_check_modifiable_polissa_not_modifiable_for_pending_modcon(self):
         pol_id = self._open_polissa('polissa_tarifa_018')
