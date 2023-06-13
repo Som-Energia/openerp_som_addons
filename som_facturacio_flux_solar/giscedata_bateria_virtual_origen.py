@@ -37,27 +37,36 @@ class GiscedataBateriaVirtualOrigen(osv.osv):
         # [descompte_date, price, 'giscedata.facturacio.factura, factura.id']
         # [05-05-2023, 25.3, 'giscedata.facturacio.factura, 3642']
         percentatge_acum_obj = self.pool.get('giscedata.bateria.virtual.percentatges.acumulacio')
+        bateria_virtual_obj = self.pool.get('giscedata.bateria.virtual')
 
         descompte_data = descompte_total[0]
         descompte_preu = descompte_total[1]
         descompte_ref = descompte_total[2]
 
-        percetatge_acum_id = self.get_percentatge_acumulacio_from_date(cursor, uid, id, descompte_data)
-        percentatge = percentatge_acum_obj.read(cursor, uid, percetatge_acum_id[0], ['percentatge'])['percentatge']
-        amount = descompte_preu * (percentatge/100)
-        return (descompte_data, amount, descompte_ref)
+        # bateria_id = self.read(cursor, uid, id, ['bateria_id'])['bateria_id']
+        # info_box = bateria_virtual_obj.read(cursor, uid, bateria_id, ['info_box'])['info_box']
+
+        percetatge_acum_ids = self.get_percentatge_acumulacio_from_date(cursor, uid, id, descompte_data)
+        if not percetatge_acum_ids:
+            raise Exception ("No hi ha percentatges d'acumulacio actius")
+        elif len(percetatge_acum_ids) > 1:
+            raise Exception ("Hi ha percentatges d'acumulacio que comprenen dates en comú")
+        else:
+            percentatge = percentatge_acum_obj.read(cursor, uid, percetatge_acum_ids[0], ['percentatge'])['percentatge']
+            amount = descompte_preu * (percentatge/100)
+            return (descompte_data, amount, descompte_ref)
 
     def get_percentatge_acumulacio_from_date(self, cursor, uid, id, descompte_date):
         percentatge_acum_obj = self.pool.get('giscedata.bateria.virtual.percentatges.acumulacio')
-        percetatge_acum_id = percentatge_acum_obj.search(cursor, uid, [
+        percetatge_acum_ids = percentatge_acum_obj.search(cursor, uid, [
             ('origen_id', '=', id),
             ('data_inici', '<=', descompte_date),
+            '|',
             ('data_fi', '>=', descompte_date),
+            ('data_fi', '=', False),
         ])
-        if len(percetatge_acum_id) > 1:
-            raise osv.except_osv(u"Error", _("Hi ha poercentatges d'acumulacio que comprenen dates en comú"))
-        return percetatge_acum_id
 
+        return percetatge_acum_ids
 
     _columns = {
         'gestio_acumulacio': fields.selection(STATES_GESTIO_ACUMULACIO, "Gestió de l'acumulació"),
