@@ -232,14 +232,16 @@ class TarifaPoolSOM(TarifaPool):
 
         # Sobrecostes REE
         compodem = MonthlyCompodem('C2_monthlycompodem_%(postfix)s' % locals(), esios_token)
-        srad = SRAD('C2_srad_%(postfix)s' % locals(), esios_token)
-
         sobrecostes_ree = (
                 compodem.get_component("RT3") + compodem.get_component("RT6") + compodem.get_component("BS3") +
                 compodem.get_component("EXD") + compodem.get_component("IN7") + compodem.get_component("CFP") +
                 compodem.get_component("BALX") + compodem.get_component("DSV") + compodem.get_component("PS3") +
-                compodem.get_component("IN3") + srad
+                compodem.get_component("IN3")
         )
+
+        if (start_date.year >= 2022 and start_date.month >= 11) or (start_date.year > 2022):
+            srad = SRAD('C2_srad_%(postfix)s' % locals(), esios_token)
+            sobrecostes_ree += srad
 
         # MAJ RDL 10/2022
         maj_activated = self.conf.get('maj_activated', 0)
