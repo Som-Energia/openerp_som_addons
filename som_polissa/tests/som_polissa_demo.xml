@@ -27,5 +27,8 @@
             <field name="tg">1</field>
             <field name="autoconsumo">00</field>
         </record>
+        <record id="giscedata_polissa.polissa_tarifa_018" model="giscedata.polissa">
+            <field name="bank" ref="base_iban.res_partner_bank_iban_0001"/>
+        </record>
     </data>
 </openerp>
