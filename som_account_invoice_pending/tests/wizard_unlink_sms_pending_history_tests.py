@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 from destral import testing
 from destral.transaction import Transaction
-from datetime import date, timedelta
-import mock
-from mock import Mock
 from osv.osv import except_osv
 
 

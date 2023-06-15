@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from osv import osv, fields
-from tools.translate import _
 
 
 class WizardUnlinkSMSPendingHistory(osv.osv_memory):

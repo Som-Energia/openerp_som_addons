@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from osv import osv
-from tools.translate import _
 from ast import literal_eval
 from oorq.decorators import job
 from tools import config

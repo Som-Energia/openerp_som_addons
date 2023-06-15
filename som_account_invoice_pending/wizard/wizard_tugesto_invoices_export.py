@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
 import base64
-import csv
 import StringIO
 import re
-from tqdm import tqdm
 import pandas as pd
-import json
 from ine_tugesto_somenergia import ine_maping_tugesto as imtug
 
 from osv import osv, fields
-from datetime import datetime, timedelta, date
+from datetime import datetime
 from tools.translate import _
 
 
@@ -85,7 +82,7 @@ class WizardExportTugestoInvoices(osv.osv_memory):
             identificador_expediente = "{}".format(vat_numbers)
             Id_tipo = 2  # Expediente Prejudicial
             importe_pagare = 0.0
-            cnae = factura.polissa_id.cnae.name
+            factura.polissa_id.cnae.name
             tipo_deudor = False
 
             nif_cif = partner.vat.replace("ES", "") if partner.vat else ""

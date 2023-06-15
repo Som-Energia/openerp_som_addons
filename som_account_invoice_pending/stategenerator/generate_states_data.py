@@ -9,7 +9,7 @@ from io import open
 select state.id, state.weight, state.name, state.pending_days, state.pending_days_type, semid.module, semid.name
 from account_invoice_pending_state as state
 left join ir_model_data as semid
-on semid.res_id=state.id 
+on semid.res_id=state.id
 and semid.model='account.invoice.pending.state'
 order by id;
 """

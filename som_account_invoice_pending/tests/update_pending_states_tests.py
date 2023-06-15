@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 from destral import testing
-from destral.transaction import Transaction
-from datetime import date, timedelta
 import mock
-from mock import Mock, ANY
+from mock import ANY
 from ..som_account_invoice_pending_exceptions import (
     UpdateWaitingFor48hException,
     UpdateWaitingCancelledContractsException,
@@ -177,7 +175,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
     def _load_data_unpaid_invoices(self, cursor, uid, invoice_semid_list=[]):
         imd_obj = self.pool.get("ir.model.data")
         inv_obj = self.pool.get("account.invoice")
-        res_obj = self.pool.get("res.partner")
+        self.pool.get("res.partner")
         fact_obj = self.pool.get("giscedata.facturacio.factura")
 
         contract_name = ""
