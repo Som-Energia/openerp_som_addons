@@ -214,7 +214,7 @@ class UpdatePendingStates(osv.osv_memory):
                 )
             except Exception as e:
                 logger.info(
-                    "UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}".format(
+                    "UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=e.message
                     )
                 )
@@ -272,7 +272,7 @@ class UpdatePendingStates(osv.osv_memory):
                 )
             except Exception as e:
                 logger.info(
-                    "UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}".format(
+                    "UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=e.message
                     )
                 )
@@ -353,7 +353,7 @@ class UpdatePendingStates(osv.osv_memory):
         If exists one invoice with state corresponding to default_pendent_carta_avis_tall_pending_state id,
         automatically will send it's corresponding email and pass to next
         pending state (default_carta_avis_tall_pending_state)
-        """
+        """  # noqa: E501
         logger = logging.getLogger(__name__)
 
         if context is None:
@@ -406,19 +406,19 @@ class UpdatePendingStates(osv.osv_memory):
 
             except UpdateWaitingForAnnexIVException as e:
                 logger.info(
-                    "ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(
+                    "ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=e.message
                     )
                 )
             except UpdateWaitingCancelledContractsException as e:
                 logger.info(
-                    "ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(
+                    "ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=e.message
                     )
                 )
             except Exception as e:
                 logger.info(
-                    "UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(
+                    "UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=e.message
                     )
                 )
@@ -462,19 +462,19 @@ class UpdatePendingStates(osv.osv_memory):
 
             except UpdateWaitingForAnnexIVException as e:
                 logger.info(
-                    "ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(
+                    "ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=e.message
                     )
                 )
             except UpdateWaitingCancelledContractsException as e:
                 logger.info(
-                    "ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(
+                    "ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=e.message
                     )
                 )
             except Exception as e:
                 logger.info(
-                    "UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(
+                    "UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=e.message
                     )
                 )
@@ -553,9 +553,11 @@ class UpdatePendingStates(osv.osv_memory):
                     "som_account_invoice_pending",
                     "pendent_traspas_advocats_pending_state",
                 )
+                # mirar si es bo social o no, entenc que aquí al igual que
+                # al II es posen per default a bs
                 self.update_waiting_for_annex_cancelled_contracts(
                     cursor, uid, factura_id, traspas_advocats_bs, context
-                )  # mirar si es bo social o no, entenc que aquí al igual que al II es posen per default a bs
+                )
 
             if ret_value == -1:
                 logger.info(
@@ -566,7 +568,7 @@ class UpdatePendingStates(osv.osv_memory):
             else:
                 fact_obj.set_pending(cursor, uid, [factura_id], final_state)
                 logger.info(
-                    "Sending Annex 3 first email to {invoice_name} partner with result: {ret_value}".format(
+                    "Sending Annex 3 first email to {invoice_name} partner with result: {ret_value}".format(  # noqa: E501
                         invoice_name=invoice["partner_id"][1], ret_value=ret_value
                     )
                 )
@@ -632,7 +634,7 @@ class UpdatePendingStates(osv.osv_memory):
 
             if ret_value == -1:
                 logger.info(
-                    "ERROR: Sending N57 default payment email cancelled contract for {factura_id} invoice error.".format(
+                    "ERROR: Sending N57 default payment email cancelled contract for {factura_id} invoice error.".format(  # noqa: E501
                         factura_id=factura_id,
                     )
                 )
@@ -653,7 +655,7 @@ class UpdatePendingStates(osv.osv_memory):
 
                 fact_obj.set_pending(cursor, uid, [factura_id], next_state)
                 logger.info(
-                    "Sending N57 default payment email cancelled contract for {factura_id} invoice with result: {ret_value}".format(
+                    "Sending N57 default payment email cancelled contract for {factura_id} invoice with result: {ret_value}".format(  # noqa: E501
                         factura_id=factura_id, ret_value=ret_value
                     )
                 )
@@ -759,7 +761,7 @@ class UpdatePendingStates(osv.osv_memory):
                         )
                     )
                 logger.info(
-                    "Sending Annex 4 email for {factura_id} invoice with result: {ret_value}".format(
+                    "Sending Annex 4 email for {factura_id} invoice with result: {ret_value}".format(  # noqa: E501
                         factura_id=factura_id, ret_value=ret_value
                     )
                 )
@@ -895,9 +897,10 @@ class UpdatePendingStates(osv.osv_memory):
             )
             if len(inv_list) >= 2:
                 for invoice_id in inv_list:
+                    # quan es fan testos és False perquè les factures de destral no tene number
                     inv_number = inv_obj.browse(
                         cursor, uid, invoice_id
-                    ).number  # quan es fan testos és False perquè les factures de destral no tene number
+                    ).number
                     fact_id = fact_obj.search(cursor, uid, [("number", "=", inv_number)])
                     polissa = fact_obj.browse(cursor, uid, fact_id[0]).polissa_id
                     if polissa.state == "baixa":

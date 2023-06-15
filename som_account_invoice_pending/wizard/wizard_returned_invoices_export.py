@@ -67,7 +67,7 @@ class WizardExportReturnedInvoices(osv.osv_memory):
                 telefon = partner.www_mobile if partner.www_mobile else partner.www_phone
                 if not telefon:
                     raise
-                telefon = "34" + re.sub("[\W_]+", "", telefon)
+                telefon = "34" + re.sub("[\W_]+", "", telefon)  # noqa: W605
             except Exception:
                 raise osv.except_osv(
                     _("DataError"),

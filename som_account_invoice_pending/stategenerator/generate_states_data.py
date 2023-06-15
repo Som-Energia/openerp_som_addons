@@ -12,7 +12,7 @@ left join ir_model_data as semid
 on semid.res_id=state.id
 and semid.model='account.invoice.pending.state'
 order by id;
-"""
+"""  # noqa: E501
 with open("states.tsv", encoding="utf8") as tsv:
     lines = tsv.readlines()
     header = lines[0].split("\t")

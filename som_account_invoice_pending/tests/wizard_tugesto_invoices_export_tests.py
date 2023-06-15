@@ -52,7 +52,11 @@ class TestWizardTugestoInvoicesExport(testing.OOTestCaseWithCursor):
             cursor, uid, "som_account_invoice_pending", "default_avis_impagament_pending_state"
         )[1]
         # self.bs_1r_avis_id =  imd_obj.get_object_reference(
-        #    cursor, uid, 'giscedata_facturacio_comer_bono_social', 'avis_impagament_pending_state')[1]
+        #     cursor,
+        #     uid,
+        #     'giscedata_facturacio_comer_bono_social',
+        #     'avis_impagament_pending_state',
+        # )[1]
 
     def _load_data_unpaid_invoices(self, cursor, uid, invoice_semid_list=[]):
         contract_name = ""

@@ -18,7 +18,7 @@ def migrate():
         IrModelData = con.model("ir.model.data")
         try:
             return IrModelData.get_object_reference(module, semid)[1]
-        except:
+        except Exception:
             return None
 
     msg = "You are requesting to: {}, do you want to continue? (Y/n)"

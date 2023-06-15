@@ -63,7 +63,7 @@ class WizardExportTugestoInvoices(osv.osv_memory):
                     _("Error"), _("L'estat pendent d'alguna de les factures no és l'esperat")
                 )
 
-        bo_social = imd_obj.get_object_reference(
+        imd_obj.get_object_reference(
             cursor,
             uid,
             "giscedata_facturacio_comer_bono_social",
@@ -88,11 +88,11 @@ class WizardExportTugestoInvoices(osv.osv_memory):
             nif_cif = partner.vat.replace("ES", "") if partner.vat else ""
             try:
                 # trantament pels NIE
-                nif_cif = "{}{}".format(re.findall("^[XYZ]\d{7,8}[A-Z]$", nif_cif)[0], "*")
+                nif_cif = "{}{}".format(re.findall("^[XYZ]\d{7,8}[A-Z]$", nif_cif)[0], "*")  # noqa: W605, E501
             except IndexError:
                 pass
 
-            if re.search("^[XYZ0-9]", nif_cif) != None:
+            if re.search("^[XYZ0-9]", nif_cif) is not None:
                 tipo_deudor = 1
             else:
                 tipo_deudor = 2
@@ -213,7 +213,7 @@ class WizardExportTugestoInvoices(osv.osv_memory):
                 "state": "pending",
                 "file_name": filename,
                 "file_bin": mfile,
-                "info": u"Un cop hagis verificat el llistat, pots prémer el botó per moure les factures cap al següent estat pendent.",
+                "info": u"Un cop hagis verificat el llistat, pots prémer el botó per moure les factures cap al següent estat pendent.",  # noqa: E501
                 "fact_ids": context.get("active_ids", []),
             },
         )
@@ -225,7 +225,7 @@ class WizardExportTugestoInvoices(osv.osv_memory):
         try:
             fact_obj.go_on_pending(cursor, uid, wizard.fact_ids)
         except Exception as ex:
-            info = u"Hi ha hagut un error en intentar passar de estat {} factures. Aquest és l'error: {}.".format(
+            info = u"Hi ha hagut un error en intentar passar de estat {} factures. Aquest és l'error: {}.".format(  # noqa: E501
                 len(wizard.fact_ids), ex.message
             )
 
