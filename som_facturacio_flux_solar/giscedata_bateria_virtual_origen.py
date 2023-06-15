@@ -18,6 +18,8 @@ class GiscedataBateriaVirtualOrigen(osv.osv):
     def get_bateria_virtual_origen_descomptes(self, cursor, uid, ids, data_final, context=None):
         # [descompte_date, price, 'giscedata.facturacio.factura, factura.id']
         # [05-05-2023, 25.3, 'giscedata.facturacio.factura, 3642']
+        if len(ids) > 1:
+            raise osv.except_osv("Error", _(u"No es pot clacular descomptes per més de un origen alhora."))
         descomptes_totals = super(GiscedataBateriaVirtualOrigen, self).get_bateria_virtual_origen_descomptes(cursor, uid, ids, data_final, context=context)
 
         descomptes = []
