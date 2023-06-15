@@ -39,7 +39,7 @@ class WizardExecutarTasca(osv.osv_memory):
         for id in active_ids:
             # obtenim una tasca
             task = task_obj.browse(cursor, uid, id)
-            if task.data_proxima_execucio == False:
+            if not task.data_proxima_execucio:
                 task_obj.write(
                     cursor,
                     uid,
@@ -47,7 +47,7 @@ class WizardExecutarTasca(osv.osv_memory):
                     {"data_proxima_execucio": datetime.now().strftime("%Y-%m-%d_%H:%M")},
                 )
             if (
-                task.data_proxima_execucio != False
+                task.data_proxima_execucio
                 and datetime.strptime(task.data_proxima_execucio, "%Y-%m-%d %H:%M:%S")
                 <= datetime.now()
             ):

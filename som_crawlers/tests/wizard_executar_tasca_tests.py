@@ -3,8 +3,6 @@ import json
 from destral import testing
 from destral.transaction import Transaction
 import os
-import base64
-import zipfile
 
 
 class WizardExecutarTascaTests(testing.OOTestCase):
@@ -31,8 +29,11 @@ class WizardExecutarTascaTests(testing.OOTestCase):
     def tearDown(self):
         pass
 
-    """Function that tests if after trying to download files, the result is "Falta especificar nom fitxer"
-        # @param self The object pointer"""
+    """
+    Function that tests if after trying to download files,
+    the result is "Falta especificar nom fitxer"
+        @param self The object pointer
+    """
 
     def test_download_files_resultat_falta_especificar_nomfitxer(
         self,
@@ -41,9 +42,6 @@ class WizardExecutarTascaTests(testing.OOTestCase):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
-            crawler_task_id = self.Data.get_object_reference(
-                cursor, uid, "som_crawlers", "demo_accions_planificades_1"
-            )[1]
             crawler_task_step_id = self.Data.get_object_reference(
                 cursor, uid, "som_crawlers", "demo_taskStep_3"
             )[1]
@@ -56,16 +54,16 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             # check result
             self.assertEqual(resultat, "Falta especificar nom fitxer")
 
-    """Function that tests if after trying to download files, the result is that the directory does not exits
-        # @param self The object pointer"""
+    """
+    Function that tests if after trying to download files,
+    the result is that the directory does not exits
+        @param self The object pointer
+    """
 
     def test_download_files_resultat_file_or_directory_does_not_exist(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
-            crawler_task_id = self.Data.get_object_reference(
-                cursor, uid, "som_crawlers", "demo_accions_planificades_1"
-            )[1]
             crawler_task_step_id = self.Data.get_object_reference(
                 cursor, uid, "som_crawlers", "demo_taskStep_5"
             )[1]
@@ -116,42 +114,6 @@ class WizardExecutarTascaTests(testing.OOTestCase):
                 self.taskStep.import_xml_files(cursor, uid, crawler_task_step_id, result_id)
             # check result
             self.assertTrue("Don't exist attachment ID" in context.exception.message)
-
-    def no_test_import_xml_files_entrada_zip_prova_sortida_import_donee(self):
-        with Transaction().start(self.database) as txn:
-            cursor = txn.cursor
-            uid = txn.user
-            # set values
-            crawler_taskStep_id = self.Data.get_object_reference(
-                cursor, uid, "som_crawlers", "demo_taskStep_8"
-            )[1]
-            crawler_taskStep_obj = self.taskStep.browse(cursor, uid, crawler_taskStep_id)
-            result_id = self.Data.get_object_reference(
-                cursor, uid, "som_crawlers", "demo_result_4"
-            )[1]
-            pathToZip = zipfile.ZipFile(
-                "~/src/openerp_som_addons/som_crawlers/demo/zip_demo_2/anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip"
-            )
-            with open(pathToZip, "r") as f:
-                content = f.read()
-            attachment = {
-                "name": "anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip",
-                "datas": base64.b64encode(content),
-                "datas_fname": "anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip",
-                "res_model": "som.crawlers.task",
-                "res_id": crawler_taskStep_obj.task_id.id,
-            }
-
-            attachment_id = self.pool.get("ir.attachment").create(
-                cursor, uid, attachment, context=None
-            )
-            result.write(cursor, uid, result_id, {"zip_name": attachment_id})
-
-            result = self.taskStep.import_xml_files(
-                cursor, uid, crawler_taskStep_id, result_id
-            )  # 'som.crawler.task.step' import_wizard
-
-            self.assertEqual(result, "Successful import")
 
     def no_test_executar_una_tasca(self):
         with Transaction().start(self.database) as txn:
@@ -319,7 +281,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
 
             self.assertEqual(
                 result,
-                "File anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip succesfully attached\n",
+                "File anselmo_2022-07-26_15_11_GRCW_W4X151_20220726151137.zip succesfully attached\n",  # noqa: E501
             )
 
     """  Create args for script test --> sortida string arguments
@@ -342,7 +304,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
 
             result = self.taskStep.create_script_args(crawler_config_obj, taskStepParams, fileName)
 
-            result_string = "-pr None -u usuariProva -d 80 -f prova.txt -url 'https://egymonluments.gov.eg/en/museums/egyptian-museum' -p contraProva -c Selenium -b firefox -n prova1 -fltr 'https://egymonuments.gov.eg/en/collections/kawit-sarcophagus-4' -nfp False -url-upload 'False'"
+            result_string = "-pr None -u usuariProva -d 80 -f prova.txt -url 'https://egymonluments.gov.eg/en/museums/egyptian-museum' -p contraProva -c Selenium -b firefox -n prova1 -fltr 'https://egymonuments.gov.eg/en/collections/kawit-sarcophagus-4' -nfp False -url-upload 'False'"  # noqa: E501
             self.assertEqual(set(result.split()), set(result_string.split()))
 
     def test_readOutPutFile_entrada_path_inexistent_sortida_excepcio(self):

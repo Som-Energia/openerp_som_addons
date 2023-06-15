@@ -24,7 +24,8 @@ import importlib
 @click.option("-pr", "--process", help="Process to download", required=False)
 @click.option("-url-upload", "--url-upload", help="Upload URL", required=False)
 @click.option("-fp", "--file-path", help="Upload file path.", required=False)
-# Function that runs de crawler of the crawler saves the user and the date when it was modified and returns the new password.
+# Function that runs de crawler of the crawler saves the user and the date when
+# it was modified and returns the new password.
 # @param user Username of the portal
 # @param name Crawler portal name
 # @param password Password of the portal

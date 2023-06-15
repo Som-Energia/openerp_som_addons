@@ -199,9 +199,6 @@ class SomCrawlersTask(osv.osv):
         while not workable_day(date):
             date += timedelta(days=1)
 
-        # date_proxima_exec = (date).replace(
-        #    hour=prev_date.hour, minute=prev_date.minute, second=prev_date.second).strftime("%Y-%m-%d %H:%M:%S")
-
         date_proxima_exec = prev_date.replace(
             year=date.year, month=date.month, day=date.day
         ).strftime("%Y-%m-%d %H:%M:%S")
