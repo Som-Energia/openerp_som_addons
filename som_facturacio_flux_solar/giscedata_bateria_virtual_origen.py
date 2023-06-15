@@ -55,7 +55,7 @@ class GiscedataBateriaVirtualOrigen(osv.osv):
             raise Exception ("Hi ha percentatges d'acumulacio que comprenen dates en comú")
         else:
             percentatge = percentatge_acum_obj.read(cursor, uid, percetatge_acum_ids[0], ['percentatge'])['percentatge']
-            amount = descompte_preu * (percentatge/100)
+            amount = descompte_preu * (percentatge/100.0)
             return (descompte_data, amount, descompte_ref)
 
     def get_percentatge_acumulacio_from_date(self, cursor, uid, id, descompte_date):
