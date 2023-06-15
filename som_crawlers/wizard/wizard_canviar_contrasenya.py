@@ -27,9 +27,9 @@ class WizardCanviarContrasenya(osv.osv_memory):
     _columns = {
         "contrasenya": fields.char(
             "Contrasenya",
-            size = 64,
-            required = True,
-            help = "La nova contrasenya",
+            size=64,
+            required=True,
+            help="La nova contrasenya",
         ),
     }
 
