@@ -7,7 +7,7 @@ def up(cursor, installed_version):
     if not installed_version:
         return
 
-    xml_content = '''<?xml version="1.0" encoding="UTF-8" ?>
+    xml_content = """<?xml version="1.0" encoding="UTF-8" ?>
     <openerp>
         <data noupdate="1">
             <record model="poweremail.core_accounts" id="cobraments_mail_account">
@@ -49,12 +49,17 @@ def up(cursor, installed_version):
             </record>
         </data>
     </openerp>
-    '''
+    """
 
-    dm = DataMigration(xml_content, cursor, 'som_account_invoice_pending', {
-        'poweremail.core_accounts': ['email_id'],
-        'poweremail.templates': ['name'],
-    })
+    dm = DataMigration(
+        xml_content,
+        cursor,
+        "som_account_invoice_pending",
+        {
+            "poweremail.core_accounts": ["email_id"],
+            "poweremail.templates": ["name"],
+        },
+    )
     dm.migrate()
 
 
