@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
 from gestionatr.defs import *
-from gestionatr.input.messages.R1 import get_minimum_fields
-from osv import osv, fields, orm
-from tools.translate import _
-import xml.etree.ElementTree as ET
+from osv import osv
 
 
 class WizardAtcMultiChange(osv.osv_memory):
@@ -40,7 +36,7 @@ class WizardAtcMultiChange(osv.osv_memory):
             if case.section_id.id == section_autoconsum_id:
                 if resultat == "01":
                     sw_model, sw_id = case.ref.split(",")
-                    res = sw_obj.notifica_a_client(cursor, uid, int(sw_id))
+                    sw_obj.notifica_a_client(cursor, uid, int(sw_id))
                 elif resultat == "02":
                     partner_to_delete = case.partner_id.id
                     gen_partner = imd_obj.get_object_reference(
