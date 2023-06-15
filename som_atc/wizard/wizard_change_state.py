@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from gestionatr.defs import *
 from osv import osv
 
 
@@ -27,6 +26,7 @@ class WizardAtcMultiChange(osv.osv_memory):
         partner_obj = self.pool.get("res.partner")
         part_event_obj = self.pool.get("res.partner.event")
         gen_obj = self.pool.get("giscedata.autoconsum.generador")
+        imd_obj = self.pool.get("ir.model.data")
 
         # Autoconsum/generacio section
         section_autoconsum_id = self.get_section_autoconsum(cursor, uid)
@@ -82,7 +82,7 @@ class WizardAtcMultiChange(osv.osv_memory):
             if case.section_id.id == section_autoconsum_id and case.subtipus_id.id == subtipus_id:
                 sw_model, sw_id = case.ref.split(",")
                 noti_pendent = sw_obj.read(cursor, uid, int(sw_id), [])["notificacio_pendent"]
-                res = sw_obj.notifica_a_client(
+                sw_obj.notifica_a_client(
                     cursor,
                     uid,
                     int(sw_id),
@@ -92,7 +92,7 @@ class WizardAtcMultiChange(osv.osv_memory):
                     d101_ids = d101_obj.search(cursor, uid, [("sw_id", "=", int(sw_id))])
                     if len(d101_ids):
                         d101_obj.write(cursor, uid, d101_ids[0], {"notificacio_pendent": True})
-                        res = sw_obj.notifica_a_client(
+                        sw_obj.notifica_a_client(
                             cursor,
                             uid,
                             int(sw_id),
