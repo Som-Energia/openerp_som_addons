@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
 from destral import testing
-from osv import osv
 from destral.transaction import Transaction
 import os
 import base64
@@ -9,7 +8,7 @@ import zipfile
 
 
 class WizardExecutarTascaTests(testing.OOTestCase):
-    ## Functiom that set up all the module dependencies
+    # Functiom that set up all the module dependencies
     # @param self The object pointer
     def setUp(self):
         self.pool = self.openerp.pool
@@ -150,7 +149,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
 
             result = self.taskStep.import_xml_files(
                 cursor, uid, crawler_taskStep_id, result_id
-            )  #'som.crawler.task.step' import_wizard
+            )  # 'som.crawler.task.step' import_wizard
 
             self.assertEqual(result, "Successful import")
 

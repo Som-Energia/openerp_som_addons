@@ -1,13 +1,13 @@
 # This script runs a crawler
 
-##Imports
-from distutils.command.build import build
-from nturl2path import url2pathname
+# Imports
 import click
 import os
 import importlib
 
-## Arguments passed through the os systemm call
+# Arguments passed through the os systemm call
+
+
 @click.command()
 @click.option("-u", "--user", help="Username of the portal.", required=False)
 @click.option(
@@ -24,8 +24,7 @@ import importlib
 @click.option("-pr", "--process", help="Process to download", required=False)
 @click.option("-url-upload", "--url-upload", help="Upload URL", required=False)
 @click.option("-fp", "--file-path", help="Upload file path.", required=False)
-
-## Function that runs de crawler of the crawler saves the user and the date when it was modified and returns the new password.
+# Function that runs de crawler of the crawler saves the user and the date when it was modified and returns the new password.
 # @param user Username of the portal
 # @param name Crawler portal name
 # @param password Password of the portal
@@ -123,6 +122,6 @@ def buildPortalCreds(
     return portalCreds
 
 
-## Main program crawler
+# Main program crawler
 if __name__ == "__main__":
     crawl()

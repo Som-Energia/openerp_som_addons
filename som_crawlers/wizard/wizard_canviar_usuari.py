@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
-from tools.translate import _
 
 
 class WizardCanviarUsuari(osv.osv_memory):
