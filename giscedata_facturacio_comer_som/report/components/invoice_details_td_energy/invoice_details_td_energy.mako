@@ -36,7 +36,11 @@ first_energy_line = True
         <td></td>
     </tr>
     <tr>
-        <td class="detall_td">${_(u"Preu energia [€/kWh]")}</td>
+        % if id.indexed:
+            <td class="detall_td">${_(u"Preu mitjà de l'energia [€/kWh]")}</td>
+        % else:
+            <td class="detall_td">${_(u"Preu energia [€/kWh]")}</td>
+        % endif
         % for p in id.showing_periods:
             % if p in energy_lines_data:
                 <td>${_(u"%s") %(locale.str(locale.atof(formatLang(energy_lines_data[p]["price_unit_multi"], digits=6))))}</td>
