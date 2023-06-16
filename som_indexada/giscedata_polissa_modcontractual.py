@@ -57,7 +57,7 @@ class GiscedataPolissaModcontractual(osv.osv):
             and modcon.mode_facturacio == 'index'
             and coeficient_k_ant != coeficient_k_new
         ):
-            if not self._apply_modcon_date_last_f1_plus_1(cursor, uid, mc_id, context)
+            if not self._apply_modcon_date_last_f1_plus_1(cursor, uid, mc_id, context):
                 return "error"
 
         return res
