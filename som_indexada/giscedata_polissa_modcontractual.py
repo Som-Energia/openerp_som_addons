@@ -46,8 +46,20 @@ class GiscedataPolissaModcontractual(osv.osv):
         res = super(GiscedataPolissaModcontractual, self)._do_previous_actions_on_activation(cursor, uid, mc_id, context)
         modcon_obj = self.pool.get('giscedata.polissa.modcontractual')
         modcon = modcon_obj.browse(cursor, uid, mc_id, context={'prefetch': False})
+
         if res == 'OK' and modcon.state == 'pendent' and (modcon.mode_facturacio == 'index' and modcon.modcontractual_ant.mode_facturacio != 'index'):
             self.send_indexada_modcon_activated_email(cursor, uid, modcon.polissa_id.id)
+
+        coeficient_k_ant = modcon.mode_facturacio.coeficient_k
+        coeficient_k_new = modcon.modcontractual_ant.coeficient_k
+        if (
+            modcon.modcontractual_ant.mode_facturacio == 'index'
+            and modcon.mode_facturacio == 'index'
+            and coeficient_k_ant != coeficient_k_new
+        ):
+            if not self._apply_modcon_date_last_f1_plus_1(cursor, uid, mc_id, context)
+                return "error"
+
         return res
 
 GiscedataPolissaModcontractual()
