@@ -50,7 +50,7 @@ class GiscedataPolissaModcontractual(osv.osv):
         if res == 'OK' and modcon.state == 'pendent' and (modcon.mode_facturacio == 'index' and modcon.modcontractual_ant.mode_facturacio != 'index'):
             self.send_indexada_modcon_activated_email(cursor, uid, modcon.polissa_id.id)
 
-        coeficient_k_ant = modcon.mode_facturacio.coeficient_k
+        coeficient_k_ant = modcon.coeficient_k
         coeficient_k_new = modcon.modcontractual_ant.coeficient_k
         if (
             modcon.modcontractual_ant.mode_facturacio == 'index'
