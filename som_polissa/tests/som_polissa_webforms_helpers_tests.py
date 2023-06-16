@@ -23,7 +23,7 @@ class TestSomWebformsHelpersPolissa(testing.OOTestCase):
 
     def _open_polissa(self, xml_ref):
         polissa_id = self.imd_obj.get_object_reference(
-            self.cursor, self.uid, 'giscedata_polissa', xml_ref
+            self.cursor, self.uid, 'som_polissa', xml_ref
         )[1]
 
         self.polissa_obj.send_signal(self.cursor, self.uid, [polissa_id], [
@@ -33,7 +33,7 @@ class TestSomWebformsHelpersPolissa(testing.OOTestCase):
         return polissa_id
 
     def test_www_get_iban(self):
-        polissa_id = self._open_polissa('polissa_tarifa_018')
+        polissa_id = self._open_polissa('polissa_domestica_0100')
         result = self.helper_obj.www_get_iban(self.cursor, self.uid, polissa_id)
         self.assertEqual(result, '**** **** **** **** **** 7890')
 
@@ -46,7 +46,7 @@ class TestSomWebformsHelpersPolissa(testing.OOTestCase):
         self.assertEqual(result, False)
 
     def test_www_set_iban(self):
-        polissa_id = self._open_polissa('polissa_tarifa_018')
+        polissa_id = self._open_polissa('polissa_domestica_0100')
         new_iban = 'ES3120170806126133002095'
         result = self.helper_obj.www_set_iban(
             self.cursor, self.uid, polissa_id, new_iban
