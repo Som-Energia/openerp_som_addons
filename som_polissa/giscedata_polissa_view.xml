@@ -172,7 +172,7 @@
                     <field name="data_ultima_lectura_f1"/>
                     <field name="dies_lectures_facturada_f1"/>
                     <field name="bateria_activa"/>
-                    <field name="bateria_ids" string="Codi BV"/>
+                    <field name="bateria_ids"/>
                     <field name="data_activacio_bateria"/>
                     <field name="cups_np"/>
                 </tree>

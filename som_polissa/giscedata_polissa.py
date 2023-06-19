@@ -452,6 +452,18 @@ class GiscedataPolissa(osv.osv):
 
         return res
 
+    def get_bateria_virtual(self, cursor, uid, ids, field_name, arg, context=None):
+        if context is None:
+            context = {}
+
+        res = dict.fromkeys(ids, False)
+        bat_pol_o = self.pool.get('giscedata.bateria.virtual.polissa')
+        for pol_id in ids:
+            bat_pol_id = bat_pol_o.search(cursor, uid, [('polissa_id', '=', pol_id)])[0]
+            bv = bat_pol_o.read(cursor, uid, bat_pol_id, ['bateria_id'], context=context)
+            if bv.get('bateria_id'):
+                res[pol_id] = bv['bateria_id'][1]
+
     _columns = {
         'info_gestio_endarrerida': fields.text('Informació gestió endarrerida'),
         'info_gestio_endarrerida_curta': fields.function(
@@ -490,7 +502,9 @@ class GiscedataPolissa(osv.osv):
         'cups_np': fields.function(_get_provincia_cups, method=True, type="char", string='Provincia (CUPS)',
             size=24),
         'tipus_cups': fields.function(_get_tipus_cups, method=True, selection=TABLA_131, string='Tipus CUPS',
-            readonly=True, type="selection")
+            readonly=True, type="selection"),
+        'bateria_virtual': fields.function(_get_bateria_virtual, method=True, type="char", string='Codi BV',
+            size=24),
     }
 
 
