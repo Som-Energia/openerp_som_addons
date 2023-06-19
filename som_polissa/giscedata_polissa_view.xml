@@ -147,20 +147,24 @@
             <field name="type">tree</field>
             <field name="priority" eval="1"/>
             <field name="arch" type="xml">
-                <tree string="Contractes per CAU">
+                <tree string="Contractes per CAU" colors="red:state in ['tall', 'baixa', 'cancelada']">
+                    <field name="distribuidora"/>
                     <field name="titular"/>
-                    <field name="autoconsum_id"/>
+                    <field name="autoconsum_id" string="CAU"/>
                     <field name="name"/>
                     <field name="cups"/>
                     <field name="is_autoconsum_collectiu"/>
+                    <field name="tipus instalacio"/>
+                    <field name="esquema_mesura"/>
                     <field name="tipus_cups"/>
                     <field name="ssaa"/>
+                    <field name="contract_type"/>
                     <field name="state"/>
                     <field name="tarifa"/>
                     <field name="llista_preu"/>
                     <field name="data_alta"/>
                     <field name="data_alta_auto"/>
-                    <field name="ac_state"/>
+                    <field name="ac_state" string="Estat de l'auto"/>
                     <field name="data_baixa_auto"/>
                     <field name="data_baixa"/>
                     <field name="facturacio_suspesa"/>
@@ -168,6 +172,7 @@
                     <field name="data_ultima_lectura_f1"/>
                     <field name="dies_lectures_facturada_f1"/>
                     <field name="bateria_activa"/>
+                    <field name="bateria_ids" string="Codi BV"/>
                     <field name="data_activacio_bateria"/>
                     <field name="cups_np"/>
                 </tree>
@@ -177,7 +182,7 @@
             <field name="name">Contractes per CAU</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">giscedata.polissa</field>
-            <field name="domain">[('autoconsumo', '!=', '00')]</field>
+            <field name="domain">[]</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="context">{'active_test': False}</field>
@@ -198,6 +203,9 @@
                     <field name="bateria_activa" invisible="1" select="2"/>
                     <field name="data_activacio_bateria" invisible="1" select="2"/>
                 </field>
+                <xpath expr="//field[@name='data_alta']" position="attributes">
+                    <attribute name="readonly">0</attribute>
+                </xpath>
             </field>
         </record>
         <record model="ir.ui.view" id="view_giscedata_polissa_tree_inherit">
