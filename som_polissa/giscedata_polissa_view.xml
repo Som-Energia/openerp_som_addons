@@ -150,10 +150,11 @@
                 <tree string="Contractes per CAU" colors="red:state in ['tall', 'baixa', 'cancelada']">
                     <field name="distribuidora"/>
                     <field name="titular"/>
-                    <field name="autoconsum_id"/>
+                    <field name="autoconsum_id" string="CAU"/>
                     <field name="name"/>
                     <field name="cups"/>
 		    <field name="is_autoconsum_collectiu"/>
+		    <field name="tipus installacio"/>
 		    <field name="esquema_mesura"/>
 		    <field name="tipus_cups"/>
 		    <field name="ssaa"/>
