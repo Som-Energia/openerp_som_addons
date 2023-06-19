@@ -410,9 +410,9 @@ class GiscedataPolissa(osv.osv):
         res = dict.fromkeys(ids, False)
 
         for pol_id in ids:
-            autoconsum_id = self.read(cursor, uid, pol_id, ['autoconsum_id'], context=context)['autoconsum_id']
-            if autoconsum_id:
-                autoconsum_id = autoconsum_id[0]
+            autoconsum_id = self.read(cursor, uid, pol_id, ['autoconsum_id'], context=context)
+            if autoconsum_id.get('autoconsum_id'):
+                autoconsum_id = autoconsum_id['autoconsum_id'][0]
                 generador_id = acg_obj.search(cursor, uid, [('autoconsum_id', '=', autoconsum_id)], context=context)
                 if generador_id:
                     ssaa = acg_obj.read(cursor, uid, generador_id[0], ['ssaa'], context=context)
@@ -443,9 +443,9 @@ class GiscedataPolissa(osv.osv):
         ac_cups_obj = self.pool.get('giscedata.autoconsum.cups.autoconsum')
         res = dict.fromkeys(ids, False)
         for pol_id in ids:
-            ac_id = self.read(cursor, uid, pol_id, ['autoconsum_id'], context=context)['autoconsum_id']
-            if ac_id:
-                ac_cups_id = ac_cups_obj.search(cursor, uid, [('autoconsum_id', '=', ac_id[0])], context=context)
+            ac_id = self.read(cursor, uid, pol_id, ['autoconsum_id'], context=context)
+            if ac_id.get('autoconsum_id'):
+                ac_cups_id = ac_cups_obj.search(cursor, uid, [('autoconsum_id', '=', ac_id['autoconsum_id'][0])], context=context)
                 if ac_cups_id:
                     tipus_cups = ac_cups_obj.read(cursor, uid, ac_cups_id[0], ['tipus_cups'], context=context)['tipus_cups']
                     res[pol_id] = tipus_cups
