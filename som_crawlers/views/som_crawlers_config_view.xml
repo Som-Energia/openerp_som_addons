@@ -57,7 +57,7 @@
             </field>
         </record>
         <record id="action_configuracio_tree" model="ir.actions.act_window">
-            <field name="name">Configuracio</field>
+            <field name="name">TEST PFG</field>
             <field name="res_model">som.crawlers.config</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
