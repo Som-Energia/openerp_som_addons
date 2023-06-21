@@ -231,6 +231,7 @@ class GiscedataFacturacioContracteLot(osv.osv):
         'data_alta_auto': fields.related('polissa_id', 'data_alta_autoconsum', type='date', relation='giscedata.polissa',
                                 string=_('Data alta autoconsum'), readonly=True),
         'n_retrocedir_lot':fields.integer(string='Num retrocedir', help="Número de vegades que la pòlissa en el lot s'ha retrocedit de lot", readonly=True),
+        'import_factures': fields.function(_ff_calc_import_factures, string='Import factures', type='float', method=True),
     }
 
     _defaults = {
