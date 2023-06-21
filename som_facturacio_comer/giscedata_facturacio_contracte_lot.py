@@ -148,6 +148,31 @@ class GiscedataFacturacioContracteLot(osv.osv):
             res[id]['consum_facturat'] = self.consum_facturat(cr, uid, id)
         return res
 
+    def _ff_calc_import_factures(self, cursor, uid, ids, name, args, context=None):
+        contractes_lot_obj = self.pool.get('giscedata.facturacio.contracte_lot')
+        factura_o = self.pool.get("giscedata.facturacio.factura")
+        res = {}
+
+        #  per cada contracte lot
+        for id in ids:
+            info = self.read(cursor, uid, id, ['polissa_id', 'lot_id'])
+            lids = list(set([x['lot_id'][0] for x in info]))
+            pids = list(set([x['polissa_id'][0] for x in info]))
+
+            #  obtenim les factures relacionades
+            factura_ids = factura_o.search(cursor, uid, [('polissa_id', 'in', pids), ('lot_facturacio', 'in', lids)])
+
+            import_total = 0
+            #  sumem els amount_total de les factures
+            for factura_id in factura_ids:
+                amount_total = factura_o.read(cursor, uid, factura_id, ['amount_total'])['amount_total']
+                if amount_total:
+                    import_total += amount_total
+
+            res[id]['import_factures'] = import_total
+
+        return res
+
     _columns = {
         'polissa_distribuidora': fields.related('polissa_id', 'distribuidora', type='many2one', relation='res.partner',
                                 string='Distribuidora', readonly=True),
