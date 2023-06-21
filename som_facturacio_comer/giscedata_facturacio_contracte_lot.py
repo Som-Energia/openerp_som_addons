@@ -138,25 +138,26 @@ class GiscedataFacturacioContracteLot(osv.osv):
             logger = logging.getLogger('openerp' + __name__)
             logger.error("Error calculant el camp funcio te_generation del contracte_lot ID %s: %s ", id, e)
 
-    def get_import_factures(self, cr, uid, id, context=None):
+    def _ff_import_factures(self, cr, uid, ids, context=None):
         factura_o = self.pool.get("giscedata.facturacio.factura")
+        res = {}
 
-        #  per cada contracte lot
-        info = self.read(cr, uid, id, ['polissa_id', 'lot_id'])
-        lids = list(set([x['lot_id'][0] for x in info]))
-        pids = list(set([x['polissa_id'][0] for x in info]))
+        for id in ids:
+            #  per cada contracte lot
+            info = self.read(cr, uid, id, ['polissa_id', 'lot_id'])
 
-        #  obtenim les factures relacionades
-        factura_ids = factura_o.search(cr, uid, [('polissa_id', '=', info['polissa_id'][0]), ('lot_facturacio', '=', info['lot_id'][0])])
+            #  obtenim les factures relacionades
+            factura_ids = factura_o.search(cr, uid, [('polissa_id', '=', info['polissa_id'][0]), ('lot_facturacio', '=', info['lot_id'][0])])
 
-        import_total = 0
-        #  sumem els amount_total de les factures
-        for factura_id in factura_ids:
-            amount_total = factura_o.read(cr, uid, factura_id, ['amount_total'])['amount_total']
-            if amount_total:
-                import_total += amount_total
+            import_total = 0
+            #  sumem els amount_total de les factures
+            for factura_id in factura_ids:
+                amount_total = factura_o.read(cr, uid, factura_id, ['amount_total'])['amount_total']
+                if amount_total:
+                    import_total += amount_total
+            res[id] = import_total
 
-        return import_total
+        return res
 
     def _ff_update_fields(self, cr, uid, ids, name, args, context=None):
         res = {id: {'total_incidencies': 0} for id in ids}
@@ -166,7 +167,6 @@ class GiscedataFacturacioContracteLot(osv.osv):
             res[id]['te_generation'] = self.te_generation(cr, uid, id)
             res[id]['data_final'] = self.data_final(cr, uid, id)
             res[id]['consum_facturat'] = self.consum_facturat(cr, uid, id)
-            res[id]['import_factures'] = self.get_import_factures(cr, uid, id)
         return res
 
     _columns = {
@@ -227,8 +227,7 @@ class GiscedataFacturacioContracteLot(osv.osv):
         'data_alta_auto': fields.related('polissa_id', 'data_alta_autoconsum', type='date', relation='giscedata.polissa',
                                 string=_('Data alta autoconsum'), readonly=True),
         'n_retrocedir_lot':fields.integer(string='Num retrocedir', help="Número de vegades que la pòlissa en el lot s'ha retrocedit de lot", readonly=True),
-        'import_factures': fields.function(_ff_update_fields, multi='totals', string='Data final factura',
-                                type='date', method=True, store=_STORE_WHEN_INVOICE_ADDED),
+        'import_factures': fields.function(_ff_import_factures, string='Import factures', type='float', method=True),
     }
 
     _defaults = {
