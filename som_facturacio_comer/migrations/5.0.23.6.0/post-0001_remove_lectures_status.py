@@ -16,7 +16,7 @@ def up(cursor, installed_version):
    ##UPATAR UN XML SENCER##
     logger.info("Updating XML som_facturacio_comer/giscedata_facturacio_view.xml")
     load_data(
-        cursor, 'som_facturacio_comer', 'wizard/giscedata_facturacio_view.xml', idref=None, mode='update'
+        cursor, 'som_facturacio_comer', 'giscedata_facturacio_view.xml', idref=None, mode='update'
     )
     logger.info("XMLs succesfully updated.")
 
