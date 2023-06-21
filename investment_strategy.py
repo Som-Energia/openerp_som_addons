@@ -61,6 +61,10 @@ class InvestmentActions(ErpWrapper):
 
         return member_ids, emission_id
 
+
+    def attach_signature(self, cursor, uid, investment_id, signaturit_data, context=None):
+        pass  # For now, this is only for GenerationkWh
+
     def create_from_transfer(self, cursor, uid, investment_id, new_partner_id, transmission_date, iban, context=None):
         pass
 
@@ -246,6 +250,42 @@ class GenerationkwhActions(InvestmentActions):
             'generationkwh.investment', '_mail_creacio')
 
         return investment_id
+
+    def attach_signature(self, cursor, uid, investment_id, signaturit_data, context=None):
+        GenerationkwhInvestment = self.erp.pool.get('generationkwh.investment')
+        SignaturaProcess = self.erp.pool.get('giscedata.signatura.process')
+
+        investment = GenerationkwhInvestment.browse(cursor, uid, investment_id)
+        recipients = [
+            (0, 0, {
+                'partner_address_id': investment.member_id.address[0].id,
+                'name': investment.member_id.name,
+                'email': investment.member_id.address[0].email
+            })
+        ]
+        files = [
+            (0, 0, {
+                'signature_id': signaturit_data['documents'][0]['id'],
+                'model': 'generationkwh.investment,{}'.format(investment_id),
+                'filename': signaturit_data['documents'][0]['file']['name'],
+            })
+        ]
+        values = {
+            'signature_id': signaturit_data['id'],
+            'signature_url': signaturit_data['url'],
+            'provider': 'signaturit',
+            'subject': investment.name,
+            'delivery_type': 'url',
+            'recipients': recipients,
+            'reminders': 0,
+            'type': 'advanced',
+            'status': 'doing',
+            'files': files,
+        }
+        process_id = SignaturaProcess.create(cursor, uid, values, context=context)
+        cursor.commit()  # Update creates a temporary cursor and will not see the investment
+        SignaturaProcess.update(cursor, uid, [process_id], context=context)
+        GenerationkwhInvestment.mark_as_signed(cursor, uid, investment_id)
 
     def create_from_transfer(self, cursor, uid, investment_id, new_partner_id, transmission_date, iban, context=None):
         GenerationkwhInvestment = self.erp.pool.get('generationkwh.investment')

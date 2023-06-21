@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <openerp>
     <data>
+        <record model="giscedata.signatura.models" id="signatura_model_gkwh_investment">
+            <field name="name" ref="som_generationkwh.model_generationkwh_investment"/>
+        </record>
+        <!-- TODO: See if the old signature code can be erased -->
         <!--Incloem account.model_account_invoice com a signable-->
         <record model="giscedata.signatura.models" id="signatura_model_generationkwh_investment">
             <field name="name" ref="account.model_account_invoice"/>
         </record>
+
     </data>
     <data noupdate="1">
         <record model="product.category" id="categ_inversions">
