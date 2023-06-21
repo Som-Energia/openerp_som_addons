@@ -1089,7 +1089,7 @@ class GenerationkwhInvestment(osv.osv):
 
     def create_from_form(self, cursor, uid,
                          partner_id, order_date, amount_in_euros, ip, iban, emission=None,
-                         context=None):
+                         signaturit_data=None, context=None):
         investment_actions = GenerationkwhActions(self, cursor, uid, 1)
         # Compatibility 'emissio_apo'
         if emission == 'emissio_apo' or (emission and 'APO_' in emission):
@@ -1097,6 +1097,10 @@ class GenerationkwhInvestment(osv.osv):
         investment_id = investment_actions.create_from_form(cursor, uid,
                                                             partner_id, order_date, amount_in_euros, ip, iban, emission,
                                                             context)
+        if signaturit_data:
+            investment_actions.attach_signature(
+                cursor, uid, investment_id, signaturit_data, context)
+
         return investment_id
 
     def create_from_transfer(self, cursor, uid,
