@@ -43,9 +43,21 @@
                     <field name="te_generation_polissa" select="2"/>
                     <field name="data_alta_auto" select="2"/>
                 </field>
+                <field name="status" position="before">
+                    <field name="import_factures" select="2" />
+                </field>
                 <field name="status" position="after">
                     <field name="info_gestions_massives" select="2" />
                 </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_facturacio_contracte_lot_tree_som">
+            <field name="name">giscedata.facturacio.contracte_lot.tree.som</field>
+            <field name="model">giscedata.facturacio.contracte_lot</field>
+			<field name="inherit_id" ref="giscedata_facturacio.view_facturacio_contracte_lot_tree" />
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='lectures_status']" position="replace"/>
             </field>
         </record>
     </data>
