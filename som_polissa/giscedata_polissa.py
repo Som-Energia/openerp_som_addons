@@ -463,9 +463,11 @@ class GiscedataPolissa(osv.osv):
         res = dict.fromkeys(ids, False)
         bat_pol_o = self.pool.get('giscedata.bateria.virtual.polissa')
         for pol_id in ids:
-            bat_pol_id = bat_pol_o.search(cursor, uid, [('polissa_id', '=', pol_id)])[0]
+            bat_pol_id = bat_pol_o.search(cursor, uid, [('polissa_id', '=', pol_id)])
+            if bat_pol_id and isinstance(bat_pol_id, list):
+                bat_pol_id = bat_pol_id[0]
             bv = bat_pol_o.read(cursor, uid, bat_pol_id, ['bateria_id'], context=context)
-            if bv.get('bateria_id'):
+            if bv and bv.get('bateria_id'):
                 res[pol_id] = bv['bateria_id'][1]
 
     def _get_tipus_installacio(self, cursor, uid, ids, field_name, arg, context=None):
