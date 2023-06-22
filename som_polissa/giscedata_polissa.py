@@ -531,7 +531,7 @@ class GiscedataPolissa(osv.osv):
             readonly=True, type="selection"),
         'bateria_virtual': fields.function(_get_bateria_virtual, method=True, type="char", string='Codi BV',
             size=24),
-        'tipus_installacio': fields.function(_get_tipus_installacio, method=True, type="selection",selection=TABLA_129, string='Codi BV',
+        'tipus_installacio': fields.function(_get_tipus_installacio, method=True, type="selection",selection=TABLA_129, string='TIpus instal.lació',
                                            ),
     }
 
