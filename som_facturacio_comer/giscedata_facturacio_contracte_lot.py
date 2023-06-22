@@ -138,7 +138,7 @@ class GiscedataFacturacioContracteLot(osv.osv):
             logger = logging.getLogger('openerp' + __name__)
             logger.error("Error calculant el camp funcio te_generation del contracte_lot ID %s: %s ", id, e)
 
-    def _ff_import_factures(self, cr, uid, ids, context=None):
+    def _ff_import_factures(self, cr, uid, ids, name, args, context=None):
         factura_o = self.pool.get("giscedata.facturacio.factura")
         res = {}
 
