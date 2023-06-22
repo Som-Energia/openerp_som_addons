@@ -154,7 +154,7 @@
                     <field name="name"/>
                     <field name="cups"/>
                     <field name="is_autoconsum_collectiu"/>
-                    <field name="tipus instalacio"/>
+                    <field name="tipus_installacio"/>
                     <field name="esquema_mesura"/>
                     <field name="tipus_cups"/>
                     <field name="ssaa"/>

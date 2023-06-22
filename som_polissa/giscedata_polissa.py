@@ -30,6 +30,10 @@ TARIFF_MAPPING = {
     "6.1B": "6.2TD"
 }
 
+TABLA_129 = [('01', u'Red interior'),
+             ('02', u'Red interior da varios consumidores (instalación de enlace)'),
+             ('03', u'Próxima a través de red'), ]
+
 TABLA_130 = [('A', u'EdM Bidireccional en PF'),
              ('B', u'EdM Bidireccional en PF y EdM gen. Neta'),
              ('C', u'EdM Consumo Total y EdM bidireccional gen. Neta'),
@@ -464,6 +468,26 @@ class GiscedataPolissa(osv.osv):
             if bv.get('bateria_id'):
                 res[pol_id] = bv['bateria_id'][1]
 
+    def _get_tipus_installacio(self, cursor, uid, ids, field_name, arg, context=None):
+        if context is None:
+            context = {}
+        acg_obj = self.pool.get('giscedata.autoconsum.generador')
+        ac_obj = self.pool.get('giscedata.autoconsum')
+        res = dict.fromkeys(ids, False)
+
+        for pol_id in ids:
+            autoconsum_id = self.read(cursor, uid, pol_id, ['autoconsum_id'], context=context)
+            if autoconsum_id.get('autoconsum_id'):
+                autoconsum_id = autoconsum_id['autoconsum_id'][0]
+                generador_id = acg_obj.search(cursor, uid, [('autoconsum_id', '=', autoconsum_id)], context=context)
+                if generador_id:
+                    tipus_installacio = acg_obj.read(cursor, uid, generador_id[0], ['tipus_installacio'], context=context)
+                    if tipus_installacio.get('tipus_installacio'):
+                        res[pol_id] = tipus_installacio['tipus_installacio']
+
+        return res
+
+
     _columns = {
         'info_gestio_endarrerida': fields.text('Informació gestió endarrerida'),
         'info_gestio_endarrerida_curta': fields.function(
@@ -505,6 +529,8 @@ class GiscedataPolissa(osv.osv):
             readonly=True, type="selection"),
         'bateria_virtual': fields.function(_get_bateria_virtual, method=True, type="char", string='Codi BV',
             size=24),
+        'tipus_installacio': fields.function(_get_tipus_installacio, method=True, type="selection",selection=TABLA_129, string='Codi BV',
+                                           ),
     }
 
 
