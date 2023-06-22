@@ -452,7 +452,7 @@ class GiscedataPolissa(osv.osv):
 
         return res
 
-    def get_bateria_virtual(self, cursor, uid, ids, field_name, arg, context=None):
+    def _get_bateria_virtual(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
             context = {}
 
