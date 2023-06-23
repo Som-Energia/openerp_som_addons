@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+      <record id="view_payment_mode_form_inherit" model="ir.ui.view">
+            <field name="name">payment.mode.form</field>
+            <field name="model">payment.mode</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="account_payment.payment_view"/>
+            <field name="arch" type="xml">
+                <form string="Payment Mode">
+                    <field name="name" readonly="1" select="1"/>
+                    <group colspan="2">
+                        <field name="active" readonly="1" select="1"/>
+                    </group>
+                    <field name="type" readonly="1"/>
+                    <field name="journal" readonly="1"/>
+                    <field name="bank_id" readonly="1"/>
+                </form>
+            </field>
+        </record>
+        <record id="action_payment_mode_form" model="ir.actions.act_window">
+            <field name="name">Payment Mode</field>
+            <field name="res_model">payment.mode</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem id="next_id_44" name="Payment" parent="account.menu_finance_configuration"/>
+        <menuitem action="action_payment_mode_form" id="menu_action_payment_mode_form" parent="next_id_44"/>
+
+        <record id="view_payment_mode_form" model="ir.ui.view">
+            <field name="name">payment.mode.form</field>
+            <field name="model">payment.mode</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="account_payment.payment_view"/>
+            <field name="arch" type="xml">
+                <form string="Payment Mode">
+                    <field name="name" select="1"/>
+                    <group colspan="2">
+                        <field name="active" select="1"/>
+                    </group>
+                    <field name="type"/>
+                    <field name="journal"/>
+                    <field name="bank_id"/>
+                </form>
+            </field>
+        </record>
+        <record id="menu_action_payment_mode_form_editable" model="ir.actions.act_window">
+            <field name="name">Payment Mode</field>
+            <field name="res_model">payment.mode</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_payment_mode_form"/>
+        </record>
+        <menuitem id="payment_editable" name="Payment Editable" parent="account.menu_finance_configuration"/>
+        <menuitem action="action_payment_mode_form" id="menu_action_payment_mode_form_editable" parent="payment_editable"/>
+    </data>
+</openerp>
