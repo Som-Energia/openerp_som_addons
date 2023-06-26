@@ -17,6 +17,9 @@ class WizardMassiveKChange(osv.osv_memory):
         wiz_og = self.browse(cursor, uid, ids[0], context=context)
         polissa_obj = self.pool.get("giscedata.polissa")
 
+        failed_polisses = []
+        inexistent_polisses = []
+
         csv_file = StringIO(base64.b64decode(wiz_og.csv_file))
         reader = csv.reader(csv_file)
         lines = list(reader)
@@ -47,13 +50,13 @@ class WizardMassiveKChange(osv.osv_memory):
                 result[line[0]] = result_extra_info
 
         if result:
-            polissa_ids = polissa_obj.search(
-                cursor,
-                uid,
-                [("name", "in", item_list)],
-            )
-
-            for polissa_id in polissa_ids:
+            for polissa_name in item_list:
+                polissa_id = polissa_obj.search(
+                    cursor, uid, [("name", "=", polissa_name)]
+                )
+                if not polissa_id:
+                    inexistent_polisses.append(polissa_name)
+                    continue
                 polissa = polissa_obj.browse(cursor, uid, polissa_id)
                 try:
                     data_activacio = date.today() + timedelta(days=1)
@@ -64,9 +67,10 @@ class WizardMassiveKChange(osv.osv_memory):
                     )
                     wz_crear_mc_obj = self.pool.get('giscedata.polissa.crear.contracte')
                     ctx = {'active_id': polissa_id}
-                    params = {'duracio': 'nou',
-                            'accio': 'nou',
-                            }
+                    params = {
+                        'duracio': 'nou',
+                        'accio': 'nou',
+                    }
                     wiz_id = wz_crear_mc_obj.create(cursor, uid, params, context=ctx)
                     wiz = wz_crear_mc_obj.browse(cursor, uid, [wiz_id])[0]
                     res = wz_crear_mc_obj.onchange_duracio(cursor, uid, [wiz.id],
@@ -75,15 +79,33 @@ class WizardMassiveKChange(osv.osv_memory):
                         polissa.send_signal('undo_modcontractual')
                         raise osv.except_osv('Error', res['warning'])
                     else:
-                        wiz.write({'data_inici': str(data_activacio),
-                                'data_final': str(data_activacio + timedelta(days=364))
-                                })
+                        wiz.write({
+                            'data_inici': str(data_activacio),
+                            'data_final': str(data_activacio + timedelta(days=364))
+                        })
                         wiz.action_crear_contracte()
                 except Exception as e:
                     polissa.send_signal('undo_modcontractual')
+                    failed_polisses.append(polissa.name)
                     raise osv.except_osv('Error', str(e))
 
-        wiz_og.write({"state": "end"})
+        info = ""
+
+        if inexistent_polisses:
+            info = "Les pòlisses següents no existeixen: {}".format(str(inexistent_polisses))
+        if failed_polisses:
+            info += "\nLes pòlisses següents han fallat: {}".format(str(failed_polisses))
+
+        if not inexistent_polisses and not failed_polisses:
+            info = "Procés acabat correctament!"
+
+        wiz_og.write(
+            {
+                "state": "end",
+                "info": info
+            }
+        )
+
         return True
 
     _columns = {
@@ -97,6 +119,7 @@ class WizardMassiveKChange(osv.osv_memory):
             required=True,
             help=(u"CSV amb les pòlisses a canviar la K")
         ),
+        'info': fields.text('Description'),
     }
 
     _defaults = {

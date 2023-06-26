@@ -20,6 +20,7 @@
                             icon="gtk-execute" />
                     </group>
                     <group attrs="{'invisible': [('state', '!=', 'end')]}">
+                        <field name="info" colspan="4" readonly="1" nolabel="1"/>
                         <button special="cancel" string="Sortir" icon="gtk-ok" />
                     </group>
                 </form>
