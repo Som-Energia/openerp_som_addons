@@ -63,10 +63,10 @@ class WizardMassiveKChange(osv.osv_memory):
                     vals_mod = result[polissa.name]
                     polissa.send_signal('modcontractual')
                     polissa_obj.write(
-                        cursor, uid, polissa_id, vals_mod, context=context
+                        cursor, uid, polissa_id[0], vals_mod, context=context
                     )
                     wz_crear_mc_obj = self.pool.get('giscedata.polissa.crear.contracte')
-                    ctx = {'active_id': polissa_id}
+                    ctx = {'active_id': polissa_id[0]}
                     params = {
                         'duracio': 'nou',
                         'accio': 'nou',
@@ -87,7 +87,6 @@ class WizardMassiveKChange(osv.osv_memory):
                 except Exception as e:
                     polissa.send_signal('undo_modcontractual')
                     failed_polisses.append(polissa.name)
-                    raise osv.except_osv('Error', str(e))
 
         info = ""
 
