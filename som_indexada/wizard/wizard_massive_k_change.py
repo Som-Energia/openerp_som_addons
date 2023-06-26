@@ -53,7 +53,7 @@ class WizardMassiveKChange(osv.osv_memory):
             for polissa_name in item_list:
                 polissa_id = polissa_obj.search(
                     cursor, uid, [("name", "=", polissa_name)]
-                )
+                )[0]
                 if not polissa_id:
                     inexistent_polisses.append(polissa_name)
                     continue
