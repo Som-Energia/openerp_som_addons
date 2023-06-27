@@ -16,10 +16,16 @@ class GiscedataPolissa(osv.osv):
 
 
     _columns = {
-        'data_alta_autoconsum': fields.date('Data alta autoconsum'),
+        'data_alta_autoconsum': fields.date('Data alta autoconsum (M105)', help='Data en la que es va activar la modcon '
+                                                                              'de canvi de tipus d\'auto de 00 al tipus'
+                                                                              'oportú.'),
+        'data_baixa_autoconsum': fields.date('Data baixa autoconsum (M105)', help='Data en la que es va activar la '
+                                                                                   'modcon de sortida de l\'autoconsum '
+                                                                                   'del tipus que tingués a 00'),
     }
     _defaults = {
         'data_alta_autoconsum': lambda *a: False,
+        'data_baixa_autoconsum': lambda *a: False,
     }
 
 GiscedataPolissa()
@@ -38,16 +44,22 @@ class GiscedataPolissaModcontractual(osv.osv):
         fields_to_read = ['autoconsumo', 'data_inici', 'modcontractual_ant', 'polissa_id']
 
         modcon_info = self.read(cursor, uid, mod_id, fields_to_read)
+        auto_vals = {}
         if modcon_info.get('modcontractual_ant'):
             modcon_ant_info = self.read(cursor, uid, modcon_info['modcontractual_ant'][0], fields_to_read)
-            auto_changes = modcon_ant_info.get('autoconsumo') != modcon_info['autoconsumo']
+            if modcon_ant_info.get('autoconsumo') != modcon_info['autoconsumo'] \
+                    and modcon_ant_info['autoconsumo'] == '00':
+                auto_vals.update({'data_alta_autoconsum': modcon_info['data_inici']})
+            elif modcon_ant_info.get('autoconsumo') != modcon_info['autoconsumo'] \
+                    and modcon_info['autoconsumo'] == '00':
+                auto_vals.update({'data_baixa_autoconsum': modcon_info['data_inici']})
         else:
-            auto_changes = modcon_info['autoconsumo'] != '00'
+            if modcon_info['autoconsumo'] != '00':
+                auto_vals.update({'data_alta_autoconsum': modcon_info['data_inici']})
 
-        if auto_changes:
+        if auto_vals:
             polissa_obj = self.pool.get('giscedata.polissa')
-            polissa_obj.write(cursor, uid, [modcon_info['polissa_id'][0]],
-                {'data_alta_autoconsum': modcon_info['data_inici']},
+            polissa_obj.write(cursor, uid, [modcon_info['polissa_id'][0]], auto_vals,
                 context={'skip_cnt_llista_preu_compatible': True}
             )
 
