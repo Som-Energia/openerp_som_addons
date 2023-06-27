@@ -75,5 +75,44 @@
                 </xpath>
             </field>
         </record>
+
+        <!-- Vista editable de Payment mode-->
+        <record id="view_payment_mode_tree_editable_som" model="ir.ui.view">
+            <field name="name">payment.mode.tree.editable.som</field>
+            <field name="model">payment.mode</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Mode de pagament (editable)" colors="red:active==0">
+                    <field name="name"/>
+                    <field name="journal"/>
+                    <field name="active" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+        <record id="view_payment_mode_form_editable_som" model="ir.ui.view">
+            <field name="name">payment.mode.form.editable.som</field>
+            <field name="model">payment.mode</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Mode de pagament (editable)">
+                    <field name="name" select="1"/>
+                    <group colspan="2">
+                        <field name="active" select="1"/>
+                    </group>
+                    <field name="type"/>
+                    <field name="journal"/>
+                    <field name="bank_id"/>
+                </form>
+            </field>
+        </record>
+        <record id="action_payment_mode_form_editable_som" model="ir.actions.act_window">
+            <field name="name">Mode de pagament (editable)</field>
+            <field name="res_model">payment.mode</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_payment_mode_tree_editable_som"/>
+        </record>
+
+        <menuitem action="action_payment_mode_form_editable_som" id="menu_action_payment_mode_form_editable_som" parent="account_payment.next_id_44"/>
     </data>
 </openerp>
