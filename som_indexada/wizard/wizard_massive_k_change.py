@@ -16,6 +16,7 @@ class WizardMassiveKChange(osv.osv_memory):
 
         wiz_og = self.browse(cursor, uid, ids[0], context=context)
         polissa_obj = self.pool.get("giscedata.polissa")
+        sw_obj = self.pool.get('giscedata.switching')
 
         failed_polisses = []
         inexistent_polisses = []
@@ -59,6 +60,23 @@ class WizardMassiveKChange(osv.osv_memory):
                     continue
                 polissa = polissa_obj.browse(cursor, uid, polissa_id)[0]
                 try:
+                    # Validations before creating new modcon
+                    if polissa.state != 'activa':
+                        failed_polisses.append(polissa.name)
+                        continue
+                    prev_modcon = polissa.modcontractuals_ids[0]
+                    if prev_modcon.state == 'pendent':
+                        failed_polisses.append(polissa.name)
+                        continue
+                    res = sw_obj.search(cursor, uid, [
+                        ('polissa_ref_id', '=', polissa.id),
+                        ('state', 'in', ['open', 'draft', 'pending']),
+                        ('proces_id.name', '!=', 'R1'),
+                    ])
+                    if res:
+                        failed_polisses.append(polissa.name)
+                        continue
+                    # Create new modcon
                     data_activacio = date.today() + timedelta(days=1)
                     vals_mod = result[polissa.name]
                     polissa.send_signal('modcontractual')
@@ -71,10 +89,15 @@ class WizardMassiveKChange(osv.osv_memory):
                         'duracio': 'nou',
                         'accio': 'nou',
                     }
-                    wiz_id = wz_crear_mc_obj.create(cursor, uid, params, context=ctx)
-                    wiz = wz_crear_mc_obj.browse(cursor, uid, [wiz_id])[0]
-                    res = wz_crear_mc_obj.onchange_duracio(cursor, uid, [wiz.id],
-                                        str(data_activacio), wiz.duracio, context=ctx)
+                    wiz_id = wz_crear_mc_obj.create(
+                        cursor, uid, params, context=ctx
+                    )
+                    wiz = wz_crear_mc_obj.browse(
+                        cursor, uid, [wiz_id]
+                    )[0]
+                    res = wz_crear_mc_obj.onchange_duracio(
+                        cursor, uid, [wiz.id], str(data_activacio), wiz.duracio, context=ctx
+                    )
                     if res.get('warning', False):
                         polissa.send_signal('undo_modcontractual')
                         raise osv.except_osv('Error', res['warning'])
@@ -84,7 +107,7 @@ class WizardMassiveKChange(osv.osv_memory):
                             'data_final': str(data_activacio + timedelta(days=364))
                         })
                         wiz.action_crear_contracte()
-                except Exception as e:
+                except Exception:
                     polissa.send_signal('undo_modcontractual')
                     failed_polisses.append(polissa.name)
 
@@ -94,7 +117,6 @@ class WizardMassiveKChange(osv.osv_memory):
             info = "Les pòlisses següents no existeixen: {}".format(str(inexistent_polisses))
         if failed_polisses:
             info += "\nLes pòlisses següents han fallat: {}".format(str(failed_polisses))
-
         if not inexistent_polisses and not failed_polisses:
             info = "Procés acabat correctament!"
 
