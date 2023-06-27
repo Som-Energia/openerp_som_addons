@@ -81,10 +81,15 @@
             <field name="name">payment.mode.tree.editable.som</field>
             <field name="model">payment.mode</field>
             <field name="type">tree</field>
+            <field name="priority">99</field>
             <field name="arch" type="xml">
                 <tree string="Mode de pagament (editable)" colors="red:active==0">
                     <field name="name"/>
                     <field name="journal"/>
+                    <field name="tipo"/>
+                    <field name="sufijo"/>
+                    <field name="partner_id"/>
+                    <field name="bank_id"/>
                     <field name="active" invisible="1"/>
                 </tree>
             </field>
@@ -93,6 +98,7 @@
             <field name="name">payment.mode.form.editable.som</field>
             <field name="model">payment.mode</field>
             <field name="type">form</field>
+            <field name="priority">99</field>
             <field name="arch" type="xml">
                 <form string="Mode de pagament (editable)">
                     <field name="name" select="1"/>
@@ -101,7 +107,38 @@
                     </group>
                     <field name="type"/>
                     <field name="journal"/>
-                    <field name="bank_id"/>
+                    <field name="require_bank_account"/>
+                    <field name="tipo"/>
+                    <newline/>
+                    <separator string="Presenter data" colspan="4"/>
+                    <field name="partner_id" attrs="{'required':[('tipo','!=','none')]}" on_change="onchange_partner(partner_id)"/>
+                    <field name="bank_id" domain="[('partner_id','=',partner_id)]"/>
+                    <field name="cif" readonly="1"/>
+                    <field name="nombre" attrs="{'required':[('tipo','!=','none')]}"/>
+                    <field name="sufijo" attrs="{'required':[('tipo','!=','none')]}"/>
+                    <field name="sepa_creditor_code" attrs="{'required':[('tipo','in',('sepa19', 'sepa34'))]}"/>
+                    <field name="ine"/>
+                    <group colspan="2" col="2" attrs="{'invisible': [('tipo', '=', 'none')]}">
+                        <field name="financiado"/>
+                    </group>
+                    <field name="mandate_scheme"/>
+                    <newline/>
+                    <group colspan="4" attrs="{'invisible': [('tipo', '=', 'none')]}">
+                        <group colspan="2" col="2" attrs="{ 'invisible': [('tipo', '!=', 'csb_58')] }">
+                            <separator string="CSB 58 Options" colspan="2"/>
+                            <field name="inc_domicile"/>
+                            <field name="alt_domicile_format"/>
+                        </group>
+                        <group colspan="2" col="2" attrs="{ 'invisible': [('tipo', '!=', 'csb_32')] }">
+                            <separator string="CSB 32 Options" colspan="2"/>
+                            <field name="cedente"/>
+                        </group>
+                        <group colspan="2" col="2" attrs="{ 'invisible': [('tipo', '!=', 'sepa19')] }">
+                            <separator string="SEPA 19 Options" colspan="2"/>
+                            <field name="cor1_scheme"/>
+                        </group>
+                    </group>
+                    <newline/>
                 </form>
             </field>
         </record>
@@ -110,7 +147,7 @@
             <field name="res_model">payment.mode</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="view_payment_mode_tree_editable_som"/>
+            <field name="view_id" ref="view_payment_mode_form_editable_som"/>
         </record>
 
         <menuitem action="action_payment_mode_form_editable_som" id="menu_action_payment_mode_form_editable_som" parent="account_payment.next_id_44"/>
