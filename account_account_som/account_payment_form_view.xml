@@ -24,14 +24,6 @@
                 </xpath>
             </field>
         </record>
-        <record id="action_payment_mode_form" model="ir.actions.act_window">
-            <field name="name">Payment Mode</field>
-            <field name="res_model">payment.mode</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-        </record>
-        <menuitem id="next_id_44" name="Payment" parent="account.menu_finance_configuration"/>
-        <menuitem action="action_payment_mode_form" id="menu_action_payment_mode_form" parent="next_id_44"/>
 
         <record id="view_payment_mode_form" model="ir.ui.view">
             <field name="name">payment.mode.form</field>
@@ -57,7 +49,6 @@
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="view_payment_mode_form"/>
         </record>
-        <menuitem id="payment_editable" name="Payment Editable" parent="account.menu_finance_configuration"/>
-        <menuitem action="action_payment_mode_form" id="menu_action_payment_mode_form_editable" parent="payment_editable"/>
+        <menuitem id="payment_editable" name="Payment Editable" parent="account.menu_finance_configuration" action="menu_action_payment_mode_form_editable"/>
     </data>
 </openerp>
