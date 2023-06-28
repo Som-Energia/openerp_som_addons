@@ -7,15 +7,21 @@
             <field name="type">form</field>
             <field name="inherit_id" ref="account_payment.payment_view"/>
             <field name="arch" type="xml">
-                <form string="Payment Mode">
+                <xpath expr="//field[@name='name']" position="replace">
                     <field name="name" readonly="1" select="1"/>
-                    <group colspan="2">
-                        <field name="active" readonly="1" select="1"/>
-                    </group>
+                </xpath>
+                <xpath expr="//field[@name='active']" position="replace">
+                    <field name="active" readonly="1" select="1"/>
+                </xpath>
+                <xpath expr="//field[@name='type']" position="replace">
                     <field name="type" readonly="1"/>
+                </xpath>
+                <xpath expr="//field[@name='journal']" position="replace">
                     <field name="journal" readonly="1"/>
+                </xpath>
+                <xpath expr="//field[@name='bank_id']" position="replace">
                     <field name="bank_id" readonly="1"/>
-                </form>
+                </xpath>
             </field>
         </record>
         <record id="action_payment_mode_form" model="ir.actions.act_window">
