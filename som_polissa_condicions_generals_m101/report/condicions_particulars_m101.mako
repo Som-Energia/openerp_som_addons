@@ -532,7 +532,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                                     <b>${_(u"Tarifa indexada")}</b>${_(u"(2) - el preu horari (PH) es calcula d'acord amb la fórmula:")}
                                 </span>
                                 <br/>
-                                <span>${_(u"PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + K] + PTD + CA")}</span>
+                                <span>${_(u"PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + F] + PTD + CA")}</span>
                                 <br/>
                                 <span class="normal_font_weight">${_(u"on la franja de la cooperativa")}</span>
                                 <%
@@ -554,7 +554,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                                                     coeficient_k = item.base_price
                                                     break
                                 %>
-                                <span>&nbsp;${("(K) = %s €/kWh</B>") % formatLang(coeficient_k, digits=6)}</span>
+                                <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(coeficient_k, digits=6)}</span>
                             </td>
                         %else:
                             %for p in periodes_energia:
