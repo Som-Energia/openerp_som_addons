@@ -117,7 +117,7 @@ class GiscedataPolissa(osv.osv):
         return traceback.format_exception(exc_type, exc_value, exc_tb)
 
     def www_check_modifiable_polissa(
-        self, cursor, uid, polissa_id, skip_atr_check=False, excluded_cases=[], context=None
+        self, cursor, uid, polissa_id, skip_atr_check=False, excluded_cases=None, context=None
     ):
         """
         Things to check before allowing modcons to the contract.
@@ -127,6 +127,9 @@ class GiscedataPolissa(osv.osv):
 
         if context is None:
             context = {}
+    
+        if excluded_cases is None:
+            excluded_cases = []
 
         sw_obj = self.pool.get('giscedata.switching')
 
