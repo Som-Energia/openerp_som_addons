@@ -32,7 +32,7 @@
     <p style="padding-left: 40px"><strong> Importe del término energía = Suma horaria (kWh energía activa entrante </strong><em><strong>h</strong></em><sub><em><strong>i</strong></em></sub><em><strong> </strong></em><strong>* PH)</strong></p>
     <p>Siendo <em><strong>h</strong></em><sub><em><strong>i </strong></em></sub>cada una de las horas del periodo de facturación en cuestión.</p>
     <p>Siendo PH el precio horario de la energía calculado siguiendo la siguiente fórmula:</p>
-    <p style="padding-left: 40px"><strong>PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + K] + PTD + CA</strong></p>
+    <p style="padding-left: 40px"><strong>PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + F] + PTD + CA</strong></p>
 
     <p style="page-break-after:always;"></p>
 
@@ -72,7 +72,7 @@
         <p><strong>FE</strong> = Obligación de aportación al Fondo de Eficiencia Energética (FNEE) publicada por el Ministerio.</p>
         </li>
         <li>
-        <p><strong>K</strong> = Margen de comercialización (incluye los costes de desvío) definido en las condiciones particulares del contrato.</p>
+        <p><strong>F</strong> = Franja de la cooperativa (incluye el margen para la viabilidad de la cooperativa, más los costes de los Certificados de Garantía de Origen 100% renovable y los costes de las desviaciones).</p>
         </li>
         <li>
         <p><strong>PTD </strong>= Coste regulado del peaje de transporte y distribución establecido y publicado por la CNMC y aplicado sobre el total de la energía consumida.</p>
