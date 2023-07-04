@@ -6,7 +6,7 @@ on:
 
 jobs:
   pre-commit:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Changed Files Exporter
         uses: futuratrepadeira/changed-files@v4.0.0
@@ -15,7 +15,7 @@ jobs:
           repo-token: ${{ github.token }}
       - uses: actions/checkout@v2
       - name: Setup Python 2.7
-        run:
+        run: |
           sudo apt-get update
           sudo apt-get install -y python2.7 python2.7-dev
           sudo ln -sf python2.7 /usr/bin/python
