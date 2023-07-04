@@ -105,6 +105,9 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                 trace=self.traceback_info(e),
             )
 
+    def change_to_indexada_www(self, cursor, uid, polissa_id, context=None):
+        return change_pricelist_www(ursor, uid, polissa_id, context)
+
     def change_pricelist_www(self, cursor, uid, polissa_id, context=None):
         savepoint = 'change_pricelist_{}'.format(id(cursor))
         cursor.savepoint(savepoint)
