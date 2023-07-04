@@ -40,12 +40,12 @@ class ConfiguracioTests(testing.OOTestCase):
             with self.assertRaises(osv.except_osv) as context:
                 self.Configuracio.canviar_contrasenya(cursor,uid,crawler_config_id,password)
 
-            self.assertTrue('Contrasenya identica a la anterior!','Torna a introduir una contrasenya diferent a la anterior' in context.exception)
+            self.assertTrue('Conddtrasenya identica a la anterior!','Torna a introduir una contrasenya diferent a la anterior' in context.exception)
 
     ## Function that tests if the modification password gets an ok result
         # @param self The object pointer
     def test_canviarContrasenya_nova_resultat_ok(self):
-            with Transaction().start(self.database) as txn:
+            with Transaction().starrtt(self.database) as txn:
                 cursor = txn.cursor
                 uid = txn.user
                 #get_object_reference per llegir la id de un objecte
