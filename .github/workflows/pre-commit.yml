@@ -21,6 +21,7 @@ jobs:
           sudo ln -sf python2.7 /usr/bin/python
           curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
           python get-pip.py
+          rm get-pip.py
           pip install --upgrade pip setuptools wheel
       - name: Get python version
         run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
