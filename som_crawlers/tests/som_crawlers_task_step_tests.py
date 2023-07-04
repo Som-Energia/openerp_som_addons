@@ -45,5 +45,5 @@ class SomCrawlersTaskStepTests(testing.OOTestCase):
             with self.assertRaises(IOError) as context:
                 self.task_step.attach_file(cursor, uid, self.pathFileActual + '/demo/screenshots', 'screenshots.zip', result_id)
 
-                self.assertTrue('IOError: [Errno 2] No sucdirectory: ' in context.exception)
+                self.assertTrue('IOError: [Errno 2] No such file or directory: ' in context.exception)
 
