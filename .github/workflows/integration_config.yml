@@ -48,9 +48,19 @@ jobs:
           - 27017:27017
     steps:
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        if: matrix.python-version != '2.7'
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Set up Python 2.7
+        if: matrix.python-version == '2.7'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python2.7 python2.7-dev
+          sudo ln -sf python2.7 /usr/bin/python
+          curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
+          python get-pip.py
+          pip install --upgrade pip setuptools wheel
       - name: Download required repositories
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
