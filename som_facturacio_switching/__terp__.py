@@ -15,6 +15,7 @@
         "giscedata_facturacio_comer",
         "som_facturacio_comer",
         "giscedata_facturacio_switching",
+        "som_indexada",
     ],
     "init_xml": [],
     "demo_xml": ["pricelist_demo_data.xml"],
