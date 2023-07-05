@@ -118,6 +118,7 @@ class SomCrawlersTask(osv.osv):
                 break
             except Exception as e:
                 resultat += "ERROR " + str(e)
+                resultat_correcte = False
                 break
             finally:
                 output = resultat + "\n\n" + output

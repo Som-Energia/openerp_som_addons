@@ -243,7 +243,7 @@
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="scq_conf">
-            <field name="name">SCQ</field>
+            <field name="name">scq</field>
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>

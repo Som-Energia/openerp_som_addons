@@ -97,13 +97,13 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
         return super(GiscedataFacturacioImportacioLinia, self).search(cr, user, args, offset, limit, order, context, count)
 
     def reimport_f1_by_cups(self, cursor, uid, ids, context=None):
-        f1_info = self.read(cursor, uid, ids, ['cups_id', 'fecha_factura_desde'])
+        f1_info = self.read(cursor, uid, ids, ['cups_text', 'fecha_factura_desde'])
         f1_dict = {}
         for f1 in f1_info:
-            cups_id = f1['cups_id'][0]
-            if cups_id not in f1_dict:
-                f1_dict[cups_id] = []
-            f1_dict[cups_id].append(f1)
+            cups_text = f1.get('cups_text')
+            if cups_text and cups_text not in f1_dict:
+                f1_dict[cups_text] = []
+            f1_dict[cups_text].append(f1)
 
         for _, f1ns in f1_dict.items():
             sorted_list = sorted(f1ns, key=lambda x: x['fecha_factura_desde'])

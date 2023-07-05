@@ -27,6 +27,7 @@
         "data/product_pricelist_data.xml",
         "data/giscedata_polissa_category_data.xml",
         "data/email_template_data.xml",
+        "data/res_config_data.xml",
         "security/ir.model.access.csv",
         "wizard/wizard_massive_k_change.xml",
     ],

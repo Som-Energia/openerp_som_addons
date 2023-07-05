@@ -146,6 +146,7 @@ class GiscedataFacturacioContracteLot(osv.osv):
         for id in ids:
             #  per cada contracte lot
             info = self.read(cr, uid, id, ['polissa_id', 'lot_id'])
+
             #  obtenim les factures relacionades
             factura_ids = factura_o.search(cr, uid, [('polissa_id', '=', info['polissa_id'][0]), ('lot_facturacio', '=', info['lot_id'][0])])
 
