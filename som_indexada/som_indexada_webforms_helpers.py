@@ -3,10 +3,10 @@ from osv import osv
 from som_indexada.exceptions import indexada_exceptions
 from datetime import datetime
 
+
 class SomIndexadaWebformsHelpers(osv.osv_memory):
 
     _name = 'som.indexada.webforms.helpers'
-
 
     def get_k_from_pricelist(self, cursor, uid, pricelist_id):
         pricelist_obj = self.pool.get('product.pricelist')
@@ -15,7 +15,9 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
         vlp = None
         coefficient_k = None
         for lp in pricelist.version_id:
-            if lp.date_start <= today and (not lp.date_end or lp.date_end >= today):
+            if lp.date_start <= today and (
+                not lp.date_end or lp.date_end >= today
+            ):
                 vlp = lp
                 break
         if vlp:
@@ -34,17 +36,31 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
         exc_type, exc_value, exc_tb = sys.exc_info()
         return traceback.format_exception(exc_type, exc_value, exc_tb)
 
+    def _get_change_type(self, cursor, uid, polissa_id):
+        change_type = "from_period_to_index"
+        cfg_obj = self.pool.get('res.config')
+        # 'flag_change_tariff_switch' enables change tariff switching.
+        # If value == 0, just change from period to index is available
+        flag_change_tariff_switch = int(cfg_obj.get(cursor, uid, 'som_flag_change_tariff_switch', '0'))
+
+        if flag_change_tariff_switch:
+            polissa_obj = self.pool.get('giscedata.polissa')
+            polissa = polissa_obj.browse(cursor, uid, polissa_id)
+            if polissa.mode_facturacio == "index":
+                change_type = "from_index_to_period"
+
+        return change_type
+
     def check_new_pricelist_www(self, cursor, uid, polissa_id, context=None):
-        savepoint = 'check_new_pricelist_indexada_{}'.format(id(cursor))
+        savepoint = 'check_new_pricelist_{}'.format(id(cursor))
         cursor.savepoint(savepoint)
         try:
+            change_type = self._get_change_type(cursor, uid, polissa_id)
+
             polissa_obj = self.pool.get('giscedata.polissa')
             pricelist_obj = self.pool.get('product.pricelist')
             polissa = polissa_obj.browse(cursor, uid, polissa_id)
 
-            # TODO: pendent refactoritzar aquesta part quan implementem modo switch
-            # depenent de 'polissa.mode_facturacio'
-            change_type = "from_period_to_index"
             wiz_o = self.pool.get('wizard.change.to.indexada')
             wiz_o.validate_polissa_can_change(
                 cursor,
@@ -90,11 +106,14 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
             )
 
     def change_to_indexada_www(self, cursor, uid, polissa_id, context=None):
-        savepoint = 'change_to_indexada_{}'.format(id(cursor))
+        return self.change_pricelist_www(cursor, uid, polissa_id, context)
+
+    def change_pricelist_www(self, cursor, uid, polissa_id, context=None):
+        savepoint = 'change_pricelist_{}'.format(id(cursor))
         cursor.savepoint(savepoint)
         try:
-            # TODO: refactor switching
-            change_type = 'from_period_to_index'
+            change_type = self._get_change_type(cursor, uid, polissa_id)
+
             wiz_o = self.pool.get('wizard.change.to.indexada')
             context = {
                 'active_id': polissa_id,
@@ -125,7 +144,12 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
     def has_indexada_prova_pilot_category_www(self, cursor, uid, polissa_id):
         polissa_obj = self.pool.get('giscedata.polissa')
 
-        polissa_categories = polissa_obj.read(cursor, uid, polissa_id, ['category_id'])
+        polissa_categories = polissa_obj.read(
+            cursor,
+            uid,
+            polissa_id,
+            ['category_id'],
+        )
         imd_obj = self.pool.get('ir.model.data')
         prova_pilot_cat = imd_obj._get_obj(
             cursor,
