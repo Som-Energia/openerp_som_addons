@@ -5,6 +5,10 @@ from ooquery.expression import Field
 from addons import get_module_resource
 from osv import osv, fields
 from addons.giscedata_facturacio.giscedata_polissa import _get_polissa_from_energy_invoice
+from gestionatr.defs import TABLA_113
+
+TIPO_AUTOCONSUMO = TABLA_113
+TIPO_AUTOCONSUMO_SEL = [(ac[0], u'[{}] - {}'.format(ac[0], ac[1])) for ac in TIPO_AUTOCONSUMO]
 
 POLISSA_DATE_FIELDS = [
     'data_ultima_lectura', 'data_ultima_lectura_f1', 'data_alta',
@@ -489,6 +493,21 @@ class GiscedataPolissa(osv.osv):
 
         return res
 
+    def _ff_get_tipus_auto(self, cursor, uid, ids, field_name, arg, context=None):
+        if context is None:
+            context = {}
+
+        ac_obj = self.pool.get('giscedata.autoconsum')
+        res = dict.fromkeys(ids, False)
+        for pol_id in ids:
+            autoconsum_id = self.read(cursor, uid, pol_id, ['autoconsum_id'], context=context)
+            if autoconsum_id.get('autoconsum_id'):
+                autoconsum_id = autoconsum_id['autoconsum_id'][0]
+                auto = ac_obj.read(cursor, uid, autoconsum_id, ['tipus_autoconsum'], context=context)
+                if auto.get('tipus_autoconsum'):
+                    res[pol_id] = auto['tipus_autoconsum']
+
+        return res
 
     _columns = {
         'info_gestio_endarrerida': fields.text('Informació gestió endarrerida'),
@@ -531,8 +550,9 @@ class GiscedataPolissa(osv.osv):
             readonly=True, type="selection"),
         'bateria_virtual': fields.function(_get_bateria_virtual, method=True, type="char", string='Codi BV',
             size=24),
-        'tipus_installacio': fields.function(_get_tipus_installacio, method=True, type="selection",selection=TABLA_129, string='TIpus instal.lació',
+        'tipus_installacio': fields.function(_get_tipus_installacio, method=True, type="selection",selection=TABLA_129, string='Tipus instal.lació',
                                            ),
+        'tipus_auto': fields.function(_ff_get_tipus_auto, method=True, type="selection", selection=TIPO_AUTOCONSUMO_SEL, string='Tipus autoconsum')
     }
 
 
