@@ -176,7 +176,7 @@
                     <field name="bateria_activa"/>
                     <field name="bateria_virtual"/>
                     <field name="data_activacio_bateria"/>
-                    <field name="cups_np" seelct="1"/>
+                    <field name="cups_np" select="1"/>
                 </tree>
             </field>
         </record>
