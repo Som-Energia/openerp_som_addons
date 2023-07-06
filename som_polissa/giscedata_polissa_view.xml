@@ -169,6 +169,7 @@
                     <field name="data_baixa_auto"/>
                     <field name="data_baixa"/>
                     <field name="facturacio_suspesa"/>
+                    <field name="observacio_suspesa" invisible="1" select="1"/>
                     <field name="data_ultima_factura"/>
                     <field name="data_ultima_lectura_f1"/>
                     <field name="dies_lectures_facturada_f1"/>
