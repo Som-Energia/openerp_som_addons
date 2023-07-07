@@ -559,10 +559,10 @@ CONTRACT_TYPES = dict(TABLA_9)
                                 <span>&nbsp;${("(K) = %s €/kWh</B>") % formatLang(coeficient_k, digits=6)}</span>
                             </td>
                         %else:
-                            % llista_preu = ultima_modcon.llista_preu if modcon_pendent_periodes else polissa.llista_preu
+                            <% llista_preu = ultima_modcon.llista_preu if modcon_pendent_periodes else polissa.llista_preu %>
                             %for p in periodes_energia:
                                 %if llista_preu:
-                                    % ctx['force_pricelist'] = llista_preu
+                                    <% ctx['force_pricelist'] = llista_preu %>
                                     <td class="center">
                                         <span class="">${formatLang(get_atr_price(cursor, uid, polissa, p, 'te', ctx, with_taxes=True)[0], digits=6)}</span>
                                     </td>
