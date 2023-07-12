@@ -1,4 +1,5 @@
 from osv import osv
+from report_backend.report_backend import report_browsify
 
 class GiscedataFacturacioFacturaReportV2(osv.osv):
     _inherit = 'giscedata.facturacio.factura.report.v2'
