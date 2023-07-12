@@ -30,7 +30,7 @@ class GiscedataFacturacioFacturaReportV2(osv.osv):
     def get_impsa(self, data, linies_importe_otros):
         res = super(GiscedataFacturacioFacturaReportV2, self).get_impsa(data, linies_importe_otros)
 
-        for linia in data['linies']:
+        for linia in data['linies']['altres']:
             if linia['metadata']['code'] in ['DN01', 'DN02', 'DONATIU']:
                 res += linia['import'].val / 1.21
         return res
