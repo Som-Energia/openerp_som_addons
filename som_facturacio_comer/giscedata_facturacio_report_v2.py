@@ -32,7 +32,8 @@ class GiscedataFacturacioFacturaReportV2(osv.osv):
 
         for linia in data['linies']['altres']:
             if linia['metadata']['code'] in ['DN01', 'DN02', 'DONATIU']:
-                res += linia['import'].val / 1.21
+                donatiu_sense_iva = linia['import'].val / 1.21
+                res += float(format(donatiu_sense_iva, '.2f'))
         return res
 
     # Posem total_preu_linies_sense_iva perquè els conceptes de linia sense iva estan a impsa / 1.21.
