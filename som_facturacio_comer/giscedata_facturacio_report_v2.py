@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from osv import osv
 from report_backend.report_backend import report_browsify
 
