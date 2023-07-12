@@ -26,4 +26,18 @@ class GiscedataFacturacioFacturaReportV2(osv.osv):
         res['te_gkwh'] = fra.is_gkwh
         return res
 
+    def get_impsa(self, data, linies_importe_otros):
+        res = super(GiscedataFacturacioFacturaReportV2, self).get_impsa(data, linies_importe_otros)
+
+        for linia in data['linies']:
+            if linia['metadata']['code'] in ['DN01', 'DN02', 'DONATIU']:
+                res += linia['import'].val / 1.21
+        return res
+
+    # Posem total_preu_linies_sense_iva perquè els conceptes de linia sense iva estan a impsa / 1.21.
+    # Ens ho ha comunicat la CNMC que s'ha de fer així
+    def get_linies_importe_otros(self, data):
+        linies_importe_otros, total_preu_linies_sense_iva = super(GiscedataFacturacioFacturaReportV2, self).get_linies_importe_otros(data)
+        return linies_importe_otros, 0
+
 GiscedataFacturacioFacturaReportV2()
