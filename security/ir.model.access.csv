@@ -97,3 +97,4 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 "access_generationkwh_right_usage_line_r","generationkwh.right.usage.line","model_generationkwh_right_usage_line","som_generationkwh.group_som_generationkwh_r",1,0,0,0
 "access_generationkwh_right_usage_line_u","generationkwh.right.usage.line","model_generationkwh_right_usage_line","som_generationkwh.group_som_generationkwh_u",1,1,1,1
 "access_generationkwh_right_usage_line_w","generationkwh.right.usage.line","model_generationkwh_right_usage_line","som_generationkwh.group_som_generationkwh_w",1,1,1,0
+"access_wizard_generate_payment_mandate_rcwd","wizard.generate.payment.mandate","model_wizard_generate_payment_mandate","base.group_user",1,1,1,1

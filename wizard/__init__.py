@@ -11,3 +11,4 @@ import wizard_baixa_soci
 import wizard_contract_sign_signaturit
 import wizard_llibre_registre_socis
 import wizard_factures_liquidacio_interessos
+import wizard_generate_mandate
