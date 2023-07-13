@@ -45,6 +45,7 @@
     "wizard/wizard_aeat193_from_gkwh_invoices_view.xml",
     "wizard/wizard_baixa_soci.xml",
     "wizard/wizard_contract_sign_signaturit.xml",
+    "wizard/wizard_generate_mandate_view.xml",
     "investment_view.xml",
     "assignment_view.xml",
     "somenergia_soci_view.xml",
