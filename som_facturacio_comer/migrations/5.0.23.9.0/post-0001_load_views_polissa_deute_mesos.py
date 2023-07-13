@@ -14,7 +14,12 @@ def up(cursor, installed_version):
     pool = pooler.get_pool(cursor.dbname)
 
     logger.info("Updating XML giscedata_polissa_view.xml")
-    load_data_records(cursor, 'som_facturacio_comer', 'giscedata_polissa_view.xml', ['view_giscedata_polissa_deute_som_tree', 'view_giscedata_polissa_pending_som_form'])
+    record_names = [
+        'view_giscedata_polissa_deute_som_tree',
+        'view_giscedata_polissa_pending_som_form',
+        'action_giscedata_polissa_deute_som_tree'
+    ]
+    load_data_records(cursor, 'som_facturacio_comer', 'giscedata_polissa_view.xml', record_names)
     logger.info("XMLs succesfully updatd.")
 
 
