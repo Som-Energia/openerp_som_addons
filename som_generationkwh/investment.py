@@ -910,7 +910,7 @@ class GenerationkwhInvestment(osv.osv):
         if invoice_type == 'out_invoice':
             mandate_id = self.get_or_create_payment_mandate(cursor, uid,
                 partner_id, partner.bank_inversions.iban,
-                'AMORTITZACIO COBRAR GENERATION kWh', gkwh.creditorCode)
+                gkwh.mandatePurposeAmorCobrar, gkwh.creditorCode)
 
             vals.update({
                 'mandate_id': mandate_id,

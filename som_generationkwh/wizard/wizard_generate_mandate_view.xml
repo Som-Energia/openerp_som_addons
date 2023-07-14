@@ -13,7 +13,7 @@
                         <field name="bank_id"
                             domain="[('partner_id', '=', partner_id)]"
                             colspan="4" width="400"/>
-                        <field name="purpose" colspan="4" width="400"/>
+                        <!-- <field name="purpose" colspan="4" width="400"/> -->
                         <group colspan="4">
                             <button icon="gtk-ok" name="action_generate_mandate" string="Obtindre o generar" type="object"/>
                             <button special="cancel" string="Cancel·lar" icon="gtk-cancel"/>
