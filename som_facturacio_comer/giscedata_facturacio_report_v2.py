@@ -42,4 +42,7 @@ class GiscedataFacturacioFacturaReportV2(osv.osv):
         linies_importe_otros, total_preu_linies_sense_iva = super(GiscedataFacturacioFacturaReportV2, self).get_linies_importe_otros(data)
         return linies_importe_otros, 0
 
+    def get_verde(self, data):
+        return 1
+
 GiscedataFacturacioFacturaReportV2()
