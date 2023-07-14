@@ -79,7 +79,7 @@
                     <field name="type">form</field>
                     <field name="arch" type="xml">
                         <xpath expr="//field[@name='unpaid_invoices']" position="after">
-                            <field name="mesos_factura_mes_antiga_impagada" select="2"/>
+                            <field name="mesos_factura_mes_antiga_impagada" />
                         </xpath>
                     </field>
                 </record>
