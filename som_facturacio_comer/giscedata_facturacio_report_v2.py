@@ -42,19 +42,7 @@ class GiscedataFacturacioFacturaReportV2(osv.osv):
         linies_importe_otros, total_preu_linies_sense_iva = super(GiscedataFacturacioFacturaReportV2, self).get_linies_importe_otros(data)
         return linies_importe_otros, 0
 
-    def get_finbs(self, data):
-        return 0
-
     def get_verde(self, data):
         return 1
-
-    def get_imp_otros_sin_ie(self, data, linies_importe_otros):
-        res = super(GiscedataFacturacioFacturaReportV2, self).get_imp_otros_sin_ie(data, linies_importe_otros)
-        valor = 0
-
-        linies = data['linies']
-        valor = sum(l['import'].val for l in linies['altres'] if l['metadata']['code'] == 'RBS') or valor
-        res += valor
-        return res
 
 GiscedataFacturacioFacturaReportV2()
