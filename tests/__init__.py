@@ -6,3 +6,4 @@ from test_wizard_baixa_soci import *
 from fareperiodcurve_tests import *
 from wizard_llibre_tests import *
 from investment_strategy_tests import *
+from wizard_generate_mandate_tests import *
