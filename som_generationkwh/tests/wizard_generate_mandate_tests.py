@@ -19,26 +19,6 @@ class TestsWizardGenerateMandate(testing.OOTestCase):
         object_id = irmd_o.get_object_reference(cursor, uid, module, obj_ref)[1]
         return object_id
 
-    # def test_get_soci_values(self):
-    #     cursor, uid, pool = (self.txn.cursor, self.txn.user, self.openerp.pool)
-    #     soci_o = pool.get('somenergia.soci')
-    #     wiz_o = pool.get('wizard.llibre.registre.socis')
-    #     soci_id = self.get_object_id('som_generationkwh', 'soci_aportacions')
-
-    #     values = wiz_o.get_soci_values(cursor, uid, soci_id)
-
-    #     self.assertEqual(values, {'adreca': u'Esperan\xe7a, 8',
-	#      'cp': u'43580',
-	#      'data_alta': '2017-01-01',
-	#      'data_baixa': '',
-	#      'dni': u'16405474B',
-	#      'email': '',
-	#      'municipi': '',
-	#      'nom': u'Alina An\xedssimova',
-	#      'num_soci': u'S202003',
-	#      'provincia': '',
-	#      'tipus': 'Consumidor'})
-
     def get_existing_mandates(self, partner_id, iban, purpose, creditor_code):
         cursor, uid, pool = (self.txn.cursor, self.txn.user, self.openerp.pool)
         ResPartner = pool.get("res.partner")
