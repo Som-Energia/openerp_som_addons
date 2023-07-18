@@ -21,7 +21,8 @@
         "giscedata_facturacio_impagat_comer",
         "som_switching",
         "base_bank_extended",
-        "l10n_ES_remesas"
+        "l10n_ES_remesas",
+        "www_base",
     ],
     "init_xml": [],
     "demo_xml": [
