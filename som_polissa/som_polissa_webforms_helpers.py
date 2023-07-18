@@ -18,8 +18,8 @@ class SomPolissaWebformsHelpers(osv.osv_memory):
         )
         iban = ''
         if bank.get('bank'):
-            iban_prefix = bank['bank'][1][-4:]
-            iban = '**** **** **** **** **** {}'.format(iban_prefix)
+            iban_suffix = bank['bank'][1][-4:]
+            iban = '**** **** **** **** **** {}'.format(iban_suffix)
         return iban
 
     def www_check_iban(self, cursor, uid, iban, context=None):
