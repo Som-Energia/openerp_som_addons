@@ -16,9 +16,6 @@ class WizardGerneratePaymentMandate(osv.osv_memory):
             id_partner = context.get('active_id', False)
         return id_partner
 
-    def _default_purpose(self, cursor, uid, context=None):
-        return gkwh.mandatePurposeAmorCobrar
-
     def action_generate_mandate(self, cursor, uid, ids, context=None):
 
         if context is None:
@@ -35,7 +32,6 @@ class WizardGerneratePaymentMandate(osv.osv_memory):
 
         self.write(cursor, uid, ids, {
             'state': 'done',
-            'info': "Mandat resultant",
             'mandate_id': id_mandate,
         })
         return True
@@ -46,15 +42,12 @@ class WizardGerneratePaymentMandate(osv.osv_memory):
             required=True, ondelete='cascade', readonly=True,
         ),
         'bank_id': fields.many2one('res.partner.bank', 'Banc client', required=True, ondelete='cascade'),
-        'purpose': fields.char('Purpose', size=500),
         'mandate_id': fields.many2one('payment.mandate', 'Mandat', required=False),
-        'info': fields.text('Info', size=4000),
         'state': fields.char('State', size=16),
     }
 
     _defaults = {
         'partner_id': _default_partner_id,
-        'purpose': _default_purpose,
         'state': lambda *a: 'init',
     }
 
