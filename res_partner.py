@@ -57,20 +57,36 @@ class ResPartner(osv.osv):
             for x in Assignments.read(cursor, uid, assignment_ids, [])
         ], key=lambda x: (x['priority'],x['id']))
 
-        def delete_rel(cursor, uid, categ_id, res_partner_id):
-            cursor.execute('delete from res_partner_category_rel where category_id=%s and partner_id=%s',(categ_id, res_partner_id))
-        
-        res_users = self.pool.get('res.users')
-        usuari = res_users.read(cursor, uid, uid, ['name'])['name']
-        old_comment = soci_obj.read(cursor, uid, [member_id], ['comment'])[0]['comment']
-        old_comment = old_comment + '\n' if old_comment else '' 
-        comment =  "{}Baixa efectuada a data {} per: {}".format(old_comment, today, usuari)
-        soci_obj.write(cursor, uid, [member_id], {'baixa': True,
-                                                'data_baixa_soci': today,
-                                                'comment': comment })
-        delete_rel(cursor, uid, soci_category_id, res_partner_id)
 
+    def www_set_generationkwh_assignment_order(self, cursor, uid, id, sorted_assignment_ids, context=None):
+        Dealer = self.pool.get('generationkwh.dealer')
+        Assignments = self.pool.get('generationkwh.assignment')
 
+        idmap = dict(Dealer.get_members_by_partners(cursor, uid, [id]))
+        if not idmap: return [] # Not a member
+
+        # Check if all assignments are owner by the partner
+        assignments = Assignments.read(cursor, uid, sorted_assignment_ids, [])
+        for partner in Dealer.get_partners_by_members(
+                cursor, uid, [assignment["member_id"][0] for assignment in assignments]):
+            if partner[1] != id:
+                raise Exception("There are different member_ids")
+
+        # Check that all assignments are ordered at once
+        actual_assignment_ids = Assignments.search(cursor, uid, [
+            ('member_id', '=', idmap[id]),
+            ('end_date', '=', False),
+        ])
+        if (
+            len(actual_assignment_ids) != len(sorted_assignment_ids)
+            or set(actual_assignment_ids) != set(sorted_assignment_ids)
+        ):
+            raise Exception("You need to order all the assignments at once")
+
+        for order, assignment_id in enumerate(sorted_assignment_ids):
+            Assignments.write(cursor, uid, [assignment_id], {'priority': order})
+
+        return self.www_generationkwh_assignments(cursor, uid, id, context)
 
 
 ResPartner()
