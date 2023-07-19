@@ -463,7 +463,21 @@ class GiscedataPolissa(osv.osv):
                 res[pol_id] = bv['bateria_id'][1]
 
     def _ff_search_tipus_installacio(self, cursor, uid, ids, field_name, args, context=None):
-        return [('tipus_instalacio', '=', args[0][2])]
+        if context is None:
+            context = {}
+        acg_obj = self.pool.get('giscedata.autoconsum.generador')
+        ac_obj = self.pool.get('giscedata.autoconsum')
+        polissa_ids = []
+        autoconsum_ids = []
+
+        generador_ids = acg_obj.search(cursor, uid, [('tipus_installacio', '=', args[0][2])], context=context)
+        ac_ids = acg_obj.read(cursor, uid, generador_ids, ['autoconsum_id'], context=context)
+        for ac_id in ac_ids:
+            autoconsum_ids += ac_id['autoconsum_id']
+        polissa_ids = self.search(cursor, uid, [('autoconsum_id', 'in', autoconsum_ids)])
+
+        return [('id', 'in', polissa_ids)]
+
     def _get_tipus_installacio(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
             context = {}
