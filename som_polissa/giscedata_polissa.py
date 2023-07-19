@@ -5,7 +5,7 @@ from ooquery.expression import Field
 from addons import get_module_resource
 from osv import osv, fields
 from addons.giscedata_facturacio.giscedata_polissa import _get_polissa_from_energy_invoice
-from gestionatr.defs import TABLA_113
+from gestionatr.defs import TABLA_113, TABLA_129, TABLA_130, TABLA_131
 
 TIPO_AUTOCONSUMO = TABLA_113
 TIPO_AUTOCONSUMO_SEL = [(ac[0], u'[{}] - {}'.format(ac[0], ac[1])) for ac in TIPO_AUTOCONSUMO]
@@ -34,18 +34,6 @@ TARIFF_MAPPING = {
     "6.1B": "6.2TD"
 }
 
-TABLA_129 = [('01', u'Red interior'),
-             ('02', u'Red interior da varios consumidores (instalación de enlace)'),
-             ('03', u'Próxima a través de red'), ]
-
-TABLA_130 = [('A', u'EdM Bidireccional en PF'),
-             ('B', u'EdM Bidireccional en PF y EdM gen. Neta'),
-             ('C', u'EdM Consumo Total y EdM bidireccional gen. Neta'),
-             ('D', u'EdM Consumo Total y EdM gen bruta y EdM SSAA'),
-             ('E', u'Configuración singular'), ]
-
-TABLA_131 = [('01', u'Consumo'),
-             ('02', u'Servicios Auxiliares'), ]
  
 class GiscedataPolissa(osv.osv):
     _name = 'giscedata.polissa'
@@ -474,6 +462,8 @@ class GiscedataPolissa(osv.osv):
             if bv and bv.get('bateria_id'):
                 res[pol_id] = bv['bateria_id'][1]
 
+    def _ff_search_tipus_installacio(self, cursor, uid, ids, field_name, args, context=None):
+        return [('tipus_instalacio', '=', args[0][2])]
     def _get_tipus_installacio(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
             context = {}
@@ -550,7 +540,7 @@ class GiscedataPolissa(osv.osv):
             readonly=True, type="selection"),
         'bateria_virtual': fields.function(_get_bateria_virtual, method=True, type="char", string='Codi BV',
             size=24),
-        'tipus_installacio': fields.function(_get_tipus_installacio, method=True, type="selection",selection=TABLA_129, string='Tipus instal.lació',
+        'tipus_installacio': fields.function(_get_tipus_installacio,fnct_search=_ff_search_tipus_installacio, method=True, type="selection",selection=TABLA_129, string='Tipus instal.lació',
                                            ),
         'tipus_auto': fields.function(_ff_get_tipus_auto, method=True, type="selection", selection=TIPO_AUTOCONSUMO_SEL, string='Tipus autoconsum')
     }
