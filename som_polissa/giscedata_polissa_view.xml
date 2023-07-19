@@ -155,7 +155,7 @@
                     <field name="cups"/>
                     <field name="tipus_auto" select="2"/>
                     <field name="is_autoconsum_collectiu" select="1"/>
-                    <field name="tipus_installacio"/>
+                    <field name="tipus_installacio" select="1"/>
                     <field name="esquema_mesura"/>
                     <field name="tipus_cups"/>
                     <field name="ssaa"/>
@@ -164,14 +164,14 @@
                     <field name="tarifa"/>
                     <field name="llista_preu"/>
                     <field name="data_alta"/>
-                    <field name="data_alta_auto"/>
+                    <field name="data_alta_autoconsum"/>
                     <field name="ac_state" string="Estat de l'auto"/>
-                    <field name="data_baixa_auto"/>
+                    <field name="data_baixa_autoconsum"/>
                     <field name="data_baixa"/>
                     <field name="facturacio_suspesa"/>
                     <field name="observacio_suspesa" invisible="1" select="1"/>
                     <field name="potencia_generacio" invisible="1" select="1"/>
-                    <field name="data_ultima_factura"/>
+                    <field name="data_ultima_lectura"/>
                     <field name="data_ultima_lectura_f1"/>
                     <field name="dies_lectures_facturada_f1"/>
                     <field name="bateria_activa"/>
@@ -179,6 +179,17 @@
                     <field name="data_activacio_bateria"/>
                     <field name="cups_np" select="1"/>
                 </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_giscedata_polissa_form_inherit_page_auto">
+            <field name="name">giscedata.polissa.form.inherit.page.auto</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_polissa.view_polissa_autoconsum_form" />
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@string='Autoconsum']" position="attributes">
+                    <attribute name="attrs">{}</attribute>
+                </xpath>
             </field>
         </record>
         <record model="ir.actions.act_window" id="action_giscedata_polissa_cau_som_tree">

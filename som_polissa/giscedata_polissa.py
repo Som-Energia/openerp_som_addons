@@ -369,33 +369,19 @@ class GiscedataPolissa(osv.osv):
         default.update({'payment_mode_id': payment_mode_id[0]})
         return super(GiscedataPolissa, self).copy_data(cursor, uid, id, default, context=context)
 
-    def _get_data_alta_auto(self, cursor, uid, ids, field_name, arg, context=None):
+    def _ff_search_ssaa(self, cursor, uid, ids, field_name, args, context=None):
         if context is None:
             context = {}
-        ac_obj = self.pool.get('giscedata.autoconsum')
-        res = dict.fromkeys(ids, False)
-        for pol_id in ids:
-            autoconsum_id = self.read(cursor, uid, pol_id, ['autoconsum_id'], context=context)['autoconsum_id']
-            if autoconsum_id:
-                data_alta_auto = ac_obj.read(cursor, uid, autoconsum_id[0], ['data_alta'], context=context)['data_alta']
-                res[pol_id] = data_alta_auto
-        return res
+        acg_obj = self.pool.get('giscedata.autoconsum.generador')
+        autoconsum_ids = []
 
-    def _get_data_baixa_auto(self, cursor, uid, ids, field_name, arg, context=None):
-        if context is None:
-            context = {}
+        generador_ids = acg_obj.search(cursor, uid, [('ssaa', '=', args[0][2])], context=context)
+        ac_ids = acg_obj.read(cursor, uid, generador_ids, ['autoconsum_id'], context=context)
+        for ac_id in ac_ids:
+            autoconsum_ids.append(ac_id['autoconsum_id'][0])
+        polissa_ids = self.search(cursor, uid, [('autoconsum_id', 'in', autoconsum_ids)])
 
-        ac_obj = self.pool.get('giscedata.autoconsum')
-        res = dict.fromkeys(ids, False)
-
-        for pol_id in ids:
-            autoconsum_id = self.read(cursor, uid, pol_id, ['autoconsum_id'], context=context)['autoconsum_id']
-            if autoconsum_id:
-                data_baixa_auto = ac_obj.read(cursor, uid, autoconsum_id[0], ['data_baixa'], context=context)
-                if data_baixa_auto.get('data_baixa'):
-                    res[pol_id] = data_baixa_auto['data_baixa']
-
-        return res
+        return [('id', 'in', polissa_ids)]
 
     def _get_ssaa(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
@@ -417,6 +403,16 @@ class GiscedataPolissa(osv.osv):
 
         return res
 
+    def _ff_search_cups_np(self, cursor, uid, ids, field_name, args, context=None):
+        if context is None:
+            context = {}
+        cups_obj = self.pool.get('giscedata.cups.ps')
+
+        cups_ids = cups_obj.search(cursor, uid, [('id_provincia.name', '=', args[0][2])])
+        polissa_ids = self.search(cursor, uid, [('cups', 'in', cups_ids)])
+
+        return [('id', 'in', polissa_ids)]
+
     def _get_provincia_cups(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
             context = {}
@@ -431,6 +427,21 @@ class GiscedataPolissa(osv.osv):
                 res[pol_id] = provincia
 
         return res
+
+    def _ff_search_tipus_cups(self, cursor, uid, ids, field_name, args, context=None):
+        if context is None:
+            context = {}
+        polissa_ids = []
+        ac_cups_obj = self.pool.get('giscedata.autoconsum.cups.autoconsum')
+        cups_ac_ids = ac_cups_obj.search(cursor, uid, [('tipus_cups', '=', args[0][2])])
+        cups_ac_data = ac_cups_obj.read(cursor, uid, cups_ac_ids, ['autoconsum_id', 'cups_id'], context=context)
+        for data in cups_ac_data:
+            if data.get('autoconsum_id') and data.get('cups_id'):
+                polissa_id = self.search(cursor, uid, [('cups', '=', data['cups_id'][0]), ('autoconsum_id', '=', data['autoconsum_id'][0])])
+                if polissa_id:
+                    polissa_ids.append(polissa_id)
+
+        return [('id', 'in', polissa_ids)]
 
     def _get_tipus_cups(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
@@ -448,6 +459,18 @@ class GiscedataPolissa(osv.osv):
 
         return res
 
+    def _ff_search_bateria_virtual(self, cursor, uid, ids, field_name, args, context=None):
+        if context is None:
+            context = {}
+        polissa_ids = []
+        bat_pol_o = self.pool.get('giscedata.bateria.virtual.polissa')
+        bat_pol_ids = bat_pol_o.search(cursor, uid, [('bateria_id.name', '=', args[0][2])])
+        bat_pol_data = bat_pol_o.read(cursor, uid, bat_pol_ids, ['polissa_id'], context=context)
+        for data in bat_pol_data:
+            if data.get('polissa_id'):
+                polissa_ids.append(data['polissa_id'][0])
+
+        return [('id', 'in', polissa_ids)]
     def _get_bateria_virtual(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
             context = {}
@@ -466,14 +489,13 @@ class GiscedataPolissa(osv.osv):
         if context is None:
             context = {}
         acg_obj = self.pool.get('giscedata.autoconsum.generador')
-        ac_obj = self.pool.get('giscedata.autoconsum')
-        polissa_ids = []
         autoconsum_ids = []
 
         generador_ids = acg_obj.search(cursor, uid, [('tipus_installacio', '=', args[0][2])], context=context)
         ac_ids = acg_obj.read(cursor, uid, generador_ids, ['autoconsum_id'], context=context)
         for ac_id in ac_ids:
-            autoconsum_ids += ac_id['autoconsum_id']
+            if ac_id.get('autoconsum_id'):
+                autoconsum_ids.append(ac_id['autoconsum_id'][0])
         polissa_ids = self.search(cursor, uid, [('autoconsum_id', 'in', autoconsum_ids)])
 
         return [('id', 'in', polissa_ids)]
@@ -543,18 +565,14 @@ class GiscedataPolissa(osv.osv):
         'bateria_activa': fields.boolean('Bateria activa'),
         'data_activacio_bateria': fields.date('Data activació bateria'),
         'esquema_mesura': fields.selection(TABLA_130, 'Esquema mesura'),
-        'ssaa': fields.function(_get_ssaa, method=True, string=u"SSAA", type="boolean"),
-        'data_alta_auto': fields.function(_get_data_alta_auto, method=True, type="date",
-            string="Data alta auto"),
-        'data_baixa_auto': fields.function(_get_data_baixa_auto, method=True, type="date",
-            string="Data baixa auto"),
-        'cups_np': fields.function(_get_provincia_cups, method=True, type="char", string='Provincia (CUPS)',
+        'ssaa': fields.function(_get_ssaa, fnct_search=_ff_search_ssaa, method=True, string=u"SSAA", type="boolean"),
+        'cups_np': fields.function(_get_provincia_cups, fnct_search=_ff_search_cups_np, method=True, type="char", string='Provincia (CUPS)',
             size=24),
-        'tipus_cups': fields.function(_get_tipus_cups, method=True, selection=TABLA_131, string='Tipus CUPS',
+        'tipus_cups': fields.function(_get_tipus_cups,fnct_search=_ff_search_tipus_cups, method=True, selection=TABLA_131, string='Tipus CUPS',
             readonly=True, type="selection"),
-        'bateria_virtual': fields.function(_get_bateria_virtual, method=True, type="char", string='Codi BV',
+        'bateria_virtual': fields.function(_get_bateria_virtual, fnct_search=_ff_search_bateria_virtual, method=True, type="char", string='Codi BV',
             size=24),
-        'tipus_installacio': fields.function(_get_tipus_installacio,fnct_search=_ff_search_tipus_installacio, method=True, type="selection",selection=TABLA_129, string='Tipus instal.lació',
+        'tipus_installacio': fields.function(_get_tipus_installacio, fnct_search=_ff_search_tipus_installacio, method=True, type="selection",selection=TABLA_129, string='Tipus instal.lació',
                                            ),
         'tipus_auto': fields.function(_ff_get_tipus_auto, method=True, type="selection", selection=TIPO_AUTOCONSUMO_SEL, string='Tipus autoconsum')
     }
