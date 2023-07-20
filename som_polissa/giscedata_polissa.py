@@ -519,6 +519,13 @@ class GiscedataPolissa(osv.osv):
 
         return res
 
+    def _ff_tipus_auto_search(self, cursor, uid, ids, field_name, args, context=None):
+        if context is None:
+            context = {}
+        ac_obj = self.pool.get('giscedata.autoconsum')
+        ac_ids = ac_obj.search(cursor, uid, [('tipus_autoconsum', '=', args[0][2])])
+        polissa_ids = self.search(cursor, uid, [('autoconsum_id', 'in', ac_ids)])
+        return [('id', 'in', polissa_ids)]
     def _ff_get_tipus_auto(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
             context = {}
@@ -574,7 +581,7 @@ class GiscedataPolissa(osv.osv):
             size=24),
         'tipus_installacio': fields.function(_get_tipus_installacio, fnct_search=_ff_search_tipus_installacio, method=True, type="selection",selection=TABLA_129, string='Tipus instal.lació',
                                            ),
-        'tipus_auto': fields.function(_ff_get_tipus_auto, method=True, type="selection", selection=TIPO_AUTOCONSUMO_SEL, string='Tipus autoconsum')
+        'tipus_auto': fields.function(_ff_get_tipus_auto, fnct_searc=_ff_tipus_auto_search, method=True, type="selection", selection=TIPO_AUTOCONSUMO_SEL, string='Tipus autoconsum')
     }
 
 
