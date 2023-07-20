@@ -967,9 +967,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             u'6.3TD':5,
             u'6.4TD':6,
         }
-        data['segment_tariff'] = segment_tarif.get(pol.tarifa.nom_comercial)
-        if not data['segment_tariff']:
-            data['segment_tariff'] = segment_tarif.get(pol.tarifa.name, '')
+        data['segment_tariff'] = segment_tarif.get(pol.tarifa.name,"")
 
         return data
 
