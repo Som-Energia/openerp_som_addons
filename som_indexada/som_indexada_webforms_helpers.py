@@ -79,8 +79,12 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                 cursor,
                 uid,
                 pricelist_id,
-                ['name'],
-            )['name']
+                ['name', 'nom_comercial'],
+            )
+            if pricelist_name.get('nom_comercial'):
+                pricelist_name = pricelist_name['nom_comercial']
+            else:
+                pricelist_name = pricelist_name['name']
             coefficient_k = self.get_k_from_pricelist(
                 cursor,
                 uid,
