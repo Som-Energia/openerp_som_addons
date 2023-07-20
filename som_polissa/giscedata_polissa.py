@@ -374,8 +374,11 @@ class GiscedataPolissa(osv.osv):
             context = {}
         acg_obj = self.pool.get('giscedata.autoconsum.generador')
         autoconsum_ids = []
-
-        generador_ids = acg_obj.search(cursor, uid, [('ssaa', '=', args[0][2])], context=context)
+        if args[0][2] == 1:
+            val = 'S'
+        else:
+            val = 'N'
+        generador_ids = acg_obj.search(cursor, uid, [('ssaa', '=', val)], context=context)
         ac_ids = acg_obj.read(cursor, uid, generador_ids, ['autoconsum_id'], context=context)
         for ac_id in ac_ids:
             autoconsum_ids.append(ac_id['autoconsum_id'][0])
@@ -408,7 +411,7 @@ class GiscedataPolissa(osv.osv):
             context = {}
         cups_obj = self.pool.get('giscedata.cups.ps')
 
-        cups_ids = cups_obj.search(cursor, uid, [('id_provincia.name', '=', args[0][2])])
+        cups_ids = cups_obj.search(cursor, uid, [('id_municipi.state.name', args[0][1], args[0][2])])
         polissa_ids = self.search(cursor, uid, [('cups', 'in', cups_ids)])
 
         return [('id', 'in', polissa_ids)]
@@ -439,7 +442,7 @@ class GiscedataPolissa(osv.osv):
             if data.get('autoconsum_id') and data.get('cups_id'):
                 polissa_id = self.search(cursor, uid, [('cups', '=', data['cups_id'][0]), ('autoconsum_id', '=', data['autoconsum_id'][0])])
                 if polissa_id:
-                    polissa_ids.append(polissa_id)
+                    polissa_ids.append(polissa_id[0])
 
         return [('id', 'in', polissa_ids)]
 
