@@ -215,6 +215,7 @@
                     <field name="esquema_mesura" invisible="1" select="2"/>
                     <field name="bateria_activa" invisible="1" select="2"/>
                     <field name="data_activacio_bateria" invisible="1" select="2"/>
+                    <field name="potencia_generacio" invisible="1" select="2"/>
                 </field>
                 <xpath expr="//field[@name='data_alta']" position="attributes">
                     <attribute name="readonly">0</attribute>
