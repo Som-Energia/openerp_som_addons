@@ -522,29 +522,6 @@ class GiscedataPolissa(osv.osv):
 
         return res
 
-    def _ff_tipus_auto_search(self, cursor, uid, ids, field_name, args, context=None):
-        if context is None:
-            context = {}
-        ac_obj = self.pool.get('giscedata.autoconsum')
-        ac_ids = ac_obj.search(cursor, uid, [('tipus_autoconsum', '=', args[0][2])])
-        polissa_ids = self.search(cursor, uid, [('autoconsum_id', 'in', ac_ids)])
-        return [('id', 'in', polissa_ids)]
-    def _ff_get_tipus_auto(self, cursor, uid, ids, field_name, arg, context=None):
-        if context is None:
-            context = {}
-
-        ac_obj = self.pool.get('giscedata.autoconsum')
-        res = dict.fromkeys(ids, False)
-        for pol_id in ids:
-            autoconsum_id = self.read(cursor, uid, pol_id, ['autoconsum_id'], context=context)
-            if autoconsum_id.get('autoconsum_id'):
-                autoconsum_id = autoconsum_id['autoconsum_id'][0]
-                auto = ac_obj.read(cursor, uid, autoconsum_id, ['tipus_autoconsum'], context=context)
-                if auto.get('tipus_autoconsum'):
-                    res[pol_id] = auto['tipus_autoconsum']
-
-        return res
-
     _columns = {
         'info_gestio_endarrerida': fields.text('Informació gestió endarrerida'),
         'info_gestio_endarrerida_curta': fields.function(
@@ -578,13 +555,12 @@ class GiscedataPolissa(osv.osv):
         'ssaa': fields.function(_get_ssaa, fnct_search=_ff_search_ssaa, method=True, string=u"SSAA", type="boolean"),
         'cups_np': fields.function(_get_provincia_cups, fnct_search=_ff_search_cups_np, method=True, type="char", string='Provincia (CUPS)',
             size=24),
-        'tipus_cups': fields.function(_get_tipus_cups,fnct_search=_ff_search_tipus_cups, method=True, selection=TABLA_131, string='Tipus CUPS',
+        'tipus_cups': fields.function(_get_tipus_cups, fnct_search=_ff_search_tipus_cups, method=True, selection=TABLA_131, string='Tipus CUPS',
             readonly=True, type="selection"),
         'bateria_virtual': fields.function(_get_bateria_virtual, fnct_search=_ff_search_bateria_virtual, method=True, type="char", string='Codi BV',
             size=24),
         'tipus_installacio': fields.function(_get_tipus_installacio, fnct_search=_ff_search_tipus_installacio, method=True, type="selection",selection=TABLA_129, string='Tipus instal.lació',
                                            ),
-        'tipus_auto': fields.function(_ff_get_tipus_auto, fnct_searc=_ff_tipus_auto_search, method=True, type="selection", selection=TIPO_AUTOCONSUMO_SEL, string='Tipus autoconsum')
     }
 
 

@@ -153,7 +153,6 @@
                     <field name="autoconsum_id" string="CAU" select="1"/>
                     <field name="name"/>
                     <field name="cups"/>
-                    <field name="tipus_auto" select="1"/>
                     <field name="is_autoconsum_collectiu" select="1"/>
                     <field name="tipus_installacio" select="2" invisible="1"/>
                     <field name="esquema_mesura"/>
@@ -171,12 +170,12 @@
                     <field name="facturacio_suspesa"/>
                     <field name="observacio_suspesa" invisible="1" select="1"/>
                     <field name="potencia_generacio" invisible="1" select="1"/>
-                    <field name="data_ultima_lectura"/>
-                    <field name="data_ultima_lectura_f1"/>
+                    <field name="data_ultima_lectura" select="2"/>
+                    <field name="data_ultima_lectura_f1" select="2"/>
                     <field name="dies_lectures_facturada_f1"/>
-                    <field name="bateria_activa"/>
+                    <field name="bateria_activa" select="2"/>
                     <field name="bateria_virtual"/>
-                    <field name="data_activacio_bateria"/>
+                    <field name="data_activacio_bateria" select="2"/>
                     <field name="cups_np" select="1"/>
                 </tree>
             </field>
