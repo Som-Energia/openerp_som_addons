@@ -16,10 +16,11 @@ class GiscedataPolissa(osv.osv):
         '_SOM_INSULAR' suffix"""
         if isinstance(contract_id, (tuple, list)):
             contract_id = contract_id[0]
+        if not context:
+            context={}
 
         pricelist_obj = self.pool.get('product.pricelist')
 
-        # enables list as an id list instead of pricelist instances list
         if llista and isinstance(llista[0], int):
             llista = pricelist_obj.browse(
                 cursor, uid, llista, context
@@ -29,6 +30,8 @@ class GiscedataPolissa(osv.osv):
 
         som_llista = []
         try:
+            tariff_name = llista[0].tarifes_atr_compatibles[0].name
+            context['forced_tariff'] = tariff_name
             wiz_o = self.pool.get('wizard.change.to.indexada')
             pricelist_id = wiz_o.get_new_pricelist(
                     cursor,
