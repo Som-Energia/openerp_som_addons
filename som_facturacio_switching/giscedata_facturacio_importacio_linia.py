@@ -111,12 +111,24 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
             for line in line_ids:
                 self.process_line(cursor, uid, line, context=context)
 
+    def _get_f1_data(self, cursor, uid, context=None):
+        # Un altre cop el diccionari
+        errors_obj = self.pool.get('som.error.cron.f1.reimport')
+        confvar_obj = self.pool.get('res.config')
+        err_ids = errors_obj.search([('active', '=', True)])
+
+        data = {}
+        data['days_to_check'] = confvar_obj.get(
+            cursor, uid, 'som_error_cron_f1_reimport_days_to_check', 30)
+
+        data['error_code'] = errors_obj.read(err_ids, ['code', 'text'])
+        return data
 
     def do_reimport_f1(self, cursor, uid, data=None, context=None):
         if not context:
             context = {}
         if not data:
-            return True
+            data = self._get_f1_data(cursor, uid, context=context)
 
         logger = logging.getLogger(
             'openerp.{}.reimport_f1'.format(__name__)
@@ -125,11 +137,13 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
         f1_ids = []
         days_to_check = data.get('days_to_check', 30)
         date_to_check = (datetime.today() - timedelta(days_to_check)).strftime('%Y-%m-%d')
-        for error_code in data['error_codes']:
+        for error_code in data['error_code']:
             code = error_code.get('code', '')
             text = error_code.get('text', '')
             _ids = self.search(cursor, uid, [
-                ('state','=','erroni'), ('info', 'ilike','%[{}]%{}%'.format(code, text)),('fecha_factura','>=',date_to_check)
+                ('state', '=', 'erroni'),
+                ('info', 'ilike', '%[{}]%{}%'.format(code, text)),
+                ('fecha_factura', '>=', date_to_check)
             ])
             f1_ids += _ids
 

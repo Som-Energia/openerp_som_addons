@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data noupdate="1">
+        <record model="res.config" id="som_error_cron_f1_reimport_days_to_check">
+            <field name="name">som_error_cron_f1_reimport_days_to_check</field>
+            <field name="description">Dies a mirar enrere del cron d'importació d'F1 erronis</field>
+            <field name="value">30</field>
+        </record>
+    </data>
+</openerp>
