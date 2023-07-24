@@ -21,7 +21,8 @@ class ReportBackendInvoiceEmail(ReportBackend):
             'factura': report_factura_obj.get_factura(cursor, uid, fra, context=context),
             'socia': self.get_socia(cursor, uid, fra, context=context),
             'email_info': self.get_email_info(cursor, uid, fra, context=context),
-            'lang': factura.partner_id.lang 
+            'lang': factura.partner_id.lang,
+            'text_personalitzat': self.get_text_personalitzat(cursor, uid, fra, context=context)
         }
         self._extend_get_factures(cursor, uid, fra, data, context=context)
         return data
@@ -52,7 +53,7 @@ class ReportBackendInvoiceEmail(ReportBackend):
             context = {}
 
         report_o = self.pool.get('giscedata.facturacio.factura.report.v2')
-        data = report_o.get_polissa(curosr, uid, fra, context=context)
+        data = report_o.get_polissa(cursor, uid, fra, context=context)
 
         polissa_retrocedida = False
         de_lot = fra.lot_facturacio and fra.lot_facturacio.id != False
@@ -67,7 +68,7 @@ class ReportBackendInvoiceEmail(ReportBackend):
 
         return data
 
-    def get_email_info(cursor, uid, fra, context=context):
+    def get_email_info(self, cursor, uid, fra, context=context):
         def render(text_to_render, object_):
             templ = Template(text_to_render)
             return templ.render_unicode(
