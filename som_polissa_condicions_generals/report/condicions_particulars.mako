@@ -184,6 +184,7 @@ CONTRACT_TYPES = dict(TABLA_9)
             <%
                 ultima_modcon = None
                 modcon_pendent_indexada = False
+                modcon_pendent_periodes = False
             %>
         %endif
 
@@ -193,6 +194,7 @@ CONTRACT_TYPES = dict(TABLA_9)
             if polissa.state != 'esborrany':
                 ultima_modcon = polissa.modcontractuals_ids[0]
                 modcon_pendent_indexada = ultima_modcon.state == 'pendent' and ultima_modcon.mode_facturacio == 'index'
+                modcon_pendent_periodes = ultima_modcon.state == 'pendent' and ultima_modcon.mode_facturacio == 'atr'
         %>
         <div class="contact_info">
             <div class="persona_titular styled_box ${"width33" if dict_titular['diferent'] else "width49"}">
@@ -287,7 +289,10 @@ CONTRACT_TYPES = dict(TABLA_9)
             <h5> ${_("PEATGE I CÀRRECS (definits a la Circular de la CNMC 3/2020 i al Reial decret 148/2021)")} </h5>
             <%
                 dict_pot = get_potencies(pas01, polissa)
-                tarifa_a_mostrar = polissa.llista_preu.name if not modcon_pendent_indexada else ultima_modcon.llista_preu.name
+                if not modcon_pendent_indexada  or modcon_pendent_periodes:
+                    tarifa_a_mostrar = polissa.llista_preu.nom_comercial or polissa.llista_preu.name
+                else:
+                    tarifa_a_mostrar = ultima_modcon.llista_preu.nom_comercial or ultima_modcon.llista_preu.name
             %>
             <div class="peatge_access_content">
                 <div class="padding_left"><b>${_(u"Peatge de transport i distribució: ")}</b>${clean(polissa.tarifa_codi)}</div>
@@ -392,7 +397,7 @@ CONTRACT_TYPES = dict(TABLA_9)
         <div class="styled_box">
         %for dades_tarifa in tarifes_a_mostrar:
             <%
-                if modcon_pendent_indexada:
+                if modcon_pendent_indexada or modcon_pendent_periodes:
                     text_vigencia = ''
                 elif not data_final and dades_tarifa['date_end']:
                     text_vigencia = _(u"(vigents fins al {})").format(dades_tarifa['date_end'])
@@ -526,7 +531,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                     %endif
                     <tr>
                         <td class="bold">${_("Terme energia (€/kWh)")}</td>
-                        %if polissa.mode_facturacio == 'index' or modcon_pendent_indexada:
+                        %if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:
                             <td class="center reset_line_height" colspan="6">
                                 <span class="normal_font_weight">
                                     <b>${_(u"Tarifa indexada")}</b>${_(u"(2) - el preu horari (PH) es calcula d'acord amb la fórmula:")}
@@ -557,8 +562,10 @@ CONTRACT_TYPES = dict(TABLA_9)
                                 <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(coeficient_k, digits=6)}</span>
                             </td>
                         %else:
+                            <% llista_preu = ultima_modcon.llista_preu if modcon_pendent_periodes else polissa.llista_preu %>
                             %for p in periodes_energia:
-                                %if polissa.llista_preu:
+                                %if llista_preu:
+                                    <% ctx['force_pricelist'] = llista_preu %>
                                     <td class="center">
                                         <span class="">${formatLang(get_atr_price(cursor, uid, polissa, p, 'te', ctx, with_taxes=True)[0], digits=6)}</span>
                                     </td>
@@ -603,7 +610,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                     %if polissa.autoconsumo != '00':
                     <tr>
                         <td><span class="bold auto">${_("Excedents d'autoconsum (€/kWh)")}</span></td>
-                        %if polissa.mode_facturacio == 'index' or modcon_pendent_indexada:
+                        %if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:
                             <td class="center reset_line_height" colspan="6">
                                 <span class="normal_font_weight">${_(u"Tarifa indexada(2) - el preu horari de la compensació d'excedents és igual al PHM")}</span>
                             </td>
@@ -625,7 +632,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                 %if polissa.te_assignacio_gkwh:
                     <span class="bold">(1) </span> ${_("Terme d'energia en cas de participar-hi, segons condicions del contracte GenerationkWh.")}<br/>
                 %endif
-                %if polissa.mode_facturacio == 'index' or modcon_pendent_indexada:
+                %if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:
                     <span class="bold">(2) </span> ${_("Pots consultar el significat de les variables a les condicions específiques que trobaràs a continuació.")}
                 %endif
                 </div>
@@ -646,7 +653,7 @@ CONTRACT_TYPES = dict(TABLA_9)
         </div>
         <div class="styled_box padding_bottom">
             <div class="center avis_impostos">
-                %if polissa.mode_facturacio == 'index' or modcon_pendent_indexada:
+                %if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:
                     ${_(u"Els preus del terme de potència")}
                 %else:
                     ${_(u"Tots els preus que apareixen en aquest contracte")}
@@ -737,7 +744,7 @@ CONTRACT_TYPES = dict(TABLA_9)
     %>
     %if lang == 'ca_ES':
         <%include file="/som_polissa_condicions_generals/report/condicions_generals.mako"/>
-        %if polissa.mode_facturacio == 'index' or modcon_pendent_indexada:
+        %if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:
             <p style="page-break-after:always;"></p>
             <%include file="/som_polissa_condicions_generals/report/condicions_especifiques_indexada.mako"/>
             %if prova_pilot_indexada:
@@ -747,7 +754,7 @@ CONTRACT_TYPES = dict(TABLA_9)
         %endif
     %else:
         <%include file="/som_polissa_condicions_generals/report/condiciones_generales.mako"/>
-        %if polissa.mode_facturacio == 'index' or modcon_pendent_indexada:
+        %if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:
             <p style="page-break-after:always;"></p>
             <%include file="/som_polissa_condicions_generals/report/condiciones_especificas_indexada.mako"/>
             %if prova_pilot_indexada:

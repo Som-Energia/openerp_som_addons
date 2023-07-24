@@ -1,4 +1,4 @@
-from ftplib import FTP, FTP_TLS, FTP_PORT
+from ftplib import FTP
 import os
 
 
@@ -28,9 +28,7 @@ class SomFtp:
         return file_list, dir_list
 
     def download_file(self, remote_path, destination_path):
-        self.ftpcon.retrbinary(
-            "RETR " + remote_path, open(destination_path, "wb").write
-        )
+        self.ftpcon.retrbinary("RETR " + remote_path, open(destination_path, "wb").write)
 
     def close(self):
         return self.ftpcon.quit()
