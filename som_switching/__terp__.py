@@ -7,7 +7,7 @@
     "version": "0-dev",
     "author": "GISCE",
     "category": "Master",
-    "depends":[
+    "depends": [
         "giscedata_switching",
         "giscedata_facturacio_switching",
         "som_polissa_soci",
@@ -16,6 +16,7 @@
         "giscedata_facturacio_suspesa",
         "giscedata_atc_switching",
         "giscedata_switching_multi_close",
+        "giscedata_switching_comer",
     ],
     "init_xml": [],
     "demo_xml": [

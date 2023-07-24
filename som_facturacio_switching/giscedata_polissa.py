@@ -17,9 +17,10 @@ class GiscedataPolissa(osv.osv):
         if isinstance(contract_id, (tuple, list)):
             contract_id = contract_id[0]
         if not context:
-            context={}
+            context = {}
 
         pricelist_obj = self.pool.get('product.pricelist')
+        tariff_obj = self.pool.get('giscedata.polissa.tarifa')
 
         if llista and isinstance(llista[0], int):
             llista = pricelist_obj.browse(
@@ -30,15 +31,12 @@ class GiscedataPolissa(osv.osv):
 
         som_llista = []
         try:
-            tariff_name = llista[0].tarifes_atr_compatibles[0].name
-            context['forced_tariff'] = tariff_name
+            tariff_id = context.get('tarifa_atr', False)
+            if tariff_id:
+                tariff = tariff_obj.browse(cursor, uid, tariff_id)
+                context['forced_tariff'] = tariff.name
             wiz_o = self.pool.get('wizard.change.to.indexada')
-            pricelist_id = wiz_o.get_new_pricelist(
-                    cursor,
-                    uid,
-                    contract,
-                    context=context,
-                )
+            pricelist_id = wiz_o.get_new_pricelist(cursor, uid, contract, context=context)
             if pricelist_id in llista:
                 som_llista = [pricelist_id]
         except Exception:
@@ -46,9 +44,9 @@ class GiscedataPolissa(osv.osv):
             pass
 
         # si li passem una list de només una pólissa, retorna la llista única
-        return super(GiscedataPolissa,
-                     self).escull_llista_preus(cursor, uid, id, som_llista,
-                                               context=context)
+        return super(GiscedataPolissa, self).escull_llista_preus(
+            cursor, uid, id, som_llista, context=context
+        )
 
 
 GiscedataPolissa()
