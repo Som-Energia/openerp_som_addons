@@ -118,7 +118,10 @@ class WizardChangeToIndexada(osv.osv_memory):
 
     def get_new_pricelist(self, cursor, uid, polissa, context=None):
         IrModel = self.pool.get('ir.model.data')
+
         tarifa_codi = polissa.tarifa_codi
+        if context.get('forced_tariff'):
+            tarifa_codi = context.get('forced_tariff')
 
         # Choose price list dict
         dict_pricelist_codis = TARIFA_CODIS_PERIODES
