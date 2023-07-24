@@ -289,7 +289,7 @@ CONTRACT_TYPES = dict(TABLA_9)
             <h5> ${_("PEATGE I CÀRRECS (definits a la Circular de la CNMC 3/2020 i al Reial decret 148/2021)")} </h5>
             <%
                 dict_pot = get_potencies(pas01, polissa)
-                if not modcon_pendent_indexada  or modcon_pendent_periodes:
+                if not (modcon_pendent_indexada or modcon_pendent_periodes):
                     tarifa_a_mostrar = polissa.llista_preu.nom_comercial or polissa.llista_preu.name
                 else:
                     tarifa_a_mostrar = ultima_modcon.llista_preu.nom_comercial or ultima_modcon.llista_preu.name
