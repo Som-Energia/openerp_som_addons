@@ -2,6 +2,7 @@
 
 from destral import testing
 from destral.transaction import Transaction
+from som_indexada.exceptions import indexada_exceptions
 
 from datetime import date,datetime,timedelta
 
@@ -27,6 +28,8 @@ class TestPolissaWwwAutolectura(testing.OOTestCase):
         self.origin_obj = self.model('giscedata.lectures.origen')
         self.tarif_obj = self.model('giscedata.polissa.tarifa')
         self.imd_obj = self.model('ir.model.data')
+        self.swproc_obj = self.model('giscedata.switching.proces')
+        self.sw_obj = self.model('giscedata.switching')
 
         self.txn = Transaction().start(self.database)
 
@@ -150,3 +153,125 @@ class TestPolissaWwwAutolectura(testing.OOTestCase):
                 self.assertEqual(lectura['origen'], 'Autolectura')
             elif lectura['lectura'] == 33387:
                 self.assertEqual(lectura['origen'], 'Distribuidora (Estimada)')
+
+
+    def _open_polissa(self, xml_ref):
+        polissa_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, 'giscedata_polissa', xml_ref
+        )[1]
+
+        self.pol_obj.send_signal(self.cursor, self.uid, [polissa_id], [
+            'validar', 'contracte'
+        ])
+
+        return polissa_id
+
+    def test_www_check_modifiable_polissa_not_modifiable_for_atr(self):
+        pol_id = self._open_polissa('polissa_tarifa_018')
+
+        ctx = {
+            'lang': 'en_US'
+        }
+
+        proces_id = self.swproc_obj.search(
+            self.cursor, self.uid, [('name', '=', 'M1')]
+        )[0]
+
+        sw_params = {
+            'proces_id': proces_id,
+            'cups_polissa_id': pol_id,
+            'ref_contracte': pol_id,
+            'polissa_ref_id': pol_id,
+        }
+
+        self.sw_obj.create(
+            self.cursor, self.uid, sw_params, context=ctx
+        )
+
+        result = self.pol_obj.www_check_modifiable_polissa(
+            self.cursor, self.uid, pol_id, context=ctx
+        )
+
+        self.assertEqual(result['error'], u"Pòlissa 0018 with simultaneous ATR")
+        self.assertEqual(result['code'], u"PolissaSimultaneousATR")
+
+
+    def test_www_check_modifiable_polissa_modifiable_atr_skip_check(self):
+        pol_id = self._open_polissa('polissa_tarifa_018')
+
+        ctx = {
+            'lang': 'en_US'
+        }
+
+        proces_id = self.swproc_obj.search(
+            self.cursor, self.uid, [('name', '=', 'M1')]
+        )[0]
+
+        sw_params = {
+            'proces_id': proces_id,
+            'cups_polissa_id': pol_id,
+            'ref_contracte': pol_id,
+            'polissa_ref_id': pol_id,
+        }
+
+        self.sw_obj.create(
+            self.cursor, self.uid, sw_params, context=ctx
+        )
+
+        result = self.pol_obj.www_check_modifiable_polissa(
+            self.cursor, self.uid, pol_id, skip_atr_check=True, context=ctx
+        )
+
+        self.assertEqual(result, True)
+
+    def test_www_check_modifiable_polissa_not_modifiable_for_pending_modcon(self):
+        pol_id = self._open_polissa('polissa_tarifa_018')
+
+        ctx = {
+            'lang': 'en_US'
+        }
+
+        today_plus_10_days = (datetime.today() + timedelta(days=10)).strftime('%Y-%m-%d')
+        today_plus_100_days = (datetime.today() + timedelta(days=10)).strftime('%Y-%m-%d')
+
+        values = {
+            'autoconsumo': '41'
+        }
+
+        self.pol_obj.crear_modcon(
+            self.cursor, self.uid, pol_id, values, today_plus_10_days, today_plus_100_days, context=ctx
+        )
+
+        result = self.pol_obj.www_check_modifiable_polissa(
+            self.cursor, self.uid, pol_id, context=ctx
+        )
+        self.assertEqual(result['error'], u"Pòlissa 0018 already has a pending modcon")
+        self.assertEqual(result['code'], u"PolissaModconPending")
+
+
+    def test_www_check_modifiable_polissa_modifiable(self):
+        pol_id = self._open_polissa('polissa_tarifa_018')
+
+        ctx = {
+            'lang': 'en_US'
+        }
+
+        result = self.pol_obj.www_check_modifiable_polissa(self.cursor, self.uid, pol_id, context=ctx)
+
+        self.assertEqual(result, True)
+
+
+    def test_www_check_modifiable_polissa_not_modifiable_for_not_active(self):
+        pol_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, 'giscedata_polissa', 'polissa_tarifa_018'
+        )[1]
+
+        ctx = {
+            'lang': 'en_US'
+        }
+
+        result = self.pol_obj.www_check_modifiable_polissa(
+            self.cursor, self.uid, pol_id, context=ctx
+        )
+        self.assertEqual(result['error'], u"Pòlissa 0018 not active")
+        self.assertEqual(result['code'], u"PolissaNotActive")
