@@ -832,6 +832,8 @@ class AportacionsActions(InvestmentActions):
             quantity = 1,
             price_unit = to_be_interized,
             product_id = product_id,
+            # partner specific account, was generic from product
+            account_id = account_inv_id,
         )
 
         # Force apply taxes. Taxes from product doesn't work.
