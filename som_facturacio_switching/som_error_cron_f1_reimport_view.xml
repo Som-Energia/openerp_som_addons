@@ -9,8 +9,9 @@
             <field name="arch" type="xml">
                 <tree string="Errors de f1 a reimportar">
                     <field name="active"/>
+                    <field name="fase"/>
+                    <field name="error_code"/>
                     <field name="text"/>
-                    <field name="code"/>
                 </tree>
             </field>
         </record>
@@ -24,7 +25,8 @@
                     <group colspan="2" col="4">
                         <field name="active" select="1"/>
                         <group colspan="4" col="2" string="Definició del error a cercar">
-                            <field name="code" select="1"/>
+                            <field name="fase" select="1"/>
+                            <field name="error_code" select="1"/>
                             <field name="text" select="1"/>
                         </group>
                     </group>
@@ -32,14 +34,13 @@
             </field>
         </record>
         <record id="action_som_error_cron_f1_reimport_tree" model="ir.actions.act_window">
-            <field name="name">Action Som Error Cron F1 Reimport</field>
+            <field name="name">Configuració cron reimportació de f1's</field>
             <field name="res_model">som.error.cron.f1.reimport</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="context">{'active_test': False}</field>
             <field name="view_id" ref="view_som_error_cron_f1_reimport_tree"/>
         </record>
-        <menuitem id="menu_folder_som_error_cron_f1_reimport" parent="giscedata_facturacio_switching.menu_gestio_f1" name="Configuració cron reimportacio f1"/>
-        <menuitem id="menu_som_error_cron_f1_reimport_config" action="action_som_error_cron_f1_reimport_tree" parent="menu_folder_som_error_cron_f1_reimport"/>
+        <menuitem id="menu_som_error_cron_f1_reimport_folder" parent="giscedata_facturacio_switching.menu_gestio_f1" name="Config. cron reimportacio f1"/>
+        <menuitem id="menu_som_error_cron_f1_reimport_config" action="action_som_error_cron_f1_reimport_tree" parent="menu_som_error_cron_f1_reimport_folder"/>
     </data>
 </openerp>

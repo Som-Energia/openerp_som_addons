@@ -115,13 +115,20 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
         # Un altre cop el diccionari
         errors_obj = self.pool.get('som.error.cron.f1.reimport')
         confvar_obj = self.pool.get('res.config')
-        err_ids = errors_obj.search([('active', '=', True)])
+        err_ids = errors_obj.search(
+            cursor, uid, [('active', '=', True)], context=context
+        )
 
         data = {}
         data['days_to_check'] = confvar_obj.get(
-            cursor, uid, 'som_error_cron_f1_reimport_days_to_check', 30)
+            cursor, uid, 'som_error_cron_f1_reimport_days_to_check', 30
+        )
 
-        data['error_code'] = errors_obj.read(err_ids, ['code', 'text'])
+        data['error_code'] = errors_obj.read(
+            cursor, uid,
+            err_ids, ['code', 'text'],
+            context=context
+        )
         return data
 
     def do_reimport_f1(self, cursor, uid, data=None, context=None):
