@@ -124,11 +124,16 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
             cursor, uid, 'som_error_cron_f1_reimport_days_to_check', 30
         )
 
-        data['error_code'] = errors_obj.read(
-            cursor, uid,
-            err_ids, ['code', 'text'],
-            context=context
-        )
+        data['error_code'] = []
+        for err_id in err_ids:
+            e_data = errors_obj.read(
+                cursor, uid, err_id, ['code', 'text'], context=context
+            )
+            data['error_code'].append({
+                'code': e_data['code'],
+                'text': e_data['text'] if e_data['text'] else '',
+            })
+
         return data
 
     def do_reimport_f1(self, cursor, uid, data=None, context=None):
