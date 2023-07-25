@@ -30,6 +30,8 @@
         "giscedata_facturacio_switching_cron.xml",
         "wizard/wizard_refund_rectify_from_origin_view.xml",
         "giscedata_facturacio_switching_view.xml",
+        "som_error_cron_f1_reimport_data.xml",
+        "som_error_cron_f1_reimport_view.xml",
     ],
     "active": False,
     "installable": True
