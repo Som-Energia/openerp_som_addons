@@ -6,6 +6,7 @@
             <field name="model">som.error.cron.f1.reimport</field>
             <field name="type">tree</field>
             <field name="priority">16</field>
+            <field name="context">{'active_test': False}</field>
             <field name="arch" type="xml">
                 <tree string="Errors de f1 a reimportar">
                     <field name="active"/>
@@ -34,13 +35,13 @@
             </field>
         </record>
         <record id="action_som_error_cron_f1_reimport_tree" model="ir.actions.act_window">
-            <field name="name">Configuració cron reimportació de f1's</field>
+            <field name="name">Configuració cron reimportació de F1's</field>
             <field name="res_model">som.error.cron.f1.reimport</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="view_som_error_cron_f1_reimport_tree"/>
         </record>
-        <menuitem id="menu_som_error_cron_f1_reimport_folder" parent="giscedata_facturacio_switching.menu_gestio_f1" name="Config. cron reimportacio f1"/>
+        <menuitem id="menu_som_error_cron_f1_reimport_folder" parent="giscedata_facturacio_switching.menu_gestio_f1" name="Config. cron reimportació F1"/>
         <menuitem id="menu_som_error_cron_f1_reimport_config" action="action_som_error_cron_f1_reimport_tree" parent="menu_som_error_cron_f1_reimport_folder"/>
     </data>
 </openerp>
