@@ -226,6 +226,8 @@ class PowersmsSMSbox(osv.osv):
         core_obj = self.pool.get('powersms.core_accounts')
         for id in ids:
             try:
+                ctx = context.copy()
+                ctx['from_smsbox_id'] = id
                 values = self.read(cr, uid, id, [], context) #Values will be a dictionary of all entries in the record ref by id
                 # ids, from_name, numbers_to, body = '', payload = None, context = None
 
@@ -236,7 +238,7 @@ class PowersmsSMSbox(osv.osv):
                     values.get('psms_body_text', '') or '',
                     self._get_attatchment_payload(cr, uid, values.get('pem_attachments_ids'), context=context),
                     # todo payload pem_attachments_ids read
-                    context=context
+                    context=ctx
                 )
                 if result is True:
                     self.write(cr, uid, id, {'folder':'sent', 'state':'sent', 'date_sms':time.strftime("%Y-%m-%d %H:%M:%S")}, context)
