@@ -272,7 +272,7 @@ ${_(u"Adreça electrònica: aporta@somenergia.coop")}
       <div class="CaixaEspai">
       </div>
       <div class="CaixaDadesAportacio">
-         <p class="ContingutDades"><b>${_(u"Data d'aportació:")}</b> ${data.inversionOrderDate}<br><b>${_(u"Venciment:")}</b> ${_(u"Indefinit.")}<br><b>${_(u"Sol·licitud de cancel·lació:")}</b> ${_(u"En qualsevol moment.")}<br><b>${_(u"Import:")}</b> ${data.inversionInitialAmount} €<br><b>${_(u"Remuneració:")}</b> ${data.ownerName}% ${_(u"interès nominal anual (revisable anualment per l'Assemblea general).")}<br><b>${_(u"Meritació d’interessos:")}</b> ${_(u"Anual, de l’1 de juliol al 30 de juny.")}<br><b>${_(u"Pagament:")}</b> ${_(u"Anual, durant el mes de juliol de l’any següent.")}</p>
+         <p class="ContingutDades"><b>${_(u"Data d'aportació:")}</b> ${data.inversionOrderDate}<br><b>${_(u"Venciment:")}</b> ${_(u"Indefinit.")}<br><b>${_(u"Sol·licitud de cancel·lació:")}</b> ${_(u"En qualsevol moment.")}<br><b>${_(u"Import:")}</b> ${data.inversionInitialAmount} €<br><b>${_(u"Remuneració:")}</b> ${interest_rate}% ${_(u"interès nominal anual (revisable anualment per l'Assemblea general).")}<br><b>${_(u"Meritació d’interessos:")}</b> ${_(u"Anual, de l’1 de juliol al 30 de juny.")}<br><b>${_(u"Pagament:")}</b> ${_(u"Anual, durant el mes de juliol de l’any següent.")}</p>
 </div>
     </div>
   </div>
