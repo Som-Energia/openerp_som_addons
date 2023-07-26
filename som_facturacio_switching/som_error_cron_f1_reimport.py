@@ -36,8 +36,8 @@ class SomErrorCronF1Reimport(osv.osv):
             'giscedata.facturacio.switching.error.template', 'Codis d\'error de F1'
         ),
         'text': fields.text(
-            _(u"Text"),
-            help=_("Text del error al F1 importat erroniament"),
+            _(u"Text contingut al F1 erroni"),
+            help=_("Text que ha de contenir l'error del F1 que es vol importar"),
         ),
         'active': fields.boolean(
             string=_(u'Actiu'),
