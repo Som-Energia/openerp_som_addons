@@ -120,8 +120,10 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
         )
 
         data = {}
-        data['days_to_check'] = confvar_obj.get(
-            cursor, uid, 'som_error_cron_f1_reimport_days_to_check', 30
+        data['days_to_check'] = int(
+            confvar_obj.get(
+                cursor, uid, 'som_error_cron_f1_reimport_days_to_check', 30
+            )
         )
 
         data['error_code'] = []
