@@ -153,6 +153,7 @@
                     <field name="autoconsum_id" string="CAU"/>
                     <field name="name"/>
                     <field name="cups"/>
+                    <field name="autoconsumo"/>
                     <field name="is_autoconsum_collectiu"/>
                     <field name="tipus_installacio"/>
                     <field name="esquema_mesura"/>
