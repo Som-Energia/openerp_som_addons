@@ -46,6 +46,13 @@ class GiscedataPolissa(osv.osv):
 
         return res
 
+    def wkf_baixa(self, cursor, uid, ids):
+        """Cal dessassignar la polissa de gkwh per deixar les dades consistents"""
+        res = super(GiscedataPolissa, self).wkf_baixa(cursor, uid, ids)
+        assig_obj = self.pool.get('generationkwh.assignment')
+        assigment_ids = assig_obj.search(cursor, uid, [('contract_id', 'in', ids)])
+        assig_obj.unlink(cursor, uid, assigment_ids)
+        return res
 
     _columns = {
         'te_assignacio_gkwh': fields.function(
