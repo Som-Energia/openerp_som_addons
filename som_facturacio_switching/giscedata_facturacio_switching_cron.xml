@@ -15,19 +15,7 @@
     </data>
     <data noupdate="1">
         <record id="ir_cron_reimport_f1" model="ir.cron">
-            <field
-                name="args"
-                eval="({
-                    'error_codes': [
-                        {'code':'3033', 'text':''},
-                        {'code':'2005', 'text':''},
-                        {'code':'1001', 'text':''},
-                        {'code':'3041', 'text':''},
-                        {'code':'1999', 'text':''},
-                        {'code':'2999', 'text':''},
-                        {'code':'3999', 'text':''},
-                        {'code':'4999', 'text':''},
-                    ], 'days_to_check': 30})" />
+            <field name="args" eval="({})" />
         </record>
     </data>
 </openerp>
