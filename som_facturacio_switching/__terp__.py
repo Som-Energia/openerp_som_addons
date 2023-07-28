@@ -32,6 +32,7 @@
         "giscedata_facturacio_switching_view.xml",
         "som_error_cron_f1_reimport_data.xml",
         "som_error_cron_f1_reimport_view.xml",
+        "wizard/wizard_change_cron_reimport_days_view.xml",
     ],
     "active": False,
     "installable": True

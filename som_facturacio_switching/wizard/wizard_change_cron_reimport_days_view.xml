@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_change_cron_reimport_days">
+            <field name="name">wizard.change.cron.reimport.days.form</field>
+            <field name="model">wizard.change.cron.reimport.days</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Canvia el numero de dies del cron de reimportació de F1's">
+                    <field name="days" />
+                    <group colspan="4" col="4">
+                        <button name="change_days" string="Acceptar" icon="gtk-ok" type="object"/>
+                        <button special="cancel" string="Cancel·lar" icon="gtk-close"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_change_cron_reimport_days_form">
+            <field name="name">Canvia el numero de dies del cron de reimportació de F1's</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.change.cron.reimport.days</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_wizard_change_cron_reimport_days"/>
+            <field name="target">new</field>
+        </record>
+        <menuitem id="menu_wizard_change_cron_reimport_days" action="action_wizard_change_cron_reimport_days_form" parent="menu_som_error_cron_f1_reimport_folder"/>
+    </data>
+</openerp>
