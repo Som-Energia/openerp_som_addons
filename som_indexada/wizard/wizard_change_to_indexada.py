@@ -186,7 +186,7 @@ class WizardChangeToIndexada(osv.osv_memory):
                         'som_indexada',
                         semantic_id,
                     )
-                    if price_list_mode == standard_price_list_id:
+                    if price_list_id == standard_price_list_id:
                         return True
         return False
 
