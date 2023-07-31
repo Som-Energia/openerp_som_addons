@@ -4,17 +4,17 @@
     "version": "0.1",
     "author": "SomEnergia",
     "category": "Master",
-    "depends":[
+    "depends": [
         "base",
         "giscedata_switching",
         "giscedata_facturacio_switching",
         "oorq",
     ],
-    "init_xml":[],
+    "init_xml": [],
     "demo_xml": [
         "demo/som_crawlers_demo.xml",
     ],
-    "update_xml":[
+    "update_xml": [
         "data/som_crawlers_config_data.xml",
         "data/som_crawlers_task_data.xml",
         "data/som_crawlers_step_data.xml",
@@ -31,5 +31,5 @@
         "security/ir.model.access.csv",
     ],
     "active": False,
-    "installable":True
+    "installable": True,
 }

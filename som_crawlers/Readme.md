@@ -13,4 +13,3 @@ Conté el resultat de l’execució de a tasca determinada en una hora determina
 
 ### Configuració: som.crawlers.config
 Conté la configuració d'una tasca
-

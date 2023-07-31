@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 class CrawlingProcessException(Exception):
     def __init__(self, msg):
         self.msg = msg
@@ -10,11 +11,12 @@ class CrawlingProcessException(Exception):
     def __str__(self):
         return self.msg
 
+
 class NoResultsException(CrawlingProcessException):
     def __init__(self, msg, download_was_clicked=False, add_msg_tag=True):
-        tag = ''
+        tag = ""
         if add_msg_tag:
-            tag = 'SENSE RESULTATS: '
+            tag = "SENSE RESULTATS: "
         super(NoResultsException, self).__init__(tag + msg)
 
     def __repr__(self):
