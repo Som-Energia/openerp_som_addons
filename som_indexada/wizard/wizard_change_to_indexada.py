@@ -173,6 +173,8 @@ class WizardChangeToIndexada(osv.osv_memory):
         return new_pricelist_id
 
     def _is_standard_price_list(self, cursor, uid, price_list_id, context=None):
+        IrModel = self.pool.get('ir.model.data')
+
         for price_list_mode in (
             TARIFA_CODIS_PERIODES,
             TARIFA_CODIS_INDEXADA,
@@ -186,7 +188,7 @@ class WizardChangeToIndexada(osv.osv_memory):
                         'som_indexada',
                         semantic_id,
                     )
-                    if price_list_id == standard_price_list_id:
+                    if price_list_id == standard_price_list_id.id:
                         return True
         return False
 
