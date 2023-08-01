@@ -39,7 +39,7 @@
                             <field name="observacio_suspesa"/>
                             <field name="resum_observacions_comptables"/>
                             <field name="data_ultima_factura" />
-                            <field name="mesos_factura_mes_antiga_impagada" />
+                            <field name="mesos_factura_mes_recent_impagada" />
                         </tree>
                     </field>
                 </record>
@@ -48,7 +48,7 @@
                     <field name="name">Contractes amb deute (Comptabilitat)</field>
                     <field name="type">ir.actions.act_window</field>
                     <field name="res_model">giscedata.polissa</field>
-                    <field name="domain">[('debt_amount', '>', 0),('mesos_factura_mes_antiga_impagada','>=',7)]</field>
+                    <field name="domain">[('debt_amount', '>', 0),('mesos_factura_mes_recent_impagada','>=',7)]</field>
                     <field name="view_type">form</field>
                     <field name="view_mode">tree,form</field>
                     <field name="view_id" ref="view_giscedata_polissa_deute_som_tree"/>
@@ -79,7 +79,7 @@
                     <field name="type">form</field>
                     <field name="arch" type="xml">
                         <xpath expr="//field[@name='unpaid_invoices']" position="after">
-                            <field name="mesos_factura_mes_antiga_impagada" />
+                            <field name="mesos_factura_mes_recent_impagada" />
                         </xpath>
                     </field>
                 </record>
