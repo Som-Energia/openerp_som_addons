@@ -107,10 +107,8 @@ class WizardChangeToIndexada(osv.osv_memory):
         return res or []
 
     def _get_location_polissa(self, cursor, uid, polissa):
-        if polissa.fiscal_position_id:
-            if polissa.fiscal_position_id.id in FISCAL_POSITIONS_CANARIES:
-                return "canaries"
-        # TODO: detectar balears
+        if polissa.fiscal_position_id and polissa.fiscal_position_id.id in FISCAL_POSITIONS_CANARIES:
+            return "canaries"
         elif polissa.cups.id in self._get_list_cups_balears(cursor, uid):
             return "balears"
         else:
@@ -153,15 +151,7 @@ class WizardChangeToIndexada(osv.osv_memory):
         if tarifa_codi not in dict_tarifa_codis:
             raise indexada_exceptions.TariffCodeNotSupported(tarifa_codi)
 
-        # TODO no basar-nos amb el nom???
-
-        if polissa.fiscal_position_id:
-            if polissa.fiscal_position_id.id in FISCAL_POSITIONS_CANARIES:
-                location = "canaries"
-        elif 'INSULAR' in polissa.llista_preu.name or 'balears' in polissa.llista_preu.name:
-            location = "balears"
-        else:
-            location = "peninsula"
+        location = self._get_location_polissa(cursor, uid, polissa)
 
         new_pricelist_id = IrModel._get_obj(
             cursor,
