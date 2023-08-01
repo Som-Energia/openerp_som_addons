@@ -107,15 +107,13 @@ class WizardChangeToIndexada(osv.osv_memory):
         return res or []
 
     def _get_location_polissa(self, cursor, uid, polissa):
-        location = "peninsula"
         if polissa.fiscal_position_id:
             if polissa.fiscal_position_id.id in FISCAL_POSITIONS_CANARIES:
-                location = "canaries"
-        elif polissa.cups.id in self._get_list_cups_balears(cursor, uid):
-            location = "balears"
+                return "canaries"
+        if polissa.cups.id in self._get_list_cups_balears(cursor, uid):
+            return "balears"
         else:
-            location = "peninsula"
-        return location
+            return "peninsula"
 
     def get_new_pricelist(self, cursor, uid, polissa, context=None):
         IrModel = self.pool.get('ir.model.data')
