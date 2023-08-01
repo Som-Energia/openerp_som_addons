@@ -26,7 +26,7 @@
         </record>
         <record id="categ_pobresa_energetica" model="giscedata.polissa.category">
             <field name="name">Pobresa Energètica</field>
-            <field name="name">POBRESA</field>
+            <field name="code">POBRESA</field>
         </record>
     </data>
 </openerp>
