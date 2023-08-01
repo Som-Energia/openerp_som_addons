@@ -12,7 +12,7 @@ def up(cursor, installed_version):
     model_data_obj = pool.get('ir.model.data')
     categ_obj = pool.get('giscedata.polissa.category')
 
-   categ_ids = categ_obj.search(cursor, 1, [('name', 'ilike', '%Pobresa Energ%')])
+    categ_ids = categ_obj.search(cursor, 1, [('name', 'ilike', '%Pobresa Energ%')])
     if len(categ_ids) == 1:
         categ_id = categ_ids[0]
         today = datetime.today().strftime("%Y-%m-%d")
