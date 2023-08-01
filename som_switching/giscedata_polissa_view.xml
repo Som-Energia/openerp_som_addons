@@ -9,6 +9,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//page[@string='Autoconsum']/field[@name='is_autoconsum_collectiu']" position="after">
                     <field name="data_alta_autoconsum" readonly="1" select="2"/>
+                    <field name="data_baixa_autoconsum" readonly="1" select="2"/>
                 </xpath>
             </field>
         </record>
@@ -21,6 +22,7 @@
             <field name="arch" type="xml">
                 <field name="lectura_en_baja" position="after" >
                     <field name="data_alta_autoconsum"/>
+                    <field name="data_baixa_autoconsum"/>
                 </field>
                 <field name="data_ultima_lectura" position="after" >
                     <field name="data_ultima_lectura_f1" string="Última lectura de F1"/>
