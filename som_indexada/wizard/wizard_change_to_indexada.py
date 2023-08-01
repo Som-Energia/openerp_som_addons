@@ -107,10 +107,9 @@ class WizardChangeToIndexada(osv.osv_memory):
         return res or []
 
     def _get_location_polissa(self, cursor, uid, polissa):
-        if polissa.fiscal_position_id:
-            if polissa.fiscal_position_id.id in FISCAL_POSITIONS_CANARIES:
-                return "canaries"
-        if polissa.cups.id in self._get_list_cups_balears(cursor, uid):
+        if polissa.fiscal_position_id and polissa.fiscal_position_id.id in FISCAL_POSITIONS_CANARIES:
+            return "canaries"
+        elif polissa.cups.id in self._get_list_cups_balears(cursor, uid):
             return "balears"
         else:
             return "peninsula"
