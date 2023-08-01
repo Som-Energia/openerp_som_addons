@@ -29,7 +29,7 @@ def up(cursor, installed_version):
 
         model_data_obj.create(cursor, 1, model_data_vals)
 
-    logger.info("Finishing Pricelist indexada peninsula semantic id creation migration script")
+    logger.info("Finishing Pobresa Energetica semantic id creation migration script")
 
 
 def down(cursor, installed_version):
