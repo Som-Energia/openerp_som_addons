@@ -1,0 +1,4 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_giscedata_bateria_virtual_percentatges_acumulacio_u","giscedata.bateria.virtual.percentatges.acumulacio","model_giscedata_bateria_virtual_percentatges_acumulacio","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
+"access_giscedata_bateria_virtual_percentatges_acumulacio_r","giscedata.bateria.virtual.percentatges.acumulacio","model_giscedata_bateria_virtual_percentatges_acumulacio","giscedata_facturacio.group_giscedata_facturacio_r",1,0,0,0
+"access_giscedata_bateria_virtual_percentatges_acumulacio_w","giscedata.bateria.virtual.percentatges.acumulacio","model_giscedata_bateria_virtual_percentatges_acumulacio","giscedata_facturacio.group_giscedata_facturacio_w",1,1,1,0
