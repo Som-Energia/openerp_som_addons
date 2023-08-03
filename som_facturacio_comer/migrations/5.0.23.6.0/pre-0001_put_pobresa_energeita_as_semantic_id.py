@@ -20,7 +20,7 @@ def up(cursor, installed_version):
         model_data_vals = {
             'noupdate': True,
             'name': 'categ_pobresa_energetica',
-            'module': 'som_facturacio_comer',
+            'module': 'som_polissa',
             'model': 'giscedata.polissa.category',
             'res_id': categ_id,
             'date_init': today,
