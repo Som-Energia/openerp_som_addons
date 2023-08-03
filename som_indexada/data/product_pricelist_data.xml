@@ -46,5 +46,10 @@
             <field name="type">sale</field>
             <field name="currency_id" ref="base.EUR"/>
         </record>
+        <record model="product.pricelist" id="pricelist_indexada_empresa_peninsula_non_standard">
+            <field name="name">Indexada Empresa Peninsula</field>
+            <field name="type">sale</field>
+            <field name="currency_id" ref="base.EUR"/>
+        </record>
     </data>
 </openerp>
