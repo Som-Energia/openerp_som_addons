@@ -14,6 +14,7 @@
     "init_xml": [],
     "demo_xml": [],
     "update_xml": [
+        "security/ir.model.access.csv",
         "giscedata_bateria_virtual.xml",
         "giscedata_bateria_virtual_origen.xml",
     ],
