@@ -290,6 +290,7 @@ class WizardChangeToIndexada(osv.osv_memory):
             'modcontractual_ant': prev_modcon.id,
             'name': str(int(prev_modcon.name) + 1),
             'observacions': new_observacions,
+            'tipus': 'mod',
         })
         if coefs:
             new_modcon_vals.update({
