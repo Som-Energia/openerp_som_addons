@@ -2,7 +2,7 @@
 <openerp>
     <data noupdate="1">
         <record model="custom.search" id="custom_search_dashboard_som_canvis_a_indexada">
-            <field name="name">[DASHBOARDS][SOM - Contractes] Número de canvis a indexada</field>
+            <field name="name">[DASHBOARDS][SOM - Contractes] Número de canvis acumulats a indexada últims 30 dies</field>
             <field name="query">
 SELECT
     g.fecha AS dates,
@@ -10,7 +10,7 @@ SELECT
     COALESCE(SUM(canvis) OVER (ORDER BY g.fecha), 0) AS canvis
 FROM (
     SELECT DATE_TRUNC('day', generate_series)::DATE AS fecha
-    FROM generate_series(NOW() - '60 days'::interval, NOW(), '1 day'::interval)
+    FROM generate_series(NOW() - '30 days'::interval, NOW(), '1 day'::interval)
 ) g
 LEFT JOIN (
     SELECT
