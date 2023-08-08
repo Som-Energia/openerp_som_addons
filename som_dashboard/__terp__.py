@@ -13,7 +13,8 @@
     "init_xml": [],
     "demo_xml": [],
     "update_xml":[
-        "som_dashboards_contractes.xml",
+        "som_dashboard_contractes.xml",
+        "som_dashboard_custom_search.xml"
     ],
     "active": False,
     "installable": True
