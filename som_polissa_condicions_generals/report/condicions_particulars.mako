@@ -288,16 +288,25 @@ CONTRACT_TYPES = dict(TABLA_9)
         <div class="peatge_acces styled_box">
             <h5> ${_("PEATGE I CÀRRECS (definits a la Circular de la CNMC 3/2020 i al Reial decret 148/2021)")} </h5>
             <%
+                pol_o = pool.get('giscedata.polissa')
+                llista_preu_o = pool.get('pricelist.pricelist')
                 dict_pot = get_potencies(pas01, polissa)
-                if not (modcon_pendent_indexada or modcon_pendent_periodes):
-                    tarifa_a_mostrar = polissa.llista_preu.nom_comercial or polissa.llista_preu.name
+
+                if modcon_pendent_indexada or modcon_pendent_periodes:
+                    llista_preus = ultima_modcon.llista_preu
+                elif polissa.llista_preu:
+                    llista_preus = polissa.llista_preu
                 else:
-                    tarifa_a_mostrar = ultima_modcon.llista_preu.nom_comercial or ultima_modcon.llista_preu.name
+                    tarifes_ids = llista_preu_o.search(cursor, uid, [])
+                    llista_preus_id = pol_o.escull_llista_preus(cursor, uid, tarifes_ids, polissa.id)
+                    llista_preus = llista_preu_o.browse(cursor, uid, tarifa_a_mostrar_id)
+
+                tarifa_a_mostrar = llista_preus.nom_comercial or llista_preus.name
             %>
             <div class="peatge_access_content">
                 <div class="padding_left"><b>${_(u"Peatge de transport i distribució: ")}</b>${clean(polissa.tarifa_codi)}</div>
                 <div class="padding_left"><b>${_(u"Tipus de contracte: ")}</b> ${CONTRACT_TYPES[polissa.contract_type]} ${"({0})".format(dict_pot['autoconsum']) if polissa.autoconsumo != '00' else ""}</div>
-                <div class="padding_bottom padding_left"><b>${_(u"Tarifa comercialitzadora: ")}</b> ${clean(tarifa_a_mostrar)}</div>
+                <div class="padding_bottom padding_left"><b>${_(u"Tarifa: ")}</b> ${clean(tarifa_a_mostrar)}</div>
                 <table class="taula_custom new_taula_custom">
                     <tr style="background-color: #878787;">
                         <th></th>
