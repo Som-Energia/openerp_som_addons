@@ -693,7 +693,6 @@ CONTRACT_TYPES = dict(TABLA_9)
             <% iban = polissa.bank and polissa.bank.printable_iban[5:] or '' %>
             <div class="dades_pagament">
                 <div class="titular">
-                    <span class="name"><b>${_(u"Persona titular del compte: ")}</b> ${owner_b}</span>
                     <span class="nif"><b>${_(u"NIF: ")}</b> ${nif}</span>
                 </div>
                 </br>
