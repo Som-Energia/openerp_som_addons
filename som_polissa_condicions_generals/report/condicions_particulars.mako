@@ -289,7 +289,7 @@ CONTRACT_TYPES = dict(TABLA_9)
             <h5> ${_("PEATGE I CÀRRECS (definits a la Circular de la CNMC 3/2020 i al Reial decret 148/2021)")} </h5>
             <%
                 pol_o = pool.get('giscedata.polissa')
-                llista_preu_o = pool.get('pricelist.pricelist')
+                llista_preu_o = pool.get('product.pricelist')
                 dict_pot = get_potencies(pas01, polissa)
 
                 if modcon_pendent_indexada or modcon_pendent_periodes:
@@ -298,8 +298,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                     llista_preus = polissa.llista_preu
                 else:
                     tarifes_ids = llista_preu_o.search(cursor, uid, [])
-                    llista_preus_id = pol_o.escull_llista_preus(cursor, uid, tarifes_ids, polissa.id)
-                    llista_preus = llista_preu_o.browse(cursor, uid, tarifa_a_mostrar_id)
+                    llista_preus = pol_o.escull_llista_preus(cursor, uid, polissa.id, tarifes_ids)
 
                 tarifa_a_mostrar = llista_preus.nom_comercial or llista_preus.name
             %>
