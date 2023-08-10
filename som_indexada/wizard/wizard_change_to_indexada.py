@@ -107,10 +107,8 @@ class WizardChangeToIndexada(osv.osv_memory):
         return res or []
 
     def _get_location_polissa(self, cursor, uid, polissa):
-        if polissa.fiscal_position_id:
-            if polissa.fiscal_position_id.id in FISCAL_POSITIONS_CANARIES:
-                return "canaries"
-        # TODO: detectar balears
+        if polissa.fiscal_position_id and polissa.fiscal_position_id.id in FISCAL_POSITIONS_CANARIES:
+            return "canaries"
         elif polissa.cups.id in self._get_list_cups_balears(cursor, uid):
             return "balears"
         else:
@@ -153,15 +151,7 @@ class WizardChangeToIndexada(osv.osv_memory):
         if tarifa_codi not in dict_tarifa_codis:
             raise indexada_exceptions.TariffCodeNotSupported(tarifa_codi)
 
-        # TODO no basar-nos amb el nom???
-
-        if polissa.fiscal_position_id:
-            if polissa.fiscal_position_id.id in FISCAL_POSITIONS_CANARIES:
-                location = "canaries"
-        elif 'INSULAR' in polissa.llista_preu.name or 'balears' in polissa.llista_preu.name:
-            location = "balears"
-        else:
-            location = "peninsula"
+        location = self._get_location_polissa(cursor, uid, polissa)
 
         new_pricelist_id = IrModel._get_obj(
             cursor,
@@ -172,7 +162,27 @@ class WizardChangeToIndexada(osv.osv_memory):
 
         return new_pricelist_id
 
-    def validate_polissa_can_change(self, cursor, uid, polissa, change_type, context=None):
+    def _is_standard_price_list(self, cursor, uid, price_list_id, context=None):
+        IrModel = self.pool.get('ir.model.data')
+
+        for price_list_mode in (
+            TARIFA_CODIS_PERIODES,
+            TARIFA_CODIS_INDEXADA,
+        ):
+            for tarifa_codi, locations in price_list_mode.items():
+                for location, semantic_id in locations.items():
+                    # TODO: Could this resolution be calculated once?
+                    standard_price_list_id = IrModel._get_obj(
+                        cursor,
+                        uid,
+                        'som_indexada',
+                        semantic_id,
+                    )
+                    if price_list_id == standard_price_list_id.id:
+                        return True
+        return False
+
+    def validate_polissa_can_change(self, cursor, uid, polissa, change_type, only_standard_prices=False, context=None):
         sw_obj = self.pool.get('giscedata.switching')
         if polissa.state != 'activa':
             raise indexada_exceptions.PolissaNotActive(polissa.name)
@@ -183,6 +193,12 @@ class WizardChangeToIndexada(osv.osv_memory):
             raise indexada_exceptions.PolissaAlreadyIndexed(polissa.name)
         if change_type == "from_index_to_period" and polissa.mode_facturacio == 'atr':
             raise indexada_exceptions.PolissaAlreadyPeriod(polissa.name)
+
+        if only_standard_prices:
+            price_list_id = polissa.llista_preu.id
+            is_standard_price = self._is_standard_price_list(cursor, uid,  price_list_id, context)
+            if not is_standard_price:
+                raise indexada_exceptions.PolissaNotStandardPrice(polissa.name)
 
         res = sw_obj.search(cursor, uid, [
             ('polissa_ref_id', '=', polissa.id),

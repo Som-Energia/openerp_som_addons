@@ -91,6 +91,20 @@ class PolissaSimultaneousATR(IndexadaException):
             polissa_number=self.polissa_number,
         )
 
+class PolissaNotStandardPrice(IndexadaException):
+    def __init__(self, polissa_number):
+        super(PolissaNotStandardPrice, self).__init__(
+            title=_('Non standard pricelist'),
+            text=_("Pòlissa {} has a non-standard pricelist").format(polissa_number),
+        )
+        self.polissa_number = polissa_number
+
+    def to_dict(self):
+        return dict(
+            super(PolissaNotStandardPrice, self).to_dict(),
+            polissa_number=self.polissa_number,
+        )
+
 class FailSendEmail(IndexadaException):
     def __init__(self, polissa_number):
         super(FailSendEmail, self).__init__(

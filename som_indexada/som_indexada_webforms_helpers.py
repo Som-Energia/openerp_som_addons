@@ -67,6 +67,7 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                 uid,
                 polissa,
                 change_type,
+                only_standard_prices=True,
             )
             pricelist_id = wiz_o.calculate_new_pricelist(
                 cursor,
