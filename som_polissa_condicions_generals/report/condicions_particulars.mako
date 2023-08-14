@@ -291,6 +291,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                 pol_o = pool.get('giscedata.polissa')
                 llista_preu_o = pool.get('product.pricelist')
                 dict_pot = get_potencies(pas01, polissa)
+                ctx = {'lang': lang}
 
                 if modcon_pendent_indexada or modcon_pendent_periodes:
                     llista_preus = ultima_modcon.llista_preu
@@ -298,7 +299,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                     llista_preus = polissa.llista_preu
                 else:
                     tarifes_ids = llista_preu_o.search(cursor, uid, [])
-                    llista_preus = pol_o.escull_llista_preus(cursor, uid, polissa.id, tarifes_ids)
+                    llista_preus = pol_o.escull_llista_preus(cursor, uid, polissa.id, tarifes_ids, context=ctx)
 
                 tarifa_a_mostrar = llista_preus.nom_comercial or llista_preus.name
             %>
