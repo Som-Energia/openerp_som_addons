@@ -20,7 +20,7 @@
             <field name="type">tree</field>
             <field name="arch" type="xml">
                 <field name="energia_kwh" position="after">
-                    <field name="generacio_kwh"/>
+                    <field name="generacio_kwh" select="2"/>
                 </field>
             </field>
         </record>
@@ -31,7 +31,7 @@
             <field name="type">tree</field>
             <field name="arch" type="xml">
                 <field name="energia_kwh" position="after">
-                    <field name="generacio_kwh"/>
+                    <field name="generacio_kwh" select="2"/>
                 </field>
             </field>
         </record>
