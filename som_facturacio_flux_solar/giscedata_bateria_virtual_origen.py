@@ -70,21 +70,19 @@ class GiscedataBateriaVirtualOrigen(osv.osv):
 
         return percetatge_acum_ids
 
-    def _default_percentatge_acumulacio(self, cursor, uid, context=None):
+    def create(self, cursor, uid, vals, context=None):
         percentatge_acum_obj = self.pool.get('giscedata.bateria.virtual.percentatges.acumulacio')
         bat_polissa_obj = self.pool.get('giscedata.bateria.virtual.polissa')
         conf_obj = self.pool.get('res.config')
 
-        origen_id = context.get('active_ids', [])
+        origen_id = super(GiscedataBateriaVirtualOrigen, self).create(cursor, uid, vals, context=context)
         orig_br = self.browse(cursor, uid, origen_id, context={'prefetch': False})
 
         polissa_id = orig_br.bateria_id.origen_ref.split(',')[1]
-
         bateria_polissa_id = bat_polissa_obj.search(cursor, uid, {
             'bateria_id', '=', orig_br.bateria_id.id,
             'polissa_id', '=', polissa_id,
         })
-
         data_inici = bat_polissa_obj.read(cursor, uid, bateria_polissa_id, ['data_inici'])['data_inici']
         percentatge_defecte = int(conf_obj.get(cursor, uid, 'percentatge_acumulacio', '100'))
 
@@ -93,7 +91,6 @@ class GiscedataBateriaVirtualOrigen(osv.osv):
             'data_inici': data_inici,
             'origen': origen_id,
         }
-
         percentatge_acum_obj.create(cursor, uid, vals, context=context)
 
     _columns = {
@@ -103,7 +100,6 @@ class GiscedataBateriaVirtualOrigen(osv.osv):
 
     _defaults = {
         'gestio_acumulacio': lambda *a: 'estandard',
-        'percentatges_acumulacio': _default_percentatge_acumulacio
     }
 
 
