@@ -78,20 +78,22 @@ class GiscedataBateriaVirtualOrigen(osv.osv):
         origen_id = super(GiscedataBateriaVirtualOrigen, self).create(cursor, uid, vals, context=context)
         orig_br = self.browse(cursor, uid, origen_id, context={'prefetch': False})
 
-        polissa_id = orig_br.bateria_id.origen_ref.split(',')[1]
+        polissa_id = orig_br.origen_ref.split(',')[1]
         bateria_polissa_id = bat_polissa_obj.search(cursor, uid, {
             'bateria_id', '=', orig_br.bateria_id.id,
             'polissa_id', '=', polissa_id,
         })
-        data_inici = bat_polissa_obj.read(cursor, uid, bateria_polissa_id, ['data_inici'])['data_inici']
-        percentatge_defecte = int(conf_obj.get(cursor, uid, 'percentatge_acumulacio', '100'))
 
-        vals = {
-            'precerntatge': percentatge_defecte,
-            'data_inici': data_inici,
-            'origen': origen_id,
-        }
-        percentatge_acum_obj.create(cursor, uid, vals, context=context)
+        if bateria_polissa_id:
+            data_inici = bat_polissa_obj.read(cursor, uid, bateria_polissa_id, ['data_inici'])['data_inici']
+            percentatge_defecte = int(conf_obj.get(cursor, uid, 'percentatge_acumulacio', '100'))
+
+            vals = {
+                'precerntatge': percentatge_defecte,
+                'data_inici': data_inici,
+                'origen': origen_id,
+            }
+            percentatge_acum_obj.create(cursor, uid, vals, context=context)
 
     _columns = {
         'gestio_acumulacio': fields.selection(STATES_GESTIO_ACUMULACIO, "Gestió de l'acumulació"),
