@@ -78,21 +78,15 @@ class GiscedataBateriaVirtualOrigen(osv.osv):
         origen_id = super(GiscedataBateriaVirtualOrigen, self).create(cursor, uid, vals, context=context)
         orig_br = self.browse(cursor, uid, origen_id, context={'prefetch': False})
 
-        polissa_id = orig_br.origen_ref.split(',')[1]
-        bateria_polissa_id = bat_polissa_obj.search(cursor, uid, [
-            ('bateria_id', '=', orig_br.bateria_id.id),
-            ('polissa_id', '=', polissa_id)
-        ])
-
-        if bateria_polissa_id:
-            data_inici = bat_polissa_obj.read(cursor, uid, bateria_polissa_id, ['data_inici'])['data_inici']
+        polissa_ids = orig_br.bateria_id.polissa_ids
+        for polissa_id in polissa_ids:
             percentatge_defecte = int(conf_obj.get(cursor, uid, 'percentatge_acumulacio', '100'))
 
             vals = {
                 'percentatge': percentatge_defecte,
-                'data_inici': data_inici,
+                'data_inici': polissa_id.data_inici,
                 'data_fi': None,
-                'origen_id': origen_id.id,
+                'origen_id': origen_id,
             }
             percentatge_acum_obj.create(cursor, uid, vals, context=context)
 
