@@ -26,7 +26,7 @@ class GiscedataBateriaVirtualPolissa(osv.osv):
                 'percentatge': percentatge_defecte,
                 'data_inici': polissa_br.data_inici,
                 'data_fi': None,
-                'origen': origen_id.id,
+                'origen_id': origen_id.id,
             })
 
 
