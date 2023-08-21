@@ -95,3 +95,6 @@ class ReportBackendInvoiceEmail(ReportBackend):
         )
 
         return data
+
+
+ReportBackendInvoiceEmail()
