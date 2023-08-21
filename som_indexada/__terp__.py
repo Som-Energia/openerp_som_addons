@@ -9,6 +9,7 @@
     "depends":[
         "base",
         "base_extended_som",
+        "www_som",
         "giscedata_facturacio_indexada_som",
         "giscedata_polissa",
         "giscedata_polissa_comer",

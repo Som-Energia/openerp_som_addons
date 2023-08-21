@@ -11,7 +11,6 @@ Mòdul per la integració de l'oficina virtual
         "base_extended",
         "www_base",
         "som_polissa_soci",
-        "som_indexada",
         "giscedata_lectures_comer",
         "giscedata_lectures_pool",
         "giscedata_facturacio_impagat_comer",
