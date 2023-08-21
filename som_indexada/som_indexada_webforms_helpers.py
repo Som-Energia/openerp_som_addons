@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from osv import osv
-from www_som.exceptions import indexada_exceptions
+from www_som import exceptions
 from datetime import datetime
 from decorator import decorator
 
@@ -65,7 +65,7 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
         if coefficient_k is not None:
             return coefficient_k
         else:
-            raise indexada_exceptions.KCoefficientNotFound(pricelist_id)
+            raise exceptions.KCoefficientNotFound(pricelist_id)
 
     def _get_change_type(self, cursor, uid, polissa_id):
         change_type = "from_period_to_index"
@@ -83,7 +83,7 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
         return change_type
 
     @www_entry_point(
-        expected_exceptions=indexada_exceptions.IndexadaException,
+        expected_exceptions=exceptions.IndexadaException,
     )
     def check_new_pricelist_www(self, cursor, uid, polissa_id, context=None):
         change_type = self._get_change_type(cursor, uid, polissa_id)
@@ -131,7 +131,7 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
         return self.change_pricelist_www(cursor, uid, polissa_id, context)
 
     @www_entry_point(
-        expected_exceptions=indexada_exceptions.IndexadaException,
+        expected_exceptions=exceptions.IndexadaException,
     )
     def change_pricelist_www(self, cursor, uid, polissa_id, context=None):
         change_type = self._get_change_type(cursor, uid, polissa_id)

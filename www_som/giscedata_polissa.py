@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
 from dateutil import parser
-from www_som.exceptions import indexada_exceptions
+from www_som import exceptions
 
 from osv import osv
 from osv import fields
@@ -137,11 +137,11 @@ class GiscedataPolissa(osv.osv):
             polissa = self.browse(cursor, uid, polissa_id, context=context)
 
             if polissa.state != 'activa':
-                raise indexada_exceptions.PolissaNotActive(polissa.name)
+                raise exceptions.PolissaNotActive(polissa.name)
 
             prev_modcon = polissa.modcontractuals_ids[0]
             if prev_modcon.state == 'pendent':
-                raise indexada_exceptions.PolissaModconPending(polissa.name)
+                raise exceptions.PolissaModconPending(polissa.name)
 
             excluded_cases.append('R1')
             atr_case = sw_obj.search(cursor, uid, [
@@ -151,8 +151,8 @@ class GiscedataPolissa(osv.osv):
             ])
 
             if atr_case and not skip_atr_check:
-                raise indexada_exceptions.PolissaSimultaneousATR(polissa.name)
-        except indexada_exceptions.IndexadaException as e:
+                raise exceptions.PolissaSimultaneousATR(polissa.name)
+        except exceptions.IndexadaException as e:
             return dict(
                 e.to_dict(),
                 trace=self._traceback_info(e),

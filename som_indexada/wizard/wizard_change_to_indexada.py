@@ -2,7 +2,7 @@
 from osv import osv, fields
 from datetime import timedelta, date
 from oorq.oorq import AsyncMode
-from www_som.exceptions import indexada_exceptions
+from www_som import exceptions
 
 
 TARIFA_CODIS_INDEXADA = {
@@ -127,7 +127,7 @@ class WizardChangeToIndexada(osv.osv_memory):
             dict_pricelist_codis = TARIFA_CODIS_INDEXADA
 
         if tarifa_codi not in dict_pricelist_codis:
-            raise indexada_exceptions.TariffCodeNotSupported(tarifa_codi)
+            raise exceptions.TariffCodeNotSupported(tarifa_codi)
 
         location = self._get_location_polissa(cursor, uid, polissa)
         new_pricelist_id = IrModel._get_obj(
@@ -149,7 +149,7 @@ class WizardChangeToIndexada(osv.osv_memory):
             dict_tarifa_codis = TARIFA_CODIS_INDEXADA
 
         if tarifa_codi not in dict_tarifa_codis:
-            raise indexada_exceptions.TariffCodeNotSupported(tarifa_codi)
+            raise exceptions.TariffCodeNotSupported(tarifa_codi)
 
         location = self._get_location_polissa(cursor, uid, polissa)
 
@@ -185,20 +185,20 @@ class WizardChangeToIndexada(osv.osv_memory):
     def validate_polissa_can_change(self, cursor, uid, polissa, change_type, only_standard_prices=False, context=None):
         sw_obj = self.pool.get('giscedata.switching')
         if polissa.state != 'activa':
-            raise indexada_exceptions.PolissaNotActive(polissa.name)
+            raise exceptions.PolissaNotActive(polissa.name)
         prev_modcon = polissa.modcontractuals_ids[0]
         if prev_modcon.state == 'pendent':
-            raise indexada_exceptions.PolissaModconPending(polissa.name)
+            raise exceptions.PolissaModconPending(polissa.name)
         if change_type == "from_period_to_index" and polissa.mode_facturacio == 'index':
-            raise indexada_exceptions.PolissaAlreadyIndexed(polissa.name)
+            raise exceptions.PolissaAlreadyIndexed(polissa.name)
         if change_type == "from_index_to_period" and polissa.mode_facturacio == 'atr':
-            raise indexada_exceptions.PolissaAlreadyPeriod(polissa.name)
+            raise exceptions.PolissaAlreadyPeriod(polissa.name)
 
         if only_standard_prices:
             price_list_id = polissa.llista_preu.id
             is_standard_price = self._is_standard_price_list(cursor, uid,  price_list_id, context)
             if not is_standard_price:
-                raise indexada_exceptions.PolissaNotStandardPrice(polissa.name)
+                raise exceptions.PolissaNotStandardPrice(polissa.name)
 
         res = sw_obj.search(cursor, uid, [
             ('polissa_ref_id', '=', polissa.id),
@@ -207,7 +207,7 @@ class WizardChangeToIndexada(osv.osv_memory):
         ])
 
         if res:
-            raise indexada_exceptions.PolissaSimultaneousATR(polissa.name)
+            raise exceptions.PolissaSimultaneousATR(polissa.name)
 
     def send_indexada_modcon_created_email(self, cursor, uid, polissa):
         ir_model_data = self.pool.get('ir.model.data')
@@ -244,7 +244,7 @@ class WizardChangeToIndexada(osv.osv_memory):
             return wiz_send_obj.send_mail(cursor, uid, [wiz_id], ctx)
 
         except Exception as e:
-            raise indexada_exceptions.FailSendEmail(polissa.name)
+            raise exceptions.FailSendEmail(polissa.name)
 
     def change_to_indexada(self, cursor, uid, ids, context=None):
         '''update data_firma_contracte in polissa

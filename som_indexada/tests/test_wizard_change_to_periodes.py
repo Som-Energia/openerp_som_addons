@@ -4,7 +4,7 @@ from destral.transaction import Transaction
 from datetime import timedelta, date, datetime
 from giscedata_switching.tests.common_tests import TestSwitchingImport
 from osv import osv, fields
-from www_som.exceptions import indexada_exceptions
+from www_som import exceptions
 import mock
 
 class TestChangeToPeriodes(TestSwitchingImport):
@@ -47,7 +47,7 @@ class TestChangeToPeriodes(TestSwitchingImport):
         wiz_o = self.pool.get('wizard.change.to.indexada')
 
         wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
-        with self.assertRaises(indexada_exceptions.PolissaNotActive) as error:
+        with self.assertRaises(exceptions.PolissaNotActive) as error:
             wiz_o.change_to_indexada(self.cursor, self.uid, [wiz_id], context=context)
         self.assertEqual(error.exception.to_dict()['error'], u"Pòlissa 0018 not active")
 
@@ -59,7 +59,7 @@ class TestChangeToPeriodes(TestSwitchingImport):
         wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
 
         wiz_o.change_to_indexada(self.cursor, self.uid, [wiz_id], context=context)
-        with self.assertRaises(indexada_exceptions.PolissaModconPending) as error:
+        with self.assertRaises(exceptions.PolissaModconPending) as error:
             wiz_o.change_to_indexada(self.cursor, self.uid, [wiz_id], context=context)
         self.assertEqual(error.exception.to_dict()['error'], u"Pòlissa 0018 already has a pending modcon")
         IrModel = self.pool.get('ir.model.data')
@@ -88,7 +88,7 @@ class TestChangeToPeriodes(TestSwitchingImport):
 
         context = {'active_id': polissa_id, 'change_type': 'from_index_to_period'}
         wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
-        with self.assertRaises(indexada_exceptions.PolissaAlreadyPeriod) as error:
+        with self.assertRaises(exceptions.PolissaAlreadyPeriod) as error:
             wiz_o.change_to_indexada(self.cursor, self.uid, [wiz_id], context=context)
         self.assertEqual(error.exception.to_dict()['error'], u"Pòlissa 0018 already period")
 
@@ -99,7 +99,7 @@ class TestChangeToPeriodes(TestSwitchingImport):
         polissa_obj = self.pool.get('giscedata.polissa')
         context = {'active_id': polissa_id, 'change_type': 'from_index_to_period'}
         wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
-        with self.assertRaises(indexada_exceptions.TariffCodeNotSupported) as error:
+        with self.assertRaises(exceptions.TariffCodeNotSupported) as error:
             wiz_o.change_to_indexada(self.cursor, self.uid, [wiz_id], context=context)
         self.assertEqual(error.exception.to_dict()['error'], u"Change with tariff code 2.0A not supported")
 
@@ -124,7 +124,7 @@ class TestChangeToPeriodes(TestSwitchingImport):
         step_id = self.create_case_and_step(
             self.cursor, self.uid, polissa_id, 'M1', '01'
         )
-        with self.assertRaises(indexada_exceptions.PolissaSimultaneousATR) as error:
+        with self.assertRaises(exceptions.PolissaSimultaneousATR) as error:
             wiz_o.change_to_indexada(self.cursor, self.uid, [wiz_id], context=context)
         self.assertEqual(error.exception.to_dict()['error'], u"Pòlissa 0018 with simultaneous ATR")
 

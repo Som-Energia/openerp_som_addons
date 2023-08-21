@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from ..exceptions.indexada_exceptions import *
+from ..exceptions import *
 import unittest
 
 class IndexadaExceptionsTest(unittest.TestCase):

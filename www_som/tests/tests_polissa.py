@@ -2,7 +2,6 @@
 
 from destral import testing
 from destral.transaction import Transaction
-from www_som.exceptions import indexada_exceptions
 
 from datetime import date,datetime,timedelta
 
