@@ -2,6 +2,7 @@
 from datetime import datetime, timedelta
 from dateutil import parser
 from www_som import exceptions
+from www_som.helpers import www_entry_point
 
 from osv import osv
 from osv import fields
@@ -116,6 +117,9 @@ class GiscedataPolissa(osv.osv):
         exc_type, exc_value, exc_tb = sys.exc_info()
         return traceback.format_exception(exc_type, exc_value, exc_tb)
 
+    @www_entry_point(
+        expected_exceptions=exceptions.IndexadaException,
+    )
     def www_check_modifiable_polissa(
         self, cursor, uid, polissa_id, skip_atr_check=False, excluded_cases=None, context=None
     ):
@@ -133,36 +137,24 @@ class GiscedataPolissa(osv.osv):
 
         sw_obj = self.pool.get('giscedata.switching')
 
-        try:
-            polissa = self.browse(cursor, uid, polissa_id, context=context)
+        polissa = self.browse(cursor, uid, polissa_id, context=context)
 
-            if polissa.state != 'activa':
-                raise exceptions.PolissaNotActive(polissa.name)
+        if polissa.state != 'activa':
+            raise exceptions.PolissaNotActive(polissa.name)
 
-            prev_modcon = polissa.modcontractuals_ids[0]
-            if prev_modcon.state == 'pendent':
-                raise exceptions.PolissaModconPending(polissa.name)
+        prev_modcon = polissa.modcontractuals_ids[0]
+        if prev_modcon.state == 'pendent':
+            raise exceptions.PolissaModconPending(polissa.name)
 
-            excluded_cases.append('R1')
-            atr_case = sw_obj.search(cursor, uid, [
-                ('polissa_ref_id', '=', polissa.id),
-                ('state', 'in', ['open', 'draft', 'pending']),
-                ('proces_id.name', 'not in', excluded_cases),
-            ])
+        excluded_cases.append('R1')
+        atr_case = sw_obj.search(cursor, uid, [
+            ('polissa_ref_id', '=', polissa.id),
+            ('state', 'in', ['open', 'draft', 'pending']),
+            ('proces_id.name', 'not in', excluded_cases),
+        ])
 
-            if atr_case and not skip_atr_check:
-                raise exceptions.PolissaSimultaneousATR(polissa.name)
-        except exceptions.IndexadaException as e:
-            return dict(
-                e.to_dict(),
-                trace=self._traceback_info(e),
-            )
-        except Exception as e:
-            return dict(
-                error=str(e),
-                code="Unexpected",
-                trace=self._traceback_info(e),
-            )
+        if atr_case and not skip_atr_check:
+            raise exceptions.PolissaSimultaneousATR(polissa.name)
 
         return True
 
