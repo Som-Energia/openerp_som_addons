@@ -7,7 +7,7 @@ from mako.template import Template
 class ReportBackendInvoiceEmail(ReportBackend):
     _source_model = 'giscedata.facturacio.factura'
     _name = 'report.backend.invoice.email'
-    
+
     @report_browsify
     def get_data(self, cursor, uid, factura, context=None):
         if context is None:
@@ -20,13 +20,12 @@ class ReportBackendInvoiceEmail(ReportBackend):
             'polissa': self.get_polissa(cursor, uid, fra, context=context),
             'factura': report_factura_obj.get_factura(cursor, uid, fra, context=context),
             'socia': self.get_socia(cursor, uid, fra, context=context),
-            'email_info': self.get_email_info(cursor, uid, fra, context=context),
+            'text_legal': self.get_text_legal(cursor, uid, fra, context=context),
             'lang': factura.partner_id.lang,
-            'text_personalitzat': self.get_text_personalitzat(cursor, uid, fra, context=context)
         }
         self._extend_get_factures(cursor, uid, fra, data, context=context)
         return data
-    
+
     def get_comerci(self, cursor, uid, fra, context=context):
         energetica = self.get_socia(cursor, uid, fra, context=context)['energetica']
 
@@ -36,7 +35,7 @@ class ReportBackendInvoiceEmail(ReportBackend):
             data['logo'] = "https://blog.somenergia.coop/wp-content/uploads/2018/10/som-energia-energetica-logos.jpg"
         else:
             data['logo'] = "http://www.somenergia.coop/wp-content/uploads/2014/07/logo.png"
-        
+
         return data
 
 
@@ -63,12 +62,12 @@ class ReportBackendInvoiceEmail(ReportBackend):
             if clot_id:
                 n_retrocedir_lot = clot_obj.read(fra._cr, fra._uid, clot_id[0], ['n_retrocedir_lot'])['n_retrocedir_lot']
                 polissa_retrocedida = n_retrocedir_lot > 0
-        
+
         data['polissa_retrocedida'] = polissa_retrocedida
 
         return data
 
-    def get_email_info(self, cursor, uid, fra, context=context):
+    def get_text_legal(self, cursor, uid, fra, context=context):
         def render(text_to_render, object_):
             templ = Template(text_to_render)
             return templ.render_unicode(
