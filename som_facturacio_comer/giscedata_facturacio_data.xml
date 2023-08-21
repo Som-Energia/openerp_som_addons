@@ -37,21 +37,5 @@
     </html>
         ]]></field>
         </record>
-        <record model="poweremail.templates" id="env_fact_via_email_20td_periodes_som">
-            <field name="name">MAIL enviar factura client normal</field>
-            <field name="def_to">${object.address_invoice_id.email}, ${object.polissa_id.direccio_notificacio.email}</field>
-            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
-            <field name="def_subject">Factura ${object.number}</field>
-            <field name="template_language">mako</field>
-            <field name="lang">${object.polissa_id.titular.lang}</field>
-            <field name="def_body_text">
-Sempre que vulguis, pots accedir a l’Oficina Virtual per veure i descarregar les teves factures i gestionar els contractes que tens amb la cooperativa.
-Pots consultar el funcionament de la tarifa que tens contractada en aquest article: la tarifa 2.0TD períodes, i al web pots veure’n els preus.
-Si detectes algun error en la factura, pots consultar aquest enllaç, o bé ens ho pots comunicar responent aquest mateix correu. I si vols saber més sobre la factura, trobaràs la informació detallada en l’article que explica la factura en la tarifa 2.0TD períodes del Centre d’Ajuda.
-Atentament,
-Equip de Som Energia
-
-            </field>
-        </record>
     </data>
 </openerp>
