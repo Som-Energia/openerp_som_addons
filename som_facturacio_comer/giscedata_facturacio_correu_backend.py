@@ -26,7 +26,9 @@ class ReportBackendInvoiceEmail(ReportBackend):
         self._extend_get_factures(cursor, uid, fra, data, context=context)
         return data
 
-    def get_comerci(self, cursor, uid, fra, context=context):
+    def get_comerci(self, cursor, uid, fra, context=None):
+        if context is None:
+            context = {}
         energetica = self.get_socia(cursor, uid, fra, context=context)['energetica']
 
         data = {}
@@ -39,7 +41,9 @@ class ReportBackendInvoiceEmail(ReportBackend):
         return data
 
 
-    def get_socia(self, cursor, uid, fra, context=context):
+    def get_socia(self, cursor, uid, fra, context=None):
+        if context is None:
+            context = {}
         data = {
             'socia': fra.polissa_id.soci.id,
             'energetica': fra.polissa_id.soci.id == 38039
@@ -47,7 +51,7 @@ class ReportBackendInvoiceEmail(ReportBackend):
 
         return data
 
-    def get_polissa(self, cursor, uid, fra, context=context):
+    def get_polissa(self, cursor, uid, fra, context=None):
         if context is None:
             context = {}
 
@@ -67,13 +71,16 @@ class ReportBackendInvoiceEmail(ReportBackend):
 
         return data
 
-    def get_text_legal(self, cursor, uid, fra, context=context):
+    def get_text_legal(self, cursor, uid, fra, context=None):
         def render(text_to_render, object_):
             templ = Template(text_to_render)
             return templ.render_unicode(
                 object=object_,
                 format_exceptions=True
             )
+
+        if context is None:
+            context = {}
 
         data = {}
 
