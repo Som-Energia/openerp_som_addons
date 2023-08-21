@@ -21,7 +21,7 @@ class ReportBackendInvoiceEmail(ReportBackend):
             'factura': report_factura_obj.get_factura(cursor, uid, fra, context=context),
             'socia': self.get_socia(cursor, uid, fra, context=context),
             'text_legal': self.get_text_legal(cursor, uid, fra, context=context),
-            'lang': factura.partner_id.lang,
+            'lang': fra.partner_id.lang,
         }
         self._extend_get_factures(cursor, uid, fra, data, context=context)
         return data
