@@ -5,3 +5,4 @@ import giscedata_facturacio_report_v2
 import wizard
 import giscedata_polissa
 import giscedata_facturacio_factura
+import giscedata_facturacio_correu_backend
