@@ -91,6 +91,7 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
         }
 
     def change_to_indexada_www(self, cursor, uid, polissa_id, context=None):
+        """ DEPRECATED: use change_pricelist_www instead"""
         return self.change_pricelist_www(cursor, uid, polissa_id, context)
 
     @www_entry_point(
