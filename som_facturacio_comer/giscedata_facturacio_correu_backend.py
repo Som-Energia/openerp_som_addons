@@ -9,7 +9,7 @@ class ReportBackendInvoiceEmail(ReportBackend):
     _name = 'report.backend.invoice.email'
 
     @report_browsify
-    def get_data(self, cursor, uid, factura, context=None):
+    def get_data(self, cursor, uid, fra, context=None):
         if context is None:
             context = {}
 
