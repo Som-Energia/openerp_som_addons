@@ -18,7 +18,7 @@ class GiscedataPolissa(osv.osv):
             ('state', 'in', ('paid', 'open')),
             ('type', 'in', ('out_invoice', 'out_refund')),
             '|',
-            ('data_final', '>', data_final),
+            ('data_final', '<=', data_final),
             ('data_final', '=', False)
         ], context=context
                                          )
