@@ -23,7 +23,6 @@ class ReportBackendInvoiceEmail(ReportBackend):
             'text_legal': self.get_text_legal(cursor, uid, fra, context=context),
             'lang': fra.partner_id.lang,
         }
-        self._extend_get_factures(cursor, uid, fra, data, context=context)
         return data
 
     def get_comerci(self, cursor, uid, fra, context=None):
