@@ -123,12 +123,16 @@ class GiscedataPolissa(osv.osv):
     def www_check_modifiable_polissa(
         self, cursor, uid, polissa_id, skip_atr_check=False, excluded_cases=None, context=None
     ):
+        self.check_modifiable_polissa(cursor, uid, polissa_id, skip_atr_check, excluded_cases, context)
+
+    def check_modifiable_polissa(
+        self, cursor, uid, polissa_id, skip_atr_check=False, excluded_cases=None, context=None
+    ):
         """
         Things to check before allowing modcons to the contract.
         - Contract doesn't have ANY pending modcons
         - Contract doesn't have ANY pending ATR cases
         """
-
         if context is None:
             context = {}
     
