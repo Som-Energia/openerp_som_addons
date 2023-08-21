@@ -4,7 +4,7 @@ from destral.transaction import Transaction
 from datetime import timedelta, date, datetime
 from giscedata_switching.tests.common_tests import TestSwitchingImport
 from osv import osv, fields
-from som_indexada.exceptions import indexada_exceptions
+from www_som.exceptions import indexada_exceptions
 import mock
 
 class TestChangeToPeriodes(TestSwitchingImport):

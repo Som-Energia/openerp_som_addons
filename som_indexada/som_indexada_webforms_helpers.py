@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from osv import osv
-from som_indexada.exceptions import indexada_exceptions
+from www_som.exceptions import indexada_exceptions
 from datetime import datetime
 from decorator import decorator
 

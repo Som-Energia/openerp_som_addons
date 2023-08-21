@@ -2,7 +2,7 @@
 from osv import osv, fields
 from datetime import timedelta, date
 from oorq.oorq import AsyncMode
-from som_indexada.exceptions import indexada_exceptions
+from www_som.exceptions import indexada_exceptions
 
 
 TARIFA_CODIS_INDEXADA = {
