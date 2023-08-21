@@ -4,17 +4,38 @@ from www_som import exceptions
 from decorator import decorator
 
 def www_entry_point(expected_exceptions=tuple()):
+    """
+    Wrapps an erp method so that it can be called safely from the web.
+
+    - Establishes a database savepoint to return at if an exception happens.
+    - Translates any expected_exceptions to a error dictionary.
+    - Any other exception will be also translated but with code 'Unexpected'
+    - To any exception, expected or unexpected,
+      it adds the backtrace as attribute of the dictionary.
+
+    Usage:
+    ```
+    @www_entry_point(
+        expected_exceptions=(
+            MyException,
+            MyOtherException,
+        )
+    )
+    def my_erp_method(self, cursor ...):
+        ...
+        if error: raise MyException(args)
+        ...
+        return dict(
+            ok=True,
+            data=...,
+        )
+    ```
+
+    Expected errors should have the to_dict method that will return
+    relevant data to identify the causes of the error. 
+    """
 
     def wrapper(f, self, cursor, *args, **kwds):
-        """
-        Wrapps an erp method so that it can be called safely from the web.
-
-        - Establishes a database savepoint to return at if an exception happens.
-        - Translates any expected_exceptions to a error dictionary.
-        - Any other exception will be also translated but with code 'Unexpected'
-        - To any exception, expected or unexpected,
-          it adds the backtrace as attribute of the dictionary.
-        """
         def traceback_info(exception):
             import traceback
             import sys
