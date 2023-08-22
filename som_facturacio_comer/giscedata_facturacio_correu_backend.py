@@ -20,7 +20,7 @@ class ReportBackendInvoiceEmail(ReportBackend):
             'polissa': self.get_polissa(cursor, uid, fra, context=context),
             'factura': report_factura_obj.get_factura(cursor, uid, fra, context=context),
             'socia': self.get_socia(cursor, uid, fra, context=context),
-            'text_legal': self.get_text_legal(cursor, uid, fra, context=context),
+            'text_correu': self.get_text_correu(cursor, uid, fra, context=context),
             'lang': fra.partner_id.lang,
         }
         return data
@@ -70,7 +70,7 @@ class ReportBackendInvoiceEmail(ReportBackend):
 
         return data
 
-    def get_text_legal(self, cursor, uid, fra, context=None):
+    def get_text_correu(self, cursor, uid, fra, context=None):
         def render(text_to_render, object_):
             templ = Template(text_to_render)
             return templ.render_unicode(
