@@ -493,6 +493,7 @@ class GiscedataPolissa(osv.osv):
             context = {}
         acg_obj = self.pool.get('giscedata.autoconsum.generador')
         autoconsum_ids = []
+
         generador_ids = acg_obj.search(cursor, uid, [('tipus_installacio', '=', args[0][2])], context=context)
         ac_ids = acg_obj.read(cursor, uid, generador_ids, ['autoconsum_id'], context=context)
         for ac_id in ac_ids:
