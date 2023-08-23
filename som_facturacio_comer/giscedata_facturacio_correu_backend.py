@@ -13,8 +13,6 @@ class ReportBackendInvoiceEmail(ReportBackend):
         if context is None:
             context = {}
 
-        report_factura_obj = self.pool.get('giscedata.facturacio.factura.report.v2')
-
         data = {
             'comerci': self.get_comerci(cursor, uid, fra, context=context),
             'polissa': self.get_polissa(cursor, uid, fra, context=context),
@@ -23,6 +21,7 @@ class ReportBackendInvoiceEmail(ReportBackend):
             'text_correu': self.get_text_correu(cursor, uid, fra, context=context),
             'lang': fra.partner_id.lang,
         }
+
         return data
 
     def get_comerci(self, cursor, uid, fra, context=None):
@@ -38,7 +37,6 @@ class ReportBackendInvoiceEmail(ReportBackend):
             data['logo'] = "http://www.somenergia.coop/wp-content/uploads/2014/07/logo.png"
 
         return data
-
 
     def get_socia(self, cursor, uid, fra, context=None):
         if context is None:
