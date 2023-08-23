@@ -698,7 +698,13 @@ CONTRACT_TYPES = dict(TABLA_9)
         </div>
         <div class="modi_condicions">
             <p>
-               ${_(u"Al contractar s’accepten aquestes Condicions Particulars i les Condicions Generals, que es poden consultar a les pàgines següents. Si ens cal modificar-les, a la clàusula 9 de les Condicions Generals s’explica el procediment que seguirem. En cas que hi hagi alguna discrepància, prevaldrà el que estigui previst en aquestes Condicions Particulars.")}
+               ${_(u"Al contractar s’accepten aquestes ")}
+                %if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:
+                    ${_(u"Condicions Particulars, Específiques i les Condicions Generals,")}
+                %else:
+                    ${_(u"Condicions Particulars i les Condicions Generals")}
+                %endif
+               ${_(u"que es poden consultar a les pàgines següents. Si ens cal modificar-les, a la clàusula 9 de les Condicions Generals s’explica el procediment que seguirem. En cas que hi hagi alguna discrepància, prevaldrà el que estigui previst en aquestes Condicions Particulars.")}
             </p>
         </div>
         <div id="footer">
