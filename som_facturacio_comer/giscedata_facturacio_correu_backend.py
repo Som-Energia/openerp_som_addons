@@ -72,7 +72,7 @@ class ReportBackendInvoiceEmail(ReportBackend):
             context = {}
 
         report_o = self.pool.get('giscedata.facturacio.factura.report.v2')
-        data = report_o.get_polissa(cursor, uid, fra, context=context)
+        data = report_o.get_factura(cursor, uid, fra, context=context)
 
         data['isTariffChange'] = self._isTariffChange(cursor, uid, fra, context=context)
 
