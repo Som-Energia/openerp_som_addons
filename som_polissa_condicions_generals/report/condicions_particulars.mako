@@ -667,7 +667,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                 %else:
                     ${_(u"Tots els preus que apareixen en aquest contracte")}
                 %endif
-                &nbsp;${_(u"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent en cada moment per a cada tipus de contracte.")}
+                &nbsp;${_(u"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent en cada moment per a cada tipus de contracte sense perjudici de les exempcions o bonificacions que puguin ser d'aplicació.")}
             </div>
         </div>
             <%
@@ -693,10 +693,6 @@ CONTRACT_TYPES = dict(TABLA_9)
             <h5> ${_("DADES DE PAGAMENT")} </h5>
             <% iban = polissa.bank and polissa.bank.printable_iban[5:] or '' %>
             <div class="dades_pagament">
-                <div class="titular">
-                    <span class="nif"><b>${_(u"NIF: ")}</b> ${nif}</span>
-                </div>
-                </br>
                 <div class="iban"><b>${_(u"Nº de compte bancari (IBAN): **** **** **** ****")}</b> &nbsp ${iban[-4:]}</div>
             </div>
         </div>
