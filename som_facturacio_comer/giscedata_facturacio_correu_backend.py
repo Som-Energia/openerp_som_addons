@@ -18,7 +18,7 @@ class ReportBackendInvoiceEmail(ReportBackend):
         data = {
             'comerci': self.get_comerci(cursor, uid, fra, context=context),
             'polissa': self.get_polissa(cursor, uid, fra, context=context),
-            'factura': report_factura_obj.get_factura(cursor, uid, fra, context=context),
+            'factura': self.get_factura(cursor, uid, fra, context=context),
             'socia': self.get_socia(cursor, uid, fra, context=context),
             'text_correu': self.get_text_correu(cursor, uid, fra, context=context),
             'lang': fra.partner_id.lang,
@@ -47,6 +47,34 @@ class ReportBackendInvoiceEmail(ReportBackend):
             'socia': fra.polissa_id.soci.id,
             'energetica': fra.polissa_id.soci.id == 38039
         }
+
+        return data
+
+    def _isTariffChange(self, cursor, uid, fra, context=None):
+        ppu = {}
+        for line in fra.linies_energia:
+            if line.name in ppu:
+                if line.price_unit != ppu[line.name]:
+                    return True
+            else:
+                ppu[line.name] = line.price_unit
+        ppu = {}
+        for line in fra.linies_potencia:
+            if line.name in ppu:
+                if line.price_unit != ppu[line.name]:
+                    return True
+            else:
+                ppu[line.name] = line.price_unit
+        return False
+
+    def get_factura(self, cursor, uid, fra, context=None):
+        if context is None:
+            context = {}
+
+        report_o = self.pool.get('giscedata.facturacio.factura.report.v2')
+        data = report_o.get_polissa(cursor, uid, fra, context=context)
+
+        data['isTariffChange'] = self._isTariffChange(cursor, uid, fra, context=context)
 
         return data
 
