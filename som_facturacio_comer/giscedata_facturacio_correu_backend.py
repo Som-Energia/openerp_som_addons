@@ -24,6 +24,15 @@ class ReportBackendInvoiceEmail(ReportBackend):
 
         return data
 
+    def get_lang(self, cursor, uid, record_id, context=None):
+        if context is None:
+            context = {}
+
+        fact_o = self.pool.get('giscedata.facturacio.factura')
+        fact_br = fact_o.browse(cursor, uid, record_id, context=context)
+
+        return fact_br.partner_id.lang
+
     def get_comerci(self, cursor, uid, fra, context=None):
         if context is None:
             context = {}
