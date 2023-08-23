@@ -3,7 +3,7 @@
     <data noupdate="1">
         <record model="poweremail.templates" id="email_canvi_tarifa_a_indexada">
             <field name="name">Email canvi tarifa a indexada</field>
-            <field name="object_name" model="ir.model" search="[('name', '=', 'giscedata.polissa')]"/>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.polissa')]"/>
             <field eval="0" name="save_to_drafts"/>
             <field name="model_int_name">giscedata.polissa</field>
             <field name="def_to">${object.direccio_pagament.email},${object.direccio_notificacio.email}</field>
@@ -30,7 +30,7 @@
     	</record>
         <record model="poweremail.templates" id="email_activacio_tarifa_indexada">
             <field name="name">Email activació tarifa indexada</field>
-            <field name="object_name" model="ir.model" search="[('name', '=', 'giscedata.polissa')]"/>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.polissa')]"/>
             <field eval="0" name="save_to_drafts"/>
             <field name="model_int_name">giscedata.polissa</field>
             <field name="def_to">${object.direccio_pagament.email},${object.direccio_notificacio.email}</field>
