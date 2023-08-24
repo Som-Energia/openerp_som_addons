@@ -62,9 +62,6 @@ class GiscedataPolissa(osv.osv):
             ('data_inici', '>=', data_inici_bat_pol),
             ('state', 'in', ('paid', 'open')),
             ('type', 'in', ('out_invoice', 'out_refund')),
-            '|',
-            ('data_final', '<=', data_final),
-            ('data_final', '=', False)
         ], context=context
                                          )
         return factura_ids
