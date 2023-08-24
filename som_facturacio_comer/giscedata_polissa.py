@@ -23,7 +23,10 @@ class GiscedataPolissa(osv.osv):
             ['bateria_id']
         ).where(dmn)
         bat_id = bat_id[0]['bateria_id']
-        data_inici_bat_pol = bat_polissa_obj.read(cursor, uid, bat_id, ['data_inici'], context=context)['data_inici']
+        bat_pol_id = bat_polissa_obj.search(
+            cursor, uid, [('bateria_id', '=', bat_id), ('polissa_id', '=', ids[0])], context=context
+        )[0]
+        data_inici_bat_pol = bat_polissa_obj.read(cursor, uid, bat_pol_id, ['data_inici'], context=context)['data_inici']
 
         factura_ids = factura_obj.search(cursor, uid, [
             ('polissa_id', '=', ids[0]),
@@ -31,9 +34,6 @@ class GiscedataPolissa(osv.osv):
             ('data_inici', '>=', data_inici_bat_pol),
             ('state', 'in', ('paid', 'open')),
             ('type', 'in', ('out_invoice', 'out_refund')),
-            '|',
-            ('data_final', '<=', data_final),
-            ('data_final', '=', False)
         ], context=context
                                          )
         return factura_ids
