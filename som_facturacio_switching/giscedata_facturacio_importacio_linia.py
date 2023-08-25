@@ -152,7 +152,7 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
         f1_ids = []
         days_to_check = data.get('days_to_check', 30)
         date_to_check = (datetime.today() - timedelta(days_to_check)).strftime('%Y-%m-%d')
-        for error_code in data['error_code']:
+        for error_code in data['error_codes']:
             code = error_code.get('code', '')
             text = error_code.get('text', '')
             _ids = self.search(cursor, uid, [
