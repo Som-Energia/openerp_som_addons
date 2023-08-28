@@ -131,7 +131,7 @@ class PowersmsSendWizard(osv.osv_memory):
                     ) or _('Report')
                 ) + "." + format,
                 'description': vals['psms_body_text'] or _("No Description"),
-                'res_model': 'powersms.mailbox',
+                'res_model': 'powersms.smsbox',
                 'res_id': sms_id
             }
             attachment_id = attach_obj.create(cr, uid, attach_vals, context=context)
