@@ -126,12 +126,12 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
             )
         )
 
-        data['error_code'] = []
+        data['error_codes'] = []
         for err_id in err_ids:
             e_data = errors_obj.read(
                 cursor, uid, err_id, ['code', 'text'], context=context
             )
-            data['error_code'].append({
+            data['error_codes'].append({
                 'code': e_data['code'],
                 'text': e_data['text'] if e_data['text'] else '',
             })
