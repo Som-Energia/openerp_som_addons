@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <record model="res.config" id="som_flag_change_tariff_switch" forcecreate="1">
+            <field name="name">som_flag_change_tariff_switch</field>
+            <field name="value">0</field>
+            <field name="description">Permet el canvi de tarifa mode switching des de OV</field>
+        </record>
+    </data>
+</openerp>

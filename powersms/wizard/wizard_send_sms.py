@@ -1,5 +1,6 @@
 from osv import osv, fields
 import tools
+from tools.translate import _
 
 class PowersmsSendWizard(osv.osv_memory):
     _name = 'powersms.send.wizard'
@@ -90,6 +91,52 @@ class PowersmsSendWizard(osv.osv_memory):
 
         return {'type': 'ir.actions.act_window_close'}
 
+    def get_end_value(self, cr, uid, src_rec_id, value, template, context=None):
+        if context is None:
+            context = {}
+        if len(context['src_rec_ids']) > 1:  # Multiple sms: Gets value from the template
+            return self.get_value(cr, uid, template, value, context, src_rec_id)
+        else:
+            return value
+
+    def create_report_attachment(self, cr, uid, template, vals, screen_vals, sms_id, report_record_ids, src_rec_id, context=None):
+        import netsvc
+        import base64
+        if context is None:
+            context = {}
+
+        ir_act_rep_xml_obj = self.pool.get('ir.actions.report.xml')
+        ir_model_obj = self.pool.get('ir.model')
+        attach_obj = self.pool.get('ir.attachment')
+
+        if template.report_template:
+            reportname_read = ir_act_rep_xml_obj.read(
+                cr, uid, template.report_template.id, ['report_name'], context=context
+            )['report_name']
+            reportname = 'report.' + reportname_read
+            data = {}
+            data['model'] = ir_model_obj.browse(cr, uid, screen_vals['rel_model'], context=context).model
+            service = netsvc.LocalService(reportname)
+            if template.report_template.context:
+                context.update(eval(template.report_template.context))
+
+            (result, format) = service.create(cr, uid, [src_rec_id], data, context=context)
+
+            attach_vals = {
+                'name': _('%s (Email Attachment)') % tools.ustr(template.name),
+                'datas': base64.b64encode(result),
+                'datas_fname': tools.ustr(
+                    self.get_end_value(
+                        cr, uid, src_rec_id, reportname, template, context=context
+                    ) or _('Report')
+                ) + "." + format,
+                'description': vals['psms_body_text'] or _("No Description"),
+                'res_model': 'powersms.smsbox',
+                'res_id': sms_id
+            }
+            attachment_id = attach_obj.create(cr, uid, attach_vals, context=context)
+            return attachment_id
+        return False
 
     def save_to_smsbox(self, cr, uid, ids, context=None):
         model_obj = self.pool.get('ir.model')
@@ -110,18 +157,20 @@ class PowersmsSendWizard(osv.osv_memory):
         report_record_ids = context['src_rec_ids'][:]
         create_empty_number = context.get('create_empty_number', True)
         pca_obj = self.pool.get('powersms.core_accounts')
+        sms_box_obj = self.pool.get('powersms.smsbox')
 
-        for id in report_record_ids:
+        for rec_id in report_record_ids:
+            attachment_ids = []
             accounts = pca_obj.read(cr, uid, screen_vals['account'], context=context)
             psms_to = []
-            phone_numbers = self.get_value(cr, uid, template, getattr(template, 'def_to'), context, id)
+            phone_numbers = self.get_value(cr, uid, template, getattr(template, 'def_to'), context, rec_id)
             for number in list(set(map(str.strip,str(phone_numbers).split(',')))):
-                if pca_obj.check_numbers(cr, uid, id, number):
+                if pca_obj.check_numbers(cr, uid, rec_id, number):
                     psms_to.append(number)
 
             vals = {
                 'psms_from': screen_vals['from'],
-                'psms_body_text': get_end_value(id, screen_vals['body_text']),
+                'psms_body_text': get_end_value(rec_id, screen_vals['body_text']),
                 'psms_account_id': screen_vals['account'],
                 'state':'na',
             }
@@ -135,22 +184,33 @@ class PowersmsSendWizard(osv.osv_memory):
                 vals.update({'psms_to': number})
                 #Create partly the mail and later update attachments
                 ctx = context.copy()
-                ctx.update({'src_rec_id': id})
-                sms_id = self.pool.get('powersms.smsbox').create(cr, uid, vals, ctx)
+                ctx.update({'src_rec_id': rec_id})
+                sms_id = sms_box_obj.create(cr, uid, vals, ctx)
                 sms_ids.append(sms_id)
 
                # Ensure report is rendered using template's language. If not found, user's launguage is used.
                 ctx = context.copy()
                 if template.lang:
-                    ctx['lang'] = self.get_value(cr, uid, template, template.lang, context, id)
-                    lang = self.get_value(cr, uid, template, template.lang, context, id)
+                    ctx['lang'] = self.get_value(cr, uid, template, template.lang, context, rec_id)
+                    lang = self.get_value(cr, uid, template, template.lang, context, rec_id)
                     if len(self.pool.get('res.lang').search(cr, uid, [('name','=',lang)], context = context)):
                         ctx['lang'] = lang
                 if not ctx.get('lang', False) or ctx['lang'] == 'False':
                     ctx['lang'] = self.pool.get('res.users').read(cr, uid, uid, ['context_lang'], context)['context_lang']
 
-        return sms_ids
+                attachment_id = self.create_report_attachment(
+                    cr, uid, template, vals, screen_vals, sms_id, report_record_ids, rec_id, context=ctx
+                )
+                if attachment_id:
+                    attachment_ids.append(attachment_id)
 
+                if attachment_ids:
+                    mailbox_vals = {
+                        'pem_attachments_ids': [[6, 0, attachment_ids]]
+                    }
+                    sms_box_obj.write(cr, uid, sms_id, mailbox_vals, context=context)
+
+        return sms_ids
 
     _columns = {
         'ref_template':fields.many2one('powersms.templates','Template',readonly=True),

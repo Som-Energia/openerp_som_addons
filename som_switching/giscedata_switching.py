@@ -282,6 +282,14 @@ class GiscedataSwitching(osv.osv):
 
         return res
 
+    def escull_tarifa_comer(self, cursor, uid, ids, tarifa_atr, context=None):
+        if context is None:
+            context = {}
+        context['tarifa_atr'] = tarifa_atr
+        return super(GiscedataSwitching, self).escull_tarifa_comer(
+            cursor, uid, ids, tarifa_atr, context=context
+        )
+
     _columns = {
         'user_observations': fields.text('Observaciones del usuario'),
         'last_observation_line': fields.function(

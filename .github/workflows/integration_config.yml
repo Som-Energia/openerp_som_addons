@@ -47,10 +47,24 @@ jobs:
         ports:
           - 27017:27017
     steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        if: matrix.python-version != '2.7'
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Set up Python 2.7
+        if: matrix.python-version == '2.7'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python2.7 python2.7-dev
+          sudo ln -sf python2.7 /usr/bin/python
+          curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
+          python get-pip.py
+          rm get-pip.py
+          pip install --upgrade pip setuptools wheel
       - name: Download required repositories
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
@@ -59,7 +73,6 @@ jobs:
           ssh-add - <<< '${{ secrets.DEPLOY_KEY }}'
           ssh-add - <<< '${{ secrets.DEPLOY_KEY_LIBFACTURACIOATR }}'
           export ROOT_DIR_SRC=${{github.workspace}}/..
-          git clone --depth 1 git@github.com:Som-Energia/openerp_som_addons.git -b ${{ github.head_ref }} $ROOT_DIR_SRC/openerp_som_addons
           git clone --depth 1 https://$GITHUB_TOKEN@github.com/gisce/erp.git -b developer $ROOT_DIR_SRC/erp
           git clone --depth 1 git@github.com:Som-Energia/somenergia-generationkwh.git $ROOT_DIR_SRC/somenergia-generationkwh
           git clone --depth 1 https://github.com/Som-Energia/plantmeter.git $ROOT_DIR_SRC/plantmeter

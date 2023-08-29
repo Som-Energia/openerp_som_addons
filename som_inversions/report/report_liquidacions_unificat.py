@@ -27,12 +27,13 @@ class ResPartner(osv.osv):
         invoices = inv_obj.browse(cursor, uid, inv_ids)
         data = {}
         data['invoices'] = {}
-
+        data['total_amount_untaxed'] = 0
         for invoice in invoices:
             data['invoices'][invoice.origin] = {}
             data['invoices'][invoice.origin]['number'] = invoice.number
             data['invoices'][invoice.origin]['name'] = invoice.origin
             data['invoices'][invoice.origin]['amount_untaxed'] = invoice.amount_untaxed
+            data['total_amount_untaxed'] += invoice.amount_untaxed
             data['invoices'][invoice.origin]['tax_lines'] = []
             data['invoices'][invoice.origin]['lines'] = []
             for tax in invoice.tax_line:

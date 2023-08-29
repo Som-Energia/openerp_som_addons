@@ -57,7 +57,7 @@ autoconsum_text = TABLA_113_dict[cd.autoconsum] if cd.autoconsum in TABLA_113_di
                     ${_(u"Peatge de transport i distribució:")} <span style="font-weight: bold;">${cd.tariff}</span> <br />
                     ${_(u"Segment tarifari:")} <span style="font-weight: bold;">${cd.segment_tariff}</span> <br />
                     % if cd.invoicing_mode == 'index':
-                        ${_(u"Tarifa comercialitzadora:")} <span style="font-weight: bold;">${cd.pricelist}</span> <br />
+                        ${_(u"Tarifa:")} <span style="font-weight: bold;">${cd.pricelist}</span> <br />
                     % endif
                     ${_(u"CUPS:")} <span style="font-weight: bold;">${cd.cups}</span> <br />
                     ${_(u"Comptador telegestionat:")} <span style="font-weight: bold;">${cd.remote_managed_meter and _(u'Sí') or _(u'No')}</span> <br />

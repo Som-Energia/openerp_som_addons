@@ -1,5 +1,7 @@
+from __future__ import absolute_import, unicode_literals
 import netsvc
 import os
+from six import string_types
 from osv import osv, fields
 import pooler
 import re
@@ -9,6 +11,7 @@ from tools.config import config
 import tools
 from oorq.decorators import job
 import six
+import json
 
 LOGGER = netsvc.Logger()
 
@@ -37,7 +40,7 @@ class PowersmsSMSbox(osv.osv):
         ctx['meta'] = {}
         if vals:
             init_meta = vals.get('meta', {}) or {}
-            if isinstance(init_meta, basestring):
+            if isinstance(init_meta, string_types):
                 init_meta = json.loads(init_meta)
         else:
             init_meta = {}
@@ -155,12 +158,11 @@ class PowersmsSMSbox(osv.osv):
         """
         try:
             self.send_all_sms(cursor, user, context=context)
-        except Exception, e:
+        except Exception as e:
             LOGGER.notifyChannel(
                                  _("Power SMS"),
                                  netsvc.LOG_ERROR,
                                  _("Error sending sms: %s") % str(e))
-
 
     def send_all_sms(self, cr, uid, ids=None, context=None):
         if ids is None:
@@ -201,6 +203,19 @@ class PowersmsSMSbox(osv.osv):
     def async_send_this_sms(self, cr, uid, ids=None, context=None):
         self.send_this_sms(cr, uid, ids, context)
 
+    def _get_attatchment_payload(self, cursor, uid, attachment_ids, context=None):
+        if not attachment_ids:
+            return {}
+
+        if not isinstance(attachment_ids, (tuple, list)):
+            attachment_ids = [attachment_ids]
+
+        attc_obj = self.pool.get('ir.attachment')
+        return {
+            attc['datas_fname']: attc['datas']
+            for attc in attc_obj.read(cursor, uid, attachment_ids, ['datas_fname', 'datas'], context=context)
+        }
+
     def send_this_sms(self, cr, uid, ids=None, context=None):
         if ids is None:
             ids = []
@@ -211,15 +226,21 @@ class PowersmsSMSbox(osv.osv):
         core_obj = self.pool.get('powersms.core_accounts')
         for id in ids:
             try:
+                ctx = context.copy()
+                ctx['from_smsbox_id'] = id
                 values = self.read(cr, uid, id, [], context) #Values will be a dictionary of all entries in the record ref by id
+                # ids, from_name, numbers_to, body = '', payload = None, context = None
+
                 result = core_obj.send_sms(
                     cr, uid, [values['psms_account_id'][0]],
-                    values.get('psms_from', u'') or u'',
-                    values.get('psms_to', u'') or u'',
-                    values.get('psms_body_text', u'') or u'',
-                    context=context
+                    values.get('psms_from', '') or '',
+                    values.get('psms_to', '') or '',
+                    values.get('psms_body_text', '') or '',
+                    self._get_attatchment_payload(cr, uid, values.get('pem_attachments_ids'), context=context),
+                    # todo payload pem_attachments_ids read
+                    context=ctx
                 )
-                if result == True:
+                if result is True:
                     self.write(cr, uid, id, {'folder':'sent', 'state':'sent', 'date_sms':time.strftime("%Y-%m-%d %H:%M:%S")}, context)
                     self.historise(cr, uid, [id], "SMS sent successfully", context)
                 else:
@@ -300,7 +321,13 @@ class PowersmsSMSbox(osv.osv):
                             store=True),
             'reference': fields.reference('Source Object', selection=_get_models,
                                         size=128),
-            'meta': fields.text('Meta information')
+            'meta': fields.text('Meta information'),
+            'pem_attachments_ids': fields.many2many(
+                'ir.attachment',
+                'sms_attachments_rel',
+                'sms_id', 'att_id',
+                'Attachments'
+            ),
         }
 
     _defaults = {

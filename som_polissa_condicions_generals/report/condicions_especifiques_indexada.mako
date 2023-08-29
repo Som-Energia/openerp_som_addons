@@ -32,7 +32,7 @@
     <p style="padding-left: 40px"><strong> Import del terme energia = Suma horària (kWh Energia Activa entrant </strong><em><strong>h</strong></em><sub><em><strong>i</strong></em></sub><em><strong> </strong></em><strong>* PH)</strong></p>
     <p>Sent <em><strong>h</strong></em><sub><em><strong>i </strong></em></sub>cada una de les hores del període de facturació en qüestió.</p>
     <p>Sent PH el preu horari de l'energia calculat seguint la fórmula següent:</p>
-    <p style="padding-left: 40px"><strong>PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + K] + PTD + CA</strong></p>
+    <p style="padding-left: 40px"><strong>PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + F] + PTD + CA</strong></p>
 
     <p style="page-break-after:always;"></p>
     <br>
@@ -70,7 +70,7 @@
             <p><strong>FE</strong> = Obligació d'aportació al Fons d'Eficiència Energètica (FNEE) publicada pel Ministeri.</p>
         </li>
         <li>
-            <p><strong>K</strong> = Marge de comercialització (inclou els costos de desviament) definit a les condicions particulars del contracte.</p>
+            <p><strong>F</strong> = Franja de la cooperativa (inclou el marge per a la viabilitat de la cooperativa, més els costos dels Certificats de Garantia d’Origen 100 % renovable i els costos de les desviacions).</p>
         </li>
         <li>
             <p><strong>PTD </strong>= Cost regulat del peatge de transport i distribució establert i publicat per la CNMC i aplicat sobre el total de l'energia consumida.</p>

@@ -921,6 +921,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         periodes_a = sorted(list(set([lectura.name[-3:-1]
                             for lectura in fact.lectures_energia_ids
                             if lectura.tipus == 'activa'])))
+        pricelist = pol.llista_preu.nom_comercial or pol.llista_preu.name
         data = {
                 'start_date': pol.data_alta,
                 'renovation_date': get_renovation_date(pol.data_alta,datetime.now()),
@@ -928,7 +929,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 'cups': fact.cups_id.name,
                 'cups_direction': fact.cups_id.direccio,
                 'tariff': pol.tarifa.name,
-                'pricelist': pol.llista_preu.name,
+                'pricelist': pricelist,
                 'invoicing_mode': pol.mode_facturacio,
                 'remote_managed_meter': pol.tg in ['1','3'],
                 'power': pol.potencia,
@@ -2232,7 +2233,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'gkwh_energy_lines_data': gkwh_energy_lines_data,
             'header_multi': 3*(len(energy_lines_data)+len(gkwh_energy_lines_data))+(1 if mag_line_data else 0),
             'showing_periods': self.get_matrix_show_periods(pol),
-            'mag_line_data': mag_line_data
+            'mag_line_data': mag_line_data,
+            'indexed': pol.mode_facturacio == 'index',
         }
         return data
 
