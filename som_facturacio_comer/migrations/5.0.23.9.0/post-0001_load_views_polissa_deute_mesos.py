@@ -16,7 +16,6 @@ def up(cursor, installed_version):
     logger.info("Updating XML giscedata_polissa_view.xml")
     record_names = [
         'view_giscedata_polissa_deute_som_tree',
-        'view_giscedata_polissa_pending_som_form',
         'action_giscedata_polissa_deute_som_tree'
     ]
     load_data_records(cursor, 'som_facturacio_comer', 'giscedata_polissa_view.xml', record_names)
