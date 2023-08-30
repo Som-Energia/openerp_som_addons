@@ -39,7 +39,6 @@
                             <field name="observacio_suspesa"/>
                             <field name="resum_observacions_comptables"/>
                             <field name="data_ultima_factura" />
-                            <field name="mesos_factura_mes_recent_impagada" />
                         </tree>
                     </field>
                 </record>
@@ -69,17 +68,6 @@
                             <page string="Comptabilitat">
                                 <field name="observacions_comptables" select="1"/>
                             </page>
-                        </xpath>
-                    </field>
-                </record>
-                <record model="ir.ui.view" id="view_giscedata_polissa_pending_som_form">
-                    <field name="name">giscedata_polissa_pending_som.form</field>
-                    <field name="model">giscedata.polissa</field>
-                    <field name="inherit_id" ref="giscedata_facturacio_impagat_comer.view_polissa_pending_form"/>
-                    <field name="type">form</field>
-                    <field name="arch" type="xml">
-                        <xpath expr="//field[@name='unpaid_invoices']" position="after">
-                            <field name="mesos_factura_mes_recent_impagada" />
                         </xpath>
                     </field>
                 </record>
