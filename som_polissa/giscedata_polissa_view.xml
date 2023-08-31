@@ -287,7 +287,7 @@
         <!-- Canviem el nom de Bateria Virtual a Flux Solar -->
         <record model="ir.ui.view" id="view_som_bateries_polissa_tree_listat">
             <field name="name">som.bateria.virtual.polissa.tree.llistat</field>
-            <field name="model">giscedata.polissa</field>
+            <field name="model">giscedata.bateria.virtual.polissa</field>
             <field name="inherit_id" ref="giscedata_facturacio_bateria_virtual.view_bateries_polissa_tree_listat"/>
             <field name="type">tree</field>
             <field name="arch" type="xml">
