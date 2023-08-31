@@ -711,17 +711,18 @@ CONTRACT_TYPES = dict(TABLA_9)
             <div class="city_date">
             <%
                 data_firma =  datetime.today()
-                imd_obj = self.pool.get('ir.model.data')
+                imd_obj = obj.pool.get('ir.model.data')
+                polissa_categ_obj = obj.pool.get('giscedata.polissa.category')
                 polissa_categ_id = imd_obj.get_object_reference(
-                    self.cursor, self.uid, 'som_polissa', 'categ_tarifa_empresa'
+                    cursor, uid, 'som_polissa', 'categ_tarifa_empresa'
                 )[1]
-
+                polissa_categ = polissa_categ_obj.browse(cursor, uid, polissa_categ_id)
             %>
                 ${company.partner_id.address[0]['city']},
                 ${_(u"a {0}".format(localize_period(data_firma, lang)))}
             </div>
             <div class="acceptacio_digital">
-                % if polissa_categ_id in polissa.category_id:
+                % if polissa_categ in polissa.category_id:
                     <div><b>${_(u"La contractant:")}</b></div>
                 % else:
                     <div><b>${_(u"La persona clienta:")}</b></div>
@@ -729,7 +730,7 @@ CONTRACT_TYPES = dict(TABLA_9)
 
                 <img src="${addons_path}/som_polissa_condicions_generals/report/assets/acceptacio_digital.png"/>
 
-                % if polissa_categ_id in polissa.category_id:
+                % if polissa_categ in polissa.category_id:
                     <div class="acceptacio_digital_txt">${_(u"Signat digitalment")}</div>
                 % else:
                     <div class="acceptacio_digital_txt">${_(u"Acceptat digitalment via formulari web")}</div>
