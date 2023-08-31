@@ -16,7 +16,8 @@ def up(cursor, installed_version):
     ##UPDATAR UNA PART DE L'XML (POSAR LA ID)##
     logger.info("Updating XMLs")
     list_of_records = [
-        "view_som_giscedata_polissa_form"
+        "view_som_giscedata_polissa_form",
+        "view_som_bateries_polissa_tree_listat"
     ]
     load_data_records(
         cursor, 'som_polissa', 'giscedata_polissa_view.xml', list_of_records, mode='update'
