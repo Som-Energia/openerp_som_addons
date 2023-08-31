@@ -289,7 +289,7 @@
             <field name="name">som.bateria.virtual.polissa.tree.llistat</field>
             <field name="model">giscedata.polissa</field>
             <field name="inherit_id" ref="giscedata_facturacio_bateria_virtual.view_bateries_polissa_tree_listat"/>
-            <field name="type">form</field>
+            <field name="type">tree</field>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='bateria_id']" position="replace">
                     <field name="bateria_id" string="Flux Solar" select="2"/>
