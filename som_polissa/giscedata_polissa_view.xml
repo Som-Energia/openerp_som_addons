@@ -291,8 +291,9 @@
             <field name="inherit_id" ref="giscedata_facturacio_bateria_virtual.view_bateries_polissa_tree_listat"/>
             <field name="type">tree</field>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='bateria_id']" position="replace">
-                    <field name="bateria_id" string="Flux Solar" select="2"/>
+                <xpath expr="//field[@name='bateria_id']" position="attributes">
+                    <attribute name="string">Flux Solar</attribute>
+                    <attribute name="select">2</attribute>
                 </xpath>
             </field>
         </record>
