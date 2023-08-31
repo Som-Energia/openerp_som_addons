@@ -717,7 +717,6 @@ CONTRACT_TYPES = dict(TABLA_9)
                     cursor, uid, 'som_polissa', 'categ_tarifa_empresa'
                 )[1]
                 polissa_categ = polissa_categ_obj.browse(cursor, uid, polissa_categ_id)
-
             %>
                 ${company.partner_id.address[0]['city']},
                 ${_(u"a {0}".format(localize_period(data_firma, lang)))}
