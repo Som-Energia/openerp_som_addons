@@ -711,9 +711,9 @@ CONTRACT_TYPES = dict(TABLA_9)
             <div class="city_date">
             <%
                 data_firma =  datetime.today()
-                imd_obj = self.pool.get('ir.model.data')
+                imd_obj = obj.pool.get('ir.model.data')
                 polissa_categ_id = imd_obj.get_object_reference(
-                    self.cursor, self.uid, 'som_polissa', 'categ_tarifa_empresa'
+                    cursor, uid, 'som_polissa', 'categ_tarifa_empresa'
                 )[1]
 
             %>
