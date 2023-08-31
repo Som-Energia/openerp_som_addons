@@ -28,5 +28,9 @@
             <field name="name">Pobresa Energètica</field>
             <field name="code">POBRESA</field>
         </record>
+        <record id="categ_tarifa_empresa" model="giscedata.polissa.category">
+            <field name="name">Tarifa Empresa</field>
+            <field name="code">TE </field>
+        </record>
     </data>
 </openerp>
