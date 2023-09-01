@@ -723,7 +723,7 @@ CONTRACT_TYPES = dict(TABLA_9)
             </div>
             <div class="acceptacio_digital">
                 % if polissa_categ in polissa.category_id:
-                    <div><b>${_(u"La contractant:")}</b></div>
+                    <div><b>${_(u"La contractant")}</b></div>
                 % else:
                     <div><b>${_(u"La persona clienta:")}</b></div>
                 % endif

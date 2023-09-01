@@ -676,8 +676,8 @@ msgid "a {0}"
 msgstr "a {0}"
 
 #: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:726
-msgid "La contractant:"
-msgstr "La contratante:"
+msgid "La contractant"
+msgstr "La contratante"
 
 #: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:728
 msgid "La persona clienta:"

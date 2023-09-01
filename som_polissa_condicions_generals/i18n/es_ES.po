@@ -631,8 +631,8 @@ msgid "a {0}"
 msgstr "a {0}"
 
 #: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:726
-msgid "La contractant:"
-msgstr "La contratante:"
+msgid "La contractant"
+msgstr "La contratante"
 
 #: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:728
 #: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:621
