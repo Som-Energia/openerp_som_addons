@@ -27,6 +27,9 @@
     % if invs.total_boe17_2021 != 0:
         <tr><td>${_(u"Descompte sobre els càrrecs (RDL 17/2021)")}</td><td class="e">${"%s &euro;" % formatLang(invs.total_boe17_2021)}</td></tr>
     % endif
+    % if invs.has_flux_solar_discount:
+        <tr><td>${_(u"Descompte per Flux Solar")}</td><td class="e">${"%s &euro;" % formatLang(invs.flux_solar_discount)}</td></tr>
+    % endif
     % if (invs.total_altres + invs.total_bosocial) != 0:
         <tr><td>${_(u"Altres conceptes")}</td><td class="e">${"%s &euro;" % formatLang(invs.total_altres + invs.total_bosocial)}</td></tr>
     % endif

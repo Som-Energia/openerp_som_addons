@@ -1660,7 +1660,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         donatiu_lines = [l for l in fact.linia_ids if l.tipus in 'altres'
                         and l.invoice_line_id.product_id.code == 'DN01']
         altres_lines = [l for l in fact.linia_ids if l.tipus in ('altres', 'cobrament')
-                        and l.invoice_line_id.product_id.code not in ('DN01', 'BS01', 'RBS')]
+                        and l.invoice_line_id.product_id.code not in ('DN01', 'BS01', 'RBS', 'PBV')]
 
         extra_energy_lines = self.get_extra_energy_lines(fact, pol)
 
@@ -1710,6 +1710,12 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         bosocial2023_lines = [l for l in fact.linia_ids if l.tipus in 'altres'
                              and l.invoice_line_id.product_id.code == 'RBS']
         data['total_bosocial2023'] = sum([l.price_subtotal for l in bosocial2023_lines])
+
+        flux_lines = [l for l in fact.linia_ids if l.tipus in ('altres', 'cobrament')
+                     and l.invoice_line_id.product_id.code == 'PBV']
+
+        data['has_flux_solar_discount'] = len(flux_lines) > 0
+        data['flux_solar_discount'] = sum([l.price_subtotal for l in flux_lines])
         return data
 
     def get_component_partner_info_data(self, fact, pol):
