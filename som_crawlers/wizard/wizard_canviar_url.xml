@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data noupdate="0">
+        <record model="ir.ui.view" id="view_wizard_canviar_contrasenya_form">
+            <field name="name">wizard.canviar.contrasenya.form</field>
+            <field name="model">wizard.canviar.contrasenya</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Canviar contrasenya">
+                    <group col="4" colspan="4">
+                        <field name="contrasenya" string="Nova contrasenya" colspan="4" width="250"/>
+                    </group>
+                    <group>
+                        <button special="cancel" string="Cancel·lar" icon="gtk-cancel"/>
+                        <button name="canviar_contrasenya" type="object" icon="gtk-ok" string="Canviar"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_canviar_contrasenya">
+            <field name="name">Canviar contrasenya</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.canviar.contrasenya</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_canviar_contrasenya_form"/>
+        </record>
+        <record id="values_canviar_contrasenya_form" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Canviar contrasenya</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">som.crawlers.config</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_canviar_contrasenya'))"/>
+        </record>
+    </data>
+</openerp>

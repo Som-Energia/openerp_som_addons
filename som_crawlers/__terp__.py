@@ -27,6 +27,7 @@
         "wizard/wizard_canviar_dies_de_marge.xml",
         "wizard/wizard_canviar_usuari.xml",
         "wizard/wizard_canviar_contrasenya.xml",
+        "wizard/wizard_change_field_value.xml",
         "security/crawlers_security.xml",
         "security/ir.model.access.csv",
     ],
