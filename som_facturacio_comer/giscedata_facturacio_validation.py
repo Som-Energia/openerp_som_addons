@@ -183,5 +183,44 @@ class GiscedataFacturacioValidationValidator(osv.osv):
         return super(GiscedataFacturacioValidationValidator,
             self).check_consume_by_amount(cursor, uid, fact, parameters)
 
+    def test_one_validation_invoice(self, cursor, uid, fact_id, validation_code, context=None):
+        if context is None:
+            context = {}
+
+        fact_obj = self.pool.get('giscedata.facturacio.factura')
+        tmpl_obj = self.pool.get('giscedata.facturacio.validation.warning.template')
+
+        search_parameters = [('code', '=', validation_code)]
+        tmpl_ids = tmpl_obj.search(cursor, uid,
+                                   search_parameters,
+                                   context={'active_test': False})
+
+        if len(tmpl_ids) != 1:
+            return {'error': 'No validation found for code {}'.format(validation_code)}
+
+        tmpl_fields = ['code', 'method', 'parameters', 'description', 'active']
+        template_vals = tmpl_obj.read(cursor, uid, tmpl_ids[0], tmpl_fields, context)
+
+        fact = fact_obj.browse(cursor, uid, fact_id)
+        vals = getattr(self, template_vals['method'])(
+            cursor, uid, fact, template_vals['parameters']
+        )
+
+        ret = {
+            'active': template_vals['active'],
+            'code': template_vals['code'],
+        }
+        if vals is not None:
+            ret.update({
+                'message': template_vals['description'].format(**vals),
+                'validation_warning': True,
+            })
+        else:
+            ret.update({
+                'message': '',
+                'validation_warning': False,
+            })
+        return ret
+
 
 GiscedataFacturacioValidationValidator()
