@@ -1434,6 +1434,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 'lloguer_lines': lloguer_lines,
                 'bosocial_lines': bosocial_lines,
                 'donatiu_lines': donatiu_lines,
+                'flux_lines': flux_lines,
                 'altres_lines': altres_lines,
                 'iese_lines': iese_lines,
                 'iva_lines': iva_lines,
