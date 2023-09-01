@@ -40,7 +40,7 @@ class WizardChangeFieldValue(osv.osv_memory):
     _columns = {
         "new_value_str": fields.char(
             "Nou valor",
-            size=64,
+            size=300,
             required=True,
         ),
         "field_to_change_label": fields.char(
