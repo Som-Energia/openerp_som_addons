@@ -20,7 +20,7 @@
                         <field name="ftp"/>
                     </group>
                     <group colspan="2" col="2" string="URLs">
-                        <field name="url_portal"/>
+                        <field name="url_portal" readonly='1'/>
                         <field name="url_upload"/>
                         <field name="filtres"/>
                     </group>

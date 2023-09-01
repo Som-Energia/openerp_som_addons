@@ -25,7 +25,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">form</field>
             <field name="domain">[]</field>
-            <field name="context">{'field_name':'url_portal', 'field_label': 'URL del portal', 'is_numeric': False}</field>
+            <field name="context">{'field_name':'url_portal', 'field_label': 'URL_del_portal', 'is_numeric': False}</field>
             <field name="target">new</field>
             <field name="view_id" ref="wizard_change_field_value_form"/>
         </record>
