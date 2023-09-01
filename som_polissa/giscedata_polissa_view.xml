@@ -145,7 +145,7 @@
             <field name="name">giscedata_polissa_cau_tree</field>
             <field name="model">giscedata.polissa</field>
             <field name="type">tree</field>
-            <field name="priority" eval="1"/>
+            <field name="priority" eval="16"/>
             <field name="arch" type="xml">
                 <tree string="Contractes per CAU" colors="red:state in ['tall', 'baixa', 'cancelada']">
                     <field name="distribuidora"/>
