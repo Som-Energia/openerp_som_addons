@@ -3,16 +3,6 @@
 import locale
 first_pass = True
 %>
-% for l in id.flux_lines:
-    <tr class= "${'last_row' if id.last_row == 'flux' else ''}">
-        % if first_pass:
-            <td class="td_first concepte_td" rowspan="${id.header_multi}">${_(u"")}</td>
-            <%first_pass = False%>
-        % endif
-        <td class="detall_td" colspan="${id.number_of_columns}">${_(u"Descompte per Flux Solar")}</td>
-        <td class="subtotal">${_(u"%s €") % formatLang(l['price_subtotal'])}</td>
-    </tr>
-% endfor
 % for l in id.bosocial_lines:
     <tr class= "${'last_row' if id.last_row == 'bosocial' else ''}">
         % if first_pass:
