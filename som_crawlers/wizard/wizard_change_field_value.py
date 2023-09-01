@@ -31,8 +31,8 @@ class WizardChangeFieldValue(osv.osv_memory):
             conf_obj.change_field_value(cursor, uid, id,
                                         field_name,
                                         field_label,
-                                        is_numeric,
                                         wizard.new_value_str,
+                                        is_numeric,
                                         context=context)
 
         return {"type": "ir.actions.act_window_close"}
@@ -42,7 +42,6 @@ class WizardChangeFieldValue(osv.osv_memory):
             "Nou valor",
             size=64,
             required=True,
-            help="La nova url",
         ),
         "field_to_change_label": fields.char(
             "Camp a modificar",
