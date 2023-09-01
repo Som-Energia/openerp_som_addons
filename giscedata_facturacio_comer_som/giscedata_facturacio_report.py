@@ -1334,6 +1334,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         lloguer_lines = []
         bosocial_lines = []
         donatiu_lines = []
+        flux_lines = []
         altres_lines = []
         for l in fact.linia_ids:
             if l.tipus in 'lloguer':
@@ -1354,7 +1355,13 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     'price_unit_multi': l.price_unit_multi,
                     'price_subtotal': l.price_subtotal,
                 })
-            if l.tipus in ('altres', 'cobrament') and l.invoice_line_id.product_id.code not in ('DN01', 'BS01', 'DESC1721', 'DESC1721ENE', 'DESC1721POT', 'RBS'):
+            if l.tipus in 'altres' and l.invoice_line_id.product_id.code == 'PBV':
+                flux_lines.append({
+                    'quantity': l.quantity,
+                    'price_unit_multi': l.price_unit_multi,
+                    'price_subtotal': l.price_subtotal,
+                })
+            if l.tipus in ('altres', 'cobrament') and l.invoice_line_id.product_id.code not in ('DN01', 'BS01', 'DESC1721', 'DESC1721ENE', 'DESC1721POT', 'RBS', 'PBV'):
                 altres_lines.append({
                     'name': l.name,
                     'price_subtotal': l.price_subtotal,
