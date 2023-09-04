@@ -183,23 +183,15 @@ class GiscedataFacturacioValidationValidator(osv.osv):
         return super(GiscedataFacturacioValidationValidator,
             self).check_consume_by_amount(cursor, uid, fact, parameters)
 
-    def test_one_validation_invoice(self, cursor, uid, fact_id, validation_code, context=None):
+    def validate_one_invoice(self, cursor, uid, fact_id, validation_id, context=None):
         if context is None:
             context = {}
 
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         tmpl_obj = self.pool.get('giscedata.facturacio.validation.warning.template')
 
-        search_parameters = [('code', '=', validation_code)]
-        tmpl_ids = tmpl_obj.search(cursor, uid,
-                                   search_parameters,
-                                   context={'active_test': False})
-
-        if len(tmpl_ids) != 1:
-            return {'error': 'No validation found for code {}'.format(validation_code)}
-
         tmpl_fields = ['code', 'method', 'parameters', 'description', 'active']
-        template_vals = tmpl_obj.read(cursor, uid, tmpl_ids[0], tmpl_fields, context)
+        template_vals = tmpl_obj.read(cursor, uid, validation_id, tmpl_fields, context)
 
         fact = fact_obj.browse(cursor, uid, fact_id)
         vals = getattr(self, template_vals['method'])(
