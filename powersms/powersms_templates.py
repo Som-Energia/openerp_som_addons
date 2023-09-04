@@ -2,7 +2,6 @@ from osv import osv, fields
 from tools.translate import _
 import tools
 from mako.template import Template as MakoTemplate
-from mako import exceptions
 
 
 class PowersmsTemplates(osv.osv):
