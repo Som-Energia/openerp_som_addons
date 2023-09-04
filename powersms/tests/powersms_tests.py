@@ -26,7 +26,7 @@ class powersms_tests(testing.OOTestCase):
             uid = txn.user
             psb = self.openerp.pool.get("powersms.smsbox")
             nsms_outbox_pre = psb.search(cursor, uid, [("folder", "=", "outbox")])
-            nsms_sent_pre = psb.search(cursor, uid, [("folder", "=", "sent")])
+            psb.search(cursor, uid, [("folder", "=", "sent")])
 
             psb.run_sms_scheduler(cursor, uid, {})
 

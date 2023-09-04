@@ -31,7 +31,10 @@ class PowersmsSendWizard(osv.osv_memory):
             ]
 
     def get_value(self, cursor, user, template, message, context=None, id=None):
-        """Gets the value of the message parsed with the content of object id (or the first 'src_rec_ids' if id is not given)"""
+        """
+        Gets the value of the message parsed with the content of object id
+        (or the first 'src_rec_ids' if id is not given)
+        """
         pwm_templ_obj = self.pool.get("powersms.templates")
         if not message:
             return ""
@@ -42,7 +45,7 @@ class PowersmsSendWizard(osv.osv_memory):
     def _get_template(self, cr, uid, context=None):
         if context is None:
             context = {}
-        if not "template_id" in context:
+        if "template_id" not in context:
             return None
         template_obj = self.pool.get("powersms.templates")
         if "template_id" in context.keys():
@@ -192,7 +195,7 @@ class PowersmsSendWizard(osv.osv_memory):
 
         for rec_id in report_record_ids:
             attachment_ids = []
-            accounts = pca_obj.read(cr, uid, screen_vals["account"], context=context)
+            pca_obj.read(cr, uid, screen_vals["account"], context=context)
             psms_to = []
             phone_numbers = self.get_value(
                 cr, uid, template, getattr(template, "def_to"), context, rec_id
@@ -221,7 +224,8 @@ class PowersmsSendWizard(osv.osv_memory):
                 sms_id = sms_box_obj.create(cr, uid, vals, ctx)
                 sms_ids.append(sms_id)
 
-                # Ensure report is rendered using template's language. If not found, user's launguage is used.
+                # Ensure report is rendered using template's language.
+                # If not found, user's launguage is used.
                 ctx = context.copy()
                 if template.lang:
                     ctx["lang"] = self.get_value(cr, uid, template, template.lang, context, rec_id)

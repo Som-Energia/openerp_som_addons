@@ -180,7 +180,7 @@ class PowersmsSMSbox(osv.osv):
         try:
             self.write(cr_tmp, uid, ids, {"state": "sending"}, context)
             cr_tmp.commit()
-        except:
+        except Exception:
             cr_tmp.rollback()
         finally:
             cr_tmp.close()
@@ -260,7 +260,7 @@ class PowersmsSMSbox(osv.osv):
                     _("Power SMS"),
                     netsvc.LOG_ERROR,
                     _(
-                        "Sending of SMS %s failed. Probable Reason: Could not login to server\nError: %s"
+                        "Sending of SMS %s failed. Probable Reason: Could not login to server\nError: %s"  # noqa: E501
                     )
                     % (id, error),
                 )

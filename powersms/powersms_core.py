@@ -42,7 +42,8 @@ class PowersmsCoreAccounts(osv.osv):
         logger = netsvc.Logger()
 
         # TODO
-        # - Check if numbers_to is a list, for the current code calls numbers_to will be one but better
+        # - Check if numbers_to is a list,
+        # for the current code calls numbers_to will be one but better
         # if we allow multiple numbers
         if not self.check_numbers(cr, uid, ids, numbers_to):
             raise Exception("Incorrect cell number: " + numbers_to)
@@ -50,7 +51,8 @@ class PowersmsCoreAccounts(osv.osv):
         # Try to send the e-mail from each allowed account
         # Only one mail is sent
         # TODO
-        # - Fix this logic, if for example we provide 3 accounts and first raise exception the other 2
+        # - Fix this logic,
+        #   if for example we provide 3 accounts and first raise exception the other 2
         #   will not be tried
         for account_id in ids:
             account = self.browse(cr, uid, account_id, context)
