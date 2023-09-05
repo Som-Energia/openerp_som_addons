@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2023-08-23 15:50+0000\n"
-"PO-Revision-Date: 2023-08-23 14:10+0000\n"
+"POT-Creation-Date: 2023-08-31 16:21+0000\n"
+"PO-Revision-Date: 2023-08-31 14:23+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -671,23 +671,31 @@ msgid ""
 "previst en aquestes Condicions Particulars."
 msgstr "que se pueden consultar en las siguientes páginas. Si es necesario modificarlas, en la cláusula 9 de las Condiciones Generales se explica el procedimiento que seguiremos. En caso de que exista alguna discrepancia, prevalecerá lo que esté previsto en estas Condiciones Particulares."
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:716
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:722
 msgid "a {0}"
 msgstr "a {0}"
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:719
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:726
+msgid "La contractant"
+msgstr "La contratante"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:728
 msgid "La persona clienta:"
 msgstr "La persona clienta:"
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:721
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:734
+msgid "Signat digitalment"
+msgstr "Firmado digitalmente"
+
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:736
 msgid "Acceptat digitalment via formulari web"
 msgstr "Aceptado digitalmente vía formulario web"
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:726
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:742
 msgid "La comercialitzadora"
 msgstr "la comercializadora"
 
-#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:737
+#: rml:som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako:753
 msgid ""
 "Aquestes Condicions Particulars estan condicionades a possibles "
 "modificacions amb la finalitat d'ajustar-les a les condicions tècniques "
