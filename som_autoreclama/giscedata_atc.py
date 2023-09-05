@@ -52,13 +52,13 @@ class GiscedataAtc(osv.osv):
             if original_sw.state != "open":
                 raise Exception(
                     _(
-                        u"S'ha intentat generar un cas ATC amb R1 029 a partir del cas ATR {} amb R1 {} no oberta!"
+                        u"S'ha intentat generar un cas ATC amb R1 029 a partir del cas ATR {} amb R1 {} no oberta!"  # noqa: E501
                     ).format(atc_id, original_sw_id)
                 )
         else:
             raise Exception(
                 _(
-                    u"S'ha intentat generar un cas ATC amb R1 029 a partir del cas ATR {} sense R1 associada!"
+                    u"S'ha intentat generar un cas ATC amb R1 029 a partir del cas ATR {} sense R1 associada!"  # noqa: E501
                 ).format(atc_id)
             )
 
@@ -134,7 +134,7 @@ class GiscedataAtc(osv.osv):
             if "orginal_sw_id" in case_data:
                 r1w_ctx["from_sw_id"] = case_data["orginal_sw_id"]
             sr1w_id = sr1w_obj.create(cursor, uid, {}, r1w_ctx)
-            r1_result = sr1w_obj.action_create_r1_case(
+            sr1w_obj.action_create_r1_case(
                 cursor, uid, [sr1w_id], r1w_ctx
             )  # create subtype R1 for example:029  # USE OLD CONTEXT!
 
