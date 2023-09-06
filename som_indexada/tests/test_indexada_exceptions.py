@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-from ..exceptions import *
+from som_indexada.exceptions import indexada_exceptions
 import unittest
 
 class IndexadaExceptionsTest(unittest.TestCase):
     def test_as_dict__IndexadaExceptionBase(self):
-        e = IndexadaException(
+        e = indexada_exceptions.IndexadaException(
             "Title",
             "Description",
         )
@@ -14,7 +14,7 @@ class IndexadaExceptionsTest(unittest.TestCase):
         ))
 
     def test_as_dict__PolissaNotActive(self):
-        e = PolissaNotActive('0018')
+        e = indexada_exceptions.PolissaNotActive('0018')
         self.assertEqual(e.to_dict(), dict(
             code="PolissaNotActive",
             error=u"Pòlissa 0018 not active",
@@ -22,7 +22,7 @@ class IndexadaExceptionsTest(unittest.TestCase):
         ))
 
     def test_as_dict__PolissaModconPending(self):
-        e = PolissaModconPending('0018')
+        e = indexada_exceptions.PolissaModconPending('0018')
         self.assertEqual(e.to_dict(), dict(
             code="PolissaModconPending",
             error=u"Pòlissa 0018 already has a pending modcon",
@@ -30,7 +30,7 @@ class IndexadaExceptionsTest(unittest.TestCase):
         ))
 
     def test_as_dict__PolissaAlreadyIndexed(self):
-        e =  PolissaAlreadyIndexed('0018')
+        e = indexada_exceptions.PolissaAlreadyIndexed('0018')
         self.assertEqual(e.to_dict(), dict(
             code="PolissaAlreadyIndexed",
             error=u"Pòlissa 0018 already indexed",
@@ -38,7 +38,7 @@ class IndexadaExceptionsTest(unittest.TestCase):
         ))
 
     def test_as_dict__PolissaSimultaneousATR(self):
-        e =  PolissaSimultaneousATR('0018')
+        e = indexada_exceptions.PolissaSimultaneousATR('0018')
         self.assertEqual(e.to_dict(), dict(
             code="PolissaSimultaneousATR",
             error=u"Pòlissa 0018 with simultaneous ATR",
