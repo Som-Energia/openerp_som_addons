@@ -11,6 +11,7 @@ Mòdul per la integració de l'oficina virtual
         "base_extended",
         "www_base",
         "som_polissa_soci",
+        "som_indexada",
         "giscedata_lectures_comer",
         "giscedata_lectures_pool",
         "giscedata_facturacio_impagat_comer",
@@ -21,6 +22,7 @@ Mòdul per la integració de l'oficina virtual
         "tests/res_partner_demo.xml",
     ],
     "update_xml":[
+        "security/ir.model.access.csv",
         "www_som_data.xml",
         "res_partner_view.xml",
         "wizard/wizard_model_list_from_file_data.xml",
