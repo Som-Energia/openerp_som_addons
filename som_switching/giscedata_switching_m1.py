@@ -15,7 +15,7 @@ class GiscedataSwitchingM1_01(osv.osv):
             })
 
         super(GiscedataSwitchingM1_01, self).config_step(
-            self, cursor, uid, ids, vals, context
+            cursor, uid, ids, vals, context
         )
 
 
