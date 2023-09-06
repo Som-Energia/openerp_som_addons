@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
 from dateutil import parser
-from www_som import exceptions
+from som_indexada.exceptions import indexada_exceptions as exceptions
 from www_som.helpers import www_entry_point
 
 from osv import osv

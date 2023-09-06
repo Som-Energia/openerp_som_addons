@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from osv import osv
-from www_som import exceptions
+from som_indexada.exceptions import indexada_exceptions as exceptions
 from decorator import decorator
 
 def www_entry_point(expected_exceptions=tuple()):
