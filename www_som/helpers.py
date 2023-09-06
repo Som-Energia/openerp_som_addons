@@ -32,7 +32,7 @@ def www_entry_point(expected_exceptions=tuple()):
     ```
 
     Expected errors should have the to_dict method that will return
-    relevant data to identify the causes of the error. 
+    relevant data to identify the causes of the error.
     """
 
     def wrapper(f, self, cursor, *args, **kwds):

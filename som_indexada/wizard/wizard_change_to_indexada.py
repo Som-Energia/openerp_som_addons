@@ -183,8 +183,8 @@ class WizardChangeToIndexada(osv.osv_memory):
         return False
 
     def validate_polissa_can_change(self, cursor, uid, polissa, change_type, only_standard_prices=False, context=None):
-
-        polissa.check_modifiable_polissa(cursor, uid, polissa.id)
+        pol_obj = self.pool.get('giscedata.polissa')
+        is_modifiable = pol_obj.check_modifiable_polissa(cursor, uid, polissa.id, context=context)
 
         if change_type == "from_period_to_index" and polissa.mode_facturacio == 'index':
             raise exceptions.PolissaAlreadyIndexed(polissa.name)
@@ -246,7 +246,7 @@ class WizardChangeToIndexada(osv.osv_memory):
         if not context:
             context = {}
 
-        self.validate_polissa_can_change(cursor, uid, polissa, change_type)
+        self.validate_polissa_can_change(cursor, uid, polissa, change_type, context=context)
         coefs = self.calculate_k_d_coeficients(
             cursor, uid) if change_type == 'from_period_to_index' else None
         new_pricelist_id = self.calculate_new_pricelist(cursor, uid, polissa, change_type)
