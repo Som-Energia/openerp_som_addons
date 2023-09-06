@@ -39,7 +39,7 @@
                             <field name="observacio_suspesa"/>
                             <field name="resum_observacions_comptables"/>
                             <field name="data_ultima_factura" />
-                            <field name="mesos_factura_mes_recent_impagada" invisible="1"/>
+                            <field name="mesos_factura_mes_recent_impagada" invisible="1" select="2"/>
                         </tree>
                     </field>
                 </record>
