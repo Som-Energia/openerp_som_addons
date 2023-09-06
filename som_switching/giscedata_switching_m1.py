@@ -11,7 +11,7 @@ class GiscedataSwitchingM1_01(osv.osv):
         new_contract_values = vals.get("new_contract_values")
         if new_contract_values:
             new_contract_values.update({
-                'category_id': [],
+                'category_id': [(6, 0, [])],
             })
 
         super(GiscedataSwitchingM1_01, self).config_step(
