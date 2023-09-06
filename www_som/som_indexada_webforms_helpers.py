@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from osv import osv
-from www_som import exceptions
-from www_som.helpers import www_entry_point
+from som_indexada.exceptions import indexada_exceptions as exceptions
 from datetime import datetime
+from www_som.helpers import www_entry_point
 
 class SomIndexadaWebformsHelpers(osv.osv_memory):
 
@@ -49,6 +49,11 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
         expected_exceptions=exceptions.IndexadaException,
     )
     def check_new_pricelist_www(self, cursor, uid, polissa_id, context=None):
+        if context is None:
+            context = {}
+
+        tariff_name = context.get('tariff_name', 'name')
+
         change_type = self._get_change_type(cursor, uid, polissa_id)
 
         polissa_obj = self.pool.get('giscedata.polissa')
@@ -74,12 +79,8 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
             cursor,
             uid,
             pricelist_id,
-            ['name', 'nom_comercial'],
-        )
-        if pricelist_name.get('nom_comercial'):
-            pricelist_name = pricelist_name['nom_comercial']
-        else:
-            pricelist_name = pricelist_name['name']
+            [tariff_name],
+        )[tariff_name]
         coefficient_k = self.get_k_from_pricelist(
             cursor,
             uid,
