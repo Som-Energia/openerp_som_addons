@@ -697,6 +697,7 @@ class GenerationkwhInvestment(osv.osv):
         start_date = str(year) + '-01-01'
         end_date = str(year) + '-12-31'
         total_amount_saving = self.get_total_saving_partner(cursor, uid, partner_id, start_date, end_date)
+        total_amount_saving = 0 if total_amount_saving < 0 else total_amount_saving
         total_data = self.get_total_generation_invoiced_partner(cursor, uid, partner_id, start_date, end_date)
 
         #obtenir total accions inverions
