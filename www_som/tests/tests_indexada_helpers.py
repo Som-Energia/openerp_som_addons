@@ -59,8 +59,8 @@ class TestIndexadaHelpers(TestChangeToIndexada):
         modcon_act['modcontractual_ant'] =  modcon_act['modcontractual_ant'][0]
 
         self.assertEquals(modcon_act,{
-            'data_inici': datetime.strftime(date.today() + timedelta(days=1), "%Y-%m-%d"),
-            'data_final': datetime.strftime(date.today() + timedelta(days=365), "%Y-%m-%d"),
+            'data_inici': datetime.strftime(datetime.today() + timedelta(days=1), "%Y-%m-%d"),
+            'data_final': datetime.strftime(datetime.today() + timedelta(days=365), "%Y-%m-%d"),
             'mode_facturacio': 'index',
             'mode_facturacio_generacio': 'index',
             'llista_preu': new_pricelist_id,
