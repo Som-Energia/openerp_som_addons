@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from som_indexada.exceptions import indexada_exceptions
+from som_polissa.exceptions import exceptions
 import unittest
 
 class IndexadaExceptionsTest(unittest.TestCase):

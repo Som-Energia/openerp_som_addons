@@ -46,7 +46,7 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
         return change_type
 
     @www_entry_point(
-        expected_exceptions=exceptions.IndexadaException,
+        expected_exceptions=exceptions.SomPolissaException,
     )
     def check_new_pricelist_www(self, cursor, uid, polissa_id, context=None):
         if context is None:
@@ -96,7 +96,7 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
         return self.change_pricelist_www(cursor, uid, polissa_id, context)
 
     @www_entry_point(
-        expected_exceptions=exceptions.IndexadaException,
+        expected_exceptions=exceptions.SomPolissaException,
     )
     def change_pricelist_www(self, cursor, uid, polissa_id, context=None):
         change_type = self._get_change_type(cursor, uid, polissa_id)

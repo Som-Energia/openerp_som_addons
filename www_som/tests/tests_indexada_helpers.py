@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from som_indexada.exceptions import indexada_exceptions
+from som_polissa.exceptions import exceptions
 from som_indexada.tests.test_wizard_change_to_indexada import TestChangeToIndexada
 import unittest
 from datetime import datetime, timedelta

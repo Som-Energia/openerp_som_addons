@@ -118,7 +118,7 @@ class GiscedataPolissa(osv.osv):
         return traceback.format_exception(exc_type, exc_value, exc_tb)
 
     @www_entry_point(
-        expected_exceptions=exceptions.IndexadaException,
+        expected_exceptions=exceptions.SomPolissaException,
     )
     def www_check_modifiable_polissa(
         self, cursor, uid, polissa_id, skip_atr_check=False, excluded_cases=None, context=None
