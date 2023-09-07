@@ -93,26 +93,16 @@ def is_DHS(pol):
 def is_DHA(pol):
     return pol.tarifa.codi_ocsum in ('004', '006')
 
-dummy_td = False
-
 def is_TD(pol):
-    if dummy_td:
-        return True
     return pol.tarifa.codi_ocsum in ('018', '019', '020', '021', '022', '023', '024', '025')
 
 def is_2XTD(pol):
-    if dummy_td:
-        return is_2X(pol)
     return pol.tarifa.codi_ocsum in ('018')
 
 def is_3XTD(pol):
-    if dummy_td:
-        return is_3X(pol)
     return pol.tarifa.codi_ocsum in ('019', '024')
 
 def is_6XTD(pol):
-    if dummy_td:
-        return is_6X(pol)
     return pol.tarifa.codi_ocsum in ('020', '021', '022', '023', '025')
 
 def is_indexed(fact):
