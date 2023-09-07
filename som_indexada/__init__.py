@@ -1,4 +1,3 @@
 import wizard
 import exceptions
 import giscedata_polissa_modcontractual
-import giscedata_polissa

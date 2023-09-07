@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from osv import osv
-from som_indexada.exceptions import indexada_exceptions as exceptions
+from som_polissa.exceptions import exceptions
 from datetime import datetime
 from www_som.helpers import www_entry_point
 
