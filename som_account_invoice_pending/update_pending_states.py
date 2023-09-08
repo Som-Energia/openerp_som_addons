@@ -48,6 +48,7 @@ class UpdatePendingStates(osv.osv_memory):
         self.update_waiting_for_annexII(cursor, uid)
         self.update_waiting_for_annexIII_first(cursor, uid)
         self.update_waiting_for_annexIII_second(cursor, uid)
+        self.update_pending_ask_poverty(cursor, uid)
         self.update_waiting_for_annexIV(cursor, uid)
         self.update_waiting_for_48h(cursor, uid)
 
@@ -912,6 +913,31 @@ class UpdatePendingStates(osv.osv_memory):
                             cursor, uid, fact_id[0], traspas_advocats_dp, context
                         )
                     fact_obj.set_pending(cursor, uid, fact_id, waiting_notif_id)
+
+    def poverty_eligible(self, cursor, uid, polissa_id):
+        pol_obj = self.pool.get("giscedata.polissa")
+        polissa_state = pol_obj.read(cursor, uid, polissa_id, ["cups_np"])["cups_np"]
+        return True if polissa_state in ['Barcelona', 'Girona', 'Lleida', 'Tarragona'] else False
+
+    def update_pending_ask_poverty(self, cursor, uid, context=None):
+        if context is None:
+            context = {}
+
+        pending_ask_poverty_state = self.get_object_id(
+            cursor, uid, "som_account_invoice_pending", "pendent_consulta_probresa_pending_state"
+        )
+        warning_cut_off_state = self.get_object_id(
+            cursor, uid, "giscedata_facturacio_comer_bono_social", "avis_tall_pending_state"
+        )
+
+        factura_ids = self.get_invoices_with_pending_state(cursor, uid, pending_ask_poverty_state)
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+
+        for factura_id in factura_ids:
+            invoice = fact_obj.read(cursor, uid, factura_id)
+            polissa_id = invoice["polissa_id"][0]
+            if not self.poverty_eligible(cursor, uid, polissa_id):
+                fact_obj.set_pending(cursor, uid, [factura_id], warning_cut_off_state)
 
 
 UpdatePendingStates()
