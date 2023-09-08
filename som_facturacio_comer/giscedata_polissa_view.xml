@@ -39,7 +39,6 @@
                             <field name="observacio_suspesa"/>
                             <field name="resum_observacions_comptables"/>
                             <field name="data_ultima_factura" />
-                            <field name="mesos_factura_mes_recent_impagada" invisible="1" select="2"/>
                         </tree>
                     </field>
                 </record>
@@ -68,6 +67,7 @@
                         <xpath expr="//page[@string='Facturació']" position="after">
                             <page string="Comptabilitat">
                                 <field name="observacions_comptables" select="1"/>
+                                <field name="mesos_factura_mes_recent_impagada" invisible="1" select="2"/>
                             </page>
                         </xpath>
                     </field>

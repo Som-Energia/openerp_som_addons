@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import pooler
-from oopgrade.oopgrade import load_data_records
+from oopgrade.oopgrade import load_data
 
 
 def up(cursor, installed_version):
@@ -14,7 +14,9 @@ def up(cursor, installed_version):
     pool = pooler.get_pool(cursor.dbname)
 
     logger.info("Updating XML giscedata_polissa_view.xml")
-    load_data_records(cursor, 'som_facturacio_comer', 'giscedata_polissa_view.xml', ['view_giscedata_polissa_deute_som_tree', 'view_giscedata_polissa_deute_som_tree'])
+    load_data(
+        cursor, 'som_facturacio_comer', "giscedata_polissa_view.xml", idref=None, mode='update'
+    )
     logger.info("XMLs succesfully updatd.")
 
 
