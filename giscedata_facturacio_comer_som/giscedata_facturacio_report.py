@@ -1715,9 +1715,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         model_obj = fact.pool.get('ir.model.data')
         fraccio_prod_id = model_obj.get_object_reference(self.cursor, self.uid,
                                                          'giscedata_facturacio',
-                                                         'default_fraccionament_product')
-        faccionament_lines = [l for l in fact.linia_ids if l.tipus == 'cobrament'
-                              and l.invoice_line_id.product_id.id == fraccio_prod_id ]
+                                                         'default_fraccionament_product')[1]
+        faccionament_lines = [l.price_subtotal for l in fact.linia_ids if l.tipus == 'cobrament'
+                              and l.invoice_line_id.product_id.id == fraccio_prod_id]
         total_faccionament = sum(faccionament_lines)
         data['total_amount'] -= data['donatiu']
         data['total_amount'] -= total_faccionament
@@ -1872,7 +1872,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'is_TD': is_TD(pol),
             'is_6xTD': is_6XTD(pol),
             'is_indexed': is_indexed(fact),
-            'is_only_taxed_lines': datetime.today() >= datetime.strptime(show_only_taxed_lines_date, '%Y-%m-%d')
+            'is_only_taxed_lines': datetime.today() >= datetime.strptime(show_only_taxed_lines_date, '%Y-%m-%d'),
         }
         return data
 
