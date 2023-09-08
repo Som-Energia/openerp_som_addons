@@ -1714,7 +1714,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data = self.get_component_invoice_summary_td_data(fact, pol)
         model_obj = fact.pool.get('ir.model.data')
         fraccio_prod_id = model_obj.get_object_reference(self.cursor, self.uid,
-                                                         'giscedata.facturacio',
+                                                         'giscedata_facturacio',
                                                          'default_fraccionament_product')
         faccionament_lines = [l for l in fact.linia_ids if l.tipus == 'cobrament'
                               and l.invoice_line_id.product_id.id == fraccio_prod_id ]

@@ -1,6 +1,6 @@
 <%page args="invs" />
 <style>
-<%include file="invoice_summary_td.css" />
+<%include file="invoice_summary_td_otl.css" />
 </style>
     <div class="invoice_summary">
         <h1>${_(u"RESUM DE LA FACTURA")}</h1>
