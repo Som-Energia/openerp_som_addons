@@ -30,6 +30,8 @@ mean_zipcode_consumption_dates = {
     'end': '2050-12-31',
 }
 
+show_only_taxed_lines_date = '2023-09-01'
+
 # -----------------------------------
 # helper functions
 # -----------------------------------
@@ -1708,6 +1710,21 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data['flux_solar_discount'] = sum([l.price_subtotal for l in flux_lines])
         return data
 
+    def get_component_invoice_summary_td_otl_data(self, fact, pol):
+        data = self.get_component_invoice_summary_td_data(fact, pol)
+        model_obj = fact.pool.get('ir.model.data')
+        fraccio_prod_id = model_obj.get_object_reference(self.cursor, self.uid,
+                                                         'giscedata.facturacio',
+                                                         'default_fraccionament_product')
+        faccionament_lines = [l for l in fact.linia_ids if l.tipus == 'cobrament'
+                              and l.invoice_line_id.product_id.id == fraccio_prod_id ]
+        total_faccionament = sum(faccionament_lines)
+        data['total_amount'] -= data['donatiu']
+        data['total_amount'] -= total_faccionament
+        data['total_altres'] -= total_faccionament
+        data.pop('donatiu')
+        return data
+
     def get_component_partner_info_data(self, fact, pol):
         cc_name = _(u"")
         bank_name = _(u"")
@@ -1855,6 +1872,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'is_TD': is_TD(pol),
             'is_6xTD': is_6XTD(pol),
             'is_indexed': is_indexed(fact),
+            'is_only_taxed_lines': datetime.today() >= datetime.strptime(show_only_taxed_lines_date, '%Y-%m-%d')
         }
         return data
 
