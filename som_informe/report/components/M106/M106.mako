@@ -1,6 +1,6 @@
 <%page args="d" />
 <li>
-    ${_("El [%s] Som Energia sol·licita l'anul·lació de la modificació contractual en curs amb codi de sol·licitud %s a la distribuïdora (%s):") % (d.data_creacio,d.codi_solicitud, d.distribuidora) }<br/>
+    ${_("El [%s] Som Energia sol·licita l'anul·lació de la modificació contractual en curs amb codi de sol·licitud %s a la distribuïdora (%s):") % (d.create, d.codi_solicitud, d.distribuidora) }<br/>
     <br>
     ${_(u"<b>Procediment:</b> M1 (Canvi de Comercialitzadora sense modificacions en el contracte d’accés)")}<br/>
     ${_(u"<b>Pas:</b> 06")}<br/>

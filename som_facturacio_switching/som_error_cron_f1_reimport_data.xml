@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data noupdate="1">
+        <record model="res.config" id="som_error_cron_f1_reimport_days_to_check">
+            <field name="name">som_error_cron_f1_reimport_days_to_check</field>
+            <field name="description">Dies a mirar enrere del cron d'importació d'F1 erronis</field>
+            <field name="value">30</field>
+        </record>
+        <record model='som.error.cron.f1.reimport' id='som_error_cron_f1_reimport_1001'>
+            <field name="active" eval="True"/>
+            <field name="error_code" ref="giscedata_facturacio_switching.error_phase_1_code_001"/>
+        </record>
+        <record model='som.error.cron.f1.reimport' id='som_error_cron_f1_reimport_1999'>
+            <field name="active" eval="True"/>
+            <field name="error_code" ref="giscedata_facturacio_switching.error_phase_1_code_999"/>
+        </record>
+        <record model='som.error.cron.f1.reimport' id='som_error_cron_f1_reimport_2005'>
+            <field name="active" eval="True"/>
+            <field name="error_code" ref="giscedata_facturacio_switching.error_phase_2_code_005"/>
+        </record>
+        <record model='som.error.cron.f1.reimport' id='som_error_cron_f1_reimport_2999'>
+            <field name="active" eval="True"/>
+            <field name="error_code" ref="giscedata_facturacio_switching.error_phase_2_code_999"/>
+        </record>
+        <record model='som.error.cron.f1.reimport' id='som_error_cron_f1_reimport_3033'>
+            <field name="active" eval="True"/>
+            <field name="error_code" ref="giscedata_facturacio_switching.error_phase_3_code_033"/>
+        </record>
+        <record model='som.error.cron.f1.reimport' id='som_error_cron_f1_reimport_3041'>
+            <field name="active" eval="True"/>
+            <field name="error_code" ref="giscedata_facturacio_switching.error_phase_3_code_041"/>
+        </record>
+        <record model='som.error.cron.f1.reimport' id='som_error_cron_f1_reimport_4999'>
+            <field name="active" eval="True"/>
+            <field name="error_code" ref="giscedata_facturacio_switching.error_phase_4_code_999"/>
+        </record>
+    </data>
+</openerp>

@@ -37,5 +37,19 @@
                 </field>
             </field>
         </record>
+        <record model="ir.ui.view" id="view_invoice_pending_form">
+            <field name="name">account.invoice.pending.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account_invoice_pending.view_invoice_pending_form"/>
+            <field name="type">tree</field>
+            <field name="arch" type="xml" >
+                <field name="pending_state" position="replace">
+                    <field name="pending_state" select="1" size="32"/>
+                </field>
+                <field name="pending_state_date" position="replace">
+                    <field name="pending_state_date" select="1"/>
+                </field>
+            </field>
+        </record>
     </data>
 </openerp>

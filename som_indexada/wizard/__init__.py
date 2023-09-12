@@ -1,0 +1,2 @@
+import wizard_change_to_indexada
+import wizard_massive_k_change

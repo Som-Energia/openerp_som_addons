@@ -342,7 +342,12 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="datacenter_ftp_f1_conf"/>
         </record>
-
+        <!-- SCQ -->
+        <record model="som.crawlers.task" id="descarregar_scq">
+            <field name="name">Descarregar SCQ</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="scq_conf"/>
+        </record>
         <!-- TASQUES D'EXPORTACIÓ -->
         <record model="som.crawlers.task" id="carregar_anselmo">
             <field name="name">Carregar Anselmo</field>

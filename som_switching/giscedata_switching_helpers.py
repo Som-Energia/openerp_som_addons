@@ -200,5 +200,24 @@ class GiscedataSwitchingHelpers(osv.osv):
 
         return 'OK', info
 
+    def activa_cac_r1_02_rebuig(self, cursor, uid, sw_id, context=None):
+        res = super(GiscedataSwitchingHelpers, self).activa_cac_r1_02_rebuig(
+            cursor, uid, sw_id, context=context
+        )
+        sw_obj = self.pool.get("giscedata.switching")
+        atc_o = self.pool.get("giscedata.atc")
+        sw = sw_obj.browse(cursor, uid, sw_id)
+        cac = None
+        if sw.ref and sw.ref.split(",")[0] == "giscedata.atc":
+            cac = atc_o.browse(cursor, uid, int(sw.ref.split(",")[1]), context=context)
+        elif sw.ref2 and sw.ref2.split(",")[0] == "giscedata.atc":
+            cac = atc_o.browse(cursor, uid, int(sw.ref2.split(",")[1]), context=context)
+        if cac and cac.state not in ["done", "cancel"] and cac.tancar_cac_al_finalitzar_r1 and len(res) > 1 and res[0].upper() == 'OK':
+            cac.case_log()
+            cac.write({'description': _(u"Cas tancat automaticament al importar R1-02.")})
+            cac.case_log()
+            cac.case_close(context)
+        return res
+
 
 GiscedataSwitchingHelpers()

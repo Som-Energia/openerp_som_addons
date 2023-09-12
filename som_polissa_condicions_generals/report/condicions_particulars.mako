@@ -11,7 +11,31 @@ from gestionatr.defs import TABLA_9
 def clean_text(text):
     return text or ''
 
-CONTRACT_TYPES = dict(TABLA_9)
+def get_pas01(cas):
+    for step_id in cas.step_ids:
+        proces_name = step_id.proces_id.name
+        step_name = step_id.step_id.name
+        if proces_name == "M1" and step_name == "01":
+            return step_id
+    return None
+
+def get_titular_data(pas01, polissa):
+    res = {}
+    if pas01:
+        dades_client = pas01.pas_id.dades_client
+        dades_envio = pas01.pas_id.direccio_notificacio
+        es_ct_subrogacio = pas01.pas_id.sollicitudadm == "S" and pas01.pas_id.canvi_titular == "S"
+    else:
+        dades_client = False
+        dades_envio = False
+        es_ct_subrogacio = False
+
+    res['client_name'] = dades_client.name if es_ct_subrogacio and dades_client else polissa.titular.name
+    res['client_vat'] = dades_client.vat if es_ct_subrogacio and dades_client else polissa.titular.vat
+    res['direccio_titular'] = dades_client.address[0] if es_ct_subrogacio and dades_client else polissa.titular.address[0]
+    res['direccio_envio'] =  dades_envio if es_ct_subrogacio and dades_envio else polissa.direccio_notificacio
+    res['diferent'] = (res['direccio_envio'] != res['direccio_titular'])
+    return res
 
 TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not imported due translations issues
     '00': _(u"Sense Autoconsum"), # Sin Autoconsumo
@@ -40,6 +64,22 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
     '73': _(u"Amb excedents sense compensació Col·lectiu amb cte. de Serv. Aux. a través de xarxa i xarxa interior - Consum"), # Con excedentes sin compensación Colectivo con cto de SSAA  a través de red y red interior – Consumo
     '74': _(u"Amb excedents sense compensació Col·lectiu amb cte. de Serv. Aux. a través de xarxa i xarxa interior - SSAA"), # Con excedentes sin compensación Colectivo con cto de SSAA a través de red y red interior - SSAA
     }
+
+def get_potencies(pas01, polissa):
+    res = {}
+    if pas01:
+        es_canvi_tecnic = pas01.pas_id.sollicitudadm == "N"
+    else:
+        es_canvi_tecnic = False
+    res['potencies'] = pas01.pas_id.pot_ids if es_canvi_tecnic else polissa.potencies_periode
+    res['autoconsum'] = pas01.pas_id.tipus_autoconsum if es_canvi_tecnic else polissa.autoconsumo
+    if res['autoconsum'] and res['autoconsum'] in TABLA_113_dict:
+            res['autoconsum'] = TABLA_113_dict[res['autoconsum']]
+    res['es_canvi_tecnic'] = es_canvi_tecnic
+    return res
+
+CONTRACT_TYPES = dict(TABLA_9)
+
 %>
 <!doctype html public "-//w3c//dtd html 4.0 transitional//en">
 <html>
@@ -76,8 +116,15 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
             ${clean(text)}
         %endif
     </%def>
-    %for polissa in objects:
+    %for obj in objects:
         <%
+            if obj._name == 'giscedata.switching':
+                pol_obj = obj.pool.get('giscedata.polissa')
+                polissa = pol_obj.browse(cursor, uid, obj.cups_polissa_id.id)
+                pas01 = get_pas01(obj)
+            elif obj._name == 'giscedata.polissa':
+                polissa = obj
+                pas01 = False
             lang = polissa.titular.lang
             if lang not in ['ca_ES', 'es_ES']:
                 lang = 'es_ES'
@@ -134,38 +181,45 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                     ${_(u"Tarifes vigents en el moment d’activació del contracte.")}
                 </h3>
             </div>
+            <%
+                ultima_modcon = None
+                modcon_pendent_indexada = False
+                modcon_pendent_periodes = False
+            %>
         %endif
 
         <%
-            direccio_titular = polissa.titular.address[0]
-            direccio_envio = polissa.direccio_notificacio
-            diferent = (polissa.direccio_notificacio != direccio_titular)
+            dict_titular = get_titular_data(pas01, polissa)
             periodes_energia, periodes_potencia = [], []
+            if polissa.state != 'esborrany':
+                ultima_modcon = polissa.modcontractuals_ids[0]
+                modcon_pendent_indexada = ultima_modcon.state == 'pendent' and ultima_modcon.mode_facturacio == 'index'
+                modcon_pendent_periodes = ultima_modcon.state == 'pendent' and ultima_modcon.mode_facturacio == 'atr'
         %>
         <div class="contact_info">
-            <div class="persona_titular styled_box ${"width33" if diferent else "width49"}">
+            <div class="persona_titular styled_box ${"width33" if dict_titular['diferent'] else "width49"}">
                 <h5>${_("PERSONA TITULAR")}</h5>
                 <div class="inside_styled_box">
                     <b>${_(u"Nom/Raó social: ")}</b>
-                    ${polissa.titular.name}<br/>
+                    ${dict_titular['client_name']}<br/>
                     <b>${_(u"NIF/CIF: ")}</b>
-                    ${polissa.titular and (polissa.titular.vat or '').replace('ES', '')}<br/>
+                    ${dict_titular['client_vat'].replace('ES', '')}<br/>
                     <b>${_(u"Adreça: ")}</b>
-                    ${clean(direccio_titular.street)}<br/>
+                    ${clean(dict_titular['direccio_titular'].street)}<br/>
                     <b>${_(u"Codi postal i municipi: ")}</b>
-                    ${clean(direccio_titular.zip)} ${clean(direccio_titular.city)}<br/>
+                    ${clean(dict_titular['direccio_titular'].zip)} ${clean(dict_titular['direccio_titular'].city)}<br/>
                     <b>${_(u"Província i país: ")}</b>
-                    ${clean(direccio_titular.state_id.name)} ${clean(direccio_titular.country_id.name)}<br/>
+                    ${clean(dict_titular['direccio_titular'].state_id.name)} ${clean(dict_titular['direccio_titular'].country_id.name)}<br/>
                     <b>${_(u"Adreça electrònica: ")}</b>
-                    ${clean(direccio_titular.email)}<br/>
+                    ${clean(dict_titular['direccio_titular'].email)}<br/>
                     <b>${_(u"Telèfon: ")}</b>
-                    ${clean(direccio_titular.mobile)}<br/>
+                    ${clean(dict_titular['direccio_titular'].mobile)}<br/>
                     <b>${_(u"Telèfon 2: ")}</b>
-                    ${clean(direccio_titular.phone)}<br/>
+                    ${clean(dict_titular['direccio_titular'].phone)}<br/>
                 </div>
             </div>
 
-            <div class="dades_subministrament styled_box ${"width33" if diferent else "width49"}">
+            <div class="dades_subministrament styled_box ${"width33" if dict_titular['diferent'] else "width49"}">
                 <h5> ${_("DADES DEL PUNT DE SUBMINISTRAMENT")} </h5>
 
                 <div class="inside_styled_box">
@@ -188,42 +242,42 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                 </div>
             </div>
 
-            %if diferent:
-            <div class="dades_de_contacte styled_box ${"width33" if diferent else "width49"}">
+            %if dict_titular['diferent']:
+            <div class="dades_de_contacte styled_box ${"width33" if dict_titular['diferent'] else "width49"}">
                 <h5> ${_("DADES DE CONTACTE")} </h5>
                 <div class="inside_styled_box">
                     <b>${_(u"Nom/Raó social: ")}</b>
-                    ${enviament(diferent, direccio_envio.name)}<br/>
+                    ${enviament(dict_titular['diferent'], dict_titular['direccio_envio'].name)}<br/>
                     <b>${_(u"Adreça: ")}</b>
-                    ${enviament(diferent, direccio_envio.street)}<br/>
+                    ${enviament(dict_titular['diferent'], dict_titular['direccio_envio'].street)}<br/>
                     <b>${_(u"Codi postal i municipi: ")}</b>
-                    ${enviament(diferent,
+                    ${enviament(dict_titular['diferent'],
                         '{0} {1}'.format(
-                            clean_text(direccio_envio.zip), clean_text(direccio_envio.city)
+                            clean_text(dict_titular['direccio_envio'].zip), clean_text(dict_titular['direccio_envio'].city)
                         )
                     )}<br/>
                     <b>${_(u"Província i país: ")}</b>
-                    ${enviament(diferent,
+                    ${enviament(dict_titular['diferent'],
                         '{0} {1}'.format(
-                            clean_text(direccio_envio.state_id.name), clean_text(direccio_envio.country_id.name)
+                            clean_text(dict_titular['direccio_envio'].state_id.name), clean_text(dict_titular['direccio_envio'].country_id.name)
                         )
                     )}<br/>
                     <b>${_(u"Adreça electrònica: ")}</b>
-                    ${enviament(diferent,
+                    ${enviament(dict_titular['diferent'],
                         '{0}'.format(
-                            clean_text(direccio_envio.email)
+                            clean_text(dict_titular['direccio_envio'].email)
                         )
                     )}<br/>
                     <b>${_(u"Telèfon: ")}</b>
-                    ${enviament(diferent,
+                    ${enviament(dict_titular['diferent'],
                         '{0}'.format(
-                            clean_text(direccio_envio.mobile)
+                            clean_text(dict_titular['direccio_envio'].mobile)
                         )
                     )}<br/>
                     <b>${_(u"Telèfon 2: ")}</b>
-                    ${enviament(diferent,
+                    ${enviament(dict_titular['diferent'],
                         '{0}'.format(
-                            clean_text(direccio_envio.phone)
+                            clean_text(dict_titular['direccio_envio'].phone)
                         )
                     )}<br/>
                 </div>
@@ -233,17 +287,26 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
 
         <div class="peatge_acces styled_box">
             <h5> ${_("PEATGE I CÀRRECS (definits a la Circular de la CNMC 3/2020 i al Reial decret 148/2021)")} </h5>
+            <%
+                pol_o = pool.get('giscedata.polissa')
+                llista_preu_o = pool.get('product.pricelist')
+                dict_pot = get_potencies(pas01, polissa)
+                ctx = {'lang': lang}
 
+                if modcon_pendent_indexada or modcon_pendent_periodes:
+                    llista_preus = ultima_modcon.llista_preu
+                elif polissa.llista_preu:
+                    llista_preus = polissa.llista_preu
+                else:
+                    tarifes_ids = llista_preu_o.search(cursor, uid, [])
+                    llista_preus = pol_o.escull_llista_preus(cursor, uid, polissa.id, tarifes_ids, context=ctx)
+
+                tarifa_a_mostrar = llista_preus.nom_comercial or llista_preus.name
+            %>
             <div class="peatge_access_content">
                 <div class="padding_left"><b>${_(u"Peatge de transport i distribució: ")}</b>${clean(polissa.tarifa_codi)}</div>
-                <%
-                    autoconsum = polissa.autoconsumo
-                    if autoconsum and autoconsum in TABLA_113_dict:
-                        autoconsum = TABLA_113_dict[autoconsum]
-                %>
-
-                <div class="padding_bottom padding_left"><b>${_(u"Tipus de contracte: ")}</b> ${CONTRACT_TYPES[polissa.contract_type]} ${"({0})".format(autoconsum) if polissa.autoconsumo != '00' else ""}</div>
-
+                <div class="padding_left"><b>${_(u"Tipus de contracte: ")}</b> ${CONTRACT_TYPES[polissa.contract_type]} ${"({0})".format(dict_pot['autoconsum']) if polissa.autoconsumo != '00' else ""}</div>
+                <div class="padding_bottom padding_left"><b>${_(u"Tarifa: ")}</b> ${clean(tarifa_a_mostrar)}</div>
                 <table class="taula_custom new_taula_custom">
                     <tr style="background-color: #878787;">
                         <th></th>
@@ -266,7 +329,7 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                     <tr>
                         <td class="bold">${_(u"Potència contractada (kW):")}</td>
                         <%
-                            potencies = polissa.potencies_periode
+                            potencies = dict_pot['potencies']
                             periodes = []
                             for i in range(0, 6):
                                 if i < len(potencies):
@@ -282,20 +345,20 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                         %if polissa.tarifa_codi == "2.0TD":
                             <td class="center">
                             %if periodes[0][1] and periodes[0][1].potencia:
-                                <span>${formatLang(periodes[0][1].potencia, digits=3)}</span>
+                                <span>${formatLang(periodes[0][1].potencia / 1000.0 if dict_pot['es_canvi_tecnic'] else periodes[0][1].potencia, digits=3)}</span>
                             %endif
                             </td>
                             <td></td>
                             <td class="center">
                             %if periodes[2][1] and periodes[2][1].potencia:
-                                <span>${formatLang(periodes[2][1].potencia, digits=3)}</span>
+                                <span>${formatLang(periodes[2][1].potencia / 1000.0 if dict_pot['es_canvi_tecnic'] else periodes[2][1].potencia, digits=3)}</span>
                             %endif
                             </td>
                         %else:
                             %for p in periodes:
                                 <td class="center">
                                 %if p[1] and p[1].potencia:
-                                    <span>${formatLang(p[1].potencia, digits=3)}</span>
+                                    <span>${formatLang(p[1].potencia / 1000.0 if dict_pot['es_canvi_tecnic'] else p[1].potencia, digits=3)}</span>
                                 %endif
                                 </td>
                             %endfor
@@ -333,7 +396,7 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                 cursor, uid, 'charge_iva_10_percent_when_start_date', '2021-06-01'
             )
             end_date_iva_5 = cfg_obj.get(
-                cursor, uid, 'iva_reduit_get_tariff_prices_end_date', '2022-12-31'
+                cursor, uid, 'iva_reduit_get_tariff_prices_end_date', '2023-12-31'
             )
             iva_5_active = eval(cfg_obj.get(
                 cursor, uid, 'charge_iva_10_percent_when_available', '0'
@@ -343,7 +406,9 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
         <div class="styled_box">
         %for dades_tarifa in tarifes_a_mostrar:
             <%
-                if not data_final and dades_tarifa['date_end']:
+                if modcon_pendent_indexada or modcon_pendent_periodes:
+                    text_vigencia = ''
+                elif not data_final and dades_tarifa['date_end']:
                     text_vigencia = _(u"(vigents fins al {})").format(dades_tarifa['date_end'])
                 elif dades_tarifa['date_end'] and dades_tarifa['date_start']:
                     text_vigencia = _(u"(vigents fins al {})").format((datetime.strptime(dades_tarifa['date_end'], '%Y-%m-%d')).strftime('%d/%m/%Y'))
@@ -358,8 +423,8 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                         iva_reduit = True
                         text_vigencia += " (IVA 5%, IE 0,5%)"
                     else:
-                        fp_id = imd_obj.get_object_reference(cursor, uid, 'giscedata_facturacio', 'fp_nacional_2012')[1]
-                        text_vigencia += " (IVA 21%, IE 5,11%)"
+                        fp_id = imd_obj.get_object_reference(cursor, uid, 'giscedata_facturacio', 'fp_nacional_2021_rd_17_2021')[1]
+                        text_vigencia += " (IVA 21%, IE 0,5%)"
                     ctx.update({'force_fiscal_position': fp_id})
             %>
             %if text_vigencia:
@@ -475,29 +540,41 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                     %endif
                     <tr>
                         <td class="bold">${_("Terme energia (€/kWh)")}</td>
-                        %if polissa.mode_facturacio == 'index':
+                        %if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:
                             <td class="center reset_line_height" colspan="6">
                                 <span class="normal_font_weight">
-                                    %if lang ==  'ca_ES':
-                                        <a target="_blank" href="https://www.somenergia.coop/documentacio_EiE/CA_EiE_Explica_Tarifa%20Indexada%20per%20Entitats%20i%20Empreses_Som%20Energia.pdf">
-                                            <b>${_(u"Tarifa indexada")}</b>
-                                        </a>
-                                    %else:
-                                        <a target="_blank" href="https://www.somenergia.coop/documentacio_EiE/ES_EiE_Explica_Tarifa%20Indexada%20para%20Entidades%20y%20Empresas_Som%20Energia.pdf">
-                                            <b>${_(u"Tarifa indexada")}</b>
-                                        </a>
-                                    %endif
-                                    ${_(u" - el preu horari es calcula d'acord amb la fórmula:")}
+                                    <b>${_(u"Tarifa indexada")}</b>${_(u"(2) - el preu horari (PH) es calcula d'acord amb la fórmula:")}
                                 </span>
                                 <br/>
-                                <span>${_(u"PH = 1,015 * [(PHM + PHMA + Pc + SobrecostosREE + Interrump + POsOm) (1 + Perd) + FE + K] + PA + CA")}</span>
+                                <span>${_(u"PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + F] + PTD + CA")}</span>
                                 <br/>
-                                <span class="normal_font_weight">${_(u"on el marge de comercialització")}</span>
-                                <span>&nbsp;${("(K) = %s €/MWh</B>") % formatLang((polissa.coeficient_k + polissa.coeficient_d), digits=3)}</span>
+                                <span class="normal_font_weight">${_(u"on la franja de la cooperativa")}</span>
+                                <%
+                                    coeficient_k = (polissa.coeficient_k + polissa.coeficient_d)/1000
+                                    if coeficient_k == 0:
+                                        today = datetime.today().strftime("%Y-%m-%d")
+                                        vlp = None
+                                        if modcon_pendent_indexada:
+                                            llista_preus = ultima_modcon.llista_preu.version_id
+                                        else:
+                                            llista_preus = polissa.llista_preu.version_id
+                                        for lp in llista_preus:
+                                            if lp.date_start <= today and (not lp.date_end or lp.date_end >= today):
+                                                vlp = lp
+                                                break
+                                        if vlp:
+                                            for item in vlp.items_id:
+                                                if item.name == 'Coeficient K':
+                                                    coeficient_k = item.base_price
+                                                    break
+                                %>
+                                <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(coeficient_k, digits=6)}</span>
                             </td>
                         %else:
+                            <% llista_preu = ultima_modcon.llista_preu if modcon_pendent_periodes else polissa.llista_preu %>
                             %for p in periodes_energia:
-                                %if polissa.llista_preu:
+                                %if llista_preu:
+                                    <% ctx['force_pricelist'] = llista_preu %>
                                     <td class="center">
                                         <span class="">${formatLang(get_atr_price(cursor, uid, polissa, p, 'te', ctx, with_taxes=True)[0], digits=6)}</span>
                                     </td>
@@ -541,12 +618,10 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                     %endif
                     %if polissa.autoconsumo != '00':
                     <tr>
-                        <td><span class="bold">${_("(2) Autoconsum (€/kWh)")}</span></td>
-                        %if polissa.mode_facturacio == 'index':
+                        <td><span class="bold auto">${_("Excedents d'autoconsum (€/kWh)")}</span></td>
+                        %if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:
                             <td class="center reset_line_height" colspan="6">
-                                <span class="normal_font_weight">${_(u"Tarifa indexada - el preu es calcula d'acord amb la fórmula:")}</span>
-                                <br/>
-                                <span>${_(u"Import excedents = Suma horària (kWh excedentaris h <sub>i</sub> * PHM <sub>i</sub> )")}</span>
+                                <span class="normal_font_weight">${_(u"Tarifa indexada(2) - el preu horari de la compensació d'excedents és igual al PHM")}</span>
                             </td>
                         %else:
                             %if polissa.llista_preu:
@@ -566,11 +641,11 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
                 %if polissa.te_assignacio_gkwh:
                     <span class="bold">(1) </span> ${_("Terme d'energia en cas de participar-hi, segons condicions del contracte GenerationkWh.")}<br/>
                 %endif
-                %if polissa.autoconsumo != '00':
-                    <span class="bold">(2) </span> ${_("Preu de la compensació d'excedents, si és aplicable.")}
+                %if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:
+                    <span class="bold">(2) </span> ${_("Pots consultar el significat de les variables a les condicions específiques que trobaràs a continuació.")}
                 %endif
                 </div>
-                %if polissa.mode_facturacio != 'index' and dades_tarifa['date_start'] >= start_date_mecanisme_ajust_gas and \
+                %if (polissa.mode_facturacio != 'index' and not modcon_pendent_indexada) and dades_tarifa['date_start'] >= start_date_mecanisme_ajust_gas and \
                     (not dades_tarifa['date_end'] or dades_tarifa['date_end'] <= end_date_mecanisme_ajust_gas):
                     <div class="avis_rmag">
                         ${_(u"A més del preu fix associat al cost de l'energia, establert per Som Energia i publicat a la nostra pàgina web, la factura inclourà un import variable associat al mecanisme d'ajust establert al")}
@@ -587,22 +662,27 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
         </div>
         <div class="styled_box padding_bottom">
             <div class="center avis_impostos">
-                %if polissa.mode_facturacio == 'index':
+                %if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:
                     ${_(u"Els preus del terme de potència")}
                 %else:
                     ${_(u"Tots els preus que apareixen en aquest contracte")}
                 %endif
-                &nbsp;${_(u"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent en cada moment per a cada tipus de contracte.")}
+                &nbsp;${_(u"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent en cada moment per a cada tipus de contracte sense perjudici de les exempcions o bonificacions que puguin ser d'aplicació.")}
             </div>
         </div>
             <%
+                if pas01:
+                    bank = pas01.pas_id.bank if pas01.pas_id.bank else polissa.bank
+                else:
+                    bank = polissa.bank
+
                 owner_b = polissa.bank.partner_id.name
                 nif = polissa.bank.partner_id.vat
-                pol_bank = polissa.bank.read(['owner_id'])
-                if 'owner_id' in pol_bank and polissa.bank.owner_name:
-                    owner_b = polissa.bank.owner_name
-                    if polissa.bank.owner_id:
-                        nif = polissa.bank.owner_id.vat
+                pol_bank = bank.read(['owner_id'])
+                if 'owner_id' in pol_bank and bank.owner_name:
+                    owner_b = bank.owner_name
+                    if bank.owner_id:
+                        nif = bank.owner_id.vat
                 nif = nif.replace('ES', '')
             %>
             %if text_vigencia:
@@ -613,33 +693,50 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
             <h5> ${_("DADES DE PAGAMENT")} </h5>
             <% iban = polissa.bank and polissa.bank.printable_iban[5:] or '' %>
             <div class="dades_pagament">
-                <div class="titular">
-                    <span class="name"><b>${_(u"Persona titular del compte: ")}</b> ${owner_b}</span>
-                    <span class="nif"><b>${_(u"NIF: ")}</b> ${nif}</span>
-                </div>
-                </br>
                 <div class="iban"><b>${_(u"Nº de compte bancari (IBAN): **** **** **** ****")}</b> &nbsp ${iban[-4:]}</div>
             </div>
         </div>
         <div class="modi_condicions">
             <p>
-               ${_(u"Al contractar s’accepten aquestes Condicions Particulars i les Condicions Generals, que es poden consultar a les pàgines següents. Si ens cal modificar-les, a la clàusula 9 de les Condicions Generals s’explica el procediment que seguirem. En cas que hi hagi alguna discrepància, prevaldrà el que estigui previst en aquestes Condicions Particulars.")}
+               ${_(u"Al contractar s’accepten aquestes ")}
+                %if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:
+                    ${_(u"Condicions Particulars, Específiques i les Condicions Generals,")}
+                %else:
+                    ${_(u"Condicions Particulars i les Condicions Generals")}
+                %endif
+               ${_(u"que es poden consultar a les pàgines següents. Si ens cal modificar-les, a la clàusula 9 de les Condicions Generals s’explica el procediment que seguirem. En cas que hi hagi alguna discrepància, prevaldrà el que estigui previst en aquestes Condicions Particulars.")}
             </p>
         </div>
         <div id="footer">
             <div class="city_date">
             <%
                 data_firma =  datetime.today()
+                imd_obj = obj.pool.get('ir.model.data')
+                polissa_categ_obj = obj.pool.get('giscedata.polissa.category')
+                polissa_categ_id = imd_obj.get_object_reference(
+                    cursor, uid, 'som_polissa', 'categ_tarifa_empresa'
+                )[1]
+                polissa_categ = polissa_categ_obj.browse(cursor, uid, polissa_categ_id)
             %>
                 ${company.partner_id.address[0]['city']},
                 ${_(u"a {0}".format(localize_period(data_firma, lang)))}
             </div>
             <div class="acceptacio_digital">
-                <div><b>${_(u"La persona clienta:")}</b></div>
-                <img src="${addons_path}/som_polissa_condicions_generals/report/assets/acceptacio_digital.png"/>
-                <div class="acceptacio_digital_txt">${_(u"Acceptat digitalment via formulari web")}</div>
+                % if polissa_categ in polissa.category_id:
+                    <div><b>${_(u"La contractant")}</b></div>
+                % else:
+                    <div><b>${_(u"La persona clienta:")}</b></div>
+                % endif
 
-                <div><b>${polissa.pagador.name}</b></div>
+                <img src="${addons_path}/som_polissa_condicions_generals/report/assets/acceptacio_digital.png"/>
+
+                % if polissa_categ in polissa.category_id:
+                    <div class="acceptacio_digital_txt">${_(u"Signat digitalment")}</div>
+                % else:
+                    <div class="acceptacio_digital_txt">${_(u"Acceptat digitalment via formulari web")}</div>
+                % endif
+
+                <div><b>${polissa.pagador.name if not pas01 else dict_titular['client_name']}</b></div>
             </div>
             <div class="signatura">
                 <div><b>${_(u"La comercialitzadora")}</b></div>
@@ -658,16 +755,39 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
             </div>
         %endif
 
-        %if polissa != objects[-1]:
+        %if obj != objects[-1]:
             <p style="page-break-after:always;"></p>
         %endif
 
     %endfor
     <p style="page-break-after:always;"></p>
+    <%
+        prova_pilot_indexada = False
+        for category in polissa.category_id:
+            if category.name == "Prova pilot indexada":
+                prova_pilot_indexada = True
+                break
+    %>
     %if lang == 'ca_ES':
         <%include file="/som_polissa_condicions_generals/report/condicions_generals.mako"/>
+        %if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:
+            <p style="page-break-after:always;"></p>
+            <%include file="/som_polissa_condicions_generals/report/condicions_especifiques_indexada.mako"/>
+            %if prova_pilot_indexada:
+                <p style="page-break-after:always;"></p>
+                <%include file="/som_polissa_condicions_generals/report/annex_prova_pilot_indexada.mako"/>
+            %endif
+        %endif
     %else:
         <%include file="/som_polissa_condicions_generals/report/condiciones_generales.mako"/>
+        %if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:
+            <p style="page-break-after:always;"></p>
+            <%include file="/som_polissa_condicions_generals/report/condiciones_especificas_indexada.mako"/>
+            %if prova_pilot_indexada:
+                <p style="page-break-after:always;"></p>
+                <%include file="/som_polissa_condicions_generals/report/anexo_prueba_piloto_indexada.mako"/>
+            %endif
+        %endif
     %endif
 </body>
 </html>

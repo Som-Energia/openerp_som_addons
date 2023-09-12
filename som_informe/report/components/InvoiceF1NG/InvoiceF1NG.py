@@ -39,16 +39,16 @@ class InvoiceF1NG:
 
         #camps obligats per estructura
         result['type'] = 'InvoiceF1NG'
-        result['date'] = (f1.f1_date if f1 else invoice.date_invoice)[:10]
+        result['date'] = (f1.f1_date if f1 and f1.f1_date else invoice.date_invoice)[:10]
         result['date_final'] = f1.fecha_factura_hasta if f1 else invoice.data_final
 
         result['distribuidora'] = f1.distribuidora_id.name if f1 else "Sense F1 relacionat"
         result['invoice_type'] = invoice.rectificative_type
-        result['invoice_date'] = dateformat(f1.f1_date) if f1 else dateformat(invoice.date_invoice)
+        result['invoice_date'] = dateformat(invoice.origin_date_invoice) if invoice.origin_date_invoice else dateformat(invoice.date_invoice)
         result['invoice_number'] = invoice.origin
         result['date_from'] = dateformat(invoice.data_inici)
         result['date_to'] = dateformat(invoice.data_final)
-        result['type_f1'] = f1.tipo_factura_f1
+        result['type_f1'] = f1.tipo_factura_f1 if f1 else "Sense F1 relacionat"
         result['concept'] = dict(TIPO_FACTURA_SELECTION).get(invoice.tipo_factura, "")
 
         #taula
@@ -67,7 +67,10 @@ class InvoiceF1NG:
                     dict_linia['consum_entre'] = linia.lectura_actual - linia.lectura_desde
                     dict_linia['ajust'] = linia.ajust
                     i_line = get_invoice_line(invoice, linia.magnitud, linia.periode)
-                    dict_linia['total_facturat'] = i_line.quantity if i_line else ""
+                    if dict_linia['magnitud_desc'] == 'Excesos de potencia':
+                        dict_linia['total_facturat'] = i_line.price_unit if i_line else 0
+                    else:
+                        dict_linia['total_facturat'] = i_line.quantity if i_line else 0
                     dict_linia['unit'] = get_unit_magnitude(linia.magnitud)
                     result['linies'].append(dict_linia)
             elif f1.tipo_factura_f1 == 'otros':
@@ -76,12 +79,6 @@ class InvoiceF1NG:
                     dict_linia['name'] = linia_extra.name
                     dict_linia['total'] = linia_extra.price_subtotal
                     result['linies_extra'].append(dict_linia)
-
-        #estaven aqui però no al mako
-        # result['invoiced_days'] = invoice.dies
-        # result['invoiced_energy'] = invoice.energia_kwh
-        # result['amount_base'] = invoice.amount_untaxed
-        # result['amount_total'] = invoice.amount_total
 
         return result
 

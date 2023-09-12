@@ -7,7 +7,7 @@
     "version": "0-dev",
     "author": "GISCE",
     "category": "Master",
-    "depends":[
+    "depends": [
         "giscedata_switching",
         "giscedata_facturacio_switching",
         "som_polissa_soci",
@@ -16,6 +16,7 @@
         "giscedata_facturacio_suspesa",
         "giscedata_atc_switching",
         "giscedata_switching_multi_close",
+        "giscedata_switching_comer",
     ],
     "init_xml": [],
     "demo_xml": [
@@ -33,6 +34,7 @@
         'giscedata_switching_activation_data.xml',
         'giscedata_facturacio_switching_error_data.xml',
         'wizard/wizard_comment_to_F1_view.xml',
+        'wizard/wizard_validate_d101_view.xml',
         'security/ir.model.access.csv',
         'giscedata_switching_rebutjos_m.xml',
         'giscedata_switching_rebutjos_c.xml',

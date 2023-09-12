@@ -12,7 +12,7 @@ class GiscedataFacturacioValidationValidator(osv.osv):
 
         if 'categoria' not in parameters:
             return None
-        
+
         pcat_obj = self.pool.get('giscedata.polissa.category')
         pcat_ids = pcat_obj.search(cursor, uid,[('name','like','%'+parameters['categoria']+'%')])
 
@@ -183,61 +183,36 @@ class GiscedataFacturacioValidationValidator(osv.osv):
         return super(GiscedataFacturacioValidationValidator,
             self).check_consume_by_amount(cursor, uid, fact, parameters)
 
-    def check_gkwh_G_invoices(self, cursor, uid, clot, data_inici,
-                                    data_fi, parametres={}):
-        modcon_obj = self.pool.get('giscedata.polissa.modcontractual')
-        compta_obj = self.pool.get('giscedata.lectures.comptador')
-        facturador_obj = self.pool.get('giscedata.facturacio.facturador')
-        imd_obj = self.pool.get('ir.model.data')
-        origen_comer_f1g_id = imd_obj.get_object_reference(cursor, uid, 'giscedata_facturacio_switching', 'origen_comer_f1_g')[1]
-        polissa = clot.polissa_id
-        if not polissa.te_assignacio_gkwh:
-            return None
+    def validate_one_invoice(self, cursor, uid, fact_id, validation_id, context=None):
+        if context is None:
+            context = {}
 
-        intervals = polissa.get_modcontractual_intervals(data_inici, data_fi)
-        mod_ids = []
-        mod_dates = {}
-        for mod_data in sorted(intervals.keys()):
-            mod_id = intervals[mod_data]['id']
-            mod_ids.append(mod_id)
-            mod_dates[mod_id] = intervals[mod_data]['dates']
+        fact_obj = self.pool.get('giscedata.facturacio.factura')
+        tmpl_obj = self.pool.get('giscedata.facturacio.validation.warning.template')
 
-        for modcontractual in modcon_obj.browse(cursor, uid, mod_ids):
-            mod_id = modcontractual.id
-            tid = modcontractual.tarifa.id
-            data_inici_periode_f = max(data_inici, mod_dates[mod_id][0])
-            data_final_periode_f = min(data_fi, mod_dates[mod_id][1])
-            reparto_real = facturador_obj.reparto_real(cursor, uid, modcontractual.tarifa.name)
-            if modcontractual.polissa_id.active and len(mod_ids) == 1:
-                data_final_periode_f = data_fi
-            c_actius = polissa.comptadors_actius(data_inici_periode_f,
-                data_final_periode_f, order='data_alta asc')
+        tmpl_fields = ['code', 'method', 'parameters', 'description', 'active']
+        template_vals = tmpl_obj.read(cursor, uid, validation_id, tmpl_fields, context)
 
-            for compt in compta_obj.browse(cursor, uid, c_actius):
-                # El métode get_inici_final_a_facturar no té en compte que la
-                # lectura inicial de la pólissa/modcon comença el dia anterior a
-                # l'activació. Per tant ara restem 1 dia a les dates que estem
-                # utilitzant
-                data_inici_periode_f2 = (datetime.strptime(data_inici_periode_f, "%Y-%m-%d") - timedelta( days=1)).strftime("%Y-%m-%d")
-                ctx = {
-                    'fins_lectura_fact': data_fi,
-                    'ult_lectura_fact': data_inici_periode_f2
-                }
-                if reparto_real:
-                    lectures_activa = compt.get_lectures_month_per_facturar(
-                        tid, 'A', context=ctx
-                    )
-                else:
-                    lectures_activa = compt.get_lectures_per_facturar(
-                        tid, 'A', context=ctx
-                    )
+        fact = fact_obj.browse(cursor, uid, fact_id)
+        vals = getattr(self, template_vals['method'])(
+            cursor, uid, fact, template_vals['parameters']
+        )
 
-                for periode, lectura in lectures_activa.items():
-                    if 'origen_comer_id' in lectura['actual'] and \
-                       lectura['actual']['origen_comer_id'][0] == origen_comer_f1g_id:
-                        return {}
-
-        return None
+        ret = {
+            'active': template_vals['active'],
+            'code': template_vals['code'],
+        }
+        if vals is not None:
+            ret.update({
+                'message': template_vals['description'].format(**vals),
+                'validation_warning': True,
+            })
+        else:
+            ret.update({
+                'message': '',
+                'validation_warning': False,
+            })
+        return ret
 
 
 GiscedataFacturacioValidationValidator()

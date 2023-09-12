@@ -15,6 +15,7 @@ from tools.translate import _
 from tools import config
 from som_infoenergia.pdf_tools import topdf
 
+import unicodedata
 
 ESTAT_ENVIAT = [
     ('obert', 'Obert'),
@@ -23,8 +24,45 @@ ESTAT_ENVIAT = [
     ('cancellat', 'Cancel·lat')
 ]
 
+
+def strip_accents(s):
+    return ''.join(
+        c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn'
+    )
+
+
 class SomEnviamentMassiu(osv.osv):
     _name = 'som.enviament.massiu'
+
+    def attach_pdf(self, cursor, uid, ids, filepath, filename):
+        if isinstance(ids, (tuple, list)):
+            ids = ids[0]
+        enviament = self.browse(cursor, uid, ids)
+        attachment_obj = self.pool.get('ir.attachment')
+        attachment_to_delete = attachment_obj.search(
+            cursor,
+            uid,
+            [('res_id', '=', ids), ('res_model', '=', 'som.enviament.massiu')],
+        )
+
+        with open(filepath, 'r') as pdf_file:
+            data = pdf_file.read()
+            values = {
+                'name': 'Lot {}, contracte {}'.format(
+                        enviament.lot_enviament.name,
+                        enviament.polissa_id.name
+                ),
+                'datas_fname': filename,
+                'datas': base64.b64encode(data),
+                'res_model': 'som.enviament.massiu',
+                'res_id': ids,
+            }
+            attachment_obj.create(cursor, uid, values)
+
+        attachment_obj.unlink(cursor, uid, attachment_to_delete)
+
+        if os.path.isfile(filepath) or os.path.islink(filepath):
+            os.unlink(filepath)
 
     def create(self, cursor, uid, vals=None, context=None):
         if 'polissa_id' in vals:
@@ -82,6 +120,7 @@ class SomEnviamentMassiu(osv.osv):
         if isinstance(_id, (tuple, list)):
             _id = _id[0]
 
+        attach_obj = self.pool.get('ir.attachment')
         pe_send_obj = self.pool.get('poweremail.send.wizard')
         enviament = self.browse(cursor, uid, _id, context=context)
         allowed_states = ['obert']
@@ -107,6 +146,15 @@ class SomEnviamentMassiu(osv.osv):
             vals.update({'bcc':''})
         if context.get('email_subject', False):
             vals.update({'subject': context.get('email_subject')})
+        attachment_id = attach_obj.search(
+            cursor,
+            uid,
+            [('res_id', '=', _id), ('res_model', '=', 'som.enviament.massiu')],
+        )
+        if attachment_id:
+            vals.update({
+                'attachment_ids': [(6, 0, [attachment_id[0]])]
+            })
         pe_send_obj.write(cursor, uid, [send_id], vals, context=ctx)
         sender = pe_send_obj.browse(cursor, uid, send_id, context=ctx)
         sender.send_mail(context=ctx)

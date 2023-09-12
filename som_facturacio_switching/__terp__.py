@@ -15,6 +15,7 @@
         "giscedata_facturacio_comer",
         "som_facturacio_comer",
         "giscedata_facturacio_switching",
+        "som_indexada",
     ],
     "init_xml": [],
     "demo_xml": ["pricelist_demo_data.xml"],
@@ -28,6 +29,10 @@
         "security/ir.model.access.csv",
         "giscedata_facturacio_switching_cron.xml",
         "wizard/wizard_refund_rectify_from_origin_view.xml",
+        "giscedata_facturacio_switching_view.xml",
+        "som_error_cron_f1_reimport_data.xml",
+        "som_error_cron_f1_reimport_view.xml",
+        "wizard/wizard_change_cron_reimport_days_view.xml",
     ],
     "active": False,
     "installable": True

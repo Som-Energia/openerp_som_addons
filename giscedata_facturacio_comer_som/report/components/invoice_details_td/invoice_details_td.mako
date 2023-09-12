@@ -29,9 +29,11 @@
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls/invoice_details_td_energy_tolls.mako" args="id=id.energy_tolls" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges/invoice_details_td_energy_charges.mako" args="id=id.energy_charges" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_discount_BOE17_2021/invoice_details_td_energy_discount_BOE17_2021.mako" args="id=id.energy_discount_BOE17_2021" />
+    <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_bo_social_2023/invoice_details_td_bo_social_2023.mako" args="bs=id.bo_social_2023" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_generation/invoice_details_td_generation.mako" args="id=id.generation" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_inductive/invoice_details_td_inductive.mako" args="id=id.inductive" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_capacitive/invoice_details_td_capacitive.mako" args="id=id.capacitive" />
+    <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_flux_solar/invoice_details_td_flux_solar.mako" args="fs=id.flux_solar" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako" args="id=id.other_concepts" />
     <tr class="total_factura_row">
         <td class="total_factura_text" colspan="${len(id.showing_periods)+2}">${_(u"TOTAL FACTURA")}</td>

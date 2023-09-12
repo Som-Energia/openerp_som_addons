@@ -14,7 +14,7 @@ class InvoiceF1Unsupported:
         result['date_final'] = invoice.data_final
 
         result['invoice_type'] = invoice.rectificative_type
-        result['invoice_date'] = dateformat(invoice.date_invoice)
+        result['invoice_date'] = dateformat(invoice.origin_date_invoice) if invoice.origin_date_invoice else dateformat(invoice.date_invoice)
         result['invoice_number'] = invoice.origin
         result['invoice_id'] = invoice.id
         result['date_from'] = dateformat(invoice.data_inici)
