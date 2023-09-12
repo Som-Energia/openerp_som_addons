@@ -2,7 +2,7 @@
 from logging import exception
 from osv import osv
 from yamlns import namespace as ns
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
 import inspect
 from tools.translate import _
 from gestionatr.defs import TENEN_AUTOCONSUM
@@ -10,7 +10,7 @@ import json
 from operator import attrgetter
 from collections import Counter
 
-SENSE_EXCEDENTS = ['31','32','33']
+SENSE_EXCEDENTS = ['31', '32', '33']
 
 agreementPartners = {
         'S019753': {'logo': 'logo_S019753.png'},
@@ -30,7 +30,7 @@ mean_zipcode_consumption_dates = {
     'end': '2050-12-31',
 }
 
-show_only_taxed_lines_date = '2023-09-01'
+show_only_taxed_lines_date = '2022-01-01'
 
 # -----------------------------------
 # helper functions
@@ -1620,10 +1620,31 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         }
         return data
 
+    def get_donatiu_amount(self, fact):
+        donatiu_lines = [l.price_subtotal for l in fact.linia_ids if l.tipus in 'altres'
+                        and l.invoice_line_id.product_id.code == 'DN01']
+
+        return sum(donatiu_lines)
+
+    def get_fraccionament_amount(self, fact):
+        model_obj = fact.pool.get('ir.model.data')
+        fraccio_prod_id = model_obj.get_object_reference(self.cursor, self.uid,
+                                                         'giscedata_facturacio',
+                                                         'default_fraccionament_product')[1]
+
+        faccionament_lines = [l.price_subtotal for l in fact.linia_ids if l.tipus == 'cobrament'
+                            and l.invoice_line_id.product_id.id == fraccio_prod_id]
+        return sum(faccionament_lines)
+
     def get_component_invoice_info_data(self, fact, pol):
+        amount_total = fact.amount_total
+        if fact.data_inici >= show_only_taxed_lines_date:
+            amount_total -= self.get_donatiu_amount(fact)
+            amount_total -= self.get_fraccionament_amount(fact)
+
         data = {
             'has_agreement_partner': pol.soci.ref in agreementPartners.keys(),
-            'amount_total': fact.amount_total,
+            'amount_total': amount_total,
             'type': fact.invoice_id.type,
             'number': fact.number,
             'ref': bool(fact.ref),
@@ -1712,16 +1733,10 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
     def get_component_invoice_summary_td_otl_data(self, fact, pol):
         data = self.get_component_invoice_summary_td_data(fact, pol)
-        model_obj = fact.pool.get('ir.model.data')
-        fraccio_prod_id = model_obj.get_object_reference(self.cursor, self.uid,
-                                                         'giscedata_facturacio',
-                                                         'default_fraccionament_product')[1]
-        faccionament_lines = [l.price_subtotal for l in fact.linia_ids if l.tipus == 'cobrament'
-                              and l.invoice_line_id.product_id.id == fraccio_prod_id]
-        total_faccionament = sum(faccionament_lines)
+        total_fraccionament = self.get_fraccionament_amount(fact)
         data['total_amount'] -= data['donatiu']
-        data['total_amount'] -= total_faccionament
-        data['total_altres'] -= total_faccionament
+        data['total_amount'] -= total_fraccionament
+        data['total_altres'] -= total_fraccionament
         data.pop('donatiu')
         return data
 
@@ -1872,7 +1887,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'is_TD': is_TD(pol),
             'is_6xTD': is_6XTD(pol),
             'is_indexed': is_indexed(fact),
-            'is_only_taxed_lines': datetime.today() >= datetime.strptime(show_only_taxed_lines_date, '%Y-%m-%d'),
+            'is_only_taxed_lines': fact.data_inici >= show_only_taxed_lines_date,
         }
         return data
 
