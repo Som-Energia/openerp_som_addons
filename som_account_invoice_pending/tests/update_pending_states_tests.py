@@ -172,6 +172,20 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             "default_pendent_traspas_advocats_pending_state",
         )[1]
 
+        self.consulta_pobresa = imd_obj.get_object_reference(
+            cursor,
+            uid,
+            "som_account_invoice_pending",
+            "pendent_consulta_probresa_pending_state",
+        )[1]
+
+        self.avis_tall = imd_obj.get_object_reference(
+            cursor,
+            uid,
+            "giscedata_facturacio_comer_bono_social",
+            "avis_tall_pending_state",
+        )[1]
+
     def _load_data_unpaid_invoices(self, cursor, uid, invoice_semid_list=[]):
         imd_obj = self.pool.get("ir.model.data")
         inv_obj = self.pool.get("account.invoice")
@@ -919,3 +933,22 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         self.assertEqual(mock_sms.call_count, 1)
         self.assertIn("(auto.): Enviat correu previ advocats + SMS.", factura.comment)
         self.assertEqual(factura.pending_state.id, self.traspas_advocats_dp)
+
+    def test__update_pendent_consulta_pobresa_poverty_eligible(self):
+        cursor = self.txn.cursor
+        uid = self.txn.user
+        self._load_data_unpaid_invoices(cursor, uid, [self.consulta_pobresa])
+        pending_obj = self.pool.get("update.pending.states")
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+
+        mocked = mock.Mock(return_value='Barcelona')
+        with mock.patch('som_polissa.giscedata_polissa.GiscedataPolissa._get_provincia_cups', mocked):
+            pending_obj.update_pending_ask_poverty(
+                cursor, uid, context=None
+            )
+
+        # actualitzar 'soci' de la pòlissa -> activarla
+        # modificar província de partner de la pòlissa
+
+        factura = fact_obj.browse(cursor, uid, self.invoice_1_id)
+        self.assertEqual(factura.pending_state.id, self.avis_tall)
