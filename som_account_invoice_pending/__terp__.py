@@ -14,6 +14,7 @@
         "giscedata_facturacio_impagat_comer",
         "www_som",
         "poweremail",
+        "som_polissa",
     ],
     "init_xml": [],
     "demo_xml": [
