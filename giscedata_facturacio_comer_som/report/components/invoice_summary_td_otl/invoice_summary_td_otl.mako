@@ -31,7 +31,7 @@
         <tr><td>${_(u"Descompte per Flux Solar")}</td><td class="e">${"%s &euro;" % formatLang(invs.flux_solar_discount)}</td></tr>
     % endif
     % if (invs.total_altres + invs.total_bosocial) != 0:
-        <tr><td>${_(u"Altres conceptes")}</td><td class="e">${"%s &euro;" % formatLang(invs.total_altres + invs.total_bosocial)}</td></tr>
+        <tr><td>${_(u"Altres conceptes facturables")}</td><td class="e">${"%s &euro;" % formatLang(invs.total_altres + invs.total_bosocial)}</td></tr>
     % endif
     % for n, v in invs.impostos.items():
         <tr><td>${n}</td><td class="e">${"%s &euro;" % formatLang(v)}</td></tr>
