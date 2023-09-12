@@ -13,6 +13,8 @@ def up(cursor, installed_version):
     logger.info("Creating pooler")
     pool = pooler.get_pool(cursor.dbname)
 
+    logger.info("Updating Table")
+    pool.get('giscedata.polissa')._auto_init(cursor, context={'module': 'som_facturacio_comer'})
     logger.info("Updating XML giscedata_polissa_view.xml")
     load_data(
         cursor, 'som_facturacio_comer', "giscedata_polissa_view.xml", idref=None, mode='update'
