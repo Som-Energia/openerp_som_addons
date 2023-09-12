@@ -6,7 +6,7 @@ first_pass = True
 % for l in id.bosocial_lines:
     <tr class= "${'last_row' if id.last_row == 'bosocial' else ''}">
         % if first_pass:
-            <td class="td_first concepte_td" rowspan="${id.header_multi}">${_(u"Altres conceptes facturables")}</td>
+            <td class="td_first concepte_td" rowspan="${id.header_multi}">${_(u"Altres conceptes")}</td>
             <%first_pass = False%>
         % endif
         <td class="detall_td" colspan="${id.number_of_columns}">${_(u"Bo social (RD 7/2016 23 desembre) %s dies x %s €/dia") % (int(l['quantity']), locale.str(locale.atof(formatLang(l['price_unit'], digits=3))))}</td>
@@ -16,7 +16,7 @@ first_pass = True
 % for l in id.altres_lines:
     <tr class= "${'last_row' if id.last_row == 'altres' else ''}">
         % if first_pass:
-            <td class="td_first concepte_td" rowspan="${id.header_multi}">${_(u"Altres conceptes facturables")}</td>
+            <td class="td_first concepte_td" rowspan="${id.header_multi}">${_(u"Altres conceptes")}</td>
             <%first_pass = False%>
         % endif
         <td class="detall_td" colspan="${id.number_of_columns}">${l['name']}</td>
@@ -26,7 +26,7 @@ first_pass = True
 % for l in id.donatiu_lines:
     <tr class= "${'last_row' if id.last_row == 'donatiu' else ''}">
         % if first_pass:
-            <td class="td_first concepte_td" rowspan="${id.header_multi}">${_(u"Altres conceptes facturables")}</td>
+            <td class="td_first concepte_td" rowspan="${id.header_multi}">${_(u"Altres conceptes")}</td>
             <%first_pass = False%>
         % endif
         <td class="detall_td" colspan="${id.number_of_columns}">${_(u"Donatiu voluntari (exempt d'IVA) %s kWh x %s €/kWh") % (formatLang(l['quantity']), formatLang(l['price_unit_multi']))}</td>

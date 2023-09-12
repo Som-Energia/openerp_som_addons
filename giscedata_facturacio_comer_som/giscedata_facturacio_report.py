@@ -110,6 +110,9 @@ def is_6XTD(pol):
 def is_indexed(fact):
     return 'Indexada' in fact.llista_preu.name
 
+def is_OTL(fact):
+    return val(fact.data_inici) >= show_only_taxed_lines_date
+
 def val(object):
     try:
         return object.val
@@ -1638,7 +1641,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
     def get_component_invoice_info_data(self, fact, pol):
         amount_total = fact.amount_total
-        if fact.data_inici >= show_only_taxed_lines_date:
+        if is_OTL(fact):
             amount_total -= self.get_donatiu_amount(fact)
             amount_total -= self.get_fraccionament_amount(fact)
 
@@ -1732,6 +1735,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return data
 
     def get_component_invoice_summary_td_otl_data(self, fact, pol):
+        if not is_OTL(fact):
+            return {}
         data = self.get_component_invoice_summary_td_data(fact, pol)
         total_fraccionament = self.get_fraccionament_amount(fact)
         data['total_amount'] -= data['donatiu']
@@ -1887,7 +1892,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'is_TD': is_TD(pol),
             'is_6xTD': is_6XTD(pol),
             'is_indexed': is_indexed(fact),
-            'is_only_taxed_lines': fact.data_inici >= show_only_taxed_lines_date,
+            'is_only_taxed_lines': is_OTL(fact),
         }
         return data
 
@@ -1914,7 +1919,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             })
         return data
 
-
+    # ---------------------------------------------------
+    # Invoice_details_td component data and subcomponents
+    # ---------------------------------------------------
     def get_matrix_show_periods(self, pol):
         requested_power_periods = 3 if is_2XTD(pol) else 6
         return ['P{}'.format(i+1) for i in range(0,requested_power_periods)]
@@ -2533,6 +2540,45 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'is_visible': True,
         }
         return data
+
+
+    # -------------------------------------------------------
+    # Invoice_details_td_otl component data and subcomponents
+    # -------------------------------------------------------
+    def get_component_invoice_details_td_otl_data(self, fact, pol):
+        if not is_TD(pol):
+            return {}
+        if not is_OTL(fact):
+            return {}
+
+        amount_total = fact.amount_total
+        amount_total -= self.get_donatiu_amount(fact)
+        amount_total -= self.get_fraccionament_amount(fact)
+
+        power_discount_BOE17_2021 = self.get_sub_component_invoice_details_td_power_discount_BOE17_2021_data(fact, pol)
+        energy_discount_BOE17_2021 = self.get_sub_component_invoice_details_td_energy_discount_BOE17_2021_data(fact, pol)
+        data = {
+            'showing_periods': self.get_matrix_show_periods(pol),
+            'power' : self.get_sub_component_invoice_details_td_power_data(fact, pol),
+            'power_discount_BOE17_2021': power_discount_BOE17_2021,
+            'power_tolls': self.get_sub_component_invoice_details_td_power_tolls_data(fact, pol),
+            'power_charges': self.get_sub_component_invoice_details_td_power_charges_data(fact, pol, power_discount_BOE17_2021),
+            'energy' : self.get_sub_component_invoice_details_td_energy_data(fact, pol, energy_discount_BOE17_2021),
+            'energy_discount_BOE17_2021': energy_discount_BOE17_2021,
+            'energy_tolls': self.get_sub_component_invoice_details_td_energy_tolls_data(fact, pol),
+            'energy_charges': self.get_sub_component_invoice_details_td_energy_charges_data(fact, pol, energy_discount_BOE17_2021),
+            'other_concepts': self.get_sub_component_invoice_details_td_other_concepts_data(fact, pol),
+            'excess_power_maximeter': self.get_sub_component_invoice_details_td_excess_power_maximeter(fact, pol),
+            'excess_power_quarterhours': self.get_sub_component_invoice_details_td_excess_power_quarterhours(fact, pol),
+            'bo_social_2023': self.get_sub_component_invoice_details_td_bo_social_2023_data(fact, pol),
+            'flux_solar': self.get_sub_component_invoice_details_td_flux_solar_data(fact, pol),
+            'generation': self.get_sub_component_invoice_details_td_generation_data(fact, pol),
+            'inductive': self.get_sub_component_invoice_details_td_inductive_data(fact, pol),
+            'capacitive': self.get_sub_component_invoice_details_td_capacitive_data(fact, pol),
+            'amount_total': amount_total
+        }
+        return data
+
 
     def get_component_amount_destination_td_data(self, fact, pol):
         """
