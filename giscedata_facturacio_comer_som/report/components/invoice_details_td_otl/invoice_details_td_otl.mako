@@ -39,5 +39,6 @@
     <tr class="total_factura_row">
         <td class="total_factura_text" colspan="${len(id.showing_periods)+2}">${_(u"TOTAL FACTURA")}</td>
         <td class="subtotal">${_(u"%s €") % formatLang(id.amount_total)}</td>
+        <td></td>
     </tr>
 </table>

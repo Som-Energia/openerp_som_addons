@@ -30,7 +30,7 @@ mean_zipcode_consumption_dates = {
     'end': '2050-12-31',
 }
 
-show_only_taxed_lines_date = '2022-01-01'
+show_only_taxed_lines_date = '2021-01-01'
 
 # -----------------------------------
 # helper functions
@@ -146,6 +146,12 @@ def get_tariffs_from_libfacturacioatr():
 def get_tariff_from_libfacturacioatr(code):
     tariffs = get_tariffs_from_libfacturacioatr()
     return tariffs.get(code, None)
+
+def get_iva_line(line):
+    for tax in line.invoice_line_tax_id:
+        if 'IVA' in tax.name:
+            return tax.name[:].replace("IVA", "").strip()
+    return ''
 
 class GiscedataFacturacioFacturaReport(osv.osv):
 
@@ -825,6 +831,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'price': rmag_line.price_unit,
             'quantity': rmag_line.quantity,
             'total': rmag_line.price_subtotal,
+            'iva': get_iva_line(rmag_line),
         }
         return data
     # -----------------------------
@@ -2007,6 +2014,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             lines_data[block]['date_from'] = dateformat(l.data_desde)
             lines_data[block]['date_to_d'] = val(l.data_fins) if 'date_to_d' not in lines_data[block] or lines_data[block]['date_to_d'] < val(l.data_fins) else lines_data[block]['date_to_d']
             lines_data[block]['date_to'] = dateformat(lines_data[block]['date_to_d'])
+            lines_data[block]['iva'] = get_iva_line(l)
 
         lines_data = [lines_data[k] for k in sorted(lines_data.keys())]
         return lines_data
@@ -2047,7 +2055,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data = {
             'power_lines_data': power_lines_data,
             'header_multi': 3*len(power_lines_data),
-            'showing_periods': self.get_matrix_show_periods(pol)
+            'showing_periods': self.get_matrix_show_periods(pol),
+            'iva_column': is_OTL(fact),
         }
         return data
 
@@ -2274,6 +2283,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'showing_periods': self.get_matrix_show_periods(pol),
             'mag_line_data': mag_line_data,
             'indexed': pol.mode_facturacio == 'index',
+            'iva_column': is_OTL(fact),
         }
         return data
 
@@ -2388,6 +2398,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 items['total'] = excess_lines['total']
                 items['date_from'] = excess_lines['date_from']
                 items['date_to'] = excess_lines['date_to']
+                items['iva'] = get_iva_line(excess_lines)
             excess_data.append(items)
         data = {
             'showing_periods': showing_periods,
@@ -2395,6 +2406,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'header_multi':4*(len(excess_lines_data)),
             'days': (datetime.strptime(fact.data_final,'%Y-%m-%d') - datetime.strptime(fact.data_inici,'%Y-%m-%d')).days + 1,
             'is_visible': True,
+            'iva_column': is_OTL(fact),
         }
         return data
 
@@ -2430,12 +2442,14 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 items['total'] = excess_lines['total']
                 items['date_from'] = excess_lines['date_from']
                 items['date_to'] = excess_lines['date_to']
+                items['iva'] = get_iva_line(excess_lines)
             excess_data.append(items)
         data = {
             'showing_periods': showing_periods,
             'excess_data': excess_data,
             'is_visible': True,
             'header_multi':4*(len(excess_data)),
+            'iva_column': is_OTL(fact),
         }
         return data
 
