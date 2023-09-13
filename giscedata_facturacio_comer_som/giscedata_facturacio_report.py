@@ -2458,12 +2458,14 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         price_per_day = 0.0
         subtotal = 0.0
         visible = False
+        iva = ''
 
         for l in fact.linia_ids:
             if l.tipus in 'altres' and l.invoice_line_id.product_id.code == 'RBS':
                 days += l.quantity
                 price_per_day = l.price_unit
                 subtotal += l.price_subtotal
+                iva = get_iva_line(l)
                 visible = True
 
         data = {
@@ -2472,22 +2474,28 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'days':days,
             'price_per_day': price_per_day,
             'subtotal': subtotal,
+            'iva_column': is_OTL(fact),
+            'iva': iva,
         }
         return data
 
     def get_sub_component_invoice_details_td_flux_solar_data(self, fact, pol):
         subtotal = 0.0
         visible = False
+        iva = ''
 
         for l in fact.linia_ids:
             if l.tipus in 'altres' and l.invoice_line_id.product_id.code == 'PBV':
                 subtotal += l.price_subtotal
+                iva = get_iva_line(l)
                 visible = True
 
         data = {
             'is_visible': visible,
             'number_of_columns': len(self.get_matrix_show_periods(pol)) + 1,
             'subtotal': subtotal,
+            'iva_column': is_OTL(fact),
+            'iva': iva,
         }
         return data
 
