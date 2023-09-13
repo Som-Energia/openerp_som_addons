@@ -934,21 +934,48 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         self.assertIn("(auto.): Enviat correu previ advocats + SMS.", factura.comment)
         self.assertEqual(factura.pending_state.id, self.traspas_advocats_dp)
 
-    def test__update_pendent_consulta_pobresa_poverty_eligible(self):
+    @mock.patch("giscedata_polissa.giscedata_polissa.GiscedataPolissa.read")
+    def test__update_pendent_consulta_pobresa_poverty_eligible(self, mock_polissa_read):
+        mock_polissa_read.return_value = [
+            {
+                'id': 1,
+                'name': '1',
+                'cups_np': 'Girona',
+            }
+        ]
+
         cursor = self.txn.cursor
         uid = self.txn.user
         self._load_data_unpaid_invoices(cursor, uid, [self.consulta_pobresa])
         pending_obj = self.pool.get("update.pending.states")
         fact_obj = self.pool.get("giscedata.facturacio.factura")
 
-        mocked = mock.Mock(return_value='Barcelona')
-        with mock.patch('som_polissa.giscedata_polissa.GiscedataPolissa._get_provincia_cups', mocked):
-            pending_obj.update_pending_ask_poverty(
-                cursor, uid, context=None
-            )
+        pending_obj.update_pending_ask_poverty(
+            cursor, uid, context=None
+        )
 
-        # actualitzar 'soci' de la pòlissa -> activarla
-        # modificar província de partner de la pòlissa
+        factura = fact_obj.browse(cursor, uid, self.invoice_1_id)
+        self.assertEqual(factura.pending_state.id, self.consulta_pobresa)
+
+    @mock.patch("giscedata_polissa.giscedata_polissa.GiscedataPolissa.read")
+    def test__update_pendent_consulta_pobresa_poverty_not_eligible(self, mock_polissa_read):
+        mock_polissa_read.return_value = [
+            {
+                'id': 1,
+                'name': '1',
+                'cups_np': 'Madrid',
+            }
+        ]
+
+        cursor = self.txn.cursor
+        uid = self.txn.user
+        self._load_data_unpaid_invoices(cursor, uid, [self.consulta_pobresa])
+        pending_obj = self.pool.get("update.pending.states")
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+
+        pending_obj.update_pending_ask_poverty(
+            cursor, uid, context=None
+        )
 
         factura = fact_obj.browse(cursor, uid, self.invoice_1_id)
         self.assertEqual(factura.pending_state.id, self.avis_tall)
