@@ -6,6 +6,7 @@ from addons import get_module_resource
 from osv import osv, fields
 from addons.giscedata_facturacio.giscedata_polissa import _get_polissa_from_energy_invoice
 from gestionatr.defs import TABLA_113, TABLA_129, TABLA_130, TABLA_131
+from .exceptions import exceptions
 
 TIPO_AUTOCONSUMO = TABLA_113
 TIPO_AUTOCONSUMO_SEL = [(ac[0], u'[{}] - {}'.format(ac[0], ac[1])) for ac in TIPO_AUTOCONSUMO]
