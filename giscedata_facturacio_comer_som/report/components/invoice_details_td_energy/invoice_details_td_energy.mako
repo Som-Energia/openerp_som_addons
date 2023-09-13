@@ -87,6 +87,5 @@ first_energy_line = True
         % if id.iva_column:
             <td>${_(u"%s") % (id.mag_line_data.iva) }</td>
         % endif
-
     </tr>
 % endif

@@ -150,7 +150,7 @@ def get_tariff_from_libfacturacioatr(code):
 def get_iva_line(line):
     for tax in line.invoice_line_tax_id:
         if 'IVA' in tax.name:
-            return tax.name[:].replace("IVA", "").strip()
+            return tax.name[:].replace("IVA", "").split()[0].strip()
     return ''
 
 class GiscedataFacturacioFacturaReport(osv.osv):
@@ -2398,7 +2398,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 items['total'] = excess_lines['total']
                 items['date_from'] = excess_lines['date_from']
                 items['date_to'] = excess_lines['date_to']
-                items['iva'] = get_iva_line(excess_lines)
+                items['iva'] = excess_lines['iva']
             excess_data.append(items)
         data = {
             'showing_periods': showing_periods,
@@ -2442,7 +2442,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 items['total'] = excess_lines['total']
                 items['date_from'] = excess_lines['date_from']
                 items['date_to'] = excess_lines['date_to']
-                items['iva'] = get_iva_line(excess_lines)
+                items['iva'] = excess_lines['iva']
             excess_data.append(items)
         data = {
             'showing_periods': showing_periods,
