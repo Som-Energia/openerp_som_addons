@@ -2159,6 +2159,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data['showing_periods'] = self.get_matrix_show_periods(pol)
         data['dies'] = int(atr_linies_potencia['P1']['days']) if 'P1' in atr_linies_potencia else 0
         data['dies_any'] = days_year
+        data['iva_column'] = is_OTL(fact)
         return data
 
     def get_sub_component_invoice_details_td_power_charges_data(self, fact, pol, discount):
@@ -2208,6 +2209,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data['dies'] = int(charges_lines_potencia['P1']['days']) if 'P1' in charges_lines_potencia else 0
         data['dies_any'] = days_year
         data['header_multi'] = 4 if discount['is_visible'] else 2
+        data['iva_column'] = is_OTL(fact)
         return data
 
     def get_component_invoice_details_info_td_data(self, fact, pol):
@@ -2301,6 +2303,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         data = atr_linies_energia
         data['showing_periods'] = self.get_matrix_show_periods(pol)
+        data['iva_column'] = is_OTL(fact)
         return data
 
     def get_sub_component_invoice_details_td_energy_charges_data(self, fact, pol, discount):
@@ -2343,6 +2346,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data = charges_lines_energy
         data['showing_periods'] = self.get_matrix_show_periods(pol)
         data['header_multi'] = 4 if discount['is_visible'] else 2
+        data['iva_column'] = is_OTL(fact)
         return data
 
     def get_sub_component_invoice_details_td_other_concepts_data(self, fact, pol):
