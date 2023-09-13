@@ -6,4 +6,4 @@ from . import powersms_smsbox
 from . import wizard
 import logging
 
-logger = logging.getLogger('openerp.powersms')
+logger = logging.getLogger("openerp.powersms")

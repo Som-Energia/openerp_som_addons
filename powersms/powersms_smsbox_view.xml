@@ -154,7 +154,3 @@
         <menuitem name="Error" id="menu_powersms_error_company" parent="menu_powersms_smsbox_all_main2" action="action_powersms_error_tree_company" />
     </data>
 </openerp>
-
-
-
-
