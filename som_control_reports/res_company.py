@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from osv import osv, fields
+from osv import osv
 import pooler
 
 
@@ -43,13 +43,13 @@ class ResCompany(osv.osv):
         ahir_dt = today_dt - relativedelta(days=1)
         ahir = datetime.datetime.strftime(ahir_dt, "%Y-%m-%d")
         six_months = today_dt + relativedelta(months=-6)
-        ## TODO date_wizard per implmentar
+        # TODO date_wizard per implmentar
         date_wizard = ahir
 
         datas = {}
 
         # Comercialitzacio general
-        pol_ids = pol_obj.search(cursor, uid, [])
+        pol_obj.search(cursor, uid, [])
         solicituts = len(
             pol_obj.search(
                 cursor,
