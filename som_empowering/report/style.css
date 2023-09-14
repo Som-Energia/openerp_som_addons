@@ -54,7 +54,7 @@ h2{font-size:12px;margin:0;font-weight:800}
 #ot201_diffH{background:#D9534F;}
 #ot201_diffL{background:#bbca2b;}
 
-div.saltopagina{ 
-      display:block; 
+div.saltopagina{
+      display:block;
       page-break-before:always;
    }
