@@ -1095,8 +1095,9 @@ class GenerationkwhInvestment(osv.osv):
         if emission == 'emissio_apo' or (emission and 'APO_' in emission):
             investment_actions = AportacionsActions(self, cursor, uid, 1)
         investment_id = investment_actions.create_from_form(cursor, uid,
-                                                            partner_id, order_date, amount_in_euros, ip, iban, emission,
-                                                            context)
+                                                            partner_id, order_date,
+                                                            amount_in_euros, ip, iban,
+                                                            emission, context)
         if signaturit_data:
             investment_actions.attach_signature(
                 cursor, uid, investment_id, signaturit_data, context)
@@ -1233,12 +1234,15 @@ class GenerationkwhInvestment(osv.osv):
 
         return id_move, id_moveline_debit, id_moveline_credit
 
-    def get_or_create_payment_mandate(self, cursor, uid, partner_id, iban, purpose, creditor_code):
+    def get_or_create_payment_mandate(self, cursor, uid, partner_id, iban, purpose, creditor_code, context=None):
         """
         Searches an active payment (SEPA) mandate for
         the partner, iban and purpose (communication).
         If none is found, a new one is created.
         """
+        if not context:
+            context = {}
+
         ResPartner = self.pool.get("res.partner")
         PaymentMandate = self.pool.get("payment.mandate")
         ResPartnerAddress = self.pool.get("res.partner.address")
@@ -1255,7 +1259,7 @@ class GenerationkwhInvestment(osv.osv):
         if mandate_ids: return mandate_ids[0]
 
         adr = ResPartnerAddress.read(cursor, uid, partner['address'][0], ['nv', 'state_id'])
-        mandate_name = uuid4().hex
+        mandate_name = context.get("mandate_name", uuid4().hex)
         mandate_date = datetime.now()
         vals = {
             'debtor_name': partner['name'],

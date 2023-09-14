@@ -244,7 +244,7 @@ class GenerationkwhActions(InvestmentActions):
         ), context)
 
         GenerationkwhInvestment.get_or_create_payment_mandate(cursor, uid,
-            partner_id, iban, gkwh.mandateName, gkwh.creditorCode)
+            partner_id, iban, gkwh.mandateName, gkwh.creditorCode, context)
 
         GenerationkwhInvestment.send_mail(cursor, uid, investment_id,
             'generationkwh.investment', '_mail_creacio')
@@ -527,7 +527,7 @@ class AportacionsActions(InvestmentActions):
 
 
         GenerationkwhInvestment.get_or_create_payment_mandate(cursor, uid,
-            partner_id, iban, emi_obj['mandate_name'], gkwh.creditorCode)
+            partner_id, iban, emi_obj['mandate_name'], gkwh.creditorCode, context)
 
         total_amount_in_emission = GenerationkwhInvestment.get_investments_amount(cursor, uid, member_ids[0], emission_id=emission_id)
 
