@@ -2506,9 +2506,11 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         autoconsum_excedents_product_id = self.get_autoconsum_excedents_product_id(fact)
         generation_lines = []
         ajustment = 0.0
+        iva = ''
         for l in fact.linies_generacio:
             if l.product_id.id == autoconsum_excedents_product_id:
                 ajustment += l.price_subtotal
+                iva = get_iva_line(l)
             else:
                 generation_lines.append(l)
 
@@ -2522,6 +2524,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'is_visible': True,
             'is_ajustment_visible': ajustment_visible,
             'ajustment': ajustment,
+            'ajustment_iva': iva,
+            'iva_column': is_OTL(fact),
         }
         return data
 
