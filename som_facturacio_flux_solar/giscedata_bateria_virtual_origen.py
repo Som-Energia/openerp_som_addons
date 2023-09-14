@@ -80,9 +80,9 @@ class GiscedataBateriaVirtualOrigen(osv.osv):
 
         percentatge_defecte = int(conf_obj.get(cursor, uid, 'percentatge_acumulacio', '100'))
         polissa_id = orig_br.origen_ref.split(',')[1]
-        bat_polissa_id = bat_polissa_obj.search(cursor, uid, [('polissa_id','=',polissa_id)], context=context)
+        bat_polissa_id = bat_polissa_obj.search(cursor, uid, [('polissa_id.id','=',polissa_id)], context=context)
         if bat_polissa_id:
-            data_inici = bat_polissa_obj.read(cursor, uid, bat_polissa_id, ['data_inici'])['data_inici']
+            data_inici = bat_polissa_obj.read(cursor, uid, bat_polissa_id[0], ['data_inici'])['data_inici']
             if not orig_br.percentatges_acumulacio:
                 vals = {
                     'percentatge': percentatge_defecte,
