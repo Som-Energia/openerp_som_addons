@@ -2022,6 +2022,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
     def get_sub_component_invoice_details_td_accumulative(self, fact, pol, linies):
         lines_data = {}
         total = 0
+        iva = 0
 
         for l in linies:
             l_count = Counter({
@@ -2038,6 +2039,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 lines_data[l.name] += l_count
 
             total += l.price_subtotal
+            iva = get_iva_line(l)
+
 
         for k,v in lines_data.items():
             lines_data[k] = {
@@ -2047,6 +2050,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             }
 
         lines_data['total'] = total
+        lines_data['iva'] = iva
         return lines_data
 
     def get_sub_component_invoice_details_td_power_data(self, fact, pol):
@@ -2548,6 +2552,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'inductive_data': inductive_data,
             'showing_periods': self.get_matrix_show_periods(pol),
             'is_visible': True,
+            'iva_column': is_OTL(fact),
         }
         return data
 
@@ -2568,6 +2573,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'capacitive_data': capacitive_data,
             'showing_periods': self.get_matrix_show_periods(pol),
             'is_visible': True,
+            'iva_column': is_OTL(fact),
         }
         return data
 
