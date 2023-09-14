@@ -22,7 +22,7 @@ class GiscedataBateriaVirtualPolissa(osv.osv):
 
         origen_ids = polissa_br.bateria_id.origen_ids
         for origen_id in origen_ids:
-            if not origen_id.precentatge_acumulacio:
+            if not origen_id.percentatges_acumulacio:
                 percentatge_acum_obj.create(cursor, uid, {
                     'percentatge': percentatge_defecte,
                     'data_inici': polissa_br.data_inici,
