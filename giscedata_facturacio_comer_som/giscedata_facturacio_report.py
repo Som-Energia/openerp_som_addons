@@ -2072,6 +2072,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         discount_power_lines = {}
         total = 0
+        iva = ''
         days_year = 365
         for l in discount_lines:
             days_year = is_leap_year(datetime.strptime(l.data_desde, '%Y-%m-%d').year) and 366 or 365
@@ -2089,6 +2090,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             else:
                 discount_power_lines[name].update(l_count)
             total += l.price_subtotal
+            iva = get_iva_line(l)
 
         for k,v in discount_power_lines.items():
             discount_power_lines[k] = {
@@ -2104,6 +2106,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data['dies'] = int(discount_power_lines['P1']['days']) if 'P1' in discount_power_lines else 0
         data['dies_any'] = days_year
         data['is_indexed'] = is_index
+        data['iva'] = iva
+        data['iva_column'] = is_OTL(fact)
         return data
 
     def get_sub_component_invoice_details_td_energy_discount_BOE17_2021_data(self, fact, pol):
@@ -2114,6 +2118,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         discount_energy_lines = {}
         total = 0
+        iva = ''
         for l in discount_lines:
             price_subtotal = l.price_unit * l.quantity if is_index else l.price_subtotal
             l_count = Counter({
@@ -2128,6 +2133,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             else:
                 discount_energy_lines[name].update(l_count)
             total += l.price_subtotal
+            iva = get_iva_line(l)
 
         for k,v in discount_energy_lines.items():
             discount_energy_lines[k] = {
@@ -2140,6 +2146,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data['is_visible'] = len(discount_lines) > 0
         data['showing_periods'] = self.get_matrix_show_periods(pol)
         data['is_indexed'] = is_index
+        data['iva'] = iva
+        data['iva_column'] = is_OTL(fact)
         return data
 
     def get_sub_component_invoice_details_td_power_tolls_data(self, fact, pol):
