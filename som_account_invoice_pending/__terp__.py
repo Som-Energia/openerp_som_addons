@@ -15,12 +15,14 @@
         "www_som",
         "poweremail",
         "som_polissa",
+        "custom_search",
     ],
     "init_xml": [],
     "demo_xml": [
         "demo/som_account_invoice_pending_demo_data.xml",
     ],
     "update_xml": [
+        "data/custom_search_data.xml",
         "som_account_invoice_pending_data.xml",
         "wizard/wizard_returned_invoices_export.xml",
         "wizard/wizard_unlink_sms_pending_history_view.xml",
