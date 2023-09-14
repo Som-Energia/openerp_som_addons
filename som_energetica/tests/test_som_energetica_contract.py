@@ -2,7 +2,7 @@
 from destral import testing
 from destral.transaction import Transaction
 
-from expects import *
+from expects import expect, contain, be_false, equal, be_true, be_empty
 import osv
 
 
@@ -99,7 +99,7 @@ class EnergeticaTests(testing.OOTestCase):
             bank_obj = self.openerp.pool.get("res.partner.bank")
             imd_obj = self.openerp.pool.get("ir.model.data")
 
-            cat_energetica_id = imd_obj.get_object_reference(
+            imd_obj.get_object_reference(
                 cursor, uid, "som_energetica", "res_partner_category_energetica"
             )[1]
 
@@ -147,7 +147,7 @@ class EnergeticaTests(testing.OOTestCase):
             bank_obj = self.openerp.pool.get("res.partner.bank")
             imd_obj = self.openerp.pool.get("ir.model.data")
 
-            cat_energetica_id = imd_obj.get_object_reference(
+            imd_obj.get_object_reference(
                 cursor, uid, "som_energetica", "res_partner_category_energetica"
             )[1]
 
