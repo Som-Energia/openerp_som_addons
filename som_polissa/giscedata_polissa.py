@@ -124,7 +124,7 @@ class GiscedataPolissa(osv.osv):
 
         excluded_cases.append('R1')
         atr_case = sw_obj.search(cursor, uid, [
-            ('polissa_ref_id', '=', polissa.id),
+            ('cups_polissa_id', '=', polissa.id),
             ('state', 'in', ['open', 'draft', 'pending']),
             ('proces_id.name', 'not in', excluded_cases),
         ])
