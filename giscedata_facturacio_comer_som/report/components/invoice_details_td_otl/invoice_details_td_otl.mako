@@ -17,7 +17,11 @@
             % endfor
         % endif
         <th class="total_td">${_(u"Total conceptes")}</th>
-        <th class="iva_td">${_(u"IVA")}</th>
+        % if id.is_canaries:
+            <th class="iva_td">${_(u"IGIC")}</th>
+        % else:
+            <th class="iva_td">${_(u"IVA")}</th>
+        % endif
     </tr>
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_power/invoice_details_td_power.mako" args="id=id.power" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako" args="id=id.power_tolls" />

@@ -151,6 +151,10 @@ def get_iva_line(line):
     for tax in line.invoice_line_tax_id:
         if 'IVA' in tax.name:
             return tax.name[:].replace("IVA", "").split()[0].strip()
+        if 'IGIC' in tax.name and 'Exent' in tax.name:
+            return '-'
+        if 'IGIC' in tax.name:
+            return tax.name[:].replace("IGIC", "").split()[0].strip()
     return ''
 
 class GiscedataFacturacioFacturaReport(osv.osv):
@@ -2619,6 +2623,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'generation': self.get_sub_component_invoice_details_td_generation_data(fact, pol),
             'inductive': self.get_sub_component_invoice_details_td_inductive_data(fact, pol),
             'capacitive': self.get_sub_component_invoice_details_td_capacitive_data(fact, pol),
+            'is_canaries': pol.cups.id_provincia.id in [37, 41],
             'amount_total': amount_total
         }
         return data
