@@ -2611,7 +2611,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'energy_discount_BOE17_2021': energy_discount_BOE17_2021,
             'energy_tolls': self.get_sub_component_invoice_details_td_energy_tolls_data(fact, pol),
             'energy_charges': self.get_sub_component_invoice_details_td_energy_charges_data(fact, pol, energy_discount_BOE17_2021),
-            'other_concepts': self.get_sub_component_invoice_details_td_other_concepts_data(fact, pol),
+            'other_concepts': self.get_sub_component_invoice_details_td_otl_other_concepts_data(fact, pol),
             'excess_power_maximeter': self.get_sub_component_invoice_details_td_excess_power_maximeter(fact, pol),
             'excess_power_quarterhours': self.get_sub_component_invoice_details_td_excess_power_quarterhours(fact, pol),
             'bo_social_2023': self.get_sub_component_invoice_details_td_bo_social_2023_data(fact, pol),
@@ -2623,6 +2623,134 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         }
         return data
 
+    def get_sub_component_invoice_details_td_otl_other_concepts_data(self, fact, pol):
+        def get_tax_type(l):
+            if l.tax_id.description == 'IESE_RD_17_2021':
+                return '0.5percent'
+            elif l.tax_id.description == 'IESE_99.2_1':
+                return '1euroMWh'
+            elif l.tax_id.description == 'IESE_99.2_0.5':
+                return '0.5euroMWh'
+            elif l.tax_id.description and l.tax_id.description.startswith('IESE_RD_17_2021_85'):
+                return 'excempcio'
+            return '5.11percent'
+
+        model_obj = fact.pool.get('ir.model.data')
+        fraccio_prod_id = model_obj.get_object_reference(self.cursor, self.uid,
+                                                         'giscedata_facturacio',
+                                                         'default_fraccionament_product')[1]
+
+        lines_extra_ids = self.get_lines_in_extralines(fact, pol)
+        lloguer_lines = []
+        bosocial_lines = []
+        altres_lines = []
+        for l in fact.linia_ids:
+            if l.tipus in 'lloguer':
+                lloguer_lines.append({
+                    'quantity': l.quantity,
+                    'price_unit': l.price_unit,
+                    'price_subtotal': l.price_subtotal,
+                    'iva': get_iva_line(l),
+                })
+            if l.tipus in 'altres' and l.invoice_line_id.product_id.code == 'BS01':
+                bosocial_lines.append({
+                    'quantity': l.quantity,
+                    'price_unit': l.price_unit,
+                    'price_subtotal': l.price_subtotal,
+                    'iva': get_iva_line(l),
+                })
+            if (l.tipus in ('altres', 'cobrament') and
+                l.invoice_line_id.product_id.code not in ('DN01', 'BS01', 'DESC1721', 'DESC1721ENE', 'DESC1721POT', 'RBS', 'PBV') and
+                l.invoice_line_id.product_id.id != fraccio_prod_id):
+                altres_lines.append({
+                    'name': l.name,
+                    'price_subtotal': l.price_subtotal,
+                    'iva': get_iva_line(l),
+                })
+            if l.tipus in 'energia' and l.id in lines_extra_ids:
+                altres_lines.append({
+                    'name': l.name,
+                    'price_subtotal': l.price_subtotal,
+                    'iva': get_iva_line(l),
+                })
+
+        iese_lines = []
+        fiscal_position = fact.fiscal_position and 'IESE' in fact.fiscal_position.name and '%' in fact.fiscal_position.name
+        excempcio = None
+        percentatges_exempcio_splitted = None
+        percentatges_exempcio = None
+        is_excempcio_IE_base = None
+
+        if fiscal_position:
+            excempcio = fact.fiscal_position.tax_ids[0].tax_dest_id.name
+            excempcio = excempcio[excempcio.find("(")+1:excempcio.find(")")]
+            percentatges_exempcio_splitted = excempcio.split(' ')
+            if len(percentatges_exempcio_splitted) == 3:
+                percentatges_exempcio = (
+                    abs(float(percentatges_exempcio_splitted[0].replace('%', '')) / 100),
+                    abs(float(percentatges_exempcio_splitted[2].replace('%', '')) / 100)
+                )
+            is_excempcio_IE_base = len(percentatges_exempcio_splitted) == 3 and len(percentatges_exempcio) == 2
+
+            for l in fact.tax_line:
+                tax_type = get_tax_type(l)
+                if 'IVA' not in l.name and 'IGIC' not in l.name:
+                    if len(percentatges_exempcio_splitted) == 3 and tax_type == 'excempcio' and is_excempcio_IE_base:
+                        base_iese = l.base_amount * (1 - percentatges_exempcio[0] * percentatges_exempcio[1])
+                    else:
+                        base_iese = l.base_amount
+
+                    iese_lines.append({
+                        'base_iese': base_iese,
+                        'tax_amount': l.tax_amount,
+                        'tax_type': tax_type,
+                        'iva': '--%',
+                    })
+        else:
+            fiscal_position = False
+            for l in fact.tax_line:
+                if 'IVA' not in l.name and 'IGIC' not in l.name:
+                    iese_lines.append({
+                        'base_amount': l.base_amount,
+                        'tax_amount': l.tax_amount,
+                        'tax_type': get_tax_type(l),
+                        'iva': '--%',
+                    })
+
+        iva_lines = []
+        igic_lines = []
+        for l in fact.tax_line:
+            if 'IVA' in l.name:
+                iva_lines.append({
+                    'name': l.name,
+                    'base': l.base,
+                    'amount': l.amount,
+                    'disclaimer_21_to_5': l.name == 'IVA 5%',
+                })
+            if 'IGIC' in l.name:
+                igic_lines.append({
+                    'name': l.name,
+                    'base': l.base,
+                    'amount': l.amount,
+                })
+
+        data = {
+                'lloguer_lines': lloguer_lines,
+                'bosocial_lines': bosocial_lines,
+                'altres_lines': altres_lines,
+                'iese_lines': iese_lines,
+                'iva_lines': iva_lines,
+                'igic_lines': igic_lines,
+                'fiscal_position': fiscal_position,
+                'excempcio': excempcio,
+                'percentatges_exempcio_splitted': percentatges_exempcio_splitted,
+                'percentatges_exempcio': percentatges_exempcio,
+                'is_excempcio_IE_base': is_excempcio_IE_base,
+                'header_multi': len(bosocial_lines) + len(altres_lines),
+                'last_row': 'altres' if len(altres_lines) else 'bosocial',
+                'number_of_columns': len(self.get_matrix_show_periods(pol)) + 1,
+        }
+        return data
 
     def get_component_amount_destination_td_data(self, fact, pol):
         """
