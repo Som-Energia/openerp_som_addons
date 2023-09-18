@@ -83,7 +83,7 @@ class GiscedataBateriaVirtualOrigen(osv.osv):
         bat_polissa_id = bat_polissa_obj.search(cursor, uid, [('polissa_id.id','=',polissa_id)], context=context)
         if bat_polissa_id and len(bat_polissa_id) == 1:
             bat_pol_br = bat_polissa_obj.browse(cursor, uid, bat_polissa_id[0], context={'prefetch': False})
-            data_inici = bat_pol_br.data_inici
+            data_inici = max(bat_pol_br.data_inici, bat_pol_br.polissa_id.data_alta)
             if not orig_br.percentatges_acumulacio:
                 vals = {
                     'percentatge': percentatge_defecte,
