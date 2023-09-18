@@ -16,10 +16,10 @@ def up(cursor, installed_version):
     ##UPDATAR UNA PART DE L'XML (POSAR LA ID)##
     logger.info("Updating XMLs")
     list_of_records = [
-        "categ_desestiment",
+        "giscedata_facturacio_bateria_virtual.categ_desestiment",
     ]
     load_data_records(
-        cursor, 'som_polissa', 'giscedata_polissa_view.xml', list_of_records, mode='update'
+        cursor, 'giscedata_facturacio_bateria_virtual', 'som_polissa_data.xml', list_of_records, mode='update'
     )
     logger.info("XMLs succesfully updated.")
 
