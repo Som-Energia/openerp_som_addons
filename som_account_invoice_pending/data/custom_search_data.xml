@@ -4,6 +4,9 @@
        <record id="consulta_factures_deute_pobresa" model="custom.search">
             <field name="name">COB - Consulta factures pobresa</field>
             <field name="query"><![CDATA[
+/* ATENCIÓ: Aquesta query està pensada per ser modificada per codi.
+ * Per tant, si es modifica a l'ERP i després s'actualitza el mòdul, els canvis seran sobreescrits.
+ * */
 select
  gff.id as "IdFactura"
 --,ai.id as IdFacturaCont
