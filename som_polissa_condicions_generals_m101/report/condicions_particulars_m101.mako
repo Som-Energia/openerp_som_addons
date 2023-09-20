@@ -288,13 +288,25 @@ CONTRACT_TYPES = dict(TABLA_9)
         <div class="peatge_acces styled_box">
             <h5> ${_("PEATGE I CÀRRECS (definits a la Circular de la CNMC 3/2020 i al Reial decret 148/2021)")} </h5>
             <%
+                pol_o = pool.get('giscedata.polissa')
+                llista_preu_o = pool.get('product.pricelist')
                 dict_pot = get_potencies(pas01, polissa)
-                tarifa_a_mostrar = polissa.llista_preu.name if not (modcon_pendent_indexada or modcon_pendent_periodes) else ultima_modcon.llista_preu.name
+                ctx = {'lang': lang}
+
+                if modcon_pendent_indexada or modcon_pendent_periodes:
+                    llista_preus = ultima_modcon.llista_preu
+                elif polissa.llista_preu:
+                    llista_preus = polissa.llista_preu
+                else:
+                    tarifes_ids = llista_preu_o.search(cursor, uid, [])
+                    llista_preus = pol_o.escull_llista_preus(cursor, uid, polissa.id, tarifes_ids, context=ctx)
+
+                tarifa_a_mostrar = llista_preus.nom_comercial or llista_preus.name
             %>
             <div class="peatge_access_content">
                 <div class="padding_left"><b>${_(u"Peatge de transport i distribució: ")}</b>${clean(polissa.tarifa_codi)}</div>
                 <div class="padding_left"><b>${_(u"Tipus de contracte: ")}</b> ${CONTRACT_TYPES[polissa.contract_type]} ${"({0})".format(dict_pot['autoconsum']) if polissa.autoconsumo != '00' else ""}</div>
-                <div class="padding_bottom padding_left"><b>${_(u"Tarifa comercialitzadora: ")}</b> ${clean(tarifa_a_mostrar)}</div>
+                <div class="padding_bottom padding_left"><b>${_(u"Tarifa: ")}</b> ${clean(tarifa_a_mostrar)}</div>
                 <table class="taula_custom new_taula_custom">
                     <tr style="background-color: #878787;">
                         <th></th>
@@ -655,7 +667,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                 %else:
                     ${_(u"Tots els preus que apareixen en aquest contracte")}
                 %endif
-                &nbsp;${_(u"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent en cada moment per a cada tipus de contracte.")}
+                &nbsp;${_(u"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent en cada moment per a cada tipus de contracte sense perjudici de les exempcions o bonificacions que puguin ser d'aplicació.")}
             </div>
         </div>
             <%
@@ -681,31 +693,48 @@ CONTRACT_TYPES = dict(TABLA_9)
             <h5> ${_("DADES DE PAGAMENT")} </h5>
             <% iban = polissa.bank and polissa.bank.printable_iban[5:] or '' %>
             <div class="dades_pagament">
-                <div class="titular">
-                    <span class="name"><b>${_(u"Persona titular del compte: ")}</b> ${owner_b}</span>
-                    <span class="nif"><b>${_(u"NIF: ")}</b> ${nif}</span>
-                </div>
-                </br>
                 <div class="iban"><b>${_(u"Nº de compte bancari (IBAN): **** **** **** ****")}</b> &nbsp ${iban[-4:]}</div>
             </div>
         </div>
         <div class="modi_condicions">
             <p>
-               ${_(u"Al contractar s’accepten aquestes Condicions Particulars i les Condicions Generals, que es poden consultar a les pàgines següents. Si ens cal modificar-les, a la clàusula 9 de les Condicions Generals s’explica el procediment que seguirem. En cas que hi hagi alguna discrepància, prevaldrà el que estigui previst en aquestes Condicions Particulars.")}
+               ${_(u"Al contractar s’accepten aquestes ")}
+                %if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:
+                    ${_(u"Condicions Particulars, Específiques i les Condicions Generals,")}
+                %else:
+                    ${_(u"Condicions Particulars i les Condicions Generals")}
+                %endif
+               ${_(u"que es poden consultar a les pàgines següents. Si ens cal modificar-les, a la clàusula 9 de les Condicions Generals s’explica el procediment que seguirem. En cas que hi hagi alguna discrepància, prevaldrà el que estigui previst en aquestes Condicions Particulars.")}
             </p>
         </div>
         <div id="footer">
             <div class="city_date">
             <%
                 data_firma =  datetime.today()
+                imd_obj = obj.pool.get('ir.model.data')
+                polissa_categ_obj = obj.pool.get('giscedata.polissa.category')
+                polissa_categ_id = imd_obj.get_object_reference(
+                    cursor, uid, 'som_polissa', 'categ_tarifa_empresa'
+                )[1]
+                polissa_categ = polissa_categ_obj.browse(cursor, uid, polissa_categ_id)
             %>
                 ${company.partner_id.address[0]['city']},
                 ${_(u"a {0}".format(localize_period(data_firma, lang)))}
             </div>
             <div class="acceptacio_digital">
-                <div><b>${_(u"La persona clienta:")}</b></div>
+                % if polissa_categ in polissa.category_id:
+                    <div><b>${_(u"La contractant")}</b></div>
+                % else:
+                    <div><b>${_(u"La persona clienta:")}</b></div>
+                % endif
+
                 <img src="${addons_path}/som_polissa_condicions_generals/report/assets/acceptacio_digital.png"/>
-                <div class="acceptacio_digital_txt">${_(u"Acceptat digitalment via formulari web")}</div>
+
+                % if polissa_categ in polissa.category_id:
+                    <div class="acceptacio_digital_txt">${_(u"Signat digitalment")}</div>
+                % else:
+                    <div class="acceptacio_digital_txt">${_(u"Acceptat digitalment via formulari web")}</div>
+                % endif
 
                 <div><b>${polissa.pagador.name if not pas01 else dict_titular['client_name']}</b></div>
             </div>

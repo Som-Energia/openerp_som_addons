@@ -126,12 +126,12 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
             )
         )
 
-        data['error_code'] = []
+        data['error_codes'] = []
         for err_id in err_ids:
             e_data = errors_obj.read(
                 cursor, uid, err_id, ['code', 'text'], context=context
             )
-            data['error_code'].append({
+            data['error_codes'].append({
                 'code': e_data['code'],
                 'text': e_data['text'] if e_data['text'] else '',
             })
@@ -148,10 +148,11 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
             'openerp.{}.reimport_f1'.format(__name__)
         )
 
+        fase1_ids = []
         f1_ids = []
         days_to_check = data.get('days_to_check', 30)
         date_to_check = (datetime.today() - timedelta(days_to_check)).strftime('%Y-%m-%d')
-        for error_code in data['error_code']:
+        for error_code in data['error_codes']:
             code = error_code.get('code', '')
             text = error_code.get('text', '')
             _ids = self.search(cursor, uid, [
@@ -160,13 +161,19 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
                 ('fecha_factura', '>=', date_to_check)
             ])
             f1_ids += _ids
+        logger.info("Trobats {} fitxers F1 mitjançant codi d'error, amb data factura entre {} i avui ({})".format(
+            len(f1_ids), date_to_check, datetime.today().strftime('%Y-%m-%d')
+        ))
 
-        _ids = self.search(cursor, uid, [
+        fase1_ids = self.search(cursor, uid, [
             ('state', '=', False),
             ('import_phase', '=', IMPORT_PHASE_1),
             ('fecha_factura', '>=', date_to_check),
         ])
-        f1_ids += _ids
+        f1_ids += fase1_ids
+        logger.info("Trobats {} fitxers F1 en fase 1 sense estat, amb data factura entre {} i avui ({})".format(
+            len(fase1_ids), date_to_check, datetime.today().strftime('%Y-%m-%d')
+        ))
 
         if f1_ids:
             self.reimport_f1_by_cups(cursor, uid, f1_ids, context=context)
