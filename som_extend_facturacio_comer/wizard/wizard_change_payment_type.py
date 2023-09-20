@@ -1,6 +1,5 @@
 # -*- encoding: utf-8 -*-
 from osv import osv, fields
-from tools.translate import _
 
 
 class WizardChangePaymentType(osv.osv_memory):

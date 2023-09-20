@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from osv import osv, fields
-import base64
-import os
-import tempfile
+from osv import osv
 
 
 class WizardExportFacturae(osv.osv_memory):

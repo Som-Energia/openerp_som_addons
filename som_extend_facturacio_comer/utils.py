@@ -1,4 +1,3 @@
-from datetime import date
 
 
 def get_gkwh_atr_price(cursor, uid, polissa, pname, context, with_taxes=False):
