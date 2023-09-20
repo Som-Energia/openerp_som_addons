@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 from erpwrapper import ErpWrapper
+import pooler
 from generationkwh.isodates import isodate
 import generationkwh.investmentmodel as gkwh
 from generationkwh.investmentstate import InvestmentState
 from datetime import datetime, date
+from time import sleep
 from yamlns import namespace as ns
 from tools.translate import _
 from dateutil.relativedelta import relativedelta
+from threading import Thread
 
 
 class PartnerException(Exception):
@@ -283,9 +286,25 @@ class GenerationkwhActions(InvestmentActions):
             'files': files,
         }
         process_id = SignaturaProcess.create(cursor, uid, values, context=context)
-        cursor.commit()  # Update creates a temporary cursor and will not see the investment
-        SignaturaProcess.update(cursor, uid, [process_id], context=context)
         GenerationkwhInvestment.mark_as_signed(cursor, uid, investment_id)
+
+        Thread(
+            target=self._wait_and_update_signature_threaded,
+            args=(cursor.dbname, uid, process_id, context)
+        ).start()
+
+    def _wait_and_update_signature_threaded(self, dbname, uid, process_id, context=None):
+        """The signature takes a few seconds to be completed on signaturit"""
+        SignaturaProcess = self.erp.pool.get('giscedata.signatura.process')
+        sleep(10)
+        cursor = pooler.get_db(dbname).cursor()
+        try:
+            SignaturaProcess.update(cursor, uid, [process_id], context=context)
+            cursor.commit()
+        except Exception, e:
+            cursor.rollback()
+        finally:
+            cursor.close()
 
     def create_from_transfer(self, cursor, uid, investment_id, new_partner_id, transmission_date, iban, context=None):
         GenerationkwhInvestment = self.erp.pool.get('generationkwh.investment')
