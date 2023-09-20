@@ -33,7 +33,7 @@ class WizardInvestmentCreation(osv.osv_memory):
             #Compatibility 'emissio_apo'
             investment_id = Investment.create_from_form(cursor, uid,
                    partner_id, wiz.order_date, amount_in_e, ip, iban, emission_code,
-                context)
+                context=context)
         except Exception as e:
             creation_errors = str(e)
 

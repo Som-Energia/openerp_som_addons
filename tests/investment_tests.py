@@ -2857,6 +2857,9 @@ class InvestmentTests(testing.OOTestCase):
                         )[1]
             iban = 'ES7712341234161234567890'
 
+            # the code makes a commit needed for production but useless at testing, and
+            # it makes the DB dirty so we "deactivate" it
+            cursor.commit = lambda: None
             id = self.Investment.create_from_form(cursor, uid,
                 partner_id,
                 '2017-01-01',
