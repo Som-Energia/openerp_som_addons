@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="res.config" id="account_link_join_43">
+            <field name="name">percentatge_acumulacio</field>
+            <field name="value">80</field>
+            <field name="description">Percentatge d'acumulació per defecte en origens de Bateria Virtual.</field>
+        </record>
+    </data>
+</openerp>
