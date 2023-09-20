@@ -4,10 +4,6 @@ from osv import fields, osv
 from tools.translate import _
 from datetime import datetime
 
-STATES_GESTIO_DESCOMPTES = [
-    ('no_aplicar', 'No aplicar descomptes'),
-    ('aplicar', 'Aplicar descomptes disponibles')
-]
 
 class WizardAfegirContracteBateriaVirtual(osv.osv_memory):
     """Wizard per afegir contractes a un bateria virtual
