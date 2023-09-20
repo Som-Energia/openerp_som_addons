@@ -78,7 +78,7 @@ def get_base_locale(locale):
             <br style="display:block; margin-top:10px; line-height:33px;"><span class="peugrafica"><div id="ot101_template3_${contract.id}"></div></span>
         </div>
     <div style="clear:both;"></div>
-    </div>    
+    </div>
     </div>
        <script>
             $.ajax({
@@ -231,7 +231,7 @@ def get_base_locale(locale):
                         width: 500, height: 220, locale: "${get_base_locale(contract.titular.lang)}"
                     });
                 });
-        </script> 
+        </script>
     <div id="modul">
     <div id="titolmodul">${_("Informació addicional")}</div>
     <div id="continguts">
