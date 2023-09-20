@@ -288,6 +288,9 @@ class GenerationkwhActions(InvestmentActions):
         process_id = SignaturaProcess.create(cursor, uid, values, context=context)
         GenerationkwhInvestment.mark_as_signed(cursor, uid, investment_id)
 
+        # If it is executed in webforms is inside a transaction and this commit is
+        # necessary to make the signature visible in the Thread temporally cursor
+        cursor.commit()
         Thread(
             target=self._wait_and_update_signature_threaded,
             args=(cursor.dbname, uid, process_id, context)
