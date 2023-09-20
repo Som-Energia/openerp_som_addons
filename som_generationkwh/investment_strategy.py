@@ -299,7 +299,7 @@ class GenerationkwhActions(InvestmentActions):
     def _wait_and_update_signature_threaded(self, dbname, uid, process_id, context=None):
         """The signature takes a few seconds to be completed on signaturit"""
         SignaturaProcess = self.erp.pool.get('giscedata.signatura.process')
-        sleep(10)
+        sleep(20)
         cursor = pooler.get_db(dbname).cursor()
         try:
             SignaturaProcess.update(cursor, uid, [process_id], context=context)
