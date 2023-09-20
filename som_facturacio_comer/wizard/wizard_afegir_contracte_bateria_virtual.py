@@ -31,7 +31,7 @@ class WizardAfegirContracteBateriaVirtual(osv.osv_memory):
         self_fields = [
             'bateria_id', 'es_receptor_descomptes',
             'es_origen_descomptes', 'data_inici', 'pes',
-            'gestio_descomptes', 'crear_bateria_automaticament'
+            'crear_bateria_automaticament'
         ]
         self_vals = self.read(
             cursor, uid, ids, self_fields, context=context
