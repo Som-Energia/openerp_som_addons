@@ -33,4 +33,9 @@
             <field name="code">TE </field>
         </record>
     </data>
+    <data>
+        <record id="giscedata_facturacio_bateria_virtual.categ_desestiment" model="giscedata.polissa.category">
+            <field name="name">DESESTIMENT (Moure Flux Solar)</field>
+        </record>
+    </data>
 </openerp>
