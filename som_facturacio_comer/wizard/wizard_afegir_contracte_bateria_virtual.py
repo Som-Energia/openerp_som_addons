@@ -76,11 +76,5 @@ class WizardAfegirContracteBateriaVirtual(osv.osv_memory):
             cursor, uid, ids, context=context
         )
 
-    _columns = {
-        'gestio_descomptes': fields.selection(
-            STATES_GESTIO_DESCOMPTES, 'Gestió dels descomptes'
-        ),
-    }
-
 
 WizardAfegirContracteBateriaVirtual()
