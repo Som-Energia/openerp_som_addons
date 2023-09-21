@@ -152,7 +152,7 @@ def get_iva_line(line):
         if 'IVA' in tax.name:
             return tax.name[:].replace("IVA", "").split()[0].strip()
         if 'IGIC' in tax.name and 'Exent' in tax.name:
-            return '-'
+            return 'Ex'
         if 'IGIC' in tax.name:
             return tax.name[:].replace("IGIC", "").split()[0].strip()
     return ''
@@ -2649,7 +2649,13 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         lloguer_lines = []
         bosocial_lines = []
         altres_lines = []
+        iva_energia =  None
+        iva_potencia = None
         for l in fact.linia_ids:
+            if l.tipus in 'energia':
+                iva_energia = get_iva_line(l)
+            if l.tipus in 'potencia':
+                iva_potencia = get_iva_line(l)
             if l.tipus in 'lloguer':
                 lloguer_lines.append({
                     'quantity': l.quantity,
@@ -2678,6 +2684,12 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     'price_subtotal': l.price_subtotal,
                     'iva': get_iva_line(l),
                 })
+
+        iva_iese = '--%'
+        if iva_potencia:
+            iva_iese = iva_potencia
+        if iva_energia:
+            iva_iese = iva_energia
 
         iese_lines = []
         fiscal_position = fact.fiscal_position and 'IESE' in fact.fiscal_position.name and '%' in fact.fiscal_position.name
@@ -2709,7 +2721,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                         'base_iese': base_iese,
                         'tax_amount': l.tax_amount,
                         'tax_type': tax_type,
-                        'iva': '--%',
+                        'iva': iva_iese,
                     })
         else:
             fiscal_position = False
@@ -2719,7 +2731,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                         'base_amount': l.base_amount,
                         'tax_amount': l.tax_amount,
                         'tax_type': get_tax_type(l),
-                        'iva': '--%',
+                        'iva': iva_iese,
                     })
 
         iva_lines = []
