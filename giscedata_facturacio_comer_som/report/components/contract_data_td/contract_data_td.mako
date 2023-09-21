@@ -72,9 +72,6 @@ autoconsum_text = TABLA_113_dict[cd.autoconsum] if cd.autoconsum in TABLA_113_di
                     %if cd.is_autoconsum:
                         ${_(u"Autoproducció tipus:")} <span style="font-weight: bold;">${autoconsum_text}</span> <br />
                         ${_(u"CAU (Codi d'autoconsum unificat):")} <span style="font-weight: bold;">${cd.autoconsum_cau}</span>
-                        %if cd.is_autoconsum_colectiu:
-                            <br />${_(u"Percentatge de repartiment de l'autoproducció compartida:")} <span style="font-weight: bold;">${cd.autoconsum_colectiu_repartiment} %</span>
-                        %endif
                     %endif
                 </p>
             </div>

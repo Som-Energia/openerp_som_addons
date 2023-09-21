@@ -26,6 +26,9 @@ count = 1
                     % endif
                 % endfor
                 <td></td>
+                % if id.iva_column:
+                    <td></td>
+                % endif
                 <%count += 1%>
             </tr>
             <tr>
@@ -43,6 +46,9 @@ count = 1
                     % endif
                 % endfor
                 <td></td>
+                % if id.iva_column:
+                    <td></td>
+                % endif
                 <%count += 1%>
             </tr>
             <tr>
@@ -64,6 +70,9 @@ count = 1
                     % endif
                 % endfor
                 <td></td>
+                % if id.iva_column:
+                    <td></td>
+                % endif
                 <%count += 1%>
             </tr>
             % if count < id.header_multi:
@@ -89,6 +98,9 @@ count = 1
                     % endif
                 % endfor
                 <td><span class="subtotal">${_(u"%s €") %(formatLang(excess_data['total']))}</span></td>
+                % if id.iva_column:
+                    <td>${_(u"%s") % (excess_data['iva']) }</td>
+                % endif
                 <%count += 1%>
             </tr>
         % else:
@@ -106,6 +118,9 @@ count = 1
                     % endif
                 % endfor
                 <td></td>
+                % if id.iva_column:
+                    <td></td>
+                % endif
                 <%count += 1%>
             </tr>
             <tr>
@@ -118,6 +133,9 @@ count = 1
                     % endif
                 % endfor
                 <td></td>
+                % if id.iva_column:
+                    <td></td>
+                % endif
                 <%count += 1%>
             </tr>
             <tr>
@@ -134,6 +152,9 @@ count = 1
                     % endif
                 % endfor
                 <td></td>
+                % if id.iva_column:
+                    <td></td>
+                % endif
                 <%count += 1%>
             </tr>
             % if count < id.header_multi:
@@ -154,6 +175,9 @@ count = 1
                     % endif
                 % endfor
                 <td><span class="subtotal">${_(u"%s €") %(formatLang(excess_data['total']))}</span></td>
+                % if id.iva_column:
+                    <td>${_(u"%s") % (excess_data['iva']) }</td>
+                % endif
                 <%count += 1%>
             </tr>
         % endif

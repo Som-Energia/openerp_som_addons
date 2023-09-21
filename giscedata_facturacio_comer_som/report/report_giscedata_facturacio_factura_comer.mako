@@ -44,7 +44,11 @@ report_data = r_obj.get_report_data(cursor, uid, objects)
         <%include file="/giscedata_facturacio_comer_som/report/components/flags/flags.mako" args="flags=factura_data.flags" />
         <%include file="/giscedata_facturacio_comer_som/report/components/invoice_info/invoice_info.mako" args="ii=factura_data.invoice_info" />
     </div>
-    <%include file="/giscedata_facturacio_comer_som/report/components/invoice_summary_td/invoice_summary_td.mako" args="invs=factura_data.invoice_summary_td" />
+    % if factura_data.globals.is_only_taxed_lines:
+        <%include file="/giscedata_facturacio_comer_som/report/components/invoice_summary_td_otl/invoice_summary_td_otl.mako" args="invs=factura_data.invoice_summary_td_otl" />
+    % else:
+        <%include file="/giscedata_facturacio_comer_som/report/components/invoice_summary_td/invoice_summary_td.mako" args="invs=factura_data.invoice_summary_td" />
+    % endif
     <%include file="/giscedata_facturacio_comer_som/report/components/partner_info/partner_info.mako" args="pi=factura_data.partner_info" />
     <%include file="/giscedata_facturacio_comer_som/report/components/rectificative_banner/rectificative_banner.mako" args="rb=factura_data.rectificative_banner" />
     <!-- LECTURES ACTIVA i GRÀFIC BARRES -->
@@ -67,7 +71,11 @@ report_data = r_obj.get_report_data(cursor, uid, objects)
     <!-- DETALL FACTURA -->
     <div class="invoice_detail">
         <h1>${_(u"DETALL DE LA FACTURA")}</h1>
-        <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td/invoice_details_td.mako" args="id=factura_data.invoice_details_td" />
+        % if factura_data.globals.is_only_taxed_lines:
+            <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_otl/invoice_details_td_otl.mako" args="id=factura_data.invoice_details_td_otl" />
+        % else:
+            <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td/invoice_details_td.mako" args="id=factura_data.invoice_details_td" />
+        % endif
         <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_info_td/invoice_details_info_td.mako" args="id_info=factura_data.invoice_details_info_td" />
     </div>
     <%include file="/giscedata_facturacio_comer_som/report/components/cnmc_comparator_qr_link/cnmc_comparator_qr_link.mako" args="comparator=factura_data.cnmc_comparator_qr_link" />

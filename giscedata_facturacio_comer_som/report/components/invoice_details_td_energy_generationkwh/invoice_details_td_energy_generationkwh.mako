@@ -17,6 +17,9 @@
             % endif
         % endfor
         <td></td>
+        % if id.iva_column:
+            <td></td>
+        % endif
     </tr>
     <tr>
         <td class="detall_td">${_(u"Preu GenerationkWh [€/kWh]")}</td>
@@ -29,6 +32,9 @@
             % endif
         % endfor
         <td></td>
+        % if id.iva_column:
+            <td></td>
+        % endif
     </tr>
     <tr class="tr_bold">
         <td class="detall_td">${_(u"kWh x €/kWh (del %s al %s)") % (energy_lines_data.date_from, energy_lines_data.date_to)}</td>
@@ -41,5 +47,8 @@
             % endif
         % endfor
         <td><span class="subtotal">${_(u"%s €") %(formatLang(energy_lines_data.total))}</span></td>
+        % if id.iva_column:
+            <td>${_(u"%s") % (energy_lines_data.iva) }</td>
+        % endif
     </tr>
 % endfor

@@ -34,6 +34,9 @@ first_energy_line = True
             % endif
         % endfor
         <td></td>
+        % if id.iva_column:
+            <td></td>
+        % endif
     </tr>
     <tr>
         % if id.indexed:
@@ -49,6 +52,9 @@ first_energy_line = True
             % endif
         % endfor
         <td></td>
+        % if id.iva_column:
+            <td></td>
+        % endif
     </tr>
     <tr class="tr_bold">
         <td class="detall_td">${_(u"kWh x €/kWh (del %s al %s)") % (energy_lines_data.date_from, energy_lines_data.date_to)}</td>
@@ -60,6 +66,9 @@ first_energy_line = True
             % endif
         % endfor
         <td><span class="subtotal">${_(u"%s €") %(formatLang(energy_lines_data.total))}</span></td>
+        % if id.iva_column:
+            <td>${_(u"%s") % (energy_lines_data.iva) }</td>
+        % endif
     </tr>
 % endfor
 % if id.mag_line_data:
@@ -75,5 +84,8 @@ first_energy_line = True
                 <td></td>
         % endfor
         <td><span class="subtotal">${_(u"%s €") % (formatLang(id.mag_line_data.total))}</span></td>
+        % if id.iva_column:
+            <td>${_(u"%s") % (id.mag_line_data.iva) }</td>
+        % endif
     </tr>
 % endif
