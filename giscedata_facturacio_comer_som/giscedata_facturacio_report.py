@@ -30,7 +30,7 @@ mean_zipcode_consumption_dates = {
     'end': '2050-12-31',
 }
 
-show_only_taxed_lines_date = '2021-01-01'
+show_only_taxed_lines_date = '2023-11-01'
 
 # -----------------------------------
 # helper functions
