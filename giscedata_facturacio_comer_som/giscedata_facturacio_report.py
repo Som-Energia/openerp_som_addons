@@ -111,7 +111,7 @@ def is_indexed(fact):
     return 'Indexada' in fact.llista_preu.name
 
 def is_OTL(fact):
-    return val(fact.data_inici) >= show_only_taxed_lines_date
+    return val(fact.date_invoice) >= show_only_taxed_lines_date
 
 def val(object):
     try:
