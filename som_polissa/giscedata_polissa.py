@@ -6,6 +6,7 @@ from addons import get_module_resource
 from osv import osv, fields
 from addons.giscedata_facturacio.giscedata_polissa import _get_polissa_from_energy_invoice
 from gestionatr.defs import TABLA_113, TABLA_129, TABLA_130, TABLA_131
+from .exceptions import exceptions
 
 TIPO_AUTOCONSUMO = TABLA_113
 TIPO_AUTOCONSUMO_SEL = [(ac[0], u'[{}] - {}'.format(ac[0], ac[1])) for ac in TIPO_AUTOCONSUMO]
@@ -34,7 +35,7 @@ TARIFF_MAPPING = {
     "6.1B": "6.2TD"
 }
 
- 
+
 class GiscedataPolissa(osv.osv):
     _name = 'giscedata.polissa'
     _inherit = 'giscedata.polissa'
@@ -95,6 +96,43 @@ class GiscedataPolissa(osv.osv):
                     args[idx][1] = '='
                     args[idx][2] = False
         return super(GiscedataPolissa, self).search(cr, user, args, offset, limit, order, context, count)
+
+    def check_modifiable_polissa(
+        self, cursor, uid, polissa_id, skip_atr_check=False, excluded_cases=None, context=None
+    ):
+        """
+        Things to check before allowing modcons to the contract.
+        - Contract doesn't have ANY pending modcons
+        - Contract doesn't have ANY pending ATR cases
+        """
+        if context is None:
+            context = {}
+
+        if excluded_cases is None:
+            excluded_cases = []
+
+        sw_obj = self.pool.get('giscedata.switching')
+
+        polissa = self.browse(cursor, uid, polissa_id, context=context)
+
+        if polissa.state != 'activa':
+            raise exceptions.PolissaNotActive(polissa.name)
+
+        prev_modcon = polissa.modcontractuals_ids[0]
+        if prev_modcon.state == 'pendent':
+            raise exceptions.PolissaModconPending(polissa.name)
+
+        excluded_cases.append('R1')
+        atr_case = sw_obj.search(cursor, uid, [
+            ('cups_polissa_id', '=', polissa.id),
+            ('state', 'in', ['open', 'draft', 'pending']),
+            ('proces_id.name', 'not in', excluded_cases),
+        ])
+
+        if atr_case and not skip_atr_check:
+            raise exceptions.PolissaSimultaneousATR(polissa.name)
+
+        return True
 
     def get_new_potencies(self, potencies_periode, new_tariff_code):
         potencies_periode = list(potencies_periode)

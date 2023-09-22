@@ -10,6 +10,7 @@
         "base",
         "base_extended_som",
         "giscedata_facturacio_indexada_som",
+        "som_polissa",
         "giscedata_polissa",
         "giscedata_polissa_comer",
         "giscedata_polissa_category",

@@ -4,11 +4,6 @@ from osv import fields, osv
 from tools.translate import _
 from datetime import datetime
 
-STATES_GESTIO_DESCOMPTES = [
-    ('no_aplicar', 'No aplicar descomptes'),
-    ('aplicar', 'Aplicar descomptes disponibles')
-]
-
 class WizardAfegirContracteBateriaVirtual(osv.osv_memory):
     """Wizard per afegir contractes a un bateria virtual
     """
@@ -31,7 +26,7 @@ class WizardAfegirContracteBateriaVirtual(osv.osv_memory):
         self_fields = [
             'bateria_id', 'es_receptor_descomptes',
             'es_origen_descomptes', 'data_inici', 'pes',
-            'gestio_descomptes', 'crear_bateria_automaticament'
+            'crear_bateria_automaticament'
         ]
         self_vals = self.read(
             cursor, uid, ids, self_fields, context=context
@@ -53,9 +48,9 @@ class WizardAfegirContracteBateriaVirtual(osv.osv_memory):
             pol_cups = []
             if origen_ids:
                 for origen_id in origen_ids:
-                    orig_pol_id = int(origen_obj.read(
+                    orig_pol_id = origen_obj.read(
                         cursor, uid, origen_id, ['origen_ref'], context=context
-                        )['origen_ref'].split(',')[1])
+                        )['origen_ref'].split(',')[1]
                     pol_cups_id = pol_obj.read(cursor, uid, orig_pol_id, ['cups'], context=context)['cups'][0]
                     origin_cups.append(pol_cups_id)
                 for pol_id in context.get('active_ids', []):
@@ -75,12 +70,5 @@ class WizardAfegirContracteBateriaVirtual(osv.osv_memory):
         return super(WizardAfegirContracteBateriaVirtual, self).action_assignar_bateria_virtual(
             cursor, uid, ids, context=context
         )
-
-    _columns = {
-        'gestio_descomptes': fields.selection(
-            STATES_GESTIO_DESCOMPTES, 'Gestió dels descomptes'
-        ),
-    }
-
 
 WizardAfegirContracteBateriaVirtual()
