@@ -1354,7 +1354,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     'price_unit_multi': l.price_unit_multi,
                     'price_subtotal': l.price_subtotal,
                 })
-            if l.tipus in ('altres', 'cobrament') and l.invoice_line_id.product_id.code not in ('DN01', 'BS01', 'DESC1721', 'DESC1721ENE', 'DESC1721POT', 'RBS'):
+            if l.tipus in ('altres', 'cobrament') and l.invoice_line_id.product_id.code not in ('DN01', 'BS01', 'DESC1721', 'DESC1721ENE', 'DESC1721POT', 'RBS', 'PBV'):
                 altres_lines.append({
                     'name': l.name,
                     'price_subtotal': l.price_subtotal,
@@ -1660,7 +1660,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         donatiu_lines = [l for l in fact.linia_ids if l.tipus in 'altres'
                         and l.invoice_line_id.product_id.code == 'DN01']
         altres_lines = [l for l in fact.linia_ids if l.tipus in ('altres', 'cobrament')
-                        and l.invoice_line_id.product_id.code not in ('DN01', 'BS01', 'RBS')]
+                        and l.invoice_line_id.product_id.code not in ('DN01', 'BS01', 'RBS', 'PBV')]
 
         extra_energy_lines = self.get_extra_energy_lines(fact, pol)
 
@@ -1710,6 +1710,12 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         bosocial2023_lines = [l for l in fact.linia_ids if l.tipus in 'altres'
                              and l.invoice_line_id.product_id.code == 'RBS']
         data['total_bosocial2023'] = sum([l.price_subtotal for l in bosocial2023_lines])
+
+        flux_lines = [l for l in fact.linia_ids if l.tipus in ('altres', 'cobrament')
+                     and l.invoice_line_id.product_id.code == 'PBV']
+
+        data['has_flux_solar_discount'] = len(flux_lines) > 0
+        data['flux_solar_discount'] = sum([l.price_subtotal for l in flux_lines])
         return data
 
     def get_component_partner_info_data(self, fact, pol):
@@ -1911,6 +1917,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'excess_power_maximeter': self.get_sub_component_invoice_details_td_excess_power_maximeter(fact, pol),
             'excess_power_quarterhours': self.get_sub_component_invoice_details_td_excess_power_quarterhours(fact, pol),
             'bo_social_2023': self.get_sub_component_invoice_details_td_bo_social_2023_data(fact, pol),
+            'flux_solar': self.get_sub_component_invoice_details_td_flux_solar_data(fact, pol),
             'generation': self.get_sub_component_invoice_details_td_generation_data(fact, pol),
             'inductive': self.get_sub_component_invoice_details_td_inductive_data(fact, pol),
             'capacitive': self.get_sub_component_invoice_details_td_capacitive_data(fact, pol),
@@ -2416,6 +2423,22 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'number_of_columns': len(self.get_matrix_show_periods(pol)) + 1,
             'days':days,
             'price_per_day': price_per_day,
+            'subtotal': subtotal,
+        }
+        return data
+
+    def get_sub_component_invoice_details_td_flux_solar_data(self, fact, pol):
+        subtotal = 0.0
+        visible = False
+
+        for l in fact.linia_ids:
+            if l.tipus in 'altres' and l.invoice_line_id.product_id.code == 'PBV':
+                subtotal += l.price_subtotal
+                visible = True
+
+        data = {
+            'is_visible': visible,
+            'number_of_columns': len(self.get_matrix_show_periods(pol)) + 1,
             'subtotal': subtotal,
         }
         return data

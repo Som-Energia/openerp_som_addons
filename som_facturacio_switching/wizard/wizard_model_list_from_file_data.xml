@@ -16,5 +16,10 @@
             <field name="name">Codi factura rectificada/anulada</field>
             <field name="column">factura_rectificada</field>
         </record>
+        <record model="wizard.model.list.from.file.filter" id="model_list_wizard_filter_polissa_CUPS_CP">
+            <field name="model">giscedata.polissa</field>
+            <field name="name">CP del CUPS de la Pòlissa</field>
+            <field name="column">cups.dp</field>
+        </record>
     </data>
 </openerp>

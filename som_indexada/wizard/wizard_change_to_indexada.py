@@ -116,6 +116,7 @@ class WizardChangeToIndexada(osv.osv_memory):
 
     def get_new_pricelist(self, cursor, uid, polissa, context=None):
         IrModel = self.pool.get('ir.model.data')
+        Pricelist = self.pool.get('product.pricelist')
 
         tarifa_codi = polissa.tarifa_codi
         if context.get('forced_tariff'):
@@ -130,14 +131,21 @@ class WizardChangeToIndexada(osv.osv_memory):
             raise exceptions.TariffCodeNotSupported(tarifa_codi)
 
         location = self._get_location_polissa(cursor, uid, polissa)
-        new_pricelist_id = IrModel._get_obj(
-            cursor,
-            uid,
-            'som_indexada',
-            dict_pricelist_codis[tarifa_codi][location],
+
+        search_params = [
+            ('module', '=', 'som_indexada'),
+            ('name', '=', dict_pricelist_codis[tarifa_codi][location])
+        ]
+
+        ir_model_id = IrModel.search(cursor, uid, search_params, context=context)[0]
+
+        new_pricelist_id = IrModel.read(cursor, uid, ir_model_id, ['res_id'], context=context)['res_id']
+
+        new_pricelist_browse = Pricelist.browse(
+            cursor, uid, new_pricelist_id, context=context
         )
 
-        return new_pricelist_id
+        return new_pricelist_browse
 
     def calculate_new_pricelist(self, cursor, uid, polissa, change_type, context=None):
         IrModel = self.pool.get('ir.model.data')

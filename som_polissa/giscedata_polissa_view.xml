@@ -145,7 +145,7 @@
             <field name="name">giscedata_polissa_cau_tree</field>
             <field name="model">giscedata.polissa</field>
             <field name="type">tree</field>
-            <field name="priority" eval="1"/>
+            <field name="priority" eval="16"/>
             <field name="arch" type="xml">
                 <tree string="Contractes per CAU" colors="red:state in ['tall', 'baixa', 'cancelada']">
                     <field name="distribuidora"/>
@@ -235,7 +235,7 @@
                     <field name="potencia_generacio" select="1"/>
                 </xpath>
                 <xpath expr="//field[@name='autoconsum_id']" position="replace">
-                    <field name="autoconsum_id" select="1" attrs="{'required':[('autoconsumo','!=','00'), ('state','in',['validar','modcontractual'])]}" on_change="onchange_autoconsum_id(autoconsum_id)"/>
+                    <field name="autoconsum_id" string="CAU" size="26" select="1" attrs="{'required':[('autoconsumo','!=','00'), ('state','in',['validar','modcontractual'])]}" on_change="onchange_autoconsum_id(autoconsum_id)"/>
                 </xpath>
                 <xpath expr="//field[@name='is_autoconsum_collectiu']" position="replace">
                     <field name="is_autoconsum_collectiu" select="2"/>
@@ -263,6 +263,38 @@
                     <field name="bateria_activa"/>
                     <field name="data_activacio_bateria"/>
                 </field>
+            </field>
+        </record>
+
+        <!-- Canviem el nom de Bateria Virtual a Flux Solar -->
+        <record model="ir.ui.view" id="view_som_giscedata_polissa_form">
+            <field name="name">som.polissa.bateries.virtuals.form</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_facturacio_bateria_virtual.view_giscedata_polissa_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <page string="Bateries Virtuals" position="replace">
+                    <page string="Flux Solar">
+                        <group colspan="2" col="4">
+                            <field name="crea_bat_auto" string="Afegir a un flux solar al activar pòlissa" select="2"/>
+                        </group>
+                        <field name="bateria_ids" nolabel="1" colspan="4" context="{'polissa_id':active_id}"/>
+                    </page>
+                </page>
+            </field>
+        </record>
+
+        <!-- Canviem el nom de Bateria Virtual a Flux Solar -->
+        <record model="ir.ui.view" id="view_som_bateries_polissa_tree_listat">
+            <field name="name">som.bateria.virtual.polissa.tree.llistat</field>
+            <field name="model">giscedata.bateria.virtual.polissa</field>
+            <field name="inherit_id" ref="giscedata_facturacio_bateria_virtual.view_bateries_polissa_tree_listat"/>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='bateria_id']" position="attributes">
+                    <attribute name="string">Flux Solar</attribute>
+                    <attribute name="select">2</attribute>
+                </xpath>
             </field>
         </record>
     </data>

@@ -10,9 +10,9 @@
     <br />
     <h1 align="center">Quadre de control General</h1>
     <h2 align="center">Dades actualitzades fins el ${day} inclòs</h2>
-    
+
     <hr width="100%" align="center" /></br></br>
-    
+
     % for group, values in sorted(stadistica.items()):
         <table border="1" width="60%" align="center">
             <th colspan="2"> ${group}</th>
