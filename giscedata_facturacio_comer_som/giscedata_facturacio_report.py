@@ -111,7 +111,7 @@ def is_indexed(fact):
     return 'Indexada' in fact.llista_preu.name
 
 def is_OTL(fact):
-    return val(fact.data_inici) >= show_only_taxed_lines_date
+    return val(fact.date_invoice) >= show_only_taxed_lines_date
 
 def val(object):
     try:
@@ -1646,8 +1646,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                                                          'giscedata_facturacio',
                                                          'default_fraccionament_product')[1]
 
-        faccionament_lines = [l.price_subtotal for l in fact.linia_ids if l.tipus == 'cobrament'
-                            and l.invoice_line_id.product_id.id == fraccio_prod_id]
+        faccionament_lines = [l.price_subtotal for l in fact.linia_ids if l.invoice_line_id.product_id.id == fraccio_prod_id]
         return sum(faccionament_lines)
 
     def get_component_invoice_info_data(self, fact, pol):

@@ -28,9 +28,9 @@
         % if not id.is_indexed:
             <span class="subtotal">${_(u"%s €") %(formatLang(id.total))}</span>
         % endif
+        </td>
         % if id.iva_column:
             <td>${_(u"%s") % (id.iva) }</td>
         % endif
-        </td>
     </tr>
 % endif
