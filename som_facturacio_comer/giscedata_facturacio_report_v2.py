@@ -2,7 +2,7 @@
 from osv import osv
 from report_backend.report_backend import report_browsify
 
-show_only_taxed_lines_date = '2020-11-01'
+show_only_taxed_lines_date = '2023-11-01'
 
 def is_OTL(data):
     return data['factura']['data']['factura'].val >= show_only_taxed_lines_date
