@@ -60,6 +60,8 @@ class GiscedataFacturacioFacturaReportV2(osv.osv):
             'import': self._get_fraccionament_amount(cursor, uid, fra, context=context),
         }
 
+        res['total_linies_impostos'] = data['factura']['import'] - res['donatiu']['import'] - res['fraccionament']['import']
+
         return res
 
     def get_impsa(self, data, linies_importe_otros):
