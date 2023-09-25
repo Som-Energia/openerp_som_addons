@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 from erpwrapper import ErpWrapper
+import pooler
 from generationkwh.isodates import isodate
 import generationkwh.investmentmodel as gkwh
 from generationkwh.investmentstate import InvestmentState
 from datetime import datetime, date
+from time import sleep
 from yamlns import namespace as ns
 from tools.translate import _
 from dateutil.relativedelta import relativedelta
+from threading import Thread
 
 
 class PartnerException(Exception):
@@ -60,6 +63,10 @@ class InvestmentActions(ErpWrapper):
             bank_inversions = bank_id,),context)
 
         return member_ids, emission_id
+
+
+    def attach_signature(self, cursor, uid, investment_id, signaturit_data, context=None):
+        pass  # For now, this is only for GenerationkWh
 
     def create_from_transfer(self, cursor, uid, investment_id, new_partner_id, transmission_date, iban, context=None):
         pass
@@ -240,12 +247,67 @@ class GenerationkwhActions(InvestmentActions):
         ), context)
 
         GenerationkwhInvestment.get_or_create_payment_mandate(cursor, uid,
-            partner_id, iban, gkwh.mandateName, gkwh.creditorCode)
+            partner_id, iban, gkwh.mandateName, gkwh.creditorCode, context)
 
         GenerationkwhInvestment.send_mail(cursor, uid, investment_id,
             'generationkwh.investment', '_mail_creacio')
 
         return investment_id
+
+    def attach_signature(self, cursor, uid, investment_id, signaturit_data, context=None):
+        GenerationkwhInvestment = self.erp.pool.get('generationkwh.investment')
+        SignaturaProcess = self.erp.pool.get('giscedata.signatura.process')
+
+        investment = GenerationkwhInvestment.browse(cursor, uid, investment_id)
+        recipients = [
+            (0, 0, {
+                'partner_address_id': investment.member_id.address[0].id,
+                'name': investment.member_id.name,
+                'email': investment.member_id.address[0].email
+            })
+        ]
+        files = [
+            (0, 0, {
+                'signature_id': signaturit_data['documents'][0]['id'],
+                'model': 'generationkwh.investment,{}'.format(investment_id),
+                'filename': signaturit_data['documents'][0]['file']['name'],
+            })
+        ]
+        values = {
+            'signature_id': signaturit_data['id'],
+            'signature_url': signaturit_data['url'],
+            'provider': 'signaturit',
+            'subject': investment.name,
+            'delivery_type': 'url',
+            'recipients': recipients,
+            'reminders': 0,
+            'type': 'advanced',
+            'status': 'doing',
+            'files': files,
+        }
+        process_id = SignaturaProcess.create(cursor, uid, values, context=context)
+        GenerationkwhInvestment.mark_as_signed(cursor, uid, investment_id)
+
+        # If it is executed in webforms is inside a transaction and this commit is
+        # necessary to make the signature visible in the Thread temporally cursor
+        cursor.commit()
+        Thread(
+            target=self._wait_and_update_signature_threaded,
+            args=(cursor.dbname, uid, process_id, context)
+        ).start()
+
+    def _wait_and_update_signature_threaded(self, dbname, uid, process_id, context=None):
+        """The signature takes a few seconds to be completed on signaturit"""
+        SignaturaProcess = self.erp.pool.get('giscedata.signatura.process')
+        sleep(20)
+        cursor = pooler.get_db(dbname).cursor()
+        try:
+            SignaturaProcess.update(cursor, uid, [process_id], context=context)
+            cursor.commit()
+        except Exception, e:
+            cursor.rollback()
+        finally:
+            cursor.close()
 
     def create_from_transfer(self, cursor, uid, investment_id, new_partner_id, transmission_date, iban, context=None):
         GenerationkwhInvestment = self.erp.pool.get('generationkwh.investment')
@@ -487,7 +549,7 @@ class AportacionsActions(InvestmentActions):
 
 
         GenerationkwhInvestment.get_or_create_payment_mandate(cursor, uid,
-            partner_id, iban, emi_obj['mandate_name'], gkwh.creditorCode)
+            partner_id, iban, emi_obj['mandate_name'], gkwh.creditorCode, context)
 
         total_amount_in_emission = GenerationkwhInvestment.get_investments_amount(cursor, uid, member_ids[0], emission_id=emission_id)
 

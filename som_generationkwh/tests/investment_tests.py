@@ -2847,4 +2847,39 @@ class InvestmentTests(testing.OOTestCase):
 
             self.assertTrue('Cannot pay interest of a already paid interest' in e.exception.message)
 
+    @mock.patch("som_generationkwh.investment_strategy.GenerationkwhActions._wait_and_update_signature_threaded")
+    def test__create_signaturit_data__AllOkGKWH(self, mocked_update_sign):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                        )[1]
+            iban = 'ES7712341234161234567890'
+
+            # the code makes a commit needed for production but useless at testing, and
+            # it makes the DB dirty so we "deactivate" it
+            cursor.commit = lambda: None
+            id = self.Investment.create_from_form(cursor, uid,
+                partner_id,
+                '2017-01-01',
+                2000,
+                '10.10.23.1',
+                iban,
+                'emissio_genkwh',
+                signaturit_data={
+                    "id": "th1s-i5-a-f4ls3-1d",
+                    "url": "https://app.sandbox.signaturit.com/document/th1s-i5-a-f4ls3-1d",
+                    "documents": [{
+                        "id": "th1s-i5-a-f4ls3-d0c-1d",
+                        "file": {
+                            "name": "Test_File.pdf",
+                        },
+                    }],
+                }
+            )
+            investment = self.Investment.browse(cursor, uid, id)
+            self.assertTrue(investment.signed_date)
+            mocked_update_sign.assert_called()
+
 # vim: et ts=4 sw=4
