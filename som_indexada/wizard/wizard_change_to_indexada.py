@@ -209,7 +209,7 @@ class WizardChangeToIndexada(osv.osv_memory):
                 raise indexada_exceptions.PolissaNotStandardPrice(polissa.name)
 
         res = sw_obj.search(cursor, uid, [
-            ('polissa_ref_id', '=', polissa.id),
+            ('cups_polissa_id', '=', polissa.id),
             ('state', 'in', ['open', 'draft', 'pending']),
             ('proces_id.name', '!=', 'R1'),
         ])
