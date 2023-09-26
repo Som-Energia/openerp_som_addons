@@ -31,6 +31,10 @@ class GiscedataFacturacioFacturaReportV2(osv.osv):
     def get_factura(self, cursor, uid, fra, context=None):
         res = super(GiscedataFacturacioFacturaReportV2, self).get_factura(cursor, uid, fra, context=context)
         res['te_gkwh'] = fra.is_gkwh
+
+        donatiu = self._get_donatiu_amount(cursor, uid, fra, context=context)
+        fraccio = self._get_fraccionament_amount(cursor, uid, fra, context=context)
+        res['total_linies_impostos'] = res['import'] - donatiu - fraccio
         return res
 
     def _get_donatiu_amount(self, cursor, uid, fra, context=None):
@@ -59,9 +63,6 @@ class GiscedataFacturacioFacturaReportV2(osv.osv):
         res['fraccionament'] = {
             'import': self._get_fraccionament_amount(cursor, uid, fra, context=context),
         }
-
-        res['total_linies_impostos'] = data['factura']['import'] - res['donatiu']['import'] - res['fraccionament']['import']
-
         return res
 
     def get_impsa(self, data, linies_importe_otros):
