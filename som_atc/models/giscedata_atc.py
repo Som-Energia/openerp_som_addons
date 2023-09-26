@@ -12,8 +12,8 @@ class GiscedataAtc(osv.osv):
     _inherit = "giscedata.atc"
 
     def _ff_get_process_step(self, cursor, uid, ids, field_name, arg, context):
-        super(GiscedataAtc, self)._ff_get_process_step(
-            self, cursor, uid, ids, field_name, arg, context
+        return super(GiscedataAtc, self)._ff_get_process_step(
+            cursor, uid, ids, field_name, arg, context
         )
 
     def _trg_switching(self, cursor, uid, ids, context=None):
@@ -22,13 +22,13 @@ class GiscedataAtc(osv.osv):
         """
         sw_obj = self.pool.get('giscedata.switching')
         sw_vals = sw_obj.read(cursor, uid, ids, ['ref', 'ref2'])
-        sw_ids = []
+        atc_ids = []
         for sw_val in sw_vals:
             if sw_val['ref'] and sw_val['ref'].split(',')[0] == 'giscedata.atc':
-                sw_ids.append(sw_val['ref'].split(',')[1])
+                atc_ids.append(int(sw_val['ref'].split(',')[1]))
             elif sw_val['ref2'] and sw_val['ref2'].split(',')[0] == 'giscedata.atc':
-                sw_ids.append(sw_val['ref2'].split(',')[1])
-        return sw_ids
+                atc_ids.append(int(sw_val['ref2'].split(',')[1]))
+        return atc_ids
 
     _columns = {
         "tarifa": fields.related(
