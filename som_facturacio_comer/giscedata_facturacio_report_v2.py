@@ -33,19 +33,19 @@ class GiscedataFacturacioFacturaReportV2(osv.osv):
         res['te_gkwh'] = fra.is_gkwh
         return res
 
-   def _get_donatiu_amount(self, cursor, uid, fra, context=context):
-        donatiu_lines = [l.price_subtotal for l in fact.linia_ids if l.tipus in 'altres'
+    def _get_donatiu_amount(self, cursor, uid, fra, context=None):
+        donatiu_lines = [l.price_subtotal for l in fra.linia_ids if l.tipus in 'altres'
                         and l.invoice_line_id.product_id.code == 'DN01']
 
         return sum(donatiu_lines)
 
-    def _get_fraccionament_amount(self, cursor, uid, fra, context=context):
-        model_obj = fact.pool.get('ir.model.data')
-        fraccio_prod_id = model_obj.get_object_reference(self.cursor, self.uid,
+    def _get_fraccionament_amount(self, cursor, uid, fra, context=None):
+        model_obj = self.pool.get('ir.model.data')
+        fraccio_prod_id = model_obj.get_object_reference(cursor, uid,
                                                          'giscedata_facturacio',
                                                          'default_fraccionament_product')[1]
 
-        faccionament_lines = [l.price_subtotal for l in fact.linia_ids if l.invoice_line_id.product_id.id == fraccio_prod_id]
+        faccionament_lines = [l.price_subtotal for l in fra.linia_ids if l.invoice_line_id.product_id.id == fraccio_prod_id]
         return sum(faccionament_lines)
 
     def _get_linies_totals(self, cursor, uid, fra, context=None):
