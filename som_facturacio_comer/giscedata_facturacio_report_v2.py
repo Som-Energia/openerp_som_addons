@@ -103,16 +103,22 @@ class GiscedataFacturacioFacturaReportV2(osv.osv):
         res['fraccionament'] = []
 
         fraccio_prod_id = model_obj.get_object_reference(
-            self.cursor, self.uid, 'giscedata_facturacio', 'default_fraccionament_product'
+            cursor, uid, 'giscedata_facturacio', 'default_fraccionament_product'
         )[1]
 
-        for index, linia in enumerate(res['altres']):
-            if linia['metadata']['code'] in ['DN01', 'DN02', 'DONATIU']:
-                res['donatiu'].append(linia)
-                res['altres'].pop(index)
-            if linia['metadata']['product_id'] == fraccio_prod_id:
-                res['fraccionament'].append(linia)
-                res['altres'].pop(index)
+        for where in ['altres', 'cobrament']:
+            if where in res.keys():
+                to_pop = []
+                for index, linia in enumerate(res[where]):
+                    if linia['metadata'] and linia['metadata'].get('code') in ['DN01', 'DN02', 'DONATIU']:
+                        res['donatiu'].append(linia)
+                        to_pop.append(index)
+                    if linia['metadata'] and linia['metadata'].get('product_id') == fraccio_prod_id:
+                        res['fraccionament'].append(linia)
+                        to_pop.append(index)
+
+                for idx in reversed(to_pop):
+                    res[where].pop(idx)
 
         return res
 

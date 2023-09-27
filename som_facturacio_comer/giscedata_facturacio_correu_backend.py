@@ -86,7 +86,7 @@ class ReportBackendInvoiceEmail(ReportBackend):
 
         return data
 
-    def get_lines(self, cursor, uid, fra, context=None):
+    def get_linies(self, cursor, uid, fra, context=None):
         if context is None:
             context = {}
 
