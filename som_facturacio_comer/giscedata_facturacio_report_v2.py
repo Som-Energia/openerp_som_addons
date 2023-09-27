@@ -87,4 +87,33 @@ class GiscedataFacturacioFacturaReportV2(osv.osv):
     def get_verde(self, data):
         return 1
 
+    @report_browsify
+    def get_linies(self, cursor, uid, fra, context=None):
+        if context is None:
+            context = {}
+
+        res = super(GiscedataFacturacioFacturaReportV2, self).get_linies(
+            cursor, uid, fra, context=context
+        )
+
+        model_obj = self.pool.get('ir.model.data')
+
+        # Treure les linees de donatiu i fraccionament d'altres i posar-les al seu tag corresponent
+        res['donatiu'] = []
+        res['fraccionament'] = []
+
+        fraccio_prod_id = model_obj.get_object_reference(
+            self.cursor, self.uid, 'giscedata_facturacio', 'default_fraccionament_product'
+        )[1]
+
+        for index, linia in enumerate(res['altres']):
+            if linia['metadata']['code'] in ['DN01', 'DN02', 'DONATIU']:
+                res['donatiu'].append(linia)
+                res['altres'].pop(index)
+            if linia['metadata']['product_id'] == fraccio_prod_id:
+                res['fraccionament'].append(linia)
+                res['altres'].pop(index)
+
+        return res
+
 GiscedataFacturacioFacturaReportV2()
