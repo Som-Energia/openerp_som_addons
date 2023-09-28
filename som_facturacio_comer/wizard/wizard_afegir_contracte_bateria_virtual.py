@@ -49,9 +49,9 @@ class WizardAfegirContracteBateriaVirtual(osv.osv_memory):
             pol_cups = []
             if origen_ids:
                 for origen_id in origen_ids:
-                    orig_pol_id = origen_obj.read(
+                    orig_pol_id = int(origen_obj.read(
                         cursor, uid, origen_id, ['origen_ref'], context=context
-                        )['origen_ref'].split(',')[1]
+                        )['origen_ref'].split(',')[1])
                     pol_cups_id = pol_obj.read(cursor, uid, orig_pol_id, ['cups'], context=context)['cups'][0]
                     origin_cups.append(pol_cups_id)
                 for pol_id in context.get('active_ids', []):
