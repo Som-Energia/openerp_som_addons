@@ -1878,14 +1878,21 @@ class GenerationkwhInvestment(osv.osv):
         shares_data = self.read(cursor, uid, inv_ids,[
             'nshares',
             'member_id',
-            ])
+            'order_date',
+        ])
 
         socis_ids = [share_data['member_id'] for share_data in shares_data]
         n_socis = len(set(socis_ids))
 
         shares = sum([share_data['nshares'] for share_data in shares_data])
+        shares_2023 = sum([
+            share_data['nshares']
+            for share_data in shares_data
+            if datetime.strptime(share_data['order_date'], '%Y-%m-%d').year >= 2023
+        ])
 
-        result.append({'amount': shares * 100,
+        result.append({'amount': shares * gkwh.shareValue,
+                       'amount_2023': shares_2023 * gkwh.shareValue,
                        'socis': n_socis})
         return result
 

@@ -1905,6 +1905,24 @@ class InvestmentTests(testing.OOTestCase):
             self.assertEqual(amount, len(inv_ids) * 1000)
 
 
+    def test__get_stats_investment_generation__amount_2023(self):
+        """
+        Check get_stats_investment_generation temporally amount_2023 field
+        """
+
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            inv_ids = self.Investment.search(cursor, uid, [('emission_id.type', '=', 'genkwh')])
+            self.Investment.write(cursor, uid, inv_ids[-1] , {'order_date': date(2023, 9, 27) , 'nshares': 5})
+
+            ret = self.Investment.get_stats_investment_generation(cursor, uid)
+            amount_2023 = ret[0]['amount_2023']
+
+            self.assertEqual(amount_2023, 500)
+
+
     def test__create_divestment_invoice__withouProfitGKWH(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
