@@ -167,7 +167,7 @@
                     </tr>
                     <tr>
                         <td class="titol" style="width: 90px;">${_(u"DATA EMISSIÓ")}</td>
-                        <td class="titol">${_(u"DATA VENCIMENT")}</td>
+                        <td class="titol">${_(u"Document vàlid fins a:")}</td>
                         <td class="titol" style="width: 120px;">${_(u"IMPORT TOTAL Euros")}</td>
                     </tr>
                     <tr>
