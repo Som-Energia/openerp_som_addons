@@ -110,7 +110,8 @@ class ReportBackendInvoiceEmail(ReportBackend):
             cursor, uid, 'som_polissa', 'categ_tarifa_empresa'
         )[1]
         polissa_categ = polissa_categ_o.browse(cursor, uid, polissa_categ_id)
-        data['has_business_tariff'] = polissa_categ in data['category_id']
+        polissa = report_o._get_polissa_br(cursor, uid, fra, context)
+        data['has_business_tariff'] = polissa_categ in polissa.category_id
 
         return data
 
