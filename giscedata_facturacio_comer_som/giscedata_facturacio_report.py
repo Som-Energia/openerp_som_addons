@@ -30,7 +30,7 @@ mean_zipcode_consumption_dates = {
     'end': '2050-12-31',
 }
 
-show_only_taxed_lines_date = '2023-11-01'
+show_iva_column_date = '2020-01-01'
 
 # -----------------------------------
 # helper functions
@@ -110,8 +110,8 @@ def is_6XTD(pol):
 def is_indexed(fact):
     return 'Indexada' in fact.llista_preu.name
 
-def is_OTL(fact):
-    return val(fact.date_invoice) >= show_only_taxed_lines_date
+def has_iva_column(fact):
+    return val(fact.date_invoice) >= show_iva_column_date
 
 def val(object):
     try:
@@ -1634,30 +1634,10 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         }
         return data
 
-    def get_donatiu_amount(self, fact):
-        donatiu_lines = [l.price_subtotal for l in fact.linia_ids if l.tipus in 'altres'
-                        and l.invoice_line_id.product_id.code == 'DN01']
-
-        return sum(donatiu_lines)
-
-    def get_fraccionament_amount(self, fact):
-        model_obj = fact.pool.get('ir.model.data')
-        fraccio_prod_id = model_obj.get_object_reference(self.cursor, self.uid,
-                                                         'giscedata_facturacio',
-                                                         'default_fraccionament_product')[1]
-
-        faccionament_lines = [l.price_subtotal for l in fact.linia_ids if l.invoice_line_id.product_id.id == fraccio_prod_id]
-        return sum(faccionament_lines)
-
     def get_component_invoice_info_data(self, fact, pol):
-        amount_total = fact.amount_total
-        if is_OTL(fact):
-            amount_total -= self.get_donatiu_amount(fact)
-            amount_total -= self.get_fraccionament_amount(fact)
-
         data = {
             'has_agreement_partner': pol.soci.ref in agreementPartners.keys(),
-            'amount_total': amount_total,
+            'amount_total': fact.amount_total,
             'type': fact.invoice_id.type,
             'number': fact.number,
             'ref': bool(fact.ref),
@@ -1742,17 +1722,6 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         data['has_flux_solar_discount'] = len(flux_lines) > 0
         data['flux_solar_discount'] = sum([l.price_subtotal for l in flux_lines])
-        return data
-
-    def get_component_invoice_summary_td_otl_data(self, fact, pol):
-        if not is_OTL(fact):
-            return {}
-        data = self.get_component_invoice_summary_td_data(fact, pol)
-        total_fraccionament = self.get_fraccionament_amount(fact)
-        data['total_amount'] -= data['donatiu']
-        data['total_amount'] -= total_fraccionament
-        data['total_altres'] -= total_fraccionament
-        data.pop('donatiu')
         return data
 
     def get_component_partner_info_data(self, fact, pol):
@@ -1902,7 +1871,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'is_TD': is_TD(pol),
             'is_6xTD': is_6XTD(pol),
             'is_indexed': is_indexed(fact),
-            'is_only_taxed_lines': is_OTL(fact),
+            'has_iva_column': has_iva_column(fact),
         }
         return data
 
@@ -2063,7 +2032,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'power_lines_data': power_lines_data,
             'header_multi': 3*len(power_lines_data),
             'showing_periods': self.get_matrix_show_periods(pol),
-            'iva_column': is_OTL(fact),
+            'iva_column': has_iva_column(fact),
         }
         return data
 
@@ -2110,7 +2079,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data['dies_any'] = days_year
         data['is_indexed'] = is_index
         data['iva'] = iva
-        data['iva_column'] = is_OTL(fact)
+        data['iva_column'] = has_iva_column(fact)
         return data
 
     def get_sub_component_invoice_details_td_energy_discount_BOE17_2021_data(self, fact, pol):
@@ -2150,7 +2119,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data['showing_periods'] = self.get_matrix_show_periods(pol)
         data['is_indexed'] = is_index
         data['iva'] = iva
-        data['iva_column'] = is_OTL(fact)
+        data['iva_column'] = has_iva_column(fact)
         return data
 
     def get_sub_component_invoice_details_td_power_tolls_data(self, fact, pol):
@@ -2183,7 +2152,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data['showing_periods'] = self.get_matrix_show_periods(pol)
         data['dies'] = int(atr_linies_potencia['P1']['days']) if 'P1' in atr_linies_potencia else 0
         data['dies_any'] = days_year
-        data['iva_column'] = is_OTL(fact)
+        data['iva_column'] = has_iva_column(fact)
         return data
 
     def get_sub_component_invoice_details_td_power_charges_data(self, fact, pol, discount):
@@ -2233,7 +2202,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data['dies'] = int(charges_lines_potencia['P1']['days']) if 'P1' in charges_lines_potencia else 0
         data['dies_any'] = days_year
         data['header_multi'] = 4 if discount['is_visible'] else 2
-        data['iva_column'] = is_OTL(fact)
+        data['iva_column'] = has_iva_column(fact)
         return data
 
     def get_component_invoice_details_info_td_data(self, fact, pol):
@@ -2298,7 +2267,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'showing_periods': self.get_matrix_show_periods(pol),
             'mag_line_data': mag_line_data,
             'indexed': pol.mode_facturacio == 'index',
-            'iva_column': is_OTL(fact),
+            'iva_column': has_iva_column(fact),
         }
         return data
 
@@ -2328,7 +2297,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         data = atr_linies_energia
         data['showing_periods'] = self.get_matrix_show_periods(pol)
-        data['iva_column'] = is_OTL(fact)
+        data['iva_column'] = has_iva_column(fact)
         return data
 
     def get_sub_component_invoice_details_td_energy_charges_data(self, fact, pol, discount):
@@ -2371,7 +2340,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data = charges_lines_energy
         data['showing_periods'] = self.get_matrix_show_periods(pol)
         data['header_multi'] = 4 if discount['is_visible'] else 2
-        data['iva_column'] = is_OTL(fact)
+        data['iva_column'] = has_iva_column(fact)
         return data
 
     def get_sub_component_invoice_details_td_other_concepts_data(self, fact, pol):
@@ -2421,7 +2390,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'header_multi':4*(len(excess_lines_data)),
             'days': (datetime.strptime(fact.data_final,'%Y-%m-%d') - datetime.strptime(fact.data_inici,'%Y-%m-%d')).days + 1,
             'is_visible': True,
-            'iva_column': is_OTL(fact),
+            'iva_column': has_iva_column(fact),
         }
         return data
 
@@ -2464,7 +2433,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'excess_data': excess_data,
             'is_visible': True,
             'header_multi':4*(len(excess_data)),
-            'iva_column': is_OTL(fact),
+            'iva_column': has_iva_column(fact),
         }
         return data
 
@@ -2489,7 +2458,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'days':days,
             'price_per_day': price_per_day,
             'subtotal': subtotal,
-            'iva_column': is_OTL(fact),
+            'iva_column': has_iva_column(fact),
             'iva': iva,
         }
         return data
@@ -2509,7 +2478,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'is_visible': visible,
             'number_of_columns': len(self.get_matrix_show_periods(pol)) + 1,
             'subtotal': subtotal,
-            'iva_column': is_OTL(fact),
+            'iva_column': has_iva_column(fact),
             'iva': iva,
         }
         return data
@@ -2540,7 +2509,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'is_ajustment_visible': ajustment_visible,
             'ajustment': ajustment,
             'ajustment_iva': iva,
-            'iva_column': is_OTL(fact),
+            'iva_column': has_iva_column(fact),
         }
         return data
 
@@ -2563,7 +2532,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'inductive_data': inductive_data,
             'showing_periods': self.get_matrix_show_periods(pol),
             'is_visible': True,
-            'iva_column': is_OTL(fact),
+            'iva_column': has_iva_column(fact),
         }
         return data
 
@@ -2584,7 +2553,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'capacitive_data': capacitive_data,
             'showing_periods': self.get_matrix_show_periods(pol),
             'is_visible': True,
-            'iva_column': is_OTL(fact),
+            'iva_column': has_iva_column(fact),
         }
         return data
 
@@ -2595,12 +2564,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
     def get_component_invoice_details_td_otl_data(self, fact, pol):
         if not is_TD(pol):
             return {}
-        if not is_OTL(fact):
+        if not has_iva_column(fact):
             return {}
-
-        amount_total = fact.amount_total
-        amount_total -= self.get_donatiu_amount(fact)
-        amount_total -= self.get_fraccionament_amount(fact)
 
         power_discount_BOE17_2021 = self.get_sub_component_invoice_details_td_power_discount_BOE17_2021_data(fact, pol)
         energy_discount_BOE17_2021 = self.get_sub_component_invoice_details_td_energy_discount_BOE17_2021_data(fact, pol)
@@ -2623,11 +2588,12 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'inductive': self.get_sub_component_invoice_details_td_inductive_data(fact, pol),
             'capacitive': self.get_sub_component_invoice_details_td_capacitive_data(fact, pol),
             'is_canaries': pol.cups.id_provincia.id in [37, 41],
-            'amount_total': amount_total
+            'amount_total': fact.amount_total
         }
         return data
 
     def get_sub_component_invoice_details_td_otl_other_concepts_data(self, fact, pol):
+
         def get_tax_type(l):
             if l.tax_id.description == 'IESE_RD_17_2021':
                 return '0.5percent'
@@ -2639,14 +2605,10 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 return 'excempcio'
             return '5.11percent'
 
-        model_obj = fact.pool.get('ir.model.data')
-        fraccio_prod_id = model_obj.get_object_reference(self.cursor, self.uid,
-                                                         'giscedata_facturacio',
-                                                         'default_fraccionament_product')[1]
-
         lines_extra_ids = self.get_lines_in_extralines(fact, pol)
         lloguer_lines = []
         bosocial_lines = []
+        donatiu_lines = []
         altres_lines = []
         iva_energia =  None
         iva_potencia = None
@@ -2669,9 +2631,14 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     'price_subtotal': l.price_subtotal,
                     'iva': get_iva_line(l),
                 })
-            if (l.tipus in ('altres', 'cobrament') and
-                l.invoice_line_id.product_id.code not in ('DN01', 'BS01', 'DESC1721', 'DESC1721ENE', 'DESC1721POT', 'RBS', 'PBV') and
-                l.invoice_line_id.product_id.id != fraccio_prod_id):
+            if l.tipus in 'altres' and l.invoice_line_id.product_id.code == 'DN01':
+                donatiu_lines.append({
+                    'quantity': l.quantity,
+                    'price_unit_multi': l.price_unit_multi,
+                    'price_subtotal': l.price_subtotal,
+                    'iva': get_iva_line(l),
+                })
+            if l.tipus in ('altres', 'cobrament') and l.invoice_line_id.product_id.code not in ('DN01', 'BS01', 'DESC1721', 'DESC1721ENE', 'DESC1721POT', 'RBS', 'PBV'):
                 altres_lines.append({
                     'name': l.name,
                     'price_subtotal': l.price_subtotal,
@@ -2753,6 +2720,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data = {
                 'lloguer_lines': lloguer_lines,
                 'bosocial_lines': bosocial_lines,
+                'donatiu_lines': donatiu_lines,
                 'altres_lines': altres_lines,
                 'iese_lines': iese_lines,
                 'iva_lines': iva_lines,
@@ -2762,6 +2730,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 'percentatges_exempcio_splitted': percentatges_exempcio_splitted,
                 'percentatges_exempcio': percentatges_exempcio,
                 'is_excempcio_IE_base': is_excempcio_IE_base,
+                'donatiu': sum([l["price_subtotal"] for l in donatiu_lines]),
+                'amount_total': fact.amount_total,
                 'header_multi': len(bosocial_lines) + len(altres_lines),
                 'last_row': 'altres' if len(altres_lines) else 'bosocial',
                 'number_of_columns': len(self.get_matrix_show_periods(pol)) + 1,
