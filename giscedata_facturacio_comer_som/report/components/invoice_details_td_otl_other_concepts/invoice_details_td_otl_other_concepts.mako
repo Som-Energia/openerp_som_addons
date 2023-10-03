@@ -25,6 +25,17 @@ first_pass = True
         <td class="detall_td periods_td">${_(u"%s") % (l['iva']) }</td>
     </tr>
 % endfor
+% for l in id.donatiu_lines:
+    <tr class= "${'last_row' if id.last_row == 'donatiu' else ''}">
+        % if first_pass:
+            <td class="td_first concepte_td" rowspan="${id.header_multi}">${_(u"Altres conceptes")}</td>
+            <%first_pass = False%>
+        % endif
+        <td class="detall_td" colspan="${id.number_of_columns}">${_(u"Donatiu voluntari (exempt d'IVA) %s kWh x %s €/kWh") % (formatLang(l['quantity']), formatLang(l['price_unit_multi']))}</td>
+        <td class="subtotal">${_(u"%s €") % formatLang(l['price_subtotal'])}</td>
+        <td></td>
+    </tr>
+% endfor
 % for l in id.iese_lines:
     <tr>
         % if id.fiscal_position:
