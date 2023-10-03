@@ -557,8 +557,8 @@ class GiscedataPolissa(osv.osv):
             size=24),
         'tipus_cups': fields.function(_get_tipus_cups, fnct_search=_ff_search_tipus_cups, method=True, selection=TABLA_131, string='Tipus CUPS',
             readonly=True, type="selection"),
-        #'bateria_virtual': fields.function(_get_bateria_virtual, fnct_search=_ff_search_bateria_virtual, method=True, type="char", string='Codi BV',
-        #    size=24),
+        'bateria_virtual': fields.function(_get_bateria_virtual, fnct_search=_ff_search_bateria_virtual, method=True, type="char", string='Codi BV',
+            size=24),
         'tipus_installacio': fields.function(_get_tipus_installacio, fnct_search=_ff_search_tipus_installacio, method=True, type="selection",selection=TABLA_129, string='Tipus instal.lació',
                                            ),
     }

@@ -172,8 +172,8 @@
                     <field name="data_ultima_lectura"/>
                     <field name="data_ultima_lectura_f1"/>
                     <field name="dies_lectures_facturada_f1"/>
-                    <!--<field name="bateria_activa"/>-->
-                    <!--<field name="bateria_virtual"/>-->
+                    <field name="bateria_activa"/>
+                    <field name="bateria_virtual"/>
                     <field name="data_activacio_bateria"/>
                     <field name="cups_np"/>
                 </tree>
@@ -212,7 +212,7 @@
             <field name="arch" type="xml">
                 <field name="titular" position="after">
                     <field name="esquema_mesura" invisible="1" select="2"/>
-                    <!--<field name="bateria_activa" invisible="1" select="2"/>-->
+                    <field name="bateria_activa" invisible="1" select="2"/>
                     <field name="data_activacio_bateria" invisible="1" select="2"/>
                     <field name="tipus_installacio" invisible="1" select="2"/>
                     <field name="cups_np" invisible="1" select="1"/>
