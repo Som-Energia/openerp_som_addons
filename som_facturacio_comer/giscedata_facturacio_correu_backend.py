@@ -90,6 +90,9 @@ class ReportBackendInvoiceEmail(ReportBackend):
             context = {}
 
         report_o = self.pool.get('giscedata.facturacio.factura.report.v2')
+        polissa_categ_o = self.pool.get('giscedata.polissa.category')
+        imd_o = self.pool.get('ir.model.data')
+
         data = report_o.get_polissa(cursor, uid, fra, context=context)
 
         polissa_retrocedida = False
@@ -102,6 +105,12 @@ class ReportBackendInvoiceEmail(ReportBackend):
                 polissa_retrocedida = n_retrocedir_lot > 0
 
         data['polissa_retrocedida'] = polissa_retrocedida
+
+        polissa_categ_id = imd_o.get_object_reference(
+            cursor, uid, 'som_polissa', 'categ_tarifa_empresa'
+        )[1]
+        polissa_categ = polissa_categ_o.browse(cursor, uid, polissa_categ_id)
+        data['has_business_tariff'] = polissa_categ in fra.polissa_id.category_id
 
         return data
 
