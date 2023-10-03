@@ -15,6 +15,23 @@
             <field name="name">2.0TD (SOM2_INSULAR)</field>
             <field name="type">sale</field>
         </record>
-
+        <record model="product.pricelist.version" id="version_pricelist_indexada_20td_peninsula">
+            <field name="name">Versio 1</field>
+            <field name="date_start">2021-01-01</field>
+            <field name="date_end" eval="False"/>
+            <field name="pricelist_id" ref="pricelist_indexada_20td_peninsula"/>
+        </record>
+        <record model="giscedata.polissa.tarifa" id="giscedata_polissa.tarifa_20TD">
+            <field name="llistes_preus_comptatibles" eval="[(4,ref('pricelist_indexada_20td_peninsula'))]"/>
+        </record>
+            <record model="product.pricelist.version" id="version_pricelist_indexada_30td_peninsula">
+            <field name="name">Versio 1</field>
+            <field name="date_start">2021-01-01</field>
+            <field name="date_end" eval="False"/>
+            <field name="pricelist_id" ref="pricelist_indexada_30td_peninsula"/>
+        </record>
+        <record model="giscedata.polissa.tarifa" id="giscedata_polissa.tarifa_30TD">
+            <field name="llistes_preus_comptatibles" eval="[(4,ref('pricelist_indexada_30td_peninsula'))]"/>
+        </record>
     </data>
 </openerp>
