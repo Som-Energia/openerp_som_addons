@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2023-09-06 15:11+0000\n"
-"PO-Revision-Date: 2023-09-06 13:19+0000\n"
+"POT-Creation-Date: 2023-10-03 09:12+0000\n"
+"PO-Revision-Date: 2023-10-03 07:15+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -191,8 +191,8 @@ msgid "DATA EMISSIÓ"
 msgstr "FECHA EMISIÓN"
 
 #: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_rebut_comer.mako:170
-msgid "DATA VENCIMENT"
-msgstr "FECHA VENCIMIENTO"
+msgid "Document vàlid fins a:"
+msgstr "Documento válido hasta:"
 
 #: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_rebut_comer.mako:171
 msgid "IMPORT TOTAL Euros"
