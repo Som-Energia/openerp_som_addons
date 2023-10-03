@@ -2,9 +2,9 @@
 from osv import osv
 from tools.translate import _
 
-class IndexadaException(osv.except_osv):
+class SomPolissaException(osv.except_osv):
     def __init__(self,  title, text):
-        super(IndexadaException, self).__init__(
+        super(SomPolissaException, self).__init__(
             title,
             text
         )
@@ -22,7 +22,7 @@ class IndexadaException(osv.except_osv):
             error=self._message,
         )
 
-class PolissaNotActive(IndexadaException):
+class PolissaNotActive(SomPolissaException):
     def __init__(self, polissa_number):
         super(PolissaNotActive, self).__init__(
             title=_('Pòlissa not active'),
@@ -36,7 +36,7 @@ class PolissaNotActive(IndexadaException):
             polissa_number=self.polissa_number,
         )
 
-class PolissaModconPending(IndexadaException):
+class PolissaModconPending(SomPolissaException):
     def __init__(self, polissa_number):
         super(PolissaModconPending, self).__init__(
             title=_('Pending modcon'),
@@ -50,7 +50,7 @@ class PolissaModconPending(IndexadaException):
             polissa_number=self.polissa_number,
         )
 
-class PolissaAlreadyIndexed(IndexadaException):
+class PolissaAlreadyIndexed(SomPolissaException):
     def __init__(self, polissa_number):
         super(PolissaAlreadyIndexed, self).__init__(
             title=_('Already indexed'),
@@ -63,7 +63,7 @@ class PolissaAlreadyIndexed(IndexadaException):
             super(PolissaAlreadyIndexed, self).to_dict(),
             polissa_number=self.polissa_number,
         )
-class PolissaAlreadyPeriod(IndexadaException):
+class PolissaAlreadyPeriod(SomPolissaException):
     def __init__(self, polissa_number):
         super(PolissaAlreadyPeriod, self).__init__(
             title=_('Already period'),
@@ -77,7 +77,7 @@ class PolissaAlreadyPeriod(IndexadaException):
             polissa_number=self.polissa_number,
         )
 
-class PolissaSimultaneousATR(IndexadaException):
+class PolissaSimultaneousATR(SomPolissaException):
     def __init__(self, polissa_number):
         super(PolissaSimultaneousATR, self).__init__(
             title=_('Simultaneous ATR'),
@@ -91,7 +91,7 @@ class PolissaSimultaneousATR(IndexadaException):
             polissa_number=self.polissa_number,
         )
 
-class PolissaNotStandardPrice(IndexadaException):
+class PolissaNotStandardPrice(SomPolissaException):
     def __init__(self, polissa_number):
         super(PolissaNotStandardPrice, self).__init__(
             title=_('Non standard pricelist'),
@@ -105,7 +105,7 @@ class PolissaNotStandardPrice(IndexadaException):
             polissa_number=self.polissa_number,
         )
 
-class FailSendEmail(IndexadaException):
+class FailSendEmail(SomPolissaException):
     def __init__(self, polissa_number):
         super(FailSendEmail, self).__init__(
             title=_('Email fail'),
@@ -119,7 +119,7 @@ class FailSendEmail(IndexadaException):
             polissa_number=self.polissa_number,
         )
 
-class KCoefficientNotFound(IndexadaException):
+class KCoefficientNotFound(SomPolissaException):
     def __init__(self, pricelist_id):
         super(KCoefficientNotFound, self).__init__(
             title=_('K_Coefficient not found'),
@@ -133,7 +133,7 @@ class KCoefficientNotFound(IndexadaException):
             pricelist_id=self.pricelist_id,
         )
 
-class TariffCodeNotSupported(IndexadaException):
+class TariffCodeNotSupported(SomPolissaException):
     def __init__(self, tariff_code):
         super(TariffCodeNotSupported, self).__init__(
             title=_("Tariff code not supported"),
