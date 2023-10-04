@@ -2,11 +2,6 @@
 from osv import osv
 from report_backend.report_backend import report_browsify
 
-show_only_taxed_lines_date = '2023-11-01'
-
-def is_OTL(data):
-    return data['factura']['data']['factura'].val >= show_only_taxed_lines_date
-
 
 class GiscedataFacturacioFacturaReportV2(osv.osv):
     _inherit = 'giscedata.facturacio.factura.report.v2'
@@ -67,9 +62,6 @@ class GiscedataFacturacioFacturaReportV2(osv.osv):
 
     def get_impsa(self, data, linies_importe_otros):
         res = super(GiscedataFacturacioFacturaReportV2, self).get_impsa(data, linies_importe_otros)
-        if is_OTL(data):
-            return res
-
         for linia in data['linies']['altres']:
             if linia['metadata']['code'] in ['DN01', 'DN02', 'DONATIU']:
                 donatiu_sense_iva = linia['import'].val / 1.21
@@ -80,8 +72,6 @@ class GiscedataFacturacioFacturaReportV2(osv.osv):
     # Ens ho ha comunicat la CNMC que s'ha de fer així
     def get_linies_importe_otros(self, data):
         linies_importe_otros, total_preu_linies_sense_iva = super(GiscedataFacturacioFacturaReportV2, self).get_linies_importe_otros(data)
-        if is_OTL(data):
-            return linies_importe_otros, total_preu_linies_sense_iva
         return linies_importe_otros, 0
 
     def get_verde(self, data):
