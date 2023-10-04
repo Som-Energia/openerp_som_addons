@@ -1228,6 +1228,7 @@ class Tests_FacturacioFacturaReport_invoice_details_other_concepts(Tests_Factura
                     'quantity': 60.0,
                     'price_unit': 0.05,
                     'price_subtotal': 3.0,
+                    'iva': '',
                 }],
                 'bosocial_lines': [],
                 'donatiu_lines': [],
