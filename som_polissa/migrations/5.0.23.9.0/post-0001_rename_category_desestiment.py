@@ -19,7 +19,7 @@ def up(cursor, installed_version):
         "giscedata_facturacio_bateria_virtual.categ_desestiment",
     ]
     load_data_records(
-        cursor, 'giscedata_facturacio_bateria_virtual', 'som_polissa_data.xml', list_of_records, mode='update'
+        cursor, 'som_polissa', 'som_polissa_data.xml', list_of_records, mode='update'
     )
     logger.info("XMLs succesfully updated.")
 
