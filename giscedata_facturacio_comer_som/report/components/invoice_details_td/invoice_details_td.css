@@ -31,6 +31,9 @@
     text-align: right;
     width: 80px;
 }
+#invoice_detail_td .iva_td {
+    text-align: center;
+}
 #invoice_detail_td .detall_td_no_bold{
     font-weight: normal;
     font-size: 0.9em;

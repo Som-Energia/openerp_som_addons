@@ -67,11 +67,7 @@ report_data = r_obj.get_report_data(cursor, uid, objects)
     <!-- DETALL FACTURA -->
     <div class="invoice_detail">
         <h1>${_(u"DETALL DE LA FACTURA")}</h1>
-        % if factura_data.globals.has_iva_column:
-            <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_otl/invoice_details_td_otl.mako" args="id=factura_data.invoice_details_td_otl" />
-        % else:
-            <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td/invoice_details_td.mako" args="id=factura_data.invoice_details_td" />
-        % endif
+        <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td/invoice_details_td.mako" args="id=factura_data.invoice_details_td" />
         <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_info_td/invoice_details_info_td.mako" args="id_info=factura_data.invoice_details_info_td" />
     </div>
     <%include file="/giscedata_facturacio_comer_som/report/components/cnmc_comparator_qr_link/cnmc_comparator_qr_link.mako" args="comparator=factura_data.cnmc_comparator_qr_link" />

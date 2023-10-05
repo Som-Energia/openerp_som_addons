@@ -1341,35 +1341,52 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         bosocial_lines = []
         donatiu_lines = []
         altres_lines = []
+        iva_energia =  None
+        iva_potencia = None
         for l in fact.linia_ids:
+            if l.tipus in 'energia':
+                iva_energia = get_iva_line(l)
+            if l.tipus in 'potencia':
+                iva_potencia = get_iva_line(l)
             if l.tipus in 'lloguer':
                 lloguer_lines.append({
                     'quantity': l.quantity,
                     'price_unit': l.price_unit,
                     'price_subtotal': l.price_subtotal,
+                    'iva': get_iva_line(l),
                 })
             if l.tipus in 'altres' and l.invoice_line_id.product_id.code == 'BS01':
                 bosocial_lines.append({
                     'quantity': l.quantity,
                     'price_unit': l.price_unit,
                     'price_subtotal': l.price_subtotal,
+                    'iva': get_iva_line(l),
                 })
             if l.tipus in 'altres' and l.invoice_line_id.product_id.code == 'DN01':
                 donatiu_lines.append({
                     'quantity': l.quantity,
                     'price_unit_multi': l.price_unit_multi,
                     'price_subtotal': l.price_subtotal,
+                    'iva': get_iva_line(l),
                 })
             if l.tipus in ('altres', 'cobrament') and l.invoice_line_id.product_id.code not in ('DN01', 'BS01', 'DESC1721', 'DESC1721ENE', 'DESC1721POT', 'RBS', 'PBV'):
                 altres_lines.append({
                     'name': l.name,
                     'price_subtotal': l.price_subtotal,
+                    'iva': get_iva_line(l),
                 })
             if l.tipus in 'energia' and l.id in lines_extra_ids:
                 altres_lines.append({
                     'name': l.name,
                     'price_subtotal': l.price_subtotal,
+                    'iva': get_iva_line(l),
                 })
+
+        iva_iese = '--%'
+        if iva_potencia:
+            iva_iese = iva_potencia
+        if iva_energia:
+            iva_iese = iva_energia
 
         iese_lines = []
         fiscal_position = fact.fiscal_position and 'IESE' in fact.fiscal_position.name and '%' in fact.fiscal_position.name
@@ -1401,6 +1418,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                         'base_iese': base_iese,
                         'tax_amount': l.tax_amount,
                         'tax_type': tax_type,
+                        'iva': iva_iese,
                     })
         else:
             fiscal_position = False
@@ -1410,6 +1428,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                         'base_amount': l.base_amount,
                         'tax_amount': l.tax_amount,
                         'tax_type': get_tax_type(l),
+                        'iva': iva_iese,
                     })
 
         iva_lines = []
@@ -1871,7 +1890,6 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'is_TD': is_TD(pol),
             'is_6xTD': is_6XTD(pol),
             'is_indexed': is_indexed(fact),
-            'has_iva_column': has_iva_column(fact),
         }
         return data
 
@@ -1930,6 +1948,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'generation': self.get_sub_component_invoice_details_td_generation_data(fact, pol),
             'inductive': self.get_sub_component_invoice_details_td_inductive_data(fact, pol),
             'capacitive': self.get_sub_component_invoice_details_td_capacitive_data(fact, pol),
+            'is_canaries': pol.cups.id_provincia.id in [37, 41],
+            'iva_column': has_iva_column(fact),
             'amount_total': fact.amount_total
         }
         return data
@@ -2554,187 +2574,6 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'showing_periods': self.get_matrix_show_periods(pol),
             'is_visible': True,
             'iva_column': has_iva_column(fact),
-        }
-        return data
-
-
-    # -------------------------------------------------------
-    # Invoice_details_td_otl component data and subcomponents
-    # -------------------------------------------------------
-    def get_component_invoice_details_td_otl_data(self, fact, pol):
-        if not is_TD(pol):
-            return {}
-        if not has_iva_column(fact):
-            return {}
-
-        power_discount_BOE17_2021 = self.get_sub_component_invoice_details_td_power_discount_BOE17_2021_data(fact, pol)
-        energy_discount_BOE17_2021 = self.get_sub_component_invoice_details_td_energy_discount_BOE17_2021_data(fact, pol)
-        data = {
-            'showing_periods': self.get_matrix_show_periods(pol),
-            'power' : self.get_sub_component_invoice_details_td_power_data(fact, pol),
-            'power_discount_BOE17_2021': power_discount_BOE17_2021,
-            'power_tolls': self.get_sub_component_invoice_details_td_power_tolls_data(fact, pol),
-            'power_charges': self.get_sub_component_invoice_details_td_power_charges_data(fact, pol, power_discount_BOE17_2021),
-            'energy' : self.get_sub_component_invoice_details_td_energy_data(fact, pol, energy_discount_BOE17_2021),
-            'energy_discount_BOE17_2021': energy_discount_BOE17_2021,
-            'energy_tolls': self.get_sub_component_invoice_details_td_energy_tolls_data(fact, pol),
-            'energy_charges': self.get_sub_component_invoice_details_td_energy_charges_data(fact, pol, energy_discount_BOE17_2021),
-            'other_concepts': self.get_sub_component_invoice_details_td_otl_other_concepts_data(fact, pol),
-            'excess_power_maximeter': self.get_sub_component_invoice_details_td_excess_power_maximeter(fact, pol),
-            'excess_power_quarterhours': self.get_sub_component_invoice_details_td_excess_power_quarterhours(fact, pol),
-            'bo_social_2023': self.get_sub_component_invoice_details_td_bo_social_2023_data(fact, pol),
-            'flux_solar': self.get_sub_component_invoice_details_td_flux_solar_data(fact, pol),
-            'generation': self.get_sub_component_invoice_details_td_generation_data(fact, pol),
-            'inductive': self.get_sub_component_invoice_details_td_inductive_data(fact, pol),
-            'capacitive': self.get_sub_component_invoice_details_td_capacitive_data(fact, pol),
-            'is_canaries': pol.cups.id_provincia.id in [37, 41],
-            'amount_total': fact.amount_total
-        }
-        return data
-
-    def get_sub_component_invoice_details_td_otl_other_concepts_data(self, fact, pol):
-
-        def get_tax_type(l):
-            if l.tax_id.description == 'IESE_RD_17_2021':
-                return '0.5percent'
-            elif l.tax_id.description == 'IESE_99.2_1':
-                return '1euroMWh'
-            elif l.tax_id.description == 'IESE_99.2_0.5':
-                return '0.5euroMWh'
-            elif l.tax_id.description and l.tax_id.description.startswith('IESE_RD_17_2021_85'):
-                return 'excempcio'
-            return '5.11percent'
-
-        lines_extra_ids = self.get_lines_in_extralines(fact, pol)
-        lloguer_lines = []
-        bosocial_lines = []
-        donatiu_lines = []
-        altres_lines = []
-        iva_energia =  None
-        iva_potencia = None
-        for l in fact.linia_ids:
-            if l.tipus in 'energia':
-                iva_energia = get_iva_line(l)
-            if l.tipus in 'potencia':
-                iva_potencia = get_iva_line(l)
-            if l.tipus in 'lloguer':
-                lloguer_lines.append({
-                    'quantity': l.quantity,
-                    'price_unit': l.price_unit,
-                    'price_subtotal': l.price_subtotal,
-                    'iva': get_iva_line(l),
-                })
-            if l.tipus in 'altres' and l.invoice_line_id.product_id.code == 'BS01':
-                bosocial_lines.append({
-                    'quantity': l.quantity,
-                    'price_unit': l.price_unit,
-                    'price_subtotal': l.price_subtotal,
-                    'iva': get_iva_line(l),
-                })
-            if l.tipus in 'altres' and l.invoice_line_id.product_id.code == 'DN01':
-                donatiu_lines.append({
-                    'quantity': l.quantity,
-                    'price_unit_multi': l.price_unit_multi,
-                    'price_subtotal': l.price_subtotal,
-                    'iva': get_iva_line(l),
-                })
-            if l.tipus in ('altres', 'cobrament') and l.invoice_line_id.product_id.code not in ('DN01', 'BS01', 'DESC1721', 'DESC1721ENE', 'DESC1721POT', 'RBS', 'PBV'):
-                altres_lines.append({
-                    'name': l.name,
-                    'price_subtotal': l.price_subtotal,
-                    'iva': get_iva_line(l),
-                })
-            if l.tipus in 'energia' and l.id in lines_extra_ids:
-                altres_lines.append({
-                    'name': l.name,
-                    'price_subtotal': l.price_subtotal,
-                    'iva': get_iva_line(l),
-                })
-
-        iva_iese = '--%'
-        if iva_potencia:
-            iva_iese = iva_potencia
-        if iva_energia:
-            iva_iese = iva_energia
-
-        iese_lines = []
-        fiscal_position = fact.fiscal_position and 'IESE' in fact.fiscal_position.name and '%' in fact.fiscal_position.name
-        excempcio = None
-        percentatges_exempcio_splitted = None
-        percentatges_exempcio = None
-        is_excempcio_IE_base = None
-
-        if fiscal_position:
-            excempcio = fact.fiscal_position.tax_ids[0].tax_dest_id.name
-            excempcio = excempcio[excempcio.find("(")+1:excempcio.find(")")]
-            percentatges_exempcio_splitted = excempcio.split(' ')
-            if len(percentatges_exempcio_splitted) == 3:
-                percentatges_exempcio = (
-                    abs(float(percentatges_exempcio_splitted[0].replace('%', '')) / 100),
-                    abs(float(percentatges_exempcio_splitted[2].replace('%', '')) / 100)
-                )
-            is_excempcio_IE_base = len(percentatges_exempcio_splitted) == 3 and len(percentatges_exempcio) == 2
-
-            for l in fact.tax_line:
-                tax_type = get_tax_type(l)
-                if 'IVA' not in l.name and 'IGIC' not in l.name:
-                    if len(percentatges_exempcio_splitted) == 3 and tax_type == 'excempcio' and is_excempcio_IE_base:
-                        base_iese = l.base_amount * (1 - percentatges_exempcio[0] * percentatges_exempcio[1])
-                    else:
-                        base_iese = l.base_amount
-
-                    iese_lines.append({
-                        'base_iese': base_iese,
-                        'tax_amount': l.tax_amount,
-                        'tax_type': tax_type,
-                        'iva': iva_iese,
-                    })
-        else:
-            fiscal_position = False
-            for l in fact.tax_line:
-                if 'IVA' not in l.name and 'IGIC' not in l.name:
-                    iese_lines.append({
-                        'base_amount': l.base_amount,
-                        'tax_amount': l.tax_amount,
-                        'tax_type': get_tax_type(l),
-                        'iva': iva_iese,
-                    })
-
-        iva_lines = []
-        igic_lines = []
-        for l in fact.tax_line:
-            if 'IVA' in l.name:
-                iva_lines.append({
-                    'name': l.name,
-                    'base': l.base,
-                    'amount': l.amount,
-                    'disclaimer_21_to_5': l.name == 'IVA 5%',
-                })
-            if 'IGIC' in l.name:
-                igic_lines.append({
-                    'name': l.name,
-                    'base': l.base,
-                    'amount': l.amount,
-                })
-
-        data = {
-                'lloguer_lines': lloguer_lines,
-                'bosocial_lines': bosocial_lines,
-                'donatiu_lines': donatiu_lines,
-                'altres_lines': altres_lines,
-                'iese_lines': iese_lines,
-                'iva_lines': iva_lines,
-                'igic_lines': igic_lines,
-                'fiscal_position': fiscal_position,
-                'excempcio': excempcio,
-                'percentatges_exempcio_splitted': percentatges_exempcio_splitted,
-                'percentatges_exempcio': percentatges_exempcio,
-                'is_excempcio_IE_base': is_excempcio_IE_base,
-                'donatiu': sum([l["price_subtotal"] for l in donatiu_lines]),
-                'amount_total': fact.amount_total,
-                'header_multi': len(bosocial_lines) + len(altres_lines),
-                'last_row': 'altres' if len(altres_lines) else 'bosocial',
-                'number_of_columns': len(self.get_matrix_show_periods(pol)) + 1,
         }
         return data
 
