@@ -33,7 +33,7 @@ first_pass = True
         % endif
         <td class="detall_td" colspan="${id.number_of_columns}">${_(u"Donatiu voluntari (exempt d'IVA) %s kWh x %s €/kWh") % (formatLang(l['quantity']), formatLang(l['price_unit_multi']))}</td>
         <td class="subtotal">${_(u"%s €") % formatLang(l['price_subtotal'])}</td>
-        <td></td>
+        <td class="detall_td periods_td">Ex</td>
     </tr>
 % endfor
 % for l in id.iese_lines:
