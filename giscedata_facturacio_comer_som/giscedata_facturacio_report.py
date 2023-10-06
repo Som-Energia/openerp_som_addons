@@ -157,6 +157,10 @@ def get_iva_line(line):
             return tax.name[:].replace("IGIC", "").split()[0].strip()
     return ''
 
+def clean_tax_name(tax_name):
+    return tax_name.replac('(Vendes)', '')
+
+
 class GiscedataFacturacioFacturaReport(osv.osv):
 
     _auto = False
@@ -1436,7 +1440,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         for l in fact.tax_line:
             if 'IVA' in l.name:
                 iva_lines.append({
-                    'name': l.name,
+                    'name': clean_tax_name(l.name),
                     'base': l.base,
                     'amount': l.amount,
                     'disclaimer_21_to_5': l.name == 'IVA 5%',
@@ -1676,7 +1680,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         iese = 0
         for l in fact.tax_line:
             if "IVA" in l.name or "IGIC" in l.name:
-                impostos.update({l.name: l.amount})
+                impostos.update({clean_tax_name(l.name): l.amount})
             else:
                 iese += l.amount
 
