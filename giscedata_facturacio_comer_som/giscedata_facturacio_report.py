@@ -158,7 +158,7 @@ def get_iva_line(line):
     return ''
 
 def clean_tax_name(tax_name):
-    return tax_name.replac('(Vendes)', '')
+    return tax_name.replace('(Vendes)', '').strip()
 
 
 class GiscedataFacturacioFacturaReport(osv.osv):
