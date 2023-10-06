@@ -152,7 +152,7 @@ def get_iva_line(line):
         if 'IVA' in tax.name:
             return tax.name[:].replace("IVA", "").split()[0].strip()
         if 'IGIC' in tax.name and 'Exent' in tax.name:
-            return 'Ex'
+            return ''
         if 'IGIC' in tax.name:
             return tax.name[:].replace("IGIC", "").split()[0].strip()
     return ''
