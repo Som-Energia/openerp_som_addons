@@ -1382,7 +1382,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     'iva': get_iva_line(l),
                 })
 
-        iva_iese = '--%'
+        iva_iese = ''
         if iva_potencia:
             iva_iese = iva_potencia
         if iva_energia:
