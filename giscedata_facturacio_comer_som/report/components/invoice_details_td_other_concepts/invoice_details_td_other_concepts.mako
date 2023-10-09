@@ -11,7 +11,9 @@ first_pass = True
         % endif
         <td class="detall_td" colspan="${id.number_of_columns}">${_(u"Bo social (RD 7/2016 23 desembre) %s dies x %s €/dia") % (int(l['quantity']), locale.str(locale.atof(formatLang(l['price_unit'], digits=3))))}</td>
         <td class="subtotal">${_(u"%s €") % formatLang(l['price_subtotal'])}</td>
-        <td class="detall_td periods_td">${_(u"%s") % (l['iva']) }</td>
+        % if id.iva_column:
+            <td class="detall_td periods_td">${_(u"%s") % (l['iva']) }</td>
+        % endif
     </tr>
 % endfor
 % for l in id.altres_lines:
@@ -22,7 +24,9 @@ first_pass = True
         % endif
         <td class="detall_td" colspan="${id.number_of_columns}">${l['name']}</td>
         <td class="subtotal">${_(u"%s €") % formatLang(l['price_subtotal'])}</td>
-        <td class="detall_td periods_td">${_(u"%s") % (l['iva']) }</td>
+        % if id.iva_column:
+            <td class="detall_td periods_td">${_(u"%s") % (l['iva']) }</td>
+        % endif
     </tr>
 % endfor
 % for l in id.donatiu_lines:
@@ -33,7 +37,9 @@ first_pass = True
         % endif
         <td class="detall_td" colspan="${id.number_of_columns}">${_(u"Donatiu voluntari (exempt d'IVA) %s kWh x %s €/kWh") % (formatLang(l['quantity']), formatLang(l['price_unit_multi']))}</td>
         <td class="subtotal">${_(u"%s €") % formatLang(l['price_subtotal'])}</td>
-        <td></td>
+        % if id.iva_column:
+            <td></td>
+        % endif
     </tr>
 % endfor
 % for l in id.iese_lines:
@@ -65,7 +71,9 @@ first_pass = True
                 % endif
             </td>
             <td class="subtotal">${_(u"%s €") % formatLang(l['tax_amount'])}</td>
-            <td class="detall_td">${_(u"%s") % (l['iva']) }</td>
+            % if id.iva_column:
+                <td class="detall_td">${_(u"%s") % (l['iva']) }</td>
+            % endif
         % else:
             <td class="td_first concepte_td">${_(u"Impost de l'electricitat")}</td>
             <td class="detall_td" colspan="${id.number_of_columns}">
@@ -81,7 +89,9 @@ first_pass = True
                 % endif
             </td>
             <td class="subtotal">${_(u"%s €") % formatLang(l['tax_amount'])}</td>
-            <td class="detall_td periods_td">${_(u"%s") % (l['iva']) }</td>
+            % if id.iva_column:
+                <td class="detall_td periods_td">${_(u"%s") % (l['iva']) }</td>
+            % endif
         % endif
     </tr>
 % endfor
@@ -90,7 +100,9 @@ first_pass = True
         <td class="td_first concepte_td">${_(u"Lloguer de comptador")}</td>
         <td class="detall_td" colspan="${id.number_of_columns}">${_(u"%s dies x %s €/dia") % (int(l['quantity']), locale.str(locale.atof(formatLang(l['price_unit'], digits=6))))}</td>
         <td class="subtotal">${_(u"%s €") % formatLang(l['price_subtotal'])}</td>
-        <td class="detall_td periods_td">${_(u"%s") % (l['iva']) }</td>
+        % if id.iva_column:
+            <td class="detall_td periods_td">${_(u"%s") % (l['iva']) }</td>
+        % endif
     </tr>
 % endfor
 % for l in id.iva_lines:
@@ -102,7 +114,9 @@ first_pass = True
         %endif
         </td>
         <td class="subtotal">${_(u"%s €") % formatLang(l['amount'])}</td>
-        <td></td>
+        % if id.iva_column:
+            <td></td>
+        % endif
     </tr>
 % endfor
 % for l in id.igic_lines:
@@ -110,6 +124,8 @@ first_pass = True
         <td class="td_first concepte_td">${l['name']}</td>
         <td class="detall_td" colspan="${id.number_of_columns}">${_(u"%s € ") % (formatLang(l['base']))}${_(u"(BASE IMPOSABLE)")}</td>
         <td class="subtotal">${_(u"%s €") % formatLang(l['amount'])}</td>
-        <td></td>
+        % if id.iva_column:
+            <td></td>
+        % endif
     </tr>
 % endfor

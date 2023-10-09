@@ -2372,6 +2372,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data['header_multi'] = len(data['bosocial_lines']+data['altres_lines']+data['donatiu_lines'])
         data['last_row'] = 'donatiu' if len(data['donatiu_lines']) else 'altres' if len(data['altres_lines']) else 'bosocial'
         data['number_of_columns'] = len(self.get_matrix_show_periods(pol)) + 1
+        data['iva_column'] = has_iva_column(fact)
         return data
 
     def get_sub_component_invoice_details_td_excess_power_maximeter(self, fact, pol):
