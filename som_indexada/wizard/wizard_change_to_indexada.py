@@ -73,18 +73,6 @@ class WizardChangeToIndexada(osv.osv_memory):
             change_type = context.get("change_type", "from_period_to_index")
         return change_type
 
-    # def haha(self, cursor, uid, polissa_id, context=None): #què és aquest nom?
-    #     if context is None:
-    #         context = {}
-    #     pol_o = self.pool.get('giscedata.polissa')
-    #     pol_browse = pol_o.browse(cursor, uid, polissa_id, context=context)
-    #     return self.get_new_pricelist(cursor, uid, pol_browse, context=context)
-
-    # def calculate_k_d_coeficients(self, cursor, uid, context=None):
-    #     # k and d come from pricelist
-    #     res = {}
-    #     return res
-
     def _get_list_cups_balears(self, cursor, uid, context=None):
         xml_id_prov_balears = "ES07"
         IrModel = self.pool.get('ir.model.data')
@@ -257,9 +245,7 @@ class WizardChangeToIndexada(osv.osv_memory):
     def change_to_indexada(self, cursor, uid, ids, context=None):
         '''update data_firma_contracte in polissa
         and data_inici in modcontractual'''
-        modcon_obj = self.pool.get('giscedata.polissa.modcontractual')
         polissa_obj = self.pool.get('giscedata.polissa')
-        pricelist_obj = self.pool.get('product.pricelist')
 
         wizard = self.browse(cursor, uid, ids[0])
         polissa = wizard.polissa_id
@@ -268,39 +254,14 @@ class WizardChangeToIndexada(osv.osv_memory):
             context = {}
 
         self.validate_polissa_can_change(cursor, uid, polissa, change_type)
-        # coefs = self.calculate_k_d_coeficients(
-        #     cursor, uid) if change_type == 'from_period_to_index' else None
         new_pricelist_id = self.calculate_new_pricelist(cursor, uid, polissa, change_type)
-        # new_pricelist = pricelist_obj.browse(
-        #     cursor, uid, new_pricelist_id, context={'prefetch': False})
-
-        # prev_modcon = polissa.modcontractuals_ids[0]
-        # modcon_obj.write(cursor, uid, prev_modcon.id, {
-        #     'data_final': date.today(),
-        # })
-
-        # new_modcon_vals = modcon_obj.copy_data(
-        #     cursor, uid, prev_modcon.id
-        # )[0]
-        # new_observacions = (
-        #     u'* Modcon canvi a {}:\n '
-        #     u'Nova tarifa comer: {}'
-        # ).format(CHANGE_AUX_VALUES[change_type]['comments'], new_pricelist.name)
 
         new_modcon_vals = {
-            # 'data_inici': date.today() + timedelta(days=1),
-            # 'data_final': date.today() + timedelta(days=365),
             'mode_facturacio': CHANGE_AUX_VALUES[change_type]['invoicing_type'],
             'mode_facturacio_generacio': CHANGE_AUX_VALUES[change_type]['invoicing_type'],
             'llista_preu': new_pricelist_id,
             'coeficient_k': False,
             'coeficient_d': False,
-            # 'active': True,
-            # 'state': 'pendent',
-            # 'modcontractual_ant': prev_modcon.id,
-            # 'name': str(int(prev_modcon.name) + 1),
-            # 'observacions': new_observacions,
-            # 'tipus': 'mod',
         }
         try:
             polissa.send_signal('modcontractual')

@@ -233,16 +233,18 @@ class TestChangeToIndexada(TestSwitchingImport):
 
     @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
     def test_change_to_indexada_one_polissa_30td(self, mocked_send_mail):
+        polissa_obj = self.pool.get('giscedata.polissa')
+        modcon_obj = self.pool.get('giscedata.polissa.modcontractual')
+        IrModel = self.pool.get('ir.model.data')
         wiz_o = self.pool.get('wizard.change.to.indexada')
+
         polissa_id = self.open_polissa('polissa_tarifa_019')
         context = {'active_id': polissa_id, 'change_type': 'from_period_to_index'}
         wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
 
         wiz_o.change_to_indexada(self.cursor, self.uid, [wiz_id], context=context)
-        wiz_o.change_to_indexada(self.cursor, self.uid, [wiz_id], context=context)
         modcontactual_id = polissa_obj.read(self.cursor, self.uid, polissa_id, ['modcontractuals_ids'])['modcontractuals_ids'][0]
         prev_modcontactual_id = polissa_obj.read(self.cursor, self.uid, polissa_id, ['modcontractuals_ids'])['modcontractuals_ids'][1]
-
 
         new_pricelist_id = IrModel._get_obj(self.cursor, self.uid, 'som_indexada', 'pricelist_indexada_30td_peninsula').id
 
@@ -255,7 +257,6 @@ class TestChangeToIndexada(TestSwitchingImport):
             'active',
             'state',
             'modcontractual_ant',
-            'autoconsumo',
             ])
         modcon_act.pop('id')
         modcon_act['llista_preu'] =  modcon_act['llista_preu'][0]
@@ -270,9 +271,8 @@ class TestChangeToIndexada(TestSwitchingImport):
             'active': True,
             'state': 'pendent',
             'modcontractual_ant': prev_modcontactual_id,
-            'autoconsumo': '41',
         })
-        IrModel = self.pool.get('ir.model.data')
+
 
         template_id = IrModel.get_object_reference(
             self.cursor, self.uid, 'som_indexada', 'email_canvi_tarifa_a_indexada'
@@ -353,5 +353,3 @@ class TestChangeToIndexada(TestSwitchingImport):
             'state': 'pendent',
             'modcontractual_ant': prev_modcontactual_id,
         })
-
-#TODO 3.0, 6.1, canaries, balears, enviament mails?
