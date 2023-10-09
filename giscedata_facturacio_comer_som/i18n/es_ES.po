@@ -191,8 +191,8 @@ msgid "DATA EMISSIÓ"
 msgstr "FECHA EMISIÓN"
 
 #: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_rebut_comer.mako:170
-msgid "DATA VENCIMENT"
-msgstr "FECHA VENCIMIENTO"
+msgid "Document vàlid fins a:"
+msgstr "Documento válido hasta:"
 
 #: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_rebut_comer.mako:171
 msgid "IMPORT TOTAL Euros"

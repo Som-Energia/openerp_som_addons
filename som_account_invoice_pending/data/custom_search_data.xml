@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data noupdate="0">
+       <record id="consulta_factures_deute_pobresa" model="custom.search">
+            <field name="name">COB - Consulta factures pobresa</field>
+            <field name="query"><![CDATA[
+/* ATENCIÓ: Aquesta query està pensada per ser modificada per codi.
+ * Per tant, si es modifica a l'ERP i després s'actualitza el mòdul, els canvis seran sobreescrits.
+ * */
+select
+ gff.id as "IdFactura"
+--,ai.id as IdFacturaCont
+,ai."number" as "NumeroFactura"
+,gp."name" as "Contracte"
+--,gp.cups as cups_id
+,gcp."name" as "CUPS"
+--,ai.partner_id
+--,ai.pending_state  as "IdEstatPendent"
+,aips."name" as "EstatPendent"
+,ai.pending_state_date as "DataEstatPendent"
+--,gff.polissa_id as contracte_id
+,gp.state as "EstatAbonat"
+,gff.data_inici as "DataInici"
+,gff.data_final  as "DataFinal"
+,rp."name" as "Empresa"
+,ai.amount_untaxed as "Base"
+,ai.residual as "Pendent"
+,ai.amount_total as "Total"
+,ai.date_invoice as "DataFactura"
+,ai.date_due as "DataVenciment"
+,gff.potencia as "PotènciaContractada(kW)"
+,gff.energia_kwh as "EnegiaFacturada"
+,gff.dies as "DiesFacturats"
+,sq02.case_name as "CasDescripció"
+,sq02.date as "CasHistData"
+,sq02.user_name as "CasHistUsuariResponsable"
+,sq02.description as "CasHistDescripció"
+from giscedata_facturacio_factura gff
+inner join account_invoice ai on ai.id = gff.invoice_id
+inner join account_invoice_pending_state aips on aips.id = ai.pending_state and aips.weight > 0
+inner join res_partner rp on rp.id = ai.partner_id
+inner join giscedata_polissa gp on gp.id = gff.polissa_id
+inner join giscedata_cups_ps gcp on gcp.id = gp.cups
+left join
+(
+	select *
+	from
+	(
+		select
+		ROW_NUMBER() OVER (
+		PARTITION BY ccl.case_id
+		ORDER BY ccl.date DESC
+		) as rn_aux
+		,ccl.case_id, cc.partner_id, cc."name" as case_name, cc.polissa_id, ccl."date", ccl.user_id, ru.name as user_name, cch.description
+		from crm_case_log ccl
+		inner join crm_case_history cch on cch.log_id = ccl.id
+		inner join crm_case cc on cc.id = ccl.case_id
+		inner join crm_case_section ccs on ccs.id = cc.section_id
+		left join res_users ru on ru.id = ccl.user_id
+		where ccs.id = (select res_id from ir_model_data imd
+				  	  where "module" = 'giscedata_facturacio_comer_bono_social' and "name" = 'crm_section_bono_social_consulta_pobresa')
+	) sql01
+	where sql01.rn_aux = 1
+)sq02 on sq02.polissa_id = gff.polissa_id
+where ai.type = 'out_invoice'
+and ai.pending_state = (select res_id from ir_model_data imd
+   				        where "module" = 'som_account_invoice_pending' and "name" = 'pendent_consulta_probresa_pending_state')
+            ]]>
+            </field>
+        </record>
+        <!--Columns-->
+        <record model="custom.search.column" id="consulta_factures_deute_pobresa_0">
+            <field name="sequence" eval="0"/>
+            <field name="search_id" ref="consulta_factures_deute_pobresa"/>
+            <field name="name">IdFactura</field>
+        </record>
+        <record model="custom.search.column" id="consulta_factures_deute_pobresa_10">
+            <field name="sequence" eval="10"/>
+            <field name="search_id" ref="consulta_factures_deute_pobresa"/>
+            <field name="name">NumeroFactura</field>
+        </record>
+        <record model="custom.search.column" id="consulta_factures_deute_pobresa_20">
+            <field name="sequence" eval="20"/>
+            <field name="search_id" ref="consulta_factures_deute_pobresa"/>
+            <field name="name">Contracte</field>
+        </record>
+        <record model="custom.search.column" id="consulta_factures_deute_pobresa_30">
+            <field name="sequence" eval="30"/>
+            <field name="search_id" ref="consulta_factures_deute_pobresa"/>
+            <field name="name">CUPS</field>
+        </record>
+        <record model="custom.search.column" id="consulta_factures_deute_pobresa_40">
+            <field name="sequence" eval="40"/>
+            <field name="search_id" ref="consulta_factures_deute_pobresa"/>
+            <field name="name">EstatPendent</field>
+        </record>
+        <record model="custom.search.column" id="consulta_factures_deute_pobresa_50">
+            <field name="sequence" eval="50"/>
+            <field name="search_id" ref="consulta_factures_deute_pobresa"/>
+            <field name="name">DataEstatPendent</field>
+        </record>
+        <record model="custom.search.column" id="consulta_factures_deute_pobresa_60">
+            <field name="sequence" eval="60"/>
+            <field name="search_id" ref="consulta_factures_deute_pobresa"/>
+            <field name="name">EstatAbonat</field>
+        </record>
+        <record model="custom.search.column" id="consulta_factures_deute_pobresa_70">
+            <field name="sequence" eval="70"/>
+            <field name="search_id" ref="consulta_factures_deute_pobresa"/>
+            <field name="name">DataInici</field>
+        </record>
+        <record model="custom.search.column" id="consulta_factures_deute_pobresa_80">
+            <field name="sequence" eval="80"/>
+            <field name="search_id" ref="consulta_factures_deute_pobresa"/>
+            <field name="name">DataFinal</field>
+        </record>
+        <record model="custom.search.column" id="consulta_factures_deute_pobresa_90">
+            <field name="sequence" eval="90"/>
+            <field name="search_id" ref="consulta_factures_deute_pobresa"/>
+            <field name="name">Empresa</field>
+        </record>
+        <record model="custom.search.column" id="consulta_factures_deute_pobresa_100">
+            <field name="sequence" eval="100"/>
+            <field name="search_id" ref="consulta_factures_deute_pobresa"/>
+            <field name="name">Base</field>
+        </record>
+        <record model="custom.search.column" id="consulta_factures_deute_pobresa_110">
+            <field name="sequence" eval="110"/>
+            <field name="search_id" ref="consulta_factures_deute_pobresa"/>
+            <field name="name">Pendent</field>
+        </record>
+        <record model="custom.search.column" id="consulta_factures_deute_pobresa_120">
+            <field name="sequence" eval="120"/>
+            <field name="search_id" ref="consulta_factures_deute_pobresa"/>
+            <field name="name">Total</field>
+        </record>
+        <record model="custom.search.column" id="consulta_factures_deute_pobresa_130">
+            <field name="sequence" eval="130"/>
+            <field name="search_id" ref="consulta_factures_deute_pobresa"/>
+            <field name="name">DataFactura</field>
+        </record>
+        <record model="custom.search.column" id="consulta_factures_deute_pobresa_140">
+            <field name="sequence" eval="140"/>
+            <field name="search_id" ref="consulta_factures_deute_pobresa"/>
+            <field name="name">DataVenciment</field>
+        </record>
+        <record model="custom.search.column" id="consulta_factures_deute_pobresa_150">
+            <field name="sequence" eval="150"/>
+            <field name="search_id" ref="consulta_factures_deute_pobresa"/>
+            <field name="name">PotenciaContractada(kW)</field>
+        </record>
+
+        <record model="custom.search.column" id="consulta_factures_deute_pobresa_160">
+            <field name="sequence" eval="160"/>
+            <field name="search_id" ref="consulta_factures_deute_pobresa"/>
+            <field name="name">EnegiaFacturada</field>
+        </record>
+        <record model="custom.search.column" id="consulta_factures_deute_pobresa_170">
+            <field name="sequence" eval="170"/>
+            <field name="search_id" ref="consulta_factures_deute_pobresa"/>
+            <field name="name">DiesFacturats</field>
+        </record>
+        <record model="custom.search.column" id="consulta_factures_deute_pobresa_180">
+            <field name="sequence" eval="180"/>
+            <field name="search_id" ref="consulta_factures_deute_pobresa"/>
+            <field name="name">CasDescripcio</field>
+        </record>
+        <record model="custom.search.column" id="consulta_factures_deute_pobresa_190">
+            <field name="sequence" eval="190"/>
+            <field name="search_id" ref="consulta_factures_deute_pobresa"/>
+            <field name="name">CasHistData</field>
+        </record>
+        <record model="custom.search.column" id="consulta_factures_deute_pobresa_200">
+            <field name="sequence" eval="200"/>
+            <field name="search_id" ref="consulta_factures_deute_pobresa"/>
+            <field name="name">CasHistUsuariResponsable</field>
+        </record>
+        <record model="custom.search.column" id="consulta_factures_deute_pobresa_210">
+            <field name="sequence" eval="210"/>
+            <field name="search_id" ref="consulta_factures_deute_pobresa"/>
+            <field name="name">CasHistDescripcio</field>
+        </record>
+    </data>
+</openerp>

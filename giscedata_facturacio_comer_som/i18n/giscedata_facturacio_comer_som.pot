@@ -184,7 +184,7 @@ msgid "DATA EMISSIÓ"
 msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_rebut_comer.mako:170
-msgid "DATA VENCIMENT"
+msgid "Document vàlid fins a:"
 msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_rebut_comer.mako:171
