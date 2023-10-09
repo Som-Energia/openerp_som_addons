@@ -30,7 +30,7 @@ mean_zipcode_consumption_dates = {
     'end': '2050-12-31',
 }
 
-show_iva_column_date = '2020-01-01'
+show_iva_column_date = '2023-10-10'
 
 # -----------------------------------
 # helper functions
