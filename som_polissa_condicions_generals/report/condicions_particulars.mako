@@ -455,7 +455,10 @@ CONTRACT_TYPES = dict(TABLA_9)
                             if datetime.strptime(data_llista_preus, '%Y-%m-%d') <= datetime.today():
                                 data_llista_preus = min(datetime.strptime(data_final, '%Y-%m-%d'), datetime.today())
                             ctx['date'] = data_llista_preus
-                        data_i = data_inici and datetime.strptime(polissa.modcontractual_activa.data_inici, '%Y-%m-%d')
+                        if not lead:
+                            data_i = data_inici and datetime.strptime(polissa.modcontractual_activa.data_inici, '%Y-%m-%d')
+                        else:
+                            data_i = datetime.strptime(data_inici, '%Y-%m-%d')
                         if data_i and calendar.isleap(data_i.year):
                             dies = 366
                         else:
@@ -735,7 +738,7 @@ CONTRACT_TYPES = dict(TABLA_9)
 
                 % if polissa_categ in polissa.category_id:
                     <div class="acceptacio_digital_txt">${_(u"Signat digitalment")}</div>
-                % else:
+                % elif not lead:
                     <div class="acceptacio_digital_txt">${_(u"Acceptat digitalment via formulari web")}</div>
                 % endif
 
