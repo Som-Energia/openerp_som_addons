@@ -5,6 +5,7 @@ body{
     margin-right: 50px;
     margin-left: 50px;
 }
+
 table{
     width: 100%;
     border: 0;
@@ -153,6 +154,16 @@ h3 {
     width: 70%;
     border: 1px solid #bbc82a;
     margin-left: 15%;
+}
+
+.index {
+    width: 70%;
+    border: 1px solid #bbc82a;
+    margin-left: 15%;
+}
+
+.sagnia, .alpha{
+    page-break-inside: avoid;
 }
 
 .content_generals {
