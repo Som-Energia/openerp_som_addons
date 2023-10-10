@@ -8,6 +8,8 @@ from som_extend_facturacio_comer.utils import get_gkwh_atr_price
 from giscedata_polissa.report.utils import localize_period, datetime_to_date
 from gestionatr.defs import TABLA_9
 
+lead = context.get('lead')
+
 def clean_text(text):
     return text or ''
 
@@ -171,7 +173,7 @@ CONTRACT_TYPES = dict(TABLA_9)
             <h2>${_(u"CONDICIONS PARTICULARS DEL CONTRACTE DE SUBMINISTRAMENT D'ENERGIA ELÈCTRICA")}</h2>
         </div>
 
-        %if polissa.state == 'esborrany':
+        %if polissa.state == 'esborrany' and not lead:
             <div class="esborrany_warning">
                 <img src="${addons_path}/som_polissa_condicions_generals/report/assets/warning_icon.png"/>
                 <h2>
@@ -181,14 +183,13 @@ CONTRACT_TYPES = dict(TABLA_9)
                     ${_(u"Tarifes vigents en el moment d’activació del contracte.")}
                 </h3>
             </div>
-            <%
+        %endif
+        <%
+            if polissa.state == 'esborrany':
                 ultima_modcon = None
                 modcon_pendent_indexada = False
                 modcon_pendent_periodes = False
-            %>
-        %endif
 
-        <%
             dict_titular = get_titular_data(pas01, polissa)
             periodes_energia, periodes_potencia = [], []
             if polissa.state != 'esborrany':
@@ -454,7 +455,10 @@ CONTRACT_TYPES = dict(TABLA_9)
                             if datetime.strptime(data_llista_preus, '%Y-%m-%d') <= datetime.today():
                                 data_llista_preus = min(datetime.strptime(data_final, '%Y-%m-%d'), datetime.today())
                             ctx['date'] = data_llista_preus
-                        data_i = data_inici and datetime.strptime(polissa.modcontractual_activa.data_inici, '%Y-%m-%d')
+                        if not lead:
+                            data_i = data_inici and datetime.strptime(polissa.modcontractual_activa.data_inici, '%Y-%m-%d')
+                        else:
+                            data_i = datetime.strptime(data_inici, '%Y-%m-%d')
                         if data_i and calendar.isleap(data_i.year):
                             dies = 366
                         else:
@@ -728,11 +732,13 @@ CONTRACT_TYPES = dict(TABLA_9)
                     <div><b>${_(u"La persona clienta:")}</b></div>
                 % endif
 
-                <img src="${addons_path}/som_polissa_condicions_generals/report/assets/acceptacio_digital.png"/>
+                %if not lead:
+                    <img src="${addons_path}/som_polissa_condicions_generals/report/assets/acceptacio_digital.png"/>
+                %endif
 
                 % if polissa_categ in polissa.category_id:
                     <div class="acceptacio_digital_txt">${_(u"Signat digitalment")}</div>
-                % else:
+                % elif not lead:
                     <div class="acceptacio_digital_txt">${_(u"Acceptat digitalment via formulari web")}</div>
                 % endif
 
