@@ -1228,6 +1228,7 @@ class Tests_FacturacioFacturaReport_invoice_details_other_concepts(Tests_Factura
                     'quantity': 60.0,
                     'price_unit': 0.05,
                     'price_subtotal': 3.0,
+                    'iva': '',
                 }],
                 'bosocial_lines': [],
                 'donatiu_lines': [],
@@ -1558,6 +1559,7 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
             'showing_periods': ['P1', 'P2', 'P3', 'P4', 'P5', 'P6'],
             'dies_any': 0,
             'dies': 0,
+            'iva_column': False,
             })
 
     @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport, 'get_tarifa_elect_atr')
@@ -1574,6 +1576,7 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
             'dies_any': 0,
             'dies': 0,
             'header_multi': 2,
+            'iva_column': False,
             })
 
     @mock.patch.object(giscedata_facturacio_report, 'is_2XTD')
@@ -1620,7 +1623,6 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
 
         fact_pol = self.bfp(f_id)
         result = self.r_obj.get_sub_component_invoice_details_td(fact_pol['fact'], fact_pol['pol'], fact_pol['fact'].linies_potencia)
-
         self.assertEquals(result, [{
                 'P1': {'quantity': 1, 'atr_price': 10.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'price_unit': 1.0, 'extra': 1.0},
                 'P2': {'quantity': 1, 'atr_price': 10.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'price_unit': 1.0, 'extra': 1.0},
@@ -1633,6 +1635,7 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                 'date_from': '01/06/2021',
                 'date_to': '30/06/2021',
                 'date_to_d': '2021-06-30',
+                'iva': '',
             }])
 
     @mock.patch.object(giscedata_facturacio_report, 'is_2XTD')
@@ -1715,6 +1718,7 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
         self.assertEquals(result, {
             'header_multi': 6,
             'showing_periods': ['P1', 'P2', 'P3'],
+            'iva_column': False,
             'power_lines_data': [
                     {
                         'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
@@ -1728,6 +1732,7 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                         'date_from': '01/05/2021',
                         'date_to': '31/05/2021',
                         'date_to_d': '2021-05-31',
+                        'iva': '',
                     },{
                         'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
                         'P2': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
@@ -1740,6 +1745,7 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                         'date_from': '01/06/2021',
                         'date_to': '30/06/2021',
                         'date_to_d': '2021-06-30',
+                        'iva': '',
                     },
                 ],
             })
@@ -1808,6 +1814,7 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
         self.assertEquals(result, {
             'header_multi': 6,
             'showing_periods': ['P1', 'P2', 'P3'],
+            'iva_column': False,
             'power_lines_data': [
                     {
                         'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
@@ -1821,6 +1828,7 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                         'date_from': '01/05/2021',
                         'date_to': '30/06/2021',
                         'date_to_d': '2021-06-30',
+                        'iva': '',
                     },{
                         'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
                         'multi': 1.0,
@@ -1832,6 +1840,7 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                         'date_from': '01/06/2021',
                         'date_to': '30/06/2021',
                         'date_to_d': '2021-06-30',
+                        'iva': '',
                     },
                 ],
             })
@@ -1917,6 +1926,7 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
         self.assertEquals(result, {
             'header_multi': 6,
             'showing_periods': ['P1', 'P2', 'P3'],
+            'iva_column': False,
             'power_lines_data': [
                     {
                         'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
@@ -1931,6 +1941,7 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                         'date_from': '01/05/2021',
                         'date_to': '30/06/2021',
                         'date_to_d': '2021-06-30',
+                        'iva': '',
                     },{
                         'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
                         'multi': 1.0,
@@ -1942,6 +1953,7 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                         'date_from': '01/06/2021',
                         'date_to': '30/06/2021',
                         'date_to_d': '2021-06-30',
+                        'iva': '',
                     },
                 ],
             })
@@ -2051,11 +2063,11 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
             })
 
         result = self.r_obj.get_sub_component_invoice_details_td_power_data(**self.bfp(f_id))
-
         self.assertYamlfy(result)
         self.assertEquals(result, {
             'header_multi': 3,
             'showing_periods': ['P1', 'P2', 'P3', 'P4', 'P5', 'P6'],
+            'iva_column': False,
             'power_lines_data': [
                     {
                         'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
@@ -2064,6 +2076,7 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                         'P4': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
                         'P5': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
                         'P6': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
+                        'iva': '',
                         'multi': 1,
                         'days_per_year': 365,
                         'total': 6.0,
@@ -2289,6 +2302,7 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
         self.assertEquals(result, {
             'header_multi': 6,
             'showing_periods': ['P1', 'P2', 'P3', 'P4', 'P5', 'P6'],
+            'iva_column': False,
             'power_lines_data': [
                     {
                         'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
@@ -2306,6 +2320,7 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                         'date_from': '01/05/2021',
                         'date_to': '30/05/2021',
                         'date_to_d': '2021-05-30',
+                        'iva': '',
                     },{
                         'P1': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
                         'P2': {'extra': 1.0, 'price_unit': 1.0, 'price_subtotal': 1.0, 'price_unit_multi': 1.0, 'atr_price': 10.0, 'quantity': 1.0},
@@ -2322,6 +2337,7 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                         'date_from': '01/06/2021',
                         'date_to': '30/06/2021',
                         'date_to_d': '2021-06-30',
+                        'iva': '',
                     },
                 ],
             })

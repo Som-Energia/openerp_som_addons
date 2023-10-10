@@ -18,6 +18,7 @@ class ReportBackendInvoiceEmail(ReportBackend):
             'polissa': self.get_polissa(cursor, uid, fra, context=context),
             'factura': self.get_factura(cursor, uid, fra, context=context),
             'socia': self.get_socia(cursor, uid, fra, context=context),
+            'linies': self.get_linies(cursor, uid, fra, context=context),
             'text_correu': self.get_text_correu(cursor, uid, fra, context=context),
             'lang': fra.partner_id.lang,
         }
@@ -82,6 +83,15 @@ class ReportBackendInvoiceEmail(ReportBackend):
         data = report_o.get_factura(cursor, uid, fra, context=context)
 
         data['isTariffChange'] = self._isTariffChange(cursor, uid, fra, context=context)
+
+        return data
+
+    def get_linies(self, cursor, uid, fra, context=None):
+        if context is None:
+            context = {}
+
+        report_o = self.pool.get('giscedata.facturacio.factura.report.v2')
+        data = report_o.get_linies(cursor, uid, fra, context=context)
 
         return data
 

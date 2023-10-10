@@ -2,7 +2,7 @@
 from logging import exception
 from osv import osv
 from yamlns import namespace as ns
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
 import inspect
 from tools.translate import _
 from gestionatr.defs import TENEN_AUTOCONSUM
@@ -10,7 +10,7 @@ import json
 from operator import attrgetter
 from collections import Counter
 
-SENSE_EXCEDENTS = ['31','32','33']
+SENSE_EXCEDENTS = ['31', '32', '33']
 
 agreementPartners = {
         'S019753': {'logo': 'logo_S019753.png'},
@@ -29,6 +29,8 @@ mean_zipcode_consumption_dates = {
     'start': '2022-12-01',
     'end': '2050-12-31',
 }
+
+show_iva_column_date = '2023-10-10'
 
 # -----------------------------------
 # helper functions
@@ -93,30 +95,23 @@ def is_DHS(pol):
 def is_DHA(pol):
     return pol.tarifa.codi_ocsum in ('004', '006')
 
-dummy_td = False
-
 def is_TD(pol):
-    if dummy_td:
-        return True
     return pol.tarifa.codi_ocsum in ('018', '019', '020', '021', '022', '023', '024', '025')
 
 def is_2XTD(pol):
-    if dummy_td:
-        return is_2X(pol)
     return pol.tarifa.codi_ocsum in ('018')
 
 def is_3XTD(pol):
-    if dummy_td:
-        return is_3X(pol)
     return pol.tarifa.codi_ocsum in ('019', '024')
 
 def is_6XTD(pol):
-    if dummy_td:
-        return is_6X(pol)
     return pol.tarifa.codi_ocsum in ('020', '021', '022', '023', '025')
 
 def is_indexed(fact):
     return 'Indexada' in fact.llista_preu.name
+
+def has_iva_column(fact):
+    return val(fact.date_invoice) >= show_iva_column_date
 
 def val(object):
     try:
@@ -151,6 +146,20 @@ def get_tariffs_from_libfacturacioatr():
 def get_tariff_from_libfacturacioatr(code):
     tariffs = get_tariffs_from_libfacturacioatr()
     return tariffs.get(code, None)
+
+def get_iva_line(line):
+    for tax in line.invoice_line_tax_id:
+        if 'IVA' in tax.name:
+            return tax.name[:].replace("IVA", "").split()[0].strip()
+        if 'IGIC' in tax.name and 'Exent' in tax.name:
+            return ''
+        if 'IGIC' in tax.name:
+            return tax.name[:].replace("IGIC", "").split()[0].strip()
+    return ''
+
+def clean_tax_name(tax_name):
+    return tax_name.replace('(Vendes)', '').strip()
+
 
 class GiscedataFacturacioFacturaReport(osv.osv):
 
@@ -830,6 +839,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'price': rmag_line.price_unit,
             'quantity': rmag_line.quantity,
             'total': rmag_line.price_subtotal,
+            'iva': get_iva_line(rmag_line),
         }
         return data
     # -----------------------------
@@ -1335,35 +1345,52 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         bosocial_lines = []
         donatiu_lines = []
         altres_lines = []
+        iva_energia =  None
+        iva_potencia = None
         for l in fact.linia_ids:
+            if l.tipus in 'energia':
+                iva_energia = get_iva_line(l)
+            if l.tipus in 'potencia':
+                iva_potencia = get_iva_line(l)
             if l.tipus in 'lloguer':
                 lloguer_lines.append({
                     'quantity': l.quantity,
                     'price_unit': l.price_unit,
                     'price_subtotal': l.price_subtotal,
+                    'iva': get_iva_line(l),
                 })
             if l.tipus in 'altres' and l.invoice_line_id.product_id.code == 'BS01':
                 bosocial_lines.append({
                     'quantity': l.quantity,
                     'price_unit': l.price_unit,
                     'price_subtotal': l.price_subtotal,
+                    'iva': get_iva_line(l),
                 })
             if l.tipus in 'altres' and l.invoice_line_id.product_id.code == 'DN01':
                 donatiu_lines.append({
                     'quantity': l.quantity,
                     'price_unit_multi': l.price_unit_multi,
                     'price_subtotal': l.price_subtotal,
+                    'iva': get_iva_line(l),
                 })
             if l.tipus in ('altres', 'cobrament') and l.invoice_line_id.product_id.code not in ('DN01', 'BS01', 'DESC1721', 'DESC1721ENE', 'DESC1721POT', 'RBS', 'PBV'):
                 altres_lines.append({
                     'name': l.name,
                     'price_subtotal': l.price_subtotal,
+                    'iva': get_iva_line(l),
                 })
             if l.tipus in 'energia' and l.id in lines_extra_ids:
                 altres_lines.append({
                     'name': l.name,
                     'price_subtotal': l.price_subtotal,
+                    'iva': get_iva_line(l),
                 })
+
+        iva_iese = ''
+        if iva_potencia:
+            iva_iese = iva_potencia
+        if iva_energia:
+            iva_iese = iva_energia
 
         iese_lines = []
         fiscal_position = fact.fiscal_position and 'IESE' in fact.fiscal_position.name and '%' in fact.fiscal_position.name
@@ -1395,6 +1422,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                         'base_iese': base_iese,
                         'tax_amount': l.tax_amount,
                         'tax_type': tax_type,
+                        'iva': iva_iese,
                     })
         else:
             fiscal_position = False
@@ -1404,6 +1432,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                         'base_amount': l.base_amount,
                         'tax_amount': l.tax_amount,
                         'tax_type': get_tax_type(l),
+                        'iva': iva_iese,
                     })
 
         iva_lines = []
@@ -1411,7 +1440,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         for l in fact.tax_line:
             if 'IVA' in l.name:
                 iva_lines.append({
-                    'name': l.name,
+                    'name': clean_tax_name(l.name),
                     'base': l.base,
                     'amount': l.amount,
                     'disclaimer_21_to_5': l.name == 'IVA 5%',
@@ -1651,7 +1680,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         iese = 0
         for l in fact.tax_line:
             if "IVA" in l.name or "IGIC" in l.name:
-                impostos.update({l.name: l.amount})
+                impostos.update({clean_tax_name(l.name): l.amount})
             else:
                 iese += l.amount
 
@@ -1891,7 +1920,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             })
         return data
 
-
+    # ---------------------------------------------------
+    # Invoice_details_td component data and subcomponents
+    # ---------------------------------------------------
     def get_matrix_show_periods(self, pol):
         requested_power_periods = 3 if is_2XTD(pol) else 6
         return ['P{}'.format(i+1) for i in range(0,requested_power_periods)]
@@ -1921,6 +1952,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'generation': self.get_sub_component_invoice_details_td_generation_data(fact, pol),
             'inductive': self.get_sub_component_invoice_details_td_inductive_data(fact, pol),
             'capacitive': self.get_sub_component_invoice_details_td_capacitive_data(fact, pol),
+            'is_canaries': pol.cups.id_provincia.id in [37, 41],
+            'iva_column': has_iva_column(fact),
             'amount_total': fact.amount_total
         }
         return data
@@ -1977,6 +2010,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             lines_data[block]['date_from'] = dateformat(l.data_desde)
             lines_data[block]['date_to_d'] = val(l.data_fins) if 'date_to_d' not in lines_data[block] or lines_data[block]['date_to_d'] < val(l.data_fins) else lines_data[block]['date_to_d']
             lines_data[block]['date_to'] = dateformat(lines_data[block]['date_to_d'])
+            lines_data[block]['iva'] = get_iva_line(l)
 
         lines_data = [lines_data[k] for k in sorted(lines_data.keys())]
         return lines_data
@@ -1984,6 +2018,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
     def get_sub_component_invoice_details_td_accumulative(self, fact, pol, linies):
         lines_data = {}
         total = 0
+        iva = 0
 
         for l in linies:
             l_count = Counter({
@@ -2000,6 +2035,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 lines_data[l.name] += l_count
 
             total += l.price_subtotal
+            iva = get_iva_line(l)
+
 
         for k,v in lines_data.items():
             lines_data[k] = {
@@ -2009,6 +2046,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             }
 
         lines_data['total'] = total
+        lines_data['iva'] = iva
         return lines_data
 
     def get_sub_component_invoice_details_td_power_data(self, fact, pol):
@@ -2017,7 +2055,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data = {
             'power_lines_data': power_lines_data,
             'header_multi': 3*len(power_lines_data),
-            'showing_periods': self.get_matrix_show_periods(pol)
+            'showing_periods': self.get_matrix_show_periods(pol),
+            'iva_column': has_iva_column(fact),
         }
         return data
 
@@ -2029,6 +2068,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         discount_power_lines = {}
         total = 0
+        iva = ''
         days_year = 365
         for l in discount_lines:
             days_year = is_leap_year(datetime.strptime(l.data_desde, '%Y-%m-%d').year) and 366 or 365
@@ -2046,6 +2086,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             else:
                 discount_power_lines[name].update(l_count)
             total += l.price_subtotal
+            iva = get_iva_line(l)
 
         for k,v in discount_power_lines.items():
             discount_power_lines[k] = {
@@ -2061,6 +2102,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data['dies'] = int(discount_power_lines['P1']['days']) if 'P1' in discount_power_lines else 0
         data['dies_any'] = days_year
         data['is_indexed'] = is_index
+        data['iva'] = iva
+        data['iva_column'] = has_iva_column(fact)
         return data
 
     def get_sub_component_invoice_details_td_energy_discount_BOE17_2021_data(self, fact, pol):
@@ -2071,6 +2114,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         discount_energy_lines = {}
         total = 0
+        iva = ''
         for l in discount_lines:
             price_subtotal = l.price_unit * l.quantity if is_index else l.price_subtotal
             l_count = Counter({
@@ -2085,6 +2129,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             else:
                 discount_energy_lines[name].update(l_count)
             total += l.price_subtotal
+            iva = get_iva_line(l)
 
         for k,v in discount_energy_lines.items():
             discount_energy_lines[k] = {
@@ -2097,6 +2142,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data['is_visible'] = len(discount_lines) > 0
         data['showing_periods'] = self.get_matrix_show_periods(pol)
         data['is_indexed'] = is_index
+        data['iva'] = iva
+        data['iva_column'] = has_iva_column(fact)
         return data
 
     def get_sub_component_invoice_details_td_power_tolls_data(self, fact, pol):
@@ -2129,6 +2176,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data['showing_periods'] = self.get_matrix_show_periods(pol)
         data['dies'] = int(atr_linies_potencia['P1']['days']) if 'P1' in atr_linies_potencia else 0
         data['dies_any'] = days_year
+        data['iva_column'] = has_iva_column(fact)
         return data
 
     def get_sub_component_invoice_details_td_power_charges_data(self, fact, pol, discount):
@@ -2178,6 +2226,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data['dies'] = int(charges_lines_potencia['P1']['days']) if 'P1' in charges_lines_potencia else 0
         data['dies_any'] = days_year
         data['header_multi'] = 4 if discount['is_visible'] else 2
+        data['iva_column'] = has_iva_column(fact)
         return data
 
     def get_component_invoice_details_info_td_data(self, fact, pol):
@@ -2242,6 +2291,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'showing_periods': self.get_matrix_show_periods(pol),
             'mag_line_data': mag_line_data,
             'indexed': pol.mode_facturacio == 'index',
+            'iva_column': has_iva_column(fact),
         }
         return data
 
@@ -2271,6 +2321,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         data = atr_linies_energia
         data['showing_periods'] = self.get_matrix_show_periods(pol)
+        data['iva_column'] = has_iva_column(fact)
         return data
 
     def get_sub_component_invoice_details_td_energy_charges_data(self, fact, pol, discount):
@@ -2313,6 +2364,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data = charges_lines_energy
         data['showing_periods'] = self.get_matrix_show_periods(pol)
         data['header_multi'] = 4 if discount['is_visible'] else 2
+        data['iva_column'] = has_iva_column(fact)
         return data
 
     def get_sub_component_invoice_details_td_other_concepts_data(self, fact, pol):
@@ -2320,6 +2372,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data['header_multi'] = len(data['bosocial_lines']+data['altres_lines']+data['donatiu_lines'])
         data['last_row'] = 'donatiu' if len(data['donatiu_lines']) else 'altres' if len(data['altres_lines']) else 'bosocial'
         data['number_of_columns'] = len(self.get_matrix_show_periods(pol)) + 1
+        data['iva_column'] = has_iva_column(fact)
         return data
 
     def get_sub_component_invoice_details_td_excess_power_maximeter(self, fact, pol):
@@ -2354,6 +2407,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 items['total'] = excess_lines['total']
                 items['date_from'] = excess_lines['date_from']
                 items['date_to'] = excess_lines['date_to']
+                items['iva'] = excess_lines['iva']
             excess_data.append(items)
         data = {
             'showing_periods': showing_periods,
@@ -2361,6 +2415,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'header_multi':4*(len(excess_lines_data)),
             'days': (datetime.strptime(fact.data_final,'%Y-%m-%d') - datetime.strptime(fact.data_inici,'%Y-%m-%d')).days + 1,
             'is_visible': True,
+            'iva_column': has_iva_column(fact),
         }
         return data
 
@@ -2396,12 +2451,14 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 items['total'] = excess_lines['total']
                 items['date_from'] = excess_lines['date_from']
                 items['date_to'] = excess_lines['date_to']
+                items['iva'] = excess_lines['iva']
             excess_data.append(items)
         data = {
             'showing_periods': showing_periods,
             'excess_data': excess_data,
             'is_visible': True,
             'header_multi':4*(len(excess_data)),
+            'iva_column': has_iva_column(fact),
         }
         return data
 
@@ -2410,12 +2467,14 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         price_per_day = 0.0
         subtotal = 0.0
         visible = False
+        iva = ''
 
         for l in fact.linia_ids:
             if l.tipus in 'altres' and l.invoice_line_id.product_id.code == 'RBS':
                 days += l.quantity
                 price_per_day = l.price_unit
                 subtotal += l.price_subtotal
+                iva = get_iva_line(l)
                 visible = True
 
         data = {
@@ -2424,22 +2483,28 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'days':days,
             'price_per_day': price_per_day,
             'subtotal': subtotal,
+            'iva_column': has_iva_column(fact),
+            'iva': iva,
         }
         return data
 
     def get_sub_component_invoice_details_td_flux_solar_data(self, fact, pol):
         subtotal = 0.0
         visible = False
+        iva = ''
 
         for l in fact.linia_ids:
             if l.tipus in 'altres' and l.invoice_line_id.product_id.code == 'PBV':
                 subtotal += l.price_subtotal
+                iva = get_iva_line(l)
                 visible = True
 
         data = {
             'is_visible': visible,
             'number_of_columns': len(self.get_matrix_show_periods(pol)) + 1,
             'subtotal': subtotal,
+            'iva_column': has_iva_column(fact),
+            'iva': iva,
         }
         return data
 
@@ -2450,9 +2515,11 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         autoconsum_excedents_product_id = self.get_autoconsum_excedents_product_id(fact)
         generation_lines = []
         ajustment = 0.0
+        iva = ''
         for l in fact.linies_generacio:
             if l.product_id.id == autoconsum_excedents_product_id:
                 ajustment += l.price_subtotal
+                iva = get_iva_line(l)
             else:
                 generation_lines.append(l)
 
@@ -2466,6 +2533,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'is_visible': True,
             'is_ajustment_visible': ajustment_visible,
             'ajustment': ajustment,
+            'ajustment_iva': iva,
+            'iva_column': has_iva_column(fact),
         }
         return data
 
@@ -2488,6 +2557,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'inductive_data': inductive_data,
             'showing_periods': self.get_matrix_show_periods(pol),
             'is_visible': True,
+            'iva_column': has_iva_column(fact),
         }
         return data
 
@@ -2508,6 +2578,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'capacitive_data': capacitive_data,
             'showing_periods': self.get_matrix_show_periods(pol),
             'is_visible': True,
+            'iva_column': has_iva_column(fact),
         }
         return data
 
