@@ -11,7 +11,7 @@ class GiscedataPolissa(osv.osv):
     _inherit = 'giscedata.polissa'
 
     @staticmethod
-    def is_autoconsum_amb_excedents(cursor, uid, autoconsumo, reverse=False, context=None):
+    def is_autoconsum_amb_excedents(cursor, uid, autoconsumo, context=None):
         if context is None:
             context = {}
         if autoconsumo in ('41', '42', '43'):
