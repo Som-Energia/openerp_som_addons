@@ -10,7 +10,6 @@ class GiscedataPolissa(osv.osv):
     _name = 'giscedata.polissa'
     _inherit = 'giscedata.polissa'
 
-    @staticmethod
     def is_autoconsum_amb_excedents(cursor, uid, autoconsumo, context=None):
         if context is None:
             context = {}
