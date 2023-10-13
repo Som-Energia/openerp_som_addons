@@ -14,6 +14,7 @@
     "init_xml": [],
     "demo_xml": [],
     "update_xml":[
+        'giscedata_crm_lead_view.xml'
     ],
     "active": False,
     "installable": True
