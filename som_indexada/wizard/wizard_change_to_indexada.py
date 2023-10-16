@@ -209,6 +209,7 @@ class WizardChangeToIndexada(osv.osv_memory):
             if not is_standard_price:
                 raise exceptions.PolissaNotStandardPrice(polissa.name)
 
+
     def send_indexada_modcon_created_email(self, cursor, uid, polissa):
         ir_model_data = self.pool.get('ir.model.data')
         account_obj = self.pool.get('poweremail.core_accounts')

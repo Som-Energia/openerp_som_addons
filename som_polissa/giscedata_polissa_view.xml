@@ -172,10 +172,10 @@
                     <field name="data_ultima_lectura"/>
                     <field name="data_ultima_lectura_f1"/>
                     <field name="dies_lectures_facturada_f1"/>
-		    <field name="bateria_activa"/>
-		    <field name="bateria_virtual"/>
-		    <field name="data_activacio_bateria"/>
-		    <field name="cups_np"/>
+                    <field name="bateria_activa"/>
+                    <field name="bateria_virtual"/>
+                    <field name="data_activacio_bateria"/>
+                    <field name="cups_np"/>
                 </tree>
             </field>
         </record>
