@@ -166,6 +166,11 @@ h3 {
     page-break-inside: avoid;
 }
 
+.sagnia, .dinssagnia, .alpha, .roman li, .wpb_wrapper ol li, .wpb_wrapper ul li, .wpb_wrapper p{
+    font-size: 12px;
+    text-align: justify;
+}
+
 .content_generals {
     text-align: justify;
 }
