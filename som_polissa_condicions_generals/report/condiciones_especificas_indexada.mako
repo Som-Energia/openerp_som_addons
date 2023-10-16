@@ -33,9 +33,6 @@
     <p>Siendo <em><strong>h</strong></em><sub><em><strong>i </strong></em></sub>cada una de las horas del periodo de facturación en cuestión.</p>
     <p>Siendo PH el precio horario de la energía calculado siguiendo la siguiente fórmula:</p>
     <p style="padding-left: 40px"><strong>PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + F] + PTD + CA</strong></p>
-
-    <br>
-    <br>
     <p>Donde:</p>
     <ul>
         <p style="padding-left: 40px">
@@ -109,8 +106,6 @@
 
 <p>6.1. Las partes acuerdan añadir la cláusula 7.2. bis de las Condiciones Generales del Contrato de Suministro, que queda redactada de la siguiente manera: </p>
 
-<br>
-<br>
 <p>Sin perjuicio de lo establecido en la cláusula 7.2, los consumos horarios para la aplicación de la tarifa indexada serán determinados a partir de las curvas horarias facilitadas por el encargado de la lectura. En caso de que SOM ENERGIA, SCCL, no pueda facturar con base en curvas horarias, SOM ENERGIA, SCCL, aplicará a los consumos informados por el encargado de la lectura u obtenidos de alguna de las maneras previstas en la cláusula 7.2. de las Condiciones Generales del Contrato de Suministro, los coeficientes perfilados publicados por el operador del sistema, de acuerdo con lo establecido en la normativa vigente para cada tipo de peaje de acceso a la red de la distribuidora<sup><a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></sup>. En el caso de los puntos de suministro con peaje de acceso a la red de distribución 6.1TD, se aplicarán los coeficientes perfilados previstos en la normativa para el peaje de acceso 3.0TD . </p>
 
 <p>SOM ENERGIA, SCCL, ha puesto a disposición de la contratante las presentes Condiciones Específicas previamente a su contratación a través de su página web <a href="http://www.somenergia.coop"><em>www.somenergia.coop</em></a>. Estas han sido suscritas mediante sistemas de contratación electrónica, y se ha remitido un ejemplar en soporte duradero a la contratante una vez finalizada la contratación.</p>
