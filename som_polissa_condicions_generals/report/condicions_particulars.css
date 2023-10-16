@@ -162,7 +162,7 @@ h3 {
     margin-left: 15%;
 }
 
-.sagnia, .alpha{
+.sagnia, .dinssagnia, .alpha li{
     page-break-inside: avoid;
 }
 
