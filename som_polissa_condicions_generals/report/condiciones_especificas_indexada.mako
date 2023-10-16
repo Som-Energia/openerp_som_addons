@@ -34,8 +34,6 @@
     <p>Siendo PH el precio horario de la energía calculado siguiendo la siguiente fórmula:</p>
     <p style="padding-left: 40px"><strong>PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + F] + PTD + CA</strong></p>
 
-    <p style="page-break-after:always;"></p>
-
     <br>
     <br>
     <p>Donde:</p>
