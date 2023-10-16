@@ -1,7 +1,7 @@
 <br>
 <br>
 <div id="titol">
-    <h2 style="font-size: 13px;">CONDICIONS GENERALS DEL CONTRACTE DE SUMINISTRAMENT D'ENERGIA ELÈCTRICA</h2>
+    <h2 style="font-size: 14px;">CONDICIONS GENERALS DEL CONTRACTE DE SUMINISTRAMENT D'ENERGIA ELÈCTRICA</h2>
 </div>
 <section class="wpb-content-wrapper"><div class="a13_row_container" style="background-position:top left;background-repeat: no-repeat;"><div class="wpb_row vc_row-fluid "><div class="wpb_column vc_column_container vc_col-sm-2"><div class="vc_column-inner vc_custom_1551863571093"><div class="wpb_wrapper"></div></div></div><div class="wpb_column vc_column_container vc_col-sm-8 vc_col-has-fill"><div class="vc_column-inner vc_custom_1551863815583"><div class="wpb_wrapper">
 	<div class="wpb_text_column wpb_content_element ">
