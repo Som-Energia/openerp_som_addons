@@ -3,4 +3,3 @@
 "access_giscedata_atc_tag_w","giscedata.atc.tag","model_giscedata_atc_tag","crm.group_crm_manager",1,1,1,1
 "access_giscedata_atc_tag_u","giscedata.atc.tag","model_giscedata_atc_tag","crm.group_crm_user",1,1,1,0
 "access_wizard_close_obsolete_cases_rcwd","wizard.close.obsolete.cases","model_wizard_close_obsolete_cases","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
-"access_wizard_validate_d101_rcwd","wizard.validate.d101","model_wizard_validate_d101","crm.group_crm_manager",1,1,1,1

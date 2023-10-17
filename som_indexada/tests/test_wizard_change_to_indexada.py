@@ -87,8 +87,6 @@ class TestChangeToIndexada(TestSwitchingImport):
             wiz_o.change_to_indexada(self.cursor, self.uid, [wiz_id], context=context)
         self.assertEqual(error.exception.to_dict()['error'], u"Pòlissa 0018 already indexed")
 
-
-
     def test_change_to_indexada_atr_en_curs_polissa(self):
         polissa_obj = self.pool.get('giscedata.polissa')
         wiz_o = self.pool.get('wizard.change.to.indexada')
@@ -233,5 +231,62 @@ class TestChangeToIndexada(TestSwitchingImport):
             }
         mocked_send_mail.assert_called_with(self.cursor, self.uid, mock.ANY, expected_ctx)
 
+    @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
+    def test_change_to_indexada_one_polissa_30td(self, mocked_send_mail):
+        polissa_obj = self.pool.get('giscedata.polissa')
+        modcon_obj = self.pool.get('giscedata.polissa.modcontractual')
+        IrModel = self.pool.get('ir.model.data')
+        wiz_o = self.pool.get('wizard.change.to.indexada')
 
-#TODO 3.0, 6.1, canaries, balears, enviament mails?
+        polissa_id = self.open_polissa('polissa_tarifa_019')
+        context = {'active_id': polissa_id, 'change_type': 'from_period_to_index'}
+        wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
+
+        wiz_o.change_to_indexada(self.cursor, self.uid, [wiz_id], context=context)
+        modcontactual_id = polissa_obj.read(self.cursor, self.uid, polissa_id, ['modcontractuals_ids'])['modcontractuals_ids'][0]
+        prev_modcontactual_id = polissa_obj.read(self.cursor, self.uid, polissa_id, ['modcontractuals_ids'])['modcontractuals_ids'][1]
+
+        new_pricelist_id = IrModel._get_obj(self.cursor, self.uid, 'som_indexada', 'pricelist_indexada_30td_peninsula').id
+
+        modcon_act = modcon_obj.read(self.cursor, self.uid, modcontactual_id, [
+            'data_inici',
+            'data_final',
+            'mode_facturacio',
+            'mode_facturacio_generacio',
+            'llista_preu',
+            'active',
+            'state',
+            'modcontractual_ant',
+            ])
+        modcon_act.pop('id')
+        modcon_act['llista_preu'] =  modcon_act['llista_preu'][0]
+        modcon_act['modcontractual_ant'] =  modcon_act['modcontractual_ant'][0]
+
+        self.assertEquals(modcon_act,{
+            'data_inici': datetime.strftime(date.today() + timedelta(days=1), "%Y-%m-%d"),
+            'data_final': datetime.strftime(date.today() + timedelta(days=365), "%Y-%m-%d"),
+            'mode_facturacio': 'index',
+            'mode_facturacio_generacio': 'index',
+            'llista_preu': new_pricelist_id,
+            'active': True,
+            'state': 'pendent',
+            'modcontractual_ant': prev_modcontactual_id,
+        })
+
+
+        template_id = IrModel.get_object_reference(
+            self.cursor, self.uid, 'som_indexada', 'email_canvi_tarifa_a_indexada'
+        )[1]
+        account_obj = self.pool.get('poweremail.core_accounts')
+        email_from = account_obj.search(self.cursor, self.uid, [('email_id', '=', 'info@somenergia.coop')])[0]
+        expected_ctx = {
+            'active_ids': [polissa_id],
+            'active_id': polissa_id,
+            'template_id': template_id,
+            'src_model': 'giscedata.polissa',
+            'src_rec_ids': [polissa_id],
+            'from': email_from,
+            'state': 'single',
+            'priority': '0',
+        }
+        mocked_send_mail.assert_called_with(self.cursor, self.uid, mock.ANY, expected_ctx)
