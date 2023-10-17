@@ -65,7 +65,7 @@ class GiscedataAtc(osv.osv):
             string=u"Pas del R1", type='char',
             size=10, store={
                 'giscedata.atc': (lambda self, cr, uid, ids, c={}: ids, ['ref', 'ref2'], 40),
-                'giscedata.switching': (_trg_switching, ['step_id'], 30),
+                'giscedata.switching': (_trg_switching, ['step_id', 'step_ids'], 30),
             }
         ),
     }

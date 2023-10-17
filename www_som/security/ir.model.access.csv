@@ -1,2 +1,0 @@
-"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
-"access_som_indexada_webforms_helpers_rcwd","som.indexada.webforms.helpers","model_som_indexada_webforms_helpers","base.group_user",1,1,1,1

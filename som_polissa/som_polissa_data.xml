@@ -32,6 +32,10 @@
             <field name="name">Tarifa Empresa</field>
             <field name="code">TE </field>
         </record>
+        <record id="categ_flux_solar_ocult_ov" model="giscedata.polissa.category">
+            <field name="name">Flux Solar ocult a la OV</field>
+            <field name="code">HIDEFLUXOV</field>
+        </record>
     </data>
     <data>
         <record id="giscedata_facturacio_bateria_virtual.categ_desestiment" model="giscedata.polissa.category">
