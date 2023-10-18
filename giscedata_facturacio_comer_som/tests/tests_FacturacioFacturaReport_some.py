@@ -9,6 +9,8 @@ from yamlns import namespace as ns
 from yamlns.testutils import assertNsEqual
 from datetime import datetime
 from .. import giscedata_facturacio_report
+from ..invoice_data_container import SmartInvoiceDataContainer
+
 
 class Tests_FacturacioFacturaReport_base(testing.OOTestCase):
 
@@ -47,6 +49,11 @@ class Tests_FacturacioFacturaReport_base(testing.OOTestCase):
         fac = self.factura_obj.browse(self.cursor, self.uid, f_id)
         pol = self.polissa_obj.browse(self.cursor, self.uid, fac.polissa_id.id)
         return {'fact': fac,'pol': pol}
+
+    def get_smart_component(self, f_id):
+        fac = self.factura_obj.browse(self.cursor, self.uid, f_id)
+        pol = self.polissa_obj.browse(self.cursor, self.uid, fac.polissa_id.id)
+        return SmartInvoiceDataContainer(self.cursor, self.uid, self.openerp, fac, pol, {})
 
     def setup_langs(self):
         lang_obj = self.model('res.lang')
@@ -155,7 +162,7 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
     def test__som_report_comp_logo__no_soci(self):
         f_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
 
-        result = self.r_obj.get_component_logo_data(**self.bfp(f_id))
+        result = dict(self.get_smart_component(f_id).logo)
         self.assertYamlfy(result)
         self.assertEquals(result ,{
             'logo': 'logo_som.png',
@@ -196,12 +203,18 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
 
         p_id = 23
-        self.partner_obj.write(self.cursor, self.uid, p_id, {'ref': 'S12345'})
+        self.setup_langs()
+        self.partner_obj.write(self.cursor, self.uid, p_id, {
+            'ref': 'S12345',
+            'lang': 'ca_ES',
+        })
         self.polissa_obj.write(self.cursor, self.uid, f.polissa_id.id, {'soci': p_id})
+        self.factura_obj.write(self.cursor, self.uid, f.id, {'partner_id': p_id})
 
-        result = self.r_obj.get_component_logo_data(**self.bfp(f_id))
+        result = dict(self.get_smart_component(f_id).logo)
         self.assertYamlfy(result)
         self.assertEquals(result , {
+            'is_visible': True,
             'logo': 'logo_som.png',
             'has_agreement_partner': False})
 
@@ -226,15 +239,16 @@ class Tests_FacturacioFacturaReport_company_component(Tests_FacturacioFacturaRep
     def test__som_report_comp_company__base(self):
         f_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
 
-        result = self.r_obj.get_component_company_data(**self.bfp(f_id))
+        result = dict(self.get_smart_component(f_id).company)
         self.assertYamlfy(result)
         self.assertEquals(result , {
-            'cif': u'A31896889',
-            'city': u'Gerompont',
+            'is_visible': True,
+            'cif': 'A31896889',
+            'city': 'Gerompont',
             'email': False,
-            'name': u'Tiny sprl',
-            'street': u'Chaussee de Namur 40',
-            'zip': u'1367'})
+            'name': 'Tiny sprl',
+            'street': 'Chaussee de Namur 40',
+            'zip': '1367'})
 
     def test__som_report_comp_company__som(self):
         f_id = self.get_fixture('giscedata_facturacio', 'factura_0001')
@@ -260,15 +274,16 @@ class Tests_FacturacioFacturaReport_company_component(Tests_FacturacioFacturaRep
             'email': 'info@somenergia.coop',
         })
 
-        result = self.r_obj.get_component_company_data(**self.bfp(f_id))
+        result = dict(self.get_smart_component(f_id).company)
         self.assertYamlfy(result)
         self.assertEquals(result , {
-            'cif': u'F55091367',
-            'city': u'Girona',
-            'email': u'info@somenergia.coop',
-            'name': u'Som Energia, SCCL',
-            'street': u'Pic de Peguera, 11 A 2 8',
-            'zip': u'17003'})
+            'is_visible': True,
+            'cif': 'F55091367',
+            'city': 'Girona',
+            'email': 'info@somenergia.coop',
+            'name': 'Som Energia, SCCL',
+            'street': 'Pic de Peguera, 11 A 2 8',
+            'zip': '17003'})
 
 
 class Tests_FacturacioFacturaReport_gdo_component(Tests_FacturacioFacturaReport_base):

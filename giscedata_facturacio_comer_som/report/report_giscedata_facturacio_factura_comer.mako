@@ -34,7 +34,7 @@ report_data = r_obj.get_report_data(cursor, uid, objects)
 <%include file="/giscedata_facturacio_comer_som/report/components/lateral_text/lateral_text.mako" args="lt=factura_data.lateral_text" />
 <div id="container">
 
-% if factura_data.globals.is_TD: # Factura 2.0TD 3.0TD 6.XTD
+% if factura_data.global_data.is_TD: # Factura 2.0TD 3.0TD 6.XTD
 
     <div class="company_address" style="font-size: .7em;">
         <%include file="/giscedata_facturacio_comer_som/report/components/logo/logo.mako" args="logo=factura_data.logo" />
@@ -52,7 +52,7 @@ report_data = r_obj.get_report_data(cursor, uid, objects)
         <h1>${_(u"INFORMACIÓ DE L'ELECTRICITAT UTILITZADA")}</h1>
         <div>
             <%include file="/giscedata_facturacio_comer_som/report/components/energy_consumption_graphic_td/energy_consumption_graphic_td.mako" args="energy=factura_data.energy_consumption_graphic_td" />
-            % if factura_data.globals.is_indexed:
+            % if factura_data.global_data.is_indexed:
                 <%include file="/giscedata_facturacio_comer_som/report/components/hourly_curve/hourly_curve.mako" args="hc=factura_data.hourly_curve" />
             % endif
         </div>
@@ -97,7 +97,7 @@ report_data = r_obj.get_report_data(cursor, uid, objects)
     <!-- LECTURES ACTIVA i GRÀFIC BARRES -->
     <div class="energy_info">
         <h1>${_(u"INFORMACIÓ DEL CONSUM ELÈCTRIC")}</h1>
-        % if factura_data.globals.is_6x:
+        % if factura_data.global_data.is_6x:
             <div class="" style="padding: 10px;">
                 <%include file="/giscedata_facturacio_comer_som/report/components/readings_6x/readings_6x.mako" args="readings_6x=factura_data.readings_6x" />
                 <div class="column">
@@ -105,7 +105,7 @@ report_data = r_obj.get_report_data(cursor, uid, objects)
                 </div>
             </div>
         % else:
-            % if factura_data.globals.num_periodes < 3:
+            % if factura_data.global_data.num_periodes < 3:
                 <div class="energy_child_info">
             % else:
                 <div>
@@ -115,7 +115,7 @@ report_data = r_obj.get_report_data(cursor, uid, objects)
                 <%include file="/giscedata_facturacio_comer_som/report/components/readings_g_table/readings_g_table.mako" args="readings=factura_data.readings_g_table" />
                 <%include file="/giscedata_facturacio_comer_som/report/components/readings_text/readings_text.mako" args="readings=factura_data.readings_text" />
             </div>
-            % if factura_data.globals.num_periodes < 3:
+            % if factura_data.global_data.num_periodes < 3:
                 <div class="energy_child_info">
             % else:
                 <div>
@@ -139,7 +139,7 @@ report_data = r_obj.get_report_data(cursor, uid, objects)
     <!-- DETALL FACTURA -->
         <div class="invoice_detail">
             <h1>${_(u"DETALL DE LA FACTURA")}</h1>
-            % if factura_data.globals.is_6x:
+            % if factura_data.global_data.is_6x:
             <div class="row">
                 <div class="column">
             %endif
@@ -148,7 +148,7 @@ report_data = r_obj.get_report_data(cursor, uid, objects)
                     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_energy/invoice_details_energy.mako" args="id_energy=factura_data.invoice_details_energy" />
                     <hr/>
                     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_generation/invoice_details_generation.mako" args="id_generation=factura_data.invoice_details_generation" />
-            % if factura_data.globals.is_6x:
+            % if factura_data.global_data.is_6x:
                 </div>
             </div>
             <%include file="/giscedata_facturacio_comer_som/report/components/hourly_curve/hourly_curve.mako" args="hc=factura_data.hourly_curve" />
