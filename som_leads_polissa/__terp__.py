@@ -9,7 +9,8 @@
     "author": "SomEnergia",
     "category": "SomEnergia",
     "depends":[
-        "giscedata_crm_leads"
+        "base_bank_extended",
+        "giscedata_crm_leads",
     ],
     "init_xml": [],
     "demo_xml": [],
