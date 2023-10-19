@@ -17,7 +17,7 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         context['lead'] = True
 
-        super(GiscedataCrmLead, self).contract_pdf(cursor, uid, ids, context=context)
+        return super(GiscedataCrmLead, self).contract_pdf(cursor, uid, ids, context=context)
 
     _columns = {
         'tipus_tarifa_lead': fields.selection(
