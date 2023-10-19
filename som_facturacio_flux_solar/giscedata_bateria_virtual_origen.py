@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 """Modificacions del model giscedata_facturacio_factura per SOMENERGIA.
 """
-from datetime import datetime
 
 from osv import osv, fields
 from tools.translate import _
+import time
 
 STATES_GESTIO_ACUMULACIO = [
     ('estandard', _("Acumular segons saldo d'excedents")),
     ('percentatge', _("Acumular saldo d'excedents (percentatge)")),
 ]
+
 
 class GiscedataBateriaVirtualOrigen(osv.osv):
     _name = "giscedata.bateria.virtual.origen"
@@ -94,11 +95,13 @@ class GiscedataBateriaVirtualOrigen(osv.osv):
                 percentatge_acum_obj.create(cursor, uid, vals, context=context)
 
     _columns = {
+        'data_inici_descomptes': fields.date('Data inici generació descomptes', required=True),
         'gestio_acumulacio': fields.selection(STATES_GESTIO_ACUMULACIO, "Gestió de l'acumulació"),
         'percentatges_acumulacio': fields.one2many('giscedata.bateria.virtual.percentatges.acumulacio', 'origen_id', 'Percentatges acumulacio'),
     }
 
     _defaults = {
+        'data_inici_descomptes': lambda *a: time.strftime('%Y-%m-%d'),
         'gestio_acumulacio': lambda *a: 'estandard',
     }
 

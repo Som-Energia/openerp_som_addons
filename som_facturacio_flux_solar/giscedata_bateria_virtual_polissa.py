@@ -30,5 +30,10 @@ class GiscedataBateriaVirtualPolissa(osv.osv):
                     'origen_id': origen_id.id,
                 })
 
+    _columns = {
+        'data_inici': fields.date('Data inici aplicació descomptes', required=True),
+        'data_final': fields.date('Data final aplicació descomptes', required=False),
+    }
+
 
 GiscedataBateriaVirtualPolissa()
