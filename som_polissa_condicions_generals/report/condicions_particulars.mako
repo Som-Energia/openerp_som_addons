@@ -677,9 +677,11 @@ CONTRACT_TYPES = dict(TABLA_9)
         <div class="styled_box">
             <h5> ${_("DADES DE PAGAMENT")} </h5>
             <% iban = polissa.bank and polissa.bank.printable_iban[5:] or '' %>
+            % if polissa.bank:
             <div class="dades_pagament">
                 <div class="iban"><b>${_(u"Nº de compte bancari (IBAN): **** **** **** ****")}</b> &nbsp ${iban[-4:]}</div>
             </div>
+            % endif
         </div>
         <div class="modi_condicions">
             <p>
