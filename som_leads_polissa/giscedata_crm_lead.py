@@ -28,6 +28,14 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         return super(GiscedataCrmLead, self)._check_and_get_mandatory_fields(cursor, uid, crml_id, mandatory_fields, other_fields, context)
 
+    def onchange_tipus_tarifa_lead(self, cursor, uid, ids, tipus_tarifa_lead):
+        res = False
+        if tipus_tarifa_lead == 'tarifa_provisional':
+            res = {'value': {'llista_preu': False},
+                    'domain': {},
+                    'warning': {},
+                    }
+        return res
 
     _columns = {
         'tipus_tarifa_lead': fields.selection(
