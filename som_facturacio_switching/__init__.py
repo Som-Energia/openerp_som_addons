@@ -6,3 +6,4 @@ import res_municipi
 import wizard
 import giscedata_facturacio_switching_error
 import som_error_cron_f1_reimport
+from giscedata_refacturacio import *
