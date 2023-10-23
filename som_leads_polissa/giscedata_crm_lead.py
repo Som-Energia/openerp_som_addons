@@ -19,6 +19,16 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         return super(GiscedataCrmLead, self).contract_pdf(cursor, uid, ids, context=context)
 
+
+    def _check_and_get_mandatory_fields(self, cursor, uid, crml_id, mandatory_fields=[], other_fields=[], context=None):
+        if 'llista_preu' in mandatory_fields:
+            data = self.read(cursor, uid, crml_id, ['tipus_tarifa_lead'])
+            if data['tipus_tarifa_lead'] == 'tarifa_provisional':
+                mandatory_fields.pop(mandatory_fields.index('llista_preu'))
+
+        return super(GiscedataCrmLead, self)._check_and_get_mandatory_fields(cursor, uid, crml_id, mandatory_fields, other_fields, context)
+
+
     _columns = {
         'tipus_tarifa_lead': fields.selection(
             _tipus_tarifes_lead, 'Tipus de tarifa del contracte'
