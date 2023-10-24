@@ -14,14 +14,13 @@ class GiscedataCrmLead(osv.OsvInherits):
     def contract_pdf(self, cursor, uid, ids, context=None):
         if context is None:
             context = {}
-
         context['lead'] = True
 
         return super(GiscedataCrmLead, self).contract_pdf(cursor, uid, ids, context=context)
 
 
     def _check_and_get_mandatory_fields(self, cursor, uid, crml_id, mandatory_fields=[], other_fields=[], context=None):
-        if 'llista_preu' in mandatory_fields:
+        if 'llista_preu' in mandatory_fields and not context.get('som_from_activation_lead'):
             data = self.read(cursor, uid, crml_id, ['tipus_tarifa_lead'])
             if data['tipus_tarifa_lead'] == 'tarifa_provisional':
                 mandatory_fields.pop(mandatory_fields.index('llista_preu'))
