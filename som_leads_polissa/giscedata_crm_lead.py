@@ -16,6 +16,21 @@ class GiscedataCrmLead(osv.OsvInherits):
             context = {}
         context['lead'] = True
 
+        lead = self.browse(cursor, uid, ids[0])
+        context['tarifa_provisional'] = {
+            'preu_fix_energia_p1': lead.preu_fix_energia_p1,
+            'preu_fix_energia_p2': lead.preu_fix_energia_p2,
+            'preu_fix_energia_p3': lead.preu_fix_energia_p3,
+            'preu_fix_energia_p4': lead.preu_fix_energia_p4,
+            'preu_fix_energia_p5': lead.preu_fix_energia_p5,
+            'preu_fix_energia_p6': lead.preu_fix_energia_p6,
+            'preu_fix_potencia_p1': lead.preu_fix_potencia_p1,
+            'preu_fix_potencia_p2': lead.preu_fix_potencia_p2,
+            'preu_fix_potencia_p3': lead.preu_fix_potencia_p3,
+            'preu_fix_potencia_p4': lead.preu_fix_potencia_p4,
+            'preu_fix_potencia_p5': lead.preu_fix_potencia_p5,
+            'preu_fix_potencia_p6': lead.preu_fix_potencia_p6,
+        }
         return super(GiscedataCrmLead, self).contract_pdf(cursor, uid, ids, context=context)
 
 
