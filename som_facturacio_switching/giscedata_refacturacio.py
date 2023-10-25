@@ -26,4 +26,5 @@ class GiscedataRefacturacio(osv.osv):
 
         return res
 
+
 GiscedataRefacturacio()

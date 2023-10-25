@@ -543,7 +543,6 @@ class UpdatePendingStates(osv.osv_memory):
 
         for factura_id in factura_ids:
             invoice = fact_obj.read(cursor, uid, factura_id)
-            ret_value = self.send_email(cursor, uid, invoice["id"], email_params)
 
             polissa_id = invoice["polissa_id"][0]
             polissa_state = pol_obj.read(cursor, uid, polissa_id, ["state"])["state"]
@@ -560,6 +559,7 @@ class UpdatePendingStates(osv.osv_memory):
                     cursor, uid, factura_id, traspas_advocats_bs, context
                 )
 
+            ret_value = self.send_email(cursor, uid, invoice["id"], email_params)
             if ret_value == -1:
                 logger.info(
                     "ERROR: Sending Annex 3 first email to {invoice_name} partner error.".format(
@@ -929,16 +929,26 @@ class UpdatePendingStates(osv.osv_memory):
         warning_cut_off_state = self.get_object_id(
             cursor, uid, "giscedata_facturacio_comer_bono_social", "avis_tall_pending_state"
         )
+        traspas_advocats_bs = self.get_object_id(
+            cursor, uid, "som_account_invoice_pending", "pendent_traspas_advocats_pending_state"
+        )
 
         factura_ids = self.get_invoices_with_pending_state(cursor, uid, pending_ask_poverty_state)
         fact_obj = self.pool.get("giscedata.facturacio.factura")
+
 
         for factura_id in factura_ids:
             invoice = fact_obj.read(cursor, uid, factura_id)
 
             polissa_id = invoice["polissa_id"][0]
-            if not self.poverty_eligible(cursor, uid, polissa_id):
-                fact_obj.set_pending(cursor, uid, [factura_id], warning_cut_off_state)
+            polissa_state = pol_obj.read(cursor, uid, polissa_id, ["state"])["state"]
+            if polissa_state == "baixa":
+                self.update_waiting_for_annex_cancelled_contracts(
+                    cursor, uid, factura_id, traspas_advocats_bs, context
+                )
+            else:
+                if not self.poverty_eligible(cursor, uid, polissa_id):
+                    fact_obj.set_pending(cursor, uid, [factura_id], warning_cut_off_state)
 
 
 UpdatePendingStates()
