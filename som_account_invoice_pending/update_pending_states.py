@@ -923,6 +923,8 @@ class UpdatePendingStates(osv.osv_memory):
         if context is None:
             context = {}
 
+        pol_obj = self.pool.get("giscedata.polissa")
+
         pending_ask_poverty_state = self.get_object_id(
             cursor, uid, "som_account_invoice_pending", "pendent_consulta_probresa_pending_state"
         )
