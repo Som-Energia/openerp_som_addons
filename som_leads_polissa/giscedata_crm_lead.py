@@ -17,20 +17,29 @@ class GiscedataCrmLead(osv.OsvInherits):
         context['lead'] = True
 
         lead = self.browse(cursor, uid, ids[0])
-        context['tarifa_provisional'] = {
-            'preu_fix_energia_p1': lead.preu_fix_energia_p1,
-            'preu_fix_energia_p2': lead.preu_fix_energia_p2,
-            'preu_fix_energia_p3': lead.preu_fix_energia_p3,
-            'preu_fix_energia_p4': lead.preu_fix_energia_p4,
-            'preu_fix_energia_p5': lead.preu_fix_energia_p5,
-            'preu_fix_energia_p6': lead.preu_fix_energia_p6,
-            'preu_fix_potencia_p1': lead.preu_fix_potencia_p1,
-            'preu_fix_potencia_p2': lead.preu_fix_potencia_p2,
-            'preu_fix_potencia_p3': lead.preu_fix_potencia_p3,
-            'preu_fix_potencia_p4': lead.preu_fix_potencia_p4,
-            'preu_fix_potencia_p5': lead.preu_fix_potencia_p5,
-            'preu_fix_potencia_p6': lead.preu_fix_potencia_p6,
+
+        preus_provisional_energia = {
+            'P1': lead.preu_fix_energia_p1,
+            'P2': lead.preu_fix_energia_p2,
+            'P3': lead.preu_fix_energia_p3,
+            'P4': lead.preu_fix_energia_p4,
+            'P5': lead.preu_fix_energia_p5,
+            'P6': lead.preu_fix_energia_p6,
         }
+        preus_provisional_potencia = {
+            'P1': lead.preu_fix_potencia_p1,
+            'P2': lead.preu_fix_potencia_p2,
+            'P3': lead.preu_fix_potencia_p3,
+            'P4': lead.preu_fix_potencia_p4,
+            'P5': lead.preu_fix_potencia_p5,
+            'P6': lead.preu_fix_potencia_p6,
+        }
+
+        context['tarifa_provisional'] = {
+            'preus_provisional_potencia': preus_provisional_potencia,
+            'preus_provisional_energia': preus_provisional_energia,
+        }
+
         return super(GiscedataCrmLead, self).contract_pdf(cursor, uid, ids, context=context)
 
 
