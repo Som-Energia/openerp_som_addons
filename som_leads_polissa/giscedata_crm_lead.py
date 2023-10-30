@@ -44,10 +44,11 @@ class GiscedataCrmLead(osv.OsvInherits):
 
 
     def _check_and_get_mandatory_fields(self, cursor, uid, crml_id, mandatory_fields=[], other_fields=[], context=None):
-        if 'llista_preu' in mandatory_fields and not context.get('som_from_activation_lead'):
-            data = self.read(cursor, uid, crml_id, ['tipus_tarifa_lead'])
-            if data['tipus_tarifa_lead'] == 'tarifa_provisional':
-                mandatory_fields.pop(mandatory_fields.index('llista_preu'))
+        if not (context is None or context.get('som_from_activation_lead')):
+            if 'llista_preu' in mandatory_fields:
+                data = self.read(cursor, uid, crml_id, ['tipus_tarifa_lead'])
+                if data['tipus_tarifa_lead'] == 'tarifa_provisional':
+                    mandatory_fields.pop(mandatory_fields.index('llista_preu'))
 
         return super(GiscedataCrmLead, self)._check_and_get_mandatory_fields(cursor, uid, crml_id, mandatory_fields, other_fields, context)
 
