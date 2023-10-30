@@ -108,7 +108,7 @@ class UpdatePendingStates(osv.osv_memory):
             return wiz_send_obj.send_mail(cursor, uid, [wiz_id], ctx)
 
         except Exception as e:
-            logger.info(
+            logger.error(
                 "ERROR sending email to invoice {factura_id}: {exc}".format(
                     factura_id=factura_id, exc=e.message
                 )
@@ -140,7 +140,7 @@ class UpdatePendingStates(osv.osv_memory):
             return wiz_send_obj.send_sms(cursor, uid, [wiz_id], ctx)
 
         except Exception as e:
-            logger.info(
+            logger.error(
                 "ERROR sending sms to invoice {factura_id}: {exc}".format(
                     factura_id=factura_id, exc=e.message
                 )
@@ -202,19 +202,19 @@ class UpdatePendingStates(osv.osv_memory):
                             cursor, uid, factura_id, sent_48h_dp, context
                         )
             except UpdateWaitingFor48hException as e:
-                logger.info(
+                logger.error(
                     "ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}".format(
                         factura_id=factura_id, exc=e.message
                     )
                 )
             except UpdateWaitingCancelledContractsException as e:
-                logger.info(
+                logger.error(
                     "ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}".format(
                         factura_id=factura_id, exc=e.message
                     )
                 )
             except Exception as e:
-                logger.info(
+                logger.error(
                     "UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=e.message
                     )
@@ -260,19 +260,19 @@ class UpdatePendingStates(osv.osv_memory):
                             cursor, uid, factura_id, sent_48h_bs, context
                         )
             except UpdateWaitingFor48hException as e:
-                logger.info(
+                logger.error(
                     "ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}".format(
                         factura_id=factura_id, exc=e.message
                     )
                 )
             except UpdateWaitingCancelledContractsException as e:
-                logger.info(
+                logger.error(
                     "ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}".format(
                         factura_id=factura_id, exc=e.message
                     )
                 )
             except Exception as e:
-                logger.info(
+                logger.error(
                     "UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=e.message
                     )
@@ -307,7 +307,7 @@ class UpdatePendingStates(osv.osv_memory):
             ret_value = self.send_email(cursor, uid, factura_id, email_params)
 
             if ret_value == -1:
-                logger.info(
+                logger.error(
                     "ERROR: Sending 48h email for {factura_id} invoice error.".format(
                         factura_id=factura_id,
                     )
@@ -406,19 +406,19 @@ class UpdatePendingStates(osv.osv_memory):
                         )
 
             except UpdateWaitingForAnnexIVException as e:
-                logger.info(
+                logger.error(
                     "ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=e.message
                     )
                 )
             except UpdateWaitingCancelledContractsException as e:
-                logger.info(
+                logger.error(
                     "ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=e.message
                     )
                 )
             except Exception as e:
-                logger.info(
+                logger.error(
                     "UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=e.message
                     )
@@ -462,19 +462,19 @@ class UpdatePendingStates(osv.osv_memory):
                         )
 
             except UpdateWaitingForAnnexIVException as e:
-                logger.info(
+                logger.error(
                     "ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=e.message
                     )
                 )
             except UpdateWaitingCancelledContractsException as e:
-                logger.info(
+                logger.error(
                     "ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=e.message
                     )
                 )
             except Exception as e:
-                logger.info(
+                logger.error(
                     "UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=e.message
                     )
@@ -561,7 +561,7 @@ class UpdatePendingStates(osv.osv_memory):
 
                 ret_value = self.send_email(cursor, uid, invoice["id"], email_params)
                 if ret_value == -1:
-                    logger.info(
+                    logger.error(
                         "ERROR: Sending Annex 3 first email to {invoice_name} partner error.".format(  # noqa: E501
                             invoice_name=invoice["partner_id"][1],
                         )
@@ -574,13 +574,13 @@ class UpdatePendingStates(osv.osv_memory):
                         )
                     )
             except UpdateWaitingCancelledContractsException as e:
-                logger.info(
+                logger.error(
                     "ERROR updating invoice {factura_id} in update_update_waiting_for_annexIII: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=e.message
                     )
                 )
             except Exception as e:
-                logger.info(
+                logger.error(
                     "UNHANDLED ERROR updating invoice {factura_id} in update_update_waiting_for_annexIII: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=e.message
                     )
@@ -626,13 +626,13 @@ class UpdatePendingStates(osv.osv_memory):
                         cursor, uid, factura_id, context
                     )
             except UpdateWaitingCancelledContractsException as e:
-                logger.info(
+                logger.error(
                     "ERROR updating invoice {factura_id} in update_waiting_for_annexII: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=e.message
                     )
                 )
             except Exception as e:
-                logger.info(
+                logger.error(
                     "UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_annexII: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=e.message
                     )
@@ -663,7 +663,7 @@ class UpdatePendingStates(osv.osv_memory):
             ret_value = self.send_email(cursor, uid, factura_id, email_params)
 
             if ret_value == -1:
-                logger.info(
+                logger.error(
                     "ERROR: Sending N57 default payment email cancelled contract for {factura_id} invoice error.".format(  # noqa: E501
                         factura_id=factura_id,
                     )
@@ -714,7 +714,7 @@ class UpdatePendingStates(osv.osv_memory):
         ret_value = self.send_email(cursor, uid, factura_id, email_params)
 
         if ret_value == -1:
-            logger.info(
+            logger.error(
                 "ERROR: Sending Annex 2 email for {factura_id} invoice error.".format(
                     factura_id=factura_id,
                 )
@@ -756,7 +756,7 @@ class UpdatePendingStates(osv.osv_memory):
             ret_value = self.send_email(cursor, uid, factura_id, email_params)
 
             if ret_value == -1:
-                logger.info(
+                logger.error(
                     "ERROR: Sending Annex 4 email for {factura_id} invoice error.".format(
                         factura_id=factura_id,
                     )
@@ -946,13 +946,13 @@ class UpdatePendingStates(osv.osv_memory):
                             )
                         fact_obj.set_pending(cursor, uid, fact_id, waiting_notif_id)
             except UpdateWaitingCancelledContractsException as e:
-                logger.info(
+                logger.error(
                     "ERROR updating invoice {factura_id} in update_state_with_2_invoices_unpaid: {exc}".format(  # noqa: E501
                         factura_id=inv_id, exc=e.message
                     )
                 )
             except Exception as e:
-                logger.info(
+                logger.error(
                     "UNHANDLED ERROR updating invoice {factura_id} in update_state_with_2_invoices_unpaid: {exc}".format(  # noqa: E501
                         factura_id=inv_id, exc=e.message
                     )
@@ -997,7 +997,7 @@ class UpdatePendingStates(osv.osv_memory):
                     if not self.poverty_eligible(cursor, uid, polissa_id):
                         fact_obj.set_pending(cursor, uid, [factura_id], warning_cut_off_state)
             except Exception as e:
-                logger.info(
+                logger.error(
                     "UNHANDLED ERROR updating invoice {factura_id} in update_pending_ask_poverty: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=e.message
                     )
