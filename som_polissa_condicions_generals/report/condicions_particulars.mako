@@ -519,7 +519,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                                 %else:
                                     %if lead:
                                         <td class="center">
-                                            <span><span>${dict_preus_tp_potencia[p]}</span></span>
+                                            <span><span>${formatLang(dict_preus_tp_potencia[p], digits=6)}</span></span>
                                         </td>
                                     %else:
                                         <td class="">
@@ -594,7 +594,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                                 %else:
                                     %if lead:
                                         <td class="center">
-                                            <span><span>${dict_preus_tp_energia[p]}</span></span>
+                                            <span><span>${formatLang(dict_preus_tp_energia[p], digits=6)}</span></span>
                                         </td>
                                     %else:
                                         <td class="">
