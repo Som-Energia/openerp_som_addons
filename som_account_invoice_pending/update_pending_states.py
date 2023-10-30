@@ -43,14 +43,50 @@ class UpdatePendingStates(osv.osv_memory):
             inv_obj.go_on_pending(cursor, uid, [invoice_id])
 
     def update_invoices(self, cursor, uid, context=None):
+        logger = logging.getLogger(__name__)
         super(UpdatePendingStates, self).update_invoices(cursor, uid, context=context)
-        self.update_second_unpaid_invoice(cursor, uid)
-        self.update_waiting_for_annexII(cursor, uid)
-        self.update_waiting_for_annexIII_first(cursor, uid)
-        self.update_waiting_for_annexIII_second(cursor, uid)
-        self.update_pending_ask_poverty(cursor, uid)
-        self.update_waiting_for_annexIV(cursor, uid)
-        self.update_waiting_for_48h(cursor, uid)
+        try:
+            self.update_second_unpaid_invoice(cursor, uid)
+        except Exception as e:
+            logger.error(
+                "UNHANDLED ERROR in update_second_unpaid_invoice: {}".format(e.message)
+            )
+        try:
+            self.update_waiting_for_annexII(cursor, uid)
+        except Exception as e:
+            logger.error(
+                "UNHANDLED ERROR in update_waiting_for_annexII: {}".format(e.message)
+            )
+        try:
+            self.update_waiting_for_annexIII_first(cursor, uid)
+        except Exception as e:
+            logger.error(
+                "UNHANDLED ERROR in update_waiting_for_annexIII_first: {}".format(e.message)
+            )
+        try:
+            self.update_waiting_for_annexIII_second(cursor, uid)
+        except Exception as e:
+            logger.error(
+                "UNHANDLED ERROR in update_waiting_for_annexIII_second: {}".format(e.message)
+            )
+        try:
+            self.update_pending_ask_poverty(cursor, uid)
+        except Exception as e:
+            logger.error(
+                "UNHANDLED ERROR in update_pending_ask_poverty: {}".format(e.message)
+            )
+        try:
+            self.update_waiting_for_annexIV(cursor, uid)
+        except Exception as e:
+            logger.error(
+                "UNHANDLED ERROR in update_waiting_for_annexIV: {}".format(e.message)
+            )
+        try:
+            self.update_waiting_for_48h(cursor, uid)
+        except Exception as e:
+            logger.error(
+                "UNHANDLED ERROR in update_waiting_for_48h: {}".format(e.message)
+            )
 
     def get_object_id(self, cursor, uid, module, sem_id):
         """
