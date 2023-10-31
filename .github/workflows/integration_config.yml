@@ -111,6 +111,7 @@ jobs:
           cd $ROOT_DIR_SRC
           pip install -r $ROOT_DIR_SRC/erp/requirements-dev.txt
           pip install -r $ROOT_DIR_SRC/erp/requirements.txt
+          pip install -r $ROOT_DIR_SRC/oorq/requirements.txt
           #pip install --upgrade --force-reinstall https://github.com/gisce/destral/archive/master.zip
           #pip install destral==1.7.3
       - name: Link Addons
