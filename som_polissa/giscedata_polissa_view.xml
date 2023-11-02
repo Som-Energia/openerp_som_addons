@@ -175,6 +175,7 @@
                     <field name="bateria_activa"/>
                     <field name="bateria_virtual"/>
                     <field name="data_activacio_bateria"/>
+                    <field name="data_baixa_bateria"/>
                     <field name="cups_np"/>
                 </tree>
             </field>
@@ -214,6 +215,7 @@
                     <field name="esquema_mesura" invisible="1" select="2"/>
                     <field name="bateria_activa" invisible="1" select="2"/>
                     <field name="data_activacio_bateria" invisible="1" select="2"/>
+                    <field name="data_baixa_bateria" invisible="1" select="2"/>
                     <field name="tipus_installacio" invisible="1" select="2"/>
                     <field name="cups_np" invisible="1" select="1"/>
                     <field name="ssaa" invisible="1" select="2"/>
@@ -262,6 +264,7 @@
                 <field name="potencia_generacio" position="after">
                     <field name="bateria_activa"/>
                     <field name="data_activacio_bateria"/>
+                    <field name="data_baixa_bateria"/>
                 </field>
             </field>
         </record>

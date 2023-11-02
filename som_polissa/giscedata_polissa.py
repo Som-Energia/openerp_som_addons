@@ -560,6 +560,84 @@ class GiscedataPolissa(osv.osv):
 
         return res
 
+    def _ff_search_bateria_activa(self, cursor, uid, obj, field_name, args, context=None):
+        if context is None:
+            context = {}
+        bat_virtual_polissa_obj = self.pool.get("giscedata.bateria.virtual.polissa")
+        te_bateria = args[0][2]
+        data_avui = datetime.today().strftime("%Y-%m-%d")
+        search_vals = [
+            ('data_inici', '<=', data_avui),
+            '|', ('data_final', '>', data_avui),
+                 ('data_final', '=', False)
+        ]
+
+        bat_polissa_ids = bat_virtual_polissa_obj.search(cursor, uid, search_vals, context=context)
+        bat_polisses = bat_virtual_polissa_obj.read(cursor, uid, bat_polissa_ids, ['polissa_id'], context=context)
+        polissa_ids = [bat_polissa['polissa_id'][0] for bat_polissa in bat_polisses]
+        if te_bateria:
+            return [('id', 'in', polissa_ids)]
+        else:
+            return [('id', 'not in', polissa_ids)]
+
+    def _ff_search_data_inici_bat(self, cursor, uid, obj, field_name, args, context=None):
+        if context is None:
+            context = {}
+        bat_virtual_polissa_obj = self.pool.get("giscedata.bateria.virtual.polissa")
+        operador = args[0][1]
+        data = args[0][2]
+        search_vals = [
+            ('data_inici', operador, data),
+        ]
+        bat_polissa_ids = bat_virtual_polissa_obj.search(cursor, uid, search_vals, context=context)
+        bat_polisses = bat_virtual_polissa_obj.read(cursor, uid, bat_polissa_ids, ['polissa_id'], context=context)
+        polissa_ids = [bat_polissa['polissa_id'][0] for bat_polissa in bat_polisses]
+        return [('id', 'in', polissa_ids)]
+
+    def _ff_search_data_final_bat(self, cursor, uid, obj, field_name, args, context=None):
+        if context is None:
+            context = {}
+        bat_virtual_polissa_obj = self.pool.get("giscedata.bateria.virtual.polissa")
+        operador = args[0][1]
+        data = args[0][2]
+        search_vals = [
+            ('data_final', operador, data),
+        ]
+        bat_polissa_ids = bat_virtual_polissa_obj.search(cursor, uid, search_vals, context=context)
+        bat_polisses = bat_virtual_polissa_obj.read(cursor, uid, bat_polissa_ids, ['polissa_id'], context=context)
+        polissa_ids = [bat_polissa['polissa_id'][0] for bat_polissa in bat_polisses]
+        return [('id', 'in', polissa_ids)]
+
+    def _ff_get_info_bateria(self, cursor, uid, ids, field_name, arg, context=None):
+        if not context:
+            context = {}
+        bat_virtual_polissa_obj = self.pool.get("giscedata.bateria.virtual.polissa")
+        q = bat_virtual_polissa_obj.q(cursor, uid)
+        default_dict = {
+            'bateria_activa': False,
+            'data_activacio_bateria': False,
+            'data_baixa_bateria': False
+        }
+        res = dict.fromkeys(ids, default_dict)
+        data_avui = datetime.today().strftime("%Y-%m-%d")
+
+        sql = q.select([
+            'id', 'data_inici', 'data_final', 'polissa_id'
+        ], only_active=False).where([
+            ('polissa_id', 'in', ids)
+        ])
+        cursor.execute(*sql)
+        for row in cursor.dictfetchall():
+            bateria_activa = False
+            if row['data_inici'] <= data_avui and row['data_final'] > data_avui or not row['data_final']:
+                bateria_activa = True
+            res[row['polissa_id']] = {
+                'bateria_activa': bateria_activa,
+                'data_activacio_bateria': row['data_inici'],
+                'data_baixa_bateria': row['data_final'] if row['data_final'] else False
+            }
+        return res
+
     _columns = {
         'info_gestio_endarrerida': fields.text('Informació gestió endarrerida'),
         'info_gestio_endarrerida_curta': fields.function(
@@ -587,8 +665,18 @@ class GiscedataPolissa(osv.osv):
                 )
             }
         ),
-        'bateria_activa': fields.boolean('Bateria activa'),
-        'data_activacio_bateria': fields.date('Data activació bateria'),
+        'bateria_activa': fields.function(
+            _ff_get_info_bateria, type='boolean', fnct_search=_ff_search_bateria_activa, method=True, multi=True,
+            string='Bateria activa',
+        ),
+        'data_activacio_bateria': fields.function(
+            _ff_get_info_bateria, type='date', fnct_search=_ff_search_data_inici_bat, method=True, multi=True,
+            string='Data activació bateria',
+        ),
+        'data_baixa_bateria': fields.function(
+            _ff_get_info_bateria, type='date', fnct_search=_ff_search_data_final_bat, method=True, multi=True,
+            string='Data baixa bateria',
+        ),
         'esquema_mesura': fields.selection(TABLA_130, 'Esquema mesura'),
         'ssaa': fields.function(_get_ssaa, fnct_search=_ff_search_ssaa, method=True, string=u"SSAA", type="boolean"),
         'cups_np': fields.function(_get_provincia_cups, fnct_search=_ff_search_cups_np, method=True, type="char", string='Provincia (CUPS)',
