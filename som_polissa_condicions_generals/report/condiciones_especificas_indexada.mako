@@ -27,17 +27,12 @@
 
 <h3>5. ADAPTACIÓN DE LA CLÁUSULA 5 “PRECIO Y ACTUALIZACIÓN”</h3>
     <p>5.1. Las partes acuerdan añadir la cláusula 5.6 de las Condiciones Generales del Contrato de Suministro, que queda redactada de la siguiente manera: </p>
-    <p>En caso de haber contratado la tarifa indexada la contratante abonará en contraprestación al suministro contratado el precio y demás conceptos descritos a continuación, así como los impuestos aplicables al tipo vigente en cada momento y todas aquellas prestaciones patrimoniales y/o otras legalmente exigibles. Asimismo, si la contratante lo solicita en el formulario de contratación, se incluirá en la factura el importe correspondiente al donativo voluntario para ayudar al desarrollo de la cooperativa.</p>
+    <p>En caso de haber contratado la tarifa indexada la contratante abonará en contraprestación al suministro contratado el precio y demás conceptos descritos a continuación, así como los impuestos aplicables al tipo vigente en cada momento y todas aquellas prestaciones patrimoniales y/o otras legalmente exigibles. Asimismo, si la contratante lo solicita en el formulario de contratación, o a posteriori a través de la Oficina Virtual, se añadirá al importe anterior el importe correspondiente al donativo voluntario para ayudar al desarrollo de la cooperativa.</p>
     <p>El importe de la energía es el resultado de la suma horaria del producto entre el consumo de energía activa entrante en cada hora y el precio horario de la energía. </p>
     <p style="padding-left: 40px"><strong> Importe del término energía = Suma horaria (kWh energía activa entrante </strong><em><strong>h</strong></em><sub><em><strong>i</strong></em></sub><em><strong> </strong></em><strong>* PH)</strong></p>
     <p>Siendo <em><strong>h</strong></em><sub><em><strong>i </strong></em></sub>cada una de las horas del periodo de facturación en cuestión.</p>
     <p>Siendo PH el precio horario de la energía calculado siguiendo la siguiente fórmula:</p>
     <p style="padding-left: 40px"><strong>PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + F] + PTD + CA</strong></p>
-
-    <p style="page-break-after:always;"></p>
-
-    <br>
-    <br>
     <p>Donde:</p>
     <ul>
         <p style="padding-left: 40px">
@@ -111,9 +106,6 @@
 
 <p>6.1. Las partes acuerdan añadir la cláusula 7.2. bis de las Condiciones Generales del Contrato de Suministro, que queda redactada de la siguiente manera: </p>
 
-<p style="page-break-after:always;"></p>
-<br>
-<br>
 <p>Sin perjuicio de lo establecido en la cláusula 7.2, los consumos horarios para la aplicación de la tarifa indexada serán determinados a partir de las curvas horarias facilitadas por el encargado de la lectura. En caso de que SOM ENERGIA, SCCL, no pueda facturar con base en curvas horarias, SOM ENERGIA, SCCL, aplicará a los consumos informados por el encargado de la lectura u obtenidos de alguna de las maneras previstas en la cláusula 7.2. de las Condiciones Generales del Contrato de Suministro, los coeficientes perfilados publicados por el operador del sistema, de acuerdo con lo establecido en la normativa vigente para cada tipo de peaje de acceso a la red de la distribuidora<sup><a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></sup>. En el caso de los puntos de suministro con peaje de acceso a la red de distribución 6.1TD, se aplicarán los coeficientes perfilados previstos en la normativa para el peaje de acceso 3.0TD . </p>
 
 <p>SOM ENERGIA, SCCL, ha puesto a disposición de la contratante las presentes Condiciones Específicas previamente a su contratación a través de su página web <a href="http://www.somenergia.coop"><em>www.somenergia.coop</em></a>. Estas han sido suscritas mediante sistemas de contratación electrónica, y se ha remitido un ejemplar en soporte duradero a la contratante una vez finalizada la contratación.</p>

@@ -670,25 +670,11 @@ CONTRACT_TYPES = dict(TABLA_9)
                 &nbsp;${_(u"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent en cada moment per a cada tipus de contracte sense perjudici de les exempcions o bonificacions que puguin ser d'aplicació.")}
             </div>
         </div>
-            <%
-                if pas01:
-                    bank = pas01.pas_id.bank if pas01.pas_id.bank else polissa.bank
-                else:
-                    bank = polissa.bank
-
-                owner_b = polissa.bank.partner_id.name
-                nif = polissa.bank.partner_id.vat
-                pol_bank = bank.read(['owner_id'])
-                if 'owner_id' in pol_bank and bank.owner_name:
-                    owner_b = bank.owner_name
-                    if bank.owner_id:
-                        nif = bank.owner_id.vat
-                nif = nif.replace('ES', '')
-            %>
             %if text_vigencia:
                 <p style="page-break-after: always"></p>
                 <br><br><br>
             %endif
+        % if polissa.bank:
         <div class="styled_box">
             <h5> ${_("DADES DE PAGAMENT")} </h5>
             <% iban = polissa.bank and polissa.bank.printable_iban[5:] or '' %>
@@ -696,6 +682,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                 <div class="iban"><b>${_(u"Nº de compte bancari (IBAN): **** **** **** ****")}</b> &nbsp ${iban[-4:]}</div>
             </div>
         </div>
+        % endif
         <div class="modi_condicions">
             <p>
                ${_(u"Al contractar s’accepten aquestes ")}

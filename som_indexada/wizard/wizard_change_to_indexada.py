@@ -73,18 +73,6 @@ class WizardChangeToIndexada(osv.osv_memory):
             change_type = context.get("change_type", "from_period_to_index")
         return change_type
 
-    def haha(self, cursor, uid, polissa_id, context=None):
-        if context is None:
-            context = {}
-        pol_o = self.pool.get('giscedata.polissa')
-        pol_browse = pol_o.browse(cursor, uid, polissa_id, context=context)
-        return self.get_new_pricelist(cursor, uid, pol_browse, context=context)
-
-    def calculate_k_d_coeficients(self, cursor, uid, context=None):
-        # k and d come from pricelist
-        res = {}
-        return res
-
     def _get_list_cups_balears(self, cursor, uid, context=None):
         xml_id_prov_balears = "ES07"
         IrModel = self.pool.get('ir.model.data')
@@ -250,8 +238,7 @@ class WizardChangeToIndexada(osv.osv_memory):
     def change_to_indexada(self, cursor, uid, ids, context=None):
         '''update data_firma_contracte in polissa
         and data_inici in modcontractual'''
-        modcon_obj = self.pool.get('giscedata.polissa.modcontractual')
-        pricelist_obj = self.pool.get('product.pricelist')
+        polissa_obj = self.pool.get('giscedata.polissa')
 
         wizard = self.browse(cursor, uid, ids[0])
         polissa = wizard.polissa_id
@@ -259,52 +246,53 @@ class WizardChangeToIndexada(osv.osv_memory):
         if not context:
             context = {}
 
-        self.validate_polissa_can_change(cursor, uid, polissa, change_type, context=context)
-        coefs = self.calculate_k_d_coeficients(
-            cursor, uid) if change_type == 'from_period_to_index' else None
+        self.validate_polissa_can_change(cursor, uid, polissa, change_type)
         new_pricelist_id = self.calculate_new_pricelist(cursor, uid, polissa, change_type)
-        new_pricelist = pricelist_obj.browse(
-            cursor, uid, new_pricelist_id, context={'prefetch': False})
 
-        prev_modcon = polissa.modcontractuals_ids[0]
-        modcon_obj.write(cursor, uid, prev_modcon.id, {
-            'data_final': date.today(),
-        })
-
-        new_modcon_vals = modcon_obj.copy_data(
-            cursor, uid, prev_modcon.id
-        )[0]
-        new_observacions = (
-            u'* Modcon canvi a {}:\n '
-            u'Nova tarifa comer: {}'
-        ).format(CHANGE_AUX_VALUES[change_type]['comments'], new_pricelist.name)
-        new_modcon_vals.update({
-            'data_inici': date.today() + timedelta(days=1),
-            'data_final': date.today() + timedelta(days=365),
+        new_modcon_vals = {
             'mode_facturacio': CHANGE_AUX_VALUES[change_type]['invoicing_type'],
             'mode_facturacio_generacio': CHANGE_AUX_VALUES[change_type]['invoicing_type'],
             'llista_preu': new_pricelist_id,
             'coeficient_k': False,
             'coeficient_d': False,
-            'active': True,
-            'state': 'pendent',
-            'modcontractual_ant': prev_modcon.id,
-            'name': str(int(prev_modcon.name) + 1),
-            'observacions': new_observacions,
-            'tipus': 'mod',
-        })
-        if coefs:
-            new_modcon_vals.update({
-                'coeficient_k': coefs['k'],
-                'coeficient_d': coefs['d'],
-            })
-        with AsyncMode('sync') as asmode:
-            new_modcon_id = modcon_obj.create(cursor, uid, new_modcon_vals)
+        }
+        try:
+            polissa.send_signal('modcontractual')
+            polissa_obj.write(cursor, uid, polissa.id, new_modcon_vals, context=context)
 
-            self.send_indexada_modcon_created_email(cursor, uid, polissa)
+            wz_crear_mc_obj = self.pool.get('giscedata.polissa.crear.contracte')
+            ctx = {'active_id': polissa.id}
+            params = {
+                'duracio': 'nou',
+                'accio': 'nou',
+            }
+            wiz_id = wz_crear_mc_obj.create(
+                cursor, uid, params, context=ctx
+            )
+            wiz = wz_crear_mc_obj.browse(
+                cursor, uid, [wiz_id]
+            )[0]
+            data_activacio = date.today() + timedelta(days=1)
+            res = wz_crear_mc_obj.onchange_duracio(
+                cursor, uid, [wiz.id], str(data_activacio), wiz.duracio, context=ctx
+            )
+            if res.get('warning', False):
+                polissa.send_signal('undo_modcontractual')
+                raise osv.except_osv('Error', res['warning'])
+            else:
+                wiz.write({
+                    'data_inici': str(data_activacio),
+                    'data_final': str(data_activacio + timedelta(days=364))
+                })
+
+                with AsyncMode('sync') as asmode:
+                    wiz.action_crear_contracte()
+                    self.send_indexada_modcon_created_email(cursor, uid, polissa)
+        except Exception:
+            polissa.send_signal('undo_modcontractual')
 
         wizard.write({'state': 'end'})
-        return new_modcon_id
+        return polissa.modcontractuals_ids[0].id
 
     _columns = {
         'state': fields.selection([('init', 'Init'),
