@@ -13,5 +13,17 @@ class GiscedataPolissa(osv.osv):
             context = {}
         return "FS" + str(polissa_name)
 
+    def get_bateria_virtual_data_inici_for_invoice(self, cursor, uid, factura, context=None):
+        if context is None:
+            context = {}
+        bat_polissa_obj = self.pool.get("giscedata.bateria.virtual.origen")
+        origen_ref = 'giscedata.polissa,{}'.format(factura.polissa_id.id)
+        dates_inici = bat_polissa_obj.q(cursor, uid).read(['data_inici_descomptes']).where([('origen_ref', '=', origen_ref)])
+        if dates_inici:
+            data_inici_bateria = max([d['data_inici_descomptes'] for d in dates_inici])
+        else:
+            data_inici_bateria = False
+        return data_inici_bateria
+
 
 GiscedataPolissa()
