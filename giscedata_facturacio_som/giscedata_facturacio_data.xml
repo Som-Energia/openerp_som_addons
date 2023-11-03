@@ -6,5 +6,10 @@
             <field name="value">1</field>
             <field name="description">Permet evitar la comprovació de si hi ha factures en esborrany a una remesa d'F1. Si es deixa a 0, es fa la validació.</field>
         </record>
+        <record model="res.config" id="auto_reobrir_clot" forcecreate="1">
+            <field name="name">auto_reobrir_clot</field>
+            <field name="value">0</field>
+            <field name="description">Amb valor 1, el c_lot en intentar facturar, si hi ha el problema on la data_inici > data_final, el reobrirà automàticament. Amb valor 0, no té efecte i es comporta per defecte</field>
+        </record>
     </data>
 </openerp>
