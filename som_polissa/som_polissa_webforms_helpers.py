@@ -43,6 +43,7 @@ class SomPolissaWebformsHelpers(osv.osv_memory):
 
         vals = {
             'account_iban': iban,
+            'update_fact_no_pagades': True,
             'print_mandate': False,
             'state': 'end'
         }
