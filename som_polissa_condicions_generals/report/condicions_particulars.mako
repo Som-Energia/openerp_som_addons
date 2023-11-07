@@ -8,6 +8,11 @@ from som_extend_facturacio_comer.utils import get_gkwh_atr_price
 from giscedata_polissa.report.utils import localize_period, datetime_to_date
 from gestionatr.defs import TABLA_9
 
+lead = context.get('lead')
+
+dict_preus_tp_potencia= context.get('tarifa_provisional')['preus_provisional_potencia']
+dict_preus_tp_energia= context.get('tarifa_provisional')['preus_provisional_energia']
+
 def clean_text(text):
     return text or ''
 
@@ -171,7 +176,7 @@ CONTRACT_TYPES = dict(TABLA_9)
             <h2>${_(u"CONDICIONS PARTICULARS DEL CONTRACTE DE SUBMINISTRAMENT D'ENERGIA ELÈCTRICA")}</h2>
         </div>
 
-        %if polissa.state == 'esborrany':
+        %if polissa.state == 'esborrany' and not lead:
             <div class="esborrany_warning">
                 <img src="${addons_path}/som_polissa_condicions_generals/report/assets/warning_icon.png"/>
                 <h2>
@@ -181,14 +186,13 @@ CONTRACT_TYPES = dict(TABLA_9)
                     ${_(u"Tarifes vigents en el moment d’activació del contracte.")}
                 </h3>
             </div>
-            <%
+        %endif
+        <%
+            if polissa.state == 'esborrany':
                 ultima_modcon = None
                 modcon_pendent_indexada = False
                 modcon_pendent_periodes = False
-            %>
-        %endif
 
-        <%
             dict_titular = get_titular_data(pas01, polissa)
             periodes_energia, periodes_potencia = [], []
             if polissa.state != 'esborrany':
@@ -379,7 +383,7 @@ CONTRACT_TYPES = dict(TABLA_9)
             if polissa.data_baixa:
                 ctx = {'date': datetime.strptime(polissa.data_baixa, '%Y-%m-%d')}
             if not polissa.llista_preu:
-                tarifes_a_mostrar = []
+                tarifes_a_mostrar = [] if not lead else [dict_preus_tp_potencia]
             else:
                 tarifes_a_mostrar = get_comming_atr_price(cursor, uid, polissa, ctx)
             text_vigencia = ''
@@ -406,7 +410,7 @@ CONTRACT_TYPES = dict(TABLA_9)
         <div class="styled_box">
         %for dades_tarifa in tarifes_a_mostrar:
             <%
-                if modcon_pendent_indexada or modcon_pendent_periodes:
+                if modcon_pendent_indexada or modcon_pendent_periodes or lead:
                     text_vigencia = ''
                 elif not data_final and dades_tarifa['date_end']:
                     text_vigencia = _(u"(vigents fins al {})").format(dades_tarifa['date_end'])
@@ -416,7 +420,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                     text_vigencia = _(u"(vigents a partir del {})").format(datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d').strftime('%d/%m/%Y'))
 
                 iva_reduit = False
-                if not polissa.fiscal_position_id:
+                if not polissa.fiscal_position_id and not lead:
                     imd_obj = polissa.pool.get('ir.model.data')
                     if iva_5_active and polissa.potencia <= 10 and dades_tarifa['date_start'] >= start_date_iva_5 and dades_tarifa['date_start'] <= end_date_iva_5:
                         fp_id = imd_obj.get_object_reference(cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
@@ -448,13 +452,16 @@ CONTRACT_TYPES = dict(TABLA_9)
                     ctx['sense_agrupar'] = True
                     periodes_energia = sorted(polissa.tarifa.get_periodes(context=ctx).keys())
                     periodes_potencia = sorted(polissa.tarifa.get_periodes('tp', context=ctx).keys())
-                    if periodes:
+                    if periodes and not lead:
                         if data_final: #TODO: A LA SEGONA PASSADA, POSARIEM ELS PREUS VELLS
                             data_llista_preus = dades_tarifa['date_start']
                             if datetime.strptime(data_llista_preus, '%Y-%m-%d') <= datetime.today():
                                 data_llista_preus = min(datetime.strptime(data_final, '%Y-%m-%d'), datetime.today())
                             ctx['date'] = data_llista_preus
-                        data_i = data_inici and datetime.strptime(polissa.modcontractual_activa.data_inici, '%Y-%m-%d')
+                        if not lead:
+                            data_i = data_inici and datetime.strptime(polissa.modcontractual_activa.data_inici, '%Y-%m-%d')
+                        else:
+                            data_i = datetime.strptime(data_inici, '%Y-%m-%d')
                         if data_i and calendar.isleap(data_i.year):
                             dies = 366
                         else:
@@ -510,9 +517,15 @@ CONTRACT_TYPES = dict(TABLA_9)
                                         <span><span>${formatLang(get_atr_price(cursor, uid, polissa, p, 'tp', ctx, with_taxes=True)[0], digits=6)}</span></span>
                                     </td>
                                 %else:
-                                    <td class="">
-                                        &nbsp;
-                                    </td>
+                                    %if lead:
+                                        <td class="center">
+                                            <span><span>${formatLang(dict_preus_tp_potencia[p], digits=6)}</span></span>
+                                        </td>
+                                    %else:
+                                        <td class="">
+                                            &nbsp;
+                                        </td>
+                                    %endif
                                 %endif
                             %endfor
                             %if len(periodes_potencia) < 6:
@@ -579,9 +592,15 @@ CONTRACT_TYPES = dict(TABLA_9)
                                         <span class="">${formatLang(get_atr_price(cursor, uid, polissa, p, 'te', ctx, with_taxes=True)[0], digits=6)}</span>
                                     </td>
                                 %else:
-                                    <td class="">
-                                        &nbsp;
-                                    </td>
+                                    %if lead:
+                                        <td class="center">
+                                            <span><span>${formatLang(dict_preus_tp_energia[p], digits=6)}</span></span>
+                                        </td>
+                                    %else:
+                                        <td class="">
+                                            &nbsp;
+                                        </td>
+                                    %endif
                                 %endif
                             %endfor
                             %if len(periodes_energia) < 6:
@@ -645,7 +664,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                     <span class="bold">(2) </span> ${_("Pots consultar el significat de les variables a les condicions específiques que trobaràs a continuació.")}
                 %endif
                 </div>
-                %if (polissa.mode_facturacio != 'index' and not modcon_pendent_indexada) and dades_tarifa['date_start'] >= start_date_mecanisme_ajust_gas and \
+                %if (polissa.mode_facturacio != 'index' and not modcon_pendent_indexada and not lead) and dades_tarifa['date_start'] >= start_date_mecanisme_ajust_gas and \
                     (not dades_tarifa['date_end'] or dades_tarifa['date_end'] <= end_date_mecanisme_ajust_gas):
                     <div class="avis_rmag">
                         ${_(u"A més del preu fix associat al cost de l'energia, establert per Som Energia i publicat a la nostra pàgina web, la factura inclourà un import variable associat al mecanisme d'ajust establert al")}
@@ -715,11 +734,13 @@ CONTRACT_TYPES = dict(TABLA_9)
                     <div><b>${_(u"La persona clienta:")}</b></div>
                 % endif
 
-                <img src="${addons_path}/som_polissa_condicions_generals/report/assets/acceptacio_digital.png"/>
+                %if not lead:
+                    <img src="${addons_path}/som_polissa_condicions_generals/report/assets/acceptacio_digital.png"/>
+                %endif
 
                 % if polissa_categ in polissa.category_id:
                     <div class="acceptacio_digital_txt">${_(u"Signat digitalment")}</div>
-                % else:
+                % elif not lead:
                     <div class="acceptacio_digital_txt">${_(u"Acceptat digitalment via formulari web")}</div>
                 % endif
 
