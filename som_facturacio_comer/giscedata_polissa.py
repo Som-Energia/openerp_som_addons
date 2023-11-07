@@ -15,24 +15,10 @@ class GiscedataPolissa(osv.osv):
         if context is None:
             context = {}
         factura_obj = self.pool.get('giscedata.facturacio.factura')
-        bat_polissa_obj = self.pool.get("giscedata.bateria.virtual.polissa")
-        dmn = [
-            ('polissa_id', '=', ids[0]),
-            ('es_origen', '=', True)
-        ]
-        bat_id = bat_polissa_obj.q(cursor, uid).read(
-            ['bateria_id']
-        ).where(dmn)
-        bat_id = bat_id[0]['bateria_id']
-        bat_pol_id = bat_polissa_obj.search(
-            cursor, uid, [('bateria_id', '=', bat_id), ('polissa_id', '=', ids[0])], context=context
-        )[0]
-        data_inici_bat_pol = bat_polissa_obj.read(cursor, uid, bat_pol_id, ['data_inici'], context=context)['data_inici']
-
         factura_ids = factura_obj.search(cursor, uid, [
             ('polissa_id', '=', ids[0]),
-            ('date_invoice', '>=', data_inici),
-            ('data_inici', '>=', data_inici_bat_pol),
+            ('date_inici', '>=', data_inici),
+            ('data_inici', '<=', data_final),
             ('state', 'in', ('paid', 'open')),
             ('type', 'in', ('out_invoice', 'out_refund')),
         ], context=context
