@@ -34,7 +34,7 @@ class SomPolissaWebformsHelpers(osv.osv_memory):
 
     def _update_payment_lines(self, cursor, uid, polissa_id, context):
         fact_obj = self.pool.get('giscedata.facturacio.factura')
-        order_obj = self.pool.get('payment.order')
+        pol_obj = self.pool.get('giscedata.polissa')
         line_obj = self.pool.get('payment.line')
 
         search_vals = [
