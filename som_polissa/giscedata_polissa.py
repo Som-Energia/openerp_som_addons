@@ -7,6 +7,8 @@ from osv import osv, fields
 from addons.giscedata_facturacio.giscedata_polissa import _get_polissa_from_energy_invoice
 from gestionatr.defs import TABLA_113, TABLA_129, TABLA_130, TABLA_131
 from .exceptions import exceptions
+from addons.giscedata_lectures_estimacio import giscedata_lectures_estimacio_helpers as estima_helper
+
 
 TIPO_AUTOCONSUMO = TABLA_113
 TIPO_AUTOCONSUMO_SEL = [(ac[0], u'[{}] - {}'.format(ac[0], ac[1])) for ac in TIPO_AUTOCONSUMO]
@@ -637,6 +639,17 @@ class GiscedataPolissa(osv.osv):
                 'data_baixa_bateria': row['data_final'] if row['data_final'] else False
             }
         return res
+
+    def consum_diari(self, cursor, uid, polissa_id, dies, data_ref=None, separat=None,
+                     context=None):
+        """Calculem el consum diari a 14 mesos"""
+        if isinstance(polissa_id, (list, tuple)):
+            polissa_id = polissa_id[0]
+
+        consum_diari = estima_helper.consum_diari_separat(cursor, uid, polissa_id,
+                                                  dies=365, data_ref=data_ref, separat=True)
+
+        return consum_diari
 
     _columns = {
         'info_gestio_endarrerida': fields.text('Informació gestió endarrerida'),
