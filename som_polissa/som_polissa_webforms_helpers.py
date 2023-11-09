@@ -54,9 +54,9 @@ class SomPolissaWebformsHelpers(osv.osv_memory):
 
         if draft_order_ids:
             bank_id = pol_obj.read(
-                cursor, uid, polissa_id, ['bank'], context=context)['bank']
+                cursor, uid, polissa_id, ['bank'], context=context)['bank'][0]
             partner_id = pol_obj.read(
-                cursor, uid, polissa_id, ['titular'], context=context)['titular']
+                cursor, uid, polissa_id, ['titular'], context=context)['titular'][0]
             line_ids = line_obj.search(cursor, uid, [
                 ('order_id', 'in', draft_order_ids),
                 ('partner_id', '=', partner_id),
