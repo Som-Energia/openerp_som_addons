@@ -10,8 +10,11 @@ from gestionatr.defs import TABLA_9
 
 lead = context.get('lead')
 
-dict_preus_tp_potencia= context.get('tarifa_provisional')['preus_provisional_potencia']
-dict_preus_tp_energia= context.get('tarifa_provisional')['preus_provisional_energia']
+dict_preus_tp_potencia = False
+dict_preus_tp_energia = False
+if context.get('tarifa_provisional', False):
+    dict_preus_tp_potencia= context.get('tarifa_provisional')['preus_provisional_potencia']
+    dict_preus_tp_energia= context.get('tarifa_provisional')['preus_provisional_energia']
 
 def clean_text(text):
     return text or ''
@@ -383,7 +386,9 @@ CONTRACT_TYPES = dict(TABLA_9)
             if polissa.data_baixa:
                 ctx = {'date': datetime.strptime(polissa.data_baixa, '%Y-%m-%d')}
             if not polissa.llista_preu:
-                tarifes_a_mostrar = [] if not lead else [dict_preus_tp_potencia]
+                tarifes_a_mostrar = []
+                if lead and dict_preus_tp_potencia:
+                    tarifes_a_mostrar = [dict_preus_tp_potencia]
             else:
                 tarifes_a_mostrar = get_comming_atr_price(cursor, uid, polissa, ctx)
             text_vigencia = ''
