@@ -3,14 +3,19 @@ from osv import osv
 from tools.translate import _
 
 class SomPolissaException(osv.except_osv):
-    def __init__(self,  title, text):
+    def __init__(self,  title, text, exception=None):
         super(SomPolissaException, self).__init__(
             title,
-            text
+            text,
+            exception
         )
         # ERP error reporting as fatal error, not a discardable warning
+        if exception:
+            message = '{} \n {}'.format(text, exception)
+        else:
+            message = text
         self.exc_type = 'error'
-        self._message = text
+        self._message = message
 
     @property
     def code(self):
@@ -106,10 +111,11 @@ class PolissaNotStandardPrice(SomPolissaException):
         )
 
 class FailSendEmail(SomPolissaException):
-    def __init__(self, polissa_number):
+    def __init__(self, polissa_number, exception=None):
         super(FailSendEmail, self).__init__(
             title=_('Email fail'),
             text=_("Failed to send email to Pòlissa {}").format(polissa_number),
+            exception=exception
         )
         self.polissa_number = polissa_number
 
