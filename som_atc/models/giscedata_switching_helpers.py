@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from osv import osv
+from tools.translate import _
 
 
 class GiscedataSwitchingHelpers(osv.osv):
