@@ -7,7 +7,7 @@ gh repo sync Som-Energia/lleida_net_api -b master
 gh repo sync Som-Energia/gestionatr -b master
 gh repo sync Som-Energia/destral -b master
 gh repo sync Som-Energia/poweremail-modules -b master
-gh repo sync Som-Energia/libFacturacioAT -b master
+gh repo sync Som-Energia/libFacturacioATR -b master
 gh repo sync Som-Energia/powerprofile -b master
 gh repo sync Som-Energia/mongodb_backend -b gisce
 
