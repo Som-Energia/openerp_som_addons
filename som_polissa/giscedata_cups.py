@@ -14,7 +14,6 @@ class GiscedataCupsPs(osv.osv):
         ('factures', _(u'Historic factures')),
         ('pdf', _(u'Pdf última factura')),
         ('consums_periods', _(u'Historic consums periodes')),
-        ('sips', _(u'Consum anual per SIPS')),
         ('estadistic', _(u"Estadística SOM")),
         ('usuari', _(u'usuari (webforms)'))
     ]
@@ -30,27 +29,6 @@ class GiscedataCupsPs(osv.osv):
                            dict(self._NEW_ORIGENS_CONANY).get(
                                origen['origen'], origen['origen']))
                 self._columns['conany_origen'].selection.append(new_sel)
-
-    def get_consum_anual_sips(self, cursor, uid, polissa_id, context=None):
-        """ Consum anual segons dades del SIPS """
-        if context is None:
-            context = {}
-        if isinstance(polissa_id, (tuple, list)):
-            polissa_id = polissa_id[0]
-
-        res = False
-        pol_obj = self.pool.get('giscedata.polissa')
-
-        cups = pol_obj.read(cursor, uid, polissa_id, ['cups'])['cups'][1]
-
-        try:
-            res = get_consum_anual_from_sips_API_periods(
-                self.pool, cursor, uid, cups, date=None, periods=True, context=context
-            )
-        except osv.except_osv as e:
-            return res
-
-        return res
 
     def get_consum_anual_backend_gisce(self, cursor, uid, polissa_id, context=None):
         """ Consum anual segons query de del backend de la factura de GISCE """
@@ -98,11 +76,6 @@ class GiscedataCupsPs(osv.osv):
                 break
 
         vals = [
-            {'priority': 500,
-            'model': 'giscedata.polissa',
-            'func': 'get_consum_anual_sips',
-            'origen': 'consums',
-            'periods': True},
             {'priority': 3,
             'model': 'giscedata.polissa',
             'func': 'get_consum_anual_backend_gisce',
@@ -144,27 +117,6 @@ class GiscedataCupsPs(osv.osv):
         llista.append(vals)
 
         return llista
-
-    def get_consum_anual_sips(self, cursor, uid, polissa_id, context=None):
-        """ Consum anual segons dades del SIPS """
-        if context is None:
-            context = {}
-        if isinstance(polissa_id, (tuple, list)):
-            polissa_id = polissa_id[0]
-
-        res = False
-        pol_obj = self.pool.get('giscedata.polissa')
-
-        cups = pol_obj.read(cursor, uid, polissa_id, ['cups'])['cups'][1]
-
-        try:
-            res = get_consum_anual_from_sips_API_periods(
-                self.pool, cursor, uid, cups, date=None, periods=True, context=context
-            )
-        except osv.except_osv as e:
-            return res
-
-        return res
 
     def get_consum_anual_backend_gisce(self, cursor, uid, polissa_id, context=None):
         """ Consum anual segons query de del backend de la factura de GISCE """

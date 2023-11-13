@@ -29,12 +29,3 @@ class TestGisceDataCups(testing.OOTestCase):
         return IrModel._get_obj(
             self.cursor, self.uid,
             module, ref).id
-
-
-    @mock.patch('giscedata_cnmc_sips_comer.giscedata_cnmc_sips_comer.fetch_SIPS')
-    def test__get_consum_anual_sips_lessThan12(self, mock_function):
-        mock_function.return_value = [
-            {'fechaFinMesConsumo': '2015-06-17', 'cups': 'ES0031300710578001ZW0F', 'consumoEnergiaActivaEnWhP5': '765000', 'consumoEnergiaActivaEnWhP4': '121000', 'consumoEnergiaActivaEnWhP6': '1524000', 'consumoEnergiaActivaEnWhP1': '324000', 'consumoEnergiaActivaEnWhP3': '3819000', 'consumoEnergiaActivaEnWhP2': '1924000', 'fechaInicioMesConsumo': '2015-05-12'},
-            {'fechaFinMesConsumo': '2015-07-13', 'cups': 'ES0031300710578001ZW0F', 'consumoEnergiaActivaEnWhP5': '521000', 'consumoEnergiaActivaEnWhP4': '83000', 'consumoEnergiaActivaEnWhP6': '1212000', 'consumoEnergiaActivaEnWhP1': '172000', 'consumoEnergiaActivaEnWhP3': '2715000', 'consumoEnergiaActivaEnWhP2': '1128000', 'fechaInicioMesConsumo': '2015-06-17'}]
-        result = self.cups_obj.get_consum_anual_sips(self.cursor, self.uid, self.contract1_id)
-        self.assertEqual(result, False)
