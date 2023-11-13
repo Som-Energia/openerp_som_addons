@@ -4,5 +4,4 @@ import som_infoenergia_enviament
 import som_enviament_massiu
 import wizard
 import giscedata_polissa
-import giscedata_cups
 import report
