@@ -133,12 +133,13 @@ class GiscedataCupsPs(osv.osv):
 
         return consum_periodes
 
-    def get_consum_anual_estadistic_som(
-        self, cursor, uid, polissa_id, periods=False, context=None
-    ):
+    def get_consum_anual_estadistic_som(self, cursor, uid, polissa_id, context=None):
         """ Consum anual segons estadística de SOM"""
-        pol_obj = self.pool.get('giscedata.polissa')
+        if not context:
+            context = {}
 
+        pol_obj = self.pool.get('giscedata.polissa')
+        periods = context.get('periods', False)
         res = {'P1': 0, 'P2': 0, 'P3': 0, 'P4': 0, 'P5': 0, 'P6': 0}
         perfil_redelectrica_20TD = {
             'P1': 0.289,

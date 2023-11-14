@@ -172,37 +172,37 @@ class TestGisceDataCups(testing.OOTestCase):
 
     def test__get_consum_anual_estadistic_som__periods_20TD(self):
         result = self.cups_obj.get_consum_anual_estadistic_som(
-            self.cursor, self.uid, self.contract_20TD_id, periods=True)
+            self.cursor, self.uid, self.contract_20TD_id, {'periods': True})
 
         self.assertEqual(result, {'P1': 693, 'P2': 633, 'P3': 1072, 'P4': 0, 'P5': 0, 'P6': 0})
 
     def test__get_consum_anual_estadistic_som__periods_30TD(self):
         result = self.cups_obj.get_consum_anual_estadistic_som(
-            self.cursor, self.uid, self.contract_30TD_id, periods=True)
+            self.cursor, self.uid, self.contract_30TD_id, {'periods': True})
 
         self.assertEqual(result, {'P1': 5760, 'P2': 1440, 'P3': 1440,
                          'P4': 1440, 'P5': 1440, 'P6': 2880})
 
     def test__get_consum_anual_estadistic_som__periods_61TD(self):
         result = self.cups_obj.get_consum_anual_estadistic_som(
-            self.cursor, self.uid, self.contract_61TD_id, periods=True)
+            self.cursor, self.uid, self.contract_61TD_id, {'periods': True})
 
         self.assertEqual(result, False)
 
     def test__get_consum_anual_estadistic_som__agreggated_20TD(self):
         result = self.cups_obj.get_consum_anual_estadistic_som(
-            self.cursor, self.uid, self.contract_20TD_id, periods=False)
+            self.cursor, self.uid, self.contract_20TD_id, {'periods': False})
 
         self.assertEqual(result, 2398)
 
     def test__get_consum_anual_estadistic_som__agreggated_30TD(self):
         result = self.cups_obj.get_consum_anual_estadistic_som(
-            self.cursor, self.uid, self.contract_30TD_id, periods=False)
+            self.cursor, self.uid, self.contract_30TD_id, {'periods': False})
 
         self.assertEqual(result, 14400)
 
     def test__get_consum_anual_estadistic_som__agreggated_61TD(self):
         result = self.cups_obj.get_consum_anual_estadistic_som(
-            self.cursor, self.uid, self.contract_61TD_id, periods=False)
+            self.cursor, self.uid, self.contract_61TD_id, {'periods': False})
 
         self.assertEqual(result, False)
