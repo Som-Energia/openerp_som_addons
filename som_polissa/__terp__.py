@@ -8,7 +8,7 @@
     "version": "0-dev",
     "author": "GISCE",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "base",
         "giscedata_polissa",
         "giscedata_polissa_comer",
@@ -24,7 +24,6 @@
         "base_bank_extended",
         "l10n_ES_remesas",
         "www_base",
-        "giscedata_cnmc_sips_comer",
     ],
     "init_xml": [],
     "demo_xml": [
