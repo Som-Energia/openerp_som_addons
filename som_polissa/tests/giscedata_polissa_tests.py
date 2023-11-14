@@ -14,7 +14,7 @@ class TestGisceDataCups(testing.OOTestCase):
         self.cursor = self.txn.cursor
         self.uid = self.txn.user
 
-        self.cups_obj = self.openerp.pool.get('giscedata.cups.ps')
+        self.pol_obj = self.model('giscedata.polissa')
         self.contract1_id = self.get_ref('giscedata_polissa', 'polissa_0001')
         self.contract_20TD_id = self.get_ref('giscedata_polissa', 'polissa_tarifa_018')
         self.contract_30TD_id = self.get_ref('giscedata_polissa', 'polissa_tarifa_019')
@@ -24,7 +24,7 @@ class TestGisceDataCups(testing.OOTestCase):
         self.txn.stop()
 
     def get_ref(self, module, ref):
-        IrModel = self.openerp.pool.get('ir.model.data')
+        IrModel = self.model('ir.model.data')
         return IrModel._get_obj(
             self.cursor, self.uid,
             module, ref).id
@@ -45,7 +45,7 @@ class TestGisceDataCups(testing.OOTestCase):
                                               u'P3': u'194,00', u'mes': u'2023/07'},
                                           {u'P1': u'183,00', u'P2': u'99,00', u'P3': u'256,00', u'mes': u'2023/08'}]}
 
-        result = self.cups_obj.get_consum_anual_backend_gisce(
+        result = self.pol_obj.get_consum_anual_backend_gisce(
             self.cursor, self.uid, self.contract_20TD_id)
 
         self.assertEqual(result, False)
@@ -54,7 +54,7 @@ class TestGisceDataCups(testing.OOTestCase):
     def test__get_consum_anual_backend_gisce__noInvoices(self, mock_function):
         mock_function.return_value = {}
 
-        result = self.cups_obj.get_consum_anual_backend_gisce(
+        result = self.pol_obj.get_consum_anual_backend_gisce(
             self.cursor, self.uid, self.contract_20TD_id)
 
         self.assertEqual(result, False)
@@ -100,7 +100,7 @@ class TestGisceDataCups(testing.OOTestCase):
                                                            u'P3': u'194,00', u'mes': u'2023/07'},
                                                        {u'P1': u'183,00', u'P2': u'99,00', u'P3': u'256,00', u'mes': u'2023/08'}]}
 
-        result = self.cups_obj.get_consum_anual_backend_gisce(
+        result = self.pol_obj.get_consum_anual_backend_gisce(
             self.cursor, self.uid, self.contract1_id)
 
         self.assertEqual(result, {'P2': 2033, 'P3': 4235, 'P1': 2254, 'P6': 0, 'P4': 0, 'P5': 0})
@@ -121,7 +121,7 @@ class TestGisceDataCups(testing.OOTestCase):
                                               u'P3': u'194,00', u'mes': u'2023/07'},
                                           {u'P1': u'183,00', u'P2': u'99,00', u'P3': u'256,00', u'mes': u'2023/08'}]}
 
-        result = self.cups_obj.get_consum_prorrageig_cnmc(
+        result = self.pol_obj.get_consum_prorrageig_cnmc(
             self.cursor, self.uid, self.contract_20TD_id)
 
         self.assertEqual(result, False)
@@ -130,7 +130,7 @@ class TestGisceDataCups(testing.OOTestCase):
     def test__get_consum_prorrageig_cnmc__noInvoices(self, mock_function):
         mock_function.return_value = {}
 
-        result = self.cups_obj.get_consum_prorrageig_cnmc(
+        result = self.pol_obj.get_consum_prorrageig_cnmc(
             self.cursor, self.uid, self.contract_20TD_id)
 
         self.assertEqual(result, False)
@@ -165,44 +165,44 @@ class TestGisceDataCups(testing.OOTestCase):
                               u'P3': u'172,00', u'mes': u'2023/06'}]
         }
 
-        result = self.cups_obj.get_consum_prorrageig_cnmc(
+        result = self.pol_obj.get_consum_prorrageig_cnmc(
             self.cursor, self.uid, self.contract1_id)
 
         self.assertEqual(result, {'P2': 2050, 'P3': 4105, 'P1': 2317, 'P6': 0, 'P4': 0, 'P5': 0})
 
     def test__get_consum_anual_estadistic_som__periods_20TD(self):
-        result = self.cups_obj.get_consum_anual_estadistic_som(
+        result = self.pol_obj.get_consum_anual_estadistic_som(
             self.cursor, self.uid, self.contract_20TD_id, {'periods': True})
 
         self.assertEqual(result, {'P1': 693, 'P2': 633, 'P3': 1072, 'P4': 0, 'P5': 0, 'P6': 0})
 
     def test__get_consum_anual_estadistic_som__periods_30TD(self):
-        result = self.cups_obj.get_consum_anual_estadistic_som(
+        result = self.pol_obj.get_consum_anual_estadistic_som(
             self.cursor, self.uid, self.contract_30TD_id, {'periods': True})
 
         self.assertEqual(result, {'P1': 5760, 'P2': 1440, 'P3': 1440,
                          'P4': 1440, 'P5': 1440, 'P6': 2880})
 
     def test__get_consum_anual_estadistic_som__periods_61TD(self):
-        result = self.cups_obj.get_consum_anual_estadistic_som(
+        result = self.pol_obj.get_consum_anual_estadistic_som(
             self.cursor, self.uid, self.contract_61TD_id, {'periods': True})
 
         self.assertEqual(result, False)
 
     def test__get_consum_anual_estadistic_som__agreggated_20TD(self):
-        result = self.cups_obj.get_consum_anual_estadistic_som(
+        result = self.pol_obj.get_consum_anual_estadistic_som(
             self.cursor, self.uid, self.contract_20TD_id, {'periods': False})
 
         self.assertEqual(result, 2398)
 
     def test__get_consum_anual_estadistic_som__agreggated_30TD(self):
-        result = self.cups_obj.get_consum_anual_estadistic_som(
+        result = self.pol_obj.get_consum_anual_estadistic_som(
             self.cursor, self.uid, self.contract_30TD_id, {'periods': False})
 
         self.assertEqual(result, 14400)
 
     def test__get_consum_anual_estadistic_som__agreggated_61TD(self):
-        result = self.cups_obj.get_consum_anual_estadistic_som(
+        result = self.pol_obj.get_consum_anual_estadistic_som(
             self.cursor, self.uid, self.contract_61TD_id, {'periods': False})
 
         self.assertEqual(result, False)
