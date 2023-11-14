@@ -30,7 +30,7 @@ class GiscedataCupsPs(osv.osv):
                                origen['origen'], origen['origen']))
                 self._columns['conany_origen'].selection.append(new_sel)
 
-    def get_desdes_consum_anual_historic_backend_gisce(self, cursor, uid, polissa_id, context):
+    def get_dades_consum_anual_historic_backend_gisce(self, cursor, uid, polissa_id, context):
         """ Obtenir dades consum anual segons query de del backend de la factura de GISCE """
         if context is None:
             context = {}
@@ -44,15 +44,18 @@ class GiscedataCupsPs(osv.osv):
 
         last_inv = factura_obj.search(
             cursor, uid, search_params, order="data_inici desc", context=context
-        )[0]
+        )
+        if not last_inv:
+            return False
 
-        return factura_backend_obj.get_grafica_historic_consum_14_mesos(cursor, uid, last_inv, context=context)
+        return factura_backend_obj.get_grafica_historic_consum_14_mesos(cursor, uid, last_inv[0], context=context)
 
     def get_consum_anual_backend_gisce(self, cursor, uid, polissa_id, context=None):
         """ Consum anual segons query de del backend de la factura de GISCE """
-        historic = self.get_desdes_consum_anual_historic_backend_gisce(
+        historic = self.get_dades_consum_anual_historic_backend_gisce(
             cursor, uid, polissa_id, context)
-
+        if not historic:
+            return False
         consums = historic['historic_js']
         if len(consums) < 12:
             return False
@@ -71,8 +74,10 @@ class GiscedataCupsPs(osv.osv):
     def get_consum_prorrageig_cnmc(self, cursor, uid, polissa_id, context=None):
         """ Consum anual estimat perfilant mesos segons fòrmula CNMC """
         pol_obj = self.pool.get('giscedata.polissa')
-        historic = self.get_desdes_consum_anual_historic_backend_gisce(
+        historic = self.get_dades_consum_anual_historic_backend_gisce(
             cursor, uid, polissa_id, context)
+        if not historic:
+            return False
         consums = historic['historic_js']
         if len(consums) < 3:
             return False
@@ -128,6 +133,60 @@ class GiscedataCupsPs(osv.osv):
 
         return consum_periodes
 
+    def get_consum_anual_estadistic_som(
+        self, cursor, uid, polissa_id, periods=False, context=None
+    ):
+        """ Consum anual segons estadística de SOM"""
+        pol_obj = self.pool.get('giscedata.polissa')
+
+        res = {'P1': 0, 'P2': 0, 'P3': 0, 'P4': 0, 'P5': 0, 'P6': 0}
+        perfil_redelectrica_20TD = {
+            'P1': 0.289,
+            'P2': 0.264,
+            'P3': 0.447
+        }
+        # TODO: Fix 3.0TD % of converion from agreggated to periods
+        perfil_redelectrica_30TD = {
+            'P1': 0.40,
+            'P2': 0.10,
+            'P3': 0.10,
+            'P4': 0.10,
+            'P5': 0.10,
+            'P6': 0.20
+        }
+        tarifa_pol = pol_obj.read(cursor, uid, polissa_id, ['tarifa_codi'])['tarifa_codi']
+        if tarifa_pol[0] == '6':  # All 6.X
+            return False
+        perfil_redelectrica = perfil_redelectrica_20TD if tarifa_pol == '2.0TD' else perfil_redelectrica_30TD
+
+        if isinstance(polissa_id, (tuple, list)):
+            polissa_id = polissa_id[0]
+
+        polissa_vals = pol_obj.read(cursor, uid, polissa_id, ['potencia'])
+        if polissa_vals['potencia'] < 1.5:
+            total = 840
+        elif 1.5 <= polissa_vals['potencia'] < 3.5:
+            total = 1800
+        elif 3.5 <= polissa_vals['potencia'] < 5.5:
+            total = 2400
+        elif 5.5 <= polissa_vals['potencia'] < 6.5:
+            total = 2880
+        elif 6.5 <= polissa_vals['potencia'] < 7.5:
+            total = 3840
+        elif 7.5 <= polissa_vals['potencia'] < 9.5:
+            total = 5280
+        elif 9.5 <= polissa_vals['potencia'] < 15:
+            total = 9480
+        elif 15 <= polissa_vals['potencia']:
+            total = 14400
+
+        for k in perfil_redelectrica.keys():
+            res[k] = int(total * perfil_redelectrica[k])
+
+        if not periods:
+            res = sum(res.values())
+        return res
+
     def get_fonts_consums_anuals(self, cursor, uid, context=None):
         ''' Afegim consum_anual_consum_lectures com a font de consum anual
         '''
@@ -140,14 +199,14 @@ class GiscedataCupsPs(osv.osv):
                 break
 
         vals = [
-            {'priority': 500,
-             'model': 'giscedata.polissa',
-             'func': 'get_consum_anual_sips',
+            {'priority': 3,
+             'model': 'giscedata.cups.ps',
+             'func': 'get_consum_anual_backend_gisce',
              'origen': 'consums',
              'periods': True},
-            {'priority': 3,
-             'model': 'giscedata.polissa',
-             'func': 'get_consum_anual_backend_gisce',
+            {'priority': 500,
+             'model': 'giscedata.cups.ps',
+             'func': 'get_consum_prorrageig_cnmc',
              'origen': 'consums',
              'periods': True},
             {'priority': 5,
@@ -167,9 +226,10 @@ class GiscedataCupsPs(osv.osv):
              'func': 'get_consum_anual_webforms',
              'origen': 'usuari'},
             {'priority': '1000',
-             'model': 'giscedata.polissa',
+             'model': 'giscedata.cups.ps',
              'func': 'get_consum_anual_estadistic_som',
-             'origen': 'estadistic'}
+             'origen': 'estadistic',
+             'periods': True}
         ]
 
         llista += vals
