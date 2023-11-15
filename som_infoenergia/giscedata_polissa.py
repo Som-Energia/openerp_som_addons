@@ -178,8 +178,8 @@ class GiscedataPolissaInfoenergia(osv.osv):
             except Exception as e:
                 failed.append(('contract read', contract['id'], str(e)))
         cups_search = [
-            ('conany_origen', '!=', 'manual'),
             ('id', 'in', company_contracts_cups_id),
+            '|', ('conany_origen', '!=', 'manual'), ('conany_origen', '=', False)
         ]
         toupdate_cups_id = cups_obj.search(cursor, uid, cups_search)
 
@@ -192,9 +192,9 @@ class GiscedataPolissaInfoenergia(osv.osv):
 
         thirtyfive_days_ago = (datetime.now() - timedelta(days=35)).strftime('%Y-%m-%d')
         cups_search = [
-            ('conany_origen', '!=', 'manual'),
             ('id', 'in', domestic_contracts_cups_id),
-            '|', ('conany_data', '=', False), ('conany_data', '<', thirtyfive_days_ago)
+            '|', ('conany_data', '=', False), ('conany_data', '<', thirtyfive_days_ago),
+            '|', ('conany_origen', '=', False), ('conany_origen', '!=', 'manual')
         ]
         toupdate_cups_id = toupdate_cups_id + cups_obj.search(cursor, uid, cups_search)
         msg.append('Trobats {} cups a updatar'.format(len(toupdate_cups_id)))
@@ -202,7 +202,7 @@ class GiscedataPolissaInfoenergia(osv.osv):
         cups_updated = 0
         for cups_id in toupdate_cups_id:
             try:
-                cups_obj.omple_consum_anual(cursor, uid, cups_id)
+                cups_obj.omple_consum_anual_periods(cursor, uid, cups_id, periods=True)
                 cups_updated += 1
             except Exception as e:
                 failed.append(('cups update', cups_id, str(e)))
