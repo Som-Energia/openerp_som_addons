@@ -2,6 +2,7 @@
 from osv import osv
 from tools.translate import _
 
+
 class GiscedataCupsPs(osv.osv):
     """Classe d'un CUPS (Punt de servei)."""
 
@@ -12,6 +13,10 @@ class GiscedataCupsPs(osv.osv):
         ('consums', _(u'Historic consums')),
         ('factures', _(u'Historic factures')),
         ('pdf', _(u'Pdf última factura')),
+        ('consums_periods', _(u'> 12 factures: Historic consums per periodes')),
+        ('estadistic', _(u"< 3 factures: Estadística SOM")),
+        ('usuari', _(u'usuari (webforms)')),
+        ('cnmc', _(u'Entre 3 i 12 factures: Estadística CNMC'))
     ]
 
     def __init__(self, pool, cursor):
@@ -39,20 +44,41 @@ class GiscedataCupsPs(osv.osv):
 
         vals = [
             {'priority': 5,
-            'model': 'giscedata.polissa',
-            'func': 'get_consum_anual_consum_lectures',
-            'origen': 'consums'},
+             'model': 'giscedata.polissa',
+             'func': 'get_consum_anual_consum_lectures',
+             'origen': 'consums'},
             {'priority': 4,
-            'model': 'giscedata.polissa',
-            'func': 'get_consum_anual_factures',
-            'origen': 'factures'},
+             'model': 'giscedata.polissa',
+             'func': 'get_consum_anual_factures',
+             'origen': 'factures'},
             {'priority': 3,
-            'model': 'giscedata.polissa',
-            'func': 'get_consum_anual_pdf',
-            'origen': 'pdf'}
+             'model': 'giscedata.polissa',
+             'func': 'get_consum_anual_pdf',
+             'origen': 'pdf'},
+            {'priority': 100,
+             'model': 'giscedata.polissa',
+             'func': 'get_consum_anual_webforms',
+             'origen': 'usuari'},
+            {'priority': 3,
+             'model': 'giscedata.polissa',
+             'func': 'get_consum_anual_backend_gisce',
+             'origen': 'consums',
+             'periods': True},
+            {'priority': 500,
+             'model': 'giscedata.polissa',
+             'func': 'get_consum_prorrageig_cnmc',
+             'origen': 'cnmc',
+             'periods': True},
+            {'priority': 1000,
+             'model': 'giscedata.polissa',
+             'func': 'get_consum_anual_estadistic_som',
+             'origen': 'estadistic',
+             'periods': True}
         ]
-        llista+=vals
+
+        llista += vals
 
         return llista
+
 
 GiscedataCupsPs()

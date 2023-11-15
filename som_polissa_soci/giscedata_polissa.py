@@ -37,34 +37,6 @@ class GiscedataPolissa(osv.osv):
 
         return res
 
-    def get_consum_anual_estadistic_som(self, cursor, uid, polissa_id,
-                                        context=None):
-        """ Consum anual segons estadística de SOM"""
-        res = 0
-
-        if isinstance(polissa_id, (tuple, list)):
-            polissa_id = polissa_id[0]
-
-        polissa_vals = self.read(cursor, uid, polissa_id, ['potencia'])
-        if polissa_vals['potencia'] < 1.5:
-            res = 840
-        elif 1.5 <= polissa_vals['potencia'] < 3.5:
-            res = 1800
-        elif 3.5 <= polissa_vals['potencia'] < 5.5:
-            res = 2400
-        elif 5.5 <= polissa_vals['potencia'] < 6.5:
-            res = 2880
-        elif 6.5 <= polissa_vals['potencia'] < 7.5:
-            res = 3840
-        elif 7.5 <= polissa_vals['potencia'] < 9.5:
-            res = 5280
-        elif 9.5 <= polissa_vals['potencia'] < 15:
-            res = 9480
-        elif 15 <= polissa_vals['potencia']:
-            res = 14400
-
-        return res
-
     _columns = {
         'soci': fields.many2one('res.partner', 'Soci',
                                 states={'validar': [('required', True)]}
