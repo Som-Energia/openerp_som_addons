@@ -687,7 +687,7 @@ class GiscedataPolissa(osv.osv):
         for invoice in consums:
             for k in invoice.keys():
                 if k in consum_periodes:
-                    consum_periodes[k] += float(invoice[k].replace(',', '.'))
+                    consum_periodes[k] += float(invoice[k].replace('.','').replace(',', '.'))
 
         days_of_consume = int(historic['historic']['days'])
         for k in consum_periodes.keys():
@@ -743,7 +743,7 @@ class GiscedataPolissa(osv.osv):
         for invoice in consums:
             for k in invoice.keys():
                 if k in consum_periodes:
-                    consum_periodes[k] += float(invoice[k].replace(',', '.'))
+                    consum_periodes[k] += float(invoice[k].replace('.','').replace(',', '.'))
             mesos_amb_factures.append(str(int(invoice['mes'].split('/')[1])))
         # Sumem percent dels mesos que tenim
         percent_acumulat = 0
