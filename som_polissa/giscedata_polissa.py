@@ -661,7 +661,8 @@ class GiscedataPolissa(osv.osv):
         factura_obj = self.pool.get('giscedata.facturacio.factura')
         factura_backend_obj = self.pool.get('giscedata.facturacio.factura.report.v2')
 
-        search_params = [('polissa_id', '=', polissa_id)]
+        search_params = [('polissa_id', '=', polissa_id), ('data_inici', '!=', False),
+                ('type', 'in', ['out_invoice', 'out_refund'])]
 
         last_inv = factura_obj.search(
             cursor, uid, search_params, order="data_inici desc", context=context
