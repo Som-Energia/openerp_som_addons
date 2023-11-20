@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_contract_power_optimization_form">
+            <field name="name">wizard_contract_power_optimization.form</field>
+            <field name="model">wizard.contract.power.optimization</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Optimització de potències">
+                    <separator string="Canviar tipus de pagament" colspan="4"/>
+                    <group colspan="4" col="4" attrs="{'invisible': [('state', '!=', 'init')]}">
+                        <group colspan="2" col="4">
+                            <field name="payment_type"/>
+                        </group>
+                        <button name="action_change_payment_type" string="Canviar"
+                                type="object" icon="gtk-go" colspan="4"/>
+                    </group>
+                    <group colspan="4" col="4" attrs="{'invisible': [('state', '!=', 'end')]}">
+                        <button special="cancel" string="Finalizar" icon="gtk-close"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_contract_power_optimization_form">
+            <field name="name">Optimització de potències</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.contract.power.optimization</field>
+            <field name="view_type">form</field>
+            <field name="target">new</field>
+            <field name="context"></field>
+            <field name="view_id" ref="view_wizard_contract_power_optimization_form"/>
+        </record>
+        <record id="value_wizard_contract_power_optimization_form" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Optimització de potències</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_contract_power_optimization_form'))"/>
+        </record>
+    </data>
+</openerp>
