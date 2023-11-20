@@ -232,7 +232,10 @@ class TarifaPoolSOM(TarifaPool):
         )
 
         if (start_date.year >= 2022 and start_date.month >= 11) or (start_date.year > 2022):
-            srad = SRAD('C2_srad_%(postfix)s' % locals(), esios_token)
+            try:
+                srad = SRAD('C2_srad_%(postfix)s' % locals(), esios_token)
+            except REECoeficientsNotFound as e:
+                srad = 0
             sobrecostes_ree += srad
 
         # MAJ RDL 10/2022
