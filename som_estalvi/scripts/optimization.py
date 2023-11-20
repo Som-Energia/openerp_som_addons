@@ -3,7 +3,7 @@ import minizinc
 
 def optimize(dades):
     # exectuar minizinc
-    model_path = ''
+    model_path = './optimization.mzn'
     minizinc.Model(model_path)
 
     solvers = ["chuffed", "coin-bc"]
@@ -12,6 +12,9 @@ def optimize(dades):
         # Create an instance of the model for every solver
         solver = minizinc.Solver.lookup(solver_name)
         inst = minizinc.Instance(solver, self.model)
+
+        for k,v in dades.items():
+            inst[k] = v
 
         task = asyncio.create_task(inst.solve_async)
         task.solver = solver.name
@@ -28,10 +31,10 @@ def optimize(dades):
         await asyncio.sleep(0.1)
 
 
-
     pass
 
 # Main program optimize
 if __name__ == "__main__":
-    dades = json.loads(sys.stdin.read())
+    standard_input = sys.stdin.read()
+    dades = json.loads(standard_input)
     optimize(dades)
