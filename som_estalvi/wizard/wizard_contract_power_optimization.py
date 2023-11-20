@@ -8,19 +8,95 @@ from dateutil.relativedelta import relativedelta
 class WizardContractPowerOptimization(osv.osv_memory):
     _name = "wizard.contract.power.optimization"
 
-    def get_potencies_maximetres(self, cursor, uid, wiz_id, polissa_id, context=None):
+    def _date_meter_in_range(self, cursor, uid, date_value, context=context):
+        if context is None:
+            context = {}
+
+        wizard = self.browse(cursor, uid, wiz_id, context=context)
+
+        start_date =  wiz.start_date
+        end_date = wiz.end_date
+
+        pol_obj.comptadors_actius(pol_id, data_inici, data_final)
+
+        comptador_obj = self.pool.get('giscedata.lectures.comptador')
+        order='data_alta desc'
+
+        search_params = [('polissa', '=', polissa_id),
+                         ('data_alta', '<=', data_final),
+                         '|', ('data_baixa', '>=', data_inici),
+                         ('data_baixa', '=', False)]
+
+        return comptador_obj.search(
+            cursor, uid, search_params, order=order,
+            context={'active_test': False}
+        )
+
+    def _date_lecture_in_range(self, cursor, uid, value_date, context=context):
+        if context is None:
+            context = {}
+
+        result = False
+        wizard = self.browse(cursor, uid, wiz_id, context=context)
+
+        start_date = datetime.strptime(wiz.start_date, '%Y-%m-%d')
+        end_date = datetime.strptime(wiz.end_date, '%Y-%m-%d')
+        datetimed_date = datetime.strptime(value_date, '%Y-%m-%d')
+
+        if datetimed_date >= start_date and datetimed_date < end_date:
+            result = True
+        return result
+
+    def get_meter_maximeter_power(self, cursor, uid, wiz_id, comptadors_ids, context=None):
         if context is None:
             context = {}
 
         pol_obj = self.pool.get('giscedata.polissa')
+        comptador_obj = self.pool.get('giscedata.lectures.comptador')
 
-        # Primer hem de dectar si es hem de mirar quins comptadors hem de mirar
+        wizard = self.browse(cursor, uid, wiz_id, context=context)
+
+        start_date =  wiz.start_date
+        end_date =  wiz.end_date
+
+        comptadors = comptador_obj.browse(cursor, uid, comptadors_ids, context=context)
+
+        maximetres = {}
+
+        for comptador in comptadors:
+            for lectura in comptador.lectures_pot:
+                lectura_date = comptador.name
+                if _date_lecture_in_range(cursor, uid, lectura_date, context=context):
+                    month_lectura_date = datetime.strftime(lectura_date, '%m%Y')
+                    period = lectura.periode.name
+                    if not maximeter.get('month_lectura_date'):
+                        maximetres[month_lectura_date] = {}
+                    if not maximeter[month_lectura_date].get(period):
+                        maximetres[month_lectura_date][period] = 0
+                    if maximetres[month_lectura_date][period] < lectura.lectura:
+                        maximetres[month_lectura_date][period] = lectura.lectura
+
+        return maximetres
+
+
+    def get_maximeters_power(self, cursor, uid, wiz_id, polissa_id, context=None):
+        if context is None:
+            context = {}
+
+        pol_obj = self.pool.get('giscedata.polissa')
+        wizard = self.browse(cursor, uid, wiz_id, context=context)
+
+        # Primer hem de mirar quins comptadors hem de mirar
         polissa = pol_obj.browse(cursor, uid, polissa_id, context=context)
-        start_date
+        start_date = wiz.start_date
+        end_date = wiz.end_date
 
         comptadors = []
+        #TODO
+        comptadors = pol_obj.comptadors_actius(pol_id, start_date, end_date)
         for comptador in polissa.comptadors:
-            if comptador.data_alta
+            if strptime(comptador.data_alta,"%Y-%m-%d") < start_date and
+                (strptime(comptador.data_baixa,"%Y-%m-%d") > end_date or )
 
     def get_periods_power(self, cursor, uid, wiz_id, polissa_id, context=None):
         if context is None:
@@ -131,7 +207,6 @@ class WizardContractPowerOptimization(osv.osv_memory):
         last_year = (datetime.now() - timedelta(year=1)).year
         start_date = '{}-01-01'.format(last_year)
         return start_date
-
 
     _columns = {
         'state': fields.selection(
