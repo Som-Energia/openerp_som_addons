@@ -67,27 +67,24 @@ jobs:
           pip install --upgrade pip setuptools wheel
       - name: Download required repositories
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_GA }}
         run: |
-          eval `ssh-agent -s`
-          ssh-add - <<< '${{ secrets.DEPLOY_KEY }}'
-          ssh-add - <<< '${{ secrets.DEPLOY_KEY_LIBFACTURACIOATR }}'
           export ROOT_DIR_SRC=${{github.workspace}}/..
-          git clone --depth 1 https://$GITHUB_TOKEN@github.com/gisce/erp.git -b developer $ROOT_DIR_SRC/erp
-          git clone --depth 1 git@github.com:Som-Energia/somenergia-generationkwh.git $ROOT_DIR_SRC/somenergia-generationkwh
+          git clone --depth 1 https://$GITHUB_TOKEN@github.com/Som-Energia/erp.git -b developer $ROOT_DIR_SRC/erp
+          git clone --depth 1 https://$GITHUB_TOKEN@github.com/Som-Energia/libFacturacioATR.git $ROOT_DIR_SRC/libFacturacioATR
+          git clone --depth 1 https://github.com/Som-Energia/somenergia-generationkwh.git $ROOT_DIR_SRC/somenergia-generationkwh
           git clone --depth 1 https://github.com/Som-Energia/plantmeter.git $ROOT_DIR_SRC/plantmeter
-          git clone --depth 1 git@github.com:gisce/oorq.git -b api_v5 $ROOT_DIR_SRC/oorq
-          git clone --depth 1 git@github.com:gisce/spawn_oop.git $ROOT_DIR_SRC/spawn_oop
-          git clone --depth 1 git@github.com:gisce/poweremail.git $ROOT_DIR_SRC/poweremail2
-          git clone --depth 1 git@github.com:gisce/openerp-sentry.git -b v5_legacy $ROOT_DIR_SRC/openerp-sentry
-          git clone --depth 1 git@github.com:gisce/ws_transactions.git $ROOT_DIR_SRC/ws_transactions
-          git clone --depth 1 git@github.com:gisce/ir_attachment_mongodb.git $ROOT_DIR_SRC/ir_attachment_mongodb
-          git clone --depth 1 git@github.com:gisce/mongodb_backend.git -b gisce $ROOT_DIR_SRC/mongodb_backend
-          git clone --depth 1 git@github.com:gisce/poweremail-modules.git $ROOT_DIR_SRC/poweremail-modules
-          git clone --depth 1 git@github.com:gisce/crm_poweremail.git $ROOT_DIR_SRC/crm_poweremail
-          git clone --depth 1 https://$GITHUB_TOKEN@github.com/gisce/libFacturacioATR.git $ROOT_DIR_SRC/libFacturacioATR
-          git clone --depth 1 git@github.com:gisce/ooop.git $ROOT_DIR_SRC/ooop
           git clone --depth 1 https://github.com/Som-Energia/giscedata_facturacio_indexada_som.git $ROOT_DIR_SRC/giscedata_facturacio_indexada_som
+          git clone --depth 1 https://github.com/gisce/oorq.git -b api_v5 $ROOT_DIR_SRC/oorq
+          git clone --depth 1 https://github.com/gisce/spawn_oop.git $ROOT_DIR_SRC/spawn_oop
+          git clone --depth 1 https://github.com/gisce/poweremail.git $ROOT_DIR_SRC/poweremail2
+          git clone --depth 1 https://github.com/gisce/openerp-sentry.git -b v5_legacy $ROOT_DIR_SRC/openerp-sentry
+          git clone --depth 1 https://github.com/gisce/ws_transactions.git $ROOT_DIR_SRC/ws_transactions
+          git clone --depth 1 https://github.com/gisce/ir_attachment_mongodb.git $ROOT_DIR_SRC/ir_attachment_mongodb
+          git clone --depth 1 https://github.com/gisce/mongodb_backend.git -b gisce $ROOT_DIR_SRC/mongodb_backend
+          git clone --depth 1 https://github.com/gisce/poweremail-modules.git $ROOT_DIR_SRC/poweremail-modules
+          git clone --depth 1 https://github.com/gisce/crm_poweremail.git $ROOT_DIR_SRC/crm_poweremail
+          git clone --depth 1 https://github.com/gisce/ooop.git $ROOT_DIR_SRC/ooop
       - name: Install dependencies
         run: |
           sudo apt-get --allow-releaseinfo-change update
