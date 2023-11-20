@@ -784,28 +784,69 @@ class GiscedataPolissa(osv.osv):
             polissa_id = polissa_id[0]
 
         polissa_vals = self.read(cursor, uid, polissa_id, ['potencia'])
-        if polissa_vals['potencia'] < 1.5:
-            total = 840
-        elif 1.5 <= polissa_vals['potencia'] < 3.5:
+        if polissa_vals['potencia'] <= 1:
+            total = 200
+        elif 1 < polissa_vals['potencia'] <= 2:
+            total = 600
+        elif 2 < polissa_vals['potencia'] <= 3:
+            total = 1200
+        elif 3 < polissa_vals['potencia'] <= 4:
             total = 1800
-        elif 3.5 <= polissa_vals['potencia'] < 5.5:
-            total = 2400
-        elif 5.5 <= polissa_vals['potencia'] < 6.5:
-            total = 2880
-        elif 6.5 <= polissa_vals['potencia'] < 7.5:
-            total = 3840
-        elif 7.5 <= polissa_vals['potencia'] < 9.5:
-            total = 5280
-        elif 9.5 <= polissa_vals['potencia'] < 15:
-            total = 9480
-        elif 15 <= polissa_vals['potencia']:
-            total = 14400
+        elif 4 < polissa_vals['potencia'] <= 5:
+            total = 2500
+        elif 5 < polissa_vals['potencia'] <= 6:
+            total = 3100
+        elif 6 < polissa_vals['potencia'] <= 7:
+            total = 4100
+        elif 7 < polissa_vals['potencia'] <= 8:
+            total = 5000
+        elif 8 < polissa_vals['potencia'] <= 9:
+            total = 5400
+        elif 9 < polissa_vals['potencia'] <= 10:
+            total = 6100
+        elif 10 < polissa_vals['potencia'] <= 11:
+            total = 7100
+        elif 11 < polissa_vals['potencia'] <= 12:
+            total = 8500
+        elif 12 < polissa_vals['potencia'] <= 13:
+            total = 9000
+        elif 13 < polissa_vals['potencia'] <= 14:
+            total = 10000
+        elif 14 < polissa_vals['potencia'] <= 15:
+            total = 10500
+        elif polissa_vals['potencia'] == 15.001:
+            total = 9800
+        elif 15.001 < polissa_vals['potencia'] <= 20:
+            total = 16500
+        elif 20 < polissa_vals['potencia'] <= 25:
+            total = 22100
+        elif 25 < polissa_vals['potencia'] <= 30:
+            total = 26500
+        elif 30 < polissa_vals['potencia'] <= 35:
+            total = 33100
+        elif 35 < polissa_vals['potencia'] <= 40:
+            total = 42500
+        elif 40 < polissa_vals['potencia'] <= 45:
+            total = 48700
+        elif 45 < polissa_vals['potencia'] <= 50:
+            total = 65400
+        elif 50 < polissa_vals['potencia'] <= 55:
+            total = 52300
+        elif 55 < polissa_vals['potencia'] <= 60:
+            total = 56100
+        elif 60 < polissa_vals['potencia'] <= 65:
+            total = 62500
+        elif 65 < polissa_vals['potencia'] <= 70:
+            total = 74800
+        elif polissa_vals['potencia'] > 70:
+            total = 100000
+
+        if not periods:
+            return total
 
         for k in perfil_redelectrica.keys():
             res[k] = int(total * perfil_redelectrica[k])
 
-        if not periods:
-            res = sum(res.values())
         return res
 
     _columns = {
