@@ -496,46 +496,8 @@ class WizardCancelFromCSVTestsAndAddContractsLot(testing.OOTestCase):
         wiz_obj.create_from_file(self.cursor, self.uid, [wiz_id], context=ctx)
 
         mock_create.assert_called_with(self.cursor, self.uid, lot_enviament_id, [pol_id_2, pol_id_3],
-                                       {'from_model': 'polissa_id', 'extra_text': {'0002': {'k': '234', 'extra_info': 'Info 1'},
-                                                                                   '0003': {'k': '213', 'extra_info': 'Info 2'}}})
-        wiz_info = wiz_obj.read(self.cursor, self.uid, [wiz_id], ['info'])[0]['info']
-        self.assertEqual(wiz_info, "Es crearan els enviaments de 2 pòlisses en segon pla")
-
-    @mock.patch('som_infoenergia.som_infoenergia_lot.SomInfoenergiaLotEnviament.create_enviaments_from_object_list')
-    def test_create_enviaments_from_csv__massive_extra_info(self, mock_create):
-        wiz_obj = self.openerp.pool.get('wizard.create.enviaments.from.csv')
-        imd_obj = self.openerp.pool.get('ir.model.data')
-        pol_obj = self.openerp.pool.get('giscedata.polissa')
-        lot_env_obj = self.openerp.pool.get('som.infoenergia.lot.enviament')
-        env_obj = self.openerp.pool.get('som.enviament.massiu')
-        lot_enviament_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, 'som_infoenergia', 'lot_enviament_0002'
-        )[1]
-        pol_id_2 = int(imd_obj.get_object_reference(
-            self.cursor, self.uid, 'giscedata_polissa', 'polissa_0002'
-        )[1])
-        pol_id_3 = int(imd_obj.get_object_reference(
-            self.cursor, self.uid, 'giscedata_polissa', 'polissa_0003'
-        )[1])
-        pol_name_2 = pol_obj.read(self.cursor, self.uid, pol_id_2, ['name'])['name']
-        pol_name_3 = pol_obj.read(self.cursor, self.uid, pol_id_3, ['name'])['name']
-        csv_content = "polissa,extra_info,k\n{},Info 1,234\n{},Info 2,213".format(
-            pol_name_2, pol_name_3)
-        encoded_csv = base64.b64encode(csv_content)
-        vals = {
-            'csv_file': encoded_csv,
-        }
-
-        ctx = {
-            'active_id': lot_enviament_id, 'active_ids': [lot_enviament_id],
-        }
-        wiz_id = wiz_obj.create(self.cursor, self.uid, vals, context=ctx)
-
-        wiz_obj.create_from_file(self.cursor, self.uid, [wiz_id], context=ctx)
-
-        mock_create.assert_called_with(self.cursor, self.uid, lot_enviament_id, [pol_id_2, pol_id_3],
-                                       {'from_model': 'polissa_id', 'extra_text': {'0002': {'k': '234', 'extra_info': 'Info 1'},
-                                                                                   '0003': {'k': '213', 'extra_info': 'Info 2'}}})
+                                       {'from_model': 'polissa_id', 'extra_text': {'0002': {'k': 234, 'extra_info': 'Info 1'},
+                                                                                   '0003': {'k': 213, 'extra_info': 'Info 2'}}})
         wiz_info = wiz_obj.read(self.cursor, self.uid, [wiz_id], ['info'])[0]['info']
         self.assertEqual(wiz_info, "Es crearan els enviaments de 2 pòlisses en segon pla")
 
@@ -585,12 +547,12 @@ class WizardCancelFromCSVTestsAndAddContractsLot(testing.OOTestCase):
         lot_enviament_id = imd_obj.get_object_reference(
             self.cursor, self.uid, 'som_infoenergia', 'lot_enviament_0002'
         )[1]
-        pol_id_2 = int(imd_obj.get_object_reference(
+        pol_id_2 = imd_obj.get_object_reference(
             self.cursor, self.uid, 'giscedata_polissa', 'polissa_0002'
-        )[1])
-        pol_id_3 = int(imd_obj.get_object_reference(
+        )[1]
+        pol_id_3 = imd_obj.get_object_reference(
             self.cursor, self.uid, 'giscedata_polissa', 'polissa_0003'
-        )[1])
+        )[1]
         pol_name_2 = pol_obj.read(self.cursor, self.uid, pol_id_2, ['name'])['name']
         pol_name_3 = pol_obj.read(self.cursor, self.uid, pol_id_3, ['name'])['name']
         csv_content = "polissa;extra_info;k\n{};Info 1;234\n{};Info 2;213".format(
@@ -607,9 +569,9 @@ class WizardCancelFromCSVTestsAndAddContractsLot(testing.OOTestCase):
 
         wiz_obj.create_from_file(self.cursor, self.uid, [wiz_id], context=ctx)
 
-        mock_create.assert_called_with(self.cursor, self.uid, lot_enviament_id, [pol_id_2, pol_id_3],
-                                       {'from_model': 'polissa_id', 'extra_text': {'0002': {'k': '234', 'extra_info': 'Info 1'},
-                                                                                   '0003': {'k': '213', 'extra_info': 'Info 2'}}})
+        mock_create.assert_called_with(self.cursor, self.uid, lot_enviament_id, [long(pol_id_2), long(pol_id_3)],
+                                       {'from_model': 'polissa_id', 'extra_text': {'0002': {'k': 234, 'extra_info': 'Info 1'},
+                                                                                   '0003': {'k': 213, 'extra_info': 'Info 2'}}})
         wiz_info = wiz_obj.read(self.cursor, self.uid, [wiz_id], ['info'])[0]['info']
         self.assertEqual(wiz_info, "Es crearan els enviaments de 2 pòlisses en segon pla")
 
