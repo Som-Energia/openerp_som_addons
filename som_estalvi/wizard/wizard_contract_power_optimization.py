@@ -47,38 +47,6 @@ class WizardContractPowerOptimization(osv.osv_memory):
             result = True
         return result
 
-    def get_meter_maximeter_power(self, cursor, uid, wiz_id, comptadors_ids, context=None):
-        if context is None:
-            context = {}
-
-        pol_obj = self.pool.get('giscedata.polissa')
-        comptador_obj = self.pool.get('giscedata.lectures.comptador')
-
-        wizard = self.browse(cursor, uid, wiz_id, context=context)
-
-        start_date =  wiz.start_date
-        end_date =  wiz.end_date
-
-        comptadors = comptador_obj.browse(cursor, uid, comptadors_ids, context=context)
-
-        maximetres = {}
-
-        for comptador in comptadors:
-            for lectura in comptador.lectures_pot:
-                lectura_date = comptador.name
-                if _date_lecture_in_range(cursor, uid, lectura_date, context=context):
-                    month_lectura_date = datetime.strftime(lectura_date, '%m%Y')
-                    period = lectura.periode.name
-                    if not maximeter.get('month_lectura_date'):
-                        maximetres[month_lectura_date] = {}
-                    if not maximeter[month_lectura_date].get(period):
-                        maximetres[month_lectura_date][period] = 0
-                    if maximetres[month_lectura_date][period] < lectura.lectura:
-                        maximetres[month_lectura_date][period] = lectura.lectura
-
-        return maximetres
-
-
     def get_maximeters_power(self, cursor, uid, wiz_id, polissa_id, context=None):
         if context is None:
             context = {}
@@ -88,15 +56,29 @@ class WizardContractPowerOptimization(osv.osv_memory):
 
         # Primer hem de mirar quins comptadors hem de mirar
         polissa = pol_obj.browse(cursor, uid, polissa_id, context=context)
+
         start_date = wiz.start_date
         end_date = wiz.end_date
 
         comptadors = []
-        #TODO
+        maximetres = {}
+
         comptadors = pol_obj.comptadors_actius(pol_id, start_date, end_date)
-        for comptador in polissa.comptadors:
-            if strptime(comptador.data_alta,"%Y-%m-%d") < start_date and
-                (strptime(comptador.data_baixa,"%Y-%m-%d") > end_date or )
+
+        for comptador in comptadors:
+            for lectura in comptador.lectures_pot:
+                lectura_date = comptador.name
+                if _date_lecture_in_range(cursor, uid, lectura_date, context=context):
+                    month_lectura_date = datetime.strftime(lectura_date, '%m%Y')
+                    period = lectura.periode.name
+                    if not maximeter.get(month_lectura_date):
+                        maximetres[month_lectura_date] = {}
+                    if not maximeter[month_lectura_date].get(period):
+                        maximetres[month_lectura_date][period] = 0
+                    if maximetres[month_lectura_date][period] < lectura.lectura:
+                        maximetres[month_lectura_date][period] = lectura.lectura
+
+        return maximetres
 
     def get_periods_power(self, cursor, uid, wiz_id, polissa_id, context=None):
         if context is None:
