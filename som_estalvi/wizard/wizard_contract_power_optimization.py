@@ -194,7 +194,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
         'preu_potencia_p5': fields.float('Preu potència P5', digits=(16, 6)),
         'preu_potencia_p6': fields.float('Preu potència P6', digits=(16, 6)),
 
-        'potencies_maximetres': fileds.text('Potències dels maxímetres')
+        'potencies_maximetres': fields.text('Potències dels maxímetres')
     }
 
     _defaults = {
