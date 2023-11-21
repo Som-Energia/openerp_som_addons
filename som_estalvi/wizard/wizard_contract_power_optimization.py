@@ -8,30 +8,6 @@ from dateutil.relativedelta import relativedelta
 class WizardContractPowerOptimization(osv.osv_memory):
     _name = "wizard.contract.power.optimization"
 
-    def _date_meter_in_range(self, cursor, uid, date_value, context=context):
-        if context is None:
-            context = {}
-
-        wizard = self.browse(cursor, uid, wiz_id, context=context)
-
-        start_date =  wiz.start_date
-        end_date = wiz.end_date
-
-        pol_obj.comptadors_actius(pol_id, data_inici, data_final)
-
-        comptador_obj = self.pool.get('giscedata.lectures.comptador')
-        order='data_alta desc'
-
-        search_params = [('polissa', '=', polissa_id),
-                         ('data_alta', '<=', data_final),
-                         '|', ('data_baixa', '>=', data_inici),
-                         ('data_baixa', '=', False)]
-
-        return comptador_obj.search(
-            cursor, uid, search_params, order=order,
-            context={'active_test': False}
-        )
-
     def _date_lecture_in_range(self, cursor, uid, value_date, context=context):
         if context is None:
             context = {}
