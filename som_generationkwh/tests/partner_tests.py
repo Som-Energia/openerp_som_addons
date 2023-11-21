@@ -3,6 +3,8 @@ from destral import testing
 from destral.transaction import Transaction
 from destral.patch import PatchNewCursors
 from yamlns import namespace as ns
+from datetime import date
+from freezegun import freeze_time
 
 
 class PartnerTests(testing.OOTestCase):
@@ -305,6 +307,68 @@ class PartnerTests(testing.OOTestCase):
                     cursor, uid, partner_id, [assignment_2, assignment_2])
             self.assertEqual(
                 e.exception.message, u"You need to order all the assignments at once")
+
+
+    def test___last_invoiced_date_from_priority_polissa(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            member_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'soci_0001')[1]
+            polissa_id_1 = self.IrModelData.get_object_reference(
+                cursor, uid, 'giscedata_polissa', 'polissa_0001')[1]
+            self.GiscedataPolissa.write(cursor, uid, polissa_id_1, {'data_ultima_lectura': '2023-11-07'})
+            self.GenerationkWhAssignment.create(
+                cursor, uid,
+                {'member_id': member_id, 'contract_id': polissa_id_1, 'priority': 0}
+            )
+
+            last_invoiced_date = self.partner_obj._last_invoiced_date_from_priority_polissa(cursor, uid, member_id)
+
+            self.assertEqual(last_invoiced_date, date(2023, 11, 7))
+
+    @freeze_time("2023-11-07")
+    def test__www_hourly_remaining_generationkwh(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1')[1]
+            member_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'soci_0001')[1]
+            polissa_id_1 = self.IrModelData.get_object_reference(
+                cursor, uid, 'giscedata_polissa', 'polissa_0001')[1]
+            self.GiscedataPolissa.write(cursor, uid, polissa_id_1, {'data_ultima_lectura': '2023-11-07'})
+            self.GenerationkWhAssignment.create(
+                cursor, uid,
+                {'member_id': member_id, 'contract_id': polissa_id_1, 'priority': 0}
+            )
+
+            remaining = self.partner_obj.www_hourly_remaining_generationkwh(cursor, uid, partner_id)
+
+            self.assertEqual(len(remaining), 8431)
+            self.assertEqual(sum(remaining.values()), 0)
+
+    def test__www_hourly_rights_generationkwh(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1')[1]
+            member_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'soci_0001')[1]
+            polissa_id_1 = self.IrModelData.get_object_reference(
+                cursor, uid, 'giscedata_polissa', 'polissa_0001')[1]
+            self.GiscedataPolissa.write(cursor, uid, polissa_id_1, {'data_ultima_lectura': '2023-11-07'})
+            self.GenerationkWhAssignment.create(
+                cursor, uid,
+                {'member_id': member_id, 'contract_id': polissa_id_1, 'priority': 0}
+            )
+
+            rights = self.partner_obj.www_hourly_rights_generationkwh(cursor, uid, partner_id, '2023-10-01', '2023-11-07')
+
+            self.assertEqual(len(rights), 912)
+            self.assertEqual(sum(rights.values()), 0)
 
 
 # vim: et ts=4 sw=4

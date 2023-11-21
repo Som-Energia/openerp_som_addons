@@ -3,6 +3,8 @@
 from osv import osv, fields
 from .erpwrapper import ErpWrapper
 import datetime
+from dateutil.relativedelta import relativedelta
+from collections import defaultdict
 from yamlns import namespace as ns
 from generationkwh.isodates import isodate
 from tools.translate import _
@@ -460,6 +462,51 @@ class GenerationkWhAssignment(osv.osv):
             ))
         result = [ id for id, in cursor.fetchall() ]
         return result
+
+    def get_generationkwh_monthly_use(self, cursor, uid, assignment_ids, month):
+        """Month must be in the format YYYY-MM"""
+        month_start = datetime.datetime.strptime(month, '%Y-%m')
+        next_month = month_start+relativedelta(months=1)
+        date_domain = [
+            ('date_invoice', '>=', month_start.strftime('%Y-%m-%d')),
+            ('date_invoice', '<', next_month.strftime('%Y-%m-%d'))
+        ]
+        return self._get_generationkwh_use(cursor, uid, assignment_ids, date_domain)
+
+
+    def get_generationkwh_yearly_use(self, cursor, uid, assignment_ids, year):
+        """Year must be in the format YYYY"""
+        year_start = datetime.datetime.strptime(year, '%Y')
+        next_year = year_start+relativedelta(years=1)
+        date_domain = [
+            ('date_invoice', '>=', year_start.strftime('%Y-%m-%d')),
+            ('date_invoice', '<', next_year.strftime('%Y-%m-%d'))
+        ]
+        return self._get_generationkwh_use(cursor, uid, assignment_ids, date_domain)
+
+    def _get_generationkwh_use(self, cursor, uid, assignment_ids, date_domain):
+        GisceInvoice = self.pool.get('giscedata.facturacio.factura')
+        GenerationkWhInvoiceLineOwner = self.pool.get('generationkwh.invoice.line.owner')
+
+        response = {}
+        for assignment in self.browse(cursor, uid, assignment_ids):
+            gisce_invoice_ids = GisceInvoice.search(cursor, uid, date_domain+[
+                ('polissa_id', '=', assignment.contract_id.id)])
+            generation_line_ids = GenerationkWhInvoiceLineOwner.search(cursor, uid, [
+                ('factura_id', 'in', gisce_invoice_ids)])
+            generation_lines = GenerationkWhInvoiceLineOwner.browse(
+                cursor, uid, generation_line_ids)
+
+            response[str(assignment.id)] = defaultdict(int)
+            for generation_line in generation_lines:
+                invoice = generation_line.factura_id
+                line = generation_line.factura_line_id
+                multiplier = 1 if invoice.type in ('out_invoice', 'in_refund') else -1
+                response[str(assignment.id)][str(line.product_id.name)] += (
+                    line.quantity*multiplier)
+            response[str(assignment.id)] = dict(response[str(assignment.id)])
+
+        return response
 
 
 GenerationkWhAssignment()
