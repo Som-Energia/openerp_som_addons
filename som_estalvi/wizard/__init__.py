@@ -1,1 +1,1 @@
-import wizard_power_contract_optimization
+import wizard_contract_power_optimization
