@@ -1,4 +1,4 @@
-rsa==4.0
+rsa<4.6
 google-auth<1.35.0
 google-auth-httplib2==0.1.0
 oauth2client==3.0.0
