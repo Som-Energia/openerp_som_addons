@@ -144,9 +144,16 @@ class GiscedataPolissaInfoenergia(osv.osv):
         return conany
 
     def _conany_updater(self, cursor, uid, context=None):
+        cups_obj = self.pool.get('giscedata.cups.ps')
         msg = []
         msg.append(str(datetime.today()))
         msg.append('Cercant polisses a updatar')
+        domain = [
+            ('state', '=', 'activa'),
+            ('tarifa_codi', 'like', '2%')
+        ]
+        contracts2_ids = self.search(cursor, uid, domain)
+        msg.append('Trobades {} polisses 2.X'.format(len(contracts2_ids)))
         domain = [
             ('state', '=', 'activa'),
             ('tarifa_codi', 'like', '3%')
@@ -164,25 +171,38 @@ class GiscedataPolissaInfoenergia(osv.osv):
         msg.append('Trobades {} polisses candidates'.format(len(contracts_ids)))
 
         failed = []
-        contracts_cups_id = []
+        company_contracts_cups_id = []
         for contract in self.read(cursor, uid, contracts_ids, ['id', 'cups']):
             try:
-                contracts_cups_id.append(contract['cups'][0])
+                company_contracts_cups_id.append(contract['cups'][0])
+            except Exception as e:
+                failed.append(('contract read', contract['id'], str(e)))
+        cups_search = [
+            ('id', 'in', company_contracts_cups_id),
+            '|', ('conany_origen', '!=', 'manual'), ('conany_origen', '=', False)
+        ]
+        toupdate_cups_id = cups_obj.search(cursor, uid, cups_search)
+
+        domestic_contracts_cups_id = []
+        for contract in self.read(cursor, uid, contracts2_ids, ['id', 'cups']):
+            try:
+                domestic_contracts_cups_id.append(contract['cups'][0])
             except Exception as e:
                 failed.append(('contract read', contract['id'], str(e)))
 
+        thirtyfive_days_ago = (datetime.now() - timedelta(days=35)).strftime('%Y-%m-%d')
         cups_search = [
-            ('conany_origen', '!=', 'manual'),
-            ('id', 'in', contracts_cups_id),
+            ('id', 'in', domestic_contracts_cups_id),
+            '|', ('conany_data', '=', False), ('conany_data', '<', thirtyfive_days_ago),
+            '|', ('conany_origen', '=', False), ('conany_origen', '!=', 'manual')
         ]
-        cups_obj = self.pool.get('giscedata.cups.ps')
-        toupdate_cups_id = cups_obj.search(cursor, uid, cups_search)
+        toupdate_cups_id = toupdate_cups_id + cups_obj.search(cursor, uid, cups_search)
         msg.append('Trobats {} cups a updatar'.format(len(toupdate_cups_id)))
 
         cups_updated = 0
         for cups_id in toupdate_cups_id:
             try:
-                cups_obj.omple_consum_anual(cursor, uid, cups_id)
+                cups_obj.omple_consum_anual_periods(cursor, uid, cups_id, periods=True)
                 cups_updated += 1
             except Exception as e:
                 failed.append(('cups update', cups_id, str(e)))
