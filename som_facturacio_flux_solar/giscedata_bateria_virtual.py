@@ -42,14 +42,14 @@ class GiscedataBateriaVirtual(osv.osv):
     def _ff_data_inici_descomptes(self, cursor, uid, ids, name, args, context=None):
         res = {}
         for bateria_virtual in self.browse(cursor, uid, ids, context={'prefetch': False}):
-            for polissa_br in bateria_virtual.polissa_ids:
-                res[bateria_virtual.id] = str(polissa_br.data_inici)
+            for origen_br in bateria_virtual.origen_ids:
+                res[bateria_virtual.id] = str(origen_br.data_inici_descomptes)
         return res
 
     _columns = {
         'origen_info': fields.function(_ff_origen, type="text", method=True, string='Origen'),
         'receptor_info': fields.function(_ff_receptor, type="text", method=True, string='Receptor (pes)'),
-        'data_inici_descomptes': fields.function(_ff_data_inici_descomptes, type="text", method=True, string='Data inici descomptes'),
+        'data_inici_descomptes': fields.function(_ff_data_inici_descomptes, type="text", method=True, string='Data inici generació descomptes'),
     }
 
 

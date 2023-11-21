@@ -64,7 +64,7 @@ class GiscedataAtc(osv.osv):
             _ff_get_process_step, method=True,
             string=u"Pas del R1", type='char',
             size=10, store={
-                'giscedata.atc': (lambda self, cr, uid, ids, c={}: ids, ['ref', 'ref2'], 10),
+                'giscedata.atc': (lambda self, cr, uid, ids, c={}: ids, ['ref', 'ref2','history_line'], 10),
                 'giscedata.switching': (_trg_switching, ['step_id', 'step_ids'], 10),
             }
         ),

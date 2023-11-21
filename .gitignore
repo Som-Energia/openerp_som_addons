@@ -132,3 +132,6 @@ deploy/
 
 # Vim temporaly files
 *.swp
+
+# GISCE Stuff
+.idea
