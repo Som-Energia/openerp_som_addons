@@ -8,7 +8,7 @@ from dateutil.relativedelta import relativedelta
 class WizardContractPowerOptimization(osv.osv_memory):
     _name = "wizard.contract.power.optimization"
 
-    def _date_lecture_in_range(self, cursor, uid, value_date, context=context):
+    def _date_lecture_in_range(self, cursor, uid, value_date, context=None):
         if context is None:
             context = {}
 
