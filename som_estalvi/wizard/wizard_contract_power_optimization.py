@@ -70,7 +70,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
                     if maximeters[month_lectura_date][period] < lectura.lectura:
                         maximeters[month_lectura_date][period] = int(round(lectura.lectura))
 
-        vals = {'potencies_maximetres': maximeters}
+        vals = {'maximeters_powers': maximeters}
         wiz.write(vals, context=context)
 
     def get_periods_power(self, cursor, uid, wiz_id, polissa_id, context=None):
@@ -83,12 +83,12 @@ class WizardContractPowerOptimization(osv.osv_memory):
 
         # De moment ho optimitzarem amb ints. TODO preguntar a EiE
         vals = {
-            "potencia_p1": round(polissa.potencies_periode[0].potencia),
-            "potencia_p2": round(polissa.potencies_periode[1].potencia),
-            "potencia_p3": round(polissa.potencies_periode[2].potencia),
-            "potencia_p4": round(polissa.potencies_periode[3].potencia),
-            "potencia_p5": round(polissa.potencies_periode[4].potencia),
-            "potencia_p6": round(polissa.potencies_periode[5].potencia),
+            "power_p1": round(polissa.potencies_periode[0].potencia),
+            "power_p2": round(polissa.potencies_periode[1].potencia),
+            "power_p3": round(polissa.potencies_periode[2].potencia),
+            "power_p4": round(polissa.potencies_periode[3].potencia),
+            "power_p5": round(polissa.potencies_periode[4].potencia),
+            "power_p6": round(polissa.potencies_periode[5].potencia),
         }
         wiz.write(vals, context=context)
 
@@ -103,22 +103,22 @@ class WizardContractPowerOptimization(osv.osv_memory):
         wiz = self.browse(cursor, uid, wiz_id, context=context)
 
         vals = {
-            "preu_potencia_p1": get_atr_price(
+            "power_price_p1": get_atr_price(
                 cursor, uid, polissa, 'P1', 'tp', context=context
             ),
-            "preu_potencia_p2": get_atr_price(
+            "power_price_p2": get_atr_price(
                 cursor, uid, polissa, 'P2', 'tp', context=context
             ),
-            "preu_potencia_p3": get_atr_price(
+            "power_price_p3": get_atr_price(
                 cursor, uid, polissa, 'P3', 'tp', context=context
             ),
-            "preu_potencia_p4": get_atr_price(
+            "power_price_p4": get_atr_price(
                 cursor, uid, polissa, 'P4', 'tp', context=context
             ),
-            "preu_potencia_p5": get_atr_price(
+            "power_price_p5": get_atr_price(
                 cursor, uid, polissa, 'P5', 'tp', context=context
             ),
-           "preu_potencia_p6": get_atr_price(
+            "power_price_p6": get_atr_price(
                 cursor, uid, polissa, 'P6', 'tp', context=context
             ),
         }
@@ -134,10 +134,10 @@ class WizardContractPowerOptimization(osv.osv_memory):
         polissa = pol_obj.browse(cursor, uid, polissa_id, context=context)
         wiz = self.browse(cursor, uid, wiz_id, context=context)
 
-        preu_exces = get_atr_price(
+        excess_price = get_atr_price(
             cursor, uid, polissa, 'P1', 'epm', context=context
         )
-        wiz.write({'preu_exces': preu_exces}, context=context)
+        wiz.write({'excess_price': excess_price}, context=context)
 
     def get_optimization_required_data(self, cursor, uid, wiz_id, polissa_id, context=None):
         if context is None:
@@ -231,26 +231,26 @@ class WizardContractPowerOptimization(osv.osv_memory):
             ],
         'State'),
 
-        'preu_exces': fields.float('Preu excés maxímetre'),
+        'excess_price': fields.float('Preu excés maxímetre'),
 
         'start_date': fields.datetime('Data d\'inici'),
         'end_date': fields.function(_compute_end_date, method=True, string='Data final', type='date'),
 
-        'potencia_p1': fields.integer('Potència P1'),
-        'potencia_p2': fields.integer('Potència P2'),
-        'potencia_p3': fields.integer('Potència P3'),
-        'potencia_p4': fields.integer('Potència P4'),
-        'potencia_p5': fields.integer('Potència P5'),
-        'potencia_p6': fields.integer('Potència P6'),
+        'power_p1': fields.integer('Potència P1'),
+        'power_p2': fields.integer('Potència P2'),
+        'power_p3': fields.integer('Potència P3'),
+        'power_p4': fields.integer('Potència P4'),
+        'power_p5': fields.integer('Potència P5'),
+        'power_p6': fields.integer('Potència P6'),
 
-        'preu_potencia_p1': fields.float('Preu potència P1', digits=(16, 6)),
-        'preu_potencia_p2': fields.float('Preu potència P2', digits=(16, 6)),
-        'preu_potencia_p3': fields.float('Preu potència P3', digits=(16, 6)),
-        'preu_potencia_p4': fields.float('Preu potència P4', digits=(16, 6)),
-        'preu_potencia_p5': fields.float('Preu potència P5', digits=(16, 6)),
-        'preu_potencia_p6': fields.float('Preu potència P6', digits=(16, 6)),
+        'power_price_p1': fields.float('Preu potència P1', digits=(16, 6)),
+        'power_price_p2': fields.float('Preu potència P2', digits=(16, 6)),
+        'power_price_p3': fields.float('Preu potència P3', digits=(16, 6)),
+        'power_price_p4': fields.float('Preu potència P4', digits=(16, 6)),
+        'power_price_p5': fields.float('Preu potència P5', digits=(16, 6)),
+        'power_price_p6': fields.float('Preu potència P6', digits=(16, 6)),
 
-        'potencies_maximetres': fields.text('Potències dels maxímetres')
+        'maximeters_powers': fields.text('Potències dels maxímetres')
     }
 
     _defaults = {
