@@ -8,12 +8,12 @@ from dateutil.relativedelta import relativedelta
 class WizardContractPowerOptimization(osv.osv_memory):
     _name = "wizard.contract.power.optimization"
 
-    def _date_lecture_in_range(self, cursor, uid, value_date, context=None):
+    def _date_lecture_in_range(self, cursor, uid, wiz_id, value_date, context=None):
         if context is None:
             context = {}
 
         result = False
-        wizard = self.browse(cursor, uid, wiz_id, context=context)
+        wiz = self.browse(cursor, uid, wiz_id, context=context)
 
         start_date = datetime.strptime(wiz.start_date, '%Y-%m-%d')
         end_date = datetime.strptime(wiz.end_date, '%Y-%m-%d')
@@ -28,7 +28,8 @@ class WizardContractPowerOptimization(osv.osv_memory):
             context = {}
 
         pol_obj = self.pool.get('giscedata.polissa')
-        wizard = self.browse(cursor, uid, wiz_id, context=context)
+        comptador_obj = self.pool.get('giscedata.lectures.comptador')
+        wiz = self.browse(cursor, uid, wiz_id, context=context)
 
         # Primer hem de mirar quins comptadors hem de mirar
         polissa = pol_obj.browse(cursor, uid, polissa_id, context=context)
@@ -37,24 +38,27 @@ class WizardContractPowerOptimization(osv.osv_memory):
         end_date = wiz.end_date
 
         comptadors = []
-        maximetres = {}
+        maximeters = {}
 
-        comptadors = pol_obj.comptadors_actius(pol_id, start_date, end_date)
+        comptadors_ids = pol_obj.comptadors_actius(cursor, uid, polissa_id, start_date, end_date)
+        comptadors = comptador_obj.browse(cursor, uid, comptadors_ids, context=context)
 
         for comptador in comptadors:
             for lectura in comptador.lectures_pot:
-                lectura_date = comptador.name
-                if _date_lecture_in_range(cursor, uid, lectura_date, context=context):
-                    month_lectura_date = datetime.strftime(lectura_date, '%m%Y')
+                lectura_date = lectura.name
+                if self._date_lecture_in_range(cursor, uid, wiz_id, lectura_date, context=context):
+                    lectura_date_dated = datetime.strptime(lectura_date, '%Y-%m-%d')
+                    month_lectura_date = datetime.strftime(lectura_date_dated, '%m%Y')
                     period = lectura.periode.name
-                    if not maximeter.get(month_lectura_date):
-                        maximetres[month_lectura_date] = {}
-                    if not maximeter[month_lectura_date].get(period):
-                        maximetres[month_lectura_date][period] = 0
-                    if maximetres[month_lectura_date][period] < lectura.lectura:
-                        maximetres[month_lectura_date][period] = lectura.lectura
+                    if not maximeters.get(month_lectura_date):
+                        maximeters[month_lectura_date] = {}
+                    if not maximeters[month_lectura_date].get(period):
+                        maximeters[month_lectura_date][period] = 0
+                    if maximeters[month_lectura_date][period] < lectura.lectura:
+                        maximeters[month_lectura_date][period] = int(round(lectura.lectura))
 
-        return maximetres
+        vals = {'potencies_maximetres': maximeters}
+        wiz.write(vals, context=context)
 
     def get_periods_power(self, cursor, uid, wiz_id, polissa_id, context=None):
         if context is None:
@@ -62,53 +66,65 @@ class WizardContractPowerOptimization(osv.osv_memory):
 
         pol_obj = self.pool.get('giscedata.polissa')
         polissa = pol_obj.browse(cursor, uid, polissa_id, context=context)
-        wizard = self.browse(cursor, uid, wiz_id, context=context)
+        wiz = self.browse(cursor, uid, wiz_id, context=context)
 
-        wiz.potencia_p1 = polissa.potencies_periode[0].potencia
-        wiz.potencia_p2 = polissa.potencies_periode[1].potencia
-        wiz.potencia_p3 = polissa.potencies_periode[2].potencia
-        wiz.potencia_p4 = polissa.potencies_periode[3].potencia
-        wiz.potencia_p5 = polissa.potencies_periode[4].potencia
-        wiz.potencia_p6 = polissa.potencies_periode[5].potencia
+        # De moment ho optimitzarem amb ints. TODO preguntar a EiE
+        vals = {
+            "potencia_p1": round(polissa.potencies_periode[0].potencia),
+            "potencia_p2": round(polissa.potencies_periode[1].potencia),
+            "potencia_p3": round(polissa.potencies_periode[2].potencia),
+            "potencia_p4": round(polissa.potencies_periode[3].potencia),
+            "potencia_p5": round(polissa.potencies_periode[4].potencia),
+            "potencia_p6": round(polissa.potencies_periode[5].potencia),
+        }
+        wiz.write(vals, context=context)
 
     def get_periods_power_price(self, cursor, uid, wiz_id, polissa_id, context=None):
         if context is None:
             context = {}
 
+        context['date'] = datetime.today().strftime("%Y-%m-%d")
+
         pol_obj = self.pool.get('giscedata.polissa')
         polissa = pol_obj.browse(cursor, uid, polissa_id, context=context)
-        wizard = self.browse(cursor, uid, wiz_id, context=context)
+        wiz = self.browse(cursor, uid, wiz_id, context=context)
 
-        wiz.preu_potencia_p1 = get_atr_price(
-            cursor, uid, polissa_id, 'P1', 'tp', context=context
-        )
-        wiz.preu_potencia_p2 = get_atr_price(
-            cursor, uid, polissa_id, 'P2', 'tp', context=context
-        )
-        wiz.preu_potencia_p3 = get_atr_price(
-            cursor, uid, polissa_id, 'P3', 'tp', context=context
-        )
-        wiz.preu_potencia_p4 = get_atr_price(
-            cursor, uid, polissa_id, 'P4', 'tp', context=context
-        )
-        wiz.preu_potencia_p5 = get_atr_price(
-            cursor, uid, polissa_id, 'P5', 'tp', context=context
-        )
-        wiz.preu_potencia_p6 = get_atr_price(
-            cursor, uid, polissa_id, 'P6', 'tp', context=context
-        )
+        vals = {
+            "preu_potencia_p1": get_atr_price(
+                cursor, uid, polissa, 'P1', 'tp', context=context
+            ),
+            "preu_potencia_p2": get_atr_price(
+                cursor, uid, polissa, 'P2', 'tp', context=context
+            ),
+            "preu_potencia_p3": get_atr_price(
+                cursor, uid, polissa, 'P3', 'tp', context=context
+            ),
+            "preu_potencia_p4": get_atr_price(
+                cursor, uid, polissa, 'P4', 'tp', context=context
+            ),
+            "preu_potencia_p5": get_atr_price(
+                cursor, uid, polissa, 'P5', 'tp', context=context
+            ),
+           "preu_potencia_p6": get_atr_price(
+                cursor, uid, polissa, 'P6', 'tp', context=context
+            ),
+        }
+        wiz.write(vals, context=context)
 
     def get_excess_price(self, cursor, uid, wiz_id, polissa_id, context=None):
         if context is None:
             context = {}
 
+        context['date'] = datetime.today().strftime("%Y-%m-%d")
+
         pol_obj = self.pool.get('giscedata.polissa')
         polissa = pol_obj.browse(cursor, uid, polissa_id, context=context)
-        wizard = self.browse(cursor, uid, wiz_id, context=context)
+        wiz = self.browse(cursor, uid, wiz_id, context=context)
 
-        wiz.preu_exces = get_atr_price(
-            cursor, uid, polissa_id, 'P1', 'epm', context=context
+        preu_exces = get_atr_price(
+            cursor, uid, polissa, 'P1', 'epm', context=context
         )
+        wiz.write({'preu_exces': preu_exces}, context=context)
 
     def get_optimization_required_data(self, cursor, uid, wiz_id, polissa_id, context=None):
         if context is None:
@@ -118,6 +134,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
         self.get_periods_power(cursor, uid, wiz_id, polissa_id, context=context)
         self.get_periods_power_price(cursor, uid, wiz_id, polissa_id, context=context)
         self.get_excess_price(cursor, uid, wiz_id, polissa_id, context=context)
+        self.get_maximeters_power(cursor, uid, wiz_id, polissa_id, context=context)
 
     def pass_maximeter_validation(self, cursor, uid, ids, context=None):
         pass
@@ -133,7 +150,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
             ids = [ids]
 
         active_ids = context.get("active_ids")
-        wizard = self.browse(cursor, uid, ids[0])
+        wiz = self.browse(cursor, uid, ids[0])
 
         for polissa_id in active_ids:
             self.get_optimization_required_data(
@@ -154,15 +171,15 @@ class WizardContractPowerOptimization(osv.osv_memory):
     def _compute_end_date(self, cr, uid, ids, field_name, arg, context={}):
         result = {}
         for wiz in self.browse(cr, uid, ids, context):
-            end_date = wiz.start_date + relativedelta(years=+1)
-            result[wiz.id] = end_ate
+            end_date = datetime.strptime(wiz.start_date, '%Y-%m-%d') + relativedelta(years=+1)
+            result[wiz.id] = datetime.strftime(end_date,'%Y-%m-%d')
         return result
 
     def _default_start_date(self, cursor, uid, context=None):
         if not context:
             context = {}
 
-        last_year = (datetime.now() - timedelta(year=1)).year
+        last_year = (datetime.now() - relativedelta(years=+1)).year
         start_date = '{}-01-01'.format(last_year)
         return start_date
 
@@ -183,14 +200,14 @@ class WizardContractPowerOptimization(osv.osv_memory):
         'potencia_p1': fields.integer('Potència P1'),
         'potencia_p2': fields.integer('Potència P2'),
         'potencia_p3': fields.integer('Potència P3'),
-        'potenica_p4': fields.integer('Potència P4'),
+        'potencia_p4': fields.integer('Potència P4'),
         'potencia_p5': fields.integer('Potència P5'),
         'potencia_p6': fields.integer('Potència P6'),
 
         'preu_potencia_p1': fields.float('Preu potència P1', digits=(16, 6)),
         'preu_potencia_p2': fields.float('Preu potència P2', digits=(16, 6)),
         'preu_potencia_p3': fields.float('Preu potència P3', digits=(16, 6)),
-        'preu_potenica_p4': fields.float('Preu potència P4', digits=(16, 6)),
+        'preu_potencia_p4': fields.float('Preu potència P4', digits=(16, 6)),
         'preu_potencia_p5': fields.float('Preu potència P5', digits=(16, 6)),
         'preu_potencia_p6': fields.float('Preu potència P6', digits=(16, 6)),
 
@@ -203,4 +220,4 @@ class WizardContractPowerOptimization(osv.osv_memory):
     }
 
 
-WizardCanviarContrasenya()
+WizardContractPowerOptimization()
