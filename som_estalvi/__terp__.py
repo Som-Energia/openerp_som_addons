@@ -14,7 +14,7 @@
     "demo_xml": [
     ],
     "update_xml": [
-        "wizard/wizard_power_contract_optimization_view.xml",
+        "wizard/wizard_contract_power_optimization_view.xml",
     ],
     "active": False,
     "installable": True
