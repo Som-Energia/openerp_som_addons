@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os, subprocess
 from osv import osv, fields
 from datetime import datetime, timedelta
 from giscedata_facturacio.report.utils import get_atr_price
@@ -23,11 +24,11 @@ class WizardContractPowerOptimization(osv.osv_memory):
             result = True
         return result
 
-    def check_output(*popenargs, **kwargs):
+    def check_output(self, data, *popenargs, **kwargs):
         if 'stdout' in kwargs:
             raise ValueError('stdout argument not allowed, it will be overridden.')
         process = subprocess.Popen(stdout=subprocess.PIPE, *popenargs, **kwargs)
-        output, unused_err = process.communicate()
+        output, unused_err = process.communicate(input=data)
         retcode = process.poll()
         if retcode:
             cmd = kwargs.get("args")
@@ -152,21 +153,23 @@ class WizardContractPowerOptimization(osv.osv_memory):
     def pass_maximeter_validation(self, cursor, uid, ids, context=None):
         pass
 
-    def serializate_wizard_data(serlf, cursor, uid, wiz_id, context=None):
+    def serializate_wizard_data(self, cursor, uid, wiz_id, context=None):
         if context is None:
             context = {}
-        data = self.browse(cursor, uid, wiz_id, context=context).read()
+        data = self.browse(cursor, uid, wiz_id, context=context).read()[0]
         data.pop('id')
         return data
 
-    def execute_optimization_script(self, cursor, uid, ids, context=None):
+    def execute_optimization_script(self, cursor, uid, wiz_id, polissa_id, context=None):
         if context is None:
             context = {}
+
+        import pudb; pu.db
 
         cfg_obj = self.pool.get("res.config")
 
         script_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../scripts/optimization.py")
-        data = self.serializate_wizard_data(self, cursor, uid, wiz_id, context=context)
+        data = self.serializate_wizard_data(cursor, uid, wiz_id, context=context)
 
         virtualenv = cfg_obj.get(
             cursor, uid,
@@ -176,10 +179,9 @@ class WizardContractPowerOptimization(osv.osv_memory):
         if not os.path.exists(virtualenv):
             raise Exception("Not virtualenv of massive importer found")
 
-        command = 'echo {} | {} {}'.format(data, virtualenv, script_path)
+        command = [virtualenv, script_path]
 
-        result = check_output(command, shell=shell)
-
+        result = self.check_output(data, command)
 
     def get_optimization(self, cursor, uid, ids, context=None):
         if not context:
