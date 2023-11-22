@@ -23,6 +23,19 @@ class WizardContractPowerOptimization(osv.osv_memory):
             result = True
         return result
 
+    def check_output(*popenargs, **kwargs):
+        if 'stdout' in kwargs:
+            raise ValueError('stdout argument not allowed, it will be overridden.')
+        process = subprocess.Popen(stdout=subprocess.PIPE, *popenargs, **kwargs)
+        output, unused_err = process.communicate()
+        retcode = process.poll()
+        if retcode:
+            cmd = kwargs.get("args")
+            if cmd is None:
+                cmd = popenargs[0]
+            raise subprocess.CalledProcessError(retcode, cmd)
+        return output
+
     def get_maximeters_power(self, cursor, uid, wiz_id, polissa_id, context=None):
         if context is None:
             context = {}
@@ -139,8 +152,34 @@ class WizardContractPowerOptimization(osv.osv_memory):
     def pass_maximeter_validation(self, cursor, uid, ids, context=None):
         pass
 
+    def serializate_wizard_data(serlf, cursor, uid, wiz_id, context=None):
+        if context is None:
+            context = {}
+        data = self.browse(cursor, uid, wiz_id, context=context).read()
+        data.pop('id')
+        return data
+
     def execute_optimization_script(self, cursor, uid, ids, context=None):
-        pass
+        if context is None:
+            context = {}
+
+        cfg_obj = self.pool.get("res.config")
+
+        script_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../scripts/optimization.py")
+        data = self.serializate_wizard_data(self, cursor, uid, wiz_id, context=context)
+
+        virtualenv = cfg_obj.get(
+            cursor, uid,
+            "som_crawlers_massive_importer_python_path",
+            "/home/erp/.virtualenvs/massive/bin/python",
+        )
+        if not os.path.exists(virtualenv):
+            raise Exception("Not virtualenv of massive importer found")
+
+        command = 'echo {} | {} {}'.format(data, virtualenv, script_path)
+
+        result = check_output(command, shell=shell)
+
 
     def get_optimization(self, cursor, uid, ids, context=None):
         if not context:
