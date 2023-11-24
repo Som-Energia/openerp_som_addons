@@ -7,17 +7,18 @@
     "version": "2.107.5",
     "author": "GISCE",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "base",
         "giscedata_polissa",
         "giscedata_facturacio_comer",
         "giscedata_polissa_condicions_generals",
         "giscedata_facturacio_indexada_som",
         "som_leads_polissa",
+        "som_infoenergia",
     ],
     "init_xml": [],
     "demo_xml": [],
-    "update_xml":[
+    "update_xml": [
         "giscedata_polissa_condicions_generals_data.xml",
         "giscedata_polissa_condicions_generals_report.xml"
     ],
