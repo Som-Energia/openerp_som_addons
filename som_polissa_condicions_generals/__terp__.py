@@ -20,7 +20,8 @@
     "demo_xml": [],
     "update_xml": [
         "giscedata_polissa_condicions_generals_data.xml",
-        "giscedata_polissa_condicions_generals_report.xml"
+        "giscedata_polissa_condicions_generals_report.xml",
+        "security/ir.model.access.csv",
     ],
     "active": False,
     "installable": True
