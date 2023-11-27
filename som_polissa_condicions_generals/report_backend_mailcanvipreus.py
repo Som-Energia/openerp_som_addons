@@ -20,6 +20,11 @@ class ReportBackendMailcanvipreus(ReportBackend):
             'lang': env.polissa_id.titular.lang,
             'nom_titular': self.getPartnerName(cursor, uid, env),
             'te_gkwh': env.polissa_id.te_assignacio_gkwh,
+            'preus_antics': self.get_preus(cursor, uid, env.polissa_id, with_taxes=False, context + {'data': date.today().strftime('%Y-%m-%d')}),
+            'preus_nous': self.get_preus(cursor, uid, env.polissa_id, with_taxes=False, context + {'data': (date.today() + timedelta(days=50)).strftime('%Y-%m-%d')}),
+            'preus_antics_imp': self.get_preus(cursor, uid, env.polissa_id, with_taxes=True, context + {'data': date.today().strftime('%Y-%m-%d')}),
+            'preus_nous_imp': self.get_preus(cursor, uid, env.polissa_id, with_taxes=True, context + {'data': (date.today() + timedelta(days=50)).strftime('%Y-%m-%d')}),
+
         }
         data.update(self.getTarifaCorreu(cursor, uid, env, context))
         return data
@@ -99,6 +104,19 @@ class ReportBackendMailcanvipreus(ReportBackend):
         for pot in pol.potencies_periode:
             potencies[pot.periode_id.name] = pot.potencia
         return potencies
+
+    def get_preus(self, cursor, uid, pol, with_taxes=False, ctx=None):
+        res = {
+            'tp': sorted(pol.tarifa.get_periodes('tp', context=ctx).keys()),
+            'te': sorted(pol.tarifa.get_periodes('te', context=ctx).keys()),
+        }
+        for terme, values in res.items():
+            for periode in values:
+                preu_periode = get_atr_price(
+                    cursor, uid, pol, periode, terme, ctx, with_taxes=False
+                )[0]
+                res[terme][periode] = preu_periode
+        return res
 
     def calcularPreuTotal(self, cursor, uid, polissa_id, consums, potencies, tarifa, afegir_maj, bo_social_separat, date=None):
         ctx = {}
@@ -197,11 +215,9 @@ class ReportBackendMailcanvipreus(ReportBackend):
         tarifa = env.polissa_id.tarifa.name
         consums = ''
         origen = ''
-        quintextes = ''
         if env.extra_text:
             consums = eval(env.extra_text)
             origen = consums['origen']
-            quintextes = consums['origen']
             del consums['origen']
             consum_total = sum(consums.values())
         elif any([env.polissa_id.cups.conany_kwh_p1, env.polissa_id.cups.conany_kwh_p2, env.polissa_id.cups.conany_kwh_p3]):
