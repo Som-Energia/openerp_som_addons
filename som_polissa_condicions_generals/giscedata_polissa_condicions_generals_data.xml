@@ -30,5 +30,23 @@
             <field name="tax_src_id" model="account.tax" search="[('name','=','IVA 21%')]" />
             <field name="tax_dest_id" model="account.tax" search="[('name','=','IVA 5%')]"  />
         </record>
+
+        <record model="poweremail.templates" id="canviPreusBackend">
+            <field name="name">Correu canvi preus gener 2024</field>
+            <field name="object_name" model="ir.model" search="[('name', '=', 'som.enviament.massiu')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">som.enviament.massiu</field>
+            <field name="def_to">${object.polissa_id.titular.www_email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Al gener actualitzarem les tarifes d’electricitat</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.polissa_id.titular.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('email_id','=', 'info@somenergia.coop')]"/>
+            <field name="def_body_text"></field>
+        </record>
     </data>
 </openerp>
