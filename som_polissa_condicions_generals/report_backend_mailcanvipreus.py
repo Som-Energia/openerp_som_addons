@@ -465,10 +465,11 @@ class ReportBackendMailcanvipreus(ReportBackend):
             'indexada': False,
             'periodes': False,
         }
+        mode_facturacio = env.polissa_id.mode_facturacio
         tarifa = env.polissa_id.tarifa.name
         potencies = self.getPotenciesPolissa(cursor, uid, env.polissa_id)
 
-        if 'indexada' in tarifa:
+        if 'index' in mode_facturacio:
             if '2.0TD' in tarifa:
                 if self.esCanaries(cursor, uid, env):
                     data['Indexada20TDCanaries'] = True
