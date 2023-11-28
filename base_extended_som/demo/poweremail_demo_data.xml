@@ -2,7 +2,7 @@
 <openerp>
     <data noupdate="1">
         <record model="poweremail.core_accounts" id="info_energia_from_email">
-            <field name="email_id">fiscal@somenergia.coop</field>
+            <field name="email_id">info@somenergia.coop</field>
             <field name="company">yes</field>
             <field name="smtpserver">test.com</field>
             <field name="send_pref">html</field>
