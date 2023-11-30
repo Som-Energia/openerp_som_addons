@@ -146,6 +146,15 @@ class WizardContractPowerOptimization(osv.osv_memory):
         )
         wiz.write({'excess_price': excess_price}, context=context)
 
+    def button_get_optimization_required_data(self, cursor, uid, wiz_id, context=None):
+        if context is None:
+            context = {}
+
+        if len(context['active_ids']) == 1:
+            self.get_optimization_required_data(cursor, uid, wiz_id[0], context['active_ids'][0], context=context)
+        else:
+            raise  osv.except_osv(_('Error !'), _('Aquest boto només funciona per una polissa'))
+
     def get_optimization_required_data(self, cursor, uid, wiz_id, polissa_id, context=None):
         if context is None:
             context = {}
@@ -183,6 +192,15 @@ class WizardContractPowerOptimization(osv.osv_memory):
         data['mzn_path'] = mzn_path
         json_data = json.dumps(data)
         return json_data
+
+    def button_execute_optimization_script(self, cursor, uid, wiz_id, context=None):
+        if context is None:
+            context = {}
+
+        if len(context['active_ids']) == 1:
+            self.execute_optimization_script(cursor, uid, wiz_id[0], context['active_ids'][0], context=context)
+        else:
+            raise  osv.except_osv(_('Error !'), _('Aquest boto només funciona per una polissa'))
 
     def execute_optimization_script(self, cursor, uid, wiz_id, polissa_id, context=None):
         if context is None:
@@ -228,6 +246,12 @@ class WizardContractPowerOptimization(osv.osv_memory):
 
         return {"type": "ir.actions.act_window_close"}
 
+    def generate_optimization_as_csv(self, cursor, uid, wiz_id, context=None):
+        wizard = self.browse(cursor, uid, wiz_id, context=context)
+
+        wizard.write({'report': base64.b64encode(result), 'filename_report': "_optim"+".csv"})
+
+
     def _default_state(self, cursor, uid, context=None):
         if not context:
             context = {}
@@ -237,12 +261,21 @@ class WizardContractPowerOptimization(osv.osv_memory):
                 state = 'multiple'
         return state
 
-    def _compute_end_date(self, cr, uid, ids, field_name, arg, context={}):
+    def _compute_end_date(self, cursor, uid, ids, field_name, arg, context={}):
         result = {}
         for wiz in self.browse(cr, uid, ids, context):
             end_date = datetime.strptime(wiz.start_date, '%Y-%m-%d') + relativedelta(years=+1)
             result[wiz.id] = datetime.strftime(end_date,'%Y-%m-%d')
         return result
+
+    def onchange_start_date(self, cursor, uid, ids, start_date, context={}):
+        res = {'value': {}, 'domain': {}, 'warning': {}}
+
+        if start_date:
+            year_end_date = (datetime.strptime(start_date, '%Y-%m-%d') + relativedelta(years=+1)).year
+            end_date = '{}-01-01'.format(year_end_date)
+            res['value'].update({'end_date': end_date})
+        return res
 
     def _default_start_date(self, cursor, uid, context=None):
         if not context:
@@ -251,6 +284,14 @@ class WizardContractPowerOptimization(osv.osv_memory):
         last_year = (datetime.now() - relativedelta(years=+1)).year
         start_date = '{}-01-01'.format(last_year)
         return start_date
+
+    def _default_end_date(self, cursor, uid, context=None):
+        if not context:
+            context = {}
+
+        last_year = datetime.now().year
+        end_date = '{}-01-01'.format(last_year)
+        return end_date
 
     _columns = {
         'state': fields.selection(
@@ -263,8 +304,8 @@ class WizardContractPowerOptimization(osv.osv_memory):
 
         'excess_price': fields.float('Preu excés maxímetre'),
 
-        'start_date': fields.datetime('Data d\'inici'),
-        'end_date': fields.function(_compute_end_date, method=True, string='Data final', type='date'),
+        'start_date': fields.date('Data inici'),
+        'end_date': fields.date('Data final'),
 
         'power_p1': fields.integer('Potència P1'),
         'power_p2': fields.integer('Potència P2'),
@@ -280,12 +321,16 @@ class WizardContractPowerOptimization(osv.osv_memory):
         'power_price_p5': fields.float('Preu potència P5', digits=(16, 6)),
         'power_price_p6': fields.float('Preu potència P6', digits=(16, 6)),
 
-        'maximeters_powers': fields.text('Potències dels maxímetres')
+        'maximeters_powers': fields.text('Potències dels maxímetres'),
+
+        'report': fields.binary('Resultat'),
+        'filename_report': fields.char('Nom fitxer exportat', size=256),
     }
 
     _defaults = {
         'state': _default_state,
-        'start_date': _default_start_date
+        'start_date': _default_start_date,
+        'end_date': _default_end_date
     }
 
 
