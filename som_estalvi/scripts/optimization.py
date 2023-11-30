@@ -6,7 +6,7 @@ def optimize(dades, mzn_path):
 
     solver_name = "coin-bc"
     solver = minizinc.Solver.lookup(solver_name)
-    inst = minizinc.Instance(solver, self.model)
+    inst = minizinc.Instance(solver, model)
 
     for k,v in dades.items():
         inst[k] = v

@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from giscedata_facturacio.report.utils import get_atr_price
 from dateutil.relativedelta import relativedelta
 from collections import OrderedDict
+import json
 
 
 class WizardContractPowerOptimization(osv.osv_memory):
@@ -167,7 +168,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
             'excess_price': values['excess_price'][0],
             'maximeters_powers': [],
             'contract61': False,
-            #'power_p6': int(values['power_p6']),
+            'power_p6': int(values['power_p6']),
         }
 
         for k,v in sorted(values.items()):
