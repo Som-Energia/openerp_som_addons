@@ -27,7 +27,7 @@ class GiscedataPolissa(osv.osv):
         factura_obj = self.pool.get('giscedata.facturacio.factura')
         factura_ids = factura_obj.search(cursor, uid, [
             ('polissa_id', '=', ids[0]),
-            ('date_inici', '>=', data_inici_origen),
+            ('data_inici', '>=', data_inici_origen),
             ('data_inici', '<=', data_final),
             ('state', 'in', ('paid', 'open')),
             ('type', 'in', ('out_invoice', 'out_refund')),
