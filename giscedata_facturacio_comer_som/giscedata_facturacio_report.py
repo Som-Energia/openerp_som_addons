@@ -2891,9 +2891,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data = {
             'is_visible': True,
             'lang': fact.lang_partner.lower(),
-            'link_qr': qr_data['url'] if max_potencies_demandades else 'https://comparador.cnmc.gob.es/',
+            'link_qr': qr_data['url'] if qr_data['url'] else 'https://comparador.cnmc.gob.es/',
             'has_gkwh': te_gkwh(fact),
-            'qr_image': qr_data['qr'] if max_potencies_demandades else '',
+            'qr_image': qr_data['qr'],
         }
         return data
 
