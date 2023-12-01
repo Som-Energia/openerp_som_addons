@@ -144,8 +144,8 @@ class GiscedataPolissaInfoenergia(osv.osv):
 
         conany = False
         try:
-            data = rprt_obj.get_components_data(cursor, uid, [ids[0]])
-            conany = data[data.keys()[0]].energy_consumption_graphic_td.total_any
+            data = rprt_obj.get_conany_kwh_energy_consumption_graphic_td_data(cursor, uid, ids[0])
+            conany = data['conany_kwh']
         except Exception:
             pass
 
