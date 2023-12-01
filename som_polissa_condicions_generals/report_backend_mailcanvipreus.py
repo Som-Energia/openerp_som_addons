@@ -122,6 +122,11 @@ class ReportBackendMailcanvipreus(ReportBackend):
             'preus_antics_imp': preus_antics_imp,
             'preus_nous_imp': preus_nous_imp,
             'impostos_str': self.getImpostosString(env.polissa_id.fiscal_position_id),
+            'modcon': (
+                env.polissa_id.modcontractuals_ids[0].state == 'pendent'
+                and env.polissa_id.mode_facturacio != env.polissa_id.modcontractuals_ids[0].mode_facturacio
+                and env.polissa_id.modcontractuals_ids[0].mode_facturacio
+            )
         }
 
         if data['te_gkwh']:
@@ -136,6 +141,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
         data.update(self.getEstimacioData(cursor, uid, env))
         data.update(self.getTarifaCorreu(cursor, uid, env, context))
+        data.update(self.getPreuCompensacioExcedents(cursor, uid, env, context))
         return data
 
     def get_lang(self, cursor, uid, record_id, context=None):
@@ -233,10 +239,10 @@ class ReportBackendMailcanvipreus(ReportBackend):
             context = {}
 
         result = {}
-
         periods = {
             'tp': sorted(pol.tarifa.get_periodes('tp', context=context).keys()),
             'te': sorted(pol.tarifa.get_periodes('te', context=context).keys()),
+            # 'ac': [sorted(pol.tarifa.get_periodes('te', context=context).keys())[0]], # not working for non auto pol
         }
         for terme, values in periods.items():
             result[terme] = {}
@@ -282,6 +288,22 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
         return estimacions[tarifa][periode]
 
+    def getPreuCompensacioExcedents(self, cursor, uid, env, context):
+        preus_auto = {
+            'auto': {
+                'nous': {
+                    'amb_impostos': 0.09,
+                    'sense_impostos': 0.07,
+                },
+                'vells': {
+                    'amb_impostos': 0.17,
+                    'sense_impostos': 0.13,
+                }
+            }
+        }
+
+        return preus_auto
+
     def calcularPreuTotal(self, cursor, uid, polissa_id, consums, potencies, tarifa, afegir_maj, bo_social_separat, date=None, origen=''):
         ctx = {}
         if date:
@@ -302,9 +324,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
                 )[0]
                 if afegir_maj and terme == 'te':
                     preu_periode += maj_price
-                preu_periode = 0
                 if terme == 'te' and origen == 'indexada':
-                    preu_periode = self.preusIndexada(cursor, uid, tarifa, periode)
+                    preu_periode = self.preusEstimatsIndexada(cursor, uid, tarifa, periode)
                 imports += preu_periode * quantity
         if bo_social_separat:
             imports += bo_social_price
@@ -392,12 +413,13 @@ class ReportBackendMailcanvipreus(ReportBackend):
         potencies = self.getPotenciesPolissa(cursor, uid, env.polissa_id)
 
         tarifa = env.polissa_id.tarifa.name
+        mode_facturacio = env.polissa_id.mode_facturacio
         consums = ''
         origen = ''
-        if 'indexada' in tarifa:
+        if 'index' in mode_facturacio:
             origen = 'indexada'
             consums = self.getConanyDict(cursor, uid, env)
-            consum_total = env.polissa_id.cups.conany_kwh * PREU_ENERGIA_INDEXADA
+            consum_total = env.polissa_id.cups.conany_kwh
         elif env.extra_text:
             consums = eval(env.extra_text)
             origen = consums['origen']
@@ -413,22 +435,17 @@ class ReportBackendMailcanvipreus(ReportBackend):
             origen = 'estadistic'
 
         preu_vell = self.calcularPreuTotal(cursor, uid, env.polissa_id, consums, potencies, tarifa, False,
-                                           False, date.today().strftime("%Y-%m-%d"), origen)
+                                           True, date.today().strftime("%Y-%m-%d"), origen)
         preu_nou = self.calcularPreuTotal(cursor, uid, env.polissa_id,
-                                          consums, potencies, tarifa, False, False, PRICE_CHANGE_DATE, origen)
+                                          consums, potencies, tarifa, False, True, PRICE_CHANGE_DATE, origen)
 
         preu_vell_imp_int = self.calcularImpostos(
             preu_vell, env.polissa_id.fiscal_position_id, potencies)
         preu_nou_imp_int = self.calcularImpostos(
             preu_nou, env.polissa_id.fiscal_position_id, potencies)
 
-        increment_total = self.formatNumber(abs(preu_nou_imp_int - preu_vell_imp_int))
-        increment_mensual = abs((preu_nou_imp_int - preu_vell_imp_int) / 12)
-
         preu_vell_imp = self.formatNumber(preu_vell_imp_int)
         preu_nou_imp = self.formatNumber(preu_nou_imp_int)
-
-        consum_total = self.formatNumber(round(consum_total / 100.0) * 100)
 
         return {
             'origen': origen,
