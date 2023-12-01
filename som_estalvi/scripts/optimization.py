@@ -12,7 +12,7 @@ def optimize(dades, mzn_path):
         inst[k] = v
 
     res = inst.solve()
-    print (res.solution)
+    print(res.solution)
 
 # Main program optimize
 if __name__ == "__main__":
