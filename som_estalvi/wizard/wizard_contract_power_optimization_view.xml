@@ -38,23 +38,21 @@
                             </page>
                         </notebook>
                         <button type="object" string="Obtenir informació de la pòlissa" name="button_get_optimization_required_data" icon="gtk-refresh" colspan="4"/>
-                        <button type="object" string="Executar optimització" name="execute_optimization_script" icon="gtk-ok" colspan="4"/>
+                        <button type="object" string="Executar optimització" name="button_execute_optimization_script" icon="gtk-ok" colspan="4"/>
                     </group>
                     <group colspan="1" attrs="{'invisible': [('state', '!=', 'multiple')]}" >
                         <label string="Calcular optimització per a tots els contractes seleccionats" colspan="4"/>
-                        <button type="object" string="Calcular" name="execute_optimization_script" icon="gtk-ok" colspan="4"/>
+                        <button type="object" string="Calcular" name="get_optimization" icon="gtk-ok" colspan="4"/>
                     </group>
                     <group colspan="1" attrs="{'invisible': [('state', '!=', 'result')]}" >
-                        <!--
                         <field name="filename_report"/>
                         <field name="report" filename="filename_report" readonly="1"/>
-                        -->
                     </group>
                </form>
             </field>
         </record>
         <record id="action_wizard_contract_power_optimization_form" model="ir.actions.act_window">
-            <field name="name">Optimització de potències</field>
+            <field name="name">Optimització de potències maximetre</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wizard.contract.power.optimization</field>
             <field name="view_type">form</field>
@@ -65,7 +63,7 @@
         </record>
         <record id="value_wizard_contract_power_optimization_form" model="ir.values">
             <field name="object" eval="1"/>
-            <field name="name">Optimització de potències</field>
+            <field name="name">Optimització de potències maximetre</field>
             <field name="key2">client_action_multi</field>
             <field name="key">action</field>
             <field name="model">giscedata.polissa</field>
