@@ -11,7 +11,7 @@ array[1..nPeriodes] of var 1..max_power: potenciaOptima;
 array[1..12] of int: diesMes = [31,29,31,30,31,30,31,31,30,31,30,31];
 array[1..nMesos,1..nPeriodes] of var 0..max(maximeters_powers)*max(power_price): maximetreMesPeriode;
 array[1..nPeriodes] of var 0..max(maximeters_powers)*max(power_price): totalMaximetres;
-array[1..nPeriodes] of var 0..max(maximeters_powers)*max(power_price): totalPotencies;
+array[1..nPeriodes] of var 0..max_power*max(power_price): totalPotencies;
 var float: totalCost = sum(totalMaximetres) + sum(totalPotencies);
 
 constraint power_p6 <= potenciaOptima[6];
