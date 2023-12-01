@@ -1489,6 +1489,52 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         return data
 
+
+    def get_conany_kwh_energy_consumption_graphic_td_data(self, cursor, uid, fact_id, context=None):
+        """
+        Simplification to avoid generate all the invoice data to get the year's kwh
+        """
+        fac_obj = self.pool.get('giscedata.facturacio.factura')
+        fact = fac_obj.browse(cursor, uid, fact_id, context)
+        (historic, historic_js) = self.get_historic_data(fact)
+        mes_any_inicial = (datetime.strptime(fact.data_inici,'%Y-%m-%d') - timedelta(days=365)).strftime("%Y/%m")
+
+        conany_kwh = 0.0
+        conany_kwh_p1 = 0.0
+        conany_kwh_p2 = 0.0
+        conany_kwh_p3 = 0.0
+        conany_kwh_p4 = 0.0
+        conany_kwh_p5 = 0.0
+        conany_kwh_p6 = 0.0
+
+        for h in historic:
+            if h['mes'] > mes_any_inicial:
+                conany_kwh += h['consum']
+                if h['periode'] == 'P1':
+                    conany_kwh_p1 += h['consum']
+                elif h['periode'] == 'P2':
+                    conany_kwh_p2 += h['consum']
+                elif h['periode'] == 'P3':
+                    conany_kwh_p3 += h['consum']
+                elif h['periode'] == 'P4':
+                    conany_kwh_p4 += h['consum']
+                elif h['periode'] == 'P5':
+                    conany_kwh_p5 += h['consum']
+                elif h['periode'] == 'P6':
+                    conany_kwh_p7 += h['consum']
+
+        data = {
+            'conany_kwh': conany_kwh,
+            'conany_kwh_p1': conany_kwh_p1,
+            'conany_kwh_p2': conany_kwh_p2,
+            'conany_kwh_p3': conany_kwh_p3,
+            'conany_kwh_p4': conany_kwh_p4,
+            'conany_kwh_p5': conany_kwh_p5,
+            'conany_kwh_p6': conany_kwh_p6,
+        }
+        return data
+
+
     def get_component_energy_consumption_graphic_td_data(self, fact, pol):
         """
         return a dictionary with data needes for the consumption graphic and related text
