@@ -33,7 +33,9 @@
                                 <field name="excess_price"/>
                             </page>
                             <page string="Potencies maximetres">
-                                <separator string="Maxímetres de 12 mesos" colspan="4"/>
+                               <separator string="Nombre de mesos estimats" colspan="4"/>
+                               <field nolabel="1" name="nEstimates"/>
+                               <separator string="Maxímetres de 12 mesos" colspan="4"/>
                                 <field nolabel="1" name="maximeters_powers"/>
                             </page>
                         </notebook>
