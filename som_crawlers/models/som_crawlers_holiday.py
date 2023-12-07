@@ -15,8 +15,8 @@ class SomCrawlersHoliday(osv.osv):
         ree_calendar = REECalendar()
 
         return (
-            ree_calendar.is_working_day(date)
-            and date.weekday() in [0, 1, 2, 3, 4]
+            ree_calendar.is_working_day(datetime.strptime(date, "%Y-%m-%d"))
+            and datetime.strptime(date, "%Y-%m-%d").weekday() in [0, 1, 2, 3, 4]
             and not self.search(cursor, uid, [("date", "=", date)])
         )
 
