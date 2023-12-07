@@ -348,6 +348,12 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="scq_conf"/>
         </record>
+        <!-- Escuer -->
+        <record model="som.crawlers.task" id="descarregar_escuer">
+            <field name="name">Descarregar Escuer</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="escuer_conf"/>
+        </record>
         <!-- TASQUES D'EXPORTACIÓ -->
         <record model="som.crawlers.task" id="carregar_anselmo">
             <field name="name">Carregar Anselmo</field>
