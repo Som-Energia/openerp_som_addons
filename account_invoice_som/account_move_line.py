@@ -11,7 +11,6 @@ class AccountMoveLine(osv.osv):
 
 
     def _check_different_date_and_period(self, cursor, uid, ids, context=None):
-        import pudb; pu.db
         return_value = super(AccountMoveLine, self)._check_different_date_and_period(
             cursor, uid, ids
         )
@@ -50,7 +49,6 @@ class AccountMove(osv.osv):
         return False
 
     def _check_different_date_and_period(self, cursor, uid, ids, context={}):
-        import pudb; pu.db
         return_value = super(AccountMove, self)._check_different_date_and_period(
             cursor, uid, ids
         )
