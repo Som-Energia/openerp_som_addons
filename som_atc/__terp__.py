@@ -5,7 +5,7 @@
     * Funcionalitats sobre casos d'atencio al client
     """,
     "version": "0-dev",
-    "author": "GISCE",
+    "author": "SomEnergia",
     "category": "Master",
     "depends": [
         "giscedata_atc_switching",
