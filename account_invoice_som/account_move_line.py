@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-from osv import osv, fields
-from datetime import datetime
-from tools.translate import _
 from osv import osv
 from osv.orm import OnlyFieldsConstraint
 
@@ -9,7 +6,6 @@ from osv.orm import OnlyFieldsConstraint
 class AccountMoveLine(osv.osv):
     _name = 'account.move.line'
     _inherit = 'account.move.line'
-
 
     def _check_different_date_and_period(self, cursor, uid, ids, context=None):
         return_value = super(AccountMoveLine, self)._check_different_date_and_period(
@@ -25,6 +21,7 @@ class AccountMoveLine(osv.osv):
                              'You can not create move line with different period and date',
                              ['date', 'period_id'])
     ]
+
 
 AccountMoveLine()
 
