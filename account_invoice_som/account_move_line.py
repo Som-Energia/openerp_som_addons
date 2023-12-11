@@ -21,8 +21,8 @@ class AccountMoveLine(osv.osv):
 
     _constraints = [
         OnlyFieldsConstraint(_check_different_date_and_period,
-                             'You can not create move line with different period and date',
-                             ['date', 'period_id'])
+                            'You can not create move line with different period and date',
+                            ['date', 'period_id'])
     ]
 
 AccountMoveLine()
@@ -34,7 +34,8 @@ class AccountMove(osv.osv):
 
     def _avoid_constraint(self, cursor, uid, context):
         try:
-            if context.get('active_id',False) and context.get('som_from_payment_order',False):
+            if context.get('active_id',False) and \
+            context.get('som_from_payment_order',False):
                 payment_order_obj = self.pool.get('payment.order')
                 payment_oder = payment_order_obj.browse(
                     cursor, uid, context.get('active_id')
@@ -58,8 +59,8 @@ class AccountMove(osv.osv):
 
     _constraints = [
         OnlyFieldsConstraint(_check_different_date_and_period,
-                             'You can not create move line with different period and date',
-                             ['date', 'period_id'])
+                            'You can not create move line with different period and date',
+                            ['date', 'period_id'])
     ]
 
 AccountMove()
