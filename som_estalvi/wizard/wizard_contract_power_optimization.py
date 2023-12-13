@@ -71,9 +71,10 @@ class WizardContractPowerOptimization(osv.osv_memory):
         contracted_power_price.append(wiz.float_p3 * wiz.power_price_p3)
         contracted_power_price.append(wiz.float_p4 * wiz.power_price_p4)
         contracted_power_price.append(wiz.float_p5 * wiz.power_price_p5)
-        contracted_power_price.append( wiz.float_p6 * wiz.power_price_p6)
+        contracted_power_price.append(wiz.float_p6 * wiz.power_price_p6)
 
         total_maximeter_price = []
+        total_by_period = {'P1': 0, 'P2': 0, 'P3': 0, 'P4': 0, 'P5': 0, 'P6': 0}
 
         maximeters_powers = json.loads(wiz.maximeters_powers)
         for date in maximeters_powers:
@@ -84,30 +85,36 @@ class WizardContractPowerOptimization(osv.osv_memory):
                     total_maximeter_price.append(self._calculate_maximeter_excess_price(
                         cursor, uid, wiz_id, month, maximeter_period_month, wiz.float_p1, context=context
                     ))
+                    total_by_period['P1'] += total_maximeter_price[-1]
                 elif period == 'P2':
                     total_maximeter_price.append(self._calculate_maximeter_excess_price(
                         cursor, uid, wiz_id, month, maximeter_period_month, wiz.float_p2, context=context
                     ))
+                    total_by_period['P2'] += total_maximeter_price[-1]
                 elif period == 'P3':
                     total_maximeter_price.append(self._calculate_maximeter_excess_price(
                         cursor, uid, wiz_id, month, maximeter_period_month, wiz.float_p3, context=context
                     ))
+                    total_by_period['P3'] += total_maximeter_price[-1]
                 elif period == 'P4':
                     total_maximeter_price.append(self._calculate_maximeter_excess_price(
                         cursor, uid, wiz_id, month, maximeter_period_month, wiz.float_p4, context=context
                     ))
+                    total_by_period['P4'] += total_maximeter_price[-1]
                 elif period == 'P5':
                     total_maximeter_price.append(self._calculate_maximeter_excess_price(
                         cursor, uid, wiz_id, month, maximeter_period_month, wiz.float_p5, context=context
                     ))
+                    total_by_period['P5'] += total_maximeter_price[-1]
                 elif period == 'P6':
                     total_maximeter_price.append(self._calculate_maximeter_excess_price(
                         cursor, uid, wiz_id, month, maximeter_period_month, wiz.float_p6, context=context
                     ))
+                    total_by_period['P6'] += total_maximeter_price[-1]
 
             result = sum(total_maximeter_price) + sum(contracted_power_price)
             wiz.write({'current_cost' : result}, context=context)
-        return total_maximeter_price, contracted_power_price
+        return total_by_period, contracted_power_price
 
     def _calculate_number_of_estimates(self, cursor, uid, wiz_id, maximeters_float, context=None):
         if context is None:
@@ -323,7 +330,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
         else:
             raise  osv.except_osv(_('Error !'), _('Aquest boto només funciona per una polissa'))
 
-    def beautify_output(self, cursor, uid, wiz_id, output, context=None):
+    def beautify_output(self, cursor, uid, wiz_id, polissa_id, output, context=None):
         if context is None:
             context = {}
 
@@ -347,6 +354,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
         result['total_cost'] = optimization['totalCost']
         result['nEstimates'] = wiz.nEstimates
         result['current_cost'] = wiz.current_cost
+        result['polissa_id'] = polissa_id
 
         return result
 
@@ -372,7 +380,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
         command = ['{} {}'.format(virtualenv, script_path)]
 
         output = self.check_output(data, command)
-        result = self.beautify_output(cursor, uid, wiz_id, output, context=context)
+        result = self.beautify_output(cursor, uid, wiz_id, polissa_id, output, context=context)
         return result
 
     def get_optimization(self, cursor, uid, ids, context=None):
@@ -406,38 +414,39 @@ class WizardContractPowerOptimization(osv.osv_memory):
             context = {}
 
         wizard = self.browse(cursor, uid, wiz_id, context=context)
-        total_maximeter_price, contracted_power_price = self._calculate_current_cost(cursor, uid, wiz_id, context=context)
 
         csv_file = StringIO()
         writer = csv.writer(csv_file, quoting=csv.QUOTE_NONNUMERIC)
-        writer.writerow(HEADER)
         for optimization in optimizations:
+            writer.writerow(HEADER)
+            self.get_optimization_required_data(
+                cursor, uid, wizard.id, optimization['polissa_id'], context=context
+            )
+            total_maximeter_price, contracted_power_price = self._calculate_current_cost(cursor, uid, wiz_id, context=context)
             row = []
             for value in HEADER:
                 row.append(optimization[value])
             writer.writerow(row)
 
+            writer.writerow(HEADER_2)
+            row = []
 
-        writer.writerow(HEADER_2)
-        row = []
-        for optimization in optimizations:
-            for value in HEADER_2[:2]:
-                row.append(optimization[value])
+            row.append(optimization['nEstimates'])
+            row.append(wizard.current_cost)
+            row.append(wizard.float_p1)
+            row.append(wizard.float_p2)
+            row.append(wizard.float_p3)
+            row.append(wizard.float_p4)
+            row.append(wizard.float_p5)
+            row.append(wizard.float_p6)
 
-        row.append(wizard.float_p1)
-        row.append(wizard.float_p2)
-        row.append(wizard.float_p3)
-        row.append(wizard.float_p4)
-        row.append(wizard.float_p5)
-        row.append(wizard.float_p6)
-
-        for maxi in total_maximeter_price:
-            for value in HEADER_2[8:14]:
+            for period, maxi in sorted(total_maximeter_price.items()):
                 row.append(maxi)
 
-        for price in contracted_power_price:
-            for value in HEADER_2[14:]:
+            for price in contracted_power_price:
                 row.append(price)
+
+            writer.writerow(row)
 
         res_file = csv_file.getvalue()
 
