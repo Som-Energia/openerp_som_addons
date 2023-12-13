@@ -1521,7 +1521,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 elif h['periode'] == 'P5':
                     conany_kwh_p5 += h['consum']
                 elif h['periode'] == 'P6':
-                    conany_kwh_p7 += h['consum']
+                    conany_kwh_p6 += h['consum']
 
         data = {
             'conany_kwh': conany_kwh,
