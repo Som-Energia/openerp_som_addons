@@ -55,7 +55,6 @@ class AccountMove(osv.osv):
             )
         return return_value
 
-
     _constraints = [
         OnlyFieldsConstraint(_check_different_date_and_period,
                              'You can not create move line with different period and date',
