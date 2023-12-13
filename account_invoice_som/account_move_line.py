@@ -7,13 +7,13 @@ class AccountMoveLine(osv.osv):
     _name = 'account.move.line'
     _inherit = 'account.move.line'
 
-    def _check_different_date_and_period(self, cursor, uid, ids, context=None):
-        return_value = super(AccountMoveLine, self)._check_different_date_and_period(
-            cursor, uid, ids
-        )
+    def _check_different_date_and_period(self, cursor, uid, ids, context={}):
+        return_value = True
         am_obj = self.pool.get('account.move')
-        if am_obj._avoid_constraint(cursor, uid, context):
-            return_value = True
+        if not am_obj._avoid_constraint(cursor, uid, context):
+            return_value = super(AccountMoveLine, self)._check_different_date_and_period(
+                cursor, uid, ids
+            )
         return return_value
 
     _constraints = [
@@ -48,12 +48,13 @@ class AccountMove(osv.osv):
         return False
 
     def _check_different_date_and_period(self, cursor, uid, ids, context={}):
-        return_value = super(AccountMove, self)._check_different_date_and_period(
-            cursor, uid, ids
-        )
-        if self._avoid_constraint(cursor, uid, context):
-            return_value = True
+        return_value = True
+        if not self._avoid_constraint(cursor, uid, context):
+            return_value = super(AccountMove, self)._check_different_date_and_period(
+                cursor, uid, ids
+            )
         return return_value
+
 
     _constraints = [
         OnlyFieldsConstraint(_check_different_date_and_period,
