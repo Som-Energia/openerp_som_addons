@@ -486,6 +486,55 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
         self.assertEqual(codi_solicitud_old, codi_solicitud_ref)
 
 
+    def test_create_ATC_R1_006_from_polissa_via_wizard__from_atc(self):
+        atc_obj = self.get_model("giscedata.atc")
+
+        ir_obj = self.get_model("ir.model.data")
+        polissa_id = ir_obj.get_object_reference(
+            self.cursor, self.uid, "giscedata_polissa", "polissa_0002"
+        )[1]
+
+        par1_id = self.search_in("res.partner", [("name", "ilike", "Tiny sprl")])
+        par2_id = self.search_in("res.partner", [("name", "ilike", "ASUStek")])
+        par_obj = self.get_model("res.partner")
+        par_obj.write(self.cursor, self.uid, par1_id, {"ref": "58264"})
+        par_obj.write(self.cursor, self.uid, par2_id, {"ref": "58265"})
+
+        channel_id = self.search_in("res.partner.canal", [("name", "ilike", "intercambi")])
+        subtipus_id = self.search_in("giscedata.subtipus.reclamacio", [("name", "=", "006")])
+        section_id = ir_obj.get_object_reference(
+            self.cursor, self.uid, "som_switching", "atc_section_factura"
+        )[1]
+
+        new_atc_id = atc_obj.create_ATC_R1_006_from_polissa_via_wizard(
+            self.cursor, self.uid, polissa_id, {}
+        )
+
+        atc = atc_obj.browse(self.cursor, self.uid, new_atc_id)
+
+        self.assertEqual(atc.name, u"AUTOCAC 006")
+        self.assertEqual(atc.canal_id.id, channel_id)
+        self.assertEqual(atc.section_id.id, section_id)
+        self.assertEqual(atc.subtipus_id.id, subtipus_id)
+        self.assertEqual(atc.polissa_id.id, polissa_id)
+
+        self.assertEqual(atc.tancar_cac_al_finalitzar_r1, True)
+        self.assertEqual(atc.state, "pending")
+        self.assertEqual(atc.agent_actual, "10")
+
+        model, id = atc.ref.split(",")
+        self.assertEqual(model, "giscedata.switching")
+        model_obj = self.get_model(model)
+        ref = model_obj.browse(self.cursor, self.uid, int(id))
+
+        self.assertEqual(ref.proces_id.name, u"R1")
+        self.assertEqual(ref.step_id.name, u"01")
+        self.assertEqual(ref.section_id.name, u"Switching")
+        self.assertEqual(ref.cups_polissa_id.id, polissa_id)
+        self.assertEqual(ref.state, u"open")
+        self.assertEqual(ref.ref, u"giscedata.atc, {}".format(atc.id))
+
+
 class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
     def build_atc(
         self,
