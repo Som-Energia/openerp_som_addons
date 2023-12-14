@@ -122,8 +122,10 @@ class GiscedataAtc(osv.osv):
             generate_r1_wiz = r1atcw_obj.generate_r1(
                 cursor, uid, [r1atcw_id], r1atcw_ctx
             )  # Generates the R1 for the ATC case
-
-            r1w_ctx = eval(generate_r1_wiz["context"])
+            if type(generate_r1_wiz["context"]) == dict:
+                r1w_ctx = generate_r1_wiz["context"]
+            else:
+                r1w_ctx = eval(generate_r1_wiz["context"])
             r1w_obj = self.pool.get(generate_r1_wiz["res_model"])  # "wizard.create.r1"
             r1w_id = r1w_obj.create(cursor, uid, {}, r1w_ctx)
             subtype_r1_wiz = r1w_obj.action_subtype_fields_view(
