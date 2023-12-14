@@ -62,3 +62,52 @@ class SomAutoreclamaStateHistoryAtc(SomAutoreclamaStateHistory):
 
 
 SomAutoreclamaStateHistoryAtc()
+
+
+class SomAutoreclamaStateHistoryPolissa(SomAutoreclamaStateHistory):
+
+    _name = "som.autoreclama.state.history.polissa"
+    _namespace = "polissa"
+
+    def historize(
+        self, cursor, uid, polissa_id, next_state_id, current_date, generated_atc_id, context=None
+    ):
+        if not current_date:
+            current_date = date.today().strftime("%Y-%m-%d")
+
+        h_ids = self.search(
+            cursor,
+            uid,
+            [
+                ("polissa_id", "=", polissa_id),
+                ("end_date", "=", False),
+            ],
+            context=context,
+        )
+        if h_ids:
+            self.write(cursor, uid, h_ids, {"end_date": current_date}, context=context)
+
+        new_polissa_h = {
+            "polissa_id": polissa_id,
+            "state_id": next_state_id,
+            "change_date": current_date,
+            "end_date": False,
+        }
+        if generated_atc_id:
+            new_polissa_h["generated_atc_id"] = generated_atc_id
+
+        return self.create(cursor, uid, new_polissa_h, context=context)
+
+    _columns = {
+        "state_id": fields.many2one("som.autoreclama.state", _(u"State"), required=False),
+        "change_date": fields.date(_(u"Change Date"), select=True, readonly=True),
+        "end_date": fields.date(_(u"End Date"), select=True, readonly=True),
+        "polissa_id": fields.many2one("giscedata.polissa", _(u"Polissa"), readonly=True, ondelete="set null"),
+        "generated_atc_id": fields.many2one(
+            "giscedata.atc", _(u"Cas ATC generat"), readonly=True, ondelete="set null"
+        ),
+    }
+    _order = "end_date desc, id desc"
+
+
+SomAutoreclamaStateHistoryPolissa()
