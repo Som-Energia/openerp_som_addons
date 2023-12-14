@@ -13,8 +13,11 @@ lead = context.get('lead')
 dict_preus_tp_potencia = False
 dict_preus_tp_energia = False
 if context.get('tarifa_provisional', False):
-    dict_preus_tp_potencia= context.get('tarifa_provisional')['preus_provisional_potencia']
-    dict_preus_tp_energia= context.get('tarifa_provisional')['preus_provisional_energia']
+    dict_preus_tp_energia = context.get('tarifa_provisional')['preus_provisional_energia']
+    if context.get('tarifa_provisional', False):
+        if context['tarifa_provisional'].get('preus_provisional_potencia')
+            dict_preus_tp_potencia = context['tarifa_provisional']['preus_provisional_potencia']
+
 
 def clean_text(text):
     return text or ''

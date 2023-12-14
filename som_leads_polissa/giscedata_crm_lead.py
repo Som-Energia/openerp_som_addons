@@ -53,17 +53,39 @@ class GiscedataCrmLead(osv.OsvInherits):
         return super(GiscedataCrmLead, self)._check_and_get_mandatory_fields(cursor, uid, crml_id, mandatory_fields, other_fields, context)
 
     def onchange_tipus_tarifa_lead(self, cursor, uid, ids, tipus_tarifa_lead):
-        res = False
+        res = {
+            'value': {
+                'set_custom_potencia': False
+            },
+            'domain': {},
+            'warning': {},
+        }
         if tipus_tarifa_lead == 'tarifa_provisional':
-            res = {'value': {'llista_preu': False},
-                    'domain': {},
-                    'warning': {},
-                    }
+            res['value']['llista_preu'] = False
+        return res
+
+    def onchange_set_custom_potencia(self, cursor, uid, ids, set_custom_potencia):
+        res = {
+            'value': {},
+            'domain': {},
+            'warning': {},
+        }
+        if set_custom_potencia == True:
+            res['value']['llista_preu'] = False
+        else:
+            res['value']['preu_fix_potencia_p1'] = 0
+            res['value']['preu_fix_potencia_p2'] = 0
+            res['value']['preu_fix_potencia_p3'] = 0
+            res['value']['preu_fix_potencia_p4'] = 0
+            res['value']['preu_fix_potencia_p5'] = 0
+            res['value']['preu_fix_potencia_p6'] = 0
+
         return res
 
     _columns = {
         'tipus_tarifa_lead': fields.selection(
             _tipus_tarifes_lead, 'Tipus de tarifa del contracte'),
+        'set_custom_potencia': fields.boolean('Personalitzar preus potència'),
         'preu_fix_energia_p1': fields.float('Preu Fix Energia P1', digits=(16, 6)),
         'preu_fix_energia_p2': fields.float('Preu Fix Energia P2', digits=(16, 6)),
         'preu_fix_energia_p3': fields.float('Preu Fix Energia P3', digits=(16, 6)),
@@ -80,6 +102,7 @@ class GiscedataCrmLead(osv.OsvInherits):
 
     _defaults = {
         'tipus_tarifa_lead': lambda*a: 'tarifa_existent',
+        'set_custom_potencia': lambda*a: False,
     }
 
 GiscedataCrmLead()
