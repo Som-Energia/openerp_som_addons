@@ -243,10 +243,6 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             len(cond_ids)
         )
 
-        #TODO polissa --> get_autoreclama_data -->  polissa like atc
-        #TODO condition --> fit_polissa_condition --> per polissa
-        #TODO state --> do_action per polissa --> ok
-
     def state_updater(self, cursor, uid, context=None):
         atc_ids = self.get_atc_candidates_to_update(cursor, uid, context)
         c, b, c, atc_msg, atc_sum = self.update_atcs_if_possible(cursor, uid, atc_ids, context)
