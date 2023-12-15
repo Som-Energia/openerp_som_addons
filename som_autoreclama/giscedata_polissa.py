@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
-
+from datetime import datetime
 
 class GiscedataPolissa(osv.osv):
 
@@ -14,10 +14,18 @@ class GiscedataPolissa(osv.osv):
             cursor,
             uid,
             id,
-            ["data_ultima_lectura_f1"],
+            ["data_ultima_lectura_f1", "data_alta"],
             context,
         )
-        return {'days_without_F1': 1234}
+
+        if data['data_ultima_lectura_f1']:
+            last_date = data['data_ultima_lectura_f1']
+        else:
+            last_date = data['data_alta']
+
+        last_date_dt = datetime.strptime(last_date, "%Y-%M-%d")
+        days_since_last_f1 = (datetime.today() - last_date_dt).days
+        return {'days_without_F1': days_since_last_f1}
 
 
     # Autoreclama history management functions
