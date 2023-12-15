@@ -12,17 +12,12 @@ class SomAutoreclamaStateHistory(osv.osv):
         return self.pool.get("som.autoreclama.state.history.{}".format(self._namespace))
 
 
-SomAutoreclamaStateHistory()
-
-
-class SomAutoreclamaStateHistoryAtc(SomAutoreclamaStateHistory):
-
-    _name = "som.autoreclama.state.history.atc"
-    _namespace = "atc"
-
     def historize(
-        self, cursor, uid, atc_id, next_state_id, current_date, generated_atc_id, context=None
+        self, cursor, uid, item_id, next_state_id, current_date, generated_atc_id, context=None
     ):
+
+        item_name_id = self._namespace + '_id'
+
         if not current_date:
             current_date = date.today().strftime("%Y-%m-%d")
 
@@ -30,7 +25,7 @@ class SomAutoreclamaStateHistoryAtc(SomAutoreclamaStateHistory):
             cursor,
             uid,
             [
-                ("atc_id", "=", atc_id),
+                (item_name_id, "=", item_id),
                 ("end_date", "=", False),
             ],
             context=context,
@@ -39,7 +34,7 @@ class SomAutoreclamaStateHistoryAtc(SomAutoreclamaStateHistory):
             self.write(cursor, uid, h_ids, {"end_date": current_date}, context=context)
 
         new_atc = {
-            "atc_id": atc_id,
+            item_name_id: item_id,
             "state_id": next_state_id,
             "change_date": current_date,
             "end_date": False,
@@ -48,6 +43,16 @@ class SomAutoreclamaStateHistoryAtc(SomAutoreclamaStateHistory):
             new_atc["generated_atc_id"] = generated_atc_id
 
         return self.create(cursor, uid, new_atc, context=context)
+
+
+SomAutoreclamaStateHistory()
+
+
+class SomAutoreclamaStateHistoryAtc(SomAutoreclamaStateHistory):
+
+    _name = "som.autoreclama.state.history.atc"
+    _namespace = "atc"
+
 
     _columns = {
         "state_id": fields.many2one("som.autoreclama.state", _(u"State"), required=False),
@@ -69,34 +74,6 @@ class SomAutoreclamaStateHistoryPolissa(SomAutoreclamaStateHistory):
     _name = "som.autoreclama.state.history.polissa"
     _namespace = "polissa"
 
-    def historize(
-        self, cursor, uid, polissa_id, next_state_id, current_date, generated_atc_id, context=None
-    ):
-        if not current_date:
-            current_date = date.today().strftime("%Y-%m-%d")
-
-        h_ids = self.search(
-            cursor,
-            uid,
-            [
-                ("polissa_id", "=", polissa_id),
-                ("end_date", "=", False),
-            ],
-            context=context,
-        )
-        if h_ids:
-            self.write(cursor, uid, h_ids, {"end_date": current_date}, context=context)
-
-        new_polissa_h = {
-            "polissa_id": polissa_id,
-            "state_id": next_state_id,
-            "change_date": current_date,
-            "end_date": False,
-        }
-        if generated_atc_id:
-            new_polissa_h["generated_atc_id"] = generated_atc_id
-
-        return self.create(cursor, uid, new_polissa_h, context=context)
 
     _columns = {
         "state_id": fields.many2one("som.autoreclama.state", _(u"State"), required=False),
