@@ -29,7 +29,7 @@
                         </group>
                         <group colspan="4" string="Accions d'autoreclama">
                             <button string="Desactivar autoreclama" type="action" icon="gtk-disconnect" name="%(action_wizard_som_autoreclama_set_disable_state)d" context="{'namespace': 'polissa'}"/>
-                            <button string="Casos ATC generats" type="action" icon="gtk-find" name="%(action_wizard_som_autoreclama_generated_atc)d"/>
+                            <button string="Casos ATC generats" type="action" icon="gtk-find" name="%(action_wizard_som_autoreclama_generated_atc)d" context="{'namespace': 'polissa'}"/>
                         </group>
                         <field name="autoreclama_history_ids" nolabel="1" colspan="4"/>
                     </page>
