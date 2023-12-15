@@ -9,6 +9,17 @@ class GiscedataPolissa(osv.osv):
     _inherit = "giscedata.polissa"
 
 
+    def get_autoreclama_data(self, cursor, uid, id, context=None):
+        data = self.read(
+            cursor,
+            uid,
+            id,
+            ["data_ultima_lectura_f1"],
+            context,
+        )
+        return {'days_without_F1': 1234}
+
+
     # Autoreclama history management functions
     def get_current_autoreclama_state_info(self, cursor, uid, ids, context=None):
         """
