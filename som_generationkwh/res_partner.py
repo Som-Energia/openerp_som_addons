@@ -114,13 +114,11 @@ class ResPartner(osv.osv):
         rightsUsage = MemberRightsUsage(mdbpool.get_db())
 
         rights = self.www_hourly_rights_generationkwh(cursor, uid, partner_id, start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"), context)
-        usage = rightsUsage.usage(member_id, start_date, end_date)
+        usage = UsageTracker.convert_usage_date_quantity(enumerate(rightsUsage.usage(member_id, start_date, end_date)), start_date)
 
-        remaining = UsageTracker.convert_usage_date_quantity(enumerate((
-            produced - used
-            for produced, used
-            in zip(rights.values(), usage)
-        )), start_date)
+        remaining = {}
+        for k,v in rights.items():
+            remaining[k] = v - usage.get(k,0)
 
         return remaining
 
