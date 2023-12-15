@@ -18,13 +18,17 @@ class SomAutoreclamaStateCondition(osv.osv):
             and data["state"] == "pending"
         )
 
+    def fit_polissa_condition(self, cursor, uid, id, data, context=None):
+        cond_data = self.read(cursor, uid, id, ["days"], context=context)
+        return data["days_without_F1"] >= cond_data["days"]
+
     _columns = {
         "priority": fields.integer(_("Order"), required=True),
         "active": fields.boolean(string=_(u"Activa"), help=_(u"Indica si la condició esta activa")),
         "subtype_id": fields.many2one(
             "giscedata.subtipus.reclamacio",
             _(u"Subtipus"),
-            required=True,
+            required=False,
             help=_(u"Subtipus de la reclamació associada al cas ATC"),
         ),
         "days": fields.integer(
