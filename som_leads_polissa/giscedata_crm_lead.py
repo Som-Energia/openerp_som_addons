@@ -26,19 +26,19 @@ class GiscedataCrmLead(osv.OsvInherits):
             'P5': lead.preu_fix_energia_p5,
             'P6': lead.preu_fix_energia_p6,
         }
-        preus_provisional_potencia = {
-            'P1': lead.preu_fix_potencia_p1,
-            'P2': lead.preu_fix_potencia_p2,
-            'P3': lead.preu_fix_potencia_p3,
-            'P4': lead.preu_fix_potencia_p4,
-            'P5': lead.preu_fix_potencia_p5,
-            'P6': lead.preu_fix_potencia_p6,
-        }
-
         context['tarifa_provisional'] = {
-            'preus_provisional_potencia': preus_provisional_potencia,
-            'preus_provisional_energia': preus_provisional_energia,
+            'preus_provisional_energia': preus_provisional_energia
         }
+        if lead.set_custom_potencia:
+            preus_provisional_potencia = {
+                'P1': lead.preu_fix_potencia_p1,
+                'P2': lead.preu_fix_potencia_p2,
+                'P3': lead.preu_fix_potencia_p3,
+                'P4': lead.preu_fix_potencia_p4,
+                'P5': lead.preu_fix_potencia_p5,
+                'P6': lead.preu_fix_potencia_p6,
+            }
+            context['tarifa_provisional']['preus_provisional_potencia'] = preus_provisional_potencia
 
         return super(GiscedataCrmLead, self).contract_pdf(cursor, uid, ids, context=context)
 
@@ -46,8 +46,8 @@ class GiscedataCrmLead(osv.OsvInherits):
     def _check_and_get_mandatory_fields(self, cursor, uid, crml_id, mandatory_fields=[], other_fields=[], context=None):
         if not (context is None or context.get('som_from_activation_lead')):
             if 'llista_preu' in mandatory_fields:
-                data = self.read(cursor, uid, crml_id, ['tipus_tarifa_lead'])
-                if data['tipus_tarifa_lead'] == 'tarifa_provisional':
+                data = self.read(cursor, uid, crml_id, ['tipus_tarifa_lead', 'set_custom_potencia'])
+                if data['tipus_tarifa_lead'] == 'tarifa_provisional' and data['set_custom_potencia']:
                     mandatory_fields.pop(mandatory_fields.index('llista_preu'))
 
         return super(GiscedataCrmLead, self)._check_and_get_mandatory_fields(cursor, uid, crml_id, mandatory_fields, other_fields, context)
