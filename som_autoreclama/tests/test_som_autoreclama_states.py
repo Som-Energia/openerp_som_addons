@@ -608,7 +608,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
             self.cursor, self.uid, "som_autoreclama", "conditions_001_correct_state_workflow_atc"
         )[1]
 
-        ok = cond_obj.fit_atc_condition(self.cursor, self.uid, cond_id, atc_data, {})
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, atc_data, "atc", {})
         self.assertEqual(ok, False)
 
     def test_fit_atc_condition__001_c_yes(self):
@@ -623,7 +623,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
             self.cursor, self.uid, "som_autoreclama", "conditions_001_correct_state_workflow_atc"
         )[1]
 
-        ok = cond_obj.fit_atc_condition(self.cursor, self.uid, cond_id, atc_data, {})
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, atc_data, "atc", {})
         self.assertEqual(ok, True)
 
     def test_fit_atc_condition__some(self):
@@ -692,14 +692,14 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
                 self.cursor, self.uid, "som_autoreclama", test_data["cond"]
             )[1]
 
-            ok = cond_obj.fit_atc_condition(self.cursor, self.uid, cond_id, atc_data, {})
+            ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, atc_data, "atc", {})
             self.assertEqual(ok, test_data["result"])
 
     def test_fit_atc_condition__all(self):
         atc_obj = self.get_model("giscedata.atc")
         cond_obj = self.get_model("som.autoreclama.state.condition")
 
-        cond_ids = cond_obj.search(self.cursor, self.uid, [])
+        cond_ids = cond_obj.search(self.cursor, self.uid, [('subtype_id', '!=', False)])
         for cond_id in cond_ids:
             cond = cond_obj.browse(self.cursor, self.uid, cond_id)
 
@@ -710,13 +710,13 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
             # test more
             atc_id = self.build_atc(subtype=cond.subtype_id.name, log_days=cond.days * 2, r1=True)
             atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
-            ok = cond_obj.fit_atc_condition(self.cursor, self.uid, cond_id, atc_data, {})
+            ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, atc_data, "atc", {})
             self.assertEqual(ok, True, "Error on More than for condition id {}".format(cond_id))
 
             # test less
             atc_id = self.build_atc(subtype=cond.subtype_id.name, log_days=cond.days / 2, r1=True)
             atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
-            ok = cond_obj.fit_atc_condition(self.cursor, self.uid, cond_id, atc_data, {})
+            ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, atc_data, "atc", {})
             self.assertEqual(ok, False, "Error on Less than for condition id {}".format(cond_id))
 
 
@@ -778,7 +778,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         atc_id = self.build_atc()
 
         updtr_obj = self.get_model("som.autoreclama.state.updater")
-        status, message = updtr_obj.update_atc_if_possible(self.cursor, self.uid, atc_id, {})
+        status, message = updtr_obj.update_item_if_possible(self.cursor, self.uid, atc_id, "atc", {})
 
         self.assertEqual(status, False)
         self.assertTrue(message.startswith(u"No compleix cap condici\xf3 activa, examinades "))
@@ -791,8 +791,8 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         atc_id = self.build_atc(log_days=60, subtype="001", r1=True)
 
         updtr_obj = self.get_model("som.autoreclama.state.updater")
-        status, message = updtr_obj.update_atc_if_possible(
-            self.cursor, self.uid, atc_id, {"search_only": True}
+        status, message = updtr_obj.update_item_if_possible(
+            self.cursor, self.uid, atc_id, "atc", {"search_only": True}
         )
 
         self.assertEqual(status, True)
@@ -804,7 +804,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         atc_id = self.build_atc(log_days=60, subtype="001", r1=True)
 
         updtr_obj = self.get_model("som.autoreclama.state.updater")
-        status, message = updtr_obj.update_atc_if_possible(self.cursor, self.uid, atc_id, {})
+        status, message = updtr_obj.update_item_if_possible(self.cursor, self.uid, atc_id, "atc",{})
 
         self.assertEqual(status, True)
         self.assertTrue(
@@ -823,8 +823,8 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         atc_y_id = self.build_atc(log_days=60, subtype="001", r1=True)
 
         updtr_obj = self.get_model("som.autoreclama.state.updater")
-        up, not_up, error, msg = updtr_obj.update_atcs_if_possible(
-            self.cursor, self.uid, [atc_y_id, atc_n_id], {}
+        up, not_up, error, msg, s = updtr_obj.update_items_if_possible(
+            self.cursor, self.uid, [atc_y_id, atc_n_id], "atc", {}
         )
 
         self.assertEqual(up, [atc_y_id])
@@ -851,7 +851,7 @@ class SomAutoreclamaDoActionTest(SomAutoreclamaEzATC_Test):
         pre_atc_state_name = atc.autoreclama_state.name
         pre_atc_data = str(atc.read())
 
-        result = state_obj.do_action(self.cursor, self.uid, state_id, atc_id, {})
+        result = state_obj.do_action(self.cursor, self.uid, state_id, atc_id, "atc", {})
 
         self.assertEqual(result["do_change"], False)
         self.assertEqual(result["message"], u"Estat {} desactivat!".format(state.name))
@@ -879,7 +879,7 @@ class SomAutoreclamaDoActionTest(SomAutoreclamaEzATC_Test):
         pre_atc_state_name = atc.autoreclama_state.name
         pre_atc_data = str(atc.read())
 
-        result = state_obj.do_action(self.cursor, self.uid, state_id, atc_id, {})
+        result = state_obj.do_action(self.cursor, self.uid, state_id, atc_id, "atc", {})
 
         self.assertEqual(result["do_change"], True)
         self.assertEqual(result["message"], u"Estat {} sense acció --> Ok".format(state.name))
@@ -907,7 +907,7 @@ class SomAutoreclamaDoActionTest(SomAutoreclamaEzATC_Test):
         pre_atc_state_name = atc.autoreclama_state.name
         pre_atc_data = str(atc.read())
 
-        result = state_obj.do_action(self.cursor, self.uid, state_id, atc_id, {})
+        result = state_obj.do_action(self.cursor, self.uid, state_id, atc_id, "atc", {})
 
         self.assertEqual(result["do_change"], True)
         self.assertEqual(
@@ -951,7 +951,7 @@ class SomAutoreclamaDoActionTest(SomAutoreclamaEzATC_Test):
         pre_atc_state_name = atc.autoreclama_state.name
         pre_atc_data = str(atc.read())
 
-        result = state_obj.do_action(self.cursor, self.uid, state_id, atc_id, {})
+        result = state_obj.do_action(self.cursor, self.uid, state_id, atc_id, "atc", {})
 
         self.assertEqual(result["do_change"], False)
         self.assertTrue(
