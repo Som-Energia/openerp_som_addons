@@ -60,6 +60,7 @@
                 <tree string="Condicions Autoreclama">
                     <field name="priority"/>
                     <field name="active"/>
+                    <field name="condition_code"/>
                     <field name="subtype_id"/>
                     <field name="days"/>
                     <field name="next_state_id"/>
@@ -79,6 +80,7 @@
                             <field name="active" select="1"/>
                         </group>
                         <group colspan="4" col="2" string="Condicions d'activació">
+                            <field name="condition_code" select="1"/>
                             <field name="subtype_id" select="1"/>
                             <field name="days" select="1"/>
                         </group>

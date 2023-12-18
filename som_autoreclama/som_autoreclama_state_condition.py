@@ -9,10 +9,19 @@ class SomAutoreclamaStateCondition(osv.osv):
     _rec_name = "subtype_id"
     _order = "priority"
 
+    CONDITION_CODE = [
+        ("ATC", _("Dies per subtipus ATC")),
+        ("noF1", _("Falta F1 a pòlissa")),
+        ("F1ok", _("F1 a data correcta a pòlissa")),
+    ]
+
     def fit_condition(self, cursor, uid, id, data, namespace, context=None):
         if namespace == "polissa":
-            cond_data = self.read(cursor, uid, id, ["days"], context=context)
-            return data["days_without_F1"] >= cond_data["days"]
+            cond_data = self.read(cursor, uid, id, ["days", "condition_code"], context=context)
+            if cond_data['condition_code'] == 'noF1':
+                return data["days_without_F1"] > cond_data["days"]
+            if cond_data['condition_code'] == 'F1ok':
+                return data["days_without_F1"] <= cond_data["days"]
         if namespace == "atc":
             cond_data = self.read(cursor, uid, id, ["subtype_id", "days"], context=context)
             return (
@@ -26,6 +35,7 @@ class SomAutoreclamaStateCondition(osv.osv):
     _columns = {
         "priority": fields.integer(_("Order"), required=True),
         "active": fields.boolean(string=_(u"Activa"), help=_(u"Indica si la condició esta activa")),
+        "condition_code": fields.selection(CONDITION_CODE, "Condició", required=True),
         "subtype_id": fields.many2one(
             "giscedata.subtipus.reclamacio",
             _(u"Subtipus"),
