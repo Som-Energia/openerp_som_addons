@@ -1977,7 +1977,7 @@ class InvestmentTests(testing.OOTestCase):
                   quantity: 1.0
                   product_id: '[GENKWH_AMOR] Amortització Generation kWh'
                   invoice_line_tax_id: []
-                journal_id: Factures GenerationkWh
+                journal_id: Amortització GenerationkWh
                 mandate_id: {mandate_id}
                 name: {investment_name}-DES
                 number: {investment_name}-DES
@@ -2087,7 +2087,7 @@ class InvestmentTests(testing.OOTestCase):
                   product_id: '[GENKWH_IRPF] Retenció IRPF estalvi Generation kWh'
                   quantity: 1.0
                   uos_id: PCE
-                journal_id: Factures GenerationkWh
+                journal_id: Amortització GenerationkWh
                 mandate_id: {mandate_id}
                 name: {investment_name}-DES
                 number: {investment_name}-DES
@@ -2220,7 +2220,7 @@ class InvestmentTests(testing.OOTestCase):
                   product_id: '[GENKWH_IRPF] Retenció IRPF estalvi Generation kWh'
                   quantity: 1.0
                   uos_id: PCE
-                journal_id: Factures GenerationkWh
+                journal_id: Amortització GenerationkWh
                 mandate_id: {mandate_id}
                 name: {investment_name}-DES
                 number: {investment_name}-DES
@@ -2357,7 +2357,7 @@ class InvestmentTests(testing.OOTestCase):
                   product_id: '[GENKWH_IRPF] Retenció IRPF estalvi Generation kWh'
                   quantity: 1.0
                   uos_id: PCE
-                journal_id: Factures GenerationkWh
+                journal_id: Amortització GenerationkWh
                 mandate_id: {mandate_id}
                 name: {investment_name}-DES
                 number: {investment_name}-DES
@@ -2446,7 +2446,7 @@ class InvestmentTests(testing.OOTestCase):
                   quantity: 1.0
                   product_id: '[APO_AE] Aportacions'
                   invoice_line_tax_id: []
-                journal_id: Factures Aportacions
+                journal_id: Factures Liquidació Aportacions
                 mandate_id: {mandate_id}
                 name: {investment_name}-DES
                 number: {investment_name}-DES

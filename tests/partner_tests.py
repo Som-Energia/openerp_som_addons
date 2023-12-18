@@ -346,7 +346,7 @@ class PartnerTests(testing.OOTestCase):
 
             remaining = self.partner_obj.www_hourly_remaining_generationkwh(cursor, uid, partner_id)
 
-            self.assertEqual(len(remaining), 8431)
+            self.assertEqual(len(remaining), 8783)
             self.assertEqual(sum(remaining.values()), 0)
 
     def test__www_hourly_rights_generationkwh(self):
