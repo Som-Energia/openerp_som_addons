@@ -28,6 +28,36 @@ class GiscedataPolissa(osv.osv):
         return {'days_without_F1': days_since_last_f1}
 
 
+    # Create and setup autoreclama history to the new created ATC object
+    def create(self, cursor, uid, vals, context=None):
+        polissa_id = super(Giscedatapolissa, self).create(cursor, uid, vals, context=context)
+
+        if not context:
+            context = {}
+
+        imd_obj = self.pool.get("ir.model.data")
+        initial_state_id = imd_obj.get_object_reference(
+            cursor, uid, "som_autoreclama", "correct_state_workflow_polissa"
+        )[1]
+
+        initial_state_id = context.get("autoreclama_history_initial_state_id", initial_state_id)
+        initial_date = context.get(
+            "autoreclama_history_initial_date", date.today().strftime("%Y-%m-%d")
+        )
+
+        polh_obj = self.pool.get("som.autoreclama.state.history.polissa")
+        polh_obj.create(
+            cursor,
+            uid,
+            {
+                "polissa_id": polissa_id,
+                "state_id": initial_state_id,
+                "change_date": initial_date,
+            },
+        )
+        return polissa_id
+
+
     # Autoreclama history management functions
     def get_current_autoreclama_state_info(self, cursor, uid, ids, context=None):
         """
