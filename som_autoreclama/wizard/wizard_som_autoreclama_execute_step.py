@@ -13,19 +13,10 @@ class WizardSomAutoreclamaExecuteStep(osv.osv_memory):
         namespace = context.get("namespace", "atc")
 
         updtr_obj = self.pool.get("som.autoreclama.state.updater")
-
-        if namespace == "atc":
-            _, _, _, msg , s = updtr_obj.update_atcs_if_possible(
-                cursor, uid, context.get("active_ids", []), context
-            )
-            msg += "\n\n" + s
-        elif namespace == "polissa":
-            _, _, _, msg, s = updtr_obj.update_polisses_if_possible(
-                cursor, uid, context.get("active_ids", []), context
-            )
-            msg += "\n\n" + s
-        else:
-            msg = "Error, namespace indefinit!"
+        _, _, _, msg, s = updtr_obj.update_items_if_possible(
+            cursor, uid, context.get("active_ids", []), namespace, context
+        )
+        msg += "\n\n" + s
 
         self.write(cursor, uid, ids, {"state": "end", "info": msg})
 
