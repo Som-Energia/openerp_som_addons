@@ -311,8 +311,10 @@ CONTRACT_TYPES = dict(TABLA_9)
                 else:
                     tarifes_ids = llista_preu_o.search(cursor, uid, [])
                     llista_preus = pol_o.escull_llista_preus(cursor, uid, polissa.id, tarifes_ids, context=ctx)
-
-                tarifa_a_mostrar = llista_preus.nom_comercial or llista_preus.name
+                if context.get('tarifa_provisional', False):
+                    tarifa_a_mostrar = 'Tarifa Períodes Empresa'
+                else:
+                    tarifa_a_mostrar = llista_preus.nom_comercial or llista_preus.name
             %>
             <div class="peatge_access_content">
                 <div class="padding_left"><b>${_(u"Peatge de transport i distribució: ")}</b>${clean(polissa.tarifa_codi)}</div>
