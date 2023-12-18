@@ -28,9 +28,9 @@ class GiscedataPolissa(osv.osv):
         return {'days_without_F1': days_since_last_f1}
 
 
-    # Create and setup autoreclama history to the new created ATC object
+    # Create and setup autoreclama history to the new created polissa object
     def create(self, cursor, uid, vals, context=None):
-        polissa_id = super(Giscedatapolissa, self).create(cursor, uid, vals, context=context)
+        polissa_id = super(GiscedataPolissa, self).create(cursor, uid, vals, context=context)
 
         if not context:
             context = {}
