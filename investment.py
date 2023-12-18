@@ -812,6 +812,12 @@ class GenerationkwhInvestment(osv.osv):
 
         invoice_type, factor = ('out_invoice',-1) if to_be_amortized < irpf_amount else ('in_invoice', 1)
 
+        # The journal
+        journal_code = self.investment_actions(cursor, uid, investment_id).journalCode
+        if invoice_type == 'in_invoice':
+            journal_code = self.investment_actions(cursor, uid, investment_id).purchaseJournalCode
+        journal_id = Journal.search(cursor, uid, [('code', '=', journal_code)])[0]
+
         # The partner
         partner_id = investment.member_id.partner_id.id
         partner = Partner.browse(cursor, uid, partner_id)
@@ -835,11 +841,6 @@ class GenerationkwhInvestment(osv.osv):
 
         product = Product.browse(cursor, uid, product_id)
         product_uom_id = product.uom_id.id
-
-        # The journal
-        journal_id = Journal.search(cursor, uid, [
-            ('code','=',self.investment_actions(cursor, uid, investment_id).journalCode),
-            ])[0]
 
         # The payment type
         if invoice_type == 'out_invoice':
@@ -1764,7 +1765,7 @@ class GenerationkwhInvestment(osv.osv):
         IrModelData = self.pool.get('ir.model.data')
         model, journal_id = IrModelData.get_object_reference(
             cursor, uid,
-            'som_generationkwh', 'genkwh_journal',
+            'som_generationkwh', 'genkwh_amor_journal',
         )
 
         period_data = wizard_period(self, cursor, uid,
