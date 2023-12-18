@@ -24,6 +24,10 @@ class InvestmentActions(ErpWrapper):
         pass
 
     @property
+    def purchaseJournalCode(self):
+        pass
+
+    @property
     def productCode(self):
         pass
 
@@ -110,7 +114,7 @@ class InvestmentActions(ErpWrapper):
 
         # The journal
         journal_id = Journal.search(cursor, uid, [
-            ('code','=',self.journalCode),
+            ('code','=',self.purchaseJournalCode),
             ])[0]
 
         # The payment type
@@ -217,6 +221,10 @@ class GenerationkwhActions(InvestmentActions):
     @property
     def journalCode(self):
         return 'GENKWH'
+
+    @property
+    def purchaseJournalCode(self):
+        return 'GENKWH_AMOR'
 
     @property
     def productCode(self):
@@ -508,6 +516,10 @@ class AportacionsActions(InvestmentActions):
     @property
     def journalCode(self):
         return 'APO_FACT'
+
+    @property
+    def purchaseJournalCode(self):
+        return 'APO'
 
     @property
     def productCode(self):
