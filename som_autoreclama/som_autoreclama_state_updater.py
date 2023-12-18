@@ -30,108 +30,6 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             return data["autoreclama_state"][1]
         return "No initial state"
 
-    def update_atcs_if_possible(self, cursor, uid, ids, context=None):
-        updated = []
-        not_updated = []
-        errors = []
-        msg = _("Accions casos ATC\n")
-
-        for atc_id in tqdm(ids):
-            actual_state = self.get_autoreclama_state_name(cursor, uid, atc_id, "atc", context)
-            result, message = self.update_atc_if_possible(cursor, uid, atc_id, context)
-            if result:
-                updated.append(atc_id)
-                next_state = self.get_autoreclama_state_name(cursor, uid, atc_id, "atc", context)
-                msg += _("Cas ATC amb id {} ha canviat d'estat: {} --> {}\n").format(
-                    atc_id, actual_state, next_state
-                )
-                msg += _(" - {}\n").format(message)
-            elif result is False:
-                not_updated.append(atc_id)
-                msg += _("Cas ATC amb id {} no li toca canviar d'estat, estat actual: {}\n").format(
-                    atc_id, actual_state
-                )
-                msg += _(" - {}\n").format(message)
-            else:
-                errors.append(atc_id)
-                msg += _(
-                    "Cas ATC amb id {} no ha canviat d'estat per error, estat actual: {}\n"
-                ).format(atc_id, actual_state)
-                msg += _(" - {}\n").format(message)
-
-
-        summary = _("Sumari casos ATC\n")
-        summary += _("casos ATC que han canviat d'estat: .................. {}\n".format(len(updated)))
-        summary += _(
-            "casos ATC que no han canviat d'estat: ............... {}\n".format(len(not_updated))
-        )
-        summary += _("casos ATC que no han pogut canviar per un error: .... {}\n".format(len(errors)))
-        summary += _("\n")
-
-        if updated:
-            summary += _("Id's de casos ATC que han canviat d'estat\n")
-            summary += ",".join(str(upd) for upd in updated)
-            summary += _("\n\n")
-
-        if errors:
-            summary += _("Id's de casos ATC que han donat error (REVISAR)\n")
-            summary += ",".join(str(error) for error in errors)
-            summary += _("\n\n")
-
-        return updated, not_updated, errors, msg, summary
-
-    def update_atc_if_possible(self, cursor, uid, atc_id, context=None):
-        atc_obj = self.pool.get("giscedata.atc")
-        history_obj = self.pool.get("som.autoreclama.state.history.atc")
-        state_obj = self.pool.get("som.autoreclama.state")
-        cond_obj = self.pool.get("som.autoreclama.state.condition")
-        atc_data = atc_obj.get_autoreclama_data(cursor, uid, atc_id, context)
-
-        state = atc_obj.read(cursor, uid, atc_id, ["autoreclama_state"], context)
-        if "autoreclama_state" in state and state["autoreclama_state"]:
-            autoreclama_state_id = state["autoreclama_state"][0]
-        else:
-            return False, _(u"Sense estat d'autoreclama inicial")
-
-        cond_ids = cond_obj.search(
-            cursor,
-            uid,
-            [
-                ("state_id", "=", autoreclama_state_id),
-                ("active", "=", True),
-            ],
-            order="priority",
-            context=context,
-        )
-
-        do_not_execute = context and context.get("search_only", False)
-        for cond_id in cond_ids:
-            if cond_obj.fit_atc_condition(cursor, uid, cond_id, atc_data):
-                if do_not_execute:
-                    return True, _(u"Testing")
-
-                next_state_id = cond_obj.read(
-                    cursor, uid, cond_id, ["next_state_id"], context=context
-                )["next_state_id"][0]
-                action_result = state_obj.do_action(cursor, uid, next_state_id, atc_id, "atc", context)
-                if action_result["do_change"]:
-                    history_obj.historize(
-                        cursor,
-                        uid,
-                        atc_id,
-                        next_state_id,
-                        None,
-                        action_result.get("created_atc", False),
-                        context,
-                    )
-                    return True, action_result.get("message", "No message!!")
-                else:
-                    return None, action_result.get("message", "No message!!")
-
-        return False, _(u"No compleix cap condició activa, examinades {} condicions.").format(
-            len(cond_ids)
-        )
-
     def get_polissa_candidates_to_update(self, cursor, uid, context=None):
         pol_obj = self.pool.get("giscedata.polissa")
         search_params = [
@@ -141,64 +39,75 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         ]
         return pol_obj.search(cursor, uid, search_params)
 
-    def update_polisses_if_possible(self, cursor, uid, ids, context=None):
+    def update_items_if_possible(self, cursor, uid, ids, namespace, context=None):
         updated = []
         not_updated = []
         errors = []
-        msg = _("Accions pòlisses\n")
 
-        for polissa_id in tqdm(ids):
-            actual_state = self.get_autoreclama_state_name(cursor, uid, polissa_id, "polissa", context)
-            result, message = self.update_polissa_if_possible(cursor, uid, polissa_id, context)
+        if namespace == 'atc':
+            name = _('Cas ATC')
+            names = _('Casos ATC')
+        elif namespace == 'polissa':
+            name = _('Pòlissa')
+            names = _('Pòlisses')
+        else:
+            name = _('Desconegut')
+            names = _('Desconeguts')
+
+        msg = _("Accions {}\n").format(names)
+
+        for item_id in tqdm(ids):
+            actual_state = self.get_autoreclama_state_name(cursor, uid, item_id, namespace, context)
+            result, message = self.update_item_if_possible(cursor, uid, item_id, namespace, context)
             if result:
-                updated.append(polissa_id)
-                next_state = self.get_autoreclama_state_name(cursor, uid, polissa_id, "polissa", context)
-                msg += _("Pòlissa amb id {} ha canviat d'estat: {} --> {}\n").format(
-                    polissa_id, actual_state, next_state
+                updated.append(item_id)
+                next_state = self.get_autoreclama_state_name(cursor, uid, item_id, namespace, context)
+                msg += _("{} amb id {} ha canviat d'estat: {} --> {}\n").format(
+                    name, item_id, actual_state, next_state
                 )
                 msg += _(" - {}\n").format(message)
             elif result is False:
-                not_updated.append(polissa_id)
-                msg += _("Pòlissa amb id {} no li toca canviar d'estat, estat actual: {}\n").format(
-                    polissa_id, actual_state
+                not_updated.append(item_id)
+                msg += _("{} amb id {} no li toca canviar d'estat, estat actual: {}\n").format(
+                    name, item_id, actual_state
                 )
                 msg += _(" - {}\n").format(message)
             else:
-                errors.append(polissa_id)
+                errors.append(item_id)
                 msg += _(
-                    "Pòlissa amb id {} no ha canviat d'estat per error, estat actual: {}\n"
-                ).format(polissa_id, actual_state)
+                    "{} amb id {} no ha canviat d'estat per error, estat actual: {}\n"
+                ).format(name, item_id, actual_state)
                 msg += _(" - {}\n").format(message)
 
 
-        summary = _("Sumari pòlisses\n")
-        summary += _("pòlisses que han canviat d'estat: .................. {}\n".format(len(updated)))
+        summary = _("Sumari {}\n").format(names)
+        summary += _("{} que han canviat d'estat: .................. {}\n".format(names, len(updated)))
         summary += _(
-            "pòlisses que no han canviat d'estat: ............... {}\n".format(len(not_updated))
+            "{} que no han canviat d'estat: ............... {}\n".format(names, len(not_updated))
         )
-        summary += _("pòlisses que no han pogut canviar per un error: .... {}\n".format(len(errors)))
+        summary += _("{} que no han pogut canviar per un error: .... {}\n".format(names, len(errors)))
         summary += _("\n")
 
         if updated:
-            summary += _("Id's de pòlisses que han canviat d'estat\n")
+            summary += _("Id's de {} que han canviat d'estat\n").format(names)
             summary += ",".join(str(upd) for upd in updated)
             summary += _("\n\n")
 
         if errors:
-            summary += _("Id's de pòlisses que han donat error (REVISAR)\n")
+            summary += _("Id's de {} que han donat error (REVISAR)\n").format(names)
             summary += ",".join(str(error) for error in errors)
             summary += _("\n\n")
 
         return updated, not_updated, errors, msg, summary
 
-    def update_polissa_if_possible(self, cursor, uid, polissa_id, context=None):
-        polissa_obj = self.pool.get("giscedata.polissa")
-        history_obj = self.pool.get("som.autoreclama.state.history.polissa")
+    def update_item_if_possible(self, cursor, uid, item_id, namespace, context=None):
+        item_obj = self.pool.get("giscedata." + namespace)
+        history_obj = self.pool.get("som.autoreclama.state.history." + namespace)
         state_obj = self.pool.get("som.autoreclama.state")
         cond_obj = self.pool.get("som.autoreclama.state.condition")
-        polissa_data = polissa_obj.get_autoreclama_data(cursor, uid, polissa_id, context)
+        item_data = item_obj.get_autoreclama_data(cursor, uid, item_id, context)
 
-        state = polissa_obj.read(cursor, uid, polissa_id, ["autoreclama_state"], context)
+        state = item_obj.read(cursor, uid, item_id, ["autoreclama_state"], context)
         if "autoreclama_state" in state and state["autoreclama_state"]:
             autoreclama_state_id = state["autoreclama_state"][0]
         else:
@@ -217,19 +126,19 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
 
         do_not_execute = context and context.get("search_only", False)
         for cond_id in cond_ids:
-            if cond_obj.fit_polissa_condition(cursor, uid, cond_id, polissa_data):
+            if cond_obj.fit_condition(cursor, uid, cond_id, item_data, namespace):
                 if do_not_execute:
                     return True, _(u"Testing")
 
                 next_state_id = cond_obj.read(
                     cursor, uid, cond_id, ["next_state_id"], context=context
                 )["next_state_id"][0]
-                action_result = state_obj.do_action(cursor, uid, next_state_id, polissa_id, 'polissa', context)
+                action_result = state_obj.do_action(cursor, uid, next_state_id, item_id, namespace, context)
                 if action_result["do_change"]:
                     history_obj.historize(
                         cursor,
                         uid,
-                        polissa_id,
+                        item_id,
                         next_state_id,
                         None,
                         action_result.get("created_atc", False),
@@ -245,10 +154,10 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
 
     def state_updater(self, cursor, uid, context=None):
         atc_ids = self.get_atc_candidates_to_update(cursor, uid, context)
-        c, b, c, atc_msg, atc_sum = self.update_atcs_if_possible(cursor, uid, atc_ids, context)
+        c, b, c, atc_msg, atc_sum = self.update_items_if_possible(cursor, uid, atc_ids, "atc", context)
 
         pol_ids = self.get_polissa_candidates_to_update(cursor, uid, context)
-        a, b, c, pol_msg, pol_sum =self.update_polisses_if_possible(cursor, uid, pol_ids, context)
+        a, b, c, pol_msg, pol_sum =self.update_items_if_possible(cursor, uid, pol_ids, "polissa", context)
 
         return "\n\n".join([atc_sum, pol_sum, atc_msg, pol_msg])
 
