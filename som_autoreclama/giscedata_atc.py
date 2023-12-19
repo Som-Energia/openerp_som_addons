@@ -148,6 +148,9 @@ class GiscedataAtc(osv.osv):
         gen_cases = atcw_obj.read(cursor, uid, wiz_id, ["generated_cases"], ctx)[0]
         atc_id = gen_cases["generated_cases"][0]  # gets the new ATC case id
 
+        if case_data["section_id"]:
+            self.write(cursor, uid, atc_id, {"section_id": case_data["section_id"]})
+
         if case_data.get("crear_cas_r1", False):
             open_r1_wiz = atcw_obj.open_r1_wizard(cursor, uid, [wiz_id], ctx)
 
