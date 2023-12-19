@@ -12,9 +12,13 @@ lead = context.get('lead')
 
 dict_preus_tp_potencia = False
 dict_preus_tp_energia = False
+
 if context.get('tarifa_provisional', False):
-    dict_preus_tp_potencia= context.get('tarifa_provisional')['preus_provisional_potencia']
-    dict_preus_tp_energia= context.get('tarifa_provisional')['preus_provisional_energia']
+    dict_preus_tp_energia = context.get('tarifa_provisional')['preus_provisional_energia']
+    if context.get('tarifa_provisional', False):
+        if context['tarifa_provisional'].get('preus_provisional_potencia'):
+            dict_preus_tp_potencia = context['tarifa_provisional']['preus_provisional_potencia']
+
 
 def clean_text(text):
     return text or ''
@@ -307,8 +311,10 @@ CONTRACT_TYPES = dict(TABLA_9)
                 else:
                     tarifes_ids = llista_preu_o.search(cursor, uid, [])
                     llista_preus = pol_o.escull_llista_preus(cursor, uid, polissa.id, tarifes_ids, context=ctx)
-
-                tarifa_a_mostrar = llista_preus.nom_comercial or llista_preus.name
+                if context.get('tarifa_provisional', False):
+                    tarifa_a_mostrar = 'Tarifa Períodes Empresa'
+                else:
+                    tarifa_a_mostrar = llista_preus.nom_comercial or llista_preus.name
             %>
             <div class="peatge_access_content">
                 <div class="padding_left"><b>${_(u"Peatge de transport i distribució: ")}</b>${clean(polissa.tarifa_codi)}</div>
@@ -591,7 +597,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                         %else:
                             <% llista_preu = ultima_modcon.llista_preu if modcon_pendent_periodes else polissa.llista_preu %>
                             %for p in periodes_energia:
-                                %if llista_preu:
+                                %if llista_preu and not lead:
                                     <% ctx['force_pricelist'] = llista_preu %>
                                     <td class="center">
                                         <span class="">${formatLang(get_atr_price(cursor, uid, polissa, p, 'te', ctx, with_taxes=True)[0], digits=6)}</span>
@@ -682,6 +688,10 @@ CONTRACT_TYPES = dict(TABLA_9)
                     </div>
                 %endif
             </div>
+            <%
+                if lead:
+                    break
+            %>
             %endfor
         </div>
         <div class="styled_box padding_bottom">
