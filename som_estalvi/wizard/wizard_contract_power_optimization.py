@@ -114,7 +114,17 @@ class WizardContractPowerOptimization(osv.osv_memory):
 
             result = sum(total_maximeter_price) + sum(contracted_power_price)
             wiz.write({'current_cost' : result}, context=context)
-        return total_by_period, contracted_power_price
+            res = {}
+            res['total_maximeter_price'] = total_by_period
+            res['contracted_power_price'] = contracted_power_price
+            res['current_cost'] = result
+            res['p1'] = wiz.float_p1
+            res['p2'] = wiz.float_p2
+            res['p3'] = wiz.float_p3
+            res['p4'] = wiz.float_p4
+            res['p5'] = wiz.float_p5
+            res['p6'] = wiz.float_p6
+        return res
 
     def _calculate_number_of_estimates(self, cursor, uid, wiz_id, maximeters_float, context=None):
         if context is None:
@@ -422,7 +432,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
             self.get_optimization_required_data(
                 cursor, uid, wizard.id, optimization['polissa_id'], context=context
             )
-            total_maximeter_price, contracted_power_price = self._calculate_current_cost(cursor, uid, wiz_id, context=context)
+            current = self._calculate_current_cost(cursor, uid, wiz_id, context=context)
             row = []
             for value in HEADER:
                 row.append(optimization[value])
@@ -432,18 +442,18 @@ class WizardContractPowerOptimization(osv.osv_memory):
             row = []
 
             row.append(optimization['nEstimates'])
-            row.append(wizard.current_cost)
-            row.append(wizard.float_p1)
-            row.append(wizard.float_p2)
-            row.append(wizard.float_p3)
-            row.append(wizard.float_p4)
-            row.append(wizard.float_p5)
-            row.append(wizard.float_p6)
+            row.append(current['current_cost'])
+            row.append(current['p1'])
+            row.append(current['p2'])
+            row.append(current['p3'])
+            row.append(current['p4'])
+            row.append(current['p5'])
+            row.append(current['p6'])
 
-            for period, maxi in sorted(total_maximeter_price.items()):
+            for period, maxi in sorted(current['total_maximeter_price'].items()):
                 row.append(maxi)
 
-            for price in contracted_power_price:
+            for price in current['contracted_power_price']:
                 row.append(price)
 
             writer.writerow(row)
