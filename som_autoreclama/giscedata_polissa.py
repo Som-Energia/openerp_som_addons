@@ -36,7 +36,7 @@ class GiscedataPolissa(osv.osv):
                 cursor, uid,
                 h_ids[0],
                 ["generated_atc_id", "change_date"],
-                context = context
+                context=context
             )
             if values['generated_atc_id']:
                 atc_obj = self.pool.get("giscedata.atc")

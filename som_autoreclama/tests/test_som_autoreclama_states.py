@@ -650,7 +650,7 @@ class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
 
         states = {
             'correct': "correct_state_workflow_polissa",
-            'first': "first_state_workflow_polissa",
+            'loop': "loop_state_workflow_polissa",
             'disabled': "disabled_state_workflow_polissa",
         }
         if initial_state in states:
@@ -835,11 +835,11 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
         polissa_obj = self.get_model("giscedata.polissa")
         cond_obj = self.get_model("som.autoreclama.state.condition")
 
-        pol_id = self.build_polissa(f1_date_days_from_today=30)
+        pol_id = self.build_polissa(f1_date_days_from_today=60)
         pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, {})
 
         cond_id = ir_obj.get_object_reference(
-            self.cursor, self.uid, "som_autoreclama", "conditions_receive_f1_first_state_workflow_polissa"
+            self.cursor, self.uid, "som_autoreclama", "conditions_receive_f1_loop_state_workflow_polissa"
         )[1]
 
         ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa", {})
@@ -850,11 +850,11 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
         polissa_obj = self.get_model("giscedata.polissa")
         cond_obj = self.get_model("som.autoreclama.state.condition")
 
-        pol_id = self.build_polissa(f1_date_days_from_today=30+1)
+        pol_id = self.build_polissa(f1_date_days_from_today=61)
         pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, {})
 
         cond_id = ir_obj.get_object_reference(
-            self.cursor, self.uid, "som_autoreclama", "conditions_receive_f1_first_state_workflow_polissa"
+            self.cursor, self.uid, "som_autoreclama", "conditions_receive_f1_loop_state_workflow_polissa"
         )[1]
 
         ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa", {})
@@ -1028,16 +1028,16 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
 
         updtr_obj = self.get_model("som.autoreclama.state.updater")
         status, message = updtr_obj.update_item_if_possible(
-            self.cursor, self.uid, pol_id, "polissa",{}
+            self.cursor, self.uid, pol_id, "polissa", {}
         )
 
         self.assertEqual(status, True)
         self.assertTrue(
-            message.startswith(u"Estat Primera reclamacio executat, nou atc creat amb id ")
+            message.startswith(u"Estat Reclamació Bucle executat, nou atc creat amb id ")
         )
 
         pol = pol_obj.browse(self.cursor, self.uid, pol_id)
-        self.assertEqual(pol.autoreclama_state.name, u"Primera reclamacio")
+        self.assertEqual(pol.autoreclama_state.name, u"Reclamació Bucle")
         self.assertEqual(pol.autoreclama_state_date, today_str())
         self.assertGreaterEqual(len(pol.autoreclama_history_ids), 2)
 
@@ -1047,7 +1047,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
 
         pol_id = self.build_polissa(
             f1_date_days_from_today=30,
-            initial_state='first',
+            initial_state='loop',
         )
 
         updtr_obj = self.get_model("som.autoreclama.state.updater")
@@ -1076,7 +1076,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         pol_y_id = self.build_polissa(
             name="polissa_0002",
             f1_date_days_from_today=30,
-            initial_state='first',
+            initial_state='loop',
         )
 
         updtr_obj = self.get_model("som.autoreclama.state.updater")
