@@ -1380,8 +1380,8 @@
             <field eval="0" name="centralisation"/>
             <field eval="0" name="group_invoice_lines"/>
             <field name="type">purchase</field>
-            <field name="default_credit_account_id" model="account.account" search="[('code','=','662000000001')]"/>
-            <field name="default_debit_account_id" model="account.account" search="[('code','=','662000000001')]"/>
+            <field name="default_credit_account_id" model="account.account" search="[('code','=','163500000000')]"/>
+            <field name="default_debit_account_id" model="account.account" search="[('code','=','163500000000')]"/>
             <field name="view_id" ref="account.account_journal_bank_view"/>
             <field eval="[(6,0,[])]" name="type_control_ids"/>
             <field name="sequence_id" ref="account.sequence_journal"/>
@@ -2177,7 +2177,7 @@ ${text_legal}
             <field name="expiration_years">0</field>
             <field name="waiting_days">0</field>
             <field name="mandate_name">PRESTEC Aportacions</field>
-            <field name="journal_id" ref="apo_journal"/>
+            <field name="journal_id" ref="apo_fact_journal"/>
             <field name="investment_product_id" ref="apo_product_ae" />
             <field name="investment_payment_mode_id" ref="apo_investment_payment_mode"/>
         </record>
@@ -2193,7 +2193,7 @@ ${text_legal}
             <field name="expiration_years">0</field>
             <field name="waiting_days">0</field>
             <field name="mandate_name">PRESTEC Aportacions</field>
-            <field name="journal_id" ref="apo_journal"/>
+            <field name="journal_id" ref="apo_fact_journal"/>
             <field name="investment_product_id" ref="apo_product_ae" />
             <field name="investment_payment_mode_id" ref="apo_investment_payment_mode"/>
         </record>
@@ -2209,7 +2209,7 @@ ${text_legal}
             <field name="expiration_years">0</field>
             <field name="waiting_days">0</field>
             <field name="mandate_name">PRESTEC Aportacions</field>
-            <field name="journal_id" ref="apo_journal"/>
+            <field name="journal_id" ref="apo_fact_journal"/>
             <field name="investment_product_id" ref="apo_product_ae" />
             <field name="investment_payment_mode_id" ref="apo_investment_payment_mode"/>
         </record>
