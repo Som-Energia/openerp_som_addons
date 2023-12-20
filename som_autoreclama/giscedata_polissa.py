@@ -25,7 +25,41 @@ class GiscedataPolissa(osv.osv):
 
         last_date_dt = datetime.strptime(last_date, "%Y-%m-%d")
         days_since_last_f1 = (datetime.today() - last_date_dt).days
-        return {'days_without_F1': days_since_last_f1}
+
+        history_obj = self.pool.get("som.autoreclama.state.history.polissa")
+        h_ids = history_obj.search(cursor, uid, [("polissa_id", "=", id)])
+
+        days_since_current_cacr1006 = 0
+        if h_ids:
+            cacr1006_closed = None
+            values = history_obj.read(
+                cursor, uid,
+                h_ids[0],
+                ["generated_atc_id", "change_date"],
+                context = context
+            )
+            if values['generated_atc_id']:
+                atc_obj = self.pool.get("giscedata.atc")
+                atc_data = atc_obj.read(
+                    cursor, uid,
+                    values['generated_atc_id'],
+                    ["state", "date_closed"],
+                    context=context
+                )
+                if atc_data["state"] == 'done' and atc_data["date_closed"]:
+                    cacr1006_closed = atc_data["date_closed"]
+
+            elif values['change_date']: # no cac, change_state created manually
+                cacr1006_closed = values['change_date']
+
+            if cacr1006_closed:
+                cacr1006_closed_dt = datetime.strptime(cacr1006_closed, "%Y-%m-%d")
+                days_since_current_cacr1006 = (datetime.today() - cacr1006_closed_dt).days
+
+        return {
+            'days_without_F1': days_since_last_f1,
+            'days_since_current_CACR1006_closed': days_since_current_cacr1006,
+        }
 
 
     # Create and setup autoreclama history to the new created polissa object
