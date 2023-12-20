@@ -10,15 +10,12 @@ import csv
 import json
 
 HEADER = [
-    'nEstimates', 'total_cost', 'optimal_powers_P1', 'optimal_powers_P2', 'optimal_powers_P3',
+    'contract_num', 'nEstimates', 'total_cost', 'current_cost', 'optimal_powers_P1', 'optimal_powers_P2', 'optimal_powers_P3',
     'optimal_powers_P4', 'optimal_powers_P5', 'optimal_powers_P6', 'total_maximeters_P1',
     'total_maximeters_P2', 'total_maximeters_P3', 'total_maximeters_P4', 'total_maximeters_P5',
     'total_maximeters_P6', 'total_powers_P1', 'total_powers_P2', 'total_powers_P3',
-    'total_powers_P4', 'total_powers_P5', 'total_powers_P6'
-]
-
-HEADER_2 = [
-    'nEstimates', 'current_cost', 'power_p1', 'power_p2', 'power_p3', 'power_p4', 'power_p5', 'power_p6',
+    'total_powers_P4', 'total_powers_P5', 'total_powers_P6',
+    'power_p1', 'power_p2', 'power_p3', 'power_p4', 'power_p5', 'power_p6',
     'maximeter_cost_p1', 'maximeter_cost_p2', 'maximeter_cost_p3', 'maximeter_cost_p4',
     'maximeter_cost_p5', 'maximeter_cost_p6',
     'power_cost_p1', 'power_cost_p2', 'power_cost_p3', 'power_cost_p4', 'power_cost_p5',
@@ -117,7 +114,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
             res = {}
             res['total_maximeter_price'] = total_by_period
             res['contracted_power_price'] = contracted_power_price
-            res['current_cost'] = result
+            res['current_cost'] = round(result, 2)
             res['p1'] = wiz.float_p1
             res['p2'] = wiz.float_p2
             res['p3'] = wiz.float_p3
@@ -208,7 +205,6 @@ class WizardContractPowerOptimization(osv.osv_memory):
         polissa = pol_obj.browse(cursor, uid, polissa_id, context=context)
         wiz = self.browse(cursor, uid, wiz_id, context=context)
 
-        # De moment ho optimitzarem amb ints. TODO preguntar a EiE
         vals = {
             "power_p1": round(polissa.potencies_periode[0].potencia),
             "power_p2": round(polissa.potencies_periode[1].potencia),
@@ -239,22 +235,22 @@ class WizardContractPowerOptimization(osv.osv_memory):
 
         vals = {
             "power_price_p1": get_atr_price(
-                cursor, uid, polissa, 'P1', 'tp', context=context, with_taxes=True
+                cursor, uid, polissa, 'P1', 'tp', context=context, with_taxes=False
             )[0],
             "power_price_p2": get_atr_price(
-                cursor, uid, polissa, 'P2', 'tp', context=context, with_taxes=True
+                cursor, uid, polissa, 'P2', 'tp', context=context, with_taxes=False
             )[0],
             "power_price_p3": get_atr_price(
-                cursor, uid, polissa, 'P3', 'tp', context=context, with_taxes=True
+                cursor, uid, polissa, 'P3', 'tp', context=context, with_taxes=False
             )[0],
             "power_price_p4": get_atr_price(
-                cursor, uid, polissa, 'P4', 'tp', context=context, with_taxes=True
+                cursor, uid, polissa, 'P4', 'tp', context=context, with_taxes=False
             )[0],
             "power_price_p5": get_atr_price(
-                cursor, uid, polissa, 'P5', 'tp', context=context, with_taxes=True
+                cursor, uid, polissa, 'P5', 'tp', context=context, with_taxes=False
             )[0],
             "power_price_p6": get_atr_price(
-                cursor, uid, polissa, 'P6', 'tp', context=context, with_taxes=True
+                cursor, uid, polissa, 'P6', 'tp', context=context, with_taxes=False
             )[0],
         }
         wiz.write(vals, context=context)
@@ -272,7 +268,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
         wiz = self.browse(cursor, uid, wiz_id, context=context)
 
         excess_price = get_atr_price(
-            cursor, uid, polissa, 'P1', 'epm', context=context, with_taxes=True
+            cursor, uid, polissa, 'P1', 'epm', context=context, with_taxes=False
         )[0]
         wiz.write({'excess_price': excess_price}, context=context)
 
@@ -295,8 +291,14 @@ class WizardContractPowerOptimization(osv.osv_memory):
         preuPenalitzacio = self.get_excess_price(cursor, uid, wiz_id, polissa_id, context=context)
         potenciaMax = self.get_maximeters_power(cursor, uid, wiz_id, polissa_id, context=context)
 
-    def pass_maximeter_validation(self, cursor, uid, ids, context=None):
-        pass
+    def pass_maximeter_validation(self, cursor, uid, wiz_id, polissa_id, context=None):
+        if context is None:
+            context = {}
+
+        wiz = self.browse(cursor, uid, wiz_id, context=context)
+        maximeters_powers = json.loads(wiz.maximeters_powers)
+        if len(maximeters_powers) < 12 return False else return True
+
 
     def serializate_wizard_data(self, cursor, uid, wiz_id, context=None):
         if context is None:
@@ -329,14 +331,17 @@ class WizardContractPowerOptimization(osv.osv_memory):
             context = {}
 
         if len(context['active_ids']) == 1:
-            optimization = self.execute_optimization_script(
-                cursor, uid, wiz_id[0], context['active_ids'][0], context=context
-            )
-            self.generate_optimization_as_csv(
-                cursor, uid, wiz_id[0], [optimization], context=context
-            )
-            wiz = self.browse(cursor, uid, wiz_id[0], context=context)
-            wiz.write({'state': 'result'}, context=context)
+            if self.pass_maximeter_validation(cursor, uid, wiz.id, polissa_id, context=context):
+                optimization = self.execute_optimization_script(
+                    cursor, uid, wiz_id[0], context['active_ids'][0], context=context
+                )
+                self.generate_optimization_as_csv(
+                    cursor, uid, wiz_id[0], [optimization], context=context
+                )
+                wiz = self.browse(cursor, uid, wiz_id[0], context=context)
+                wiz.write({'state': 'result'}, context=context)
+            else:
+                raise  osv.except_osv(_('Error !'), _('Aquesta polissa no passa les validacions de maximetre'))
         else:
             raise  osv.except_osv(_('Error !'), _('Aquest boto només funciona per una polissa'))
 
@@ -354,17 +359,18 @@ class WizardContractPowerOptimization(osv.osv_memory):
             i += 1
         i = 1
         for val in optimization['totalMaximeters']:
-            result['total_maximeters_P{}'.format(i)] = val
+            result['total_maximeters_P{}'.format(i)] = round(val, 2)
             i += 1
         i = 1
         for val in optimization['totalPowers']:
-            result['total_powers_P{}'.format(i)] = val
+            result['total_powers_P{}'.format(i)] = round(val, 2)
             i += 1
 
-        result['total_cost'] = optimization['totalCost']
+        result['total_cost'] = round(optimization['totalCost'], 2)
         result['nEstimates'] = wiz.nEstimates
-        result['current_cost'] = wiz.current_cost
-        result['polissa_id'] = polissa_id
+        pol_obj = self.pool.get('giscedata.polissa')
+        polissa_name = pol_obj.read(cursor, uid, polissa_id, ['name'], context=context)
+        result['contract_num'] = polissa_name['name']
 
         return result
 
@@ -404,18 +410,22 @@ class WizardContractPowerOptimization(osv.osv_memory):
         wiz = self.browse(cursor, uid, ids[0])
 
         optimizations = []
+        missing_data_pol = []
 
         for polissa_id in active_ids:
             self.get_optimization_required_data(
                 cursor, uid, wiz.id, polissa_id, context=context
             )
-            polissa_optimization = self.execute_optimization_script(
-                cursor, uid, wiz.id, polissa_id, context=context
-            )
-            optimizations.append(polissa_optimization)
+            if self.pass_maximeter_validation(cursor, uid, wiz.id, polissa_id, context=context):
+                polissa_optimization = self.execute_optimization_script(
+                    cursor, uid, wiz.id, polissa_id, context=context
+                )
+                optimizations.append(polissa_optimization)
+            else:
+                missing_data_pol.append(polissa_id)
 
         self.generate_optimization_as_csv(
-            cursor, uid, wiz.id, optimizations, context=context
+            cursor, uid, wiz.id, optimizations, missing_data_pol, context=context
         )
         wiz.write({'state': 'result'})
 
@@ -435,14 +445,11 @@ class WizardContractPowerOptimization(osv.osv_memory):
             current = self._calculate_current_cost(cursor, uid, wiz_id, context=context)
             row = []
             for value in HEADER:
-                row.append(optimization[value])
-            writer.writerow(row)
+                if value == 'current_cost':
+                    row.append(current['current_cost'])
+                else:
+                    row.append(optimization[value])
 
-            writer.writerow(HEADER_2)
-            row = []
-
-            row.append(optimization['nEstimates'])
-            row.append(current['current_cost'])
             row.append(current['p1'])
             row.append(current['p2'])
             row.append(current['p3'])
@@ -451,12 +458,15 @@ class WizardContractPowerOptimization(osv.osv_memory):
             row.append(current['p6'])
 
             for period, maxi in sorted(current['total_maximeter_price'].items()):
-                row.append(maxi)
+                row.append(round(maxi, 2))
 
             for price in current['contracted_power_price']:
-                row.append(price)
+                row.append(round(price, 2))
 
             writer.writerow(row)
+            writer.writerow(['Failed contracts'])
+            for pol in missing_data_pol:
+                writer.writerow(pol)
 
         res_file = csv_file.getvalue()
 
