@@ -24,7 +24,7 @@ class SomAutoreclamaStateCondition(osv.osv):
             if cond_data['condition_code'] == 'F1ok':
                 return data["days_without_F1"] <= cond_data["days"]
             if cond_data['condition_code'] == 'CACR1006closed':
-                return data["days_since_current_CAR1006_closed"] > cond_data["days"]
+                return data["days_since_current_CACR1006_closed"] > cond_data["days"]
         if namespace == "atc":
             cond_data = self.read(cursor, uid, id, ["subtype_id", "days"], context=context)
             return (

@@ -42,7 +42,7 @@ class GiscedataPolissa(osv.osv):
                 atc_obj = self.pool.get("giscedata.atc")
                 atc_data = atc_obj.read(
                     cursor, uid,
-                    values['generated_atc_id'],
+                    values['generated_atc_id'][0],
                     ["state", "date_closed"],
                     context=context
                 )
