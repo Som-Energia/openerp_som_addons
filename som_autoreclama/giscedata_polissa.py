@@ -47,7 +47,7 @@ class GiscedataPolissa(osv.osv):
                     context=context
                 )
                 if atc_data["state"] == 'done' and atc_data["date_closed"]:
-                    cacr1006_closed = atc_data["date_closed"]
+                    cacr1006_closed = atc_data["date_closed"][:10]
 
             elif values['change_date']: # no cac, change_state created manually
                 cacr1006_closed = values['change_date']
