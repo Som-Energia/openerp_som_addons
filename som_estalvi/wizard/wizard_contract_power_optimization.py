@@ -297,7 +297,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
 
         wiz = self.browse(cursor, uid, wiz_id, context=context)
         maximeters_powers = json.loads(wiz.maximeters_powers)
-        if len(maximeters_powers) < 12 return False else return True
+        return False if len(maximeters_powers) < 12 else True
 
 
     def serializate_wizard_data(self, cursor, uid, wiz_id, context=None):
@@ -331,19 +331,19 @@ class WizardContractPowerOptimization(osv.osv_memory):
             context = {}
 
         if len(context['active_ids']) == 1:
-            if self.pass_maximeter_validation(cursor, uid, wiz.id, polissa_id, context=context):
+            if self.pass_maximeter_validation(cursor, uid, wiz_id[0], context['active_ids'][0], context=context):
                 optimization = self.execute_optimization_script(
                     cursor, uid, wiz_id[0], context['active_ids'][0], context=context
                 )
                 self.generate_optimization_as_csv(
-                    cursor, uid, wiz_id[0], [optimization], context=context
+                    cursor, uid, wiz_id[0], [optimization], [], context=context
                 )
                 wiz = self.browse(cursor, uid, wiz_id[0], context=context)
                 wiz.write({'state': 'result'}, context=context)
             else:
-                raise  osv.except_osv(_('Error !'), _('Aquesta polissa no passa les validacions de maximetre'))
+                raise  osv.except_osv(('Error !'), ('Aquesta polissa no passa les validacions de maximetre'))
         else:
-            raise  osv.except_osv(_('Error !'), _('Aquest boto només funciona per una polissa'))
+            raise  osv.except_osv(('Error !'), ('Aquest boto només funciona per una polissa'))
 
     def beautify_output(self, cursor, uid, wiz_id, polissa_id, output, context=None):
         if context is None:
@@ -371,6 +371,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
         pol_obj = self.pool.get('giscedata.polissa')
         polissa_name = pol_obj.read(cursor, uid, polissa_id, ['name'], context=context)
         result['contract_num'] = polissa_name['name']
+        result['polissa_id'] = polissa_id
 
         return result
 
@@ -429,7 +430,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
         )
         wiz.write({'state': 'result'})
 
-    def generate_optimization_as_csv(self, cursor, uid, wiz_id, optimizations, context=None):
+    def generate_optimization_as_csv(self, cursor, uid, wiz_id, optimizations, missing_data_pol, context=None):
         if context is None:
             context = {}
 
@@ -437,14 +438,14 @@ class WizardContractPowerOptimization(osv.osv_memory):
 
         csv_file = StringIO()
         writer = csv.writer(csv_file, quoting=csv.QUOTE_NONNUMERIC)
+        writer.writerow(HEADER)
         for optimization in optimizations:
-            writer.writerow(HEADER)
             self.get_optimization_required_data(
                 cursor, uid, wizard.id, optimization['polissa_id'], context=context
             )
             current = self._calculate_current_cost(cursor, uid, wiz_id, context=context)
             row = []
-            for value in HEADER:
+            for value in HEADER[:22]:
                 if value == 'current_cost':
                     row.append(current['current_cost'])
                 else:
@@ -464,9 +465,11 @@ class WizardContractPowerOptimization(osv.osv_memory):
                 row.append(round(price, 2))
 
             writer.writerow(row)
+
+        if missing_data_pol:
             writer.writerow(['Failed contracts'])
-            for pol in missing_data_pol:
-                writer.writerow(pol)
+        for pol in missing_data_pol:
+            writer.writerow([pol])
 
         res_file = csv_file.getvalue()
 
