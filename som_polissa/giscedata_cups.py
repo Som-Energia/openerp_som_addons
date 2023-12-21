@@ -80,5 +80,8 @@ class GiscedataCupsPs(osv.osv):
 
         return llista
 
+    _columns = {
+        'importacio_cadastre_incidencies_origen': fields.char('Incidència Origen Importació Cadastre', size=128),
+    }
 
 GiscedataCupsPs()

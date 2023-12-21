@@ -37,6 +37,7 @@
         "som_polissa_data.xml",
         "som_polissa_report.xml",
         "wizard/wizard_massive_category_to_polissa_view.xml",
+        "giscedata_cups_view.xml",
     ],
     "active": False,
     "installable": True
