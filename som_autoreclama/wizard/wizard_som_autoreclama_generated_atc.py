@@ -20,9 +20,13 @@ class WizardSomAutoreclamaGeneratedAtc(osv.osv_memory):
         generated_atc_ids = []
 
         for item_id in item_ids:
-            h_ids = model_obj.read(cursor, uid, item_id, ["autoreclama_history_ids"], context=context)[
-                "autoreclama_history_ids"
-            ]
+            h_ids = model_obj.read(
+                cursor,
+                uid,
+                item_id,
+                ["autoreclama_history_ids"],
+                context=context
+            )["autoreclama_history_ids"]
             for h_id in h_ids:
                 h_data = h_obj.read(cursor, uid, h_id, ["generated_atc_id"], context=context)
                 if "generated_atc_id" in h_data and h_data["generated_atc_id"]:

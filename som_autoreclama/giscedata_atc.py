@@ -77,8 +77,8 @@ class GiscedataAtc(osv.osv):
         }
         return self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
 
-
     # Automatic ATC + R1-006 from existing polissa / Entry point
+
     def create_ATC_R1_006_from_polissa_via_wizard(self, cursor, uid, polissa_id, context=None):
         channel_obj = self.pool.get("res.partner.canal")
         canal_id = channel_obj.search(
@@ -111,8 +111,8 @@ class GiscedataAtc(osv.osv):
         }
         return self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
 
-
     # Automatic ATC + [R1] from dictonary / Entry poiut
+
     def create_general_atc_r1_case_via_wizard(self, cursor, uid, case_data, context=None):
         if not context:
             ctx = {}

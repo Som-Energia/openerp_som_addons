@@ -9,7 +9,6 @@ class GiscedataPolissa(osv.osv):
     _name = "giscedata.polissa"
     _inherit = "giscedata.polissa"
 
-
     def get_autoreclama_data(self, cursor, uid, id, context=None):
         data = self.read(
             cursor,
@@ -50,7 +49,7 @@ class GiscedataPolissa(osv.osv):
                 if atc_data["state"] == 'done' and atc_data["date_closed"]:
                     cacr1006_closed = atc_data["date_closed"][:10]
 
-            elif values['change_date']: # no cac, change_state created manually
+            elif values['change_date']:  # no cac, change_state created manually
                 cacr1006_closed = values['change_date']
 
             if cacr1006_closed:
@@ -62,8 +61,8 @@ class GiscedataPolissa(osv.osv):
             'days_since_current_CACR1006_closed': days_since_current_cacr1006,
         }
 
-
     # Create and setup autoreclama history to the new created polissa object
+
     def create(self, cursor, uid, vals, context=None):
         polissa_id = super(GiscedataPolissa, self).create(cursor, uid, vals, context=context)
 
@@ -92,8 +91,8 @@ class GiscedataPolissa(osv.osv):
         )
         return polissa_id
 
-
     # Autoreclama history management functions
+
     def get_current_autoreclama_state_info(self, cursor, uid, ids, context=None):
         """
             Get the info of the last history line by atc id.
@@ -127,8 +126,8 @@ class GiscedataPolissa(osv.osv):
                 result[id] = False
         return result
 
-
     # Autoreclama history management functions
+
     def _get_last_autoreclama_state_from_history(
         self, cursor, uid, ids, field_name, arg, context=None
     ):
@@ -143,12 +142,11 @@ class GiscedataPolissa(osv.osv):
                 result[id]["autoreclama_state_date"] = False
         return result
 
-
     # Autoreclama history management functions
+
     def change_state(self, cursor, uid, ids, context):
         values = self.read(cursor, uid, ids, ["polissa_id"])
         return [value["polissa_id"][0] for value in values]
-
 
     _STORE_STATE = {"som.autoreclama.state.history.polissa": (change_state, ["change_date"], 10)}
 

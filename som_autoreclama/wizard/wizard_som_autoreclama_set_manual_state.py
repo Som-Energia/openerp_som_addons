@@ -41,7 +41,12 @@ class WizardSomAutoreclamaSetManualState(osv.osv_memory):
         "state": fields.selection([("init", "Init"), ("end", "End")], "State"),
         "info": fields.text("Informació", readonly=True),
         "workflow_id": fields.many2one("som.autoreclama.state.workflow", "Fluxe"),
-        "next_state_id": fields.many2one("som.autoreclama.state", "Estat", required=True, domain="[('workflow_id', '=', workflow_id)]"),
+        "next_state_id": fields.many2one(
+            "som.autoreclama.state",
+            "Estat",
+            required=True,
+            domain="[('workflow_id', '=', workflow_id)]"
+        ),
     }
 
     _defaults = {

@@ -61,7 +61,8 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             result, message = self.update_item_if_possible(cursor, uid, item_id, namespace, context)
             if result:
                 updated.append(item_id)
-                next_state = self.get_autoreclama_state_name(cursor, uid, item_id, namespace, context)
+                next_state = self.get_autoreclama_state_name(
+                    cursor, uid, item_id, namespace, context)
                 msg += _("{} amb id {} ha canviat d'estat: {} --> {}\n").format(
                     name, item_id, actual_state, next_state
                 )
@@ -79,13 +80,12 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                 ).format(name, item_id, actual_state)
                 msg += _(" - {}\n").format(message)
 
-
         summary = _("Sumari {}\n").format(names)
-        summary += _("{} que han canviat d'estat: .................. {}\n".format(names, len(updated)))
+        summary += _("{} que han canviat d'estat: .................. {}\n".format(names, len(updated)))  # noqa: E501
         summary += _(
             "{} que no han canviat d'estat: ............... {}\n".format(names, len(not_updated))
         )
-        summary += _("{} que no han pogut canviar per un error: .... {}\n".format(names, len(errors)))
+        summary += _("{} que no han pogut canviar per un error: .... {}\n".format(names, len(errors)))  # noqa: E501
         summary += _("\n")
 
         if updated:
@@ -133,7 +133,8 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                 next_state_id = cond_obj.read(
                     cursor, uid, cond_id, ["next_state_id"], context=context
                 )["next_state_id"][0]
-                action_result = state_obj.do_action(cursor, uid, next_state_id, item_id, namespace, context)
+                action_result = state_obj.do_action(
+                    cursor, uid, next_state_id, item_id, namespace, context)
                 if action_result["do_change"]:
                     history_obj.historize(
                         cursor,
@@ -154,10 +155,12 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
 
     def state_updater(self, cursor, uid, context=None):
         atc_ids = self.get_atc_candidates_to_update(cursor, uid, context)
-        c, b, c, atc_msg, atc_sum = self.update_items_if_possible(cursor, uid, atc_ids, "atc", context)
+        c, b, c, atc_msg, atc_sum = self.update_items_if_possible(
+            cursor, uid, atc_ids, "atc", context)
 
         pol_ids = self.get_polissa_candidates_to_update(cursor, uid, context)
-        a, b, c, pol_msg, pol_sum =self.update_items_if_possible(cursor, uid, pol_ids, "polissa", context)
+        a, b, c, pol_msg, pol_sum = self.update_items_if_possible(
+            cursor, uid, pol_ids, "polissa", context)
 
         return "\n\n".join([atc_sum, pol_sum, atc_msg, pol_msg])
 

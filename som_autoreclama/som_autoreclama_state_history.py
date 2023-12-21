@@ -11,7 +11,6 @@ class SomAutoreclamaStateHistory(osv.osv):
     def get_this_model(self, cursor, uid, context=None):
         return self.pool.get("som.autoreclama.state.history.{}".format(self._namespace))
 
-
     def historize(
         self, cursor, uid, item_id, next_state_id, current_date, generated_atc_id, context=None
     ):
@@ -53,7 +52,6 @@ class SomAutoreclamaStateHistoryAtc(SomAutoreclamaStateHistory):
     _name = "som.autoreclama.state.history.atc"
     _namespace = "atc"
 
-
     _columns = {
         "state_id": fields.many2one("som.autoreclama.state", _(u"State"), required=False),
         "change_date": fields.date(_(u"Change Date"), select=True, readonly=True),
@@ -74,12 +72,16 @@ class SomAutoreclamaStateHistoryPolissa(SomAutoreclamaStateHistory):
     _name = "som.autoreclama.state.history.polissa"
     _namespace = "polissa"
 
-
     _columns = {
         "state_id": fields.many2one("som.autoreclama.state", _(u"State"), required=False),
         "change_date": fields.date(_(u"Change Date"), select=True, readonly=True),
         "end_date": fields.date(_(u"End Date"), select=True, readonly=True),
-        "polissa_id": fields.many2one("giscedata.polissa", _(u"Polissa"), readonly=True, ondelete="set null"),
+        "polissa_id": fields.many2one(
+            "giscedata.polissa",
+            _(u"Polissa"),
+            readonly=True,
+            ondelete="set null",
+        ),
         "generated_atc_id": fields.many2one(
             "giscedata.atc", _(u"Cas ATC generat"), readonly=True, ondelete="set null"
         ),
