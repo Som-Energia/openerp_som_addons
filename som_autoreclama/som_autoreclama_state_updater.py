@@ -33,8 +33,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
     def get_polissa_candidates_to_update(self, cursor, uid, context=None):
         pol_obj = self.pool.get("giscedata.polissa")
         search_params = [
-            ("active", "=", True),
-            ("state", "=", "TODO"),
+            ("state", "in", ['activa','baixa','impagament','modcontractual']),
             ("autoreclama_state.is_last", "=", False),
         ]
         return pol_obj.search(cursor, uid, search_params)
