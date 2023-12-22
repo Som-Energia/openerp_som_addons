@@ -92,6 +92,14 @@
                 </form>
             </field>
         </record>
+        <record id="action_som_autoreclama_state_condition_tree" model="ir.actions.act_window">
+            <field name="name">Condicions d'estats autoreclama</field>
+            <field name="res_model">som.autoreclama.state.condition</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'active_test': False}</field>
+        </record>
+        <menuitem id="menu_autoreclama_state_condifion_config" action="action_som_autoreclama_state_condition_tree" parent="menu_folder_autoreclama"/>
         <record model="ir.ui.view" id="view_som_autoreclam_state_history_atc_tree">
             <field name="name">som.autoreclama.state.history.atc.tree</field>
             <field name="model">som.autoreclama.state.history.atc</field>
