@@ -933,7 +933,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         atc_id = self.build_atc()
 
         updtr_obj = self.get_model("som.autoreclama.state.updater")
-        status, message = updtr_obj.update_item_if_possible(
+        status, cnd_id, message = updtr_obj.update_item_if_possible(
             self.cursor, self.uid, atc_id, "atc", {})
 
         self.assertEqual(status, False)
@@ -947,7 +947,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         atc_id = self.build_atc(log_days=60, subtype="001", r1=True)
 
         updtr_obj = self.get_model("som.autoreclama.state.updater")
-        status, message = updtr_obj.update_item_if_possible(
+        status, cnd_id, message = updtr_obj.update_item_if_possible(
             self.cursor, self.uid, atc_id, "atc", {"search_only": True}
         )
 
@@ -960,7 +960,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         atc_id = self.build_atc(log_days=60, subtype="001", r1=True)
 
         updtr_obj = self.get_model("som.autoreclama.state.updater")
-        status, message = updtr_obj.update_item_if_possible(
+        status, cnd_id, message = updtr_obj.update_item_if_possible(
             self.cursor, self.uid, atc_id, "atc", {})
 
         self.assertEqual(status, True)
@@ -981,7 +981,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
 
         updtr_obj = self.get_model("som.autoreclama.state.updater")
         up, not_up, error, msg, s = updtr_obj.update_items_if_possible(
-            self.cursor, self.uid, [atc_y_id, atc_n_id], "atc", {}
+            self.cursor, self.uid, [atc_y_id, atc_n_id], "atc", True, {}
         )
 
         self.assertEqual(up, [atc_y_id])
@@ -1010,7 +1010,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         )
 
         updtr_obj = self.get_model("som.autoreclama.state.updater")
-        status, message = updtr_obj.update_item_if_possible(
+        status, cnd_id, message = updtr_obj.update_item_if_possible(
             self.cursor, self.uid, pol_id, "polissa", {}
         )
 
@@ -1026,7 +1026,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         )
 
         updtr_obj = self.get_model("som.autoreclama.state.updater")
-        status, message = updtr_obj.update_item_if_possible(
+        status, cnd_id, message = updtr_obj.update_item_if_possible(
             self.cursor, self.uid, pol_id, "polissa", {"search_only": True}
         )
 
@@ -1042,7 +1042,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         )
 
         updtr_obj = self.get_model("som.autoreclama.state.updater")
-        status, message = updtr_obj.update_item_if_possible(
+        status, cnd_id, message = updtr_obj.update_item_if_possible(
             self.cursor, self.uid, pol_id, "polissa", {}
         )
 
@@ -1065,7 +1065,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         )
 
         updtr_obj = self.get_model("som.autoreclama.state.updater")
-        status, message = updtr_obj.update_item_if_possible(
+        status, cnd_id, message = updtr_obj.update_item_if_possible(
             self.cursor, self.uid, pol_id, "polissa", {}
         )
 
@@ -1096,7 +1096,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
             mock_funcion
         ):
             updtr_obj = self.get_model("som.autoreclama.state.updater")
-            status, message = updtr_obj.update_item_if_possible(
+            status, cnd_id, message = updtr_obj.update_item_if_possible(
                 self.cursor, self.uid, pol_id, "polissa", {}
             )
             self.assertEqual(status, True)
@@ -1125,7 +1125,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
             mock_funcion
         ):
             updtr_obj = self.get_model("som.autoreclama.state.updater")
-            status, message = updtr_obj.update_item_if_possible(
+            status, cnd_id, message = updtr_obj.update_item_if_possible(
                 self.cursor, self.uid, pol_id, "polissa", {}
             )
             self.assertEqual(status, False)
@@ -1152,7 +1152,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
 
         updtr_obj = self.get_model("som.autoreclama.state.updater")
         up, not_up, error, msg, s = updtr_obj.update_items_if_possible(
-            self.cursor, self.uid, [pol_y_id, pol_n_id], "polissa", {}
+            self.cursor, self.uid, [pol_y_id, pol_n_id], "polissa", True, {}
         )
 
         self.assertEqual(up, [pol_y_id])
