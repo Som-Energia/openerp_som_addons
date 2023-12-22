@@ -14,7 +14,7 @@ class WizardSomAutoreclamaExecuteStep(osv.osv_memory):
 
         updtr_obj = self.pool.get("som.autoreclama.state.updater")
         _, _, _, msg, s = updtr_obj.update_items_if_possible(
-            cursor, uid, context.get("active_ids", []), namespace, context
+            cursor, uid, context.get("active_ids", []), namespace, True, context
         )
         msg += "\n\n" + s
 
