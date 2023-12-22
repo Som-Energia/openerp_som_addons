@@ -1,2 +1,3 @@
 import wizard_gestio_text_to_polissa
 import wizard_massive_category_to_polissa
+import wizard_import_ref_cadastral_from_csv
