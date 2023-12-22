@@ -14,7 +14,7 @@ class GiscedataPolissa(osv.osv):
             cursor,
             uid,
             id,
-            ["data_ultima_lectura_f1", "data_alta"],
+            ["data_ultima_lectura_f1", "data_alta", "data_baixa" ,"state"],
             context,
         )
 
@@ -25,6 +25,18 @@ class GiscedataPolissa(osv.osv):
 
         last_date_dt = datetime.strptime(last_date, "%Y-%m-%d")
         days_since_last_f1 = (datetime.today() - last_date_dt).days
+
+        baixa = data['state'] == 'baixa'
+        if data["data_ultima_lectura_f1"] and data["data_baixa"]:
+            facturada = data["data_baixa"] <= data["data_ultima_lectura_f1"]
+        else:
+            facturada = False
+
+        if data["data_baixa"]:
+            baixa_dt = datetime.strptime(data["data_baixa"], "%Y-%m-%d")
+            days_baixa = (datetime.today() - baixa_dt).days
+        else:
+            days_baixa = 0
 
         history_obj = self.pool.get("som.autoreclama.state.history.polissa")
         h_ids = history_obj.search(cursor, uid, [("polissa_id", "=", id)])
@@ -59,6 +71,8 @@ class GiscedataPolissa(osv.osv):
         return {
             'days_without_F1': days_since_last_f1,
             'days_since_current_CACR1006_closed': days_since_current_cacr1006,
+            'days_since_baixa':  days_baixa,
+            'baixa_facturada': baixa and facturada,
         }
 
     # Create and setup autoreclama history to the new created polissa object

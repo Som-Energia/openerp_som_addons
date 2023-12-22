@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <openerp>
-    <data noupdate="1">
+    <data noupdate="0">
         <!-- SomEnergia autoreclama  states -->
         <record model="som.autoreclama.state.workflow" id="workflow_atc">
             <field name="name">Reclamació per no resposta cas ATC</field>
@@ -615,7 +615,7 @@
             <field name="condition_code">noF1</field>
             <field name="state_id" ref="correct_state_workflow_polissa"/>
             <field name="next_state_id" ref="loop_state_workflow_polissa"/>
-            <field name="priority">10</field>
+            <field name="priority">20</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_receive_f1_loop_state_workflow_polissa">
@@ -623,7 +623,7 @@
             <field name="condition_code">F1ok</field>
             <field name="state_id" ref="loop_state_workflow_polissa"/>
             <field name="next_state_id" ref="correct_state_workflow_polissa"/>
-            <field name="priority">10</field>
+            <field name="priority">20</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_CACR1006_closed_loop_state_workflow_polissa">
@@ -631,7 +631,23 @@
             <field name="condition_code">CACR1006closed</field>
             <field name="state_id" ref="loop_state_workflow_polissa"/>
             <field name="next_state_id" ref="loop_state_workflow_polissa"/>
-            <field name="priority">20</field>
+            <field name="priority">30</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_old_polissa_correct_state_workflow_polissa">
+            <field name="days">365</field>
+            <field name="condition_code">oldPolissa</field>
+            <field name="state_id" ref="correct_state_workflow_polissa"/>
+            <field name="next_state_id" ref="disabled_state_workflow_polissa"/>
+            <field name="priority">10</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_old_polissa_loop_state_workflow_polissa">
+            <field name="days">365</field>
+            <field name="condition_code">oldPolissa</field>
+            <field name="state_id" ref="loop_state_workflow_polissa"/>
+            <field name="next_state_id" ref="disabled_state_workflow_polissa"/>
+            <field name="priority">10</field>
             <field name="active" eval="True"/>
         </record>
         <record id="ir_cron_autoreclama_states_updater" model="ir.cron" forcecreate="1">
