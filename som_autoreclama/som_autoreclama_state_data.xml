@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <openerp>
-    <data noupdate="0">
+    <data noupdate="1">
         <!-- SomEnergia autoreclama  states -->
         <record model="som.autoreclama.state.workflow" id="workflow_atc">
             <field name="name">Reclamació per no resposta cas ATC</field>
