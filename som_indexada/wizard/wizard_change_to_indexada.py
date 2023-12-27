@@ -247,7 +247,10 @@ class WizardChangeToIndexada(osv.osv_memory):
             context = {}
 
         self.validate_polissa_can_change(cursor, uid, polissa, change_type)
-        new_pricelist_id = self.calculate_new_pricelist(cursor, uid, polissa, change_type)
+
+        new_pricelist_id = context.get('business_pricelist', False)
+        if not new_pricelist_id:
+            new_pricelist_id = self.calculate_new_pricelist(cursor, uid, polissa, change_type)
 
         new_modcon_vals = {
             'mode_facturacio': CHANGE_AUX_VALUES[change_type]['invoicing_type'],
