@@ -17,7 +17,8 @@ class WizardChangeToIndexadaMulti(osv.osv_memory):
         failed_polisses = []
         pol_ok = []
         for pol in pol_ids:
-            ctx = {'active_id': pol}
+            ctx = {'active_id': pol,
+                'business_pricelist': wiz_og.pricelist.id}
             params = {'change_type': 'from_period_to_index'}
             wiz_id = wz_chng_to_indx_obj.create(
                 cursor, uid, params, context=ctx
@@ -50,6 +51,7 @@ class WizardChangeToIndexadaMulti(osv.osv_memory):
         'state': fields.selection([('init', 'Init'),
                                    ('end', 'End')], 'State'),
         'info': fields.text('Description'),
+        'pricelist': fields.many2one('product.pricelist', "Tarifa"),
     }
 
     _defaults = {
