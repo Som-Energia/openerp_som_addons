@@ -251,12 +251,13 @@ class WizardChangeToIndexada(osv.osv_memory):
         new_pricelist_id = context.get('business_pricelist', False)
         if not new_pricelist_id:
             new_pricelist_id = self.calculate_new_pricelist(cursor, uid, polissa, change_type)
+        coeficient_k = context.get('coeficient_k', False)
 
         new_modcon_vals = {
             'mode_facturacio': CHANGE_AUX_VALUES[change_type]['invoicing_type'],
             'mode_facturacio_generacio': CHANGE_AUX_VALUES[change_type]['invoicing_type'],
             'llista_preu': new_pricelist_id,
-            'coeficient_k': False,
+            'coeficient_k': coeficient_k,
             'coeficient_d': False,
         }
         try:
@@ -290,7 +291,8 @@ class WizardChangeToIndexada(osv.osv_memory):
 
                 with AsyncMode('sync') as asmode:
                     wiz.action_crear_contracte()
-                    self.send_indexada_modcon_created_email(cursor, uid, polissa)
+                    if not coeficient_k:
+                        self.send_indexada_modcon_created_email(cursor, uid, polissa)
         except Exception:
             polissa.send_signal('undo_modcontractual')
 
