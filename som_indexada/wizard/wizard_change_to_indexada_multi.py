@@ -53,7 +53,7 @@ class WizardChangeToIndexadaMulti(osv.osv_memory):
                                    ('end', 'End')], 'State'),
         'info': fields.text('Description'),
         'pricelist': fields.many2one('product.pricelist', "Tarifa"),
-        'coeficient_k': fields.integer('Coeficient K'),
+        'coeficient_k': fields.float('Coeficient K', digits=(9,3)),
     }
 
     _defaults = {
