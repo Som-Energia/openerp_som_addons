@@ -1319,6 +1319,79 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         )
         self.assertEqual(cnd_id, e_cnd_id)
 
+    def test_update_polissa_if_possible__on_loop__reloop__do_action(self):
+        pol_obj = self.get_model("giscedata.polissa")
+        atc_obj = self.get_model("giscedata.atc")
+        sw_obj = self.get_model("giscedata.switching")
+
+        pol_id = self.build_polissa(
+            f1_date_days_from_today=75 + 1,
+            initial_state='correct',
+            data_baixa=False,
+        )
+
+        updtr_obj = self.get_model("som.autoreclama.state.updater")
+        status, cnd_id, message = updtr_obj.update_item_if_possible(
+            self.cursor, self.uid, pol_id, "polissa", {}
+        )
+
+        self.assertEqual(status, True)
+        self.assertTrue(
+            message.startswith(u"Estat Reclamació Bucle executat, nou atc creat amb id ")
+        )
+
+        pol = pol_obj.browse(self.cursor, self.uid, pol_id)
+        self.assertEqual(pol.autoreclama_state.name, u"Reclamació Bucle")
+        self.assertEqual(pol.autoreclama_state_date, today_str())
+        self.assertGreaterEqual(len(pol.autoreclama_history_ids), 2)
+        _, e_cnd_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_days_since_last_f1_correct_state_workflow_polissa"
+        )
+        self.assertEqual(cnd_id, e_cnd_id)
+
+        first_006 = pol.autoreclama_history_ids[0]['generated_atc_id']
+
+        ## unlock the R1 and the ATC
+        r1 = self.browse_referenced(first_006.ref)
+        sw_obj.write(self.cursor, self.uid, r1.id, {
+            "ref": '',
+            "state": 'done',
+        })
+        atc_obj.write(self.cursor, self.uid, first_006.id, {
+            "ref": '',
+        })
+
+        ## close the ATC and set it up
+        date = datetime.today() - timedelta(days=21)
+        data_close = datetime.strftime(date, "%Y-%m-%d")
+        atc_obj.write(self.cursor, self.uid, first_006.id, {
+            "state": 'done',
+            "date_closed": data_close,
+        })
+
+        ## The real test
+        status, cnd_id, message = updtr_obj.update_item_if_possible(
+            self.cursor, self.uid, pol_id, "polissa", {}
+        )
+
+        self.assertEqual(status, True)
+        self.assertTrue(
+            message.startswith(u"Estat Reclamació Bucle executat, nou atc creat amb id ")
+        )
+
+        pol = pol_obj.browse(self.cursor, self.uid, pol_id)
+        self.assertEqual(pol.autoreclama_state.name, u"Reclamació Bucle")
+        self.assertEqual(pol.autoreclama_state_date, today_str())
+        self.assertGreaterEqual(len(pol.autoreclama_history_ids), 3)
+        _, e_cnd_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_CACR1006_closed_loop_state_workflow_polissa"
+        )
+        self.assertEqual(cnd_id, e_cnd_id)
+        second_006_id = pol.autoreclama_history_ids[0]['generated_atc_id'].id
+        self.assertNotEqual(first_006.id, second_006_id)
+
     def test_update_polisses_if_possible__some_conditions(self):
         pol_n_id = self.build_polissa(
             name="polissa_0003",
