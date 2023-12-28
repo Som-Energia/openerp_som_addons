@@ -38,6 +38,13 @@ class SomAutoreclamaBaseTests(testing.OOTestCase):
         model_obj = self.get_model(model)
         return model_obj.browse(self.cursor, self.uid, int(id))
 
+    def get_object_reference(self, module, semantic_id):
+        ir_obj = self.get_model("ir.model.data")
+        expected_id = ir_obj.get_object_reference(
+            self.cursor, self.uid, module, semantic_id
+        )
+        return expected_id
+
 
 class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
     def test_first_state_correct_atc_dummy(self):
@@ -625,6 +632,8 @@ class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
         f1_date=None,
         f1_date_days_from_today=None,
         initial_state=None,
+        data_baixa=None,
+        data_baixa_from_today=None,
     ):
         ir_obj = self.get_model("ir.model.data")
         f1i_obj = self.get_model("giscedata.polissa.f1.info")
@@ -674,6 +683,18 @@ class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
         par_obj = self.get_model("res.partner")
         par_obj.write(self.cursor, self.uid, par1_id, {"ref": "58264"})
         par_obj.write(self.cursor, self.uid, par2_id, {"ref": "58265"})
+
+        if data_baixa_from_today:
+            date = datetime.today() - timedelta(days=data_baixa_from_today)
+            data_baixa = datetime.strftime(date, "%Y-%m-%d")
+
+        if data_baixa is not None:
+            vals = {"data_baixa": data_baixa}
+            if data_baixa:
+                vals['state'] = 'baixa'
+
+            pol_obj = self.get_model("giscedata.polissa")
+            pol_obj.write(self.cursor, self.uid, polissa_id, vals)
 
         return polissa_id
 
@@ -1003,10 +1024,11 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         self.assertEqual(set(pol_ids) & set(pols), set(pol_ids))
         self.assertTrue(len(pols) >= 5)
 
-    def test_update_polissa_if_possible__no_condition_meet(self):
+    def test_update_polissa_if_possible__on_correct__no_condition_meet(self):
         pol_id = self.build_polissa(
             f1_date_days_from_today=24,
             initial_state='correct',
+            data_baixa=False,
         )
 
         updtr_obj = self.get_model("som.autoreclama.state.updater")
@@ -1018,8 +1040,9 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         self.assertTrue(message.startswith(u"No compleix cap condici\xf3 activa, examinades "))
         self.assertTrue(message.endswith(u"condicions."))
         self.assertTrue(int(message[44:46]) >= 1)
+        self.assertEqual(cnd_id, None)
 
-    def test_update_polissa_if_possible__do_action_test(self):
+    def test_update_polissa_if_possible__on_correct__nof1__do_action_test(self):
         pol_id = self.build_polissa(
             f1_date_days_from_today=75 + 1,
             initial_state='correct',
@@ -1032,13 +1055,15 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
 
         self.assertEqual(status, True)
         self.assertEqual(message, u"Testing")
+        self.assertEqual(cnd_id, None)
 
-    def test_update_polissa_if_possible__do_action_full(self):
+    def test_update_polissa_if_possible__on_correct__nof1__do_action_full(self):
         pol_obj = self.get_model("giscedata.polissa")
 
         pol_id = self.build_polissa(
             f1_date_days_from_today=75 + 1,
             initial_state='correct',
+            data_baixa=False,
         )
 
         updtr_obj = self.get_model("som.autoreclama.state.updater")
@@ -1055,13 +1080,99 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         self.assertEqual(pol.autoreclama_state.name, u"Reclamació Bucle")
         self.assertEqual(pol.autoreclama_state_date, today_str())
         self.assertGreaterEqual(len(pol.autoreclama_history_ids), 2)
+        _, e_cnd_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_days_since_last_f1_correct_state_workflow_polissa"
+        )
+        self.assertEqual(cnd_id, e_cnd_id)
 
-    def test_update_polissa_if_possible__do_action_full_back(self):
+    def test_update_polissa_if_possible__on_correct__baixa_facturada__do_action_full(self):
+        pol_obj = self.get_model("giscedata.polissa")
+        pol_id = self.build_polissa(
+            f1_date_days_from_today=75 + 1,
+            initial_state='correct',
+            data_baixa_from_today=200,
+        )
+
+        updtr_obj = self.get_model("som.autoreclama.state.updater")
+        status, cnd_id, message = updtr_obj.update_item_if_possible(
+            self.cursor, self.uid, pol_id, "polissa", {}
+        )
+
+        self.assertEqual(status, True)
+        self.assertTrue(
+            message.startswith(u"Estat Desactivat - Gestió Manual sense acció --> Ok")
+        )
+
+        pol = pol_obj.browse(self.cursor, self.uid, pol_id)
+        self.assertEqual(pol.autoreclama_state.name, u"Desactivat - Gestió Manual")
+        self.assertEqual(pol.autoreclama_state_date, today_str())
+        self.assertGreaterEqual(len(pol.autoreclama_history_ids), 2)
+        _, e_cnd_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_old_polissa_correct_state_workflow_polissa"
+        )
+        self.assertEqual(cnd_id, e_cnd_id)
+
+    def test_update_polissa_if_possible__on_correct__old__do_action_full(self):
+        pol_obj = self.get_model("giscedata.polissa")
+        pol_id = self.build_polissa(
+            f1_date_days_from_today=369,
+            initial_state='correct',
+            data_baixa_from_today=366,
+        )
+
+        updtr_obj = self.get_model("som.autoreclama.state.updater")
+        status, cnd_id, message = updtr_obj.update_item_if_possible(
+            self.cursor, self.uid, pol_id, "polissa", {}
+        )
+
+        self.assertEqual(status, True)
+        self.assertTrue(
+            message.startswith(u"Estat Desactivat - Gestió Manual sense acció --> Ok")
+        )
+
+        pol = pol_obj.browse(self.cursor, self.uid, pol_id)
+        self.assertEqual(pol.autoreclama_state.name, u"Desactivat - Gestió Manual")
+        self.assertEqual(pol.autoreclama_state_date, today_str())
+        self.assertGreaterEqual(len(pol.autoreclama_history_ids), 2)
+        _, e_cnd_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_old_polissa_correct_state_workflow_polissa"
+        )
+        self.assertEqual(cnd_id, e_cnd_id)
+
+    def test_update_polissa_if_possible__on_correct__nothing__do_action(self):
+        pol_obj = self.get_model("giscedata.polissa")
+        pol_id = self.build_polissa(
+            f1_date_days_from_today=75,
+            initial_state='correct',
+            data_baixa_from_today=74,
+        )
+
+        updtr_obj = self.get_model("som.autoreclama.state.updater")
+        status, cnd_id, message = updtr_obj.update_item_if_possible(
+            self.cursor, self.uid, pol_id, "polissa", {}
+        )
+
+        self.assertEqual(status, False)
+        self.assertTrue(
+            message.startswith(u"No compleix cap condició activa, examinades")
+        )
+
+        pol = pol_obj.browse(self.cursor, self.uid, pol_id)
+        self.assertEqual(pol.autoreclama_state.name, u"Correcte")
+        self.assertEqual(pol.autoreclama_state_date, today_str())
+        self.assertGreaterEqual(len(pol.autoreclama_history_ids), 1)
+        self.assertEqual(cnd_id, None)
+
+    def test_update_polissa_if_possible__on_loop__f1ok__do_action_full_back(self):
         pol_obj = self.get_model("giscedata.polissa")
 
         pol_id = self.build_polissa(
             f1_date_days_from_today=30,
             initial_state='loop',
+            data_baixa=False,
         )
 
         updtr_obj = self.get_model("som.autoreclama.state.updater")
@@ -1078,8 +1189,13 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         self.assertEqual(pol.autoreclama_state.name, u"Correcte")
         self.assertEqual(pol.autoreclama_state_date, today_str())
         self.assertGreaterEqual(len(pol.autoreclama_history_ids), 2)
+        _, e_cnd_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_receive_f1_loop_state_workflow_polissa"
+        )
+        self.assertEqual(cnd_id, e_cnd_id)
 
-    def test_update_polissa_if_possible__do_action_full_loop(self):
+    def test_update_polissa_if_possible__on_loop__again__do_action_full_loop(self):
         pol_obj = self.get_model("giscedata.polissa")
 
         pol_id = self.build_polissa(
@@ -1090,6 +1206,8 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         mock_funcion = mock.Mock(return_value={
             'days_without_F1': 61,
             'days_since_current_CACR1006_closed': 21,
+            'days_since_baixa': 0,
+            'baixa_facturada': False,
         })
         with mock.patch(
             'som_autoreclama.giscedata_polissa.GiscedataPolissa.get_autoreclama_data',
@@ -1107,8 +1225,13 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
             self.assertEqual(pol.autoreclama_state.name, u"Reclamació Bucle")
             self.assertEqual(pol.autoreclama_state_date, today_str())
             self.assertGreaterEqual(len(pol.autoreclama_history_ids), 2)
+            _, expected_ncd_id = self.get_object_reference(
+                "som_autoreclama",
+                "conditions_CACR1006_closed_loop_state_workflow_polissa"
+            )
+            self.assertEqual(cnd_id, expected_ncd_id)
 
-    def test_update_polissa_if_possible__do_action_full_stay(self):
+    def test_update_polissa_if_possible__on_loop__continue__do_action_full_stay(self):
         pol_obj = self.get_model("giscedata.polissa")
 
         pol_id = self.build_polissa(
@@ -1119,6 +1242,8 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         mock_funcion = mock.Mock(return_value={
             'days_without_F1': 61,
             'days_since_current_CACR1006_closed': 20,
+            'days_since_baixa': 0,
+            'baixa_facturada': False,
         })
         with mock.patch(
             'som_autoreclama.giscedata_polissa.GiscedataPolissa.get_autoreclama_data',
@@ -1136,18 +1261,77 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
             self.assertEqual(pol.autoreclama_state.name, u"Reclamació Bucle")
             self.assertEqual(pol.autoreclama_state_date, today_str())
             self.assertGreaterEqual(len(pol.autoreclama_history_ids), 1)
+            self.assertEqual(cnd_id, None)
+
+    def test_update_polissa_if_possible__on_loop__baixa__do_action(self):
+        pol_obj = self.get_model("giscedata.polissa")
+        pol_id = self.build_polissa(
+            f1_date_days_from_today=75 + 1,
+            initial_state='loop',
+            data_baixa_from_today=200,
+        )
+
+        updtr_obj = self.get_model("som.autoreclama.state.updater")
+        status, cnd_id, message = updtr_obj.update_item_if_possible(
+            self.cursor, self.uid, pol_id, "polissa", {}
+        )
+
+        self.assertEqual(status, True)
+        self.assertTrue(
+            message.startswith(u"Estat Desactivat - Gestió Manual sense acció --> Ok")
+        )
+
+        pol = pol_obj.browse(self.cursor, self.uid, pol_id)
+        self.assertEqual(pol.autoreclama_state.name, u"Desactivat - Gestió Manual")
+        self.assertEqual(pol.autoreclama_state_date, today_str())
+        self.assertGreaterEqual(len(pol.autoreclama_history_ids), 2)
+        _, e_cnd_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_old_polissa_loop_state_workflow_polissa"
+        )
+        self.assertEqual(cnd_id, e_cnd_id)
+
+    def test_update_polissa_if_possible__on_loop__facturada__do_action(self):
+        pol_obj = self.get_model("giscedata.polissa")
+        pol_id = self.build_polissa(
+            f1_date_days_from_today=369,
+            initial_state='loop',
+            data_baixa_from_today=366,
+        )
+
+        updtr_obj = self.get_model("som.autoreclama.state.updater")
+        status, cnd_id, message = updtr_obj.update_item_if_possible(
+            self.cursor, self.uid, pol_id, "polissa", {}
+        )
+
+        self.assertEqual(status, True)
+        self.assertTrue(
+            message.startswith(u"Estat Desactivat - Gestió Manual sense acció --> Ok")
+        )
+
+        pol = pol_obj.browse(self.cursor, self.uid, pol_id)
+        self.assertEqual(pol.autoreclama_state.name, u"Desactivat - Gestió Manual")
+        self.assertEqual(pol.autoreclama_state_date, today_str())
+        self.assertGreaterEqual(len(pol.autoreclama_history_ids), 2)
+        _, e_cnd_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_old_polissa_loop_state_workflow_polissa"
+        )
+        self.assertEqual(cnd_id, e_cnd_id)
 
     def test_update_polisses_if_possible__some_conditions(self):
         pol_n_id = self.build_polissa(
             name="polissa_0003",
             f1_date_days_from_today=24,
             initial_state='correct',
+            data_baixa=False,
         )
 
         pol_y_id = self.build_polissa(
             name="polissa_0002",
             f1_date_days_from_today=30,
             initial_state='loop',
+            data_baixa=False,
         )
 
         updtr_obj = self.get_model("som.autoreclama.state.updater")
