@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
 	<data>
-        <record id="view_wizard_import_ref_cadastral_from_csv" model="ir.ui.view">
+        <record model="ir.ui.view" id="view_wizard_import_ref_cadastral_from_csv">
             <field name="name">wizard.import.ref.cadastral.from.csv.form</field>
             <field name="model">wizard.import.ref.cadastral.from.csv</field>
             <field name="type">form</field>
@@ -10,10 +10,10 @@
                     <field name="state" invisible="1"/>
                     <group colspan="4" attrs="{'invisible':[('state','=', 'end')]}">
                         <group colspan="4">
-                            <field name="csv_file"/>
+                            <field name="csv_file" colspan="4" filename="name" string="Arxiu CSV" />
                         </group>
                         <group colspan="4">
-                            <button string="Importar fitxer" name="import_csv_file" icon="gtk-apply"/>
+                            <button string="Importar fitxer" name="import_ref_cadastral_csv" type="object" icon="gtk-apply"/>
                         </group>
                     </group>
                     <group colspan="4" attrs="{'invisible':[('state','=', 'init')]}">
@@ -25,7 +25,7 @@
                 </form>
             </field>
         </record>
-        <record id="action_wizard_import_ref_cadastral_from_csv" model="ir.actions.act_window">
+        <record model="ir.actions.act_window" id="action_wizard_import_ref_cadastral_from_csv">
             <field name="name">Importar Referències cadastrals</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wizard.import.ref.cadastral.from.csv</field>
@@ -42,5 +42,11 @@
             <field name="model">giscedata.cups.ps</field>
             <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_import_ref_cadastral_from_csv'))"/>
         </record>
+        <menuitem
+            action="action_wizard_import_ref_cadastral_from_csv"
+            id="menu_import_ref_cadastral"
+            name="Importar CSV amb referencies cadastrals"
+            parent="giscedata_cups.menu_gestio_cups_manteniment_cups"
+            sequence="10"/>
     </data>
 </openerp>
