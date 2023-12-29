@@ -48,19 +48,17 @@ class SomAutoreclamaBaseTests(testing.OOTestCase):
 
 class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
     def test_first_state_correct_atc_dummy(self):
-        imd_obj = self.get_model("ir.model.data")
-        correct_state_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, "som_autoreclama", "correct_state_workflow_atc"
-        )[1]
+        _, correct_state_id = self.get_object_reference(
+            "som_autoreclama", "correct_state_workflow_atc"
+        )
         sas_obj = self.get_model("som.autoreclama.state")
         first = sas_obj.browse(self.cursor, self.uid, correct_state_id)
         self.assertEqual(first.name, "Correcte")
 
     def test_first_state_correct_polissa_dummy(self):
-        imd_obj = self.get_model("ir.model.data")
-        correct_state_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, "som_autoreclama", "correct_state_workflow_polissa"
-        )[1]
+        _, correct_state_id = self.get_object_reference(
+            "som_autoreclama", "correct_state_workflow_polissa"
+        )
         sas_obj = self.get_model("som.autoreclama.state")
         first = sas_obj.browse(self.cursor, self.uid, correct_state_id)
         self.assertEqual(first.name, "Correcte")
@@ -102,10 +100,9 @@ class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
     def test_create_atc__first_state_correct_in_history_indirectly(self):
         atc_obj = self.get_model("giscedata.atc")
 
-        ir_obj = self.get_model("ir.model.data")
-        polissa_id = ir_obj.get_object_reference(
-            self.cursor, self.uid, "giscedata_polissa", "polissa_0001"
-        )[1]
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0001"
+        )
 
         channel_id = self.search_in("res.partner.canal", [("name", "ilike", "intercambi")])
         section_id = self.search_in("crm.case.section", [("name", "ilike", "client")])
@@ -135,10 +132,9 @@ class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
     def test_create_atc__first_state_correct_in_history_indirectly_a(self):
         atc_obj = self.get_model("giscedata.atc")
 
-        ir_obj = self.get_model("ir.model.data")
-        polissa_id = ir_obj.get_object_reference(
-            self.cursor, self.uid, "giscedata_polissa", "polissa_0001"
-        )[1]
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0001"
+        )
 
         channel_id = self.search_in("res.partner.canal", [("name", "ilike", "intercambi")])
         section_id = self.search_in("crm.case.section", [("name", "ilike", "client")])
@@ -176,10 +172,9 @@ class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
         atc_obj = self.get_model("giscedata.atc")
         history_obj = self.get_model("som.autoreclama.state.history.atc")
 
-        ir_obj = self.get_model("ir.model.data")
-        polissa_id = ir_obj.get_object_reference(
-            self.cursor, self.uid, "giscedata_polissa", "polissa_0001"
-        )[1]
+        _, polissa_id = self.get_object_reference(
+             "giscedata_polissa", "polissa_0001"
+        )
 
         channel_id = self.search_in("res.partner.canal", [("name", "ilike", "intercambi")])
         section_id = self.search_in("crm.case.section", [("name", "ilike", "client")])
@@ -228,10 +223,9 @@ class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
         atc_obj = self.get_model("giscedata.atc")
         history_obj = self.get_model("som.autoreclama.state.history.atc")
 
-        ir_obj = self.get_model("ir.model.data")
-        polissa_id = ir_obj.get_object_reference(
-            self.cursor, self.uid, "giscedata_polissa", "polissa_0001"
-        )[1]
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0001"
+        )
 
         channel_id = self.search_in("res.partner.canal", [("name", "ilike", "intercambi")])
         section_id = self.search_in("crm.case.section", [("name", "ilike", "client")])
@@ -291,10 +285,9 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
     def test_create_general_atc_r1_case_via_wizard__atr_wihtout_r1_type_a(self):
         atc_obj = self.get_model("giscedata.atc")
 
-        ir_obj = self.get_model("ir.model.data")
-        polissa_id = ir_obj.get_object_reference(
-            self.cursor, self.uid, "giscedata_polissa", "polissa_0001"
-        )[1]
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0001"
+        )
 
         channel_id = self.search_in("res.partner.canal", [("name", "ilike", "intercambi")])
         section_id = self.search_in("crm.case.section", [("name", "ilike", "client")])
@@ -328,10 +321,9 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
     def test_create_general_atc_r1_case_via_wizard__atr_wihtout_r1_type_b(self):
         atc_obj = self.get_model("giscedata.atc")
 
-        ir_obj = self.get_model("ir.model.data")
-        polissa_id = ir_obj.get_object_reference(
-            self.cursor, self.uid, "giscedata_polissa", "polissa_0002"
-        )[1]
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0002"
+        )
 
         channel_id = self.search_in("res.partner.canal", [("name", "ilike", "directo")])
         section_id = self.search_in("crm.case.section", [("name", "ilike", "switching")])
@@ -365,10 +357,9 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
     def test_create_general_atc_r1_case_via_wizard__atr_wihtout_r1_type_c(self):
         atc_obj = self.get_model("giscedata.atc")
 
-        ir_obj = self.get_model("ir.model.data")
-        polissa_id = ir_obj.get_object_reference(
-            self.cursor, self.uid, "giscedata_polissa", "polissa_0003"
-        )[1]
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0003"
+        )
 
         channel_id = self.search_in("res.partner.canal", [("name", "ilike", "fono")])
         section_id = self.search_in("crm.case.section", [("name", "ilike", "auto")])
@@ -402,10 +393,9 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
     def test_create_general_atc_r1_case_via_wizard__atr_with_r1_type_a(self):
         atc_obj = self.get_model("giscedata.atc")
 
-        ir_obj = self.get_model("ir.model.data")
-        polissa_id = ir_obj.get_object_reference(
-            self.cursor, self.uid, "giscedata_polissa", "polissa_0002"
-        )[1]
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0002"
+        )
 
         par1_id = self.search_in("res.partner", [("name", "ilike", "Tiny sprl")])
         par2_id = self.search_in("res.partner", [("name", "ilike", "ASUStek")])
@@ -453,10 +443,9 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
     def test_create_ATC_R1_029_from_atc_via_wizard__from_atr(self):
         atc_obj = self.get_model("giscedata.atc")
 
-        ir_obj = self.get_model("ir.model.data")
-        polissa_id = ir_obj.get_object_reference(
-            self.cursor, self.uid, "giscedata_polissa", "polissa_0002"
-        )[1]
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0002"
+        )
 
         par1_id = self.search_in("res.partner", [("name", "ilike", "Tiny sprl")])
         par2_id = self.search_in("res.partner", [("name", "ilike", "ASUStek")])
@@ -521,10 +510,9 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
     def test_create_ATC_R1_006_from_polissa_via_wizard__from_atc(self):
         atc_obj = self.get_model("giscedata.atc")
 
-        ir_obj = self.get_model("ir.model.data")
-        polissa_id = ir_obj.get_object_reference(
-            self.cursor, self.uid, "giscedata_polissa", "polissa_0002"
-        )[1]
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0002"
+        )
 
         par1_id = self.search_in("res.partner", [("name", "ilike", "Tiny sprl")])
         par2_id = self.search_in("res.partner", [("name", "ilike", "ASUStek")])
@@ -534,9 +522,9 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
 
         channel_id = self.search_in("res.partner.canal", [("name", "ilike", "intercambi")])
         subtipus_id = self.search_in("giscedata.subtipus.reclamacio", [("name", "=", "006")])
-        section_id = ir_obj.get_object_reference(
-            self.cursor, self.uid, "som_switching", "atc_section_factura"
-        )[1]
+        _, section_id = self.get_object_reference(
+            "som_switching", "atc_section_factura"
+        )
 
         new_atc_id = atc_obj.create_ATC_R1_006_from_polissa_via_wizard(
             self.cursor, self.uid, polissa_id, {}
@@ -580,10 +568,9 @@ class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
         active=True,
     ):
         atc_obj = self.get_model("giscedata.atc")
-        ir_obj = self.get_model("ir.model.data")
-        polissa_id = ir_obj.get_object_reference(
-            self.cursor, self.uid, "giscedata_polissa", "polissa_0002"
-        )[1]
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0002"
+        )
 
         par1_id = self.search_in("res.partner", [("name", "ilike", "Tiny sprl")])
         par2_id = self.search_in("res.partner", [("name", "ilike", "ASUStek")])
@@ -629,7 +616,6 @@ class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
     def build_polissa(
         self,
         name="polissa_0002",
-        f1_date=None,
         f1_date_days_from_today=None,
         initial_state=None,
         data_baixa=None,
@@ -639,23 +625,18 @@ class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
         f1i_obj = self.get_model("giscedata.polissa.f1.info")
         h_obj = self.get_model("som.autoreclama.state.history.polissa")
 
-        polissa_id = ir_obj.get_object_reference(
-            self.cursor, self.uid, "giscedata_polissa", name
-        )[1]
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", name
+        )
 
-        date = None
-        if f1_date is not None:
-            date = f1_date
-        elif f1_date_days_from_today is not None:
-            date = datetime.today() - timedelta(days=f1_date_days_from_today)
-
-        if date:
+        if f1_date_days_from_today is not None:
+            date = today_minus_str(f1_date_days_from_today)
             f1i_obj.create(
                 self.cursor,
                 self.uid,
                 {
                     'polissa_id': polissa_id,
-                    'data_ultima_lectura_f1': datetime.strftime(date, "%Y-%m-%d"),
+                    'data_ultima_lectura_f1': date,
                 }
             )
 
@@ -665,11 +646,10 @@ class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
             'disabled': "disabled_state_workflow_polissa",
         }
         if initial_state in states:
-            st_id = ir_obj.get_object_reference(
-                self.cursor, self.uid,
+            _, st_id = self.get_object_reference(
                 "som_autoreclama",
                 states[initial_state]
-            )[1]
+            )
             h_obj.historize(
                 self.cursor, self.uid,
                 polissa_id,
@@ -685,8 +665,7 @@ class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
         par_obj.write(self.cursor, self.uid, par2_id, {"ref": "58265"})
 
         if data_baixa_from_today:
-            date = datetime.today() - timedelta(days=data_baixa_from_today)
-            data_baixa = datetime.strftime(date, "%Y-%m-%d")
+            data_baixa = today_minus_str(data_baixa_from_today)
 
         if data_baixa is not None:
             vals = {"data_baixa": data_baixa}
@@ -701,37 +680,34 @@ class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
 
 class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
     def test_fit_atc_condition__001_c_no(self):
-        ir_obj = self.get_model("ir.model.data")
         atc_obj = self.get_model("giscedata.atc")
         cond_obj = self.get_model("som.autoreclama.state.condition")
 
         atc_id = self.build_atc(subtype="001", log_days=10)
         atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
 
-        cond_id = ir_obj.get_object_reference(
-            self.cursor, self.uid, "som_autoreclama", "conditions_001_correct_state_workflow_atc"
-        )[1]
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama", "conditions_001_correct_state_workflow_atc"
+        )
 
         ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, atc_data, "atc", {})
         self.assertEqual(ok, False)
 
     def test_fit_atc_condition__001_c_yes(self):
-        ir_obj = self.get_model("ir.model.data")
         atc_obj = self.get_model("giscedata.atc")
         cond_obj = self.get_model("som.autoreclama.state.condition")
 
         atc_id = self.build_atc(subtype="001", log_days=50, r1=True)
         atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
 
-        cond_id = ir_obj.get_object_reference(
-            self.cursor, self.uid, "som_autoreclama", "conditions_001_correct_state_workflow_atc"
-        )[1]
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama", "conditions_001_correct_state_workflow_atc"
+        )
 
         ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, atc_data, "atc", {})
         self.assertEqual(ok, True)
 
     def test_fit_atc_condition__some(self):
-        ir_obj = self.get_model("ir.model.data")
         atc_obj = self.get_model("giscedata.atc")
         cond_obj = self.get_model("som.autoreclama.state.condition")
 
@@ -792,9 +768,9 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
             )
             atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
 
-            cond_id = ir_obj.get_object_reference(
-                self.cursor, self.uid, "som_autoreclama", test_data["cond"]
-            )[1]
+            _, cond_id = self.get_object_reference(
+                "som_autoreclama", test_data["cond"]
+            )
 
             ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, atc_data, "atc", {})
             self.assertEqual(ok, test_data["result"])
@@ -824,73 +800,61 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
             self.assertEqual(ok, False, "Error on Less than for condition id {}".format(cond_id))
 
     def test_fit_polissa_condition__noF1_yes(self):
-        ir_obj = self.get_model("ir.model.data")
         polissa_obj = self.get_model("giscedata.polissa")
         cond_obj = self.get_model("som.autoreclama.state.condition")
 
         pol_id = self.build_polissa(f1_date_days_from_today=75 + 1)
         pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, {})
 
-        cond_id = ir_obj.get_object_reference(
-            self.cursor,
-            self.uid,
+        _, cond_id = self.get_object_reference(
             "som_autoreclama",
             "conditions_days_since_last_f1_correct_state_workflow_polissa"
-        )[1]
+        )
 
         ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa", {})
         self.assertEqual(ok, True)
 
     def test_fit_polissa_condition__noF1_no(self):
-        ir_obj = self.get_model("ir.model.data")
         polissa_obj = self.get_model("giscedata.polissa")
         cond_obj = self.get_model("som.autoreclama.state.condition")
 
         pol_id = self.build_polissa(f1_date_days_from_today=75)
         pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, {})
 
-        cond_id = ir_obj.get_object_reference(
-            self.cursor,
-            self.uid,
+        _, cond_id = self.get_object_reference(
             "som_autoreclama",
             "conditions_days_since_last_f1_correct_state_workflow_polissa",
-        )[1]
+        )
 
         ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa", {})
         self.assertEqual(ok, False)
 
     def test_fit_polissa_condition__F1ok_yes(self):
-        ir_obj = self.get_model("ir.model.data")
         polissa_obj = self.get_model("giscedata.polissa")
         cond_obj = self.get_model("som.autoreclama.state.condition")
 
         pol_id = self.build_polissa(f1_date_days_from_today=60)
         pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, {})
 
-        cond_id = ir_obj.get_object_reference(
-            self.cursor,
-            self.uid,
+        _, cond_id = self.get_object_reference(
             "som_autoreclama",
             "conditions_receive_f1_loop_state_workflow_polissa"
-        )[1]
+        )
 
         ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa", {})
         self.assertEqual(ok, True)
 
     def test_fit_polissa_condition__F1ok_no(self):
-        ir_obj = self.get_model("ir.model.data")
         polissa_obj = self.get_model("giscedata.polissa")
         cond_obj = self.get_model("som.autoreclama.state.condition")
 
         pol_id = self.build_polissa(f1_date_days_from_today=61)
         pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, {})
 
-        cond_id = ir_obj.get_object_reference(
-            self.cursor,
-            self.uid,
+        _, cond_id = self.get_object_reference(
             "som_autoreclama",
             "conditions_receive_f1_loop_state_workflow_polissa"
-        )[1]
+        )
 
         ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa", {})
         self.assertEqual(ok, False)
@@ -1363,8 +1327,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         })
 
         ## close the ATC and set it up
-        date = datetime.today() - timedelta(days=21)
-        data_close = datetime.strftime(date, "%Y-%m-%d")
+        data_close = today_minus_str(21)
         atc_obj.write(self.cursor, self.uid, first_006.id, {
             "state": 'done',
             "date_closed": data_close,
@@ -1424,10 +1387,9 @@ class SomAutoreclamaDoActionTest(SomAutoreclamaEzATC_Test):
 
         atc_id = self.build_atc(log_days=60, subtype="001")
 
-        ir_obj = self.get_model("ir.model.data")
-        state_id = ir_obj.get_object_reference(
-            self.cursor, self.uid, "som_autoreclama", "disabled_state_workflow_atc"
-        )[1]
+        _, state_id = self.get_object_reference(
+            "som_autoreclama", "disabled_state_workflow_atc"
+        )
         state_obj.write(self.cursor, self.uid, state_id, {"active": False})
         state = state_obj.browse(self.cursor, self.uid, state_id)
 
@@ -1453,10 +1415,9 @@ class SomAutoreclamaDoActionTest(SomAutoreclamaEzATC_Test):
 
         atc_id = self.build_atc(log_days=60, subtype="001")
 
-        ir_obj = self.get_model("ir.model.data")
-        state_id = ir_obj.get_object_reference(
-            self.cursor, self.uid, "som_autoreclama", "correct_state_workflow_atc"
-        )[1]
+        _, state_id = self.get_object_reference(
+            "som_autoreclama", "correct_state_workflow_atc"
+        )
         state = state_obj.browse(self.cursor, self.uid, state_id)
 
         atc = atc_obj.browse(self.cursor, self.uid, atc_id)
@@ -1481,10 +1442,9 @@ class SomAutoreclamaDoActionTest(SomAutoreclamaEzATC_Test):
 
         atc_id = self.build_atc(log_days=60, subtype="001", r1=True)
 
-        ir_obj = self.get_model("ir.model.data")
-        state_id = ir_obj.get_object_reference(
-            self.cursor, self.uid, "som_autoreclama", "first_state_workflow_atc"
-        )[1]
+        _, state_id = self.get_object_reference(
+            "som_autoreclama", "first_state_workflow_atc"
+        )
         state = state_obj.browse(self.cursor, self.uid, state_id)
 
         atc = atc_obj.browse(self.cursor, self.uid, atc_id)
@@ -1516,10 +1476,9 @@ class SomAutoreclamaDoActionTest(SomAutoreclamaEzATC_Test):
 
         atc_id = self.build_atc(log_days=60, subtype="001")
 
-        ir_obj = self.get_model("ir.model.data")
-        state_id = ir_obj.get_object_reference(
-            self.cursor, self.uid, "som_autoreclama", "first_state_workflow_atc"
-        )[1]
+        _, state_id = self.get_object_reference(
+            "som_autoreclama", "first_state_workflow_atc"
+        )
         state_obj.write(
             self.cursor,
             self.uid,
