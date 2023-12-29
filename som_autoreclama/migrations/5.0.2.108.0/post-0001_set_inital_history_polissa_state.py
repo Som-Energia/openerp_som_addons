@@ -55,7 +55,7 @@ def up(cursor, installed_version):
     assignat_loop = 0
     assignat_correct_no_previa = 0
 
-    date_75_days_ago =  (date.today() - timedelta(days=75)).strftime("%Y-%m-%d")
+    date_75_days_ago = (date.today() - timedelta(days=75)).strftime("%Y-%m-%d")
     date_one_year_ago = (date.today() - timedelta(days=300)).strftime("%Y-%m-%d")
 
     pol_ids = pol_obj.search(cursor, uid, search_params, context={'active_test': False})
@@ -67,7 +67,7 @@ def up(cursor, installed_version):
             continue
 
         if pol.state == 'baixa' and pol.data_baixa <= pol.data_ultima_lectura_f1:
-            baixa_factura_ok +=1
+            baixa_factura_ok += 1
             continue
 
         if pol.autoreclama_state:
@@ -90,10 +90,9 @@ def up(cursor, installed_version):
     logger.info("> Baixa més d'un any ------> {}".format(baixa_year_ago))
     logger.info("> Baixa tot facturat ------> {}".format(baixa_factura_ok))
     logger.info("> Ja té autoreclama -------> {}".format(has_autoreclama))
-    logger.info("> Assignat estat correcte (polissa ok) -------------------------> {}".format(assignat_correct))
-    logger.info("> Assignat estat bucle (polissa no ok amb R1 006 previa) -------> {}".format(assignat_loop))
-    logger.info("> Assignat estat correcte (polissa no ok sense R1 006 previa) --> {}".format(assignat_correct_no_previa))
-    
+    logger.info("> Assignat estat correcte (polissa ok) -------------------------> {}".format(assignat_correct))            # noqa: E501
+    logger.info("> Assignat estat bucle (polissa no ok amb R1 006 previa) -------> {}".format(assignat_loop))               # noqa: E501
+    logger.info("> Assignat estat correcte (polissa no ok sense R1 006 previa) --> {}".format(assignat_correct_no_previa))  # noqa: E501
     logger.info("Estats inicials per les giscedata_polissa creats")
 
 

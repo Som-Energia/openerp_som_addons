@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from destral import testing
 from destral.transaction import Transaction
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 import mock
 
 from .. import giscedata_atc, giscedata_polissa, som_autoreclama_state_history
@@ -173,7 +173,7 @@ class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
         history_obj = self.get_model("som.autoreclama.state.history.atc")
 
         _, polissa_id = self.get_object_reference(
-             "giscedata_polissa", "polissa_0001"
+            "giscedata_polissa", "polissa_0001"
         )
 
         channel_id = self.search_in("res.partner.canal", [("name", "ilike", "intercambi")])
@@ -621,7 +621,6 @@ class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
         data_baixa=None,
         data_baixa_from_today=None,
     ):
-        ir_obj = self.get_model("ir.model.data")
         f1i_obj = self.get_model("giscedata.polissa.f1.info")
         h_obj = self.get_model("som.autoreclama.state.history.polissa")
 
@@ -1316,7 +1315,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
 
         first_006 = pol.autoreclama_history_ids[0]['generated_atc_id']
 
-        ## unlock the R1 and the ATC
+        # unlock the R1 and the ATC
         r1 = self.browse_referenced(first_006.ref)
         sw_obj.write(self.cursor, self.uid, r1.id, {
             "ref": '',
@@ -1326,14 +1325,14 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
             "ref": '',
         })
 
-        ## close the ATC and set it up
+        # close the ATC and set it up
         data_close = today_minus_str(21)
         atc_obj.write(self.cursor, self.uid, first_006.id, {
             "state": 'done',
             "date_closed": data_close,
         })
 
-        ## The real test
+        # The real test
         status, cnd_id, message = updtr_obj.update_item_if_possible(
             self.cursor, self.uid, pol_id, "polissa", {}
         )
