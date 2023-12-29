@@ -14,7 +14,7 @@ class GiscedataPolissa(osv.osv):
             cursor,
             uid,
             id,
-            ["data_ultima_lectura_f1", "data_alta", "data_baixa" ,"state"],
+            ["data_ultima_lectura_f1", "data_alta", "data_baixa", "state"],
             context,
         )
 
@@ -71,7 +71,7 @@ class GiscedataPolissa(osv.osv):
         return {
             'days_without_F1': days_since_last_f1,
             'days_since_current_CACR1006_closed': days_since_current_cacr1006,
-            'days_since_baixa':  days_baixa,
+            'days_since_baixa': days_baixa,
             'baixa_facturada': baixa and facturada,
         }
 

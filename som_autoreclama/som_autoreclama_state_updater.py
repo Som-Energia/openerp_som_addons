@@ -33,12 +33,12 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
     def get_polissa_candidates_to_update(self, cursor, uid, context=None):
         pol_obj = self.pool.get("giscedata.polissa")
         search_params = [
-            ("state", "in", ['activa','baixa','impagament','modcontractual']),
+            ("state", "in", ['activa', 'baixa', 'impagament', 'modcontractual']),
             ("autoreclama_state.is_last", "=", False),
         ]
         return pol_obj.search(cursor, uid, search_params)
 
-    def update_items_if_possible(self, cursor, uid, ids, namespace, verbose = True, context=None):
+    def update_items_if_possible(self, cursor, uid, ids, namespace, verbose=True, context=None):
         updated = []
         not_updated = []
         errors = []
@@ -57,7 +57,9 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
 
         for item_id in tqdm(ids):
             actual_state = self.get_autoreclama_state_name(cursor, uid, item_id, namespace, context)
-            result, condition_id, message = self.update_item_if_possible(cursor, uid, item_id, namespace, context)
+            result, condition_id, message = self.update_item_if_possible(
+                cursor, uid, item_id, namespace, context
+            )
             if result:
                 updated.append(item_id)
                 next_state = self.get_autoreclama_state_name(
@@ -76,7 +78,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             else:
                 errors.append(item_id)
                 msg += _(
-                    "{} amb id {} no ha canviat d'estat per error, estat actual: {} => condició {}\n"
+                    "{} amb id {} no ha canviat d'estat per error, estat actual: {} => condició {}\n"  # noqa: E501
                 ).format(name, item_id, actual_state, condition_id)
                 msg += _(" - {}\n").format(message)
 
