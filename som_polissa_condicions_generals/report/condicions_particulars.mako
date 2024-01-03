@@ -404,16 +404,16 @@ CONTRACT_TYPES = dict(TABLA_9)
             cursor, uid, 'start_date_mecanisme_ajust_gas', '2022-10-01'
             )
             end_date_mecanisme_ajust_gas = cfg_obj.get(
-                cursor, uid, 'end_date_mecanisme_ajust_gas', '2099-12-31'
+                cursor, uid, 'end_date_mecanisme_ajust_gas', '2023-12-31'
             )
 
-            start_date_iva_5 = cfg_obj.get(
+            start_date_iva_10 = cfg_obj.get(
                 cursor, uid, 'charge_iva_10_percent_when_start_date', '2021-06-01'
             )
-            end_date_iva_5 = cfg_obj.get(
-                cursor, uid, 'iva_reduit_get_tariff_prices_end_date', '2023-12-31'
+            end_date_iva_10 = cfg_obj.get(
+                cursor, uid, 'iva_reduit_get_tariff_prices_end_date', '2024-12-31'
             )
-            iva_5_active = eval(cfg_obj.get(
+            iva_10_active = eval(cfg_obj.get(
                 cursor, uid, 'charge_iva_10_percent_when_available', '0'
             ))
 
@@ -433,13 +433,13 @@ CONTRACT_TYPES = dict(TABLA_9)
                 iva_reduit = False
                 if not polissa.fiscal_position_id and not lead:
                     imd_obj = polissa.pool.get('ir.model.data')
-                    if iva_5_active and polissa.potencia <= 10 and dades_tarifa['date_start'] >= start_date_iva_5 and dades_tarifa['date_start'] <= end_date_iva_5:
+                    if iva_10_active and polissa.potencia <= 10 and dades_tarifa['date_start'] >= 10 and dades_tarifa['date_start'] <= end_date_iva_10:
                         fp_id = imd_obj.get_object_reference(cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
                         iva_reduit = True
-                        text_vigencia += " (IVA 5%, IE 0,5%)"
+                        text_vigencia += " (IVA 10%, IE 2,5%)"
                     else:
-                        fp_id = imd_obj.get_object_reference(cursor, uid, 'giscedata_facturacio', 'fp_nacional_2012')[1]
-                        text_vigencia += " (IVA 21%, IE 5,11%)"
+                        fp_id = imd_obj.get_object_reference(cursor, uid, 'giscedata_facturacio', 'fp_nacional_2024')[1]
+                        text_vigencia += " (IVA 21%, IE 2,5%)"
                     ctx.update({'force_fiscal_position': fp_id})
             %>
             %if text_vigencia:
