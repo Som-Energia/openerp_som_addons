@@ -438,7 +438,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                         iva_reduit = True
                         text_vigencia += " (IVA 10%, IE 2,5%)"
                     else:
-                        fp_id = imd_obj.get_object_reference(cursor, uid, 'giscedata_facturacio', 'fp_nacional_2024_rdl_8_2023_25')[1]
+                        fp_id = imd_obj.get_object_reference(cursor, uid, 'giscedata_facturacio_iese', 'fp_nacional_2024_rdl_8_2023_25')[1]
                         text_vigencia += " (IVA 21%, IE 2,5%)"
                     ctx.update({'force_fiscal_position': fp_id})
             %>

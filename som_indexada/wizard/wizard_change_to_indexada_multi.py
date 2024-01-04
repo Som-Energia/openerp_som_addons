@@ -14,10 +14,10 @@ class WizardChangeToIndexadaMulti(osv.osv_memory):
 
         pol_ids = context.get("active_ids")
         wz_chng_to_indx_obj = self.pool.get('wizard.change.to.indexada')
+        pol_obj = self.pool.get('giscedata.polissa')
         failed_polisses = []
-        pol_ok = []
-        for pol in pol_ids:
-            ctx = {'active_id': pol,
+        for pol_id in pol_ids:
+            ctx = {'active_id': pol_id,
                 'business_pricelist': wiz_og.pricelist.id,
                 'coeficient_k': wiz_og.coeficient_k}
             params = {'change_type': 'from_period_to_index'}
@@ -31,9 +31,9 @@ class WizardChangeToIndexadaMulti(osv.osv_memory):
                 res = wz_chng_to_indx_obj.change_to_indexada(
                     cursor, uid, [wiz.id], context=ctx
                 )
-                pol_ok.append(pol)
             except Exception:
-                failed_polisses.append(pol)
+                pol_name = pol_obj.read(cursor, uid, pol_id, ['name'])
+                failed_polisses.append(pol_name['name'])
 
         info = ""
         if failed_polisses:
