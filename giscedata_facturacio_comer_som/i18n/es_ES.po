@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2024-01-04 17:03+0000\n"
+"POT-Creation-Date: 2024-01-04 18:21+0000\n"
 "PO-Revision-Date: 2024-01-04 16:10+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
@@ -285,7 +285,7 @@ msgstr "Otros costes regulados"
 
 #: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:34
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:40
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:106
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:112
 msgid "Lloguer de comptador"
 msgstr "Alquiler de contador"
 
@@ -920,8 +920,8 @@ msgstr "Valle"
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:15
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:28
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:81
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:99
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:110
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:105
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:116
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power/invoice_details_td_power.mako:18
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power/invoice_details_td_power.mako:21
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power/invoice_details_td_power.mako:30
@@ -1303,10 +1303,10 @@ msgstr "%s kWh x %s €/kWh"
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:26
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:39
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:79
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:97
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:108
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:122
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:132
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:103
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:114
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:128
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:138
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power/invoice_details_td_power.mako:76
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power/invoice_details_td_power.mako:79
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power/invoice_details_td_power.mako:88
@@ -1468,7 +1468,7 @@ msgstr "Bono social (RD 7/2016 23 diciembre)"
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:11
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:41
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_bo_social_2023/invoice_details_td_bo_social_2023.mako:8
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:107
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:113
 #, python-format
 msgid "%s dies x %s €/dia"
 msgstr "%s días x %s €/día"
@@ -1503,8 +1503,8 @@ msgstr "Impuesto de electricidad"
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:55
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:62
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:117
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:131
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:123
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:137
 msgid "(BASE IMPOSABLE)"
 msgstr "(BASE IMPONIBLE)"
 
@@ -1821,11 +1821,13 @@ msgid ""
 msgstr "En virtud del Real Decreto-ley 17/2021, de 14 de septiembre, el impuesto especial sobre la electricidad aplicable a su factura se encuentra reducido del 5,11269632% al 0,5%."
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:54
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:90
 #, python-format
 msgid "%s € x 2,5%%"
 msgstr "%s € x 2,5%%"
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:55
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:91
 msgid ""
 "En virtut del Reial Decret-llei 8/2023, del 27 de desembre, l'impost "
 "especial sobre l'electricitat aplicable a la factura es troba reduït del "
@@ -1833,11 +1835,13 @@ msgid ""
 msgstr "En virtud del Real Decreto-ley 8/2023, del 27 de diciembre, el impuesto especial sobre la electricidad aplicable a su factura se encuentra reducido del 5,11269632% al 2,5%."
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:57
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:93
 #, python-format
 msgid "%s € x 3,8%%"
 msgstr "%s € x 3,8%%"
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:58
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:94
 msgid ""
 "En virtut del Reial Decret-llei 8/2023, del 27 de desembre, l'impost "
 "especial sobre l'electricitat aplicable a la factura es troba reduït del "
@@ -1859,7 +1863,7 @@ msgid ""
 msgstr "%s kWh x 0,0005 €/kWh (aplicando Art 99.2 de la Ley 28/2014 sin bonificación del 85%%)"
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:66
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:94
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:100
 #, python-format
 msgid "%s € x 5,11269%%"
 msgstr "%s € x 5,11269%%"
@@ -1869,23 +1873,23 @@ msgstr "%s € x 5,11269%%"
 msgid " (amb l'exempció del {}% sobre el {}% de Base Imposable IE)"
 msgstr " (con la exención del {}% sobre el {}% de Base Imponible IE)"
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:90
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:96
 #, python-format
 msgid "%s kWh x 0,001 €/kWh (aplicant Art 99.2 de la Llei 28/2014)"
 msgstr "%s kWh x 0,001 €/kWh (aplicando Art 99.2 de la Ley 28/2014)"
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:92
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:98
 #, python-format
 msgid "%s kWh x 0,0005 €/kWh (aplicant Art 99.2 de la Llei 28/2014)"
 msgstr "%s kWh x 0,0005 €/kWh (aplicando Art 99.2 de la Ley 28/2014)"
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:117
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:131
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:123
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:137
 #, python-format
 msgid "%s € "
 msgstr "%s € "
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:119
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:125
 msgid ""
 "En virtut del Reial Decret-llei 12/2021, del 24 de juny, l'IVA aplicable a "
 "la factura es troba reduït del 21% al 5%."
