@@ -10,6 +10,7 @@
                     <field name="state" invisible="1"/>
                     <group colspan="4" attrs="{'invisible':[('state','=', 'end')]}">
                         <group colspan="4">
+                            <field name="overwrite"/>
                             <field name="csv_file" colspan="4" filename="name" string="Arxiu CSV" />
                         </group>
                         <group colspan="4">

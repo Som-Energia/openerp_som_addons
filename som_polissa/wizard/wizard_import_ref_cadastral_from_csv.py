@@ -25,8 +25,11 @@ class WizardImportRefCadastralFromCSV(osv.osv_memory):
             id_value = row[id_index]
             refcat_value = row[refcat_index]
             subcat_value = row[subcat_index]
-            cups_obj.write(cursor, uid, int(id_value), {'ref_catastral': refcat_value,
-            'importacio_cadastre_incidencies_origen' : subcat_value})
+
+            current = cups_obj.read(cursor, uid, int(id_value), ['ref_catastral'])
+            if wiz.overwrite or not current['ref_catastral']:
+                cups_obj.write(cursor, uid, int(id_value), {'ref_catastral': refcat_value,
+                'importacio_cadastre_incidencies_origen' : subcat_value})
 
         wiz.write({'state': 'end'})
 
@@ -35,6 +38,7 @@ class WizardImportRefCadastralFromCSV(osv.osv_memory):
         'state': fields.selection(
             [('init', 'Initial'), ('end', 'End')], 'State'
         ),
+        'overwrite': fields.boolean('Sobreescriure'),
     }
 
     _defaults = {
