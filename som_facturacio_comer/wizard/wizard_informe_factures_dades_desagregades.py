@@ -62,7 +62,7 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
         for pol_id in pol_ids:
             pol = pol_obj.browse(cursor, uid, pol_id)
             subitem = OrderedDict([('Contracte', pol.name), ('Tarifa Comercialitzadora', pol.llista_preu.name if pol.llista_preu else ''), ('Indexada', 'Indexada' if pol.llista_preu and 'indexada' in pol.llista_preu.name.lower(
-            ) else 'No'), ('Energia activa', 0), ('MAG', 0), ('Penalització reactiva', 0), ('Potència', 0), ('Excés potència', 0), ('Excedents', 0), ('Excedents generats totals', 0),('Excedents saldo compensació', 0), ('Lloguer comptador', 0), ('IVA', 0), ('IGIC', 0), ('IESE', 0), ('Altres', 0), ('TOTAL', 0)])
+            ) else 'No'), ('Energia activa', 0), ('MAG', 0), ('Penalització reactiva', 0), ('Potència', 0), ('Excés potència', 0), ('Excedents', 0), ('Excedents generats totals', 0),('Excedents saldo compensació', 0), ('Lloguer comptador', 0), ('IVA', 0), ('IGIC', 0), ('IESE', 0), ('Flux Solar', 0), ('Altres', 0), ('TOTAL', 0)])
             items[pol_id] = subitem
 
         fact_ids = fact_obj.search(cursor, uid, [('polissa_id.id', 'in', pol_ids), ('data_inici', '>=', from_date), ('data_final', '<=', to_date),
@@ -97,7 +97,7 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
                 else:
                     pol_item['IESE'] += tax_line.amount * factor
             for line in fact.linia_ids:
-                if line.tipus in ('altres', 'cobrament') and l.invoice_line_id.product_id.code == 'PBV':
+                if line.tipus in ('altres', 'cobrament') and line.invoice_line_id.product_id.code == 'PBV':
                     pol_item['Flux Solar'] += line.amount * factor
             pol_item['Altres'] += fact.total_altres * factor
             pol_item['TOTAL'] += fact.amount_total * factor
