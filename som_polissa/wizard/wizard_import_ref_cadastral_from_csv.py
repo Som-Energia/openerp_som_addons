@@ -14,7 +14,7 @@ class WizardImportRefCadastralFromCSV(osv.osv_memory):
         wiz = self.browse(cursor, uid, ids[0], context=context)
         csv_file = StringIO(base64.decodestring(wiz.csv_file))
 
-        csv_reader = csv.reader(csv_file)
+        csv_reader = csv.reader(csv_file, delimiter=';')
         header = next(csv_reader)
         id_index = header.index('id')
         refcat_index = header.index('REFCAT')
