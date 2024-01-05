@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from osv import osv
+from osv import osv, fields
 from tools.translate import _
 
 
@@ -80,5 +80,8 @@ class GiscedataCupsPs(osv.osv):
 
         return llista
 
+    _columns = {
+        'importacio_cadastre_incidencies_origen': fields.char('Incidència Origen Importació', size=128),
+    }
 
 GiscedataCupsPs()

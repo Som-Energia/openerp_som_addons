@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_giscedata_cups_ps_form">
+            <field name="name">giscedata.cups.ps.form</field>
+            <field name="model">giscedata.cups.ps</field>
+            <field name="inherit_id" ref="giscedata_cups.view_cups_ps_form"/>
+            <field name="type">tree</field>
+            <field name="priority">99</field>
+            <field name="arch" type="xml">
+                <field name="catas_dp" position="after">
+                    <separator string="Importació Cadastre" colspan="4"/>
+                    <field name="importacio_cadastre_incidencies_origen" readonly="True"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>
