@@ -96,6 +96,9 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
                     pol_item['IGIC'] += tax_line.amount * factor
                 else:
                     pol_item['IESE'] += tax_line.amount * factor
+            for line in fact.linia_ids:
+                if line.tipus in ('altres', 'cobrament') and l.invoice_line_id.product_id.code == 'PBV':
+                    pol_item['Flux Solar'] += line.amount * factor
             pol_item['Altres'] += fact.total_altres * factor
             pol_item['TOTAL'] += fact.amount_total * factor
 
