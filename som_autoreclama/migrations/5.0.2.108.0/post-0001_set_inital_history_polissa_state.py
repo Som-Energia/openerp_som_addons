@@ -48,51 +48,57 @@ def up(cursor, installed_version):
         ("state", "in", ['activa', 'baixa', 'impagament', 'modcontractual']),
     ]
 
-    baixa_year_ago = 0
-    baixa_factura_ok = 0
-    has_autoreclama = 0
-    assignat_correct = 0
-    assignat_loop = 0
-    assignat_correct_no_previa = 0
+    baixa_year_ago = []
+    baixa_factura_ok = []
+    has_autoreclama = []
+    assignat_correct = []
+    assignat_loop = []
+    assignat_correct_no_previa = []
 
     date_75_days_ago = (date.today() - timedelta(days=75)).strftime("%Y-%m-%d")
     date_one_year_ago = (date.today() - timedelta(days=300)).strftime("%Y-%m-%d")
 
     pol_ids = pol_obj.search(cursor, uid, search_params, context={'active_test': False})
-    for pol_id in tqdm(pol_ids):
-        pol = pol_obj.browse(cursor, uid, pol_id)
+    pol_datas = pol_obj.read(
+        cursor, uid,
+        pol_ids,
+        ['state', 'name', 'data_baixa', 'autoreclama_state', 'data_ultima_lectura_f1']
+    )
 
-        if pol.state == 'baixa' and pol.data_baixa <= date_one_year_ago:
-            baixa_year_ago += 1
+    for pol_data in tqdm(pol_datas):
+
+        if pol_data['state'] == 'baixa' and pol_data['data_baixa'] <= date_one_year_ago:
+            baixa_year_ago.append(pol_data)
             continue
 
-        if pol.state == 'baixa' and pol.data_baixa <= pol.data_ultima_lectura_f1:
-            baixa_factura_ok += 1
+        if pol_data['state'] == 'baixa' and pol_data['data_baixa'] <= pol_data['data_ultima_lectura_f1']:
+            baixa_factura_ok.append(pol_data)
             continue
 
-        if pol.autoreclama_state:
-            has_autoreclama += 1
+        if 'autoreclama_state' in pol_data and pol_data['autoreclama_state']:
+            has_autoreclama.append(pol_data)
             continue
 
-        if pol.data_ultima_lectura_f1 >= date_75_days_ago:
-            polh_obj.historize(cursor, uid, pol_id, correct_state_id, None, False)
-            assignat_correct += 1
+        if pol_data['data_ultima_lectura_f1'] >= date_75_days_ago:
+            polh_obj.historize(cursor, uid, pol_data['id'], correct_state_id, None, False)
+            assignat_correct.append(pol_data)
         else:
-            atc_006_id = cercar_act_r1_006_polissa(cursor, uid, pol_id)
+            atc_006_id = cercar_act_r1_006_polissa(cursor, uid, pol_data['id'])
             if atc_006_id:
-                polh_obj.historize(cursor, uid, pol_id, loop_state_id, None, atc_006_id)
-                assignat_loop += 1
+                polh_obj.historize(cursor, uid, pol_data['id'], loop_state_id, None, atc_006_id)
+                pol_data['reclama'] = atc_006_id
+                assignat_loop.append(pol_data)
             else:
-                polh_obj.historize(cursor, uid, pol_id, correct_state_id, None, False)
-                assignat_correct_no_previa += 1
+                polh_obj.historize(cursor, uid, pol_data['id'], correct_state_id, None, False)
+                assignat_correct_no_previa.append(pol_data)
 
     logger.info("Resum assignacions")
-    logger.info("> Baixa més d'un any ------> {}".format(baixa_year_ago))
-    logger.info("> Baixa tot facturat ------> {}".format(baixa_factura_ok))
-    logger.info("> Ja té autoreclama -------> {}".format(has_autoreclama))
-    logger.info("> Assignat estat correcte (polissa ok) -------------------------> {}".format(assignat_correct))            # noqa: E501
-    logger.info("> Assignat estat bucle (polissa no ok amb R1 006 previa) -------> {}".format(assignat_loop))               # noqa: E501
-    logger.info("> Assignat estat correcte (polissa no ok sense R1 006 previa) --> {}".format(assignat_correct_no_previa))  # noqa: E501
+    logger.info("> Baixa més d'un any ------> {}".format(len(baixa_year_ago)))
+    logger.info("> Baixa tot facturat ------> {}".format(len(baixa_factura_ok)))
+    logger.info("> Ja té autoreclama -------> {}".format(len(has_autoreclama)))
+    logger.info("> Assignat estat correcte (polissa ok) -------------------------> {}".format(len(assignat_correct)))            # noqa: E501
+    logger.info("> Assignat estat bucle (polissa no ok amb R1 006 previa) -------> {}".format(len(assignat_loop)))               # noqa: E501
+    logger.info("> Assignat estat correcte (polissa no ok sense R1 006 previa) --> {}".format(len(assignat_correct_no_previa)))  # noqa: E501
     logger.info("Estats inicials per les giscedata_polissa creats")
 
 
