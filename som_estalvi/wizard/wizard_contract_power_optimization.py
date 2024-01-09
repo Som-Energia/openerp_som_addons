@@ -10,7 +10,7 @@ import csv
 import json
 
 HEADER = [
-    'contract_num', 'nEstimates', 'total_cost', 'current_cost', 'optimal_powers_P1', 'optimal_powers_P2', 'optimal_powers_P3',
+    'contract_num', 'nEstimates', 'optimal_cost', 'current_cost', 'optimal_powers_P1', 'optimal_powers_P2', 'optimal_powers_P3',
     'optimal_powers_P4', 'optimal_powers_P5', 'optimal_powers_P6', 'total_maximeters_P1',
     'total_maximeters_P2', 'total_maximeters_P3', 'total_maximeters_P4', 'total_maximeters_P5',
     'total_maximeters_P6', 'total_powers_P1', 'total_powers_P2', 'total_powers_P3',
@@ -366,7 +366,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
             result['total_powers_P{}'.format(i)] = round(val, 2)
             i += 1
 
-        result['total_cost'] = round(optimization['totalCost'], 2)
+        result['optimal_cost'] = round(optimization['totalCost'], 2)
         result['nEstimates'] = wiz.nEstimates
         pol_obj = self.pool.get('giscedata.polissa')
         polissa_name = pol_obj.read(cursor, uid, polissa_id, ['name'], context=context)
@@ -409,6 +409,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
 
         active_ids = context.get("active_ids")
         wiz = self.browse(cursor, uid, ids[0])
+        pol_obj = self.pool.get('giscedata.polissa')
 
         optimizations = []
         missing_data_pol = []
@@ -423,7 +424,8 @@ class WizardContractPowerOptimization(osv.osv_memory):
                 )
                 optimizations.append(polissa_optimization)
             else:
-                missing_data_pol.append(polissa_id)
+                pol_name = pol_obj.read(cursor, uid, polissa_id, ['name'])
+                missing_data_pol.append(pol_name['name'])
 
         self.generate_optimization_as_csv(
             cursor, uid, wiz.id, optimizations, missing_data_pol, context=context
@@ -525,7 +527,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
             ],
         'State'),
 
-        'excess_price': fields.float('Preu excés maxímetre'),
+        'excess_price': fields.float('Preu excés maxímetre', digits=(16, 6)),
 
         'start_date': fields.date('Data inici'),
         'end_date': fields.date('Data final'),
@@ -538,12 +540,12 @@ class WizardContractPowerOptimization(osv.osv_memory):
         'power_p4': fields.integer('Potència P4'),
         'power_p5': fields.integer('Potència P5'),
         'power_p6': fields.integer('Potència P6'),
-        'float_p1': fields.float('Potència amb decimals P1'),
-        'float_p2': fields.float('Potència amb decimals P2'),
-        'float_p3': fields.float('Potència amb decimals P3'),
-        'float_p4': fields.float('Potència amb decimals P4'),
-        'float_p5': fields.float('Potència amb decimals P5'),
-        'float_p6': fields.float('Potència amb decimals P6'),
+        'float_p1': fields.float('Potència amb decimals P1', digits=(16, 6)),
+        'float_p2': fields.float('Potència amb decimals P2', digits=(16, 6)),
+        'float_p3': fields.float('Potència amb decimals P3', digits=(16, 6)),
+        'float_p4': fields.float('Potència amb decimals P4', digits=(16, 6)),
+        'float_p5': fields.float('Potència amb decimals P5', digits=(16, 6)),
+        'float_p6': fields.float('Potència amb decimals P6', digits=(16, 6)),
 
         'power_price_p1': fields.float('Preu potència P1', digits=(16, 6)),
         'power_price_p2': fields.float('Preu potència P2', digits=(16, 6)),
