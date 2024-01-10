@@ -5,6 +5,7 @@ from osv import osv, fields
 from datetime import datetime, timedelta
 from giscedata_facturacio.report.utils import get_atr_price
 from dateutil.relativedelta import relativedelta
+from operator import countOf
 import base64
 import csv
 import json
@@ -136,7 +137,8 @@ class WizardContractPowerOptimization(osv.osv_memory):
             (maximeters_float[month]['P3'] == 0 or maximeters_float[month]['P3'] == (wiz.power_p3 * 0.85)) and \
             (maximeters_float[month]['P4'] == 0 or maximeters_float[month]['P4'] == (wiz.power_p4 * 0.85)) and \
             (maximeters_float[month]['P5'] == 0 or maximeters_float[month]['P5'] == (wiz.power_p5 * 0.85)) and \
-            (maximeters_float[month]['P6'] == 0 or maximeters_float[month]['P6'] == (wiz.power_p6 * 0.85)):
+            (maximeters_float[month]['P6'] == 0 or maximeters_float[month]['P6'] == (wiz.power_p6 * 0.85)) and \
+            countOf(maximeters_float[month].values(), 0) == 3:
                 nEstimates+=1
 
         wiz.write({'nEstimates' : nEstimates}, context=context)
@@ -277,6 +279,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
             context = {}
 
         if len(context['active_ids']) == 1:
+            self._compute_end_date(cursor, uid, wiz_id, context=context)
             self.get_optimization_required_data(cursor, uid, wiz_id[0], context['active_ids'][0], context=context)
         else:
             raise  osv.except_osv(_('Error !'), _('Aquest boto només funciona per una polissa'))
@@ -410,6 +413,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
         active_ids = context.get("active_ids")
         wiz = self.browse(cursor, uid, ids[0])
         pol_obj = self.pool.get('giscedata.polissa')
+        self._compute_end_date(cursor, uid, ids, context=context)
 
         optimizations = []
         missing_data_pol = []
@@ -486,11 +490,12 @@ class WizardContractPowerOptimization(osv.osv_memory):
                 state = 'multiple'
         return state
 
-    def _compute_end_date(self, cursor, uid, ids, field_name, arg, context={}):
+    def _compute_end_date(self, cursor, uid, ids, context={}):
         result = {}
         for wiz in self.browse(cr, uid, ids, context):
             end_date = datetime.strptime(wiz.start_date, '%Y-%m-%d') + relativedelta(years=+1)
             result[wiz.id] = datetime.strftime(end_date,'%Y-%m-%d')
+            wiz.write({'end_date': datetime.strftime(end_date,'%Y-%m-%d')})
         return result
 
     def onchange_start_date(self, cursor, uid, ids, start_date, context={}):
