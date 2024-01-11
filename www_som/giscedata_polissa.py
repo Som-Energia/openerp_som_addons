@@ -75,11 +75,12 @@ class GiscedataPolissa(osv.osv):
             search_params = [('polissa.id', '=', polissa_id)]
             llista_comptadors = comptador_obj.search(
                 cursor, uid, search_params, 0, 0, False, {'active_test':False})
-            llista_comptadors.sort(reverse = True)
-            comptador_name = comptador_obj.read(
-                cursor, uid, llista_comptadors[0], ['name'])
-            comptador_id = self._www_get_comptador_id(
-                cursor, uid, polissa_id, comptador_name['name'])
+            if llista_comptadors:
+                llista_comptadors.sort(reverse = True)
+                comptador_name = comptador_obj.read(
+                    cursor, uid, llista_comptadors[0], ['name'])
+                comptador_id = self._www_get_comptador_id(
+                    cursor, uid, polissa_id, comptador_name['name'])
 
         if not comptador_id:
             return lectures
