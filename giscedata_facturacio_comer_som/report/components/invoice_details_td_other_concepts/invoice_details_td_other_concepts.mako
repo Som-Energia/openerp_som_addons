@@ -123,6 +123,8 @@ first_pass = True
         <td class="detall_td" colspan="${id.number_of_columns}">${_(u"%s € ") % (formatLang(l['base']))}${_(u"(BASE IMPOSABLE)")}
         %if l.disclaimer_21_to_5:
             ${_(u"En virtut del Reial Decret-llei 12/2021, del 24 de juny, l'IVA aplicable a la factura es troba reduït del 21% al 5%.")}
+        %elif l.disclaimer_21_to_10:
+            ${_(u"En virtut del Reial Decret-llei 8/2023, del 27 de desembre, l’IVA aplicat a la factura es troba reduït del 21% al 10%")}
         %endif
         </td>
         <td class="subtotal">${_(u"%s €") % formatLang(l['amount'])}</td>

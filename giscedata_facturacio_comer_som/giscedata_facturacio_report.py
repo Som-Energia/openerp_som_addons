@@ -1448,6 +1448,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     'base': l.base,
                     'amount': l.amount,
                     'disclaimer_21_to_5': l.name == 'IVA 5%',
+                    'disclaimer_21_to_10': l.name == 'IVA 10%',
                 })
             if 'IGIC' in l.name:
                 igic_lines.append({
