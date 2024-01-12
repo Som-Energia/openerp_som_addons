@@ -71,7 +71,7 @@ def up(cursor, installed_version):
             baixa_year_ago.append(pol_data)
             continue
 
-        if pol_data['state'] == 'baixa' and pol_data['data_baixa'] <= pol_data['data_ultima_lectura_f1']:
+        if pol_data['state'] == 'baixa' and pol_data['data_baixa'] <= pol_data['data_ultima_lectura_f1']:  # noqa: E501
             baixa_factura_ok.append(pol_data)
             continue
 

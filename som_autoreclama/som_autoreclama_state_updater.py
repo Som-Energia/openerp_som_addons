@@ -5,6 +5,7 @@ from tools.translate import _
 from tools import email_send
 from datetime import datetime
 
+
 class SomAutoreclamaStateUpdater(osv.osv_memory):
 
     _name = "som.autoreclama.state.updater"
@@ -45,10 +46,10 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
 
         if namespace == 'atc':
             name = _('Cas ATC')
-            names = _('Casos ATC')
+            names = _('Casos ATC 029')
         elif namespace == 'polissa':
             name = _('Pòlissa')
-            names = _('Pòlisses')
+            names = _('Pòlisses ATC 006')
         else:
             name = _('Desconegut')
             names = _('Desconeguts')
@@ -157,7 +158,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
 
     def state_updater(self, cursor, uid, context=None):
         atc_ids = self.get_atc_candidates_to_update(cursor, uid, context)
-        c, b, c, atc_msg, atc_sum = self.update_items_if_possible(
+        a, b, c, atc_msg, atc_sum = self.update_items_if_possible(
             cursor, uid, atc_ids, "atc", False, context)
 
         pol_ids = self.get_polissa_candidates_to_update(cursor, uid, context)
@@ -176,13 +177,14 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
 
             def printn(f, text):
                 f.write(str(text) + "\n")
-            def separator(f ,pattern='*'):
+
+            def separator(f, pattern='*'):
                 printn(f, pattern * 4 + ' ' + str(datetime.today()) + ' ' + pattern * 40)
 
             separator(f, '-')
             subject = _(u"Resultat accions batch d'autoreclama")
             msg = self.state_updater(cursor, uid, context)
-            emails_to = filter(lambda a: bool(a), map(str.strip, data.get("emails_to", "").split(",")))
+            emails_to = filter(lambda a: bool(a), map(str.strip, data.get("emails_to", "").split(",")))  # noqa: E501
 
             separator(f)
             printn(f, subject)

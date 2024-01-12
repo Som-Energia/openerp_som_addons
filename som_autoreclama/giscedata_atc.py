@@ -80,13 +80,27 @@ class GiscedataAtc(osv.osv):
     # Automatic ATC + R1-006 from existing polissa / Entry point
 
     def create_ATC_R1_006_from_polissa_via_wizard(self, cursor, uid, polissa_id, context=None):
+        subtr_obj = self.pool.get("giscedata.subtipus.reclamacio")
+        subtr_id = subtr_obj.search(cursor, uid, [("name", "=", "006")], context=context)[0]
+
+        # Do not create a 006 if there is an active one yet
+        params = [
+            ("polissa_id", "=", polissa_id),
+            ("state", "in", ["open", "pending"]),
+            ("subtipus_id", "=", subtr_id),
+        ]
+        atc_ids = self.search(cursor, uid, params, context=context)
+        if atc_ids:
+            raise Exception(
+                _(
+                    u"Error en la creació del CAC amb R1 006, ja n'hi ha un en estat obert o pendent amb id {}!!!"  # noqa: E501
+                ).format(",".join([str(atc_id) for atc_id in atc_ids]))
+            )
+
         channel_obj = self.pool.get("res.partner.canal")
         canal_id = channel_obj.search(
             cursor, uid, [("name", "ilike", "intercambi")], context=context
         )[0]
-
-        subtr_obj = self.pool.get("giscedata.subtipus.reclamacio")
-        subtr_id = subtr_obj.search(cursor, uid, [("name", "=", "006")], context=context)[0]
 
         imd_obj = self.pool.get("ir.model.data")
         initial_state_id = imd_obj.get_object_reference(
@@ -109,6 +123,14 @@ class GiscedataAtc(osv.osv):
             "crear_cas_r1": True,
             "autoreclama_history_initial_state_id": initial_state_id,
         }
+
+        tag_obj = self.pool.get("giscedata.atc.tag")
+        tag_ids = tag_obj.search(
+            cursor, uid, [('name', '=', 'AUTOCAC 006')], context=context
+        )
+        if tag_ids:
+            new_case_data['atc_tag_id'] = tag_ids[0]
+
         return self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
 
     # Automatic ATC + [R1] from dictonary / Entry poiut
@@ -139,6 +161,7 @@ class GiscedataAtc(osv.osv):
             "open_case": True,
             "no_responsible": case_data.get("sense_responsable", False),
             "tancar_cac_al_finalitzar_r1": case_data.get("tanca_al_finalitzar_r1", False),
+            "tag": case_data.get("atc_tag_id", False),
         }
 
         atcw_obj = self.pool.get("wizard.create.atc.from.polissa")
@@ -186,7 +209,7 @@ class GiscedataAtc(osv.osv):
                     cursor, uid, [r1w_id], r1w_ctx
                 )
             else:
-                raise Exception("Error en la creació del R1, aquest cas no està suportat")
+                raise Exception(_("Error en la creació del R1, aquest cas no està suportat"))
 
         return atc_id
 
