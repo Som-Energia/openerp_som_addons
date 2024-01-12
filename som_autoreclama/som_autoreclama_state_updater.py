@@ -5,6 +5,7 @@ from tools.translate import _
 from tools import email_send
 from datetime import datetime
 
+
 class SomAutoreclamaStateUpdater(osv.osv_memory):
 
     _name = "som.autoreclama.state.updater"
@@ -176,13 +177,14 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
 
             def printn(f, text):
                 f.write(str(text) + "\n")
-            def separator(f ,pattern='*'):
+
+            def separator(f, pattern='*'):
                 printn(f, pattern * 4 + ' ' + str(datetime.today()) + ' ' + pattern * 40)
 
             separator(f, '-')
             subject = _(u"Resultat accions batch d'autoreclama")
             msg = self.state_updater(cursor, uid, context)
-            emails_to = filter(lambda a: bool(a), map(str.strip, data.get("emails_to", "").split(",")))
+            emails_to = filter(lambda a: bool(a), map(str.strip, data.get("emails_to", "").split(",")))  # noqa: E501
 
             separator(f)
             printn(f, subject)
