@@ -25,7 +25,14 @@ class WizardSomAutoreclamaSetManualState(osv.osv_memory):
         info = ""
         for item_id in item_ids:
             try:
-                h_obj.historize(cursor, uid, item_id, wiz.next_state_id.id, None, False, context)
+                h_obj.historize(
+                    cursor, uid,
+                    item_id,
+                    wiz.next_state_id.id,
+                    wiz.change_date,
+                    wiz.attached_atc.id,
+                    context
+                )
                 info += _("{} {} estat canviat manualment a '{}'\n").format(
                     namespace.capitalize(), item_id, wiz.next_state_id.name
                 )
@@ -47,6 +54,11 @@ class WizardSomAutoreclamaSetManualState(osv.osv_memory):
             required=True,
             domain="[('workflow_id', '=', workflow_id)]"
         ),
+        "attached_atc": fields.many2one(
+            "giscedata.atc",
+            "Cas ATC associat",
+        ),
+        "change_date": fields.date("Canvi de data"),
     }
 
     _defaults = {
