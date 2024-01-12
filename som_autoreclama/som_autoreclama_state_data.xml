@@ -635,7 +635,7 @@
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_old_polissa_correct_state_workflow_polissa">
-            <field name="days">365</field>
+            <field name="days">300</field>
             <field name="condition_code">oldPolissa</field>
             <field name="state_id" ref="correct_state_workflow_polissa"/>
             <field name="next_state_id" ref="disabled_state_workflow_polissa"/>
@@ -643,7 +643,7 @@
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_old_polissa_loop_state_workflow_polissa">
-            <field name="days">365</field>
+            <field name="days">300</field>
             <field name="condition_code">oldPolissa</field>
             <field name="state_id" ref="loop_state_workflow_polissa"/>
             <field name="next_state_id" ref="disabled_state_workflow_polissa"/>
