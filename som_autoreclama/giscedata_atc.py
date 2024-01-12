@@ -109,6 +109,14 @@ class GiscedataAtc(osv.osv):
             "crear_cas_r1": True,
             "autoreclama_history_initial_state_id": initial_state_id,
         }
+
+        tag_obj = self.pool.get("giscedata.atc.tag")
+        tag_ids = tag_obj.search(
+            cursor, uid, [('name','=','AUTOCAC 006')], context=context
+        )
+        if tag_ids:
+            new_case_data['atc_tag_id'] = tag_ids[0]
+
         return self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
 
     # Automatic ATC + [R1] from dictonary / Entry poiut
@@ -139,6 +147,7 @@ class GiscedataAtc(osv.osv):
             "open_case": True,
             "no_responsible": case_data.get("sense_responsable", False),
             "tancar_cac_al_finalitzar_r1": case_data.get("tanca_al_finalitzar_r1", False),
+            "tag": case_data.get("atc_tag_id", False),
         }
 
         atcw_obj = self.pool.get("wizard.create.atc.from.polissa")
