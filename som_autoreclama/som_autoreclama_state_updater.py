@@ -45,10 +45,10 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
 
         if namespace == 'atc':
             name = _('Cas ATC')
-            names = _('Casos ATC')
+            names = _('Casos ATC 029')
         elif namespace == 'polissa':
             name = _('Pòlissa')
-            names = _('Pòlisses')
+            names = _('Pòlisses ATC 006')
         else:
             name = _('Desconegut')
             names = _('Desconeguts')
@@ -157,7 +157,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
 
     def state_updater(self, cursor, uid, context=None):
         atc_ids = self.get_atc_candidates_to_update(cursor, uid, context)
-        c, b, c, atc_msg, atc_sum = self.update_items_if_possible(
+        a, b, c, atc_msg, atc_sum = self.update_items_if_possible(
             cursor, uid, atc_ids, "atc", False, context)
 
         pol_ids = self.get_polissa_candidates_to_update(cursor, uid, context)
