@@ -39,6 +39,21 @@ class TarifaPoolSOM(TarifaPool):
             if 'ajom' in res:
                 del res['ajom']
 
+        if self.phf_function == 'phf_calc_esmasa':
+            # only if 'phf_calc_esmasa' formula is used
+            res['pmd'] = 'prmdiari'
+            del res['pc3_ree']
+            res['pos'] = 'sobrecostes_ree'
+            res['peatges'] = 'pa'
+            res['omie_ree'] = 'omie'
+            res['fe'] = 'fe'
+            res['imu'] = 'imu'
+            res['k'] = 'k'
+            res['d'] = 'd'
+            res['si'] = 'si'
+            if 'ajom' in res:
+                del res['ajom']
+
         return res
 
     def get_available_audit_coefs_gen(self):
