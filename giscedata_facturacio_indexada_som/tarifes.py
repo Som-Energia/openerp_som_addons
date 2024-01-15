@@ -436,7 +436,9 @@ class TarifaPoolSOM(TarifaPool):
     def phf_calc_esmasa(self, curve, start_date):
         """
         Calcs component PHF as:
-        PHF = (1 + IMU) * [(PMD + PC + POS + OMIE_REE + H) * (1 + Perdidas) + FNEE + K + D] + PA
+
+        PHF = (1 + IMU) * [(Prm + PMAJ + Pc + CAD + DSV + POsOm + I) * (1 + Perd)] + Ptd + Ca + F
+
         :param curve: Component curve
         :param start_date: component start date
         :return: returns a component
