@@ -493,21 +493,7 @@ class TarifaPoolSOM(TarifaPool):
                 srad = 0
             sobrecostes_ree += srad
 
-        # MAJ RDL 10/2022
-        maj_activated = self.conf.get('maj_activated', 0)
-
         A = ((prmdiari + sobrecostes_ree + si) * 0.001) + pc3_boe + (omie * 0.001) + h
-
-        # Use AJOM if invoice includes june'22 or later days and variable is activated
-        if maj_activated and (
-                (start_date.year >= 2022 and start_date.month >= 6) or
-                (start_date.year == 2023 and start_date.month < 6)
-        ):
-            ajom = self.get_coeficient_from_dict(start_date, 'ajom')
-            A += ajom * 0.001
-        else:
-            ajom = None
-
         B = (1 + (perdues * 0.01))
         C = A * B
         D = (fe * 0.001) + k + d
