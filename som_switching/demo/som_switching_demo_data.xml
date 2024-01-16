@@ -9,13 +9,25 @@
             <field name="subtipus_id" eval="1"/>
             <field name="reclamante">06</field>
             <field name="agent_actual">06</field>
-		</record>
+        </record>
         <record  model="giscedata.switching" id="sw_001">
             <field name="ref_contracte">Test</field>
             <field name="data_sollicitud">2022-01-02</field>
             <field name="proces_id" ref='giscedata_switching.sw_proces_r1' />
             <field name="step_id" ref='giscedata_switching.sw_step_r1_01' />
             <field name="company_id" ref="base.main_company"/>
-		</record>
+        </record>
+        <record id="base.res_partner_asus" model="res.partner">
+            <field name="ref">0001</field>
+            <field name="ref2">R1-001</field>
+        </record>
+        <record id="base.res_partner_agrolait" model="res.partner">
+            <field name="ref">0002</field>
+            <field name="ref2">R1-002</field>
+        </record>
+        <record id="base.main_partner" model="res.partner">
+            <field name="ref">0003</field>
+            <field name="ref2">R1-003</field>
+        </record>
     </data>
 </openerp>
