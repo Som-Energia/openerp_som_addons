@@ -43,16 +43,14 @@ class TarifaPoolSOM(TarifaPool):
             # only if 'phf_calc_esmasa' formula is used
             res['pmd'] = 'prmdiari'
             del res['pc3_ree']
-            res['pos'] = 'sobrecostes_ree'
             res['peatges'] = 'pa'
             res['omie_ree'] = 'omie'
-            res['fe'] = 'fe'
             res['imu'] = 'imu'
             res['k'] = 'k'
             res['d'] = 'd'
             res['si'] = 'si'
-            if 'ajom' in res:
-                del res['ajom']
+            res['dsv'] = 'dsv'
+            res['prdemcad'] = 'prdemcad'
 
         return res
 
@@ -479,31 +477,35 @@ class TarifaPoolSOM(TarifaPool):
             'C2_%(fname)s_%(postfix)s' % locals(), esios_token
         )
 
-        # Sobrecostes REE
+        # prdemcad file
+        prdemcad = Prdemcad('C2_prmdencad_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+
+        # preu del desvío corresponent als NOCUR
         compodem = MonthlyCompodem('C2_monthlycompodem_%(postfix)s' % locals(), esios_token)
-        sobrecostes_ree = (
-                compodem.get_component("RT3") + compodem.get_component("RT6") + compodem.get_component("BS3") +
-                compodem.get_component("EXD") + compodem.get_component("IN7") + compodem.get_component("CFP") +
-                compodem.get_component("BALX") + compodem.get_component("DSV") + compodem.get_component("PS3") +
-                compodem.get_component("IN3") + compodem.get_component("CT3")
-        )
+        dsv = compodem.get_component("DSV")  # [€/MWh]
 
-        if (start_date.year >= 2022 and start_date.month >= 11) or (start_date.year > 2022):
-            try:
-                srad = SRAD('C2_srad_%(postfix)s' % locals(), esios_token)
-            except REECoeficientsNotFound as e:
-                srad = 0
-            sobrecostes_ree += srad
+        # MAJ RDL 10/2022
+        # Use AJOM if invoice includes june'22 or later days and variable is activated
+        maj_activated = self.conf.get('maj_activated', 0)
+        if maj_activated and (
+                (start_date.year >= 2022 and start_date.month >= 6) or
+                (start_date.year == 2023 and start_date.month < 6)
+        ):
+            ajom = self.get_coeficient_from_dict(start_date, 'ajom')  # [€/MWh]
+        else:
+            ajom = None
 
-        A = ((prmdiari + sobrecostes_ree + si) * 0.001) + pc3_boe + (omie * 0.001) + h
-        B = (1 + (perdues * 0.01))
-        C = A * B
-        D = (fe * 0.001) + k + d
-        E = C + D
-        F = E * (1 + (imu * 0.01))
-        G = F + pa
-        H = curve * 0.001
-        component = H * G
+        #A = (prmdiari * 0.001) + pc3_boe + (prdemcad * 0.001) + (dsv * 0.001) + (omie * 0.001) + (si * 0.001)
+
+        A = (prmdiari + prdemcad + dsv + omie + si) * 0.001
+        A += pc3_boe
+        if ajom:
+            A += ajom * 0.001
+        B = A * (1 + (perdues * 0.01))
+        C = B * (1 + (imu * 0.01))
+        D = C + pa + k + d
+        E = curve * 0.001
+        component = D * E
 
         audit_keys = self.get_available_audit_coefs()
         for key in self.conf.get('audit', []):
