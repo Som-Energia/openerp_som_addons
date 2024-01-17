@@ -478,7 +478,7 @@ class TarifaPoolSOM(TarifaPool):
         )
 
         # prdemcad file
-        prdemcad = Prdemcad('C2_prmdencad_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        prdemcad = Prdemcad('C2_prdemcad_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
         # preu del desvío corresponent als NOCUR
         compodem = MonthlyCompodem('C2_monthlycompodem_%(postfix)s' % locals(), esios_token)
