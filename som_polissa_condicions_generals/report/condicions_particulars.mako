@@ -433,7 +433,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                 iva_reduit = False
                 if not polissa.fiscal_position_id and not lead:
                     imd_obj = polissa.pool.get('ir.model.data')
-                    if iva_10_active and polissa.potencia <= 10 and dades_tarifa['date_start'] >= 10 and dades_tarifa['date_start'] <= end_date_iva_10:
+                    if iva_10_active and polissa.potencia <= 10 and dades_tarifa['date_start'] >= start_date_iva_10 and dades_tarifa['date_start'] <= end_date_iva_10:
                         fp_id = imd_obj.get_object_reference(cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
                         iva_reduit = True
                         text_vigencia += " (IVA 10%, IE 2,5%)"
