@@ -12,6 +12,7 @@
                         <group>
                             <field name="workflow_id" invisible="1"/>
                             <field name="as_polissa_id" invisible="1"/>
+                            <field name="as_subtipus_name" invisible="1"/>
                             <field name="next_state_id" />
                             <field name="attached_atc" />
                             <field name="change_date" />

@@ -25,6 +25,13 @@ class WizardSomAutoreclamaSetManualState(osv.osv_memory):
             return context["active_ids"][0]
         return None
 
+    def _get_associated_subtipus_name(self, cursor, uid, context=None):
+        namespace = context.get("namespace", "atc")
+        if namespace == "atc":
+            return '029'
+        elif namespace == "polissa":
+            return '006'
+        return ''
 
     def assign_state(self, cursor, uid, ids, context=None):
         namespace = context.get("namespace", "atc")
@@ -60,6 +67,7 @@ class WizardSomAutoreclamaSetManualState(osv.osv_memory):
         "state": fields.selection([("init", "Init"), ("end", "End")], "State"),
         "info": fields.text("Informació", readonly=True),
         "as_polissa_id": fields.many2one("giscedata.polissa"),
+        "as_subtipus_name": fields.text("subtipus"),
         "workflow_id": fields.many2one("som.autoreclama.state.workflow", "Fluxe"),
         "next_state_id": fields.many2one(
             "som.autoreclama.state",
@@ -70,7 +78,7 @@ class WizardSomAutoreclamaSetManualState(osv.osv_memory):
         "attached_atc": fields.many2one(
             "giscedata.atc",
             "Cas ATC associat",
-            domain="[('polissa_id', '=', as_polissa_id)]",
+            domain="[('polissa_id', '=', as_polissa_id), ('subtipus_id.name', '=', as_subtipus_name)]",  # noqa: E501
         ),
         "change_date": fields.date("Canvi de data"),
     }
@@ -80,6 +88,7 @@ class WizardSomAutoreclamaSetManualState(osv.osv_memory):
         "info": lambda *a: "",
         "workflow_id": _get_workflow_id,
         "as_polissa_id": _get_associated_polissa_id,
+        "as_subtipus_name": _get_associated_subtipus_name,
     }
 
 
