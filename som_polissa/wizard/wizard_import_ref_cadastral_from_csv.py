@@ -18,18 +18,21 @@ class WizardImportRefCadastralFromCSV(osv.osv_memory):
         csv_reader = csv.reader(csv_file, delimiter=';')
         header = next(csv_reader)
         id_index = header.index('id')
-        ref_catastral_index = header.index('REFCAT')
         resultat_importacio_index = header.index('SUBCATEGORIA')
-        catas_tv_index = header.index('tipus_de_via')
-        catas_nv_index = header.index('NOMVIA')
-        catas_pnp_index = header.index('NUMVIA')
-        catas_bq_index = header.index('BLOQUE')
-        catas_es_index = header.index('ESCALE')
-        catas_pt_index = header.index('PISO')
-        catas_pu_index = header.index('PUERTA')
-        catas_nm_index = header.index('poblacio')
-        catas_dp_index = header.index('codi_postal')
-        catas_np_index = header.index('provincia')
+
+        col_indexs = {
+            'ref_catastral': header.index('REFCAT'),
+            'catas_tv': header.index('tipus_de_via'),
+            'catas_nm': header.index('poblacio'),
+            'catas_dp': header.index('codi_postal'),
+            'catas_pu': header.index('PUERTA'),
+            'catas_pt': header.index('PISO'),
+            'catas_nv': header.index('NOMVIA'),
+            'catas_np': header.index('provincia'),
+            'catas_pnp': header.index('NUMVIA'),
+            'catas_es': header.index('ESCALE'),
+            'catas_bq': header.index('BLOQUE'),
+        }
 
         for row in csv_reader:
             id_value = row[id_index]
@@ -45,15 +48,17 @@ class WizardImportRefCadastralFromCSV(osv.osv_memory):
             current = cups_obj.read(cursor, uid, int(id_value), fields_to_update)
             for field in fields_to_update:
                 if wiz.overwrite or not current[field]:
-                    dict_to_update[field] = row[eval('{}_index'.format(field))].decode(
+                    dict_to_update[field] = row[col_indexs[field]].decode(
                         'iso-8859-1').encode('utf8')
 
             if not current['ref_catastral'] and dict_to_update:
-                dict_to_update['importacio_cadastre_incidencies_origen'] = resultat_importacio
+                msg_importacio = resultat_importacio
             elif current['ref_catastral'] and dict_to_update:
-                dict_to_update['importacio_cadastre_incidencies_origen'] = 'Ja existia la referència catastral, s\'ha actualitzat algun camp de l\'adreça'
+                msg_importacio = ('Ja existia la referència catastral, s\'ha actualitzat ',
+                                  'algun camp de l\'adreça')
             elif current['ref_catastral'] and not dict_to_update:
-                dict_to_update['importacio_cadastre_incidencies_origen'] = 'Ja existia la referència catastral i adreça completa'
+                msg_importacio = 'Ja existia la referència catastral i adreça completa'
+            dict_to_update['importacio_cadastre_incidencies_origen'] = msg_importacio
 
             cups_obj.write(cursor, uid, int(id_value), dict_to_update)
 
