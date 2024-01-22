@@ -54,11 +54,9 @@ class WizardReexportLogAttachment(osv.osv_memory):
         })
         failed_files = []
         log_vals = log_obj.read(cursor, uid, log_ids, [
-                                'status', 'pas', 'proces', 'request_code', 'cups_text'])
+                                'pas', 'proces', 'request_code', 'cups_text'])
         generated_files = []
         for log in log_vals:
-            if log['status'] == 'correcte':
-                continue
             sw_id = sw_obj.search(cursor, uid, [('codi_sollicitud', '=', log['request_code'])])
             if not sw_id:
                 failed_files.append(
@@ -85,7 +83,7 @@ class WizardReexportLogAttachment(osv.osv_memory):
             for failed_f in failed_files:
                 info += _(u"\t- CUPS {} -> Error: {}\n".format(failed_f[0], failed_f[1]))
 
-        folder = self._create_worimpoking_directory(cursor, uid, ids)
+        folder = self._create_working_directory(cursor, uid, ids)
         zip_file = self._zip_xml_files(cursor, uid, ids, folder, generated_files)
         f = open(zip_file, 'rb')
         out = f.read()
