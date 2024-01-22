@@ -1,0 +1,143 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>
+        <menuitem id="menu_som_soci_crm_leads" parent="base.menu_base_partner" sequence="50" name="Processos d'alta/baixa de sòcies"/>
+        <menuitem name="Configuració" id="menu_som_soci_crm_lead_config" parent="menu_som_soci_crm_leads"/>
+        <menuitem name="Seccions" id="menu_som_soci_crm_lead_config_sections" parent="menu_som_soci_crm_lead_config" action="crm.crm_case_section_act"/>
+        <menuitem name="Stages" id="menu_som_soci_crm_lead_config_stages" parent="menu_som_soci_crm_lead_config" action="crm_configuration.crm_case_stage_act"/>
+        <menuitem name="Alta de sòcies" id="menu_som_soci_crm_leads_altes" parent="menu_som_soci_crm_leads"/>
+        <menuitem name="Baixa de sòcies" id="menu_som_soci_crm_leads_baixes" parent="menu_som_soci_crm_leads"/>
+
+        <record id="som_soci_crm_lead_view_form" model="ir.ui.view">
+            <field name="name">som.soci.crm.lead.form</field>
+            <field name="model">som.soci.crm.lead</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="crm.crm_case-view"/>
+            <field name="extend">1</field>
+            <field name="arch" type="xml">
+                <field name="date_deadline" position="replace">
+                </field>
+                <field name="priority" position="replace">
+                </field>
+                <field name="polissa_id" position="replace">
+                </field>
+                <xpath expr="//field[@name='stage_id']" position="replace">
+                    <field name="stage_id" readonly="1" />
+                </xpath>
+                <xpath expr="//field[@name='stage_id']" position="after">
+                    <button name="stage_next" string="Next Stage" type="object"  icon="gtk-go-forward" />
+                    <button name="stage_previous" string="Previous Stage" type="object" icon="gtk-go-back" />
+                </xpath>
+                <page string="Categories" position="replace">
+                </page>
+                <page string="Extra Info" position="replace">
+                </page>
+                <page string="History" position="replace">
+                </page>
+                <page string="General" position="before">
+                    <page string="Sobre el Client">
+                        <separator string="Dades de la nova sòcia" colspan="4"/>
+                        <group colspan="8" col="8">
+                            <group string="Titular" col="4" colspan="5">
+                                <field name="partner_nom" colspan="5"/>
+                                <field name="partner_vat" on_change="onchange_generic('partner_vat', partner_vat)" colspan="1"/>
+                                <field name="partner_es_empresa" colspan="1"/>
+                            </group>
+                            <group string="Contacte" col="8" colspan="3">
+                                <field name="address_email" colspan="3"/>
+                                <field name="address_phone" colspan="3"/>
+                                <field name="address_mobile" colspan="3"/>
+                                <field name="partner_lang" colspan="3"/>
+                            </group>
+                        </group>
+                        <label string="" colspan="4"/>
+                        <group string="Direcció" col="8"  colspan="8">
+                            <field name="address_nv" colspan="6"/>
+                            <field name="address_zip"/>
+                            <field name="address_municipi_id" on_change="onchange_generic('address_municipi_id', address_municipi_id)"/>
+                            <field name="address_poblacio_id" on_change="onchange_generic('address_poblacio_id', address_poblacio_id)"/>
+                            <field name="address_state_id" on_change="onchange_generic('address_state_id', address_state_id)"/>
+                            <field name="address_country_id" on_change="onchange_generic('address_country_id', address_country_id)"/>
+                        </group>
+                    </page>
+                    <page string="Sobre el Pagament">
+                        <label string="" colspan="4"/>
+                        <separator string="Dades de la facturació i pagament" colspan="8"/>
+                        <group string="Forma de Pagament" col="2" colspan="8">
+                            <field name="payment_mode_id"/>
+                            <field name="iban" on_change="onchange_generic('iban', iban)"/>
+                        </group>
+                        <label string="" colspan="4"/>
+                        <label string="" colspan="4"/>
+                        <group string="Informació pasarel·la TPV" col="8" colspan="8">
+                            <field name="id_transaccio" colspan="4" readonly="1"/>
+                            <field name="data_transaccio" readonly="1"/>
+                            <field name="codi_resposta" colspan="8" readonly="1"/>
+                            <field name="dades_peticio_tpv" colspan="8" readonly="1"/>
+                            <field name="dades_resposta_tpv" colspan="8" readonly="1"/>
+                        </group>
+                    </page>
+                </page>
+                <xpath expr="//field[@name='time_tracking_id']" position="replace">
+                    <field name="investment_id"/>
+                    <field name="invoice_id"/>
+                </xpath>
+                <xpath expr="//field[@name='user_id']" position="replace">
+                    <field name="soci_id"/>
+                </xpath>
+                <xpath expr="//field[@name='canal_id']" position="replace">
+                </xpath>
+                <xpath expr="//field[@name='partner_address_id']" position="replace">
+                </xpath>
+                <xpath expr="//field[@name='email_from']" position="replace">
+                </xpath>
+                <xpath expr="//page[@string='General']/group[2]/group" position="replace">
+                </xpath>
+                <xpath expr="//page[@string='General']/group[1]/button[@name='remind_partner']" position="replace">
+                </xpath>
+                <xpath expr="//page[@string='General']/group[1]/button[@name='remind_user']" position="replace">
+                </xpath>
+                <xpath expr="//page[@string='General']/group[1]/button[@name='autoassign']" position="replace">
+                </xpath>
+            </field>
+        </record>
+        <record id="som_soci_crm_lead_view_tree" model="ir.ui.view">
+            <field name="name">som.soci.crm.lead.tree</field>
+            <field name="model">som.soci.crm.lead</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree colors="blue:state=='open'" string="CRM Soci Leads">
+                    <field name="id" select="2"/>
+                    <field name="create_date" select="1"/>
+                    <field name="name" select="1"/>
+                    <field name="user_id" select="1"/>
+                    <field name="stage_id" select="1"/>
+                    <field name="state" select="1"/>
+                    <field name="partner_vat" select="2" string="Nº Document"/>
+                    <field name="partner_name" select="2" string="Nom"/>
+                    <field name="address_email" select="2" string="Email"/>
+                    <field name="date" select="2"/>
+                    <!-- Camps tornats a definir per treurelsi el select 1-->
+                    <field name="partner_id" select="2" invisible="1"/>
+                    <field name="create_uid" select="2" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_all_som_soci_crm_leads" model="ir.actions.act_window">
+                <field name="name">Tots els processos d'alta</field>
+                <field name="res_model">som.soci.crm.lead</field>
+                <field name="view_type">form</field>
+                <field name="view_id" ref="som_soci_crm_lead_view_tree"/>
+        </record>
+        <record id="action_current_som_soci_crm_leads" model="ir.actions.act_window">
+                <field name="name">Processos d'alta no finalitzats</field>
+                <field name="res_model">som.soci.crm.lead</field>
+                <field name="domain">[('state', 'not in', ('done', 'cancel'))]</field>
+                <field name="view_type">form</field>
+                <field name="view_id" ref="som_soci_crm_lead_view_tree"/>
+        </record>
+        <menuitem action="action_all_som_soci_crm_leads" id="menu_all_som_soci_crm_leads" parent="menu_som_soci_crm_leads_altes" sequence="10" name="Tots els processos d'alta"/>
+        <menuitem action="action_current_som_soci_crm_leads" id="menu_current_som_soci_crm_leads" parent="menu_som_soci_crm_leads_altes" sequence="11" name="Processos d'alta no finalitzats"/>
+    </data>
+</openerp>

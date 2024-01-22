@@ -207,11 +207,16 @@ class ResPartner(osv.osv):
         """
         if not context:
             context = {}
-        res = self.create_account_410(cursor, uid, ids, context)
-        for partner_id in res:
-            self.write(cursor, uid, int(partner_id),
-                       {'property_account_liquidacio': res[partner_id]})
-        return True
+        aa_obj = self.pool.get('account.account')
+        ag_id = aa_obj.search(cursor, uid, [('code','=ilike','410000%')])
+        if ag_id:
+            for partner in self.browse(cursor, uid, ids):
+                self.write(cursor, uid, int(partner.id),
+                       {'property_account_liquidacio': ag_id[0]})
+            return True
+        else:
+            raise osv.except_osv(_('Error'),
+                                 _(u"No s'ha trobat el compte genèric 4100..00"))
 
     def button_assign_acc_163(self, cursor, uid, ids, context=None):
         """Mètode per ser cridat des del botó.

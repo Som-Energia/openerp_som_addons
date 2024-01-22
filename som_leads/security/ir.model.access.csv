@@ -1,0 +1,4 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_som_soci_crm_lead_rcwd","som.soci.crm.lead","model_som_soci_crm_lead","som_inversions.group_som_inversions_u",1,1,1,1
+"access_som_soci_crm_lead_rcw","som.soci.crm.lead","model_som_soci_crm_lead","som_inversions.group_som_inversions_w",1,1,1,0
+"access_som_soci_crm_lead_r","som.soci.crm.lead","model_som_soci_crm_lead","som_inversions.group_som_inversions_r",1,0,0,0

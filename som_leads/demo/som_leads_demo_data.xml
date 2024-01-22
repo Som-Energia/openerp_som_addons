@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="payment_mode_crmlead" model="payment.mode">
+            <field name="name">Remesat on li dongui la gana</field>
+            <field name="type" ref="account_payment.payment_type_demo" />
+            <field name="bank_id" ref="base.main_bank" />
+            <field name="journal" model="account.journal" search="[('type','=','cash')]" />
+            <field name="require_bank_account" eval="True" />
+            <field name="partner_id">1</field>
+        </record>
+
+        <record id="crm_lead_alta_socia1" model="crm.case">
+            <field name="section_id" ref="alta_socies_section_crm_leads"/>
+            <field name="name">Alta de socia demo</field>
+            <field name="date">2022-01-01</field>
+        </record>
+        <record id="som_leads_alta_socia1" model="som.soci.crm.lead">
+            <field name="crm_id" ref="crm_lead_alta_socia1" />
+            <field name="partner_lang"></field>
+            <field name="iban">ES0801821549931855861518</field>
+            <field name="payment_mode_id" ref="payment_mode_crmlead"/>
+            <!-- dades del titular -->
+            <field name="partner_vat">ES17419856R</field>
+            <field name="partner_nom">Primer Segon, Oliva</field>
+            <!-- dades contacte titular -->
+            <field name="address_zip">17123</field>
+            <field name="address_nv">Molongui</field>
+            <field name="address_municipi_id" ref="base_extended.ine_01001"/>
+            <field name="address_poblacio_id" ref="base_extended.poble_01"/>
+            <field name="address_email">correus@correu.com</field>
+            <field name="address_phone">972972972</field>
+            <field name="address_mobile">+34666111222</field>
+            <field name="state">open</field>
+            <field name="stage_id">1</field>
+        </record>
+
+        <record id="crm_lead_alta_socia_tpv" model="crm.case">
+            <field name="section_id" ref="alta_socies_tpv_section_crm_leads"/>
+            <field name="name">Alta de socia TPV demo</field>
+            <field name="date">2022-02-01</field>
+        </record>
+        <record id="som_leads_alta_socia_tpv" model="som.soci.crm.lead">
+            <field name="crm_id" ref="crm_lead_alta_socia_tpv" />
+            <field name="partner_lang"></field>
+            <field name="iban"></field>
+            <field name="payment_mode_id" ref="payment_mode_crmlead"/>
+            <!-- dades del titular -->
+            <field name="partner_vat">ES92483820S</field>
+            <field name="partner_nom">Tercer Quart, Mirgin</field>
+            <!-- dades contacte titular -->
+            <field name="address_zip">17456</field>
+            <field name="address_nv">Divertit</field>
+            <field name="address_municipi_id" ref="base_extended.ine_01001"/>
+            <field name="address_poblacio_id" ref="base_extended.poble_01"/>
+            <field name="address_email">correu2@correu.com</field>
+            <field name="address_phone">972973973</field>
+            <field name="address_mobile">+34666111222</field>
+            <field name="state">open</field>
+            <field name="stage_id">1</field>
+        </record>
+    </data>
+</openerp>
