@@ -84,4 +84,5 @@ class GiscedataCupsPs(osv.osv):
         'importacio_cadastre_incidencies_origen': fields.char('Incidència Origen Importació', size=128),
     }
 
+
 GiscedataCupsPs()
