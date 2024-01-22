@@ -45,7 +45,8 @@ class WizardImportRefCadastralFromCSV(osv.osv_memory):
             current = cups_obj.read(cursor, uid, int(id_value), fields_to_update)
             for field in fields_to_update:
                 if wiz.overwrite or not current[field]:
-                    dict_to_update[field] = row['{}_index'.format(field)]
+                    dict_to_update[field] = row[eval('{}_index'.format(field))].decode(
+                        'iso-8859-1').encode('utf8')
 
             if not current['ref_catastral'] and dict_to_update:
                 dict_to_update['importacio_cadastre_incidencies_origen'] = resultat_importacio
