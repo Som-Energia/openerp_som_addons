@@ -60,7 +60,8 @@ class WizardReexportLogAttachment(osv.osv_memory):
             sw_id = sw_obj.search(cursor, uid, [('codi_sollicitud', '=', log['request_code'])])
             if not sw_id:
                 failed_files.append(
-                    (log['cups_text'], "No s'ha trobat un cas amb aquest codi de solicitud {}".format(log['request_code'])))
+                    (log['cups_text'], ("No s'ha trobat un cas amb aquest codi de ",
+                                        "solicitud {}".format(log['request_code']))))
                 continue
             proces_id = proces_obj.search(cursor, uid, [('name', '=', log['proces'])])
             pas_obj = self.pool.get('giscedata.switching.{}.{}'.format(
@@ -68,11 +69,12 @@ class WizardReexportLogAttachment(osv.osv_memory):
             pas_id = pas_obj.search(cursor, uid, [('sw_id', '=', sw_id)])
             try:
                 step_id = step_obj.search(cursor, uid,
-                                          [('name', '=', log['pas']), ('proces_id', '=', proces_id[0])])
+                                          [('name', '=', log['pas']),
+                                           ('proces_id', '=', proces_id[0])])
                 xml = sw_obj.exportar_xml(
                     cursor, uid, sw_id[0], step_id[0], pas_id[0], context=context)
                 generated_files.append(xml)
-            except Exception, e:
+            except Exception as e:
                 e_string = str(e)
                 if not e_string:
                     e_string = e.value
