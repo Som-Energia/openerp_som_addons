@@ -166,7 +166,7 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
         ))
 
         fase1_ids = self.search(cursor, uid, [
-            ('state', '=', False),
+            ('state', 'in', [False, 'valid']),
             ('import_phase', '=', IMPORT_PHASE_1),
             ('data_carrega', '>=', date_to_check),
         ])
