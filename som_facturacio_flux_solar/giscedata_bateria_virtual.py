@@ -50,6 +50,11 @@ class GiscedataBateriaVirtual(osv.osv):
         'origen_info': fields.function(_ff_origen, type="text", method=True, string='Origen'),
         'receptor_info': fields.function(_ff_receptor, type="text", method=True, string='Receptor (pes)'),
         'data_inici_descomptes': fields.function(_ff_data_inici_descomptes, type="text", method=True, string='Data inici generació descomptes'),
+        'activa': fields.function(string='Activa')
+    }
+
+    _defaults = {
+        'activa': lambda *a: True
     }
 
 
