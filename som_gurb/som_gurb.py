@@ -18,9 +18,9 @@ class SomGurb(osv.osv):
             required=True,
         ),
         'logo': fields.boolean('Logo'),
-        'adress': fields.char('Adreça', size=60, required=True),
-        'province': fields.char('Provincia', size=60, required=True),  # TODO: Check type
-        'zip_code': fields.char('Codi postal', size=60, required=True),
+        'address': fields.many2one('res.partner.address', 'Adreça', required=True),
+        'province': fields.char('Provincia', size=60, readonly=True),
+        'zip_code': fields.char('Codi postal', size=60, readonly=True),
         'sig_data': fields.char('Dades SIG', size=60, required=True),
         'activation_date': fields.date(u"Data activació GURB", required=True),
         'state': fields.selection(
