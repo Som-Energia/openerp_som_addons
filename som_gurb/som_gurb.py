@@ -1,11 +1,52 @@
 # -*- encoding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
+import logging
+
+logger = logging.getLogger('openerp.{}'.format(__name__))
 
 
 class SomGurb(osv.osv):
     _name = "som.gurb"
     _description = _('Grup generació urbana')
+
+    def _ff_get_self_consumption_state(self, cursor, uid, ids, field_name, arg, context=None):
+        if context is None:
+            context = {}
+        auto_obj = self.pool.get('giscedata.autoconsum')
+        res = dict.fromkeys(ids, False)
+        for gurb_vals in self.read(cursor, uid, ids, ['self_consumption_id']):
+            auto_id = gurb_vals.get('self_consumption_id', False)
+            if auto_id:
+                res[gurb_vals['id']] = auto_obj.read(
+                    cursor, uid, auto_id[0], ['state']
+                )['state']
+        return res
+
+    def _ff_get_generation_power(self, cursor, uid, ids, field_name, arg, context=None):
+        if context is None:
+            context = {}
+        auto_obj = self.pool.get('giscedata.autoconsum')
+        res = dict.fromkeys(ids, False)
+        for gurb_vals in self.read(cursor, uid, ids, ['self_consumption_id']):
+            auto_id = gurb_vals.get('self_consumption_id', False)
+            if auto_id:
+                autoconsum = auto_obj.browse(cursor, uid, auto_id[0], context=context)
+                max_gen_pot = 0
+                try:
+                    gens = autoconsum.generador_id
+                    for gen in gens:
+                        max_gen_pot = max(max_gen_pot, gen.pot_instalada_gen)
+                except Exception as e:
+                    logger.info(
+                        _(
+                            u"Error: No s'ha pogut trobar la instal·lació d'Autoconsum. "
+                            u"No es pot recuperar la potència de generació. e: {}"
+                        ).format(e)
+                    )
+                finally:
+                    res[gurb_vals['id']] = max_gen_pot
+        return res
 
     # TODO: Add constrains and requireds
     _columns = {
@@ -38,6 +79,38 @@ class SomGurb(osv.osv):
         'notes': fields.text('Observacions'),
         'history_box': fields.text('Històric del GURB', readonly=True),
         # TODO: Autoconsum, betes and registrador
+        'self_consumption_id': fields.many2one('giscedata.autoconsum', 'CAU'),
+        'self_consumption_state': fields.function(
+            _ff_get_self_consumption_state,
+            type='char',
+            size=30,
+            string='Estat de l\'AC.',
+            method=True,
+        ),
+        'generation_power': fields.function(
+            _ff_get_generation_power,
+            type='float',
+            digits=(10, 3),
+            string='Potència generació',
+            method=True,
+        ),
+        'has_compensation': fields.boolean('Amb compensació', readonly=True),
+        'self_consumption_start_date': fields.date(
+            'Data alta autoconsum (M105)',
+            help='Data en la que es va activar la modcon de canvi de tipus d\'auto de 00 '
+            'al tipus oportú.',
+            readonly=True,
+        ),
+        'self_consumption_end_date': fields.date(
+            'Data baixa autoconsum (M105)',
+            help='Data en la que es va activar la modcon de sortida de l\'autoconsum '
+            'del tipus que tingués a 00',
+            readonly=True,
+        ),
+    }
+    _defaults = {
+        'self_consumption_start_date': lambda *a: False,
+        'self_consumption_end_date': lambda *a: False,
     }
 
     defaults = {

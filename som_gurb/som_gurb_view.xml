@@ -46,7 +46,13 @@
                         <field name="max_power" select="1" colspan="2" />
                         <field name="mix_power" select="1" colspan="2" />
                     </group>
-                    <group col="4" string="Autoconsum" colspan="4">
+                    <group col="4" string="Autoconsum">
+                        <field name="self_consumption_id" />
+                        <field name="self_consumption_state" />
+                        <field name="generation_power" />
+                        <field name="has_compensation" />
+                        <field name="self_consumption_start_date" />
+                        <field name="self_consumption_end_date" />
                     </group>
                     <notebook colspan="4">
                         <page string="Betes">
