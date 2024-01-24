@@ -65,11 +65,10 @@
                     <field name="inherit_id" ref="giscedata_polissa.view_polisses_form"/>
                     <field name="type">form</field>
                     <field name="arch" type="xml">
-                        <xpath expr="//page[@string='Facturació']" position="after">
-                            <page string="Comptabilitat">
-                                <field name="observacions_comptables" select="1"/>
-                                <field name="mesos_factura_mes_recent_impagada" invisible="1" select="2"/>
-                            </page>
+                        <xpath expr='//notebook/page[@string="Observacions"]/field[@name="observacions"]' position="after">
+                            <separator string="Observacions comptables" colspan="4"/>
+                            <field name="observacions_comptables" select="1" nolabel="1"/>
+                            <field name="mesos_factura_mes_recent_impagada" invisible="1" select="2"/>
                         </xpath>
                     </field>
                 </record>

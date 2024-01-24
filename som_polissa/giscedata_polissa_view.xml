@@ -66,13 +66,11 @@
             <field name="inherit_id" ref="giscedata_polissa_comer.view_giscedata_polissa_comer_form"/>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <xpath expr="//page[@string='Observacions']" position="after">
-                    <page string="Gest. Endarrerida">
-                        <field name="info_gestio_endarrerida" nolabel="1" colspan="4"/>
-                    </page>
-                    <page string="Gest. Massives">
-                        <field name="info_gestions_massives" nolabel="1" colspan="4" select="2"/>
-                    </page>
+                <xpath expr="//page[@string='Observacions']" position="inside">
+                    <separator string="Gest. Endarrerida" colspan="4" />
+                    <field name="info_gestio_endarrerida" nolabel="1" colspan="4"/>
+                    <separator string="Gest. Massives" colspan="4" />
+                    <field name="info_gestions_massives" nolabel="1" colspan="4" select="2"/>
                 </xpath>
             </field>
         </record>
