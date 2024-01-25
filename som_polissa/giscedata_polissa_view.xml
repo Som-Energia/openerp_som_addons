@@ -284,14 +284,16 @@
             <field name="inherit_id" ref="giscedata_facturacio_bateria_virtual.view_giscedata_polissa_form"/>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <page string="Bateries Virtuals" position="replace">
-                    <page string="Flux Solar">
-                        <group colspan="2" col="4">
-                            <field name="crea_bat_auto" string="Afegir a un flux solar al activar pòlissa" select="2"/>
-                        </group>
-                        <field name="bateria_ids" nolabel="1" colspan="4" context="{'polissa_id':active_id}"/>
-                    </page>
-                </page>
+                <xpath expr="//page[@string='Bateries Virtuals']"  position="replace">
+                    <page string="Bateries Virtuals" invisible="1" />
+                </xpath>
+                <xpath expr="//page[@string='Autoconsum']" position="inside">
+                    <separator string="Flux Solar" colspan="4" />
+                    <group colspan="2" col="4">
+                        <field name="crea_bat_auto" string="Afegir a un flux solar al activar pòlissa" select="2"/>
+                    </group>
+                    <field name="bateria_ids" nolabel="1" colspan="4" context="{'polissa_id':active_id}"/>
+                </xpath>
             </field>
         </record>
 
