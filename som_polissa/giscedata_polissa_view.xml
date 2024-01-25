@@ -75,6 +75,9 @@
                 <xpath expr="//page[@string='Butlletins']" position="replace">
                     <page string="Butlletins" invisible="1"/>
                 </xpath>
+                <xpath expr="//page[@string='Mecanisme ajust gas']" position="replace">
+                    <page string="Mecanisme ajust gas" invisible="1"/>
+                </xpath>
             </field>
         </record>
         <record model="ir.ui.view" id="view_giscedata_polissa_enviament_tree">
