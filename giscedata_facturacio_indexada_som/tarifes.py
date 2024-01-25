@@ -48,6 +48,7 @@ class TarifaPoolSOM(TarifaPool):
             res['imu'] = 'imu'
             res['k'] = 'k'
             res['d'] = 'd'
+            del res['h']
             res['si'] = 'si'
             res['dsv'] = 'dsv'
             res['prdemcad'] = 'prdemcad'
@@ -457,7 +458,6 @@ class TarifaPoolSOM(TarifaPool):
         # Contract specific coeficients
         k = self.get_coeficient_component(start_date, 'k')  # [€/kWh]
         d = self.get_coeficient_component(start_date, 'd')  # [€/kWh]
-        h = self.get_coeficient_component(start_date, 'h')  # [€/kWh]
 
         # Coste remuneración OMIE REE
         omie = self.get_coeficient_component(start_date, 'omie')  # [€/MWh]
@@ -503,9 +503,9 @@ class TarifaPoolSOM(TarifaPool):
             A += ajom * 0.001
         B = A * (1 + (perdues * 0.01))
         C = B * (1 + (imu * 0.01))
-        D = C + pa + k + d
-        E = curve * 0.001
-        component = D * E
+        G = C + pa + k + d
+        H = curve * 0.001
+        component = G * H
 
         audit_keys = self.get_available_audit_coefs()
         for key in self.conf.get('audit', []):
