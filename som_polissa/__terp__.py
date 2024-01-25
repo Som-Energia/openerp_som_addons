@@ -10,6 +10,7 @@
     "category": "SomEnergia",
     "depends": [
         "base",
+        "giscedata_butlletins",
         "giscedata_polissa",
         "giscedata_polissa_comer",
         "giscedata_polissa_category",
