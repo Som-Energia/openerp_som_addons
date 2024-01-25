@@ -48,7 +48,8 @@ class TarifaPoolSOM(TarifaPool):
             res['imu'] = 'imu'
             res['k'] = 'k'
             res['d'] = 'd'
-            del res['h']
+            if 'h' in res:
+                del res['h']
             res['si'] = 'si'
             res['dsv'] = 'dsv'
             res['prdemcad'] = 'prdemcad'
