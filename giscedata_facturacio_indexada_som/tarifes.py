@@ -440,6 +440,10 @@ class Tarifa30TDPoolSOM(TarifaPoolSOM, Tarifa30TDPool):
     pass
 
 
+class Tarifa30TDVEPoolSOM(TarifaPoolSOM, Tarifa30TDVEPool):
+    pass
+
+
 class Tarifa61TDPoolSOM(TarifaPoolSOM, Tarifa61TDPool):
     pass
 
@@ -499,6 +503,7 @@ class Tarifa62PoolSOM(TarifaPoolSOM, Tarifa62Pool):
 TARIFFS_FACT = {
     '2.0TD': Tarifa20TDPoolSOM,
     '3.0TD': Tarifa30TDPoolSOM,
+    '3.0TDVE': Tarifa30TDVEPoolSOM,
     '6.1TD': Tarifa61TDPoolSOM,
     '6.2TD': Tarifa62TDPoolSOM,
     '6.3TD': Tarifa63TDPoolSOM,
