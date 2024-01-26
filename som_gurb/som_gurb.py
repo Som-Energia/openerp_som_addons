@@ -8,20 +8,21 @@ logger = logging.getLogger('openerp.{}'.format(__name__))
 
 class SomGurb(osv.osv):
     _name = "som.gurb"
+    _inherits = {'giscedata.autoconsum': 'self_consumption_id'}
     _description = _('Grup generació urbana')
 
-    def _ff_get_self_consumption_state(self, cursor, uid, ids, field_name, arg, context=None):
-        if context is None:
-            context = {}
-        auto_obj = self.pool.get('giscedata.autoconsum')
-        res = dict.fromkeys(ids, False)
-        for gurb_vals in self.read(cursor, uid, ids, ['self_consumption_id']):
-            auto_id = gurb_vals.get('self_consumption_id', False)
-            if auto_id:
-                res[gurb_vals['id']] = auto_obj.read(
-                    cursor, uid, auto_id[0], ['state']
-                )['state']
-        return res
+    # def _ff_get_self_consumption_state(self, cursor, uid, ids, field_name, arg, context=None):
+    #     if context is None:
+    #         context = {}
+    #     auto_obj = self.pool.get('giscedata.autoconsum')
+    #     res = dict.fromkeys(ids, False)
+    #     for gurb_vals in self.read(cursor, uid, ids, ['self_consumption_id']):
+    #         auto_id = gurb_vals.get('self_consumption_id', False)
+    #         if auto_id:
+    #             res[gurb_vals['id']] = auto_obj.read(
+    #                 cursor, uid, auto_id[0], ['state']
+    #             )['state']
+    #     return res
 
     def _ff_get_generation_power(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
@@ -51,6 +52,7 @@ class SomGurb(osv.osv):
     # TODO: Add constrains and requireds
     _columns = {
         'name': fields.char('Nom GURB', size=60, required=True),
+        'self_consumption_id': fields.many2one('giscedata.autoconsum', 'CAU'),
         'code': fields.char('Codi GURB', size=60, required=True),
         'roof_owner': fields.many2one("res.partner", 'Propietari teulada', required=True),
         'type': fields.selection(
@@ -64,7 +66,7 @@ class SomGurb(osv.osv):
         'zip_code': fields.char('Codi postal', size=60, readonly=True),
         'sig_data': fields.char('Dades SIG', size=60, required=True),
         'activation_date': fields.date(u"Data activació GURB", required=True),
-        'state': fields.selection(
+        'gurb_state': fields.selection(
             [("state1", "Estat 1"), ("state2", "Estat 2"), ],  # TODO: States
             "Estat GURB",
             required=True,
@@ -78,15 +80,16 @@ class SomGurb(osv.osv):
         'reopening_days': fields.integer('Dies reobertura'),
         'notes': fields.text('Observacions'),
         'history_box': fields.text('Històric del GURB', readonly=True),
+        'has_compensation': fields.boolean('Amb compensació', readonly=True),
         # TODO: Autoconsum, betes and registrador
-        'self_consumption_id': fields.many2one('giscedata.autoconsum', 'CAU'),
-        'self_consumption_state': fields.function(
-            _ff_get_self_consumption_state,
-            type='char',
-            size=30,
-            string='Estat de l\'AC.',
-            method=True,
-        ),
+        # 'self_consumption_id': fields.many2one('giscedata.autoconsum', 'CAU'),
+        # 'self_consumption_state': fields.function(
+        #     _ff_get_self_consumption_state,
+        #     type='char',
+        #     size=30,
+        #     string='Estat de l\'AC.',
+        #     method=True,
+        # ),
         'generation_power': fields.function(
             _ff_get_generation_power,
             type='float',
@@ -94,29 +97,29 @@ class SomGurb(osv.osv):
             string='Potència generació',
             method=True,
         ),
-        'has_compensation': fields.boolean('Amb compensació', readonly=True),
-        'self_consumption_start_date': fields.date(
-            'Data alta autoconsum (M105)',
-            help='Data en la que es va activar la modcon de canvi de tipus d\'auto de 00 '
-            'al tipus oportú.',
-            readonly=True,
-        ),
-        'self_consumption_end_date': fields.date(
-            'Data baixa autoconsum (M105)',
-            help='Data en la que es va activar la modcon de sortida de l\'autoconsum '
-            'del tipus que tingués a 00',
-            readonly=True,
-        ),
+        # 'self_consumption_start_date': fields.date(
+        #     'Data alta autoconsum (M105)',
+        #     help='Data en la que es va activar la modcon de canvi de tipus d\'auto de 00 '
+        #     'al tipus oportú.',
+        #     readonly=True,
+        # ),
+        # 'self_consumption_end_date': fields.date(
+        #     'Data baixa autoconsum (M105)',
+        #     help='Data en la que es va activar la modcon de sortida de l\'autoconsum '
+        #     'del tipus que tingués a 00',
+        #     readonly=True,
+        # ),
     }
     _defaults = {
-        'self_consumption_start_date': lambda *a: False,
-        'self_consumption_end_date': lambda *a: False,
+        'logo': lambda *a: False,
+        'gurb_state': lambda *a: 'state1',
     }
 
-    defaults = {
-        'logo': lambda *a: False,
-        'state': lambda *a: 'state1',
-    }
+    _sql_constraints = [(
+        'self_consumption_id_uniq',
+        'unique(self_consumption_id)',
+        'Ja existeix un GURB per aquest autoconsum'
+    )]
 
 
 SomGurb()
