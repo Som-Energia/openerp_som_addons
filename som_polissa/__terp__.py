@@ -10,6 +10,7 @@
     "category": "SomEnergia",
     "depends": [
         "base",
+        "giscedata_butlletins",
         "giscedata_polissa",
         "giscedata_polissa_comer",
         "giscedata_polissa_category",
@@ -24,6 +25,7 @@
         "base_bank_extended",
         "l10n_ES_remesas",
         "www_base",
+        "giscedata_repercussio_mecanismo_ajuste_gas",
     ],
     "init_xml": [],
     "demo_xml": [
