@@ -68,7 +68,7 @@ class GiscedataBateriaVirtual(osv.osv):
             dates = self.read(cursor, uid, bat_id, read_vals, context=context)
             if (dates['data_inici_app_descomptes'] <= avui and
             (not dates['data_final_app_descomptes'] or dates['data_final_app_descomptes'] >= avui)):
-                res['bat_id'] = True
+                res[bat_id] = True
         return res
 
     _columns = {
@@ -78,10 +78,6 @@ class GiscedataBateriaVirtual(osv.osv):
         'activa': fields.function(_ff_bateria_activa, type="boolean", method=True, string='Activa'),
         'data_inici_app_descomptes': fields.function(_ff_data_app_descomptes, type="text", method=True, string='Data inici aplicació descomptes', multi='data_app'),
         'data_final_app_descomptes': fields.function(_ff_data_app_descomptes, type="text", method=True, string='Data final aplicació descomptes', multi='data_app'),
-    }
-
-    _defaults = {
-        'activa': lambda *a: True
     }
 
 
