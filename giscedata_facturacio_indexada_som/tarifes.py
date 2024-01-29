@@ -39,6 +39,21 @@ class TarifaPoolSOM(TarifaPool):
             if 'ajom' in res:
                 del res['ajom']
 
+        if self.phf_function == 'phf_calc_esmasa':
+            # only if 'phf_calc_esmasa' formula is used
+            res['pmd'] = 'prmdiari'
+            del res['pc3_ree']
+            res['peatges'] = 'pa'
+            res['omie_ree'] = 'omie'
+            res['imu'] = 'imu'
+            res['k'] = 'k'
+            res['d'] = 'd'
+            if 'h' in res:
+                del res['h']
+            res['si'] = 'si'
+            res['dsv'] = 'dsv'
+            res['prdemcad'] = 'prdemcad'
+
         return res
 
     def get_available_audit_coefs_gen(self):
@@ -418,6 +433,95 @@ class TarifaPoolSOM(TarifaPool):
 
         return component
 
+    def phf_calc_esmasa(self, curve, start_date):
+        """
+        Calcs component PHF as:
+
+        PHF = (1 + IMU) * [(Prm + PMAJ + Pc + CAD + DSV + POsOm + I) * (1 + Perd)] + Ptd + Ca + F
+
+        :param curve: Component curve
+        :param start_date: component start date
+        :return: returns a component
+        """
+        num_days = calendar.monthrange(start_date.year, start_date.month)[1]
+        end_date = datetime(
+            start_date.year, start_date.month, num_days
+        ).date()
+
+        esios_token = self.conf['esios_token']
+        holidays = self.conf['holidays']
+
+        # peajes
+        pa = self.get_peaje_component(start_date, holidays)    # [€/kWh]
+        # Payments by capacity (PC3) BOE
+        pc3_boe = self.get_pricexperiod_component(start_date, 'pc', holidays)    # [€/kWh]
+
+        # Contract specific coeficients
+        k = self.get_coeficient_component(start_date, 'k')  # [€/kWh]
+        d = self.get_coeficient_component(start_date, 'd')  # [€/kWh]
+
+        # Coste remuneración OMIE REE
+        omie = self.get_coeficient_component(start_date, 'omie')  # [€/MWh]
+        # Fondo de Eficiencia
+        fe = self.get_coeficient_component(start_date, 'fe')  # [€/MWh]
+        # Municipal fee
+        imu = self.get_coeficient_component(start_date, 'imu')  # [%]
+
+        # REE
+        postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"),
+                              end_date.strftime("%Y%m%d")))
+        prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        si = SI('C2_si_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+
+        fname = self.perdclass.name
+        perdues = self.perdclass(
+            'C2_%(fname)s_%(postfix)s' % locals(), esios_token
+        )
+
+        # prdemcad file
+        prdemcad = Prdemcad('C2_prdemcad_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+
+        # preu del desvío corresponent als NOCUR
+        compodem = MonthlyCompodem('C2_monthlycompodem_%(postfix)s' % locals(), esios_token)
+        dsv = compodem.get_component("DSV")  # [€/MWh]
+
+        # MAJ RDL 10/2022
+        # Use AJOM if invoice includes june'22 or later days and variable is activated
+        maj_activated = self.conf.get('maj_activated', 0)
+        if maj_activated and (
+                (start_date.year >= 2022 and start_date.month >= 6) or
+                (start_date.year == 2023 and start_date.month < 6)
+        ):
+            ajom = self.get_coeficient_from_dict(start_date, 'ajom')  # [€/MWh]
+        else:
+            ajom = None
+
+        #A = (prmdiari * 0.001) + pc3_boe + (prdemcad * 0.001) + (dsv * 0.001) + (omie * 0.001) + (si * 0.001)
+
+        A = (prmdiari + prdemcad + dsv + omie + si) * 0.001
+        A += pc3_boe
+        if ajom:
+            A += ajom * 0.001
+        B = A * (1 + (perdues * 0.01))
+        C = B * (1 + (imu * 0.01))
+        G = C + pa + k + d
+        H = curve * 0.001
+        component = G * H
+
+        audit_keys = self.get_available_audit_coefs()
+        for key in self.conf.get('audit', []):
+            if key not in self.audit_data.keys():
+                self.audit_data[key] = []
+            var_name = audit_keys[key]
+            com = locals()[var_name]
+            if com is None:
+                continue
+            self.audit_data[key].extend(
+                com.get_audit_data(start=start_date.day)
+            )
+
+        return component
+
     def get_available_indexed_formulas(self):
         """
         Gets available formulas for indexed invoicing
@@ -429,6 +533,7 @@ class TarifaPoolSOM(TarifaPool):
             u'Indexada Península': 'phf_calc_peninsula',
             u'Indexada Balears': 'phf_calc_balears',
             u'Indexada Canàries': 'phf_calc_canaries',
+            u'Indexada ESMASA': 'phf_calc_esmasa',
         }
 
 
