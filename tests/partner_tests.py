@@ -378,9 +378,9 @@ class PartnerTests(testing.OOTestCase):
             '2024-01-29 02:00:00': 2,
         }
         expected = [
-            {'date': 1706482800, 'value': 0},
-            {'date': 1706486400, 'value': 1},
-            {'date': 1706490000, 'value': 2},
+            {'date': 1706482800000, 'value': 0},
+            {'date': 1706486400000, 'value': 1},
+            {'date': 1706490000000, 'value': 2},
         ]
         self.assertEqual(
             self.partner_obj._prepare_datetime_value_www_response(original),

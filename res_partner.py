@@ -160,7 +160,9 @@ class ResPartner(osv.osv):
     def _prepare_datetime_value_www_response(dict_with_data):
         return [
             {
-                'date': int(mktime(datetime.strptime(k, '%Y-%m-%d %H:%M:%S').timetuple())),
+                'date': int(
+                    mktime(datetime.strptime(k, '%Y-%m-%d %H:%M:%S').timetuple())
+                )*1000,  # javascript works with 3 more 0 than python
                 'value': dict_with_data[k]
             } for k in sorted(dict_with_data)
         ]
