@@ -57,6 +57,8 @@
                     <notebook colspan="4">
                         <page string="Betes">
                             <!-- TODO -->
+                            <separator string="CUPS del GURB" colspan="4"/>
+                            <field name="gurb_cups_id" nolabel="1" select="1" colspan="4"/>
                         </page>
                         <page string="Registrador (comptador)">
                             <!-- TODO -->

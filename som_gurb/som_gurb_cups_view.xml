@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- Formulari per defecte dels CUPS de GURBs -->
+        <record model="ir.ui.view" id="view_gurbs_cups_form">
+            <field name="name">som.gurb.cups.form</field>
+            <field name="model">som.gurb.cups</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="GURB">
+                    <group col="6" colspan="4" string="General">
+                        <field name="cups_id" />
+                        <field name="start_date" />
+                        <field name="end_date" />
+                        <field name="gurb_id" />
+                    </group>
+                </form>
+            </field>
+        </record>
+        <!-- Llistat per defecte dels CUPS de GURBs-->
+        <record model="ir.ui.view" id="view_gurbs_cups_tree">
+            <field name="name">som.gurb.cups.tree</field>
+            <field name="model">som.gurb.cups</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="CUPS GURB">
+                    <field name="cups_id" />
+                    <field name="gurb_id" />
+                    <field name="start_date" />
+                    <field name="end_date" />
+                </tree>
+            </field>
+        </record>
+    </data>
+</openerp>

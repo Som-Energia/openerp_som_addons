@@ -12,7 +12,8 @@
     "demo_xml": [
     ],
     "update_xml": [
-        "som_gurb_view.xml"
+        "som_gurb_view.xml",
+        "som_gurb_cups_view.xml"
     ],
     "active": False,
     "installable": True,

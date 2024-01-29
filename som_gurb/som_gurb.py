@@ -57,6 +57,7 @@ class SomGurb(osv.osv):
             "Estat GURB",
             required=True,
         ),
+        'gurb_cups_id': fields.one2many('som.gurb.cups', 'gurb_id', 'Betes', readonly=False),
         'joining_fee': fields.float('Tarifa cost adhesió'),  # TODO: New model
         'service_fee': fields.float('Tarifa quota servei'),  # TODO: New model
         'max_power': fields.float('Topall max. per contracte (kW)'),
