@@ -2,6 +2,7 @@
 
 from osv import osv, fields
 from datetime import datetime, date
+from time import mktime
 from dateutil.relativedelta import relativedelta
 from tools.translate import _
 from mongodb_backend.mongodb2 import mdbpool
@@ -113,16 +114,20 @@ class ResPartner(osv.osv):
 
         rightsUsage = MemberRightsUsage(mdbpool.get_db())
 
-        rights = self.www_hourly_rights_generationkwh(cursor, uid, partner_id, start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"), context)
+        rights = self._hourly_rights_generationkwh(cursor, uid, partner_id, start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"), context)
         usage = UsageTracker.convert_usage_date_quantity(enumerate(rightsUsage.usage(member_id, start_date, end_date)), start_date)
 
         remaining = {}
         for k,v in rights.items():
             remaining[k] = v - usage.get(k,0)
 
-        return remaining
+        return self._prepare_datetime_value_www_response(remaining)
 
     def www_hourly_rights_generationkwh(self, cursor, uid, partner_id, start_date=None, end_date=None, context=None):
+        rights = self._hourly_rights_generationkwh(cursor, uid, partner_id, start_date, end_date, context)
+        return self._prepare_datetime_value_www_response(rights)
+
+    def _hourly_rights_generationkwh(self, cursor, uid, partner_id, start_date=None, end_date=None, context=None):
         if not start_date:
             start_date = gkwh.startDateRights
         if not end_date:
@@ -150,6 +155,15 @@ class ResPartner(osv.osv):
         rights = generatedRights.rights_kwh(member_id, start_date_dt, end_date_dt)
 
         return UsageTracker.convert_usage_date_quantity(enumerate((rights)), start_date_dt)
+
+    @staticmethod
+    def _prepare_datetime_value_www_response(dict_with_data):
+        return [
+            {
+                'date': int(mktime(datetime.strptime(k, '%Y-%m-%d %H:%M:%S').timetuple())),
+                'value': dict_with_data[k]
+            } for k in sorted(dict_with_data)
+        ]
 
     def last_invoiced_date_from_priority_polissa(self, cursor, uid, member_id, context=None):
         return self._last_invoiced_date_from_priority_polissa(cursor, uid, member_id, context).strftime("%Y-%m-%d")
