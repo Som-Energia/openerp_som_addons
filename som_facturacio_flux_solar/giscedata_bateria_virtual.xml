@@ -18,5 +18,17 @@
                 </field>
             </field>
         </record>
+
+        <record model="ir.ui.view" id="view_som_bateria_virtual_form">
+            <field name="name">view.som.bateria.virtual.tree</field>
+            <field name="model">giscedata.bateria.virtual</field>
+            <field name="type">tree</field>
+            <field name="inherit_id" ref="giscedata_facturacio_bateria_virtual.view_bateries_virtuals_form"/>
+            <field name="arch" type="xml">
+                <field name="total_descompte_bateria" position="after">
+                    <field name="activa" select="1"/>
+                </field>
+            </field>
+        </record>
     </data>
 </openerp>
