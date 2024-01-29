@@ -46,10 +46,28 @@ class GiscedataBateriaVirtual(osv.osv):
                 res[bateria_virtual.id] = str(origen_br.data_inici_descomptes)
         return res
 
+    def _ff_data_app_descomptes(self, cursor, uid, bat_ids, name, args, context=None):
+        res = dict.fromkeys(bat_ids, "")
+        sql = ("SELECT bat.id, bat_pol.data_inici, bat_pol.data_final "
+               "FROM giscedata_bateria_virtual_polissa bat_pol "
+               "JOIN giscedata_bateria_virtual bat ON bat.id = bat_pol.bateria_id "
+               "WHERE bat.id in %(bat_ids)s")
+        cursor.execute(sql, {'bat_ids': tuple(bat_ids)})
+        aux = {x[0]: {'data_inici_app_descomptes': x[1], 'data_final_app_descomptes': x[2]} for x in cursor.fetchall()}
+        res.update(aux)
+        return res
+
     _columns = {
         'origen_info': fields.function(_ff_origen, type="text", method=True, string='Origen'),
         'receptor_info': fields.function(_ff_receptor, type="text", method=True, string='Receptor (pes)'),
         'data_inici_descomptes': fields.function(_ff_data_inici_descomptes, type="text", method=True, string='Data inici generació descomptes'),
+        'activa': fields.boolean('Activa'),
+        'data_inici_app_descomptes': fields.function(_ff_data_app_descomptes, type="text", method=True, string='Data inici aplicació descomptes', multi='data_app'),
+        'data_final_app_descomptes': fields.function(_ff_data_app_descomptes, type="text", method=True, string='Data final aplicació descomptes', multi='data_app'),
+    }
+
+    _defaults = {
+        'activa': lambda *a: True
     }
 
 
