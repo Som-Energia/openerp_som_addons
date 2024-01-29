@@ -24,7 +24,7 @@ def up(cursor, installed_version):
         "view_bateries_virtuals_tree",
     ]
     load_data_records(
-        cursor, 'som_facturacio_flux_solar', 'giscedata_bateria_virtual_view.xml', list_of_records, mode='update'
+        cursor, 'som_facturacio_flux_solar', 'giscedata_bateria_virtual.xml', list_of_records, mode='update'
     )
     logger.info("XMLs succesfully updated.")
 
