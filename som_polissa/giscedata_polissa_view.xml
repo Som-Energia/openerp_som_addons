@@ -78,6 +78,9 @@
                 <xpath expr="//page[@string='Mecanisme ajust gas']" position="replace">
                     <page string="Mecanisme ajust gas" invisible="1"/>
                 </xpath>
+                <xpath expr="//page[@string='Agregació']" position="replace">
+                    <page string="Agregació" invisible="1"/>
+                </xpath>
             </field>
         </record>
         <record model="ir.ui.view" id="view_giscedata_polissa_enviament_tree">
