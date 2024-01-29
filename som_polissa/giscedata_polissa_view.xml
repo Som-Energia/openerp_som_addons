@@ -184,17 +184,6 @@
                 </tree>
             </field>
         </record>
-        <record model="ir.ui.view" id="view_giscedata_polissa_form_inherit_page_auto">
-            <field name="name">giscedata.polissa.form.inherit.page.auto</field>
-            <field name="model">giscedata.polissa</field>
-            <field name="inherit_id" ref="giscedata_polissa.view_polissa_autoconsum_form" />
-            <field name="type">form</field>
-            <field name="arch" type="xml">
-                <xpath expr="//page[@string='Autoconsum']" position="attributes">
-                    <attribute name="attrs">{}</attribute>
-                </xpath>
-            </field>
-        </record>
         <record model="ir.actions.act_window" id="action_giscedata_polissa_cau_som_tree">
             <field name="name">Contractes per CAU</field>
             <field name="type">ir.actions.act_window</field>
@@ -212,7 +201,7 @@
          <record model="ir.ui.view" id="view_giscedata_polissa_form_inherit">
             <field name="name">giscedata.polissa.form.inherit</field>
             <field name="model">giscedata.polissa</field>
-			<field name="inherit_id" ref="giscedata_polissa.view_polisses_form" />
+            <field name="inherit_id" ref="giscedata_polissa.view_polisses_form" />
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <field name="titular" position="after">
@@ -234,7 +223,7 @@
         <record model="ir.ui.view" id="view_giscedata_polissa_autoconsum_form_inherit">
             <field name="name">giscedata.polissa.autoconsum.form.inherit</field>
             <field name="model">giscedata.polissa</field>
-			<field name="inherit_id" ref="giscedata_polissa.view_polissa_autoconsum_form" />
+            <field name="inherit_id" ref="giscedata_polissa.view_polissa_autoconsum_form" />
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='potencia_generacio']" position="replace">
@@ -251,7 +240,7 @@
         <record model="ir.ui.view" id="view_giscedata_factruacio_suspesa_form_inherit">
             <field name="name">giscedata.facturacio.suspesa.form.inherit</field>
             <field name="model">giscedata.polissa</field>
-			<field name="inherit_id" ref="giscedata_facturacio_suspesa.view_giscedata_polissa_facturacio_suspesa_form" />
+            <field name="inherit_id" ref="giscedata_facturacio_suspesa.view_giscedata_polissa_facturacio_suspesa_form" />
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='observacio_suspesa']" position="replace">
@@ -262,7 +251,7 @@
         <record model="ir.ui.view" id="view_giscedata_polissa_tree_inherit">
             <field name="name">giscedata.polissa.tree.inherit</field>
             <field name="model">giscedata.polissa</field>
-			<field name="inherit_id" ref="giscedata_polissa.view_polisses_tree" />
+            <field name="inherit_id" ref="giscedata_polissa.view_polisses_tree" />
             <field name="type">tree</field>
             <field name="arch" type="xml">
                 <field name="cups" position="after">
@@ -293,6 +282,10 @@
                         <field name="crea_bat_auto" string="Afegir a un flux solar al activar pòlissa" select="2"/>
                     </group>
                     <field name="bateria_ids" nolabel="1" colspan="4" context="{'polissa_id':active_id}"/>
+                    <field name="historic_autoconsum" />
+                </xpath>
+                <xpath expr="//page[@string='Autoconsum']" position="attributes">
+                    <attribute name="attrs">{'invisible':[('historic_autoconsum','=', False)]}</attribute>
                 </xpath>
             </field>
         </record>

@@ -849,6 +849,29 @@ class GiscedataPolissa(osv.osv):
 
         return res
 
+    def _ff_historic_autoconsum(self, cursor, uid, ids, field_name, args, context=None):
+        """ Mirem al històric d'autoconsums si aquesta pólissa mai ha tingut l'autoconsum activat
+        """
+        hist_obj = self.pool.get('giscedata.autoconsum.cups.autoconsum')
+        res = dict.fromkeys(ids, False)
+        for pol_id in ids:
+            pol = self.browse(cursor, uid, pol_id)
+            hist_autos_ids = hist_obj.search(cursor, uid, [('cups_id', '=', pol.cups.id)])
+            for hist_auto_id in hist_autos_ids:
+                hist_auto = hist_obj.browse(cursor, uid, hist_auto_id)
+                pol_data_baixa = pol.data_baixa if pol.data_baixa else '9999-01-01'
+                hist_auto_data_final = hist_auto.data_final if hist_auto.data_final else '9999-01-01'
+                any_auto = (
+                    hist_auto.data_inici > pol.data_alta
+                    and hist_auto.data_inici < pol_data_baixa) or (
+                        hist_auto_data_final > pol.data_alta
+                    and hist_auto_data_final <= pol_data_baixa)
+                if any_auto:
+                    res[pol_id] = True
+                    break
+
+        return res
+
     _columns = {
         'info_gestio_endarrerida': fields.text('Informació gestió endarrerida'),
         'info_gestio_endarrerida_curta': fields.function(
@@ -898,6 +921,9 @@ class GiscedataPolissa(osv.osv):
             size=24),
         'tipus_installacio': fields.function(_get_tipus_installacio, fnct_search=_ff_search_tipus_installacio, method=True, type="selection",selection=TABLA_129, string='Tipus instal.lació',
                                            ),
+        'historic_autoconsum': fields.function(_ff_historic_autoconsum, method=True,
+                                                type='boolean', string='Té o ha tingut autoconsum',
+                                                readonly=True),
     }
 
 
