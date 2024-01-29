@@ -21,7 +21,7 @@ def up(cursor, installed_version):
     ##UPDATAR UNA PART DE L'XML (POSAR LA ID)##
     logger.info("Updating XMLs")
     list_of_records = [
-        "view_bateries_virtuals_tree",
+        "view_som_bateria_virtual_tree",
     ]
     load_data_records(
         cursor, 'som_facturacio_flux_solar', 'giscedata_bateria_virtual.xml', list_of_records, mode='update'
