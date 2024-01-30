@@ -61,6 +61,7 @@ class ResPartner(osv.osv):
             x['member_id'] = x['member_id'][0]
             x['annual_use_kwh'] = x.pop('cups_anual_use')
             x['contract_address'] = x.pop('cups_direction')
+            x['contract_tariff'] = x['contract_tariff'][1]
             del x['end_date']
             return x
 

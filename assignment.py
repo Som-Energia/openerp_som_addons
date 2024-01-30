@@ -16,6 +16,7 @@ FF_CONTRACT_FIELDS = [
     ('contract_state', 'state'),
     ('contract_last_invoiced', 'data_ultima_lectura'),
     ('cups_direction', 'cups_direccio'),
+    ('contract_tariff', 'tarifa'),
 ]
 
 
@@ -52,7 +53,7 @@ class GenerationkWhAssignment(osv.osv):
             assignment_id = assigment_vals['id']
             contract_id = assigment_vals['contract_id'][0]
             contract_fields = ['cups', 'state', 'data_ultima_lectura',
-                               'cups_direccio']
+                               'cups_direccio', 'tarifa']
             contract_vals = contract_obj.read(
                 cursor, uid, contract_id, contract_fields
             )
@@ -114,12 +115,16 @@ class GenerationkWhAssignment(osv.osv):
             type='date', method=True, multi='contract',
             help="Data Última lectura facturada",
             ),
+        contract_tariff=fields.function(
+            _ff_contract, string='Contract Tariff', readonly=True, type='char',
+            method=True, multi='contract',
+            help="Tarifa del contracte seleccionat",
+            ),
         cups_direction=fields.function(
             _ff_contract, string='Direcció CUPS', readonly=True, type='char',
             method=True, multi='contract',
             help="Direcció del CUPS",
             ),
-        # Contract fields
         cups_anual_use=fields.function(
             _ff_contract, string='Consum anual', readonly=True, type='integer',
             method=True, multi='contract',

@@ -375,6 +375,7 @@ class PartnerAssignments_Test(unittest.TestCase):
             'state',
             'cups',
             'cups_direccio',
+            'tarifa'
             ]))
         cups = self.Cups.read(contract.cups[0], ['conany_kwh'])
         contract.annualUseKwh = cups['conany_kwh']
@@ -403,6 +404,7 @@ class PartnerAssignments_Test(unittest.TestCase):
               contract_state: {contract.state}
               annual_use_kwh: {contract.annualUseKwh}
               contract_address: {contract.cups_direccio}
+              contract_tariff: {contract.tarifa}
             """.format(**dict(
                 self.personalData,
                 id=id,
@@ -459,6 +461,7 @@ class PartnerAssignments_Test(unittest.TestCase):
               contract_state: {contract2.state}
               annual_use_kwh: {contract2.annualUseKwh}
               contract_address: {contract2.cups_direccio}
+              contract_tariff: {contract2.tarifa}
             - id: {id}
               priority: 1
               member_id: {member_id}
@@ -469,6 +472,7 @@ class PartnerAssignments_Test(unittest.TestCase):
               contract_state: {contract.state}
               annual_use_kwh: {contract.annualUseKwh}
               contract_address: {contract.cups_direccio}
+              contract_tariff: {contract.tarifa}
             """.format(**dict(
                 self.personalData,
                 id=id,
