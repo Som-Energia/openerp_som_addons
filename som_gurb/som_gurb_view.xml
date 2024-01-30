@@ -85,5 +85,24 @@
         </record>
         <!-- Menú per llistar els GURBs-->
         <menuitem id="menu_llistar_gurbs" parent="menu_gurbs" action="action_gurbs" />
+        <!-- Accés directe a la pestanya amb llistat dels som.gurb.cups del GURB -->
+        <record id="action_som_gurb_cups_tree" model="ir.actions.act_window">
+            <field name="name">Tots els CUPS del GURB</field>
+            <field name="src_model">som.gurb</field>
+            <field name="res_model">som.gurb.cups</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'active_test': False}</field>
+            <field name="domain">[('gurb_id', '=', active_id)]</field>
+            <field name="view_id" ref="view_gurbs_cups_tree"/>
+        </record>
+        <record id="value_som_gurb_cups_in_gurb" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Tots els CUPS del GURB</field>
+            <field name="key2">client_action_relate</field>
+            <field name="key">action</field>
+            <field name="model">som.gurb</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_som_gurb_cups_tree'))" />
+        </record>
     </data>
 </openerp>
