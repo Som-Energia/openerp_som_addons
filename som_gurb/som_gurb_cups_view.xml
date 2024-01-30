@@ -8,7 +8,8 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="GURB">
-                    <group col="6" colspan="4" string="General">
+                    <group col="4" colspan="4" string="General">
+                        <field name="active" />
                         <field name="cups_id" />
                         <field name="start_date" />
                         <field name="end_date" />
@@ -23,11 +24,12 @@
             <field name="model">som.gurb.cups</field>
             <field name="type">tree</field>
             <field name="arch" type="xml">
-                <tree string="CUPS GURB">
-                    <field name="cups_id" />
+                <tree string="CUPS GURB" colors="red:active == False">
+                    <field name="active" select="1" />
+                    <field name="cups_id" select="1" />
                     <field name="gurb_id" />
-                    <field name="start_date" />
-                    <field name="end_date" />
+                    <field name="start_date" select="1" />
+                    <field name="end_date" select="1" />
                 </tree>
             </field>
         </record>
