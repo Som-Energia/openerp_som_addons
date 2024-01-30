@@ -11,8 +11,14 @@
             <field name="type">tree</field>
             <field name="arch" type="xml">
                 <tree string="GURBs">
-                    <!-- TODO: Check select fields -->
-                    <field name="name" select="1" />
+                    <field name="name" />
+                    <field name="code" />
+                    <field name="gurb_state" />
+                    <field name="activation_date" />
+                    <field name="self_consumption_id" />
+                    <field name="generation_power" />
+                    <field name="has_compensation" />
+                    <field name="has_compensation" />
                 </tree>
             </field>
         </record>
@@ -25,32 +31,32 @@
                 <form string="GURB">
                     <!-- TODO: Progress bar -->
                     <group col="6" colspan="4" string="General">
-                        <field name="code" select="1" />
-                        <field name="type" select="1" />
-                        <field name="logo" select="1" />
                         <field name="name" select="1" />
-                        <field name="roof_owner" select="1" />
-                        <field name="sig_data" select="1" />
-                        <field name="address" select="1" />
-                        <field name="province" select="1" />
-                        <field name="zip_code" select="1" />
+                        <field name="type" />
+                        <field name="logo" select="2" />
+                        <field name="code" select="1" />
+                        <field name="roof_owner" />
+                        <field name="sig_data" />
+                        <field name="address" />
+                        <field name="province" select="2" />
+                        <field name="zip_code" select="2" />
                     </group>
                     <group col="6" colspan="4" string="Característiques">
                         <field name="activation_date" select="1" />
-                        <field name="first_opening_days" select="1" />
-                        <field name="reopening_days" select="1" />
+                        <field name="first_opening_days" />
+                        <field name="reopening_days" />
                         <field name="gurb_state" select="1" />
-                        <field name="critical_incomplete_state" select="1" />
-                        <field name="joining_fee" select="1" />
-                        <field name="service_fee" select="1" />
-                        <field name="max_power" select="1" />
-                        <field name="mix_power" select="1" />
+                        <field name="critical_incomplete_state" />
+                        <field name="joining_fee" select="2" />
+                        <field name="service_fee" select="2" />
+                        <field name="max_power" />
+                        <field name="mix_power" />
                     </group>
                     <group col="6" colspan="4" string="Autoconsum">
-                        <field name="self_consumption_id" />
+                        <field name="self_consumption_id" select="1" />
                         <field name="state" />
-                        <field name="generation_power" />
-                        <field name="has_compensation" />
+                        <field name="generation_power" select="1" />
+                        <field name="has_compensation" select="1" />
                         <field name="data_alta" />
                         <field name="data_baixa" />
                     </group>
@@ -58,7 +64,7 @@
                         <page string="Betes">
                             <!-- TODO -->
                             <separator string="CUPS del GURB" colspan="4"/>
-                            <field name="gurb_cups_id" nolabel="1" select="1" colspan="4"/>
+                            <field name="gurb_cups_id" nolabel="1" colspan="4"/>
                         </page>
                         <page string="Registrador (comptador)">
                             <!-- TODO -->
