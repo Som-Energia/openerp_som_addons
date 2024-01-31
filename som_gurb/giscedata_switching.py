@@ -28,8 +28,6 @@ def cancel_switching_if_gurb(cursor, uid, sw_id, context=None):
 
 
 class GiscedataSwitchingD1_01(osv.osv):
-    """Classe pel pas 01"""
-
     _inherit = "giscedata.switching.d1.01"
 
     def create_from_xml(self, cursor, uid, sw_id, xml, context=None):
@@ -45,7 +43,6 @@ GiscedataSwitchingD1_01()
 
 
 class GiscedataSwitchingM1_02(osv.osv):
-
     _inherit = "giscedata.switching.m1.02"
 
     def create_from_xml(self, cursor, uid, sw_id, xml, context=None):
@@ -61,7 +58,6 @@ GiscedataSwitchingM1_02()
 
 
 class GiscedataSwitchingM1_03(osv.osv):
-
     _inherit = "giscedata.switching.m1.03"
 
     def create_from_xml(self, cursor, uid, sw_id, xml, context=None):
@@ -77,7 +73,6 @@ GiscedataSwitchingM1_03()
 
 
 class GiscedataSwitchingM1_04(osv.osv):
-
     _inherit = "giscedata.switching.m1.04"
 
     def create_from_xml(self, cursor, uid, sw_id, xml, context=None):
@@ -93,7 +88,6 @@ GiscedataSwitchingM1_04()
 
 
 class GiscedataSwitchingM1_05(osv.osv):
-
     _inherit = "giscedata.switching.m1.05"
 
     def create_from_xml(self, cursor, uid, sw_id, xml, context=None):
