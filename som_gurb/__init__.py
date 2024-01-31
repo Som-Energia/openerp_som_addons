@@ -1,1 +1,1 @@
-import giscedata_switching.py
+import giscedata_switching
