@@ -34,7 +34,7 @@ class GiscedataSwitchingHelpers(osv.osv):
         Es treu facturacio suspesa i refacturacio pendent.
 
         Es marca el CAC com a "Tancar al finalitzar CAC", cosa que provoca que el propi cas CAC es passi a finalitzat i el R1 també.
-        """
+        """  # noqa: E501
         if context is None:
             context = {}
 
@@ -201,7 +201,7 @@ class GiscedataSwitchingHelpers(osv.osv):
 
         if sw.cups_polissa_id.active:
             info = _(
-                u"[Baixa Mailchimp] No s'ha donat de baixa el titular perquè la pòlissa està activa."
+                u"[Baixa Mailchimp] No s'ha donat de baixa el titular perquè la pòlissa està activa."  # noqa: E501
             )
             return (_(u"OK"), info)
 

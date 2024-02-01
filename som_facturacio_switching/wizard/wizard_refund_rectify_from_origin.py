@@ -168,13 +168,13 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             if len(set([x["amount_untaxed_no_mag"] for x in re_ab_fact_info])) == 1:
                 if inv_initial_info["linies_generacio"] or has_autoconsumption:
                     msg.append(
-                        "Per la factura numero {} no s'esborren perquè alguna de les factures té autoconsum.".format(
+                        "Per la factura numero {} no s'esborren perquè alguna de les factures té autoconsum.".format(  # noqa: E501
                             inv_initial_info["number"]
                         )
                     )
                 elif inv_initial_info["is_gkwh"] or has_gkwh:
                     msg.append(
-                        "Per la factura numero {} no s'esborren perquè alguna de les factures té generationkwh.".format(
+                        "Per la factura numero {} no s'esborren perquè alguna de les factures té generationkwh.".format(  # noqa: E501
                             inv_initial_info["number"]
                         )
                     )
@@ -182,7 +182,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                     ab_re_ids = [x["id"] for x in re_ab_fact_info]
                     fact_obj.unlink(cursor, uid, ab_re_ids)
                     msg.append(
-                        "Per la factura numero {} les factures AB i RE tenen mateix import, s'esborren".format(
+                        "Per la factura numero {} les factures AB i RE tenen mateix import, s'esborren".format(  # noqa: E501
                             inv_initial_info["number"]
                         )
                     )
@@ -197,13 +197,13 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             ):
                 if inv_initial_info["linies_generacio"] or has_autoconsumption:
                     msg.append(
-                        "Per la factura numero {} no s'esborren perquè alguna de les factures té autoconsum.".format(
+                        "Per la factura numero {} no s'esborren perquè alguna de les factures té autoconsum.".format(  # noqa: E501
                             inv_initial_info["number"]
                         )
                     )
                 elif inv_initial_info["is_gkwh"] or has_gkwh:
                     msg.append(
-                        "Per la factura numero {} no s'esborren perquè alguna de les factures té generationkwh.".format(
+                        "Per la factura numero {} no s'esborren perquè alguna de les factures té generationkwh.".format(  # noqa: E501
                             inv_initial_info["number"]
                         )
                     )
@@ -211,7 +211,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                     ab_re_ids = [x["id"] for x in re_ab_fact_info]
                     fact_obj.unlink(cursor, uid, ab_re_ids)
                     msg.append(
-                        "Per la factura numero {} les factures AB i RE tenen quasi mateix import, s'esborren".format(
+                        "Per la factura numero {} les factures AB i RE tenen quasi mateix import, s'esborren".format(  # noqa: E501
                             inv_initial_info["number"]
                         )
                     )
@@ -376,7 +376,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                 [
                     "",
                     pol_name,
-                    "Ha arribat al final del procés (obrir {} factures: {}, enviar correu: {}).".format(
+                    "Ha arribat al final del procés (obrir {} factures: {}, enviar correu: {}).".format(  # noqa: E501
                         len(facts_created),
                         wiz.actions != "draft" and "Sí" or "No",
                         wiz.actions == "open-group-order-send" and "Sí" or "No",
@@ -385,7 +385,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             )
         return msg, fact_csv_result
 
-    def refund_rectify_by_origin(self, cursor, uid, ids, context={}):
+    def refund_rectify_by_origin(self, cursor, uid, ids, context={}):  # noqa: C901
         if not isinstance(ids, (tuple, list)):
             ids = [ids]
 
@@ -429,7 +429,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             try:
                 if f1.type_factura != "R":
                     msg.append(
-                        "La pòlissa {}, que té l'F1 amb origen {}, l'F1 no és tipus rectificatiu. No s'actua.".format(
+                        "La pòlissa {}, que té l'F1 amb origen {}, l'F1 no és tipus rectificatiu. No s'actua.".format(  # noqa: E501
                             pol_name, origen
                         )
                     )
@@ -438,7 +438,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
 
                 if f1.polissa_id.facturacio_suspesa:
                     msg.append(
-                        "La pòlissa {}, que té l'F1 amb origen {}, té facturació suspesa. No s'actua.".format(
+                        "La pòlissa {}, que té l'F1 amb origen {}, té facturació suspesa. No s'actua.".format(  # noqa: E501
                             pol_name, origen
                         )
                     )
@@ -460,7 +460,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                     )
                 if not facts_cli_ids:
                     msg.append(
-                        "L'F1 amb origen {} no té res per abonar i rectificar perquè no hi ha factura generada, no s'actua".format(
+                        "L'F1 amb origen {} no té res per abonar i rectificar perquè no hi ha factura generada, no s'actua".format(  # noqa: E501
                             origen
                         )
                     )
@@ -468,7 +468,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                         [
                             origen,
                             pol_name,
-                            "No té res per abonar i rectificar perquè no hi ha factura generada, no s'actua",
+                            "No té res per abonar i rectificar perquè no hi ha factura generada, no s'actua",  # noqa: E501
                         ]
                     )
                     self.add_f1_observation(
@@ -493,7 +493,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                 )
                 if not n_lect_del:
                     msg.append(
-                        "La pòlissa {}, que té l'F1 amb origen {}, no té lectures per esborrar. No s'hi actua.".format(
+                        "La pòlissa {}, que té l'F1 amb origen {}, no té lectures per esborrar. No s'hi actua.".format(  # noqa: E501
                             pol_name, origen
                         )
                     )
@@ -507,7 +507,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                     cursor, uid, facts_created, facts_cli_ids, context
                 )
                 msg.append(
-                    "S'han esborrat {} lectures de la pòlissa {} i s'han generat {} factures".format(
+                    "S'han esborrat {} lectures de la pòlissa {} i s'han generat {} factures".format(  # noqa: E501
                         n_lect_del, pol_name, len(facts_created)
                     )
                 )
@@ -520,7 +520,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                     )
                     if facts_over_limit:
                         msg.append(
-                            "La pòlissa {} té alguna factura d'import superior al límit, cal revisar les factures. No continua el procés.".format(
+                            "La pòlissa {} té alguna factura d'import superior al límit, cal revisar les factures. No continua el procés.".format(  # noqa: E501
                                 pol_name
                             )
                         )
@@ -528,7 +528,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                             [
                                 origen,
                                 pol_name,
-                                "Té alguna factura d'import superior al límit, cal revisar les factures. No continua el procés.",
+                                "Té alguna factura d'import superior al límit, cal revisar les factures. No continua el procés.",  # noqa: E501
                             ]
                         )
                         continue
@@ -536,7 +536,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                     cursor, uid, ids, facts_cli_ids
                 ):
                     msg.append(
-                        "La pòlissa {} té alguna factura inicial oberta. No continua el procés".format(
+                        "La pòlissa {} té alguna factura inicial oberta. No continua el procés".format(  # noqa: E501
                             pol_name
                         )
                     )
@@ -544,7 +544,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                         [
                             origen,
                             pol_name,
-                            "Té alguna factura inicial oberta, cal revisar les factures. No continua el procés.",
+                            "Té alguna factura inicial oberta, cal revisar les factures. No continua el procés.",  # noqa: E501
                         ]
                     )
                     continue
@@ -612,7 +612,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         "facts_generades": fields.text(),
         "max_amount": fields.float(
             "Import màxim",
-            help="Import màxim a partir del qual les factures no s'obren i cal revisar. Si s'indica 0 no es comprova cap import",
+            help="Import màxim a partir del qual les factures no s'obren i cal revisar. Si s'indica 0 no es comprova cap import",  # noqa: E501
         ),
         "email_template_to_pay": fields.many2one(
             "poweremail.templates",

@@ -81,7 +81,7 @@ class TestGiscedataFacturacioImportacioLinia(testing.OOTestCaseWithCursor):
         self.assertGreater(len(f1_ids), 1)
 
     @mock.patch(
-        "som_facturacio_switching.giscedata_facturacio_importacio_linia.GiscedataFacturacioImportacioLinia.reimport_f1_by_cups"
+        "som_facturacio_switching.giscedata_facturacio_importacio_linia.GiscedataFacturacioImportacioLinia.reimport_f1_by_cups"  # noqa: E501
     )
     def test_do_reimport_f1_select_one_f1(self, mock_function):
         f1_id = self.imd_obj.get_object_reference(
@@ -94,7 +94,7 @@ class TestGiscedataFacturacioImportacioLinia(testing.OOTestCaseWithCursor):
             self.uid,
             f1_id,
             {
-                "info": "* [2999] Undefined error: no file in gridfs collection Collection(Database(MongoClient('', ), u''), u'fs') with _id ObjectId('5')",
+                "info": "* [2999] Undefined error: no file in gridfs collection Collection(Database(MongoClient('', ), u''), u'fs') with _id ObjectId('5')",  # noqa: E501
                 "fecha_factura": fecha_factura,
             },
         )
@@ -105,7 +105,7 @@ class TestGiscedataFacturacioImportacioLinia(testing.OOTestCaseWithCursor):
         mock_function.assert_called_with(self.cursor, self.uid, [f1_id], context={})
 
     @mock.patch(
-        "som_facturacio_switching.giscedata_facturacio_importacio_linia.GiscedataFacturacioImportacioLinia.reimport_f1_by_cups"
+        "som_facturacio_switching.giscedata_facturacio_importacio_linia.GiscedataFacturacioImportacioLinia.reimport_f1_by_cups"  # noqa: E501
     )
     def test_do_reimport_f1_no_select_older_f1(self, mock_function):
         f1_id = self.imd_obj.get_object_reference(
@@ -118,7 +118,7 @@ class TestGiscedataFacturacioImportacioLinia(testing.OOTestCaseWithCursor):
             self.uid,
             f1_id,
             {
-                "info": "* [2999] Undefined error: no file in gridfs collection Collection(Database(MongoClient('', ), u''), u'fs') with _id ObjectId('5')",
+                "info": "* [2999] Undefined error: no file in gridfs collection Collection(Database(MongoClient('', ), u''), u'fs') with _id ObjectId('5')",  # noqa: E501
                 "fecha_factura": fecha_factura,
             },
         )
@@ -129,7 +129,7 @@ class TestGiscedataFacturacioImportacioLinia(testing.OOTestCaseWithCursor):
         mock_function.assert_not_called()
 
     @mock.patch(
-        "giscedata_facturacio_switching.giscedata_facturacio_switching.GiscedataFacturacioImportacioLinia.process_line"
+        "giscedata_facturacio_switching.giscedata_facturacio_switching.GiscedataFacturacioImportacioLinia.process_line"  # noqa: E501
     )
     def test_do_reimport_f1_two_f1_same_cups(self, mock_function):
         f1_id = self.imd_obj.get_object_reference(
@@ -143,7 +143,7 @@ class TestGiscedataFacturacioImportacioLinia(testing.OOTestCaseWithCursor):
         )[1]
         fecha_factura = (datetime.today() - timedelta(days=30)).strftime("%Y-%m-%d")
         vals = {
-            "info": "* [2999] Undefined error: no file in gridfs collection Collection(Database(MongoClient('', ), u''), u'fs') with _id ObjectId('5')",
+            "info": "* [2999] Undefined error: no file in gridfs collection Collection(Database(MongoClient('', ), u''), u'fs') with _id ObjectId('5')",  # noqa: E501
             "fecha_factura": fecha_factura,
             "cups_id": cups_id,
         }
@@ -157,7 +157,7 @@ class TestGiscedataFacturacioImportacioLinia(testing.OOTestCaseWithCursor):
         mock_function.assert_called_with(self.cursor, self.uid, [f2_id, f1_id], context={})
 
     @mock.patch(
-        "giscedata_facturacio_switching.giscedata_facturacio_switching.GiscedataFacturacioImportacioLinia.process_line"
+        "giscedata_facturacio_switching.giscedata_facturacio_switching.GiscedataFacturacioImportacioLinia.process_line"  # noqa: E501
     )
     def test_do_reimport_f1_two_f1_different_cups(self, mock_function):
         f1_id = self.imd_obj.get_object_reference(
@@ -174,7 +174,7 @@ class TestGiscedataFacturacioImportacioLinia(testing.OOTestCaseWithCursor):
         )[1]
         fecha_factura = (datetime.today() - timedelta(days=30)).strftime("%Y-%m-%d")
         vals = {
-            "info": "* [2999] Undefined error: no file in gridfs collection Collection(Database(MongoClient('', ), u''), u'fs') with _id ObjectId('5')",
+            "info": "* [2999] Undefined error: no file in gridfs collection Collection(Database(MongoClient('', ), u''), u'fs') with _id ObjectId('5')",  # noqa: E501
             "fecha_factura": fecha_factura,
         }
 

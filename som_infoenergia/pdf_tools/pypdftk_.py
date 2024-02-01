@@ -77,7 +77,7 @@ def fill_form(pdf_path, datas={}, out_file=None, flatten=True):
         cmd += " flatten"
     try:
         run_command(cmd, True)
-    except:
+    except Exception:
         if cleanOnFail:
             os.remove(tmp_fdf)
         raise
@@ -103,7 +103,7 @@ def concat(files, out_file=None):
     args += ["cat", "output", out_file]
     try:
         run_command(args)
-    except:
+    except Exception:
         if cleanOnFail:
             os.remove(out_file)
         raise
@@ -122,7 +122,7 @@ def split(pdf_path, out_dir=None):
     out_pattern = "%s/page_%%02d.pdf" % out_dir
     try:
         run_command((PDFTK_PATH, pdf_path, "burst", "output", out_pattern))
-    except:
+    except Exception:
         if cleanOnFail:
             shutil.rmtree(out_dir)
         raise
@@ -183,7 +183,7 @@ def add_custom(custom, input_, output_):
 
 def stamp(pdf_path, stamp_pdf_path, output_pdf_path=None):
     """
-    Applies a stamp (from stamp_pdf_path) to the PDF file in pdf_path. Useful for watermark purposes.
+    Applies a stamp (from stamp_pdf_path) to the PDF file in pdf_path. Useful for watermark purposes.  # noqa: E501
     If not output_pdf_path is provided, it returns a temporary file with the result PDF.
     """
     output = output_pdf_path or tempfile.mktemp(suffix=".pdf")

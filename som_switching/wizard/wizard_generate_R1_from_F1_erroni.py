@@ -18,7 +18,7 @@ class WizardGenerateR1FromF1Erroni(osv.osv_memory):
         res = super(WizardGenerateR1FromF1Erroni, self).create_atr_case(
             cursor, uid, ids, line_id, context=context
         )
-        if not isinstance(res[-1], long):
+        if not isinstance(res[-1], long):  # noqa: F821
             return res
 
         pol_obj = self.pool.get("giscedata.polissa")

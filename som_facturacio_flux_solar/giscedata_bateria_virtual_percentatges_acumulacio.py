@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Nou modesl de dades per gestionar els percentatges d'acumulacio dels origens de bateria virtual per SOMENERGIA.
+Nou modesl de dades per gestionar els percentatges d'acumulacio dels origens de bateria virtual per SOMENERGIA.  # noqa: E501
 """
 
 from osv import osv, fields
@@ -37,7 +37,7 @@ class GiscedataPolissa(osv.osv):
     _inherit = "giscedata.polissa"
 
     def wkf_baixa(self, cursor, uid, ids):
-        # Afegir la data de baixa al percentatge d'acumulacio de la bateria virtual quan es dona de baixa la polissa
+        # Afegir la data de baixa al percentatge d'acumulacio de la bateria virtual quan es dona de baixa la polissa  # noqa: E501
 
         res = super(GiscedataPolissa, self).wkf_baixa(cursor, uid, ids)
 

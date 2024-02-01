@@ -9,7 +9,7 @@ def up(cursor, installed_version):
 
     logger = logging.getLogger("openerp.migration")
 
-    ##UPDATAR UNA PART DE L'XML (POSAR LA ID)##
+    # UPDATAR UNA PART DE L'XML (POSAR LA ID)
     logger.info("Updating XMLs")
     list_of_records = ["view_giscedata_polissa_tree_inherit"]
     load_data_records(

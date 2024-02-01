@@ -218,7 +218,7 @@ class GiscedataSwitching(osv.osv):
                         )
                     msg_h = init_str + msg
                     tmp_cursor.commit()
-                except Exception, e:
+                except Exception as e:
                     msg_h = init_str + str(e)
                     tmp_cursor.rollback()
                     return ("ERROR", str(e))
@@ -251,7 +251,7 @@ class GiscedataSwitching(osv.osv):
                         ares = sw.notifica_a_client(context=ctx)
                         n_msg = init_str + ares[1]
                         self.historize_msg(cursor, uid, sw.id, n_msg, context=context)
-            except Exception, e:
+            except Exception as e:
                 n_msg = init_str + str(e)
                 self.historize_msg(cursor, uid, sw.id, n_msg, context=context)
 

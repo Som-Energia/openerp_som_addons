@@ -13,7 +13,7 @@ def up(cursor, installed_version):
     logger.info("Creating pooler")
     pooler.get_pool(cursor.dbname)
 
-    ##UPDATAR UNA PART DE L'XML (POSAR LA ID)##
+    # UPDATAR UNA PART DE L'XML (POSAR LA ID)
     logger.info("Updating XMLs")
     list_of_records = [
         "giscedata_facturacio_bateria_virtual.categ_desestiment",

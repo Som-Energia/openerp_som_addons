@@ -221,7 +221,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         if not isinstance(ids, list):
             ids = [ids]
 
-        if context == None:
+        if context == None:  # noqa: E711
             context = {}
 
         fac_obj = self.pool.get("giscedata.facturacio.factura")
@@ -351,7 +351,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
     def del_readings_data(self, fact):
         self.readings_cache.pop(fact.id, None)
 
-    def get_readings_data_fill(self, fact):
+    def get_readings_data_fill(self, fact):  # noqa: C901
         """
         Calculate the active and reactive energy readings data
         """
@@ -443,7 +443,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                         < datetime.strptime(lectura.data_actual, "%Y-%m-%d")
                     ],
                     reverse=True,
-                    key=lambda l: l.name,
+                    key=lambda l: l.name,  # noqa: E741
                 )
                 lectures_real_a.setdefault(lectura.comptador, [])
                 if len(lectura_real) > 0:
@@ -458,7 +458,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     lectura_real = sorted(
                         [
                             lectura_real
-                            for lectura_real in lectura.comptador_id.lectures
+                            for lectura_real in lectura.comptador_id.lectures  # noqa: F812
                             if lectura_real.tipus == "A"
                             and "{} ({})".format(
                                 lectura_real.periode.tarifa.name,
@@ -470,7 +470,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                             < datetime.strptime(lectura.data_actual, "%Y-%m-%d")
                         ],
                         reverse=True,
-                        key=lambda l: l.name,
+                        key=lambda l: l.name,  # noqa: E741
                     )
                     if len(lectura_real) > 0:
                         lectures_real_a[lectura.comptador].append(
@@ -511,7 +511,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                         < datetime.strptime(lectura.data_actual, "%Y-%m-%d")
                     ],
                     reverse=True,
-                    key=lambda l: l.name,
+                    key=lambda l: l.name,  # noqa: E741
                 )
                 lectures_real_g.setdefault(lectura.comptador, [])
                 if len(lectura_real) > 0:
@@ -526,7 +526,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     lectura_real = sorted(
                         [
                             lectura_real
-                            for lectura_real in lectura.comptador_id.lectures
+                            for lectura_real in lectura.comptador_id.lectures  # noqa: F812
                             if lectura_real.tipus == "A"
                             and "{} ({})".format(
                                 lectura_real.periode.tarifa.name,
@@ -538,7 +538,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                             < datetime.strptime(lectura.data_actual, "%Y-%m-%d")
                         ],
                         reverse=True,
-                        key=lambda l: l.name,
+                        key=lambda l: l.name,  # noqa: E741
                     )
                     if len(lectura_real) > 0:
                         lectures_real_g[lectura.comptador].append(
@@ -577,7 +577,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                         < datetime.strptime(lectura.data_actual, "%Y-%m-%d")
                     ],
                     reverse=True,
-                    key=lambda l: l.name,
+                    key=lambda l: l.name,  # noqa: E741
                 )
                 lectures_real_r.setdefault(lectura.comptador, [])
                 if len(lectura_real) > 0:
@@ -592,7 +592,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     lectura_real = sorted(
                         [
                             lectura_real
-                            for lectura_real in lectura.comptador_id.lectures
+                            for lectura_real in lectura.comptador_id.lectures  # noqa: F812
                             if lectura_real.tipus == "R"
                             and "{} ({})".format(
                                 lectura_real.periode.tarifa.name,
@@ -604,7 +604,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                             < datetime.strptime(lectura.data_actual, "%Y-%m-%d")
                         ],
                         reverse=True,
-                        key=lambda l: l.name,
+                        key=lambda l: l.name,  # noqa: E741
                     )
                     if len(lectura_real) > 0:
                         lectures_real_r[lectura.comptador].append(
@@ -643,7 +643,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                         < datetime.strptime(lectura.data_actual, "%Y-%m-%d")
                     ],
                     reverse=True,
-                    key=lambda l: l.name,
+                    key=lambda l: l.name,  # noqa: E741
                 )
                 lectures_real_c.setdefault(lectura.comptador, [])
                 if len(lectura_real) > 0:
@@ -658,7 +658,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     lectura_real = sorted(
                         [
                             lectura_real
-                            for lectura_real in lectura.comptador_id.lectures
+                            for lectura_real in lectura.comptador_id.lectures  # noqa: F812
                             if lectura_real.tipus == "R"
                             and "{} ({})".format(
                                 lectura_real.periode.tarifa.name,
@@ -670,7 +670,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                             < datetime.strptime(lectura.data_actual, "%Y-%m-%d")
                         ],
                         reverse=True,
-                        key=lambda l: l.name,
+                        key=lambda l: l.name,  # noqa: E741
                     )
                     if len(lectura_real) > 0:
                         lectures_real_c[lectura.comptador].append(
@@ -687,31 +687,31 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         total_lectures_g = dict([(p, 0) for p in periodes_g])
 
         for c, ls in lectures_a.items():
-            for l in ls:
+            for l in ls:  # noqa: E741
                 total_lectures_a[l[0]] += l[3]
 
         for c, ls in lectures_r.items():
-            for l in ls:
+            for l in ls:  # noqa: E741
                 total_lectures_r[l[0]] += l[3]
 
         for c, ls in lectures_c.items():
-            for l in ls:
+            for l in ls:  # noqa: E741
                 total_lectures_c[l[0]] += l[3]
 
         for c, ls in lectures_g.items():
-            for l in ls:
+            for l in ls:  # noqa: E741
                 total_lectures_g[l[0]] += l[3]
 
         has_adjust_a = False
         for k, v in lectures_a.items():
-            for l in v:
+            for l in v:  # noqa: E741
                 if l[8] != 0:
                     has_adjust_a = True
 
         has_readings_g = False
         has_adjust_g = False
         for k, v in lectures_g.items():
-            for l in v:
+            for l in v:  # noqa: E741
                 if l[1] != 0 or l[2] != 0:
                     has_readings_g = True
                 if l[8] != 0:
@@ -788,7 +788,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         GROUP BY polissa_id, periode, mes
         ORDER BY mes DESC, periode ASC
         ) consums_ordenats
-        ORDER BY mes ASC"""
+        ORDER BY mes ASC"""  # noqa: E501
 
         interval = 13 if fact.data_inici[0:7] == fact.data_final[0:7] else 14
 
@@ -840,7 +840,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 )
             else:
                 return polissa.distribuidora.address[0].phone
-        except:
+        except Exception:
             return polissa.distribuidora.www_phone
 
     def get_atr_price(self, fact, tarifa, linia):
@@ -898,7 +898,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         total_exces_consumida = 0.0
         exces_potencia = sorted(
             sorted(
-                [l for l in fact.linia_ids if l.tipus == "exces_potencia"],
+                [l for l in fact.linia_ids if l.tipus == "exces_potencia"],  # noqa: E741
                 key=attrgetter("price_unit_multi"),
                 reverse=True,
             ),
@@ -982,7 +982,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
     def get_real_energy_lines(self, fact, pol):
         real_energy = []
         lines_extra_ids = self.get_lines_in_extralines(fact, pol)
-        for l in fact.linies_energia:
+        for l in fact.linies_energia:  # noqa: E741
             if l.id not in lines_extra_ids and l.name.startswith("P"):
                 real_energy.append(l)
         return real_energy
@@ -990,7 +990,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
     def get_extra_energy_lines(self, fact, pol):
         real_energy = []
         lines_extra_ids = self.get_lines_in_extralines(fact, pol)
-        for l in fact.linies_energia:
+        for l in fact.linies_energia:  # noqa: E741
             if l.id in lines_extra_ids:
                 real_energy.append(l)
         return real_energy
@@ -1267,14 +1267,15 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     (potencia.periode_id.name, potencia.potencia)
                     for potencia in pol.potencies_periode
                 ],
-                key=lambda l: l[0],
+                key=lambda l: l[0],  # noqa: E741
             ),
             "is_autoconsum": te_autoconsum(fact, pol),  # fact.te_autoconsum
             "autoconsum": pol.autoconsumo,
             "autoconsum_cau": pol.autoconsum_id.cau if pol.autoconsum_id else "",
             "is_autoconsum_colectiu": te_autoconsum_collectiu(
                 fact, pol
-            ),  # fact.te_autoconsum and fact.polissa_id.autoconsum_id and fact.polissa_id.autoconsum_id.collectiu
+            ),  # fact.te_autoconsum and fact.polissa_id.autoconsum_id
+            # and fact.polissa_id.autoconsum_id.collectiu
             "autoconsum_colectiu_repartiment": float(pol.coef_repartiment),
             "power_invoicing_type": pol.facturacio_potencia == "max" or len(periodes_a) > 3,
             "small_text": self.is_visible_readings_g_table(fact, pol)
@@ -1573,7 +1574,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         if show_mean_zipcode_consumption:
             try:
                 mean_zipcode_consumption = fact.consum_cp_ids[0].consum
-            except Exception as e:  # consum_cp_ids is in another module and may be not installed or empty
+            except Exception:
+                # consum_cp_ids is in another module and may be not installed or empty
                 pass
 
         data = {
@@ -1698,7 +1700,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         atr_linies_potencia = {}  # ATR Peatges Energia dict
         power_lines = []
         tarifa_elect_atr = self.get_tarifa_elect_atr(fact)
-        for l in sorted(
+        for l in sorted(  # noqa: E741
             sorted(fact.linies_potencia, key=attrgetter("data_desde")), key=attrgetter("name")
         ):
             days_year = (
@@ -1721,7 +1723,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 }
             )
             l_name = l.name[:2]
-            if not l_name in atr_linies_potencia.keys():
+            if not l_name in atr_linies_potencia.keys():  # noqa: E713
                 atr_linies_potencia[l.name[:2]] = l_count
                 atr_linies_potencia[l.name[:2]].update(
                     {
@@ -1757,7 +1759,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         power_lines = []
         tarifa_elect_atr = self.get_tarifa_elect_atr(fact)
         linies_energia = self.get_real_energy_lines(fact, pol)
-        for l in sorted(
+        for l in sorted(  # noqa: E741
             sorted(linies_energia, key=attrgetter("data_desde")), key=attrgetter("name")
         ):
             power_lines.append(
@@ -1771,7 +1773,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             )
             l_count = Counter({"quantity": l.quantity, "atrprice_subtotal": l.atrprice_subtotal})
             l_name = l.name[:2]
-            if not l_name in atr_linies_energia.keys():
+            if not l_name in atr_linies_energia.keys():  # noqa: E713
                 atr_linies_energia[l.name[:2]] = l_count
                 atr_linies_energia[l.name[:2]].update(
                     {"price": self.get_atr_price(fact, tarifa_elect_atr, l)}
@@ -1796,7 +1798,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
     def get_component_invoice_details_generation_data(self, fact, pol):
         autoconsum_excedents_product_id = self.get_autoconsum_excedents_product_id(fact)
         generation_lines = []
-        for l in sorted(
+        for l in sorted(  # noqa: E741
             sorted(fact.linies_generacio, key=attrgetter("data_desde")), key=attrgetter("name")
         ):
             generation_lines.append(
@@ -1819,7 +1821,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
     def get_component_invoice_details_reactive_data(self, fact, pol):
         tarifa_elect_atr = self.get_tarifa_elect_atr(fact)
         reactive_lines = []
-        for l in sorted(
+        for l in sorted(  # noqa: E741
             sorted(fact.linies_reactiva, key=attrgetter("data_desde")), key=attrgetter("name")
         ):
             reactive_lines.append(
@@ -1839,8 +1841,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         }
         return data
 
-    def get_component_invoice_details_other_concepts_data(self, fact, pol):
-        def get_tax_type(l):
+    def get_component_invoice_details_other_concepts_data(self, fact, pol):  # noqa: C901
+        def get_tax_type(l):  # noqa: E741
             if l.tax_id.description == "IESE_RD_17_2021":
                 return "0.5percent"
             elif l.tax_id.description == "IESE_RDL_8_2023_25":
@@ -1862,7 +1864,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         altres_lines = []
         iva_energia = None
         iva_potencia = None
-        for l in fact.linia_ids:
+        for l in fact.linia_ids:  # noqa: E741
             if l.tipus in "energia":
                 iva_energia = get_iva_line(l)
             if l.tipus in "potencia":
@@ -1949,7 +1951,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 len(percentatges_exempcio_splitted) == 3 and len(percentatges_exempcio) == 2
             )
 
-            for l in fact.tax_line:
+            for l in fact.tax_line:  # noqa: E741
                 tax_type = get_tax_type(l)
                 if "IVA" not in l.name and "IGIC" not in l.name:
                     if (
@@ -1973,7 +1975,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     )
         else:
             fiscal_position = False
-            for l in fact.tax_line:
+            for l in fact.tax_line:  # noqa: E741
                 if "IVA" not in l.name and "IGIC" not in l.name:
                     iese_lines.append(
                         {
@@ -1986,7 +1988,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         iva_lines = []
         igic_lines = []
-        for l in fact.tax_line:
+        for l in fact.tax_line:  # noqa: E741
             if "IVA" in l.name:
                 iva_lines.append(
                     {
@@ -2019,7 +2021,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "percentatges_exempcio_splitted": percentatges_exempcio_splitted,
             "percentatges_exempcio": percentatges_exempcio,
             "is_excempcio_IE_base": is_excempcio_IE_base,
-            "donatiu": sum([l["price_subtotal"] for l in donatiu_lines]),
+            "donatiu": sum([l["price_subtotal"] for l in donatiu_lines]),  # noqa: E741
             "amount_total": fact.amount_total,
         }
         return data
@@ -2027,7 +2029,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
     def get_component_invoice_details_comments_data(self, fact, pol):
         """
         returns a dictionary with all the comments data needed for the invoice details comments component
-        """
+        """  # noqa: E501
         invoice_comment = (
             fact.comment
             if fact.journal_id.code.startswith("RECUPERACION_IVA") and fact.comment
@@ -2045,7 +2047,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
     def get_component_invoice_details_tec271_data(self, fact, pol):
         """
         returns a dictionary with all the tec271 data needed for the invoice details tec271 component
-        """
+        """  # noqa: E501
         polissa_obj = fact.pool.get("giscedata.polissa")
         cups = polissa_obj.read(self.cursor, self.uid, pol.id, ["cups"])["cups"][1]
         sup_territorials_tec_271_comer_obj = fact.pool.get(
@@ -2074,13 +2076,13 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         altres_lines = [
             l
-            for l in fact.linia_ids
+            for l in fact.linia_ids  # noqa: E741
             if l.tipus in ("altres", "cobrament")
             and l.invoice_line_id.product_id.code
             not in ("DN01", "BS01", "DESC1721", "DESC1721ENE", "DESC1721POT")
         ]
 
-        total_altres = sum([l.price_subtotal for l in altres_lines])
+        total_altres = sum([l.price_subtotal for l in altres_lines])  # noqa: E741
 
         pie_total = fact.amount_total - fact.total_lloguers
         pie_regulats = fact.total_atr + total_altres
@@ -2155,7 +2157,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         )
         exces_potencia = sorted(
             sorted(
-                [l for l in fact.linia_ids if l.tipus == "exces_potencia"],
+                [l for l in fact.linia_ids if l.tipus == "exces_potencia"],  # noqa: E741
                 key=attrgetter("price_unit_multi"),
                 reverse=True,
             ),
@@ -2174,7 +2176,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             fact_potencia.update({p[0]: max(fact_potencia.get(p[0], 0), p[1])})
 
         dades_exces_potencia = dict([(p, (0, 0)) for p in periodes_m])
-        for l in exces_potencia:
+        for l in exces_potencia:  # noqa: E741
             dades_exces_potencia[l.name] = (l.quantity, l.price_subtotal)
 
         exces_m = []
@@ -2287,7 +2289,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         total_exces_consumida, has_exces_potencia = self.get_total_excess_power_consumed(fact)
         impostos = {}
         iese = 0
-        for l in fact.tax_line:
+        for l in fact.tax_line:  # noqa: E741
             if "IVA" in l.name or "IGIC" in l.name:
                 impostos.update({clean_tax_name(l.name): l.amount})
             else:
@@ -2295,34 +2297,34 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         bosocial_lines = [
             l
-            for l in fact.linia_ids
+            for l in fact.linia_ids  # noqa: E741
             if l.tipus in "altres" and l.invoice_line_id.product_id.code == "BS01"
         ]
         donatiu_lines = [
             l
-            for l in fact.linia_ids
+            for l in fact.linia_ids  # noqa: E741
             if l.tipus in "altres" and l.invoice_line_id.product_id.code == "DN01"
         ]
         altres_lines = [
             l
-            for l in fact.linia_ids
+            for l in fact.linia_ids  # noqa: E741
             if l.tipus in ("altres", "cobrament")
             and l.invoice_line_id.product_id.code not in ("DN01", "BS01", "RBS", "PBV")
         ]
 
         extra_energy_lines = self.get_extra_energy_lines(fact, pol)
 
-        donatiu = sum([l.price_subtotal for l in donatiu_lines])
+        donatiu = sum([l.price_subtotal for l in donatiu_lines])  # noqa: E741
 
-        total_bosocial = sum([l.price_subtotal for l in bosocial_lines])
+        total_bosocial = sum([l.price_subtotal for l in bosocial_lines])  # noqa: E741
 
-        total_altres = sum([l.price_subtotal for l in altres_lines])
+        total_altres = sum([l.price_subtotal for l in altres_lines])  # noqa: E741
 
-        total_extra = sum([l.price_subtotal for l in extra_energy_lines])
+        total_extra = sum([l.price_subtotal for l in extra_energy_lines])  # noqa: E741
 
         total_altres += total_extra
 
-        total_energia = sum([l.price_subtotal for l in fact.linies_energia])
+        total_energia = sum([l.price_subtotal for l in fact.linies_energia])  # noqa: E741
         total_energia = total_energia - total_extra
 
         data = {
@@ -2334,7 +2336,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "total_rent": fact.total_lloguers,
             "total_amount": fact.amount_total,
             "has_autoconsum": te_autoconsum(fact, pol),
-            "autoconsum_total_compensada": sum([l.price_subtotal for l in fact.linies_generacio]),
+            "autoconsum_total_compensada": sum([l.price_subtotal for l in fact.linies_generacio]),  # noqa: E741, E501
             "impostos": impostos,
             "iese": iese,
             "donatiu": donatiu,
@@ -2365,19 +2367,19 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data["total_altres"] = total_altres if abs(total_altres) > 0.001 else 0
         bosocial2023_lines = [
             l
-            for l in fact.linia_ids
+            for l in fact.linia_ids  # noqa: E741
             if l.tipus in "altres" and l.invoice_line_id.product_id.code == "RBS"
         ]
-        data["total_bosocial2023"] = sum([l.price_subtotal for l in bosocial2023_lines])
+        data["total_bosocial2023"] = sum([l.price_subtotal for l in bosocial2023_lines])  # noqa: E741, E501
 
         flux_lines = [
             l
-            for l in fact.linia_ids
+            for l in fact.linia_ids  # noqa: E741
             if l.tipus in ("altres", "cobrament") and l.invoice_line_id.product_id.code == "PBV"
         ]
 
         data["has_flux_solar_discount"] = len(flux_lines) > 0
-        data["flux_solar_discount"] = sum([l.price_subtotal for l in flux_lines])
+        data["flux_solar_discount"] = sum([l.price_subtotal for l in flux_lines])  # noqa: E741
         return data
 
     def get_component_partner_info_data(self, fact, pol):
@@ -2503,7 +2505,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 data_ant = lect[2]["data_anterior"]
                 data_act = lect[2]["data_actual"]
             if comptador_anterior and comptador_actual != comptador_anterior:
-                comptadors[(comptador_anterior, data_actual_pre, data_ant_pre)] = llista_lect
+                comptadors[(comptador_anterior, data_actual_pre, data_ant_pre)] = llista_lect  # noqa: F821, E501
                 llista_lect = []
             if data_act:
                 comptadors[(comptador_actual, data_act, data_ant)] = llista_lect
@@ -2603,7 +2605,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "energy": self.get_sub_component_invoice_details_td_energy_data(
                 fact, pol, energy_discount_BOE17_2021
             ),
-            # 'energy_generationkwh' : self.get_sub_component_invoice_details_td_energy_generationkwh_data(fact, pol),
+            # 'energy_generationkwh' :
+            # self.get_sub_component_invoice_details_td_energy_generationkwh_data(fact, pol),
             "energy_discount_BOE17_2021": energy_discount_BOE17_2021,
             "energy_tolls": self.get_sub_component_invoice_details_td_energy_tolls_data(fact, pol),
             "energy_charges": self.get_sub_component_invoice_details_td_energy_charges_data(
@@ -2612,10 +2615,10 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "other_concepts": self.get_sub_component_invoice_details_td_other_concepts_data(
                 fact, pol
             ),
-            "excess_power_maximeter": self.get_sub_component_invoice_details_td_excess_power_maximeter(
+            "excess_power_maximeter": self.get_sub_component_invoice_details_td_excess_power_maximeter(  # noqa: E501
                 fact, pol
             ),
-            "excess_power_quarterhours": self.get_sub_component_invoice_details_td_excess_power_quarterhours(
+            "excess_power_quarterhours": self.get_sub_component_invoice_details_td_excess_power_quarterhours(  # noqa: E501
                 fact, pol
             ),
             "bo_social_2023": self.get_sub_component_invoice_details_td_bo_social_2023_data(
@@ -2633,7 +2636,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
     def get_sub_component_invoice_details_td(self, fact, pol, linies, lectures=None):
         readings = {}
-        if lectures != None:
+        if lectures != None:  # noqa: E711
             for comptador_name, lectures_comptador in lectures.items():
                 for lectura in lectures_comptador:
                     if lectura[0] == u"P1":
@@ -2658,7 +2661,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         block = 0
         sorted_linies = sorted(linies, key=attrgetter("data_desde"))
         data_desde = sorted_linies[0]["data_desde"] if len(sorted_linies) > 0 else None
-        for l in sorted_linies:
+        for l in sorted_linies:  # noqa: E741
             if data_desde != l["data_desde"]:
                 block += 1
                 data_desde = l["data_desde"]
@@ -2670,7 +2673,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 is_leap_year(datetime.strptime(l.data_desde, "%Y-%m-%d").year) and 366 or 365
             )
 
-            if lines_data.has_key(block) and lines_data[block].has_key(l.name):
+            if lines_data.has_key(block) and lines_data[block].has_key(l.name):  # noqa: W601
                 lines_data[block][l.name]["quantity"] = (
                     lines_data[block][l.name]["quantity"] + l.quantity
                 )
@@ -2715,7 +2718,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         total = 0
         iva = 0
 
-        for l in linies:
+        for l in linies:  # noqa: E741
             l_count = Counter(
                 {
                     "quantity": l.quantity,
@@ -2764,7 +2767,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         is_index = is_indexed(fact)
         discount_lines = [
             l
-            for l in fact.linia_ids
+            for l in fact.linia_ids  # noqa: E741
             if l.tipus in "altres"
             and l.invoice_line_id.product_id.code in ("DESC1721", "DESC1721POT", "DESC1721ENE")
             and "potencia" in l.name
@@ -2774,7 +2777,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         total = 0
         iva = ""
         days_year = 365
-        for l in discount_lines:
+        for l in discount_lines:  # noqa: E741
             days_year = (
                 is_leap_year(datetime.strptime(l.data_desde, "%Y-%m-%d").year) and 366 or 365
             )
@@ -2822,7 +2825,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         is_index = is_indexed(fact)
         discount_lines = [
             l
-            for l in fact.linia_ids
+            for l in fact.linia_ids  # noqa: E741
             if l.tipus in "altres"
             and l.invoice_line_id.product_id.code in ("DESC1721", "DESC1721POT", "DESC1721ENE")
             and "energia" in l.name
@@ -2831,7 +2834,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         discount_energy_lines = {}
         total = 0
         iva = ""
-        for l in discount_lines:
+        for l in discount_lines:  # noqa: E741
             price_subtotal = l.price_unit * l.quantity if is_index else l.price_subtotal
             l_count = Counter(
                 {
@@ -2870,7 +2873,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         atr_linies_potencia = {}  # ATR Peatges Potencia dict
         tarifa_elect_atr = self.get_tarifa_elect_atr(fact, "pricelist_tarifas_peajes_electricidad")
         days_year = 0
-        for l in sorted(
+        for l in sorted(  # noqa: E741
             sorted(fact.linies_potencia, key=attrgetter("data_desde")), key=attrgetter("name")
         ):
             days_year = (
@@ -2883,7 +2886,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 }
             )
             l_name = l.name[:2]
-            if not l_name in atr_linies_potencia.keys():
+            if not l_name in atr_linies_potencia.keys():  # noqa: E713
                 atr_linies_potencia[l_name] = l_count
                 atr_linies_potencia[l_name].update(
                     {
@@ -2912,7 +2915,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         tarifa_elect_atr = self.get_tarifa_elect_atr(fact, "pricelist_tarifas_cargos_electricidad")
 
         days_year = 0
-        for l in fact.linies_potencia:
+        for l in fact.linies_potencia:  # noqa: E741
             days_year = (
                 is_leap_year(datetime.strptime(l.data_desde, "%Y-%m-%d").year) and 366 or 365
             )
@@ -2939,7 +2942,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 )
 
             l_name = l.name[:2]
-            if not l_name in charges_lines_potencia.keys():
+            if not l_name in charges_lines_potencia.keys():  # noqa: E713
                 if (
                     l.data_desde >= BOE17_2021_dates["start"]
                     and l.data_desde <= BOE17_2021_dates["end"]
@@ -3022,12 +3025,12 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             fact
         )
         linies_energia = self.get_real_energy_lines(fact, pol)
-        no_generationkWh_lines = [l for l in linies_energia if "GkWh" not in l.name]
+        no_generationkWh_lines = [l for l in linies_energia if "GkWh" not in l.name]  # noqa: E741
         energy_lines_data = self.get_sub_component_invoice_details_td(
             fact, pol, no_generationkWh_lines, lectures_a
         )
 
-        generationkwh_lines = [l for l in linies_energia if "GkWh" in l.name]
+        generationkwh_lines = [l for l in linies_energia if "GkWh" in l.name]  # noqa: E741
         gkwh_energy_lines_data = self.get_sub_component_invoice_details_td(
             fact, pol, generationkwh_lines
         )
@@ -3064,12 +3067,12 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         atr_linies_energia = {}  # ATR Peatges Energia dict
         tarifa_elect_atr = self.get_tarifa_elect_atr(fact, "pricelist_tarifas_peajes_electricidad")
         linies_energia = self.get_real_energy_lines(fact, pol)
-        for l in sorted(
+        for l in sorted(  # noqa: E741
             sorted(linies_energia, key=attrgetter("data_desde")), key=attrgetter("name")
         ):
             l_count = Counter({"quantity": l.quantity, "atrprice_subtotal": l.atrprice_subtotal})
             l_name = l.name[:2]
-            if not l_name in atr_linies_energia.keys():
+            if not l_name in atr_linies_energia.keys():  # noqa: E713
                 atr_linies_energia[l_name] = l_count
                 atr_linies_energia[l_name].update(
                     {"price": self.get_atr_price(fact, tarifa_elect_atr, l)}
@@ -3092,7 +3095,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         charges_lines_energy = {}
         tarifa_elect_atr = self.get_tarifa_elect_atr(fact, "pricelist_tarifas_cargos_electricidad")
         linies_energia = self.get_real_energy_lines(fact, pol)
-        for l in linies_energia:
+        for l in linies_energia:  # noqa: E741
             if "price_unit_cargos" in l:
                 l_count = Counter(
                     {
@@ -3113,7 +3116,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 )
 
             l_name = l.name[:2]
-            if not l_name in charges_lines_energy.keys():
+            if not l_name in charges_lines_energy.keys():  # noqa: E713
                 if (
                     l.data_desde >= BOE17_2021_dates["start"]
                     and l.data_desde <= BOE17_2021_dates["end"]
@@ -3161,7 +3164,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return data
 
     def get_sub_component_invoice_details_td_excess_power_maximeter(self, fact, pol):
-        excess_lines = [l for l in fact.linia_ids if l.tipus == "exces_potencia"]
+        excess_lines = [l for l in fact.linia_ids if l.tipus == "exces_potencia"]  # noqa: E741
         if not excess_lines:
             return {"is_visible": False}
 
@@ -3209,7 +3212,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return data
 
     def get_sub_component_invoice_details_td_excess_power_quarterhours(self, fact, pol):
-        excess_lines = [l for l in fact.linia_ids if l.tipus == "exces_potencia"]
+        excess_lines = [l for l in fact.linia_ids if l.tipus == "exces_potencia"]  # noqa: E741
         if not excess_lines:
             return {"is_visible": False}
 
@@ -3258,7 +3261,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         visible = False
         iva = ""
 
-        for l in fact.linia_ids:
+        for l in fact.linia_ids:  # noqa: E741
             if l.tipus in "altres" and l.invoice_line_id.product_id.code == "RBS":
                 days += l.quantity
                 price_per_day = l.price_unit
@@ -3282,7 +3285,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         visible = False
         iva = ""
 
-        for l in fact.linia_ids:
+        for l in fact.linia_ids:  # noqa: E741
             if l.tipus in "altres" and l.invoice_line_id.product_id.code == "PBV":
                 subtotal += l.price_subtotal
                 iva = get_iva_line(l)
@@ -3305,7 +3308,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         generation_lines = []
         ajustment = 0.0
         iva = ""
-        for l in fact.linies_generacio:
+        for l in fact.linies_generacio:  # noqa: E741
             if l.product_id.id == autoconsum_excedents_product_id:
                 ajustment += l.price_subtotal
                 iva = get_iva_line(l)
@@ -3339,7 +3342,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
     def get_sub_component_invoice_details_td_inductive_data(self, fact, pol):
         if is_6XTD(pol):
-            linies_inductiva = [l for l in fact.linies_reactiva if l.name not in (u"P6")]
+            linies_inductiva = [l for l in fact.linies_reactiva if l.name not in (u"P6")]  # noqa: E741, E501
         else:
             linies_inductiva = fact.linies_reactiva
         if not linies_inductiva:
@@ -3363,7 +3366,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return (False, 0.0)
 
     def get_sub_component_invoice_details_td_capacitive_data(self, fact, pol):
-        linies_capacitiva = [l for l in fact.linies_reactiva if l.name in (u"P6")]
+        linies_capacitiva = [l for l in fact.linies_reactiva if l.name in (u"P6")]  # noqa: E741
 
         if not linies_capacitiva or not is_6XTD(pol):
             return {"is_visible": False}
@@ -3509,7 +3512,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return data
 
     def adjust_readings_priority(self, adjust_readings_list):
-        adjust_readings_list = [adjust for adjust in adjust_readings_list if adjust != False]
+        adjust_readings_list = [adjust for adjust in adjust_readings_list if adjust != False]  # noqa: E712, E501
         if len(adjust_readings_list) == 0:
             return False
 
@@ -3656,7 +3659,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return data
 
     def get_sub_component_energy_consumption_detail_td_maximeter_data(self, fact, pol, meter):
-        excess_lines = [l for l in fact.linia_ids if l.tipus == "exces_potencia"]
+        excess_lines = [l for l in fact.linia_ids if l.tipus == "exces_potencia"]  # noqa: E741
 
         data = {
             "showing_periods": self.get_matrix_show_periods(pol),

@@ -133,7 +133,7 @@ class GiscedataFacturacioContracteLot(osv.osv):
         return res
 
     def _get_clots_from_polissa(self, cr, uid, ids, context=None):
-        """ids són els ids de pòlisses que han canviat. Hem de retornar els ids de clot que cal recalcular"""
+        """ids són els ids de pòlisses que han canviat. Hem de retornar els ids de clot que cal recalcular"""  # noqa: E501
         cl_obj = self.pool.get("giscedata.facturacio.contracte_lot")
         return cl_obj.search(cr, uid, [("polissa_id", "in", ids)])
 

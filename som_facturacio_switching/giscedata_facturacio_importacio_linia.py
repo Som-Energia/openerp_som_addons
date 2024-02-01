@@ -61,10 +61,10 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
                 comentario = comentario[0]
                 try:
                     comentario = comentario.encode("utf-8")
-                except:
+                except Exception:
                     try:
                         comentario = comentario.decode("latin-1").encode("utf-8")
-                    except:
+                    except Exception:
                         comentario = ""
 
                 vals["comentari"] = comentario
@@ -89,9 +89,9 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
                     if (
                         exact_origin
                         and field == "invoice_number_text"
-                        and isinstance(match, (unicode, str))
+                        and isinstance(match, (unicode, str))  # noqa: F821
                     ):
-                        if not "%" in match:
+                        if "%" not in match:
                             operator = "="
                         args[idx] = (field, operator, match)
         return super(GiscedataFacturacioImportacioLinia, self).search(
@@ -107,7 +107,7 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
                 f1_dict[cups_text] = []
             f1_dict[cups_text].append(f1)
 
-        for _, f1ns in f1_dict.items():
+        for k, f1ns in f1_dict.items():
             sorted_list = sorted(f1ns, key=lambda x: x["fecha_factura_desde"])
             line_ids = [x["id"] for x in sorted_list]
             for line in line_ids:
@@ -162,7 +162,7 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
             )
             f1_ids += _ids
         logger.info(
-            "Trobats {} fitxers F1 mitjançant codi d'error, amb data factura entre {} i avui ({})".format(
+            "Trobats {} fitxers F1 mitjançant codi d'error, amb data factura entre {} i avui ({})".format(  # noqa: E501
                 len(f1_ids), date_to_check, datetime.today().strftime("%Y-%m-%d")
             )
         )
@@ -178,7 +178,7 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
         )
         f1_ids += fase1_ids
         logger.info(
-            "Trobats {} fitxers F1 en fase 1 sense estat, amb data factura entre {} i avui ({})".format(
+            "Trobats {} fitxers F1 en fase 1 sense estat, amb data factura entre {} i avui ({})".format(  # noqa: E501
                 len(fase1_ids), date_to_check, datetime.today().strftime("%Y-%m-%d")
             )
         )

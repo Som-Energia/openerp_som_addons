@@ -4,7 +4,7 @@ import unittest
 
 class IndexadaExceptionsTest(unittest.TestCase):
     def test_as_dict__IndexadaExceptionBase(self):
-        e = indexada_exceptions.IndexadaException(
+        e = indexada_exceptions.IndexadaException(  # noqa: F821
             "Title",
             "Description",
         )
@@ -17,7 +17,7 @@ class IndexadaExceptionsTest(unittest.TestCase):
         )
 
     def test_as_dict__PolissaNotActive(self):
-        e = indexada_exceptions.PolissaNotActive("0018")
+        e = indexada_exceptions.PolissaNotActive("0018")  # noqa: F821
         self.assertEqual(
             e.to_dict(),
             dict(
@@ -28,7 +28,7 @@ class IndexadaExceptionsTest(unittest.TestCase):
         )
 
     def test_as_dict__PolissaModconPending(self):
-        e = indexada_exceptions.PolissaModconPending("0018")
+        e = indexada_exceptions.PolissaModconPending("0018")  # noqa: F821
         self.assertEqual(
             e.to_dict(),
             dict(
@@ -39,7 +39,7 @@ class IndexadaExceptionsTest(unittest.TestCase):
         )
 
     def test_as_dict__PolissaAlreadyIndexed(self):
-        e = indexada_exceptions.PolissaAlreadyIndexed("0018")
+        e = indexada_exceptions.PolissaAlreadyIndexed("0018")  # noqa: F821
         self.assertEqual(
             e.to_dict(),
             dict(
@@ -50,7 +50,7 @@ class IndexadaExceptionsTest(unittest.TestCase):
         )
 
     def test_as_dict__PolissaSimultaneousATR(self):
-        e = indexada_exceptions.PolissaSimultaneousATR("0018")
+        e = indexada_exceptions.PolissaSimultaneousATR("0018")  # noqa: F821
         self.assertEqual(
             e.to_dict(),
             dict(

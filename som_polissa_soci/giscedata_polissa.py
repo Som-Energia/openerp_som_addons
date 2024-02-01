@@ -26,12 +26,12 @@ class GiscedataPolissa(osv.osv):
         ):
             observacions = polissa_vals["observacions"]
             cadena = "* consum: "
-            linia = [l for l in observacions.split("\n") if cadena in l][0]
+            linia = [obs for obs in observacions.split("\n") if cadena in obs][0]
 
             val = re.findall("[0-9]+", linia.split(":")[1])
             try:
                 consum = val and int(val[0]) or False
-            except:
+            except Exception:
                 consum = False
 
             res = consum

@@ -64,7 +64,7 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
             wiz_obj.refund_rectify_by_origin(cursor, uid, wiz_id, context=ctx)
         self.assertEqual(
             e.exception.message,
-            "warning -- Error\n\nLa plantilla de pagament no té indicat el compte des del qual enviar",
+            "warning -- Error\n\nLa plantilla de pagament no té indicat el compte des del qual enviar",  # noqa: E501
         )
 
     def test_refund_rectify_by_origin_notEnforceFromAccountRefundTemplate(self):
@@ -95,7 +95,7 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
             wiz_obj.refund_rectify_by_origin(cursor, uid, wiz_id, context=ctx)
         self.assertEqual(
             e.exception.message,
-            "warning -- Error\n\nLa plantilla de cobrament no té indicat el compte des del qual enviar",
+            "warning -- Error\n\nLa plantilla de cobrament no té indicat el compte des del qual enviar",  # noqa: E501
         )
 
     def test_refund_rectify_by_origin_notPaymentOrder(self):
@@ -260,7 +260,7 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
         wiz = wiz_obj.browse(cursor, uid, wiz_id)
         self.assertEqual(
             wiz.info,
-            "S'han esborrat 3 lectures de la pòlissa {} i s'han generat 1 factures\n\nLa pòlissa {} té "
+            "S'han esborrat 3 lectures de la pòlissa {} i s'han generat 1 factures\n\nLa pòlissa {} té "  # noqa: E501
             "alguna factura inicial oberta. No continua el procés".format(
                 fact_info["polissa_id"][1], fact_info["polissa_id"][1]
             ),

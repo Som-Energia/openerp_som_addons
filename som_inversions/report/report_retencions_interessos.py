@@ -1,6 +1,7 @@
 from osv import osv
 from yamlns import namespace as ns
 import pooler
+import generationkwh.investmentmodel as gkwh
 
 
 class AccountInvoice(osv.osv):

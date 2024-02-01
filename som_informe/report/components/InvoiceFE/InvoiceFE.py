@@ -108,7 +108,7 @@ class InvoiceFE:
         result["other_concepts"] = []
         altres_lines = [
             l
-            for l in invoice.linia_ids
+            for l in invoice.linia_ids  # noqa: E741
             if l.tipus in ("altres", "cobrament")
             and l.invoice_line_id.product_id.code
             not in ("DN01", "BS01", "DESC1721", "DESC1721ENE", "DESC1721POT")
@@ -155,7 +155,7 @@ class InvoiceFE:
             result["lectures"].append(dict_lectura)
 
         excess_lines = {"P1": 0, "P2": 0, "P3": 0, "P4": 0, "P5": 0, "P6": 0}
-        lines = [l for l in invoice.linia_ids if l.tipus == "exces_potencia"]
+        lines = [l for l in invoice.linia_ids if l.tipus == "exces_potencia"]  # noqa: E741
         result["maximetre"] = False
         if lines:
             result["maximetre"] = True

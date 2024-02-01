@@ -136,11 +136,11 @@ class TestPolissaWwwAutolectura(testing.OOTestCase):
 
         self.create_lect_pool(pol_id, str(test_date), "P1", "A", 22287, "test", "OV", "50")
 
-        b = self.create_lect_pool(
+        self.create_lect_pool(
             pol_id, str(test_date - timedelta(days=31)), "P1", "A", 33387, "test", "OV", "40"
         )
 
-        c = self.create_lect_pool(
+        self.create_lect_pool(
             pol_id, str(test_date - timedelta(days=61)), "P1", "A", 99987, "test", "OV", "99"
         )
 

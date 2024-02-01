@@ -109,7 +109,7 @@ class WizardLiquidacioInteressos(osv.osv_memory):
         l_vals.update(vals)
         il_obj.create(cursor, uid, l_vals)
 
-    def calc(self, cursor, uid, ids, context=None):
+    def calc(self, cursor, uid, ids, context=None):  # noqa: C901
         if not context:
             context = {}
 

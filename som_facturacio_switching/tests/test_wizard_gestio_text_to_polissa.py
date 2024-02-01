@@ -248,7 +248,7 @@ class TestWizardGestioTextToPolissa(testing.OOTestCaseWithCursor):
         wiz_id = wiz_o.create(self.cursor, self.uid, wiz_init, context=context)
 
         with self.assertRaises(osv.except_osv) as exception_context:
-            result = wiz_o.get_polisses_ids(self.cursor, self.uid, [wiz_id], context=context)
+            wiz_o.get_polisses_ids(self.cursor, self.uid, [wiz_id], context=context)
 
         expected_message = "No s'ha trobat pòlissa per l'F1 amb cups {}".format(cups_data.name)
         exception_message = exception_context.exception.message

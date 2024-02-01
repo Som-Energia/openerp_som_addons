@@ -25,8 +25,8 @@ class PaymentOrder(osv.osv):
             if factura.cups_id and factura.cups_id.direccio:
                 # We take only 97 chars in order to respect xml facet of 140 chars max length
                 # The text "Factura FExxxxxxxxxx - Contracte yyyyyyy - " is 43 chars long
-                # So we must take only 97 from address for we don't want to exceed the 140 chars restriction
-                additional_text = unicode(factura.cups_id.direccio)[:97].encode("utf8")
+                # So we must take only 97 from address for we don't want to exceed the 140 chars restriction   # noqa: E501
+                additional_text = unicode(factura.cups_id.direccio)[:97].encode("utf8")  # noqa: F821,E501
         return remesa_description.format(additional_text)
 
 

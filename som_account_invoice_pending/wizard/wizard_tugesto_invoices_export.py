@@ -89,8 +89,8 @@ class WizardExportTugestoInvoices(osv.osv_memory):
             try:
                 # trantament pels NIE
                 nif_cif = "{}{}".format(
-                    re.findall("^[XYZ]\d{7,8}[A-Z]$", nif_cif)[0], "*"
-                )  # noqa: W605, E501
+                    re.findall("^[XYZ]\d{7,8}[A-Z]$", nif_cif)[0], "*"  # noqa: W605
+                )
             except IndexError:
                 pass
 

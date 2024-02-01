@@ -162,7 +162,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
         return env_br.polissa_id.titular.lang
 
-    def getConsumEstimatPotencia(self, potencia):
+    def getConsumEstimatPotencia(self, potencia):  # noqa: C901
         res = 0
         if potencia <= 1:
             res = 200
@@ -251,7 +251,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
         periods = {
             "tp": sorted(pol.tarifa.get_periodes("tp", context=context).keys()),
             "te": sorted(pol.tarifa.get_periodes("te", context=context).keys()),
-            # 'ac': [sorted(pol.tarifa.get_periodes('te', context=context).keys())[0]], # not working for non auto pol
+            # 'ac': [sorted(pol.tarifa.get_periodes('te', context=context).keys())[0]], # not working for non auto pol  # noqa: E501
         }
         for terme, values in periods.items():
             result[terme] = {}
@@ -567,7 +567,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
                 nom_titular = " " + env.polissa_id.titular.name.split(",")[1].lstrip() + ","
             else:
                 nom_titular = ","
-        except:
+        except Exception:
             nom_titular = ","
         return nom_titular
 

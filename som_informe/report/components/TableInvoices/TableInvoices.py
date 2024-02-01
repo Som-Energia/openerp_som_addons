@@ -92,7 +92,7 @@ class TableInvoices:
     def get_invoice_origin(self, cursor, uid, invoice):
         readings = {}
         lectures = invoice.lectures_energia_ids
-        if lectures != None:
+        if lectures != None:  # noqa: E711
             for lectura in lectures:
                 origens = self.get_origen_lectura(cursor, uid, lectura)
                 if "(P1)" in lectura.name:

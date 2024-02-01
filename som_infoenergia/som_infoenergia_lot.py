@@ -440,7 +440,7 @@ class SomInfoenergiaLotEnviament(osv.osv):
             "poweremail.templates",
             "Plantilla del correu del lot",
             required=True,
-            domain="[('object_name.model', 'in', ['som.enviament.massiu','som.infoenergia.enviament'])]",
+            domain="[('object_name.model', 'in', ['som.enviament.massiu','som.infoenergia.enviament'])]",  # noqa: E501
         ),
         "total_env_csv": fields.function(
             _ff_totals,
@@ -489,7 +489,7 @@ class SomInfoenergiaLotEnviament(osv.osv):
             readonly=True,
             type="integer",
             method=True,
-            help="Ja sigui perquè la pòlissa té l'enviament deshabilitat, s'ha cancel·lat a través d'una acció...",
+            help="Ja sigui perquè la pòlissa té l'enviament deshabilitat, s'ha cancel·lat a través d'una acció...",  # noqa: E501
         ),
         "total_baixa": fields.function(
             _ff_totals,
@@ -584,7 +584,7 @@ class SomInfoenergiaLotEnviament(osv.osv):
         ),
         "total_env_csv_in_search": fields.function(
             _ff_totals,
-            string="Enviaments totals informats en algun CSV descarregat de Beedata trobats en cerca",
+            string="Enviaments totals informats en algun CSV descarregat de Beedata trobats en cerca",  # noqa: E501
             readonly=True,
             type="integer",
             method=True,

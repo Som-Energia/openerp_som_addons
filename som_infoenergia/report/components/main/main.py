@@ -55,7 +55,7 @@ class main:
         data_firma = datetime.strptime(object.date, '%Y-%m-%d') if object.date else datetime.now()
         data['sign_date'] = babel.dates.format_datetime(data_firma, "d LLLL 'de' YYYY", locale='es_ES')
         data['is_business'] = self._is_business(cursor, uid, object)
-        """
+        """  # noqa: E501
         par_obj = object.pool.get("res.partner")
         som_par = par_obj.browse(cursor, uid, 1)
 

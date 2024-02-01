@@ -88,7 +88,7 @@ class WizardPaperInvoiceSom(osv.osv_memory):
             {
                 "state": "info",
                 "invoice_ids": json.dumps(fact_ids),
-                "info": "Trobades {} polisses amb enviament postal.\nEs generanan {} pdf's de les seguents factures:\n{}".format(
+                "info": "Trobades {} polisses amb enviament postal.\nEs generanan {} pdf's de les seguents factures:\n{}".format(  # noqa: E501
                     len(pol_ids), len(fact_ids), fact_names
                 ),
             }

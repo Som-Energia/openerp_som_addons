@@ -295,9 +295,6 @@ class TestsAutoActiva(testing.OOTestCase):
 
         partner_id = imd_obj.get_object_reference(cursor, uid, "base", "main_partner")[1]
 
-        part_obj = self.model("res.partner")
-        ddd = part_obj.search(cursor, uid, [("ref", "=", "4321")])
-
         activ_custom_id = imd_obj.get_object_reference(
             cursor, uid, "som_switching", "sw_act_r105_cac"
         )[1]
@@ -451,9 +448,6 @@ class TestsAutoActiva(testing.OOTestCase):
         imd_obj = self.openerp.pool.get("ir.model.data")
 
         partner_id = imd_obj.get_object_reference(cursor, uid, "base", "main_partner")[1]
-
-        part_obj = self.model("res.partner")
-        ddd = part_obj.search(cursor, uid, [("ref", "=", "4321")])
 
         activ_custom_id = imd_obj.get_object_reference(
             cursor, uid, "som_switching", "sw_act_r105_cac"

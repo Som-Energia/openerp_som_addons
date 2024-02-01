@@ -45,7 +45,7 @@ class WizardLlistatSocis(osv.osv_memory):
         writer.writerow(HEADERS)
 
         for row in llistat:
-            tmp = [isinstance(t, basestring) and t.encode("utf-8") or t for t in row]
+            tmp = [isinstance(t, basestring) and t.encode("utf-8") or t for t in row]  # noqa: F821
             writer.writerow(tmp)
 
         mfile = base64.b64encode(output.getvalue())

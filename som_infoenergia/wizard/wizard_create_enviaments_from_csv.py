@@ -23,7 +23,7 @@ class WizardCancelFromCSV(osv.osv_memory):
             _(u"Fitxer CSV"),
             required=True,
             help=_(
-                u"Número de pòlissa de les pòlisses o número de partners dels quals se'n vol crear un enviament"
+                u"Número de pòlissa de les pòlisses o número de partners dels quals se'n vol crear un enviament"  # noqa: E501
             ),
         ),
         "state": fields.selection(STATES, _(u"Estat del wizard de crear enviaments des de CSV")),

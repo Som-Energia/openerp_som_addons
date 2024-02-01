@@ -32,7 +32,7 @@ class SendEmailOverLimitWizard(osv.osv_memory):
             partner_id = partner["partner_id"]
             name = res_partner_obj.read(cursor, uid, partner_id[0], ["name"])["name"]
             partner_record_list.append(NIF + " - " + name)
-        return "\n".join([partner for partner in partner_record_list])
+        return "\n".join([partner for partner in partner_record_list])  # noqa: F812
 
     def send_email_to_partner_records(self, cursor, uid, ids, context=None):
         active_ids = context.get("active_ids")

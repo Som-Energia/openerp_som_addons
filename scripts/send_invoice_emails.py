@@ -38,7 +38,7 @@ def send_emails():
         return
     # lot_ids = get_current_lot(c)
     lot_ids = get_lots(c)
-    print lot_ids
+    print lot_ids  # noqa: E999
     for lot_id in lot_ids:
         lot = c.GiscedataFacturacioLot.get(lot_id)
         logger.info("*** Sending emails of lot {0}:".format(lot.name))
@@ -48,9 +48,9 @@ def send_emails():
         logger.info(wiz.info)
         sys.stdout.write(wiz.info)
         sys.stdout.write("\n")
-        res = c.WizardFacturesPerEmail.action_enviar_lot_per_mail(
+        res = c.WizardFacturesPerEmail.action_enviar_lot_per_mail(  # noqa: F841
             [wiz.id], context=context
-        )  # noqa: E501, F841
+        )
         wiz = c.WizardFacturesPerEmail.get(wiz.id)
         logger.info(wiz.info)
         sys.stdout.write(wiz.info)

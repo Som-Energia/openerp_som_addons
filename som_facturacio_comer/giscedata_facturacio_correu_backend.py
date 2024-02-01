@@ -44,7 +44,7 @@ class ReportBackendInvoiceEmail(ReportBackend):
         if energetica:
             data[
                 "logo"
-            ] = "https://blog.somenergia.coop/wp-content/uploads/2018/10/som-energia-energetica-logos.jpg"
+            ] = "https://blog.somenergia.coop/wp-content/uploads/2018/10/som-energia-energetica-logos.jpg"  # noqa: E501
         else:
             data["logo"] = "http://www.somenergia.coop/wp-content/uploads/2014/07/logo.png"
 
@@ -105,7 +105,7 @@ class ReportBackendInvoiceEmail(ReportBackend):
         data = report_o.get_polissa(cursor, uid, fra, context=context)
 
         polissa_retrocedida = False
-        de_lot = fra.lot_facturacio and fra.lot_facturacio.id != False
+        de_lot = fra.lot_facturacio and fra.lot_facturacio.id != False  # noqa: E712
         if de_lot:
             clot_obj = fra.pool.get("giscedata.facturacio.contracte_lot")
             clot_id = clot_obj.search(

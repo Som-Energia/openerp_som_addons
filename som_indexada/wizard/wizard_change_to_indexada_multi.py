@@ -26,7 +26,7 @@ class WizardChangeToIndexadaMulti(osv.osv_memory):
             wiz_id = wz_chng_to_indx_obj.create(cursor, uid, params, context=ctx)
             wiz = wz_chng_to_indx_obj.browse(cursor, uid, [wiz_id])[0]
             try:
-                res = wz_chng_to_indx_obj.change_to_indexada(cursor, uid, [wiz.id], context=ctx)
+                wz_chng_to_indx_obj.change_to_indexada(cursor, uid, [wiz.id], context=ctx)
             except Exception:
                 pol_name = pol_obj.read(cursor, uid, pol_id, ["name"])
                 failed_polisses.append(pol_name["name"])

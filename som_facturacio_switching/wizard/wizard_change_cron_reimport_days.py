@@ -30,7 +30,7 @@ class WizardChangeCronReimportDays(osv.osv_memory):
         "days": fields.integer(
             "Dies a reimportar",
             help=_(
-                u"Canvia el numero de dies a cercar cap enrere del cron de reimportació de F1's a partir d'avuí"
+                u"Canvia el numero de dies a cercar cap enrere del cron de reimportació de F1's a partir d'avuí"  # noqa: E501
             ),
         ),
     }

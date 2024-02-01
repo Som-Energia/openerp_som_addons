@@ -21,7 +21,7 @@ def up(cursor, installed_version):
          'field_wizard_refund_rectify_from_origin_open_invoices', 'field_wizard_refund_rectify_from_origin_send_mail',
          'access_wizard_refund_rectify_from_origin_rcwd', 'view_wizard_refund_rectify_from_origin',
          'action_wizard_refund_rectify_from_origin_from_f1_form', 'value_wizard_refund_rectify_from_origin_from_f1_form')
-        """
+        """  # noqa: E501
     cursor.execute(update_query)
     logger.info("Wizard migrated")
 

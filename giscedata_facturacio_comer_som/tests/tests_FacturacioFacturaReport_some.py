@@ -165,10 +165,10 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         self.get_fixture("giscedata_polissa", "polissa_0001")
 
-        print "+-" * 50
-        print f.polissa_id
-        print f.polissa_id.soci
-        print f.polissa_id.id
+        print "+-" * 50  # noqa: E999
+        print f.polissa_id  # noqa: F821
+        print f.polissa_id.soci  # noqa: F821
+        print f.polissa_id.id  # noqa: F821
 
         p = self.partner_obj.browse(self.cursor, self.uid, 23)
         self.partner_obj.write(self.cursor, self.uid, p.id, {"ref": "S019753"})
@@ -180,7 +180,7 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
             polissa.return_value = "S019753"
 
             print "*" * 50
-            print f.polissa_id.soci
+            print f.polissa_id.soci  # noqa: F821
 
             result = self.r_obj.get_component_logo_data(**self.bfp(f_id))
             self.assertYamlfy(result)

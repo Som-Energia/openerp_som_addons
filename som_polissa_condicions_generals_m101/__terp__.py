@@ -2,7 +2,7 @@
 {
     "name": "Condicions generals Somenergia (model giscedata.switching)",
     "description": """Aquest mòdul afegeix les següents funcionalitats:
-    * Afegir nou report i nova plantilla d'email pels casos M1 01 de CT per subrogació i canvis tècnics
+    * Afegir nou report i nova plantilla d'email pels casos M1 01 de CT per subrogació i canvis tècnics  # noqa: E501
     """,
     "version": "2.107.5",
     "author": "SomEnergia",

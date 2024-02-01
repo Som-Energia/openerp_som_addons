@@ -51,7 +51,8 @@ class GiscedataSwitchingWizardValidateD101(osv.osv_memory):
     def validate_d101_autoconsum(self, cursor, uid, ids, context=None):
         """
         Creates a step D102 from a D1 case (sw_id).
-        If it's not a rejections, a M1 case is created to change self-consumption for the related contract.
+        If it's not a rejections, a M1 case is created to change self-consumption
+        for the related contract.
         Returns a tuple with 2 values:
             - If the D102 is a rejection step , returns (D102_ID, None)
             - If the D102 is an accepted step, returns (D102_ID, M1_ID)

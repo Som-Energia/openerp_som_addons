@@ -33,7 +33,7 @@ class LotEnviamentTests(testing.OOTestCase):
     @mock.patch(
         "som_infoenergia.som_infoenergia_lot.SomInfoenergiaLotEnviament.create_enviaments_from_csv"
     )
-    def test_create_enviaments_from_csv_file(self, mocked_create_enviaments_from_csv):
+    def test_create_enviaments_from_csv_file_first(self, mocked_create_enviaments_from_csv):
         imd_obj = self.openerp.pool.get("ir.model.data")
         lot_env_obj = self.openerp.pool.get("som.infoenergia.lot.enviament")
         self.openerp.pool.get("som.infoenergia.enviament")
@@ -64,7 +64,7 @@ class LotEnviamentTests(testing.OOTestCase):
     @mock.patch(
         "som_infoenergia.som_infoenergia_lot.SomInfoenergiaLotEnviament.create_enviaments_from_csv"
     )
-    def test_create_enviaments_from_csv_file(self, mocked_create_enviaments_from_csv):
+    def test_create_enviaments_from_csv_file_second(self, mocked_create_enviaments_from_csv):
         imd_obj = self.openerp.pool.get("ir.model.data")
         lot_env_obj = self.openerp.pool.get("som.infoenergia.lot.enviament")
         self.openerp.pool.get("som.enviament.massiu")

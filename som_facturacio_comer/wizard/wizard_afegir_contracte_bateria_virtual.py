@@ -66,14 +66,14 @@ class WizardAfegirContracteBateriaVirtual(osv.osv_memory):
                         raise osv.except_osv(
                             _("Error"),
                             _(
-                                "La bateria virtual seleccionada ja té un origen amb un CUPS diferent."
+                                "La bateria virtual seleccionada ja té un origen amb un CUPS diferent."  # noqa: E501
                             ),
                         )
                     if pol_cups and (cups_pol_id not in pol_cups):
                         raise osv.except_osv(
                             _("Error"),
                             _(
-                                "S'estan intentant assignar varies pòlisses amb diferent CUPS com a orígens de la bateria virtual."
+                                "S'estan intentant assignar varies pòlisses amb diferent CUPS com a orígens de la bateria virtual."  # noqa: E501
                             ),
                         )
                     pol_cups.append(cups_pol_id)

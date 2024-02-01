@@ -46,7 +46,7 @@ class WizardSubtypeR1(osv.osv_memory):
         res = super(WizardSubtypeR1, self).action_create_r1_case_from_dict(
             cursor, uid, polissa_id, dict_fields2, context=context
         )
-        if not isinstance(res[-1], long):
+        if not isinstance(res[-1], long):  # noqa: F821
             return res
 
         pol_obj = self.pool.get("giscedata.polissa")

@@ -3,8 +3,6 @@ from expects import expect
 from expects import contain
 from destral import testing
 from destral.transaction import Transaction
-from expects import expect
-from expects import contain
 
 
 class TestsFacturesValidation(testing.OOTestCase):
@@ -74,7 +72,7 @@ class TestsFacturesValidation(testing.OOTestCase):
         contract_obj.send_signal(cursor, uid, [pol_id], ["validar", "contracte"])
         contract = contract_obj.browse(cursor, uid, pol_id)
         for meter in contract.comptadors:
-            for l in meter.lectures:
+            for l in meter.lectures:  # noqa: E741
                 l.unlink(context={})
             for lp in meter.lectures_pot:
                 lp.unlink(context={})
@@ -165,7 +163,7 @@ class TestsFacturesValidation(testing.OOTestCase):
 
         wz_id_mod = wz_crear_mc_obj.create(cursor, uid, params, ctx)
         wiz_mod = wz_crear_mc_obj.browse(cursor, uid, wz_id_mod, ctx)
-        res = wz_crear_mc_obj.onchange_duracio(
+        wz_crear_mc_obj.onchange_duracio(
             cursor, uid, [wz_id_mod], wiz_mod.data_inici, wiz_mod.duracio, ctx
         )
         wiz_mod.write({"data_inici": ini, "data_final": fi})
@@ -177,7 +175,7 @@ class TestsFacturesValidation(testing.OOTestCase):
         pool = self.openerp.pool
         linia_obj = pool.get("giscedata.facturacio.factura.linia")
 
-        linia_id = linia_obj.create(
+        linia_obj.create(
             cursor,
             uid,
             {
@@ -277,7 +275,7 @@ class TestsFacturesValidation(testing.OOTestCase):
         warnings = self.validation_warnings(inv_id)
         expect(warnings).not_to(contain("SF02"))
 
-    def test_check_min_periods_and_teoric_maximum_consum__contract_with_category_not_periods_not_teoric(
+    def test_check_min_periods_and_teoric_maximum_consum__contract_with_category_not_periods_not_teoric(  # noqa: E501
         self,
     ):
         pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
@@ -331,7 +329,7 @@ class TestsFacturesValidation(testing.OOTestCase):
         warnings = self.validation_warnings(inv_id)
         expect(warnings).not_to(contain("SF03"))
 
-    def test_check_consume_by_percentage_and_category__contract_with_category_and_teoric_consumption(
+    def test_check_consume_by_percentage_and_category__contract_with_category_and_teoric_consumption(  # noqa: E501
         self,
     ):
         pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")

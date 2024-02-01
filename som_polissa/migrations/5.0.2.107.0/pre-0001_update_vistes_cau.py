@@ -14,7 +14,7 @@ def up(cursor, installed_version):
     logger.info("Creating pooler")
     pool = pooler.get_pool(cursor.dbname)
 
-    ##UPDATAR UN MODUL NOU AL CREAR-LO O AFEGIR UNA COLUMNA##
+    # UPDATAR UN MODUL NOU AL CREAR-LO O AFEGIR UNA COLUMNA
     logger.info("Updating table table: giscedata.polissa")
     pool.get("giscedata.polissa")._auto_init(cursor, context={"module": "som_polissa"})
     logger.info("Table updated succesfully.")

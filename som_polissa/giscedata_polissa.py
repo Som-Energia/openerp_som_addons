@@ -832,7 +832,7 @@ class GiscedataPolissa(osv.osv):
 
         return consum_periodes
 
-    def get_consum_anual_estadistic_som(self, cursor, uid, polissa_id, context=None):
+    def get_consum_anual_estadistic_som(self, cursor, uid, polissa_id, context=None):  # noqa: C901
         """Consum anual segons estadística de SOM"""
         if not context:
             context = {}
@@ -950,7 +950,7 @@ class GiscedataPolissa(osv.osv):
             digits=(8, 1),
             string="Dif. dies lectures F1 i facturades",
             readonly=True,
-            help="Data última lectura F1 - data última lectura facturada (si no té data facturada real, agafa la data d'alta de la pòlissa).",
+            help="Data última lectura F1 - data última lectura facturada (si no té data facturada real, agafa la data d'alta de la pòlissa).",  # noqa: E501
             store={
                 "giscedata.polissa": (
                     lambda self, cr, uid, ids, c={}: ids,

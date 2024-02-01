@@ -117,7 +117,7 @@ class TestActivacioM1(TestSwitchingImport):
                 u"[Baixa Mailchimp] S'ha iniciat el procés de baixa "
                 u"per l'antic titular (ID %d)" % (old_partner_id)
             )
-            history_line_desc = [l["description"] for l in m1.history_line]
+            history_line_desc = [line["description"] for line in m1.history_line]
             self.assertTrue(any([expected_result in desc for desc in history_line_desc]))
 
     @mock.patch("som_polissa_soci.res_partner.ResPartner.arxiva_client_mailchimp_async")
@@ -138,12 +138,12 @@ class TestActivacioM1(TestSwitchingImport):
                 u"[Baixa Mailchimp] No s'ha iniciat el procés de baixa "
                 u"perque l'antic titular encara té pòlisses associades"
             )
-            history_line_desc = [l["description"] for l in m1.history_line]
+            history_line_desc = [line["description"] for line in m1.history_line]
             self.assertTrue(any([expected_result in desc for desc in history_line_desc]))
 
     @mock.patch("som_polissa_soci.res_partner.ResPartner.arxiva_client_mailchimp_async")
     @mock.patch(
-        "giscedata_lectures_switching.giscedata_lectures.GiscedataLecturesSwitchingHelper.move_meters_of_contract"
+        "giscedata_lectures_switching.giscedata_lectures.GiscedataLecturesSwitchingHelper.move_meters_of_contract"  # noqa: E501
     )
     def test_ct_traspas_baixa_mailchimp_ok(self, mock_lectures, mock_mailchimp_function):
         with Transaction().start(self.database) as txn:
@@ -170,12 +170,12 @@ class TestActivacioM1(TestSwitchingImport):
                 u"[Baixa Mailchimp] S'ha iniciat el procés de baixa "
                 u"per l'antic titular (ID %d)" % (old_partner_id)
             )
-            history_line_desc = [l["description"] for l in m1.history_line]
+            history_line_desc = [line["description"] for line in m1.history_line]
             self.assertTrue(any([expected_result in desc for desc in history_line_desc]))
 
     @mock.patch("som_polissa_soci.res_partner.ResPartner.arxiva_client_mailchimp_async")
     @mock.patch(
-        "giscedata_lectures_switching.giscedata_lectures.GiscedataLecturesSwitchingHelper.move_meters_of_contract"
+        "giscedata_lectures_switching.giscedata_lectures.GiscedataLecturesSwitchingHelper.move_meters_of_contract"  # noqa: E501
     )
     def test_ct_traspas_baixa_mailchimp_error__more_than_one_contract(
         self, mock_lectures, mock_function
@@ -201,5 +201,5 @@ class TestActivacioM1(TestSwitchingImport):
                 u"[Baixa Mailchimp] No s'ha iniciat el procés de baixa "
                 u"perque l'antic titular encara té pòlisses associades"
             )
-            history_line_desc = [l["description"] for l in m1.history_line]
+            history_line_desc = [line["description"] for line in m1.history_line]
             self.assertTrue(any([expected_result in desc for desc in history_line_desc]))

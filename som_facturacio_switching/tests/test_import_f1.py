@@ -36,8 +36,8 @@ class TestImportF1Som(TestImportF1):
             line_obj.process_line_sync(cursor, uid, line_id)
 
             line_vals = line_obj.read(cursor, uid, line_id)
-            expect(line_vals["state"]).to(equal("valid"))
-            expect(line_vals["import_phase"]).to(equal(40))
+            expect(line_vals["state"]).to(equal("valid"))  # noqa: F405
+            expect(line_vals["import_phase"]).to(equal(40))  # noqa: F405
 
             error_codes = []
             error_3035S_id = None
@@ -48,8 +48,8 @@ class TestImportF1Som(TestImportF1):
                 error_code.pop("id")
                 error_codes.append(error_code)
 
-            expect(error_codes).not_to(contain({"name": "3035S", "level": "warning"}))
-            expect(error_codes).not_to(contain({"name": "3035S", "level": "critical"}))
+            expect(error_codes).not_to(contain({"name": "3035S", "level": "warning"}))  # noqa: F405
+            expect(error_codes).not_to(contain({"name": "3035S", "level": "critical"}))  # noqa: F405, E501
             self.assertIsNone(error_3035S_id)
 
     def test_validation_3035S_error(self):
@@ -84,8 +84,8 @@ class TestImportF1Som(TestImportF1):
             line_obj.process_line_sync(cursor, uid, line_id)
 
             line_vals = line_obj.read(cursor, uid, line_id)
-            expect(line_vals["state"]).to(equal("erroni"))
-            expect(line_vals["import_phase"]).to(equal(30))
+            expect(line_vals["state"]).to(equal("erroni"))  # noqa: F405
+            expect(line_vals["import_phase"]).to(equal(30))  # noqa: F405
 
             error_codes = []
             error_3035S_id = None
@@ -96,7 +96,7 @@ class TestImportF1Som(TestImportF1):
                 error_code.pop("id")
                 error_codes.append(error_code)
 
-            expect(error_codes).to(contain({"name": "3035S", "level": "critical"}))
+            expect(error_codes).to(contain({"name": "3035S", "level": "critical"}))  # noqa: F405
 
             self.assertIsNotNone(error_3035S_id)
 
@@ -135,8 +135,8 @@ class TestImportF1Som(TestImportF1):
             line_obj.process_line_sync(cursor, uid, line_id)
 
             line_vals = line_obj.read(cursor, uid, line_id)
-            expect(line_vals["state"]).to(equal("valid"))
-            expect(line_vals["import_phase"]).to(equal(40))
+            expect(line_vals["state"]).to(equal("valid"))  # noqa: F405
+            expect(line_vals["import_phase"]).to(equal(40))  # noqa: F405
 
             error_codes = []
             error_3035S_id = None
@@ -147,7 +147,7 @@ class TestImportF1Som(TestImportF1):
                 error_code.pop("id")
                 error_codes.append(error_code)
 
-            expect(error_codes).not_to(contain({"name": "3035S", "level": "critical"}))
+            expect(error_codes).not_to(contain({"name": "3035S", "level": "critical"}))  # noqa: F405, E501
 
             self.assertIsNone(error_3035S_id)
 
@@ -187,8 +187,8 @@ class TestImportF1Som(TestImportF1):
             line_obj.process_line_sync(cursor, uid, line_id)
 
             line_vals = line_obj.read(cursor, uid, line_id)
-            expect(line_vals["state"]).to(equal("erroni"))
-            expect(line_vals["import_phase"]).to(equal(30))
+            expect(line_vals["state"]).to(equal("erroni"))  # noqa: F405
+            expect(line_vals["import_phase"]).to(equal(30))  # noqa: F405
 
             error_codes = []
             error_3035S_id = None
@@ -199,6 +199,6 @@ class TestImportF1Som(TestImportF1):
                 error_code.pop("id")
                 error_codes.append(error_code)
 
-            expect(error_codes).to(contain({"name": "3035S", "level": "critical"}))
+            expect(error_codes).to(contain({"name": "3035S", "level": "critical"}))  # noqa: F405
 
             self.assertIsNotNone(error_3035S_id)

@@ -89,7 +89,7 @@ class WizardRevertIncidentFactCLot(osv.osv_memory):
 
                 if fact_ids:
                     error_msg.append(
-                        u"Pòlissa {} té factures però no té Data última lectura facturada Real. No s'hi actua\n".format(
+                        u"Pòlissa {} té factures però no té Data última lectura facturada Real. No s'hi actua\n".format(  # noqa: E501
                             c_lot.polissa_id.id
                         )
                     )
@@ -105,7 +105,7 @@ class WizardRevertIncidentFactCLot(osv.osv_memory):
                 cursor.dbname,
                 uid,
                 _(
-                    "Eliminar factures i reobrir {0} pòlisses amb incidència (eliminar lectures: {1})."
+                    "Eliminar factures i reobrir {0} pòlisses amb incidència (eliminar lectures: {1})."  # noqa: E501
                 ).format(len(job_ids), context["delete_lectures"]),
                 "facturacio_tasks.delete_invoices",
                 job_ids,

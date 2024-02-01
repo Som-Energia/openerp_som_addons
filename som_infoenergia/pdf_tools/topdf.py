@@ -23,7 +23,7 @@ def write_html(path, name, result):
         filename = os.path.join(path, name + ".html")
         with open(filename, "w") as f:
             f.write(result.encode(ENCODING))
-    except Exception, e:
+    except Exception as e:
         raise Exception(
             """Report in html for  %s was not generated due to
                 problems with write_html function. Error: %s"""
@@ -46,7 +46,7 @@ def write_pdf(path, name):
         output_ = os.path.join(path, name + ".pdf")
         config = pdfkit.configuration(wkhtmltopdf=WKHTMLTOPDF)
         pdfkit.from_file(input_, output_, options=options, configuration=config)
-    except Exception, e:
+    except Exception as e:
         raise Exception(
             """Report in pdf for %s was not generated due to problems
                  in the write_pdf function. Error: %s"""

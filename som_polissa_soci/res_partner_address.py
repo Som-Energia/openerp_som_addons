@@ -91,9 +91,9 @@ class ResPartnerAddress(osv.osv):
             "lists"
         ]
 
-        for l in all_lists:
-            if l["name"] == list_name:
-                return l["id"]
+        for lis in all_lists:
+            if lis["name"] == list_name:
+                return lis["id"]
         raise osv.except_osv(_("Error"), _("List: <{}> not found".format(list_name)))
 
     @job(queue="mailchimp_tasks")
@@ -110,7 +110,7 @@ class ResPartnerAddress(osv.osv):
         for email in email_addresses:
             subscriber_hash = md5(email["email"].lower()).hexdigest()
             try:
-                response = mailchimp_conn.lists.delete_list_member(
+                mailchimp_conn.lists.delete_list_member(
                     list_id=list_id, subscriber_hash=subscriber_hash
                 )
             except ApiClientError as error:
@@ -269,7 +269,7 @@ class ResPartnerAddress(osv.osv):
 
                 try:
                     mailchimp_conn.lists.get_list_member(list_id, subscriber_hash)
-                except Exception as e:
+                except Exception:
                     continue
 
                 client_data = {}
@@ -314,7 +314,7 @@ class ResPartnerAddress(osv.osv):
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
 
-        logger = logging.getLogger(
+        logging.getLogger(
             "openerp.{0}.unsubscribe_client_email_in_all_lists".format(__name__)
         )
 

@@ -76,7 +76,7 @@ class SomenergiaSoci(osv.osv):
                     )
                 )
                 cursor.commit()
-            except Exception, e:
+            except Exception as e:
                 logger.error(
                     u"Error converting partner {0} ({1}:{2}) {3}".format(
                         partner_id, partner_vals["ref"], partner_vals["name"], e

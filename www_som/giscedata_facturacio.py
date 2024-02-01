@@ -21,11 +21,6 @@ class GiscedataFacturacioFactura(osv.osv):
     _name = "giscedata.facturacio.factura"
     _inherit = "giscedata.facturacio.factura"
 
-    def www_estat_pagament_ov(self, cursor, uid, inv_id):
-        inv_obj = self.pool.get("giscedata.facturacio.factura")
-        inv_data = inv_obj.browse(cursor, uid, inv_id)
-        return self._www_estat_pagament_ov(cursor, uid, inv_data)
-
     def www_estat_pagament_ov(self, cursor, uid, ids, context=None):
         """
         1)Si té estat oberta i té estat pedent (Correcte): 'EN_PROCES'

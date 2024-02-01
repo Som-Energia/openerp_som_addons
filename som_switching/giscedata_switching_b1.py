@@ -39,7 +39,7 @@ class GiscedataSwitchingB1_01(osv.osv):
             del new_vals["phone_pre"]
             del new_vals["phone_num"]
 
-        res = super(GiscedataSwitchingB1_01, self).config_step(
+        super(GiscedataSwitchingB1_01, self).config_step(
             cursor, uid, ids, new_vals, context=None
         )
 

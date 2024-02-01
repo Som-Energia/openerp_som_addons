@@ -260,7 +260,7 @@ class TestWizardValidateD101(TestSwitchingImport):
             wiz_init = {"sw_id": d1_id}
             wiz_id = wiz_validate_obj.create(cursor, uid, wiz_init)
             wiz = wiz_validate_obj.browse(cursor, uid, wiz_id)
-            with self.assertRaises(except_osv) as error:
+            with self.assertRaises(except_osv):
                 wiz.validate_d101_autoconsum()
 
             d1 = sw_obj.browse(cursor, uid, d1_id)

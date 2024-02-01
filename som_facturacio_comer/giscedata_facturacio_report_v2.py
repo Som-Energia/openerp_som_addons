@@ -39,7 +39,7 @@ class GiscedataFacturacioFacturaReportV2(osv.osv):
     def _get_donatiu_amount(self, cursor, uid, fra, context=None):
         donatiu_lines = [
             l.price_subtotal
-            for l in fra.linia_ids
+            for l in fra.linia_ids  # noqa: E741
             if l.tipus in "altres" and l.invoice_line_id.product_id.code == "DN01"
         ]
 
@@ -53,7 +53,7 @@ class GiscedataFacturacioFacturaReportV2(osv.osv):
 
         faccionament_lines = [
             l.price_subtotal
-            for l in fra.linia_ids
+            for l in fra.linia_ids  # noqa: E741
             if l.invoice_line_id.product_id.id == fraccio_prod_id
         ]
         return sum(faccionament_lines)
@@ -79,7 +79,7 @@ class GiscedataFacturacioFacturaReportV2(osv.osv):
                 res += float(format(donatiu_sense_iva, ".2f"))
         return res
 
-    # Posem total_preu_linies_sense_iva perquè els conceptes de linia sense iva estan a impsa / 1.21.
+    # Posem total_preu_linies_sense_iva perquè els conceptes de linia sense iva estan a impsa / 1.21
     # Ens ho ha comunicat la CNMC que s'ha de fer així
     def get_linies_importe_otros(self, data):
         linies_importe_otros, total_preu_linies_sense_iva = super(

@@ -36,7 +36,7 @@ class OnDemandDataGenerator:
         self.cache = {}
 
     def factory_data_extractor(self, component_name):
-        exec (
+        exec (  # noqa: E211
             "from components."
             + component_name
             + " import "
@@ -47,7 +47,7 @@ class OnDemandDataGenerator:
             + component_name
             + "()"
         )
-        return extractor
+        return extractor  # noqa: F821
 
     def __getattr__(self, name):
         if name not in self.cache.keys():

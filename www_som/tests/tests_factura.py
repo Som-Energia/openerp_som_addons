@@ -137,8 +137,8 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
         self.pol_obj.send_signal(cursor, uid, [pol_id], ["validar", "contracte"])
         contract = self.pol_obj.browse(cursor, uid, pol_id)
         for meter in contract.comptadors:
-            for l in meter.lectures:
-                l.unlink(context={})
+            for lec in meter.lecectures:
+                lec.unlink(context={})
             for lp in meter.lectures_pot:
                 lp.unlink(context={})
             meter.write({"lloguer": False})

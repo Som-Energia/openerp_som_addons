@@ -73,7 +73,7 @@ class GiscedataCrmLead(osv.OsvInherits):
             "domain": {},
             "warning": {},
         }
-        if set_custom_potencia == True:
+        if set_custom_potencia == True:   # noqa: E712
             res["value"]["llista_preu"] = False
         else:
             res["value"]["preu_fix_potencia_p1"] = 0

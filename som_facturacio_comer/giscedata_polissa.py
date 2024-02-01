@@ -72,7 +72,7 @@ class GiscedataPolissa(osv.osv):
         "teoric_maximum_consume_gc": fields.float(
             digits=(8, 2),
             string="Teoric maximum consume Grans Contractes",
-            help=u"Màxim consum mensual teòric d'un contracte amb categoria Gran Consum associat a la validació SF03.",
+            help=u"Màxim consum mensual teòric d'un contracte amb categoria Gran Consum associat a la validació SF03.",  # noqa: E501
         ),
         "observacions_comptables": fields.text("Accounting Observations"),
         "resum_observacions_comptables": fields.function(

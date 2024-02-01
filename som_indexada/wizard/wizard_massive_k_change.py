@@ -9,7 +9,7 @@ import base64
 class WizardMassiveKChange(osv.osv_memory):
     _name = "wizard.massive.k.change"
 
-    def change_k_from_csv(self, cursor, uid, ids, context=None):
+    def change_k_from_csv(self, cursor, uid, ids, context=None):  # noqa: C901
         if context is None:
             context = {}
 

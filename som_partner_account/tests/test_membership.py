@@ -306,7 +306,7 @@ class TestAccountAccountSom(testing.OOTestCase):
             active: True
             data_baixa_soci: False
             baixa: false
-            comment: "Previous comment\\n{today:%Y-%m-%d} Donat d'alta quan estava de baixa des de 2010-01-01"
+            comment: "Previous comment\\n{today:%Y-%m-%d} Donat d'alta quan estava de baixa des de 2010-01-01"  # noqa: E501
         """.format(
                 id=member_id,
                 today=date.today(),

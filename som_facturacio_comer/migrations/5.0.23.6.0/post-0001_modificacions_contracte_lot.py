@@ -13,14 +13,14 @@ def up(cursor, installed_version):
     logger.info("Creating pooler")
     pool = pooler.get_pool(cursor.dbname)
 
-    ##UPDATAR UN MODUL NOU AL CREAR-LO O AFEGIR UNA COLUMNA##
+    # UPDATAR UN MODUL NOU AL CREAR-LO O AFEGIR UNA COLUMNA
     logger.info("Creating table: giscedata.facturacio.contracte_lot")
     pool.get("giscedata.facturacio.contracte_lot")._auto_init(
         cursor, context={"module": "som_facturacio_comer"}
     )
     logger.info("Table created succesfully.")
 
-    ##UPATAR UN XML SENCER##
+    # UPATAR UN XML SENCER
     logger.info("Updating XML som_facturacio_comer/giscedata_facturacio_contracte_lot_view.xml")
     load_data(
         cursor,
@@ -31,7 +31,7 @@ def up(cursor, installed_version):
     )
     logger.info("XMLs succesfully updated.")
 
-    ##UPDATAR UNA PART DE L'XML (POSAR LA ID)##
+    # UPDATAR UNA PART DE L'XML (POSAR LA ID)
     logger.info("Updating XMLs")
     list_of_records = [
         "view_giscedata_facturacio_contracte_lot_som_tree",

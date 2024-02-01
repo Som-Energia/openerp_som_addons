@@ -85,7 +85,7 @@ class TestActivacioCn(TestSwitchingImport):
                 u"[Baixa Mailchimp] S'ha iniciat el procés de baixa "
                 u"per l'antic titular (ID %d)" % (old_partner_id)
             )
-            history_line_desc = [l["description"] for l in c1.history_line]
+            history_line_desc = [line["description"] for line in c1.history_line]
             self.assertTrue(any([expected_result in desc for desc in history_line_desc]))
 
     @mock.patch("som_polissa_soci.res_partner.ResPartner.arxiva_client_mailchimp_async")
@@ -107,7 +107,7 @@ class TestActivacioCn(TestSwitchingImport):
                 u"[Baixa Mailchimp] No s'ha iniciat el procés de baixa "
                 u"perque l'antic titular encara té pòlisses associades"
             )
-            history_line_desc = [l["description"] for l in c1.history_line]
+            history_line_desc = [line["description"] for line in c1.history_line]
             self.assertTrue(any([expected_result in desc for desc in history_line_desc]))
 
     @mock.patch("som_polissa_soci.res_partner.ResPartner.arxiva_client_mailchimp_async")
@@ -137,7 +137,7 @@ class TestActivacioCn(TestSwitchingImport):
                 u"[Baixa Mailchimp] S'ha iniciat el procés de baixa "
                 u"per l'antic titular (ID %d)" % (old_partner_id)
             )
-            history_line_desc = [l["description"] for l in c2.history_line]
+            history_line_desc = [line["description"] for line in c2.history_line]
             self.assertTrue(any([expected_result in desc for desc in history_line_desc]))
 
     @mock.patch("som_polissa_soci.res_partner.ResPartner.arxiva_client_mailchimp_async")
@@ -160,7 +160,7 @@ class TestActivacioCn(TestSwitchingImport):
                 u"[Baixa Mailchimp] No s'ha iniciat el procés de baixa "
                 u"perque l'antic titular encara té pòlisses associades"
             )
-            history_line_desc = [l["description"] for l in c2.history_line]
+            history_line_desc = [line["description"] for line in c2.history_line]
             self.assertTrue(any([expected_result in desc for desc in history_line_desc]))
 
     @mock.patch("som_polissa_soci.res_partner.ResPartner.arxiva_client_mailchimp_async")
@@ -186,6 +186,6 @@ class TestActivacioCn(TestSwitchingImport):
 
             self.assertTrue(not mock_function.called)
 
-            expected_result = u"[Baixa Mailchimp] No s'ha donat de baixa el titular perquè la pòlissa està activa."
-            history_line_desc = [l["description"] for l in c1.history_line]
+            expected_result = u"[Baixa Mailchimp] No s'ha donat de baixa el titular perquè la pòlissa està activa."  # noqa: E501
+            history_line_desc = [line["description"] for line in c1.history_line]
             self.assertTrue(any([expected_result in desc for desc in history_line_desc]))

@@ -189,7 +189,7 @@ class WizardChangeToIndexada(osv.osv_memory):
 
         pol_obj = self.pool.get("giscedata.polissa")
 
-        is_modifiable = pol_obj.check_modifiable_polissa(cursor, uid, polissa.id, context=context)
+        pol_obj.check_modifiable_polissa(cursor, uid, polissa.id, context=context)
 
         if change_type == "from_period_to_index" and polissa.mode_facturacio == "index":
             raise exceptions.PolissaAlreadyIndexed(polissa.name)
@@ -291,7 +291,7 @@ class WizardChangeToIndexada(osv.osv_memory):
                     }
                 )
 
-                with AsyncMode("sync") as asmode:
+                with AsyncMode("sync"):
                     wiz.action_crear_contracte()
                     if not coeficient_k:
                         self.send_indexada_modcon_created_email(cursor, uid, polissa)

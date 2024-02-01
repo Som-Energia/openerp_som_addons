@@ -26,7 +26,7 @@ class TestGisceDataCups(testing.OOTestCase):
         return IrModel._get_obj(self.cursor, self.uid, module, ref).id
 
     @mock.patch(
-        "giscedata_facturacio_comer.giscedata_facturacio_report_v2.GiscedataFacturacioFacturaReportV2.get_grafica_historic_consum_14_mesos"
+        "giscedata_facturacio_comer.giscedata_facturacio_report_v2.GiscedataFacturacioFacturaReportV2.get_grafica_historic_consum_14_mesos"  # noqa: E501
     )
     def test__get_consum_anual_backend_gisce__lessThan12(self, mock_function):
         mock_function.return_value = {
@@ -54,7 +54,7 @@ class TestGisceDataCups(testing.OOTestCase):
         self.assertEqual(result, False)
 
     @mock.patch(
-        "giscedata_facturacio_comer.giscedata_facturacio_report_v2.GiscedataFacturacioFacturaReportV2.get_grafica_historic_consum_14_mesos"
+        "giscedata_facturacio_comer.giscedata_facturacio_report_v2.GiscedataFacturacioFacturaReportV2.get_grafica_historic_consum_14_mesos"  # noqa: E501
     )
     def test__get_consum_anual_backend_gisce__noInvoices(self, mock_function):
         mock_function.return_value = {}
@@ -66,7 +66,7 @@ class TestGisceDataCups(testing.OOTestCase):
         self.assertEqual(result, False)
 
     @mock.patch(
-        "giscedata_facturacio_comer.giscedata_facturacio_report_v2.GiscedataFacturacioFacturaReportV2.get_grafica_historic_consum_14_mesos"
+        "giscedata_facturacio_comer.giscedata_facturacio_report_v2.GiscedataFacturacioFacturaReportV2.get_grafica_historic_consum_14_mesos"  # noqa: E501
     )
     def test__get_consum_anual_backend_gisce__moreThan12(self, mock_function):
         mock_function.return_value = {
@@ -106,7 +106,7 @@ class TestGisceDataCups(testing.OOTestCase):
         self.assertEqual(result, {"P2": 2033, "P3": 4235, "P1": 2254, "P6": 0, "P4": 0, "P5": 0})
 
     @mock.patch(
-        "giscedata_facturacio_comer.giscedata_facturacio_report_v2.GiscedataFacturacioFacturaReportV2.get_grafica_historic_consum_14_mesos"
+        "giscedata_facturacio_comer.giscedata_facturacio_report_v2.GiscedataFacturacioFacturaReportV2.get_grafica_historic_consum_14_mesos"  # noqa: E501
     )
     def test__get_consum_prorrageig_cnmc__lessThan2(self, mock_function):
         mock_function.return_value = {
@@ -134,7 +134,7 @@ class TestGisceDataCups(testing.OOTestCase):
         self.assertEqual(result, False)
 
     @mock.patch(
-        "giscedata_facturacio_comer.giscedata_facturacio_report_v2.GiscedataFacturacioFacturaReportV2.get_grafica_historic_consum_14_mesos"
+        "giscedata_facturacio_comer.giscedata_facturacio_report_v2.GiscedataFacturacioFacturaReportV2.get_grafica_historic_consum_14_mesos"  # noqa: E501
     )
     def test__get_consum_prorrageig_cnmc__noInvoices(self, mock_function):
         mock_function.return_value = {}
@@ -146,7 +146,7 @@ class TestGisceDataCups(testing.OOTestCase):
         self.assertEqual(result, False)
 
     @mock.patch(
-        "giscedata_facturacio_comer.giscedata_facturacio_report_v2.GiscedataFacturacioFacturaReportV2.get_grafica_historic_consum_14_mesos"
+        "giscedata_facturacio_comer.giscedata_facturacio_report_v2.GiscedataFacturacioFacturaReportV2.get_grafica_historic_consum_14_mesos"  # noqa: E501
     )
     def test__get_consum_prorrageig_cnmc__moreThan2(self, mock_function):
         mock_function.return_value = {

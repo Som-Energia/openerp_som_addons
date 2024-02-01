@@ -42,7 +42,8 @@ class TestRevertIncidentFactContracteLot(testing.OOTestCase):
         lot_obj.crear_lots_mensuals(cursor, uid, 2021)
         lot_id = lot_obj.search(cursor, uid, [("name", "=", "06/2021")], limit=1)[0]
 
-        # Activem el contracte. Les dades que te de demo ja son correctes (si, increible). Fins i tot les lectures
+        # Activem el contracte. Les dades que te de demo ja son correctes (si, increible).
+        # Fins i tot les lectures
         contract_obj.write(cursor, uid, contract_id, {"lot_facturacio": lot_id})
         contract_obj.send_signal(cursor, uid, [contract_id], ["validar", "contracte"])
 
@@ -74,7 +75,7 @@ class TestRevertIncidentFactContracteLot(testing.OOTestCase):
         return contracte_lot_id, contract_id
 
     @mock.patch(
-        "som_facturacio_comer.wizard.wizard_revert_incident_fact_contracte_lot.WizardRevertIncidentFactCLot.delete_lot_factures_lectures"
+        "som_facturacio_comer.wizard.wizard_revert_incident_fact_contracte_lot.WizardRevertIncidentFactCLot.delete_lot_factures_lectures",  # noqa: E501
     )
     def test_do_action__incident_no_data_ultima_lectura_si_fact(self, mock_delete):
         cursor = self.cursor
@@ -102,14 +103,14 @@ class TestRevertIncidentFactContracteLot(testing.OOTestCase):
 
         self.assertTrue(u"Pòlisses on actuar: 0\n" in wiz.info)
         self.assertTrue(
-            "Pòlissa {} té factures però no té Data última lectura facturada Real. No s'hi actua\n".format(
+            "Pòlissa {} té factures però no té Data última lectura facturada Real. No s'hi actua\n".format(  # noqa: E501
                 pol_id
             )
             in wiz.info
         )
 
     @mock.patch(
-        "som_facturacio_comer.wizard.wizard_revert_incident_fact_contracte_lot.WizardRevertIncidentFactCLot.delete_lot_factures_lectures"
+        "som_facturacio_comer.wizard.wizard_revert_incident_fact_contracte_lot.WizardRevertIncidentFactCLot.delete_lot_factures_lectures"  # noqa: E501
     )
     def test_do_action__incident_no_data_ultima_lectura_no_fact(self, mock_delete):
         cursor = self.cursor
