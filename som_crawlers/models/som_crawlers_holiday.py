@@ -3,6 +3,7 @@ from osv import osv, fields
 from enerdata.calendars import REECalendar
 from datetime import datetime
 
+
 class SomCrawlersHoliday(osv.osv):
 
     _name = "som.crawlers.holiday"

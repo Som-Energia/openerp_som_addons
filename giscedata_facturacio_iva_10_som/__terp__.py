@@ -9,16 +9,12 @@
     "version": "0-dev",
     "author": "GISCE",
     "category": "GISCEMaster",
-    "depends": [
-        "base",
-        "giscedata_facturacio_iva_10"
-    ],
+    "depends": ["base", "giscedata_facturacio_iva_10"],
     "init_xml": [],
     "demo_xml": [
         "demo/giscedata_facturacio_iva_10_demo.xml",
     ],
-    "update_xml": [
-    ],
+    "update_xml": [],
     "active": False,
-    "installable": True
+    "installable": True,
 }

@@ -8,7 +8,7 @@ def up(cursor, installed_version):
     if not installed_version:
         return
 
-    logger = logging.getLogger('openerp.migration')
+    logger = logging.getLogger("openerp.migration")
 
     logger.info("Creating pooler")
     pool = pooler.get_pool(cursor.dbname)
@@ -18,9 +18,7 @@ def up(cursor, installed_version):
     list_of_records = [
         "giscedata_facturacio_bateria_virtual.categ_desestiment",
     ]
-    load_data_records(
-        cursor, 'som_polissa', 'som_polissa_data.xml', list_of_records, mode='update'
-    )
+    load_data_records(cursor, "som_polissa", "som_polissa_data.xml", list_of_records, mode="update")
     logger.info("XMLs succesfully updated.")
 
 

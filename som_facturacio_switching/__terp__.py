@@ -8,7 +8,7 @@
     "version": "2.107.6",
     "author": "GISCE",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "base",
         "som_polissa",
         "som_switching",
@@ -35,5 +35,5 @@
         "wizard/wizard_change_cron_reimport_days_view.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

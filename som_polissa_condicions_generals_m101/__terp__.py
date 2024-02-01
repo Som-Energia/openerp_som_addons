@@ -7,17 +7,17 @@
     "version": "2.107.5",
     "author": "SomEnergia",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "giscedata_switching",
         "som_polissa_condicions_generals",
         "c2c_webkit_report",
     ],
     "init_xml": [],
     "demo_xml": [],
-    "update_xml":[
+    "update_xml": [
         "giscedata_polissa_condicions_generals_m101_report.xml",
-        "giscedata_switching_data_m1.xml"
+        "giscedata_switching_data_m1.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

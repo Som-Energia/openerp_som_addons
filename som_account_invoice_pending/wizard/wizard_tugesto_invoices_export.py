@@ -88,7 +88,9 @@ class WizardExportTugestoInvoices(osv.osv_memory):
             nif_cif = partner.vat.replace("ES", "") if partner.vat else ""
             try:
                 # trantament pels NIE
-                nif_cif = "{}{}".format(re.findall("^[XYZ]\d{7,8}[A-Z]$", nif_cif)[0], "*")  # noqa: W605, E501
+                nif_cif = "{}{}".format(
+                    re.findall("^[XYZ]\d{7,8}[A-Z]$", nif_cif)[0], "*"
+                )  # noqa: W605, E501
             except IndexError:
                 pass
 

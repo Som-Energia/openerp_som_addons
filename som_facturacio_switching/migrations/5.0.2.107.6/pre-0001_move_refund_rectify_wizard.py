@@ -1,10 +1,11 @@
 # coding=utf-8
 import logging
 
+
 def up(cursor, installed_version):
-    logger = logging.getLogger('openerp.migration')
+    logger = logging.getLogger("openerp.migration")
     if not installed_version:
-        logger.info('Migration 5.0.2.107.0 not running because not installed_version found')
+        logger.info("Migration 5.0.2.107.0 not running because not installed_version found")
         return
 
     logger.info("Move Wizard refund rectify from origin")
@@ -23,7 +24,6 @@ def up(cursor, installed_version):
         """
     cursor.execute(update_query)
     logger.info("Wizard migrated")
-
 
 
 def down(cursor, installed_version):
