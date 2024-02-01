@@ -3,7 +3,6 @@
 from __future__ import absolute_import
 
 from osv import osv, fields
-from tools.translate import _
 
 from osv.orm import browse_record
 import logging
@@ -42,7 +41,7 @@ class SomenergiaSoci(osv.osv):
     def create_one_soci(self, cursor, uid, partner_id, context=None):
         """Creates only one soci (member) from a partner"""
         if isinstance(partner_id, (tuple, list)):
-            ids = partner_id[0]
+            partner_id[0]
 
         vals = {"partner_id": partner_id}
         soci_id = self.search(cursor, uid, [("partner_id", "=", partner_id)], context=context)

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-from destral import testing
 from destral.transaction import Transaction
 import mock
-from osv import osv
 from giscedata_switching.tests.common_tests import TestSwitchingImport
 from destral.patch import PatchNewCursors
 

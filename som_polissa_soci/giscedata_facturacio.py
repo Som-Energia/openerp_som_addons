@@ -2,7 +2,7 @@
 
 from osv import osv, fields
 from tools.translate import _
-from datetime import datetime, date
+from datetime import datetime
 
 
 class GiscedataFacturacioFacturador(osv.osv):

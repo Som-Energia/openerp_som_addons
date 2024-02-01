@@ -4,17 +4,13 @@ from expects import contain
 from destral import testing
 from destral.transaction import Transaction
 from expects import expect
-from expects import raise_error
-from expects import equal
 from expects import contain
-from expects import contain_exactly
-import json
 
 
 class TestsFacturesValidation(testing.OOTestCase):
     def setUp(self):
-        fact_obj = self.openerp.pool.get("giscedata.facturacio.factura")
-        line_obj = self.openerp.pool.get("giscedata.facturacio.factura.linia")
+        self.openerp.pool.get("giscedata.facturacio.factura")
+        self.openerp.pool.get("giscedata.facturacio.factura.linia")
         warn_obj = self.openerp.pool.get("giscedata.facturacio.validation.warning.template")
         self.imd_obj = self.openerp.pool.get("ir.model.data")
         self.pol_obj = self.openerp.pool.get("giscedata.polissa")
@@ -266,7 +262,7 @@ class TestsFacturesValidation(testing.OOTestCase):
 
     def test_check_min_periods_and_teoric_maximum_consum__contract_without_category(self):
         pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
-        meter_id = self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
+        self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
         inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         self.modify_invoice(inv_id, pol_id, "2017-02-18", "2017-03-17")
         warnings = self.validation_warnings(inv_id)
@@ -275,7 +271,7 @@ class TestsFacturesValidation(testing.OOTestCase):
     def test_check_min_periods_and_teoric_maximum_consum__contract_with_wrong_category(self):
         pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
         self.create_category_to_contract_by_name(pol_id, "Petit Contracte")
-        meter_id = self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
+        self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
         inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         self.modify_invoice(inv_id, pol_id, "2017-02-18", "2017-03-17")
         warnings = self.validation_warnings(inv_id)
@@ -286,7 +282,7 @@ class TestsFacturesValidation(testing.OOTestCase):
     ):
         pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
         self.create_category_to_contract_by_name(pol_id, "Gran Contracte")
-        meter_id = self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
+        self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
         inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         self.modify_invoice(inv_id, pol_id, "2017-02-18", "2017-03-17")
         warnings = self.validation_warnings(inv_id)
@@ -297,7 +293,7 @@ class TestsFacturesValidation(testing.OOTestCase):
     ):
         pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
         self.create_category_to_contract_by_name(pol_id, "Gran Contracte")
-        meter_id = self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
+        self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
         inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         self.modify_invoice(inv_id, pol_id, "2017-02-18", "2017-03-17")
         self.crear_modcon(pol_id, 0, "2017-02-18", "2017-03-17")
@@ -320,7 +316,7 @@ class TestsFacturesValidation(testing.OOTestCase):
 
     def test_check_consume_by_percentage_and_category__contract_without_category(self):
         pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
-        meter_id = self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
+        self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
         inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         self.modify_invoice(inv_id, pol_id, "2017-02-18", "2017-03-17")
         warnings = self.validation_warnings(inv_id)
@@ -329,7 +325,7 @@ class TestsFacturesValidation(testing.OOTestCase):
     def test_check_consume_by_percentage_and_category__contract_with_wrong_category(self):
         pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
         self.create_category_to_contract_by_name(pol_id, "Petit Contracte")
-        meter_id = self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
+        self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
         inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         self.modify_invoice(inv_id, pol_id, "2017-02-18", "2017-03-17")
         warnings = self.validation_warnings(inv_id)
@@ -340,7 +336,7 @@ class TestsFacturesValidation(testing.OOTestCase):
     ):
         pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
         self.create_category_to_contract_by_name(pol_id, "Gran Contracte")
-        meter_id = self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
+        self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
         inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         self.modify_invoice(inv_id, pol_id, "2017-02-18", "2017-03-17")
         self.create_inv_line(inv_id, 200)

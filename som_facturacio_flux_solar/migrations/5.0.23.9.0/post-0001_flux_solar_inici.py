@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import pooler
-from oopgrade.oopgrade import load_data, load_data_records
+from oopgrade.oopgrade import load_data
 
 
 def up(cursor, installed_version):

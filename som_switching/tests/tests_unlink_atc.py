@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from destral import testing
 from destral.transaction import Transaction
-from osv.osv import except_osv
 from giscedata_switching.tests.common_tests import TestSwitchingImport
 from addons import get_module_resource
-from datetime import date, datetime
+from datetime import datetime
 import mock
 import giscedata_atc_switching
 

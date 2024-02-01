@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from som_polissa.exceptions import exceptions
 import unittest
 
 

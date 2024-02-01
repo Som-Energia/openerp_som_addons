@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from datetime import datetime
 
 from osv import osv, fields
-from tools.translate import _
 
 
 class GiscedataBateriaVirtualPolissa(osv.osv):
@@ -12,7 +10,7 @@ class GiscedataBateriaVirtualPolissa(osv.osv):
 
     def create(self, cursor, uid, vals, context=None):
         percentatge_acum_obj = self.pool.get("giscedata.bateria.virtual.percentatges.acumulacio")
-        origen_obj = self.pool.get("giscedata.bateria.virtual.origen")
+        self.pool.get("giscedata.bateria.virtual.origen")
         conf_obj = self.pool.get("res.config")
 
         bat_polissa_id = super(GiscedataBateriaVirtualPolissa, self).create(

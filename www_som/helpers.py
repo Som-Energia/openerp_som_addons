@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from osv import osv
-from som_polissa.exceptions import exceptions
 from decorator import decorator
 
 

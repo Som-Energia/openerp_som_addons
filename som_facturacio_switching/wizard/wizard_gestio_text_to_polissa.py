@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from osv import osv, fields
+from osv import osv
 from tools.translate import _
 
 
@@ -16,7 +16,7 @@ class WizardGestioTextToPolissa(osv.osv_memory):
         from_model = context.get("from_model", "giscedata.polissa")
         if from_model == "giscedata.facturacio.importacio.linia":
             line_obj = self.pool.get(from_model)
-            cups_obj = self.pool.get("giscedata.cups.ps")
+            self.pool.get("giscedata.cups.ps")
             polissa_ids = []
             for _id in active_ids:
                 f1 = line_obj.browse(cursor, uid, _id)

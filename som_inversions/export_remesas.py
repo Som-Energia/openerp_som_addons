@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-import pooler
-import base64
-import netsvc
 import copy
-from tools.translate import _
 from osv import osv
 
 from l10n_ES_remesas.wizard.export_remesas import FakeInvoice

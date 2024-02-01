@@ -236,7 +236,7 @@ class WizardChangeToIndexada(osv.osv_memory):
             wiz_id = wiz_send_obj.create(cursor, uid, params, ctx)
             return wiz_send_obj.send_mail(cursor, uid, [wiz_id], ctx)
 
-        except Exception as e:
+        except Exception:
             raise exceptions.FailSendEmail(polissa.name)
 
     def change_to_indexada(self, cursor, uid, ids, context=None):

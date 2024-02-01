@@ -48,7 +48,7 @@ class GiscedataBateriaVirtualOrigen(osv.osv):
         # [descompte_date, price, 'giscedata.facturacio.factura, factura.id']
         # [05-05-2023, 25.3, 'giscedata.facturacio.factura, 3642']
         percentatge_acum_obj = self.pool.get("giscedata.bateria.virtual.percentatges.acumulacio")
-        bateria_virtual_obj = self.pool.get("giscedata.bateria.virtual")
+        self.pool.get("giscedata.bateria.virtual")
 
         descompte_data = descompte_total[0]
         descompte_preu = descompte_total[1]

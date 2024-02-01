@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-from som_polissa.exceptions import exceptions
 from som_indexada.tests.test_wizard_change_to_indexada import TestChangeToIndexada
-import unittest
 from datetime import datetime, timedelta
 
 
@@ -15,7 +13,7 @@ class TestIndexadaHelpers(TestChangeToIndexada):
         self.activar_polissa_CUPS(self.txn, context=None)
         polissa_obj.send_signal(self.cursor, self.uid, [polissa_id], ["validar", "contracte"])
         context = {"active_id": polissa_id, "change_type": "from_period_to_index"}
-        step_id = self.create_case_and_step(self.cursor, self.uid, polissa_id, "M1", "01")
+        self.create_case_and_step(self.cursor, self.uid, polissa_id, "M1", "01")
 
         helper = self.pool.get("som.indexada.webforms.helpers")
 
@@ -33,7 +31,7 @@ class TestIndexadaHelpers(TestChangeToIndexada):
 
         helper = self.pool.get("som.indexada.webforms.helpers")
 
-        result = helper.change_to_indexada_www(self.cursor, self.uid, polissa_id, context)
+        helper.change_to_indexada_www(self.cursor, self.uid, polissa_id, context)
 
         modcontactual_id = polissa_obj.read(
             self.cursor, self.uid, polissa_id, ["modcontractuals_ids"]

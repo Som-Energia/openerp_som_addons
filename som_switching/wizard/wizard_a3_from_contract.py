@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
-import json
 
-from osv import osv, fields, orm
-from tools.translate import _
-from gestionatr.defs import TABLA_8, TIPUS_DOCUMENT_INST_CIE, TABLA_64, TABLA_62, SINO, TABLA_117
+from osv import fields, osv
 
 
 class GiscedataSwitchingWizardA301(osv.osv_memory):

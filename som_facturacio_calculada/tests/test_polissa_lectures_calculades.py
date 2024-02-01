@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from destral import testing
 from destral.transaction import Transaction
-from expects import *
-import osv
 from .. import giscedata_polissa
 import mock
 

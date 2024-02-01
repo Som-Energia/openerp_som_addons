@@ -1,12 +1,9 @@
 # coding=utf-8
 
-from gettext import dgettext
 import logging
 import pooler
-from datetime import date, timedelta
-from tqdm import tqdm
 
-from oopgrade.oopgrade import load_data, load_data_records
+from oopgrade.oopgrade import load_data_records
 
 
 def up(cursor, installed_version):

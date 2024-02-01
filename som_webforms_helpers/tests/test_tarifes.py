@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from destral import testing
-import unittest
 from destral.transaction import Transaction
 from datetime import datetime
 from ..exceptions.som_webforms_exceptions import TariffNonExists
@@ -212,7 +211,7 @@ class tarifes_tests(testing.OOTestCase):
                 cursor, uid, "som_webforms_helpers", "tarifa_20TD_test"
             )[1]
 
-            tariff = tariff_obj.browse(cursor, uid, tariff_id)
+            tariff_obj.browse(cursor, uid, tariff_id)
 
             today = datetime.today().strftime("%Y-%m-%d")
 

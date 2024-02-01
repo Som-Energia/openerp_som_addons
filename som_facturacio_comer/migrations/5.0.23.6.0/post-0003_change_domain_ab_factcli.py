@@ -11,7 +11,7 @@ def up(cursor, installed_version):
     logger = logging.getLogger("openerp.migration")
 
     logger.info("Creating pooler")
-    pool = pooler.get_pool(cursor.dbname)
+    pooler.get_pool(cursor.dbname)
 
     logger.info("Updating XML giscedata_facturacio_view.xml")
     load_data_records(

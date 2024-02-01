@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 from destral import testing
-from destral.transaction import Transaction
-from datetime import timedelta, datetime
-from osv import osv
 import mock
 
 
@@ -240,7 +237,7 @@ class TestWizardDeleteReimport2001f1(testing.OOTestCaseWithCursor):
         imd_obj = self.pool.get("ir.model.data")
         wiz_o = self.pool.get("wizard.delete.reimport.2001.f1")
         f1_o = self.pool.get("giscedata.facturacio.importacio.linia")
-        fact_o = self.pool.get("giscedata.facturacio.factura")
+        self.pool.get("giscedata.facturacio.factura")
         f1_error_o = self.pool.get("giscedata.facturacio.switching.error")
 
         f1_error_id = f1_error_o.create(

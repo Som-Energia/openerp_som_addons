@@ -157,7 +157,7 @@ class SomAdministradoraNotification(osv.osv):
         params = {"state": "single", "priority": "0", "from": ctx["from"]}
 
         pwswz_id = pwswz_obj.create(cursor, uid, params, ctx)
-        pwemb_id = pwswz_obj.save_to_mailbox(cursor, uid, [pwswz_id], ctx)
+        pwswz_obj.save_to_mailbox(cursor, uid, [pwswz_id], ctx)
 
         return True
 
@@ -171,13 +171,13 @@ class SomAdministradoraNotification(osv.osv):
         if context is None:
             context = {}
         meta = context.get("meta")
-        attach_obj = self.pool.get("ir.attachment")
-        mail_obj = self.pool.get("poweremail.mailbox")
+        self.pool.get("ir.attachment")
+        self.pool.get("poweremail.mailbox")
         noti_obj = self.pool.get("som.admin.notification")
         for noti_id in ids:
             if not meta:
                 meta = {}
-            model = meta[noti_id].get("model", False)
+            meta[noti_id].get("model", False)
             if "folder" in vals and "date_mail" in vals:
                 if vals.get("folder", False) == "sent":
                     noti_obj.write(

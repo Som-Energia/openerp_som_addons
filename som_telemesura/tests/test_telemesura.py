@@ -1,7 +1,5 @@
-import unittest
 from destral import testing
 from destral.transaction import Transaction
-from datetime import datetime
 from som_telemesura.telemesura import TmProfile
 
 

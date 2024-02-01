@@ -48,6 +48,6 @@ class ProcesATR:
                 day = swl.case_date
             else:
                 day = None
-        except Exception as e:
+        except Exception:
             day = step.date_created
         return day

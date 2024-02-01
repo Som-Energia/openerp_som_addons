@@ -2,10 +2,7 @@
 
 from destral import testing
 from destral.transaction import Transaction
-import xml.etree.ElementTree as ET
-from datetime import date, datetime, timedelta
-import unittest
-from osv import fields
+from datetime import date
 from yamlns import namespace as ns
 
 
@@ -372,7 +369,7 @@ class TestAccountAccountSom(testing.OOTestCase):
 
     def test__adopt_contracts_as_member__withNoContractsRelated(self):
         Partner = self.openerp.pool.get("res.partner")
-        Contract = self.openerp.pool.get("giscedata.polissa")
+        self.openerp.pool.get("giscedata.polissa")
 
         contract_ids = Partner.adopt_contracts_as_member(self.cursor, self.uid, self.adopter)
 

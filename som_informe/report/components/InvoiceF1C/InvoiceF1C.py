@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-from ..component_utils import dateformat, get_description, get_invoice_line, get_unit_magnitude
+from ..component_utils import dateformat
 
 # from .. .. ..erp.addons.gisce.GISCEMaster.giscedata_facturacio.defs import TIPO_FACTURA_SELECTION
 

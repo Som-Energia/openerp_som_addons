@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-from osv import osv, fields
+from osv import osv
 
 import babel
 from datetime import datetime
-import time
 
 
 class PaymentMandate(osv.osv):

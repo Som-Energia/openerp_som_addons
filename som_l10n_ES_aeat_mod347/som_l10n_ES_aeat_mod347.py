@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-from osv import fields, osv
+from osv import osv
 
 
 class SomL10nEsAeatMod347Report(osv.osv):

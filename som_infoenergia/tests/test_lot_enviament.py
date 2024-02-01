@@ -2,9 +2,6 @@
 from destral import testing
 from destral.transaction import Transaction
 
-from expects import *
-import osv
-import unittest
 import csv
 import os
 import mock
@@ -39,7 +36,7 @@ class LotEnviamentTests(testing.OOTestCase):
     def test_create_enviaments_from_csv_file(self, mocked_create_enviaments_from_csv):
         imd_obj = self.openerp.pool.get("ir.model.data")
         lot_env_obj = self.openerp.pool.get("som.infoenergia.lot.enviament")
-        env_obj = self.openerp.pool.get("som.infoenergia.enviament")
+        self.openerp.pool.get("som.infoenergia.enviament")
 
         cursor = self.cursor
         uid = self.uid
@@ -70,7 +67,7 @@ class LotEnviamentTests(testing.OOTestCase):
     def test_create_enviaments_from_csv_file(self, mocked_create_enviaments_from_csv):
         imd_obj = self.openerp.pool.get("ir.model.data")
         lot_env_obj = self.openerp.pool.get("som.infoenergia.lot.enviament")
-        env_obj = self.openerp.pool.get("som.enviament.massiu")
+        self.openerp.pool.get("som.enviament.massiu")
         cursor = self.cursor
         uid = self.uid
         lot_enviament_id = imd_obj.get_object_reference(
@@ -295,7 +292,7 @@ class LotEnviamentTests(testing.OOTestCase):
             cursor, uid, [("lot_enviament", "=", lot_enviament_id), ("polissa_id", "=", pol_id)]
         )
         self.assertEqual(len(enviaments_in_lot), 0)
-        pol_name = pol_obj.read(cursor, uid, pol_id, ["name"])["name"]
+        pol_obj.read(cursor, uid, pol_id, ["name"])["name"]
 
         lot_enviament.create_single_enviament_from_object(pol_id, context={"tipus": "infoenergia"})
 
@@ -328,7 +325,7 @@ class LotEnviamentTests(testing.OOTestCase):
             cursor, uid, [("lot_enviament", "=", lot_enviament_id), ("polissa_id", "=", pol_id)]
         )
         self.assertEqual(len(enviaments_in_lot), 0)
-        pol_name = pol_obj.read(cursor, uid, pol_id, ["name"])["name"]
+        pol_obj.read(cursor, uid, pol_id, ["name"])["name"]
 
         lot_enviament.create_single_enviament_from_object(
             pol_id, context={"tipus": "altres", "from_model": "polissa_id"}
@@ -350,7 +347,7 @@ class LotEnviamentTests(testing.OOTestCase):
         imd_obj = self.openerp.pool.get("ir.model.data")
         lot_env_obj = self.openerp.pool.get("som.infoenergia.lot.enviament")
         env_obj = self.openerp.pool.get("som.enviament.massiu")
-        pol_obj = self.openerp.pool.get("giscedata.polissa")
+        self.openerp.pool.get("giscedata.polissa")
         cursor = self.cursor
         uid = self.uid
         lot_enviament_id = imd_obj.get_object_reference(
@@ -383,7 +380,7 @@ class LotEnviamentTests(testing.OOTestCase):
         imd_obj = self.openerp.pool.get("ir.model.data")
         lot_env_obj = self.openerp.pool.get("som.infoenergia.lot.enviament")
         env_obj = self.openerp.pool.get("som.enviament.massiu")
-        pol_obj = self.openerp.pool.get("giscedata.polissa")
+        self.openerp.pool.get("giscedata.polissa")
         cursor = self.cursor
         uid = self.uid
         lot_enviament_id = imd_obj.get_object_reference(
@@ -415,7 +412,7 @@ class LotEnviamentTests(testing.OOTestCase):
         imd_obj = self.openerp.pool.get("ir.model.data")
         lot_env_obj = self.openerp.pool.get("som.infoenergia.lot.enviament")
         env_obj = self.openerp.pool.get("som.enviament.massiu")
-        pol_obj = self.openerp.pool.get("giscedata.polissa")
+        self.openerp.pool.get("giscedata.polissa")
         cursor = self.cursor
         uid = self.uid
         lot_enviament_id = imd_obj.get_object_reference(

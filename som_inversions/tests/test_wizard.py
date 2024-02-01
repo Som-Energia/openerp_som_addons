@@ -3,14 +3,8 @@ from __future__ import absolute_import
 
 from destral import testing
 from destral.transaction import Transaction
-import base64
-from lxml import objectify, etree
-import netsvc
 from datetime import date
 import unittest
-import sepa
-import os
-from l10n_ES_remesas.wizard.export_remesas import NoInvoiceException
 from l10n_ES_remesas.wizard.export_remesas import FakeInvoice
 
 
@@ -67,7 +61,7 @@ class ExportRemesesWizard(testing.OOTestCase):
             payorder_obj = pool.get("payment.order")
             payline_obj = pool.get("payment.line")
             paymandate_obj = pool.get("payment.mandate")
-            bank_obj = pool.get("res.partner.bank")
+            pool.get("res.partner.bank")
 
             wiz_obj = pool.get("wizard.payment.file.spain")
 
@@ -93,7 +87,7 @@ class ExportRemesesWizard(testing.OOTestCase):
                 "debtor_state": 17,
                 "debtor_country": country_id,
                 "debtor_iban": iban,
-                #'reference': 'res.partner,{}'.format(
+                # 'reference': 'res.partner,{}'.format(
                 #    remesa.mode.bank_id.partner_id.id
                 # ),
                 "notes": "PAYMENT TEST LINE",

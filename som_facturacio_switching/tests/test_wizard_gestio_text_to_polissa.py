@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from destral import testing
-from destral.transaction import Transaction
 from datetime import timedelta, datetime
 from osv import osv
 

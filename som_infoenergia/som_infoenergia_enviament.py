@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-import os, datetime, csv
-from dateutil.relativedelta import relativedelta
+import datetime
+import os
 from paramiko import SSHClient, AutoAddPolicy
-import tempfile, shutil
+import tempfile
+import shutil
 import base64
 from scp import SCPClient
 import shutil
-from StringIO import StringIO
 
 from autoworker import AutoWorker
 from oorq.decorators import job, create_jobs_group
@@ -336,14 +336,14 @@ class SomInfoenergiaEnviament(osv.osv):
             "name": "Reenviar",
             "view_type": "form",
             "view_mode": "form",
-            #'views' : [(view_id,'form')],
+            # 'views' : [(view_id,'form')],
             "res_model": "poweremail.mailbox",
             "view_id": False,
-            #'view_id':view_id,
+            # 'view_id':view_id,
             "type": "ir.actions.act_window",
             "res_id": mail_id,
             "target": "new",
-            #'context': context,
+            # 'context': context,
         }
 
     def _ff_te_autoconsum(self, cursor, uid, ids, field_name, args, context):

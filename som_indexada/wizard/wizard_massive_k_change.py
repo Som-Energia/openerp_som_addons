@@ -4,7 +4,6 @@ from StringIO import StringIO
 from datetime import timedelta, date
 import csv
 import base64
-from tools.translate import _
 
 
 class WizardMassiveKChange(osv.osv_memory):

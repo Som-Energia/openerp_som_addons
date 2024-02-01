@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from gestionatr.defs import *
-from gestionatr.input.messages.R1 import get_minimum_fields
-from osv import osv, fields, orm
+from osv import fields, osv
 from tools.translate import _
 import xml.etree.ElementTree as ET
 

@@ -1,9 +1,10 @@
 # -*- encoding: utf-8 -*-
-import netsvc, pooler
-from oorq.oorq import AsyncMode
+import pooler
 from osv import osv, fields
 from datetime import datetime, timedelta
-import json, csv, base64
+import json
+import csv
+import base64
 from StringIO import StringIO
 from tools.translate import _
 
@@ -43,7 +44,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         }
 
         wz_id = pem_send_wo.create(cursor, uid, params, ctx)
-        result = pem_send_wo.send_mail(cursor, uid, [wz_id], ctx)
+        pem_send_wo.send_mail(cursor, uid, [wz_id], ctx)
 
     def is_positive_total_grouped_amount(self, cursor, uid, facts_created_ids, context):
         fact_obj = self.pool.get("giscedata.facturacio.factura")
@@ -250,7 +251,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                 fact_obj.invoice_open(cursor, uid, [factura_id], context=context)
 
             tmp_cr.commit()
-        except Exception as exc:
+        except Exception:
             tmp_cr.rollback()
             return False, "Error en obrir les factures, no continua el procés"
         finally:
@@ -300,7 +301,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         writer.writerow(["Origen", "Pòlissa", "Resultat"])
         writer.writerows(fact_csv_result)
         res_file = base64.b64encode(csv_file.getvalue())
-        today = datetime.today().strftime("%Y%m%d")
+        datetime.today().strftime("%Y%m%d")
         wizard.write(
             {
                 "report_file": res_file,

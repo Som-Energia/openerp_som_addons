@@ -3,7 +3,6 @@ from osv import osv
 from tools import config
 from datetime import datetime, timedelta
 from enerdata.contracts import get_tariff_by_code
-from enerdata.contracts.normalized_power import NormalizedPower
 from som_webforms_helpers.exceptions import som_webforms_exceptions
 
 

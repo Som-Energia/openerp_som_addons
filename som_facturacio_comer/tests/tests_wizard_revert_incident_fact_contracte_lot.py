@@ -3,8 +3,8 @@ from destral import testing
 from destral.transaction import Transaction
 from destral.patch import PatchNewCursors
 
-from giscedata_polissa.tests import utils as utils_polissa, crear_modcon
-import mock, os
+import mock
+import os
 
 
 class TestRevertIncidentFactContracteLot(testing.OOTestCase):
@@ -25,11 +25,11 @@ class TestRevertIncidentFactContracteLot(testing.OOTestCase):
         uid = self.uid
         imd_obj = self.openerp.pool.get("ir.model.data")
         contract_obj = self.openerp.pool.get("giscedata.polissa")
-        lectura_obj = self.openerp.pool.get("giscedata.lectures.lectura")
+        self.openerp.pool.get("giscedata.lectures.lectura")
         fact_obj = self.openerp.pool.get("giscedata.facturacio.factura")
         lot_obj = self.openerp.pool.get("giscedata.facturacio.lot")
         clot_obj = self.openerp.pool.get("giscedata.facturacio.contracte_lot")
-        clot_fact_obj = self.openerp.pool.get("giscedata.facturacio.contracte_lot.factura")
+        self.openerp.pool.get("giscedata.facturacio.contracte_lot.factura")
         conf_obj = self.openerp.pool.get("res.config")
         contract_id = imd_obj.get_object_reference(
             cursor, uid, "giscedata_polissa", "polissa_tarifa_018"
@@ -70,7 +70,7 @@ class TestRevertIncidentFactContracteLot(testing.OOTestCase):
 
         # Comprovem la factura creada
         factura_id = fact_obj.search(cursor, uid, [("lot_facturacio", "=", lot_id)])
-        invoice = fact_obj.browse(cursor, uid, factura_id)[0]
+        fact_obj.browse(cursor, uid, factura_id)[0]
         return contracte_lot_id, contract_id
 
     @mock.patch(

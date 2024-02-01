@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
-from logging import exception
 from osv import osv
 from yamlns import namespace as ns
 from datetime import datetime, timedelta
 import inspect
 from tools.translate import _
-from gestionatr.defs import TENEN_AUTOCONSUM
 import json
 from operator import attrgetter
 from collections import Counter
@@ -35,6 +33,8 @@ show_iva_column_date = "2023-10-10"
 # -----------------------------------
 # helper functions
 # -----------------------------------
+
+
 def is_leap_year(year):
     if year % 4 == 0:
         if year % 100 == 0:
@@ -136,7 +136,7 @@ def has_iva_column(fact):
 def val(object):
     try:
         return object.val
-    except Exception as e:
+    except Exception:
         return object
 
 
@@ -1011,7 +1011,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         """
         Retorna [{'periode': str, 'potencia':float},...], ordenada per 'periode'
         """
-        maximetre_obj = self.pool.get("giscedata.facturacio.maximetre.consumidor")
+        self.pool.get("giscedata.facturacio.maximetre.consumidor")
         maximetres_ids = fact.maximetre_consumidor_ids
         maximetres_data = []
         if maximetres_ids:
@@ -1037,7 +1037,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return {"qr": qr, "url": url}
 
     def mag_get_ajust_topall_gas_info(self, fact):
-        report_v2_obj = self.pool.get("giscedata.facturacio.factura.report.v2")
+        self.pool.get("giscedata.facturacio.factura.report.v2")
         ok = True
         try:
             # res = report_v2_obj.get_ajust_topall_gas_info(self.cursor, self.uid, fact.id)
@@ -1049,7 +1049,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             res = str(e) + "\n" + traceback.format_exc()
         return ok, res
 
-    ## Duplicated code until V108 and molule giscedata_omie_comer can be installed, then remove it
+    # Duplicated code until V108 and molule giscedata_omie_comer can be installed, then remove it
     def get_ajust_topall_gas_info(self, cursor, uid, fra, context=None):
         res = {
             "periode_facturacio": {
@@ -1131,7 +1131,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         }
         return res
 
-    ## Duplicated code until V108 and molule giscedata_omie_comer can be installed, then remove it
+    # Duplicated code until V108 and molule giscedata_omie_comer can be installed, then remove it
 
     def get_mag_lines_info(self, fact):
         rmag_line_ids = fact.get_rmag_lines()
@@ -1215,7 +1215,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 data = json.loads(gdo_som)
                 data["lang"] = lang
                 data["graph"] = "gdo_graf_{}_{}.png".format(lang, data["year"])
-            except Exception as e:
+            except Exception:
                 data = eval(example_data_2020)
                 data = json.dumps(data)
                 data = json.loads(data)
@@ -1342,7 +1342,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         diari_factura_actual_eur = fact.total_energia / (dies_factura or 1.0)
         diari_factura_actual_kwh = (fact.energia_kwh * 1.0) / (dies_factura or 1.0)
 
-        lang = fact.lang_partner
+        fact.lang_partner
 
         data = {
             "periodes_a": periodes_a,
@@ -1657,13 +1657,13 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "is_6X": is_6X(pol),
             "distri_name": pol.distribuidora.name,
             "distri_contract": pol.ref_dist or "",
-            "distri_phone": ".".join([dphone[i : i + 3] for i in range(0, len(dphone), 3)])
+            "distri_phone": ".".join([dphone[i: i + 3] for i in range(0, len(dphone), 3)])
             if "." not in dphone
             else dphone,
             "has_agreement_partner": pol.soci.ref in agreementPartners.keys(),
             "agreement_partner_name": pol.soci.name,
             "is_energetica": pol.soci.ref in agreementPartners.keys() and pol.soci.ref == "S019753",
-            "comer_phone": ".".join([cphone[i : i + 3] for i in range(0, len(cphone), 3)])
+            "comer_phone": ".".join([cphone[i: i + 3] for i in range(0, len(cphone), 3)])
             if "." not in cphone
             else cphone,
         }
@@ -1681,13 +1681,13 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data = {
             "distri_name": pol.distribuidora.name,
             "distri_contract": pol.ref_dist or "",
-            "distri_phone": ".".join([dphone[i : i + 3] for i in range(0, len(dphone), 3)])
+            "distri_phone": ".".join([dphone[i: i + 3] for i in range(0, len(dphone), 3)])
             if "." not in dphone
             else dphone,
             "has_agreement_partner": pol.soci.ref in agreementPartners.keys(),
             "agreement_partner_name": pol.soci.name,
             "is_energetica": pol.soci.ref in agreementPartners.keys() and pol.soci.ref == "S019753",
-            "comer_phone": ".".join([cphone[i : i + 3] for i in range(0, len(cphone), 3)])
+            "comer_phone": ".".join([cphone[i: i + 3] for i in range(0, len(cphone), 3)])
             if "." not in cphone
             else cphone,
             "lang": fact.lang_partner,
@@ -1938,7 +1938,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         if fiscal_position:
             excempcio = fact.fiscal_position.tax_ids[0].tax_dest_id.name
-            excempcio = excempcio[excempcio.find("(") + 1 : excempcio.find(")")]
+            excempcio = excempcio[excempcio.find("(") + 1: excempcio.find(")")]
             percentatges_exempcio_splitted = excempcio.split(" ")
             if len(percentatges_exempcio_splitted) == 3:
                 percentatges_exempcio = (
@@ -2489,7 +2489,6 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         comptador_anterior = None
         comptadors = {}
         llista_lect = []
-        data_actual = None
         for lect in lectures:
             if lect[0]:
                 comptador_actual = lect[0]["comptador"]
@@ -2510,8 +2509,6 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 comptadors[(comptador_actual, data_act, data_ant)] = llista_lect
                 llista_lect.append((lect[0], lect[1], lect[2], lect[0]["origen_text"]))
                 comptador_anterior = comptador_actual
-                data_actual_pre = data_act
-                data_ant_pre = data_ant
 
         dies_factura = (
             datetime.strptime(fact.data_final, "%Y-%m-%d")
@@ -2606,7 +2603,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "energy": self.get_sub_component_invoice_details_td_energy_data(
                 fact, pol, energy_discount_BOE17_2021
             ),
-            #'energy_generationkwh' : self.get_sub_component_invoice_details_td_energy_generationkwh_data(fact, pol),
+            # 'energy_generationkwh' : self.get_sub_component_invoice_details_td_energy_generationkwh_data(fact, pol),
             "energy_discount_BOE17_2021": energy_discount_BOE17_2021,
             "energy_tolls": self.get_sub_component_invoice_details_td_energy_tolls_data(fact, pol),
             "energy_charges": self.get_sub_component_invoice_details_td_energy_charges_data(
@@ -3518,7 +3515,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         adjust_auto = "98" in adjust_readings_list
         adjust_trTD = "97" in adjust_readings_list
-        adjust_deci = "96" in adjust_readings_list
+        "96" in adjust_readings_list
         adjust_remaining = [
             adjust for adjust in adjust_readings_list if adjust not in ("98", "97", "96")
         ]
@@ -3771,7 +3768,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         )
         try:
             data["som"] = eval_and_json(seid_som)
-        except Exception as e:
+        except Exception:
             data["som"] = eval_and_json(example_som_2020)
 
         seid_mit = conf_obj.get(
@@ -3779,7 +3776,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         )
         try:
             data["mitjana"] = eval_and_json(seid_mit)
-        except Exception as e:
+        except Exception:
             data["mitjana"] = eval_and_json(example_mitjana_2020)
 
         return data

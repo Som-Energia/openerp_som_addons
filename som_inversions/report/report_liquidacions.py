@@ -1,8 +1,7 @@
 from osv import osv
 from yamlns import namespace as ns
 import pooler
-from osv.expression import OOQuery
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 from report import report_sxw
 from tools import config
 from c2c_webkit_report import webkit_report

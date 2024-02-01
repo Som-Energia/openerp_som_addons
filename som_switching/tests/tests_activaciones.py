@@ -28,7 +28,7 @@ GiscedataSwitching()
 class TestsAutoActiva(testing.OOTestCase):
     def setUp(self):
         fact_obj = self.model("giscedata.facturacio.factura")
-        line_obj = self.model("giscedata.facturacio.factura.linia")
+        self.model("giscedata.facturacio.factura.linia")
         warn_obj = self.model("giscedata.facturacio.validation.warning.template")
         self.txn = Transaction().start(self.database)
 

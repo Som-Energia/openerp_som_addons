@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
-from osv import osv, fields
-from tools.translate import _
+from osv import osv
 
 
 class GiscedataPolissa(osv.osv):

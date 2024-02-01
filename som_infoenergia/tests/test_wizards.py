@@ -2,12 +2,9 @@
 from destral import testing
 from destral.transaction import Transaction
 
-from expects import *
 import osv
 import base64
 
-import csv
-import os
 import mock
 
 
@@ -189,7 +186,7 @@ class WizardCancelFromCSVTestsAndAddContractsLot(testing.OOTestCase):
         self.txn.stop()
 
     def test_wizard_invalid_active_id__exception_raises(self):
-        imd_obj = self.openerp.pool.get("ir.model.data")
+        self.openerp.pool.get("ir.model.data")
         cursor = self.cursor
         uid = self.uid
         wiz_obj = self.openerp.pool.get("wizard.infoenergia.add.contracts.lot")
@@ -236,7 +233,7 @@ class WizardCancelFromCSVTestsAndAddContractsLot(testing.OOTestCase):
         cursor = self.cursor
         uid = self.uid
         wiz_obj = self.openerp.pool.get("wizard.infoenergia.add.contracts.lot")
-        pol_obj = self.openerp.pool.get("giscedata.polissa")
+        self.openerp.pool.get("giscedata.polissa")
         lot_enviament_id = imd_obj.get_object_reference(
             cursor, uid, "som_infoenergia", "lot_enviament_0001"
         )[1]
@@ -356,7 +353,7 @@ class WizardCancelFromCSVTestsAndAddContractsLot(testing.OOTestCase):
     def test_cancel_from_csv__missingLeftZeros(self, mock_cancel):
         wiz_obj = self.openerp.pool.get("wizard.cancel.from.csv")
         imd_obj = self.openerp.pool.get("ir.model.data")
-        env_obj = self.openerp.pool.get("som.infoenergia.enviament")
+        self.openerp.pool.get("som.infoenergia.enviament")
         lot_env_obj = self.openerp.pool.get("som.infoenergia.lot.enviament")
 
         pol_obj = self.openerp.pool.get("giscedata.polissa")
@@ -392,7 +389,7 @@ class WizardCancelFromCSVTestsAndAddContractsLot(testing.OOTestCase):
     def test_create_enviaments_from_csv__infoenergia_none(self, mock_create):
         wiz_obj = self.openerp.pool.get("wizard.create.enviaments.from.csv")
         imd_obj = self.openerp.pool.get("ir.model.data")
-        lot_env_obj = self.openerp.pool.get("som.infoenergia.lot.enviament")
+        self.openerp.pool.get("som.infoenergia.lot.enviament")
         csv_content = ""
         encoded_csv = base64.b64encode(csv_content)
         vals = {
@@ -423,7 +420,7 @@ class WizardCancelFromCSVTestsAndAddContractsLot(testing.OOTestCase):
         wiz_obj = self.openerp.pool.get("wizard.create.enviaments.from.csv")
         imd_obj = self.openerp.pool.get("ir.model.data")
         pol_obj = self.openerp.pool.get("giscedata.polissa")
-        lot_env_obj = self.openerp.pool.get("som.infoenergia.lot.enviament")
+        self.openerp.pool.get("som.infoenergia.lot.enviament")
         lot_enviament_id = imd_obj.get_object_reference(
             self.cursor, self.uid, "som_infoenergia", "lot_enviament_0001"
         )[1]
@@ -459,7 +456,7 @@ class WizardCancelFromCSVTestsAndAddContractsLot(testing.OOTestCase):
         wiz_obj = self.openerp.pool.get("wizard.create.enviaments.from.csv")
         imd_obj = self.openerp.pool.get("ir.model.data")
         pol_obj = self.openerp.pool.get("giscedata.polissa")
-        lot_env_obj = self.openerp.pool.get("som.infoenergia.lot.enviament")
+        self.openerp.pool.get("som.infoenergia.lot.enviament")
         lot_enviament_id = imd_obj.get_object_reference(
             self.cursor, self.uid, "som_infoenergia", "lot_enviament_0001"
         )[1]
@@ -503,8 +500,8 @@ class WizardCancelFromCSVTestsAndAddContractsLot(testing.OOTestCase):
         wiz_obj = self.openerp.pool.get("wizard.create.enviaments.from.csv")
         imd_obj = self.openerp.pool.get("ir.model.data")
         pol_obj = self.openerp.pool.get("giscedata.polissa")
-        lot_env_obj = self.openerp.pool.get("som.infoenergia.lot.enviament")
-        env_obj = self.openerp.pool.get("som.enviament.massiu")
+        self.openerp.pool.get("som.infoenergia.lot.enviament")
+        self.openerp.pool.get("som.enviament.massiu")
         lot_enviament_id = imd_obj.get_object_reference(
             self.cursor, self.uid, "som_infoenergia", "lot_enviament_0002"
         )[1]
@@ -559,8 +556,8 @@ class WizardCancelFromCSVTestsAndAddContractsLot(testing.OOTestCase):
         wiz_obj = self.openerp.pool.get("wizard.create.enviaments.from.csv")
         imd_obj = self.openerp.pool.get("ir.model.data")
         pol_obj = self.openerp.pool.get("giscedata.polissa")
-        lot_env_obj = self.openerp.pool.get("som.infoenergia.lot.enviament")
-        env_obj = self.openerp.pool.get("som.enviament.massiu")
+        self.openerp.pool.get("som.infoenergia.lot.enviament")
+        self.openerp.pool.get("som.enviament.massiu")
         lot_enviament_id = imd_obj.get_object_reference(
             self.cursor, self.uid, "som_infoenergia", "lot_enviament_0002"
         )[1]
@@ -607,8 +604,8 @@ class WizardCancelFromCSVTestsAndAddContractsLot(testing.OOTestCase):
         wiz_obj = self.openerp.pool.get("wizard.create.enviaments.from.csv")
         imd_obj = self.openerp.pool.get("ir.model.data")
         pol_obj = self.openerp.pool.get("giscedata.polissa")
-        lot_env_obj = self.openerp.pool.get("som.infoenergia.lot.enviament")
-        env_obj = self.openerp.pool.get("som.enviament.massiu")
+        self.openerp.pool.get("som.infoenergia.lot.enviament")
+        self.openerp.pool.get("som.enviament.massiu")
         lot_enviament_id = imd_obj.get_object_reference(
             self.cursor, self.uid, "som_infoenergia", "lot_enviament_0002"
         )[1]
@@ -668,8 +665,8 @@ class WizardCreateEnviamentsFromPartner(testing.OOTestCase):
     )
     def test_wizard_create_enviaments_from_partner(self, mock_add_partners):
         imd_obj = self.openerp.pool.get("ir.model.data")
-        cursor = self.cursor
-        uid = self.uid
+        self.cursor
+        self.uid
         wiz_obj = self.openerp.pool.get("wizard.add.partners.lot")
         lot_enviament_id = imd_obj.get_object_reference(
             self.cursor, self.uid, "som_infoenergia", "lot_enviament_0002"

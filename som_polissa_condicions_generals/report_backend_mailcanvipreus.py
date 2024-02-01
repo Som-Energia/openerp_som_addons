@@ -4,7 +4,7 @@ from report_backend.report_backend import ReportBackend, report_browsify
 from mako.template import Template
 from giscedata_facturacio.report.utils import get_atr_price
 from som_extend_facturacio_comer.utils import get_gkwh_atr_price
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 
 
 class ReportBackendMailcanvipreus(ReportBackend):

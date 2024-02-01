@@ -2,10 +2,6 @@
 
 from destral import testing
 from destral.transaction import Transaction
-import unittest
-from osv import fields
-import mock
-from mock import Mock, ANY
 
 
 class TestSomWebformsHelpersPolissa(testing.OOTestCase):
@@ -46,6 +42,6 @@ class TestSomWebformsHelpersPolissa(testing.OOTestCase):
     def test_www_set_iban(self):
         polissa_id = self._open_polissa("polissa_domestica_0100")
         new_iban = "ES31 2017 0806 1261 3300 2095"
-        result = self.helper_obj.www_set_iban(self.cursor, self.uid, polissa_id, new_iban)
+        self.helper_obj.www_set_iban(self.cursor, self.uid, polissa_id, new_iban)
         new_iban_pol = self.polissa_obj.read(self.cursor, self.uid, polissa_id, ["bank"])["bank"][1]
         self.assertEqual(new_iban_pol, new_iban)

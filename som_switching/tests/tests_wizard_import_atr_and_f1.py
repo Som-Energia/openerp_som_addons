@@ -22,7 +22,7 @@ class TestWizardImportAtrAndF1(testing.OOTestCase):
         wiz_content = {"filename": "nomFitxer"}
         wiz_id = wiz_o.create(self.cursor, self.uid, wiz_content)
 
-        zip_handler = wiz_o._create_tmp_zip(self.cursor, self.uid, [wiz_id], "testDirectory", "F1_")
+        wiz_o._create_tmp_zip(self.cursor, self.uid, [wiz_id], "testDirectory", "F1_")
 
         mock_open.assert_called_with("testDirectory/F1_nomFitxer", "w+")
 
@@ -32,7 +32,7 @@ class TestWizardImportAtrAndF1(testing.OOTestCase):
         wiz_content = {"filename": "25_07_2022/nomFitxer"}
         wiz_id = wiz_o.create(self.cursor, self.uid, wiz_content)
 
-        zip_handler = wiz_o._create_tmp_zip(self.cursor, self.uid, [wiz_id], "testDirectory", "F1_")
+        wiz_o._create_tmp_zip(self.cursor, self.uid, [wiz_id], "testDirectory", "F1_")
 
         mock_open.assert_called_with("testDirectory/F1_nomFitxer", "w+")
 
@@ -46,7 +46,7 @@ class TestWizardImportAtrAndF1(testing.OOTestCase):
         today = datetime.strftime(datetime.today(), "%Y%m%d_%H%M%S")
         mock_datetime.strftime.return_value = today
 
-        zip_handler = wiz_o._create_tmp_zip(self.cursor, self.uid, wiz_id, "testDirectory", "ATR_")
+        wiz_o._create_tmp_zip(self.cursor, self.uid, wiz_id, "testDirectory", "ATR_")
 
         filename = "testDirectory/ATR_" + today + ".zip"
         mock_open.assert_called_with(filename, "w+")

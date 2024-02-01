@@ -155,7 +155,7 @@ class GiscedataSwitchingWizardValidateD101(osv.osv_memory):
         }
 
         if is_rejected:
-            motiu_obj = self.pool.get("giscedata.switching.motiu.rebuig")
+            self.pool.get("giscedata.switching.motiu.rebuig")
             imd_obj = self.pool.get("ir.model.data")
             motiu_rebuig_id = imd_obj.get_object_reference(
                 cursor, uid, "giscedata_switching", "sw_motiu_rebuig_F1"

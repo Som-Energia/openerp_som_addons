@@ -1,6 +1,5 @@
 # -*- encoding: utf-8 -*-
 from osv import osv, fields
-from tools.translate import _
 
 
 class WizardCreateAtc(osv.osv_memory):
@@ -43,7 +42,6 @@ class WizardCreateAtc(osv.osv_memory):
         return res
 
     def onchange_section(self, cursor, uid, ids, section_id):
-        res = False
         mostrar_tag = False
         factura_tag = False
         section_obj = self.pool.get("crm.case.section")

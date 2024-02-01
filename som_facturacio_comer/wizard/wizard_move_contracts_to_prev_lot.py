@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from osv import osv, fields
-from tools.translate import _
-from datetime import datetime, timedelta
-import json
+from osv import osv
 
 
 class WizardMoveContractsToPrevLot(osv.osv_memory):
@@ -12,7 +9,7 @@ class WizardMoveContractsToPrevLot(osv.osv_memory):
 
     def move_one_contract_to_prev_lot(self, cursor, uid, id, pol_id, context):
         if not context:
-            contex = {}
+            pass
         clot_o = self.pool.get("giscedata.facturacio.contracte_lot")
         clot_id = super(WizardMoveContractsToPrevLot, self).move_one_contract_to_prev_lot(
             cursor, uid, id, pol_id, context=context

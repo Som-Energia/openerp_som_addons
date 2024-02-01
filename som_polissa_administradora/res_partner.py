@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from osv import osv, fields
+from osv import osv
 from osv.osv import except_osv
 
 

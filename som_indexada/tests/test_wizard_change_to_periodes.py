@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-from destral import testing
 from destral.transaction import Transaction
 from datetime import timedelta, date, datetime
 from giscedata_switching.tests.common_tests import TestSwitchingImport
-from osv import osv, fields
 from som_polissa.exceptions import exceptions
 import mock
 
@@ -90,7 +88,7 @@ class TestChangeToPeriodes(TestSwitchingImport):
     def test_change_to_periodes_already_period_polissa(self):
         wiz_o = self.pool.get("wizard.change.to.indexada")
         polissa_id = self.open_polissa("polissa_tarifa_018")
-        polissa_obj = self.pool.get("giscedata.polissa")
+        self.pool.get("giscedata.polissa")
 
         context = {"active_id": polissa_id, "change_type": "from_index_to_period"}
         wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
@@ -101,7 +99,7 @@ class TestChangeToPeriodes(TestSwitchingImport):
     def test_change_to_periodes_tariff_code_not_supported(self):
         wiz_o = self.pool.get("wizard.change.to.indexada")
         polissa_id = self.open_polissa("polissa_0001", indexed=True)
-        polissa_obj = self.pool.get("giscedata.polissa")
+        self.pool.get("giscedata.polissa")
         context = {"active_id": polissa_id, "change_type": "from_index_to_period"}
         wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
         with self.assertRaises(exceptions.TariffCodeNotSupported) as error:
@@ -130,7 +128,7 @@ class TestChangeToPeriodes(TestSwitchingImport):
         polissa_obj.send_signal(self.cursor, self.uid, [polissa_id], ["validar", "contracte"])
         context = {"active_id": polissa_id, "change_type": "from_index_to_period"}
         wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
-        step_id = self.create_case_and_step(self.cursor, self.uid, polissa_id, "M1", "01")
+        self.create_case_and_step(self.cursor, self.uid, polissa_id, "M1", "01")
         with self.assertRaises(exceptions.PolissaSimultaneousATR) as error:
             wiz_o.change_to_indexada(self.cursor, self.uid, [wiz_id], context=context)
         self.assertEqual(error.exception.to_dict()["error"], u"Pòlissa 0018 with simultaneous ATR")

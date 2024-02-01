@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
-import unittest
 
-from destral import testing
 from destral.transaction import Transaction
 from expects import *
-from datetime import datetime, timedelta
 from giscedata_facturacio_switching.tests.test_import_f1 import TestImportF1
 from addons import get_module_resource
 

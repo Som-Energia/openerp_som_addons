@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-import pooler
 from oopgrade.oopgrade import load_data_records
 
 

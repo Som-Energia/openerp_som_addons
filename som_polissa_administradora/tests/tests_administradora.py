@@ -2,10 +2,7 @@
 
 from destral import testing
 from destral.transaction import Transaction
-import xml.etree.ElementTree as ET
-from datetime import datetime
 
-from osv import fields
 from osv.osv import except_osv
 
 from .. import res_partner, giscedata_polissa
@@ -77,7 +74,7 @@ class TestPolissaAdministradora(testing.OOTestCase):
     @mock.patch.object(giscedata_polissa.GiscedataPolissa, "validate_partner")
     def test_add_contract_administrator__polissa_invalid_partner(self, mock_validate_partner):
         pol_obj = self.model("giscedata.polissa")
-        res_partner_obj = self.model("res.partner")
+        self.model("res.partner")
 
         partner_id = 1
         polissa_id = 1
@@ -140,7 +137,7 @@ class TestPolissaAdministradora(testing.OOTestCase):
         self.assertEqual(admin_mod.permissions, permissions)
         self.assertEqual(admin_mod.is_legal_representative, is_representative)
 
-        titular = res_partner_obj.browse(self.cursor, self.uid, titular_id)
+        res_partner_obj.browse(self.cursor, self.uid, titular_id)
         partner = res_partner_obj.browse(self.cursor, self.uid, partner_id)
 
         admin_cat = pol_obj.get_admin_cat(self.cursor, self.uid)
@@ -170,7 +167,7 @@ class TestPolissaAdministradora(testing.OOTestCase):
         mock_read_res_partner,
     ):
         pol_obj = self.model("giscedata.polissa")
-        res_partner_obj = self.model("res.partner")
+        self.model("res.partner")
         admin_mod_obj = self.model("som.admin.modification")
 
         titular_id = 3
@@ -264,9 +261,8 @@ class TestPolissaAdministradora(testing.OOTestCase):
         mock_read_res_partner,
     ):
         pol_obj = self.model("giscedata.polissa")
-        res_partner_obj = self.model("res.partner")
+        self.model("res.partner")
 
-        partner_id = 1
         polissa_id = 1
         mock_read_polissa.return_value = {"administradora": [1], "titular": [2]}
         admin_cat = pol_obj.get_admin_cat(self.cursor, self.uid)
@@ -356,7 +352,7 @@ class TestPolissaAdministradora(testing.OOTestCase):
     @mock.patch.object(res_partner.ResPartner, "write")
     @mock.patch.object(res_partner.ResPartner, "read")
     def test_become_owner__member_to_owner(self, mock_res_partner_read, mock_res_partner_write):
-        pol_obj = self.model("giscedata.polissa")
+        self.model("giscedata.polissa")
         res_partner_obj = self.model("res.partner")
 
         partner_id = 1

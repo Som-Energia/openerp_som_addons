@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from tools.translate import _
 from osv import osv
 
 

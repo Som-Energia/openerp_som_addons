@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
-from ooquery.expression import Field
 from addons import get_module_resource
 from osv import osv, fields
 from addons.giscedata_facturacio.giscedata_polissa import _get_polissa_from_energy_invoice
@@ -315,7 +313,6 @@ class GiscedataPolissa(osv.osv):
         return [("id", "in", self._get_fact_enderrerida_ids(cursor, uid, context=context))]
 
     def _ff_fact_endarrerida(self, cursor, uid, ids, field_name, args, context=None):
-
         """Marquem una factura com a endarrerida:
         * Fa més de 1.33 * facturacio dies que no es factura
         * La pólissa no té cap factura fa 1.33 * facturacio
@@ -458,7 +455,7 @@ class GiscedataPolissa(osv.osv):
             context = {}
 
         acg_obj = self.pool.get("giscedata.autoconsum.generador")
-        ac_obj = self.pool.get("giscedata.autoconsum")
+        self.pool.get("giscedata.autoconsum")
         res = dict.fromkeys(ids, False)
 
         for pol_id in ids:
@@ -606,7 +603,7 @@ class GiscedataPolissa(osv.osv):
         if context is None:
             context = {}
         acg_obj = self.pool.get("giscedata.autoconsum.generador")
-        ac_obj = self.pool.get("giscedata.autoconsum")
+        self.pool.get("giscedata.autoconsum")
         res = dict.fromkeys(ids, False)
 
         for pol_id in ids:

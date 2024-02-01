@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Funcions compartides per diferents processos de switching
 from osv import osv
-from datetime import datetime
 
 
 class GiscedataSwitchingHelpers(osv.osv):

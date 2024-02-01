@@ -1,6 +1,5 @@
 # -*- encoding: utf-8 -*-
-from datetime import date
-from ..component_utils import dateformat, get_description, get_invoice_line, get_unit_magnitude
+from ..component_utils import dateformat
 from tools.translate import _
 
 magnitud_description = {
@@ -75,7 +74,6 @@ class InvoiceFE:
 
     def get_data(self, cursor, uid, wiz, invoice, context):
         # fact_obj = wiz.pool.get('giscedata.facturacio.factura')
-
         """start_reading, start_origin = get_reading(invoice, invoice.data_inici)
         end_reading, end_origin = get_reading(invoice, invoice.data_final)"""
         result = {}
@@ -127,7 +125,7 @@ class InvoiceFE:
             dict_lectura = {}
             dict_lectura["magnitud_desc"] = magnitud_description[lectura.magnitud]
             dict_lectura["periode_desc"] = lectura.name[
-                lectura.name.find("(") + 1 : lectura.name.find(")")
+                lectura.name.find("(") + 1: lectura.name.find(")")
             ]
             dict_lectura["origen_lectura_inicial"] = lectura.origen_anterior_id.name
             dict_lectura["lectura_inicial"] = lectura.lect_anterior

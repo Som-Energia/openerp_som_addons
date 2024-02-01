@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
-from dateutil import parser
 from som_polissa.exceptions import exceptions
 from www_som.helpers import www_entry_point
 

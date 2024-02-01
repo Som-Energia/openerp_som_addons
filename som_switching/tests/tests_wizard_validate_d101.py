@@ -177,9 +177,9 @@ class TestWizardValidateD101(TestSwitchingImport):
             uid = txn.user
             cursor = txn.cursor
 
-            sw_obj = self.openerp.pool.get("giscedata.switching")
-            m101_obj = self.openerp.pool.get("giscedata.switching.m1.01")
-            wiz_step_obj = self.openerp.pool.get("wizard.create.step")
+            self.openerp.pool.get("giscedata.switching")
+            self.openerp.pool.get("giscedata.switching.m1.01")
+            self.openerp.pool.get("wizard.create.step")
             wiz_validate_obj = self.openerp.pool.get("wizard.validate.d101")
 
             pol_id = self.get_contract_id(txn)
@@ -189,7 +189,7 @@ class TestWizardValidateD101(TestSwitchingImport):
 
             wiz_init = {"sw_id": d1_id}
             wiz_id = wiz_validate_obj.create(cursor, uid, wiz_init)
-            wiz = wiz_validate_obj.browse(cursor, uid, wiz_id)
+            wiz_validate_obj.browse(cursor, uid, wiz_id)
 
             with self.assertRaises(except_osv) as error:
                 wiz_validate_obj._create_case_m1_01_autoconsum(cursor, uid, wiz_id, pol_id)
@@ -203,7 +203,7 @@ class TestWizardValidateD101(TestSwitchingImport):
         with Transaction().start(self.database) as txn:
             uid = txn.user
             cursor = txn.cursor
-            sw_obj = self.openerp.pool.get("giscedata.switching")
+            self.openerp.pool.get("giscedata.switching")
             d102_obj = self.openerp.pool.get("giscedata.switching.d1.02")
             d1_id = self.create_d1_case_at_step_01(txn)
 
@@ -252,7 +252,7 @@ class TestWizardValidateD101(TestSwitchingImport):
 
             sw_obj = self.openerp.pool.get("giscedata.switching")
             d102_obj = self.openerp.pool.get("giscedata.switching.d1.02")
-            m101_obj = self.openerp.pool.get("giscedata.switching.m1.01")
+            self.openerp.pool.get("giscedata.switching.m1.01")
             wiz_validate_obj = self.openerp.pool.get("wizard.validate.d101")
 
             d1_id = self.create_d1_case_at_step_01(txn)
@@ -328,7 +328,7 @@ class TestWizardValidateD101(TestSwitchingImport):
             # wizard to test
             sw_obj = self.openerp.pool.get("giscedata.switching")
             d101_obj = self.openerp.pool.get("giscedata.switching.d1.01")
-            d102_obj = self.openerp.pool.get("giscedata.switching.d1.02")
+            self.openerp.pool.get("giscedata.switching.d1.02")
             wiz_validate_obj = self.openerp.pool.get("wizard.validate.d101")
 
             d1_id = self.create_d1_case_at_step_01(txn)

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from osv import osv, orm
+from osv import osv
 from datetime import datetime, timedelta
 from tools.translate import _
 from oorq.decorators import job
@@ -49,7 +49,7 @@ class GiscedataPolissaCalculada(osv.osv):
             return False, _(u"té GenerationKWh")
         if pol.autoconsumo != "00":
             return False, _(u"té Autoconsum")
-        if pol.facturacio_potencia == "max":  #!= 'icp'
+        if pol.facturacio_potencia == "max":  # != 'icp'
             return False, _(u"té Maximetre")
         if pol.tg != "1":
             return False, _(u"no té telegestió")
@@ -209,7 +209,7 @@ class GiscedataPolissaCalculada(osv.osv):
         data_seguent_lect_14 = add_days(data_ultima_lect, 14)
         data_seguent_lect_21 = add_days(data_ultima_lect, 21)
 
-        today = datetime.today().strftime("%Y-%m-%d")
+        datetime.today().strftime("%Y-%m-%d")
 
         for _date in [data_seguent_lect_21, data_seguent_lect_14, data_seguent_lect_7]:
             if _date > today_str() or _date > add_days(data_ultima_lectura_f1, 21):

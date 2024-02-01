@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from mako.template import Template
-from osv import osv, fields
-from tools import config
+from osv import osv
 
 
 class UiqmakoHelper(osv.osv_memory):

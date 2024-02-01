@@ -52,7 +52,7 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
         return [int(x) for x in pol_ids]
 
     def find_invoices(self, cursor, uid, ids, pol_ids, from_date, to_date):
-        wiz = self.browse(cursor, uid, ids[0])
+        self.browse(cursor, uid, ids[0])
 
         fact_obj = self.pool.get("giscedata.facturacio.factura")
         pol_obj = self.pool.get("giscedata.polissa")

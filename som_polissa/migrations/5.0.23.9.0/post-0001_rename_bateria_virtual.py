@@ -11,7 +11,7 @@ def up(cursor, installed_version):
     logger = logging.getLogger("openerp.migration")
 
     logger.info("Creating pooler")
-    pool = pooler.get_pool(cursor.dbname)
+    pooler.get_pool(cursor.dbname)
 
     ##UPDATAR UNA PART DE L'XML (POSAR LA ID)##
     logger.info("Updating XMLs")

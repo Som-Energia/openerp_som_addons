@@ -1,5 +1,4 @@
 # -*- encoding: utf-8 -*-
-from datetime import date
 from ..component_utils import dateformat, get_description, get_invoice_line, get_unit_magnitude
 
 
@@ -26,7 +25,7 @@ class InvoiceF1NG:
 
         result = {}
         f1_obj = wiz.pool.get("giscedata.facturacio.importacio.linia")
-        facturacio_imp_linia_obj = wiz.pool.get("giscedata.facturacio.importacio.linia.factura")
+        wiz.pool.get("giscedata.facturacio.importacio.linia.factura")
 
         search_params = [
             ("cups_id.id", "=", invoice.cups_id.id),

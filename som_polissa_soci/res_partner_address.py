@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from osv import osv, fields
+from osv import osv
 from tools.translate import _
 
-from osv.orm import browse_record
 import logging
 from hashlib import md5
 import mailchimp_marketing as MailchimpMarketing
@@ -137,7 +136,7 @@ class ResPartnerAddress(osv.osv):
     def fill_merge_fields_clients(self, cursor, uid, id, context=None):
         partner_obj = self.pool.get("res.partner")
         municipi_obj = self.pool.get("res.municipi")
-        ca_obj = self.pool.get("res.comunitat.autonoma")
+        self.pool.get("res.comunitat.autonoma")
         partner_data = self.read(cursor, uid, id, ["partner_id", "email", "zip", "id_municipi"])
         partner_fields = partner_obj.read(
             cursor, uid, partner_data["partner_id"][0], ["name", "lang"]
@@ -177,7 +176,7 @@ class ResPartnerAddress(osv.osv):
     def fill_merge_fields_soci(self, cursor, uid, id, context=None):
         partner_obj = self.pool.get("res.partner")
         municipi_obj = self.pool.get("res.municipi")
-        ca_obj = self.pool.get("res.comunitat.autonoma")
+        self.pool.get("res.comunitat.autonoma")
         partner_data = self.read(
             cursor, uid, id, ["partner_id", "email", "zip", "id_municipi", "mobile", "phone"]
         )

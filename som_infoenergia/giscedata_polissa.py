@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
-import re
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from tools.translate import _

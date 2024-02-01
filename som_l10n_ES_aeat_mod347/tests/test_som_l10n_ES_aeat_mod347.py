@@ -3,7 +3,6 @@
 from destral import testing
 from destral.transaction import Transaction
 
-from expects import *
 import mock
 
 

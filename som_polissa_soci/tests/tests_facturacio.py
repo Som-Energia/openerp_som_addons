@@ -493,7 +493,7 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
         data_lectura_inici = "2016-02-02"
         data_lectura_final = "2017-01-31"
 
-        end_plv_16 = pl_version_o.read(cursor, uid, pl_version16_id, ["date_end"])["date_end"]
+        pl_version_o.read(cursor, uid, pl_version16_id, ["date_end"])["date_end"]
 
         # Configurem la pòlissa per tal de poder activar-la i facturar-la.
         polissa_wv = {

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-from destral import testing
 from destral.transaction import Transaction
 import mock
-from osv import osv
 from giscedata_switching.tests.common_tests import TestSwitchingImport
 from destral.patch import PatchNewCursors
 
@@ -39,7 +37,7 @@ class TestActivacioM1(TestSwitchingImport):
         pt_obj = self.openerp.pool.get("payment.type")
         step = self.M101.browse(cursor, uid, step_id)
 
-        old_partner_id = step.sw_id.titular_polissa.id
+        step.sw_id.titular_polissa.id
         new_partner_id = self.IrModelData.get_object_reference(
             cursor, uid, "som_polissa_soci", "res_partner_nosoci2"
         )[1]
@@ -72,7 +70,7 @@ class TestActivacioM1(TestSwitchingImport):
         cursor = txn.cursor
         m1 = self.get_m1_01_ct(txn, contract_id, tipus)
 
-        polissa = m1.cups_polissa_id
+        m1.cups_polissa_id
 
         self.ResConfig.set(cursor, uid, "sw_m1_S_with_service_order", "0")
         self.ResConfig.set(cursor, uid, "sw_m1_owner_change_subrogacio_new_contract", "0")
@@ -189,7 +187,7 @@ class TestActivacioM1(TestSwitchingImport):
             mock_lectures.return_value = []
             contract_id = self.get_contract_id(txn, "polissa_tarifa_018")
             # actualitze 'data_baixa' per a que no falle el test per la restricció de dates
-            #'giscedata_polissa_modcontractual_date_coherence'
+            # 'giscedata_polissa_modcontractual_date_coherence'
             contract_002_id = self.get_contract_id(txn, "polissa_0002")
             self.Polissa.write(cursor, uid, [contract_002_id], {"data_baixa": "2099-01-01"})
 
