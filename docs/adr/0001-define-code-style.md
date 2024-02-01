@@ -46,7 +46,7 @@ _Permetem 'star imports' als fitxers `__init__.py` per no haver d'importar un pe
 
 Pel que fa a formatar el codi al desenvolupar és una decisió pròpia de cada persona desenvolupadora. Dues formes en les quals es podria fer són les següents (o fer servir les dues alhora):
 
-**Integrat amb VSCode**
+#### Integrat amb VSCode
 
 1. Instal·lem l'extensió de Python
 2. Instal·lem `autopep8` (1.5.7) i `flake8` (3.9.2) al `venv` de `erp`
@@ -70,7 +70,7 @@ Pel que fa a formatar el codi al desenvolupar és una decisió pròpia de cada p
 
 Al programar veurem els errors que ens marca `flake8` i al guardar se'ns formata automàticament el codi amb `autopep8`. Aquestes dues eines tindran en compte la configuració dels fitxers `.flake8` i `.pycodestyle` del repositori.
 
-**Amb l'eina `pre-commit`**
+#### Amb l'eina `pre-commit
 
 1. Instal·lem `pre-commit` al `venv` de `erp`: `pip install pre-commit`
 2. Activem el `pre-commit` dins el repositori: `pre-commit install`
@@ -80,6 +80,10 @@ Al fer un _commit_ ens formatarà el codi automàticament amb `autoflake` i `aut
 - Si algun formatador fa algun canvi o no passen totes les comprovacions el _commit_ no es farà.
 - Els fitxers modificats pel `pre-commit` queden _unstaged_.
 - Fa el mateix que farà el GitHub Actions (definit al fitxer `.pre-commit-config.yaml`).
+
+#### Amb l'eina `pre-commit manualment, sense força que es passi al fer cada commit
+1.- Anem a la carpeta del repositori
+2.- Executem `pre-commit run -a`
 
 ## Conseqüències
 
