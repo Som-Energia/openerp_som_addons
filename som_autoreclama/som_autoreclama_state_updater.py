@@ -38,6 +38,14 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         ]
         return pol_obj.search(cursor, uid, search_params)
 
+    def get_item_name(self, cursor, uid, item_id, namespace, context=None):
+        if namespace != 'polissa':
+            return item_id
+
+        pol_obj = self.pool.get('giscedata.polissa')
+        pol_data = pol_obj.read(cursor, uid, item_id, ['name'], context=context)
+        return "{} - {}".format(item_id, pol_data['name'])
+
     def update_items_if_possible(self, cursor, uid, ids, namespace, verbose=True, context=None):
         updated = []
         not_updated = []
@@ -60,26 +68,27 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             result, condition_id, message = self.update_item_if_possible(
                 cursor, uid, item_id, namespace, context
             )
+            item_name = self.get_item_name(cursor, uid, item_id, namespace, context)
             if result:
                 updated.append(item_id)
                 next_state = self.get_autoreclama_state_name(
                     cursor, uid, item_id, namespace, context)
                 msg += _("{} amb id {} ha canviat d'estat: {} --> {} => condició {}\n").format(
-                    name, item_id, actual_state, next_state, condition_id
+                    name, item_name, actual_state, next_state, condition_id
                 )
                 msg += _(" - {}\n").format(message)
             elif result is False:
                 not_updated.append(item_id)
                 if verbose:
                     msg += _("{} amb id {} no li toca canviar d'estat, estat actual: {}\n").format(
-                        name, item_id, actual_state
+                        name, item_name, actual_state
                     )
                     msg += _(" - {}\n").format(message)
             else:
                 errors.append(item_id)
                 msg += _(
                     "{} amb id {} no ha canviat d'estat per error, estat actual: {} => condició {}\n"  # noqa: E501
-                ).format(name, item_id, actual_state, condition_id)
+                ).format(name, item_name, actual_state, condition_id)
                 msg += _(" - {}\n").format(message)
 
         summary = _("Sumari {}\n").format(names)
