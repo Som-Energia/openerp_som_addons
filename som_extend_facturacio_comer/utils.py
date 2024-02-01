@@ -1,5 +1,3 @@
-
-
 def get_gkwh_atr_price(cursor, uid, polissa, pname, context, with_taxes=False):
     if context is None:
         context = {}

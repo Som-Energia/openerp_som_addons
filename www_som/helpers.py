@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-from osv import osv
-from som_polissa.exceptions import exceptions
 from decorator import decorator
+
 
 def www_entry_point(expected_exceptions=tuple()):
     """
@@ -39,10 +38,11 @@ def www_entry_point(expected_exceptions=tuple()):
         def traceback_info(exception):
             import traceback
             import sys
+
             exc_type, exc_value, exc_tb = sys.exc_info()
             return traceback.format_exception(exc_type, exc_value, exc_tb)
 
-        savepoint = 'change_pricelist_{}'.format(id(cursor))
+        savepoint = "change_pricelist_{}".format(id(cursor))
         cursor.savepoint(savepoint)
         try:
             return f(self, cursor, *args, **kwds)
@@ -59,5 +59,5 @@ def www_entry_point(expected_exceptions=tuple()):
                 code="Unexpected",
                 trace=traceback_info(e),
             )
-    return decorator(wrapper)
 
+    return decorator(wrapper)

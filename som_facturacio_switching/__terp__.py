@@ -3,12 +3,12 @@
     "name": "Funcions de suport a switching per SOM",
     "description": """
     This module provide :
-        * Funció propia a pólissa (escull_llista_preus) per escollir tarifa a partir llistes de preus.
+        * Funció propia a pólissa (escull_llista_preus) per escollir tarifa a partir llistes de preus.  # noqa: E501
     """,
     "version": "2.107.6",
     "author": "GISCE",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "base",
         "som_polissa",
         "som_switching",
@@ -35,5 +35,5 @@
         "wizard/wizard_change_cron_reimport_days_view.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

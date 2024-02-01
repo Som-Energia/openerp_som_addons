@@ -938,9 +938,9 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
     def test__update_pendent_consulta_pobresa_poverty_eligible(self, mock_polissa_read):
         mock_polissa_read.return_value = [
             {
-                'id': 1,
-                'name': '1',
-                'cups_np': 'Girona',
+                "id": 1,
+                "name": "1",
+                "cups_np": "Girona",
             }
         ]
 
@@ -950,9 +950,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         pending_obj = self.pool.get("update.pending.states")
         fact_obj = self.pool.get("giscedata.facturacio.factura")
 
-        pending_obj.update_pending_ask_poverty(
-            cursor, uid, context=None
-        )
+        pending_obj.update_pending_ask_poverty(cursor, uid, context=None)
 
         factura = fact_obj.browse(cursor, uid, self.invoice_1_id)
         self.assertEqual(factura.pending_state.id, self.consulta_pobresa)
@@ -961,9 +959,9 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
     def test__update_pendent_consulta_pobresa_poverty_not_eligible(self, mock_polissa_read):
         mock_polissa_read.return_value = [
             {
-                'id': 1,
-                'name': '1',
-                'cups_np': 'Madrid',
+                "id": 1,
+                "name": "1",
+                "cups_np": "Madrid",
             }
         ]
 
@@ -973,9 +971,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         pending_obj = self.pool.get("update.pending.states")
         fact_obj = self.pool.get("giscedata.facturacio.factura")
 
-        pending_obj.update_pending_ask_poverty(
-            cursor, uid, context=None
-        )
+        pending_obj.update_pending_ask_poverty(cursor, uid, context=None)
 
         factura = fact_obj.browse(cursor, uid, self.invoice_1_id)
         self.assertEqual(factura.pending_state.id, self.avis_tall)

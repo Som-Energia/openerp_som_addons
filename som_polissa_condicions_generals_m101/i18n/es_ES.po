@@ -1,7 +1,7 @@
 # Translation of OpenERP Server.
 # This file contains the translation of the following modules:
 # * som_polissa_condicions_generals_m101
-# 
+#
 # Translators:
 # Som Energia  <itcrowd@somenergia.coop>, 2020, 2021, 2023.
 msgid ""
