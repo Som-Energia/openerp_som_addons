@@ -3,7 +3,6 @@ from osv import osv
 from tqdm import tqdm
 from tools.translate import _
 from tools import email_send
-from datetime import datetime
 
 
 class SomAutoreclamaStateUpdater(osv.osv_memory):
@@ -173,29 +172,15 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         if not context:
             context = {}
 
-        with open("/tmp/erp/autoreclama.log", 'a') as f:
+        subject = _(u"Resultat accions batch d'autoreclama")
+        msg = self.state_updater(cursor, uid, context)
+        emails_to = filter(lambda a: bool(a), map(str.strip, data.get("emails_to", "").split(",")))  # noqa: E501
 
-            def printn(f, text):
-                f.write(str(text) + "\n")
+        if emails_to:
+            user_obj = self.pool.get("res.users")
+            email_from = user_obj.browse(cursor, uid, uid).address_id.email
+            email_send(email_from, emails_to, subject, msg)
 
-            def separator(f, pattern='*'):
-                printn(f, pattern * 4 + ' ' + str(datetime.today()) + ' ' + pattern * 40)
-
-            separator(f, '-')
-            subject = _(u"Resultat accions batch d'autoreclama")
-            msg = self.state_updater(cursor, uid, context)
-            emails_to = filter(lambda a: bool(a), map(str.strip, data.get("emails_to", "").split(",")))  # noqa: E501
-
-            separator(f)
-            printn(f, subject)
-            printn(f, emails_to)
-            printn(f, msg)
-            if emails_to:
-                user_obj = self.pool.get("res.users")
-                email_from = user_obj.browse(cursor, uid, uid).address_id.email
-                email_send(email_from, emails_to, subject, msg)
-
-            separator(f, '+')
         return True
 
 
