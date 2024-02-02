@@ -7,6 +7,13 @@ on:
       module:
         required: true
         type: string
+    secrets:
+        ACCESS_TOKEN_GA:
+            required: true
+        ESIOS_TOKEN:
+            required: true
+        SRID:
+            required: true
 
 env:
   POSTGRES_USER: erp
@@ -116,7 +123,6 @@ jobs:
           cd $ROOT_DIR_SRC/erp && ./tools/link_addons.sh
       - name: Run Tests
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ESIOS_TOKEN: ${{ secrets.ESIOS_TOKEN }}
           SRID: ${{ secrets.SRID }}
         run: |
@@ -138,7 +144,7 @@ jobs:
           export OPENERP_DB_USER=$POSTGRES_USER
           export OPENERP_DB_PASSWORD=$POSTGRES_PASSWORD
           cd ${{github.workspace}}
-          destral --report-coverage --enable-coverage --report-junitxml ${{github.workspace}}/test-results/destral -m ${{ inputs.config-path }}
+          destral --report-coverage --enable-coverage --report-junitxml ${{github.workspace}}/test-results/destral -m ${{ inputs.module }}
       - name: Publish Unit Test Results
         if: (success() || failure()) && matrix.python-version == '2.7' && github.event_name == 'pull_request'
         uses: EnricoMi/publish-unit-test-result-action@v1

@@ -11,3 +11,7 @@ jobs:
     uses: ./.github/workflows/reusable_workflow.yml
     with:
       module: account_account_som
+    secrets:
+      ACCESS_TOKEN_GA: ${{ secrets.ACCESS_TOKEN_GA }}
+      ESIOS_TOKEN: ${{ secrets.ESIOS_TOKEN }}
+      SRID: ${{ secrets.SRID }}

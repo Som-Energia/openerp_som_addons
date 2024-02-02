@@ -1,6 +1,6 @@
 # This workflow will pass tests of module passed by input
 
-name: TEST_account_account_som
+name: TEST_account_invoice_som
 on:
   schedule:
     - cron: '0 0 * * 1'
@@ -10,4 +10,8 @@ jobs:
   call-workflow-2-in-local-repo:
     uses: ./.github/workflows/reusable_workflow.yml
     with:
-      module: account_accoubt_som
+      module: account_invoice_som
+    secrets:
+      ACCESS_TOKEN_GA: ${{ secrets.ACCESS_TOKEN_GA }}
+      ESIOS_TOKEN: ${{ secrets.ESIOS_TOKEN }}
+      SRID: ${{ secrets.SRID }}
