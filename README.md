@@ -4,8 +4,7 @@ Repository whith OpenERP addons customization made by [Som Energia](https://www.
   [![CI](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/integration_config.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/integration_config.yml)
   [![Coverage Status](https://coveralls.io/repos/github/Som-Energia/openerp_som_addons/badge.svg?branch=)](https://coveralls.io/github/Som-Energia/openerp_som_addons?branch=)
 
-## List of modules
-Available addons
+List of modules
 ----------------
 tests | name | description
 --- | --- | ---
@@ -38,7 +37,7 @@ tests | name | description
 [![som_informe](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_informe.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_informe.yml) | [som_informe](som_informe/) |
 [![som_inversions](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_inversions.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_inversions.yml) | [som_inversions](som_inversions/) |
 [![som_l10n_ES_aeat_mod347](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_l10n_ES_aeat_mod347.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_l10n_ES_aeat_mod347.yml) | [som_l10n_ES_aeat_mod347](som_l10n_ES_aeat_mod347/) |
- | [som_modul_fulla](som_modul_fulla/) |
+ _  | [som_modul_fulla](som_modul_fulla/) |
 [![som_partner_account](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_partner_account.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_partner_account.yml) | [som_partner_account](som_partner_account/) |
 [![som_partner_seq](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_partner_seq.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_partner_seq.yml) | [som_partner_seq](som_partner_seq/) |
 [![som_polissa](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_polissa.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_polissa.yml) | [som_polissa](som_polissa/) | A customization of GiscedataPolissa model from PowerERP (GISCE)
