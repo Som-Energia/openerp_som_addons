@@ -1,0 +1,13 @@
+# This workflow will pass tests of module passed by input
+
+name: TEST_account_account_som
+on:
+  schedule:
+    - cron: '0 0 * * 1'
+  pull_request:
+    branches: [ main ]
+jobs:
+  call-workflow-2-in-local-repo:
+    uses: ./.github/workflows/reusable_workflow.yml
+    with:
+      module: account_accoubt_som
