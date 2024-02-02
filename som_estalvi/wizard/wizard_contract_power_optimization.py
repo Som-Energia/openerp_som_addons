@@ -437,7 +437,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
         wiz.write({'state': 'result'})
 
     def button_seguent(self, cursor, uid, wiz_id, context=None):
-        wiz = self.browse(cursor, uid, wiz_id)
+        wiz = self.browse(cursor, uid, wiz_id[0])
         wiz.write({'state': 'confirm'})
 
     def generate_optimization_as_csv(self, cursor, uid, wiz_id, optimizations, missing_data_pol, context=None):
