@@ -1,6 +1,6 @@
 # This workflow will pass tests of module passed by input
 
-name: account_account_som
+name: giscedata_facturacio_som
 on:
   schedule:
     - cron: '0 0 * * 1'
@@ -10,7 +10,7 @@ jobs:
   erp-tests-module:
     uses: ./.github/workflows/reusable_workflow.yml
     with:
-      module: account_account_som
+      module: giscedata_facturacio_som
     secrets:
       ACCESS_TOKEN_GA: ${{ secrets.ACCESS_TOKEN_GA }}
       ESIOS_TOKEN: ${{ secrets.ESIOS_TOKEN }}

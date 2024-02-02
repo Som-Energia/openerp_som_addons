@@ -1,6 +1,6 @@
 # This workflow will pass tests of module passed by input
 
-name: account_account_som
+name: dx_invoice_supplier_renumber
 on:
   schedule:
     - cron: '0 0 * * 1'
@@ -10,7 +10,7 @@ jobs:
   erp-tests-module:
     uses: ./.github/workflows/reusable_workflow.yml
     with:
-      module: account_account_som
+      module: dx_invoice_supplier_renumber
     secrets:
       ACCESS_TOKEN_GA: ${{ secrets.ACCESS_TOKEN_GA }}
       ESIOS_TOKEN: ${{ secrets.ESIOS_TOKEN }}
