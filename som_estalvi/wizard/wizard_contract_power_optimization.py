@@ -503,7 +503,8 @@ class WizardContractPowerOptimization(osv.osv_memory):
 
         if start_date:
             year_end_date = (datetime.strptime(start_date, '%Y-%m-%d') + relativedelta(years=+1)).year
-            end_date = '{}-01-01'.format(year_end_date)
+            month_end = datetime.strptime(start_date, '%Y-%m-%d').month
+            end_date = '{}-01-01'.format(year_end_date, month_end)
             res['value'].update({'end_date': end_date})
         return res
 

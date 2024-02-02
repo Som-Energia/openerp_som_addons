@@ -16,12 +16,12 @@
                                 <field name="start_date" on_change="onchange_start_date(start_date)"/>
                                 <field name="end_date" readonly="1"/>
                                 <separator string="Potències Actuals" colspan="4"/>
-                                <field name="power_p1"/>
-                                <field name="power_p2"/>
-                                <field name="power_p3"/>
-                                <field name="power_p4"/>
-                                <field name="power_p5"/>
-                                <field name="power_p6"/>
+                                <field name="float_p1"/>
+                                <field name="float_p2"/>
+                                <field name="float_p3"/>
+                                <field name="float_p4"/>
+                                <field name="float_p5"/>
+                                <field name="float_p6"/>
                                 <separator string="Preus Potències Actuals" colspan="4"/>
                                 <field name="power_price_p1"/>
                                 <field name="power_price_p2"/>
