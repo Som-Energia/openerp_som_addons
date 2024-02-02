@@ -4,8 +4,6 @@ name: som_partner_seq
 on:
   schedule:
     - cron: '0 0 * * 1'
-  pull_request:
-    branches: [ main ]
 jobs:
   erp-tests-module:
     uses: ./.github/workflows/reusable_workflow.yml

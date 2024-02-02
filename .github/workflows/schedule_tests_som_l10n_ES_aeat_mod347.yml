@@ -4,8 +4,6 @@ name: som_l10n_ES_aeat_mod347
 on:
   schedule:
     - cron: '0 0 * * 1'
-  pull_request:
-    branches: [ main ]
 jobs:
   erp-tests-module:
     uses: ./.github/workflows/reusable_workflow.yml
