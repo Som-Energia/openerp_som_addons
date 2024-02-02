@@ -40,7 +40,10 @@
                             </page>
                         </notebook>
                         <button type="object" string="Obtenir informació de la pòlissa" name="button_get_optimization_required_data" icon="gtk-refresh" colspan="4"/>
-                        <button type="object" string="Executar optimització" name="button_execute_optimization_script" icon="gtk-ok" colspan="4"/>
+                        <button type="object" string="Següent" name="button_seguent" icon="gtk-ok" colspan="4"/>
+                        <group colspan="1" attrs="{'invisible': [('state', '!=', 'confirm')]}" >
+                            <button type="object" string="Executar optimització" name="button_execute_optimization_script" icon="gtk-ok" colspan="4"/>
+                        </group>
                     </group>
                     <group colspan="1" attrs="{'invisible': [('state', '!=', 'multiple')]}" >
                         <label string="Calcular optimització per a tots els contractes seleccionats" colspan="4"/>
