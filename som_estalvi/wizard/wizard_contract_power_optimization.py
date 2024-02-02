@@ -436,6 +436,9 @@ class WizardContractPowerOptimization(osv.osv_memory):
         )
         wiz.write({'state': 'result'})
 
+    def button_execute_optimization_script(self, cursor, uid, wiz_id, context=None):
+        wiz.write({'state': 'confirm'})
+
     def generate_optimization_as_csv(self, cursor, uid, wiz_id, optimizations, missing_data_pol, context=None):
         if context is None:
             context = {}
@@ -529,7 +532,8 @@ class WizardContractPowerOptimization(osv.osv_memory):
             [
                 ('one', 'Un'),
                 ('multiple', 'Varis'),
-                ('result', 'Resultat')
+                ('result', 'Resultat'),
+                ('confirm', 'Confirmar'),
             ],
         'State'),
 
@@ -546,12 +550,12 @@ class WizardContractPowerOptimization(osv.osv_memory):
         'power_p4': fields.integer('Potència P4'),
         'power_p5': fields.integer('Potència P5'),
         'power_p6': fields.integer('Potència P6'),
-        'float_p1': fields.float('Potència amb decimals P1', digits=(16, 6)),
-        'float_p2': fields.float('Potència amb decimals P2', digits=(16, 6)),
-        'float_p3': fields.float('Potència amb decimals P3', digits=(16, 6)),
-        'float_p4': fields.float('Potència amb decimals P4', digits=(16, 6)),
-        'float_p5': fields.float('Potència amb decimals P5', digits=(16, 6)),
-        'float_p6': fields.float('Potència amb decimals P6', digits=(16, 6)),
+        'float_p1': fields.float('Potència amb decimals P1', digits=(16, 3)),
+        'float_p2': fields.float('Potència amb decimals P2', digits=(16, 3)),
+        'float_p3': fields.float('Potència amb decimals P3', digits=(16, 3)),
+        'float_p4': fields.float('Potència amb decimals P4', digits=(16, 3)),
+        'float_p5': fields.float('Potència amb decimals P5', digits=(16, 3)),
+        'float_p6': fields.float('Potència amb decimals P6', digits=(16, 3)),
 
         'power_price_p1': fields.float('Preu potència P1', digits=(16, 6)),
         'power_price_p2': fields.float('Preu potència P2', digits=(16, 6)),
