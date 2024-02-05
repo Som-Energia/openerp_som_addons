@@ -11,6 +11,13 @@ jobs:
       - name: checkout repo
         uses: actions/checkout@v4.1.1
 
+      - name: convert-svg-to-png
+        uses: oriolpiera/convert-svg-to-png@v1.1
+        with:
+          file: "README.md"
+          path: "scripts"
+          name: "converted-svg-file"
+
       - name: Converts Markdown to HTML
         uses: jaywcjlove/markdown-to-html-cli@main
         with:
