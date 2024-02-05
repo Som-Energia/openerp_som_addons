@@ -2,6 +2,7 @@
 
 name: som_polissa_soci
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 0 * * 1'
 jobs:
