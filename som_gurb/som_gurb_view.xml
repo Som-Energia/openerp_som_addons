@@ -32,14 +32,13 @@
                     <!-- TODO: Progress bar -->
                     <group col="6" colspan="4" string="General">
                         <field name="name" select="1" />
-                        <field name="type" />
-                        <field name="logo" select="2" />
                         <field name="code" select="1" />
-                        <field name="roof_owner" />
-                        <field name="sig_data" />
+                        <field name="roof_owner_id" />
                         <field name="address" />
                         <field name="province" select="2" />
                         <field name="zip_code" select="2" />
+                        <field name="sig_data" />
+                        <field name="logo" select="2" />
                     </group>
                     <group col="6" colspan="4" string="Característiques">
                         <field name="activation_date" select="1" />
@@ -66,9 +65,6 @@
                             <separator string="CUPS del GURB" colspan="4"/>
                             <field name="gurb_cups_id" nolabel="1" colspan="4"/>
                         </page>
-                        <page string="Registrador (comptador)">
-                            <!-- TODO -->
-                        </page>
                         <page string="Observacions">
                             <separator string="Observacions sobre el GURB" colspan="4" />
                             <field name="notes" colspan="4" height="600" nolabel="1" />
@@ -76,6 +72,9 @@
                         <page string="Històric">
                             <separator string="Canvis realitzats al GURB" colspan="4" />
                             <field name="history_box" colspan="4" height="600" nolabel="1" />
+                        </page>
+                        <page string="Altres">
+                            <field name="meter_id" />
                         </page>
                     </notebook>
                 </form>
