@@ -8,13 +8,15 @@
             <field name="arch" type="xml">
                 <form string="Optimitzador de potències">
                     <field name="state" invisible="1"/>
+                    <group attrs="{'invisible': [('state', 'not in', ('one','multiple'))]}" colspan="4">
+                        <separator string="Dates del Càlcul" colspan="4"/>
+                        <label string="És recomanable posar el primer dia de l'any" colspan="4"/>
+                        <field name="start_date" on_change="onchange_start_date(start_date)"/>
+                        <field name="end_date" readonly="1"/>
+                    </group>
                     <group attrs="{'invisible': [('state', '!=', 'one')]}" colspan="4">
                         <notebook colspan="4">
                             <page string="Dades actuals pel càlcul">
-                                <separator string="Dates del Càlcul" colspan="4"/>
-                                <label string="És recomanable posar el primer dia de l'any" colspan="4"/>
-                                <field name="start_date" on_change="onchange_start_date(start_date)"/>
-                                <field name="end_date" readonly="1"/>
                                 <separator string="Potències Actuals" colspan="4"/>
                                 <field name="float_p1"/>
                                 <field name="float_p2"/>
@@ -43,8 +45,6 @@
                         <button type="object" string="Executar optimització" name="button_execute_optimization_script" icon="gtk-ok" colspan="4"/>
                     </group>
                     <group colspan="1" attrs="{'invisible': [('state', '!=', 'multiple')]}" >
-                        <field name="start_date" on_change="onchange_start_date(start_date)"/>
-                        <field name="end_date" readonly="1"/>
                         <label string="Calcular optimització per a tots els contractes seleccionats" colspan="4"/>
                         <button type="object" string="Calcular" name="get_optimization" icon="gtk-ok" colspan="4"/>
                     </group>
