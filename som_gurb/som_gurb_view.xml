@@ -34,7 +34,7 @@
                         <field name="name" select="1" />
                         <field name="code" select="1" />
                         <field name="roof_owner_id" />
-                        <field name="address" />
+                        <field name="address_id" />
                         <field name="province" select="2" />
                         <field name="zip_code" select="2" />
                         <field name="sig_data" />

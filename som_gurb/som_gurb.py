@@ -36,15 +36,56 @@ class SomGurb(osv.osv):
                     res[gurb_vals["id"]] = max_gen_pot
         return res
 
+    def _ff_get_province(self, cursor, uid, ids, field_name, arg, context=None):
+        if context is None:
+            context = {}
+        address_obj = self.pool.get("res.partner.address")
+        res = dict.fromkeys(ids, False)
+        for gurb_vals in self.read(cursor, uid, ids, ["address_id"]):
+            address_id = gurb_vals.get("address_id", False)
+            if address_id:
+                address = address_obj.browse(cursor, uid, address_id[0], context=context)
+                if address.state_id:
+                    res[gurb_vals["id"]] = address.state_id.name
+                else:
+                    res[gurb_vals["id"]] = ""
+            else:
+                res[gurb_vals["id"]] = ""
+        return res
+
+    def _ff_get_zip_code(self, cursor, uid, ids, field_name, arg, context=None):
+        if context is None:
+            context = {}
+        address_obj = self.pool.get("res.partner.address")
+        res = dict.fromkeys(ids, False)
+        for gurb_vals in self.read(cursor, uid, ids, ["address_id"]):
+            address_id = gurb_vals.get("address_id", False)
+            if address_id:
+                address = address_obj.browse(cursor, uid, address_id[0], context=context)
+                res[gurb_vals["id"]] = address.zip
+            else:
+                res[gurb_vals["id"]] = ""
+        return res
+
     _columns = {
         "name": fields.char("Nom GURB", size=60, required=True),
         "self_consumption_id": fields.many2one("giscedata.autoconsum", "CAU"),
         "code": fields.char("Codi GURB", size=60, required=True),
         "roof_owner_id": fields.many2one("res.partner", "Propietari teulada", required=True),
         "logo": fields.boolean("Logo"),
-        "address": fields.many2one("res.partner.address", "Adreça", required=True),
-        "province": fields.char("Provincia", size=60, readonly=True),
-        "zip_code": fields.char("Codi postal", size=60, readonly=True),
+        "address_id": fields.many2one("res.partner.address", "Adreça", required=True),
+        "province": fields.function(
+            _ff_get_province,
+            type="char",
+            string="Província",
+            method=True,
+        ),
+        "zip_code": fields.function(
+            _ff_get_zip_code,
+            type="char",
+            string="Codi postal",
+            method=True,
+        ),
         "sig_data": fields.char("Dades SIG", size=60, required=True),
         "activation_date": fields.date(u"Data activació GURB", required=True),
         "gurb_state": fields.selection(
