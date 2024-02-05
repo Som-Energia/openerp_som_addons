@@ -2,6 +2,7 @@
 
 name: som_polissa_condicions_generals_m101
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 0 * * 1'
 jobs:

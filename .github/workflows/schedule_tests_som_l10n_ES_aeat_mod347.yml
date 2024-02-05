@@ -2,6 +2,7 @@
 
 name: som_l10n_ES_aeat_mod347
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 0 * * 1'
 jobs:
