@@ -10,6 +10,15 @@ jobs:
     steps:
       - name: checkout repo
         uses: actions/checkout@v4.1.1
+
+      - name: Converts Markdown to HTML
+        uses: jaywcjlove/markdown-to-html-cli@main
+        with:
+          source: README.md
+          output: README.html
+          github-corners: https://github.com/jaywcjlove/markdown-to-html-cli
+          favicon: data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌐</text></svg>
+
       - name: send mail
         uses: dawidd6/action-send-mail@v3.11.0
         with:
@@ -17,9 +26,6 @@ jobs:
           subject: Resultats tests repo OpenERP Som Addons
           to: ${{secrets.MAIL_DESTINATION}}
           from: El sentinela del ERP <elsentinela@somenergia.coop>
-          html_body: file://README.md
-          convert_markdown: true
+          html_body: file://README.html
           server_port: 587
           secure: true
-          nodemailerlog: true
-          nodemailerdebug: true
