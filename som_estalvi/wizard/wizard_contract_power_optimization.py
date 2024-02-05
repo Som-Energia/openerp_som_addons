@@ -436,10 +436,6 @@ class WizardContractPowerOptimization(osv.osv_memory):
         )
         wiz.write({'state': 'result'})
 
-    def button_seguent(self, cursor, uid, wiz_id, context=None):
-        wiz = self.browse(cursor, uid, wiz_id[0])
-        wiz.write({'state': 'confirm'})
-
     def generate_optimization_as_csv(self, cursor, uid, wiz_id, optimizations, missing_data_pol, context=None):
         if context is None:
             context = {}
@@ -450,9 +446,10 @@ class WizardContractPowerOptimization(osv.osv_memory):
         writer = csv.writer(csv_file, quoting=csv.QUOTE_NONNUMERIC)
         writer.writerow(HEADER)
         for optimization in optimizations:
-            self.get_optimization_required_data(
-                cursor, uid, wizard.id, optimization['polissa_id'], context=context
-            )
+            if len(optimizations) > 1:
+                self.get_optimization_required_data(
+                    cursor, uid, wizard.id, optimization['polissa_id'], context=context
+                )
             current = self._calculate_current_cost(cursor, uid, wiz_id, context=context)
             row = []
             for value in HEADER[:22]:
@@ -534,7 +531,6 @@ class WizardContractPowerOptimization(osv.osv_memory):
                 ('one', 'Un'),
                 ('multiple', 'Varis'),
                 ('result', 'Resultat'),
-                ('confirm', 'Confirmar'),
             ],
         'State'),
 
