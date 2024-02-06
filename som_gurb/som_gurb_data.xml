@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="1">
+        <record id="gurb_crm_sections" model="crm.case.section">
+            <field name="name">GURB</field>
+            <field name="code">GURB</field>
+        </record>
+        <record model="crm.case.stage" id="stage_gurb_draft">
+            <field name="name">Esborrany</field>
+            <field name="sequence">5</field>
+            <field name="section_id" ref="gurb_crm_sections"/>
+        </record>
+        <record model="crm.case.stage" id="stage_gurb_first_opening">
+            <field name="name">Primera Obertura</field>
+            <field name="sequence">10</field>
+            <field name="section_id" ref="gurb_crm_sections"/>
+        </record>
+        <record model="crm.case.stage" id="stage_gurb_complete">
+            <field name="name">Complet</field>
+            <field name="sequence">20</field>
+            <field name="section_id" ref="gurb_crm_sections"/>
+        </record>
+        <record model="crm.case.stage" id="stage_gurb_incomplete">
+            <field name="name">No Complet</field>
+            <field name="sequence">20</field>
+            <field name="section_id" ref="gurb_crm_sections"/>
+        </record>
+        <record model="crm.case.stage" id="stage_gurb_register_pending">
+            <field name="name">Pendent de Registre</field>
+            <field name="sequence">40</field>
+            <field name="section_id" ref="gurb_crm_sections"/>
+        </record>
+        <record model="crm.case.stage" id="stage_gurb_registered">
+            <field name="name">Registrat</field>
+            <field name="sequence">50</field>
+            <field name="section_id" ref="gurb_crm_sections"/>
+        </record>
+        <record model="crm.case.stage" id="stage_gurb_active">
+            <field name="name">Actiu</field>
+            <field name="sequence">60</field>
+            <field name="section_id" ref="gurb_crm_sections"/>
+        </record>
+        <record model="crm.case.stage" id="stage_gurb_active_incomplete">
+            <field name="name">Actiu no complet</field>
+            <field name="sequence">70</field>
+            <field name="section_id" ref="gurb_crm_sections"/>
+        </record>
+        <record model="crm.case.stage" id="stage_gurb_active_critical_incomplete">
+            <field name="name">Actiu no complet crític</field>
+            <field name="sequence">80</field>
+            <field name="section_id" ref="gurb_crm_sections"/>
+        </record>
+        <record model="crm.case.stage" id="stage_gurb_reopened">
+            <field name="name">Reobertura</field>
+            <field name="sequence">90</field>
+            <field name="section_id" ref="gurb_crm_sections"/>
+        </record>
+    </data>
+</openerp>
