@@ -35,6 +35,8 @@
         "som_polissa_data.xml",
         "som_polissa_report.xml",
         "wizard/wizard_massive_category_to_polissa_view.xml",
+        "giscedata_cups_view.xml",
+        "wizard/wizard_import_ref_cadastral_from_csv_view.xml",
     ],
     "active": False,
     "installable": True,
