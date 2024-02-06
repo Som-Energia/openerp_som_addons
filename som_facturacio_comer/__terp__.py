@@ -8,7 +8,7 @@
     "version": "0-dev",
     "author": "GISCE",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "base",
         "giscedata_facturacio_comer",
         "giscedata_polissa_category",
@@ -16,7 +16,7 @@
         "som_switching",
         "som_generationkwh",
         "giscedata_repercussio_mecanismo_ajuste_gas",
-        "giscedata_facturacio_impagat_comer"
+        "giscedata_facturacio_impagat_comer",
     ],
     "init_xml": [],
     "demo_xml": [],
@@ -35,5 +35,5 @@
         "giscedata_facturacio_view.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

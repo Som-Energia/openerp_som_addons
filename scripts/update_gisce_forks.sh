@@ -13,4 +13,3 @@ gh repo sync Som-Energia/mongodb_backend -b gisce
 
 # Discontinued forks, our repo is ahead than forked
 #gh repo sync Som-Energia/heman -b master
-

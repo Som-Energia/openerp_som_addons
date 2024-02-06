@@ -26,9 +26,7 @@
         "www_base",
     ],
     "init_xml": [],
-    "demo_xml": [
-        "tests/som_polissa_demo.xml"
-    ],
+    "demo_xml": ["tests/som_polissa_demo.xml"],
     "update_xml": [
         "giscedata_polissa_view.xml",
         "som_polissa_report.xml",
@@ -39,5 +37,5 @@
         "wizard/wizard_massive_category_to_polissa_view.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

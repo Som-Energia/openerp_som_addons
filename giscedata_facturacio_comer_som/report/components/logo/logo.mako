@@ -5,5 +5,5 @@
         <img src="${addons_path}/giscedata_facturacio_comer_som/report/components/logo/${logo.logo_agreement_partner}" width="95px"/>
     % else:
         <img src="${addons_path}/giscedata_facturacio_comer_som/report/components/logo/${logo.logo}" width="125px"/>
-    % endif 
+    % endif
 </div>
