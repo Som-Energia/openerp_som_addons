@@ -1332,6 +1332,10 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         def get_tax_type(l):
             if l.tax_id.description == 'IESE_RD_17_2021':
                 return '0.5percent'
+            elif l.tax_id.description == 'IESE_RDL_8_2023_25':
+                return '2.5percent'
+            elif l.tax_id.description == 'IESE_RDL_8_2023_38':
+                return '3.8percent'
             elif l.tax_id.description == 'IESE_99.2_1':
                 return '1euroMWh'
             elif l.tax_id.description == 'IESE_99.2_0.5':
@@ -1444,6 +1448,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     'base': l.base,
                     'amount': l.amount,
                     'disclaimer_21_to_5': l.name == 'IVA 5%',
+                    'disclaimer_21_to_10': l.name == 'IVA 10%',
                 })
             if 'IGIC' in l.name:
                 igic_lines.append({

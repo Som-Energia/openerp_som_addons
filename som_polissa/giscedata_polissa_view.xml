@@ -261,10 +261,14 @@
 			<field name="inherit_id" ref="giscedata_polissa.view_polisses_tree" />
             <field name="type">tree</field>
             <field name="arch" type="xml">
+                <field name="cups" position="after">
+                    <field name="autoconsumo"/>
+                </field>
                 <field name="potencia_generacio" position="after">
                     <field name="bateria_activa"/>
                     <field name="data_activacio_bateria"/>
                     <field name="data_baixa_bateria"/>
+                    <field name="cups_np"/>
                 </field>
             </field>
         </record>

@@ -31,6 +31,7 @@
         "data/res_config_data.xml",
         "security/ir.model.access.csv",
         "wizard/wizard_massive_k_change.xml",
+        "wizard/wizard_change_to_indexada_multi.xml",
     ],
     "active": False,
     "installable": True
