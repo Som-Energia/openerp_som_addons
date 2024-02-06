@@ -6,6 +6,7 @@
     "author": "SomEnergia",
     "category": "SomEnergia",
     "depends": [
+        "crm_configuration",
         "giscedata_polissa",
         "giscedata_telemesures_base",
     ],
@@ -13,6 +14,7 @@
     "demo_xml": [
     ],
     "update_xml": [
+        "som_gurb_data.xml",
         "som_gurb_cups_view.xml",
         "som_gurb_view.xml",
     ],

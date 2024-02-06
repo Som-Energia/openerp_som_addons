@@ -5,6 +5,13 @@ import logging
 
 logger = logging.getLogger("openerp.{}".format(__name__))
 
+_GURB_STATES = [
+    ("draft", "Esborrany"),
+    ("pending", "Pendent"),
+    ("active", "Actiu"),
+    ("modification", "Modificació"),
+]
+
 
 class SomGurb(osv.osv):
     _name = "som.gurb"
@@ -67,6 +74,20 @@ class SomGurb(osv.osv):
                 res[gurb_vals["id"]] = ""
         return res
 
+    def _get_grub_initial_stage(self, cursor, uid, context=None):
+        if context is None:
+            context = {}
+        ir_model_obj = self.pool.get("ir.model.data")
+
+        stage_id = ir_model_obj.get_object_reference(
+            cursor, uid, "som_gurb", "stage_gurb_draft"
+        )
+
+        if stage_id:
+            return stage_id[1]
+
+        return False
+
     _columns = {
         "name": fields.char("Nom GURB", size=60, required=True),
         "self_consumption_id": fields.many2one("giscedata.autoconsum", "CAU"),
@@ -88,10 +109,12 @@ class SomGurb(osv.osv):
         ),
         "sig_data": fields.char("Dades SIG", size=60, required=True),
         "activation_date": fields.date(u"Data activació GURB", required=True),
-        "gurb_state": fields.selection(
-            [("state1", "Estat 1"), ("state2", "Estat 2"), ],  # TODO: States
-            "Estat GURB",
+        "gurb_state": fields.selection(_GURB_STATES, "Estat GURB", required=True),
+        "gurb_stage": fields.many2one(
+            "crm.case.stage",
+            "Etapes",
             required=True,
+            domain=[("section_id.code", "=", "GURB")],
         ),
         "gurb_cups_id": fields.one2many("som.gurb.cups", "gurb_id", "Betes", readonly=False),
         "joining_fee": fields.float("Tarifa cost adhesió"),  # TODO: New model
@@ -115,7 +138,8 @@ class SomGurb(osv.osv):
     }
     _defaults = {
         "logo": lambda *a: False,
-        "gurb_state": lambda *a: "state1",
+        "gurb_state": lambda *a: "draft",
+        "gurb_stage": _get_grub_initial_stage,
     }
 
     _sql_constraints = [(
