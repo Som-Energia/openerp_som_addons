@@ -75,11 +75,19 @@
                 <xpath expr="//page[@string='Butlletins']" position="replace">
                     <page string="Butlletins" invisible="1"/>
                 </xpath>
-                <xpath expr="//page[@string='Mecanisme ajust gas']" position="replace">
-                    <page string="Mecanisme ajust gas" invisible="1"/>
-                </xpath>
                 <xpath expr="//page[@string='Agregació']" position="replace">
                     <page string="Agregació" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_giscedata_polissa_comer_form_mecanisme_ajust_gas">
+            <field name="name">giscedata.polissa.comer.form</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_repercussio_mecanismo_ajuste_gas.view_giscedata_polissa_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@string='Mecanisme ajust gas']" position="replace">
+                    <page string="Mecanisme ajust gas" invisible="1"/>
                 </xpath>
             </field>
         </record>
