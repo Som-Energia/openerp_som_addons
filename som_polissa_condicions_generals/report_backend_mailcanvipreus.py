@@ -485,6 +485,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
         mode_facturacio = env.polissa_id.mode_facturacio
         tarifa = env.polissa_id.tarifa.name
         potencies = self.getPotenciesPolissa(cursor, uid, env.polissa_id)
+        max_potencia = env.polissa_id.potencia
 
         if 'index' in mode_facturacio:
             if '2.0TD' in tarifa:
@@ -492,7 +493,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
                     data['Indexada20TDCanaries'] = True
                     data['igic'] = self.getIGIC(cursor, uid, env)
                 else:
-                    if int(potencies['P1']) < 10:
+                    if max_potencia < 10:
                         data['Indexada20TDPeninsulaBalearsFins10kw'] = True
                     else:
                         data['Indexada20TDPeninsulaBalearsMesDe10kw'] = True
@@ -503,7 +504,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
                     data['Periodes20TDCanaries'] = True
                     data['igic'] = self.getIGIC(cursor, uid, env)
                 else:
-                    if int(potencies['P1']) < 10:
+                    if max_potencia < 10:
                         data['Periodes20TDPeninsulaFins10kw'] = True
                     else:
                         data['Periodes20TDPeninsulaMesDe10kw'] = True
