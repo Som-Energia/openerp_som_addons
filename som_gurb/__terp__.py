@@ -17,6 +17,7 @@
         "som_gurb_data.xml",
         "som_gurb_cups_view.xml",
         "som_gurb_view.xml",
+        "som_gurb_webview.xml",
     ],
     "active": False,
     "installable": True,
