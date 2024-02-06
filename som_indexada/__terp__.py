@@ -6,7 +6,7 @@
     "version": "0-dev",
     "author": "SomEnergia",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "base",
         "base_extended_som",
         "giscedata_facturacio_indexada_som",
@@ -34,5 +34,5 @@
         "wizard/wizard_change_to_indexada_multi.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

@@ -67,4 +67,3 @@ msgstr ""
 
 msgid "Pots fer el seguiment dels nostres projectes a l'apartat invertir en projectes del  nostre web www.somenergia.coop o bé consultar-nos qualsevol tema referent a inversions al correu electrònic invertir@somenergia.coop"
 msgstr ""
-
