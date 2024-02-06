@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+       <record model="ir.ui.view" id="giscedata_polissa_autoreclama_tree-view">
+            <field name="name">giscedata.polissa.autoreclama.tree</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="type">tree</field>
+            <field name="inherit_id" ref="som_switching.giscedata_polissa_auto_tree"/>
+            <field name="priority" eval="101"/>
+            <field name="arch" type="xml">
+                <field name="data_ultima_lectura_f1" position="after" >
+                    <field name="autoreclama_state" select="2"/>
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_som_autoreclama_state_history_polissa_form">
+            <field name="name">giscedata.polissa.autoreclama.form</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="giscedata_polissa.view_polisses_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="Accions Autoreclama">
+                        <field name="autoreclama_state" select="2"/>
+                        <field name="autoreclama_state_date"/>
+                        <group colspan="4" string="Eines debug" groups="som_autoreclama.group_som_autoreclama_u">
+                            <button string="Executa pas d'autoreclama" type="action" icon="gtk-execute" name="%(action_wizard_som_autoreclama_execute_step)d" context="{'namespace': 'polissa'}"/>
+                            <button string="Selecció manual d'estat" type="action" icon="gtk-convert" name="%(action_wizard_som_autoreclama_set_manual_state)d" context="{'namespace': 'polissa'}"/>
+                        </group>
+                        <group colspan="4" string="Accions d'autoreclama">
+                            <button string="Desactivar autoreclama" type="action" icon="gtk-disconnect" name="%(action_wizard_som_autoreclama_set_disable_state)d" context="{'namespace': 'polissa'}"/>
+                            <button string="Casos ATC generats" type="action" icon="gtk-find" name="%(action_wizard_som_autoreclama_generated_atc)d" context="{'namespace': 'polissa'}"/>
+                        </group>
+                        <field name="autoreclama_history_ids" nolabel="1" colspan="4"/>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

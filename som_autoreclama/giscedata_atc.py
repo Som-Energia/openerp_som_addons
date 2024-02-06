@@ -28,7 +28,7 @@ class GiscedataAtc(osv.osv):
             "state": data["state"],
         }
 
-    # Automatic ATC + R1-029 from existing ATC / Entry poiut
+    # Automatic ATC + R1-029 from existing ATC / Entry point
     def create_ATC_R1_029_from_atc_via_wizard(self, cursor, uid, atc_id, context=None):
         channel_obj = self.pool.get("res.partner.canal")
         canal_id = channel_obj.search(
@@ -77,7 +77,64 @@ class GiscedataAtc(osv.osv):
         }
         return self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
 
+    # Automatic ATC + R1-006 from existing polissa / Entry point
+
+    def create_ATC_R1_006_from_polissa_via_wizard(self, cursor, uid, polissa_id, context=None):
+        subtr_obj = self.pool.get("giscedata.subtipus.reclamacio")
+        subtr_id = subtr_obj.search(cursor, uid, [("name", "=", "006")], context=context)[0]
+
+        # Do not create a 006 if there is an active one yet
+        params = [
+            ("polissa_id", "=", polissa_id),
+            ("state", "in", ["open", "pending"]),
+            ("subtipus_id", "=", subtr_id),
+        ]
+        atc_ids = self.search(cursor, uid, params, context=context)
+        if atc_ids:
+            raise Exception(
+                _(
+                    u"Error en la creació del CAC amb R1 006, ja n'hi ha un en estat obert o pendent amb id {}!!!"  # noqa: E501
+                ).format(",".join([str(atc_id) for atc_id in atc_ids]))
+            )
+
+        channel_obj = self.pool.get("res.partner.canal")
+        canal_id = channel_obj.search(
+            cursor, uid, [("name", "ilike", "intercambi")], context=context
+        )[0]
+
+        imd_obj = self.pool.get("ir.model.data")
+        initial_state_id = imd_obj.get_object_reference(
+            cursor, uid, "som_autoreclama", "correct_state_workflow_atc"
+        )[1]
+
+        section_id = imd_obj.get_object_reference(
+            cursor, uid, "som_switching", "atc_section_factura"
+        )[1]
+
+        new_case_data = {
+            "polissa_id": polissa_id,
+            "descripcio": u"AUTOCAC 006",
+            "canal_id": canal_id,
+            "section_id": section_id,
+            "subtipus_reclamacio_id": subtr_id,
+            "comentaris": u"",
+            "sense_responsable": True,
+            "tanca_al_finalitzar_r1": True,
+            "crear_cas_r1": True,
+            "autoreclama_history_initial_state_id": initial_state_id,
+        }
+
+        tag_obj = self.pool.get("giscedata.atc.tag")
+        tag_ids = tag_obj.search(
+            cursor, uid, [('name', '=', 'AUTOCAC 006')], context=context
+        )
+        if tag_ids:
+            new_case_data['atc_tag_id'] = tag_ids[0]
+
+        return self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
+
     # Automatic ATC + [R1] from dictonary / Entry poiut
+
     def create_general_atc_r1_case_via_wizard(self, cursor, uid, case_data, context=None):
         if not context:
             ctx = {}
@@ -104,6 +161,7 @@ class GiscedataAtc(osv.osv):
             "open_case": True,
             "no_responsible": case_data.get("sense_responsable", False),
             "tancar_cac_al_finalitzar_r1": case_data.get("tanca_al_finalitzar_r1", False),
+            "tag": case_data.get("atc_tag_id", False),
         }
 
         atcw_obj = self.pool.get("wizard.create.atc.from.polissa")
@@ -112,6 +170,9 @@ class GiscedataAtc(osv.osv):
 
         gen_cases = atcw_obj.read(cursor, uid, wiz_id, ["generated_cases"], ctx)[0]
         atc_id = gen_cases["generated_cases"][0]  # gets the new ATC case id
+
+        if case_data["section_id"]:
+            self.write(cursor, uid, atc_id, {"section_id": case_data["section_id"]})
 
         if case_data.get("crear_cas_r1", False):
             open_r1_wiz = atcw_obj.open_r1_wizard(cursor, uid, [wiz_id], ctx)
@@ -122,21 +183,33 @@ class GiscedataAtc(osv.osv):
             generate_r1_wiz = r1atcw_obj.generate_r1(
                 cursor, uid, [r1atcw_id], r1atcw_ctx
             )  # Generates the R1 for the ATC case
+            if type(generate_r1_wiz["context"]) == dict:
+                r1w_ctx = generate_r1_wiz["context"]
+            else:
+                r1w_ctx = eval(generate_r1_wiz["context"])
 
-            r1w_ctx = eval(generate_r1_wiz["context"])
-            r1w_obj = self.pool.get(generate_r1_wiz["res_model"])  # "wizard.create.r1"
-            r1w_id = r1w_obj.create(cursor, uid, {}, r1w_ctx)
-            subtype_r1_wiz = r1w_obj.action_subtype_fields_view(
-                cursor, uid, [r1w_id], r1w_ctx
-            )  # obtain subtype wizard R1
+            if generate_r1_wiz["res_model"] == 'wizard.create.r1':
+                r1w_obj = self.pool.get(generate_r1_wiz["res_model"])  # "wizard.create.r1"
+                r1w_id = r1w_obj.create(cursor, uid, {}, r1w_ctx)
+                subtype_r1_wiz = r1w_obj.action_subtype_fields_view(
+                    cursor, uid, [r1w_id], r1w_ctx
+                )  # obtain subtype wizard R1
 
-            sr1w_obj = self.pool.get(subtype_r1_wiz["res_model"])  # "wizard.subtype.r1"
-            if "orginal_sw_id" in case_data:
-                r1w_ctx["from_sw_id"] = case_data["orginal_sw_id"]
-            sr1w_id = sr1w_obj.create(cursor, uid, {}, r1w_ctx)
-            sr1w_obj.action_create_r1_case(
-                cursor, uid, [sr1w_id], r1w_ctx
-            )  # create subtype R1 for example:029  # USE OLD CONTEXT!
+                sr1w_obj = self.pool.get(subtype_r1_wiz["res_model"])  # "wizard.subtype.r1"
+                if "orginal_sw_id" in case_data:
+                    r1w_ctx["from_sw_id"] = case_data["orginal_sw_id"]
+                sr1w_id = sr1w_obj.create(cursor, uid, {}, r1w_ctx)
+                sr1w_obj.action_create_r1_case(
+                    cursor, uid, [sr1w_id], r1w_ctx
+                )  # create subtype R1 for example:029  # USE OLD CONTEXT!
+            elif generate_r1_wiz["res_model"] == 'wizard.r101.from.contract':
+                r1w_obj = self.pool.get(generate_r1_wiz["res_model"])  # "wizard.r101.from.contract"
+                r1w_id = r1w_obj.create(cursor, uid, {}, r1w_ctx)
+                r1w_obj.action_create_atr_case(
+                    cursor, uid, [r1w_id], r1w_ctx
+                )
+            else:
+                raise Exception(_("Error en la creació del R1, aquest cas no està suportat"))
 
         return atc_id
 

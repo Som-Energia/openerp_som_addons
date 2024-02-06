@@ -23,12 +23,12 @@
                         <field name="autoreclama_state"/>
                         <field name="autoreclama_state_date"/>
                         <group colspan="4" string="Eines debug" groups="som_autoreclama.group_som_autoreclama_u">
-                            <button string="Executa pas d'autoreclama" type="action" icon="gtk-execute" name="%(action_wizard_som_autoreclama_execute_step)d"/>
-                            <button string="Selecció manual d'estat" type="action" icon="gtk-convert" name="%(action_wizard_som_autoreclama_set_manual_state)d"/>
+                            <button string="Executa pas d'autoreclama" type="action" icon="gtk-execute" name="%(action_wizard_som_autoreclama_execute_step)d" context="{'namespace': 'atc'}"/>
+                            <button string="Selecció manual d'estat" type="action" icon="gtk-convert" name="%(action_wizard_som_autoreclama_set_manual_state)d" context="{'namespace': 'atc'}"/>
                         </group>
                         <group colspan="4" string="Accions d'autoreclama">
-                            <button string="Desactivar autoreclama" type="action" icon="gtk-disconnect" name="%(action_wizard_som_autoreclama_set_disable_state)d"/>
-                            <button string="Casos ATC generats" type="action" icon="gtk-find" name="%(action_wizard_som_autoreclama_generated_atc)d"/>
+                            <button string="Desactivar autoreclama" type="action" icon="gtk-disconnect" name="%(action_wizard_som_autoreclama_set_disable_state)d" context="{'namespace': 'atc'}"/>
+                            <button string="Casos ATC generats" type="action" icon="gtk-find" name="%(action_wizard_som_autoreclama_generated_atc)d"  context="{'namespace': 'atc'}"/>
                         </group>
                         <field name="autoreclama_history_ids" nolabel="1" colspan="4"/>
                     </page>

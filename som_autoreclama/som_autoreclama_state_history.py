@@ -11,18 +11,12 @@ class SomAutoreclamaStateHistory(osv.osv):
     def get_this_model(self, cursor, uid, context=None):
         return self.pool.get("som.autoreclama.state.history.{}".format(self._namespace))
 
-
-SomAutoreclamaStateHistory()
-
-
-class SomAutoreclamaStateHistoryAtc(SomAutoreclamaStateHistory):
-
-    _name = "som.autoreclama.state.history.atc"
-    _namespace = "atc"
-
     def historize(
-        self, cursor, uid, atc_id, next_state_id, current_date, generated_atc_id, context=None
+        self, cursor, uid, item_id, next_state_id, current_date, generated_atc_id, context=None
     ):
+
+        item_name_id = self._namespace + '_id'
+
         if not current_date:
             current_date = date.today().strftime("%Y-%m-%d")
 
@@ -30,7 +24,7 @@ class SomAutoreclamaStateHistoryAtc(SomAutoreclamaStateHistory):
             cursor,
             uid,
             [
-                ("atc_id", "=", atc_id),
+                (item_name_id, "=", item_id),
                 ("end_date", "=", False),
             ],
             context=context,
@@ -39,7 +33,7 @@ class SomAutoreclamaStateHistoryAtc(SomAutoreclamaStateHistory):
             self.write(cursor, uid, h_ids, {"end_date": current_date}, context=context)
 
         new_atc = {
-            "atc_id": atc_id,
+            item_name_id: item_id,
             "state_id": next_state_id,
             "change_date": current_date,
             "end_date": False,
@@ -48,6 +42,15 @@ class SomAutoreclamaStateHistoryAtc(SomAutoreclamaStateHistory):
             new_atc["generated_atc_id"] = generated_atc_id
 
         return self.create(cursor, uid, new_atc, context=context)
+
+
+SomAutoreclamaStateHistory()
+
+
+class SomAutoreclamaStateHistoryAtc(SomAutoreclamaStateHistory):
+
+    _name = "som.autoreclama.state.history.atc"
+    _namespace = "atc"
 
     _columns = {
         "state_id": fields.many2one("som.autoreclama.state", _(u"State"), required=False),
@@ -62,3 +65,28 @@ class SomAutoreclamaStateHistoryAtc(SomAutoreclamaStateHistory):
 
 
 SomAutoreclamaStateHistoryAtc()
+
+
+class SomAutoreclamaStateHistoryPolissa(SomAutoreclamaStateHistory):
+
+    _name = "som.autoreclama.state.history.polissa"
+    _namespace = "polissa"
+
+    _columns = {
+        "state_id": fields.many2one("som.autoreclama.state", _(u"State"), required=False),
+        "change_date": fields.date(_(u"Change Date"), select=True, readonly=True),
+        "end_date": fields.date(_(u"End Date"), select=True, readonly=True),
+        "polissa_id": fields.many2one(
+            "giscedata.polissa",
+            _(u"Polissa"),
+            readonly=True,
+            ondelete="set null",
+        ),
+        "generated_atc_id": fields.many2one(
+            "giscedata.atc", _(u"Cas ATC generat"), readonly=True, ondelete="set null"
+        ),
+    }
+    _order = "end_date desc, id desc"
+
+
+SomAutoreclamaStateHistoryPolissa()

@@ -3,6 +3,7 @@ from osv import osv, fields
 from enerdata.calendars import REECalendar
 from datetime import datetime
 
+
 class SomCrawlersHoliday(osv.osv):
 
     _name = "som.crawlers.holiday"
@@ -11,7 +12,7 @@ class SomCrawlersHoliday(osv.osv):
     def is_working_day(self, cursor, uid, date):
         if isinstance(date, datetime):
             date = date.strftime("%Y-%m-%d")
-        sch_obj = self.pool.get("som.crawlers.holiday")
+        self.pool.get("som.crawlers.holiday")
         ree_calendar = REECalendar()
 
         return (

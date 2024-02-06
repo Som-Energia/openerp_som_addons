@@ -28,9 +28,7 @@
         "giscedata_repercussio_mecanismo_ajuste_gas",
     ],
     "init_xml": [],
-    "demo_xml": [
-        "tests/som_polissa_demo.xml"
-    ],
+    "demo_xml": ["tests/som_polissa_demo.xml"],
     "update_xml": [
         "giscedata_polissa_view.xml",
         "som_polissa_report.xml",
@@ -39,7 +37,9 @@
         "som_polissa_data.xml",
         "som_polissa_report.xml",
         "wizard/wizard_massive_category_to_polissa_view.xml",
+        "giscedata_cups_view.xml",
+        "wizard/wizard_import_ref_cadastral_from_csv_view.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

@@ -18,7 +18,6 @@
             <field name="name">www_interval_venciment</field>
             <field name="value">10</field>
         </record>
-
         <record model="res.config" id="cobraments_ps_correcte">
             <field name="name">cobraments_ps_correcte</field>
             <field name="value">[]</field>
@@ -34,6 +33,5 @@
             <field name="value">[]</field>
             <field name="description">Estats pendents no pagables per mostrar "EN PROCES" a la OV. Ex: [3,12,33]</field>
         </record>
-
     </data>
 </openerp>
