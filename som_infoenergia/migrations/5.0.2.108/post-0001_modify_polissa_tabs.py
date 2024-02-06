@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-from oopgrade.oopgrade import load_data_records
+from oopgrade.oopgrade import load_data
 
 
 def up(cursor, installed_version):
@@ -10,7 +10,7 @@ def up(cursor, installed_version):
     logger = logging.getLogger('openerp.migration')
     logger.info("Creating pooler")
 
-    ##UPATAR UN XML SENCER##
+    # UPATAR UN XML SENCER##
     logger.info("Updating XML giscedata_polissa_view.xml")
     load_data(
         cursor, 'som_infoenergia', 'giscedata_polissa_view.xml', idref=None,

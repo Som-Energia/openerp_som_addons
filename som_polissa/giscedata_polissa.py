@@ -935,7 +935,10 @@ class GiscedataPolissa(osv.osv):
             for hist_auto_id in hist_autos_ids:
                 hist_auto = hist_obj.browse(cursor, uid, hist_auto_id)
                 pol_data_baixa = pol.data_baixa if pol.data_baixa else '9999-01-01'
-                hist_auto_data_final = hist_auto.data_final if hist_auto.data_final else '9999-01-01'
+                if hist_auto.data_final:
+                    hist_auto_data_final = hist_auto.data_final
+                else:
+                    hist_auto.data_final = '9999-01-01'
                 any_auto = (
                     hist_auto.data_inici > pol.data_alta
                     and hist_auto.data_inici < pol_data_baixa) or (
