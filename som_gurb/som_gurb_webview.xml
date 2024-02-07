@@ -67,7 +67,7 @@
                                 <field name="assigned_betas_kw" colspan="4"/>
                                 <field name="available_betas_percentage" colspan="4"/>
                             </group>
-                            <field name="gurb_cups_id" nolabel="1" colspan="4"/>
+                            <field name="gurb_cups_ids" nolabel="1" colspan="4"/>
                         </page>
                         <page string="Observacions" icon="edit">
                             <separator string="Observacions sobre el GURB" colspan="4" icon="edit" />

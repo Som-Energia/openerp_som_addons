@@ -123,13 +123,13 @@ class SomGurb(osv.osv):
         "sig_data": fields.char("Dades SIG", size=60, required=True),
         "activation_date": fields.date("Data activació GURB", required=True),
         "gurb_state": fields.selection(_GURB_STATES, "Estat GURB", required=True),
-        "gurb_stage": fields.many2one(
+        "gurb_stage_id": fields.many2one(
             "crm.case.stage",
-            "Etapes",
+            "Etapa",
             required=True,
             domain=[("section_id.code", "=", "GURB")],
         ),
-        "gurb_cups_id": fields.one2many("som.gurb.cups", "gurb_id", "Betes", readonly=False),
+        "gurb_cups_ids": fields.one2many("som.gurb.cups", "gurb_id", "Betes", readonly=False),
         "joining_fee": fields.float("Tarifa cost adhesió"),  # TODO: New model
         "service_fee": fields.float("Tarifa quota servei"),  # TODO: New model
         "max_power": fields.float("Topall max. per contracte (kW)"),
@@ -180,7 +180,7 @@ class SomGurb(osv.osv):
     _defaults = {
         "logo": lambda *a: False,
         "gurb_state": lambda *a: "draft",
-        "gurb_stage": _get_grub_initial_stage,
+        "gurb_stage_id": _get_grub_initial_stage,
     }
 
     _sql_constraints = [(
