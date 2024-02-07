@@ -2,3 +2,4 @@ import wizard
 import payment_order
 import facturacio_extra
 import giscedata_facturacio_validation
+import product_pricelist
