@@ -663,6 +663,8 @@ class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
         par_obj.write(self.cursor, self.uid, par1_id, {"ref": "58264"})
         par_obj.write(self.cursor, self.uid, par2_id, {"ref": "58265"})
 
+        pol_obj = self.get_model("giscedata.polissa")
+        pol_obj.write(self.cursor, self.uid, polissa_id, {"state": 'activa'})
         if data_baixa_from_today:
             data_baixa = today_minus_str(data_baixa_from_today)
 
@@ -671,7 +673,6 @@ class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
             if data_baixa:
                 vals['state'] = 'baixa'
 
-            pol_obj = self.get_model("giscedata.polissa")
             pol_obj.write(self.cursor, self.uid, polissa_id, vals)
 
         return polissa_id

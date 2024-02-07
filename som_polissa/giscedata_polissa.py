@@ -935,7 +935,10 @@ class GiscedataPolissa(osv.osv):
             for hist_auto_id in hist_autos_ids:
                 hist_auto = hist_obj.browse(cursor, uid, hist_auto_id)
                 pol_data_baixa = pol.data_baixa if pol.data_baixa else '9999-01-01'
-                hist_auto_data_final = hist_auto.data_final if hist_auto.data_final else '9999-01-01'
+                if hist_auto.data_final:
+                    hist_auto_data_final = hist_auto.data_final
+                else:
+                    hist_auto.data_final = '9999-01-01'
                 any_auto = (
                     hist_auto.data_inici > pol.data_alta
                     and hist_auto.data_inici < pol_data_baixa) or (
@@ -1044,19 +1047,10 @@ class GiscedataPolissa(osv.osv):
             selection=TABLA_129,
             string="Tipus instal.lació",
         ),
-        'esquema_mesura': fields.selection(TABLA_130, 'Esquema mesura'),
-        'ssaa': fields.function(_get_ssaa, fnct_search=_ff_search_ssaa, method=True, string=u"SSAA", type="boolean"),
-        'cups_np': fields.function(_get_provincia_cups, fnct_search=_ff_search_cups_np, method=True, type="char", string='Provincia (CUPS)',
-            size=24),
-        'tipus_cups': fields.function(_get_tipus_cups, fnct_search=_ff_search_tipus_cups, method=True, selection=TABLA_131, string='Tipus CUPS',
-            readonly=True, type="selection"),
-        'bateria_virtual': fields.function(_get_bateria_virtual, fnct_search=_ff_search_bateria_virtual, method=True, type="char", string='Codi BV',
-            size=24),
-        'tipus_installacio': fields.function(_get_tipus_installacio, fnct_search=_ff_search_tipus_installacio, method=True, type="selection",selection=TABLA_129, string='Tipus instal.lació',
-                                           ),
-        'historic_autoconsum': fields.function(_ff_historic_autoconsum, method=True,
-                                                type='boolean', string='Té o ha tingut autoconsum',
-                                                readonly=True),
+        'historic_autoconsum': fields.function(
+            _ff_historic_autoconsum, method=True,
+            type='boolean', string='Té o ha tingut autoconsum',
+            readonly=True),
     }
 
 

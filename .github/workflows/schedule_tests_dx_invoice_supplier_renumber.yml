@@ -2,6 +2,7 @@
 
 name: dx_invoice_supplier_renumber
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 0 * * 1'
 jobs:

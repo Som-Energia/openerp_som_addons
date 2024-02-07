@@ -23,8 +23,11 @@ class GiscedataPolissa(osv.osv):
         else:
             last_date = data['data_alta']
 
-        last_date_dt = datetime.strptime(last_date, "%Y-%m-%d")
-        days_since_last_f1 = (datetime.today() - last_date_dt).days
+        if last_date and data['state'] in ['activa', 'baixa']:
+            last_date_dt = datetime.strptime(last_date, "%Y-%m-%d")
+            days_since_last_f1 = (datetime.today() - last_date_dt).days
+        else:
+            days_since_last_f1 = 0
 
         baixa = data['state'] == 'baixa'
         if data["data_ultima_lectura_f1"] and data["data_baixa"]:
