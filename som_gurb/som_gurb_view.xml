@@ -66,12 +66,12 @@
                     </group>
                     <notebook colspan="4">
                         <page string="Betes" icon="beta">
-                            <separator string="CUPS del GURB" colspan="4"/>
-                            <group colspan="4" string="Autoconsum" icon="solar-panel">
+                            <group colspan="4">
                                 <field name="available_betas_kw" colspan="4"/>
                                 <field name="assigned_betas_kw" colspan="4"/>
                                 <field name="available_betas_percentage" colspan="4"/>
                             </group>
+                            <separator string="CUPS del GURB" colspan="4"/>
                             <field name="gurb_cups_ids" nolabel="1" colspan="4"/>
                         </page>
                         <page string="Observacions" icon="edit">
