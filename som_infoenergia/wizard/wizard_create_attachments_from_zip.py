@@ -16,23 +16,20 @@ class WizardCreateAttachmentsFromZip(osv.osv_memory):
     _columns = {
         "state": fields.selection(STATES, _(u"Estat del wizard de creació d'adjunts des de ZIP")),
         "name": fields.char(_(u"Nom del fitxer"), size=256),
-        "zip_file": fields.binary(
-            _(u"Fitxer ZIP"),
-            required=True
-        ),
+        "zip_file": fields.binary(_(u"Fitxer ZIP"), required=True),
     }
 
     _defaults = {"state": "init"}
 
     def attach_files(self, cursor, uid, ids, context=None):
-        lot_obj = self.pool.get('som.infoenergia.lot.enviament')
-        env_obj = self.pool.get('som.enviament.massiu')
+        lot_obj = self.pool.get("som.infoenergia.lot.enviament")
+        env_obj = self.pool.get("som.enviament.massiu")
         wiz = self.browse(cursor, uid, ids[0], context=context)
-        lot_id = context.get('active_id', 0)
+        lot_id = context.get("active_id", 0)
 
         lot = lot_obj.browse(cursor, uid, lot_id)
         if lot.tipus != "infoenergia":
-            env_ids = env_obj.search(cursor, uid, [('lot_enviament', '=', lot_id)])
+            env_ids = env_obj.search(cursor, uid, [("lot_enviament", "=", lot_id)])
             zip_data = base64.b64decode(wiz.zip_file)
 
             tmp_dir = (
@@ -60,7 +57,7 @@ class WizardCreateAttachmentsFromZip(osv.osv_memory):
                 except Exception:
                     pass
 
-        wiz.write({'state': "finished"})
+        wiz.write({"state": "finished"})
 
 
 WizardCreateAttachmentsFromZip()

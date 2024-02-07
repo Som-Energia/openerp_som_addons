@@ -597,4 +597,3 @@ def get_new_tariff(polissa):
     %endif
 </body>
 </html>
-

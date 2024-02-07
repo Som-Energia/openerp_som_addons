@@ -15,7 +15,7 @@
                     </group>
 
                     <group colspan="4" attrs="{'invisible': [('state', '!=', 'end')]}">
-                        <button icon="gtk-close" special="cancel" 
+                        <button icon="gtk-close" special="cancel"
                             string="Tancar" type="object" />
                     </group>
 		        </form>

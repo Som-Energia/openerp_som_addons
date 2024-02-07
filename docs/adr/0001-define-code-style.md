@@ -87,7 +87,8 @@ Al fer un _commit_ ens formatarà automàticament el codi dels fitxers modificat
 
 1. Anem a la carpeta del repositori
 2. Executem `pre-commit run -a` (tots els fitxers del repositori) o `pre-commit run --files` (fitxers especificats)
+3. Si volem que executi pre-commit per tots els fitxers modificats en un repo local, podem executar `pre-commit run --files $(git diff --cached --name-only)`. Aquest mètode només arreglarà fitxers modificats. Si se n'han afegit, s'hauran d'afegir previament amb `git add`.
 
 ## Conseqüències
 
-El codi del repositori quedaria més net, més llegible i més uniforme. S'ha de fer un format de tot el repositori abans de començar a aplicar-ho.
+El codi del repositori quedaria més net, més llegible i més uniforme. S'ha fet una [PR](https://github.com/Som-Energia/openerp_som_addons/pull/527) per formatar tot el repositori.

@@ -6,7 +6,7 @@ def up(cursor, installed_version):
     if not installed_version:
         return
 
-    xml_content = '''<?xml version="1.0" encoding="UTF-8"?>
+    xml_content = """<?xml version="1.0" encoding="UTF-8"?>
     <openerp>
         <data noupdate="1">
             <record model="giscedata.polissa.category"
@@ -17,18 +17,22 @@ def up(cursor, installed_version):
             </record>
         </data>
     </openerp>
-    '''
+    """
 
-    logger = logging.getLogger('openerp.migration')
-    logger.info('Migrating data from giscedata_polissa_category')
+    logger = logging.getLogger("openerp.migration")
+    logger.info("Migrating data from giscedata_polissa_category")
 
-    dm = DataMigration(xml_content, cursor, 'som_polissa_soci', search_params={
-        'giscedata.polissa.category': ['name']
-    })
+    dm = DataMigration(
+        xml_content,
+        cursor,
+        "som_polissa_soci",
+        search_params={"giscedata.polissa.category": ["name"]},
+    )
     dm.migrate()
 
 
 def down(cursor, installed_version):
     pass
+
 
 migrate = up

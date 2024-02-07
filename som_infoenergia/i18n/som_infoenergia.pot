@@ -2220,4 +2220,3 @@ msgid ""
 "Aquesta oferta té una vigència de 15 dies naturals a partir de la data "
 "d’oferta."
 msgstr ""
-
