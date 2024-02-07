@@ -121,7 +121,7 @@ class SomGurb(osv.osv):
             multi="address",
         ),
         "sig_data": fields.char("Dades SIG", size=60, required=True),
-        "activation_date": fields.date("Data activació GURB", required=True),
+        "activation_date": fields.date("Data activació GURB"),
         "gurb_state": fields.selection(_GURB_STATES, "Estat GURB", required=True),
         "gurb_stage_id": fields.many2one(
             "crm.case.stage",

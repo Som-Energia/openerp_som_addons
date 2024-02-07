@@ -12,6 +12,8 @@
     ],
     "init_xml": [],
     "demo_xml": [
+        "demo/som_gurb_demo.xml",
+        "demo/som_gurb_cups_demo.xml",
     ],
     "update_xml": [
         "som_gurb_data.xml",
