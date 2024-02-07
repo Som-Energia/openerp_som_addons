@@ -7,11 +7,11 @@
         <!-- Llistat per defecte dels GURBs-->
         <record model="ir.ui.view" id="view_gurbs_tree">
             <field name="name">som.gurbs.tree</field>
-            <field name="version">1</field>
+            <field name="version" eval="1" />
             <field name="model">som.gurb</field>
             <field name="type">tree</field>
             <field name="arch" type="xml">
-                <tree string="GURBs">
+                <tree string="GURBs" status="green:gurb_state=='active'; red:gurb_state=='modification'; orange:gurb_state in ['pending', 'draft']">
                     <field name="name" />
                     <field name="code" />
                     <field name="gurb_state" />
@@ -19,20 +19,24 @@
                     <field name="self_consumption_id" />
                     <field name="generation_power" />
                     <field name="has_compensation" />
-                    <field name="has_compensation" />
                 </tree>
             </field>
         </record>
         <!-- Formulari per defecte dels GURBs -->
         <record model="ir.ui.view" id="view_gurbs_form">
             <field name="name">som.gurb.form</field>
-            <field name="version">1</field>
+            <field name="version" eval="1" />
             <field name="model">som.gurb</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="GURB">
-                    <!-- TODO: Progress bar -->
-                    <group col="6" colspan="4" string="General">
+                    <group colspan="2" string="Betes assignades">
+                        <field nolabel="1" name="assigned_betas_percentage" widget="progressbar" />
+                    </group>
+                    <group colspan="2" string="Estat" icon="status-change">
+                        <field nolabel="1" name="gurb_state" select="1" readonly="1" />
+                    </group>
+                    <group col="6" colspan="4" string="General" icon="building-cottage">
                         <field name="name" select="1" />
                         <field name="code" select="1" />
                         <field name="roof_owner_id" />
@@ -42,18 +46,17 @@
                         <field name="sig_data" />
                         <field name="logo" select="2" />
                     </group>
-                    <group col="6" colspan="4" string="Característiques">
+                    <group col="6" colspan="4" string="Característiques" icon="tool">
                         <field name="activation_date" select="1" />
                         <field name="first_opening_days" />
                         <field name="reopening_days" />
-                        <field name="gurb_state" select="1" />
                         <field name="critical_incomplete_state" />
                         <field name="joining_fee" select="2" />
                         <field name="service_fee" select="2" />
                         <field name="max_power" />
                         <field name="mix_power" />
                     </group>
-                    <group col="6" colspan="4" string="Autoconsum">
+                    <group col="6" colspan="4" string="Autoconsum" icon="solar-panel">
                         <field name="self_consumption_id" select="1" />
                         <field name="state" />
                         <field name="generation_power" select="1" />
@@ -62,23 +65,32 @@
                         <field name="data_baixa" />
                     </group>
                     <notebook colspan="4">
-                        <page string="Betes">
-                            <!-- TODO -->
+                        <page string="Betes" icon="beta">
                             <separator string="CUPS del GURB" colspan="4"/>
-                            <field name="gurb_cups_id" nolabel="1" colspan="4"/>
+                            <group colspan="4" string="Autoconsum" icon="solar-panel">
+                                <field name="available_betas_kw" colspan="4"/>
+                                <field name="assigned_betas_kw" colspan="4"/>
+                                <field name="available_betas_percentage" colspan="4"/>
+                            </group>
+                            <field name="gurb_cups_ids" nolabel="1" colspan="4"/>
                         </page>
-                        <page string="Observacions">
-                            <separator string="Observacions sobre el GURB" colspan="4" />
+                        <page string="Observacions" icon="edit">
+                            <separator string="Observacions sobre el GURB" colspan="4" icon="edit" />
                             <field name="notes" colspan="4" height="600" nolabel="1" />
                         </page>
-                        <page string="Històric">
+                        <page string="Històric" icon="history">
                             <separator string="Canvis realitzats al GURB" colspan="4" />
-                            <field name="history_box" colspan="4" height="600" nolabel="1" />
+                            <field name="history_box" colspan="4" height="600" nolabel="1"/>
                         </page>
-                        <page string="Altres">
+                        <page string="Altres" icon="mist">
                             <field name="meter_id" />
                         </page>
                     </notebook>
+                    <group col="6" colspan="4" string="Etapes" icon="123">
+                        <field name="gurb_stage_id" select="1"  colspan="3" />
+                        <button name="action_previous_stage" colspan="1" icon="gtk-go-back" type="object" danger="1" string="Etapa anterior" />
+                        <button name="action_next_stage" colspan="1" icon="gtk-go-forward" type="object" primary="1" string="Etapa següent" />
+                    </group>
                 </form>
             </field>
         </record>
