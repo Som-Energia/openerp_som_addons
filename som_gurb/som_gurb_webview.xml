@@ -83,10 +83,10 @@
                     </notebook>
                     <group col="6" colspan="4" string="Etapes" icon="123">
                         <field name="gurb_stage" select="1" />
-                        <!-- <buttonGroup name="gurb_button_stages" default="next_stage"> -->
-                        <button name="action_previous_stage" icon="arrow-left" type="object" string="Etapa anterior" />
-                        <button name="action_next_stage" icon="arrow-right" type="object" string="Etapa següent" />
-                        <!-- </buttonGroup> -->
+                        <buttonGroup name="gurb_button_stages" default="action_next_stage">
+                            <button name="action_next_stage" icon="arrow-right" type="object" string="Etapa següent" />
+                            <button name="action_previous_stage" icon="arrow-left" type="object" string="Etapa anterior" danger="1" />
+                        </buttonGroup>
                     </group>
                 </form>
             </field>
