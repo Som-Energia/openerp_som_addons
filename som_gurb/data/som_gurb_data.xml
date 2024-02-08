@@ -55,5 +55,16 @@
             <field name="sequence">90</field>
             <field name="section_id" ref="gurb_crm_sections"/>
         </record>
+        <record id="seq_gurb_type" model="ir.sequence.type">
+            <field name="name">Seqüència de GURB</field>
+            <field name="code">som.gurb</field>
+        </record>
+        <record id="seq_gurb" model="ir.sequence">
+            <field name="name">GURB</field>
+            <field name="code">som.gurb</field>
+            <field name="prefix">GURB</field>
+            <field name="padding">4</field>
+            <field name="number_increment">1</field>
+        </record>
     </data>
 </openerp>

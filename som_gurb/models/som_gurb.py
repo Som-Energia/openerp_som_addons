@@ -19,6 +19,14 @@ class SomGurb(osv.osv):
     _inherits = {"giscedata.autoconsum": "self_consumption_id"}
     _description = _("Grup generació urbana")
 
+    def create(self, cursor, uid, vals, context=None):
+        res_id = super(SomGurb, self).create(cursor, uid, vals, context=context)
+
+        ir_seq = self.pool.get("ir.sequence")
+        code = ir_seq.get_next(cursor, uid, "som.gurb")
+
+        self.write(cursor, uid, res_id, {"code": code}, context=context)
+
     def _ff_get_generation_power(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
             context = {}
@@ -160,7 +168,7 @@ class SomGurb(osv.osv):
     _columns = {
         "name": fields.char("Nom GURB", size=60, required=True),
         "self_consumption_id": fields.many2one("giscedata.autoconsum", "CAU"),
-        "code": fields.char("Codi GURB", size=60, required=True),
+        "code": fields.char("Codi GURB", size=60, readonly=True),
         "roof_owner_id": fields.many2one("res.partner", "Propietari teulada", required=True),
         "logo": fields.boolean("Logo"),
         "address_id": fields.many2one("res.partner.address", "Adreça", required=True),
@@ -180,7 +188,7 @@ class SomGurb(osv.osv):
         ),
         "sig_data": fields.char("Dades SIG", size=60, required=True),
         "activation_date": fields.date("Data activació GURB"),
-        "gurb_state": fields.selection(_GURB_STATES, "Estat GURB", required=True),
+        "gurb_state": fields.selection(_GURB_STATES, "Estat GURB", readonly=True),
         "gurb_stage_id": fields.many2one(
             "crm.case.stage",
             "Etapa",
