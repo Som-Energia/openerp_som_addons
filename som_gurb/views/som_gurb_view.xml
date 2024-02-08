@@ -88,7 +88,7 @@
                     </notebook>
                     <group col="6" colspan="4" string="Etapes" icon="123">
                         <field name="gurb_stage_id" select="1"  colspan="3" />
-                        <button name="action_previous_stage" colspan="1" icon="gtk-go-back" type="object" danger="1" string="Etapa anterior" />
+                        <button name="action_previous_stage" colspan="1" icon="gtk-go-back" type="object" danger="1" string="Etapa anterior" attrs="{'invisible': [('gurb_state', '==','draft')]}" />
                         <button name="action_next_stage" colspan="1" icon="gtk-go-forward" type="object" primary="1" string="Etapa següent" />
                     </group>
                 </form>

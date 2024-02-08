@@ -1,2 +1,1 @@
-import som_gurb
-import som_gurb_cups
+from . import models

@@ -7,6 +7,7 @@ logger = logging.getLogger("openerp.{}".format(__name__))
 
 _GURB_STATES = [
     ("draft", "Esborrany"),
+    ("open", "Obert"),
     ("pending", "Pendent"),
     ("active", "Actiu"),
     ("modification", "Modificació"),
@@ -73,12 +74,12 @@ class SomGurb(osv.osv):
             gurb_cups_data = gurb_cups_obj.read(cursor, uid, gurb_cups_ids, ["beta_kw"])
             gen_power = self.read(cursor, uid, gurb_id, ["generation_power"])["generation_power"]
 
-            assgiend_betas_kw = sum(gurb_cups['beta_kw'] for gurb_cups in gurb_cups_data)
-            assigned_betas_percentage = (assgiend_betas_kw * 100 / gen_power) if gen_power else 0
+            assigned_betas_kw = sum(gurb_cups["beta_kw"] for gurb_cups in gurb_cups_data)
+            assigned_betas_percentage = (assigned_betas_kw * 100 / gen_power) if gen_power else 0
 
             res[gurb_id] = {
-                "assigned_betas_kw": assgiend_betas_kw,
-                "available_betas_kw": gen_power - assgiend_betas_kw,
+                "assigned_betas_kw": assigned_betas_kw,
+                "available_betas_kw": gen_power - assigned_betas_kw,
                 "assigned_betas_percentage": assigned_betas_percentage,
                 "available_betas_percentage": 100 - assigned_betas_percentage,
             }
@@ -98,6 +99,63 @@ class SomGurb(osv.osv):
             return stage_id[1]
 
         return False
+
+    def action_next_stage(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+
+        order = "sequence"
+        operator = ">"
+        self._action_change_stage(cursor, uid, ids, order, operator, context=context)
+
+    def action_previous_stage(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+
+        order = "sequence desc"
+        operator = "<"
+        self._action_change_stage(cursor, uid, ids, order, operator, context=context)
+
+    def validate_stage(self, cursor, uid, ids, current_stage_id, stage_id, context=None):
+        pass
+
+    def _action_change_stage(self, cursor, uid, ids, order, operator, context=None):
+        if context is None:
+            context = {}
+
+        stage_obj = self.pool.get("crm.case.stage")
+        ir_model_obj = self.pool.get("ir.model.data")
+
+        section_id = ir_model_obj.get_object_reference(
+            cursor, uid, "som_gurb", "gurb_crm_sections"
+        )[1]
+
+        current_stage_id = self.read(cursor, uid, ids[0], ["gurb_stage_id"])["gurb_stage_id"][0]
+        stage_sequence = stage_obj.read(cursor, uid, current_stage_id, ["sequence"])["sequence"]
+
+        last_stage_id = ir_model_obj.get_object_reference(
+            cursor, uid, "som_gurb", "stage_gurb_reopened"
+        )[1]
+
+        first_stage_id = ir_model_obj.get_object_reference(
+            cursor, uid, "som_gurb", "stage_gurb_draft"
+        )[1]
+
+        if current_stage_id == first_stage_id and order == "sequence desc":
+            return False
+        elif current_stage_id != last_stage_id or order == "sequence desc":
+            search_params = [
+                ("sequence", operator, stage_sequence),
+                ("section_id", "=", section_id)
+            ]
+
+            stage_id = stage_obj.search(cursor, uid, search_params, order=order, context=context)[0]
+        else:
+            stage_id = ir_model_obj.get_object_reference(
+                cursor, uid, "som_gurb", "stage_gurb_active"
+            )[1]
+        self.validate_stage(cursor, uid, ids, current_stage_id, stage_id, context=context)
+        self.write(cursor, uid, ids[0], {"gurb_stage_id": stage_id}, context=context)
 
     _columns = {
         "name": fields.char("Nom GURB", size=60, required=True),
