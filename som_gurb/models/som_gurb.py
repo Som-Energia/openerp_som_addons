@@ -13,6 +13,19 @@ _GURB_STATES = [
     ("modification", "Modificació"),
 ]
 
+_STAGE_STATE = {
+    "Esborrany": "draft",
+    "Primera Obertura": "open",
+    "Complet": "pending",
+    "No Complet": "pending",
+    "Pendent de Registre": "pending",
+    "Registrat": "pending",
+    "Actiu": "active",
+    "Actiu no complet": "active",
+    "Actiu no complet critic": "active",
+    "Reobertura": "modification",
+}
+
 
 class SomGurb(osv.osv):
     _name = "som.gurb"
@@ -119,6 +132,16 @@ class SomGurb(osv.osv):
     def validate_stage(self, cursor, uid, ids, current_stage_id, stage_id, context=None):
         pass
 
+    def change_state(self, cursor, uid, ids, stage_id, context=None):
+        if context is None:
+            context = {}
+
+        stage_obj = self.pool.get("crm.case.stage")
+
+        stage_name = stage_obj.read(cursor, uid, stage_id, ['name'])['name']
+        new_gurb_state = _STAGE_STATE[stage_name]
+        self.write(cursor, uid, ids[0], {"gurb_state": new_gurb_state}, context=context)
+
     def _action_change_stage(self, cursor, uid, ids, order, operator, context=None):
         if context is None:
             context = {}
@@ -156,6 +179,7 @@ class SomGurb(osv.osv):
             )[1]
         self.validate_stage(cursor, uid, ids, current_stage_id, stage_id, context=context)
         self.write(cursor, uid, ids[0], {"gurb_stage_id": stage_id}, context=context)
+        self.change_state(cursor, uid, ids, stage_id, context=context)
 
     _columns = {
         "name": fields.char("Nom GURB", size=60, required=True),
