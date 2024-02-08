@@ -33,7 +33,6 @@ from time import sleep
 
 FILE_TYPE = 'liquicomun'
 BIN_PATH = '/home/erp/ConnectionKit/bin'  # /bin folder of the ConnectionKit path
-BIN_PATH = '/home/oriol/ConnectionKit/bin'  # /bin folder of the ConnectionKit path
 
 
 def get_search_day():
