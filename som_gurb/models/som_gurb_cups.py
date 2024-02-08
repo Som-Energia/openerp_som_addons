@@ -50,7 +50,7 @@ class SomGurbCups(osv.osv):
         "active": fields.boolean("Actiu"),
         "start_date": fields.date(u"Data entrada GURB", required=True),
         "end_date": fields.date(u"Data sortida GURB",),
-        "gurb_id": fields.many2one("som.gurb", "GURB", required=True),
+        "gurb_id": fields.many2one("som.gurb", "GURB", required=True, ondelete="cascade"),
         "cups_id": fields.many2one("giscedata.cups.ps", "CUPS", required=True),
         "beta_kw": fields.float(
             "Beta (kW)",

@@ -29,8 +29,17 @@ _STAGE_STATE = {
 
 class SomGurb(osv.osv):
     _name = "som.gurb"
-    _inherits = {"giscedata.autoconsum": "self_consumption_id"}
     _description = _("Grup generació urbana")
+
+    def create(self, cursor, uid, vals, context=None):
+        res_id = super(SomGurb, self).create(cursor, uid, vals, context=context)
+
+        ir_seq = self.pool.get("ir.sequence")
+        code = ir_seq.get_next(cursor, uid, "som.gurb")
+
+        self.write(cursor, uid, res_id, {"code": code}, context=context)
+
+        return res_id
 
     def _ff_get_generation_power(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
@@ -97,6 +106,30 @@ class SomGurb(osv.osv):
                 "available_betas_percentage": 100 - assigned_betas_percentage,
             }
 
+        return res
+
+    def _ff_get_self_consumption_fields(self, cursor, uid, ids, field_name, arg, context=None):
+        if context is None:
+            context = {}
+        auto_obj = self.pool.get("giscedata.autoconsum")
+        res = {}
+        for gurb_vals in self.read(cursor, uid, ids, ["self_consumption_id"]):
+            auto_id = gurb_vals.get("self_consumption_id", False)
+            if auto_id:
+                auto_vals = auto_obj.read(
+                    cursor, uid, auto_id[0], ["state", "data_alta", "data_baixa"]
+                )
+                res[gurb_vals["id"]] = {
+                    "self_consumption_state": auto_vals["state"],
+                    "self_consumption_start_date": auto_vals["data_alta"],
+                    "self_consumption_end_date": auto_vals["data_baixa"],
+                }
+            else:
+                res[gurb_vals["id"]] = {
+                    "self_consumption_state": False,
+                    "self_consumption_start_date": False,
+                    "self_consumption_end_date": False,
+                }
         return res
 
     def _get_grub_initial_stage(self, cursor, uid, context=None):
@@ -184,10 +217,10 @@ class SomGurb(osv.osv):
     _columns = {
         "name": fields.char("Nom GURB", size=60, required=True),
         "self_consumption_id": fields.many2one("giscedata.autoconsum", "CAU"),
-        "code": fields.char("Codi GURB", size=60, required=True),
+        "code": fields.char("Codi GURB", size=60, readonly=True),
         "roof_owner_id": fields.many2one("res.partner", "Propietari teulada", required=True),
         "logo": fields.boolean("Logo"),
-        "address_id": fields.many2one("res.partner.address", "Adreça", required=True),
+        "address_id": fields.many2one("res.partner.address", "Adreça"),
         "province": fields.function(
             _ff_get_address_fields,
             type="char",
@@ -204,7 +237,7 @@ class SomGurb(osv.osv):
         ),
         "sig_data": fields.char("Dades SIG", size=60, required=True),
         "activation_date": fields.date("Data activació GURB"),
-        "gurb_state": fields.selection(_GURB_STATES, "Estat GURB", required=True),
+        "gurb_state": fields.selection(_GURB_STATES, "Estat GURB", readonly=True),
         "gurb_stage_id": fields.many2one(
             "crm.case.stage",
             "Etapa",
@@ -257,6 +290,28 @@ class SomGurb(osv.osv):
             type="float",
             method=True,
             multi="betas",
+        ),
+        "self_consumption_state": fields.function(
+            _ff_get_self_consumption_fields,
+            type="char",
+            size=30,
+            string="Estat",
+            method=True,
+            multi="self_consumption"
+        ),
+        "self_consumption_start_date": fields.function(
+            _ff_get_self_consumption_fields,
+            type="date",
+            string="Data alta",
+            method=True,
+            multi="self_consumption",
+        ),
+        "self_consumption_end_date": fields.function(
+            _ff_get_self_consumption_fields,
+            type="date",
+            string="Data baixa",
+            method=True,
+            multi="self_consumption",
         ),
     }
     _defaults = {
