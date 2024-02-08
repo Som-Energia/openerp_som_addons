@@ -7,26 +7,33 @@ Requirements:
 - Java 11 or above installed
 - eemws-kit-installer-2.0.0.jar (https://bitbucket.org/smree/eemws-core/downloads/)
 
-Friendly tip: Installer create a 'Connection Kit' folder into users home. That space makes me fail
-all the scripts. I suggest you to remove the space 'ConnectionKit' and change all the apparences of
-the path in bin/XXX.sh scripts.
-
-`cd ConnectionKit/bin/
-sed -i 's/Connection Kit/ConnectionKit/g' *`
-
+# How to install eemws
+- Download from bitbucket:
+wget https://bitbucket.org/smree/eemws-core/downloads/eemws-kit-installer-2.0.0.jar
+- Run the installer
+java -jar eemws-kit-installer-2.0.0.jar
+Friendly tip: During the installation, the install will ask you for the Target Path.
+I suggest you to remove the space and put /home/erp/ConnectionKit
+- Copy certificate .p12 file
+- Modify file /home/erp/ConnectionKit/config/config.properties following values:
+```
+WEBSERVICES.URL=https://participa.esios.ree.es/ServicioLQ/ServiceEME
+javax.net.ssl.keyStore=PATH_TO_CERTIFICATE
+javax.net.ssl.keyStorePassword=PASSWORD_OF_CERTIFICATE
+```
 '''
+
 import argparse
 from datetime import datetime, timedelta
 from consolemsg import step, error
-from subprocess import Popen, PIPE, STDOUT
+from subprocess import Popen, PIPE, STDOUT, call
 import re
-import shutil
 import os
-import time
+from time import sleep
 
 FILE_TYPE = 'liquicomun'
 BIN_PATH = '/home/erp/ConnectionKit/bin'  # /bin folder of the ConnectionKit path
-DESTINATION_PATH = '/tmp'  # Place where to save downloade file
+BIN_PATH = '/home/oriol/ConnectionKit/bin'  # /bin folder of the ConnectionKit path
 
 
 def get_search_day():
@@ -39,34 +46,51 @@ def get_search_day():
         return tomorrow.strftime('%d-%m-%Y')
 
 
-def download_files(file_type):
+def download_files(file_type, server, server_port):
     day_of_search = get_search_day()
     step("Listing avaiable files {}...".format(FILE_TYPE))
     output = Popen(
         ['./list.sh', '-startTime', day_of_search, '-intervalType', 'Application'],
         cwd=BIN_PATH, stdout=PIPE, stderr=STDOUT)
     result = []
+    errors = []
     for line in output.stdout:
         if FILE_TYPE in line:
             result.append(line)
+        else:
+            errors.append(line)
     if len(result) == 1:
         code, filename = re.match(r'\s+([0-9]+)\s+([^ ]*)', result[0]).groups()
     elif len(result) == 0:
         error("No files avaiables")
-    elif len(result) == 0:
+        print errors
+        return 0
+    elif len(result) > 1:
         error("To many files to download")
+        print result
+        return 0
 
     step("Downloading {}...".format(filename))
     output = Popen(
         ['./get.sh', '-code', code], cwd=BIN_PATH, stdout=PIPE, stderr=STDOUT)
-    time.sleep(3)
-    shutil.copy('{}/{}'.format(BIN_PATH, filename), '{}/{}'.format(DESTINATION_PATH, filename))
-    if os.path.isfile('{}/{}'.format(BIN_PATH, filename)):
-        os.remove('{}/{}'.format(BIN_PATH, filename))
-    step("File {} copied to {} successfully".format(filename, DESTINATION_PATH))
+
+    file_path = '{}/{}'.format(BIN_PATH, filename)
+    timeout = 10
+    while not os.path.isfile('{}/{}'.format(BIN_PATH, filename)):
+        if not timeout:
+            error("Timeout downloading file {}".format(filename))
+            return 0
+        sleep(5)
+        timeout -= 1
+
+    step("Coping file to the server {}...".format(server))
+    call(["scp", "-P", server_port, file_path, server])
+    os.remove('{}/{}'.format(BIN_PATH, filename))
+    step("File {} copied to {} successfully".format(filename, server))
 
 
 if __name__ == "__main__":
+    step("Start run: {}".format(datetime.today().strftime('%d-%m-%Y %H:%M:%S')))
     parser = argparse.ArgumentParser(description="Download ESIOS files")
     parser.add_argument(
         "--file_type",
@@ -75,6 +99,20 @@ if __name__ == "__main__":
         type=str,
         help="File type (default 'liquicomun')",
     )
+    parser.add_argument(
+        "--destination_server",
+        dest="server",
+        type=str,
+        help="user@server:path destionation",
+    )
+    parser.add_argument(
+        "--server_port",
+        dest="server_port",
+        type=str,
+        help="SSH server port",
+    )
     args = parser.parse_args()
 
-    download_files(args.file_type)
+    download_files(args.file_type, args.server, args.server_port)
+    step("Finsish run: {}".format(datetime.today().strftime('%d-%m-%Y %H:%M:%S')))
+    step("=============================================\n")
