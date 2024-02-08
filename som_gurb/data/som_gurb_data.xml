@@ -46,7 +46,7 @@
             <field name="section_id" ref="gurb_crm_sections"/>
         </record>
         <record model="crm.case.stage" id="stage_gurb_active_critical_incomplete">
-            <field name="name">Actiu no complet crític</field>
+            <field name="name">Actiu no complet critic</field>
             <field name="sequence">80</field>
             <field name="section_id" ref="gurb_crm_sections"/>
         </record>
