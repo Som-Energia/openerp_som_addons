@@ -36,11 +36,16 @@
                     <group colspan="2" string="Estat" icon="status-change">
                         <field nolabel="1" name="gurb_state" select="1" readonly="1" />
                     </group>
+                    <group col="6" colspan="4" string="Etapes" icon="123">
+                        <field name="gurb_stage_id" select="1"  colspan="3" />
+                        <button name="action_previous_stage" colspan="1" icon="gtk-go-back" type="object" danger="1" string="Etapa anterior" attrs="{'invisible': [('gurb_state', '==','draft')]}" />
+                        <button name="action_next_stage" colspan="1" icon="gtk-go-forward" type="object" primary="1" string="Etapa següent" />
+                    </group>
                     <group col="6" colspan="4" string="General" icon="building-cottage">
                         <field name="name" select="1" />
                         <field name="code" select="1" />
                         <field name="roof_owner_id" />
-                        <field name="address_id" />
+                        <field name="address_id" domain="[('partner_id','=', roof_owner_id)]" />
                         <field name="province" select="2" />
                         <field name="zip_code" select="2" />
                         <field name="sig_data" />
@@ -58,11 +63,11 @@
                     </group>
                     <group col="6" colspan="4" string="Autoconsum" icon="solar-panel">
                         <field name="self_consumption_id" select="1" />
-                        <field name="state" />
+                        <field name="self_consumption_state" />
                         <field name="generation_power" select="1" />
                         <field name="has_compensation" select="1" />
-                        <field name="data_alta" />
-                        <field name="data_baixa" />
+                        <field name="self_consumption_start_date" />
+                        <field name="self_consumption_end_date" />
                     </group>
                     <notebook colspan="4">
                         <page string="Betes" icon="beta">
@@ -86,11 +91,6 @@
                             <field name="meter_id" />
                         </page>
                     </notebook>
-                    <group col="6" colspan="4" string="Etapes" icon="123">
-                        <field name="gurb_stage_id" select="1"  colspan="3" />
-                        <button name="action_previous_stage" colspan="1" icon="gtk-go-back" type="object" danger="1" string="Etapa anterior" attrs="{'invisible': [('gurb_state', '==','draft')]}" />
-                        <button name="action_next_stage" colspan="1" icon="gtk-go-forward" type="object" primary="1" string="Etapa següent" />
-                    </group>
                 </form>
             </field>
         </record>
