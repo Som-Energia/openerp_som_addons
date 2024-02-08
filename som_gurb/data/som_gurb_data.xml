@@ -62,8 +62,8 @@
         <record id="seq_gurb" model="ir.sequence">
             <field name="name">GURB</field>
             <field name="code">som.gurb</field>
-            <field name="prefix">GURB</field>
-            <field name="padding">4</field>
+            <field name="prefix">G</field>
+            <field name="padding">3</field>
             <field name="number_increment">1</field>
         </record>
     </data>

@@ -27,6 +27,8 @@ class SomGurb(osv.osv):
 
         self.write(cursor, uid, res_id, {"code": code}, context=context)
 
+        return res_id
+
     def _ff_get_generation_power(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
             context = {}
