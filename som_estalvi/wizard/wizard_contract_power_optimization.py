@@ -446,7 +446,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
         writer = csv.writer(csv_file, quoting=csv.QUOTE_NONNUMERIC)
         writer.writerow(HEADER)
         for optimization in optimizations:
-            if len(optimizations) > 1:
+            if wizard.state == 'multiple':
                 self.get_optimization_required_data(
                     cursor, uid, wizard.id, optimization['polissa_id'], context=context
                 )
