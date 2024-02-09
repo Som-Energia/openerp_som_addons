@@ -1,0 +1,42 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>
+        <record model="product.category" id="categ_product_gurb_demo">
+            <field name="name">GURB Demo Product Category</field>
+        </record>
+        <record model="product.product" id="product_gurb_demo">
+            <field name="name">GURB Demo Product</field>
+            <field name="categ_id" ref="categ_product_gurb_demo"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="standard_price">10</field>
+            <field name="supply_method">buy</field>
+        </record>
+        <record model="product.pricelist" id="pricelist_gurb_demo">
+            <field name="name">GURB Demo Pricelist</field>
+            <field name="type">sale</field>
+            <field name="active">True</field>
+        </record>
+        <record model="product.pricelist.version" id="version_pricelist_gurb_demo">
+            <field name="name">GURB Demo Pricelist Version</field>
+            <field name="active">True</field>
+            <field name="date_start">2023-01-01</field>
+            <field name="date_end" eval="False"/>
+            <field name="pricelist_id" ref="pricelist_gurb_demo"/>
+        </record>
+        <record model="product.pricelist.item" id="item_version_pricelist_gurb_demo">
+            <field name="name">GURB Demo Pricelist Item</field>
+            <field name="price_version_id" ref="version_pricelist_gurb_demo"/>
+            <field name="base" eval="-3"/>
+            <field name="base_price">5</field>
+            <field name="price_surcharge">0.0</field>
+            <field name="sequence">11</field>
+            <field name="product_id" ref="product_gurb_demo"/>
+        </record>
+        <record model="product.pricelist.services" id="product_pricelist_services_gurb_demo">
+            <field name="pricelist_id" ref="pricelist_gurb_demo"/>
+            <field name="product_ids" eval="[(6,0,[ref('product_gurb_demo')])]"/>
+            <field name="description">GURB Service DEMO</field>
+        </record>
+    </data>
+</openerp>

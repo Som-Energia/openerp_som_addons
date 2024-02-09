@@ -9,9 +9,11 @@
         "crm_configuration",
         "giscedata_polissa",
         "giscedata_telemesures_base",
+        "giscedata_facturacio_services",
     ],
     "init_xml": [],
     "demo_xml": [
+        "demo/som_gurb_service_demo.xml",
         "demo/som_gurb_demo.xml",
         "demo/som_gurb_cups_demo.xml",
     ],

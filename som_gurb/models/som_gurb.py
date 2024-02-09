@@ -246,7 +246,6 @@ class SomGurb(osv.osv):
         ),
         "gurb_cups_ids": fields.one2many("som.gurb.cups", "gurb_id", "Betes", readonly=False),
         "joining_fee": fields.float("Tarifa cost adhesió"),  # TODO: New model
-        "service_fee": fields.float("Tarifa quota servei"),  # TODO: New model
         "max_power": fields.float("Topall max. per contracte (kW)"),
         "mix_power": fields.float("Topall mix. per contracte (kW)"),
         "critical_incomplete_state": fields.integer("Estat crític incomplet (%)"),
@@ -313,6 +312,7 @@ class SomGurb(osv.osv):
             method=True,
             multi="self_consumption",
         ),
+        "pricelist_id": fields.many2one("product.pricelist", "Quota mensual"),
     }
     _defaults = {
         "logo": lambda *a: False,

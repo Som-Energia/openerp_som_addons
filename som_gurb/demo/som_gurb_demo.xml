@@ -8,6 +8,7 @@
             <field name="address_id" ref="base.res_partner_address_c2c_1" />
             <field name="self_consumption_id" ref="giscedata_cups.autoconsum_cups_tarifa_020_autoconsum_43" />
             <field name="sig_data">SIGDATA</field>
+            <field name="pricelist_id" ref="pricelist_gurb_test" ></field>
         </record>
     </data>
 </openerp>

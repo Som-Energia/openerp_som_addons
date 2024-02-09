@@ -57,7 +57,7 @@
                         <field name="reopening_days" />
                         <field name="critical_incomplete_state" />
                         <field name="joining_fee" select="2" />
-                        <field name="service_fee" select="2" />
+                        <field name="pricelist_id" select="2" />
                         <field name="max_power" />
                         <field name="mix_power" />
                     </group>
