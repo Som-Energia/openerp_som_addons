@@ -52,7 +52,7 @@ CHANGE_AUX_VALUES = {
     },
 }
 
-FISCAL_POSITIONS_CANARIES = [19, 25, 33, 34, 38, 39]
+FISCAL_POSITIONS_CANARIES = [19, 25, 33, 34, 38, 39, 47, 48, 52, 53]
 
 
 class WizardChangeToIndexada(osv.osv_memory):
