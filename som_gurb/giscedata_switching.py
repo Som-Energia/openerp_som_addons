@@ -15,7 +15,7 @@ def cancel_switching_if_gurb(cursor, uid, pool, sw_id, context=None):
 
     pol_id = sw_obj.read(
         cursor, uid, sw_id, ['cups_polissa_id'], context=context
-    )['cups_polissa_id']
+    )['cups_polissa_id'][0]
 
     gurb_categ_id = ir_model_obj.get_object_reference(
         cursor, uid, 'som_gurb', 'categ_gurb_pilot'
