@@ -7,3 +7,4 @@ import wizard
 import giscedata_facturacio_switching_error
 import som_error_cron_f1_reimport
 from giscedata_refacturacio import *
+from giscedata_facturacio_validation import *
