@@ -1,5 +1,7 @@
-import sys, json
+import sys
+import json
 import minizinc
+
 
 def optimize(dades, mzn_path):
     model = minizinc.Model(mzn_path)
@@ -8,11 +10,12 @@ def optimize(dades, mzn_path):
     solver = minizinc.Solver.lookup(solver_name)
     inst = minizinc.Instance(solver, model)
 
-    for k,v in dades.items():
+    for k, v in dades.items():
         inst[k] = v
 
     res = inst.solve()
     print(res.solution)
+
 
 # Main program optimize
 if __name__ == "__main__":

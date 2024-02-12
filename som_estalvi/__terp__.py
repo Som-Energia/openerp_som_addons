@@ -7,7 +7,7 @@
     "version": "0-dev",
     "author": "SomEnergia",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "som_polissa",
     ],
     "init_xml": [],
