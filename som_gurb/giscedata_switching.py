@@ -56,7 +56,7 @@ class GiscedataSwitchingM1_02(osv.osv):
         if context is None:
             context = {}
 
-        pas_id = super(GiscedataSwitchingD1_01, self).create_from_xml(
+        pas_id = super(GiscedataSwitchingM1_02, self).create_from_xml(
             cursor, uid, sw_id, xml, context=context
         )
         cancel_switching_if_gurb(cursor, uid, self.pool, sw_id, context=context)
@@ -74,7 +74,7 @@ class GiscedataSwitchingM1_03(osv.osv):
         if context is None:
             context = {}
 
-        pas_id = super(GiscedataSwitchingD1_01, self).create_from_xml(
+        pas_id = super(GiscedataSwitchingM1_03, self).create_from_xml(
             cursor, uid, sw_id, xml, context=context
         )
         cancel_switching_if_gurb(cursor, uid, self.pool, sw_id, context=context)
@@ -92,7 +92,7 @@ class GiscedataSwitchingM1_04(osv.osv):
         if context is None:
             context = {}
 
-        pas_id = super(GiscedataSwitchingD1_01, self).create_from_xml(
+        pas_id = super(GiscedataSwitchingM1_04, self).create_from_xml(
             cursor, uid, sw_id, xml, context=context
         )
         cancel_switching_if_gurb(cursor, uid, self.pool, sw_id, context=context)
@@ -110,7 +110,7 @@ class GiscedataSwitchingM1_05(osv.osv):
         if context is None:
             context = {}
 
-        pas_id = super(GiscedataSwitchingD1_01, self).create_from_xml(
+        pas_id = super(GiscedataSwitchingM1_05, self).create_from_xml(
             cursor, uid, sw_id, xml, context=context
         )
         cancel_switching_if_gurb(cursor, uid, self.pool, sw_id, context=context)
