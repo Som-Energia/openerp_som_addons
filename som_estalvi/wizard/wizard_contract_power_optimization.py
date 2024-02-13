@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-import os, subprocess
+import os
+import subprocess
 from StringIO import StringIO
 from osv import osv, fields
-from datetime import datetime, timedelta
+from datetime import datetime
 from giscedata_facturacio.report.utils import get_atr_price
 from dateutil.relativedelta import relativedelta
 from operator import countOf
@@ -11,7 +12,8 @@ import csv
 import json
 
 HEADER = [
-    'contract_num', 'nEstimates', 'optimal_cost', 'current_cost', 'optimal_powers_P1', 'optimal_powers_P2', 'optimal_powers_P3',
+    'contract_num', 'nEstimates', 'optimal_cost', 'current_cost', 'optimal_powers_P1',
+    'optimal_powers_P2', 'optimal_powers_P3',
     'optimal_powers_P4', 'optimal_powers_P5', 'optimal_powers_P6', 'total_maximeters_P1',
     'total_maximeters_P2', 'total_maximeters_P3', 'total_maximeters_P4', 'total_maximeters_P5',
     'total_maximeters_P6', 'total_powers_P1', 'total_powers_P2', 'total_powers_P3',
@@ -22,6 +24,7 @@ HEADER = [
     'power_cost_p1', 'power_cost_p2', 'power_cost_p3', 'power_cost_p4', 'power_cost_p5',
     'power_cost_p6'
 ]
+
 
 class WizardContractPowerOptimization(osv.osv_memory):
     _name = "wizard.contract.power.optimization"
@@ -41,7 +44,9 @@ class WizardContractPowerOptimization(osv.osv_memory):
             result = True
         return result
 
-    def _calculate_maximeter_excess_price(self, cursor, uid, wiz_id, month, maximeter_power, period_power, context=None):
+    def _calculate_maximeter_excess_price(
+        self, cursor, uid, wiz_id, month, maximeter_power, period_power, context=None
+    ):
         if context is None:
             context = {}
 
@@ -52,7 +57,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
 
         maximeter_excess = maximeter_power - period_power
         if maximeter_excess > 0:
-            maximeter_excess_price = 2 * maximeter_excess * wiz.excess_price * month_days[month-1]
+            maximeter_excess_price = 2 * maximeter_excess * wiz.excess_price * month_days[month - 1]
 
         return maximeter_excess_price
 
@@ -81,37 +86,43 @@ class WizardContractPowerOptimization(osv.osv_memory):
                 maximeter_period_month = maximeters_powers[date][period]
                 if period == 'P1':
                     total_maximeter_price.append(self._calculate_maximeter_excess_price(
-                        cursor, uid, wiz_id, month, maximeter_period_month, wiz.float_p1, context=context
+                        cursor, uid, wiz_id, month, maximeter_period_month,
+                        wiz.float_p1, context=context
                     ))
                     total_by_period['P1'] += total_maximeter_price[-1]
                 elif period == 'P2':
                     total_maximeter_price.append(self._calculate_maximeter_excess_price(
-                        cursor, uid, wiz_id, month, maximeter_period_month, wiz.float_p2, context=context
+                        cursor, uid, wiz_id, month, maximeter_period_month,
+                        wiz.float_p2, context=context
                     ))
                     total_by_period['P2'] += total_maximeter_price[-1]
                 elif period == 'P3':
                     total_maximeter_price.append(self._calculate_maximeter_excess_price(
-                        cursor, uid, wiz_id, month, maximeter_period_month, wiz.float_p3, context=context
+                        cursor, uid, wiz_id, month, maximeter_period_month,
+                        wiz.float_p3, context=context
                     ))
                     total_by_period['P3'] += total_maximeter_price[-1]
                 elif period == 'P4':
                     total_maximeter_price.append(self._calculate_maximeter_excess_price(
-                        cursor, uid, wiz_id, month, maximeter_period_month, wiz.float_p4, context=context
+                        cursor, uid, wiz_id, month, maximeter_period_month,
+                        wiz.float_p4, context=context
                     ))
                     total_by_period['P4'] += total_maximeter_price[-1]
                 elif period == 'P5':
                     total_maximeter_price.append(self._calculate_maximeter_excess_price(
-                        cursor, uid, wiz_id, month, maximeter_period_month, wiz.float_p5, context=context
+                        cursor, uid, wiz_id, month, maximeter_period_month,
+                        wiz.float_p5, context=context
                     ))
                     total_by_period['P5'] += total_maximeter_price[-1]
                 elif period == 'P6':
                     total_maximeter_price.append(self._calculate_maximeter_excess_price(
-                        cursor, uid, wiz_id, month, maximeter_period_month, wiz.float_p6, context=context
+                        cursor, uid, wiz_id, month, maximeter_period_month,
+                        wiz.float_p6, context=context
                     ))
                     total_by_period['P6'] += total_maximeter_price[-1]
 
             result = sum(total_maximeter_price) + sum(contracted_power_price)
-            wiz.write({'current_cost' : result}, context=context)
+            wiz.write({'current_cost': result}, context=context)
             res = {}
             res['total_maximeter_price'] = total_by_period
             res['contracted_power_price'] = contracted_power_price
@@ -128,25 +139,32 @@ class WizardContractPowerOptimization(osv.osv_memory):
         if context is None:
             context = {}
         wiz = self.browse(cursor, uid, wiz_id, context=context)
-        #per cada mes, cada periode diferent de 0 ha de ser pX*0.85
+        # per cada mes, cada periode diferent de 0 ha de ser pX*0.85
 
-        nEstimates=0
+        nEstimates = 0
         for month in maximeters_float:
-            if (maximeters_float[month]['P1'] == 0 or maximeters_float[month]['P1'] == (wiz.power_p1 * 0.85)) and \
-            (maximeters_float[month]['P2'] == 0 or maximeters_float[month]['P2'] == (wiz.power_p2 * 0.85)) and \
-            (maximeters_float[month]['P3'] == 0 or maximeters_float[month]['P3'] == (wiz.power_p3 * 0.85)) and \
-            (maximeters_float[month]['P4'] == 0 or maximeters_float[month]['P4'] == (wiz.power_p4 * 0.85)) and \
-            (maximeters_float[month]['P5'] == 0 or maximeters_float[month]['P5'] == (wiz.power_p5 * 0.85)) and \
-            (maximeters_float[month]['P6'] == 0 or maximeters_float[month]['P6'] == (wiz.power_p6 * 0.85)) and \
-            countOf(maximeters_float[month].values(), 0) == 3:
-                nEstimates+=1
+            if (maximeters_float[month]['P1'] == 0 or (
+                maximeters_float[month]['P1']) == (wiz.power_p1 * 0.85)) and \
+                (maximeters_float[month]['P2'] == 0 or (
+                    maximeters_float[month]['P2']) == (wiz.power_p2 * 0.85)) and \
+                (maximeters_float[month]['P3'] == 0 or (
+                    maximeters_float[month]['P3']) == (wiz.power_p3 * 0.85)) and \
+                (maximeters_float[month]['P4'] == 0 or (
+                    maximeters_float[month]['P4']) == (wiz.power_p4 * 0.85)) and \
+                (maximeters_float[month]['P5'] == 0 or (
+                    maximeters_float[month]['P5']) == (wiz.power_p5 * 0.85)) and \
+                (maximeters_float[month]['P6'] == 0 or (
+                    maximeters_float[month]['P6']) == (wiz.power_p6 * 0.85)) and \
+                    countOf(maximeters_float[month].values(), 0) == 3:
+                nEstimates += 1
 
-        wiz.write({'nEstimates' : nEstimates}, context=context)
+        wiz.write({'nEstimates': nEstimates}, context=context)
 
     def check_output(self, data, *popenargs, **kwargs):
         if 'stdout' in kwargs:
             raise ValueError('stdout argument not allowed, it will be overridden.')
-        process = subprocess.Popen(stdout=subprocess.PIPE, stdin=subprocess.PIPE, shell=True, *popenargs, **kwargs)
+        process = subprocess.Popen(stdout=subprocess.PIPE,
+                                   stdin=subprocess.PIPE, shell=True, *popenargs, **kwargs)
         output = process.communicate(input=data)[0]
         retcode = process.poll()
         if retcode:
@@ -163,9 +181,6 @@ class WizardContractPowerOptimization(osv.osv_memory):
         pol_obj = self.pool.get('giscedata.polissa')
         comptador_obj = self.pool.get('giscedata.lectures.comptador')
         wiz = self.browse(cursor, uid, wiz_id, context=context)
-
-        # Primer hem de mirar quins comptadors hem de mirar
-        polissa = pol_obj.browse(cursor, uid, polissa_id, context=context)
 
         start_date = wiz.start_date
         end_date = wiz.end_date
@@ -280,9 +295,10 @@ class WizardContractPowerOptimization(osv.osv_memory):
 
         if len(context['active_ids']) == 1:
             self._compute_end_date(cursor, uid, wiz_id, context=context)
-            self.get_optimization_required_data(cursor, uid, wiz_id[0], context['active_ids'][0], context=context)
+            self.get_optimization_required_data(
+                cursor, uid, wiz_id[0], context['active_ids'][0], context=context)
         else:
-            raise  osv.except_osv(_('Error !'), _('Aquest boto només funciona per una polissa'))
+            raise osv.except_osv(('Error !'), ('Aquest boto només funciona per una polissa'))
 
     def get_optimization_required_data(self, cursor, uid, wiz_id, polissa_id, context=None):
         if context is None:
@@ -290,9 +306,10 @@ class WizardContractPowerOptimization(osv.osv_memory):
 
         # We fill the wizard data
         self.get_periods_power(cursor, uid, wiz_id, polissa_id, context=context)
-        preuPotencies = self.get_periods_power_price(cursor, uid, wiz_id, polissa_id, context=context)
-        preuPenalitzacio = self.get_excess_price(cursor, uid, wiz_id, polissa_id, context=context)
-        potenciaMax = self.get_maximeters_power(cursor, uid, wiz_id, polissa_id, context=context)
+        self.get_periods_power_price(
+            cursor, uid, wiz_id, polissa_id, context=context)
+        self.get_excess_price(cursor, uid, wiz_id, polissa_id, context=context)
+        self.get_maximeters_power(cursor, uid, wiz_id, polissa_id, context=context)
 
     def pass_maximeter_validation(self, cursor, uid, wiz_id, polissa_id, context=None):
         if context is None:
@@ -301,7 +318,6 @@ class WizardContractPowerOptimization(osv.osv_memory):
         wiz = self.browse(cursor, uid, wiz_id, context=context)
         maximeters_powers = json.loads(wiz.maximeters_powers)
         return False if len(maximeters_powers) < 12 else True
-
 
     def serializate_wizard_data(self, cursor, uid, wiz_id, context=None):
         if context is None:
@@ -315,7 +331,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
             'power_p6': values['float_p6'],
         }
 
-        for k,v in sorted(values.read()[0].items()):
+        for k, v in sorted(values.read()[0].items()):
             if 'power_price' in k:
                 data['power_price'].append(v)
             elif 'maximeters_powers' in k:
@@ -324,7 +340,8 @@ class WizardContractPowerOptimization(osv.osv_memory):
                     for periode in sorted(maximeters_powers[mes]):
                         data['maximeters_powers'] += [maximeters_powers[mes][periode]]
 
-        mzn_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../scripts/optimization.mzn")
+        mzn_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                "../scripts/optimization.mzn")
         data['mzn_path'] = mzn_path
         json_data = json.dumps(data)
         return json_data
@@ -334,7 +351,9 @@ class WizardContractPowerOptimization(osv.osv_memory):
             context = {}
 
         if len(context['active_ids']) == 1:
-            if self.pass_maximeter_validation(cursor, uid, wiz_id[0], context['active_ids'][0], context=context):
+            if self.pass_maximeter_validation(
+                cursor, uid, wiz_id[0], context['active_ids'][0], context=context
+            ):
                 optimization = self.execute_optimization_script(
                     cursor, uid, wiz_id[0], context['active_ids'][0], context=context
                 )
@@ -344,9 +363,10 @@ class WizardContractPowerOptimization(osv.osv_memory):
                 wiz = self.browse(cursor, uid, wiz_id[0], context=context)
                 wiz.write({'state': 'result'}, context=context)
             else:
-                raise  osv.except_osv(('Error !'), ('Aquesta polissa no passa les validacions de maximetre'))
+                raise osv.except_osv(
+                    ('Error !'), ('Aquesta polissa no passa les validacions de maximetre'))
         else:
-            raise  osv.except_osv(('Error !'), ('Aquest boto només funciona per una polissa'))
+            raise osv.except_osv(('Error !'), ('Aquest boto només funciona per una polissa'))
 
     def beautify_output(self, cursor, uid, wiz_id, polissa_id, output, context=None):
         if context is None:
@@ -384,8 +404,9 @@ class WizardContractPowerOptimization(osv.osv_memory):
 
         cfg_obj = self.pool.get("res.config")
 
-        script_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../scripts/optimization.py")
-        mzn_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../scripts/optimization.mzn")
+        script_path = os.path.join(os.path.dirname(
+            os.path.realpath(__file__)), "../scripts/optimization.py")
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "../scripts/optimization.mzn")
         data = self.serializate_wizard_data(cursor, uid, wiz_id, context=context)
 
         virtualenv = cfg_obj.get(
@@ -436,7 +457,9 @@ class WizardContractPowerOptimization(osv.osv_memory):
         )
         wiz.write({'state': 'result'})
 
-    def generate_optimization_as_csv(self, cursor, uid, wiz_id, optimizations, missing_data_pol, context=None):
+    def generate_optimization_as_csv(
+        self, cursor, uid, wiz_id, optimizations, missing_data_pol, context=None
+    ):
         if context is None:
             context = {}
 
@@ -480,7 +503,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
 
         res_file = csv_file.getvalue()
 
-        wizard.write({'report': base64.b64encode(res_file), 'filename_report': "_optim"+".csv"})
+        wizard.write({'report': base64.b64encode(res_file), 'filename_report': "_optim" + ".csv"})
 
     def _default_state(self, cursor, uid, context=None):
         if not context:
@@ -495,15 +518,16 @@ class WizardContractPowerOptimization(osv.osv_memory):
         result = {}
         for wiz in self.browse(cursor, uid, ids, context):
             end_date = datetime.strptime(wiz.start_date, '%Y-%m-%d') + relativedelta(years=+1)
-            result[wiz.id] = datetime.strftime(end_date,'%Y-%m-%d')
-            wiz.write({'end_date': datetime.strftime(end_date,'%Y-%m-%d')})
+            result[wiz.id] = datetime.strftime(end_date, '%Y-%m-%d')
+            wiz.write({'end_date': datetime.strftime(end_date, '%Y-%m-%d')})
         return result
 
     def onchange_start_date(self, cursor, uid, ids, start_date, context={}):
         res = {'value': {}, 'domain': {}, 'warning': {}}
 
         if start_date:
-            year_end_date = (datetime.strptime(start_date, '%Y-%m-%d') + relativedelta(years=+1)).year
+            year_end_date = (datetime.strptime(start_date, '%Y-%m-%d')
+                             + relativedelta(years=+1)).year
             month_end = datetime.strptime(start_date, '%Y-%m-%d').month
             end_date = '{}-{}-01'.format(year_end_date, month_end)
             res['value'].update({'end_date': end_date})
@@ -532,7 +556,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
                 ('multiple', 'Varis'),
                 ('result', 'Resultat'),
             ],
-        'State'),
+            'State'),
 
         'excess_price': fields.float('Preu excés maxímetre', digits=(16, 6)),
 
