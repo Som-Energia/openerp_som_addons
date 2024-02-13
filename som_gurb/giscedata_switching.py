@@ -12,7 +12,7 @@ _GURB_CANCEL_CASES = {
 class GiscedataSwitching(osv.osv):
     _inherit = "giscedata.switching"
 
-    def importar_xml_post_hook(self, cursor, uid, sw_id, xml, context=None):
+    def importar_xml_post_hook(self, cursor, uid, sw_id, context=None):
         """
         Cancel and avoid activation of some cases if related contract has GURB category.
         """
@@ -45,12 +45,14 @@ class GiscedataSwitching(osv.osv):
 
         if not avoid_cancel or gurb_categ_id not in pol_category_ids:
             return super(GiscedataSwitching, self).importar_xml_post_hook(
-                cursor, uid, sw_id, xml, context=context
+                cursor, uid, sw_id, context=context
             )
 
+        msg = _("Cas cancel·lat per GURB")
+        self.historize_msg(cursor, uid, sw.id, msg, context=context)
         sw_obj.write(cursor, uid, sw_id, {"state": "cancel"}, context=context)
 
-        return _("Cas cancel·lat per GURB")
+        return _("Cas importat correctament.")
 
 
 GiscedataSwitching()
