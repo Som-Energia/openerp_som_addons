@@ -8,16 +8,16 @@
     "version": "0-dev",
     "author": "SomEnergia",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "base_bank_extended",
         "giscedata_crm_leads",
     ],
     "init_xml": [],
     "demo_xml": [],
-    "update_xml":[
-        'giscedata_crm_lead_view.xml',
-        'wizard/wizard_crm_lead_create_entities_view.xml',
+    "update_xml": [
+        "giscedata_crm_lead_view.xml",
+        "wizard/wizard_crm_lead_create_entities_view.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

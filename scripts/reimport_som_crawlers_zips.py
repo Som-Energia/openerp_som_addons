@@ -60,6 +60,6 @@ for craw_id in craw_ids:
 print """
     Hem trobat {} crawlers per reimportar.
      S'han intentat reimportat {} fitxers.
-     S'han reimportat correctament {} fitxers.""".format(
+     S'han reimportat correctament {} fitxers.""".format(   # noqa: E999
     total_crawlers, total_reintents, total_correctes
 )

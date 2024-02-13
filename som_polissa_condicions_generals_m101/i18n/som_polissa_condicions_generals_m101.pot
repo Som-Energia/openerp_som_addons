@@ -729,4 +729,3 @@ msgid ""
 "modificacions amb la finalitat d'ajustar-les a les condicions tècniques "
 "d'accés a xarxa segons la clàusula 6.3 de les Condicions Generals."
 msgstr ""
-

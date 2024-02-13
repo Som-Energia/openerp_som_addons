@@ -1,0 +1,151 @@
+# This workflow is disabled because Github is not supporting matrix output separatly by job: PR https://github.com/actions/runner/pull/2477
+
+name: ALL_MODULES
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 1'
+  pull_request:
+    branches: [ main ]
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  POSTGRES_USER: erp
+  POSTGRES_PASSWORD: erp
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      # You can use PyPy versions in python-version.
+      # For example, pypy2 and pypy3
+      fail-fast: false
+      matrix:
+        # python-version: [ "2.7", "3.10" ]
+        python-version: [ "2.7" ]
+        module: ["account_account_som", "account_invoice_som", "base_extended_som", "dx_invoice_supplier_renumber", "giscedata_facturacio_comer_som", "giscedata_facturacio_iva_10_som", "giscedata_facturacio_som", "powersms", "som_account_invoice_pending", "som_atc", "som_autofactura", "som_autoreclama", "som_control_reports", "som_crawlers", "som_dashboard", "som_documents_sensibles", "som_empowering", "som_energetica", "som_extend_facturacio_comer", "som_extend_facturacio_facturae", "som_facturacio_calculada", "som_facturacio_comer", "som_facturacio_flux_solar", "som_facturacio_switching", "som_factures_paper", "som_indexada", "som_infoenergia", "som_informe", "som_inversions", "som_l10n_ES_aeat_mod347", "som_leads_polissa", "som_partner_account", "som_partner_seq", "som_polissa", "som_polissa_administradora", "som_polissa_condicions_generals", "som_polissa_condicions_generals_m101", "som_polissa_soci", "som_poweremail_common_templates", "som_remeses_base", "som_switching", "som_telemesura", "som_webforms_helpers", "uiqmako_helpers", "www_som", ]
+    services:
+      postgres:
+        image: timescale/timescaledb-postgis:latest-pg12
+        env:
+          POSTGRES_USER: erp
+          POSTGRES_PASSWORD: erp
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+      redis:
+        image: redis:5.0
+        ports:
+          # Maps tcp port 6379 on service container to the host
+          - 6379:6379
+      mongo:
+        image: mongo:3.0
+        ports:
+          - 27017:27017
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Set up Python ${{ matrix.python-version }}
+        if: matrix.python-version != '2.7'
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Set up Python 2.7
+        if: matrix.python-version == '2.7'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python2.7 python2.7-dev
+          sudo ln -sf python2.7 /usr/bin/python
+          curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
+          python get-pip.py
+          rm get-pip.py
+          pip install --upgrade pip setuptools wheel
+      - name: Download required repositories
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_GA }}
+        run: |
+          export ROOT_DIR_SRC=${{github.workspace}}/..
+          git clone --depth 1 https://$GITHUB_TOKEN@github.com/Som-Energia/erp.git -b developer $ROOT_DIR_SRC/erp
+          git clone --depth 1 https://$GITHUB_TOKEN@github.com/Som-Energia/libFacturacioATR.git $ROOT_DIR_SRC/libFacturacioATR
+          git clone --depth 1 https://github.com/Som-Energia/somenergia-generationkwh.git $ROOT_DIR_SRC/somenergia-generationkwh
+          git clone --depth 1 https://github.com/Som-Energia/plantmeter.git $ROOT_DIR_SRC/plantmeter
+          git clone --depth 1 https://github.com/Som-Energia/giscedata_facturacio_indexada_som.git $ROOT_DIR_SRC/giscedata_facturacio_indexada_som
+          git clone --depth 1 https://github.com/gisce/oorq.git -b api_v5 $ROOT_DIR_SRC/oorq
+          git clone --depth 1 https://github.com/gisce/spawn_oop.git $ROOT_DIR_SRC/spawn_oop
+          git clone --depth 1 https://github.com/gisce/poweremail.git $ROOT_DIR_SRC/poweremail2
+          git clone --depth 1 https://github.com/gisce/openerp-sentry.git -b v5_legacy $ROOT_DIR_SRC/openerp-sentry
+          git clone --depth 1 https://github.com/gisce/ws_transactions.git $ROOT_DIR_SRC/ws_transactions
+          git clone --depth 1 https://github.com/gisce/ir_attachment_mongodb.git $ROOT_DIR_SRC/ir_attachment_mongodb
+          git clone --depth 1 https://github.com/gisce/mongodb_backend.git -b gisce $ROOT_DIR_SRC/mongodb_backend
+          git clone --depth 1 https://github.com/gisce/poweremail-modules.git $ROOT_DIR_SRC/poweremail-modules
+          git clone --depth 1 https://github.com/gisce/crm_poweremail.git $ROOT_DIR_SRC/crm_poweremail
+          git clone --depth 1 https://github.com/gisce/ooop.git $ROOT_DIR_SRC/ooop
+      - name: Install dependencies
+        run: |
+          sudo apt-get --allow-releaseinfo-change update
+          sudo apt-get install python2-dev python3-dev libxml2-dev libxmlsec1 libxmlsec1-dev libgdal-dev -y
+          export ROOT_DIR_SRC=${{github.workspace}}/..
+          cd $ROOT_DIR_SRC
+          pip install virtualenv
+          virtualenv venv
+          . $ROOT_DIR_SRC/venv/bin/activate
+          cd $ROOT_DIR_SRC/libFacturacioATR
+          git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
+          pip install -e .
+          cd $ROOT_DIR_SRC/ooop
+          git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
+          pip install -e .
+          pip install somutils
+          cd $ROOT_DIR_SRC/somenergia-generationkwh
+          pip install -e . || "Not installing somenergia-generation Python package"
+          cd $ROOT_DIR_SRC/plantmeter
+          pip install -e . || "Not installing plantmeter Python package"
+          cd $ROOT_DIR_SRC
+          pip install -r $ROOT_DIR_SRC/erp/requirements-dev.txt
+          pip install -r $ROOT_DIR_SRC/erp/requirements.txt
+          #pip install --upgrade --force-reinstall https://github.com/gisce/destral/archive/master.zip
+          #pip install destral==1.7.3
+      - name: Link Addons
+        run: |
+          export ROOT_DIR_SRC=${{github.workspace}}/..
+          . $ROOT_DIR_SRC/venv/bin/activate
+          cd $ROOT_DIR_SRC/erp && ./tools/link_addons.sh
+      - name: Run Tests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ESIOS_TOKEN: ${{ secrets.ESIOS_TOKEN }}
+          SRID: ${{ secrets.SRID }}
+        run: |
+          export ROOT_DIR_SRC=${{github.workspace}}/..
+          export CI_REPO=som-energia/openerp_som_addons
+          export CI_PULL_REQUEST=${{ github.event.number }}
+          export ROOT_DIR_SRC=${{github.workspace}}/..
+          . $ROOT_DIR_SRC/venv/bin/activate
+          export PYTHONPATH=${{github.workspace}}/../erp/server/bin:${{github.workspace}}/../erp/server/bin/addons:${{github.workspace}}/../erp/server/sitecustomize
+          export OPENERP_PRICE_ACCURACY=6
+          export OORQ_ASYNC=False
+          export OPENERP_SRID=$SRID
+          export OPENERP_ESIOS_TOKEN=$ESIOS_TOKEN
+          export OPENERP_MONGODB_HOST=localhost
+          export OPENERP_REDIS_URL=redis://localhost:6379
+          export OPENERP_ROOT_PATH=${{github.workspace}}/../erp/server/bin
+          export OPENERP_ADDONS_PATH=$OPENERP_ROOT_PATH/addons
+          export OPENERP_DB_HOST=localhost
+          export OPENERP_DB_USER=$POSTGRES_USER
+          export OPENERP_DB_PASSWORD=$POSTGRES_PASSWORD
+          cd ${{github.workspace}}
+          destral --report-coverage --enable-coverage --report-junitxml ${{github.workspace}}/test-results/destral -m ${{matrix.module}}
+      - name: Publish Unit Test Results
+        if: (success() || failure()) && matrix.python-version == '2.7' && github.event_name == 'pull_request'
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        with:
+          files: test-results/destral/*.xml
