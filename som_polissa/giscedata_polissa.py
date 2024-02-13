@@ -938,7 +938,7 @@ class GiscedataPolissa(osv.osv):
                 if hist_auto.data_final:
                     hist_auto_data_final = hist_auto.data_final
                 else:
-                    hist_auto.data_final = '9999-01-01'
+                    hist_auto_data_final = '9999-01-01'
                 any_auto = (
                     hist_auto.data_inici > pol.data_alta
                     and hist_auto.data_inici < pol_data_baixa) or (
