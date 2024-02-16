@@ -66,5 +66,16 @@
             <field name="padding">3</field>
             <field name="number_increment">1</field>
         </record>
+        <record model="product.category" id="categ_product_gurb">
+            <field name="name">Categoria GURB</field>
+        </record>
+        <record model="product.product" id="product_gurb">
+            <field name="name">Producte GURB</field>
+            <field name="categ_id" ref="categ_product_gurb"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="standard_price">10</field>
+            <field name="supply_method">buy</field>
+        </record>
     </data>
 </openerp>

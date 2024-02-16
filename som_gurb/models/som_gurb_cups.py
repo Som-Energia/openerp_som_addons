@@ -46,6 +46,29 @@ class SomGurbCups(osv.osv):
                 res[cups_gurb_id] = True
         return res
 
+    def add_service_to_contract(self, cursor, uid, ids, pricelist_id, product_id, context=None):
+        if context is None:
+            context = {}
+
+        pol_obj = self.pool.get("giscedata.polissa")
+
+        for gurb_cups_id in ids:
+            cups_id = self.read(cursor, uid, gurb_cups_id, ['cups_id'])['cups_id']
+            search_params = [
+                ("state", "=", "activa"),
+                ("cups_id", "=", cups_id),
+            ]
+
+            pol_id = pol_obj.search(cursor, uid, search_params, context=context, limit=1)
+            if not pol_id:
+                error_title = _("No hi ha pòlisses actives per aquest CUPS"),
+                error_info = _(
+                    "El CUPS id {} no té pòlisses actives. No es pot afegir cap servei".format(
+                        cups_id
+                    )
+                )
+                raise osv.except_osv(error_title, error_info)
+
     _columns = {
         "active": fields.boolean("Actiu"),
         "start_date": fields.date(u"Data entrada GURB", required=True),

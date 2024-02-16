@@ -132,7 +132,7 @@ class SomGurb(osv.osv):
                 }
         return res
 
-    def _get_grub_initial_stage(self, cursor, uid, context=None):
+    def _get_gurb_initial_stage(self, cursor, uid, context=None):
         if context is None:
             context = {}
         ir_model_obj = self.pool.get("ir.model.data")
@@ -213,6 +213,35 @@ class SomGurb(osv.osv):
         self.validate_stage(cursor, uid, ids, current_stage_id, stage_id, context=context)
         self.write(cursor, uid, ids[0], {"gurb_stage_id": stage_id}, context=context)
         self.change_state(cursor, uid, ids, stage_id, context=context)
+
+    # WIP CODE
+    def add_services_to_gurb_contracts(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+
+        gurb_cups_obj = self.pool.get("som.gurb.cups")
+        ir_model_obj = self.pool.get("ir.model.data")
+
+        for gurb_id in ids:
+            pricelist_id = self.read(
+                cursor, uid, gurb_id, ["pricelist_id"], context=context
+            )["pricelist_id"]
+
+            product_id = ir_model_obj.get_object_reference(
+                cursor, uid, "som_gurb", "product_gurb"
+            )
+
+            search_params = [
+                ("gurb_id", "=", gurb_id)
+            ]
+            gurb_cups_ids = gurb_cups_obj.search(
+                cursor, uid, search_params, context=context
+            )
+            gurb_cups_obj.add_service_to_contract(
+                cursor, uid, gurb_cups_ids, pricelist_id, product_id, context=context
+            )
+
+        return True
 
     _columns = {
         "name": fields.char("Nom GURB", size=60, required=True),
@@ -317,7 +346,7 @@ class SomGurb(osv.osv):
     _defaults = {
         "logo": lambda *a: False,
         "gurb_state": lambda *a: "draft",
-        "gurb_stage_id": _get_grub_initial_stage,
+        "gurb_stage_id": _get_gurb_initial_stage,
     }
 
     _sql_constraints = [(
