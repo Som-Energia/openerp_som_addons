@@ -5,7 +5,7 @@
     This module provide :
         * Model d'enmagatzemament temporal
         * Vistes associades
-        * Scripts recurrents 
+        * Scripts recurrents
     """,
     "version": "0-dev",
     "author": "SOM ENERGIA",
@@ -13,7 +13,7 @@
     "depends": [
         "base",
     ],
-    "init_xml": [        
+    "init_xml": [
     ],
     "demo_xml": [],
     "update_xml": [
