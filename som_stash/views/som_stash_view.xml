@@ -25,7 +25,6 @@
             </form>
             </field>
         </record>
-        
         <record id="action_som_stash_tree" model="ir.actions.act_window">
             <field name="name">Som stash data</field>
             <field name="res_model">som.stash</field>
@@ -33,14 +32,12 @@
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="som_stash_tree_view"/>
         </record>
-
-        <menuitem id="menu_som_stash_folder" 
+        <menuitem id="menu_som_stash_folder"
                 groups="som_stash.group_som_stash"
                 name = "Stash de dades"
                 parent="base.menu_base_config"/>
-
-        <menuitem action="action_som_stash_tree" 
-                id="menu_som_stash_tree" 
+        <menuitem action="action_som_stash_tree"
+                id="menu_som_stash_tree"
                 parent="menu_som_stash_folder"/>
     </data>
 </openerp>
