@@ -87,6 +87,13 @@ def download_files(file_type, server, server_port):
     os.remove('{}/{}'.format(BIN_PATH, filename))
     step("File {} copied to {} successfully".format(filename, server))
 
+    step("Unzipping file on remote server {}...".format(server))
+    Popen(
+        ["ssh", "{}".format(server.split(':')[0]), 'unzip',
+         "/tmp/{}".format(filename)], shell=False,
+        stdout=PIPE, stderr=PIPE)
+    step("File {} unzip successfully".format(filename))
+
 
 if __name__ == "__main__":
     step("Start run: {}".format(datetime.today().strftime('%d-%m-%Y %H:%M:%S')))
