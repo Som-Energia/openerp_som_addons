@@ -1,2 +1,3 @@
 "id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
 "access_som_stash_rcwd","som.stash","model_som_stash","som_stash.group_som_stash",1,1,1,1
+"access_wizard_som_stasher_u","wizard.som.stasher","model_wizard_som_stasher","som_stash.group_som_stash",1,1,1,1
