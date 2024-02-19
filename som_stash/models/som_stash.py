@@ -11,9 +11,16 @@ SELECTABLE_MODELS = [
     ("giscedata.atc", _("Cas d'atenció a Client"))
 ]
 
+SELECTABLE_MODELS_LIST = [tup[0] for tup in SELECTABLE_MODELS]
+
+SELECTABLE_TYPES_LIST = ['char', 'text', 'boolean', 'integer', 'int', 'string', 'float']
+
 
 class SomStash(osv.osv):
     _name = 'som.stash'
+
+    def _get_selectable_models_list(self, cursor, uid, context=None):
+        return SELECTABLE_MODELS_LIST
 
     def _ff_data_text(self, cursor, uid, ids, field_name, arg, context=None):
         if not context:
@@ -70,7 +77,7 @@ class SomStash(osv.osv):
     }
 
     _sql_constraints = [
-        ('module_origin_uniq', 'unique(origin)', 'You cannot an origin more than once'),
+        ('origin_uniq', 'unique(origin)', 'You cannot an origin more than once'),
     ]
 
 

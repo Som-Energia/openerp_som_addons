@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="som_stash_setting_tree_view" model="ir.ui.view">
+            <field name="name">som.stash.setting.tree</field>
+            <field name="model">som.stash.setting</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Configuració backup de dades">
+                    <field name="model"/>
+                    <field name="field"/>
+                    <field name="default_stashed_value"/>
+                </tree>
+            </field>
+        </record>
+        <record id="som_stash_setting_form_view" model="ir.ui.view">
+            <field name="name">som.stash.setting.form</field>
+            <field name="model">som.stash.setting</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form>
+                    <field name="allowed_models" invisible="1"/>
+                    <field name="allowed_types" invisible="1"/>
+                    <field name="model" domain="[('model', 'in', allowed_models)]" select="1"/>
+                    <field name="field" domain="[('model_id', '=', model), ('ttype', 'in', allowed_types)]" select="1"/>
+                    <field name="default_stashed_value" select="2"/>
+                </form>
+            </field>
+        </record>
+        <record id="action_som_stash_setting_tree" model="ir.actions.act_window">
+            <field name="name">Som stash settings</field>
+            <field name="res_model">som.stash.setting</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="som_stash_setting_tree_view"/>
+        </record>
+        <menuitem id="menu_som_stash_setting_tree"
+            action="action_som_stash_setting_tree"    
+            parent="menu_som_stash_folder"/>
+    </data>
+</openerp>

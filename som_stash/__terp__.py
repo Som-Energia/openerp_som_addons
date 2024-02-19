@@ -22,6 +22,7 @@
         "security/som_stash.xml",
         "security/ir.model.access.csv",
         "views/som_stash_view.xml",
+        "views/som_stash_setting_view.xml",
         "wizard/wizard_som_stasher_view.xml",
     ],
     "active": False,
