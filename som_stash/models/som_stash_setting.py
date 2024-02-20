@@ -11,17 +11,17 @@ class SomStashSetting(osv.osv):
         res = {}
         for val in self.browse(cursor, uid, ids, context=context):
             res[val.id] = {
-                'allowed_models': SELECTABLE_MODELS_LIST,
-                'allowed_types': SELECTABLE_TYPES_LIST,
+                'models_domain': str(SELECTABLE_MODELS_LIST),
+                'field_types_domain': str(SELECTABLE_TYPES_LIST),
             }
         return res
 
     _columns = {
-        'allowed_models': fields.function(
-            _ff_get_allowed, type="char", method=True, string="Allowed models", multi=True
+        'models_domain': fields.function(
+            _ff_get_allowed, type="text", method=True, string="Allowed models", multi=True
         ),
-        'allowed_types': fields.function(
-            _ff_get_allowed, type="char", method=True, string="Allowed types", multi=True
+        'field_types_domain': fields.function(
+            _ff_get_allowed, type="text", method=True, string="Allowed types", multi=True
         ),
         'model': fields.many2one('ir.model', 'Model'),
         'field': fields.many2one('ir.model.fields', 'Camp'),
