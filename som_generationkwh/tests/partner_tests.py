@@ -202,7 +202,7 @@ class PartnerTests(testing.OOTestCase):
                 'contract_address': u'carrer inventat 1 1 1 1 aclaridor 00001 (Poble de Prova)',
                 'contract_id': 1, 'contract_last_invoiced': False, 'contract_name': u'0001C',
                 'contract_state': u'esborrany', 'member_id': member_id, 'member_name': u'Gil, Pere',
-                'priority': 0}])
+                'priority': 0, 'contract_tariff': '2.0A'}])
 
 
     def test__www_set_generationkwh_assignment_order(self):
@@ -347,7 +347,7 @@ class PartnerTests(testing.OOTestCase):
             remaining = self.partner_obj.www_hourly_remaining_generationkwh(cursor, uid, partner_id)
 
             self.assertEqual(len(remaining), 8783)
-            self.assertEqual(sum(remaining.values()), 0)
+            self.assertEqual(sum(r['value'] for r in remaining), 0)
 
     def test__www_hourly_rights_generationkwh(self):
         with Transaction().start(self.database) as txn:
@@ -368,7 +368,24 @@ class PartnerTests(testing.OOTestCase):
             rights = self.partner_obj.www_hourly_rights_generationkwh(cursor, uid, partner_id, '2023-10-01', '2023-11-07')
 
             self.assertEqual(len(rights), 912)
-            self.assertEqual(sum(rights.values()), 0)
+            self.assertEqual(sum(r['value'] for r in rights), 0)
+
+
+    def test__prepare_datetime_value_www_response(self):
+        original = {
+            '2024-01-29 00:00:00': 0,
+            '2024-01-29 01:00:00': 1,
+            '2024-01-29 02:00:00': 2,
+        }
+        expected = [
+            {'date': 1706482800000, 'value': 0},
+            {'date': 1706486400000, 'value': 1},
+            {'date': 1706490000000, 'value': 2},
+        ]
+        self.assertEqual(
+            self.partner_obj._prepare_datetime_value_www_response(original),
+            expected
+        )
 
 
 # vim: et ts=4 sw=4
