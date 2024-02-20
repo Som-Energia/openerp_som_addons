@@ -29,6 +29,8 @@ class SomStashSetting(osv.osv):
     }
 
     _defaults = {
+        "models_domain": lambda *a: str(SELECTABLE_MODELS_LIST),
+        "field_types_domain": lambda *a: str(SELECTABLE_TYPES_LIST),
     }
 
     _sql_constraints = [

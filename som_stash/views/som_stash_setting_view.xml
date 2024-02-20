@@ -19,11 +19,13 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form>
-                    <field name="allowed_models" invisible="1"/>
-                    <field name="allowed_types" invisible="1"/>
-                    <field name="model" domain="[('model', 'in', allowed_models)]" select="1"/>
-                    <field name="field" domain="[('model_id', '=', model), ('ttype', 'in', allowed_types)]" select="1"/>
-                    <field name="default_stashed_value" select="2"/>
+                    <group colspan="4">
+                        <field name="models_domain" invisible="1"/>
+                        <field name="field_types_domain" invisible="1"/>
+                        <field name="model" domain="[('model', 'in', eval(models_domain))]" select="1"/>
+                        <field name="field" domain="[('model_id', '=', model), ('ttype', 'in', eval(field_types_domain))]" select="1"/>
+                        <field name="default_stashed_value" select="1" height="200"/>
+                    </group>
                 </form>
             </field>
         </record>
@@ -35,7 +37,7 @@
             <field name="view_id" ref="som_stash_setting_tree_view"/>
         </record>
         <menuitem id="menu_som_stash_setting_tree"
-            action="action_som_stash_setting_tree"    
+            action="action_som_stash_setting_tree"
             parent="menu_som_stash_folder"/>
     </data>
 </openerp>
