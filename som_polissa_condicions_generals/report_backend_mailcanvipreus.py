@@ -132,6 +132,10 @@ class ReportBackendMailcanvipreus(ReportBackend):
                 != env.polissa_id.modcontractuals_ids[0].mode_facturacio
                 and env.polissa_id.modcontractuals_ids[0].mode_facturacio
             ),
+            'autoconsum': {
+                'es_autoconsum': env.polissa_id.es_autoconsum,
+                'compensacio': env.polissa_id.autoconsum_id.tipus_autoconsum in ['41', '42', '43']
+            }
         }
 
         if data["te_gkwh"]:
