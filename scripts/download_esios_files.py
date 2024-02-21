@@ -65,9 +65,13 @@ def download_files(file_type, server, server_port):
         print errors
         return 0
     elif len(result) > 1:
-        error("To many files to download")
-        print result
-        return 0
+        step("Found multiple files...")
+        file_list = []
+        for res in result:
+            file_list.append(re.match(r'\s+([0-9]+)\s+([^ ]*)', res).groups())
+        file_list.sort(key=lambda a: a[1], reverse=True)
+        code = file_list[0][0]
+        filename = file_list[0][1]
 
     step("Downloading {}...".format(filename))
     output = Popen(
@@ -88,10 +92,11 @@ def download_files(file_type, server, server_port):
     step("File {} copied to {} successfully".format(filename, server))
 
     step("Unzipping file on remote server {}...".format(server))
-    Popen(
-        ["ssh", "{}".format(server.split(':')[0]), 'unzip',
-         "/tmp/{}".format(filename)], shell=False,
-        stdout=PIPE, stderr=PIPE)
+    ssh = Popen(
+        ["ssh", "-p", server_port, "{}".format(server.split(':')[0]), 'unzip -o',
+         "/tmp/{}".format(filename), "-d", "/tmp/"], shell=False, stdout=PIPE, stderr=PIPE)
+    step("List of unzipped files {}".format(ssh.stdout.readlines()))
+    print ssh.stderr.readlines()
     step("File {} unzip successfully".format(filename))
 
 
