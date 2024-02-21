@@ -80,9 +80,31 @@ class WizardSomStasher(osv.osv_memory):
         return to_stash_ids
 
     def do_stash_model(self, cursor, uid, ids, model, context=None):
+
+        def make_stasheable_dict(dict):
+            time_stamp = datetime.strftime(datetime.today(), '%Y-%m-%d %H:%M:%S')
+            result = {}
+            for k, v in dict.items():
+                if k != 'id' and v:
+                    result[k] = {
+                        'value': v,
+                        'stashed': time_stamp,
+                    }
+            return json.dumps(result)
+
         # obtenim els valors a fer stash del model
+        ir_model_obj = self.pool.get('ir.model')
         som_stash_setting_obj = self.pool.get("som.stash.setting")
-        stash_setting_ids = som_stash_setting_obj.search(cursor, uid, [('model', '=', model)])
+
+        model_ids = ir_model_obj.search(cursor, uid, [('model', '=', model)])
+        if len(model_ids) != 1:
+            return
+
+        stash_setting_ids = som_stash_setting_obj.search(
+            cursor, uid, [('model', '=', model_ids[0])]
+        )
+        if not stash_setting_ids:
+            return
 
         # montem diccionari per fer el write i llista per al read
         dict_write = {}
@@ -90,26 +112,35 @@ class WizardSomStasher(osv.osv_memory):
         som_stash_obj = self.pool.get("som.stash")
         for setting in som_stash_setting_obj.browse(cursor, uid, stash_setting_ids):
             dict_write[setting.field.name] = setting.default_stashed_value
-            # {'email': 'a@a.com', 'phone': ''}
             list_fields_read.append(setting.field.name)
-            # ['email', 'phone']
 
-        # bkp de valor actuals
+        if not list_fields_read or not dict_write:
+            return
+
         model_obj = self.pool.get(model)
         for id in ids:
-            # read obté -> {'email': hola@hola.com, 'phone': '666332111'}
-            dict_data = model_obj.read(cursor, uid, [id], list_fields_read)[0]
-            json_data = json.dumps(dict_data)
+            new_dict_data = model_obj.read(cursor, uid, id, list_fields_read)
             value_origin = "{},{}".format(model, str(id))
-            # origin = res.partner,3
-            # comprove si ja està el valor
-            if len(som_stash_obj.search(cursor, uid, [('origin', '=', value_origin)])) > 0:
-                som_stash_obj.read()
-                # upodatar diccionari amb els camps nous
-            else:
-                som_stash_obj.create()
+            stash_id = som_stash_obj.search(cursor, uid, [('origin', '=', value_origin)])
+            if len(stash_id) > 0:
+                str_data = som_stash_obj.read(cursor, uid, stash_id, ['data'])['data']
+                old_dict_data = json.loads(str_data)
 
-            print json_data
+                keys_to_update = set(new_dict_data.keys()) - set(old_dict_data.keys())
+                for key_to_update in keys_to_update:
+                    old_dict_data[key_to_update] = new_dict_data[key_to_update]
+
+                values = {
+                    'data': make_stasheable_dict(old_dict_data),
+                }
+                som_stash_obj.write(cursor, uid, stash_id, values)
+            else:
+                values = {
+                    'origin': value_origin,
+                    'data': make_stasheable_dict(new_dict_data),
+                }
+                som_stash_obj.create(cursor, uid, values)
+
         # fem el write
         model_obj.write(cursor, uid, ids, dict_write)
 
@@ -127,21 +158,18 @@ class WizardSomStasher(osv.osv_memory):
             )
         )
 
-        # do not commit
-        partners_to_stash = partners_to_stash[:10]
-
         if do_stash:
-            self.do_stash_model(cursor, uid, 'res.partner', partners_to_stash)
+            self.do_stash_model(cursor, uid, partners_to_stash, 'res.partner')
 
             list_partners_address_ids = self.get_partners_address(
                 cursor, uid, partners_to_stash, context=context
             )
-            self.do_stash_model(cursor, uid, 'res.partner.address', list_partners_address_ids)
+            self.do_stash_model(cursor, uid, list_partners_address_ids, 'res.partner.address')
 
             list_pol_ids = self.get_polisses(
                 cursor, uid, partners_to_stash, context=context
             )
-            self.do_stash_model(cursor, uid, 'giscedata.polissa', list_pol_ids)
+            self.do_stash_model(cursor, uid, list_pol_ids, 'giscedata.polissa')
 
         self.write(
             cursor, uid, ids, {'info': msg}
