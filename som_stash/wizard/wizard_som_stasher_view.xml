@@ -33,10 +33,10 @@
             <field name="view_mode">form</field>
             <field name="target">new</field>
         </record>
-        <menuitem name="Fer backup de dades" 
-            id="menu_som_stash_do_process" 
-            parent="menu_som_stash_folder" 
-            action="action_menu_wizard_som_stasher_form" 
+        <menuitem name="Fer backup de dades"
+            id="menu_som_stash_do_process"
+            parent="menu_som_stash_folder"
+            action="action_menu_wizard_som_stasher_form"
             sequence="99"/>
     </data>
 </openerp>

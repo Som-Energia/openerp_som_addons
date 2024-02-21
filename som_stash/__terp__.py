@@ -19,6 +19,7 @@
     ],
     "demo_xml": [],
     "update_xml": [
+        "data/res_config_data.xml",
         "security/som_stash.xml",
         "security/ir.model.access.csv",
         "views/som_stash_view.xml",
