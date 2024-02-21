@@ -77,5 +77,17 @@
             <field name="standard_price">10</field>
             <field name="supply_method">buy</field>
         </record>
+        <record id="ir_attachment_gurb_ritsic_attachment_category" model="ir.attachment.category">
+            <field name="code">gurb_ritsic_attachment_category</field>
+            <field name="name">GURB: Fitxer RITSIC</field>
+        </record>
+        <record id="ir_attachment_gurb_cie_attachment_category" model="ir.attachment.category">
+            <field name="code">gurb_cie_attachment_category</field>
+            <field name="name">GURB: Fitxer CIE</field>
+        </record>
+        <record id="ir_attachment_gurb_rac_attachment_category" model="ir.attachment.category">
+            <field name="code">gurb_rac_attachment_category</field>
+            <field name="name">GURB: Fitxer RAC</field>
+        </record>
     </data>
 </openerp>
