@@ -23,12 +23,6 @@ def up(cursor, installed_version):
     )
     logger.info("XMLs succesfully updated.")
 
-    logger.info("Updating access CSV")
-    load_data(
-        cursor, 'som_facturacio_flux_solar', 'security/ir.model.access.csv', idref=None, mode='update'
-    )
-    logger.info("CSV succesfully updated.")
-
 
 def down(cursor, installed_version):
     pass
