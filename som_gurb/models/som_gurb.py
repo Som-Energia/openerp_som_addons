@@ -26,6 +26,25 @@ _STAGE_STATE = {
     "Reobertura": "modification",
 }
 
+_REQUIRED_FIRST_OPENING_FIELDS = [  # TODO: Propietari - logo?
+    "name",
+    "code"
+    "address_id",
+    "province",
+    "zip_code",
+    "roof_owner_id",
+    "joining_fee",
+    "pricelist_id",
+    "max_power",
+    "mix_power",
+    "first_opening_days",
+    "reopening_days",
+    "critical_incomplete_state",
+    # "CAU",
+    "generation_power",  # TODO: No relació amb CAU?
+    "has_compensation",  # TODO: D'on ho treiem?
+]
+
 
 class SomGurb(osv.osv):
     _name = "som.gurb"
@@ -163,7 +182,28 @@ class SomGurb(osv.osv):
         self._action_change_stage(cursor, uid, ids, order, operator, context=context)
 
     def validate_stage(self, cursor, uid, ids, current_stage_id, stage_id, context=None):
-        pass
+        if context is None:
+            context = {}
+
+        ir_model_obj = self.pool.get("ir.model.data")
+        first_opening_stage_id = ir_model_obj.get_object_reference(
+            cursor, uid, "som_gurb", "stage_gurb_first_opening"
+        )[1]
+
+        if first_opening_stage_id == stage_id:
+            required_values = self.read(
+                cursor,
+                uid,
+                ids[0],
+                _REQUIRED_FIRST_OPENING_FIELDS,
+                context=context
+            )
+
+            if not all(valor for valor in required_values.values()):
+                raise osv.except_osv(
+                    _("Error"),
+                    _("Falta omplir camps necessaris per passar a l'estat de primera obertura."),
+                )
 
     def change_state(self, cursor, uid, ids, stage_id, context=None):
         if context is None:
@@ -171,7 +211,7 @@ class SomGurb(osv.osv):
 
         stage_obj = self.pool.get("crm.case.stage")
 
-        stage_name = stage_obj.read(cursor, uid, stage_id, ['name'])['name']
+        stage_name = stage_obj.read(cursor, uid, stage_id, ["name"])["name"]
         new_gurb_state = _STAGE_STATE[stage_name]
         self.write(cursor, uid, ids[0], {"gurb_state": new_gurb_state}, context=context)
 
@@ -245,7 +285,7 @@ class SomGurb(osv.osv):
 
     _columns = {
         "name": fields.char("Nom GURB", size=60, required=True),
-        "self_consumption_id": fields.many2one("giscedata.autoconsum", "CAU"),
+        "self_consumption_id": fields.many2one("giscedata.autoconsum", "CAU"),  # TODO: Required?
         "code": fields.char("Codi GURB", size=60, readonly=True),
         "roof_owner_id": fields.many2one("res.partner", "Propietari teulada", required=True),
         "logo": fields.boolean("Logo"),
@@ -264,9 +304,9 @@ class SomGurb(osv.osv):
             method=True,
             multi="address",
         ),
-        "sig_data": fields.char("Dades SIG", size=60, required=True),
+        "sig_data": fields.char("Dades SIG", size=60),
         "activation_date": fields.date("Data activació GURB"),
-        "gurb_state": fields.selection(_GURB_STATES, "Estat GURB", readonly=True),
+        "gurb_state": fields.selection(_GURB_STATES, "Estat GURB", readonly=True),  # TODO: Borrar?
         "gurb_stage_id": fields.many2one(
             "crm.case.stage",
             "Etapa",
