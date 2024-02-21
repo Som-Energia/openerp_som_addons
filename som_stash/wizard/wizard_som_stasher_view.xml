@@ -7,11 +7,14 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Backup de dades">
-                    <label string="Aquest assistent realitza un backup de dades antigues per a ser arxivades i posteriorment esborrades." colspan="4"/>
+                    <label string="Aquest assistent realitza el backup de dades antigues per a ser arxivades i posteriorment esborrades." colspan="4"/>
                     <label string="" colspan="4"/>
-                    <field name="info" nolabel="1" colspan="4"/>
+                    <group colspan="4" string="Informació:">
+                        <field name="info" nolabel="1" colspan="4" width="500" height="200" readonly="True"/>
+                    </group>
                     <group colspan="4">
-                        <field name="do_stash" colspan="2"/>
+                        <field name="do_stash"/>
+                        <field name="years"/>
                     </group>
                     <label string="" colspan="4"/>
                     <group colspan="4">
@@ -21,7 +24,6 @@
                 </form>
             </field>
         </record>
-
         <record id="action_menu_wizard_som_stasher_form" model="ir.actions.act_window">
             <field name="name">Stash data</field>
             <field name="type">ir.actions.act_window</field>
@@ -31,12 +33,10 @@
             <field name="view_mode">form</field>
             <field name="target">new</field>
         </record>
-        
         <menuitem name="Fer backup de dades" 
             id="menu_som_stash_do_process" 
             parent="menu_som_stash_folder" 
             action="action_menu_wizard_som_stasher_form" 
             sequence="99"/>
-
     </data>
 </openerp>
