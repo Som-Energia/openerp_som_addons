@@ -34,7 +34,7 @@ def _is_m1_closable(cursor, uid, pool, sw, context=None):
     )
 
     return any([
-        "unidireccional" in sw.additional_info,
+        "unidireccional" in sw.additional_info.lower(),
         "(S)[R]" in sw.additional_info,
         bool(step_m101_auto),
     ])
