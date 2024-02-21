@@ -7,13 +7,11 @@ import json
 SELECTABLE_MODELS = [
     ("res.partner", _("Fitxa client")),
     ("res.partner.address", _("Adreça fitxa client")),
-    ("giscedata.polissa", _("Polissa")),
-    ("giscedata.atc", _("Cas d'atenció a Client"))
 ]
 
 SELECTABLE_MODELS_LIST = [tup[0] for tup in SELECTABLE_MODELS]
 
-SELECTABLE_TYPES_LIST = ['char', 'text', 'boolean', 'integer', 'int', 'string', 'float']
+SELECTABLE_TYPES_LIST = ['char', 'text']
 
 
 class SomStash(osv.osv):

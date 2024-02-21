@@ -72,13 +72,6 @@ class WizardSomStasher(osv.osv_memory):
         ])
         return to_stash_ids
 
-    def get_polisses(self, cursor, uid, partner_ids, context=None):
-        obj = self.pool.get("giscedata.polissa")
-        to_stash_ids = obj.search(cursor, uid, [
-            ('titular', 'in', partner_ids),
-        ])
-        return to_stash_ids
-
     def do_stash_model(self, cursor, uid, ids, model, context=None):
 
         def make_stasheable_dict(dict):
@@ -158,6 +151,10 @@ class WizardSomStasher(osv.osv_memory):
             )
         )
 
+        # do not commit
+        # import pudb;pu.db
+        partners_to_stash = partners_to_stash[:2]
+
         if do_stash:
             self.do_stash_model(cursor, uid, partners_to_stash, 'res.partner')
 
@@ -165,11 +162,6 @@ class WizardSomStasher(osv.osv_memory):
                 cursor, uid, partners_to_stash, context=context
             )
             self.do_stash_model(cursor, uid, list_partners_address_ids, 'res.partner.address')
-
-            list_pol_ids = self.get_polisses(
-                cursor, uid, partners_to_stash, context=context
-            )
-            self.do_stash_model(cursor, uid, list_pol_ids, 'giscedata.polissa')
 
         self.write(
             cursor, uid, ids, {'info': msg}
