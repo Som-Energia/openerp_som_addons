@@ -266,9 +266,9 @@ class SomGurb(osv.osv):
 
     _columns = {
         "name": fields.char("Nom GURB", size=60, required=True),
-        "self_consumption_id": fields.many2one("giscedata.autoconsum", "CAU"),  # TODO: Required?
+        "self_consumption_id": fields.many2one("giscedata.autoconsum", "CAU"),
         "code": fields.char("Codi GURB", size=60, readonly=True),
-        "roof_owner_id": fields.many2one("res.partner", "Propietari teulada", required=True),
+        "roof_owner_id": fields.many2one("res.partner", "Propietari teulada"),
         "logo": fields.boolean("Logo"),
         "address_id": fields.many2one("res.partner.address", "Adreça"),
         "province": fields.function(
@@ -303,13 +303,7 @@ class SomGurb(osv.osv):
         "notes": fields.text("Observacions"),
         "history_box": fields.text("Històric del GURB", readonly=True),
         "has_compensation": fields.boolean("Amb compensació", readonly=True),
-        "generation_power": fields.function(
-            _ff_get_generation_power,
-            type="float",
-            digits=(10, 3),
-            string="Potència generació",
-            method=True,
-        ),
+        "generation_power": fields.float("Potència generació", digits=(10, 3)),
         "meter_id": fields.many2one("giscedata.registrador", "Registrador (comptador)"),
         "available_betas_kw": fields.function(
             _ff_total_betas,
