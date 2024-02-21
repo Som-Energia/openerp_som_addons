@@ -5,28 +5,8 @@ import logging
 
 logger = logging.getLogger("openerp.{}".format(__name__))
 
-_GURB_STATES = [
-    ("draft", "Esborrany"),
-    ("open", "Obert"),
-    ("pending", "Pendent"),
-    ("active", "Actiu"),
-    ("modification", "Modificació"),
-]
 
-_STAGE_STATE = {
-    "Esborrany": "draft",
-    "Primera Obertura": "open",
-    "Complet": "pending",
-    "No Complet": "pending",
-    "Pendent de Registre": "pending",
-    "Registrat": "pending",
-    "Actiu": "active",
-    "Actiu no complet": "active",
-    "Actiu no complet critic": "active",
-    "Reobertura": "modification",
-}
-
-_REQUIRED_FIRST_OPENING_FIELDS = [  # TODO: Propietari - logo?
+_REQUIRED_FIRST_OPENING_FIELDS = [
     "name",
     "code"
     "address_id",
@@ -40,9 +20,8 @@ _REQUIRED_FIRST_OPENING_FIELDS = [  # TODO: Propietari - logo?
     "first_opening_days",
     "reopening_days",
     "critical_incomplete_state",
-    # "CAU",
-    "generation_power",  # TODO: No relació amb CAU?
-    "has_compensation",  # TODO: D'on ho treiem?
+    "generation_power",
+    "has_compensation",
 ]
 
 
@@ -205,16 +184,6 @@ class SomGurb(osv.osv):
                     _("Falta omplir camps necessaris per passar a l'estat de primera obertura."),
                 )
 
-    def change_state(self, cursor, uid, ids, stage_id, context=None):
-        if context is None:
-            context = {}
-
-        stage_obj = self.pool.get("crm.case.stage")
-
-        stage_name = stage_obj.read(cursor, uid, stage_id, ["name"])["name"]
-        new_gurb_state = _STAGE_STATE[stage_name]
-        self.write(cursor, uid, ids[0], {"gurb_state": new_gurb_state}, context=context)
-
     def _action_change_stage(self, cursor, uid, ids, order, operator, context=None):
         if context is None:
             context = {}
@@ -252,7 +221,6 @@ class SomGurb(osv.osv):
             )[1]
         self.validate_stage(cursor, uid, ids, current_stage_id, stage_id, context=context)
         self.write(cursor, uid, ids[0], {"gurb_stage_id": stage_id}, context=context)
-        self.change_state(cursor, uid, ids, stage_id, context=context)
 
     # WIP CODE
     def add_services_to_gurb_contracts(self, cursor, uid, ids, context=None):
@@ -306,10 +274,9 @@ class SomGurb(osv.osv):
         ),
         "sig_data": fields.char("Dades SIG", size=60),
         "activation_date": fields.date("Data activació GURB"),
-        "gurb_state": fields.selection(_GURB_STATES, "Estat GURB", readonly=True),  # TODO: Borrar?
         "gurb_stage_id": fields.many2one(
             "crm.case.stage",
-            "Etapa",
+            "Estat",
             required=True,
             domain=[("section_id.code", "=", "GURB")],
         ),
@@ -385,7 +352,6 @@ class SomGurb(osv.osv):
     }
     _defaults = {
         "logo": lambda *a: False,
-        "gurb_state": lambda *a: "draft",
         "gurb_stage_id": _get_gurb_initial_stage,
     }
 

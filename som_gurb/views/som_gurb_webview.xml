@@ -8,9 +8,6 @@
             <field name="model">som.gurb</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='gurb_state']" position="replace">
-                    <field nolabel="1" name="gurb_state" widget="steps" select="1"/>
-                </xpath>
                 <xpath expr="//field[@name='history_box']" position="replace">
                     <field name="history_box" colspan="4" height="600" nolabel="1" widget="markdown" />
                 </xpath>

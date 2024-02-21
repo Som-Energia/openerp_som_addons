@@ -11,10 +11,9 @@
             <field name="model">som.gurb</field>
             <field name="type">tree</field>
             <field name="arch" type="xml">
-                <tree string="GURBs" status="green:gurb_state=='active'; red:gurb_state=='modification'; orange:gurb_state in ['pending', 'draft']">
+                <tree string="GURBs">
                     <field name="name" />
                     <field name="code" />
-                    <field name="gurb_state" />
                     <field name="activation_date" />
                     <field name="self_consumption_id" />
                     <field name="generation_power" />
