@@ -251,6 +251,19 @@ class SomGurb(osv.osv):
 
         return True
 
+    def _related_attachments(self, cursor, uid, ids, field_name, arg, context=None):
+        if not context:
+            context = {}
+        res = dict.fromkeys(ids, False)
+        attach_obj = self.pool.get("ir.attachment")
+        for gurb_id in ids:
+            attach_ids = attach_obj.search(cursor, uid, [
+                ("res_model", "=", "som.gurb"),
+                ("res_id", "=", gurb_id)
+            ])
+            res[gurb_id] = list(set(attach_ids))
+        return res
+
     _columns = {
         "name": fields.char("Nom GURB", size=60, required=True),
         "self_consumption_id": fields.many2one("giscedata.autoconsum", "CAU"),  # TODO: Required?
@@ -347,6 +360,13 @@ class SomGurb(osv.osv):
             string="Data baixa",
             method=True,
             multi="self_consumption",
+        ),
+        "related_attachments": fields.function(
+            _related_attachments,
+            method=True,
+            string="Adjunts relacionats",
+            type="one2many",
+            relation="ir.attachment"
         ),
         "pricelist_id": fields.many2one("product.pricelist", "Quota mensual"),
     }
