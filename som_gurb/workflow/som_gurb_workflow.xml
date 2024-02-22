@@ -131,37 +131,37 @@
 
         <record id="trans_reopening_incomplete" model="workflow.transition">
             <field name="act_from" ref="act_reopening"/>
-            <field name="act_to" ref="act_incompleted"/>
+            <field name="act_to" ref="act_incomplete"/>
             <field name="signal"></field>
         </record>
 
-        <record id="trans_approved_suspended" model="workflow.transition">
-            <field name="act_from" ref="act_approved"/>
-            <field name="act_to" ref="act_suspended"/>
+        <record id="trans_active_incomplete_reopening" model="workflow.transition">
+            <field name="act_from" ref="act_active_incomplete"/>
+            <field name="act_to" ref="act_reopening"/>
             <field name="signal">button_suspended</field>
         </record>
 
-        <record id="trans_suspended_reapproved" model="workflow.transition">
-            <field name="act_from" ref="act_suspended"/>
-            <field name="act_to" ref="act_draft"/>
-            <field name="signal">get_reapprove</field>
+        <record id="trans_reopening_complete" model="workflow.transition">
+            <field name="act_from" ref="act_reopening"/>
+            <field name="act_to" ref="act_complete"/>
+            <field name="signal">button_suspended</field>
         </record>
 
-        <record id="trans_suspended_dummy" model="workflow.transition">
-            <field name="act_from" ref="act_suspended"/>
-            <field name="act_to" ref="act_dummy"/>
+        <record id="trans_first_opening_incomplete" model="workflow.transition">
+            <field name="act_from" ref="act_first_opening"/>
+            <field name="act_to" ref="act_incomplete"/>
             <field name="signal">get_never</field>
         </record>
 
-        <record id="trans_awaiting_approved" model="workflow.transition">
-            <field name="act_from" ref="act_draft"/>
-            <field name="act_to" ref="act_approved"/>
+        <record id="trans_incomplete_complete" model="workflow.transition">
+            <field name="act_from" ref="act_incomplete"/>
+            <field name="act_to" ref="act_complete"/>
             <field name="signal">button_approval</field>
         </record>
 
-        <record id="trans_approved_suspended" model="workflow.transition">
-            <field name="act_from" ref="act_approved"/>
-            <field name="act_to" ref="act_suspended"/>
+        <record id="trans_incomplete_first_opening" model="workflow.transition">
+            <field name="act_from" ref="act_incomplete"/>
+            <field name="act_to" ref="act_first_opening"/>
             <field name="signal">button_suspended</field>
         </record>
     </data>
