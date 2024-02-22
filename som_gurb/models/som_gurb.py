@@ -5,6 +5,18 @@ import logging
 
 logger = logging.getLogger("openerp.{}".format(__name__))
 
+_GURB_STATES = {
+    "draft": "Esborrany",
+    "first_opening": "Primera Obertura",
+    "complete": "Complet",
+    "incomplete": "No Complet",
+    "registered": "Grup registrat",
+    "in_process": "En tràmit",
+    "active": "Actiu",
+    "active_incomplete": "Actiu no complet",
+    "active_critical_incomplete": "Actiu no complet critic",
+    "reopening": "Reobertura",
+}
 
 _REQUIRED_FIRST_OPENING_FIELDS = [
     "name",
@@ -184,7 +196,7 @@ class SomGurb(osv.osv):
                     _("Falta omplir camps necessaris per passar a l'estat de primera obertura."),
                 )
 
-    def _action_change_stage(self, cursor, uid, ids, order, operator, context=None):
+    def _action_change_state(self, cursor, uid, ids, order, operator, context=None):
         if context is None:
             context = {}
 
@@ -287,12 +299,7 @@ class SomGurb(osv.osv):
         ),
         "sig_data": fields.char("Dades SIG", size=60),
         "activation_date": fields.date("Data activació GURB"),
-        "gurb_stage_id": fields.many2one(
-            "crm.case.stage",
-            "Estat",
-            required=True,
-            domain=[("section_id.code", "=", "GURB")],
-        ),
+        "gurb_state": fields.selection(_GURB_STATES, _(u"Estat del GURB")),
         "gurb_cups_ids": fields.one2many("som.gurb.cups", "gurb_id", "Betes", readonly=False),
         "joining_fee": fields.float("Tarifa cost adhesió"),  # TODO: New model
         "max_power": fields.float("Topall max. per contracte (kW)"),
