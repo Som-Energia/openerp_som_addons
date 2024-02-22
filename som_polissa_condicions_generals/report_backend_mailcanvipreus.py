@@ -104,7 +104,16 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
         context_preus_nous = dict(context)
         context_preus_nous["date"] = (date.today() + timedelta(days=50)).strftime("%Y-%m-%d")
-        # TODO: Preus nous amb 3.8
+
+        # Preus nous amb IESE 3.8
+        new_fiscal_position = {
+            68: 69, # IDs de testing, i cal afegir moltes més
+        }.get(
+            env.polissa_id.fiscal_position_id.id
+            or env.polissa_id.titular.property_account_position.id
+        )
+        if new_fiscal_position:
+            context_preus_nous['force_fiscal_position'] = new_fiscal_position
 
         preus_antics = self.get_preus(
             cursor, uid, env.polissa_id, with_taxes=False, context=context_preus_antics
