@@ -8,7 +8,10 @@
             <field name="arch" type="xml">
                 <tree string="Backup de dades">
                     <field name="origin"/>
-                    <field name="data"/>
+                    <field name="res_field"/>
+                    <field name="res_id"/>
+                    <field name="value"/>
+                    <field name="date_stashed"/>
                 </tree>
             </field>
         </record>
@@ -18,11 +21,16 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form>
-                    <field name="origin" select="1"/>
-                    <group colspan="6" col="2" string="Dades">
-                        <field name="data_text" select="2" on_change="check_correct_json(data_text)" height="600"  nolabel="1" />
+                    <group colspan="6" col="2" string="Identificació">
+                        <field name="origin" select="1" readonly="1"/>
+                        <field name="res_field" select="1" readonly="1"/>
+                        <field name="res_id" select="1" readonly="1"/>
                     </group>
-            </form>
+                    <group colspan="6" col="2" string="Dades">
+                        <field name="value" select="1" readonly="1"/>
+                        <field name="date_stashed" select="1" readonly="1"/>
+                    </group>
+                </form>
             </field>
         </record>
         <record id="action_som_stash_tree" model="ir.actions.act_window">
