@@ -5,18 +5,18 @@ import logging
 
 logger = logging.getLogger("openerp.{}".format(__name__))
 
-_GURB_STATES = {
-    "draft": "Esborrany",
-    "first_opening": "Primera Obertura",
-    "complete": "Complet",
-    "incomplete": "No Complet",
-    "registered": "Grup registrat",
-    "in_process": "En tràmit",
-    "active": "Actiu",
-    "active_incomplete": "Actiu no complet",
-    "active_critical_incomplete": "Actiu no complet critic",
-    "reopening": "Reobertura",
-}
+_GURB_STATES = [
+    ("draft", "Esborrany"),
+    ("first_opening", "Primera Obertura"),
+    ("complete", "Complet"),
+    ("incomplete", "No Complet"),
+    ("registered", "Grup registrat"),
+    ("in_process", "En tràmit"),
+    ("active", "Actiu"),
+    ("active_incomplete", "Actiu no complet"),
+    ("active_critical_incomplete", "Actiu no complet critic"),
+    ("reopened", "Reobertura"),
+]
 
 _REQUIRED_FIRST_OPENING_FIELDS = [
     "name",
@@ -207,7 +207,7 @@ class SomGurb(osv.osv):
             cursor, uid, "som_gurb", "gurb_crm_sections"
         )[1]
 
-        current_stage_id = self.read(cursor, uid, ids[0], ["gurb_stage_id"])["gurb_stage_id"][0]
+        current_stage_id = self.read(cursor, uid, ids[0], ["state"])["state"][0]
         stage_sequence = stage_obj.read(cursor, uid, current_stage_id, ["sequence"])["sequence"]
 
         last_stage_id = ir_model_obj.get_object_reference(
@@ -232,7 +232,7 @@ class SomGurb(osv.osv):
                 cursor, uid, "som_gurb", "stage_gurb_active"
             )[1]
         self.validate_stage(cursor, uid, ids, current_stage_id, stage_id, context=context)
-        self.write(cursor, uid, ids[0], {"gurb_stage_id": stage_id}, context=context)
+        self.write(cursor, uid, ids[0], {"state": stage_id}, context=context)
 
     # WIP CODE
     def add_services_to_gurb_contracts(self, cursor, uid, ids, context=None):
@@ -299,7 +299,7 @@ class SomGurb(osv.osv):
         ),
         "sig_data": fields.char("Dades SIG", size=60),
         "activation_date": fields.date("Data activació GURB"),
-        "gurb_state": fields.selection(_GURB_STATES, _(u"Estat del GURB")),
+        "state": fields.selection(_GURB_STATES, _(u"Estat del GURB")),
         "gurb_cups_ids": fields.one2many("som.gurb.cups", "gurb_id", "Betes", readonly=False),
         "joining_fee": fields.float("Tarifa cost adhesió"),  # TODO: New model
         "max_power": fields.float("Topall max. per contracte (kW)"),
@@ -373,7 +373,7 @@ class SomGurb(osv.osv):
     }
     _defaults = {
         "logo": lambda *a: False,
-        "gurb_stage_id": _get_gurb_initial_stage,
+        "state": lambda *a: "draft",
     }
 
     _sql_constraints = [(

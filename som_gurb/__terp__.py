@@ -22,6 +22,7 @@
         "views/som_gurb_cups_view.xml",
         "views/som_gurb_view.xml",
         "views/som_gurb_webview.xml",
+        "workflow/som_gurb_workflow.xml",
     ],
     "active": False,
     "installable": True,

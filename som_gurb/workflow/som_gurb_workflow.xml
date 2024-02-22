@@ -11,6 +11,7 @@
 
         <record id="act_draft" model="workflow.activity">
             <field name="wkf_id" ref="wkf_gurb"/>
+            <field name="flow_start">True</field>
             <field name="name">draft</field>
             <field name="kind">function</field>
             <field name="action">write({'state':'draft'})</field>
@@ -20,63 +21,63 @@
             <field name="wkf_id" ref="wkf_gurb"/>
             <field name="name">first_opening</field>
             <field name="kind">function</field>
-            <field name="action">write({'state':'draft'})</field>
+            <field name="action">write({'state':'first_opening'})</field>
         </record>
 
         <record id="act_complete" model="workflow.activity">
             <field name="wkf_id" ref="wkf_gurb"/>
             <field name="name">complete</field>
             <field name="kind">function</field>
-            <field name="action">write({'state':'draft'})</field>
+            <field name="action">write({'state':'complete'})</field>
         </record>
 
         <record id="act_incomplete" model="workflow.activity">
             <field name="wkf_id" ref="wkf_gurb"/>
             <field name="name">incomplete</field>
             <field name="kind">function</field>
-            <field name="action">write({'state':'draft'})</field>
+            <field name="action">write({'state':'incomplete'})</field>
         </record>
 
         <record id="act_registered" model="workflow.activity">
             <field name="wkf_id" ref="wkf_gurb"/>
             <field name="name">registered</field>
             <field name="kind">function</field>
-            <field name="action">write({'state':'draft'})</field>
+            <field name="action">write({'state':'registered'})</field>
         </record>
 
         <record id="act_in_process" model="workflow.activity">
             <field name="wkf_id" ref="wkf_gurb"/>
             <field name="name">in_process</field>
             <field name="kind">function</field>
-            <field name="action">write({'state':'draft'})</field>
+            <field name="action">write({'state':'in_process'})</field>
         </record>
 
         <record id="act_active" model="workflow.activity">
             <field name="wkf_id" ref="wkf_gurb"/>
             <field name="name">active</field>
             <field name="kind">function</field>
-            <field name="action">write({'state':'draft'})</field>
+            <field name="action">write({'state':'active'})</field>
         </record>
 
         <record id="act_active_incomplete" model="workflow.activity">
             <field name="wkf_id" ref="wkf_gurb"/>
             <field name="name">active_incomplete</field>
             <field name="kind">function</field>
-            <field name="action">write({'state':'draft'})</field>
+            <field name="action">write({'state':'active_incomplete'})</field>
         </record>
 
         <record id="act_active_critical_incomplete" model="workflow.activity">
             <field name="wkf_id" ref="wkf_gurb"/>
             <field name="name">active_critical_incomplete</field>
             <field name="kind">function</field>
-            <field name="action">write({'state':'draft'})</field>
+            <field name="action">write({'state':'active_critical_incomplete'})</field>
         </record>
 
         <record id="act_reopened" model="workflow.activity">
             <field name="wkf_id" ref="wkf_gurb"/>
             <field name="name">reopened</field>
             <field name="kind">function</field>
-            <field name="action">write({'state':'draft'})</field>
+            <field name="action">write({'state':'reopened'})</field>
         </record>
 
         <!-- Transition -->
@@ -84,85 +85,71 @@
         <record id="trans_draft_first_opening" model="workflow.transition">
             <field name="act_from" ref="act_draft"/>
             <field name="act_to" ref="act_first_opening"/>
-            <field name="signal"></field>
         </record>
 
         <record id="trans_first_opening_complete" model="workflow.transition">
             <field name="act_from" ref="act_first_opening"/>
             <field name="act_to" ref="act_complete"/>
-            <field name="signal"></field>
         </record>
 
         <record id="trans_complete_registered" model="workflow.transition">
             <field name="act_from" ref="act_complete"/>
             <field name="act_to" ref="act_registered"/>
-            <field name="signal"></field>
         </record>
 
         <record id="trans_registered_in_process" model="workflow.transition">
             <field name="act_from" ref="act_registered"/>
             <field name="act_to" ref="act_in_process"/>
-            <field name="signal"></field>
         </record>
 
         <record id="trans_in_process_active" model="workflow.transition">
             <field name="act_from" ref="act_in_process"/>
             <field name="act_to" ref="act_active"/>
-            <field name="signal"></field>
         </record>
 
         <record id="trans_active_active_incomplete" model="workflow.transition">
             <field name="act_from" ref="act_active"/>
             <field name="act_to" ref="act_active_incomplete"/>
-            <field name="signal"></field>
         </record>
 
         <record id="trans_active_incomplete_active_critical_incomplete" model="workflow.transition">
             <field name="act_from" ref="act_active_incomplete"/>
             <field name="act_to" ref="act_active_critical_incomplete"/>
-            <field name="signal"></field>
         </record>
 
-        <record id="trans_active_critical_incomplete_reopening" model="workflow.transition">
+        <record id="trans_active_critical_incomplete_reopened" model="workflow.transition">
             <field name="act_from" ref="act_active_critical_incomplete"/>
-            <field name="act_to" ref="act_reopening"/>
-            <field name="signal"></field>
+            <field name="act_to" ref="act_reopened"/>
         </record>
 
-        <record id="trans_reopening_incomplete" model="workflow.transition">
-            <field name="act_from" ref="act_reopening"/>
+        <record id="trans_reopened_incomplete" model="workflow.transition">
+            <field name="act_from" ref="act_reopened"/>
             <field name="act_to" ref="act_incomplete"/>
-            <field name="signal"></field>
         </record>
 
-        <record id="trans_active_incomplete_reopening" model="workflow.transition">
+        <record id="trans_active_incomplete_reopened" model="workflow.transition">
             <field name="act_from" ref="act_active_incomplete"/>
-            <field name="act_to" ref="act_reopening"/>
-            <field name="signal">button_suspended</field>
+            <field name="act_to" ref="act_reopened"/>
         </record>
 
-        <record id="trans_reopening_complete" model="workflow.transition">
-            <field name="act_from" ref="act_reopening"/>
+        <record id="trans_reopened_complete" model="workflow.transition">
+            <field name="act_from" ref="act_reopened"/>
             <field name="act_to" ref="act_complete"/>
-            <field name="signal">button_suspended</field>
         </record>
 
         <record id="trans_first_opening_incomplete" model="workflow.transition">
             <field name="act_from" ref="act_first_opening"/>
             <field name="act_to" ref="act_incomplete"/>
-            <field name="signal">get_never</field>
         </record>
 
         <record id="trans_incomplete_complete" model="workflow.transition">
             <field name="act_from" ref="act_incomplete"/>
             <field name="act_to" ref="act_complete"/>
-            <field name="signal">button_approval</field>
         </record>
 
         <record id="trans_incomplete_first_opening" model="workflow.transition">
             <field name="act_from" ref="act_incomplete"/>
             <field name="act_to" ref="act_first_opening"/>
-            <field name="signal">button_suspended</field>
         </record>
     </data>
 </openerp>
