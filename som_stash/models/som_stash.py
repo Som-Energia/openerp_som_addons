@@ -71,7 +71,8 @@ class SomStash(osv.osv):
             ):
                 dict_write[field] = fields[field]
 
-        model_obj.write(cursor, uid, item_id, dict_write, context=context)
+        if dict_write:
+            model_obj.write(cursor, uid, item_id, dict_write, context=context)
 
     def do_stash(self, cursor, uid, ids, model, context=None):
         setting_fields = self.get_fields_to_stash(cursor, uid, model)
