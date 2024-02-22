@@ -13,8 +13,8 @@ _GURB_STATES = [
     ("registered", "Grup registrat"),
     ("in_process", "En tràmit"),
     ("active", "Actiu"),
-    ("active_incomplete", "Actiu no complet"),
-    ("active_critical_incomplete", "Actiu no complet critic"),
+    ("active_inc", "Actiu no complet"),
+    ("active_crit_inc", "Actiu no complet critic"),
     ("reopened", "Reobertura"),
 ]
 
