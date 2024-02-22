@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_wizard_som_stasher" model="ir.ui.view">
+            <field name="name">wizard.som.stasher.form</field>
+            <field name="model">wizard.som.stasher</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Backup de dades">
+                    <label string="Aquest assistent realitza el backup de dades antigues per a ser arxivades i posteriorment esborrades." colspan="4"/>
+                    <label string="" colspan="4"/>
+                    <group colspan="4" string="Informació:">
+                        <field name="info" nolabel="1" colspan="4" width="500" height="200" readonly="True"/>
+                    </group>
+                    <group colspan="4">
+                        <field name="do_stash"/>
+                        <field name="years"/>
+                    </group>
+                    <label string="" colspan="4"/>
+                    <group colspan="4">
+                        <button special="cancel" string="Tancar" icon="gtk-no"/>
+                        <button icon="gtk-ok" name="do_stash_process" string="Cerca i modifica" type="object"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_menu_wizard_som_stasher_form" model="ir.actions.act_window">
+            <field name="name">Stash data</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.som.stasher</field>
+            <field name="context">{'from_menu': True}</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        <menuitem name="Fer backup de dades"
+            id="menu_som_stash_do_process"
+            parent="menu_som_stash_folder"
+            action="action_menu_wizard_som_stasher_form"
+            sequence="99"/>
+    </data>
+</openerp>

@@ -598,7 +598,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                             <% llista_preu = ultima_modcon.llista_preu if modcon_pendent_periodes else polissa.llista_preu %>
                             %for p in periodes_energia:
                                 %if llista_preu and not lead:
-                                    <% ctx['force_pricelist'] = llista_preu %>
+                                    <% ctx['force_pricelist'] = llista_preu.id %>
                                     <td class="center">
                                         <span class="">${formatLang(get_atr_price(cursor, uid, polissa, p, 'te', ctx, with_taxes=True)[0], digits=6)}</span>
                                     </td>

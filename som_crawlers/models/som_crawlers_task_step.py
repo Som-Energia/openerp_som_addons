@@ -260,8 +260,9 @@ class SomCrawlersTaskStep(osv.osv):
         return output
 
     def recursive_extract_zip(self, zip_path, destination_path):
-        with zipfile.ZipFile(zip_path, "r") as zip_file:
-            zip_file.extractall(path=destination_path)
+        if os.path.getsize(zip_path) > 0:
+            with zipfile.ZipFile(zip_path, "r") as zip_file:
+                zip_file.extractall(path=destination_path)
         os.remove(zip_path)
 
         for root, dirs, files in os.walk(destination_path):
