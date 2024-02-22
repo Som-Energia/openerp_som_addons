@@ -3,7 +3,6 @@ from osv import fields, osv
 from tools.translate import _
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-import json
 
 
 class WizardSomStasher(osv.osv_memory):
@@ -72,71 +71,6 @@ class WizardSomStasher(osv.osv_memory):
         ])
         return to_stash_ids
 
-    def do_stash_model(self, cursor, uid, ids, model, context=None):
-
-        def make_stasheable_dict(dict):
-            time_stamp = datetime.strftime(datetime.today(), '%Y-%m-%d %H:%M:%S')
-            result = {}
-            for k, v in dict.items():
-                if k != 'id' and v:
-                    result[k] = {
-                        'value': v,
-                        'stashed': time_stamp,
-                    }
-            return json.dumps(result)
-
-        # obtenim els valors a fer stash del model
-        ir_model_obj = self.pool.get('ir.model')
-        som_stash_setting_obj = self.pool.get("som.stash.setting")
-
-        model_ids = ir_model_obj.search(cursor, uid, [('model', '=', model)])
-        if len(model_ids) != 1:
-            return
-
-        stash_setting_ids = som_stash_setting_obj.search(
-            cursor, uid, [('model', '=', model_ids[0])]
-        )
-        if not stash_setting_ids:
-            return
-
-        # montem diccionari per fer el write i llista per al read
-        dict_write = {}
-        list_fields_read = []
-        som_stash_obj = self.pool.get("som.stash")
-        for setting in som_stash_setting_obj.browse(cursor, uid, stash_setting_ids):
-            dict_write[setting.field.name] = setting.default_stashed_value
-            list_fields_read.append(setting.field.name)
-
-        if not list_fields_read or not dict_write:
-            return
-
-        model_obj = self.pool.get(model)
-        for id in ids:
-            new_dict_data = model_obj.read(cursor, uid, id, list_fields_read)
-            value_origin = "{},{}".format(model, str(id))
-            stash_id = som_stash_obj.search(cursor, uid, [('origin', '=', value_origin)])
-            if len(stash_id) > 0:
-                str_data = som_stash_obj.read(cursor, uid, stash_id, ['data'])['data']
-                old_dict_data = json.loads(str_data)
-
-                keys_to_update = set(new_dict_data.keys()) - set(old_dict_data.keys())
-                for key_to_update in keys_to_update:
-                    old_dict_data[key_to_update] = new_dict_data[key_to_update]
-
-                values = {
-                    'data': make_stasheable_dict(old_dict_data),
-                }
-                som_stash_obj.write(cursor, uid, stash_id, values)
-            else:
-                values = {
-                    'origin': value_origin,
-                    'data': make_stasheable_dict(new_dict_data),
-                }
-                som_stash_obj.create(cursor, uid, values)
-
-        # fem el write
-        model_obj.write(cursor, uid, ids, dict_write)
-
     def do_stash_process(self, cursor, uid, ids, context=None):
         msg = _("Resultat d'execució del wizard de backup de dades:\n")
         do_stash = self.read(
@@ -156,12 +90,22 @@ class WizardSomStasher(osv.osv_memory):
         partners_to_stash = partners_to_stash[:2]
 
         if do_stash:
-            self.do_stash_model(cursor, uid, partners_to_stash, 'res.partner')
-
+            som_stash_obj = self.pool.get("som.stash")
+            som_stash_obj.do_stash(
+                cursor, uid,
+                partners_to_stash,
+                'res.partner',
+                context=context
+            )
             list_partners_address_ids = self.get_partners_address(
                 cursor, uid, partners_to_stash, context=context
             )
-            self.do_stash_model(cursor, uid, list_partners_address_ids, 'res.partner.address')
+            som_stash_obj.do_stash(
+                cursor, uid,
+                list_partners_address_ids,
+                'res.partner.address',
+                context=context
+            )
 
         self.write(
             cursor, uid, ids, {'info': msg}
