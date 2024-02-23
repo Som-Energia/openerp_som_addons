@@ -94,31 +94,6 @@ class SomGurb(osv.osv):
 
         return res_id
 
-    def _ff_get_generation_power(self, cursor, uid, ids, field_name, arg, context=None):
-        if context is None:
-            context = {}
-        auto_obj = self.pool.get("giscedata.autoconsum")
-        res = dict.fromkeys(ids, False)
-        for gurb_vals in self.read(cursor, uid, ids, ["self_consumption_id"]):
-            auto_id = gurb_vals.get("self_consumption_id", False)
-            if auto_id:
-                autoconsum = auto_obj.browse(cursor, uid, auto_id[0], context=context)
-                max_gen_pot = 0
-                try:
-                    gens = autoconsum.generador_id
-                    for gen in gens:
-                        max_gen_pot = max(max_gen_pot, gen.pot_instalada_gen)
-                except Exception as e:
-                    logger.info(
-                        _(
-                            u"Error: No s'ha pogut trobar la instal·lació d'Autoconsum. "
-                            u"No es pot recuperar la potència de generació. e: {}"
-                        ).format(e)
-                    )
-                finally:
-                    res[gurb_vals["id"]] = max_gen_pot
-        return res
-
     def _ff_get_address_fields(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
             context = {}
