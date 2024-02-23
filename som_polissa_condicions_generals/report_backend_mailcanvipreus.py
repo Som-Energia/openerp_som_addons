@@ -107,7 +107,16 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
         # Preus nous amb IESE 3.8
         new_fiscal_position = {
-            68: 69, # IDs de testing, i cal afegir moltes més
+            34: 34,
+            18: 18,
+            50: 59,
+            52: 61,
+            49: 58,
+            47: 56,
+            48: 57,
+            33: 33,
+            43: 44,
+            53: 62,
         }.get(
             env.polissa_id.fiscal_position_id.id
             or env.polissa_id.titular.property_account_position.id
@@ -167,7 +176,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
                 cursor, uid, env.polissa_id, with_taxes=True, context=context_preus_nous
             )
 
-        data.update(self.getEstimacioData(cursor, uid, env, context))
+        data.update(self.getEstimacioData(cursor, uid, env, context=context_preus_nous))
         data.update(self.getTarifaCorreu(cursor, uid, env, context))
         data.update(self.getPreuCompensacioExcedents(cursor, uid, env, context))
         return data
@@ -423,12 +432,14 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
     def calcularImpostosPerCostAnualEstimat(self, preu, fiscal_position, context=False):
         iva = 0.1 if context and context.get('iva10') else 0.21
-        impost_electric = 0.025 # FIXME: Change in every send or get it from the ERP
-        if fiscal_position:
+        impost_electric = 0.038
+        if context.get('force_fiscal_position'):
             if fiscal_position.id in [19, 33, 38]:
                 iva = 0.03
+                impost_electric = 0.0050
             if fiscal_position.id in [25, 34, 39]:
                 iva = 0.0
+                impost_electric = 0.0050
         preu_imp = round(preu * (1 + impost_electric), 2)
         return round(preu_imp * (1 + iva))
 
@@ -445,7 +456,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
         return format(number, "1,.0f").replace(",", ".")
 
     def getEstimacioData(self, cursor, uid, env, context=False):
-        PRICE_CHANGE_DATE = "2024-01-01"
+        PRICE_CHANGE_DATE = "2024-04-01"
 
         potencies = self.getPotenciesPolissa(cursor, uid, env.polissa_id)
 
@@ -503,10 +514,10 @@ class ReportBackendMailcanvipreus(ReportBackend):
         )
 
         preu_vell_imp_int = self.calcularImpostosPerCostAnualEstimat(
-            preu_vell, env.polissa_id.fiscal_position_id, context
+            preu_vell, env.polissa_id.fiscal_position_id, context=context
         )
         preu_nou_imp_int = self.calcularImpostosPerCostAnualEstimat(
-            preu_nou, env.polissa_id.fiscal_position_id, context
+            preu_nou, env.polissa_id.fiscal_position_id, context=context
         )
 
         preu_vell_imp = self.formatNumber(preu_vell_imp_int)
