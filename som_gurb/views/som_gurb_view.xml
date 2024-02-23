@@ -34,7 +34,7 @@
                     </group>
                     <group col="6" colspan="4" string="Estats" icon="123">
                         <field name="state" select="1" colspan="3" nolabel="1" />
-                        <button name="action_next_state" colspan="1" icon="gtk-go-forward" type="object" primary="1" string="Estat següent" />
+                        <button string="Primera obertura" name="button_first_opening" states="draft" type="workflow" colspan="2" />
                     </group>
                     <group col="6" colspan="4" string="General" icon="building-cottage">
                         <field name="name" select="1" />
