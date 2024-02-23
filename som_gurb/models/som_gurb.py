@@ -33,7 +33,7 @@ _REQUIRED_FIRST_OPENING_FIELDS = [
     "reopening_days",
     "critical_incomplete_state",
     "generation_power",
-    "has_compensation",
+    # "has_compensation",
 ]
 
 
@@ -309,7 +309,7 @@ class SomGurb(osv.osv):
         "reopening_days": fields.integer("Dies reobertura"),
         "notes": fields.text("Observacions"),
         "history_box": fields.text("Històric del GURB", readonly=True),
-        "has_compensation": fields.boolean("Amb compensació", readonly=True),
+        "has_compensation": fields.boolean("Amb compensació", readonly=True),  # Selection?
         "generation_power": fields.float("Potència generació", digits=(10, 3)),
         "meter_id": fields.many2one("giscedata.registrador", "Registrador (comptador)"),
         "available_betas_kw": fields.function(
