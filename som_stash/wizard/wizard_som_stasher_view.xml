@@ -15,6 +15,7 @@
                     <group colspan="4">
                         <field name="do_stash"/>
                         <field name="years"/>
+                        <field name="limit_to_stash"/>
                     </group>
                     <label string="" colspan="4"/>
                     <group colspan="4">

@@ -39,7 +39,7 @@ class SomStash(osv.osv):
 
         return fields
 
-    def do_stash_item_field(self, cursor, uid, item_id, field, old_value, default_value, key_ref_origin, context=None):  # noqa: E501
+    def do_stash_item_field(self, cursor, uid, item_id, field, old_value, default_value, key_ref_origin, model, context=None):  # noqa: E501
         if not old_value:
             return False
 
@@ -50,6 +50,7 @@ class SomStash(osv.osv):
             'origin': key_ref_origin,
             'res_field': field,
             'res_id': item_id,
+            'res_model': model,
             'value': old_value,
             'date_stashed': datetime.strftime(datetime.today(), '%Y-%m-%d %H:%M:%S'),
         }
@@ -66,7 +67,7 @@ class SomStash(osv.osv):
         for field in fields.keys():
             if self.do_stash_item_field(
                     cursor, uid,
-                    item_id, field, data_to_bkp[field], fields[field], key_ref,
+                    item_id, field, data_to_bkp[field], fields[field], key_ref, model,
                     context=context,
             ):
                 dict_write[field] = fields[field]
@@ -83,6 +84,7 @@ class SomStash(osv.osv):
         'origin': fields.reference(_('Origen'), selection=SELECTABLE_MODELS, size=128),
         'res_field': fields.char(_('Camp'), size=64),
         'res_id': fields.integer(_('ID')),
+        'res_model': fields.char(_('Model'), size=128),
         'value': fields.text(_('Valor')),
         'date_stashed': fields.datetime(_('Data backup')),
     }
