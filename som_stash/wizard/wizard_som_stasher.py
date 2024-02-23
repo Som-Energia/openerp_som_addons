@@ -15,8 +15,7 @@ class WizardSomStasher(osv.osv_memory):
             cfg_obj.get(cursor, uid, "som_stash_years_ago", "6")
         )
 
-    def get_date_limit(self, cursor, uid, context=None):
-        years_ago = self._get_default_years(cursor, uid, context)
+    def get_date_limit(self, cursor, uid, years_ago, context=None):
         date_limit = datetime.today() - relativedelta(years=years_ago)
         return date_limit
 
@@ -57,8 +56,8 @@ class WizardSomStasher(osv.osv_memory):
         res = cursor.dictfetchone()["partner_ids"]
         return res or []
 
-    def get_partners_origin_to_stash(self, cursor, uid, context=None):
-        date_limit = self.get_date_limit(cursor, uid, context=context)
+    def get_partners_origin_to_stash(self, cursor, uid, years_ago, context=None):
+        date_limit = self.get_date_limit(cursor, uid, years_ago, context=context)
         patrner_ids = self.get_partners_inactive_soci_before_datelimit(cursor, uid, date_limit)
         patrner_ids += self.get_partners_inactive_pol_before_datelimit(cursor, uid, date_limit)
         res = sorted(list(set(patrner_ids)))
@@ -73,11 +72,19 @@ class WizardSomStasher(osv.osv_memory):
 
     def do_stash_process(self, cursor, uid, ids, context=None):
         msg = _("Resultat d'execució del wizard de backup de dades:\n")
-        do_stash = self.read(
-            cursor, uid, ids, ['do_stash'], context=context
-        )[0]['do_stash']
+        # do not commit
+        # import pudb; pu.db
+        wiz = self.read(
+            cursor, uid, ids, [], context=context
+        )[0]
 
-        partners_to_stash = self.get_partners_origin_to_stash(cursor, uid, context=context)
+        do_stash = wiz['do_stash']
+        limit_to_stash = wiz['limit_to_stash']
+        years_ago = wiz['years']
+
+        partners_to_stash = self.get_partners_origin_to_stash(
+            cursor, uid, years_ago, context=context
+        )
         msg += _(
             "Trobats {} partners per fer backup.\nLlista d'Ids:\n{}".format(
                 len(partners_to_stash),
@@ -85,11 +92,10 @@ class WizardSomStasher(osv.osv_memory):
             )
         )
 
-        # do not commit
-        # import pudb;pu.db
-        partners_to_stash = partners_to_stash[:2]
+        if limit_to_stash and limit_to_stash < len(partners_to_stash):
+            partners_to_stash = partners_to_stash[:limit_to_stash]
 
-        if do_stash:
+        if do_stash and partners_to_stash:
             som_stash_obj = self.pool.get("som.stash")
             som_stash_obj.do_stash(
                 cursor, uid,
@@ -119,6 +125,7 @@ class WizardSomStasher(osv.osv_memory):
                    'regsitres trobats')
         ),
         'years': fields.integer(_("Antiguitat en anys")),
+        'limit_to_stash': fields.integer(_("Elements a fet backup (0 = tots)")),
     }
 
     _defaults = {
