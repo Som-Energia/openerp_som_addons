@@ -19,12 +19,13 @@ class ProductPricelist(osv.osv):
             titular, context)
 
     def get_atr_price_from_report(
-            self, cursor, uid, polissa_id, period_name, tipus, context, with_taxes=False):
+            self, cursor, uid, ids, polissa_id, period_name, tipus, context, with_taxes=False):
         pol_obj = self.pool.get('giscedata.polissa')
         polissa = pol_obj.browse(cursor, uid, polissa_id)
         return get_atr_price(cursor, uid, polissa, period_name, tipus, context, with_taxes)
 
-    def get_atr_price_copied(self, cursor, uid, polissa_id, pname, tipus, context, with_taxes=False):
+    def get_atr_price_copied(
+            self, cursor, uid, polissa_id, pname, tipus, context, with_taxes=False):
         from datetime import date
         from datetime import datetime
         import calendar
@@ -50,7 +51,7 @@ class ProductPricelist(osv.osv):
             product_id = periodes_ac[pname]
         else:
             product_id = polissa.tarifa.get_periodes_producte(tipus)[pname]
-        if not context.get('date',False):
+        if not context.get('date', False):
             context.update({
                 'date': date.today()
             })
@@ -76,22 +77,22 @@ class ProductPricelist(osv.osv):
         if pricelist.visible_discount:
             date_price = date.today().strftime('%Y-%m-%d')
             version = pricelistver_obj.search(cursor, uid,
-                [
-                    ('pricelist_id', '=', pricelist.id),
-                    '|',
-                    ('date_start', '=', False),
-                    ('date_start', '<=', date_price),
-                    '|',
-                    ('date_end', '=', False),
-                    ('date_end', '>=', date_price)
+                                              [
+                                                  ('pricelist_id', '=', pricelist.id),
+                                                  '|',
+                                                  ('date_start', '=', False),
+                                                  ('date_start', '<=', date_price),
+                                                  '|',
+                                                  ('date_end', '=', False),
+                                                  ('date_end', '>=', date_price)
 
-                ], order='id', limit=1)
+                                              ], order='id', limit=1)
             if version:
                 items = pricelistitem_obj.search(
-                        cursor, uid, [
-                            ('price_version_id', '=', version[0]),
-                            ('product_id', '=', product_id)
-                        ]
+                    cursor, uid, [
+                        ('price_version_id', '=', version[0]),
+                        ('product_id', '=', product_id)
+                    ]
                 )
                 if items:
                     params_to_read = ['price_discount', 'price_surcharge']
@@ -117,8 +118,10 @@ class ProductPricelist(osv.osv):
             preu_final = price_atr
             prod = prod_obj.browse(cursor, uid, product_id)
             for tax in prod.taxes_id:
-                fiscal_position = polissa.fiscal_position_id or polissa.titular.property_account_position
-                mapped_tax_ids = fiscal_pos_obj.map_tax(cursor, uid, fiscal_position, [tax], context=context)
+                fiscal_position = (polissa.fiscal_position_id
+                                   or polissa.titular.property_account_position)
+                mapped_tax_ids = fiscal_pos_obj.map_tax(
+                    cursor, uid, fiscal_position, [tax], context=context)
                 if mapped_tax_ids:
                     tax_id = mapped_tax_ids[0]
                     tax = acc_tax_obj.browse(cursor, uid, tax_id)
@@ -131,5 +134,6 @@ class ProductPricelist(osv.osv):
                     preu_final += tax_amount
             return preu_final, discount
         return price_atr, discount
+
 
 ProductPricelist()
