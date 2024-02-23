@@ -232,7 +232,7 @@ class SomGurb(osv.osv):
         ),
         "sig_data": fields.char("Dades SIG", size=60),
         "activation_date": fields.date("Data activació GURB"),
-        "state": fields.selection(_GURB_STATES, _(u"Estat del GURB")),
+        "state": fields.selection(_GURB_STATES, "Estat del GURB", readonly=True),
         "gurb_cups_ids": fields.one2many("som.gurb.cups", "gurb_id", "Betes", readonly=False),
         "state_log_ids": fields.one2many(
             "som.gurb.state.log",
