@@ -14,14 +14,14 @@
             <field name="flow_start">True</field>
             <field name="name">draft</field>
             <field name="kind">function</field>
-            <field name="action">write({'state':'draft'})</field>
+            <field name="action">change_state('draft')</field>
         </record>
 
         <record id="act_first_opening" model="workflow.activity">
             <field name="wkf_id" ref="wkf_gurb"/>
             <field name="name">first_opening</field>
             <field name="kind">function</field>
-            <field name="action">write({'state':'first_opening'})</field>
+            <field name="action">change_state('first_opening')</field>
         </record>
 
         <record id="act_complete" model="workflow.activity">

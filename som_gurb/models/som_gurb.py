@@ -41,7 +41,27 @@ _REQUIRED_FIRST_OPENING_FIELDS = [
 
 class SomGurbStateLog(osv.osv):
     _name = "som.gurb.state.log"
-    _order = "date_start DESC"
+    _order = "create_date desc"
+
+    def create(self, cursor, uid, vals, context=None):
+        res_id = super(SomGurbStateLog, self).create(cursor, uid, vals, context=context)
+
+        if res_id:
+            # If exists, set date_end to the previous state log with same "gurb_id"
+            new_state_log = self.browse(cursor, uid, res_id, context=context)
+            prev_state_log_ids = self.search(
+                cursor, uid, [("gurb_id", "=", new_state_log.gurb_id.id)], context=context
+            )
+            if len(prev_state_log_ids) > 1:
+                self.write(
+                    cursor,
+                    uid,
+                    prev_state_log_ids[1],
+                    {"date_end": new_state_log.date_start},
+                    context=context,
+                )
+
+        return res_id
 
     _columns = {
         "gurb_id": fields.many2one("som.gurb", "GURB", required=True),
@@ -162,6 +182,14 @@ class SomGurb(osv.osv):
                     "self_consumption_end_date": False,
                 }
         return res
+
+    def _log_change_state(self, cursor, uid, id, new_state, context=None):
+        self.write(cursor, uid, id, {"state_log_ids": [(0, 0, {"state": new_state})]})
+
+    def change_state(self, cursor, uid, ids, new_state, context=None):
+        for record_id in ids:
+            self.write(cursor, uid, ids, {"state": new_state}, context=context)
+            self._log_change_state(cursor, uid, record_id, new_state, context=context)
 
     def validate_draft_first_opening(self, cursor, uid, ids, context=None):
         for record in self.read(cursor, uid, ids, _REQUIRED_FIRST_OPENING_FIELDS, context=context):
