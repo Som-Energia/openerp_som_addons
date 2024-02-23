@@ -22,7 +22,7 @@ _GURB_STATES = [
 
 _REQUIRED_FIRST_OPENING_FIELDS = [
     "name",
-    "code"
+    "code",
     "address_id",
     "province",
     "zip_code",
