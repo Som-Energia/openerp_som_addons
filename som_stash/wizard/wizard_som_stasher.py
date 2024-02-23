@@ -85,6 +85,10 @@ class WizardSomStasher(osv.osv_memory):
         partners_to_stash = self.get_partners_origin_to_stash(
             cursor, uid, years_ago, context=context
         )
+
+        if limit_to_stash and limit_to_stash < len(partners_to_stash):
+            partners_to_stash = partners_to_stash[:limit_to_stash]
+
         msg += _(
             "Trobats {} partners per fer backup.\nLlista d'Ids:\n{}".format(
                 len(partners_to_stash),
@@ -92,25 +96,37 @@ class WizardSomStasher(osv.osv_memory):
             )
         )
 
-        if limit_to_stash and limit_to_stash < len(partners_to_stash):
-            partners_to_stash = partners_to_stash[:limit_to_stash]
-
         if do_stash and partners_to_stash:
             som_stash_obj = self.pool.get("som.stash")
-            som_stash_obj.do_stash(
+            res_partners_stashed = som_stash_obj.do_stash(
                 cursor, uid,
                 partners_to_stash,
                 'res.partner',
                 context=context
             )
+
+            msg += _(
+                "\nModificades {} fitxes de partners.\nLlista d'Ids:\n{}".format(
+                    len(res_partners_stashed),
+                    ', '.join([str(i) for i in res_partners_stashed if i])
+                )
+            )
+
             list_partners_address_ids = self.get_partners_address(
                 cursor, uid, partners_to_stash, context=context
             )
-            som_stash_obj.do_stash(
+            res_partners_address_stashed = som_stash_obj.do_stash(
                 cursor, uid,
                 list_partners_address_ids,
                 'res.partner.address',
                 context=context
+            )
+
+            msg += _(
+                "\nModificades {} fitxes d'adreces de partners.\nLlista d'Ids:\n{}".format(
+                    len(res_partners_address_stashed),
+                    ', '.join([str(i) for i in res_partners_address_stashed if i])
+                )
             )
 
         self.write(

@@ -74,11 +74,18 @@ class SomStash(osv.osv):
 
         if dict_write:
             model_obj.write(cursor, uid, item_id, dict_write, context=context)
+            return True
+        return False
 
     def do_stash(self, cursor, uid, ids, model, context=None):
+        modified = []
         setting_fields = self.get_fields_to_stash(cursor, uid, model)
         for item_id in ids:
-            self.do_stash_item(cursor, uid, item_id, model, setting_fields, context=context)
+            if self.do_stash_item(
+                cursor, uid, item_id, model, setting_fields, context=context
+            ):
+                modified.append(item_id)
+        return modified
 
     _columns = {
         'origin': fields.reference(_('Origen'), selection=SELECTABLE_MODELS, size=128),
