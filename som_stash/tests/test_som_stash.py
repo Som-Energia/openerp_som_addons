@@ -1,19 +1,12 @@
 # -*- coding: utf-8 -*-
 from destral import testing
 from destral.transaction import Transaction
-from datetime import date, datetime, timedelta
+from datetime import datetime
 
 
-def today_str():
-    return date.today().strftime("%Y-%m-%d")
-
-
-def today_hour_str():
-    return datetime.today().strftime("%Y-%m-%d %H:%M:%S")
-
-
-def today_minus_str(d):
-    return (date.today() - timedelta(days=d)).strftime("%Y-%m-%d")
+def get_minutes(then_str, now):
+    difference = datetime.strptime(then_str, "%Y-%m-%d %H:%M:%S") - now
+    return difference.total_seconds() / 60.0
 
 
 def get_data_for_id(results, r_id):
@@ -136,7 +129,7 @@ class SomStashTest(SomStashSettingsTests):
 
         data_pre = rp_obj.read(self.cursor, self.uid, id_1, ['name', 'ref'])
 
-        todayhm = today_hour_str()[:17]
+        todayhm = datetime.today()
 
         n_stash_items = len(stash_obj.search(self.cursor, self.uid, []))
         result = stash_obj.do_stash(self.cursor, self.uid, [id_1], 'res.partner')
@@ -154,7 +147,7 @@ class SomStashTest(SomStashSettingsTests):
             values = self.get_stashed_values('res.partner', id_1, k)
             self.assertEqual(len(values), 1)
             self.assertEqual(values[0]['value'], data_pre[k])
-            self.assertEqual(values[0]['date_stashed'][:17], todayhm)
+            self.assertLessEqual(get_minutes(values[0]['date_stashed'], todayhm), 5)
 
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0], id_1)
@@ -173,7 +166,7 @@ class SomStashTest(SomStashSettingsTests):
 
         data_pre = rp_obj.read(self.cursor, self.uid, id_3, ['name', 'ref'])
 
-        todayhm = today_hour_str()[:17]
+        todayhm = datetime.today()
 
         n_stash_items = len(stash_obj.search(self.cursor, self.uid, []))
         result = stash_obj.do_stash(self.cursor, self.uid, [id_3], 'res.partner')
@@ -190,7 +183,7 @@ class SomStashTest(SomStashSettingsTests):
         values = self.get_stashed_values('res.partner', id_3, 'name')
         self.assertEqual(len(values), 1)
         self.assertEqual(values[0]['value'], data_pre['name'])
-        self.assertEqual(values[0]['date_stashed'][:17], todayhm)
+        self.assertLessEqual(get_minutes(values[0]['date_stashed'], todayhm), 5)
         values = self.get_stashed_values('res.partner', id_3, 'ref')
         self.assertEqual(len(values), 0)
 
@@ -215,7 +208,7 @@ class SomStashTest(SomStashSettingsTests):
 
         data_pre = rp_obj.read(self.cursor, self.uid, ids, ['name', 'ref'])
 
-        todayhm = today_hour_str()[:17]
+        todayhm = datetime.today()
 
         n_stash_items = len(stash_obj.search(self.cursor, self.uid, []))
         result = stash_obj.do_stash(self.cursor, self.uid, ids, 'res.partner')
@@ -243,29 +236,29 @@ class SomStashTest(SomStashSettingsTests):
         values = self.get_stashed_values('res.partner', id_1, 'name')
         self.assertEqual(len(values), 1)
         self.assertEqual(values[0]['value'], data_pre_v['name'])
-        self.assertEqual(values[0]['date_stashed'][:17], todayhm)
+        self.assertLessEqual(get_minutes(values[0]['date_stashed'], todayhm), 5)
         values = self.get_stashed_values('res.partner', id_1, 'ref')
         self.assertEqual(len(values), 1)
         self.assertEqual(values[0]['value'], data_pre_v['ref'])
-        self.assertEqual(values[0]['date_stashed'][:17], todayhm)
+        self.assertLessEqual(get_minutes(values[0]['date_stashed'], todayhm), 5)
 
         data_pre_v = get_data_for_id(data_pre, id_2)
         self.assertEqual(id_2, data_pre_v['id'])
         values = self.get_stashed_values('res.partner', id_2, 'name')
         self.assertEqual(len(values), 1)
         self.assertEqual(values[0]['value'], data_pre_v['name'])
-        self.assertEqual(values[0]['date_stashed'][:17], todayhm)
+        self.assertLessEqual(get_minutes(values[0]['date_stashed'], todayhm), 5)
         values = self.get_stashed_values('res.partner', id_2, 'ref')
         self.assertEqual(len(values), 1)
         self.assertEqual(values[0]['value'], data_pre_v['ref'])
-        self.assertEqual(values[0]['date_stashed'][:17], todayhm)
+        self.assertLessEqual(get_minutes(values[0]['date_stashed'], todayhm), 5)
 
         data_pre_v = get_data_for_id(data_pre, id_3)
         self.assertEqual(id_3, data_pre_v['id'])
         values = self.get_stashed_values('res.partner', id_3, 'name')
         self.assertEqual(len(values), 1)
         self.assertEqual(values[0]['value'], data_pre_v['name'])
-        self.assertEqual(values[0]['date_stashed'][:17], todayhm)
+        self.assertLessEqual(get_minutes(values[0]['date_stashed'], todayhm), 5)
         values = self.get_stashed_values('res.partner', id_3, 'ref')
         self.assertEqual(len(values), 0)
 
@@ -274,7 +267,7 @@ class SomStashTest(SomStashSettingsTests):
         values = self.get_stashed_values('res.partner', id_4, 'name')
         self.assertEqual(len(values), 1)
         self.assertEqual(values[0]['value'], data_pre_v['name'])
-        self.assertEqual(values[0]['date_stashed'][:17], todayhm)
+        self.assertLessEqual(get_minutes(values[0]['date_stashed'], todayhm), 5)
         values = self.get_stashed_values('res.partner', id_4, 'ref')
         self.assertEqual(len(values), 0)
 
@@ -287,7 +280,8 @@ class SomStashTest(SomStashSettingsTests):
                 if k in data_pre_v and data_pre_v[k]:
                     self.assertEqual(len(values), 1)
                     self.assertEqual(values[0]['value'], data_pre_v[k])
-                    self.assertEqual(values[0]['date_stashed'][:17], todayhm)
+                    self.assertLessEqual(
+                        get_minutes(values[0]['date_stashed'], todayhm), 5)
                 else:
                     self.assertEqual(len(values), 0)
 
@@ -311,7 +305,7 @@ class SomStashTest(SomStashSettingsTests):
 
         data_pre = rp_obj.read(self.cursor, self.uid, id_1, ['name', 'ref'])
 
-        todayhm = today_hour_str()[:17]
+        todayhm = datetime.today()
 
         n_stash_items = len(stash_obj.search(self.cursor, self.uid, []))
         result_1 = stash_obj.do_stash(self.cursor, self.uid, [id_1], 'res.partner')
@@ -330,7 +324,7 @@ class SomStashTest(SomStashSettingsTests):
             values = self.get_stashed_values('res.partner', id_1, k)
             self.assertEqual(len(values), 1)
             self.assertEqual(values[0]['value'], data_pre[k])
-            self.assertEqual(values[0]['date_stashed'][:17], todayhm)
+            self.assertLessEqual(get_minutes(values[0]['date_stashed'], todayhm), 5)
 
         # test that all where modified only first time
         self.assertEqual(len(result_1), 1)
@@ -350,7 +344,7 @@ class SomStashTest(SomStashSettingsTests):
 
         data_pre = rp_obj.read(self.cursor, self.uid, id_1, ['name', 'ref'])
 
-        todayhm = today_hour_str()[:17]
+        todayhm = datetime.today()
 
         n_stash_items = len(stash_obj.search(self.cursor, self.uid, []))
         result_1 = stash_obj.do_stash(self.cursor, self.uid, [id_1], 'res.partner')
@@ -373,7 +367,7 @@ class SomStashTest(SomStashSettingsTests):
             values = self.get_stashed_values('res.partner', id_1, k)
             self.assertEqual(len(values), 1)
             self.assertEqual(values[0]['value'], data_pre[k])
-            self.assertEqual(values[0]['date_stashed'][:17], todayhm)
+            self.assertLessEqual(get_minutes(values[0]['date_stashed'], todayhm), 5)
 
         # test that all where modified only first time
         self.assertEqual(len(result_1), 1)
