@@ -79,6 +79,8 @@
                             <field name="notes" colspan="4" height="600" nolabel="1" />
                         </page>
                         <page string="Històric" icon="history">
+                            <separator string="Logs canvi d'estat" colspan="4" />
+                            <field name="state_log_ids" nolabel="1" />
                             <separator string="Canvis realitzats al GURB" colspan="4" />
                             <field name="history_box" colspan="4" height="600" nolabel="1"/>
                         </page>
@@ -90,6 +92,20 @@
                         </page>
                     </notebook>
                 </form>
+            </field>
+        </record>
+        <!-- Vista llistat logs canvi estat -->
+        <record model="ir.ui.view" id="view_gurb_state_logs_tree">
+            <field name="name">som.gurbs.state.log.tree</field>
+            <field name="version" eval="1" />
+            <field name="model">som.gurb.state.log</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Logs canvi d'estat">
+                    <field name="state"/>
+                    <field name="date_start"/>
+                    <field name="date_end"/>
+                </tree>
             </field>
         </record>
         <!-- Acció per obrir el llistat de GURBs-->

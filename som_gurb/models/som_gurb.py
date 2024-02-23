@@ -1,6 +1,8 @@
 # -*- encoding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
+from datetime import datetime
+
 import logging
 
 logger = logging.getLogger("openerp.{}".format(__name__))
@@ -35,6 +37,25 @@ _REQUIRED_FIRST_OPENING_FIELDS = [
     "generation_power",
     # "has_compensation",
 ]
+
+
+class SomGurbStateLog(osv.osv):
+    _name = "som.gurb.state.log"
+    _order = "date_start DESC"
+
+    _columns = {
+        "gurb_id": fields.many2one("som.gurb", "GURB", required=True),
+        "state": fields.char("Estat", size=60, required=True),
+        "date_start": fields.date("Data inici", required=True),
+        "date_end": fields.date("Data final"),
+    }
+
+    _defaults = {
+        "date_start": lambda *a: datetime.now().strftime("%Y-%m-%d"),
+    }
+
+
+SomGurbStateLog()
 
 
 class SomGurb(osv.osv):
@@ -213,6 +234,12 @@ class SomGurb(osv.osv):
         "activation_date": fields.date("Data activació GURB"),
         "state": fields.selection(_GURB_STATES, _(u"Estat del GURB")),
         "gurb_cups_ids": fields.one2many("som.gurb.cups", "gurb_id", "Betes", readonly=False),
+        "state_log_ids": fields.one2many(
+            "som.gurb.state.log",
+            "gurb_id",
+            "Logs canvi d'estat",
+            readonly=True,
+        ),
         "joining_fee": fields.float("Tarifa cost adhesió"),  # TODO: New model
         "max_power": fields.float("Topall max. per contracte (kW)"),
         "mix_power": fields.float("Topall mix. per contracte (kW)"),
