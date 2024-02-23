@@ -28,14 +28,14 @@
             <field name="wkf_id" ref="wkf_gurb"/>
             <field name="name">complete</field>
             <field name="kind">function</field>
-            <field name="action">write({'state':'complete'})</field>
+            <field name="action">change_state('complete')</field>
         </record>
 
         <record id="act_incomplete" model="workflow.activity">
             <field name="wkf_id" ref="wkf_gurb"/>
             <field name="name">incomplete</field>
             <field name="kind">function</field>
-            <field name="action">write({'state':'incomplete'})</field>
+            <field name="action">change_state('incomplete')</field>
         </record>
 
         <record id="act_registered" model="workflow.activity">
@@ -92,68 +92,81 @@
         <record id="trans_first_opening_complete" model="workflow.transition">
             <field name="act_from" ref="act_first_opening"/>
             <field name="act_to" ref="act_complete"/>
-            <field name="condition">False</field>
+            <field name="condition">validate_first_opening_complete()</field>
+            <field name="signal">button_close_first_opening</field>
         </record>
 
         <record id="trans_first_opening_incomplete" model="workflow.transition">
             <field name="act_from" ref="act_first_opening"/>
             <field name="act_to" ref="act_incomplete"/>
-            <field name="condition">False</field>
+            <field name="condition">validate_first_opening_incomplete()</field>
+            <field name="signal">button_first_opening_next_state</field>
         </record>
 
         <record id="trans_complete_registered" model="workflow.transition">
             <field name="act_from" ref="act_complete"/>
             <field name="act_to" ref="act_registered"/>
+            <field name="condition">False</field>
         </record>
 
         <record id="trans_registered_in_process" model="workflow.transition">
             <field name="act_from" ref="act_registered"/>
             <field name="act_to" ref="act_in_process"/>
+            <field name="condition">False</field>
         </record>
 
         <record id="trans_in_process_active" model="workflow.transition">
             <field name="act_from" ref="act_in_process"/>
             <field name="act_to" ref="act_active"/>
+            <field name="condition">False</field>
         </record>
 
         <record id="trans_active_active_inc" model="workflow.transition">
             <field name="act_from" ref="act_active"/>
             <field name="act_to" ref="act_active_inc"/>
+            <field name="condition">False</field>
         </record>
 
         <record id="trans_active_inc_active_crit_inc" model="workflow.transition">
             <field name="act_from" ref="act_active_inc"/>
             <field name="act_to" ref="act_active_crit_inc"/>
+            <field name="condition">False</field>
         </record>
 
         <record id="trans_active_crit_inc_reopened" model="workflow.transition">
             <field name="act_from" ref="act_active_crit_inc"/>
             <field name="act_to" ref="act_reopened"/>
+            <field name="condition">False</field>
         </record>
 
         <record id="trans_reopened_incomplete" model="workflow.transition">
             <field name="act_from" ref="act_reopened"/>
             <field name="act_to" ref="act_incomplete"/>
+            <field name="condition">False</field>
         </record>
 
         <record id="trans_active_inc_reopened" model="workflow.transition">
             <field name="act_from" ref="act_active_inc"/>
             <field name="act_to" ref="act_reopened"/>
+            <field name="condition">False</field>
         </record>
 
         <record id="trans_reopened_complete" model="workflow.transition">
             <field name="act_from" ref="act_reopened"/>
             <field name="act_to" ref="act_complete"/>
+            <field name="condition">False</field>
         </record>
 
         <record id="trans_incomplete_complete" model="workflow.transition">
             <field name="act_from" ref="act_incomplete"/>
             <field name="act_to" ref="act_complete"/>
+            <field name="condition">False</field>
         </record>
 
         <record id="trans_incomplete_first_opening" model="workflow.transition">
             <field name="act_from" ref="act_incomplete"/>
             <field name="act_to" ref="act_first_opening"/>
+            <field name="condition">False</field>
         </record>
     </data>
 </openerp>

@@ -35,6 +35,7 @@
                     <group col="6" colspan="4" string="Estats" icon="123">
                         <field name="state" select="1" colspan="3" nolabel="1" />
                         <button string="Primera obertura" name="button_first_opening" states="draft" type="workflow" colspan="2" />
+                        <button string="Tancar primera obertura" name="button_close_first_opening" states="first_opening" type="workflow" colspan="2" />
                     </group>
                     <group col="6" colspan="4" string="General" icon="building-cottage">
                         <field name="name" select="1" />

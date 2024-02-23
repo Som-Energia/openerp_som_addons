@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
-from datetime import datetime
+from datetime import datetime, date, timedelta
 
 import logging
 
@@ -40,6 +40,8 @@ _REQUIRED_FIRST_OPENING_FIELDS = [
 
 
 class SomGurbStateLog(osv.osv):
+    # TODO: Use this model or a field for the current state start date + text log?
+
     _name = "som.gurb.state.log"
     _order = "create_date desc"
 
@@ -190,6 +192,40 @@ class SomGurb(osv.osv):
         for record_id in ids:
             self.write(cursor, uid, ids, {"state": new_state}, context=context)
             self._log_change_state(cursor, uid, record_id, new_state, context=context)
+
+    def _is_first_opening_end_date(self, cursor, uid, record, context=None):
+        if not record.state_log_ids[0]:
+            raise osv.except_osv(
+                _("No hi ha logs dels canvis d'estat"),
+                _("Hi ha d'haver almenys un registre en els logs de canvis d'estat"),
+            )
+
+        if record.state_log_ids[0].state != "first_opening":
+            raise osv.except_osv(
+                _("Error a l'obtenir el registre més recent"),
+                _("El registre més recent ha de ser de l'estat Primera Obertura"),
+            )
+
+        state_date_start_str = record.state_log_ids[0].date_start
+        state_date_start = datetime.strptime(state_date_start_str, '%Y-%m-%d').date()
+        max_opening_date = state_date_start + timedelta(days=record.first_opening_days)
+        today = date.today()
+
+        return today >= max_opening_date
+
+    def validate_first_opening_complete(self, cursor, uid, ids, context=None):
+        for record in self.browse(cursor, uid, ids, context=context):
+            return (
+                self._is_first_opening_end_date(cursor, uid, record)
+                and record.assigned_betas_kw == record.generation_power
+            )
+
+    def validate_first_opening_incomplete(self, cursor, uid, ids, context=None):
+        for record in self.browse(cursor, uid, ids, context=context):
+            return (
+                self._is_first_opening_end_date(cursor, uid, record)
+                and record.assigned_betas_kw != record.generation_power
+            )
 
     def validate_draft_first_opening(self, cursor, uid, ids, context=None):
         for record in self.read(cursor, uid, ids, _REQUIRED_FIRST_OPENING_FIELDS, context=context):
