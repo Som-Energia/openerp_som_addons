@@ -1,8 +1,6 @@
 # -*- encoding: utf-8 -*-
 from osv import fields, osv
 from tools.translate import _
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
 
 
 class WizardSomUnstasher(osv.osv_memory):
@@ -18,18 +16,15 @@ class WizardSomUnstasher(osv.osv_memory):
     def do_unstash_process(self, cursor, uid, ids, context=None):
         msg = _("Resultat d'execució del wizard de desfer el backup de dades:\n")
         # do not commit
-        import pudb; pu.db
-        wiz = self.read(
-            cursor, uid, ids, [], context=context
-        )[0]
+        # import pudb; pu.db
 
         item_ids = context.get("active_ids", [])
 
         som_stash_obj = self.pool.get("som.stash")
         list_ok, errors = som_stash_obj.do_unstash(
-                cursor, uid, item_ids, context=context
+            cursor, uid, item_ids, context=context
         )
-        
+
         msg += _(
             "\nRecuperades {} entrades d'estash.\nLlista d'Ids:\n{}".format(
                 len(list_ok),
@@ -46,11 +41,9 @@ class WizardSomUnstasher(osv.osv_memory):
             )
             for error in errors:
                 msg += _(
-                    "\nID {} ERROR {}\n".format(
-                    str(error[0]), error[1]
-                    )
+                    "\nID {} ERROR {}\n".format(str(error[0]), error[1])
                 )
-                
+
         self.write(
             cursor, uid, ids, {'info': msg}
         )

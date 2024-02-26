@@ -376,14 +376,3 @@ class SomStashTest(SomStashSettingsTests):
 
         # test that right number of registers where created
         self.assertEqual(n_stash_items, 2)
-
-
-class WizardSomStasherTest(SomStashSettingsTests):
-    def test_get_partners_origin_to_stash__find_one(self):
-        wstahser_obj = self.get_model('wizard.som.stasher')
-
-        date_limit = datetime.datetime(2021,1,1,0,0,0)
-
-
-
-        ids = wstahser_obj.get_partners_origin_to_stash(self.cursor, self.uid, datelimit)
