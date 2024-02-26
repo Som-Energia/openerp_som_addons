@@ -87,6 +87,30 @@ class SomStash(osv.osv):
                 modified.append(item_id)
         return modified
 
+    def do_unstash_item(self, cursor, uid, item_id, context=None):
+        try:
+            stash = self.browse(cursor, uid, item_id, context=context)
+            model_obj = self.pool.get(stash.res_model)
+            values = {
+                stash.res_field: stash.value,
+            }
+            model_obj.write(cursor, uid, stash.res_id, values, context=context)
+        except Exception as e:
+            return False, str(e)
+        return True, item_id
+
+    def do_unstash(self, cursor, uid, ids, context=None):
+        res = []
+        errors = []
+        for item_id in sorted(ids, reverse=True):
+            ok, value = self.do_unstash_item(cursor, uid, item_id, context=context)
+            if ok:
+                res.append(value)
+            else:
+                errors.append((item_id, value))
+
+        return res, errors
+
     _columns = {
         'origin': fields.reference(_('Origen'), selection=SELECTABLE_MODELS, size=128),
         'res_field': fields.char(_('Camp'), size=64),

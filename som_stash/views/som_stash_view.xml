@@ -7,7 +7,6 @@
             <field name="type">tree</field>
             <field name="arch" type="xml">
                 <tree string="Backup de dades">
-                    <field name="origin"/>
                     <field name="res_model"/>
                     <field name="res_id"/>
                     <field name="res_field"/>

@@ -80,7 +80,7 @@ class WizardSomStasher(osv.osv_memory):
 
         do_stash = wiz['do_stash']
         limit_to_stash = wiz['limit_to_stash']
-        years_ago = wiz['years']
+        years_ago = max(wiz['years'], 6)
 
         partners_to_stash = self.get_partners_origin_to_stash(
             cursor, uid, years_ago, context=context

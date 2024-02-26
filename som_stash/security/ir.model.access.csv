@@ -2,3 +2,4 @@
 "access_som_stash_rcwd","som.stash","model_som_stash","som_stash.group_som_stash",1,1,1,1
 "access_wizard_som_stasher_u","wizard.som.stasher","model_wizard_som_stasher","som_stash.group_som_stash",1,1,1,1
 "access_som_stash_setting_rcwd","som.stash.setting","model_som_stash_setting","som_stash.group_som_stash",1,1,1,1
+"access_wizard_som_unstasher_u","wizard.som.unstasher","model_wizard_som_unstasher","som_stash.group_som_stash",1,1,1,1

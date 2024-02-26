@@ -25,6 +25,7 @@
         "views/som_stash_view.xml",
         "views/som_stash_setting_view.xml",
         "wizard/wizard_som_stasher_view.xml",
+        "wizard/wizard_som_unstasher_view.xml",
     ],
     "active": False,
     "installable": True,

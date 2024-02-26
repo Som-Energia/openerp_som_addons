@@ -14,7 +14,7 @@
                     </group>
                     <group colspan="4">
                         <field name="do_stash"/>
-                        <field name="years"/>
+                        <field name="years" readonly="1"/>
                         <field name="limit_to_stash"/>
                     </group>
                     <label string="" colspan="4"/>
