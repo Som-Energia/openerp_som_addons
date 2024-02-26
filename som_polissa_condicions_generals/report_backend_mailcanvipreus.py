@@ -97,7 +97,10 @@ class ReportBackendMailcanvipreus(ReportBackend):
             context = {}
 
         # TODO: Remove if regulation changes
-        context['iva10'] = env.polissa_id.potencia <= 10
+        context['iva10'] = (
+            not self.esCanaries(cursor, uid, env)
+            and env.polissa_id.potencia <= 10
+        )
 
         context_preus_antics = dict(context)
         context_preus_antics["date"] = date.today().strftime("%Y-%m-%d")
@@ -438,21 +441,19 @@ class ReportBackendMailcanvipreus(ReportBackend):
         iva = 0.1 if context and context.get('iva10') else 0.21
         impost_electric = 0.025
         if context.get('force_fiscal_position'):
-            if fiscal_position.id in [19, 33, 38]:
+            if fiscal_position.id in [33, 47, 52]:
                 iva = 0.03
-                impost_electric = 0.0050
-            if fiscal_position.id in [25, 34, 39]:
+            if fiscal_position.id in [34, 48, 53]:
                 iva = 0.0
-                impost_electric = 0.0050
         preu_imp = round(preu * (1 + impost_electric), 2)
         return round(preu_imp * (1 + iva))
 
     def getImpostosString(self, fiscal_position, context=False):
         res = "IVA del 10%" if context and context.get('iva10') else "IVA del 21%"
         if fiscal_position:
-            if fiscal_position.id in [19, 33, 38]:
+            if fiscal_position.id in [33, 47, 52]:
                 res = "IGIC del 3%"
-            if fiscal_position.id in [25, 34, 39]:
+            if fiscal_position.id in [34, 48, 53]:
                 res = "IGIC del 0%"
         return res
 
@@ -533,15 +534,15 @@ class ReportBackendMailcanvipreus(ReportBackend):
         }
 
     def getIGIC(self, cursor, uid, env, context=False):
-        if env.polissa_id.fiscal_position_id.id in [19, 33, 38]:
+        if env.polissa_id.fiscal_position_id.id in [33, 47, 52]:
             return 3
-        elif env.polissa_id.fiscal_position_id.id in [25, 34, 39]:
+        elif env.polissa_id.fiscal_position_id.id in [34, 48, 53]:
             return 0
         else:
-            raise Exception("No té IGIC")
+            raise Exception("Eh recorda actualitzar les posicions fiscals hardcodejades")
 
     def esCanaries(self, cursor, uid, env, context=False):
-        return env.polissa_id.fiscal_position_id.id in [19, 33, 38, 25, 34, 39]
+        return env.polissa_id.fiscal_position_id.id in [33, 34, 47, 48, 52, 53]
 
     def getTarifaCorreu(self, cursor, uid, env, context=False):
         data = {
