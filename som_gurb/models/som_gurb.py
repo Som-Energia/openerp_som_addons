@@ -138,7 +138,7 @@ class SomGurb(osv.osv):
         for record in self.browse(cursor, uid, ids, context=context):
             return (
                 self._is_first_opening_end_date(cursor, uid, record)
-                and record.assigned_betas_kw == record.generation_power
+                or record.assigned_betas_kw == record.generation_power
             )
 
     def validate_first_opening_incomplete(self, cursor, uid, ids, context=None):
