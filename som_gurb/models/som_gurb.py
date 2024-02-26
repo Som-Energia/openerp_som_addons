@@ -39,47 +39,6 @@ _REQUIRED_FIRST_OPENING_FIELDS = [
 ]
 
 
-class SomGurbStateLog(osv.osv):
-    # TODO: Use this model or a field for the current state start date + text log?
-
-    _name = "som.gurb.state.log"
-    _order = "create_date desc"
-
-    def create(self, cursor, uid, vals, context=None):
-        res_id = super(SomGurbStateLog, self).create(cursor, uid, vals, context=context)
-
-        if res_id:
-            # If exists, set date_end to the previous state log with same "gurb_id"
-            new_state_log = self.browse(cursor, uid, res_id, context=context)
-            prev_state_log_ids = self.search(
-                cursor, uid, [("gurb_id", "=", new_state_log.gurb_id.id)], context=context
-            )
-            if len(prev_state_log_ids) > 1:
-                self.write(
-                    cursor,
-                    uid,
-                    prev_state_log_ids[1],
-                    {"date_end": new_state_log.date_start},
-                    context=context,
-                )
-
-        return res_id
-
-    _columns = {
-        "gurb_id": fields.many2one("som.gurb", "GURB", required=True),
-        "state": fields.char("Estat", size=60, required=True),
-        "date_start": fields.date("Data inici", required=True),
-        "date_end": fields.date("Data final"),
-    }
-
-    _defaults = {
-        "date_start": lambda *a: datetime.now().strftime("%Y-%m-%d"),
-    }
-
-
-SomGurbStateLog()
-
-
 class SomGurb(osv.osv):
     _name = "som.gurb"
     _description = _("Grup generació urbana")
@@ -160,33 +119,20 @@ class SomGurb(osv.osv):
                 }
         return res
 
-    def _log_change_state(self, cursor, uid, id, new_state, context=None):
-        self.write(cursor, uid, id, {"state_log_ids": [(0, 0, {"state": new_state})]})
-
     def change_state(self, cursor, uid, ids, new_state, context=None):
+        write_values = {
+            "state": new_state,
+            "state_date": datetime.now().strftime("%Y-%m-%d")
+        }
         for record_id in ids:
-            self.write(cursor, uid, ids, {"state": new_state}, context=context)
-            self._log_change_state(cursor, uid, record_id, new_state, context=context)
+            self.write(cursor, uid, ids, write_values, context=context)
 
     def _is_first_opening_end_date(self, cursor, uid, record, context=None):
-        if not record.state_log_ids[0]:
-            raise osv.except_osv(
-                _("No hi ha logs dels canvis d'estat"),
-                _("Hi ha d'haver almenys un registre en els logs de canvis d'estat"),
-            )
-
-        if record.state_log_ids[0].state != "first_opening":
-            raise osv.except_osv(
-                _("Error a l'obtenir el registre més recent"),
-                _("El registre més recent ha de ser de l'estat Primera Obertura"),
-            )
-
-        state_date_start_str = record.state_log_ids[0].date_start
-        state_date_start = datetime.strptime(state_date_start_str, '%Y-%m-%d').date()
-        max_opening_date = state_date_start + timedelta(days=record.first_opening_days)
+        state_date = datetime.strptime(record.state_date, '%Y-%m-%d').date()
+        opening_end_date = state_date + timedelta(days=record.first_opening_days)
         today = date.today()
 
-        return today >= max_opening_date
+        return today >= opening_end_date
 
     def validate_first_opening_complete(self, cursor, uid, ids, context=None):
         for record in self.browse(cursor, uid, ids, context=context):
@@ -272,13 +218,8 @@ class SomGurb(osv.osv):
         "sig_data": fields.char("Dades SIG", size=60),
         "activation_date": fields.date("Data activació GURB"),
         "state": fields.selection(_GURB_STATES, "Estat del GURB", readonly=True),
+        "state_date": fields.date("Data activació estat", readonly=True),
         "gurb_cups_ids": fields.one2many("som.gurb.cups", "gurb_id", "Betes", readonly=False),
-        "state_log_ids": fields.one2many(
-            "som.gurb.state.log",
-            "gurb_id",
-            "Logs canvi d'estat",
-            readonly=True,
-        ),
         "joining_fee": fields.float("Tarifa cost adhesió"),  # TODO: New model
         "max_power": fields.float("Topall max. per contracte (kW)"),
         "mix_power": fields.float("Topall mix. per contracte (kW)"),
