@@ -123,6 +123,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
             or env.polissa_id.titular.property_account_position.id
         )
         if context.get('iva10') and new_fiscal_position == 42:
+            context_preus_antics['force_fiscal_position'] = 37
             context_preus_nous['force_fiscal_position'] = 63
         elif new_fiscal_position:
             context_preus_nous['force_fiscal_position'] = new_fiscal_position
