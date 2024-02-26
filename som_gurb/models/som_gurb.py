@@ -152,6 +152,14 @@ class SomGurb(osv.osv):
         for record in self.read(cursor, uid, ids, _REQUIRED_FIRST_OPENING_FIELDS, context=context):
             return all(valor for valor in record.values())
 
+    def validate_active_incomplete(self, cursor, uid, ids, context=None):
+        for record in self.browse(cursor, uid, ids, context=context):
+            return record.assigned_betas_kw != record.generation_power
+
+    def validate_active_critic_incomplete(self, cursor, uid, ids, context=None):
+        for record in self.browse(cursor, uid, ids, context=context):
+            return record.assigned_betas_percentage < record.critical_incomplete_state
+
     # WIP CODE
     def add_services_to_gurb_contracts(self, cursor, uid, ids, context=None):
         if context is None:

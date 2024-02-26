@@ -33,9 +33,16 @@
                         <field nolabel="1" name="assigned_betas_percentage" widget="progressbar" />
                     </group>
                     <group col="6" colspan="4" string="Estats" icon="123">
-                        <field name="state" select="1" colspan="3" nolabel="1" />
-                        <button string="Primera obertura" name="button_first_opening" states="draft" type="workflow" colspan="2" />
-                        <button string="Tancar primera obertura" name="button_close_first_opening" states="first_opening" type="workflow" colspan="2" />
+                        <field name="state_date" colspan="1" />
+                        <field name="state" select="1" colspan="1" />
+                        <button string="Obrir GURB" name="button_open" states="draft" type="workflow" />
+                        <button string="Tancar primera obertura" name="button_close_first_opening" states="first_opening" type="workflow" />
+                        <button string="Registrar" name="button_register" states="complete" type="workflow" />
+                        <button string="Tornar a primera obertura" name="button_first_reopening" states="incomplete" type="workflow" />
+                        <button string="Tramitar" name="button_process" states="registered" type="workflow" />
+                        <button string="Activar" name="button_activate" states="in_process" type="workflow" />
+                        <button string="Reobrir" name="button_reopen_active_incomplete" states="active_inc" type="workflow" />
+                        <button string="Reobrir" name="button_reopen_active_critical_incomplete" states="active_crit_inc" type="workflow" />
                     </group>
                     <group col="6" colspan="4" string="General" icon="building-cottage">
                         <field name="name" select="1" />
