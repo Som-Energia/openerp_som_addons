@@ -376,3 +376,98 @@ class SomStashTest(SomStashSettingsTests):
 
         # test that right number of registers where created
         self.assertEqual(n_stash_items, 2)
+
+    def test_do_unstash__res_partner__one_case(self):
+        rp_obj = self.get_model('res.partner')
+        stash_obj = self.get_model('som.stash')
+
+        self.create_settings_for_partner()
+
+        id_1 = self.get_object_reference('base', 'res_partner_asus')[1]
+
+        # stash name
+        data_pre = rp_obj.read(self.cursor, self.uid, id_1, ['name'])
+        stash_obj.do_stash(self.cursor, self.uid, [id_1], 'res.partner')
+        data_post = rp_obj.read(self.cursor, self.uid, id_1, ['name'])
+
+        self.assertNotEqual(data_pre['name'], data_post['name'])
+
+        # unstash name
+        stash_id = stash_obj.search(self.cursor, self.uid, [
+            ('res_model', '=', 'res.partner'),
+            ('res_field', '=', 'name'),
+            ('res_id', '=', id_1),
+        ], limit=1)[0]
+
+        list_ok, errors = stash_obj.do_unstash(
+            self.cursor, self.uid, [stash_id]
+        )
+        self.assertEqual(len(list_ok), 1)
+        self.assertEqual(len(errors), 0)
+        data_post = rp_obj.read(self.cursor, self.uid, id_1, ['name'])
+        self.assertEqual(data_pre['name'], data_post['name'])
+
+
+class WizardSomStasherTest(SomStashSettingsTests):
+
+    def test_get_partners_inactive_soci_before_datelimit__find_one(self):
+        date_limit = datetime(2021, 1, 1, 0, 0, 0)
+        soci_id = self.get_object_reference('som_polissa_soci', 'soci_0001')[1]
+        soci_obj = self.get_model('somenergia.soci')
+        soci_obj.write(self.cursor, self.uid, soci_id, {
+            'baixa': True,
+            'data_baixa_soci': datetime.strftime(date_limit, '%Y-%m-%d'),
+        })
+        wstahser_obj = self.get_model('wizard.som.stasher')
+        ids = wstahser_obj.get_partners_inactive_soci_before_datelimit(
+            self.cursor, self.uid, date_limit
+        )
+        soci = soci_obj.browse(self.cursor, self.uid, soci_id)
+        assert soci.partner_id.id in ids
+
+    def test_get_partners_inactive_soci_after_datelimit__find_one(self):
+        date_limit = datetime(2021, 1, 1, 0, 0, 0)
+        date_baixa = datetime(2021, 1, 2, 0, 0, 0)
+        soci_id = self.get_object_reference('som_polissa_soci', 'soci_0001')[1]
+        soci_obj = self.get_model('somenergia.soci')
+        soci_obj.write(self.cursor, self.uid, soci_id, {
+            'baixa': True,
+            'data_baixa_soci': datetime.strftime(date_baixa, '%Y-%m-%d'),
+        })
+        wstahser_obj = self.get_model('wizard.som.stasher')
+        ids = wstahser_obj.get_partners_inactive_soci_before_datelimit(
+            self.cursor, self.uid, date_limit
+        )
+        soci = soci_obj.browse(self.cursor, self.uid, soci_id)
+        assert soci.partner_id.id not in ids
+
+    def test_get_partners_inactive_pol_before_datelimit__find_one(self):
+        date_limit = datetime(2021, 1, 1, 0, 0, 0)
+        pol_id = self.get_object_reference('giscedata_polissa', 'polissa_0001')[1]
+        pol_obj = self.get_model('giscedata.polissa')
+        pol_obj.write(self.cursor, self.uid, pol_id, {
+            'state': 'baixa',
+            'data_baixa': datetime.strftime(date_limit, '%Y-%m-%d'),
+        })
+        pol = pol_obj.browse(self.cursor, self.uid, pol_id)
+        wstahser_obj = self.get_model('wizard.som.stasher')
+        ids = wstahser_obj.get_partners_inactive_pol_before_datelimit(
+            self.cursor, self.uid, date_limit
+        )
+        assert pol.titular.id in ids
+
+    def test_get_partners_inactive_pol_after_datelimit__find_one(self):
+        date_limit = datetime(2021, 1, 1, 0, 0, 0)
+        date_baixa = datetime(2021, 1, 2, 0, 0, 0)
+        pol_id = self.get_object_reference('giscedata_polissa', 'polissa_0001')[1]
+        pol_obj = self.get_model('giscedata.polissa')
+        pol_obj.write(self.cursor, self.uid, pol_id, {
+            'state': 'baixa',
+            'data_baixa': date_baixa,
+        })
+        pol = pol_obj.browse(self.cursor, self.uid, pol_id)
+        wstahser_obj = self.get_model('wizard.som.stasher')
+        ids = wstahser_obj.get_partners_inactive_pol_before_datelimit(
+            self.cursor, self.uid, date_limit
+        )
+        assert pol.titular.id not in ids
