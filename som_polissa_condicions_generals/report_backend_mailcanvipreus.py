@@ -117,11 +117,14 @@ class ReportBackendMailcanvipreus(ReportBackend):
             33: 33,
             43: 44,
             53: 62,
+            41: 42
         }.get(
             env.polissa_id.fiscal_position_id.id
             or env.polissa_id.titular.property_account_position.id
         )
-        if new_fiscal_position:
+        if context.get('iva10') and new_fiscal_position == 42:
+            context_preus_nous['force_fiscal_position'] = 63
+        elif new_fiscal_position:
             context_preus_nous['force_fiscal_position'] = new_fiscal_position
 
         preus_antics = self.get_preus(
@@ -330,12 +333,12 @@ class ReportBackendMailcanvipreus(ReportBackend):
         preus_auto = {
             "auto": {
                 "nous": {
-                    "amb_impostos": 0.09,
-                    "sense_impostos": 0.07,
+                    "amb_impostos": 0.07,
+                    "sense_impostos": 0.06,
                 },
                 "vells": {
-                    "amb_impostos": 0.17,
-                    "sense_impostos": 0.13,
+                    "amb_impostos": 0.08,
+                    "sense_impostos": 0.07,
                 },
             }
         }
@@ -360,8 +363,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
             ctx["date"] = date
         ctx["potencia_anual"] = True
         ctx["sense_agrupar"] = True
-        maj_price = 0.140  # €/kWh
-        bo_social_price = 14.035934
+        maj_price = 0  # €/kWh
+        bo_social_price = 2.299047
         types = {"tp": potencies or {}, "te": consums or {}}
         imports = 0
         for terme, values in types.items():
@@ -468,11 +471,6 @@ class ReportBackendMailcanvipreus(ReportBackend):
             origen = "indexada"
             consums = self.getConanyDict(cursor, uid, env)
             consum_total = env.polissa_id.cups.conany_kwh
-        elif env.extra_text:
-            consums = eval(env.extra_text)
-            origen = consums["origen"]
-            del consums["origen"]
-            consum_total = sum(consums.values())
         elif any(
             [
                 env.polissa_id.cups.conany_kwh_p1,
