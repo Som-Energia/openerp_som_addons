@@ -348,11 +348,11 @@ class ReportBackendMailcanvipreus(ReportBackend):
         return {
             "auto": {
                 "nous": {
-                    "amb_impostos": PREU_NOU*1.025*(1+iva),
+                    "amb_impostos": PREU_NOU*1.038*(1+iva),
                     "sense_impostos": PREU_NOU,
                 },
                 "vells": {
-                    "amb_impostos": PREU_VELL*1.038*(1+iva),
+                    "amb_impostos": PREU_VELL*1.025*(1+iva),
                     "sense_impostos": PREU_VELL,
                 },
             }
