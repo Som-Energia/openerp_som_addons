@@ -73,7 +73,7 @@ class ExportRemesesWizard(testing.OOTestCase):
             country_id = imd_obj.get_object_reference(cursor, uid, "base", "es")[1]
 
             remesa = payorder_obj.browse(cursor, uid, remesa1_id)
-            iban = "ES0914910001202012341234"
+            iban = "ES6415383216135305497255"
             acc_number = iban[4:]
             remesa.mode.bank_id.write({"acc_number": acc_number, "iban": iban})
             remesa.mode.bank_id.partner_id.write({"vat": "ES11111111H"})
