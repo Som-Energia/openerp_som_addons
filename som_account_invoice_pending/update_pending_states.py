@@ -940,7 +940,7 @@ class UpdatePendingStates(osv.osv_memory):
             invoice = fact_obj.read(cursor, uid, factura_id)
 
             polissa_id = invoice["polissa_id"][0]
-            polissa_state = pol_obj.read(cursor, uid, polissa_id, ["state"])["state"]
+            polissa_state = pol_obj.read(cursor, uid, [polissa_id], ["state"])[0]["state"]
             if polissa_state == "baixa":
                 self.update_waiting_for_annex_cancelled_contracts(
                     cursor, uid, factura_id, traspas_advocats_bs, context
