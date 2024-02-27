@@ -1,3 +1,2 @@
 import giscedata_facturacio
 import wizard
-import pricelist

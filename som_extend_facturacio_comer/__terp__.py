@@ -12,7 +12,6 @@
         "giscedata_facturacio_comer",
         "giscedata_facturacio_impagat",
         "giscedata_facturacio_comer_bono_social",
-        "som_generationkwh"
     ],
     "init_xml": [],
     "demo_xml": [],
