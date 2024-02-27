@@ -83,11 +83,11 @@ class GiscedataPolissaCalculada(osv.osv):
 
         pol = self.browse(cursor, uid, _id, context)
 
-        if add_days(pol.data_ultima_lectura, 7) > today_str():
-            return False, _(u"lectures a futur")
-
         if not pol.data_ultima_lectura:
             return False, _(u"sense data ultima lectura")
+
+        if add_days(pol.data_ultima_lectura, 7) > today_str():
+            return False, _(u"lectures a futur")
 
         mtr_ids = mtr_o.search(cursor, uid, [("polissa.id", "=", _id), ("active", "=", True)])
         if not mtr_ids:
