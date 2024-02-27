@@ -1,9 +1,9 @@
-import uuid
-from osv import osv, fields
+from osv import osv
+
 
 class GiscedataPolissa(osv.osv):
-    _name = 'giscedata.polissa'
-    _inherit = 'giscedata.polissa'
+    _name = "giscedata.polissa"
+    _inherit = "giscedata.polissa"
 
     def _modified_partners(self, cursor, uid, ids, vals):
         """
@@ -14,13 +14,14 @@ class GiscedataPolissa(osv.osv):
         # TODO: notifica not suported (is a partner address)
         # TODO: consider administradora as allowed_relations
         allowed_relations = [
-            'pagador',
-            'titular',
+            "pagador",
+            "titular",
         ]
         if type(ids) not in (list, tuple):
-            ids=[ids]
+            ids = [ids]
         relations = set(vals.keys()).intersection(allowed_relations)
-        if not relations: return [] # avoid reading
+        if not relations:
+            return []  # avoid reading
         polisses = self.read(cursor, uid, ids, list(relations))
         result = set()
         for relation in relations:
@@ -36,18 +37,18 @@ class GiscedataPolissa(osv.osv):
         return list(result)
 
     def write(self, cursor, uid, ids, vals, context=None):
-        """Assign new token if partner not have
-        """
+        """Assign new token if partner not have"""
 
         partners_to_update = self._modified_partners(cursor, uid, ids, vals)
 
         res = super(GiscedataPolissa, self).write(cursor, uid, ids, vals, context)
 
         if partners_to_update:
-            partner_obj = self.pool.get('res.partner')
+            partner_obj = self.pool.get("res.partner")
             partner_obj.assign_token(cursor, uid, partners_to_update, context)
 
         return res
+
 
 GiscedataPolissa()
 # vim: et ts=4 sw=4

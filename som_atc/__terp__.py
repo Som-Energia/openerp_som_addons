@@ -19,5 +19,5 @@
         "views/giscedata_atc_view.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

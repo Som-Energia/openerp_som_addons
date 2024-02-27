@@ -5,3 +5,9 @@
 "access_wizard_refund_rectify_from_origin_rcwd","wizard.refund.rectify.from.origin","model_wizard_refund_rectify_from_origin","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
 "access_wizard_refund_rectify_from_origin_rcwd","wizard.refund.rectify.from.origin","model_wizard_refund_rectify_from_origin","giscedata_facturacio.group_giscedata_facturacio_r",1,1,1,1
 "access_wizard_refund_rectify_from_origin_rcwd","wizard.refund.rectify.from.origin","model_wizard_refund_rectify_from_origin","giscedata_facturacio.group_giscedata_facturacio_w",1,1,1,1
+"access_som_error_cron_f1_reimport_u","som.error.cron.f1.reimport","model_som_error_cron_f1_reimport","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
+"access_som_error_cron_f1_reimport_r","som.error.cron.f1.reimport","model_som_error_cron_f1_reimport","giscedata_facturacio.group_giscedata_facturacio_r",1,0,0,0
+"access_som_error_cron_f1_reimport_w","som.error.cron.f1.reimport","model_som_error_cron_f1_reimport","giscedata_facturacio.group_giscedata_facturacio_w",1,1,1,0
+"access_wizard_change_cron_reimport_days_u","wizard.change.cron.reimport.days","model_wizard_change_cron_reimport_days","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
+"access_wizard_change_cron_reimport_days_r","wizard.change.cron.reimport.days","model_wizard_change_cron_reimport_days","giscedata_facturacio.group_giscedata_facturacio_r",1,0,0,0
+"access_wizard_change_cron_reimport_days_w","wizard.change.cron.reimport.days","model_wizard_change_cron_reimport_days","giscedata_facturacio.group_giscedata_facturacio_w",1,1,1,0

@@ -44,4 +44,4 @@
             <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_massive_create_R1029'))" />
         </record>
     </data>
-</openerp> 
+</openerp>

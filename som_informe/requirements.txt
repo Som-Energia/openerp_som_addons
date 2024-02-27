@@ -1,9 +1,10 @@
-rsa==4.0
-google-auth==1.31.0
+rsa<4.6
+google-auth<1.35.0
+google-auth-httplib2==0.1.0
 oauth2client==3.0.0
 google-api-python-client==1.12.8
-six==1.13
-httplib2==0.15.0
+six>=1.13
+httplib2<0.18
 google-auth-oauthlib
 google-api-core==1.30.0
 oauth2==1.9.0.post1

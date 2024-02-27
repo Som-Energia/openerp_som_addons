@@ -1,13 +1,12 @@
 # coding=utf-8
 from oopgrade import DataMigration
-from addons import get_module_resource
 
 
 def up(cursor, installed_version):
     if not installed_version:
         return
 
-    xml_content = '''<?xml version="1.0" encoding="UTF-8" ?>
+    xml_content = """<?xml version="1.0" encoding="UTF-8" ?>
     <openerp>
         <data noupdate="1">
             <record model="poweremail.core_accounts" id="cobraments_mail_account">
@@ -20,7 +19,7 @@ def up(cursor, installed_version):
                 <field name="state">approved</field>
                 <field name="smtpport">587</field>
             </record>
-            
+
             <record model="poweremail.templates" id="email_impagats_annex3">
                 <field name="name">Impagats: Procediment tall de llum Annex 3</field>
                 <field name="object_name" model="ir.model" search="[('name', '=', 'giscedata.facturacio.factura')]"/>
@@ -49,12 +48,17 @@ def up(cursor, installed_version):
             </record>
         </data>
     </openerp>
-    '''
+    """  # noqa: E501
 
-    dm = DataMigration(xml_content, cursor, 'som_account_invoice_pending', {
-        'poweremail.core_accounts': ['email_id'],
-        'poweremail.templates': ['name'],
-    })
+    dm = DataMigration(
+        xml_content,
+        cursor,
+        "som_account_invoice_pending",
+        {
+            "poweremail.core_accounts": ["email_id"],
+            "poweremail.templates": ["name"],
+        },
+    )
     dm.migrate()
 
 

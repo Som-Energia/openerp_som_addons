@@ -151,7 +151,7 @@ svg.selectAll(".yaxis_l")
     .attr("x2", - marges.left)
     .attr("x1", - textWidth - 14 );
 
-if (num_bars == 1 ) 
+if (num_bars == 1 )
 {
     var bar = svg.selectAll('g .bar')
           .data(data_consum)
@@ -163,7 +163,7 @@ if (num_bars == 1 )
             .attr("y", function(d){return y(data_max(d)) + marges.top})
             .attr("width", bar_group_w - bar_group_padding)
             .attr("height", function(d){return (graf_h) - y(data_max(d))})
-    
+
     bar.append("text")
         .attr("y", function(d) {return y(data_max(d)) + marges.top})
         .attr("x", (bar_group_w - bar_group_padding)/ 2)
@@ -188,7 +188,7 @@ else
                 .attr("y", function(d){return y(d[valor]) + marges.top})
                 .attr("width", bar_w - bar_padding)
                 .attr("height", function(d){return (graf_h) - y(d[valor])})
-    
+
         bars[i].append("text")
                 .attr("y", function(d) {return y(d[valor]) + marges.top - 15})
                 .attr("x", (bar_w - bar_padding)/ 2)
@@ -213,4 +213,3 @@ else
             .attr("dy", ".35em")
             .text(function(d){return d.mes})
 }
-

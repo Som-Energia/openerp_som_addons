@@ -8,6 +8,18 @@ from som_extend_facturacio_comer.utils import get_gkwh_atr_price
 from giscedata_polissa.report.utils import localize_period, datetime_to_date
 from gestionatr.defs import TABLA_9
 
+lead = context.get('lead')
+
+dict_preus_tp_potencia = False
+dict_preus_tp_energia = False
+
+if context.get('tarifa_provisional', False):
+    dict_preus_tp_energia = context.get('tarifa_provisional')['preus_provisional_energia']
+    if context.get('tarifa_provisional', False):
+        if context['tarifa_provisional'].get('preus_provisional_potencia'):
+            dict_preus_tp_potencia = context['tarifa_provisional']['preus_provisional_potencia']
+
+
 def clean_text(text):
     return text or ''
 
@@ -171,7 +183,7 @@ CONTRACT_TYPES = dict(TABLA_9)
             <h2>${_(u"CONDICIONS PARTICULARS DEL CONTRACTE DE SUBMINISTRAMENT D'ENERGIA ELÈCTRICA")}</h2>
         </div>
 
-        %if polissa.state == 'esborrany':
+        %if polissa.state == 'esborrany' and not lead:
             <div class="esborrany_warning">
                 <img src="${addons_path}/som_polissa_condicions_generals/report/assets/warning_icon.png"/>
                 <h2>
@@ -181,18 +193,19 @@ CONTRACT_TYPES = dict(TABLA_9)
                     ${_(u"Tarifes vigents en el moment d’activació del contracte.")}
                 </h3>
             </div>
-            <%
+        %endif
+        <%
+            if polissa.state == 'esborrany':
                 ultima_modcon = None
                 modcon_pendent_indexada = False
-            %>
-        %endif
+                modcon_pendent_periodes = False
 
-        <%
             dict_titular = get_titular_data(pas01, polissa)
             periodes_energia, periodes_potencia = [], []
             if polissa.state != 'esborrany':
                 ultima_modcon = polissa.modcontractuals_ids[0]
                 modcon_pendent_indexada = ultima_modcon.state == 'pendent' and ultima_modcon.mode_facturacio == 'index'
+                modcon_pendent_periodes = ultima_modcon.state == 'pendent' and ultima_modcon.mode_facturacio == 'atr'
         %>
         <div class="contact_info">
             <div class="persona_titular styled_box ${"width33" if dict_titular['diferent'] else "width49"}">
@@ -286,13 +299,27 @@ CONTRACT_TYPES = dict(TABLA_9)
         <div class="peatge_acces styled_box">
             <h5> ${_("PEATGE I CÀRRECS (definits a la Circular de la CNMC 3/2020 i al Reial decret 148/2021)")} </h5>
             <%
+                pol_o = pool.get('giscedata.polissa')
+                llista_preu_o = pool.get('product.pricelist')
                 dict_pot = get_potencies(pas01, polissa)
-                tarifa_a_mostrar = polissa.llista_preu.name if not modcon_pendent_indexada else ultima_modcon.llista_preu.name
+                ctx = {'lang': lang}
+
+                if modcon_pendent_indexada or modcon_pendent_periodes:
+                    llista_preus = ultima_modcon.llista_preu
+                elif polissa.llista_preu:
+                    llista_preus = polissa.llista_preu
+                else:
+                    tarifes_ids = llista_preu_o.search(cursor, uid, [])
+                    llista_preus = pol_o.escull_llista_preus(cursor, uid, polissa.id, tarifes_ids, context=ctx)
+                if context.get('tarifa_provisional', False):
+                    tarifa_a_mostrar = 'Tarifa Períodes Empresa'
+                else:
+                    tarifa_a_mostrar = llista_preus.nom_comercial or llista_preus.name
             %>
             <div class="peatge_access_content">
                 <div class="padding_left"><b>${_(u"Peatge de transport i distribució: ")}</b>${clean(polissa.tarifa_codi)}</div>
                 <div class="padding_left"><b>${_(u"Tipus de contracte: ")}</b> ${CONTRACT_TYPES[polissa.contract_type]} ${"({0})".format(dict_pot['autoconsum']) if polissa.autoconsumo != '00' else ""}</div>
-                <div class="padding_bottom padding_left"><b>${_(u"Tarifa comercialitzadora: ")}</b> ${clean(tarifa_a_mostrar)}</div>
+                <div class="padding_bottom padding_left"><b>${_(u"Tarifa: ")}</b> ${clean(tarifa_a_mostrar)}</div>
                 <table class="taula_custom new_taula_custom">
                     <tr style="background-color: #878787;">
                         <th></th>
@@ -366,6 +393,8 @@ CONTRACT_TYPES = dict(TABLA_9)
                 ctx = {'date': datetime.strptime(polissa.data_baixa, '%Y-%m-%d')}
             if not polissa.llista_preu:
                 tarifes_a_mostrar = []
+                if lead and dict_preus_tp_potencia:
+                    tarifes_a_mostrar = [dict_preus_tp_potencia]
             else:
                 tarifes_a_mostrar = get_comming_atr_price(cursor, uid, polissa, ctx)
             text_vigencia = ''
@@ -375,16 +404,16 @@ CONTRACT_TYPES = dict(TABLA_9)
             cursor, uid, 'start_date_mecanisme_ajust_gas', '2022-10-01'
             )
             end_date_mecanisme_ajust_gas = cfg_obj.get(
-                cursor, uid, 'end_date_mecanisme_ajust_gas', '2099-12-31'
+                cursor, uid, 'end_date_mecanisme_ajust_gas', '2023-12-31'
             )
 
-            start_date_iva_5 = cfg_obj.get(
+            start_date_iva_10 = cfg_obj.get(
                 cursor, uid, 'charge_iva_10_percent_when_start_date', '2021-06-01'
             )
-            end_date_iva_5 = cfg_obj.get(
-                cursor, uid, 'iva_reduit_get_tariff_prices_end_date', '2023-12-31'
+            end_date_iva_10 = cfg_obj.get(
+                cursor, uid, 'iva_reduit_get_tariff_prices_end_date', '2024-12-31'
             )
-            iva_5_active = eval(cfg_obj.get(
+            iva_10_active = eval(cfg_obj.get(
                 cursor, uid, 'charge_iva_10_percent_when_available', '0'
             ))
 
@@ -392,7 +421,7 @@ CONTRACT_TYPES = dict(TABLA_9)
         <div class="styled_box">
         %for dades_tarifa in tarifes_a_mostrar:
             <%
-                if modcon_pendent_indexada:
+                if modcon_pendent_indexada or modcon_pendent_periodes or lead:
                     text_vigencia = ''
                 elif not data_final and dades_tarifa['date_end']:
                     text_vigencia = _(u"(vigents fins al {})").format(dades_tarifa['date_end'])
@@ -402,15 +431,15 @@ CONTRACT_TYPES = dict(TABLA_9)
                     text_vigencia = _(u"(vigents a partir del {})").format(datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d').strftime('%d/%m/%Y'))
 
                 iva_reduit = False
-                if not polissa.fiscal_position_id:
+                if not polissa.fiscal_position_id and not lead:
                     imd_obj = polissa.pool.get('ir.model.data')
-                    if iva_5_active and polissa.potencia <= 10 and dades_tarifa['date_start'] >= start_date_iva_5 and dades_tarifa['date_start'] <= end_date_iva_5:
+                    if iva_10_active and polissa.potencia <= 10 and dades_tarifa['date_start'] >= start_date_iva_10 and dades_tarifa['date_start'] <= end_date_iva_10:
                         fp_id = imd_obj.get_object_reference(cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
                         iva_reduit = True
-                        text_vigencia += " (IVA 5%, IE 0,5%)"
+                        text_vigencia += " (IVA 10%, IE 2,5%)"
                     else:
-                        fp_id = imd_obj.get_object_reference(cursor, uid, 'giscedata_facturacio', 'fp_nacional_2021_rd_17_2021')[1]
-                        text_vigencia += " (IVA 21%, IE 0,5%)"
+                        fp_id = imd_obj.get_object_reference(cursor, uid, 'giscedata_facturacio_iese', 'fp_nacional_2024_rdl_8_2023_25')[1]
+                        text_vigencia += " (IVA 21%, IE 2,5%)"
                     ctx.update({'force_fiscal_position': fp_id})
             %>
             %if text_vigencia:
@@ -434,13 +463,16 @@ CONTRACT_TYPES = dict(TABLA_9)
                     ctx['sense_agrupar'] = True
                     periodes_energia = sorted(polissa.tarifa.get_periodes(context=ctx).keys())
                     periodes_potencia = sorted(polissa.tarifa.get_periodes('tp', context=ctx).keys())
-                    if periodes:
+                    if periodes and not lead:
                         if data_final: #TODO: A LA SEGONA PASSADA, POSARIEM ELS PREUS VELLS
                             data_llista_preus = dades_tarifa['date_start']
                             if datetime.strptime(data_llista_preus, '%Y-%m-%d') <= datetime.today():
                                 data_llista_preus = min(datetime.strptime(data_final, '%Y-%m-%d'), datetime.today())
                             ctx['date'] = data_llista_preus
-                        data_i = data_inici and datetime.strptime(polissa.modcontractual_activa.data_inici, '%Y-%m-%d')
+                        if not lead:
+                            data_i = data_inici and datetime.strptime(polissa.modcontractual_activa.data_inici, '%Y-%m-%d')
+                        else:
+                            data_i = datetime.strptime(data_inici, '%Y-%m-%d')
                         if data_i and calendar.isleap(data_i.year):
                             dies = 366
                         else:
@@ -496,9 +528,15 @@ CONTRACT_TYPES = dict(TABLA_9)
                                         <span><span>${formatLang(get_atr_price(cursor, uid, polissa, p, 'tp', ctx, with_taxes=True)[0], digits=6)}</span></span>
                                     </td>
                                 %else:
-                                    <td class="">
-                                        &nbsp;
-                                    </td>
+                                    %if lead:
+                                        <td class="center">
+                                            <span><span>${formatLang(dict_preus_tp_potencia[p], digits=6)}</span></span>
+                                        </td>
+                                    %else:
+                                        <td class="">
+                                            &nbsp;
+                                        </td>
+                                    %endif
                                 %endif
                             %endfor
                             %if len(periodes_potencia) < 6:
@@ -526,13 +564,13 @@ CONTRACT_TYPES = dict(TABLA_9)
                     %endif
                     <tr>
                         <td class="bold">${_("Terme energia (€/kWh)")}</td>
-                        %if polissa.mode_facturacio == 'index' or modcon_pendent_indexada:
+                        %if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:
                             <td class="center reset_line_height" colspan="6">
                                 <span class="normal_font_weight">
                                     <b>${_(u"Tarifa indexada")}</b>${_(u"(2) - el preu horari (PH) es calcula d'acord amb la fórmula:")}
                                 </span>
                                 <br/>
-                                <span>${_(u"PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + K] + PTD + CA")}</span>
+                                <span>${_(u"PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + F] + PTD + CA")}</span>
                                 <br/>
                                 <span class="normal_font_weight">${_(u"on la franja de la cooperativa")}</span>
                                 <%
@@ -554,18 +592,26 @@ CONTRACT_TYPES = dict(TABLA_9)
                                                     coeficient_k = item.base_price
                                                     break
                                 %>
-                                <span>&nbsp;${("(K) = %s €/kWh</B>") % formatLang(coeficient_k, digits=6)}</span>
+                                <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(coeficient_k, digits=6)}</span>
                             </td>
                         %else:
+                            <% llista_preu = ultima_modcon.llista_preu if modcon_pendent_periodes else polissa.llista_preu %>
                             %for p in periodes_energia:
-                                %if polissa.llista_preu:
+                                %if llista_preu and not lead:
+                                    <% ctx['force_pricelist'] = llista_preu.id %>
                                     <td class="center">
                                         <span class="">${formatLang(get_atr_price(cursor, uid, polissa, p, 'te', ctx, with_taxes=True)[0], digits=6)}</span>
                                     </td>
                                 %else:
-                                    <td class="">
-                                        &nbsp;
-                                    </td>
+                                    %if lead:
+                                        <td class="center">
+                                            <span><span>${formatLang(dict_preus_tp_energia[p], digits=6)}</span></span>
+                                        </td>
+                                    %else:
+                                        <td class="">
+                                            &nbsp;
+                                        </td>
+                                    %endif
                                 %endif
                             %endfor
                             %if len(periodes_energia) < 6:
@@ -603,7 +649,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                     %if polissa.autoconsumo != '00':
                     <tr>
                         <td><span class="bold auto">${_("Excedents d'autoconsum (€/kWh)")}</span></td>
-                        %if polissa.mode_facturacio == 'index' or modcon_pendent_indexada:
+                        %if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:
                             <td class="center reset_line_height" colspan="6">
                                 <span class="normal_font_weight">${_(u"Tarifa indexada(2) - el preu horari de la compensació d'excedents és igual al PHM")}</span>
                             </td>
@@ -625,11 +671,11 @@ CONTRACT_TYPES = dict(TABLA_9)
                 %if polissa.te_assignacio_gkwh:
                     <span class="bold">(1) </span> ${_("Terme d'energia en cas de participar-hi, segons condicions del contracte GenerationkWh.")}<br/>
                 %endif
-                %if polissa.mode_facturacio == 'index' or modcon_pendent_indexada:
+                %if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:
                     <span class="bold">(2) </span> ${_("Pots consultar el significat de les variables a les condicions específiques que trobaràs a continuació.")}
                 %endif
                 </div>
-                %if (polissa.mode_facturacio != 'index' and not modcon_pendent_indexada) and dades_tarifa['date_start'] >= start_date_mecanisme_ajust_gas and \
+                %if (polissa.mode_facturacio != 'index' and not modcon_pendent_indexada and not lead) and dades_tarifa['date_start'] >= start_date_mecanisme_ajust_gas and \
                     (not dades_tarifa['date_end'] or dades_tarifa['date_end'] <= end_date_mecanisme_ajust_gas):
                     <div class="avis_rmag">
                         ${_(u"A més del preu fix associat al cost de l'energia, establert per Som Energia i publicat a la nostra pàgina web, la factura inclourà un import variable associat al mecanisme d'ajust establert al")}
@@ -642,66 +688,76 @@ CONTRACT_TYPES = dict(TABLA_9)
                     </div>
                 %endif
             </div>
+            <%
+                if lead:
+                    break
+            %>
             %endfor
         </div>
         <div class="styled_box padding_bottom">
             <div class="center avis_impostos">
-                %if polissa.mode_facturacio == 'index' or modcon_pendent_indexada:
+                %if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:
                     ${_(u"Els preus del terme de potència")}
                 %else:
                     ${_(u"Tots els preus que apareixen en aquest contracte")}
                 %endif
-                &nbsp;${_(u"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent en cada moment per a cada tipus de contracte.")}
+                &nbsp;${_(u"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent en cada moment per a cada tipus de contracte sense perjudici de les exempcions o bonificacions que puguin ser d'aplicació.")}
             </div>
         </div>
-            <%
-                if pas01:
-                    bank = pas01.pas_id.bank if pas01.pas_id.bank else polissa.bank
-                else:
-                    bank = polissa.bank
-
-                owner_b = polissa.bank.partner_id.name
-                nif = polissa.bank.partner_id.vat
-                pol_bank = bank.read(['owner_id'])
-                if 'owner_id' in pol_bank and bank.owner_name:
-                    owner_b = bank.owner_name
-                    if bank.owner_id:
-                        nif = bank.owner_id.vat
-                nif = nif.replace('ES', '')
-            %>
             %if text_vigencia:
                 <p style="page-break-after: always"></p>
                 <br><br><br>
             %endif
+        % if polissa.bank:
         <div class="styled_box">
             <h5> ${_("DADES DE PAGAMENT")} </h5>
             <% iban = polissa.bank and polissa.bank.printable_iban[5:] or '' %>
             <div class="dades_pagament">
-                <div class="titular">
-                    <span class="name"><b>${_(u"Persona titular del compte: ")}</b> ${owner_b}</span>
-                    <span class="nif"><b>${_(u"NIF: ")}</b> ${nif}</span>
-                </div>
-                </br>
                 <div class="iban"><b>${_(u"Nº de compte bancari (IBAN): **** **** **** ****")}</b> &nbsp ${iban[-4:]}</div>
             </div>
         </div>
+        % endif
         <div class="modi_condicions">
             <p>
-               ${_(u"Al contractar s’accepten aquestes Condicions Particulars i les Condicions Generals, que es poden consultar a les pàgines següents. Si ens cal modificar-les, a la clàusula 9 de les Condicions Generals s’explica el procediment que seguirem. En cas que hi hagi alguna discrepància, prevaldrà el que estigui previst en aquestes Condicions Particulars.")}
+               ${_(u"Al contractar s’accepten aquestes ")}
+                %if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:
+                    ${_(u"Condicions Particulars, Específiques i les Condicions Generals,")}
+                %else:
+                    ${_(u"Condicions Particulars i les Condicions Generals")}
+                %endif
+               ${_(u"que es poden consultar a les pàgines següents. Si ens cal modificar-les, a la clàusula 9 de les Condicions Generals s’explica el procediment que seguirem. En cas que hi hagi alguna discrepància, prevaldrà el que estigui previst en aquestes Condicions Particulars.")}
             </p>
         </div>
         <div id="footer">
             <div class="city_date">
             <%
                 data_firma =  datetime.today()
+                imd_obj = obj.pool.get('ir.model.data')
+                polissa_categ_obj = obj.pool.get('giscedata.polissa.category')
+                polissa_categ_id = imd_obj.get_object_reference(
+                    cursor, uid, 'som_polissa', 'categ_tarifa_empresa'
+                )[1]
+                polissa_categ = polissa_categ_obj.browse(cursor, uid, polissa_categ_id)
             %>
                 ${company.partner_id.address[0]['city']},
                 ${_(u"a {0}".format(localize_period(data_firma, lang)))}
             </div>
             <div class="acceptacio_digital">
-                <div><b>${_(u"La persona clienta:")}</b></div>
-                <img src="${addons_path}/som_polissa_condicions_generals/report/assets/acceptacio_digital.png"/>
-                <div class="acceptacio_digital_txt">${_(u"Acceptat digitalment via formulari web")}</div>
+                % if polissa_categ in polissa.category_id:
+                    <div><b>${_(u"La contractant")}</b></div>
+                % else:
+                    <div><b>${_(u"La persona clienta:")}</b></div>
+                % endif
+
+                %if not lead:
+                    <img src="${addons_path}/som_polissa_condicions_generals/report/assets/acceptacio_digital.png"/>
+                %endif
+
+                % if polissa_categ in polissa.category_id:
+                    <div class="acceptacio_digital_txt">${_(u"Signat digitalment")}</div>
+                % elif not lead:
+                    <div class="acceptacio_digital_txt">${_(u"Acceptat digitalment via formulari web")}</div>
+                % endif
 
                 <div><b>${polissa.pagador.name if not pas01 else dict_titular['client_name']}</b></div>
             </div>
@@ -737,7 +793,7 @@ CONTRACT_TYPES = dict(TABLA_9)
     %>
     %if lang == 'ca_ES':
         <%include file="/som_polissa_condicions_generals/report/condicions_generals.mako"/>
-        %if polissa.mode_facturacio == 'index' or modcon_pendent_indexada:
+        %if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:
             <p style="page-break-after:always;"></p>
             <%include file="/som_polissa_condicions_generals/report/condicions_especifiques_indexada.mako"/>
             %if prova_pilot_indexada:
@@ -747,7 +803,7 @@ CONTRACT_TYPES = dict(TABLA_9)
         %endif
     %else:
         <%include file="/som_polissa_condicions_generals/report/condiciones_generales.mako"/>
-        %if polissa.mode_facturacio == 'index' or modcon_pendent_indexada:
+        %if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:
             <p style="page-break-after:always;"></p>
             <%include file="/som_polissa_condicions_generals/report/condiciones_especificas_indexada.mako"/>
             %if prova_pilot_indexada:

@@ -9,4 +9,3 @@
     ${_(u"<b>Codi de la sol·licitud:</b> %s") % (d.codi_solicitud)}<br/>
     <br><br>
 </li>
-

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
-	<data>
+    <data>
         <!-- Fer readonly el camp del MAG de pòlissa-->
         <record model="ir.ui.view" id="giscedata_polissa_mag_readonly_som_tree">
             <field name="name">giscedata.polissa.mag.readonly.som.tree</field>
@@ -8,10 +8,208 @@
             <field name="type">tree</field>
             <field name="inherit_id" ref="giscedata_repercussio_mecanismo_ajuste_gas.view_giscedata_polissa_form"/>
             <field name="arch" type="xml">
-                <field name="coef_repercusio_gas" position="replace" >
+                <field name="coef_repercusio_gas" position="replace">
                     <field name="coef_repercusio_gas" readonly="1"/>
                 </field>
             </field>
         </record>
-	</data>
+
+
+        <!--     Nova vista de impagats &ndash;&gt;-->
+                <record model="ir.ui.view" id="view_giscedata_polissa_deute_som_tree">
+                    <field name="name">giscedata_polissa_deute_som.tree</field>
+                    <field name="model">giscedata.polissa</field>
+                    <field name="type">tree</field>
+                    <field name="priority" eval="1"/>
+                    <field name="arch" type="xml">
+                        <tree string="Contractes amb deute">
+                            <field name="name"/>
+                            <field name="state"/>
+                            <field name="pending_state"/>
+                            <field name="pending_amount"/>
+                            <field name="data_tall"/>
+                            <field name="titular"/>
+                            <field name="cups_direccio"/>
+                            <field name="tarifa"/>
+                            <field name="potencia"/>
+                            <field name="nocutoff"/>
+                            <field name="unpaid_invoices"/>
+                            <field name="data_ultima_lectura"/>
+                            <field name="refacturacio_pendent"/>
+                            <field name="data_alta"/>
+                            <field name="observacio_suspesa"/>
+                            <field name="resum_observacions_comptables"/>
+                            <field name="data_ultima_factura" />
+                        </tree>
+                    </field>
+                </record>
+
+                <record model="ir.actions.act_window" id="action_giscedata_polissa_deute_som_tree">
+                    <field name="name">Contractes amb deute (Comptabilitat)</field>
+                    <field name="type">ir.actions.act_window</field>
+                    <field name="res_model">giscedata.polissa</field>
+                    <field name="domain">[('mesos_factura_mes_recent_impagada','>=',6),'|',('debt_amount', '>', 0),('pending_amount', '>', 0)]</field>
+                    <field name="view_type">form</field>
+                    <field name="view_mode">tree,form</field>
+                    <field name="view_id" ref="view_giscedata_polissa_deute_som_tree"/>
+                    <field name="context">{'active_test': False}</field>
+                </record>
+
+        <menuitem name="Contractes amb deute (Comptabilitat)" id="menu_view_giscedata_polissa_deute_som_tree"
+                  parent="giscedata_facturacio_impagat.menu_giscedata_polissa_deute_tree"
+                  action="action_giscedata_polissa_deute_som_tree"/>
+
+                <record model="ir.ui.view" id="view_giscedata_polissa_deute_som_form">
+                    <field name="name">giscedata_polissa_deute_som.form</field>
+                    <field name="model">giscedata.polissa</field>
+                    <field name="inherit_id" ref="giscedata_polissa.view_polisses_form"/>
+                    <field name="type">form</field>
+                    <field name="arch" type="xml">
+                        <xpath expr='//notebook/page[@string="Observacions"]/field[@name="observacions"]' position="after">
+                            <separator string="Observacions comptables" colspan="4"/>
+                            <field name="observacions_comptables" select="1" nolabel="1"/>
+                            <field name="mesos_factura_mes_recent_impagada" invisible="1" select="2"/>
+                        </xpath>
+                    </field>
+                </record>
+
+        <!-- Fer readonly elis camps del Gruo de Pagament-->
+        <record model="ir.ui.view" id="view_payment_mode_form_readonly">
+            <field name="name">payment.mode.form.readonly</field>
+            <field name="model">payment.mode</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="account_payment.view_payment_mode_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='type']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='name']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='journal']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='active']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_payment_mode_form_remesas_readonly">
+            <field name="name">payment.mode.form.remesas.readonly</field>
+            <field name="model">payment.mode</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="l10n_ES_remesas.view_payment_mode_form_remesas"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='bank_id']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='cif']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='nombre']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='sufijo']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='sepa_creditor_code']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='ine']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_factura_payment_mode_form_readonly">
+            <field name="name">factura.payment.mode.form.readonly</field>
+            <field name="model">giscedata.facturacio.factura</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="giscedata_facturacio_comer.view_factura_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='payment_mode_id']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Vista editable de Payment mode-->
+        <record id="view_payment_mode_tree_editable_som" model="ir.ui.view">
+            <field name="name">payment.mode.tree.editable.som</field>
+            <field name="model">payment.mode</field>
+            <field name="type">tree</field>
+            <field name="priority">99</field>
+            <field name="arch" type="xml">
+                <tree string="Mode de pagament (editable)" colors="red:active==0">
+                    <field name="name"/>
+                    <field name="journal"/>
+                    <field name="tipo"/>
+                    <field name="sufijo"/>
+                    <field name="partner_id"/>
+                    <field name="bank_id"/>
+                    <field name="active" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+        <record id="view_payment_mode_form_editable_som" model="ir.ui.view">
+            <field name="name">payment.mode.form.editable.som</field>
+            <field name="model">payment.mode</field>
+            <field name="type">form</field>
+            <field name="priority">99</field>
+            <field name="arch" type="xml">
+                <form string="Mode de pagament (editable)">
+                    <field name="name" select="1"/>
+                    <group colspan="2">
+                        <field name="active" select="1"/>
+                    </group>
+                    <field name="type"/>
+                    <field name="journal"/>
+                    <field name="require_bank_account"/>
+                    <field name="tipo"/>
+                    <newline/>
+                    <separator string="Presenter data" colspan="4"/>
+                    <field name="partner_id" attrs="{'required':[('tipo','!=','none')]}" on_change="onchange_partner(partner_id)"/>
+                    <field name="bank_id" domain="[('partner_id','=',partner_id)]"/>
+                    <field name="cif" readonly="1"/>
+                    <field name="nombre" attrs="{'required':[('tipo','!=','none')]}"/>
+                    <field name="sufijo" attrs="{'required':[('tipo','!=','none')]}"/>
+                    <field name="sepa_creditor_code" attrs="{'required':[('tipo','in',('sepa19', 'sepa34'))]}"/>
+                    <field name="ine"/>
+                    <group colspan="2" col="2" attrs="{'invisible': [('tipo', '=', 'none')]}">
+                        <field name="financiado"/>
+                    </group>
+                    <field name="mandate_scheme"/>
+                    <newline/>
+                    <group colspan="4" attrs="{'invisible': [('tipo', '=', 'none')]}">
+                        <group colspan="2" col="2" attrs="{ 'invisible': [('tipo', '!=', 'csb_58')] }">
+                            <separator string="CSB 58 Options" colspan="2"/>
+                            <field name="inc_domicile"/>
+                            <field name="alt_domicile_format"/>
+                        </group>
+                        <group colspan="2" col="2" attrs="{ 'invisible': [('tipo', '!=', 'csb_32')] }">
+                            <separator string="CSB 32 Options" colspan="2"/>
+                            <field name="cedente"/>
+                        </group>
+                        <group colspan="2" col="2" attrs="{ 'invisible': [('tipo', '!=', 'sepa19')] }">
+                            <separator string="SEPA 19 Options" colspan="2"/>
+                            <field name="cor1_scheme"/>
+                        </group>
+                    </group>
+                    <newline/>
+                </form>
+            </field>
+        </record>
+        <record id="action_payment_mode_form_editable_som" model="ir.actions.act_window">
+            <field name="name">Mode de pagament (editable)</field>
+            <field name="res_model">payment.mode</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_payment_mode_form_editable_som"/>
+        </record>
+
+        <menuitem action="action_payment_mode_form_editable_som" id="menu_action_payment_mode_form_editable_som" parent="account_payment.next_id_44"/>
+
+    </data>
 </openerp>

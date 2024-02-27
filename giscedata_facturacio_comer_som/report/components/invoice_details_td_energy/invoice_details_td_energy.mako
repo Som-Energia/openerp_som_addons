@@ -34,9 +34,16 @@ first_energy_line = True
             % endif
         % endfor
         <td></td>
+        % if id.iva_column:
+            <td></td>
+        % endif
     </tr>
     <tr>
-        <td class="detall_td">${_(u"Preu energia [€/kWh]")}</td>
+        % if id.indexed:
+            <td class="detall_td">${_(u"Preu mitjà de l'energia [€/kWh]")}</td>
+        % else:
+            <td class="detall_td">${_(u"Preu energia [€/kWh]")}</td>
+        % endif
         % for p in id.showing_periods:
             % if p in energy_lines_data:
                 <td>${_(u"%s") %(locale.str(locale.atof(formatLang(energy_lines_data[p]["price_unit_multi"], digits=6))))}</td>
@@ -45,6 +52,9 @@ first_energy_line = True
             % endif
         % endfor
         <td></td>
+        % if id.iva_column:
+            <td></td>
+        % endif
     </tr>
     <tr class="tr_bold">
         <td class="detall_td">${_(u"kWh x €/kWh (del %s al %s)") % (energy_lines_data.date_from, energy_lines_data.date_to)}</td>
@@ -56,6 +66,9 @@ first_energy_line = True
             % endif
         % endfor
         <td><span class="subtotal">${_(u"%s €") %(formatLang(energy_lines_data.total))}</span></td>
+        % if id.iva_column:
+            <td>${_(u"%s") % (energy_lines_data.iva) }</td>
+        % endif
     </tr>
 % endfor
 % if id.mag_line_data:
@@ -71,5 +84,8 @@ first_energy_line = True
                 <td></td>
         % endfor
         <td><span class="subtotal">${_(u"%s €") % (formatLang(id.mag_line_data.total))}</span></td>
+        % if id.iva_column:
+            <td>${_(u"%s") % (id.mag_line_data.iva) }</td>
+        % endif
     </tr>
 % endif

@@ -8,11 +8,11 @@ Reimporta fitxers ZIPs trobats en Resultats de som_crawlers que han acabat amb F
 Aquest script s'ha d'executar després de la pimera onada de crawlers (7 hores)
 """
 
-O = Client(**dbconfig.erppeek)
+O = Client(**dbconfig.erppeek)  # noqa: E741
 
 
 # Obtenir la llista de resultats a tractar
-craw_ids = O.SomCrawlersTask.search([('resultat_bool','=',False)])
+craw_ids = O.SomCrawlersTask.search([("resultat_bool", "=", False)])
 
 total_crawlers = 0
 total_reintents = 0
@@ -23,10 +23,12 @@ for craw_id in craw_ids:
     craw = O.SomCrawlersTask.browse(craw_id)
     if craw.run_ids:
         last_result = craw.run_ids[0]
-        attachment_ids = O.IrAttachment.search([
-            ('res_id', '=', last_result.id),
-            ('name', 'ilike', '.zip'),
-        ])
+        attachment_ids = O.IrAttachment.search(
+            [
+                ("res_id", "=", last_result.id),
+                ("name", "ilike", ".zip"),
+            ]
+        )
         if not attachment_ids:
             continue
         total_crawlers += 1
@@ -44,15 +46,20 @@ for craw_id in craw_ids:
             else:
                 total_correctes += 1
 
-        output  += "\n{} reimportats correctament".format(total_correctes)
+        output += "\n{} reimportats correctament".format(total_correctes)
         # Afegir nou resultat al crawler
-        O.SomCrawlersResult.create({'task_id': craw_id,
-            'data_i_hora_execucio': datetime.now().strftime("%Y-%m-%d_%H:%M"),
-            'resultat_bool': result,
-            'resultat_text': output,
-        })
+        O.SomCrawlersResult.create(
+            {
+                "task_id": craw_id,
+                "data_i_hora_execucio": datetime.now().strftime("%Y-%m-%d_%H:%M"),
+                "resultat_bool": result,
+                "resultat_text": output,
+            }
+        )
 
 print """
     Hem trobat {} crawlers per reimportar.
      S'han intentat reimportat {} fitxers.
-     S'han reimportat correctament {} fitxers.""".format(total_crawlers, total_reintents, total_correctes)
+     S'han reimportat correctament {} fitxers.""".format(   # noqa: E999
+    total_crawlers, total_reintents, total_correctes
+)

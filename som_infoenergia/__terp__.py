@@ -16,14 +16,13 @@
         "som_generationkwh",
     ],
     "init_xml": [],
-    "demo_xml": [
-        "tests/som_infoenergia_demo.xml"
-    ],
+    "demo_xml": ["tests/som_infoenergia_demo.xml"],
     "update_xml": [
         "som_infoenergia_report.xml",
         "som_infoenergia_sepa.xml",
         "som_infoenergia_data.xml",
         "som_infoenergia_view.xml",
+        "som_infoenergia_conany_data.xml",
         "giscedata_polissa_view.xml",
         "security/infoenergia_security.xml",
         "security/ir.model.access.csv",
@@ -39,5 +38,5 @@
         "wizard/wizard_create_attachments_from_zip_view.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

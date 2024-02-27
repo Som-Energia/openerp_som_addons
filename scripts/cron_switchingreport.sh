@@ -29,7 +29,7 @@ step "Execució a $execucio"
 
 scriptpath=$(dirname $(readlink -f "$0"))
 cd "$scriptpath"
- 
+
 
 today=$(date -I)
 # Data fixa per enviar informes antics

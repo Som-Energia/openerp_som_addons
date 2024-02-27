@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.actions.act_window" id="giscedata_facturacio.action_factura_tree">
+            <field name="domain">[('type', 'in', ['out_invoice', 'out_refund'])]</field>
+        </record>
+    </data>
+</openerp>

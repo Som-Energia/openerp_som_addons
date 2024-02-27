@@ -1,7 +1,7 @@
 # Translation of OpenERP Server.
 # This file contains the translation of the following modules:
 # * som_inversions
-# 
+#
 # Translators:
 #   <>, 2018.
 # Agustí Fita <afita@gisce.net>, 2017.
@@ -1739,7 +1739,7 @@ msgstr "aporta@somenergia.coop"
 #: rml:som_inversions/report/report_liquidacions_interessos.mako:205
 #: rml:som_inversions/report/report_liquidacions_titols.mako:199
 msgid "Comunicat dels interessos generats  per les teves aportacions"
-msgstr "Comunicado de los interesses generados por sus aportaciones"
+msgstr "Comunicado de los intereses generados por sus aportaciones"
 
 #: rml:som_inversions/report/report_liquidacions_interessos.mako:211
 #: rml:som_inversions/report/report_liquidacions_titols.mako:205

@@ -153,4 +153,3 @@ msgid ""
 "Allà trobareu serveis addicionals i tota la informació relacionada amb "
 "els vostres contractes"
 msgstr ""
-

@@ -654,4 +654,3 @@ def calcularPreuCanaries(periodes, fiscal_position):
     %endif
 </body>
 </html>
-

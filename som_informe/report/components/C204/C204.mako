@@ -12,4 +12,3 @@
     % endfor
     <br><br>
 </li>
-

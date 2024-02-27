@@ -27,20 +27,15 @@
 
 <h3>5. ADAPTACIÓN DE LA CLÁUSULA 5 “PRECIO Y ACTUALIZACIÓN”</h3>
     <p>5.1. Las partes acuerdan añadir la cláusula 5.6 de las Condiciones Generales del Contrato de Suministro, que queda redactada de la siguiente manera: </p>
-    <p>En caso de haber contratado la tarifa indexada la contratante abonará en contraprestación al suministro contratado el precio y demás conceptos descritos a continuación, así como los impuestos aplicables al tipo vigente en cada momento y todas aquellas prestaciones patrimoniales y/o otras legalmente exigibles. Asimismo, si la contratante lo solicita en el formulario de contratación, se incluirá en la factura el importe correspondiente al donativo voluntario para ayudar al desarrollo de la cooperativa.</p>
+    <p>En caso de haber contratado la tarifa indexada la contratante abonará en contraprestación al suministro contratado el precio y demás conceptos descritos a continuación, así como los impuestos aplicables al tipo vigente en cada momento y todas aquellas prestaciones patrimoniales y/o otras legalmente exigibles. Asimismo, si la contratante lo solicita en el formulario de contratación, o a posteriori a través de la Oficina Virtual, se añadirá al importe anterior el importe correspondiente al donativo voluntario para ayudar al desarrollo de la cooperativa.</p>
     <p>El importe de la energía es el resultado de la suma horaria del producto entre el consumo de energía activa entrante en cada hora y el precio horario de la energía. </p>
-    <blockquote><strong> Importe del término energía = Suma horaria (kWh energía activa entrante </strong><em><strong>h</strong></em><sub><em><strong>i</strong></em></sub><em><strong> </strong></em><strong>* PH)</strong></blockquote>
+    <p style="padding-left: 40px"><strong> Importe del término energía = Suma horaria (kWh energía activa entrante </strong><em><strong>h</strong></em><sub><em><strong>i</strong></em></sub><em><strong> </strong></em><strong>* PH)</strong></p>
     <p>Siendo <em><strong>h</strong></em><sub><em><strong>i </strong></em></sub>cada una de las horas del periodo de facturación en cuestión.</p>
     <p>Siendo PH el precio horario de la energía calculado siguiendo la siguiente fórmula:</p>
-    <blockquote><strong>PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + K] + PTD + CA</strong></blockquote>
-
-    <p style="page-break-after:always;"></p>
-
-    <br>
-    <br>
+    <p style="padding-left: 40px"><strong>PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + F] + PTD + CA</strong></p>
     <p>Donde:</p>
     <ul>
-        <blockquote>
+        <p style="padding-left: 40px">
         <li>
         <p><strong>PH </strong>= Precio horario de la energía.</p>
         </li>
@@ -72,7 +67,7 @@
         <p><strong>FE</strong> = Obligación de aportación al Fondo de Eficiencia Energética (FNEE) publicada por el Ministerio.</p>
         </li>
         <li>
-        <p><strong>K</strong> = Margen de comercialización (incluye los costes de desvío) definido en las condiciones particulares del contrato.</p>
+        <p><strong>F</strong> = Franja de la cooperativa (incluye el margen para la viabilidad de la cooperativa, más los costes de los Certificados de Garantía de Origen 100% renovable y los costes de las desviaciones).</p>
         </li>
         <li>
         <p><strong>PTD </strong>= Coste regulado del peaje de transporte y distribución establecido y publicado por la CNMC y aplicado sobre el total de la energía consumida.</p>
@@ -80,7 +75,7 @@
         <li>
         <p><strong>CA</strong> = Coste regulado de los cargos del sistema eléctrico definidos por el Ministerio correspondiente, aplicado sobre el total de la energía consumida. </p>
         </li>
-        </blockquote>
+        </p>
     </ul>
     <ol type="a">
         <li><span id="anchor-2"></span><strong>Término de energía reactiva</strong></li>
@@ -96,9 +91,9 @@
     <p>En caso de estar acogido al mecanismo de compensación simplificada, la comercializadora debe reflejar en las facturas esta compensación, de acuerdo a la información facilitada por la compañía distribuidora, conforme a lo que establece el Real Decreto 244/2019 y otra normativa aplicable a esta modalidad de autoconsumo. En particular, la comercializadora debe facturar la energía consumida de la red en periodos de facturación de 1 mes, de acuerdo a las lecturas y otra información enviada por la distribuidora, conforme a los artículos 13 y 14 del Real Decreto 244/20219, aplicando el precio de compensación que se pacta a continuación.</p>
     <p>El importe de los excedentes será la suma horaria del producto entre la energía activa saliente (excedentes) en cada hora y el precio horario de los excedentes. </p>
 
-    <blockquote>
-        <p><strong>Importe de los excedentes = SUMA HORARIA (kWh excedentarios </strong><em><strong>h</strong></em><sub><em><strong>i</strong></em></sub><em><strong> </strong></em><strong>x PHM </strong><em><strong>h</strong></em><sub><em><strong>i</strong></em></sub>)</p>
-    </blockquote>
+    <p style="padding-left: 40px">
+        <strong>Importe de los excedentes = SUMA HORARIA (kWh excedentarios </strong><em><strong>h</strong></em><sub><em><strong>i</strong></em></sub><em><strong> </strong></em><strong>x PHM </strong><em><strong>h</strong></em><sub><em><strong>i</strong></em></sub>)
+    </p>
 
     <p>Donde, <em>PHM</em> representa el precio horario mayorista que, para los contratos de la península, es el precio de OMIE, mientras que para las Baleares y Canarias es el precio horario de la demanda del Sistema Eléctrico Insular (balear y canario, respectivamente).</p>
 
@@ -111,9 +106,6 @@
 
 <p>6.1. Las partes acuerdan añadir la cláusula 7.2. bis de las Condiciones Generales del Contrato de Suministro, que queda redactada de la siguiente manera: </p>
 
-<p style="page-break-after:always;"></p>
-<br>
-<br>
 <p>Sin perjuicio de lo establecido en la cláusula 7.2, los consumos horarios para la aplicación de la tarifa indexada serán determinados a partir de las curvas horarias facilitadas por el encargado de la lectura. En caso de que SOM ENERGIA, SCCL, no pueda facturar con base en curvas horarias, SOM ENERGIA, SCCL, aplicará a los consumos informados por el encargado de la lectura u obtenidos de alguna de las maneras previstas en la cláusula 7.2. de las Condiciones Generales del Contrato de Suministro, los coeficientes perfilados publicados por el operador del sistema, de acuerdo con lo establecido en la normativa vigente para cada tipo de peaje de acceso a la red de la distribuidora<sup><a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></sup>. En el caso de los puntos de suministro con peaje de acceso a la red de distribución 6.1TD, se aplicarán los coeficientes perfilados previstos en la normativa para el peaje de acceso 3.0TD . </p>
 
 <p>SOM ENERGIA, SCCL, ha puesto a disposición de la contratante las presentes Condiciones Específicas previamente a su contratación a través de su página web <a href="http://www.somenergia.coop"><em>www.somenergia.coop</em></a>. Estas han sido suscritas mediante sistemas de contratación electrónica, y se ha remitido un ejemplar en soporte duradero a la contratante una vez finalizada la contratación.</p>

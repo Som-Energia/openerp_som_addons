@@ -8,7 +8,7 @@
     "version": "0-dev",
     "author": "GISCE",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "giscedata_facturacio_bateria_virtual",
     ],
     "init_xml": [],
@@ -17,7 +17,8 @@
         "security/ir.model.access.csv",
         "giscedata_bateria_virtual.xml",
         "giscedata_bateria_virtual_origen.xml",
+        "giscedata_bateria_virtual_percentatges_acumulacio_data.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

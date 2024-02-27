@@ -61,18 +61,41 @@
             </field>
         </record>
         <record model="ir.ui.view" id="view_giscedata_polissa_comer_form">
-            <field name="name">giscedata.polissa.comer.form</field>
+            <field name="name">giscedata.polissa.form</field>
             <field name="model">giscedata.polissa</field>
-            <field name="inherit_id" ref="giscedata_polissa_comer.view_giscedata_polissa_comer_form"/>
+            <field name="inherit_id" ref="giscedata_polissa.view_polisses_form"/>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <xpath expr="//page[@string='Observacions']" position="after">
-                    <page string="Gest. Endarrerida">
-                        <field name="info_gestio_endarrerida" nolabel="1" colspan="4"/>
-                    </page>
-                    <page string="Gest. Massives">
-                        <field name="info_gestions_massives" nolabel="1" colspan="4" select="2"/>
-                    </page>
+                <xpath expr="//page[@string='Observacions']" position="inside">
+                    <separator string="Gest. Endarrerida" colspan="4" />
+                    <field name="info_gestio_endarrerida" nolabel="1" colspan="4"/>
+                    <separator string="Gest. Massives" colspan="4" />
+                    <field name="info_gestions_massives" nolabel="1" colspan="4" select="2"/>
+                </xpath>
+                <xpath expr="//page[@string='Agregació']" position="replace">
+                    <page string="Agregació" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_giscedata_polissa_comer_form_mecanisme_ajust_gas">
+            <field name="name">giscedata.polissa.form</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_repercussio_mecanismo_ajuste_gas.view_giscedata_polissa_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@string='Mecanisme ajust gas']" position="replace">
+                    <page string="Mecanisme ajust gas" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_giscedata_polissa_comer_form_butlletins">
+            <field name="name">giscedata.polissa.form</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_butlletins.view_butlletins_polissa_tree"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@string='Butlletins']" position="replace">
+                    <page string="Butlletins" invisible="1"/>
                 </xpath>
             </field>
         </record>
@@ -139,6 +162,164 @@
                 <field name="data_ultima_lectura_f1" position="after">
                     <field name="dies_lectures_facturada_f1" select="2"/>
                 </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_giscedata_polissa_cau_tree">
+            <field name="name">giscedata_polissa_cau_tree</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="type">tree</field>
+            <field name="priority" eval="16"/>
+            <field name="arch" type="xml">
+                <tree string="Contractes per CAU" colors="red:state in ['tall', 'baixa', 'cancelada']">
+                    <field name="distribuidora"/>
+                    <field name="titular"/>
+                    <field name="autoconsum_id" string="CAU"/>
+                    <field name="name"/>
+                    <field name="cups"/>
+                    <field name="autoconsumo"/>
+                    <field name="is_autoconsum_collectiu"/>
+                    <field name="tipus_installacio"/>
+                    <field name="esquema_mesura"/>
+                    <field name="tipus_cups"/>
+                    <field name="ssaa"/>
+                    <field name="contract_type"/>
+                    <field name="state"/>
+                    <field name="tarifa"/>
+                    <field name="llista_preu"/>
+                    <field name="data_alta"/>
+                    <field name="data_alta_autoconsum"/>
+                    <field name="ac_state" string="Estat de l'auto"/>
+                    <field name="data_baixa_autoconsum"/>
+                    <field name="data_baixa"/>
+                    <field name="facturacio_suspesa"/>
+                    <field name="data_ultima_lectura"/>
+                    <field name="data_ultima_lectura_f1"/>
+                    <field name="dies_lectures_facturada_f1"/>
+                    <field name="bateria_activa"/>
+                    <field name="bateria_virtual"/>
+                    <field name="data_activacio_bateria"/>
+                    <field name="data_baixa_bateria"/>
+                    <field name="cups_np"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_giscedata_polissa_cau_som_tree">
+            <field name="name">Contractes per CAU</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">giscedata.polissa</field>
+            <field name="domain">[]</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'active_test': False}</field>
+            <field name="view_id" ref="view_giscedata_polissa_cau_tree"/>
+        </record>
+        <menuitem name="Contractes per CAU" id="menu_view_giscedata_polissa_cau_tree"
+                  parent="giscedata_polissa.menu_polisses"
+                  action="action_giscedata_polissa_cau_som_tree"/>
+
+         <record model="ir.ui.view" id="view_giscedata_polissa_form_inherit">
+            <field name="name">giscedata.polissa.form.inherit</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_polissa.view_polisses_form" />
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <field name="titular" position="after">
+                    <field name="esquema_mesura" invisible="1" select="2"/>
+                    <field name="bateria_activa" invisible="1" select="2"/>
+                    <field name="data_activacio_bateria" invisible="1" select="2"/>
+                    <field name="data_baixa_bateria" invisible="1" select="2"/>
+                    <field name="tipus_installacio" invisible="1" select="2"/>
+                    <field name="cups_np" invisible="1" select="1"/>
+                    <field name="ssaa" invisible="1" select="2"/>
+                    <field name="tipus_installacio" invisible="1" select="2"/>
+                    <field name="tipus_cups" invisible="1" select="1"/>
+                </field>
+                <xpath expr="//field[@name='data_alta']" position="attributes">
+                    <attribute name="readonly">0</attribute>
+                </xpath>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_giscedata_polissa_autoconsum_form_inherit">
+            <field name="name">giscedata.polissa.autoconsum.form.inherit</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_polissa.view_polissa_autoconsum_form" />
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='potencia_generacio']" position="replace">
+                    <field name="potencia_generacio" select="1"/>
+                </xpath>
+                <xpath expr="//field[@name='autoconsum_id']" position="replace">
+                    <field name="autoconsum_id" string="CAU" size="26" select="1" attrs="{'required':[('autoconsumo','!=','00'), ('state','in',['validar','modcontractual'])]}" on_change="onchange_autoconsum_id(autoconsum_id)"/>
+                </xpath>
+                <xpath expr="//field[@name='is_autoconsum_collectiu']" position="replace">
+                    <field name="is_autoconsum_collectiu" select="2"/>
+                </xpath>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_giscedata_factruacio_suspesa_form_inherit">
+            <field name="name">giscedata.facturacio.suspesa.form.inherit</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_facturacio_suspesa.view_giscedata_polissa_facturacio_suspesa_form" />
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='observacio_suspesa']" position="replace">
+                    <field name="observacio_suspesa" select="1"/>
+                </xpath>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_giscedata_polissa_tree_inherit">
+            <field name="name">giscedata.polissa.tree.inherit</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_polissa.view_polisses_tree" />
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <field name="cups" position="after">
+                    <field name="autoconsumo"/>
+                </field>
+                <field name="potencia_generacio" position="after">
+                    <field name="bateria_activa"/>
+                    <field name="data_activacio_bateria"/>
+                    <field name="data_baixa_bateria"/>
+                    <field name="cups_np"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- Canviem el nom de Bateria Virtual a Flux Solar -->
+        <record model="ir.ui.view" id="view_som_giscedata_polissa_form">
+            <field name="name">som.polissa.bateries.virtuals.form</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_facturacio_bateria_virtual.view_giscedata_polissa_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@string='Bateries Virtuals']"  position="replace">
+                    <page string="Bateries Virtuals" invisible="1" />
+                </xpath>
+                <xpath expr="//page[@string='Autoconsum']" position="inside">
+                    <separator string="Flux Solar" colspan="4" />
+                    <group colspan="2" col="4">
+                        <field name="crea_bat_auto" string="Afegir a un flux solar al activar pòlissa" select="2"/>
+                    </group>
+                    <field name="bateria_ids" nolabel="1" colspan="4" context="{'polissa_id':active_id}"/>
+                    <field name="historic_autoconsum" />
+                </xpath>
+                <xpath expr="//page[@string='Autoconsum']" position="attributes">
+                    <attribute name="attrs">{'invisible':[('historic_autoconsum','=', False)]}</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Canviem el nom de Bateria Virtual a Flux Solar -->
+        <record model="ir.ui.view" id="view_som_bateries_polissa_tree_listat">
+            <field name="name">som.bateria.virtual.polissa.tree.llistat</field>
+            <field name="model">giscedata.bateria.virtual.polissa</field>
+            <field name="inherit_id" ref="giscedata_facturacio_bateria_virtual.view_bateries_polissa_tree_listat"/>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='bateria_id']" position="attributes">
+                    <attribute name="string">Flux Solar</attribute>
+                    <attribute name="select">2</attribute>
+                </xpath>
             </field>
         </record>
     </data>

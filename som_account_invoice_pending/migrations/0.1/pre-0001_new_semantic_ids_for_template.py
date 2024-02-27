@@ -7,13 +7,13 @@ def up(cursor, installed_version):
     if not installed_version:
         return
     data_path = get_module_resource(
-        'som_account_invoice_pending', 'som_account_invoice_pending_data.xml'
+        "som_account_invoice_pending", "som_account_invoice_pending_data.xml"
     )
-    with open(data_path, 'r') as f:
+    with open(data_path, "r") as f:
         data_xml = f.read()
-    dm = DataMigration(data_xml, cursor, 'som_account_invoice_pending', {
-        'poweremail.templates': ['name']
-    })
+    dm = DataMigration(
+        data_xml, cursor, "som_account_invoice_pending", {"poweremail.templates": ["name"]}
+    )
     dm.migrate()
 
 

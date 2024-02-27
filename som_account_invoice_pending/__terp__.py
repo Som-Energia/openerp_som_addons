@@ -6,20 +6,23 @@
     "version": "0.1.2",
     "author": "Som Energia SCCL",
     "category": "Master",
-    "depends":[
+    "depends": [
         "account_invoice_pending",
         "giscedata_facturacio",
         "l10n_ES_cobros_ventanilla",
         "powersms",
         "giscedata_facturacio_impagat_comer",
         "www_som",
-        "poweremail"
-   ],
+        "poweremail",
+        "som_polissa",
+        "custom_search",
+    ],
     "init_xml": [],
     "demo_xml": [
         "demo/som_account_invoice_pending_demo_data.xml",
     ],
-    "update_xml":[
+    "update_xml": [
+        "data/custom_search_data.xml",
         "som_account_invoice_pending_data.xml",
         "wizard/wizard_returned_invoices_export.xml",
         "wizard/wizard_unlink_sms_pending_history_view.xml",
@@ -29,5 +32,5 @@
         "account_invoice_pending_view.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

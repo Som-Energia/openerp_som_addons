@@ -34,6 +34,12 @@
                                 </group>
                             </group>
                         </page>
+                        <page string="Attachments">
+                            <group col="4">
+                                <separator colspan="4" string="Attachments" />
+                                <field name="pem_attachments_ids" colspan="4" nolabel="1" height="400" widget="one2many"/>
+                            </group>
+                        </page>
                     </notebook>
                     <separator colspan="4" string="" />
                     <group col="4" colspan="4">
@@ -148,7 +154,3 @@
         <menuitem name="Error" id="menu_powersms_error_company" parent="menu_powersms_smsbox_all_main2" action="action_powersms_error_tree_company" />
     </data>
 </openerp>
-
-
-
-

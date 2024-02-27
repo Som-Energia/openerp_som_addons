@@ -28,7 +28,7 @@
         </record>
         <!-- La fem visible des del menu -->
         <menuitem id="menu_facturacio_factures_impagades" action="action_factures_impagades" parent="giscedata_facturacio.menu_facturacio_base_factures"/>
-	
+
 	    <record id="view_giscedata_facturacio_factura_devolucio_add_comment_tree" model="ir.ui.view">
             <field name="name">giscedata.facturacio.factura.devolucio.add.commeent.tree</field>
             <field name="model">giscedata.facturacio.factura</field>

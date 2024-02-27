@@ -5,20 +5,19 @@ from tools.translate import _
 
 class SomAutoreclamaStateWorkflow(osv.osv):
 
-    _name = 'som.autoreclama.state.workflow'
+    _name = "som.autoreclama.state.workflow"
 
     WORKFLOW_MODELS = [
-        ('ATC', 'Cas ATC'),
-        ('F1', 'F1'),
+        ("ATC", "Cas ATC"),
+        ("F1", "F1"),
+        ("polissa", "Pòlissa"),
     ]
     _columns = {
-        'name': fields.char(_('Name'), size=64, required=True),
-        'model': fields.selection(WORKFLOW_MODELS, 'Model', required=True),
+        "name": fields.char(_("Name"), size=64, required=True),
+        "model": fields.selection(WORKFLOW_MODELS, "Model", required=True),
     }
 
-    _defaults = {
-
-    }
+    _defaults = {}
 
 
 SomAutoreclamaStateWorkflow()

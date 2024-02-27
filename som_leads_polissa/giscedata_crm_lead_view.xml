@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>
+        <record id="giscedata_crm_leads_som_view" model="ir.ui.view">
+            <field name="name">giscedata.crm.lead.som</field>
+            <field name="model">giscedata.crm.lead</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="giscedata_crm_leads.giscedata_crm_leads_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='llista_preu']" position="replace">
+                </xpath>
+                <xpath expr="//page[@string='Sobre el Pago']" position="after">
+                    <page string="Sobre la Tarifa">
+                        <field name="tipus_tarifa_lead" colspan="4" col="4"
+                               on_change="onchange_tipus_tarifa_lead(tipus_tarifa_lead)"/>
+                        <group  string="Llista preus"  colspan="4" col="4"
+                            attrs="{'invisible':[('tipus_tarifa_lead','=', 'tarifa_provisional')]}">
+                            <field name="llista_preu" colspan="4"/>
+                        </group>
+                        <group string=""  colspan="4" col="4"
+                            attrs="{'invisible':[('tipus_tarifa_lead','=', 'tarifa_existent')]}">
+                            <separator string="Preus Tarifa Provisional" colspan="4" col="4"/>
+                        </group>
+                        <group string="Preus d'energia"  colspan="2" col="4"
+                            attrs="{'invisible':[('tipus_tarifa_lead','=', 'tarifa_existent')]}">
+                            <field name="preu_fix_energia_p1" colspan="4"/>
+                            <field name="preu_fix_energia_p2" colspan="4"/>
+                            <field name="preu_fix_energia_p3" colspan="4"/>
+                            <field name="preu_fix_energia_p4" colspan="4"/>
+                            <field name="preu_fix_energia_p5" colspan="4"/>
+                            <field name="preu_fix_energia_p6" colspan="4"/>
+                        </group>
+                        <group string="Preus de potència"  colspan="2" col="4"
+                            attrs="{'invisible':[('tipus_tarifa_lead', '=', 'tarifa_existent')], 'readonly':[('set_custom_potencia', '=', False)]}">
+                            <field name="preu_fix_potencia_p1" colspan="4"/>
+                            <field name="preu_fix_potencia_p2" colspan="4"/>
+                            <field name="preu_fix_potencia_p3" colspan="4"/>
+                            <field name="preu_fix_potencia_p4" colspan="4"/>
+                            <field name="preu_fix_potencia_p5" colspan="4"/>
+                            <field name="preu_fix_potencia_p6" colspan="4"/>
+                        </group>
+                        <group string="Preus de potència"  colspan="4" col="4"
+                            attrs="{'invisible':[('tipus_tarifa_lead', '=', 'tarifa_existent')]}">
+                            <field name="set_custom_potencia" colspan="4" on_change="onchange_set_custom_potencia(set_custom_potencia)"/>
+                        </group>
+                        <group  string="Llista preus de potència"  colspan="4" col="4"
+                            attrs="{'invisible':[('tipus_tarifa_lead', '=', 'tarifa_existent')], 'readonly':[('set_custom_potencia', '=', True)]}">
+                            <field name="llista_preu" colspan="4"/>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

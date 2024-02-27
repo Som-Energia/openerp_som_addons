@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
-from tools.translate import _
 
 
 class WizardCanviarUsuari(osv.osv_memory):
@@ -27,9 +26,9 @@ class WizardCanviarUsuari(osv.osv_memory):
     _columns = {
         "usuari": fields.char(
             "Usuari",
-            size = 64,
-            required = True,
-            help = "El nou nom d'usuari",
+            size=64,
+            required=True,
+            help="El nou nom d'usuari",
         ),
     }
 

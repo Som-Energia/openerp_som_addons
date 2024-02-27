@@ -11,6 +11,9 @@
         % endif
     % endfor
     <td></td>
+    % if id.iva_column:
+        <td></td>
+    % endif
 </tr>
 <tr class="${'last_row' if id.header_multi == 2 else ''}">
     <td class="td_bold detall_td">${_(u"kWh x €/kWh")}</td>
@@ -22,4 +25,7 @@
         % endif
     % endfor
     <td></td>
+    % if id.iva_column:
+        <td></td>
+    % endif
 </tr>

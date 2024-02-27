@@ -37,7 +37,7 @@ autoconsum_text = TABLA_113_dict[cd.autoconsum] if cd.autoconsum in TABLA_113_di
         <h1>${_(u"DADES DEL CONTRACTE")}</h1>
         <div class="contract_data_container">
             <div class="contract_data_adreca">
-                ${_(u"Adreça de subministrament:")} <span style="font-weight: bold;">${cd.cups_direction}</span> 
+                ${_(u"Adreça de subministrament:")} <span style="font-weight: bold;">${cd.cups_direction}</span>
             </div>
             <div class="contract_data_column">
                 <p>
@@ -57,7 +57,7 @@ autoconsum_text = TABLA_113_dict[cd.autoconsum] if cd.autoconsum in TABLA_113_di
                     ${_(u"Peatge de transport i distribució:")} <span style="font-weight: bold;">${cd.tariff}</span> <br />
                     ${_(u"Segment tarifari:")} <span style="font-weight: bold;">${cd.segment_tariff}</span> <br />
                     % if cd.invoicing_mode == 'index':
-                        ${_(u"Tarifa comercialitzadora:")} <span style="font-weight: bold;">${cd.pricelist}</span> <br />
+                        ${_(u"Tarifa:")} <span style="font-weight: bold;">${cd.pricelist}</span> <br />
                     % endif
                     ${_(u"CUPS:")} <span style="font-weight: bold;">${cd.cups}</span> <br />
                     ${_(u"Comptador telegestionat:")} <span style="font-weight: bold;">${cd.remote_managed_meter and _(u'Sí') or _(u'No')}</span> <br />
@@ -72,9 +72,6 @@ autoconsum_text = TABLA_113_dict[cd.autoconsum] if cd.autoconsum in TABLA_113_di
                     %if cd.is_autoconsum:
                         ${_(u"Autoproducció tipus:")} <span style="font-weight: bold;">${autoconsum_text}</span> <br />
                         ${_(u"CAU (Codi d'autoconsum unificat):")} <span style="font-weight: bold;">${cd.autoconsum_cau}</span>
-                        %if cd.is_autoconsum_colectiu:
-                            <br />${_(u"Percentatge de repartiment de l'autoproducció compartida:")} <span style="font-weight: bold;">${cd.autoconsum_colectiu_repartiment} %</span>
-                        %endif
                     %endif
                 </p>
             </div>

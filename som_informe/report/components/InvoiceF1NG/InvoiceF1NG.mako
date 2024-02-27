@@ -32,10 +32,10 @@
                     <td style="width:10%">${_(u"%s %s") % (formatLang(linia['lectura_final'], digits=2), linia['unit'])}</td>
                     <td style="width:12%">${_(u"%s %s") % (formatLang(linia['consum_entre'], digits=2), linia['unit'])}</td>
                     <td style="width:12%">${_(u"%s %s") % (formatLang(linia['ajust'], digits=2), linia['unit'])}</td>
-                    %if linia['magnitud_desc'] != 'Excesos de potencia':
-                        <td style="width:13%">${_(u"%s %s") % (formatLang(linia['total_facturat'], digits=2), linia['unit'])}</td>
-                    %else:
+                    %if linia['magnitud_desc'] == 'Excesos de potencia':
                         <td style="width:13%">${_(u"%s %s") % (formatLang(linia['total_facturat'], digits=2), '€')}</td>
+                    %else:
+                        <td style="width:13%">${_(u"%s %s") % (formatLang(linia['total_facturat'], digits=2), linia['unit'])}</td>
                     %endif
                 </tr>
             % endfor

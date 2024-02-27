@@ -27,12 +27,12 @@
 
 <h3>5. ADAPTACIÓ DE LA CLÀUSULA 5 “PREU I ACTUALITZACIÓ”</h3>
     <p>5.1. Les parts acorden afegir la clàusula 5.6 de les Condicions Generals del Contracte de Subministrament, que queda redactada de la manera següent:</p>
-    <p>En cas d'haver contractat la tarifa indexada, la contractant ha d'abonar en contraprestació al subministrament contractat el preu i altres conceptes descrits a continuació, així com els impostos aplicables al tipus vigent a cada moment i totes aquelles prestacions patrimonials i/o altres legalment exigibles. Així mateix, si la contractant ho sol·licita en el formulari de contractació, s'inclourà en la factura l'import corresponent al donatiu voluntari per ajudar al desenvolupament de la cooperativa.</p>
+    <p>En cas d'haver contractat la tarifa indexada, la contractant ha d'abonar en contraprestació al subministrament contractat el preu i altres conceptes descrits a continuació, així com els impostos aplicables al tipus vigent a cada moment i totes aquelles prestacions patrimonials i/o altres legalment exigibles. Així mateix, si la contractant ho sol·licita en el formulari de contractació, o posteriorment a través de l’Oficina Virtual, s'ha d’afegir a l’import anterior a l'import corresponent al donatiu voluntari per ajudar al desenvolupament de la cooperativa.</p>
     <p>L'import de l'energia és el resultat de la suma horària del producte entre el consum d'energia activa entrant a cada hora i el preu horari de l'energia.</p>
-    <blockquote><strong> Import del terme energia = Suma horària (kWh Energia Activa entrant </strong><em><strong>h</strong></em><sub><em><strong>i</strong></em></sub><em><strong> </strong></em><strong>* PH)</strong></blockquote>
+    <p style="padding-left: 40px"><strong> Import del terme energia = Suma horària (kWh Energia Activa entrant </strong><em><strong>h</strong></em><sub><em><strong>i</strong></em></sub><em><strong> </strong></em><strong>* PH)</strong></p>
     <p>Sent <em><strong>h</strong></em><sub><em><strong>i </strong></em></sub>cada una de les hores del període de facturació en qüestió.</p>
     <p>Sent PH el preu horari de l'energia calculat seguint la fórmula següent:</p>
-    <blockquote><strong>PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + K] + PTD + CA</strong></blockquote>
+    <p style="padding-left: 40px"><strong>PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + F] + PTD + CA</strong></p>
 
     <p style="page-break-after:always;"></p>
     <br>
@@ -40,7 +40,7 @@
 
     <p>On:</p>
     <ul>
-        <blockquote>
+        <p style="padding-left: 40px">
         <li>
             <p><strong>PH </strong>= Preu horari de l'energia.</p>
             <p><strong>PHM</strong> = Preu horari del mercat diari. Per als contractes de la península és el preu publicat per l'Operador del Mercat Ibèric de l'Energia (*OMIE), mentre que per a les illes Balears i Canàries és el preu de la demanda del Sistema Elèctric Insular.</p>
@@ -70,7 +70,7 @@
             <p><strong>FE</strong> = Obligació d'aportació al Fons d'Eficiència Energètica (FNEE) publicada pel Ministeri.</p>
         </li>
         <li>
-            <p><strong>K</strong> = Marge de comercialització (inclou els costos de desviament) definit a les condicions particulars del contracte.</p>
+            <p><strong>F</strong> = Franja de la cooperativa (inclou el marge per a la viabilitat de la cooperativa, més els costos dels Certificats de Garantia d’Origen 100 % renovable i els costos de les desviacions).</p>
         </li>
         <li>
             <p><strong>PTD </strong>= Cost regulat del peatge de transport i distribució establert i publicat per la CNMC i aplicat sobre el total de l'energia consumida.</p>
@@ -78,7 +78,7 @@
         <li>
             <p><strong>CA</strong> = Cost regulat dels càrrecs del sistema elèctric definits pel Ministeri corresponent, aplicat sobre el total de l'energia consumida.</p>
         </li>
-        </blockquote>
+        </p>
     </ul>
     <ol type="a">
         <li><span id="anchor-2"></span><strong>Terme d'energia reactiva</strong></li>
@@ -94,9 +94,9 @@
     <p>En cas d'estar acollit al mecanisme de compensació simplificada, la comercialitzadora ha de reflectir en les factures aquesta compensació, d'acord amb la informació facilitada per la companyia distribuïdora, d'acord amb el que estableix el Reial decret 244/2019 i altra normativa aplicable a aquesta modalitat d'autoconsum. En particular, la comercialitzadora ha de facturar l'energia consumida de la xarxa en períodes de facturació d'1 mes, d'acord amb les lectures i una altra informació enviada per la distribuïdora, d'acord amb els articles 13 i 14 del Reial decret 244/20219, aplicant el preu de compensació que es pacta a continuació.</p>
     <p>L'import dels excedents serà la suma horària del producte entre l'energia activa sortint (excedents) en cada hora i el preu horari dels excedents.</p>
 
-    <blockquote>
-        <p><strong>Import dels excedents = SUMA HORÀRIA (kWh excedentaris </strong><em><strong>h</strong></em><sub><em><strong>i</strong></em></sub><em><strong> </strong></em><strong>x PHM </strong><em><strong>h</strong></em><sub><em><strong>i</strong></em></sub>)</p>
-    </blockquote>
+    <p style="padding-left: 40px">
+        <strong>Import dels excedents = SUMA HORÀRIA (kWh excedentaris </strong><em><strong>h</strong></em><sub><em><strong>i</strong></em></sub><em><strong> </strong></em><strong>x PHM </strong><em><strong>h</strong></em><sub><em><strong>i</strong></em></sub>)
+    </p>
 
     <p>On <em>PHM</em> representa el preu horari majorista que, per als contractes de la península, és el preu d'OMIE, mentre que per a les Balears i Canàries és el preu horari de la demanda del Sistema Elèctric Insular (balear i canari, respectivament).</p>
 
