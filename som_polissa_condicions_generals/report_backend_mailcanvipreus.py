@@ -89,6 +89,10 @@ class ReportBackendMailcanvipreus(ReportBackend):
         ("preu_vell",): 0,
         ("preu_vell_imp",): 0,
         ("consum_total",): 0,
+        ("auto", "nous", "amb_impostos"): 3,
+        ("auto", "nous", "sense_impostos"): 3,
+        ("auto", "vells", "amb_impostos"): 3,
+        ("auto", "vells", "sense_impostos"): 3,
     }
 
     @report_browsify
@@ -332,20 +336,27 @@ class ReportBackendMailcanvipreus(ReportBackend):
         return estimacions[tarifa][periode]
 
     def getPreuCompensacioExcedents(self, cursor, uid, env, context):
-        preus_auto = {
+        iva = 0.1 if context and context.get('iva10') else 0.21
+        if env.polissa_id.fiscal_position_id:
+            if env.polissa_id.fiscal_position_id.id in [33, 47, 52]:
+                iva = 0.03
+            if  env.polissa_id.fiscal_position_id.id in [34, 48, 53]:
+                iva = 0.0
+
+        PREU_NOU = 0.06
+        PREU_VELL = 0.07
+        return {
             "auto": {
                 "nous": {
-                    "amb_impostos": 0.07,
-                    "sense_impostos": 0.06,
+                    "amb_impostos": PREU_NOU*1.025*(1+iva),
+                    "sense_impostos": PREU_NOU,
                 },
                 "vells": {
-                    "amb_impostos": 0.08,
-                    "sense_impostos": 0.07,
+                    "amb_impostos": PREU_VELL*1.038*(1+iva),
+                    "sense_impostos": PREU_VELL,
                 },
             }
         }
-
-        return preus_auto
 
     def calcularPreuTotal(
         self,
@@ -438,7 +449,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
     def calcularImpostosPerCostAnualEstimat(self, preu, fiscal_position, context=False):
         iva = 0.1 if context and context.get('iva10') else 0.21
         impost_electric = 0.025
-        if context.get('force_fiscal_position'):
+        if fiscal_position:
             if fiscal_position.id in [33, 47, 52]:
                 iva = 0.03
             if fiscal_position.id in [34, 48, 53]:
