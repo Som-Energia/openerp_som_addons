@@ -110,8 +110,6 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
         # Preus nous amb IESE 3.8
         new_fiscal_position = {
-            34: 34,
-            18: 18,
             50: 59,
             52: 61,
             49: 58,
