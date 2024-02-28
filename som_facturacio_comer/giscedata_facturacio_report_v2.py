@@ -34,6 +34,7 @@ class GiscedataFacturacioFacturaReportV2(osv.osv):
         donatiu = self._get_donatiu_amount(cursor, uid, fra, context=context)
         fraccio = self._get_fraccionament_amount(cursor, uid, fra, context=context)
         res["total_linies_impostos"] = res["import"] - donatiu - fraccio
+        res["te_iva_21"] = self._get_te_iva_21(cursor, uid, fra, context=context)
         return res
 
     def _get_donatiu_amount(self, cursor, uid, fra, context=None):
@@ -57,6 +58,13 @@ class GiscedataFacturacioFacturaReportV2(osv.osv):
             if l.invoice_line_id.product_id.id == fraccio_prod_id
         ]
         return sum(faccionament_lines)
+
+    def _get_te_iva_21(self, cursor, uid, fra, context=None):
+        # falta contemplar :
+        # - canàries
+        # - data límit avís o flag?
+        id_factura_21 = 186
+        return id_factura_21 in fra.tax_line.tax_id.id
 
     def _get_linies_totals(self, cursor, uid, fra, context=None):
         res = super(GiscedataFacturacioFacturaReportV2, self)._get_linies_totals(

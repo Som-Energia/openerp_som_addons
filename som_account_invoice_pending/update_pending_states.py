@@ -558,21 +558,21 @@ class UpdatePendingStates(osv.osv_memory):
                 self.update_waiting_for_annex_cancelled_contracts(
                     cursor, uid, factura_id, traspas_advocats_bs, context
                 )
-
-            ret_value = self.send_email(cursor, uid, invoice["id"], email_params)
-            if ret_value == -1:
-                logger.info(
-                    "ERROR: Sending Annex 3 first email to {invoice_name} partner error.".format(
-                        invoice_name=invoice["partner_id"][1],
-                    )
-                )
             else:
-                fact_obj.set_pending(cursor, uid, [factura_id], final_state)
-                logger.info(
-                    "Sending Annex 3 first email to {invoice_name} partner with result: {ret_value}".format(  # noqa: E501
-                        invoice_name=invoice["partner_id"][1], ret_value=ret_value
+                ret_value = self.send_email(cursor, uid, invoice["id"], email_params)
+                if ret_value == -1:
+                    logger.info(
+                        "ERROR: Sending Annex 3 first email to {invoice_name} partner error.".format(  # noqa: E501
+                            invoice_name=invoice["partner_id"][1],
+                        )
                     )
-                )
+                else:
+                    fact_obj.set_pending(cursor, uid, [factura_id], final_state)
+                    logger.info(
+                        "Sending Annex 3 first email to {invoice_name} partner with result: {ret_value}".format(  # noqa: E501
+                            invoice_name=invoice["partner_id"][1], ret_value=ret_value
+                        )
+                    )
 
     def update_waiting_for_annexII(self, cursor, uid, context=None):
         """
