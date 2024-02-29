@@ -5,7 +5,7 @@ from tools.translate import _
 
 _GURB_CANCEL_CASES = {
     "D1": ["01"],
-    "M1": ["02", "03", "04", "05"],
+    "M1": ["03", "04", "05"],
 }
 
 
@@ -83,3 +83,29 @@ class GiscedataSwitching(osv.osv):
 
 
 GiscedataSwitching()
+
+
+class GiscedataSwitchingM1_02(osv.osv):
+    _inherit = "giscedata.switching.m1.02"
+
+    def create_from_xml(self, cursor, uid, sw_id, xml, context=None):
+        if context is None:
+            context = {}
+
+        pas_id = super(GiscedataSwitchingM1_02, self).create_from_xml(
+            cursor, uid, sw_id, xml, context=context
+        )
+
+        sw_obj = self.pool.get("giscedata.switching")
+        sw = sw_obj.browse(cursor, uid, sw_id, context=context)
+
+        if sw and _contract_has_gurb_category(
+            cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
+        ):
+            sw_step_header_id = self.read(cursor, uid, pas_id, ['header_id'])['header_id']
+            self.write(cursor, uid, sw_step_header_id, {'notificacio_pendent': False})
+
+        return pas_id
+
+
+GiscedataSwitchingM1_02()
