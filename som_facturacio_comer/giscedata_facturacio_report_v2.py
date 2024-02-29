@@ -60,8 +60,15 @@ class GiscedataFacturacioFacturaReportV2(osv.osv):
         return sum(faccionament_lines)
 
     def _get_te_iva_21(self, cursor, uid, fra, context=None):
-        id_iva_21 = 186
-        return id_iva_21 in fra.tax_line.tax_id.id
+        cfg_obj = self.pool.get('res.config')
+        list_conf_ids = []
+        try:
+            list_conf_ids = eval(cfg_obj.get(cursor, uid, "som_tax_21_ids_for_invoice_mail", "[]"))
+        except Exception:
+            pass
+        list_fra_tax_ids = fra.tax_line.tax_id.id
+        common_elements = [id for id in list_fra_tax_ids if id in list_conf_ids]
+        return len(common_elements) > 0
 
     def _get_linies_totals(self, cursor, uid, fra, context=None):
         res = super(GiscedataFacturacioFacturaReportV2, self)._get_linies_totals(
