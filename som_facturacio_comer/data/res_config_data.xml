@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data noupdate="1">
-        <record model="res.config" id="som_tax_ids_for_invoice_mail" forcecreate="1">
-            <field name="name">som_tax_ids_for_invoice_mail</field>
+        <record model="res.config" id="som_tax_21_ids_for_invoice_mail" forcecreate="1">
+            <field name="name">som_tax_21_ids_for_invoice_mail</field>
             <field name="value">[186]</field>
             <field name="description">Id's d'impostos que es fan servir per al cos del mail d'enviament de factura</field>
         </record>
