@@ -60,11 +60,8 @@ class GiscedataFacturacioFacturaReportV2(osv.osv):
         return sum(faccionament_lines)
 
     def _get_te_iva_21(self, cursor, uid, fra, context=None):
-        # falta contemplar :
-        # - canàries
-        # - data límit avís o flag?
-        id_factura_21 = 186
-        return id_factura_21 in fra.tax_line.tax_id.id
+        id_iva_21 = 186
+        return id_iva_21 in fra.tax_line.tax_id.id
 
     def _get_linies_totals(self, cursor, uid, fra, context=None):
         res = super(GiscedataFacturacioFacturaReportV2, self)._get_linies_totals(
