@@ -43,6 +43,7 @@
                         <button string="Activar" name="button_activate" states="in_process" type="workflow" />
                         <button string="Reobrir" name="button_reopen_active_incomplete" states="active_inc" type="workflow" />
                         <button string="Reobrir" name="button_reopen_active_critical_incomplete" states="active_crit_inc" type="workflow" />
+                        <button string="Tancar reobertura" name="button_close_reopening" states="reopened" type="workflow" />
                     </group>
                     <group col="6" colspan="4" string="General" icon="building-cottage">
                         <field name="name" select="1" />

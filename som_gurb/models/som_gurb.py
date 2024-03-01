@@ -127,6 +127,13 @@ class SomGurb(osv.osv):
         for record_id in ids:
             self.write(cursor, uid, ids, write_values, context=context)
 
+    def _is_reopening_end_date(self, cursor, uid, record, context=None):
+        state_date = datetime.strptime(record.state_date, '%Y-%m-%d').date()
+        reopening_end_date = state_date + timedelta(days=record.reopening_days)
+        today = date.today()
+
+        return today >= reopening_end_date
+
     def _is_first_opening_end_date(self, cursor, uid, record, context=None):
         state_date = datetime.strptime(record.state_date, '%Y-%m-%d').date()
         opening_end_date = state_date + timedelta(days=record.first_opening_days)
@@ -147,6 +154,24 @@ class SomGurb(osv.osv):
                 self._is_first_opening_end_date(cursor, uid, record)
                 and record.assigned_betas_kw != record.generation_power
             )
+
+    def validate_reopening_complete(self, cursor, uid, ids, context=None):
+        for record in self.browse(cursor, uid, ids, context=context):
+            return (
+                self._is_reopening_end_date(cursor, uid, record)
+                or record.assigned_betas_kw == record.generation_power
+            )
+
+    def validate_reopening_incomplete(self, cursor, uid, ids, context=None):
+        for record in self.browse(cursor, uid, ids, context=context):
+            return (
+                self._is_reopening_end_date(cursor, uid, record)
+                and record.assigned_betas_kw != record.generation_power
+            )
+
+    def validate_incomplete_complete(self, cursor, uid, ids, context=None):
+        for record in self.browse(cursor, uid, ids, context=context):
+            return record.assigned_betas_kw == record.generation_power
 
     def validate_draft_first_opening(self, cursor, uid, ids, context=None):
         for record in self.read(cursor, uid, ids, _REQUIRED_FIRST_OPENING_FIELDS, context=context):
