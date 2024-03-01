@@ -91,6 +91,7 @@ jobs:
           git clone --depth 1 https://github.com/gisce/poweremail-modules.git $ROOT_DIR_SRC/poweremail-modules
           git clone --depth 1 https://github.com/gisce/crm_poweremail.git $ROOT_DIR_SRC/crm_poweremail
           git clone --depth 1 https://github.com/gisce/ooop.git $ROOT_DIR_SRC/ooop
+          git clone --depth 1 https://github.com/Som-Energia/somenergia-utils.git -b py2 $ROOT_DIR_SRC/somenergia-utils
       - name: Install dependencies
         run: |
           sudo apt-get --allow-releaseinfo-change update
@@ -111,6 +112,8 @@ jobs:
           pip install -e . || "Not installing somenergia-generation Python package"
           cd $ROOT_DIR_SRC/plantmeter
           pip install -e . || "Not installing plantmeter Python package"
+          cd $ROOT_DIR_SRC/somenergia-utils
+          pip install -e . || "Not installing somenergia-utils Python package"
           cd $ROOT_DIR_SRC
           pip install -r $ROOT_DIR_SRC/erp/requirements-dev.txt
           pip install -r $ROOT_DIR_SRC/erp/requirements.txt
