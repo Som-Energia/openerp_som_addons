@@ -45,10 +45,10 @@ class PolissaLecturesCalculadesTest(testing.OOTestCase):
         )
 
         self.assertEqual(
-            result[0], u"La pòlissa 0001C no compleix les condicions per que no es 2.0TD"
+            result[0], u"La pòlissa 0001C no compleix les condicions perquè no es 2.0TD"
         )
         self.assertEqual(
-            result[1], u"La pòlissa 0001C no compleix les condicions per que no té categoria"
+            result[1], u"La pòlissa 0001C no compleix les condicions perquè no té categoria"
         )
         self.assertEqual(len(result), 2)
 
