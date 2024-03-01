@@ -8,6 +8,8 @@ giscedata_facturacio_comer_som:
 -  giscedata_facturacio_comer_som/**
 giscedata_facturacio_som:
 -  giscedata_facturacio_som/**
+GithubActions:
+-  .github/**
 powersms:
 -  powersms/**
 scripts:
