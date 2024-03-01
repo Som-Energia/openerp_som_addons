@@ -103,7 +103,7 @@ class GiscedataSwitchingM1_02(osv.osv):
         if sw and _contract_has_gurb_category(
             cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
         ):
-            sw_step_header_id = self.read(cursor, uid, pas_id, ['header_id'])['header_id']
+            sw_step_header_id = self.read(cursor, uid, pas_id, ['header_id'])['header_id'][0]
             sw_step_header_obj.write(cursor, uid, sw_step_header_id, {'notificacio_pendent': False})
 
         return pas_id
