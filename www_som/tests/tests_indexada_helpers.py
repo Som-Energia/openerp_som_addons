@@ -134,7 +134,7 @@ class TestIndexadaHelpers(TestChangeToIndexada):
             "curves": {
                 "geo_zone": "PENINSULA",
                 "maturity": ["C3", "C3", "C3", "C3", "C3"],
-                "compesation_euros_kwh": [1.2, 1.3, 1.4, 1.5, 1.6]
+                "compensation_euros_kwh": [1.2, 1.3, 1.4, 1.5, 1.6]
                 }
             }
         self.assertDictEqual(json.loads(result),expected)

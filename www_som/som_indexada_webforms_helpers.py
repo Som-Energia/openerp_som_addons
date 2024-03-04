@@ -243,7 +243,7 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                 last_date = last_date,
                 curves=dict(
                     geo_zone = geo_zone,
-                    compesation_euros_kwh = [curve.get('prm_diari') for curve in curves],
+                    compensation_euros_kwh = [curve.get('prm_diari') for curve in curves],
                     maturity = [curve.get('maturity') for curve in curves]
                 ))
             )
