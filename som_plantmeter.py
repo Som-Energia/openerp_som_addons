@@ -8,9 +8,10 @@ from .erpwrapper import ErpWrapper
 from yamlns import namespace as ns
 
 from datetime import datetime
-from plantmeter.resource import ProductionAggregator, ProductionPlant, ProductionMeter 
+from plantmeter.resource import ProductionAggregator, ProductionPlant, ProductionMeter
 from plantmeter.mongotimecurve import MongoTimeCurve, toLocal, asUtc
-from somutils.isodates import isodate, naiveisodatetime, localisodate
+from somutils.isodates import isodate, localisodate
+
 
 class GenerationkwhProductionAggregator(osv.osv):
     """
@@ -19,7 +20,6 @@ class GenerationkwhProductionAggregator(osv.osv):
     """
 
     _name = 'generationkwh.production.aggregator'
-
 
     _columns = {
         'name': fields.char('Name', size=50),
@@ -34,7 +34,7 @@ class GenerationkwhProductionAggregator(osv.osv):
 
     def get_kwh(self, cursor, uid, mix_id, start, end, context=None):
         '''Get production aggregation'''
-   
+
         if not context:
             context = {}
         _aggr = self._createAggregator(cursor, uid, mix_id)
@@ -77,10 +77,10 @@ class GenerationkwhProductionAggregator(osv.osv):
 
         aggr = self.browse(cursor, uid, mix_id)
         curveProvider = MongoTimeCurve(mdbpool.get_db(),
-            'tm_profile',
-            creationField = 'create_date',
-            timestampField = 'utc_gkwh_timestamp',
-            )
+                                       'tm_profile',
+                                       creationField='create_date',
+                                       timestampField='utc_gkwh_timestamp',
+                                       )
 
         # TODO: Clean initialization method
         args = ['id', 'name', 'description', 'enabled']
@@ -93,15 +93,16 @@ class GenerationkwhProductionAggregator(osv.osv):
                         ProductionMeter(
                             curveProvider=curveProvider,
                             **extract_attrs(meter, args + ['first_active_date'])
-                            )
+                        )
                         for meter in plant.meters
                         if meter.enabled
-                        ],
-                    ))
+                    ],
+                ))
                 for plant in aggr.plants
                 if plant.enabled
-                ],
-            ))
+            ],
+        ))
+
 
 GenerationkwhProductionAggregator()
 
@@ -118,7 +119,7 @@ class GenerationkwhProductionPlant(osv.osv):
         'enabled': fields.boolean('Enabled'),
         'nshares': fields.integer('Number of shares'),
         'aggr_id': fields.many2one('generationkwh.production.aggregator', 'Production aggregator',
-                                  required=True),
+                                   required=True),
         'meters': fields.one2many('generationkwh.production.meter', 'plant_id', 'Meters'),
         'first_active_date': fields.date('First operative date'),
         'last_active_date': fields.date('Last operative date'),
@@ -143,12 +144,14 @@ class GenerationkwhProductionMeter(osv.osv):
         'enabled': fields.boolean('Enabled'),
         'plant_id': fields.many2one('generationkwh.production.plant'),
         'first_active_date': fields.date('First operative date'),
-        }
+    }
     _defaults = {
         'enabled': lambda *a: False,
     }
 
+
 GenerationkwhProductionMeter()
+
 
 class PlantShareProvider(ErpWrapper):
     """
@@ -156,6 +159,7 @@ class PlantShareProvider(ErpWrapper):
     To be used as provider for a LayeredShareCurve, that generates
     the curves to represent the share value of the active built plants.
     """
+
     def __init__(self, erp, cursor, uid, mixname, context=None):
         self.mixname = mixname
         super(PlantShareProvider, self).__init__(erp, cursor, uid, context)
@@ -177,12 +181,11 @@ class PlantShareProvider(ErpWrapper):
             ns(
                 mix=self.mixname,
                 shares=plant['nshares'],
-                firstEffectiveDate = isodate(plant['first_active_date']),
-                lastEffectiveDate = isodate(plant['last_active_date']),
+                firstEffectiveDate=isodate(plant['first_active_date']),
+                lastEffectiveDate=isodate(plant['last_active_date']),
             )
             for plant in plants
         ]
-
 
 
 class GenerationkwhProductionMeasurement(osv_mongodb.osv_mongodb):
@@ -191,10 +194,11 @@ class GenerationkwhProductionMeasurement(osv_mongodb.osv_mongodb):
     _order = 'timestamp desc'
 
     _columns = {
-        'name': fields.integer('Plant identifier'), # NOTE: workaround due mongodb backend
+        # NOTE: workaround due mongodb backend
+        'name': fields.integer('Plant identifier'),
         'create_at': fields.datetime('Create datetime'),
         'datetime': fields.datetime('Exported datetime'),
-        'daylight': fields.char('Exported datetime daylight',size=1),
+        'daylight': fields.char('Exported datetime daylight', size=1),
         'ae': fields.float('Exported energy (kWh)')
     }
 
@@ -221,8 +225,8 @@ class GenerationkwhProductionMeasurement(osv_mongodb.osv_mongodb):
                                   order=order, context=context,
                                   count=count)
 
-GenerationkwhProductionMeasurement()
 
+GenerationkwhProductionMeasurement()
 
 
 class GenerationkwhProductionAggregatorTesthelper(osv.osv):
@@ -231,11 +235,10 @@ class GenerationkwhProductionAggregatorTesthelper(osv.osv):
     _name = 'generationkwh.production.aggregator.testhelper'
     _auto = False
 
-
     def get_kwh(self, cursor, uid, mix_id, start, end, context=None):
         mix = self.pool.get('generationkwh.production.aggregator')
         return mix.get_kwh(cursor, uid, mix_id,
-                isodate(start), isodate(end), context)
+                           isodate(start), isodate(end), context)
 
     def firstActiveDate(self, cursor, uid, mix_id, context=None):
         mix = self.pool.get('generationkwh.production.aggregator')
@@ -258,25 +261,26 @@ class GenerationkwhProductionAggregatorTesthelper(osv.osv):
 
     def fillMeasurements(self, cursor, uid, first_date, meter_name, values):
         curveProvider = MongoTimeCurve(mdbpool.get_db(),
-            'tm_profile',
-            creationField = 'create_date',
-            timestampField = 'utc_gkwh_timestamp',
-            )
+                                       'tm_profile',
+                                       creationField='create_date',
+                                       timestampField='utc_gkwh_timestamp',
+                                       )
         curveProvider.update(
-            start = localisodate(first_date),
-            filter = meter_name,
-            field = 'ae',
-            data = values,
-            )
+            start=localisodate(first_date),
+            filter=meter_name,
+            field='ae',
+            data=values,
+        )
 
     def fillMeasurementPoint(self, cursor, uid, pointTime, name, value, context=None):
         curveProvider = MongoTimeCurve(mdbpool.get_db(),
-            'tm_profile',
-            creationField = 'create_date',
-            timestampField = 'utc_gkwh_timestamp',
-            )
+                                       'tm_profile',
+                                       creationField='create_date',
+                                       timestampField='utc_gkwh_timestamp',
+                                       )
         curveProvider.fillPoint(
-            datetime=toLocal(asUtc(naiveisodatetime(pointTime))),
+            datetime=toLocal(asUtc(datetime.strptime(
+                pointTime, "%Y-%m-%d %H:%M:%S"))),
             name=name,
             ae=value)
 
@@ -290,7 +294,6 @@ class GenerationkwhProductionAggregatorTesthelper(osv.osv):
             )
             for item in provider.items()
         ]
-
 
 
 GenerationkwhProductionAggregatorTesthelper()
