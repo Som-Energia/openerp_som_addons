@@ -240,6 +240,7 @@ class SomGurb(osv.osv):
             string="Província",
             method=True,
             multi="address",
+            size=64,
         ),
         "zip_code": fields.function(
             _ff_get_address_fields,
