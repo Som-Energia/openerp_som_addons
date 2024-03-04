@@ -22,7 +22,7 @@
         "views/som_gurb_view.xml",
         "views/som_gurb_webview.xml",
         "workflow/som_gurb_workflow.xml",
-        "security/ir.model.access.csv"
+        "security/ir.model.access.csv",
     ],
     "init_xml": [],
     "active": False,
