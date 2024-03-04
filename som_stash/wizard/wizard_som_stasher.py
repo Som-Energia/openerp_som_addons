@@ -3,6 +3,7 @@ from osv import fields, osv
 from tools.translate import _
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from addons import get_module_resource
 
 
 class WizardSomStasher(osv.osv_memory):
@@ -22,38 +23,41 @@ class WizardSomStasher(osv.osv_memory):
     def get_partners_inactive_pol_before_datelimit(self, cursor, uid, date_limit, context=None):
         str_date_limit = datetime.strftime(date_limit, '%Y-%m-%d')
 
-        sql_array = """
-            select
-            array_agg(gp.titular) as partner_ids
-            --gp.titular
-            from giscedata_polissa gp
-            where
-            state = 'baixa'
-            and data_baixa <= %s
-            and titular is not null
-            and not exists
-            (   select gp2.titular
-                from giscedata_polissa gp2
-                where (gp2.state = 'activa' or (gp2.state = 'baixa' and gp2.data_baixa > %s))
-                and gp2.titular = gp.titular
-            )
-        """
-        cursor.execute(sql_array, (str_date_limit, str_date_limit))
-        res = cursor.dictfetchone()["partner_ids"]
+        sql_path = get_module_resource(
+            'som_stash',
+            'sql',
+            'query_partner_pol_expired.sql'
+        )
+
+        with open(sql_path, 'r') as sql_file:
+            sql = sql_file.read()
+
+        sql_params = {
+            'data_limit': str_date_limit,
+        }
+
+        cursor.execute(sql, sql_params)
+        res = cursor.dictfetchall()
         return res or []
 
     def get_partners_inactive_soci_before_datelimit(self, cursor, uid, date_limit, context=None):
         str_date_limit = datetime.strftime(date_limit, '%Y-%m-%d')
 
-        sql_array = """
-            select
-            array_agg(partner_id) as partner_ids
-            --partner_id
-            from somenergia_soci ss
-            where ss.baixa=true and ss.data_baixa_soci <= %s
-        """
-        cursor.execute(sql_array, (str_date_limit,))
-        res = cursor.dictfetchone()["partner_ids"]
+        sql_path = get_module_resource(
+            'som_stash',
+            'sql',
+            'query_soci_expired.sql'
+        )
+
+        with open(sql_path, 'r') as sql_file:
+            sql = sql_file.read()
+
+        sql_params = {
+            'data_limit': str_date_limit,
+        }
+
+        cursor.execute(sql, sql_params)
+        res = cursor.dictfetchall()
         return res or []
 
     def get_partners_origin_to_stash(self, cursor, uid, years_ago, context=None):
