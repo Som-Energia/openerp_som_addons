@@ -62,17 +62,44 @@ class WizardSomStasher(osv.osv_memory):
 
     def get_partners_origin_to_stash(self, cursor, uid, years_ago, context=None):
         date_limit = self.get_date_limit(cursor, uid, years_ago, context=context)
-        patrner_ids = self.get_partners_inactive_soci_before_datelimit(cursor, uid, date_limit)
-        patrner_ids += self.get_partners_inactive_pol_before_datelimit(cursor, uid, date_limit)
-        res = sorted(list(set(patrner_ids)))
+        par_pols = self.get_partners_inactive_soci_before_datelimit(cursor, uid, date_limit)
+        par_soci = self.get_partners_inactive_pol_before_datelimit(cursor, uid, date_limit)
+
+        res = {}
+        for par in par_pols:
+            if par['partner_id']:
+                res[par['partner_id']] = par
+
+        for par in par_soci:
+            if not par['partner_id']:
+                continue
+
+            if par['partner_id'] in res:
+                if res[par['partner_id']]['date_expiry'] < par['date_expiry']:
+                    res[par['partner_id']] = par
+            else:
+                res[par['partner_id']] = par
+
         return res
 
-    def get_partners_address(self, cursor, uid, partner_ids, context=None):
+    def get_partners_address(self, cursor, uid, partners_to_stash, context=None):
         obj = self.pool.get("res.partner.address")
-        to_stash_ids = obj.search(cursor, uid, [
-            ('partner_id', 'in', partner_ids),
+        address_ids = obj.search(cursor, uid, [
+            ('partner_id', 'in', partners_to_stash.keys()),
         ])
-        return to_stash_ids
+
+        address_datas = obj.read(cursor, uid, address_ids, ['partner_id'])
+
+        res = {}
+        for addr_data in address_datas:
+            if not addr_data['id']:
+                continue
+
+            res[addr_data['id']] = {
+                'partner_id': addr_data['partner_id'],
+                'date_expiry': partners_to_stash[addr_data['partner_id']]['date_expiry'],
+            }
+        return res
 
     def do_stash_process(self, cursor, uid, ids, context=None):
         msg = _("Resultat d'execució del wizard de backup de dades:\n")
@@ -96,7 +123,7 @@ class WizardSomStasher(osv.osv_memory):
         msg += _(
             "Trobats {} partners per fer backup.\nLlista d'Ids:\n{}".format(
                 len(partners_to_stash),
-                ', '.join([str(i) for i in partners_to_stash if i])
+                ', '.join([str(i) for i in partners_to_stash.keys()])
             )
         )
 
@@ -116,12 +143,12 @@ class WizardSomStasher(osv.osv_memory):
                 )
             )
 
-            list_partners_address_ids = self.get_partners_address(
+            partners_address_to_stash = self.get_partners_address(
                 cursor, uid, partners_to_stash, context=context
             )
             res_partners_address_stashed = som_stash_obj.do_stash(
                 cursor, uid,
-                list_partners_address_ids,
+                partners_address_to_stash,
                 'res.partner.address',
                 context=context
             )
