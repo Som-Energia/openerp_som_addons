@@ -39,7 +39,7 @@ class SomStash(osv.osv):
 
         return fields
 
-    def do_stash_item_field(self, cursor, uid, item_id, field, old_value, default_value, key_ref_origin, model, context=None):  # noqa: E501
+    def do_stash_item_field(self, cursor, uid, item_id, field, old_value, default_value, model, date_expiry, origin_partner_id, context=None):  # noqa: E501
         if not old_value:
             return False
 
@@ -47,27 +47,29 @@ class SomStash(osv.osv):
             return False
 
         values = {
-            'origin': key_ref_origin,
             'res_field': field,
             'res_id': item_id,
             'res_model': model,
             'value': old_value,
             'date_stashed': datetime.strftime(datetime.today(), '%Y-%m-%d %H:%M:%S'),
+            'date_expiry': date_expiry,
+            'origin_partner_id': origin_partner_id,
         }
 
         self.create(cursor, uid, values, context=context)
         return True
 
-    def do_stash_item(self, cursor, uid, item_id, model, fields, context=None):
+    def do_stash_item(self, cursor, uid, item_id, item_data, model, fields, context=None):
         model_obj = self.pool.get(model)
         data_to_bkp = model_obj.read(cursor, uid, item_id, fields.keys())
-        key_ref = "{},{}".format(model, str(item_id))
 
         dict_write = {}
         for field in fields.keys():
             if self.do_stash_item_field(
                     cursor, uid,
-                    item_id, field, data_to_bkp[field], fields[field], key_ref, model,
+                    item_id, field, data_to_bkp[field], fields[field], model,
+                    item_data['date_expiry'],
+                    item_data['partner_id'],
                     context=context,
             ):
                 dict_write[field] = fields[field]
@@ -77,12 +79,12 @@ class SomStash(osv.osv):
             return True
         return False
 
-    def do_stash(self, cursor, uid, ids, model, context=None):
+    def do_stash(self, cursor, uid, items, model, context=None):
         modified = []
         setting_fields = self.get_fields_to_stash(cursor, uid, model)
-        for item_id in ids:
+        for item_id, item_data in items.items():
             if self.do_stash_item(
-                cursor, uid, item_id, model, setting_fields, context=context
+                cursor, uid, item_id, item_data, model, setting_fields, context=context
             ):
                 modified.append(item_id)
         return modified
@@ -112,20 +114,22 @@ class SomStash(osv.osv):
         return res, errors
 
     _columns = {
-        'origin': fields.reference(_('Origen'), selection=SELECTABLE_MODELS, size=128),
         'res_field': fields.char(_('Camp'), size=64),
         'res_id': fields.integer(_('ID')),
         'res_model': fields.char(_('Model'), size=128),
         'value': fields.text(_('Valor')),
         'date_stashed': fields.datetime(_('Data backup')),
+        'date_expiry': fields.date(_('Última data de caducitat')),
+        'origin_partner_id': fields.many2one("res.partner", _('Fitxa clent'), required=True),
     }
 
     _defaults = {
     }
 
     _sql_constraints = [
-        ('origin_field_date_stashed_uniq', 'unique(origin, res_field, date_stashed)',
-         'You cannot have an origin and field more than once at the same time'),
+        ('model_field_res_id_date_stashed_uniq',
+         'unique(res_model, res_field, res_id, date_stashed)',
+         'You cannot have an model and field more than once at the same time'),
     ]
 
 
