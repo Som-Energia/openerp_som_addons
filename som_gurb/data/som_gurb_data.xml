@@ -35,5 +35,9 @@
             <field name="code">gurb_rac_attachment_category</field>
             <field name="name">GURB: Fitxer RAC</field>
         </record>
+        <record id="categ_gurb_pilot" model="giscedata.polissa.category">
+            <field name="name">GURB Pilot</field>
+            <field name="code">GURBP</field>
+        </record>
     </data>
 </openerp>
