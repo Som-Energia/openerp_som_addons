@@ -9,7 +9,7 @@
         <record model="giscedata.polissa.tarifa" id="giscedata_polissa.tarifa_20A_test">
             <field name="name">2.0ATest</field>
             <field name="llistes_preus_comptatibles" eval="[(6,0,[ref('giscedata_facturacio.pricelist_tarifas_electricidad_test')])]"/>
-        </record>  
+        </record>
         <record model="product.pricelist.version" id="version_pricelist_tarifas_electricidad_test">
             <field name="name">Versio 1</field>
             <field name="active">True</field>
@@ -24,7 +24,7 @@
             <field name="price_surcharge">10.0</field>
             <field name="sequence">999</field>
             <field name="product_id" eval="1"/>
-        </record>  
+        </record>
         <record model="product.pricelist.version" id="version_pricelist_tarifas_electricidad_test">
             <field name="name">Versio 1</field>
             <field name="active">True</field>
@@ -39,7 +39,7 @@
             <field name="price_surcharge">12.0</field>
             <field name="sequence">999</field>
             <field name="product_id" eval="1"/>
-        </record>  
+        </record>
         <record model="giscedata.polissa.tarifa.periodes" id="p1_test">
             <field name="tarifa" ref="giscedata_polissa.tarifa_20A_test"/>
             <field name="tipus">tp</field>

@@ -192,7 +192,7 @@ class SomCrawlersTask(osv.osv):
             now = datetime.now()
         date = now + timedelta(days=1)
 
-        while not sch_obj.is_working_day(cursor,uid, date):
+        while not sch_obj.is_working_day(cursor, uid, date):
             date += timedelta(days=1)
 
         date_proxima_exec = prev_date.replace(

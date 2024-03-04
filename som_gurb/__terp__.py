@@ -6,12 +6,11 @@
     "author": "SomEnergia",
     "category": "SomEnergia",
     "depends": [
-        "crm_configuration",
         "giscedata_polissa",
         "giscedata_telemesures_base",
         "giscedata_facturacio_services",
+        "giscedata_switching",
     ],
-    "init_xml": [],
     "demo_xml": [
         "demo/som_gurb_service_demo.xml",
         "demo/som_gurb_demo.xml",
@@ -23,7 +22,9 @@
         "views/som_gurb_view.xml",
         "views/som_gurb_webview.xml",
         "workflow/som_gurb_workflow.xml",
+        "som_gurb_data.xml"
     ],
+    "init_xml": [],
     "active": False,
     "installable": True,
 }

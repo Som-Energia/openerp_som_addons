@@ -97,4 +97,3 @@ msgstr ""
 
 msgid "{0} actuant en el seu propi nom i interès."
 msgstr ""
-
