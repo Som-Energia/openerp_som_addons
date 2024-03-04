@@ -107,7 +107,6 @@ class SomStashTest(SomStashSettingsTests):
         stash_obj = self.get_model('som.stash')
 
         stashed_fields_ids = stash_obj.search(self.cursor, self.uid, [
-            ('origin', '=', '{},{}'.format(model, item_id)),
             ('res_model', '=', model),
             ('res_id', '=', item_id),
             ('res_field', '=', field),
@@ -132,7 +131,10 @@ class SomStashTest(SomStashSettingsTests):
         todayhm = datetime.today()
 
         n_stash_items = len(stash_obj.search(self.cursor, self.uid, []))
-        result = stash_obj.do_stash(self.cursor, self.uid, [id_1], 'res.partner')
+        stash = {
+            id_1: {'partner_id': id_1, 'date_expiry': '2001-01-01'},
+        }
+        result = stash_obj.do_stash(self.cursor, self.uid, stash, 'res.partner')
         n_stash_items = len(stash_obj.search(self.cursor, self.uid, [])) - n_stash_items
 
         data_post = rp_obj.read(self.cursor, self.uid, id_1, ['name', 'ref'])
@@ -169,7 +171,10 @@ class SomStashTest(SomStashSettingsTests):
         todayhm = datetime.today()
 
         n_stash_items = len(stash_obj.search(self.cursor, self.uid, []))
-        result = stash_obj.do_stash(self.cursor, self.uid, [id_3], 'res.partner')
+        stash = {
+            id_3: {'partner_id': id_3, 'date_expiry': '2003-01-01'},
+        }
+        result = stash_obj.do_stash(self.cursor, self.uid, stash, 'res.partner')
         n_stash_items = len(stash_obj.search(self.cursor, self.uid, [])) - n_stash_items
 
         data_post = rp_obj.read(self.cursor, self.uid, id_3, ['name', 'ref'])
@@ -211,7 +216,13 @@ class SomStashTest(SomStashSettingsTests):
         todayhm = datetime.today()
 
         n_stash_items = len(stash_obj.search(self.cursor, self.uid, []))
-        result = stash_obj.do_stash(self.cursor, self.uid, ids, 'res.partner')
+        stash = {
+            id_1: {'partner_id': id_1, 'date_expiry': '2001-01-01'},
+            id_2: {'partner_id': id_2, 'date_expiry': '2002-01-01'},
+            id_3: {'partner_id': id_3, 'date_expiry': '2003-01-01'},
+            id_4: {'partner_id': id_4, 'date_expiry': '2004-01-01'},
+        }
+        result = stash_obj.do_stash(self.cursor, self.uid, stash, 'res.partner')
         n_stash_items = len(stash_obj.search(self.cursor, self.uid, [])) - n_stash_items
 
         data_post = rp_obj.read(self.cursor, self.uid, ids, ['name', 'ref'])
@@ -308,8 +319,11 @@ class SomStashTest(SomStashSettingsTests):
         todayhm = datetime.today()
 
         n_stash_items = len(stash_obj.search(self.cursor, self.uid, []))
-        result_1 = stash_obj.do_stash(self.cursor, self.uid, [id_1], 'res.partner')
-        result_2 = stash_obj.do_stash(self.cursor, self.uid, [id_1], 'res.partner')
+        stash = {
+            id_1: {'partner_id': id_1, 'date_expiry': '2001-01-01'},
+        }
+        result_1 = stash_obj.do_stash(self.cursor, self.uid, stash, 'res.partner')
+        result_2 = stash_obj.do_stash(self.cursor, self.uid, stash, 'res.partner')
         n_stash_items = len(stash_obj.search(self.cursor, self.uid, [])) - n_stash_items
 
         data_post = rp_obj.read(self.cursor, self.uid, id_1, ['name', 'ref'])
@@ -347,12 +361,15 @@ class SomStashTest(SomStashSettingsTests):
         todayhm = datetime.today()
 
         n_stash_items = len(stash_obj.search(self.cursor, self.uid, []))
-        result_1 = stash_obj.do_stash(self.cursor, self.uid, [id_1], 'res.partner')
-        result_2 = stash_obj.do_stash(self.cursor, self.uid, [id_1], 'res.partner')
-        result_2 = stash_obj.do_stash(self.cursor, self.uid, [id_1], 'res.partner')
-        result_2 = stash_obj.do_stash(self.cursor, self.uid, [id_1], 'res.partner')
-        result_2 = stash_obj.do_stash(self.cursor, self.uid, [id_1], 'res.partner')
-        result_2 = stash_obj.do_stash(self.cursor, self.uid, [id_1], 'res.partner')
+        stash = {
+            id_1: {'partner_id': id_1, 'date_expiry': '2001-01-01'},
+        }
+        result_1 = stash_obj.do_stash(self.cursor, self.uid, stash, 'res.partner')
+        result_2 = stash_obj.do_stash(self.cursor, self.uid, stash, 'res.partner')
+        result_2 = stash_obj.do_stash(self.cursor, self.uid, stash, 'res.partner')
+        result_2 = stash_obj.do_stash(self.cursor, self.uid, stash, 'res.partner')
+        result_2 = stash_obj.do_stash(self.cursor, self.uid, stash, 'res.partner')
+        result_2 = stash_obj.do_stash(self.cursor, self.uid, stash, 'res.partner')
         n_stash_items = len(stash_obj.search(self.cursor, self.uid, [])) - n_stash_items
 
         data_post = rp_obj.read(self.cursor, self.uid, id_1, ['name', 'ref'])
@@ -387,7 +404,10 @@ class SomStashTest(SomStashSettingsTests):
 
         # stash name
         data_pre = rp_obj.read(self.cursor, self.uid, id_1, ['name'])
-        stash_obj.do_stash(self.cursor, self.uid, [id_1], 'res.partner')
+        stash = {
+            id_1: {'partner_id': id_1, 'date_expiry': '2001-01-01'},
+        }
+        stash_obj.do_stash(self.cursor, self.uid, stash, 'res.partner')
         data_post = rp_obj.read(self.cursor, self.uid, id_1, ['name'])
 
         self.assertNotEqual(data_pre['name'], data_post['name'])
@@ -419,9 +439,10 @@ class WizardSomStasherTest(SomStashSettingsTests):
             'data_baixa_soci': datetime.strftime(date_limit, '%Y-%m-%d'),
         })
         wstahser_obj = self.get_model('wizard.som.stasher')
-        ids = wstahser_obj.get_partners_inactive_soci_before_datelimit(
+        stashed = wstahser_obj.get_partners_inactive_soci_before_datelimit(
             self.cursor, self.uid, date_limit
         )
+        ids = [s['partner_id'] for s in stashed]
         soci = soci_obj.browse(self.cursor, self.uid, soci_id)
         assert soci.partner_id.id in ids
 
@@ -435,9 +456,10 @@ class WizardSomStasherTest(SomStashSettingsTests):
             'data_baixa_soci': datetime.strftime(date_baixa, '%Y-%m-%d'),
         })
         wstahser_obj = self.get_model('wizard.som.stasher')
-        ids = wstahser_obj.get_partners_inactive_soci_before_datelimit(
+        stashed = wstahser_obj.get_partners_inactive_soci_before_datelimit(
             self.cursor, self.uid, date_limit
         )
+        ids = [s['partner_id'] for s in stashed]
         soci = soci_obj.browse(self.cursor, self.uid, soci_id)
         assert soci.partner_id.id not in ids
 
@@ -451,9 +473,10 @@ class WizardSomStasherTest(SomStashSettingsTests):
         })
         pol = pol_obj.browse(self.cursor, self.uid, pol_id)
         wstahser_obj = self.get_model('wizard.som.stasher')
-        ids = wstahser_obj.get_partners_inactive_pol_before_datelimit(
+        stashed = wstahser_obj.get_partners_inactive_pol_before_datelimit(
             self.cursor, self.uid, date_limit
         )
+        ids = [s['partner_id'] for s in stashed]
         assert pol.titular.id in ids
 
     def test_get_partners_inactive_pol_after_datelimit__find_one(self):
@@ -467,7 +490,8 @@ class WizardSomStasherTest(SomStashSettingsTests):
         })
         pol = pol_obj.browse(self.cursor, self.uid, pol_id)
         wstahser_obj = self.get_model('wizard.som.stasher')
-        ids = wstahser_obj.get_partners_inactive_pol_before_datelimit(
+        stashed = wstahser_obj.get_partners_inactive_pol_before_datelimit(
             self.cursor, self.uid, date_limit
         )
+        ids = [s['partner_id'] for s in stashed]
         assert pol.titular.id not in ids
