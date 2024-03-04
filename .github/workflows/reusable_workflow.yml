@@ -78,8 +78,12 @@ jobs:
           export ROOT_DIR_SRC=${{github.workspace}}/..
           git clone --depth 1 https://$GITHUB_TOKEN@github.com/Som-Energia/erp.git -b developer $ROOT_DIR_SRC/erp
           git clone --depth 1 https://$GITHUB_TOKEN@github.com/Som-Energia/libFacturacioATR.git $ROOT_DIR_SRC/libFacturacioATR
-          git clone --depth 1 https://github.com/Som-Energia/somenergia-generationkwh.git $ROOT_DIR_SRC/somenergia-generationkwh
-          git clone --depth 1 https://github.com/Som-Energia/plantmeter.git $ROOT_DIR_SRC/plantmeter
+          if [ ! -d "$ROOT_DIR_SRC/somenergia-generationkwh" ]; then
+                  git clone --depth 1 https://github.com/Som-Energia/somenergia-generationkwh.git $ROOT_DIR_SRC/somenergia-generationkwh
+          fi
+          if [ ! -d "$ROOT_DIR_SRC/plantmeter" ]; then
+                git clone --depth 1 https://github.com/Som-Energia/plantmeter.git $ROOT_DIR_SRC/plantmeter
+          fi
           git clone --depth 1 https://github.com/Som-Energia/giscedata_facturacio_indexada_som.git $ROOT_DIR_SRC/giscedata_facturacio_indexada_som
           git clone --depth 1 https://github.com/gisce/oorq.git -b api_v5 $ROOT_DIR_SRC/oorq
           git clone --depth 1 https://github.com/gisce/spawn_oop.git $ROOT_DIR_SRC/spawn_oop
