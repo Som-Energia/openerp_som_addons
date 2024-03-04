@@ -96,8 +96,8 @@ class WizardSomStasher(osv.osv_memory):
                 continue
 
             res[addr_data['id']] = {
-                'partner_id': addr_data['partner_id'],
-                'date_expiry': partners_to_stash[addr_data['partner_id']]['date_expiry'],
+                'partner_id': addr_data['partner_id'][0],
+                'date_expiry': partners_to_stash[addr_data['partner_id'][0]]['date_expiry'],
             }
         return res
 
@@ -117,8 +117,13 @@ class WizardSomStasher(osv.osv_memory):
             cursor, uid, years_ago, context=context
         )
 
-        if limit_to_stash and limit_to_stash < len(partners_to_stash):
-            partners_to_stash = partners_to_stash[:limit_to_stash]
+        partner_keys = sorted(partners_to_stash.keys())
+        if limit_to_stash and limit_to_stash < len(partner_keys):
+            partner_keys = partner_keys[:limit_to_stash]
+            res = {}
+            for partner_key in partner_keys:
+                res[partner_key] = partners_to_stash[partner_key]
+            partners_to_stash = res
 
         msg += _(
             "Trobats {} partners per fer backup.\nLlista d'Ids:\n{}".format(

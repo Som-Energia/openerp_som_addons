@@ -127,7 +127,8 @@ class SomStash(osv.osv):
     }
 
     _sql_constraints = [
-        ('model_field_date_stashed_uniq', 'unique(res_model, res_field, date_stashed)',
+        ('model_field_res_id_date_stashed_uniq',
+         'unique(res_model, res_field, res_id, date_stashed)',
          'You cannot have an model and field more than once at the same time'),
     ]
 
