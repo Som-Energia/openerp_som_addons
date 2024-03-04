@@ -22,7 +22,6 @@
         "views/som_gurb_view.xml",
         "views/som_gurb_webview.xml",
         "workflow/som_gurb_workflow.xml",
-        "som_gurb_data.xml"
     ],
     "init_xml": [],
     "active": False,
