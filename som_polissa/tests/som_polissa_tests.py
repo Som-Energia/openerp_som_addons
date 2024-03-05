@@ -58,7 +58,7 @@ class TestSomPolissa(testing.OOTestCase):
 
         self.polissa_obj.set_category_eie(self.cursor, self.uid, self.contract3_id)
         self.assertEqual(
-            sorted(oldCategories + [self.domestic_id]),
+            sorted(list(set(oldCategories + [self.domestic_id]))),
             sorted(self.getCategories(self.contract3_id)),
         )
 
