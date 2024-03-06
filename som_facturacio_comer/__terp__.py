@@ -21,6 +21,7 @@
     "init_xml": [],
     "demo_xml": [],
     "update_xml": [
+        "data/res_config_data.xml",
         "giscedata_facturacio_validation_data.xml",
         "giscedata_facturacio_contracte_lot_view.xml",
         "security/ir.model.access.csv",

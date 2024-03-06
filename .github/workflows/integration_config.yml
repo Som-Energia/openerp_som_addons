@@ -77,7 +77,6 @@ jobs:
           git clone --depth 1 https://github.com/Som-Energia/plantmeter.git $ROOT_DIR_SRC/plantmeter
           git clone --depth 1 https://github.com/Som-Energia/giscedata_facturacio_indexada_som.git $ROOT_DIR_SRC/giscedata_facturacio_indexada_som
           git clone --depth 1 https://github.com/gisce/oorq.git -b api_v5 $ROOT_DIR_SRC/oorq
-          git clone --depth 1 https://github.com/gisce/spawn_oop.git $ROOT_DIR_SRC/spawn_oop
           git clone --depth 1 https://github.com/gisce/poweremail.git $ROOT_DIR_SRC/poweremail2
           git clone --depth 1 https://github.com/gisce/openerp-sentry.git -b v5_legacy $ROOT_DIR_SRC/openerp-sentry
           git clone --depth 1 https://github.com/gisce/ws_transactions.git $ROOT_DIR_SRC/ws_transactions
@@ -86,6 +85,7 @@ jobs:
           git clone --depth 1 https://github.com/gisce/poweremail-modules.git $ROOT_DIR_SRC/poweremail-modules
           git clone --depth 1 https://github.com/gisce/crm_poweremail.git $ROOT_DIR_SRC/crm_poweremail
           git clone --depth 1 https://github.com/gisce/ooop.git $ROOT_DIR_SRC/ooop
+          git clone --depth 1 https://github.com/Som-Energia/somenergia-utils.git -b py2 $ROOT_DIR_SRC/somenergia-utils
       - name: Install dependencies
         run: |
           sudo apt-get --allow-releaseinfo-change update
@@ -106,11 +106,14 @@ jobs:
           pip install -e . || "Not installing somenergia-generation Python package"
           cd $ROOT_DIR_SRC/plantmeter
           pip install -e . || "Not installing plantmeter Python package"
+          cd $ROOT_DIR_SRC/somenergia-utils
+          pip install -e . || "Not installing somenergia-utils Python package"
           cd $ROOT_DIR_SRC
           pip install -r $ROOT_DIR_SRC/erp/requirements-dev.txt
           pip install -r $ROOT_DIR_SRC/erp/requirements.txt
           #pip install --upgrade --force-reinstall https://github.com/gisce/destral/archive/master.zip
           #pip install destral==1.7.3
+          pip install "dm.xmlsec.binding<=1.3.2"
       - name: Link Addons
         run: |
           export ROOT_DIR_SRC=${{github.workspace}}/..
@@ -139,6 +142,9 @@ jobs:
           export OPENERP_DB_HOST=localhost
           export OPENERP_DB_USER=$POSTGRES_USER
           export OPENERP_DB_PASSWORD=$POSTGRES_PASSWORD
+          export OPENERP_SII_TEST_MODE=1
+          export OPENERP_SECRET="verysecret"
+          export OPENERP_IGNORE_PUBSUB=1
           cd ${{github.workspace}}
           destral --report-coverage --enable-coverage --report-junitxml ${{github.workspace}}/test-results/destral
       - name: Publish Unit Test Results

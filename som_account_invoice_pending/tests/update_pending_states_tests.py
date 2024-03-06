@@ -941,6 +941,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
                 "id": 1,
                 "name": "1",
                 "cups_np": "Girona",
+                "state": "activa",
             }
         ]
 
@@ -962,6 +963,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
                 "id": 1,
                 "name": "1",
                 "cups_np": "Madrid",
+                "state": "activa",
             }
         ]
 
