@@ -340,7 +340,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
         if env.polissa_id.fiscal_position_id:
             if env.polissa_id.fiscal_position_id.id in [33, 47, 52]:
                 iva = 0.03
-            if  env.polissa_id.fiscal_position_id.id in [34, 48, 53]:
+            if env.polissa_id.fiscal_position_id.id in [34, 48, 53]:
                 iva = 0.0
 
         PREU_NOU = 0.06
@@ -348,11 +348,11 @@ class ReportBackendMailcanvipreus(ReportBackend):
         return {
             "auto": {
                 "nous": {
-                    "amb_impostos": PREU_NOU*1.038*(1+iva),
+                    "amb_impostos": PREU_NOU * 1.038 * (1 + iva),
                     "sense_impostos": PREU_NOU,
                 },
                 "vells": {
-                    "amb_impostos": PREU_VELL*1.025*(1+iva),
+                    "amb_impostos": PREU_VELL * 1.025 * (1 + iva),
                     "sense_impostos": PREU_VELL,
                 },
             }
