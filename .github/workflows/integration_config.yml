@@ -149,6 +149,7 @@ jobs:
           destral --report-coverage --enable-coverage --report-junitxml ${{github.workspace}}/test-results/destral
       - name: Publish Unit Test Results
         if: (success() || failure()) && matrix.python-version == '2.7' && github.event_name == 'pull_request'
-        uses: EnricoMi/publish-unit-test-result-action@v1
+        uses: EnricoMi/publish-unit-test-result-action@v2
         with:
           files: test-results/destral/*.xml
+          secondary_rate_limit_wait_seconds: 120.0
