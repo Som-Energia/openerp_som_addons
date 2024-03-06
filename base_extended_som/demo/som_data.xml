@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>
+        <!-- Polissa 2.0TD Indexada Catalunya-->
+        <record model="giscedata.polissa" id="polissa_20td_indexada_cat">
+            <field name="name">1000</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process" />
+            <field name="state">esborrany</field>
+            <field name="active">True</field>
+            <field name="comercialitzadora" ref="base.res_partner_agrolait" />
+        </record>
+    </data>
+</openerp>
