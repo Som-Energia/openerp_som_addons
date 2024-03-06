@@ -157,9 +157,10 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
                 ('data_carrega', '>=', date_to_check)
             ])
             f1_ids += _ids
-        logger.info("Trobats {} fitxers F1 mitjançant codi d'error, amb data factura entre {} i avui ({})".format(
-            len(f1_ids), date_to_check, datetime.today().strftime('%Y-%m-%d')
-        ))
+        msg = "Trobats {} fitxers F1 mitjançant codi d'error, amb data factura entre {} i avui ({})"
+        logger.info(
+            msg.format(len(f1_ids), date_to_check, datetime.today().strftime('%Y-%m-%d'))
+        )
 
         fase1_ids = self.search(cursor, uid, [
             ('state', 'in', [False, 'valid']),
