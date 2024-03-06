@@ -3,15 +3,15 @@
     <data>
       <record id="base.res_partner_asus" model="res.partner">
         <field name="ref">0001</field>
-	<field name="ref2">R1-001</field>
+        <field name="ref2">R1-001</field>
       </record>
       <record id="base.res_partner_agrolait" model="res.partner">
         <field name="ref">0002</field>
-	<field name="ref2">R1-002</field>
+        <field name="ref2">R1-002</field>
       </record>
       <record id="base.main_partner" model="res.partner">
         <field name="ref">0003</field>
-	<field name="ref2">R1-003</field>
+        <field name="ref2">R1-003</field>
       </record>
     </data>
 </openerp>

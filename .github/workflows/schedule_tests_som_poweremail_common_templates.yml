@@ -1,0 +1,16 @@
+# This workflow will pass tests of module passed by input
+
+name: som_poweremail_common_templates
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 1'
+jobs:
+  erp-tests-module:
+    uses: ./.github/workflows/reusable_workflow.yml
+    with:
+      module: som_poweremail_common_templates
+    secrets:
+      ACCESS_TOKEN_GA: ${{ secrets.ACCESS_TOKEN_GA }}
+      ESIOS_TOKEN: ${{ secrets.ESIOS_TOKEN }}
+      SRID: ${{ secrets.SRID }}

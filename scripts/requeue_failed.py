@@ -82,9 +82,11 @@ def main(redis_conn, interval, max_attempts):
                         job.save()
                         requeue_job(job.id, connection=redis_conn)
                         continue
-            if queue.name in QUEUES_TO_DELETE or any(
-                substring in job.exc_info for substring in EXECINFO_TO_DELETE
-                ) or job.exc_info == '':
+            if (
+                queue.name in QUEUES_TO_DELETE
+                or any(substring in job.exc_info for substring in EXECINFO_TO_DELETE)
+                or job.exc_info == ""
+            ):
                 try:
                     print("deleting: %s from %s (Requeue)" % (job.id, job.origin))
                     print(job.exc_info)

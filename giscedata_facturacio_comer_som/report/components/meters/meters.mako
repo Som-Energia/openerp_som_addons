@@ -7,7 +7,7 @@
             <div class="lectures_m${len(meters.periodes_a)>=3 and '30' or ''}">
                 <table>
                     % for comptador in sorted(meters.lectures_real_a):
-                        % if len(meters.lectures_real_a[comptador])>0:  
+                        % if len(meters.lectures_real_a[comptador])>0:
                             <tr>
                                 <th>&nbsp;</th>
                                 % for periode in meters.periodes_a:
