@@ -1,0 +1,30 @@
+# This workflow is disabled because Github is not supporting matrix output separatly by job: PR https://github.com/actions/runner/pull/2477
+
+name: SOM_MODULES
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 1'
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  POSTGRES_USER: erp
+  POSTGRES_PASSWORD: erp
+
+jobs:
+  module_list:
+    strategy:
+      fail-fast: false
+      matrix:
+        module: ["account_account_som", "account_invoice_som", "base_extended_som", "dx_invoice_supplier_renumber", "giscedata_facturacio_comer_som", "giscedata_facturacio_iva_10_som", "giscedata_facturacio_som", "powersms", "som_account_invoice_pending", "som_atc", "som_autofactura", "som_autoreclama", "som_control_reports", "som_crawlers", "som_dashboard", "som_documents_sensibles", "som_empowering", "som_energetica", "som_extend_facturacio_comer", "som_extend_facturacio_facturae", "som_facturacio_calculada", "som_facturacio_comer", "som_facturacio_flux_solar", "som_facturacio_switching", "som_factures_paper", "som_indexada", "som_infoenergia", "som_informe", "som_inversions", "som_l10n_ES_aeat_mod347", "som_leads_polissa", "som_partner_account", "som_partner_seq", "som_polissa", "som_polissa_administradora", "som_polissa_condicions_generals", "som_polissa_condicions_generals_m101", "som_polissa_soci", "som_poweremail_common_templates", "som_remeses_base", "som_switching", "som_telemesura", "som_webforms_helpers", "uiqmako_helpers", "www_som", ]
+    steps:
+      - uses: ./.github/workflows/reusable_workflow.yml
+        with:
+          module: ${{matrix.module}}
+        secrets:
+          ACCESS_TOKEN_GA: ${{ secrets.ACCESS_TOKEN_GA }}
+          ESIOS_TOKEN: ${{ secrets.ESIOS_TOKEN }}
+          SRID: ${{ secrets.SRID }}
