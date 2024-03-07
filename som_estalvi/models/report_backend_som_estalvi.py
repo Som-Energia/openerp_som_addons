@@ -26,10 +26,10 @@ class ReportBackendSomEstalvi(ReportBackend):
             context = {}
 
         data = {
-            "nom": "",
-            "adreca": "",
-            "cups": "",
-            "peatge": "",
+            "nom": pol.titular.name,
+            "adreca": pol.cups.direccio,
+            "cups": pol.cups.name,
+            "peatge": pol.tarifa.name,
             "grup_local": "",
         }
         return data
@@ -38,7 +38,9 @@ class ReportBackendSomEstalvi(ReportBackend):
         if context is None:
             context = {}
 
-        data = {}
+        data = {
+
+        }
 
         return data
 
@@ -47,8 +49,8 @@ class ReportBackendSomEstalvi(ReportBackend):
             context = {}
 
         data = {
-            'potencia_actual': '',
-            'potencia_optima': '',
+            "potencia_actual": "",
+            "potencia_optima": "",
         }
 
         return data
@@ -61,17 +63,45 @@ class ReportBackendSomEstalvi(ReportBackend):
 
         return data
 
+    def get_ultimes_12_factures(self, cursor, uid, pol, context=None):
+        if context is None:
+            context = {}
+
+        factura_obj = self.pool.get("giscedata.facturacio.factura")
+
+        search_params = [
+            ("polissa_id", "=", pol.id),
+            ("type", "=", "out_invoice"),
+            ("refund_by_id", "=", False),
+            ("state", "=", "paid")
+        ]
+
+        factures_ids = factura_obj.search(
+            cursor, uid, search_params, context=context, order="date_invoice DESC", limit=12
+        )
+
+        return factures_ids
+
     def get_costs(self, cursor, uid, pol, context=None):
         if context is None:
             context = {}
 
+        factura_obj = self.pool.get("giscedata.facturacio.factura")
+
         data = {
-            'electricitat': '',
-            'mag': '',
-            'potencia': '',
-            'exces': '',
-            'reactiva': '',
+            "energia": "",
+            # "mag": "",
+            "potencia": "",
+            "exces": 0.0,
+            "reactiva": "",
         }
+
+        factures_ids = self.get_ultimes_12_factures(cursor, uid, pol, context=context)
+
+        for factura in factura_obj.browse(cursor, uid, factures_ids):
+            # mirar cada línia de la factura
+
+            pass
 
         return data
 
