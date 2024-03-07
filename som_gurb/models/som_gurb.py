@@ -30,12 +30,11 @@ _REQUIRED_FIRST_OPENING_FIELDS = [
     "joining_fee",
     "pricelist_id",
     "max_power",
-    "mix_power",
+    "min_power",
     "first_opening_days",
     "reopening_days",
     "critical_incomplete_state",
     "generation_power",
-    # "has_compensation",
 ]
 
 
@@ -256,7 +255,7 @@ class SomGurb(osv.osv):
         "gurb_cups_ids": fields.one2many("som.gurb.cups", "gurb_id", "Betes", readonly=False),
         "joining_fee": fields.float("Tarifa cost adhesió"),  # TODO: New model
         "max_power": fields.float("Topall max. per contracte (kW)"),
-        "mix_power": fields.float("Topall mix. per contracte (kW)"),
+        "min_power": fields.float("Topall min. per contracte (kW)"),
         "critical_incomplete_state": fields.integer("Estat crític incomplet (%)"),
         "first_opening_days": fields.integer("Dies primera obertura"),
         "reopening_days": fields.integer("Dies reobertura"),
