@@ -122,7 +122,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
             33: 33,
             43: 44,
             53: 62,
-            41: 42
+            41: 42,
+            68: 69, # IDs de testing, i cal afegir moltes més
         }.get(
             env.polissa_id.fiscal_position_id.id
             or env.polissa_id.titular.property_account_position.id
@@ -448,7 +449,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
     def calcularImpostosPerCostAnualEstimat(self, preu, fiscal_position, context=False):
         iva = 0.1 if context and context.get('iva10') else 0.21
-        impost_electric = 0.025
+        impost_electric = 0.025 # FIXME: Change in every send or get it from the ERP
         if fiscal_position:
             if fiscal_position.id in [33, 47, 52]:
                 iva = 0.03
@@ -633,3 +634,4 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
 
 ReportBackendMailcanvipreus()
+
