@@ -76,7 +76,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         polissa_id = self.read(
             cursor, uid, crml_id, ['polissa_id'],
             context=context
-        )['polissa_id']
+        )['polissa_id'][0]
 
         polissa_o = self.pool.get("giscedata.polissa")
         mode_facturacio = polissa_o.read(
