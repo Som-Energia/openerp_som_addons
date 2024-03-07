@@ -5,7 +5,6 @@ from datetime import datetime
 from www_som.helpers import www_entry_point
 import json
 from datetime import datetime, date, timedelta
-from som_webforms_helpers.exceptions import som_webforms_exceptions
 
 SUBSYSTEMS = [
     'PENINSULA',
@@ -144,13 +143,6 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
             return True
         return False
 
-    def traceback_info(self, exception):
-        import traceback
-        import sys
-
-        exc_type, exc_value, exc_tb = sys.exc_info()
-        return traceback.format_exception(exc_type, exc_value, exc_tb)
-
     def validate_parameters(self, cursor, uid, geo_zone, first_date, last_date, tariff=None):
         if geo_zone not in SUBSYSTEMS:
             raise exceptions.InvalidSubsystem(geo_zone)
@@ -174,46 +166,31 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
     def get_indexed_prices(self, cursor, uid, geo_zone, tariff, first_date, last_date, context=None):
         prices_obj = self.pool.get('giscedata.next.days.energy.price')
 
-        try:
-            self.validate_parameters(cursor, uid, geo_zone, first_date, last_date, tariff)
+        self.validate_parameters(cursor, uid, geo_zone, first_date, last_date, tariff)
 
-            initial_time, final_time = self.initial_final_times(first_date, last_date)
-            params = [
-                ('hour_timestamp', '>=', initial_time),
-                ('hour_timestamp', '<=', final_time),
-                ('tarifa_id.name', '=', tariff),
-                ('geom_zone', '=', geo_zone)
-            ]
-            price_ids = prices_obj.search(cursor, uid, params, order='hour_timestamp')
+        initial_time, final_time = self.initial_final_times(first_date, last_date)
+        params = [
+            ('hour_timestamp', '>=', initial_time),
+            ('hour_timestamp', '<=', final_time),
+            ('tarifa_id.name', '=', tariff),
+            ('geom_zone', '=', geo_zone)
+        ]
+        price_ids = prices_obj.search(cursor, uid, params, order='hour_timestamp')
 
-            curves = []
-            for price_id in price_ids:
-                curves.append(prices_obj.read(cursor, uid, price_id, ['initial_price','maturity']))
+        curves = []
+        for price_id in price_ids:
+            curves.append(prices_obj.read(cursor, uid, price_id, ['initial_price','maturity']))
 
-            json_prices = json.dumps(dict(
-                first_date = first_date,
-                last_date = last_date,
-                curves=dict(
-                    geo_zone = geo_zone,
-                    tariff = tariff,
-                    price_euros_kwh = [curve.get('initial_price') for curve in curves],
-                    maturity = [curve.get('maturity') for curve in curves]
-                ))
-            )
-
-        except exceptions.SomPolissaException as e:
-            return dict(
-                error=e.value,
-                error_code=e.code,
-                trace=self.traceback_info(e),
-            )
-
-        except Exception as e:
-            return dict(
-                error=str(e),
-                error_code="Unexpected",
-                trace=self.traceback_info(e),
-            )
+        json_prices = json.dumps(dict(
+            first_date = first_date,
+            last_date = last_date,
+            curves=dict(
+                geo_zone = geo_zone,
+                tariff = tariff,
+                price_euros_kwh = [curve.get('initial_price') for curve in curves],
+                maturity = [curve.get('maturity') for curve in curves]
+            ))
+        )
 
         return json_prices
 
@@ -223,44 +200,29 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
     def get_compensation_prices(self, cursor, uid, geo_zone, first_date, last_date, context=None):
         prices_obj = self.pool.get('giscedata.next.days.energy.price')
 
-        try:
-            self.validate_parameters(cursor, uid, geo_zone, first_date, last_date, tariff=None)
+        self.validate_parameters(cursor, uid, geo_zone, first_date, last_date, tariff=None)
 
-            initial_time, final_time = self.initial_final_times(first_date, last_date)
-            params = [
-                ('hour_timestamp', '>=', initial_time),
-                ('hour_timestamp', '<=', final_time),
-                ('geom_zone', '=', geo_zone)
-            ]
-            price_ids = prices_obj.search(cursor, uid, params, order='hour_timestamp')
+        initial_time, final_time = self.initial_final_times(first_date, last_date)
+        params = [
+            ('hour_timestamp', '>=', initial_time),
+            ('hour_timestamp', '<=', final_time),
+            ('geom_zone', '=', geo_zone)
+        ]
+        price_ids = prices_obj.search(cursor, uid, params, order='hour_timestamp')
 
-            curves = []
-            for price_id in price_ids:
-                curves.append(prices_obj.read(cursor, uid, price_id, ['prm_diari','maturity']))
+        curves = []
+        for price_id in price_ids:
+            curves.append(prices_obj.read(cursor, uid, price_id, ['prm_diari','maturity']))
 
-            json_prices = json.dumps(dict(
-                first_date = first_date,
-                last_date = last_date,
-                curves=dict(
-                    geo_zone = geo_zone,
-                    compensation_euros_kwh = [curve.get('prm_diari') for curve in curves],
-                    maturity = [curve.get('maturity') for curve in curves]
-                ))
-            )
-
-        except exceptions.SomPolissaException as e:
-            return dict(
-                error=e.value,
-                error_code=e.code,
-                trace=self.traceback_info(e),
-            )
-
-        except Exception as e:
-            return dict(
-                error=str(e),
-                error_code="Unexpected",
-                trace=self.traceback_info(e),
-            )
+        json_prices = json.dumps(dict(
+            first_date = first_date,
+            last_date = last_date,
+            curves=dict(
+                geo_zone = geo_zone,
+                compensation_euros_kwh = [curve.get('prm_diari') for curve in curves],
+                maturity = [curve.get('maturity') for curve in curves]
+            ))
+        )
 
         return json_prices
 
