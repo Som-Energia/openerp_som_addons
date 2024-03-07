@@ -15,7 +15,7 @@ env:
   POSTGRES_PASSWORD: erp
 
 jobs:
-  example_matrix:
+  module_list:
     strategy:
       fail-fast: false
       matrix:
