@@ -7,7 +7,7 @@
             <field name="type">form</field>
             <field name="inherit_id" ref="giscedata_crm_leads.view_crm_lead_create_entities_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//button[@name='action_crm_lead_create_entities']" position="attributes">
+                <xpath expr="//button[@name='action_activation_lead_entity']" position="attributes">
                     <attribute name="context">{'som_from_activation_lead' : True}</attribute>
                 </xpath>
             </field>

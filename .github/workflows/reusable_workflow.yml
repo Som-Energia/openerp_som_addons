@@ -78,11 +78,14 @@ jobs:
           export ROOT_DIR_SRC=${{github.workspace}}/..
           git clone --depth 1 https://$GITHUB_TOKEN@github.com/Som-Energia/erp.git -b developer $ROOT_DIR_SRC/erp
           git clone --depth 1 https://$GITHUB_TOKEN@github.com/Som-Energia/libFacturacioATR.git $ROOT_DIR_SRC/libFacturacioATR
-          git clone --depth 1 https://github.com/Som-Energia/somenergia-generationkwh.git $ROOT_DIR_SRC/somenergia-generationkwh
-          git clone --depth 1 https://github.com/Som-Energia/plantmeter.git $ROOT_DIR_SRC/plantmeter
+          if [ ! -d "$ROOT_DIR_SRC/somenergia-generationkwh" ]; then
+                  git clone --depth 1 https://github.com/Som-Energia/somenergia-generationkwh.git $ROOT_DIR_SRC/somenergia-generationkwh
+          fi
+          if [ ! -d "$ROOT_DIR_SRC/plantmeter" ]; then
+                git clone --depth 1 https://github.com/Som-Energia/plantmeter.git $ROOT_DIR_SRC/plantmeter
+          fi
           git clone --depth 1 https://github.com/Som-Energia/giscedata_facturacio_indexada_som.git $ROOT_DIR_SRC/giscedata_facturacio_indexada_som
           git clone --depth 1 https://github.com/gisce/oorq.git -b api_v5 $ROOT_DIR_SRC/oorq
-          git clone --depth 1 https://github.com/gisce/spawn_oop.git $ROOT_DIR_SRC/spawn_oop
           git clone --depth 1 https://github.com/gisce/poweremail.git $ROOT_DIR_SRC/poweremail2
           git clone --depth 1 https://github.com/gisce/openerp-sentry.git -b v5_legacy $ROOT_DIR_SRC/openerp-sentry
           git clone --depth 1 https://github.com/gisce/ws_transactions.git $ROOT_DIR_SRC/ws_transactions
@@ -147,10 +150,14 @@ jobs:
           export OPENERP_DB_HOST=localhost
           export OPENERP_DB_USER=$POSTGRES_USER
           export OPENERP_DB_PASSWORD=$POSTGRES_PASSWORD
+          export OPENERP_SII_TEST_MODE=1
+          export OPENERP_SECRET="verysecret"
+          export OPENERP_IGNORE_PUBSUB=1
           cd ${{github.workspace}}
           destral --report-coverage --enable-coverage --report-junitxml ${{github.workspace}}/test-results/destral -m ${{ inputs.module }}
       - name: Publish Unit Test Results
         if: (success() || failure()) && matrix.python-version == '2.7'
-        uses: EnricoMi/publish-unit-test-result-action@v1
+        uses: EnricoMi/publish-unit-test-result-action@v2
         with:
           files: test-results/destral/*.xml
+          secondary_rate_limit_wait_seconds: 120.0
