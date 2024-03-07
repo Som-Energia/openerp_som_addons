@@ -174,7 +174,13 @@ class SomGurb(osv.osv):
 
     def validate_draft_first_opening(self, cursor, uid, ids, context=None):
         for record in self.read(cursor, uid, ids, _REQUIRED_FIRST_OPENING_FIELDS, context=context):
-            return all(valor for valor in record.values())
+            for k, v in record.items():
+                if not v:
+                    raise osv.except_osv(
+                        _("Error al canviar d'estat"),
+                        _("Per poder obrir el GURB s'ha d'omplir el camp: {}".format(k))
+                    )
+            return True
 
     def validate_active_incomplete(self, cursor, uid, ids, context=None):
         for record in self.browse(cursor, uid, ids, context=context):
