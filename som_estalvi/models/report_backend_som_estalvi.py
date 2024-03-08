@@ -29,7 +29,8 @@ class ReportBackendSomEstalvi(ReportBackend):
             "nom": pol.titular.name,
             "adreca": pol.cups.direccio,
             "cups": pol.cups.name,
-            "peatge": pol.llista_preu.nom_comercial,
+            "peatge": pol.tarifa.name,
+            "tarifa": pol.llista_preu.nom_comercial,
             # "grup_local": "",
         }
         return data
@@ -61,7 +62,12 @@ class ReportBackendSomEstalvi(ReportBackend):
         if context is None:
             context = {}
 
-        data = {}
+        data = {
+            "potencies_contractades": [],
+        }
+
+        for periode in pol.potencies_periode:
+            data["potencies_contractades"].append(periode.potencia)
 
         return data
 
@@ -75,7 +81,7 @@ class ReportBackendSomEstalvi(ReportBackend):
             ("polissa_id", "=", pol.id),
             ("type", "=", "out_invoice"),
             ("refund_by_id", "=", False),
-            ("state", "=", "paid")
+            ("state", "=", "paid"),
         ]
 
         factures_ids = factura_obj.search(
@@ -112,7 +118,7 @@ class ReportBackendSomEstalvi(ReportBackend):
             data["descompte_generacio"] += abs(factura.total_generacio)
 
             for linia in factura.linia_ids:
-                if linia.product_id == flux_solar:
+                if linia.product_id.id == flux_solar:
                     data["descompte_generacio"] += abs(linia.price_subtotal)
         return data
 
