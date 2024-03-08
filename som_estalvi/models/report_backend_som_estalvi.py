@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 from report_backend.report_backend import ReportBackend, report_browsify
+import json
 
 
 class ReportBackendSomEstalvi(ReportBackend):
@@ -28,7 +29,8 @@ class ReportBackendSomEstalvi(ReportBackend):
             "nom": pol.titular.name,
             "adreca": pol.cups.direccio,
             "cups": pol.cups.name,
-            "peatge": pol.llista_preu.nom_comercial,
+            "peatge": pol.tarifa.name,
+            "tarifa": pol.llista_preu.nom_comercial,
             # "grup_local": "",
         }
         return data
@@ -41,14 +43,17 @@ class ReportBackendSomEstalvi(ReportBackend):
 
         ctx = {"active_id": pol.id}
 
-        wiz = wiz_opti_obj.create({}, context=ctx)
-        wiz.get_optimization_required_data(cursor, uid, wiz.id, pol.id, context=ctx)
-        wiz_opti_obj.serializate_wizard_data(cursor, uid, wiz.id, context=ctx)
-        wiz.get_periods_power(context=ctx)
+        wiz_id = wiz_opti_obj.create(cursor, uid, {}, context=ctx)
+        wiz_opti_obj.get_optimization_required_data(cursor, uid, wiz_id, pol.id, context=ctx)
+        wiz_opti_obj.serializate_wizard_data(cursor, uid, wiz_id, context=ctx)
+        wiz_browse = wiz_opti_obj.browse(cursor, uid, wiz_id, context=ctx)
+        wiz_maximeters_powers = wiz_browse.maximeter_powers
+        maximeters_powers = json.loads(wiz_maximeters_powers)
 
         data = {
             "potencia_actual": "",
             "potencia_optima": "",
+            "maximetres": maximeters_powers,
         }
 
         return data
@@ -57,7 +62,12 @@ class ReportBackendSomEstalvi(ReportBackend):
         if context is None:
             context = {}
 
-        data = {}
+        data = {
+            "potencies_contractades": [],
+        }
+
+        for periode in pol.potencies_periode:
+            data["potencies_contractades"].append(periode.potencia)
 
         return data
 
@@ -71,7 +81,7 @@ class ReportBackendSomEstalvi(ReportBackend):
             ("polissa_id", "=", pol.id),
             ("type", "=", "out_invoice"),
             ("refund_by_id", "=", False),
-            ("state", "=", "paid")
+            ("state", "=", "paid"),
         ]
 
         factures_ids = factura_obj.search(
@@ -108,7 +118,7 @@ class ReportBackendSomEstalvi(ReportBackend):
             data["descompte_generacio"] += abs(factura.total_generacio)
 
             for linia in factura.linia_ids:
-                if linia.product_id == flux_solar:
+                if linia.product_id.id == flux_solar:
                     data["descompte_generacio"] += abs(linia.price_subtotal)
         return data
 
