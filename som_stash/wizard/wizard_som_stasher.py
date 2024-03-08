@@ -103,8 +103,6 @@ class WizardSomStasher(osv.osv_memory):
 
     def do_stash_process(self, cursor, uid, ids, context=None):
         msg = _("Resultat d'execució del wizard de backup de dades:\n")
-        # do not commit
-        # import pudb; pu.db
         wiz = self.read(
             cursor, uid, ids, [], context=context
         )[0]

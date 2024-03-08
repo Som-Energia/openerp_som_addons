@@ -4,5 +4,8 @@
         <record model="res.groups" id="group_som_stash">
             <field name="name">Som Stash</field>
         </record>
+        <record model="res.groups" id="group_som_stash_can_stash">
+            <field name="name">Som Stash pot fer stash</field>
+        </record>
      </data>
 </openerp>
