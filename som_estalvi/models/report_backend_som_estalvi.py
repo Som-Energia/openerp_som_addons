@@ -14,10 +14,9 @@ class ReportBackendSomEstalvi(ReportBackend):
 
         data = {
             "titular": self.get_titular(cursor, uid, pol, context=context),
-            "energia": self.get_energia(cursor, uid, pol, context=context),
             "costs": self.get_costs(cursor, uid, pol, context=context),
             "potencia": self.get_potencia(cursor, uid, pol, context=context),
-            "estimacio": self.get_potencia(cursor, uid, pol, context=context),
+            "estimacio": self.get_estimacio(cursor, uid, pol, context=context),
         }
         return data
 
@@ -29,24 +28,23 @@ class ReportBackendSomEstalvi(ReportBackend):
             "nom": pol.titular.name,
             "adreca": pol.cups.direccio,
             "cups": pol.cups.name,
-            "peatge": pol.tarifa.name,
-            "grup_local": "",
+            "peatge": pol.llista_preu.nom_comercial,
+            # "grup_local": "",
         }
-        return data
-
-    def get_energia(self, cursor, uid, pol, context=None):
-        if context is None:
-            context = {}
-
-        data = {
-
-        }
-
         return data
 
     def get_estimacio(self, cursor, uid, pol, context=None):
         if context is None:
             context = {}
+
+        wiz_opti_obj = self.pool.get("wizard.contract.power.optimization")
+
+        ctx = {"active_id": pol.id}
+
+        wiz = wiz_opti_obj.create({}, context=ctx)
+        wiz.get_optimization_required_data(cursor, uid, wiz.id, pol.id, context=ctx)
+        wiz_opti_obj.serializate_wizard_data(cursor, uid, wiz.id, context=ctx)
+        wiz.get_periods_power(context=ctx)
 
         data = {
             "potencia_actual": "",
