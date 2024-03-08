@@ -3390,7 +3390,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             return {"is_visible": False}
 
         # Repartiment segons BOE
-        rep_BOE = {"r": 0.0, "d": 81.0, "t": 18.0, "o": 1.0}
+        rep_BOE = {"r": 0.76, "d": 71.0, "t": 27.58, "o": 0.66}
 
         pie_total = round(fact.amount_total, 2)
         pie_renting = round(fact.total_lloguers, 2)

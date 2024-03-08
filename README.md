@@ -1,7 +1,7 @@
 # openerp_som_addons
 Repository whith OpenERP addons customization made by [Som Energia](https://www.somenergia.coop/). We used an already customized version of OpenERP developed by [GISCE](https://gisce.net/) that at the same time, has some features from [Odoo](https://www.odoo.com/).
 
-  [![CI](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/integration_config.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/integration_config.yml)
+  [![SOM_MODULES](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/all_modules_test.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/all_modules_test.yml)
   [![Coverage Status](https://coveralls.io/repos/github/Som-Energia/openerp_som_addons/badge.svg?branch=)](https://coveralls.io/github/Som-Energia/openerp_som_addons?branch=)
 
 List of modules
@@ -9,7 +9,7 @@ List of modules
 tests | name | description
 --- | --- | ---
 [![account_account_som](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_account_account_som.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_account_account_som.yml) | [account_account_som](account_account_som/) | A customization of AccountAccount model from OpenERP/Odoo
-[![account_account_som](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_account_account_som.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_account_account_som.yml) | [account_account_som](account_account_som/) | A customization of AccountInvoice model from OpenERP/Odoo
+[![account_invoice_som](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_account_invoice_som.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_account_invoice_som.yml) | [account_invoice_som](account_invoice_som/) | A customization of AccountInvoice model from OpenERP/Odoo
 [![base_extended_som](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_base_extended_som.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_base_extended_som.yml) | [base_extended_som](base_extended_som/) | A customization of Base model from OpenERP/Odoo
 [![dx_invoice_supplier_renumber](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_dx_invoice_supplier_renumber.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_dx_invoice_supplier_renumber.yml) | [dx_invoice_supplier_renumber](dx_invoice_supplier_renumber/) |
 [![giscedata_facturacio_comer_som](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_giscedata_facturacio_comer_som.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_giscedata_facturacio_comer_som.yml) | [giscedata_facturacio_comer_som](giscedata_facturacio_comer_som/) | A customization of GiscedataFacturacioComer model from PowerERP (GISCE)
