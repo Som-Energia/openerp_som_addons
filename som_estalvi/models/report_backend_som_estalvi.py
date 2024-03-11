@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 from report_backend.report_backend import ReportBackend, report_browsify
+from report_puppeteer.report_puppeteer import PuppeteerParser
 import json
 
 
@@ -124,3 +125,11 @@ class ReportBackendSomEstalvi(ReportBackend):
 
 
 ReportBackendSomEstalvi()
+
+
+PuppeteerParser(
+    'report.som.estalvi',
+    'report.backend.som.estalvi',
+    'som_estalvi/report/som_estalvi.mako',
+    params={}
+)
