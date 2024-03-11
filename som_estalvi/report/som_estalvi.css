@@ -1,0 +1,24 @@
+body{
+    margin: 0;
+    padding: 0;
+}
+
+.a4 {
+    height: 297mm;
+    width: 210mm;
+    display: flex;
+    flex-direction: row;
+}
+
+.page-content{
+    margin: 0 1.75mm 10mm 1.75mm;
+    height: 287mm;
+    width: 206.5mm;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    height: 100%;
+}
