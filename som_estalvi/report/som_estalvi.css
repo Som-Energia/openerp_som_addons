@@ -1,15 +1,15 @@
 body{
     margin: 0;
     padding: 0;
+    font-family: 'Montserrat-Medium';
+    color: #4d4d4d;
 }
-
 .a4 {
     height: 297mm;
     width: 210mm;
     display: flex;
     flex-direction: row;
 }
-
 .page-content{
     margin: 0 1.75mm 10mm 1.75mm;
     height: 287mm;
@@ -18,7 +18,29 @@ body{
     display: flex;
     flex-direction: column;
 }
-
 .content {
     height: 100%;
+}
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.dades-titular {
+    width: 60%;
+}
+.titol {
+    width: 40%;
+}
+.dades-resum {
+    width: 50%;
+}
+.distribucio-costos {
+    width: 50%;
+}
+.seccio {
+    width: 100%;
+}
+.estimacio {
+    width: 33%;
 }
