@@ -3389,10 +3389,18 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         if not is_TD(pol):
             return {"is_visible": False}
 
+        # Remove the discounts from the amount total
+        flux_solar = 0
+        for line in fact.linia_ids:
+            if line.tipus in ("altres", "cobrament") and line.product_id.code == "PBV":
+                flux_solar += line.price_subtotal
+
+        amount_total = fact.amount_total + flux_solar
+
         # Repartiment segons BOE
         rep_BOE = {"r": 0.76, "d": 71.0, "t": 27.58, "o": 0.66}
 
-        pie_total = round(fact.amount_total, 2)
+        pie_total = round(amount_total, 2)
         pie_renting = round(fact.total_lloguers, 2)
         pie_taxes = round(float(fact.amount_tax), 2)
         pie_tolls = round(fact.total_atr, 2)
@@ -3440,7 +3448,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data = {
             "is_visible": is_TD(pol),
             "factura_id": fact.id,
-            "amount_total": fact.amount_total,
+            "amount_total": amount_total,
             "pie_renting": pie_renting,
             "pie_taxes": pie_taxes,
             "pie_tolls": pie_tolls,
