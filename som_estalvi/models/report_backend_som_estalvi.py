@@ -128,7 +128,7 @@ ReportBackendSomEstalvi()
 
 
 PuppeteerParser(
-    'report.som.estalvi',
+    'report.report_som_estalvi',
     'report.backend.som.estalvi',
     'som_estalvi/report/som_estalvi.mako',
     params={}
