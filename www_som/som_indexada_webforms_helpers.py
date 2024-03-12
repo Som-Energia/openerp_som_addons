@@ -152,7 +152,7 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
             raise exceptions.TariffNonExists(tariff)
 
         if first_date is None or last_date is None or \
-           (first_date != None and last_date != None and last_date < first_date):
+           (first_date is not None and last_date is not None and last_date < first_date):
             raise exceptions.InvalidDates(first_date, last_date)
 
     def initial_final_times(self, first_date, last_date):
