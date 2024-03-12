@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from osv import osv
 from som_polissa.exceptions import exceptions
-from datetime import datetime
 from www_som.helpers import www_entry_point
 import json
 from datetime import datetime, timedelta
@@ -152,7 +151,7 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
         if tariff and not tariff_obj.search(cursor, uid, [('name', '=', tariff)]):
             raise exceptions.TariffNonExists(tariff)
 
-        if first_date == None or last_date == None or \
+        if first_date is None or last_date is None or \
            (first_date != None and last_date != None and last_date < first_date):
             raise exceptions.InvalidDates(first_date, last_date)
 
@@ -166,7 +165,9 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
     @www_entry_point(
         expected_exceptions=exceptions.SomPolissaException,
     )
-    def get_indexed_prices(self, cursor, uid, geo_zone, tariff, first_date, last_date, context=None):
+    def get_indexed_prices(
+        self, cursor, uid, geo_zone, tariff, first_date, last_date, context=None
+    ):
         prices_obj = self.pool.get('giscedata.next.days.energy.price')
 
         self.validate_parameters(cursor, uid, geo_zone, first_date, last_date, tariff)
@@ -200,7 +201,9 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
     @www_entry_point(
         expected_exceptions=exceptions.SomPolissaException,
     )
-    def get_compensation_prices(self, cursor, uid, geo_zone, first_date, last_date, context=None):
+    def get_compensation_prices(
+        self, cursor, uid, geo_zone, first_date, last_date, context=None
+    ):
         prices_obj = self.pool.get('giscedata.next.days.energy.price')
 
         self.validate_parameters(cursor, uid, geo_zone, first_date, last_date, tariff=None)
