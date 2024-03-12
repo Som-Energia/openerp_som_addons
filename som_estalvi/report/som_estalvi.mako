@@ -2,6 +2,7 @@
 <%namespace file="som_estalvi/report/components/capcalera.mako" import="capcalera"/>
 <%namespace file="som_estalvi/report/components/resum_facturacio_anual.mako" import="resum_facturacio_anual"/>
 <%namespace file="som_estalvi/report/components/analisi_potencies.mako" import="analisi_potencies"/>
+<%namespace file="som_estalvi/report/components/footer.mako" import="footer"/>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -24,8 +25,7 @@
                         ${capcalera(informe)}
                         ${resum_facturacio_anual(informe)}
                         ${analisi_potencies(informe)}
-                        <hr/>
-                        Fins al juny del 2024, es manté la possibilitat de fer més d'una modificació de potències per als contractes d'empreses i treballador/es autònoms/es, així com la gratuïtat del tràmit
+                        ${footer(informe)}
                     </div>
                 </div>
             </div>

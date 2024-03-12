@@ -3,7 +3,7 @@
         <div class="dades-titular">
             <table>
                 <tr>
-                    <td>Nom:<td>
+                    <td>Nom:</td>
                     <td><b>SomEnergia</b></td>
                 </tr>
                 <tr>
@@ -25,8 +25,8 @@
             </table>
         </div>
         <div class="titol">
-            <p>INFORME ANUAL</p>
-            <img class="logo" src="${addons_path}/som_estalvi/report/assets/cuca.svg" alt="Logo SomEnergia">
+            <span>INFORME ANUAL</span>
+            <img class="logo" src="${addons_path}/som_estalvi/report/assets/logo.svg" alt="Logo SomEnergia">
         </div>
     </div>
 </%def>
