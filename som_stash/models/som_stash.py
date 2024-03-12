@@ -6,6 +6,8 @@ from datetime import datetime
 SELECTABLE_MODELS = [
     ("res.partner", _("Fitxa client")),
     ("res.partner.address", _("Adreça fitxa client")),
+    ("res.partner.event", _("Events de client")),
+    ("res.partner.bank", _("Bancs")),
 ]
 
 SELECTABLE_MODELS_LIST = [tup[0] for tup in SELECTABLE_MODELS]
@@ -75,7 +77,7 @@ class SomStash(osv.osv):
                 dict_write[field] = fields[field]
 
         if dict_write:
-            model_obj.write(cursor, uid, item_id, dict_write, context=context)
+            model_obj.write(cursor, uid, [item_id], dict_write, context=context)
             return True
         return False
 
@@ -88,6 +90,39 @@ class SomStash(osv.osv):
             ):
                 modified.append(item_id)
         return modified
+
+    def do_stash_partner(self, cursor, uid, partner_ids, date_expiry, context=None):
+        par_mod = "res.partner"
+        add_mod = "res.partner.address"
+        add_obj = self.pool.get(add_mod)
+
+        mod_par = []
+        mod_add = []
+
+        if not date_expiry:
+            date_expiry = datetime.strftime(datetime.today(), '%Y-%m-%d')
+
+        for partner_id in partner_ids:
+            value = {
+                partner_id: {
+                    'partner_id': partner_id,
+                    'date_expiry': date_expiry,
+                }
+            }
+            mod_par.extend(self.do_stash(cursor, uid, value, par_mod, context=context))
+
+            domain = [('partner_id', '=', partner_id)]
+            adr_ids = add_obj.search(cursor, uid, domain, context=context)
+
+            add_items = {
+                adr_id: {
+                    'partner_id': partner_id,
+                    'date_expiry': date_expiry,
+                } for adr_id in adr_ids
+            }
+            mod_add.extend(self.do_stash(cursor, uid, add_items, add_mod, context=context))
+
+        return mod_par, mod_add
 
     def do_unstash_item(self, cursor, uid, item_id, context=None):
         try:

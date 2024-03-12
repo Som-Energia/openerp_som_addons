@@ -82,29 +82,71 @@ class WizardSomStasher(osv.osv_memory):
 
         return res
 
-    def get_partners_address(self, cursor, uid, partners_to_stash, context=None):
-        obj = self.pool.get("res.partner.address")
-        address_ids = obj.search(cursor, uid, [
-            ('partner_id', 'in', partners_to_stash.keys()),
+    def get_o2m_models_to_stash(self, cursor, uid, context=None):
+        obj_im = self.pool.get('ir.model')
+        res_partner_model_id = obj_im.search(cursor, uid, [
+            ('model', '=', 'res.partner'),
+        ])[0]
+
+        obj_sss = self.pool.get('som.stash.setting')
+        sss_ids = obj_sss.search(cursor, uid, [
+            ('model', "!=", res_partner_model_id)
         ])
 
-        address_datas = obj.read(cursor, uid, address_ids, ['partner_id'])
+        list_dict_models = obj_sss.read(cursor, uid, sss_ids, ['model'])
+        # list set of dict models
+        # [{'model': (73, u'Partner Addresses'), 'id': 26L}, ...]
+        list_models = list(set([d['model'] for d in list_dict_models]))
+        res = [
+            (obj_im.read(cursor, uid, item[0], ['model'])['model'], item[1])
+            for item in list_models
+        ]
+
+        return res
+
+    def get_o2m_partner_objects(self, cursor, uid, partners_to_stash, model, fk_field, context=None):  # noqa: E501
+        obj = self.pool.get(model)
+        o2m_ids = obj.search(cursor, uid, [
+            (fk_field, 'in', partners_to_stash.keys()),
+        ])
+
+        o2m_datas = obj.read(cursor, uid, o2m_ids, [fk_field])
 
         res = {}
-        for addr_data in address_datas:
-            if not addr_data['id']:
+        for o2m_data in o2m_datas:
+            if not o2m_data['id']:
                 continue
 
-            res[addr_data['id']] = {
-                'partner_id': addr_data['partner_id'][0],
-                'date_expiry': partners_to_stash[addr_data['partner_id'][0]]['date_expiry'],
+            res[o2m_data['id']] = {
+                'partner_id': o2m_data[fk_field][0],
+                'date_expiry': partners_to_stash[o2m_data[fk_field][0]]['date_expiry'],
             }
         return res
 
+    def do_stash_o2m_model(self, cursor, uid, partners_to_stash, model_name, model_human_name, fk_field, context=None):    # noqa: E501
+        o2m_objects_to_stash = self.get_o2m_partner_objects(
+            cursor, uid, partners_to_stash, model_name, fk_field, context=context
+        )
+        som_stash_obj = self.pool.get("som.stash")
+        o2m_objects_stashed = som_stash_obj.do_stash(
+            cursor, uid,
+            o2m_objects_to_stash,
+            model_name,
+            context=context
+        )
+
+        msg = _(
+            "\nModificades {} fitxes {}.\nLlista d'Ids:\n{}".format(
+                len(o2m_objects_stashed),
+                model_human_name,
+                ', '.join([str(i) for i in o2m_objects_stashed if i])
+            )
+        )
+
+        return msg
+
     def do_stash_process(self, cursor, uid, ids, context=None):
         msg = _("Resultat d'execució del wizard de backup de dades:\n")
-        # do not commit
-        # import pudb; pu.db
         wiz = self.read(
             cursor, uid, ids, [], context=context
         )[0]
@@ -134,6 +176,7 @@ class WizardSomStasher(osv.osv_memory):
 
         if do_stash and partners_to_stash:
             som_stash_obj = self.pool.get("som.stash")
+
             res_partners_stashed = som_stash_obj.do_stash(
                 cursor, uid,
                 partners_to_stash,
@@ -148,22 +191,16 @@ class WizardSomStasher(osv.osv_memory):
                 )
             )
 
-            partners_address_to_stash = self.get_partners_address(
-                cursor, uid, partners_to_stash, context=context
-            )
-            res_partners_address_stashed = som_stash_obj.do_stash(
-                cursor, uid,
-                partners_address_to_stash,
-                'res.partner.address',
-                context=context
-            )
-
-            msg += _(
-                "\nModificades {} fitxes d'adreces de partners.\nLlista d'Ids:\n{}".format(
-                    len(res_partners_address_stashed),
-                    ', '.join([str(i) for i in res_partners_address_stashed if i])
+            o2m_models = self.get_o2m_models_to_stash(cursor, uid, context=context)
+            fk_field = 'partner_id'
+            for t_model in o2m_models:
+                model_name = t_model[0]
+                model_human_name = t_model[1]
+                msg += self.do_stash_o2m_model(
+                    cursor, uid,
+                    partners_to_stash, model_name, model_human_name, fk_field,
+                    context=context,
                 )
-            )
 
         self.write(
             cursor, uid, ids, {'info': msg}
