@@ -6,6 +6,8 @@ from datetime import datetime
 SELECTABLE_MODELS = [
     ("res.partner", _("Fitxa client")),
     ("res.partner.address", _("Adreça fitxa client")),
+    ("res.partner.event", _("Events de client")),
+    ("res.partner.bank", _("Bancs")),
 ]
 
 SELECTABLE_MODELS_LIST = [tup[0] for tup in SELECTABLE_MODELS]
@@ -75,7 +77,7 @@ class SomStash(osv.osv):
                 dict_write[field] = fields[field]
 
         if dict_write:
-            model_obj.write(cursor, uid, item_id, dict_write, context=context)
+            model_obj.write(cursor, uid, [item_id], dict_write, context=context)
             return True
         return False
 
