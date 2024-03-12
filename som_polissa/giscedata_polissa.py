@@ -950,6 +950,50 @@ class GiscedataPolissa(osv.osv):
 
         return res
 
+    def calculate_fiscal_position_from_municipi(self, cursor, uid, municipi_id, cnae, powers, context=None):  # noqa: E501
+        fp_obj = self.pool.get("account.fiscal.position")
+        municipi_obj = self.pool.get("res.municipi")
+        municipi = municipi_obj.browse(cursor, uid, municipi_id, context=context)
+        posicio_id = None
+        is_canarias = municipi and municipi.subsistema_id and municipi.subsistema_id.code in [
+            'TF', 'PA', 'LG', 'HI', 'GC', 'FL']
+        is_pdlc = municipi.ine == '38028'  # Puerto de la cruz has it's own Fiscal Position
+        is_vivienda = cnae and cnae == "9820"
+        power = max(powers or [0])
+
+        if is_canarias:
+            if is_vivienda and power < 10.0:
+                # Régimen Islas Canarias Vivienda RDL 8/2023 2,5%
+                posicio_id = fp_obj.search(
+                    cursor, uid, [('name', 'like', "%Islas Canarias Vivienda RD%8%2023%2%5%")])
+            else:
+                # Régimen Islas Canarias RDL 8/2023 2,5%
+                posicio_id = fp_obj.search(
+                    cursor, uid, [('name', 'like', "%Islas Canarias RD%8%2023%2%5%")])
+
+        if is_pdlc:
+            if is_vivienda and power < 10.0:
+                # Régimen Islas Canarias Vivienda Puerto de la Cruz RDL 8/2023 2,5
+                posicio_id = fp_obj.search(
+                    cursor, uid,
+                    [
+                        (
+                            'name',
+                            'like',
+                            "%Islas Canarias Vivienda Puerto%Cruz%RD%8%2023%2%5%"
+                        )
+                    ]
+                )
+            else:
+                # Régimen Islas Canarias Puerto de la Cruz RDL 8/2023 2,5%
+                posicio_id = fp_obj.search(
+                    cursor, uid, [('name', 'like', "%Islas Canarias Puerto%Cruz%RD%8%2023%2%5%")])
+
+        if posicio_id:
+            posicio_id = posicio_id[0]
+
+        return posicio_id
+
     _columns = {
         "info_gestio_endarrerida": fields.text("Informació gestió endarrerida"),
         "info_gestio_endarrerida_curta": fields.function(
