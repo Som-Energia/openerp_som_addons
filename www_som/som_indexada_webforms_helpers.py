@@ -4,13 +4,14 @@ from som_polissa.exceptions import exceptions
 from datetime import datetime
 from www_som.helpers import www_entry_point
 import json
-from datetime import datetime, date, timedelta
+from datetime import datetime, timedelta
 
 SUBSYSTEMS = [
     'PENINSULA',
     'BALEARES',
     'CANARIAS',
 ]
+
 
 class SomIndexadaWebformsHelpers(osv.osv_memory):
 
@@ -148,16 +149,18 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
             raise exceptions.InvalidSubsystem(geo_zone)
 
         tariff_obj = self.pool.get('giscedata.polissa.tarifa')
-        if tariff and not tariff_obj.search(cursor, uid, [('name','=', tariff)]):
+        if tariff and not tariff_obj.search(cursor, uid, [('name', '=', tariff)]):
             raise exceptions.TariffNonExists(tariff)
 
         if first_date == None or last_date == None or \
            (first_date != None and last_date != None and last_date < first_date):
-           raise exceptions.InvalidDates(first_date, last_date)
+            raise exceptions.InvalidDates(first_date, last_date)
 
     def initial_final_times(self, first_date, last_date):
-        initial_time = (datetime.strptime(first_date, '%Y-%m-%d') + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S")
-        final_time = (datetime.strptime(last_date, '%Y-%m-%d') + timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")
+        initial_time = (datetime.strptime(first_date, '%Y-%m-%d')
+                        + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S")
+        final_time = (datetime.strptime(last_date, '%Y-%m-%d')
+                      + timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")
         return initial_time, final_time
 
     @www_entry_point(
@@ -179,16 +182,16 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
 
         curves = []
         for price_id in price_ids:
-            curves.append(prices_obj.read(cursor, uid, price_id, ['initial_price','maturity']))
+            curves.append(prices_obj.read(cursor, uid, price_id, ['initial_price', 'maturity']))
 
         json_prices = json.dumps(dict(
-            first_date = first_date,
-            last_date = last_date,
+            first_date=first_date,
+            last_date=last_date,
             curves=dict(
-                geo_zone = geo_zone,
-                tariff = tariff,
-                price_euros_kwh = [curve.get('initial_price') for curve in curves],
-                maturity = [curve.get('maturity') for curve in curves]
+                geo_zone=geo_zone,
+                tariff=tariff,
+                price_euros_kwh=[curve.get('initial_price') for curve in curves],
+                maturity=[curve.get('maturity') for curve in curves]
             ))
         )
 
@@ -212,18 +215,19 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
 
         curves = []
         for price_id in price_ids:
-            curves.append(prices_obj.read(cursor, uid, price_id, ['prm_diari','maturity']))
+            curves.append(prices_obj.read(cursor, uid, price_id, ['prm_diari', 'maturity']))
 
         json_prices = json.dumps(dict(
-            first_date = first_date,
-            last_date = last_date,
+            first_date=first_date,
+            last_date=last_date,
             curves=dict(
-                geo_zone = geo_zone,
-                compensation_euros_kwh = [curve.get('prm_diari') for curve in curves],
-                maturity = [curve.get('maturity') for curve in curves]
+                geo_zone=geo_zone,
+                compensation_euros_kwh=[curve.get('prm_diari') for curve in curves],
+                maturity=[curve.get('maturity') for curve in curves]
             ))
         )
 
         return json_prices
+
 
 SomIndexadaWebformsHelpers()

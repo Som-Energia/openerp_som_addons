@@ -155,6 +155,7 @@ class TariffCodeNotSupported(SomPolissaException):
             tariff_code=self.tariff_code,
         )
 
+
 class TariffNonExists(SomPolissaException):
     def __init__(self, tariff):
         super(TariffNonExists, self).__init__(
@@ -167,6 +168,7 @@ class TariffNonExists(SomPolissaException):
             super(TariffNonExists, self).to_dict(),
         )
 
+
 class InvalidSubsystem(SomPolissaException):
     def __init__(self, geo_zone):
         super(InvalidSubsystem, self).__init__(
@@ -178,6 +180,7 @@ class InvalidSubsystem(SomPolissaException):
         return dict(
             super(InvalidSubsystem, self).to_dict(),
         )
+
 
 class InvalidDates(SomPolissaException):
     def __init__(self, first_date, last_date):
