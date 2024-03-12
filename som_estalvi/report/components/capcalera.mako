@@ -4,29 +4,29 @@
             <table>
                 <tr>
                     <td>Nom:<td>
-                    <td>SomEnergia</td>
+                    <td><b>SomEnergia</b></td>
                 </tr>
                 <tr>
                     <td>Adreça:</td>
-                    <td>Parc Científic i tecnologic</td>
+                    <td><b>Parc Científic i tecnologic</b></td>
                 </tr>
                 <tr>
                     <td>CUPS:</td>
-                    <td>ES12493384900F</td>
+                    <td><b>ES12493384900F</b></td>
                 </tr>
                 <tr>
                     <td>Peatge:</td>
-                    <td>2.0TD</td>
+                    <td><b>2.0TD</b></td>
                 </tr>
                 <tr>
                     <td>Tarifa:</td>
-                    <td>2.0TD Períodes</td>
+                    <td><b>2.0TD Períodes</b></td>
                 </tr>
             </table>
         </div>
         <div class="titol">
-            INFORME ANUAL
-            <img src="${addons_path}/som_estalvi/report/assets/cuca.svg" alt="Logo SomEnergia">
+            <p>INFORME ANUAL</p>
+            <img class="logo" src="${addons_path}/som_estalvi/report/assets/cuca.svg" alt="Logo SomEnergia">
         </div>
     </div>
 </%def>

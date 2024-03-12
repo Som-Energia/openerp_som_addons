@@ -1,25 +1,31 @@
-body{
-    margin: 0;
+/* BASE STYLE */
+/* Body */
+body {
     padding: 0;
-    font-family: 'Montserrat-Medium';
-    color: #4d4d4d;
+    margin: 0;
 }
-.a4 {
+/* Page */
+.a4{
     height: 297mm;
     width: 210mm;
-    display: flex;
-    flex-direction: row;
-}
-.page-content{
-    margin: 0 1.75mm 10mm 1.75mm;
-    height: 287mm;
-    width: 206.5mm;
     position: relative;
     display: flex;
     flex-direction: column;
 }
+.page-content {
+    margin: 10mm 10mm 10mm 10mm;
+    height: 277mm;
+    width: 190mm;
+    position: relative;
+}
 .content {
-    height: 100%;
+    margin-left: 5mm;
+    margin-right: 5mm;
+}
+/* REPORT STYLE */
+body {
+    font-family: 'Montserrat-Medium';
+    color: #4d4d4d;
 }
 .container {
     display: flex;
@@ -28,6 +34,8 @@ body{
 }
 .dades-titular {
     width: 60%;
+    padding-left: 20mm;
+    border-right: #4d4d4d;
 }
 .titol {
     width: 40%;
@@ -38,9 +46,19 @@ body{
 .distribucio-costos {
     width: 50%;
 }
-.seccio {
+.section {
     width: 100%;
+    font-weight: bold;
 }
 .estimacio {
     width: 33%;
+}
+.logo {
+
+}
+.secundary-text {
+    color: #9d9d9d;
+}
+.titol p {
+    font-size: 18pt;
 }

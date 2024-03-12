@@ -15,7 +15,7 @@
                 <td>
                     Potències òptimes
                 </td>
-                <td>
+                <td colspan="12">
                     Potència màxima registrada
                 </td>
             </tr>
@@ -56,7 +56,7 @@
                 <td>x</td>
             </tr>
             <tr>
-                <td>Tots els valors es mostre en kW</td>
+                <td colspan="3">Tots els valors es mostre en kW</td>
                 <td>GEN</td>
                 <td>FEB</td>
                 <td>MAR</td>
