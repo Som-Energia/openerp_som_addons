@@ -81,7 +81,6 @@ class SomStashSettingsTests(SomStashBaseTests):
     def create_settings_for_address(self):
         address_fields = {
             'name': 'ningú',
-            'email': 'a@a.com',
             'phone': '999999999',
             'mobile': '666666666',
             'fax': '777777777',
@@ -438,7 +437,6 @@ class SomStashTest(SomStashSettingsTests):
         ad_1 = rpa_obj.search(self.cursor, self.uid, [('partner_id', '=', id_1)])[0]
 
         values = {
-            'email': 'someone@somenergia.coop.',
             'phone': '969696969',
             'mobile': '696969696',
             'fax': '769696969',
@@ -446,7 +444,7 @@ class SomStashTest(SomStashSettingsTests):
         addr_pre = rpa_obj.write(self.cursor, self.uid, ad_1, values)
 
         rp_fields = ['name', 'ref']
-        rpa_fields = ['name', 'email', 'phone', 'mobile', 'fax']
+        rpa_fields = ['name', 'phone', 'mobile', 'fax']
 
         data_pre = rp_obj.read(self.cursor, self.uid, id_1, rp_fields)
         addr_pre = rpa_obj.read(self.cursor, self.uid, ad_1, rpa_fields)
@@ -468,7 +466,6 @@ class SomStashTest(SomStashSettingsTests):
         self.assertEqual(id_1, partners[0])
 
         self.assertEqual('ningú', addr_post['name'])
-        self.assertEqual('a@a.com', addr_post['email'])
         self.assertEqual('999999999', addr_post['phone'])
         self.assertEqual('666666666', addr_post['mobile'])
         self.assertEqual('777777777', addr_post['fax'])
@@ -476,7 +473,7 @@ class SomStashTest(SomStashSettingsTests):
         self.assertEqual(ad_1, adresses[0])
 
         # test that right number of registers where created
-        self.assertEqual(n_stash_items, 2 + 5)
+        self.assertEqual(n_stash_items, 2 + 4)
 
         # test that the values are stored in stash registers if original values exists
         self.assertEqual(id_1, data_pre['id'])
@@ -492,10 +489,6 @@ class SomStashTest(SomStashSettingsTests):
         values = self.get_stashed_values('res.partner.address', ad_1, 'name')
         self.assertEqual(len(values), 1)
         self.assertEqual(values[0]['value'], addr_pre['name'])
-        self.assertLessEqual(get_minutes(values[0]['date_stashed'], todayhm), 5)
-        values = self.get_stashed_values('res.partner.address', ad_1, 'email')
-        self.assertEqual(len(values), 1)
-        self.assertEqual(values[0]['value'], addr_pre['email'])
         self.assertLessEqual(get_minutes(values[0]['date_stashed'], todayhm), 5)
         values = self.get_stashed_values('res.partner.address', ad_1, 'phone')
         self.assertEqual(len(values), 1)

@@ -23,7 +23,7 @@
                         <field name="models_domain" invisible="1"/>
                         <field name="field_types_domain" invisible="1"/>
                         <field name="model" domain="[('model', 'in', eval(models_domain))]" select="1"/>
-                        <field name="field" domain="[('model_id', '=', model), ('ttype', 'in', eval(field_types_domain)), ('readonly', '=', False)]" select="1"/>
+                        <field name="field" domain="[('model_id', '=', model), ('ttype', 'in', eval(field_types_domain))]" select="1"/>
                         <field name="default_stashed_value" select="1" height="200"/>
                     </group>
                 </form>
