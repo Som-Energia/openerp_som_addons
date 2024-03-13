@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 from report_backend.report_backend import ReportBackend, report_browsify
+from report_puppeteer.report_puppeteer import PuppeteerParser
 import json
 
 
@@ -15,9 +16,9 @@ class ReportBackendSomEstalvi(ReportBackend):
 
         data = {
             "titular": self.get_titular(cursor, uid, pol, context=context),
-            "costs": self.get_costs(cursor, uid, pol, context=context),
-            "potencia": self.get_potencia(cursor, uid, pol, context=context),
-            "estimacio": self.get_estimacio(cursor, uid, pol, context=context),
+            # "costs": self.get_costs(cursor, uid, pol, context=context),
+            # "potencia": self.get_potencia(cursor, uid, pol, context=context),
+            # "estimacio": self.get_estimacio(cursor, uid, pol, context=context),
         }
         return data
 
@@ -124,3 +125,11 @@ class ReportBackendSomEstalvi(ReportBackend):
 
 
 ReportBackendSomEstalvi()
+
+
+PuppeteerParser(
+    'report.report_som_estalvi',
+    'report.backend.som.estalvi',
+    'som_estalvi/report/som_estalvi.mako',
+    params={}
+)
