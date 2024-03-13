@@ -16,9 +16,9 @@ class ReportBackendSomEstalvi(ReportBackend):
 
         data = {
             "titular": self.get_titular(cursor, uid, pol, context=context),
-            "costs": self.get_costs(cursor, uid, pol, context=context),
-            "potencia": self.get_potencia(cursor, uid, pol, context=context),
-            "estimacio": self.get_estimacio(cursor, uid, pol, context=context),
+            # "costs": self.get_costs(cursor, uid, pol, context=context),
+            # "potencia": self.get_potencia(cursor, uid, pol, context=context),
+            # "estimacio": self.get_estimacio(cursor, uid, pol, context=context),
         }
         return data
 

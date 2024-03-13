@@ -37,7 +37,7 @@
             </table>
         </div>
         <div class="distribucio-costos">
-            Gràfica
+            <div id="grafic-costos"></div>
         </div>
     </div>
     <div class="container">

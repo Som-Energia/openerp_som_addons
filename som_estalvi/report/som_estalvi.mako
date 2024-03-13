@@ -8,6 +8,7 @@
 <html lang="es">
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <head>
+        <script src="${addons_path}/som_estalvi/report/assets/d3.v6.js"></script>
         <link rel="stylesheet" href="${addons_path}/som_estalvi/report/som_estalvi.css">
         <style>
             @font-face {
@@ -19,6 +20,9 @@
     </head>
     <body>
         %for informe in objects:
+            <script>
+                const data = {"Reactiva": 9, "Energia": 3, "Potencia": 15, "Exces": 5}
+            </script>
             <div class="a4">
                 <div class="page-content">
                     <div class="content">
@@ -31,4 +35,5 @@
             </div>
         %endfor
     </body>
+    <script src="${addons_path}/som_estalvi/report/components/graphic.js"></script>
 </html>
