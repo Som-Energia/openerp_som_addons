@@ -21,22 +21,21 @@
             </tr>
             <% it = 0 %>
             %for potencia in potencia['potencies_contractades']:
+                <%
+                    from dateutil.relativedelta import relativedelta
+
+                    periode = 'P{}'.format(it+1)
+                    any_anterior = (datetime.now() - relativedelta(years=+1)).year
+                %>
                 <tr>
-                    <td>P${it+1}</td>
+                    <td>P${periode}</td>
                     <td>${potencia}</td>
                     <td>P1_opt</td>
-                    <td>x</td>
-                    <td>x</td>
-                    <td>x</td>
-                    <td>x</td>
-                    <td>x</td>
-                    <td>x</td>
-                    <td>x</td>
-                    <td>x</td>
-                    <td>x</td>
-                    <td>x</td>
-                    <td>x</td>
-                    <td>x</td>
+
+                    %for mes in range(1, 13):
+                        <% mesany = '%02d%s' % (mes, any_anterior) %>
+                        <td>${potencia['maximetres'][mesany][periode]}</td>
+                    %endfor
                 </tr>
                 <% it += 1 %>
             %endfor
