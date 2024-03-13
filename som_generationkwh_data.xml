@@ -1535,7 +1535,7 @@
             <field eval="0" name="auto_email"/>
             <field eval="0" name="single_email"/>
             <field eval="0" name="use_sign"/>
-            <field name="def_subject">Generation kWh Som Enegia ${object.number} activat</field>
+            <field name="def_subject">Generation kWh Som Enegia ${object.name} activat</field>
             <field name="template_language">mako</field>
             <field eval="0" name="send_on_create"/>
             <field name="lang">${object.member_id.partner_id.lang}</field>
