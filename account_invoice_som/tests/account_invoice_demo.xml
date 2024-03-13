@@ -33,6 +33,7 @@
             <field name="address_invoice_id" ref="base.res_partner_address_c2c_1"/>
             <field name="period_id" ref="account.period_1"/>
             <field name="account_id" ref="account.a_recv"/>
+            <field name="journal_id" ref="account.sales_journal" />
         </record>
         <record id="invoice_fe210001_line_1" model="account.invoice.line">
             <field name="name">Aportació Compra Colectiva</field>
@@ -51,6 +52,7 @@
             <field name="address_invoice_id" ref="base.res_partner_address_c2c_1"/>
             <field name="period_id" ref="account.period_1"/>
             <field name="account_id" ref="account.a_recv"/>
+            <field name="journal_id" ref="account.sales_journal" />
         </record>
         <record id="invoice_fe210002_line_1" model="account.invoice.line">
             <field name="name">Aportació Compra Colectiva</field>
@@ -72,6 +74,7 @@
             <field name="origin">5015093073892</field>
             <field name="origin_date_invoice">2015-10-09</field>
             <field name="reference">GISCE</field>
+            <field name="journal_id" ref="account.expenses_journal"/>
         </record>
         <record id="invoice_fpe210001_line_1" model="account.invoice.line">
             <field name="name">Aportació Compra Colectiva</field>
@@ -93,6 +96,7 @@
             <field name="origin">5015093073892</field>
             <field name="origin_date_invoice">2015-10-09</field>
             <field name="reference">GISCE</field>
+            <field name="journal_id" ref="account.expenses_journal" />
         </record>
         <record id="invoice_fpe210002_line_1" model="account.invoice.line">
             <field name="name">Aportació Compra Colectiva</field>
