@@ -48,7 +48,7 @@ class ReportBackendSomEstalvi(ReportBackend):
         wiz_opti_obj.get_optimization_required_data(cursor, uid, wiz_id, pol.id, context=ctx)
         wiz_opti_obj.serializate_wizard_data(cursor, uid, wiz_id, context=ctx)
         wiz_browse = wiz_opti_obj.browse(cursor, uid, wiz_id, context=ctx)
-        wiz_maximeters_powers = wiz_browse.maximeter_powers
+        wiz_maximeters_powers = wiz_browse.maximeters_powers
         maximeters_powers = json.loads(wiz_maximeters_powers)
 
         data = {
