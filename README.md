@@ -37,7 +37,6 @@ tests | name | description
 [![som_informe](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_informe.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_informe.yml) | [som_informe](som_informe/) |
 [![som_inversions](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_inversions.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_inversions.yml) | [som_inversions](som_inversions/) |
 [![som_l10n_ES_aeat_mod347](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_l10n_ES_aeat_mod347.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_l10n_ES_aeat_mod347.yml) | [som_l10n_ES_aeat_mod347](som_l10n_ES_aeat_mod347/) |
- _  | [som_modul_fulla](som_modul_fulla/) |
 [![som_partner_account](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_partner_account.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_partner_account.yml) | [som_partner_account](som_partner_account/) |
 [![som_partner_seq](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_partner_seq.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_partner_seq.yml) | [som_partner_seq](som_partner_seq/) |
 [![som_polissa](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_polissa.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_polissa.yml) | [som_polissa](som_polissa/) | A customization of GiscedataPolissa model from PowerERP (GISCE)
@@ -53,6 +52,17 @@ tests | name | description
 [![uiqmako_helpers](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_uiqmako_helpers.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_uiqmako_helpers.yml) | [uiqmako_helpers](uiqmako_helpers/) | A module of helpers for [UIQMako](https//github.com/Som-Energia/uiqmako-api) project
 [![www_som](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_www_som.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_www_som.yml) | [www_som](www_som/) | A module to integrate **Oficina Virtual** (Virtual office)
 
+External modules
+----------------
+tests | name | description
+--- | --- | ---
+. | [empowering_api](https://github.com/Som-Energia/erp-empowering) (external) |
+. | [empowering_api_online](https://github.com/Som-Energia/erp-empowering) (external) |
+. | [empowering_customize](https://github.com/Som-Energia/erp-empowering) (external) |
+. | [giscedata_facturacio_indexada_som](https://github.com/Som-Energia/giscedata_facturacio_indexada_som) (extern) |
+[![som_generationkwh](https://github.com/Som-Energia/somenergia-generationkwh/actions/workflows/som_generation_integration_config.yml/badge.svg)](https://github.com/Som-Energia/somenergia-generationkwh/actions/workflows/som_generation_integration_config.yml) | [som_generationkwh](https://github.com/Som-Energia/somenergia-generationkwh/tree/master/som_generationkwh)  (external) |
+[![som_modules_fulla](https://github.com/Som-Energia/som_modules_fulla/actions/workflows/som_modules_fulla.yml/badge.svg)](https://github.com/Som-Energia/som_modules_fulla/actions/workflows/som_modules_fulla.yml)  | [som_modul_fulla](https://github.com/Som-Energia/som_modules_fulla) (external) |
+[![som_plantmeter](https://github.com/Som-Energia/plantmeter/actions/workflows/som_plantmeter.yml/badge.svg)](https://github.com/Som-Energia/plantmeter/actions/workflows/som_plantmeter.yml) | [som_plantmeter](https://github.com/Som-Energia/plantmeter/tree/master/som_plantmeter)  (external) |
 
 ## Other folders
 * [scripts](scripts/): Set of scripts
