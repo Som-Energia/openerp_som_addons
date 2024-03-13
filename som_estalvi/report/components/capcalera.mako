@@ -1,26 +1,26 @@
-<%def name="capcalera(informe)">
+<%def name="capcalera(titular)">
     <div class="container">
         <div class="dades-titular">
             <table>
                 <tr>
                     <td>Nom:</td>
-                    <td><b>SomEnergia</b></td>
+                    <td><b>${titular['nom']}</b></td>
                 </tr>
                 <tr>
                     <td>Adreça:</td>
-                    <td><b>Parc Científic i tecnologic</b></td>
+                    <td><b>${titular['adreca']}</b></td>
                 </tr>
                 <tr>
                     <td>CUPS:</td>
-                    <td><b>ES12493384900F</b></td>
+                    <td><b>${titular['cups']}</b></td>
                 </tr>
                 <tr>
                     <td>Peatge:</td>
-                    <td><b>2.0TD</b></td>
+                    <td><b>${titular['peatge']}</b></td>
                 </tr>
                 <tr>
                     <td>Tarifa:</td>
-                    <td><b>2.0TD Períodes</b></td>
+                    <td><b>${titular['tarifa']}</b></td>
                 </tr>
             </table>
         </div>

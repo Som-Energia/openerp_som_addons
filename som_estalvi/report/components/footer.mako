@@ -1,4 +1,4 @@
-<%def name="footer(informe)">
+<%def name="footer()">
     <div class="container alert">
         <div class="exclamation">
             <span><b>!</b></span>

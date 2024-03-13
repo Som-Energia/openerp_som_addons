@@ -21,15 +21,20 @@
     <body>
         %for informe in objects:
             <script>
-                const data = {"Reactiva": 9, "Energia": 3, "Potencia": 15, "Exces": 5}
+                const data = {
+                    "Reactiva": ${informe['costs']['reactiva']},
+                    "Energia": ${informe['costs']['energia']},
+                    "Potencia": ${informe['costs']['potencia']},
+                    "Exces": ${informe['costs']['exces']},
+                }
             </script>
             <div class="a4">
                 <div class="page-content">
                     <div class="content">
-                        ${capcalera(informe)}
-                        ${resum_facturacio_anual(informe)}
-                        ${analisi_potencies(informe)}
-                        ${footer(informe)}
+                        ${capcalera(informe['titular'])}
+                        ${resum_facturacio_anual(informe['costs'])}
+                        ${analisi_potencies(informe['potencia'])}
+                        ${footer()}
                     </div>
                 </div>
             </div>

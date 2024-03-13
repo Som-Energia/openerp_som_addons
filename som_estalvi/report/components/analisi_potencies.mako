@@ -1,4 +1,4 @@
-<%def name="analisi_potencies(informe)">
+<%def name="analisi_potencies(potencia)">
     <div class="seccio">
         <span>
             ANÀLISI DE LES POTÈNCIES CONTRACTADES I ESTIMACIÓ DEL COST TOTAL
@@ -19,108 +19,27 @@
                     <b>Potència màxima registrada</b>
                 </th>
             </tr>
-            <tr>
-                <td>P1</td>
-                <td>P1</td>
-                <td>P1_opt</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-            </tr>
-            <tr>
-                <td>P2</td>
-                <td>P2</td>
-                <td>P2_opt</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-            </tr>
-            <tr>
-                <td>P3</td>
-                <td>P3</td>
-                <td>P3_opt</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-            </tr>
-            <tr>
-                <td>P4</td>
-                <td>P4</td>
-                <td>P4_opt</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-            </tr>
-            <tr>
-                <td>P5</td>
-                <td>P5</td>
-                <td>P5_opt</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-            </tr>
-            <tr>
-                <td>P6</td>
-                <td>P6</td>
-                <td>P6_opt</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-                <td>x</td>
-            </tr>
+            <% it = 0 %>
+            %for potencia in potencia['potencies_contractades']:
+                <tr>
+                    <td>P${it+1}</td>
+                    <td>${potencia}</td>
+                    <td>P1_opt</td>
+                    <td>x</td>
+                    <td>x</td>
+                    <td>x</td>
+                    <td>x</td>
+                    <td>x</td>
+                    <td>x</td>
+                    <td>x</td>
+                    <td>x</td>
+                    <td>x</td>
+                    <td>x</td>
+                    <td>x</td>
+                    <td>x</td>
+                </tr>
+                <% it += 1 %>
+            %endfor
             <tr>
                 <td colspan="3">Tots els valors es mostre en kW</td>
                 <td>GEN</td>

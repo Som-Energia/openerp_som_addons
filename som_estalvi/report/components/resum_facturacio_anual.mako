@@ -1,4 +1,4 @@
-<%def name="resum_facturacio_anual(informe)">
+<%def name="resum_facturacio_anual(costs)">
     <div class="seccio">
         <span>RESUM DE LA TEVA FACTURACIÓ ANUAL</span>
         <hr/>
@@ -11,28 +11,28 @@
                         <p><b>Cost de l'electricitat utilitzada</b></p>
                         <p class="secundary-text">Oferim 2 tarifes diferents: períodes i indexada.</p>
                     </td>
-                    <td><b>1000€</b></td>
+                    <td><b>${costs['energia']} €</b></td>
                 </tr>
                 <tr>
                     <td>
                         <p><b>Cost de les potències contractades:</b></p>
                         <p class="secundary-text">Correspon íntegrament als costos regulats, ja que no hi afegim marge per la cooperativa.</p>
                     </td>
-                    <td><b>1000€</b></td>
+                    <td><b>${costs['potencia']} €</b></td>
                 </tr>
                 <tr>
                     <td>
                         <p><b>Cost de l'excés de potència:</b></p>
                         <p class="secundary-text">També regulat. L'analitzem a continuació junt amb el cost de les potències contractades.</p>
                     </td>
-                    <td><b>1000€</b></td>
+                    <td><b>${costs['exces']} €</b></td>
                 </tr>
                 <tr>
                     <td>
                         <p><b>Cost per energia reactiva:</b></p>
                         <p class="secundary-text">A partir de 400 € recomanem la instal·lació de bateries de condensadors. <a href="https://ca.support.somenergia.coop/article/259-energia-reactiva-que-es-efectes-en-la-factura-i-com-eliminar-la">Més informació.</a></p>
                     </td>
-                    <td><b>1000€</b></td>
+                    <td><b>${costs['reactiva']} €</b></td>
                 </tr>
             </table>
         </div>
@@ -48,7 +48,7 @@
                         <p class="text-descompte">Descompte pels excedents:</p>
                         <p class="secundary-text text-negre">Inclou la compensació i el Flux Solar.</p>
                     </td>
-                    <td class="text-descompte"><b>100€</b></td>
+                    <td class="text-descompte"><b>${costs['descompte_generacio']} €</b></td>
                 </tr>
             </table>
         </div>
