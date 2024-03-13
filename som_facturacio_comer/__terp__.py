@@ -19,9 +19,7 @@
         "giscedata_facturacio_impagat_comer",
     ],
     "init_xml": [],
-    "demo_xml": [
-        "demo/som_facturacio_comer_demo.xml"
-    ],
+    "demo_xml": [],
     "update_xml": [
         "data/res_config_data.xml",
         "giscedata_facturacio_validation_data.xml",
