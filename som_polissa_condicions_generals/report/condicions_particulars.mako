@@ -416,6 +416,7 @@ CONTRACT_TYPES = dict(TABLA_9)
             iva_10_active = eval(cfg_obj.get(
                 cursor, uid, 'charge_iva_10_percent_when_available', '0'
             ))
+            omie_obj = polissa.pool.get('giscedata.monthly.price.omie')
 
         %>
         <div class="styled_box">
@@ -429,11 +430,15 @@ CONTRACT_TYPES = dict(TABLA_9)
                     text_vigencia = _(u"(vigents fins al {})").format((datetime.strptime(dades_tarifa['date_end'], '%Y-%m-%d')).strftime('%d/%m/%Y'))
                 elif datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d') > datetime.today():
                     text_vigencia = _(u"(vigents a partir del {})").format(datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d').strftime('%d/%m/%Y'))
+		try:
+		    omie_mon_price_45 = omie_obj.has_to_charge_10_percent_requeriments_oficials(cursor, uid, ctx['date'], polissa.potencia)
+		except:
+		    omie_mon_price_45 = False
 
                 iva_reduit = False
                 if not polissa.fiscal_position_id and not lead:
                     imd_obj = polissa.pool.get('ir.model.data')
-                    if iva_10_active and polissa.potencia <= 10 and dades_tarifa['date_start'] >= start_date_iva_10 and dades_tarifa['date_start'] <= end_date_iva_10:
+                    if iva_10_active and polissa.potencia <= 10 and dades_tarifa['date_start'] >= start_date_iva_10 and dades_tarifa['date_start'] <= end_date_iva_10 and omie_mon_price_45:
                         fp_id = imd_obj.get_object_reference(cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
                         iva_reduit = True
                         text_vigencia += " (IVA 10%, IE 2,5%)"
