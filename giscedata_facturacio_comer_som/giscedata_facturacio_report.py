@@ -3395,6 +3395,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             if line.tipus in ("altres", "cobrament") and line.product_id.code == "PBV":
                 flux_solar += line.price_subtotal
 
+        has_flux = flux_solar > 0
         amount_total = fact.amount_total - flux_solar
 
         # Repartiment segons BOE
@@ -3456,6 +3457,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "pie_energy": pie_energy,
             "pie_total": pie_total,
             "rep_BOE": rep_BOE,
+            "has_flux": has_flux,
         }
         return data
 
