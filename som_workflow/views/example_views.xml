@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <!-- Example model form view -->
+        <record model="ir.ui.view" id="view_example_model_form">
+            <field name="name">example.model.form</field>
+            <field name="version" eval="1" />
+            <field name="model">example.model</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Example model">
+                    <group string="State">
+                        <field name="state" nolabel="1"></field>
+                    </group>
+                    <group col="4" colspan="4" string="Fields">
+                        <field name="name"></field>
+                        <field name="partner_id"></field>
+                        <field name="amount_total"></field>
+                        <field name="paid"></field>
+                    </group>
+                    <group string="Log" colspan="4">
+                        <field name="log" nolabel="1"></field>
+                    </group>
+                    <group string="Workflow buttons" colspan="4">
+                        <button name="open" string="Open" states="draft" />
+                        <button name="validate" string="Validate" states="open" />
+                        <button name="refund" string="Refund" states="paid" />
+                        <button name="cancel" string="Cancel" states="open,paid,unpaid,refund" />
+                        <button name="draft" string="Draft" states="cancel" />
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <!-- Main menu -->
+        <menuitem id="menu_workflow" name="Som Workflow" />
+
+        <!-- Action to open example model tree view -->
+        <record model="ir.actions.act_window" id="action_example_model_tree">
+            <field name="name">Example models</field>
+            <field name="res_model">example.model</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Example model menu item -->
+        <menuitem id="menu_example_model" action="action_example_model_tree" parent="menu_workflow" />
+    </data>
+</openerp>

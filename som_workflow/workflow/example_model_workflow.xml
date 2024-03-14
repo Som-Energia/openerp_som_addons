@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- Workflow -->
+        <record id="wkf_example" model="workflow">
+            <field name="name">Example model workflow</field>
+            <field name="osv">example.model</field>
+            <field name="on_create">True</field>
+        </record>
+
+        <!-- Activities -->
+        <record id="act_draft" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_example"/>
+            <field name="flow_start">True</field>
+            <field name="name">draft</field>
+            <field name="kind">function</field>
+            <field name="action">write({'state':'draft'})</field>
+        </record>
+        <record id="act_open" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_example"/>
+            <field name="name">open</field>
+            <field name="kind">function</field>
+            <field name="action">write({'state':'open'})</field>
+        </record>
+        <record id="act_paid" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_example"/>
+            <field name="name">paid</field>
+            <field name="kind">function</field>
+            <field name="action">write({'state':'paid'})</field>
+        </record>
+        <record id="act_unpaid" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_example"/>
+            <field name="name">unpaid</field>
+            <field name="kind">function</field>
+            <field name="action">write({'state':'unpaid'})</field>
+        </record>
+        <record id="act_refund" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_example"/>
+            <field name="name">refund</field>
+            <field name="kind">function</field>
+            <field name="action">write({'state':'refund'})&#10;log_message("Refund!")</field>
+        </record>
+        <record id="act_cancel" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_example"/>
+            <field name="name">cancel</field>
+            <field name="kind">function</field>
+            <field name="action">write({'state':'cancel'})</field>
+        </record>
+
+        <!-- Transitions -->
+        <record id="trans_draft_open" model="workflow.transition">
+            <field name="act_from" ref="act_draft"/>
+            <field name="act_to" ref="act_open"/>
+            <field name="condition">True</field>
+            <field name="signal">open</field>
+        </record>
+        <record id="trans_open_paid" model="workflow.transition">
+            <field name="act_from" ref="act_open"/>
+            <field name="act_to" ref="act_paid"/>
+            <field name="condition">(paid and amount_total&gt;0)</field>
+            <field name="signal">validate</field>
+        </record>
+        <record id="trans_open_unpaid" model="workflow.transition">
+            <field name="act_from" ref="act_open"/>
+            <field name="act_to" ref="act_unpaid"/>
+            <field name="condition">(not paid and amount_total&gt;0)</field>
+            <field name="signal">validate</field>
+        </record>
+        <record id="trans_unpaid_paid" model="workflow.transition">
+            <field name="act_from" ref="act_unpaid"/>
+            <field name="act_to" ref="act_paid"/>
+            <field name="condition">(paid)</field>
+        </record>
+        <record id="trans_unpaid_cancel" model="workflow.transition">
+            <field name="act_from" ref="act_unpaid"/>
+            <field name="act_to" ref="act_cancel"/>
+            <field name="condition">True</field>
+            <field name="signal">cancel</field>
+        </record>
+        <record id="trans_paid_cancel" model="workflow.transition">
+            <field name="act_from" ref="act_paid"/>
+            <field name="act_to" ref="act_cancel"/>
+            <field name="condition">True</field>
+            <field name="signal">cancel</field>
+        </record>
+        <record id="trans_open_cancel" model="workflow.transition">
+            <field name="act_from" ref="act_open"/>
+            <field name="act_to" ref="act_cancel"/>
+            <field name="condition">True</field>
+            <field name="signal">cancel</field>
+        </record>
+        <record id="trans_refund_cancel" model="workflow.transition">
+            <field name="act_from" ref="act_refund"/>
+            <field name="act_to" ref="act_cancel"/>
+            <field name="condition">True</field>
+            <field name="signal">cancel</field>
+        </record>
+        <record id="trans_paid_refund" model="workflow.transition">
+            <field name="act_from" ref="act_paid"/>
+            <field name="act_to" ref="act_refund"/>
+            <field name="condition">True</field>
+            <field name="signal">refund</field>
+        </record>
+        <record id="trans_cancel_draft" model="workflow.transition">
+            <field name="act_from" ref="act_cancel"/>
+            <field name="act_to" ref="act_draft"/>
+            <field name="condition">True</field>
+            <field name="signal">draft</field>
+        </record>
+    </data>
+</openerp>
