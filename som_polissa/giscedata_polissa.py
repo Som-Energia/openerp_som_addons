@@ -950,7 +950,7 @@ class GiscedataPolissa(osv.osv):
 
         return res
 
-    def calculate_fiscal_position_from_municipi(self, cursor, uid, cups_id, cnae, powers, context=None):  # noqa: E501
+    def calculate_fiscal_position_from_cups(self, cursor, uid, cups_id, cnae, powers, context=None):  # noqa: E501
         fp_obj = self.pool.get("account.fiscal.position")
         municipi_obj = self.pool.get("res.municipi")
         cups_obj = self.pool.get("giscedata.cups.ps")
