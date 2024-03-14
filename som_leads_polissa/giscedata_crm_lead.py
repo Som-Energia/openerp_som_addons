@@ -84,9 +84,9 @@ class GiscedataCrmLead(osv.OsvInherits):
         if polissa.mode_facturacio != 'atr':
             values['mode_facturacio_generacio'] = polissa.mode_facturacio
 
-        fp_id = polissa_o.calculate_fiscal_position_from_municipi(
+        fp_id = polissa_o.calculate_fiscal_position_from_cups(
             cursor, uid,
-            polissa.cups.id_municipi.id,
+            polissa.cups.id,
             polissa.cnae.name,
             polissa.potencies_periode.potencia,
             context=context
