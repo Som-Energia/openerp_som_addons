@@ -950,14 +950,17 @@ class GiscedataPolissa(osv.osv):
 
         return res
 
-    def calculate_fiscal_position_from_municipi(self, cursor, uid, municipi_id, cnae, powers, context=None):  # noqa: E501
+    def calculate_fiscal_position_from_municipi(self, cursor, uid, cups_id, cnae, powers, context=None):  # noqa: E501
         fp_obj = self.pool.get("account.fiscal.position")
         municipi_obj = self.pool.get("res.municipi")
-        municipi = municipi_obj.browse(cursor, uid, municipi_id, context=context)
+        cups_obj = self.pool.get("giscedata.cups.ps")
+        cups = cups_obj.browse(cursor, uid, cups_id)
+        municipi = municipi_obj.browse(cursor, uid, cups.id_municipi.id, context=context)
         posicio_id = None
         is_canarias = municipi and municipi.subsistema_id and municipi.subsistema_id.code in [
             'TF', 'PA', 'LG', 'HI', 'GC', 'FL']
-        is_pdlc = municipi.ine == '38028'  # Puerto de la cruz has it's own Fiscal Position
+        # Puerto de la cruz distri has it's own Fiscal Position
+        is_pdlc = cups.distribuidora_id.ref == '0401'
         is_vivienda = cnae and cnae == "9820"
         power = max(powers or [0])
 
