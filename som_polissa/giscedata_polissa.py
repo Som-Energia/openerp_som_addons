@@ -951,46 +951,30 @@ class GiscedataPolissa(osv.osv):
         return res
 
     def calculate_fiscal_position_from_cups(self, cursor, uid, cups_id, cnae, powers, context=None):  # noqa: E501
-        fp_obj = self.pool.get("account.fiscal.position")
         municipi_obj = self.pool.get("res.municipi")
         cups_obj = self.pool.get("giscedata.cups.ps")
+        cfg_obj = self.pool.get("res.config")
+
         cups = cups_obj.browse(cursor, uid, cups_id)
         municipi = municipi_obj.browse(cursor, uid, cups.id_municipi.id, context=context)
         posicio_id = None
         is_canarias = municipi and municipi.subsistema_id and municipi.subsistema_id.code in [
             'TF', 'PA', 'LG', 'HI', 'GC', 'FL']
-        # Puerto de la cruz distri has it's own Fiscal Position
         is_pdlc = cups.distribuidora_id.ref == '0401'
         is_vivienda = cnae and cnae == "9820"
         power = max(powers or [0])
 
         if is_canarias:
             if is_vivienda and power < 10.0:
-                # Régimen Islas Canarias Vivienda RDL 8/2023 2,5%
-                posicio_id = fp_obj.search(
-                    cursor, uid, [('name', 'like', "%Islas Canarias Vivienda RD%8%2023%2%5%")])
+                posicio_id = cfg_obj.get(cursor, uid, "fp_canarias_vivienda_id", 25)
             else:
-                # Régimen Islas Canarias RDL 8/2023 2,5%
-                posicio_id = fp_obj.search(
-                    cursor, uid, [('name', 'like', "%Islas Canarias RD%8%2023%2%5%")])
+                posicio_id = cfg_obj.get(cursor, uid, "fp_canarias_id", 19)
 
         if is_pdlc:
             if is_vivienda and power < 10.0:
-                # Régimen Islas Canarias Vivienda Puerto de la Cruz RDL 8/2023 2,5
-                posicio_id = fp_obj.search(
-                    cursor, uid,
-                    [
-                        (
-                            'name',
-                            'like',
-                            "%Islas Canarias Vivienda Puerto%Cruz%RD%8%2023%2%5%"
-                        )
-                    ]
-                )
+                posicio_id = cfg_obj.get(cursor, uid, "fp_pdlc_vivienda_id", 39)
             else:
-                # Régimen Islas Canarias Puerto de la Cruz RDL 8/2023 2,5%
-                posicio_id = fp_obj.search(
-                    cursor, uid, [('name', 'like', "%Islas Canarias Puerto%Cruz%RD%8%2023%2%5%")])
+                posicio_id = cfg_obj.get(cursor, uid, "fp_pdlc_id", 38)
 
         if posicio_id:
             posicio_id = posicio_id[0]
