@@ -46,7 +46,11 @@ var dades_reparto = ${json.dumps(dades_reparto)}
     % if ad.is_visible:
         <div class="destination">
             <h1>${_(u"DESTÍ DE L'IMPORT DE LA FACTURA")}</h1>
-            <p>${_(u"El destí de l'import de la teva factura, %s euros, és el següent:") % formatLang(ad.amount_total)}</p>
+            % if ad.has_flux:
+                <p>${_(u"El destí de l'import de la teva factura sense flux solar, %s euros, és el següent:") % formatLang(ad.amount_total)}</p>
+            % else:
+                <p>${_(u"El destí de l'import de la teva factura, %s euros, és el següent:") % formatLang(ad.amount_total)}</p>
+            %endif
             <div class="chart_desti" id="chart_desti_${ad.factura_id}"></div>
         </div>
     % endif
