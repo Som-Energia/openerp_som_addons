@@ -227,18 +227,25 @@ class SomStashTest(SomStashSettingsTests):
         data_post = rp_obj.read(self.cursor, self.uid, ids, ['name', 'ref'])
 
         # test that the values are overwritten with defaults if original values exists
-        self.assertEqual('ningú', data_post[0]['name'])
-        self.assertEqual('S000XXXX', data_post[0]['ref'])
-        self.assertEqual(id_1, data_post[0]['id'])
-        self.assertEqual('ningú', data_post[1]['name'])
-        self.assertEqual('S000XXXX', data_post[1]['ref'])
-        self.assertEqual(id_2, data_post[1]['id'])
-        self.assertEqual('ningú', data_post[2]['name'])
-        self.assertEqual(False, data_post[2]['ref'])
-        self.assertEqual(id_3, data_post[2]['id'])
-        self.assertEqual('ningú', data_post[3]['name'])
-        self.assertEqual(False, data_post[3]['ref'])
-        self.assertEqual(id_4, data_post[3]['id'])
+        dict_aux = get_data_for_id(data_post, id_1)
+        self.assertEqual('ningú', dict_aux['name'])
+        self.assertEqual('S000XXXX', dict_aux['ref'])
+        self.assertEqual(id_1, dict_aux['id'])
+
+        dict_aux = get_data_for_id(data_post, id_2)
+        self.assertEqual('ningú', dict_aux['name'])
+        self.assertEqual('S000XXXX', dict_aux['ref'])
+        self.assertEqual(id_2, dict_aux['id'])
+
+        dict_aux = get_data_for_id(data_post, id_3)
+        self.assertEqual('ningú', dict_aux['name'])
+        self.assertEqual(False, dict_aux['ref'])
+        self.assertEqual(id_3, dict_aux['id'])
+
+        dict_aux = get_data_for_id(data_post, id_4)
+        self.assertEqual('ningú', dict_aux['name'])
+        self.assertEqual(False, dict_aux['ref'])
+        self.assertEqual(id_4, dict_aux['id'])
 
         # test that the values are stored in stash registers if original values exists
         data_pre_v = get_data_for_id(data_pre, id_1)
@@ -541,7 +548,7 @@ class WizardSomStasherTest(SomStashSettingsTests):
 
     def test_get_partners_inactive_pol_before_datelimit__find_one(self):
         date_limit = datetime(2021, 1, 1, 0, 0, 0)
-        pol_id = self.get_object_reference('giscedata_polissa', 'polissa_0001')[1]
+        pol_id = self.get_object_reference('giscedata_polissa', 'polissa_0002')[1]
         pol_obj = self.get_model('giscedata.polissa')
         pol_obj.write(self.cursor, self.uid, pol_id, {
             'state': 'baixa',

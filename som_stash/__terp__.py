@@ -14,6 +14,8 @@
         "base",
         "som_polissa",
         "som_switching",
+        "som_generationkwh",
+        "som_polissa_administradora",
     ],
     "init_xml": [
     ],
