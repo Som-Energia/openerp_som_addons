@@ -88,7 +88,7 @@ class GiscedataCrmLead(osv.OsvInherits):
             cursor, uid,
             polissa.cups.id,
             polissa.cnae.name,
-            polissa.potencies_periode.potencia,
+            [potencia.potencia for potencia in polissa.potencies_periode],
             context=context
         )
         if fp_id:
