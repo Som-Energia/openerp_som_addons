@@ -1,3 +1,4 @@
+## -*- coding: utf-8 -*-
 <%def name="resum_facturacio_anual(costs)">
     <div class="seccio">
         <span>RESUM DE LA TEVA FACTURACIÓ ANUAL</span>
@@ -6,33 +7,37 @@
     <div class="container">
         <div class="dades-resum">
             <table>
+                <colgroup>
+                    <col width="75%"/>
+                    <col width="25%"/>
+                </colgroup>
                 <tr>
                     <td>
                         <p><b>Cost de l'electricitat utilitzada</b></p>
                         <p class="secundary-text">Oferim 2 tarifes diferents: períodes i indexada.</p>
                     </td>
-                    <td><b>${costs['energia']} €</b></td>
+                    <td><b><span style="color: #4d4d4d">${costs['energia']} €</span></b></td>
                 </tr>
                 <tr>
                     <td>
                         <p><b>Cost de les potències contractades:</b></p>
                         <p class="secundary-text">Correspon íntegrament als costos regulats, ja que no hi afegim marge per la cooperativa.</p>
                     </td>
-                    <td><b>${costs['potencia']} €</b></td>
+                    <td><b><span style="color: #80a82d">${costs['potencia']} €</span></b></td>
                 </tr>
                 <tr>
                     <td>
                         <p><b>Cost de l'excés de potència:</b></p>
                         <p class="secundary-text">També regulat. L'analitzem a continuació junt amb el cost de les potències contractades.</p>
                     </td>
-                    <td><b>${costs['exces']} €</b></td>
+                    <td><b><span style="color: #c7d1b0">${costs['exces']} €</span></b></td>
                 </tr>
                 <tr>
                     <td>
                         <p><b>Cost per energia reactiva:</b></p>
                         <p class="secundary-text">A partir de 400 € recomanem la instal·lació de bateries de condensadors. <a href="https://ca.support.somenergia.coop/article/259-energia-reactiva-que-es-efectes-en-la-factura-i-com-eliminar-la">Més informació.</a></p>
                     </td>
-                    <td><b>${costs['reactiva']} €</b></td>
+                    <td><b><span style="color: #71805b">${costs['reactiva']} €</span></b></td>
                 </tr>
             </table>
         </div>

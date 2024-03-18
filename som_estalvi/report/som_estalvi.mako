@@ -3,6 +3,7 @@
 <%namespace file="som_estalvi/report/components/resum_facturacio_anual.mako" import="resum_facturacio_anual"/>
 <%namespace file="som_estalvi/report/components/analisi_potencies.mako" import="analisi_potencies"/>
 <%namespace file="som_estalvi/report/components/footer.mako" import="footer"/>
+<%namespace file="som_estalvi/report/components/graphic.mako" import="graphic"/>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -21,12 +22,6 @@
     <body>
         %for informe in objects:
             <script>
-                const data = {
-                    "Reactiva": ${informe['costs']['reactiva']},
-                    "Energia": ${informe['costs']['energia']},
-                    "Potencia": ${informe['costs']['potencia']},
-                    "Exces": ${informe['costs']['exces']},
-                }
             </script>
             <div class="a4">
                 <div class="page-content">
@@ -38,7 +33,7 @@
                     </div>
                 </div>
             </div>
+            ${graphic(informe['costs'])}
         %endfor
     </body>
-    <script src="${addons_path}/som_estalvi/report/components/graphic.js"></script>
 </html>

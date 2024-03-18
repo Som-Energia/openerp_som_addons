@@ -108,8 +108,8 @@ body {
 
 .descomptes-excedents table tr td:last-child, .dades-resum table tr td:last-child {
     text-align: right;
-    font-size: 12pt;
-    padding-left: 3mm;
+    font-size: 11pt;
+    padding-left: 0;
 }
 
 .dades-resum table tr:not(:first-child) td {
