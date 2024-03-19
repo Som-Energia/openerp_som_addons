@@ -976,9 +976,6 @@ class GiscedataPolissa(osv.osv):
             else:
                 posicio_id = cfg_obj.get(cursor, uid, "fp_pdlc_id", 38)
 
-        if posicio_id:
-            posicio_id = posicio_id[0]
-
         return posicio_id
 
     _columns = {
