@@ -1,0 +1,524 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+# * som_estalvi
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 5.0.14\n"
+"Report-Msgid-Bugs-To: support@openerp.com\n"
+"POT-Creation-Date: 2024-03-19 15:36+0000\n"
+"PO-Revision-Date: 2024-03-19 15:36+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: \n"
+"Generated-By: Babel 2.9.1\n"
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,power_p1:0
+msgid "Potència P1"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,maximeters_powers:0
+msgid "Potències dels maxímetres"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,power_p3:0
+msgid "Potència P3"
+msgstr ""
+
+#. module: som_estalvi
+#: view:wizard.contract.power.optimization:0
+msgid "Optimitzador de potències"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,power_p5:0
+msgid "Potència P5"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,power_p4:0
+msgid "Potència P4"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,power_p6:0
+msgid "Potència P6"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,excess_price:0
+msgid "Preu excés maxímetre"
+msgstr ""
+
+#. module: som_estalvi
+#: view:wizard.contract.power.optimization:0
+msgid "Potències Actuals"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,state:0
+msgid "State"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,power_p2:0
+msgid "Potència P2"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,report:0
+#: selection:wizard.contract.power.optimization,state:0
+msgid "Resultat"
+msgstr ""
+
+#. module: som_estalvi
+#: constraint:ir.actions.act_window:0
+msgid "Invalid model name in the action definition."
+msgstr ""
+
+#. module: som_estalvi
+#: view:wizard.contract.power.optimization:0
+msgid "Nombre de mesos estimats"
+msgstr ""
+
+#. module: som_estalvi
+#: selection:wizard.contract.power.optimization,state:0
+msgid "Varis"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,float_p6:0
+msgid "Potència amb decimals P6"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,float_p4:0
+msgid "Potència amb decimals P4"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,float_p5:0
+msgid "Potència amb decimals P5"
+msgstr ""
+
+#. module: som_estalvi
+#: view:wizard.contract.power.optimization:0
+msgid "Maxímetres de 12 mesos"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,float_p3:0
+msgid "Potència amb decimals P3"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,float_p1:0
+msgid "Potència amb decimals P1"
+msgstr ""
+
+#. module: som_estalvi
+#: model:ir.model,name:som_estalvi.model_wizard_contract_power_optimization
+msgid "wizard.contract.power.optimization"
+msgstr ""
+
+#. module: som_estalvi
+#: constraint:ir.model:0
+msgid "The Object name must start with x_ and not contain any special character !"
+msgstr ""
+
+#. module: som_estalvi
+#: model:ir.module.module,description:som_estalvi.module_meta_information
+msgid ""
+"\n"
+"        Funcions i continguts per millorar l'estalvi dels contractes de "
+"SOM\n"
+"    "
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,nEstimates:0
+msgid "Nombre de mesos amb maximetres estimats"
+msgstr ""
+
+#. module: som_estalvi
+#: view:wizard.contract.power.optimization:0
+msgid "Obtenir informació de la pòlissa"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,end_date:0
+msgid "Data final"
+msgstr ""
+
+#. module: som_estalvi
+#: view:wizard.contract.power.optimization:0
+msgid "Preus Potències Actuals"
+msgstr ""
+
+#. module: som_estalvi
+#: constraint:ir.ui.view:0
+msgid "Invalid XML for View Architecture!"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,start_date:0
+msgid "Data inici"
+msgstr ""
+
+#. module: som_estalvi
+#: view:wizard.contract.power.optimization:0
+msgid "Dades actuals pel càlcul"
+msgstr ""
+
+#. module: som_estalvi
+#: model:ir.actions.report.xml,name:som_estalvi.action_report_som_estalvi
+msgid "Informe de mesures d'estalvi"
+msgstr ""
+
+#. module: som_estalvi
+#: selection:wizard.contract.power.optimization,state:0
+msgid "Un"
+msgstr ""
+
+#. module: som_estalvi
+#: model:ir.module.module,shortdesc:som_estalvi.module_meta_information
+msgid "som_estalvi"
+msgstr ""
+
+#. module: som_estalvi
+#: view:wizard.contract.power.optimization:0
+msgid "És recomanable posar el primer dia de l'any"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,float_p2:0
+msgid "Potència amb decimals P2"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,current_cost:0
+msgid "Cost actual"
+msgstr ""
+
+#. module: som_estalvi
+#: view:wizard.contract.power.optimization:0
+msgid "Potencies maximetres"
+msgstr ""
+
+#. module: som_estalvi
+#: view:wizard.contract.power.optimization:0
+msgid "Executar optimització"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,filename_report:0
+msgid "Nom fitxer exportat"
+msgstr ""
+
+#. module: som_estalvi
+#: view:wizard.contract.power.optimization:0
+msgid "Preu Exces de potència"
+msgstr ""
+
+#. module: som_estalvi
+#: view:wizard.contract.power.optimization:0
+msgid "Calcular"
+msgstr ""
+
+#. module: som_estalvi
+#: view:wizard.contract.power.optimization:0
+msgid "Dates del Càlcul"
+msgstr ""
+
+#. module: som_estalvi
+#: model:ir.model,name:som_estalvi.model_report_backend_som_estalvi
+msgid "report.backend.som.estalvi"
+msgstr ""
+
+#. module: som_estalvi
+#: view:wizard.contract.power.optimization:0
+msgid "Calcular optimització per a tots els contractes seleccionats"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,power_price_p1:0
+msgid "Preu potència P1"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,power_price_p2:0
+msgid "Preu potència P2"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,power_price_p3:0
+msgid "Preu potència P3"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,power_price_p4:0
+msgid "Preu potència P4"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,power_price_p5:0
+msgid "Preu potència P5"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,power_price_p6:0
+msgid "Preu potència P6"
+msgstr ""
+
+#. module: som_estalvi
+#: model:ir.actions.act_window,name:som_estalvi.action_wizard_contract_power_optimization_form
+msgid "Optimització de potències maximetre"
+msgstr ""
+
+#: rml:som_estalvi/report/som_estalvi.mako:14
+msgid "SomEnergia informe anual"
+msgstr ""
+
+#: rml:som_estalvi/report/components/analisi_potencies.mako:4
+msgid "ANÀLISI DE LES POTÈNCIES CONTRACTADES I ESTIMACIÓ DEL COST TOTAL"
+msgstr ""
+
+#: rml:som_estalvi/report/components/analisi_potencies.mako:13
+msgid "Potències actuals"
+msgstr ""
+
+#: rml:som_estalvi/report/components/analisi_potencies.mako:16
+msgid "Potències òptimes"
+msgstr ""
+
+#: rml:som_estalvi/report/components/analisi_potencies.mako:19
+msgid "Potència màxima registrada"
+msgstr ""
+
+#: rml:som_estalvi/report/components/analisi_potencies.mako:52
+msgid "Tots els valors es mostre en kW"
+msgstr ""
+
+#: rml:som_estalvi/report/components/analisi_potencies.mako:53
+msgid "GEN"
+msgstr ""
+
+#: rml:som_estalvi/report/components/analisi_potencies.mako:54
+msgid "FEB"
+msgstr ""
+
+#: rml:som_estalvi/report/components/analisi_potencies.mako:55
+msgid "MAR"
+msgstr ""
+
+#: rml:som_estalvi/report/components/analisi_potencies.mako:56
+msgid "ABR"
+msgstr ""
+
+#: rml:som_estalvi/report/components/analisi_potencies.mako:57
+msgid "MAI"
+msgstr ""
+
+#: rml:som_estalvi/report/components/analisi_potencies.mako:58
+msgid "JUN"
+msgstr ""
+
+#: rml:som_estalvi/report/components/analisi_potencies.mako:59
+msgid "JUL"
+msgstr ""
+
+#: rml:som_estalvi/report/components/analisi_potencies.mako:60
+msgid "AGO"
+msgstr ""
+
+#: rml:som_estalvi/report/components/analisi_potencies.mako:61
+msgid "SET"
+msgstr ""
+
+#: rml:som_estalvi/report/components/analisi_potencies.mako:62
+msgid "OCT"
+msgstr ""
+
+#: rml:som_estalvi/report/components/analisi_potencies.mako:63
+msgid "NOV"
+msgstr ""
+
+#: rml:som_estalvi/report/components/analisi_potencies.mako:64
+msgid "DES"
+msgstr ""
+
+#: rml:som_estalvi/report/components/analisi_potencies.mako:69
+msgid ""
+"Les potències òptimes proposades minimitzen el cost anual total de "
+"potència i són vàlides si es manté un ús similar d’energia en les "
+"mateixes hores."
+msgstr ""
+
+#: rml:som_estalvi/report/components/analisi_potencies.mako:73
+#: rml:som_estalvi/report/components/analisi_potencies.mako:76
+msgid "Estimació del cost anual"
+msgstr ""
+
+#: rml:som_estalvi/report/components/analisi_potencies.mako:73
+msgid "amb les potències actuals"
+msgstr ""
+
+#: rml:som_estalvi/report/components/analisi_potencies.mako:76
+msgid "amb les potències òptimes"
+msgstr ""
+
+#: rml:som_estalvi/report/components/analisi_potencies.mako:79
+msgid ""
+"https://ca.support.somenergia.coop/article/271-com-puc-fer-una-"
+"modificacio-de-potencia-o-de-tarifa-i-quant-costa"
+msgstr ""
+
+#: rml:som_estalvi/report/components/analisi_potencies.mako:79
+msgid "Més informació per modificar les potències contractades</a>"
+msgstr ""
+
+#: rml:som_estalvi/report/components/capcalera.mako:6
+msgid "Nom:"
+msgstr ""
+
+#: rml:som_estalvi/report/components/capcalera.mako:10
+msgid "Adreça:"
+msgstr ""
+
+#: rml:som_estalvi/report/components/capcalera.mako:14
+msgid "CUPS:"
+msgstr ""
+
+#: rml:som_estalvi/report/components/capcalera.mako:18
+msgid "Peatge:"
+msgstr ""
+
+#: rml:som_estalvi/report/components/capcalera.mako:22
+msgid "Tarifa:"
+msgstr ""
+
+#: rml:som_estalvi/report/components/capcalera.mako:28
+msgid "INFORME ANUAL"
+msgstr ""
+
+#: rml:som_estalvi/report/components/footer.mako:8
+msgid ""
+"Fins al juny del 2024, es manté la possibilitat de fer més d'una "
+"modificació de potències per als contractes d'empreses i treballador/es "
+"autònoms/es, així com la gratuïtat del tràmit"
+msgstr ""
+
+#: rml:som_estalvi/report/components/footer.mako:13
+msgid "Som Energia, SCCL - CIF F55091367 | Pic de Peguera, 9 - 17003 - Girona | "
+msgstr ""
+
+#: rml:som_estalvi/report/components/graphic.mako:35
+#: rml:som_estalvi/report/components/graphic.mako:60
+msgid "Energia"
+msgstr ""
+
+#: rml:som_estalvi/report/components/graphic.mako:36
+#: rml:som_estalvi/report/components/graphic.mako:61
+msgid "Potencia"
+msgstr ""
+
+#: rml:som_estalvi/report/components/graphic.mako:38
+#: rml:som_estalvi/report/components/graphic.mako:63
+msgid "Exces"
+msgstr ""
+
+#: rml:som_estalvi/report/components/graphic.mako:41
+#: rml:som_estalvi/report/components/graphic.mako:66
+msgid "Reactiva"
+msgstr ""
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:4
+msgid "RESUM DE LA TEVA FACTURACIÓ ANUAL"
+msgstr ""
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:16
+msgid "Cost de l'electricitat utilitzada"
+msgstr ""
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:17
+msgid "Oferim 2 tarifes diferents: períodes i indexada."
+msgstr ""
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:23
+msgid "Cost de les potències contractades:"
+msgstr ""
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:24
+msgid ""
+"Correspon íntegrament als costos regulats, ja que no hi afegim marge per "
+"la cooperativa."
+msgstr ""
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:30
+msgid "Cost de l'excés de potència:"
+msgstr ""
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:31
+msgid ""
+"També regulat. L'analitzem a continuació junt amb el cost de les "
+"potències contractades."
+msgstr ""
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:37
+msgid "Cost per energia reactiva:"
+msgstr ""
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:38
+msgid "A partir de 400 € recomanem la instal·lació de bateries de condensadors."
+msgstr ""
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:38
+msgid ""
+"https://ca.support.somenergia.coop/article/259-energia-reactiva-que-es-"
+"efectes-en-la-factura-i-com-eliminar-la"
+msgstr ""
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:38
+msgid "Més informació."
+msgstr ""
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:45
+msgid "Distribució dels costos"
+msgstr ""
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:54
+msgid "Descompte pels excedents:"
+msgstr ""
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:55
+msgid "Inclou la compensació i el Flux Solar."
+msgstr ""
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:65
+msgid ""
+"No s'inclou el lloguer del comptador ni els impostos. Dades dels últims "
+"12 mesos facturats o dels mesos disponibles."
+msgstr ""
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:75
+msgid ""
+"Pots consultar i descarregar les corbes horàries d'ús d'energia per dies,"
+" setmanes, mesos i anys, i fer comparatives per aquests períodes a l'"
+msgstr ""
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:75
+msgid "https://oficinavirtual.somenergia.coop/ca/"
+msgstr ""
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:75
+msgid "Oficina Virtual"
+msgstr ""
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:75
+msgid "a l'apartat Infoenergia > Veure les corbes horàries"
+msgstr ""
