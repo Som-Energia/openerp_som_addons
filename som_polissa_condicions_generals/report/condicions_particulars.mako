@@ -416,6 +416,7 @@ CONTRACT_TYPES = dict(TABLA_9)
             iva_10_active = eval(cfg_obj.get(
                 cursor, uid, 'charge_iva_10_percent_when_available', '0'
             ))
+            omie_obj = polissa.pool.get('giscedata.monthly.price.omie')
 
         %>
         <div class="styled_box">
@@ -429,11 +430,15 @@ CONTRACT_TYPES = dict(TABLA_9)
                     text_vigencia = _(u"(vigents fins al {})").format((datetime.strptime(dades_tarifa['date_end'], '%Y-%m-%d')).strftime('%d/%m/%Y'))
                 elif datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d') > datetime.today():
                     text_vigencia = _(u"(vigents a partir del {})").format(datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d').strftime('%d/%m/%Y'))
+		try:
+		    omie_mon_price_45 = omie_obj.has_to_charge_10_percent_requeriments_oficials(cursor, uid, ctx['date'], polissa.potencia)
+		except:
+		    omie_mon_price_45 = False
 
                 iva_reduit = False
                 if not polissa.fiscal_position_id and not lead:
                     imd_obj = polissa.pool.get('ir.model.data')
-                    if iva_10_active and polissa.potencia <= 10 and dades_tarifa['date_start'] >= start_date_iva_10 and dades_tarifa['date_start'] <= end_date_iva_10:
+                    if iva_10_active and polissa.potencia <= 10 and dades_tarifa['date_start'] >= start_date_iva_10 and dades_tarifa['date_start'] <= end_date_iva_10 and omie_mon_price_45:
                         fp_id = imd_obj.get_object_reference(cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
                         iva_reduit = True
                         text_vigencia += " (IVA 10%, IE 2,5%)"
@@ -598,7 +603,7 @@ CONTRACT_TYPES = dict(TABLA_9)
                             <% llista_preu = ultima_modcon.llista_preu if modcon_pendent_periodes else polissa.llista_preu %>
                             %for p in periodes_energia:
                                 %if llista_preu and not lead:
-                                    <% ctx['force_pricelist'] = llista_preu %>
+                                    <% ctx['force_pricelist'] = llista_preu.id %>
                                     <td class="center">
                                         <span class="">${formatLang(get_atr_price(cursor, uid, polissa, p, 'te', ctx, with_taxes=True)[0], digits=6)}</span>
                                     </td>
@@ -675,18 +680,6 @@ CONTRACT_TYPES = dict(TABLA_9)
                     <span class="bold">(2) </span> ${_("Pots consultar el significat de les variables a les condicions específiques que trobaràs a continuació.")}
                 %endif
                 </div>
-                %if (polissa.mode_facturacio != 'index' and not modcon_pendent_indexada and not lead) and dades_tarifa['date_start'] >= start_date_mecanisme_ajust_gas and \
-                    (not dades_tarifa['date_end'] or dades_tarifa['date_end'] <= end_date_mecanisme_ajust_gas):
-                    <div class="avis_rmag">
-                        ${_(u"A més del preu fix associat al cost de l'energia, establert per Som Energia i publicat a la nostra pàgina web, la factura inclourà un import variable associat al mecanisme d'ajust establert al")}
-                        &nbsp;<a target="_blank" href="https://www.boe.es/buscar/act.php?id=BOE-A-2022-10557">RD 10/2022</a>.
-                        ${_(u"Aquest import el calcularem per a cada període de facturació. Ponderarem el preu de cada hora del mecanisme d'ajust (")}<a target="_blank" href="https://www.omie.es/es/market-results/daily/average-final-prices/hourly-price-consumers">${_(u"publicat per OMIE")}</a>
-                        ${_(u") en funció del repartiment horari energètic d'un consumidor/a tipus (")}<a target="_blank" href="https://www.ree.es/es/clientes/consumidor/gestion-medidas-electricas/consulta-perfiles-de-consumo">${_(u"publicat per Red Eléctrica de")}</a>
-                        <a target="_blank" href="https://www.ree.es/es/clientes/consumidor/gestion-medidas-electricas/consulta-perfiles-de-consumo">&nbsp;España</a>
-                        &nbsp;${_(u"segons la")}&nbsp;<a target="_blank" href="https://www.boe.es/diario_boe/txt.php?id=BOE-A-2021-21395">${_(u"Resolució de 23/12/2021")}</a>
-                        ${_(u"). El preu obtingut el multiplicarem, en cada factura, per l'energia total consumida en el període de facturació. El mecanisme d’ajust al gas no aplica per als contractes de les Illes Canàries ni Balears, i tampoc aplica a la tarifa Generation kWh.")}
-                    </div>
-                %endif
             </div>
             <%
                 if lead:

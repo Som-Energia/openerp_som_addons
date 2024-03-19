@@ -19,7 +19,7 @@
                     </group>
                     <notebook colspan="4">
                         <page string="Modifications">
-                            <field colspan="4" name="modification" nolabel="1" select="1" readonly="1" ref="som_administradora_modification_tree_view"/> 
+                            <field colspan="4" name="modification" nolabel="1" select="1" readonly="1" ref="som_administradora_modification_tree_view"/>
                         </page>
                     </notebook>
                 </form>

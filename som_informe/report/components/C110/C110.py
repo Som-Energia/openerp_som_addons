@@ -1,13 +1,14 @@
 from ..component_utils import dateformat
 from ..ProcesC1 import ProcesC1
 
+
 class C110(ProcesC1.ProcesC1):
     def __init__(self):
         ProcesC1.ProcesC1.__init__(self)
 
     def get_data(self, wiz, cursor, uid, step):
         result = ProcesC1.ProcesC1.get_data(self, wiz, cursor, uid, step)
-        result['type'] = 'C110'
-        result['data_acceptacio'] = dateformat(step.data_acceptacio)
+        result["type"] = "C110"
+        result["data_acceptacio"] = dateformat(step.data_acceptacio)
 
         return result

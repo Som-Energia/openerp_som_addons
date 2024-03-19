@@ -645,18 +645,6 @@ CONTRACT_TYPES = dict(TABLA_9)
                     <span class="bold">(2) </span> ${_("Pots consultar el significat de les variables a les condicions específiques que trobaràs a continuació.")}
                 %endif
                 </div>
-                %if (polissa.mode_facturacio != 'index' and not modcon_pendent_indexada) and dades_tarifa['date_start'] >= start_date_mecanisme_ajust_gas and \
-                    (not dades_tarifa['date_end'] or dades_tarifa['date_end'] <= end_date_mecanisme_ajust_gas):
-                    <div class="avis_rmag">
-                        ${_(u"A més del preu fix associat al cost de l'energia, establert per Som Energia i publicat a la nostra pàgina web, la factura inclourà un import variable associat al mecanisme d'ajust establert al")}
-                        &nbsp;<a target="_blank" href="https://www.boe.es/buscar/act.php?id=BOE-A-2022-10557">RD 10/2022</a>.
-                        ${_(u"Aquest import el calcularem per a cada període de facturació. Ponderarem el preu de cada hora del mecanisme d'ajust (")}<a target="_blank" href="https://www.omie.es/es/market-results/daily/average-final-prices/hourly-price-consumers">${_(u"publicat per OMIE")}</a>
-                        ${_(u") en funció del repartiment horari energètic d'un consumidor/a tipus (")}<a target="_blank" href="https://www.ree.es/es/clientes/consumidor/gestion-medidas-electricas/consulta-perfiles-de-consumo">${_(u"publicat per Red Eléctrica de")}</a>
-                        <a target="_blank" href="https://www.ree.es/es/clientes/consumidor/gestion-medidas-electricas/consulta-perfiles-de-consumo">&nbsp;España</a>
-                        &nbsp;${_(u"segons la")}&nbsp;<a target="_blank" href="https://www.boe.es/diario_boe/txt.php?id=BOE-A-2021-21395">${_(u"Resolució de 23/12/2021")}</a>
-                        ${_(u"). El preu obtingut el multiplicarem, en cada factura, per l'energia total consumida en el període de facturació. El mecanisme d’ajust al gas no aplica per als contractes de les Illes Canàries ni Balears, i tampoc aplica a la tarifa Generation kWh.")}
-                    </div>
-                %endif
             </div>
             %endfor
         </div>

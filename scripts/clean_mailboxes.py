@@ -5,7 +5,7 @@ O = Client(**configdb.erppeek)  # noqa: E741
 
 msgs = O.PoweremailMailbox.search([("folder", "=", "drafts")])
 
-print "Mails in draft folder: {}".format(len(msgs))
+print "Mails in draft folder: {}".format(len(msgs))  # noqa: E999
 status = len(msgs) >= 100
 print "Status (test): {}".format(status)
 

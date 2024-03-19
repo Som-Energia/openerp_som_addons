@@ -46,7 +46,7 @@ _Permetem 'star imports' als fitxers `__init__.py` per no haver d'importar un pe
 
 Pel que fa a formatar el codi al desenvolupar és una decisió pròpia de cada persona desenvolupadora. Dues formes en les quals es podria fer són les següents (o fer servir les dues alhora):
 
-**Integrat amb VSCode**
+#### Integrat amb VSCode
 
 1. Instal·lem l'extensió de Python
 2. Instal·lem `autopep8` (1.5.7) i `flake8` (3.9.2) al `venv` de `erp`
@@ -70,17 +70,25 @@ Pel que fa a formatar el codi al desenvolupar és una decisió pròpia de cada p
 
 Al programar veurem els errors que ens marca `flake8` i al guardar se'ns formata automàticament el codi amb `autopep8`. Aquestes dues eines tindran en compte la configuració dels fitxers `.flake8` i `.pycodestyle` del repositori.
 
-**Amb l'eina `pre-commit`**
+#### Amb l'eina `pre-commit` automàticament al fer un _commit_
 
 1. Instal·lem `pre-commit` al `venv` de `erp`: `pip install pre-commit`
 2. Activem el `pre-commit` dins el repositori: `pre-commit install`
 
-Al fer un _commit_ ens formatarà el codi automàticament amb `autoflake` i `autopep8`. També farà les comprovacions amb `flake8` i algunes altres pels XML i fitxer YAML.
+*Podem desactivar-lo sempre que vulguem: `pre-commit uninstall`*
+
+Al fer un _commit_ ens formatarà automàticament el codi dels fitxers modificats amb `autoflake` i `autopep8`. També farà les comprovacions amb `flake8` i algunes altres pels XML i fitxer YAML.
 
 - Si algun formatador fa algun canvi o no passen totes les comprovacions el _commit_ no es farà.
 - Els fitxers modificats pel `pre-commit` queden _unstaged_.
 - Fa el mateix que farà el GitHub Actions (definit al fitxer `.pre-commit-config.yaml`).
 
+#### Amb l'eina `pre-commit` manualment, sense força que es passi al fer cada _commit_
+
+1. Anem a la carpeta del repositori
+2. Executem `pre-commit run -a` (tots els fitxers del repositori) o `pre-commit run --files` (fitxers especificats)
+3. Si volem que executi pre-commit per tots els fitxers modificats en un repo local, podem executar `pre-commit run --files $(git diff --cached --name-only)`. Aquest mètode només arreglarà fitxers modificats. Si se n'han afegit, s'hauran d'afegir previament amb `git add`.
+
 ## Conseqüències
 
-El codi del repositori quedaria més net, més llegible i més uniforme. S'ha de fer un format de tot el repositori abans de començar a aplicar-ho.
+El codi del repositori quedaria més net, més llegible i més uniforme. S'ha fet una [PR](https://github.com/Som-Energia/openerp_som_addons/pull/527) per formatar tot el repositori.

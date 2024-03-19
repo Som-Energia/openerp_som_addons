@@ -1,21 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <openerp>
     <data>
-        <record model="ir.ui.view" id="view_polisses_form">
-            <field name="name">giscedata_polissa.form</field>
-            <field name="model">giscedata.polissa</field>
-            <field name="type">form</field>
-            <field name="inherit_id" ref="giscedata_polissa.view_polisses_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//notebook" position="inside">
-                    <page string="Infoenergia">
-                        <field name="emp_allow_send_data" string="Compartir dades per infoenergia" />
-                        <field name="emp_allow_recieve_mail_infoenergia" string="Rebre email infoenergia" attrs="{'readonly' : [('emp_allow_send_data', '=', False)]}"/>
-                    </page>
-                </xpath>
-            </field>
-        </record>
-
         <record model="ir.actions.act_window" id="action_open_infoenergia_enviaments">
             <field name="name">Enviaments d'Infoenergia</field>
             <field name="res_model">som.infoenergia.enviament</field>
