@@ -2037,33 +2037,10 @@ class GenerationkwhInvestment(osv.osv):
                 investment_id, vals, context)
         return investment_id, error
 
-    def get_activated_investments_for_a_concret_date(
-            self, cursor, uid, effective_on, context=None):
-        """
-            Returns all the investments actived on effective_on for repeating members
-            (so discards first time investments)
-        """
-        cursor.execute("""
-            select
-                investment.id
-            from
-                generationkwh_investment as investment
-            inner join generationkwh_emission as emission
-                on emission.id = investment.emission_id
-            where
-                investment.active
-                and emission.type = 'genkwh'
-                and investment.first_effective_date = %(effective_on)s;
-            """, dict(
-                effective_on = isodate(effective_on),
-            ))
-        result = [ id for id, in cursor.fetchall() ]
-        return result
-
-    def notifyInvestmentsByMail(self, cursor, uid, investments, context=None):
-        for investment in investments:
+    def notifyInvestmentsByMail(self, cursor, uid, investment_ids, context=None):
+        for investment_id in investment_ids:
             self.send_mail(cursor, uid,
-                investment,
+                investment_id,
                 'generationkwh.investment',
                 '_investment_activated_notification_mail',
                 context=context)
