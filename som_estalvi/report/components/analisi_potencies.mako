@@ -76,7 +76,7 @@
             ${_(u"Estimació del cost anual")} <span class="subratllar">${_(u"amb les potències òptimes")}</span>:<br />${potencia['estimacio_cost_potencia_optima']} €
         </div>
         <div class="estimacio">
-            ${_(u"<a href="https://ca.support.somenergia.coop/article/271-com-puc-fer-una-modificacio-de-potencia-o-de-tarifa-i-quant-costa">Més informació per modificar les potències contractades</a>")}
+            <a href="${_(u"https://ca.support.somenergia.coop/article/271-com-puc-fer-una-modificacio-de-potencia-o-de-tarifa-i-quant-costa")}">${_(u"Més informació per modificar les potències contractades</a>")}
         </div>
     </div>
     <hr/>

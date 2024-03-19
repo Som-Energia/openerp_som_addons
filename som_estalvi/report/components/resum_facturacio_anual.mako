@@ -35,7 +35,7 @@
                 <tr>
                     <td>
                         <p><b>${_(u"Cost per energia reactiva:")}</b></p>
-                        <p class="secundary-text">${_(u"A partir de 400 € recomanem la instal·lació de bateries de condensadors. <a href="https://ca.support.somenergia.coop/article/259-energia-reactiva-que-es-efectes-en-la-factura-i-com-eliminar-la">Més informació.</a>")}</p>
+                        <p class="secundary-text">${_(u"A partir de 400 € recomanem la instal·lació de bateries de condensadors.")} <a href="${_(u"https://ca.support.somenergia.coop/article/259-energia-reactiva-que-es-efectes-en-la-factura-i-com-eliminar-la")}">${_(u"Més informació.")}</a></p>
                     </td>
                     <td><b><span style="color: #71805b">${costs['reactiva']} €</span></b></td>
                 </tr>
@@ -51,8 +51,8 @@
             <table>
                 <tr>
                     <td>
-                        <p class="text-descompte">${_(u"Descompte pels excedents:"}</p>
-                        <p class="secundary-text text-negre">${_(u"Inclou la compensació i el Flux Solar."}</p>
+                        <p class="text-descompte">${_(u"Descompte pels excedents:")}</p>
+                        <p class="secundary-text text-negre">${_(u"Inclou la compensació i el Flux Solar.")}</p>
                     </td>
                     <td class="text-descompte"><b>${costs['descompte_generacio']} €</b></td>
                 </tr>
@@ -72,7 +72,7 @@
         </div>
         <div>
             <p class="alert-text">
-                ${_(u"Pots consultar i descarregar les corbes horàries d'ús d'energia per dies, setmanes, mesos i anys, i fer comparatives per aquests períodes a l'<a href="https://oficinavirtual.somenergia.coop/ca/">Oficina Virtual</a>, <b>a l'apartat Infoenergia > Veure les corbes horàries</b>.")}
+                ${_(u"Pots consultar i descarregar les corbes horàries d'ús d'energia per dies, setmanes, mesos i anys, i fer comparatives per aquests períodes a l'")}<a href="${_(u"https://oficinavirtual.somenergia.coop/ca/")}">${_(u"Oficina Virtual")}</a>, <b>${_(u"a l'apartat Infoenergia > Veure les corbes horàries")}</b>.
             </p>
         </div>
     </div>
