@@ -1,7 +1,46 @@
+<%def name="graphic(costs)">
+
+<script>
+
+const data = {
+    "Energia": ${costs['energia'].val},
+    "Potencia": ${costs['potencia'].val},
+    %if costs['exces'] > 0:
+        "Exces": ${costs['exces'].val},
+    %endif
+    %if costs['reactiva'] > 0:
+        "Reactiva": ${costs['reactiva'].val},
+    %endif
+}
 // set the dimensions and margins of the graph
 const width = 350,
     height = 200,
     margin = 0;
+
+const half_width = width / 2,
+    half_height = height / 2;
+
+const color_list = [
+    '#4d4d4d',
+    '#80a82d',
+    %if costs['exces'] > 0:
+        '#bec8a9',
+    %endif
+    %if costs['reactiva'] > 0:
+        '#71805b'
+    %endif
+]
+
+const domain_list = [
+    'Energia',
+    'Potencia',
+    %if costs['exces'] > 0:
+        'Exces',
+    %endif
+    %if costs['reactiva'] > 0:
+        'Reactiva'
+    %endif
+]
 
 // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
 const radius = Math.min(width, height) / 2 - margin
@@ -12,18 +51,22 @@ const svg = d3.select("#grafic-costos")
     .attr("width", width)
     .attr("height", height)
   .append("g")
-    .attr("transform", `translate(${width/2},${height/2})`);
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 svg.append("text")
     .attr("text-anchor", "middle")
     .attr("class", "text-grafic")
     .text("DISTRIBUCIÓ DELS COSTOS");
 
 // set the color scale
-const color = d3.scaleOrdinal(['#25b2a4', '#4d4d4d', '#c6de0e', '#80a82d']).domain(["Reactiva", "Energia", "Potencia", "Exces"]);
-color("Reactiva");
+const color = d3.scaleOrdinal(color_list).domain(domain_list);
 color("Energia");
 color("Potencia");
-color("Exces");
+%if costs['exces'] > 0:
+    color("Exces");
+%endif
+%if costs['reactiva'] > 0:
+    color("Reactiva");
+%endif
 
 // Compute the position of each group on the pie:
 const pie = d3.pie()
@@ -36,7 +79,7 @@ const arc = d3.arc()
   .innerRadius(radius * 0.5)         // This is the size of the donut hole
   .outerRadius(radius * 0.8)
 
-// Another arc that won't be drawn. Just for labels positioning
+// Another arc that wont be drawn. Just for labels positioning
 const outerArc = d3.arc()
   .innerRadius(radius * 0.9)
   .outerRadius(radius * 0.9)
@@ -79,9 +122,11 @@ svg
         const pos = outerArc.centroid(d);
         const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
         pos[0] = radius * 0.99 * (midangle < Math.PI ? 1 : -1);
-        return `translate(${pos})`;
+        return "translate(" + pos +")";
     })
     .style('text-anchor', function(d) {
         const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
         return (midangle < Math.PI ? 'start' : 'end')
     })
+</script>
+</%def>

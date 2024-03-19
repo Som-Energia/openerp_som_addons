@@ -20,21 +20,30 @@
                 </th>
             </tr>
             <% it = 0 %>
-            %for potencia in potencia['potencies_contractades']:
+            %for potencia_contractada in potencia['potencies_contractades']:
                 <%
                     from dateutil.relativedelta import relativedelta
+                    from datetime import datetime
 
                     periode = 'P{}'.format(it+1)
-                    any_anterior = (datetime.now() - relativedelta(years=+1)).year
+                    any_anterior = (datetime.now() - relativedelta(years=+2)).year
                 %>
                 <tr>
-                    <td>P${periode}</td>
-                    <td>${potencia}</td>
-                    <td>P1_opt</td>
+                    <td>${periode}</td>
+                    <td>${potencia_contractada}</td>
+                    <td>
+                        ${potencia['optimizations']['optimal_powers_{}'.format(periode.upper())]}
+                    </td>
 
                     %for mes in range(1, 13):
-                        <% mesany = '%02d%s' % (mes, any_anterior) %>
-                        <td>${potencia['maximetres'][mesany][periode]}</td>
+                        <%
+                            mesany = '%02d%s' % (mes, any_anterior)
+                        %>
+                        %if potencia['maximetres'].get(mesany):
+                            <td>${potencia['maximetres'][mesany][periode]}</td>
+                        %else:
+                            <td>-</td>
+                        %endif
                     %endfor
                 </tr>
                 <% it += 1 %>
@@ -61,10 +70,10 @@
     </div>
     <div class="container">
         <div class="estimacio">
-            Estimació del cost anual <span class="subratllar">amb les potències actuals</span>:<br />1000€
+            Estimació del cost anual <span class="subratllar">amb les potències actuals</span>:<br />${potencia['estimacio_cost_potencia_actual']} €
         </div>
         <div class="estimacio">
-            Estimació del cost anual <span class="subratllar">amb les potències òptimes</span>:<br />1000€
+            Estimació del cost anual <span class="subratllar">amb les potències òptimes</span>:<br />${potencia['estimacio_cost_potencia_optima']} €
         </div>
         <div class="estimacio">
             <a href="https://ca.support.somenergia.coop/article/271-com-puc-fer-una-modificacio-de-potencia-o-de-tarifa-i-quant-costa">Més informació per modificar les potències contractades</a>
