@@ -11,6 +11,7 @@
     <head>
         <script src="${addons_path}/som_estalvi/report/assets/d3.v6.js"></script>
         <link rel="stylesheet" href="${addons_path}/som_estalvi/report/som_estalvi.css">
+        <title>${_(u"SomEnergia informe anual")}</title>
         <style>
             @font-face {
                 font-family: "Montserrat-Medium";

@@ -8,8 +8,8 @@
         <div class="dades-resum">
             <table>
                 <colgroup>
-                    <col width="75%"/>
-                    <col width="25%"/>
+                    <col width="72%"/>
+                    <col width="28%"/>
                 </colgroup>
                 <tr>
                     <td>
@@ -42,6 +42,7 @@
             </table>
         </div>
         <div class="distribucio-costos">
+            <div class="distribucio-costos-title"><b>${_(u"Distribució dels costos")}</b></div>
             <div id="grafic-costos"></div>
         </div>
     </div>
