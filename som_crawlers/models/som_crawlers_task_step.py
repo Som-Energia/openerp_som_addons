@@ -246,7 +246,7 @@ class SomCrawlersTaskStep(osv.osv):
                 output = self.import_xml_files(cursor, uid, id, result_id, nivell - 1, context)
                 return output
             except Exception as e:
-                raise Exception("IMPORTANT: {}: {}".format(type(e).__name__, str(e)))
+                raise Exception("IMPORTANT: " + str(e))
 
         task_step_obj.task_id.write(
             {
@@ -260,8 +260,9 @@ class SomCrawlersTaskStep(osv.osv):
         return output
 
     def recursive_extract_zip(self, zip_path, destination_path):
-        with zipfile.ZipFile(zip_path, "r") as zip_file:
-            zip_file.extractall(path=destination_path)
+        if os.path.getsize(zip_path) > 0:
+            with zipfile.ZipFile(zip_path, "r") as zip_file:
+                zip_file.extractall(path=destination_path)
         os.remove(zip_path)
 
         for root, dirs, files in os.walk(destination_path):
@@ -370,7 +371,11 @@ class SomCrawlersTaskStep(osv.osv):
             if import_wizard.state == "load":
                 import_wizard.action_send_xmls(context=context)
 
-            return WizardImportAtrF1.browse(cursor, uid, import_wizard_id).info
+            res = WizardImportAtrF1.browse(cursor, uid, import_wizard_id).info
+            if WizardImportAtrF1.browse(cursor, uid, import_wizard_id).state == "done":
+                return res
+            else:
+                raise Exception("No ha acabat el procés d'importació: " + res)
         else:
             raise Exception("El fitxer no té format ZIP")
 

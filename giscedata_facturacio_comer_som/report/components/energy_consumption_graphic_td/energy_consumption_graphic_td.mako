@@ -44,4 +44,3 @@ var esgran = ${energy.is_big and 'true' or 'false'}
     </div>
 </div>
 <script src="${addons_path}/giscedata_facturacio_comer_som/report/components/energy_consumption_graphic_td/energy_consumption_graphic_td.js"></script>
-

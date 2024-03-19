@@ -558,21 +558,21 @@ class UpdatePendingStates(osv.osv_memory):
                 self.update_waiting_for_annex_cancelled_contracts(
                     cursor, uid, factura_id, traspas_advocats_bs, context
                 )
-
-            ret_value = self.send_email(cursor, uid, invoice["id"], email_params)
-            if ret_value == -1:
-                logger.info(
-                    "ERROR: Sending Annex 3 first email to {invoice_name} partner error.".format(
-                        invoice_name=invoice["partner_id"][1],
-                    )
-                )
             else:
-                fact_obj.set_pending(cursor, uid, [factura_id], final_state)
-                logger.info(
-                    "Sending Annex 3 first email to {invoice_name} partner with result: {ret_value}".format(  # noqa: E501
-                        invoice_name=invoice["partner_id"][1], ret_value=ret_value
+                ret_value = self.send_email(cursor, uid, invoice["id"], email_params)
+                if ret_value == -1:
+                    logger.info(
+                        "ERROR: Sending Annex 3 first email to {invoice_name} partner error.".format(  # noqa: E501
+                            invoice_name=invoice["partner_id"][1],
+                        )
                     )
-                )
+                else:
+                    fact_obj.set_pending(cursor, uid, [factura_id], final_state)
+                    logger.info(
+                        "Sending Annex 3 first email to {invoice_name} partner with result: {ret_value}".format(  # noqa: E501
+                            invoice_name=invoice["partner_id"][1], ret_value=ret_value
+                        )
+                    )
 
     def update_waiting_for_annexII(self, cursor, uid, context=None):
         """
@@ -899,9 +899,7 @@ class UpdatePendingStates(osv.osv_memory):
             if len(inv_list) >= 2:
                 for invoice_id in inv_list:
                     # quan es fan testos és False perquè les factures de destral no tene number
-                    inv_number = inv_obj.browse(
-                        cursor, uid, invoice_id
-                    ).number
+                    inv_number = inv_obj.browse(cursor, uid, invoice_id).number
                     fact_id = fact_obj.search(cursor, uid, [("number", "=", inv_number)])
                     polissa = fact_obj.browse(cursor, uid, fact_id[0]).polissa_id
                     if polissa.state == "baixa":
@@ -917,7 +915,7 @@ class UpdatePendingStates(osv.osv_memory):
     def poverty_eligible(self, cursor, uid, polissa_id):
         pol_obj = self.pool.get("giscedata.polissa")
         polissa_state = pol_obj.read(cursor, uid, [polissa_id], ["cups_np"])[0]["cups_np"]
-        return True if polissa_state in ['Barcelona', 'Girona', 'Lleida', 'Tarragona'] else False
+        return True if polissa_state in ["Barcelona", "Girona", "Lleida", "Tarragona"] else False
 
     def update_pending_ask_poverty(self, cursor, uid, context=None):
         if context is None:
@@ -938,12 +936,11 @@ class UpdatePendingStates(osv.osv_memory):
         factura_ids = self.get_invoices_with_pending_state(cursor, uid, pending_ask_poverty_state)
         fact_obj = self.pool.get("giscedata.facturacio.factura")
 
-
         for factura_id in factura_ids:
             invoice = fact_obj.read(cursor, uid, factura_id)
 
             polissa_id = invoice["polissa_id"][0]
-            polissa_state = pol_obj.read(cursor, uid, polissa_id, ["state"])["state"]
+            polissa_state = pol_obj.read(cursor, uid, [polissa_id], ["state"])[0]["state"]
             if polissa_state == "baixa":
                 self.update_waiting_for_annex_cancelled_contracts(
                     cursor, uid, factura_id, traspas_advocats_bs, context

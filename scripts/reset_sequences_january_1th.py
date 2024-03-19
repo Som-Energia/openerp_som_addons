@@ -8,6 +8,12 @@ sequences_to_update = [
     "account.invoice.energia",
     "account.invoice.energia.ab",
     "account.invoice.energia.re",
+    "payment.order",
+    "rec.payment.order",
+    "account.invoice.in_invoice",
+    "account.invoice.out_invoice",
+    "account.invoice.in_refund",
+    "account.invoice.out_refund",
 ]
 
 

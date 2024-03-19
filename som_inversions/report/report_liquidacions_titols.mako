@@ -192,7 +192,7 @@
         <!-- 150px mida logo -->
         <img src="https://www.somenergia.coop/iconespdf/logo_som_energia.svg" alt="Logo Som Energia" width="150" height="75" /></a><br>
         <p class="sotalogo"><b>${data.somenergia.partner_name}</b><br>${_(u"CIF:")} ${data.somenergia.partner_vat.replace('ES','')}<br>${_(u"Domicili:")} ${data.somenergia.address_street} ${data.somenergia.address_zip} - ${data.somenergia.address_city}<br>
-            ${_(u"Adreça electrònica:")} <a href="mailto:aporta@somenergia.coop">${_(u"aporta@somenergia.coop")}</a> 
+            ${_(u"Adreça electrònica:")} <a href="mailto:aporta@somenergia.coop">${_(u"aporta@somenergia.coop")}</a>
     </div>
         <div class="TitolHeader">
         <h1 class="titol">${_(u"Liquidació interessos")}</h1>
@@ -392,4 +392,3 @@
     </div>
 </body>
 </html>
-

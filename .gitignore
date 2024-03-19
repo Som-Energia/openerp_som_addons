@@ -129,6 +129,10 @@ dmypy.json
 
 # Deploy files
 deploy/
+patches/
 
 # Vim temporaly files
 *.swp
+
+# GISCE Stuff
+.idea

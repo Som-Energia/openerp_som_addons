@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_crm_lead_create_entities_form" model="ir.ui.view">
+            <field name="name">wizard.crm.lead.create.entities.form.som</field>
+            <field name="model">wizard.crm.lead.create.entities</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="giscedata_crm_leads.view_crm_lead_create_entities_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_crm_lead_create_entities']" position="attributes">
+                    <attribute name="context">{'som_from_activation_lead' : True}</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

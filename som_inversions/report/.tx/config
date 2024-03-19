@@ -18,4 +18,3 @@ source_file = titol.pot
 type = PO
 file_filter = titol_<lang>.po
 source_lang = ca_ES
-
