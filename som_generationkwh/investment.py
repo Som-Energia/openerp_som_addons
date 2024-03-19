@@ -1628,7 +1628,9 @@ class GenerationkwhInvestment(osv.osv):
                     'account.invoice', '_mail_pagament', investment_ids[0], context=mail_context)
         return invoice_ids, errors
 
-    def send_mail(self, cursor, uid, id, model, template, investment_id=None, context={}):
+    def send_mail(self, cursor, uid, id, model, template, investment_id=None, context=None):
+        if context is None:
+            context = {}
 
         PEAccounts = self.pool.get('poweremail.core_accounts')
         WizardInvoiceOpenAndSend = self.pool.get('wizard.invoice.open.and.send')
@@ -2034,6 +2036,15 @@ class GenerationkwhInvestment(osv.osv):
         investment_id, error = investment_actions.create_interest_invoice(cursor, uid,
                 investment_id, vals, context)
         return investment_id, error
+
+    def notifyInvestmentsByMail(self, cursor, uid, investment_ids, context=None):
+        for investment_id in investment_ids:
+            self.send_mail(cursor, uid,
+                investment_id,
+                'generationkwh.investment',
+                '_investment_activated_notification_mail',
+                context=context)
+
 
 class InvestmentProvider(ErpWrapper):
 

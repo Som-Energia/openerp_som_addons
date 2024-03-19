@@ -1525,6 +1525,25 @@
             <field name="def_body_text"><![CDATA[text_to_replace]]></field>
             <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Generation kWh')]"/>
         </record>
+        <record model="poweremail.templates" id="generationkwh_investment_activated_notification_mail">
+            <field name="name">Generation kWh - Investment Activated</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'generationkwh.investment')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">generationkwh.investment</field>
+            <field name="def_to">${object.member_id.partner_id.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Generation kWh Som Enegia ${object.name} activat</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.member_id.partner_id.lang}</field>
+            <field name="copyvalue"></field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text"><![CDATA[text_to_replace]]></field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Generation kWh')]"/>
+        </record>
 
         <record model="poweremail.templates" id="aportacio_mail_pagament">
             <field name="name">Aportacions - Pagament inversió</field>
