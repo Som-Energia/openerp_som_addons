@@ -56,6 +56,7 @@ class SomStash(osv.osv):
             'date_stashed': datetime.strftime(datetime.today(), '%Y-%m-%d %H:%M:%S'),
             'date_expiry': date_expiry,
             'origin_partner_id': origin_partner_id,
+            'origin_partner_id_int': origin_partner_id,
         }
 
         self.create(cursor, uid, values, context=context)
@@ -155,7 +156,8 @@ class SomStash(osv.osv):
         'value': fields.text(_('Valor')),
         'date_stashed': fields.datetime(_('Data backup')),
         'date_expiry': fields.date(_('Última data de caducitat')),
-        'origin_partner_id': fields.many2one("res.partner", _('Fitxa clent'), required=True),
+        'origin_partner_id': fields.many2one("res.partner", _('Fitxa client'), required=True),
+        'origin_partner_id_int': fields.integer(_('ID client')),
     }
 
     _defaults = {
