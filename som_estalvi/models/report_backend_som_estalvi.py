@@ -126,7 +126,7 @@ class ReportBackendSomEstalvi(ReportBackend):
         )
         wiz_id = informe_dades_obj.create(cursor, uid, {}, context=context)
         dades_factures = informe_dades_obj.find_invoices(
-            wiz_id, [pol.id], start_date, end_date, context=context
+            cursor, uid, [wiz_id], [pol.id], start_date, end_date, context=context
         )[pol.id]
 
         data["energia"] = dades_factures['Energia activa'] + dades_factures['MAG']
