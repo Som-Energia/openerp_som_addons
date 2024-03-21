@@ -10,6 +10,6 @@
         </div>
     </div>
     <div class="container footer">
-        <span>${_(u"Som Energia, SCCL - CIF F55091367 | Pic de Peguera, 9 - 17003 - Girona | ")} <a href="${_u("mailto:empresa@somenergia.coop")}">empresa@somenergia.coop</a> | <a href="https://www.somenergia.coop/">www.somenergia.coop</a></span>
+        <span>${_(u"Som Energia, SCCL - CIF F55091367 | Pic de Peguera, 9 - 17003 - Girona | ")} <a href="mailto:empresa@somenergia.coop">empresa@somenergia.coop</a> | <a href="https://www.somenergia.coop/">www.somenergia.coop</a></span>
     </div>
 </%def>
