@@ -32,13 +32,13 @@ const color_list = [
 ]
 
 const domain_list = [
-    'Energia',
-    'Potencia',
+    ${_(u'Energia')},
+    ${_(u'Potencia')},
     %if costs['exces'] > 0:
-        'Exces',
+        ${_(u'Exces')},
     %endif
     %if costs['reactiva'] > 0:
-        'Reactiva'
+        ${_(u'Reactiva')}
     %endif
 ]
 
@@ -53,19 +53,17 @@ const svg = d3.select("#grafic-costos")
   .append("g")
     .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 svg.append("text")
-    .attr("text-anchor", "middle")
-    .attr("class", "text-grafic")
-    .text("DISTRIBUCIÓ DELS COSTOS");
+    .attr("text-anchor", "middle");
 
 // set the color scale
 const color = d3.scaleOrdinal(color_list).domain(domain_list);
-color("Energia");
-color("Potencia");
+color(${_(u"Energia")});
+color(${_(u"Potencia")});
 %if costs['exces'] > 0:
-    color("Exces");
+    color(${_(u"Exces")});
 %endif
 %if costs['reactiva'] > 0:
-    color("Reactiva");
+    color(${_(u"Reactiva")});
 %endif
 
 // Compute the position of each group on the pie:

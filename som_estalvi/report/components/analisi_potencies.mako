@@ -1,7 +1,7 @@
 <%def name="analisi_potencies(potencia)">
     <div class="seccio">
         <span>
-            ANÀLISI DE LES POTÈNCIES CONTRACTADES I ESTIMACIÓ DEL COST TOTAL
+            ${_(u"ANÀLISI DE LES POTÈNCIES CONTRACTADES I ESTIMACIÓ DEL COST TOTAL")}
         </span>
         <hr/>
     </div>
@@ -10,13 +10,13 @@
             <tr>
                 <th></th>
                 <th>
-                    <b>Potències actuals</b>
+                    <b>${_(u"Potències actuals")}</b>
                 </th>
                 <th>
-                    <b>Potències òptimes</b>
+                    <b>${_(u"Potències òptimes")}</b>
                 </th>
                 <th colspan="12">
-                    <b>Potència màxima registrada</b>
+                    <b>${_(u"Potència màxima registrada")}</b>
                 </th>
             </tr>
             <% it = 0 %>
@@ -49,34 +49,34 @@
                 <% it += 1 %>
             %endfor
             <tr>
-                <td colspan="3">Tots els valors es mostre en kW</td>
-                <td>GEN</td>
-                <td>FEB</td>
-                <td>MAR</td>
-                <td>ABR</td>
-                <td>MAI</td>
-                <td>JUN</td>
-                <td>JUL</td>
-                <td>AGO</td>
-                <td>SET</td>
-                <td>OCT</td>
-                <td>NOV</td>
-                <td>DES</td>
+                <td colspan="3">${_(u"Tots els valors es mostre en kW")}</td>
+                <td>${_(u"GEN")}</td>
+                <td>${_(u"FEB")}</td>
+                <td>${_(u"MAR")}</td>
+                <td>${_(u"ABR")}</td>
+                <td>${_(u"MAI")}</td>
+                <td>${_(u"JUN")}</td>
+                <td>${_(u"JUL")}</td>
+                <td>${_(u"AGO")}</td>
+                <td>${_(u"SET")}</td>
+                <td>${_(u"OCT")}</td>
+                <td>${_(u"NOV")}</td>
+                <td>${_(u"DES")}</td>
             </tr>
         </table>
     </div>
     <div class="container">
-    <span class="text-estimacio">Les potències òptimes proposades minimitzen el cost anual total de potència i són vàlides si es manté un ús similar d’energia en les mateixes hores.</span>
+    <span class="text-estimacio">${_(u"Les potències òptimes proposades minimitzen el cost anual total de potència i són vàlides si es manté un ús similar d’energia en les mateixes hores.")}</span>
     </div>
     <div class="container">
         <div class="estimacio">
-            Estimació del cost anual <span class="subratllar">amb les potències actuals</span>:<br />${potencia['estimacio_cost_potencia_actual']} €
+            ${_(u"Estimació del cost anual")} <span class="subratllar">${_(u"amb les potències actuals")}</span>:<br />${potencia['estimacio_cost_potencia_actual']} €
         </div>
         <div class="estimacio">
-            Estimació del cost anual <span class="subratllar">amb les potències òptimes</span>:<br />${potencia['estimacio_cost_potencia_optima']} €
+            ${_(u"Estimació del cost anual")} <span class="subratllar">${_(u"amb les potències òptimes")}</span>:<br />${potencia['estimacio_cost_potencia_optima']} €
         </div>
         <div class="estimacio">
-            <a href="https://ca.support.somenergia.coop/article/271-com-puc-fer-una-modificacio-de-potencia-o-de-tarifa-i-quant-costa">Més informació per modificar les potències contractades</a>
+            <a href="${_(u"https://ca.support.somenergia.coop/article/271-com-puc-fer-una-modificacio-de-potencia-o-de-tarifa-i-quant-costa")}">${_(u"Més informació per modificar les potències contractades</a>")}
         </div>
     </div>
     <hr/>
