@@ -134,7 +134,7 @@ class ReportBackendSomEstalvi(ReportBackend):
 
         factura_id = factura_obj.search(
             cursor, uid, search_params, context=context, order="date_invoice DESC", limit=1
-        )
+        )[0]
 
         end_date = factura_obj.read(
             cursor, uid, factura_id, ['date_invoice'], context=context
@@ -146,13 +146,13 @@ class ReportBackendSomEstalvi(ReportBackend):
         wiz_id = informe_dades_obj.create(cursor, uid, {}, context=context)
         dades_factures = informe_dades_obj.find_invoices(
             wiz_id, [pol.id], start_date, end_date, context=context
-        )[0]
+        )[pol.id]
 
         data["energia"] = dades_factures['Energia activa'] + dades_factures['MAG']
-        data["exces"] = dades_factures['Excés potència']
-        data["potencia"] = dades_factures['Potència']
-        data["reactiva"] = dades_factures['Penalització reactiva']
-        data["descompte_generacio"] = dades_factures['Flux solar'] + dades_factures['Excedents']
+        data["exces"] = dades_factures[b'Excés potència']
+        data["potencia"] = dades_factures[b'Potència']
+        data["reactiva"] = dades_factures[b'Penalització reactiva']
+        data["descompte_generacio"] = dades_factures['Flux Solar'] + dades_factures['Excedents']
 
         return data
 
