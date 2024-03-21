@@ -3,6 +3,8 @@ from __future__ import absolute_import, unicode_literals
 from report_backend.report_backend import ReportBackend, report_browsify
 from report_puppeteer.report_puppeteer import PuppeteerParser
 import json
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 
 class ReportBackendSomEstalvi(ReportBackend):
@@ -112,10 +114,7 @@ class ReportBackendSomEstalvi(ReportBackend):
             context = {}
 
         factura_obj = self.pool.get("giscedata.facturacio.factura")
-        ir_model_obj = self.pool.get("ir.model.data")
-        flux_solar = ir_model_obj.get_object_reference(
-            cursor, uid, "giscedata_facturacio_bateria_virtual", "bateria_virtual_product"
-        )[1]
+        informe_dades_obj = self.pool.get("wizard.informe.dades_desagregades")
 
         data = {
             "energia": 0.0,
@@ -125,18 +124,36 @@ class ReportBackendSomEstalvi(ReportBackend):
             "descompte_generacio": 0.0,
         }
 
-        factures_ids = self.get_ultimes_12_factures(cursor, uid, pol, context=context)
+        factura_obj = self.pool.get("giscedata.facturacio.factura")
 
-        for factura in factura_obj.browse(cursor, uid, factures_ids):
-            data["energia"] += factura.total_energia
-            data["exces"] += factura.total_exces_potencia
-            data["potencia"] += factura.total_potencia
-            data["reactiva"] += factura.total_reactiva
-            data["descompte_generacio"] += abs(factura.total_generacio)
+        search_params = [
+            ("polissa_id", "=", pol.id),
+            ("type", "=", "out_invoice"),
+            ("refund_by_id", "=", False),
+        ]
 
-            for linia in factura.linia_ids:
-                if linia.product_id.id == flux_solar:
-                    data["descompte_generacio"] += abs(linia.price_subtotal)
+        factura_id = factura_obj.search(
+            cursor, uid, search_params, context=context, order="date_invoice DESC", limit=1
+        )
+
+        end_date = factura_obj.read(
+            cursor, uid, factura_id, ['date_invoice'], context=context
+        )['date_invoice']
+        start_date = datetime.strftime(
+            datetime.strptime(end_date, "%Y-%m-%d") - relativedelta(years=1),
+            '%Y-%m-%d'
+        )
+        wiz_id = informe_dades_obj.create(cursor, uid, {}, context=context)
+        dades_factures = informe_dades_obj.find_invoices(
+            wiz_id, [pol.id], start_date, end_date, context=context
+        )[0]
+
+        data["energia"] = dades_factures['Energia activa'] + dades_factures['MAG']
+        data["exces"] = dades_factures['Excés potència']
+        data["potencia"] = dades_factures['Potència']
+        data["reactiva"] = dades_factures['Penalització reactiva']
+        data["descompte_generacio"] = dades_factures['Flux solar'] + dades_factures['Excedents']
+
         return data
 
 
