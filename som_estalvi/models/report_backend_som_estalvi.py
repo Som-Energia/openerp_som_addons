@@ -90,25 +90,6 @@ class ReportBackendSomEstalvi(ReportBackend):
 
         return data
 
-    def get_ultimes_12_factures(self, cursor, uid, pol, context=None):
-        if context is None:
-            context = {}
-
-        factura_obj = self.pool.get("giscedata.facturacio.factura")
-
-        search_params = [
-            ("polissa_id", "=", pol.id),
-            ("type", "=", "out_invoice"),
-            ("refund_by_id", "=", False),
-            ("state", "=", "paid"),
-        ]
-
-        factures_ids = factura_obj.search(
-            cursor, uid, search_params, context=context, order="date_invoice DESC", limit=12
-        )
-
-        return factures_ids
-
     def get_costs(self, cursor, uid, pol, context=None):
         if context is None:
             context = {}
