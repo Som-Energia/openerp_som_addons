@@ -164,7 +164,7 @@ class ResPartner(osv.osv):
         return [
             {
                 'date': int(
-                    mktime(datetime.strptime(k, '%Y-%m-%d %H:%M:%S').replace(tzinfo=cet).timetuple())
+                    datetime.strptime(k, '%Y-%m-%d %H:%M:%S').replace(tzinfo=cet).timestamp()
                 )*1000,  # javascript works with 3 more 0 than python
                 'value': dict_with_data[k]
             } for k in sorted(dict_with_data)
