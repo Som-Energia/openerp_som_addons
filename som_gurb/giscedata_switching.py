@@ -44,7 +44,7 @@ def _is_m1_closable(cursor, uid, pool, sw, context=None):
         )
         return step_m102_rebuig and step_m101_auto
     else:
-        return step_m101_auto
+        return bool(step_m101_auto)
 
 
 def _is_case_closable(cursor, uid, pool, sw, context=None):
