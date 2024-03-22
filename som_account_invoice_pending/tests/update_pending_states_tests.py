@@ -984,7 +984,6 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
     def test__send_fue_reminder_emails(self, mock_mail):
         cursor = self.txn.cursor
         uid = self.txn.user
-        import pudb; pu.db
 
         imd_obj = self.pool.get("ir.model.data")
         fact_obj = self.pool.get("giscedata.facturacio.factura")
