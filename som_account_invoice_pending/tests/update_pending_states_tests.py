@@ -7,6 +7,7 @@ from ..som_account_invoice_pending_exceptions import (
     UpdateWaitingCancelledContractsException,
     UpdateWaitingForAnnexIVException,
 )
+from freezegun import freeze_time
 
 
 class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
@@ -977,3 +978,27 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
 
         factura = fact_obj.browse(cursor, uid, self.invoice_1_id)
         self.assertEqual(factura.pending_state.id, self.avis_tall)
+
+    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email")
+    @freeze_time("2024-03-26")
+    def test__send_fue_reminder_emails(self, mock_mail):
+        cursor = self.txn.cursor
+        uid = self.txn.user
+
+        imd_obj = self.pool.get("ir.model.data")
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+        fact_dp_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_account_invoice_pending", "factura_00011"
+        )[1]
+        fact_bs_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_account_invoice_pending", "factura_00012"
+        )[1]
+
+        pending_obj = self.pool.get("update.pending.states")
+
+        pending_obj.send_fue_reminder_emails(cursor, uid, context=None)
+        self.assertEqual(mock_mail.call_count, 2)
+        factura_dp = fact_obj.browse(cursor, uid, fact_dp_id)
+        self.assertIn("(auto.): Enviat correu recordatori FUE.", factura_dp.comment)
+        factura_bs = fact_obj.browse(cursor, uid, fact_bs_id)
+        self.assertIn("(auto.): Enviat correu recordatori FUE.", factura_bs.comment)

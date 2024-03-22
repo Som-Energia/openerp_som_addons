@@ -3,6 +3,7 @@ from som_indexada.tests.test_wizard_change_to_indexada import TestChangeToIndexa
 from datetime import datetime, timedelta
 import json
 
+
 class TestIndexadaHelpers(TestChangeToIndexada):
     def test_change_to_indexada_www__with_indexada_exception(self):
         polissa_obj = self.pool.get("giscedata.polissa")
@@ -118,9 +119,9 @@ class TestIndexadaHelpers(TestChangeToIndexada):
                 "maturity": ["C3", "C3", "C3", "C3", "C3"],
                 "tariff": "2.0TDTest",
                 "price_euros_kwh": [0.2, 0.3, 0.4, 0.5, 0.6]
-                }
             }
-        self.assertDictEqual(json.loads(result),expected)
+        }
+        self.assertDictEqual(json.loads(result), expected)
 
     def test__get_compensation_prices__ok(self):
         helper = self.pool.get("som.indexada.webforms.helpers")
@@ -135,9 +136,9 @@ class TestIndexadaHelpers(TestChangeToIndexada):
                 "geo_zone": "PENINSULA",
                 "maturity": ["C3", "C3", "C3", "C3", "C3"],
                 "compensation_euros_kwh": [1.2, 1.3, 1.4, 1.5, 1.6]
-                }
             }
-        self.assertDictEqual(json.loads(result),expected)
+        }
+        self.assertDictEqual(json.loads(result), expected)
 
     def test__initial_final_times__24h(self):
         first_date = '2024-02-29'

@@ -64,7 +64,7 @@
             <field name="active">True</field>
         </record>
         <record model="giscedata.polissa.tarifa" id="tarifa_20TD_test">
-            <field name="name">2.0TDTest</field>
+            <field name="name">2.0TD Test</field>
             <field name="llistes_preus_comptatibles" eval="[(6,0,[ref('pricelist_tarifas_electricidad_20TD_SOM_test'), ref('pricelist_tarifas_electricidad_20TD_SOM_V2_test')])]"/>
         </record>
         <record model="product.product" id="p1_p_tarifa_20TD_test">

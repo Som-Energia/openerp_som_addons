@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 from osv import osv
 from som_polissa.exceptions import exceptions
-from datetime import datetime
 from www_som.helpers import www_entry_point
 import json
-from datetime import datetime, date, timedelta
-from som_webforms_helpers.exceptions import som_webforms_exceptions
+from datetime import datetime, timedelta
 
 SUBSYSTEMS = [
     'PENINSULA',
     'BALEARES',
     'CANARIAS',
 ]
+
 
 class SomIndexadaWebformsHelpers(osv.osv_memory):
 
@@ -144,124 +143,94 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
             return True
         return False
 
-    def traceback_info(self, exception):
-        import traceback
-        import sys
-
-        exc_type, exc_value, exc_tb = sys.exc_info()
-        return traceback.format_exception(exc_type, exc_value, exc_tb)
-
     def validate_parameters(self, cursor, uid, geo_zone, first_date, last_date, tariff=None):
         if geo_zone not in SUBSYSTEMS:
             raise exceptions.InvalidSubsystem(geo_zone)
 
         tariff_obj = self.pool.get('giscedata.polissa.tarifa')
-        if tariff and not tariff_obj.search(cursor, uid, [('name','=', tariff)]):
+        if tariff and not tariff_obj.search(cursor, uid, [('name', '=', tariff)]):
             raise exceptions.TariffNonExists(tariff)
 
-        if first_date == None or last_date == None or \
-           (first_date != None and last_date != None and last_date < first_date):
-           raise exceptions.InvalidDates(first_date, last_date)
+        if first_date is None or last_date is None or \
+           (first_date is not None and last_date is not None and last_date < first_date):
+            raise exceptions.InvalidDates(first_date, last_date)
 
     def initial_final_times(self, first_date, last_date):
-        initial_time = (datetime.strptime(first_date, '%Y-%m-%d') + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S")
-        final_time = (datetime.strptime(last_date, '%Y-%m-%d') + timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")
+        initial_time = (datetime.strptime(first_date, '%Y-%m-%d')
+                        + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S")
+        final_time = (datetime.strptime(last_date, '%Y-%m-%d')
+                      + timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")
         return initial_time, final_time
 
     @www_entry_point(
         expected_exceptions=exceptions.SomPolissaException,
     )
-    def get_indexed_prices(self, cursor, uid, geo_zone, tariff, first_date, last_date, context=None):
+    def get_indexed_prices(
+        self, cursor, uid, geo_zone, tariff, first_date, last_date, context=None
+    ):
         prices_obj = self.pool.get('giscedata.next.days.energy.price')
 
-        try:
-            self.validate_parameters(cursor, uid, geo_zone, first_date, last_date, tariff)
+        self.validate_parameters(cursor, uid, geo_zone, first_date, last_date, tariff)
 
-            initial_time, final_time = self.initial_final_times(first_date, last_date)
-            params = [
-                ('hour_timestamp', '>=', initial_time),
-                ('hour_timestamp', '<=', final_time),
-                ('tarifa_id.name', '=', tariff),
-                ('geom_zone', '=', geo_zone)
-            ]
-            price_ids = prices_obj.search(cursor, uid, params, order='hour_timestamp')
+        initial_time, final_time = self.initial_final_times(first_date, last_date)
+        params = [
+            ('hour_timestamp', '>=', initial_time),
+            ('hour_timestamp', '<=', final_time),
+            ('tarifa_id.name', '=', tariff),
+            ('geom_zone', '=', geo_zone)
+        ]
+        price_ids = prices_obj.search(cursor, uid, params, order='hour_timestamp')
 
-            curves = []
-            for price_id in price_ids:
-                curves.append(prices_obj.read(cursor, uid, price_id, ['initial_price','maturity']))
+        curves = []
+        for price_id in price_ids:
+            curves.append(prices_obj.read(cursor, uid, price_id, ['initial_price', 'maturity']))
 
-            json_prices = json.dumps(dict(
-                first_date = first_date,
-                last_date = last_date,
-                curves=dict(
-                    geo_zone = geo_zone,
-                    tariff = tariff,
-                    price_euros_kwh = [curve.get('initial_price') for curve in curves],
-                    maturity = [curve.get('maturity') for curve in curves]
-                ))
-            )
-
-        except exceptions.SomPolissaException as e:
-            return dict(
-                error=e.value,
-                error_code=e.code,
-                trace=self.traceback_info(e),
-            )
-
-        except Exception as e:
-            return dict(
-                error=str(e),
-                error_code="Unexpected",
-                trace=self.traceback_info(e),
-            )
+        json_prices = json.dumps(dict(
+            first_date=first_date,
+            last_date=last_date,
+            curves=dict(
+                geo_zone=geo_zone,
+                tariff=tariff,
+                price_euros_kwh=[curve.get('initial_price') for curve in curves],
+                maturity=[curve.get('maturity') for curve in curves]
+            ))
+        )
 
         return json_prices
 
     @www_entry_point(
         expected_exceptions=exceptions.SomPolissaException,
     )
-    def get_compensation_prices(self, cursor, uid, geo_zone, first_date, last_date, context=None):
+    def get_compensation_prices(
+        self, cursor, uid, geo_zone, first_date, last_date, context=None
+    ):
         prices_obj = self.pool.get('giscedata.next.days.energy.price')
 
-        try:
-            self.validate_parameters(cursor, uid, geo_zone, first_date, last_date, tariff=None)
+        self.validate_parameters(cursor, uid, geo_zone, first_date, last_date, tariff=None)
 
-            initial_time, final_time = self.initial_final_times(first_date, last_date)
-            params = [
-                ('hour_timestamp', '>=', initial_time),
-                ('hour_timestamp', '<=', final_time),
-                ('geom_zone', '=', geo_zone)
-            ]
-            price_ids = prices_obj.search(cursor, uid, params, order='hour_timestamp')
+        initial_time, final_time = self.initial_final_times(first_date, last_date)
+        params = [
+            ('hour_timestamp', '>=', initial_time),
+            ('hour_timestamp', '<=', final_time),
+            ('geom_zone', '=', geo_zone)
+        ]
+        price_ids = prices_obj.search(cursor, uid, params, order='hour_timestamp')
 
-            curves = []
-            for price_id in price_ids:
-                curves.append(prices_obj.read(cursor, uid, price_id, ['prm_diari','maturity']))
+        curves = []
+        for price_id in price_ids:
+            curves.append(prices_obj.read(cursor, uid, price_id, ['prm_diari', 'maturity']))
 
-            json_prices = json.dumps(dict(
-                first_date = first_date,
-                last_date = last_date,
-                curves=dict(
-                    geo_zone = geo_zone,
-                    compensation_euros_kwh = [curve.get('prm_diari') for curve in curves],
-                    maturity = [curve.get('maturity') for curve in curves]
-                ))
-            )
-
-        except exceptions.SomPolissaException as e:
-            return dict(
-                error=e.value,
-                error_code=e.code,
-                trace=self.traceback_info(e),
-            )
-
-        except Exception as e:
-            return dict(
-                error=str(e),
-                error_code="Unexpected",
-                trace=self.traceback_info(e),
-            )
+        json_prices = json.dumps(dict(
+            first_date=first_date,
+            last_date=last_date,
+            curves=dict(
+                geo_zone=geo_zone,
+                compensation_euros_kwh=[curve.get('prm_diari') for curve in curves],
+                maturity=[curve.get('maturity') for curve in curves]
+            ))
+        )
 
         return json_prices
+
 
 SomIndexadaWebformsHelpers()
