@@ -104,14 +104,24 @@ class GiscedataSwitchingM1_02(osv.osv):
         )
 
         sw_obj = self.pool.get("giscedata.switching")
+        step_m101_obj = self.pool.get("giscedata.switching.m1.01")
         sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
         sw = sw_obj.browse(cursor, uid, sw_id, context=context)
 
         if sw and _contract_has_gurb_category(
             cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
         ):
-            sw_step_header_id = self.read(cursor, uid, pas_id, ['header_id'])['header_id'][0]
-            sw_step_header_obj.write(cursor, uid, sw_step_header_id, {'notificacio_pendent': False})
+            step_m101_auto = step_m101_obj.search(
+                cursor,
+                uid,
+                [("sw_id", "=", sw.id), ("solicitud_autoconsum", "=", "S")],
+                context=context,
+            )
+            if step_m101_auto:
+                sw_step_header_id = self.read(cursor, uid, pas_id, ['header_id'])['header_id'][0]
+                sw_step_header_obj.write(
+                    cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
+                )
 
         return pas_id
 
