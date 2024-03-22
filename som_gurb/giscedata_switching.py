@@ -5,7 +5,7 @@ from tools.translate import _
 
 _GURB_CANCEL_CASES = {
     "D1": ["01"],
-    "M1": ["03", "04", "05"],
+    "M1": ["02", "03", "04", "05"],
 }
 
 
@@ -29,15 +29,22 @@ def _is_m1_closable(cursor, uid, pool, sw, context=None):
         context = {}
 
     step_m101_obj = pool.get("giscedata.switching.m1.01")
+    step_m102_obj = pool.get("giscedata.switching.m1.02")
     step_m101_auto = step_m101_obj.search(
-        cursor, uid, [("sw_id", "=", sw.id), ("solicitud_autoconsum", "=", "S")]
+        cursor, uid, [("sw_id", "=", sw.id), ("solicitud_autoconsum", "=", "S")], context=context
     )
 
-    return any([
-        "unidireccional" in sw.additional_info.lower(),
-        "(S)[R]" in sw.additional_info,
-        bool(step_m101_auto),
-    ])
+    if "unidireccional" in sw.additional_info.lower():
+        return True
+    elif "(S)[R]" in sw.additional_info:
+        return True
+    elif step_m101_auto and sw.step_id.name == "02":
+        step_m102_rebuig = step_m102_obj.search(
+            cursor, uid, [("sw_id", "=", sw.id), ("rebuig", "=", True)], context=context
+        )
+        return step_m102_rebuig and step_m101_auto
+    else:
+        return step_m101_auto
 
 
 def _is_case_closable(cursor, uid, pool, sw, context=None):
