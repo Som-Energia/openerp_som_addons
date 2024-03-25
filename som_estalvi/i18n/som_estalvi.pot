@@ -6,14 +6,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2024-03-19 15:36+0000\n"
-"PO-Revision-Date: 2024-03-19 15:36+0000\n"
+"POT-Creation-Date: 2024-03-25 15:26+0000\n"
+"PO-Revision-Date: 2024-03-25 15:26+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: \n"
-"Generated-By: Babel 2.9.1\n"
+"Generated-By: Babel 2.7.0\n"
 
 #. module: som_estalvi
 #: field:wizard.contract.power.optimization,power_p1:0
@@ -300,27 +300,27 @@ msgstr ""
 msgid "Potència màxima registrada"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:52
+#: rml:som_estalvi/report/components/analisi_potencies.mako:55
 msgid "Tots els valors es mostre en kW"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:53
+#: rml:som_estalvi/report/components/analisi_potencies.mako:58
 msgid "GEN"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:54
+#: rml:som_estalvi/report/components/analisi_potencies.mako:58
 msgid "FEB"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:55
+#: rml:som_estalvi/report/components/analisi_potencies.mako:58
 msgid "MAR"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:56
+#: rml:som_estalvi/report/components/analisi_potencies.mako:58
 msgid "ABR"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:57
+#: rml:som_estalvi/report/components/analisi_potencies.mako:58
 msgid "MAI"
 msgstr ""
 
@@ -328,57 +328,57 @@ msgstr ""
 msgid "JUN"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:59
+#: rml:som_estalvi/report/components/analisi_potencies.mako:58
 msgid "JUL"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:60
+#: rml:som_estalvi/report/components/analisi_potencies.mako:58
 msgid "AGO"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:61
+#: rml:som_estalvi/report/components/analisi_potencies.mako:58
 msgid "SET"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:62
+#: rml:som_estalvi/report/components/analisi_potencies.mako:58
 msgid "OCT"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:63
+#: rml:som_estalvi/report/components/analisi_potencies.mako:58
 msgid "NOV"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:64
+#: rml:som_estalvi/report/components/analisi_potencies.mako:58
 msgid "DES"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:69
+#: rml:som_estalvi/report/components/analisi_potencies.mako:66
 msgid ""
 "Les potències òptimes proposades minimitzen el cost anual total de "
 "potència i són vàlides si es manté un ús similar d’energia en les "
 "mateixes hores."
 msgstr ""
 
+#: rml:som_estalvi/report/components/analisi_potencies.mako:70
 #: rml:som_estalvi/report/components/analisi_potencies.mako:73
-#: rml:som_estalvi/report/components/analisi_potencies.mako:76
 msgid "Estimació del cost anual"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:73
+#: rml:som_estalvi/report/components/analisi_potencies.mako:70
 msgid "amb les potències actuals"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:76
+#: rml:som_estalvi/report/components/analisi_potencies.mako:73
 msgid "amb les potències òptimes"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:79
+#: rml:som_estalvi/report/components/analisi_potencies.mako:76
 msgid ""
 "https://ca.support.somenergia.coop/article/271-com-puc-fer-una-"
 "modificacio-de-potencia-o-de-tarifa-i-quant-costa"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:79
+#: rml:som_estalvi/report/components/analisi_potencies.mako:76
 msgid "Més informació per modificar les potències contractades</a>"
 msgstr ""
 
@@ -417,21 +417,25 @@ msgstr ""
 msgid "Som Energia, SCCL - CIF F55091367 | Pic de Peguera, 9 - 17003 - Girona | "
 msgstr ""
 
+#: rml:som_estalvi/report/components/graphic.mako:6
 #: rml:som_estalvi/report/components/graphic.mako:35
 #: rml:som_estalvi/report/components/graphic.mako:60
 msgid "Energia"
 msgstr ""
 
+#: rml:som_estalvi/report/components/graphic.mako:7
 #: rml:som_estalvi/report/components/graphic.mako:36
 #: rml:som_estalvi/report/components/graphic.mako:61
 msgid "Potencia"
 msgstr ""
 
+#: rml:som_estalvi/report/components/graphic.mako:9
 #: rml:som_estalvi/report/components/graphic.mako:38
 #: rml:som_estalvi/report/components/graphic.mako:63
 msgid "Exces"
 msgstr ""
 
+#: rml:som_estalvi/report/components/graphic.mako:12
 #: rml:som_estalvi/report/components/graphic.mako:41
 #: rml:som_estalvi/report/components/graphic.mako:66
 msgid "Reactiva"

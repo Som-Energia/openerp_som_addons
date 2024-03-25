@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2024-03-19 15:36+0000\n"
-"PO-Revision-Date: 2024-03-21 14:06+0000\n"
+"POT-Creation-Date: 2024-03-25 15:26+0000\n"
+"PO-Revision-Date: 2024-03-25 14:32+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Generated-By: Babel 2.9.1\n"
+"Generated-By: Babel 2.7.0\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
@@ -304,27 +304,27 @@ msgstr "Potencias optimas"
 msgid "Potència màxima registrada"
 msgstr "Potencia máxima registrada"
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:52
+#: rml:som_estalvi/report/components/analisi_potencies.mako:55
 msgid "Tots els valors es mostre en kW"
 msgstr "Todos los valores se muestran en kW"
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:53
+#: rml:som_estalvi/report/components/analisi_potencies.mako:58
 msgid "GEN"
 msgstr "ENE"
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:54
+#: rml:som_estalvi/report/components/analisi_potencies.mako:58
 msgid "FEB"
 msgstr "FEB"
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:55
+#: rml:som_estalvi/report/components/analisi_potencies.mako:58
 msgid "MAR"
 msgstr "MAR"
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:56
+#: rml:som_estalvi/report/components/analisi_potencies.mako:58
 msgid "ABR"
 msgstr "ABR"
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:57
+#: rml:som_estalvi/report/components/analisi_potencies.mako:58
 msgid "MAI"
 msgstr "MAI"
 
@@ -332,58 +332,58 @@ msgstr "MAI"
 msgid "JUN"
 msgstr "JUN"
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:59
+#: rml:som_estalvi/report/components/analisi_potencies.mako:58
 msgid "JUL"
 msgstr "JUL"
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:60
+#: rml:som_estalvi/report/components/analisi_potencies.mako:58
 msgid "AGO"
 msgstr "AGO"
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:61
+#: rml:som_estalvi/report/components/analisi_potencies.mako:58
 msgid "SET"
-msgstr "SET"
+msgstr "SEP"
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:62
+#: rml:som_estalvi/report/components/analisi_potencies.mako:58
 msgid "OCT"
 msgstr "OCT"
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:63
+#: rml:som_estalvi/report/components/analisi_potencies.mako:58
 msgid "NOV"
 msgstr "NOV"
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:64
+#: rml:som_estalvi/report/components/analisi_potencies.mako:58
 msgid "DES"
 msgstr "DIC"
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:69
+#: rml:som_estalvi/report/components/analisi_potencies.mako:66
 msgid ""
 "Les potències òptimes proposades minimitzen el cost anual total de potència "
 "i són vàlides si es manté un ús similar d’energia en les mateixes hores."
 msgstr "Las potencias optimas propuestas minimizan el coste anual total de potencia y son validas si se mantiene un uso similar de la energía en las mismas horas."
 
+#: rml:som_estalvi/report/components/analisi_potencies.mako:70
 #: rml:som_estalvi/report/components/analisi_potencies.mako:73
-#: rml:som_estalvi/report/components/analisi_potencies.mako:76
 msgid "Estimació del cost anual"
 msgstr "Estimación del coste anual"
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:73
+#: rml:som_estalvi/report/components/analisi_potencies.mako:70
 msgid "amb les potències actuals"
 msgstr "con las potencias actuales"
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:76
+#: rml:som_estalvi/report/components/analisi_potencies.mako:73
 msgid "amb les potències òptimes"
 msgstr "con las potencias óptimas"
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:79
+#: rml:som_estalvi/report/components/analisi_potencies.mako:76
 msgid ""
 "https://ca.support.somenergia.coop/article/271-com-puc-fer-una-modificacio-"
 "de-potencia-o-de-tarifa-i-quant-costa"
-msgstr ""
+msgstr "https://es.support.somenergia.coop/article/284-como-puedo-hacer-una-modificacion-de-potencia-o-de-tarifa-y-cuanto-cuesta"
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:79
+#: rml:som_estalvi/report/components/analisi_potencies.mako:76
 msgid "Més informació per modificar les potències contractades</a>"
-msgstr ""
+msgstr "Más información para modificar las potencias contratadas</a>"
 
 #: rml:som_estalvi/report/components/capcalera.mako:6
 msgid "Nom:"
@@ -421,21 +421,25 @@ msgid ""
 "Som Energia, SCCL - CIF F55091367 | Pic de Peguera, 9 - 17003 - Girona | "
 msgstr "Som Energia, SCCL - CIF F55091367 | Pic de Peguera, 9 - 17003 - Girona | "
 
+#: rml:som_estalvi/report/components/graphic.mako:6
 #: rml:som_estalvi/report/components/graphic.mako:35
 #: rml:som_estalvi/report/components/graphic.mako:60
 msgid "Energia"
 msgstr "Energía"
 
+#: rml:som_estalvi/report/components/graphic.mako:7
 #: rml:som_estalvi/report/components/graphic.mako:36
 #: rml:som_estalvi/report/components/graphic.mako:61
 msgid "Potencia"
 msgstr "Potencia"
 
+#: rml:som_estalvi/report/components/graphic.mako:9
 #: rml:som_estalvi/report/components/graphic.mako:38
 #: rml:som_estalvi/report/components/graphic.mako:63
 msgid "Exces"
 msgstr "Exceso"
 
+#: rml:som_estalvi/report/components/graphic.mako:12
 #: rml:som_estalvi/report/components/graphic.mako:41
 #: rml:som_estalvi/report/components/graphic.mako:66
 msgid "Reactiva"
@@ -486,7 +490,7 @@ msgstr "A partir de 400 € recomendamos la instalación de baterías de condens
 msgid ""
 "https://ca.support.somenergia.coop/article/259-energia-reactiva-que-es-"
 "efectes-en-la-factura-i-com-eliminar-la"
-msgstr ""
+msgstr "https://es.support.somenergia.coop/article/180-como-puedo-reducir-el-consumo-de-energia-reactiva-con-la-tarifa-3-0a"
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:38
 msgid "Més informació."
