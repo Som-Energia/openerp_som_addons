@@ -3,13 +3,13 @@
 <script>
 
 const data = {
-    "Energia": ${costs['energia'].val},
-    "Potencia": ${costs['potencia'].val},
-    %if costs['exces'] > 0:
-        "Exces": ${costs['exces'].val},
+    ${_(u"Energia")}: ${costs['energia'].val},
+    ${_(u"Potencia")}: ${costs['potencia'].val},
+    %if costs['exces'].val > 0:
+        ${_(u"Exces")}: ${costs['exces'].val},
     %endif
-    %if costs['reactiva'] > 0:
-        "Reactiva": ${costs['reactiva'].val},
+    %if costs['reactiva'].val > 0:
+        ${_(u"Reactiva")}: ${costs['reactiva'].val},
     %endif
 }
 // set the dimensions and margins of the graph
@@ -23,22 +23,22 @@ const half_width = width / 2,
 const color_list = [
     '#4d4d4d',
     '#80a82d',
-    %if costs['exces'] > 0:
+    %if costs['exces'].val > 0:
         '#bec8a9',
     %endif
-    %if costs['reactiva'] > 0:
+    %if costs['reactiva'].val > 0:
         '#71805b'
     %endif
 ]
 
 const domain_list = [
-    ${_(u'Energia')},
-    ${_(u'Potencia')},
-    %if costs['exces'] > 0:
-        ${_(u'Exces')},
+    "${_(u'Energia')}",
+    "${_(u'Potencia')}",
+    %if costs['exces'].val > 0:
+        "${_(u'Exces')}",
     %endif
-    %if costs['reactiva'] > 0:
-        ${_(u'Reactiva')}
+    %if costs['reactiva'].val > 0:
+        "${_(u'Reactiva')}"
     %endif
 ]
 
@@ -57,13 +57,13 @@ svg.append("text")
 
 // set the color scale
 const color = d3.scaleOrdinal(color_list).domain(domain_list);
-color(${_(u"Energia")});
-color(${_(u"Potencia")});
+color("${_(u"Energia")}");
+color("${_(u"Potencia")}");
 %if costs['exces'] > 0:
-    color(${_(u"Exces")});
+    color("${_(u"Exces")}");
 %endif
 %if costs['reactiva'] > 0:
-    color(${_(u"Reactiva")});
+    color("${_(u"Reactiva")}");
 %endif
 
 // Compute the position of each group on the pie:

@@ -19,14 +19,19 @@
                     <b>${_(u"Potència màxima registrada")}</b>
                 </th>
             </tr>
-            <% it = 0 %>
+            <%
+                it = 0
+                mesos_ordenats = []
+                for val in potencia['maximetres'].keys():
+                    mesos_ordenats.append(val[2:] + val[:2])
+                mesos_ordenats.sort()
+            %>
             %for potencia_contractada in potencia['potencies_contractades']:
                 <%
                     from dateutil.relativedelta import relativedelta
                     from datetime import datetime
 
                     periode = 'P{}'.format(it+1)
-                    any_anterior = (datetime.now() - relativedelta(years=+2)).year
                 %>
                 <tr>
                     <td>${periode}</td>
@@ -35,10 +40,8 @@
                         ${potencia['optimizations']['optimal_powers_{}'.format(periode.upper())]}
                     </td>
 
-                    %for mes in range(1, 13):
-                        <%
-                            mesany = '%02d%s' % (mes, any_anterior)
-                        %>
+                    %for mes in mesos_ordenats:
+                        <% mesany = mes[4:] + mes[:4] %>
                         %if potencia['maximetres'].get(mesany):
                             <td>${potencia['maximetres'][mesany][periode]}</td>
                         %else:
@@ -50,18 +53,12 @@
             %endfor
             <tr>
                 <td colspan="3">${_(u"Tots els valors es mostre en kW")}</td>
-                <td>${_(u"GEN")}</td>
-                <td>${_(u"FEB")}</td>
-                <td>${_(u"MAR")}</td>
-                <td>${_(u"ABR")}</td>
-                <td>${_(u"MAI")}</td>
-                <td>${_(u"JUN")}</td>
-                <td>${_(u"JUL")}</td>
-                <td>${_(u"AGO")}</td>
-                <td>${_(u"SET")}</td>
-                <td>${_(u"OCT")}</td>
-                <td>${_(u"NOV")}</td>
-                <td>${_(u"DES")}</td>
+                %for val in mesos_ordenats:
+                    <%
+                        mesos = {'01': _('GEN'), '02': _('FEB'), '03': _('MAR'), '04': _('ABR'), '05': _('MAI'), '06': _('JUN'), '07': _('JUL'), '08': _('AGO'), '09': _('SET'), '10': _('OCT'), '11': _('NOV'), '12': _('DES')}
+                    %>
+                    <td>${mesos[val[4:]]}</td>
+                %endfor
             </tr>
         </table>
     </div>
