@@ -6,6 +6,7 @@ from time import mktime
 from dateutil.relativedelta import relativedelta
 from tools.translate import _
 from mongodb_backend.mongodb2 import mdbpool
+import pytz
 
 from generationkwh.sharescurve import MemberSharesCurve
 from generationkwh.rightspershare import RightsPerShare
@@ -159,11 +160,15 @@ class ResPartner(osv.osv):
 
     @staticmethod
     def _prepare_datetime_value_www_response(dict_with_data):
+        # https://stackoverflow.com/questions/8777753/converting-datetime-date-to-utc-timestamp-in-python/8778548#8778548
+        cet = pytz.timezone('CET')
+        utc = pytz.timezone('UTC')
         return [
             {
-                'date': int(
-                    mktime(datetime.strptime(k, '%Y-%m-%d %H:%M:%S').timetuple())
-                )*1000,  # javascript works with 3 more 0 than python
+                'date': (
+                    datetime.strptime(k, '%Y-%m-%d %H:%M:%S').replace(tzinfo=cet)
+                    - datetime(1970, 1, 1, tzinfo=utc)
+                ).total_seconds()*1000,  # javascript works with 3 more 0 than python
                 'value': dict_with_data[k]
             } for k in sorted(dict_with_data)
         ]
