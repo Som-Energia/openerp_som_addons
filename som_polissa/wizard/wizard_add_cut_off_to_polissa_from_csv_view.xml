@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_add_cut_off_to_polissa_from_csv_form">
+            <field name="name">wizard.add.cut.off.to.polissa.from.csv.form</field>
+            <field name="model">wizard.add.cut.off.to.polissa.from.csv</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Marcar subministrament no tallable des de CSV">
+                    <field name="state" invisible="1" />
+                    <group attrs="{'invisible': [('state', '!=', 'init')]}">
+                        <label string="Marcar subministrament no tallable des de CSV"
+                            colspan="4" />
+                        <label
+                            string="Format del CSV: a la primera columna hi ha d'haver els CUPS, un a cada fila."
+                            colspan="4" />
+                        <field name="csv_file" colspan="4" filename="name" string="Arxiu CSV" />
+                        <field name="cut_off" colspan="4" string="Motiu no tallable" />
+                        <button special="cancel" string="Sortir" icon="gtk-cancel" />
+                        <button name="add_cut_off_from_csv" type="object" string="Marcar subministrament no tallable"
+                            icon="gtk-execute" />
+                    </group>
+                    <group attrs="{'invisible': [('state', '!=', 'end')]}">
+                        <field name="info" colspan="4" readonly="1" nolabel="1"/>
+                        <button special="cancel" string="Sortir" icon="gtk-ok" />
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_add_cut_off_to_polissa_from_csv">
+            <field name="name">Marcar subministrament no tallable des de CSV</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.add.cut.off.to.polissa.from.csv</field>
+            <field name="view_type">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_add_cut_off_to_polissa_from_csv_form" />
+        </record>
+        <record id="values_wizard_add_cut_off_to_polissa_from_csv" model="ir.values">
+            <field name="object" eval="1" />
+            <field name="name">Marcar subministrament no tallable des de CSV</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="value"
+                eval="'ir.actions.act_window,'+str(ref('action_wizard_add_cut_off_to_polissa_from_csv'))" />
+        </record>
+        <menuitem
+            action="action_wizard_add_cut_off_to_polissa_from_csv"
+            id="menu_add_cutoff_to_polissa_from_csv"
+            name="Marcar subministrament no tallable des de CSV"
+            parent="giscedata_polissa.menu_principal"
+            sequence="10"/>
+    </data>
+</openerp>
