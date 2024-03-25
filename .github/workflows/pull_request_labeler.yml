@@ -14,7 +14,7 @@ jobs:
       with:
         mode: minimum
         count: 1
-        labels: "*"
+        labels: ".*"
         add_comment: true
         message: "No s'ha pogut posar cap etiqueta. Potser et falta algun dels passos següents: [docs/crear_nou_modul.md](docs/crear_nou_modul.md)"
         use_regex: true
