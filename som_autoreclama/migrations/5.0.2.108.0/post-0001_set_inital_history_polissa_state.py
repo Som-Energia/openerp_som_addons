@@ -27,6 +27,11 @@ def up(cursor, installed_version):
     if not installed_version:
         return
 
+    # do not execute, make the setup in phases, too many objects, see:
+    # PR https://github.com/Som-Energia/somenergia-scripts/pull/86
+    # PR https://github.com/Som-Energia/somenergia-scripts/pull/85
+    # PR https://github.com/Som-Energia/somenergia-scripts/pull/84
+    """
     uid = 1
     pool = pooler.get_pool(cursor.dbname)
 
@@ -100,7 +105,7 @@ def up(cursor, installed_version):
     logger.info("> Assignat estat bucle (polissa no ok amb R1 006 previa) -------> {}".format(len(assignat_loop)))               # noqa: E501
     logger.info("> Assignat estat correcte (polissa no ok sense R1 006 previa) --> {}".format(len(assignat_correct_no_previa)))  # noqa: E501
     logger.info("Estats inicials per les giscedata_polissa creats")
-
+    """
 
 def down(cursor, installed_version):
     pass
