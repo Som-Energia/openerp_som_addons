@@ -1,7 +1,7 @@
 <%def name="analisi_potencies(potencia)">
     <div class="seccio">
         <span>
-            ${_(u"ANÀLISI DE LES POTÈNCIES CONTRACTADES I ESTIMACIÓ DEL COST TOTAL")}
+            ${_(u"ANÀLISI DE LES POTÈNCIES CONTRACTADES I ESTIMACIÓ DEL COST ANUAL")}
         </span>
         <hr/>
     </div>
@@ -15,8 +15,9 @@
                 <th>
                     <b>${_(u"Potències òptimes")}</b>
                 </th>
-                <th colspan="12">
-                    <b>${_(u"Potència màxima registrada")}</b>
+                <th colspan="12" style="text-align: left;">
+                    <b>${_(u"Potència màxima registrada")}</b><br/>
+                    <span class="secondary-text">${_(u"Si els tres valors del mes corresponen al 85% de la potència contractada, són estimats.")}</span>
                 </th>
             </tr>
             <%
