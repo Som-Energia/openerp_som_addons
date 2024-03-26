@@ -14,28 +14,28 @@
                 <tr>
                     <td>
                         <p><b>${_(u"Cost de l'electricitat utilitzada")}</b></p>
-                        <p class="secundary-text">${_(u"Oferim 2 tarifes diferents: períodes i indexada.")}</p>
+                        <p class="secondary-text">${_(u"Oferim 2 tarifes diferents:")} <a href="${_(u"https://www.somenergia.coop/ca/tarifes-delectricitat-que-oferim/tarifa-periodes/")}">${_(u"períodes")}</a> ${_(u"i")} <a href="${_(u"https://www.somenergia.coop/ca/tarifes-delectricitat-que-oferim/tarifa-indexada/")}">${_(u"indexada")}</a>.</p>
                     </td>
                     <td><b><span style="color: #4d4d4d">${costs['energia']} €</span></b></td>
                 </tr>
                 <tr>
                     <td>
                         <p><b>${_(u"Cost de les potències contractades:")}</b></p>
-                        <p class="secundary-text">${_(u"Correspon íntegrament als costos regulats, ja que no hi afegim marge per la cooperativa.")}</p>
+                        <p class="secondary-text">${_(u"Correspon íntegrament als costos regulats, ja que no hi afegim marge per la cooperativa.")}</p>
                     </td>
                     <td><b><span style="color: #80a82d">${costs['potencia']} €</span></b></td>
                 </tr>
                 <tr>
                     <td>
                         <p><b>${_(u"Cost de l'excés de potència:")}</b></p>
-                        <p class="secundary-text">${_(u"També regulat. L'analitzem a continuació junt amb el cost de les potències contractades.")}</p>
+                        <p class="secondary-text">${_(u"També regulat. L'analitzem a continuació junt amb el cost de les potències contractades.")}</p>
                     </td>
                     <td><b><span style="color: #c7d1b0">${costs['exces']} €</span></b></td>
                 </tr>
                 <tr>
                     <td>
                         <p><b>${_(u"Cost per energia reactiva:")}</b></p>
-                        <p class="secundary-text">${_(u"A partir de 400 € recomanem la instal·lació de bateries de condensadors.")} <a href="${_(u"https://ca.support.somenergia.coop/article/259-energia-reactiva-que-es-efectes-en-la-factura-i-com-eliminar-la")}">${_(u"Més informació.")}</a></p>
+                        <p class="secondary-text">${_(u"A partir de 400 € recomanem la instal·lació de bateries de condensadors.")} <a href="${_(u"https://ca.support.somenergia.coop/article/259-energia-reactiva-que-es-efectes-en-la-factura-i-com-eliminar-la")}">${_(u"Més informació.")}</a></p>
                     </td>
                     <td><b><span style="color: #71805b">${costs['reactiva']} €</span></b></td>
                 </tr>
@@ -52,7 +52,7 @@
                 <tr>
                     <td>
                         <p class="text-descompte">${_(u"Descompte pels excedents:")}</p>
-                        <p class="secundary-text text-negre">${_(u"Inclou la compensació i el Flux Solar.")}</p>
+                        <p class="secondary-text text-negre">${_(u"Inclou la compensació i el Flux Solar.")}</p>
                     </td>
                     <td class="text-descompte"><b>${costs['descompte_generacio']} €</b></td>
                 </tr>
@@ -62,7 +62,7 @@
     <div class="container">
         <div class="note">
             <span>
-                ${_(u"No s'inclou el lloguer del comptador ni els impostos. Dades dels últims 12 mesos facturats o dels mesos disponibles.")}
+                ${_(u"No s'inclou el lloguer del comptador ni els impostos. Dades dels últims 12 mesos facturats.")}
             </span>
         </div>
     </div>
