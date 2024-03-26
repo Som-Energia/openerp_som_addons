@@ -5,6 +5,7 @@ from report_puppeteer.report_puppeteer import PuppeteerParser
 import json
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from osv import osv
 
 
 class ReportBackendSomEstalvi(ReportBackend):
@@ -24,10 +25,63 @@ class ReportBackendSomEstalvi(ReportBackend):
 
         return pol_br.titular.lang
 
+    def get_dates(self, cursor, uid, pol, context=None):
+        if context is None:
+            context = {}
+
+        factura_obj = self.pool.get("giscedata.facturacio.factura")
+
+        search_params = [
+            ("polissa_id", "=", pol.id),
+            ("type", "=", "out_invoice"),
+            ("refund_by_id", "=", False),
+        ]
+
+        factura_id = factura_obj.search(
+            cursor, uid, search_params, context=context, order="date_invoice DESC", limit=1
+        )[0]
+
+        end_date = factura_obj.read(
+            cursor, uid, factura_id, ['date_invoice'], context=context
+        )['date_invoice']
+        start_date = datetime.strftime(
+            datetime.strptime(end_date, "%Y-%m-%d") - relativedelta(years=1),
+            '%Y-%m-%d'
+        )
+
+        return start_date, end_date
+
+    def is_printable(self, cursor, uid, pol, context=None):
+        if context is None:
+            context = {}
+
+        factura_obj = self.pool.get("giscedata.facturacio.factura")
+
+        _, end_date = self.get_dates(cursor, uid, pol, context=context)
+
+        search_params = [
+            ("polissa_id", "=", pol.id),
+            ("type", "=", "out_invoice"),
+            ("refund_by_id", "=", False),
+            ("date_invoice", ">=", end_date),
+        ]
+
+        factura_id = factura_obj.search(
+            cursor, uid, search_params, context=context, order="date_invoice DESC", limit=1
+        )
+
+        if not factura_id:
+            raise osv.except_osv(
+                "Aquest informe no es pot imprimir!",
+                "El contracte ha de tenir les últimes 12 factures d'energia pagades amb SomEnergia"
+            )
+
     @report_browsify
     def get_data(self, cursor, uid, pol, context=None):
         if context is None:
             context = {}
+
+        self.is_printable(cursor, uid, pol, context=context)
 
         data = {
             "titular": self.get_titular(cursor, uid, pol, context=context),
@@ -56,6 +110,10 @@ class ReportBackendSomEstalvi(ReportBackend):
 
         wiz_opti_obj = self.pool.get("wizard.contract.power.optimization")
 
+        # Triar les dates del càlcul del MiniZinc
+        start_date, end_date = self.get_dates(cursor, uid, pol, context=context)
+
+        # Wizard del MiniZinc
         ctx = {
             "active_id": pol.id,
             "active_ids": [pol.id]
@@ -63,7 +121,8 @@ class ReportBackendSomEstalvi(ReportBackend):
 
         wiz_id = wiz_opti_obj.create(cursor, uid, {}, context=ctx)
         wiz_data = {
-            'start_date': '2022-01-01'
+            'start_date': start_date,
+            'end_date': end_date
         }
         wiz_opti_obj.write(cursor, uid, [wiz_id], wiz_data, context=ctx)
         wiz_opti_obj.button_get_optimization_required_data(cursor, uid, [wiz_id], context=ctx)
@@ -94,7 +153,6 @@ class ReportBackendSomEstalvi(ReportBackend):
         if context is None:
             context = {}
 
-        factura_obj = self.pool.get("giscedata.facturacio.factura")
         informe_dades_obj = self.pool.get("wizard.informe.dades_desagregades")
 
         data = {
@@ -105,25 +163,8 @@ class ReportBackendSomEstalvi(ReportBackend):
             "descompte_generacio": 0.0,
         }
 
-        factura_obj = self.pool.get("giscedata.facturacio.factura")
+        start_date, end_date = self.get_dates(cursor, uid, pol, context=context)
 
-        search_params = [
-            ("polissa_id", "=", pol.id),
-            ("type", "=", "out_invoice"),
-            ("refund_by_id", "=", False),
-        ]
-
-        factura_id = factura_obj.search(
-            cursor, uid, search_params, context=context, order="date_invoice DESC", limit=1
-        )[0]
-
-        end_date = factura_obj.read(
-            cursor, uid, factura_id, ['date_invoice'], context=context
-        )['date_invoice']
-        start_date = datetime.strftime(
-            datetime.strptime(end_date, "%Y-%m-%d") - relativedelta(years=1),
-            '%Y-%m-%d'
-        )
         wiz_id = informe_dades_obj.create(cursor, uid, {}, context=context)
         dades_factures = informe_dades_obj.find_invoices(
             cursor, uid, [wiz_id], [pol.id], start_date, end_date, context=context
