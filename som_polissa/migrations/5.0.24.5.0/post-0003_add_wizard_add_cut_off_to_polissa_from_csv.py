@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 import logging
-from oopgrade.oopgrade import load_data, add_columns
+from oopgrade.oopgrade import load_data
 import pooler
 
 
