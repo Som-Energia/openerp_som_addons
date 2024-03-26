@@ -1,11 +1,7 @@
 # -*- encoding: utf-8 -*-
 import logging
 import pooler
-<<<<<<< HEAD
-from oopgrade.oopgrade import load_data, load_data_records
-=======
 from oopgrade.oopgrade import load_data_records
->>>>>>> origin/ADD_no_cut_off_from_csv
 
 
 def up(cursor, installed_version):
@@ -26,7 +22,7 @@ def up(cursor, installed_version):
     # UPDATAR UNA PART DE L'XML (POSAR LA ID)##
     logger.info("Updating XMLs")
     list_of_records = [
-        "view_som_bateria_virtual_tree",
+        "view_som_bateria_virtual_form",
     ]
     load_data_records(
         cursor, 'som_facturacio_flux_solar', 'giscedata_bateria_virtual.xml',

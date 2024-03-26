@@ -1,11 +1,6 @@
 # -*- encoding: utf-8 -*-
 import logging
 import pooler
-<<<<<<< HEAD
-from oopgrade.oopgrade import load_data, load_data_records
-=======
-from oopgrade.oopgrade import load_data_records
->>>>>>> origin/ADD_no_cut_off_from_csv
 
 
 def up(cursor, installed_version):
@@ -22,17 +17,6 @@ def up(cursor, installed_version):
     pool.get("giscedata.bateria.virtual")._auto_init(
         cursor, context={'module': 'som_facturacio_flux_solar'})
     logger.info("Table created succesfully.")
-
-    # UPDATAR UNA PART DE L'XML (POSAR LA ID)##
-    logger.info("Updating XMLs")
-    list_of_records = [
-        "view_som_bateria_virtual_tree",
-    ]
-    load_data_records(
-        cursor, 'som_facturacio_flux_solar', 'giscedata_bateria_virtual.xml',
-        list_of_records, mode='update'
-    )
-    logger.info("XMLs succesfully updated.")
 
 
 def down(cursor, installed_version):

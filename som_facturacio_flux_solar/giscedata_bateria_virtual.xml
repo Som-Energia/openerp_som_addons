@@ -7,15 +7,27 @@
             <field name="type">tree</field>
             <field name="inherit_id" ref="giscedata_facturacio_bateria_virtual.view_bateries_virtuals_tree"/>
             <field name="arch" type="xml">
-		<field name="total_descompte_bateria" position="replace">
-                    <field name="total_descompte_bateria" sum="Total descomptes"/>	
-		    <field name="receptor_info"/>
+                <field name="total_descompte_bateria" position="replace">
+                    <field name="total_descompte_bateria" sum="Total descomptes"/>
+                    <field name="receptor_info"/>
                     <field name="origen_info"/>
                     <field name="data_inici_descomptes"/>
-	            <field name="data_inici_app_descomptes"/>
+                    <field name="data_inici_app_descomptes"/>
                     <field name="data_final_app_descomptes"/>
                     <field name="activa"/>
-	        </field>
+                </field>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_som_bateria_virtual_form">
+            <field name="name">view.som.bateria.virtual.tree</field>
+            <field name="model">giscedata.bateria.virtual</field>
+            <field name="type">tree</field>
+            <field name="inherit_id" ref="giscedata_facturacio_bateria_virtual.view_bateries_virtuals_form"/>
+            <field name="arch" type="xml">
+                <field name="total_descompte_bateria" position="after">
+                    <field name="activa" select="1"/>
+                </field>
             </field>
         </record>
     </data>

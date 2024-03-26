@@ -155,18 +155,25 @@ class TestOpenFacturesSendMail(testing.OOTestCase):
         uid = self.uid
 
         clot_obj = self.pool.get("giscedata.facturacio.contracte_lot")
+        wiz_add_lot_obj = self.pool.get("wizard.afegir.polisses.lot")
         fact_obj = self.pool.get("giscedata.facturacio.factura")
         wiz_obj = self.pool.get("wizard.open.factures.send.mail")
         imd_obj = self.pool.get("ir.model.data")
         clot_id1 = imd_obj.get_object_reference(
             cursor, uid, "giscedata_facturacio", "cont_lot_0001"
         )[1]
-        clot_id2 = imd_obj.get_object_reference(
-            cursor, uid, "giscedata_facturacio", "cont_lot_0002"
+        lot_id = imd_obj.get_object_reference(
+            cursor, uid, "giscedata_facturacio", "lot_0001"
         )[1]
+        pol_id2 = imd_obj.get_object_reference(
+            cursor, uid, "giscedata_polissa", "polissa_0007"
+        )[1]
+        ctx = {'active_ids': [pol_id2], 'active_id': pol_id2}
+        wiz_id = wiz_add_lot_obj.create(cursor, uid, {'lot_facturacio': lot_id}, context=ctx)
+        wiz_add_lot_obj.action_assignar_lot_facturacio(cursor, uid, wiz_id, context=ctx)
+        clot_id2 = clot_obj.search(cursor, uid, [('polissa_id', '=', pol_id2)])[0]
         clots = clot_obj.browse(cursor, uid, [clot_id1, clot_id2])
         pol_id1 = clots[0].polissa_id.id
-        pol_id2 = clots[1].polissa_id.id
         fact_id1 = fact_obj.search(
             cursor,
             uid,
@@ -176,7 +183,7 @@ class TestOpenFacturesSendMail(testing.OOTestCase):
         fact_id2 = fact_obj.search(
             cursor,
             uid,
-            [("polissa_id", "!=", pol_id1), ("type", "=", "out_invoice"), ("state", "=", "draft")],
+            [("polissa_id", "=", pol_id2), ("type", "=", "out_invoice"), ("state", "=", "draft")],
             limit=1,
         )[0]
         fact_obj.write(cursor, uid, fact_id1, {"lot_facturacio": clots[0].lot_id.id})
