@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2024-03-25 15:26+0000\n"
-"PO-Revision-Date: 2024-03-25 15:26+0000\n"
+"POT-Creation-Date: 2024-03-26 10:09+0000\n"
+"PO-Revision-Date: 2024-03-26 10:09+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -31,8 +31,8 @@ msgid "Potència P3"
 msgstr ""
 
 #. module: som_estalvi
-#: view:wizard.contract.power.optimization:0
-msgid "Optimitzador de potències"
+#: field:wizard.contract.power.optimization,power_p2:0
+msgid "Potència P2"
 msgstr ""
 
 #. module: som_estalvi
@@ -66,8 +66,8 @@ msgid "State"
 msgstr ""
 
 #. module: som_estalvi
-#: field:wizard.contract.power.optimization,power_p2:0
-msgid "Potència P2"
+#: view:wizard.contract.power.optimization:0
+msgid "Optimitzador de potències"
 msgstr ""
 
 #. module: som_estalvi
@@ -151,6 +151,11 @@ msgid "Obtenir informació de la pòlissa"
 msgstr ""
 
 #. module: som_estalvi
+#: model:ir.actions.report.xml,name:som_estalvi.action_report_som_estalvi
+msgid "Generar infoenergia maxímetre"
+msgstr ""
+
+#. module: som_estalvi
 #: field:wizard.contract.power.optimization,end_date:0
 msgid "Data final"
 msgstr ""
@@ -173,11 +178,6 @@ msgstr ""
 #. module: som_estalvi
 #: view:wizard.contract.power.optimization:0
 msgid "Dades actuals pel càlcul"
-msgstr ""
-
-#. module: som_estalvi
-#: model:ir.actions.report.xml,name:som_estalvi.action_report_som_estalvi
-msgid "Informe de mesures d'estalvi"
 msgstr ""
 
 #. module: som_estalvi
@@ -285,7 +285,7 @@ msgid "SomEnergia informe anual"
 msgstr ""
 
 #: rml:som_estalvi/report/components/analisi_potencies.mako:4
-msgid "ANÀLISI DE LES POTÈNCIES CONTRACTADES I ESTIMACIÓ DEL COST TOTAL"
+msgid "ANÀLISI DE LES POTÈNCIES CONTRACTADES I ESTIMACIÓ DEL COST ANUAL"
 msgstr ""
 
 #: rml:som_estalvi/report/components/analisi_potencies.mako:13
@@ -300,85 +300,92 @@ msgstr ""
 msgid "Potència màxima registrada"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:55
+#: rml:som_estalvi/report/components/analisi_potencies.mako:20
+#, python-format
+msgid ""
+"Si els tres valors del mes corresponen al 85% de la potència contractada,"
+" són estimats."
+msgstr ""
+
+#: rml:som_estalvi/report/components/analisi_potencies.mako:56
 msgid "Tots els valors es mostre en kW"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:58
+#: rml:som_estalvi/report/components/analisi_potencies.mako:59
 msgid "GEN"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:58
+#: rml:som_estalvi/report/components/analisi_potencies.mako:59
 msgid "FEB"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:58
+#: rml:som_estalvi/report/components/analisi_potencies.mako:59
 msgid "MAR"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:58
+#: rml:som_estalvi/report/components/analisi_potencies.mako:59
 msgid "ABR"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:58
+#: rml:som_estalvi/report/components/analisi_potencies.mako:59
 msgid "MAI"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:58
+#: rml:som_estalvi/report/components/analisi_potencies.mako:59
 msgid "JUN"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:58
+#: rml:som_estalvi/report/components/analisi_potencies.mako:59
 msgid "JUL"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:58
+#: rml:som_estalvi/report/components/analisi_potencies.mako:59
 msgid "AGO"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:58
+#: rml:som_estalvi/report/components/analisi_potencies.mako:59
 msgid "SET"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:58
+#: rml:som_estalvi/report/components/analisi_potencies.mako:59
 msgid "OCT"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:58
+#: rml:som_estalvi/report/components/analisi_potencies.mako:59
 msgid "NOV"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:58
+#: rml:som_estalvi/report/components/analisi_potencies.mako:59
 msgid "DES"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:66
+#: rml:som_estalvi/report/components/analisi_potencies.mako:67
 msgid ""
 "Les potències òptimes proposades minimitzen el cost anual total de "
 "potència i són vàlides si es manté un ús similar d’energia en les "
 "mateixes hores."
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:70
-#: rml:som_estalvi/report/components/analisi_potencies.mako:73
+#: rml:som_estalvi/report/components/analisi_potencies.mako:71
+#: rml:som_estalvi/report/components/analisi_potencies.mako:74
 msgid "Estimació del cost anual"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:70
+#: rml:som_estalvi/report/components/analisi_potencies.mako:71
 msgid "amb les potències actuals"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:73
+#: rml:som_estalvi/report/components/analisi_potencies.mako:74
 msgid "amb les potències òptimes"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:76
+#: rml:som_estalvi/report/components/analisi_potencies.mako:77
 msgid ""
 "https://ca.support.somenergia.coop/article/271-com-puc-fer-una-"
 "modificacio-de-potencia-o-de-tarifa-i-quant-costa"
 msgstr ""
 
-#: rml:som_estalvi/report/components/analisi_potencies.mako:76
+#: rml:som_estalvi/report/components/analisi_potencies.mako:77
 msgid "Més informació per modificar les potències contractades</a>"
 msgstr ""
 
@@ -410,7 +417,7 @@ msgstr ""
 msgid ""
 "Fins al juny del 2024, es manté la possibilitat de fer més d'una "
 "modificació de potències per als contractes d'empreses i treballador/es "
-"autònoms/es, així com la gratuïtat del tràmit"
+"autònoms/es, així com la gratuïtat del tràmit."
 msgstr ""
 
 #: rml:som_estalvi/report/components/footer.mako:13
@@ -450,7 +457,31 @@ msgid "Cost de l'electricitat utilitzada"
 msgstr ""
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:17
-msgid "Oferim 2 tarifes diferents: períodes i indexada."
+msgid "Oferim 2 tarifes diferents:"
+msgstr ""
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:17
+msgid ""
+"https://www.somenergia.coop/ca/tarifes-delectricitat-que-oferim/tarifa-"
+"periodes/"
+msgstr ""
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:17
+msgid "períodes"
+msgstr ""
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:17
+msgid "i"
+msgstr ""
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:17
+msgid ""
+"https://www.somenergia.coop/ca/tarifes-delectricitat-que-oferim/tarifa-"
+"indexada/"
+msgstr ""
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:17
+msgid "indexada"
 msgstr ""
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:23
@@ -506,7 +537,7 @@ msgstr ""
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:65
 msgid ""
 "No s'inclou el lloguer del comptador ni els impostos. Dades dels últims "
-"12 mesos facturats o dels mesos disponibles."
+"12 mesos facturats."
 msgstr ""
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:75
