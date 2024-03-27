@@ -628,3 +628,29 @@ class TestsGurbSwitching(testing.OOTestCase):
 
         self.assertEqual(m1.state, "open")
         self.assertEqual(m1.notificacio_pendent, True)
+
+    def test_close_d1_01_gurb_category(self):
+        d1_xml_path = get_module_resource(
+            "giscedata_switching", "tests", "fixtures", "d101_new.xml"
+        )
+        with open(d1_xml_path, "r") as f:
+            d1_xml = f.read()
+
+        sw_obj = self.openerp.pool.get("giscedata.switching")
+        self.switch(self.txn, "comer")
+        self.activar_polissa_CUPS(self.txn, set_gurb_category=True)
+        sw_obj.importar_xml(
+            self.cursor, self.uid, d1_xml, "d101.xml"
+        )
+
+        res = sw_obj.search(self.cursor, self.uid, [
+            ("proces_id.name", "=", "D1"),
+            ("step_id.name", "=", "01"),
+            ("codi_sollicitud", "=", "201608120830"),
+        ])
+        self.assertEqual(len(res), 1)
+
+        d1 = sw_obj.browse(self.cursor, self.uid, res[0])
+        self.assertEqual(d1.proces_id.name, "D1")
+        self.assertEqual(d1.step_id.name, "01")
+        self.assertEqual(d1.state, "cancel")
