@@ -1,6 +1,6 @@
 # This workflow will pass tests of module passed by input
 
-name: powersms
+name: powersms_py3
 on:
   workflow_dispatch:
   schedule:
