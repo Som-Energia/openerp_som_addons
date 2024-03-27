@@ -51,8 +51,11 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
 
         return [int(x) for x in pol_ids]
 
-    def find_invoices(self, cursor, uid, ids, pol_ids, from_date, to_date):
-        self.browse(cursor, uid, ids[0])
+    def find_invoices(self, cursor, uid, ids, pol_ids, from_date, to_date, context=None):
+        if not context:
+            context = {}
+
+        self.browse(cursor, uid, ids[0], context=context)
 
         fact_obj = self.pool.get("giscedata.facturacio.factura")
         pol_obj = self.pool.get("giscedata.polissa")
@@ -60,7 +63,7 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
         items = {}
 
         for pol_id in pol_ids:
-            pol = pol_obj.browse(cursor, uid, pol_id)
+            pol = pol_obj.browse(cursor, uid, pol_id, context=context)
             subitem = OrderedDict(
                 [
                     ("Contracte", pol.name),
@@ -100,10 +103,11 @@ class WizardInformeDadesDesagregades(osv.osv_memory):
                 ("type", "in", ["out_invoice", "out_refund"]),
                 ("state", "!=", "draft"),
             ],
+            context=context,
         )
 
         for fact_id in fact_ids:
-            fact = fact_obj.browse(cursor, uid, fact_id)
+            fact = fact_obj.browse(cursor, uid, fact_id, context=context)
             pol_item = items[fact.polissa_id.id]
 
             factor = 1.0 if fact.type == "out_invoice" else -1.0
