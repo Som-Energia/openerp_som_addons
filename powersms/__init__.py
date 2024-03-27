@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from . import powersms_provider
 from . import powersms_provider_lleidanet
 from . import powersms_core
