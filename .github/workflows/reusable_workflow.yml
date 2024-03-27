@@ -7,6 +7,10 @@ on:
       module:
         required: true
         type: string
+      pyversion:
+        required: false
+        type: string
+        default: '["2.7"]'
     secrets:
         ACCESS_TOKEN_GA:
             required: true
@@ -28,7 +32,8 @@ jobs:
       fail-fast: false
       matrix:
         # python-version: [ "2.7", "3.10" ]
-        python-version: [ "2.7" ]
+        # python-version: [ "2.7" ]
+        python-version: ${{ fromJSON(inputs.pyversion) }}
     services:
       postgres:
         image: timescale/timescaledb-postgis:latest-pg12
