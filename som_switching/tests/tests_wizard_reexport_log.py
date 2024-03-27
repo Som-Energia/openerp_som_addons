@@ -16,30 +16,29 @@ class TestWizardReexportLog(TestSwitchingImport):
         self.txn.stop()
 
     def test_wizard_reexport_files(self):
-        with Transaction().start(self.database) as txn:
-            self.switch(txn, "comer", other_id_name="res_partner_asus")
-            uid = txn.user
-            cursor = txn.cursor
-            contract_id = self.get_contract_id(txn)
-            self.activar_polissa_CUPS(txn)
-            step_id = self.create_case_and_step(cursor, uid, contract_id, "C1", "01")
-            step_obj = self.openerp.pool.get("giscedata.switching.c1.01")
-            sw_obj = self.openerp.pool.get("giscedata.switching")
-            c101 = step_obj.browse(cursor, uid, step_id)
-            c1 = sw_obj.browse(cursor, uid, c101.sw_id.id)
-            log_obj = self.pool.get("giscedata.switching.log")
-            sw_obj.exportar_xml(cursor, uid, c1.id)
-            log_id = sorted(log_obj.search(cursor, uid, [("request_code", "=", "202401160002")]))[
-                -1
-            ]
-            log = log_obj.browse(cursor, uid, log_id)
-            log_obj.write(cursor, uid, [log_id], {"status": "error"})
-            wiz_reexport_id = self.wiz_o.create(cursor, uid, {}, context={"active_ids": [log.id]})
+        self.switch(self.txn, "comer", other_id_name="res_partner_asus")
+        uid = self.uid
+        cursor = self.cursor
+        contract_id = self.get_contract_id(self.txn)
+        self.activar_polissa_CUPS(self.txn)
+        step_id = self.create_case_and_step(cursor, uid, contract_id, "C1", "01")
+        step_obj = self.openerp.pool.get("giscedata.switching.c1.01")
+        sw_obj = self.openerp.pool.get("giscedata.switching")
+        c101 = step_obj.browse(cursor, uid, step_id)
+        c1 = sw_obj.browse(cursor, uid, c101.sw_id.id)
+        log_obj = self.pool.get("giscedata.switching.log")
+        sw_obj.exportar_xml(cursor, uid, c1.id)
+        log_id = sorted(log_obj.search(cursor, uid, [("proces", "=", "C1")]))[
+            -1
+        ]
+        log = log_obj.browse(cursor, uid, log_id)
+        log_obj.write(cursor, uid, [log_id], {"status": "error"})
+        wiz_reexport_id = self.wiz_o.create(cursor, uid, {}, context={"active_ids": [log.id]})
 
-            self.wiz_o.reexport_files(
-                cursor, uid, wiz_reexport_id, context={"active_ids": [log.id]}
-            )
+        self.wiz_o.reexport_files(
+            cursor, uid, wiz_reexport_id, context={"active_ids": [log.id]}
+        )
 
-            wiz = self.wiz_o.browse(cursor, uid, wiz_reexport_id)
-            self.assertEqual(wiz.state, "end")
-            self.assertEqual(wiz.msg, "S'han processat 1 fitxers.\n")
+        wiz = self.wiz_o.browse(cursor, uid, wiz_reexport_id)
+        self.assertEqual(wiz.state, "end")
+        self.assertEqual(wiz.msg, "S'han processat 1 fitxers.\n")
