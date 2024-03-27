@@ -31,8 +31,6 @@ jobs:
       # For example, pypy2 and pypy3
       fail-fast: false
       matrix:
-        # python-version: [ "2.7", "3.10" ]
-        # python-version: [ "2.7" ]
         python-version: ${{ fromJSON(inputs.pyversion) }}
     services:
       postgres:
