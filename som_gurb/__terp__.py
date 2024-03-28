@@ -7,6 +7,7 @@
     "category": "SomEnergia",
     "depends": [
         "giscedata_polissa",
+        "giscedata_polissa_category",
         "giscedata_switching",
     ],
     "init_xml": [],
