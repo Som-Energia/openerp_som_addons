@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <record model="res.config" id="som_stash_years_ago" forcecreate="1">
+            <field name="name">som_stash_years_ago</field>
+            <field name="value">6</field>
+            <field name="description">Quantitat d'anys que es considera pel procés d'stashing</field>
+        </record>
+    </data>
+</openerp>
