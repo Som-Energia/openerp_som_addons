@@ -46,21 +46,24 @@ class SomGurbCups(osv.osv):
                 res[cups_gurb_id] = True
         return res
 
-    def add_service_to_contract(self, cursor, uid, ids, pricelist_id, product_id, context=None):
+    def add_service_to_contract(
+        self, cursor, uid, ids, pricelist_id, product_id, data_inici, context=None
+    ):
         if context is None:
             context = {}
 
         pol_obj = self.pool.get("giscedata.polissa")
+        wiz_service_o = self.pool.get("wizard.create.service")
 
         for gurb_cups_id in ids:
-            cups_id = self.read(cursor, uid, gurb_cups_id, ['cups_id'])['cups_id']
+            cups_id = self.read(cursor, uid, gurb_cups_id, ["cups_id"])["cups_id"][0]
             search_params = [
                 ("state", "=", "activa"),
-                ("cups_id", "=", cups_id),
+                ("cups", "=", cups_id),
             ]
 
-            pol_id = pol_obj.search(cursor, uid, search_params, context=context, limit=1)
-            if not pol_id:
+            pol_ids = pol_obj.search(cursor, uid, search_params, context=context, limit=1)
+            if not pol_ids:
                 error_title = _("No hi ha pòlisses actives per aquest CUPS"),
                 error_info = _(
                     "El CUPS id {} no té pòlisses actives. No es pot afegir cap servei".format(
@@ -68,6 +71,17 @@ class SomGurbCups(osv.osv):
                     )
                 )
                 raise osv.except_osv(error_title, error_info)
+
+            # Afegim el servei
+            creation_vals = {
+                "pricelist_id": pricelist_id,
+                "product_id": product_id,
+                "data_inici": data_inici,
+            }
+            wiz_id = wiz_service_o.create(cursor, uid, creation_vals, context=context)
+
+            context['active_ids'] = pol_ids
+            wiz_service_o.create_services(cursor, uid, [wiz_id], context=context)
 
     _columns = {
         "active": fields.boolean("Actiu"),
