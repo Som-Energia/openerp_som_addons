@@ -51,6 +51,7 @@ class UpdatePendingStates(osv.osv_memory):
         self.update_pending_ask_poverty(cursor, uid)
         self.update_waiting_for_annexIV(cursor, uid)
         self.update_waiting_for_48h(cursor, uid)
+        self.send_fue_reminder_emails(cursor, uid)
 
     def get_object_id(self, cursor, uid, module, sem_id):
         """
@@ -948,6 +949,51 @@ class UpdatePendingStates(osv.osv_memory):
             else:
                 if not self.poverty_eligible(cursor, uid, polissa_id):
                     fact_obj.set_pending(cursor, uid, [factura_id], warning_cut_off_state)
+
+    def send_fue_reminder_emails(self, cursor, uid, context=None):
+        if context is None:
+            context = {}
+
+        gff_obj = self.pool.get("giscedata.facturacio.factura")
+        logger = logging.getLogger("openerp.poweremail")
+        fue_dp_state = self.get_object_id(
+            cursor, uid, "som_account_invoice_pending", "fue_default_pending_state"
+        )
+        fue_bs_state = self.get_object_id(
+            cursor, uid, "som_account_invoice_pending", "fue_bo_social_pending_state"
+        )
+        factura_ids = []
+        facts_dp = self.get_invoices_with_pending_state(cursor, uid, fue_dp_state)
+        facts_bs = self.get_invoices_with_pending_state(cursor, uid, fue_bs_state)
+
+        factura_ids = facts_dp + facts_bs
+
+        fue_reminder_template_id = self.get_object_id(
+            cursor, uid, "som_account_invoice_pending", "email_fue_reminder"
+        )
+        email_from = self.get_from_email(cursor, uid, fue_reminder_template_id)
+
+        email_params = dict({"email_from": email_from, "template_id": fue_reminder_template_id})
+
+        for factura_id in factura_ids:
+            fact = gff_obj.browse(cursor, uid, factura_id)
+            date_fue = datetime.strptime(fact.pending_state_date, "%Y-%m-%d %H:%M:%S")
+            date_diff = datetime.today() - date_fue
+
+            if date_diff.days % 330 == 0:
+                ret_value = self.send_email(cursor, uid, factura_id, email_params)
+                if ret_value == -1:
+                    logger.info(
+                        "ERROR: Sending FUE reminder for {factura_id} invoice error.".format(
+                            factura_id=factura_id,
+                        )
+                    )
+                else:
+                    old_comment = fact.comment if fact.comment else ""
+                    new_comment = "{} (auto.): Enviat correu recordatori FUE.\n".format(
+                        datetime.now().strftime("%Y-%m-%d")
+                    )
+                    gff_obj.write(cursor, uid, factura_id, {"comment": new_comment + old_comment})
 
 
 UpdatePendingStates()
