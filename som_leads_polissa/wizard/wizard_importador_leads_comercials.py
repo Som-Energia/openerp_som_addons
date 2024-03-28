@@ -30,9 +30,9 @@ class WizardImportarLeadsComercials(osv.osv):
         lead_o = self.pool.get("giscedata.crm.lead")
 
         write_vals = {
-            "llista_preu": wiz.llista_preus,
-            "condicions_generals_id": wiz.condicions_generals_id,
-            "atr_proces_name": wiz.atr_proces_name
+            "llista_preu": wiz.llista_preus.id,
+            "condicions_generals_id": wiz.condicions_generals_id.id,
+            "atr_proces_name": wiz.atr_proces_name,
         }
 
         lead_o.write(cursor, uid, leads_ids, write_vals, context=context)
@@ -42,7 +42,7 @@ class WizardImportarLeadsComercials(osv.osv):
         "condicions_generals_id": fields.many2one(
             "giscedata.polissa.condicions.generals", "Condicions Generals", required=True),
         'atr_proces_name': fields.selection(
-            [('A3', 'A3'), ('C1', 'C1'), ('C2', 'C2')], "Procés d'alta", required=True),
+            [('A3', 'A3'), ('C1', 'C1')], "Procés d'alta", required=True),
     }
 
 
