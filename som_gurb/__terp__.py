@@ -9,6 +9,7 @@
         "giscedata_polissa",
         "giscedata_telemesures_base",
         "giscedata_facturacio_services",
+        "giscedata_polissa_category",
         "giscedata_switching",
     ],
     "demo_xml": [
