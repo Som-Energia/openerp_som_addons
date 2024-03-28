@@ -5,7 +5,7 @@ Repository whith OpenERP addons customization made by [Som Energia](https://www.
   [![GISCE_MODULES](https://github.com/Som-Energia/som_modules_fulla/actions/workflows/schedule_all_installed_modules.yml/badge.svg)](https://github.com/Som-Energia/som_modules_fulla/actions/workflows/schedule_all_installed_modules.yml)
   [![Coverage Status](https://coveralls.io/repos/github/Som-Energia/openerp_som_addons/badge.svg?branch=)](https://coveralls.io/github/Som-Energia/openerp_som_addons?branch=)
 
-List of modules
+List of modules ([add new module](docs/crear_nou_modul.md))
 ----------------
 tests | name | description
 --- | --- | ---
