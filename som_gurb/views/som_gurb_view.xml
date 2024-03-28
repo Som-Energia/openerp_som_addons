@@ -2,8 +2,8 @@
 <openerp>
     <data>
         <!-- Menú de GURBs mòdul pòlisses -->
-        <menuitem id="menu_gurbs" name="Gestió GURB" parent="giscedata_polissa.menu_principal"
-            sequence="99" />
+        <menuitem name="Agrupacions" id="menu_agrupacions" />
+        <menuitem id="menu_gurbs" name="Gestió GURB" parent="menu_agrupacions" sequence="99" />
         <!-- Llistat per defecte dels GURBs-->
         <record model="ir.ui.view" id="view_gurbs_tree">
             <field name="name">som.gurbs.tree</field>
