@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # Pas 1: Executar script
-# PYTHONIOENCODING="UTF-8" PYTHONPATH="$OPENERP_ROOT_PATH:$OPENERP_ADDONS_PATH:$HOME/src/erp/server/sitecustomize" python andalucia.py
+# PYTHONIOENCODING="UTF-8" PYTHONPATH="$OPENERP_ROOT_PATH:$OPENERP_ADDONS_PATH:$HOME/src/erp/server/sitecustomize" python andalucia.py  # noqa: E501
 
 # Pas 2: Canviar dates sortida (Regex VSCode)
 # (\d+)-(\d+)-(\d+)
@@ -21,7 +21,6 @@ from collections import OrderedDict
 import csv
 import configdb
 from erppeek import Client
-from tqdm import tqdm
 
 csv_reader = False
 
@@ -61,7 +60,7 @@ for data_dict in data_dict_list:
     for pol in polisses:
         fact_ids = fact_obj.search([
             ('polissa_id', '=', pol.id),
-            ('type', 'in', ['out_invoice','out_refund']),
+            ('type', 'in', ['out_invoice', 'out_refund']),
             ('data_final', '>=', '2021-01-01'),
             ('data_inici', '<=', '2022-12-31'),
         ])
@@ -104,14 +103,16 @@ for data_dict in data_dict_list:
             if not fact.lectures_energia_ids:
                 fact_line['tipo_lectura'] = ''
             else:
-                fact_line['tipo_lectura'] = 'E' if fact.lectures_energia_ids[0].origen_id.codi in ['40', 'LC'] else 'R'
+                fact_line['tipo_lectura'] = 'E' if fact.lectures_energia_ids[0].origen_id.codi in [
+                    '40', 'LC'] else 'R'
 
             # Girar signe out_refund
             signe = 1
             if fact.type == 'out_refund':
                 signe = -1
-            fact_line['importe_energia'] = (fact.amount_total - (fact.total_altres + fact.total_lloguers + fact.amount_tax)) * signe
-            fact_line['importe_servicios'] = (fact.total_altres+fact.total_lloguers) * signe
+            fact_line['importe_energia'] = (fact.amount_total - (
+                fact.total_altres + fact.total_lloguers + fact.amount_tax)) * signe
+            fact_line['importe_servicios'] = (fact.total_altres + fact.total_lloguers) * signe
             fact_line['impuestos'] = fact.amount_tax * signe
             fact_line['total_factura'] = fact.amount_total * signe
 
