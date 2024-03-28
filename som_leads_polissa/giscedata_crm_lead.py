@@ -67,6 +67,37 @@ class GiscedataCrmLead(osv.OsvInherits):
             res["value"]["llista_preu"] = False
         return res
 
+    def create_entity_polissa(self, cursor, uid, crml_id, context=None):
+        res = super(GiscedataCrmLead, self).create_entity_polissa(
+            cursor, uid, crml_id, context=context
+        )
+
+        # recuperem la polissa recent creada del lead
+        polissa_id = self.read(
+            cursor, uid, crml_id, ['polissa_id'],
+            context=context
+        )['polissa_id'][0]
+
+        polissa_o = self.pool.get("giscedata.polissa")
+        polissa = polissa_o.browse(cursor, uid, polissa_id, context=context)
+        values = {}
+        if polissa.mode_facturacio != 'atr':
+            values['mode_facturacio_generacio'] = polissa.mode_facturacio
+
+        fp_id = polissa_o.calculate_fiscal_position_from_cups(
+            cursor, uid,
+            polissa.cups.id,
+            polissa.cnae.name,
+            [potencia.potencia for potencia in polissa.potencies_periode],
+            context=context
+        )
+        if fp_id:
+            values['fiscal_position_id'] = fp_id
+
+        if values:
+            polissa_o.write(cursor, uid, polissa_id, values, context=context)
+        return res
+
     def onchange_set_custom_potencia(self, cursor, uid, ids, set_custom_potencia):
         res = {
             "value": {},

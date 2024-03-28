@@ -89,6 +89,10 @@ class ReportBackendMailcanvipreus(ReportBackend):
         ("preu_vell",): 0,
         ("preu_vell_imp",): 0,
         ("consum_total",): 0,
+        ("auto", "nous", "amb_impostos"): 3,
+        ("auto", "nous", "sense_impostos"): 3,
+        ("auto", "vells", "amb_impostos"): 3,
+        ("auto", "vells", "sense_impostos"): 3,
     }
 
     @report_browsify
@@ -96,11 +100,38 @@ class ReportBackendMailcanvipreus(ReportBackend):
         if context is None:
             context = {}
 
+        # TODO: Remove if regulation changes
+        context['iva10'] = (
+            not self.esCanaries(cursor, uid, env)
+            and env.polissa_id.potencia <= 10
+        )
+
         context_preus_antics = dict(context)
         context_preus_antics["date"] = date.today().strftime("%Y-%m-%d")
 
         context_preus_nous = dict(context)
         context_preus_nous["date"] = (date.today() + timedelta(days=50)).strftime("%Y-%m-%d")
+
+        # Preus nous amb IESE 3.8
+        new_fiscal_position = {
+            50: 59,
+            52: 61,
+            49: 58,
+            47: 56,
+            48: 57,
+            33: 33,
+            43: 44,
+            53: 62,
+            41: 42
+        }.get(
+            env.polissa_id.fiscal_position_id.id
+            or env.polissa_id.titular.property_account_position.id
+        )
+        if context.get('iva10') and new_fiscal_position == 42:
+            context_preus_antics['force_fiscal_position'] = 37
+            context_preus_nous['force_fiscal_position'] = 63
+        elif new_fiscal_position:
+            context_preus_nous['force_fiscal_position'] = new_fiscal_position
 
         preus_antics = self.get_preus(
             cursor, uid, env.polissa_id, with_taxes=False, context=context_preus_antics
@@ -125,13 +156,19 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "preus_nous": preus_nous,
             "preus_antics_imp": preus_antics_imp,
             "preus_nous_imp": preus_nous_imp,
-            "impostos_str": self.getImpostosString(env.polissa_id.fiscal_position_id),
+            "impostos_str": self.getImpostosString(
+                env.polissa_id.fiscal_position_id, context),
             "modcon": (
                 env.polissa_id.modcontractuals_ids[0].state == "pendent"
                 and env.polissa_id.mode_facturacio
                 != env.polissa_id.modcontractuals_ids[0].mode_facturacio
                 and env.polissa_id.modcontractuals_ids[0].mode_facturacio
             ),
+            'autoconsum': {
+                'es_autoconsum': env.polissa_id.es_autoconsum,
+                'compensacio': env.polissa_id.autoconsum_id.tipus_autoconsum in ['41', '42', '43']
+            },
+            'te_iva10': context['iva10'],
         }
 
         if data["te_gkwh"]:
@@ -148,7 +185,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
                 cursor, uid, env.polissa_id, with_taxes=True, context=context_preus_nous
             )
 
-        data.update(self.getEstimacioData(cursor, uid, env))
+        data.update(self.getEstimacioData(cursor, uid, env, context=context_preus_nous))
         data.update(self.getTarifaCorreu(cursor, uid, env, context))
         data.update(self.getPreuCompensacioExcedents(cursor, uid, env, context))
         return data
@@ -246,6 +283,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
     def get_preus(self, cursor, uid, pol, with_taxes=False, context=None):
         if context is None:
             context = {}
+        context["potencia_anual"] = True
 
         result = {}
         periods = {
@@ -298,20 +336,27 @@ class ReportBackendMailcanvipreus(ReportBackend):
         return estimacions[tarifa][periode]
 
     def getPreuCompensacioExcedents(self, cursor, uid, env, context):
-        preus_auto = {
+        iva = 0.1 if context and context.get('iva10') else 0.21
+        if env.polissa_id.fiscal_position_id:
+            if env.polissa_id.fiscal_position_id.id in [33, 47, 52]:
+                iva = 0.03
+            if env.polissa_id.fiscal_position_id.id in [34, 48, 53]:
+                iva = 0.0
+
+        PREU_NOU = 0.06
+        PREU_VELL = 0.07
+        return {
             "auto": {
                 "nous": {
-                    "amb_impostos": 0.09,
-                    "sense_impostos": 0.07,
+                    "amb_impostos": PREU_NOU * 1.038 * (1 + iva),
+                    "sense_impostos": PREU_NOU,
                 },
                 "vells": {
-                    "amb_impostos": 0.17,
-                    "sense_impostos": 0.13,
+                    "amb_impostos": PREU_VELL * 1.025 * (1 + iva),
+                    "sense_impostos": PREU_VELL,
                 },
             }
         }
-
-        return preus_auto
 
     def calcularPreuTotal(
         self,
@@ -331,8 +376,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
             ctx["date"] = date
         ctx["potencia_anual"] = True
         ctx["sense_agrupar"] = True
-        maj_price = 0.140  # €/kWh
-        bo_social_price = 14.035934
+        maj_price = 0  # €/kWh
+        bo_social_price = 2.299047
         types = {"tp": potencies or {}, "te": consums or {}}
         imports = 0
         for terme, values in types.items():
@@ -401,31 +446,31 @@ class ReportBackendMailcanvipreus(ReportBackend):
             )
         return conany
 
-    def calcularImpostos(self, preu, fiscal_position, potencies):
-        iva = 0.21
-        impost_electric = 0.05113
+    def calcularImpostosPerCostAnualEstimat(self, preu, fiscal_position, context=False):
+        iva = 0.1 if context and context.get('iva10') else 0.21
+        impost_electric = 0.025
         if fiscal_position:
-            if fiscal_position.id in [19, 33, 38]:
+            if fiscal_position.id in [33, 47, 52]:
                 iva = 0.03
-            if fiscal_position.id in [25, 34, 39]:
+            if fiscal_position.id in [34, 48, 53]:
                 iva = 0.0
         preu_imp = round(preu * (1 + impost_electric), 2)
         return round(preu_imp * (1 + iva))
 
-    def getImpostosString(self, fiscal_position):
-        res = "IVA del 21%"
+    def getImpostosString(self, fiscal_position, context=False):
+        res = "IVA del 10%" if context and context.get('iva10') else "IVA del 21%"
         if fiscal_position:
-            if fiscal_position.id in [19, 33, 38]:
+            if fiscal_position.id in [33, 47, 52]:
                 res = "IGIC del 3%"
-            if fiscal_position.id in [25, 34, 39]:
+            if fiscal_position.id in [34, 48, 53]:
                 res = "IGIC del 0%"
         return res
 
     def formatNumber(self, number):
         return format(number, "1,.0f").replace(",", ".")
 
-    def getEstimacioData(self, cursor, uid, env):
-        PRICE_CHANGE_DATE = "2024-01-01"
+    def getEstimacioData(self, cursor, uid, env, context=False):
+        PRICE_CHANGE_DATE = "2024-04-01"
 
         potencies = self.getPotenciesPolissa(cursor, uid, env.polissa_id)
 
@@ -437,11 +482,6 @@ class ReportBackendMailcanvipreus(ReportBackend):
             origen = "indexada"
             consums = self.getConanyDict(cursor, uid, env)
             consum_total = env.polissa_id.cups.conany_kwh
-        elif env.extra_text:
-            consums = eval(env.extra_text)
-            origen = consums["origen"]
-            del consums["origen"]
-            consum_total = sum(consums.values())
         elif any(
             [
                 env.polissa_id.cups.conany_kwh_p1,
@@ -482,11 +522,11 @@ class ReportBackendMailcanvipreus(ReportBackend):
             origen,
         )
 
-        preu_vell_imp_int = self.calcularImpostos(
-            preu_vell, env.polissa_id.fiscal_position_id, potencies
+        preu_vell_imp_int = self.calcularImpostosPerCostAnualEstimat(
+            preu_vell, env.polissa_id.fiscal_position_id, context=context
         )
-        preu_nou_imp_int = self.calcularImpostos(
-            preu_nou, env.polissa_id.fiscal_position_id, potencies
+        preu_nou_imp_int = self.calcularImpostosPerCostAnualEstimat(
+            preu_nou, env.polissa_id.fiscal_position_id, context=context
         )
 
         preu_vell_imp = self.formatNumber(preu_vell_imp_int)
@@ -503,15 +543,15 @@ class ReportBackendMailcanvipreus(ReportBackend):
         }
 
     def getIGIC(self, cursor, uid, env, context=False):
-        if env.polissa_id.fiscal_position_id.id in [19, 33, 38]:
+        if env.polissa_id.fiscal_position_id.id in [33, 47, 52]:
             return 3
-        elif env.polissa_id.fiscal_position_id.id in [25, 34, 39]:
+        elif env.polissa_id.fiscal_position_id.id in [34, 48, 53]:
             return 0
         else:
-            raise Exception("No té IGIC")
+            raise Exception("Eh recorda actualitzar les posicions fiscals hardcodejades")
 
     def esCanaries(self, cursor, uid, env, context=False):
-        return env.polissa_id.fiscal_position_id.id in [19, 33, 38, 25, 34, 39]
+        return env.polissa_id.fiscal_position_id.id in [33, 34, 47, 48, 52, 53]
 
     def getTarifaCorreu(self, cursor, uid, env, context=False):
         data = {

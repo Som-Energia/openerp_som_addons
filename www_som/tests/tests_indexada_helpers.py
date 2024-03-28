@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from som_indexada.tests.test_wizard_change_to_indexada import TestChangeToIndexada
 from datetime import datetime, timedelta
+import json
 
 
 class TestIndexadaHelpers(TestChangeToIndexada):
@@ -76,3 +77,75 @@ class TestIndexadaHelpers(TestChangeToIndexada):
                 "modcontractual_ant": prev_modcontactual_id,
             },
         )
+
+    def test__get_energy_prices__invalid_geozone(self):
+        helper = self.pool.get("som.indexada.webforms.helpers")
+
+        result = helper.get_indexed_prices(
+            self.cursor, self.uid, 'invalid_geo_zone', '2.0TD', '2021-12-01', '2021-12-01'
+        )
+
+        self.assertEqual(result["error"], "Wrong geo zone invalid_geo_zone")
+
+    def test__get_energy_prices__invalid_tariff(self):
+        helper = self.pool.get("som.indexada.webforms.helpers")
+
+        result = helper.get_indexed_prices(
+            self.cursor, self.uid, 'PENINSULA', 'invalid_tariff', '2021-12-01', '2021-12-01'
+        )
+
+        self.assertEqual(result["error"], "Tariff invalid_tariff not found")
+
+    def test__get_energy_prices__invalid_dates(self):
+        helper = self.pool.get("som.indexada.webforms.helpers")
+
+        result = helper.get_indexed_prices(
+            self.cursor, self.uid, 'PENINSULA', '2.0TD', '2022-12-01', '2021-12-01'
+        )
+
+        self.assertEqual(result["error"], "Invalid range dates [2022-12-01 - 2021-12-01]")
+
+    def test__get_energy_prices__ok(self):
+        helper = self.pool.get("som.indexada.webforms.helpers")
+
+        result = helper.get_indexed_prices(
+            self.cursor, self.uid, 'PENINSULA', '2.0TDTest', '2023-05-01', '2023-05-01'
+        )
+        expected = {
+            "last_date": "2023-05-01",
+            "first_date": "2023-05-01",
+            "curves": {
+                "geo_zone": "PENINSULA",
+                "maturity": ["C3", "C3", "C3", "C3", "C3"],
+                "tariff": "2.0TDTest",
+                "price_euros_kwh": [0.2, 0.3, 0.4, 0.5, 0.6]
+            }
+        }
+        self.assertDictEqual(json.loads(result), expected)
+
+    def test__get_compensation_prices__ok(self):
+        helper = self.pool.get("som.indexada.webforms.helpers")
+
+        result = helper.get_compensation_prices(
+            self.cursor, self.uid, 'PENINSULA', '2023-05-01', '2023-05-01'
+        )
+        expected = {
+            "last_date": "2023-05-01",
+            "first_date": "2023-05-01",
+            "curves": {
+                "geo_zone": "PENINSULA",
+                "maturity": ["C3", "C3", "C3", "C3", "C3"],
+                "compensation_euros_kwh": [1.2, 1.3, 1.4, 1.5, 1.6]
+            }
+        }
+        self.assertDictEqual(json.loads(result), expected)
+
+    def test__initial_final_times__24h(self):
+        first_date = '2024-02-29'
+        last_date = '2024-02-29'
+        helper = self.pool.get("som.indexada.webforms.helpers")
+
+        initial_time, final_time = helper.initial_final_times(first_date, last_date)
+
+        self.assertEqual(initial_time, '2024-02-29 01:00:00')
+        self.assertEqual(final_time, '2024-03-01 00:00:00')

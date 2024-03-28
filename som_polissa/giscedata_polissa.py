@@ -950,6 +950,37 @@ class GiscedataPolissa(osv.osv):
 
         return res
 
+    def calculate_fiscal_position_from_cups(self, cursor, uid, cups_id, cnae, powers, context=None):  # noqa: E501
+        municipi_obj = self.pool.get("res.municipi")
+        cups_obj = self.pool.get("giscedata.cups.ps")
+        cfg_obj = self.pool.get("res.config")
+
+        cups = cups_obj.browse(cursor, uid, cups_id)
+        municipi = municipi_obj.browse(cursor, uid, cups.id_municipi.id, context=context)
+        posicio_id = None
+        is_canarias = municipi and municipi.subsistema_id and municipi.subsistema_id.code in [
+            'TF', 'PA', 'LG', 'HI', 'GC', 'FL']
+        is_pdlc = cups.distribuidora_id.ref == '0401'
+        is_vivienda = cnae and cnae == "9820"
+        power = max(powers or [0])
+
+        if is_canarias:
+            if is_vivienda and power < 10.0:
+                posicio_id = cfg_obj.get(cursor, uid, "fp_canarias_vivienda_id", 25)
+            else:
+                posicio_id = cfg_obj.get(cursor, uid, "fp_canarias_id", 19)
+
+        if is_pdlc:
+            if is_vivienda and power < 10.0:
+                posicio_id = cfg_obj.get(cursor, uid, "fp_pdlc_vivienda_id", 39)
+            else:
+                posicio_id = cfg_obj.get(cursor, uid, "fp_pdlc_id", 38)
+
+        if posicio_id:
+            posicio_id = int(posicio_id)
+
+        return posicio_id
+
     _columns = {
         "info_gestio_endarrerida": fields.text("Informació gestió endarrerida"),
         "info_gestio_endarrerida_curta": fields.function(

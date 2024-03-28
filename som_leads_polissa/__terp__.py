@@ -11,6 +11,7 @@
     "depends": [
         "base_bank_extended",
         "giscedata_crm_leads",
+        "som_polissa"
     ],
     "init_xml": [],
     "demo_xml": [],

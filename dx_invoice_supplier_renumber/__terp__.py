@@ -7,7 +7,10 @@
     "version": "0-dev",
     "author": "Domatix",
     "category": "Account",
-    "depends": ["account"],
+    "depends": [
+        "account",
+        "base_extended",
+    ],
     "init_xml": [],
     "demo_xml": [],
     "update_xml": ["account_invoice_view.xml"],

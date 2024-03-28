@@ -43,10 +43,10 @@
                     <field name="te_generation_polissa" select="2"/>
                     <field name="data_alta_auto" select="2"/>
                 </field>
-                <field name="status_tree" position="before">
+                <field name="status" position="before">
                     <field name="import_factures" select="2" />
                 </field>
-                <field name="status_tree" position="after">
+                <field name="status" position="after">
                     <field name="info_gestions_massives" select="2" />
                 </field>
             </field>

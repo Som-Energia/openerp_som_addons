@@ -418,8 +418,22 @@ class tarifes_tests(testing.OOTestCase):
 
             tariff_obj = self.tariff_model
             pplv_obj = self.pool.get("product.pricelist.version")
+            imd_obj = self.pool.get("ir.model.data")
 
-            pricelists_ids = pplv_obj.search(cursor, uid, [("name", "like", "%SOM%")])
+            pricelist_2022_id = imd_obj.get_object_reference(
+                cursor,
+                uid,
+                "som_webforms_helpers",
+                "version_pricelist_tarifas_electricidad_20TD_SOM_20220601",
+            )[1]
+            pricelist_2023_id = imd_obj.get_object_reference(
+                cursor,
+                uid,
+                "som_webforms_helpers",
+                "version_pricelist_tarifas_electricidad_20TD_SOM_20230101",
+            )[1]
+
+            pricelists_ids = [pricelist_2022_id, pricelist_2023_id]
             pricelists = [pricelist for pricelist in pplv_obj.browse(cursor, uid, pricelists_ids)]
 
             fiscal_positions = [("2000-01-01", "2999-12-31", 1), ("2022-10-01", "2022-12-31", 2)]
@@ -428,15 +442,15 @@ class tarifes_tests(testing.OOTestCase):
 
             expected_result = [
                 (
-                    pplv_obj.browse(cursor, uid, 9),
+                    pplv_obj.browse(cursor, uid, pricelist_2022_id),
                     {"fp": 1, "fp_date_start": "2000-01-01", "fp_date_end": "2999-12-31"},
                 ),
                 (
-                    pplv_obj.browse(cursor, uid, 9),
+                    pplv_obj.browse(cursor, uid, pricelist_2022_id),
                     {"fp": 2, "fp_date_start": "2022-10-01", "fp_date_end": "2022-12-31"},
                 ),
                 (
-                    pplv_obj.browse(cursor, uid, 8),
+                    pplv_obj.browse(cursor, uid, pricelist_2023_id),
                     {"fp": 1, "fp_date_start": "2000-01-01", "fp_date_end": "2999-12-31"},
                 ),
             ]
