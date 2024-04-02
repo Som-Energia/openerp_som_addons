@@ -52,8 +52,6 @@ CHANGE_AUX_VALUES = {
     },
 }
 
-FISCAL_POSITIONS_CANARIES = [19, 25, 33, 34, 38, 39, 47, 48, 52, 53]
-
 
 class WizardChangeToIndexada(osv.osv_memory):
 
@@ -96,8 +94,7 @@ class WizardChangeToIndexada(osv.osv_memory):
 
     def _get_location_polissa(self, cursor, uid, polissa):
         if (
-            polissa.fiscal_position_id
-            and polissa.fiscal_position_id.id in FISCAL_POSITIONS_CANARIES
+            polissa.cups.id_municipi.subsistema_id.code in ['TF', 'PA', 'LG', 'HI', 'GC', 'FL']
         ):
             return "canaries"
         elif polissa.cups.id in self._get_list_cups_balears(cursor, uid):
