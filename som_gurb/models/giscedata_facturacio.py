@@ -1,4 +1,9 @@
 from osv import osv
+from datetime import datetime
+
+
+def _str_to_date(date_str):
+    return datetime.strptime(date_str, "%Y-%m-%d").date()
 
 
 class GiscedataFacturacioServices(osv.osv):
@@ -23,8 +28,24 @@ class GiscedataFacturacioServices(osv.osv):
                     cursor, uid, inv, vals, context=context
                 ):
                     gurb_cups_br = gurb_cups_o.browse(cursor, uid, gurb_cups_id)
+
+                    gurb_cups_start_date = _str_to_date(gurb_cups_br["start_date"])
+                    if gurb_cups_br["end_date"]:
+                        gurb_cups_end_date = _str_to_date(gurb_cups_br["end_date"])
+                    else:
+                        gurb_cups_end_date = False
+                    line_start_date = _str_to_date(vals["data_desde"])
+                    line_end_date = _str_to_date(vals["data_hasta"])
+
+                    if not gurb_cups_end_date:
+                        end_date = line_end_date
+                    else:
+                        end_date = min(line_end_date, gurb_cups_end_date)
+                    start_date = max(line_start_date, gurb_cups_start_date)
+
                     vals["multi"] = vals["quantity"]
-                    vals["quantity"] = gurb_cups_br.beta_kw
+                    vals["quantity"] = (end_date - start_date).days + 1
+
                     yield vals
             else:
                 yield vals
