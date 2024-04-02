@@ -35,7 +35,7 @@ class GiscedataFacturacioServices(osv.osv):
                     else:
                         gurb_cups_end_date = False
                     line_start_date = _str_to_date(vals["data_desde"])
-                    line_end_date = _str_to_date(vals["data_hasta"])
+                    line_end_date = _str_to_date(vals["data_fins"])
 
                     if not gurb_cups_end_date:
                         end_date = line_end_date
@@ -43,8 +43,8 @@ class GiscedataFacturacioServices(osv.osv):
                         end_date = min(line_end_date, gurb_cups_end_date)
                     start_date = max(line_start_date, gurb_cups_start_date)
 
-                    vals["multi"] = vals["quantity"]
-                    vals["quantity"] = (end_date - start_date).days + 1
+                    vals["quantity"] = gurb_cups_br.beta_kw
+                    vals["multi"] = (end_date - start_date).days + 1
 
                     yield vals
             else:
