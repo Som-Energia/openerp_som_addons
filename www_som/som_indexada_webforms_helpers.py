@@ -162,37 +162,149 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                       + timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")
         return initial_time, final_time
 
+    def _get_prices(self, cursor, geom_zone, tariff_id, first_timestamp_utc, last_timestamp_utc):
+        """
+        SQL query breakdown:
+
+            1. Common Table Expressions (CTEs):
+                * `filtered_data`: Filters data from `giscedata_next_days_energy_price` based on specified criteria
+                  (geom_zone, tarifa_id if asked, first_timestamp_utc, and last_timestamp_utc).
+                * `filled_data`: Generates a series of timestamps between `first_timestamp_utc`
+                  and `last_timestamp_utc`, and fills in NULL values for `geom_zone`, `maturity`, `tarifa_id`,
+                  `initial_price` and `prm_diari` where there are gaps in data.
+                * `final_data`: Joins the filtered and filled data, ensuring no gaps exist.
+                * `ranked_data`: Assigns a rank to each record based on the maturity level.
+
+            2. Main Query:
+                * Selects aggregated data as a JSON object.
+                * Aggregates data by `timestamp`.
+                * Includes the following information in the JSON object:
+                    * `geo_zone`: `PENINSULA', `CANARIAS` or `BALEARES'.
+                    * `tariff_id`: tariff id.
+                    * `first_timestamp_utc`: Start timestamp parameter.
+                    * `last_timestamp_utc`: End timestamp parameter.
+                    * `initial_price`: Array of actual initial_price, ordered by timestamp.
+                    * `prm_diari`: Array of actual prm_diari, ordered by timestamp.
+                    * `maturity`: Array of maturity levels, ordered by timestamp.
+
+            3. Final Filtering:
+                * Filters the results to only include records where `create_date_rank` is equal to 1,
+                  meaning it selects the records with the highest create_date rank for each timestamp.
+
+        """
+        cursor.execute(
+            '''
+                WITH filtered_data AS (
+                    SELECT
+                        hour_timestamp AT TIME ZONE 'UTC' AS hour_timestamp,
+                        geom_zone,
+                        tarifa_id,
+                        initial_price,
+                        prm_diari,
+                        maturity,
+                        create_date
+                    FROM
+                        giscedata_next_days_energy_price
+                    WHERE
+                        geom_zone = %(geom_zone)s
+                        AND (%(tariff_id)s IS NULL OR tarifa_id = %(tariff_id)s)
+                        AND hour_timestamp AT TIME ZONE 'UTC' BETWEEN %(first_timestamp_utc)s AND %(last_timestamp_utc)s
+                ),
+                filled_data AS (
+                    SELECT
+                        generate_series AS hour_timestamp,
+                        NULL AS geom_zone,
+                        NULL AS tarifa_id,
+                        NULL AS initial_price,
+                        NULL AS prm_diari,
+                        NULL AS maturity
+                    FROM
+                        generate_series(
+                            %(first_timestamp_utc)s,
+                            %(last_timestamp_utc)s,
+                            INTERVAL '1 HOUR'
+                        ) generate_series
+                    LEFT JOIN
+                        filtered_data fd ON generate_series.generate_series = fd.hour_timestamp
+                    WHERE
+                        fd.hour_timestamp IS NULL
+                ),
+                final_data AS (
+                    SELECT
+                        COALESCE(fd.hour_timestamp, fd2.hour_timestamp) AS hour_timestamp,
+                        COALESCE(fd.geom_zone, NULL) AS geom_zone,
+                        COALESCE(fd.tarifa_id, NULL) AS tarifa_id,
+                        COALESCE(fd.initial_price, NULL) AS initial_price,
+                        COALESCE(fd.prm_diari, NULL) AS prm_diari,
+                        COALESCE(fd.maturity, fd2.maturity) AS maturity,
+                        create_date
+                    FROM
+                        filtered_data fd
+                    FULL JOIN
+                        filled_data fd2 ON fd.hour_timestamp = fd2.hour_timestamp
+                ),
+                ranked_data AS (
+                    SELECT
+                        *,
+                        RANK() OVER (PARTITION BY hour_timestamp ORDER BY
+                            create_date DESC
+                        ) AS create_date_rank
+                    FROM
+                        final_data
+                )
+                SELECT
+                    JSON_BUILD_OBJECT(
+                        'first_date', %(first_timestamp_utc)s,
+                        'last_date', %(last_timestamp_utc)s,
+                        'geo_zone', %(geom_zone)s,
+                        'tariff_id', %(tariff_id)s,
+                        'price_euros_kwh', COALESCE(ARRAY_AGG(initial_price ORDER BY hour_timestamp ASC), ARRAY[]::numeric[]),
+                        'compensation_euros_kwh', COALESCE(ARRAY_AGG(prm_diari ORDER BY hour_timestamp ASC), ARRAY[]::numeric[]),
+                        'maturity', COALESCE(ARRAY_AGG(maturity ORDER BY hour_timestamp ASC), ARRAY[]::text[])
+                    ) AS data
+                FROM
+                    ranked_data
+                WHERE
+                    create_date_rank = 1;
+            ''',
+            {
+                'geom_zone': geom_zone,
+                'tariff_id': tariff_id,
+                'first_timestamp_utc': first_timestamp_utc,
+                'last_timestamp_utc': last_timestamp_utc
+            }
+        )
+
+        return cursor.fetchall()
+
     @www_entry_point(
         expected_exceptions=exceptions.SomPolissaException,
     )
     def get_indexed_prices(
         self, cursor, uid, geo_zone, tariff, first_date, last_date, context=None
     ):
-        prices_obj = self.pool.get('giscedata.next.days.energy.price')
-
         self.validate_parameters(cursor, uid, geo_zone, first_date, last_date, tariff)
 
-        initial_time, final_time = self.initial_final_times(first_date, last_date)
-        params = [
-            ('hour_timestamp', '>=', initial_time),
-            ('hour_timestamp', '<=', final_time),
-            ('tarifa_id.name', '=', tariff),
-            ('geom_zone', '=', geo_zone)
-        ]
-        price_ids = prices_obj.search(cursor, uid, params, order='hour_timestamp')
+        tariff_obj = self.pool.get('giscedata.polissa.tarifa')
 
-        curves = []
-        for price_id in price_ids:
-            curves.append(prices_obj.read(cursor, uid, price_id, ['initial_price', 'maturity']))
+        tariff_id = tariff_obj.search(cursor, uid, [('name','=',tariff)])
+
+        initial_time, final_time = self.initial_final_times(first_date, last_date)
+
+        curves_data = self._get_prices(cursor, geo_zone, tariff_id[0], initial_time, final_time)[0][0]
+
+        keys_to_return = ['first_date','last_date','geo_zone','price_euros_kwh','maturity']
+
+        filtered_data= {k:v for k,v in curves_data.items() if k in keys_to_return}
 
         json_prices = json.dumps(dict(
-            first_date=first_date,
-            last_date=last_date,
+            first_date=filtered_data['first_date'],
+            last_date=filtered_data['last_date'],
             curves=dict(
-                geo_zone=geo_zone,
                 tariff=tariff,
-                price_euros_kwh=[curve.get('initial_price') for curve in curves],
-                maturity=[curve.get('maturity') for curve in curves]
+                geo_zone=filtered_data['geo_zone'],
+                price_euros_kwh=filtered_data['price_euros_kwh'],
+                maturity=filtered_data['maturity']
             ))
         )
 
@@ -204,29 +316,23 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
     def get_compensation_prices(
         self, cursor, uid, geo_zone, first_date, last_date, context=None
     ):
-        prices_obj = self.pool.get('giscedata.next.days.energy.price')
-
         self.validate_parameters(cursor, uid, geo_zone, first_date, last_date, tariff=None)
 
         initial_time, final_time = self.initial_final_times(first_date, last_date)
-        params = [
-            ('hour_timestamp', '>=', initial_time),
-            ('hour_timestamp', '<=', final_time),
-            ('geom_zone', '=', geo_zone)
-        ]
-        price_ids = prices_obj.search(cursor, uid, params, order='hour_timestamp')
 
-        curves = []
-        for price_id in price_ids:
-            curves.append(prices_obj.read(cursor, uid, price_id, ['prm_diari', 'maturity']))
+        curves_data = self._get_prices(cursor, geo_zone, None, initial_time, final_time)[0][0]
+
+        keys_to_return = ['first_date','last_date','geo_zone','compensation_euros_kwh','maturity']
+
+        filtered_data= {k:v for k,v in curves_data.items() if k in keys_to_return}
 
         json_prices = json.dumps(dict(
-            first_date=first_date,
-            last_date=last_date,
+            first_date=filtered_data['first_date'],
+            last_date=filtered_data['last_date'],
             curves=dict(
-                geo_zone=geo_zone,
-                compensation_euros_kwh=[curve.get('prm_diari') for curve in curves],
-                maturity=[curve.get('maturity') for curve in curves]
+                geo_zone=filtered_data['geo_zone'],
+                compensation_euros_kwh=filtered_data['compensation_euros_kwh'],
+                maturity=filtered_data['maturity']
             ))
         )
 

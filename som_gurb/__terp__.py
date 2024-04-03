@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+#-*- coding: utf-8 -*-
 {
     "name": "Generació urbana",
     "description": "Mòdul per gestionar els grups de generació urbana",
@@ -9,6 +9,7 @@
         "giscedata_polissa",
         "giscedata_telemesures_base",
         "giscedata_facturacio_services",
+        "giscedata_polissa_category",
         "giscedata_switching",
     ],
     "demo_xml": [
