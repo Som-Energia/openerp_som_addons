@@ -29,34 +29,46 @@ class TestsGurbServices(testing.OOTestCase):
             "validar", "contracte"
         ])
 
-    def test_add_service_to_contract(self):
+    def get_references(self):
         imd_o = self.openerp.pool.get("ir.model.data")
-        gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
-        pol_o = self.openerp.pool.get("giscedata.polissa")
 
-        gurb_cups_id = imd_o.get_object_reference(
+        vals = {}
+
+        vals['gurb_cups_id'] = imd_o.get_object_reference(
             self.cursor, self.uid, "som_gurb", "gurb_cups_0001"
         )[1]
-        pricelist_id = imd_o.get_object_reference(
+        vals['pricelist_id'] = imd_o.get_object_reference(
             self.cursor, self.uid, "som_gurb", "pricelist_gurb_demo"
         )[1]
-        product_id = imd_o.get_object_reference(
+        vals['product_id'] = imd_o.get_object_reference(
             self.cursor, self.uid, "som_gurb", "product_gurb"
         )[1]
-        pol_id = imd_o.get_object_reference(
+        vals['pol_id'] = imd_o.get_object_reference(
             self.cursor, self.uid, "giscedata_polissa", "polissa_0001"
         )[1]
 
+        return vals
+
+    def add_service_to_contract(self, context=None):
+        gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
+        vals = self.get_references()
+
         self.activar_polissa_CUPS()
         gurb_cups_o.add_service_to_contract(
-            self.cursor, self.uid, [gurb_cups_id], pricelist_id, product_id, '2023-01-01'
+            self.cursor, self.uid, [vals['gurb_cups_id']], vals['pricelist_id'], vals['product_id'],
+            '2023-01-01'
         )
 
-        pol_br = pol_o.browse(self.cursor, self.uid, pol_id)
+    def test_add_service_to_contract(self):
+        pol_o = self.openerp.pool.get("giscedata.polissa")
+        self.add_service_to_contract()
+        vals = self.get_references()
+
+        pol_br = pol_o.browse(self.cursor, self.uid, vals['pol_id'])
         self.assertEqual(len(pol_br.serveis), 1)
-        self.assertEqual(pol_br.serveis[0].llista_preus.id, pricelist_id)
-        self.assertEqual(pol_br.serveis[0].producte.id, product_id)
-        self.assertEqual(pol_br.serveis[0].polissa_id.id, pol_id)
+        self.assertEqual(pol_br.serveis[0].llista_preus.id, vals['pricelist_id'])
+        self.assertEqual(pol_br.serveis[0].producte.id, vals['product_id'])
+        self.assertEqual(pol_br.serveis[0].polissa_id.id, vals['pol_id'])
 
     def test_fail_add_service_to_unactivated_contract(self):
         imd_o = self.openerp.pool.get("ir.model.data")
@@ -76,3 +88,7 @@ class TestsGurbServices(testing.OOTestCase):
             gurb_cups_o.add_service_to_contract(
                 self.cursor, self.uid, [gurb_cups_id], pricelist_id, product_id, '2023-01-01'
             )
+
+    def test_invoice_with_invoice(self):
+        # wiz_inv_o = self.openerp.pool.get("wizard.manual.invoice")
+        self.add_service_to_contract()
