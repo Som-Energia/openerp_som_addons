@@ -127,6 +127,12 @@ class TestActivacioM1(TestSwitchingImport):
             uid = txn.user
 
             contract_id = self.get_contract_id(txn, "polissa_tarifa_018")
+
+            # activate contract
+            self.Polissa.send_signal(cursor, uid, [contract_id], [
+                'validar', 'contracte'
+            ])
+
             m1 = self.get_m1_02_ct(txn, contract_id, "S", {"polissa_xml_id": "polissa_tarifa_018"})
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, m1)
