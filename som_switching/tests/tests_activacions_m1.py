@@ -58,7 +58,12 @@ class TestActivacioM1(TestSwitchingImport):
             }
         )
         other_polissa_id = self.Polissa.search(
-            cursor, uid, [("id", "!=", contract_id), ("state", "=", "esborrany")], limit=1
+            cursor, uid,
+            [
+                ("id", "!=", contract_id),
+                ("state", "=", "esborrany"),
+                ("tarifa_codi", "=", "2.0TD")
+            ], limit=1
         )[-1]
         self.Switching.write(
             cursor, uid, m101.sw_id.id, {"ref": "giscedata.polissa,{}".format(other_polissa_id)}
@@ -201,10 +206,6 @@ class TestActivacioM1(TestSwitchingImport):
 
             mock_lectures.return_value = []
             contract_id = self.get_contract_id(txn, "polissa_tarifa_018")
-            # actualitze 'data_baixa' per a que no falle el test per la restricció de dates
-            # 'giscedata_polissa_modcontractual_date_coherence'
-            contract_002_id = self.get_contract_id(txn, "polissa_0002")
-            self.Polissa.write(cursor, uid, [contract_002_id], {"data_baixa": "2099-01-01"})
 
             m1 = self.get_m1_05_traspas(txn, contract_id, {"polissa_xml_id": "polissa_tarifa_018"})
             with PatchNewCursors():
