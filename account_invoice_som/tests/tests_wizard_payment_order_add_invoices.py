@@ -3,8 +3,21 @@
 from destral import testing
 import netsvc
 from osv import osv
-from rq import job as rq_job
-from oorq.oorq import setup_redis_connection
+from account_invoice_som.wizard import wizard_payment_order_add_invoices
+import mock
+
+
+class TestJob:
+    def work(self):
+        return True
+
+    def __init__(self):
+        self.id = 0
+
+
+class TestAutoWorker:
+    def work(self):
+        return True
 
 
 class AccountInvoice(osv.osv):
@@ -12,9 +25,8 @@ class AccountInvoice(osv.osv):
     _inherit = "account.invoice"
 
     def afegeix_a_remesa_async(self, cursor, uid, ids, order_id, context=None):
-        setup_redis_connection()
         self.afegeix_a_remesa(cursor, uid, ids, order_id, context=context)
-        return rq_job.Job(id=0)
+        return TestJob()  # Fake test job
 
 
 AccountInvoice()
@@ -38,7 +50,11 @@ class TestsWizardPaymentOrderAddInvoices(testing.OOTestCaseWithCursor):
             "La cerca ha trobat {} resultats".format(len(all_invoices)), wizard.len_result
         )
 
-    def test_add_invoices_to_payment_order__out_invoices_ok(self):
+    @mock.patch.object(wizard_payment_order_add_invoices, "create_jobs_group")
+    @mock.patch.object(wizard_payment_order_add_invoices, "AutoWorker")
+    def test_add_invoices_to_payment_order__out_invoices_ok(
+        self, mock_autoworker_class, mock_create_jobs_group
+    ):
         wiz_obj = self.openerp.pool.get("wizard.payment.order.add.invoices")
         inv_obj = self.openerp.pool.get("account.invoice")
         po_obj = self.openerp.pool.get("payment.order")
@@ -69,13 +85,21 @@ class TestsWizardPaymentOrderAddInvoices(testing.OOTestCaseWithCursor):
         }
         wizard.write(values)
 
+        # Do not create autoworkers
+        mock_autoworker_class.return_value = TestAutoWorker()
+        mock_create_jobs_group.return_value = True
+
         wizard.add_invoices_to_payment_order()
         wizard.add_invoices_with_limit()
 
         order = po_obj.browse(cursor, uid, order_id)
         self.assertEqual(len(inv_ids), len(order.line_ids))
 
-    def test_add_invoices_to_payment_order__in_invoices_ok(self):
+    @mock.patch.object(wizard_payment_order_add_invoices, "create_jobs_group")
+    @mock.patch.object(wizard_payment_order_add_invoices, "AutoWorker")
+    def test_add_invoices_to_payment_order__in_invoices_ok(
+        self, mock_autoworker_class, mock_create_jobs_group
+    ):
         wiz_obj = self.openerp.pool.get("wizard.payment.order.add.invoices")
         inv_obj = self.openerp.pool.get("account.invoice")
         po_obj = self.openerp.pool.get("payment.order")
@@ -107,6 +131,11 @@ class TestsWizardPaymentOrderAddInvoices(testing.OOTestCaseWithCursor):
             "invoice_type": "in_invoice",
         }
         wizard.write(values)
+
+        # Do not create autoworkers
+        mock_autoworker_class.return_value = TestAutoWorker()
+        mock_create_jobs_group.return_value = True
+
         wizard.add_invoices_to_payment_order()
         wizard.add_invoices_with_limit()
 
