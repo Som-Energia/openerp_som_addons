@@ -112,13 +112,50 @@ class TestIndexadaHelpers(TestChangeToIndexada):
             self.cursor, self.uid, 'PENINSULA', '2.0TDTest', '2023-05-01', '2023-05-01'
         )
         expected = {
-            "last_date": "2023-05-01",
-            "first_date": "2023-05-01",
+            "last_date": "2023-05-02 00:00:00",
+            "first_date": "2023-05-01 01:00:00",
             "curves": {
                 "geo_zone": "PENINSULA",
-                "maturity": ["C3", "C3", "C3", "C3", "C3"],
+                "maturity": ["C3", "C3", "C3", "C3", "C3", None, None, None, None, None, None, None,
+                            None, None, None, None, None, None, None, None, None, None, None, None],
                 "tariff": "2.0TDTest",
-                "price_euros_kwh": [0.2, 0.3, 0.4, 0.5, 0.6]
+                "price_euros_kwh": [0.2, 0.3, 0.4, 0.5, 0.6, None, None, None, None, None, None, None,
+                            None, None, None, None, None, None, None, None, None, None, None, None]
+            }
+        }
+        self.assertDictEqual(json.loads(result), expected)
+
+    def test__get_energy_prices_repeated_prices__ok(self):
+        helper = self.pool.get("som.indexada.webforms.helpers")
+
+        prices_obj = self.pool.get('giscedata.next.days.energy.price')
+        tariff_obj = self.pool.get('giscedata.polissa.tarifa')
+
+        tariff_id = tariff_obj.search(self.cursor, self.uid, [('name','=','2.0TDTest')])
+
+        values = {"name":'hour7',
+            "tarifa_id":tariff_id[0],
+            "geom_zone":'PENINSULA',
+            "prm_diari":1.7,
+            'initial_price':0.7,
+            "maturity":'C3.3',
+            "hour_timestamp":'2023-05-01 01:00:00'}
+
+        prices_obj.create(self.cursor, self.uid, values)
+
+        result = helper.get_indexed_prices(
+            self.cursor, self.uid, 'PENINSULA', '2.0TDTest', '2023-05-01', '2023-05-01'
+        )
+        expected = {
+            "last_date": "2023-05-02 00:00:00",
+            "first_date": "2023-05-01 01:00:00",
+            "curves": {
+                "geo_zone": "PENINSULA",
+                "maturity": ["C3.3", "C3", "C3", "C3", "C3", None, None, None, None, None, None, None,
+                            None, None, None, None, None, None, None, None, None, None, None, None],
+                "tariff": "2.0TDTest",
+                "price_euros_kwh": [0.7, 0.3, 0.4, 0.5, 0.6, None, None, None, None, None, None, None,
+                            None, None, None, None, None, None, None, None, None, None, None, None]
             }
         }
         self.assertDictEqual(json.loads(result), expected)
@@ -129,13 +166,16 @@ class TestIndexadaHelpers(TestChangeToIndexada):
         result = helper.get_compensation_prices(
             self.cursor, self.uid, 'PENINSULA', '2023-05-01', '2023-05-01'
         )
+
         expected = {
-            "last_date": "2023-05-01",
-            "first_date": "2023-05-01",
+            "last_date": "2023-05-02 00:00:00",
+            "first_date": "2023-05-01 01:00:00",
             "curves": {
                 "geo_zone": "PENINSULA",
-                "maturity": ["C3", "C3", "C3", "C3", "C3"],
-                "compensation_euros_kwh": [1.2, 1.3, 1.4, 1.5, 1.6]
+                "maturity": ["C3", "C3", "C3", "C3", "C3", None, None, None, None, None, None, None,
+                            None, None, None, None, None, None, None, None, None, None, None, None],
+                "compensation_euros_kwh": [1.2, 1.3, 1.4, 1.5, 1.6, None, None, None, None, None, None, None,
+                            None, None, None, None, None, None, None, None, None, None, None, None]
             }
         }
         self.assertDictEqual(json.loads(result), expected)
