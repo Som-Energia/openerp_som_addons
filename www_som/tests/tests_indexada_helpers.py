@@ -133,13 +133,13 @@ class TestIndexadaHelpers(TestChangeToIndexada):
 
         tariff_id = tariff_obj.search(self.cursor, self.uid, [('name', '=', '2.0TDTest')])
 
-        values = {"name": 'hour7',
-            "tarifa_id": tariff_id[0],
-            "geom_zone": 'PENINSULA',
-            "prm_diari": 1.7,
-            'initial_price': 0.7,
-            "maturity": 'C3.3',
-            "hour_timestamp": '2023-05-01 01:00:00'}
+        values = {"name": "hour7",
+                  "tarifa_id": tariff_id[0],
+                  "geom_zone": "PENINSULA",
+                  "prm_diari": 1.7,
+                  "initial_price": 0.7,
+                  "maturity": "C3.3",
+                  "hour_timestamp": "2023-05-01 01:00:00"}
 
         prices_obj.create(self.cursor, self.uid, values)
 
