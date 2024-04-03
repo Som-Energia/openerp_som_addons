@@ -188,8 +188,7 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                     * `maturity`: Array of maturity levels, ordered by timestamp.
 
             3. Final Filtering:
-                * Filters the results to only include records where `create_date_rank` is equal to 1,
-                  meaning it selects the records with the highest create_date rank for each timestamp.
+                * Filters the results to only include records where qwith the highest create_date for each timestamp.
 
         """
         cursor.execute(
@@ -243,14 +242,12 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                     FULL JOIN
                         filled_data fd2 ON fd.hour_timestamp = fd2.hour_timestamp
                 ),
-                ranked_data AS (
-                    SELECT
-                        *,
-                        RANK() OVER (PARTITION BY hour_timestamp ORDER BY
-                            create_date DESC
-                        ) AS create_date_rank
+                collapsed_data AS (
+                    SELECT DISTINCT ON(hour_timestamp)
+                        *
                     FROM
                         final_data
+                    ORDER BY hour_timestamp ASC, create_date DESC
                 )
                 SELECT
                     JSON_BUILD_OBJECT(
@@ -263,9 +260,7 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                         'maturity', COALESCE(ARRAY_AGG(maturity ORDER BY hour_timestamp ASC), ARRAY[]::text[])
                     ) AS data
                 FROM
-                    ranked_data
-                WHERE
-                    create_date_rank = 1;
+                    collapsed_data
             ''',
             {
                 'geom_zone': geom_zone,
