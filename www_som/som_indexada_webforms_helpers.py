@@ -167,11 +167,12 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
         SQL query breakdown:
 
             1. Common Table Expressions (CTEs):
-                * `filtered_data`: Filters data from `giscedata_next_days_energy_price` based on specified criteria
+                * `filtered_data`: Filters data from `giscedata_next_days_energy_price`
+                   based on specified criteria
                   (geom_zone, tarifa_id if asked, first_timestamp_utc, and last_timestamp_utc).
                 * `filled_data`: Generates a series of timestamps between `first_timestamp_utc`
-                  and `last_timestamp_utc`, and fills in NULL values for `geom_zone`, `maturity`, `tarifa_id`,
-                  `initial_price` and `prm_diari` where there are gaps in data.
+                  and `last_timestamp_utc`, and fills in NULL values for `geom_zone`, `maturity`,
+                  `tarifa_id`, `initial_price` and `prm_diari` where there are gaps in data.
                 * `final_data`: Joins the filtered and filled data, ensuring no gaps exist.
                 * `ranked_data`: Assigns a rank to each record based on the maturity level.
 
@@ -188,7 +189,8 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                     * `maturity`: Array of maturity levels, ordered by timestamp.
 
             3. Final Filtering:
-                * Filters the results to only include records where qwith the highest create_date for each timestamp.
+                * Filters the results to only include records where qwith the highest
+                  create_date for each timestamp.
 
         """
         cursor.execute(
@@ -207,7 +209,8 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                     WHERE
                         geom_zone = %(geom_zone)s
                         AND (%(tariff_id)s IS NULL OR tarifa_id = %(tariff_id)s)
-                        AND hour_timestamp AT TIME ZONE 'UTC' BETWEEN %(first_timestamp_utc)s AND %(last_timestamp_utc)s
+                        AND hour_timestamp AT TIME ZONE 'UTC'
+                        BETWEEN %(first_timestamp_utc)s AND %(last_timestamp_utc)s
                 ),
                 filled_data AS (
                     SELECT
@@ -255,9 +258,14 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                         'last_date', %(last_timestamp_utc)s,
                         'geo_zone', %(geom_zone)s,
                         'tariff_id', %(tariff_id)s,
-                        'price_euros_kwh', COALESCE(ARRAY_AGG(initial_price ORDER BY hour_timestamp ASC), ARRAY[]::numeric[]),
-                        'compensation_euros_kwh', COALESCE(ARRAY_AGG(prm_diari ORDER BY hour_timestamp ASC), ARRAY[]::numeric[]),
-                        'maturity', COALESCE(ARRAY_AGG(maturity ORDER BY hour_timestamp ASC), ARRAY[]::text[])
+                        'price_euros_kwh', COALESCE(ARRAY_AGG(initial_price
+                                                    ORDER BY hour_timestamp ASC),
+                                                    ARRAY[]::numeric[]),
+                        'compensation_euros_kwh', COALESCE(ARRAY_AGG(prm_diari
+                                                           ORDER BY hour_timestamp ASC),
+                                                           ARRAY[]::numeric[]),
+                        'maturity', COALESCE(ARRAY_AGG(maturity
+                                             ORDER BY hour_timestamp ASC), ARRAY[]::text[])
                     ) AS data
                 FROM
                     collapsed_data
