@@ -282,15 +282,17 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
 
         tariff_obj = self.pool.get('giscedata.polissa.tarifa')
 
-        tariff_id = tariff_obj.search(cursor, uid, [('name','=',tariff)])
+        tariff_id = tariff_obj.search(cursor, uid, [('name', '=', tariff)])
 
         initial_time, final_time = self.initial_final_times(first_date, last_date)
 
-        curves_data = self._get_prices(cursor, geo_zone, tariff_id[0], initial_time, final_time)[0][0]
+        curves_data = self._get_prices(
+            cursor, geo_zone, tariff_id[0], initial_time, final_time)[0][0]
 
-        keys_to_return = ['first_date','last_date','geo_zone','price_euros_kwh','maturity']
+        keys_to_return = ['first_date', 'last_date',
+                          'geo_zone', 'price_euros_kwh', 'maturity']
 
-        filtered_data= {k:v for k,v in curves_data.items() if k in keys_to_return}
+        filtered_data = {k: v for k, v in curves_data.items() if k in keys_to_return}
 
         json_prices = json.dumps(dict(
             first_date=filtered_data['first_date'],
@@ -317,9 +319,10 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
 
         curves_data = self._get_prices(cursor, geo_zone, None, initial_time, final_time)[0][0]
 
-        keys_to_return = ['first_date','last_date','geo_zone','compensation_euros_kwh','maturity']
+        keys_to_return = ['first_date', 'last_date',
+                          'geo_zone', 'compensation_euros_kwh', 'maturity']
 
-        filtered_data= {k:v for k,v in curves_data.items() if k in keys_to_return}
+        filtered_data = {k: v for k, v in curves_data.items() if k in keys_to_return}
 
         json_prices = json.dumps(dict(
             first_date=filtered_data['first_date'],
