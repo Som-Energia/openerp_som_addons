@@ -30,6 +30,7 @@ from subprocess import Popen, PIPE, STDOUT, call
 import re
 import os
 from time import sleep
+import paramiko
 
 FILE_TYPE = 'liquicomun'
 FILE_PREFERENCE = ['A2_liquicomun', 'A1_liquicomun']
@@ -47,7 +48,7 @@ def get_search_day():
         return tomorrow.strftime('%d-%m-%Y')
 
 
-def download_files(file_type, server, server_port):
+def download_files(file_type, server, server_port, ftp_server, ftp_username, ftp_password):
     day_of_search = get_search_day()
     step("Listing avaiable files {}...".format(FILE_TYPE))
     output = Popen(
@@ -101,7 +102,6 @@ def download_files(file_type, server, server_port):
 
     step("Coping file to the server {}...".format(server))
     call(["scp", "-P", server_port, file_path, server])
-    os.remove('{}/{}'.format(BIN_PATH, filename))
     step("File {} copied to {} successfully".format(filename, server))
 
     step("Unzipping file on remote server {}...".format(server))
@@ -111,6 +111,21 @@ def download_files(file_type, server, server_port):
     step("List of unzipped files {}".format(ssh.stdout.readlines()))
     print ssh.stderr.readlines()
     step("File {} unzip successfully".format(filename))
+
+    step("Coping file to SFTP server {}".format(ftp_server))
+
+    with paramiko.SSHClient() as ssh:
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.load_system_host_keys()
+        ssh.connect(hostname=ftp_server, port=server_port,
+                    username=ftp_username, password=ftp_password)
+        sftp = ssh.open_sftp()
+        sftp.chdir('/{}'.format(FILE_TYPE))
+        sftp.put(file_path, filename)
+
+    step("All done")
+    step("Removing file from localhost")
+    os.remove('{}/{}'.format(BIN_PATH, filename))
 
 
 if __name__ == "__main__":
@@ -135,8 +150,27 @@ if __name__ == "__main__":
         type=str,
         help="SSH server port",
     )
+    parser.add_argument(
+        "--ftp_server",
+        dest="ftp_server",
+        type=str,
+        help="FTP server address",
+    )
+    parser.add_argument(
+        "--ftp_username",
+        dest="ftp_username",
+        type=str,
+        help="FTP user name",
+    )
+    parser.add_argument(
+        "--ftp_password",
+        dest="ftp_password",
+        type=str,
+        help="FTP user password",
+    )
     args = parser.parse_args()
 
-    download_files(args.file_type, args.server, args.server_port)
+    download_files(args.file_type, args.server, args.server_port,
+                   args.ftp_server, args.ftp_username, args.ftp_password)
     step("Finsish run: {}".format(datetime.today().strftime('%d-%m-%Y %H:%M:%S')))
     step("=============================================\n")
