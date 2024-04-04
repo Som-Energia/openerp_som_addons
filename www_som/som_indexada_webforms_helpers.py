@@ -190,7 +190,7 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
 
             3. Final Filtering:
                 * Filters the results to only include records where qwith the highest
-                  create_date for each timestamp.
+                  id for each timestamp.
 
         """
         cursor.execute(
@@ -203,7 +203,7 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                         initial_price,
                         prm_diari,
                         maturity,
-                        create_date
+                        id
                     FROM
                         giscedata_next_days_energy_price
                     WHERE
@@ -239,7 +239,7 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                         COALESCE(fd.initial_price, NULL) AS initial_price,
                         COALESCE(fd.prm_diari, NULL) AS prm_diari,
                         COALESCE(fd.maturity, fd2.maturity) AS maturity,
-                        create_date
+                        id
                     FROM
                         filtered_data fd
                     FULL JOIN
@@ -250,7 +250,7 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                         *
                     FROM
                         final_data
-                    ORDER BY hour_timestamp ASC, create_date DESC
+                    ORDER BY hour_timestamp ASC, id DESC
                 )
                 SELECT
                     JSON_BUILD_OBJECT(
