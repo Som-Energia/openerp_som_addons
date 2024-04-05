@@ -3,7 +3,6 @@ from som_indexada.tests.test_wizard_change_to_indexada import TestChangeToIndexa
 from datetime import datetime, timedelta
 import json
 
-
 class TestIndexadaHelpers(TestChangeToIndexada):
     def test_change_to_indexada_www__with_indexada_exception(self):
         polissa_obj = self.pool.get("giscedata.polissa")
@@ -141,13 +140,17 @@ class TestIndexadaHelpers(TestChangeToIndexada):
                   "prm_diari": 1.7,
                   "initial_price": 0.7,
                   "maturity": "C3.3",
-                  "hour_timestamp": "2023-05-01 01:00:00"}
+                  "hour_timestamp": "2023-05-01 01:00:00",
+                  "season":'S',
+                  "id": 7
+                  }
 
         prices_obj.create(self.cursor, self.uid, values)
 
         result = helper.get_indexed_prices(
             self.cursor, self.uid, 'PENINSULA', '2.0TDTest', '2023-05-01', '2023-05-01'
         )
+
         expected = {
             "last_date": "2023-05-02 00:00:00",
             "first_date": "2023-05-01 01:00:00",

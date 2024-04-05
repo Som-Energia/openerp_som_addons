@@ -4,6 +4,7 @@ from som_polissa.exceptions import exceptions
 from www_som.helpers import www_entry_point
 import json
 from datetime import datetime, timedelta
+import pytz
 
 SUBSYSTEMS = [
     'PENINSULA',
@@ -162,7 +163,24 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                       + timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")
         return initial_time, final_time
 
-    def _get_prices(self, cursor, geom_zone, tariff_id, first_timestamp_utc, last_timestamp_utc):
+    def toUtcTime(self, geom_zone, initial_time, final_time):
+        localtimezone = pytz.timezone('Europe/Madrid')
+        winter_offset = '1 HOUR'
+        summer_offset = '2 HOUR'
+        if geom_zone == 'CANARIAS':
+            localtimezone = pytz.timezone('Atlantic/Canary')
+            winter_offset = '0 HOUR'
+            summer_offset = '1 HOUR'
+
+        initial_time_str = datetime.strptime(initial_time, "%Y-%m-%d %H:%M:%S")
+        final_time_str = datetime.strptime(final_time, "%Y-%m-%d %H:%M:%S")
+        first_timestamp_utc = localtimezone.normalize(localtimezone.localize(initial_time_str, is_dst=True))
+        last_timestamp_utc = localtimezone.normalize(localtimezone.localize(final_time_str, is_dst=True))
+
+        return first_timestamp_utc, last_timestamp_utc, winter_offset, summer_offset
+
+    def _get_prices(self, cursor, geom_zone, winter_offset, summer_offset, tariff_id,
+                    first_timestamp_utc, last_timestamp_utc):
         """
         SQL query breakdown:
 
@@ -197,11 +215,17 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
             '''
                 WITH filtered_data AS (
                     SELECT
-                        hour_timestamp AT TIME ZONE 'UTC' AS hour_timestamp,
+                        CASE
+                            WHEN season = 'W' THEN hour_timestamp - INTERVAL %(winter_offset)s
+                            WHEN season = 'S' THEN hour_timestamp - INTERVAL %(summer_offset)s
+                            ELSE NULL
+                        END AT TIME ZONE 'UTC' AS hourtimestamp,
                         geom_zone,
                         tarifa_id,
-                        initial_price,
-                        prm_diari,
+                        CASE
+                            WHEN %(tariff_id)s IS NULL THEN prm_diari
+                            ELSE initial_price
+                        END AS price,
                         maturity,
                         id
                     FROM
@@ -209,17 +233,21 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                     WHERE
                         geom_zone = %(geom_zone)s
                         AND (%(tariff_id)s IS NULL OR tarifa_id = %(tariff_id)s)
-                        AND hour_timestamp AT TIME ZONE 'UTC'
+                        AND CASE
+                            WHEN season = 'W' THEN hour_timestamp - INTERVAL %(winter_offset)s
+                            WHEN season = 'S' THEN hour_timestamp - INTERVAL %(summer_offset)s
+                            ELSE NULL
+                        END AT TIME ZONE 'UTC'
                         BETWEEN %(first_timestamp_utc)s AND %(last_timestamp_utc)s
                 ),
                 filled_data AS (
                     SELECT
-                        generate_series AS hour_timestamp,
+                        generate_series AS hourtimestamp,
                         NULL AS geom_zone,
                         NULL AS tarifa_id,
-                        NULL AS initial_price,
-                        NULL AS prm_diari,
-                        NULL AS maturity
+                        NULL AS price,
+                        NULL AS maturity,
+                        NULL AS id
                     FROM
                         generate_series(
                             %(first_timestamp_utc)s,
@@ -227,30 +255,29 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                             INTERVAL '1 HOUR'
                         ) generate_series
                     LEFT JOIN
-                        filtered_data fd ON generate_series.generate_series = fd.hour_timestamp
+                        filtered_data fd ON generate_series.generate_series = fd.hourtimestamp
                     WHERE
-                        fd.hour_timestamp IS NULL
+                        fd.hourtimestamp IS NULL
                 ),
                 final_data AS (
                     SELECT
-                        COALESCE(fd.hour_timestamp, fd2.hour_timestamp) AS hour_timestamp,
+                        COALESCE(fd.hourtimestamp, fd2.hourtimestamp) AS hourtimestamp,
                         COALESCE(fd.geom_zone, NULL) AS geom_zone,
                         COALESCE(fd.tarifa_id, NULL) AS tarifa_id,
-                        COALESCE(fd.initial_price, NULL) AS initial_price,
-                        COALESCE(fd.prm_diari, NULL) AS prm_diari,
-                        COALESCE(fd.maturity, fd2.maturity) AS maturity,
-                        id
+                        COALESCE(fd.price, NULL) AS price,
+                        COALESCE(fd.maturity, NULL) AS maturity,
+                        COALESCE(fd.id, NULL) AS id
                     FROM
                         filtered_data fd
                     FULL JOIN
-                        filled_data fd2 ON fd.hour_timestamp = fd2.hour_timestamp
+                        filled_data fd2 ON fd.hourtimestamp = fd2.hourtimestamp
                 ),
                 collapsed_data AS (
-                    SELECT DISTINCT ON(hour_timestamp)
+                    SELECT DISTINCT ON(hourtimestamp)
                         *
                     FROM
                         final_data
-                    ORDER BY hour_timestamp ASC, id DESC
+                    ORDER BY hourtimestamp ASC, id DESC
                 )
                 SELECT
                     JSON_BUILD_OBJECT(
@@ -258,20 +285,19 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                         'last_date', %(last_timestamp_utc)s,
                         'geo_zone', %(geom_zone)s,
                         'tariff_id', %(tariff_id)s,
-                        'price_euros_kwh', COALESCE(ARRAY_AGG(initial_price
-                                                    ORDER BY hour_timestamp ASC),
+                        'prices', COALESCE(ARRAY_AGG(price
+                                                    ORDER BY hourtimestamp ASC),
                                                     ARRAY[]::numeric[]),
-                        'compensation_euros_kwh', COALESCE(ARRAY_AGG(prm_diari
-                                                           ORDER BY hour_timestamp ASC),
-                                                           ARRAY[]::numeric[]),
                         'maturity', COALESCE(ARRAY_AGG(maturity
-                                             ORDER BY hour_timestamp ASC), ARRAY[]::text[])
+                                             ORDER BY hourtimestamp ASC), ARRAY[]::text[])
                     ) AS data
                 FROM
                     collapsed_data
             ''',
             {
                 'geom_zone': geom_zone,
+                'winter_offset': winter_offset,
+                'summer_offset': summer_offset,
                 'tariff_id': tariff_id,
                 'first_timestamp_utc': first_timestamp_utc,
                 'last_timestamp_utc': last_timestamp_utc
@@ -294,21 +320,23 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
 
         initial_time, final_time = self.initial_final_times(first_date, last_date)
 
-        curves_data = self._get_prices(
-            cursor, geo_zone, tariff_id[0], initial_time, final_time)[0][0]
+        first_timestamp_utc, last_timestamp_utc, winter_offset, summer_offset = self.toUtcTime(
+            geo_zone, initial_time, final_time)
 
-        keys_to_return = ['first_date', 'last_date',
-                          'geo_zone', 'price_euros_kwh', 'maturity']
+        curves_data = self._get_prices(
+            cursor, geo_zone, winter_offset, summer_offset, tariff_id[0], first_timestamp_utc, last_timestamp_utc)[0][0]
+
+        keys_to_return = ['first_date', 'last_date', 'geo_zone', 'prices', 'maturity']
 
         filtered_data = {k: v for k, v in curves_data.items() if k in keys_to_return}
 
         json_prices = json.dumps(dict(
-            first_date=filtered_data['first_date'],
-            last_date=filtered_data['last_date'],
+            first_date=initial_time,
+            last_date=final_time,
             curves=dict(
                 tariff=tariff,
                 geo_zone=filtered_data['geo_zone'],
-                price_euros_kwh=filtered_data['price_euros_kwh'],
+                price_euros_kwh=filtered_data['prices'],
                 maturity=filtered_data['maturity']
             ))
         )
@@ -325,19 +353,22 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
 
         initial_time, final_time = self.initial_final_times(first_date, last_date)
 
-        curves_data = self._get_prices(cursor, geo_zone, None, initial_time, final_time)[0][0]
+        first_timestamp_utc, last_timestamp_utc, winter_offset, summer_offset = self.toUtcTime(
+            geo_zone, initial_time, final_time)
 
-        keys_to_return = ['first_date', 'last_date',
-                          'geo_zone', 'compensation_euros_kwh', 'maturity']
+        curves_data = self._get_prices(
+            cursor, geo_zone, winter_offset, summer_offset, None, first_timestamp_utc, last_timestamp_utc)[0][0]
+
+        keys_to_return = ['first_date', 'last_date', 'geo_zone', 'prices', 'maturity']
 
         filtered_data = {k: v for k, v in curves_data.items() if k in keys_to_return}
 
         json_prices = json.dumps(dict(
-            first_date=filtered_data['first_date'],
-            last_date=filtered_data['last_date'],
+            first_date=initial_time,
+            last_date=final_time,
             curves=dict(
                 geo_zone=filtered_data['geo_zone'],
-                compensation_euros_kwh=filtered_data['compensation_euros_kwh'],
+                compensation_euros_kwh=filtered_data['prices'],
                 maturity=filtered_data['maturity']
             ))
         )
