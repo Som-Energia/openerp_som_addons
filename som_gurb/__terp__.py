@@ -11,6 +11,7 @@
         "giscedata_facturacio_services",
         "giscedata_polissa_category",
         "giscedata_switching",
+        "giscedata_facturacio",
     ],
     "demo_xml": [
         "demo/som_gurb_service_demo.xml",
