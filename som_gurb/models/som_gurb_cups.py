@@ -25,14 +25,12 @@ class SomGurbCups(osv.osv):
             search_params = [
                 ("state", "=", "activa"),
                 ("cups", "=", cups_id),
+                ("titular", "=", gurb_vals["roof_owner_id"][0])
             ]
 
-            pol_ids = pol_obj.search(cursor, uid, search_params, context=context, limit=1)
-            if pol_ids:
-                titular_id = pol_obj.read(
-                    cursor, uid, gurb_cups_vals["id"], ["titular"]
-                )["titular"][0]
-                res[gurb_cups_vals["id"]] = titular_id == gurb_vals["roof_owner_id"][0]
+            pol_id = pol_obj.search(cursor, uid, search_params, context=context, limit=1)
+            if pol_id:
+                res[gurb_cups_vals["id"]] = True
             else:
                 res[gurb_cups_vals["id"]] = False
         return res
