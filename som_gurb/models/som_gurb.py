@@ -79,15 +79,24 @@ class SomGurb(osv.osv):
         res = {}
         for gurb_id in ids:
             gurb_cups_ids = gurb_cups_obj.search(cursor, uid, [("gurb_id", "=", gurb_id)])
-            gurb_cups_data = gurb_cups_obj.read(cursor, uid, gurb_cups_ids, ["beta_kw"])
+            gurb_cups_data = gurb_cups_obj.read(
+                cursor, uid, gurb_cups_ids, ["beta_kw", "extra_beta_kw"]
+            )
             gen_power = self.read(cursor, uid, gurb_id, ["generation_power"])["generation_power"]
 
             assigned_betas_kw = sum(gurb_cups["beta_kw"] for gurb_cups in gurb_cups_data)
-            assigned_betas_percentage = (assigned_betas_kw * 100 / gen_power) if gen_power else 0
+            assigned_extra_betas_kw = sum(
+                gurb_cups["extra_beta_kw"] for gurb_cups in gurb_cups_data
+            )
+            assigned_betas_percentage = 0
+            if gen_power:
+                assigned_betas_percentage = (
+                    assigned_betas_kw + assigned_extra_betas_kw
+                ) * 100 / gen_power
 
             res[gurb_id] = {
-                "assigned_betas_kw": assigned_betas_kw,
-                "available_betas_kw": gen_power - assigned_betas_kw,
+                "assigned_betas_kw": assigned_betas_kw + assigned_extra_betas_kw,
+                "available_betas_kw": gen_power - assigned_betas_kw - assigned_extra_betas_kw,
                 "assigned_betas_percentage": assigned_betas_percentage,
                 "available_betas_percentage": 100 - assigned_betas_percentage,
             }
@@ -280,6 +289,13 @@ class SomGurb(osv.osv):
         "assigned_betas_kw": fields.function(
             _ff_total_betas,
             string="Betes assignades (kW)",
+            type="float",
+            method=True,
+            multi="betas",
+        ),
+        "assigned_extra_betas_kw": fields.function(
+            _ff_total_betas,
+            string="Betes extres assignades (kW)",
             type="float",
             method=True,
             multi="betas",

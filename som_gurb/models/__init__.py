@@ -1,4 +1,6 @@
-import som_gurb
-import som_gurb_cups
-import giscedata_switching
-import giscedata_facturacio
+from __future__ import absolute_import
+
+from . import som_gurb
+from . import som_gurb_cups
+from . import giscedata_switching
+from . import giscedata_facturacio

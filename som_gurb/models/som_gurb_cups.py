@@ -11,10 +11,38 @@ class SomGurbCups(osv.osv):
     _name = "som.gurb.cups"
     _description = _("CUPS en grup de generació urbana")
 
+    def _ff_is_owner(self, cursor, uid, ids, field_name, arg, context=None):
+        if context is None:
+            context = {}
+
+        gurb_obj = self.pool.get("som.gurb")
+        pol_obj = self.pool.get("giscedata.polissa")
+
+        res = dict.fromkeys(ids, False)
+        for gurb_cups_vals in self.read(cursor, uid, ids, ["gurb_id"]):
+            gurb_vals = gurb_obj.read(cursor, uid, gurb_cups_vals["gurb_id"][0], ["roof_owner_id"])
+            cups_id = self.read(cursor, uid, gurb_cups_vals["id"], ["cups_id"])["cups_id"][0]
+            search_params = [
+                ("state", "=", "activa"),
+                ("cups", "=", cups_id),
+            ]
+
+            pol_ids = pol_obj.search(cursor, uid, search_params, context=context, limit=1)
+            if pol_ids:
+                titular_id = pol_obj.read(
+                    cursor, uid, gurb_cups_vals["id"], ["titular"]
+                )["titular"][0]
+                res[gurb_cups_vals["id"]] = titular_id == gurb_vals["roof_owner_id"][0]
+            else:
+                res[gurb_cups_vals["id"]] = False
+        return res
+
     def _ff_get_beta_percentage(self, cursor, uid, ids, field_name, arg, context=None):
+        if context is None:
+            context = {}
         gurb_obj = self.pool.get("som.gurb")
         res = dict.fromkeys(ids, False)
-        for gurb_cups_vals in self.read(cursor, uid, ids, ["gurb_id", "beta_kw"]):
+        for gurb_cups_vals in self.read(cursor, uid, ids, ["gurb_id", "beta_kw", "extra_beta_kw"]):
             gurb_id = gurb_cups_vals.get("gurb_id", False)
             if gurb_id:
                 generation_power = gurb_obj.read(
@@ -23,7 +51,8 @@ class SomGurbCups(osv.osv):
 
                 if generation_power:
                     beta_kw = gurb_cups_vals.get("beta_kw", 0)
-                    res[gurb_cups_vals["id"]] = beta_kw * 100 / generation_power
+                    extra_beta_kw = gurb_cups_vals.get("extra_beta_kw", 0)
+                    res[gurb_cups_vals["id"]] = (extra_beta_kw + beta_kw) * 100 / generation_power
                 else:
                     res[gurb_cups_vals["id"]] = 0
         return res
@@ -85,8 +114,8 @@ class SomGurbCups(osv.osv):
 
     _columns = {
         "active": fields.boolean("Actiu"),
-        "start_date": fields.date(u"Data entrada GURB", required=True),
-        "end_date": fields.date(u"Data sortida GURB",),
+        "start_date": fields.date("Data entrada GURB", required=True),
+        "end_date": fields.date("Data sortida GURB",),
         "gurb_id": fields.many2one("som.gurb", "GURB", required=True, ondelete="cascade"),
         "cups_id": fields.many2one("giscedata.cups.ps", "CUPS", required=True),
         "beta_kw": fields.float(
@@ -94,17 +123,29 @@ class SomGurbCups(osv.osv):
             digits=(10, 3),
             required=True,
         ),
+        "extra_beta_kw": fields.float(
+            "Extra Beta (kW)",
+            digits=(10, 3),
+            required=True,
+        ),
         "beta_percentage": fields.function(
             _ff_get_beta_percentage,
             type="float",
-            string="Beta (%)",
+            string="Total Beta (%)",
             digits=(12, 4),
             method=True,
+        ),
+        "owner_cups": fields.function(
+            _ff_is_owner,
+            type="boolean",
+            string="Cups de la persona propietària",
+            method=True
         )
     }
 
     _defaults = {
         "active": lambda *a: True,
+        "extra_beta_kw": lambda *a: 0,
     }
 
 
