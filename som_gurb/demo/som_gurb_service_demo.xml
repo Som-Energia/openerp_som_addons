@@ -9,7 +9,7 @@
         <record model="product.pricelist.version" id="version_pricelist_gurb_demo">
             <field name="name">GURB Demo Pricelist Version</field>
             <field name="active">True</field>
-            <field name="date_start">2023-01-01</field>
+            <field name="date_start">2016-01-01</field>
             <field name="date_end" eval="False"/>
             <field name="pricelist_id" ref="pricelist_gurb_demo"/>
         </record>

@@ -9,6 +9,7 @@
             <field name="self_consumption_id" ref="giscedata_cups.autoconsum_cups_tarifa_020_autoconsum_43" />
             <field name="sig_data">SIGDATA</field>
             <field name="pricelist_id" ref="pricelist_gurb_demo" ></field>
+            <field name="generation_power">10</field>
         </record>
     </data>
 </openerp>

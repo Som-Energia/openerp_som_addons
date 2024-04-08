@@ -1,53 +1,8 @@
-from destral import testing
-from destral.transaction import Transaction
 from osv import osv
+from tests_gurb_base import TestsGurbBase
 
 
-class TestsGurbServices(testing.OOTestCase):
-    def setUp(self):
-        self.txn = Transaction().start(self.database)
-        self.cursor = self.txn.cursor
-        self.uid = self.txn.user
-
-    def tearDown(self):
-        self.txn.stop()
-
-    def get_model(self, model_name):
-        return self.openerp.pool.get(model_name)
-
-    def activar_polissa_CUPS(self, context=None):
-        if context is None:
-            context = {}
-        cursor = self.cursor
-        uid = self.uid
-        imd_obj = self.openerp.pool.get("ir.model.data")
-        polissa_obj = self.openerp.pool.get("giscedata.polissa")
-        polissa_id = imd_obj.get_object_reference(
-            cursor, uid, "giscedata_polissa", context.get("polissa_xml_id", "polissa_0001")
-        )[1]
-        polissa_obj.send_signal(cursor, uid, [polissa_id], [
-            "validar", "contracte"
-        ])
-
-    def get_references(self):
-        imd_o = self.openerp.pool.get("ir.model.data")
-
-        vals = {}
-
-        vals['gurb_cups_id'] = imd_o.get_object_reference(
-            self.cursor, self.uid, "som_gurb", "gurb_cups_0001"
-        )[1]
-        vals['pricelist_id'] = imd_o.get_object_reference(
-            self.cursor, self.uid, "som_gurb", "pricelist_gurb_demo"
-        )[1]
-        vals['product_id'] = imd_o.get_object_reference(
-            self.cursor, self.uid, "som_gurb", "product_gurb"
-        )[1]
-        vals['pol_id'] = imd_o.get_object_reference(
-            self.cursor, self.uid, "giscedata_polissa", "polissa_0001"
-        )[1]
-
-        return vals
+class TestsGurbServices(TestsGurbBase):
 
     def add_service_to_contract(self, start_date='2023-01-01', context=None):
         gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
@@ -111,7 +66,7 @@ class TestsGurbServices(testing.OOTestCase):
             self.cursor, self.uid, pol_br.serveis[0], fact_br
         ):
             n_lines += 1
-            self.assertEqual(line["quantity"], 2.0)  # Number of betas
+            self.assertEqual(line["quantity"], 2.5)  # Number of betas
             self.assertEqual(line["multi"], 0)  # Service days invoiced
 
         self.assertEqual(n_lines, 1)
@@ -137,7 +92,7 @@ class TestsGurbServices(testing.OOTestCase):
             self.cursor, self.uid, pol_br.serveis[0], fact_br
         ):
             n_lines += 1
-            self.assertEqual(line["quantity"], 2.0)  # Number of betas
-            self.assertEqual(line["multi"], 20)  # Service days invoiced
+            self.assertEqual(line["quantity"], 2.5)  # Number of betas
+            self.assertEqual(line["multi"], 60)  # Service days invoiced
 
         self.assertEqual(n_lines, 0)
