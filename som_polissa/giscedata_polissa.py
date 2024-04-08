@@ -497,7 +497,7 @@ class GiscedataPolissa(osv.osv):
         provincies = cups_obj.read(cursor, uid, cups_ids, ['id_provincia'])
 
         for provincia in provincies:
-            res[provincia['id']] = provincia["id_provincia"][1]
+            res[provincia['polissa_polissa'][0]]=provincia["id_provincia"][1]
 
         return res
 
