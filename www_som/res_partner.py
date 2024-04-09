@@ -275,6 +275,50 @@ class ResPartner(osv.osv):
                     res[partner_id] = empty_num_soci
         return res
 
+    def www_ov_attachments(self, cursor, uid, partner_id, context=None):
+        """
+        Returns the list of the OV attachments for this parnter.
+        TODO: Now only works for attachments in the res_partner, but it can be improved
+        in the future.
+        """
+        attachment_obj = self.pool.get("ir.attachment")
+        attachment_ids = attachment_obj.search(cursor, uid, [
+            ('res_model', '=', 'res.partner'),
+            ('res_id', '=', partner_id),
+            ('category_id.ov_available', '=', True),
+        ])
+        res = []
+        for attachment in attachment_obj.browse(cursor, uid, attachment_ids):
+            res.append({
+                'erp_id': attachment.id,
+                'name': attachment.name,
+                'file_name': attachment.datas_fname,
+                'date': attachment.create_date,
+                'res_model': attachment.res_model,
+                'res_id': attachment.res_id,
+                'category': attachment.category_id.code,
+            })
+        return res
+
+    def www_get_ov_attachment(self, cursor, uid, attachment_id, partner_id, context=None):
+        """
+        Downloads an OV attachment
+        TODO: Now only works for attachments in the res_partner, but it can be improved
+        in the future.
+        """
+        attachment_obj = self.pool.get("ir.attachment")
+        attachment_ids = attachment_obj.search(cursor, uid, [
+            ('id', '=', attachment_id),
+            ('res_model', '=', 'res.partner'),
+            ('res_id', '=', partner_id),
+            ('category_id.ov_available', '=', True),
+        ])
+        if not attachment_ids:
+            raise Exception("The attachment doesn't exists or you don't have permission")
+
+        return attachment_obj.read(cursor, uid, attachment_id, ['datas_fname', 'datas'])
+
+
     _columns = {
         "www_email": fields.function(
             _www_email,
