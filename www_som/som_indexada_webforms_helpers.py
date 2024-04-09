@@ -174,8 +174,10 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
 
         initial_time_str = datetime.strptime(initial_time, "%Y-%m-%d %H:%M:%S")
         final_time_str = datetime.strptime(final_time, "%Y-%m-%d %H:%M:%S")
-        first_timestamp_utc = localtimezone.normalize(localtimezone.localize(initial_time_str, is_dst=True))
-        last_timestamp_utc = localtimezone.normalize(localtimezone.localize(final_time_str, is_dst=True))
+        first_timestamp_utc = localtimezone.normalize(
+            localtimezone.localize(initial_time_str, is_dst=True))
+        last_timestamp_utc = localtimezone.normalize(
+            localtimezone.localize(final_time_str, is_dst=True))
 
         return first_timestamp_utc, last_timestamp_utc, winter_offset, summer_offset
 

@@ -141,7 +141,7 @@ class TestIndexadaHelpers(TestChangeToIndexada):
                   "initial_price": 0.7,
                   "maturity": "C3.3",
                   "hour_timestamp": "2023-05-01 01:00:00",
-                  "season":'S',
+                  "season": 'S',
                   "id": 7
                   }
 
