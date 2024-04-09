@@ -29,10 +29,8 @@ class SomGurbCups(osv.osv):
             ]
 
             pol_id = pol_obj.search(cursor, uid, search_params, context=context, limit=1)
-            if pol_id:
-                res[gurb_cups_vals["id"]] = True
-            else:
-                res[gurb_cups_vals["id"]] = False
+            res[gurb_cups_vals["id"]] = bool(pol_id)
+
         return res
 
     def _ff_get_beta_percentage(self, cursor, uid, ids, field_name, arg, context=None):

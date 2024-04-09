@@ -22,3 +22,25 @@ class TestsGurbCups(TestsGurbBase):
 
         self.assertEqual(percentatge_1, 35.0)
         self.assertEqual(percentatge_2, 30.0)
+
+    def test_gurb_is_owner(self):
+        context = {}
+        imd_o = self.openerp.pool.get("ir.model.data")
+        gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
+
+        gurb_cups_id_1 = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_0001"
+        )[1]
+        gurb_cups_id_2 = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_0002"
+        )[1]
+        gurb_cups_1 = gurb_cups_o.browse(self.cursor, self.uid, gurb_cups_id_1)
+        gurb_cups_2 = gurb_cups_o.browse(self.cursor, self.uid, gurb_cups_id_2)
+
+        self.assertEqual(gurb_cups_1.owner_cups, False)
+        self.activar_polissa_CUPS()
+        self.assertEqual(gurb_cups_1.owner_cups, True)
+        self.assertEqual(gurb_cups_2.owner_cups, False)
+        context["polissa_xml_id"] = "polissa_0002"
+        self.activar_polissa_CUPS(context=context)
+        self.assertEqual(gurb_cups_2.owner_cups, False)
