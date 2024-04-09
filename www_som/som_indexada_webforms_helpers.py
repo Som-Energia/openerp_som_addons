@@ -326,7 +326,8 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
             geo_zone, initial_time, final_time)
 
         curves_data = self._get_prices(
-            cursor, geo_zone, winter_offset, summer_offset, tariff_id[0], first_timestamp_utc, last_timestamp_utc)[0][0]
+            cursor, geo_zone, winter_offset, summer_offset, tariff_id[0],
+            first_timestamp_utc, last_timestamp_utc)[0][0]
 
         keys_to_return = ['first_date', 'last_date', 'geo_zone', 'prices', 'maturity']
 
@@ -359,7 +360,8 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
             geo_zone, initial_time, final_time)
 
         curves_data = self._get_prices(
-            cursor, geo_zone, winter_offset, summer_offset, None, first_timestamp_utc, last_timestamp_utc)[0][0]
+            cursor, geo_zone, winter_offset, summer_offset, None, 
+            first_timestamp_utc, last_timestamp_utc)[0][0]
 
         keys_to_return = ['first_date', 'last_date', 'geo_zone', 'prices', 'maturity']
 
