@@ -23,6 +23,14 @@
             <field name="standard_price">10</field>
             <field name="supply_method">buy</field>
         </record>
+        <record model="product.product" id="product_owner_gurb">
+            <field name="name">Producte GURB persona propietària</field>
+            <field name="categ_id" ref="categ_product_gurb"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="standard_price">0</field>
+            <field name="supply_method">buy</field>
+        </record>
         <record id="ir_attachment_gurb_ritsic_attachment_category" model="ir.attachment.category">
             <field name="code">gurb_ritsic_attachment_category</field>
             <field name="name">GURB: Fitxer RITSIC</field>

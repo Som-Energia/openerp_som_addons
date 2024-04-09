@@ -71,38 +71,52 @@ class SomGurbCups(osv.osv):
                 res[cups_gurb_id] = True
         return res
 
-    def add_service_to_contract(
-        self, cursor, uid, ids, pricelist_id, product_id, data_inici, context=None
-    ):
+    def add_service_to_contract(self, cursor, uid, ids, data_inici, context=None):
         if context is None:
             context = {}
 
-        pol_obj = self.pool.get("giscedata.polissa")
+        pol_o = self.pool.get("giscedata.polissa")
+        gurb_o = self.pool.get("som.gurb")
         wiz_service_o = self.pool.get("wizard.create.service")
+        imd_o = self.openerp.pool.get("ir.model.data")
+
+        owner_product_id = imd_o.get_object_reference(
+            cursor, uid, "som_gurb", "product_owner_gurb"
+        )[1]
+
+        gurb_product_id = imd_o.get_object_reference(
+            cursor, uid, "som_gurb", "product_gurb"
+        )[1]
 
         for gurb_cups_id in ids:
-            cups_id = self.read(cursor, uid, gurb_cups_id, ["cups_id"])["cups_id"][0]
+            gurb_vals = self.read(cursor, uid, gurb_cups_id, ["cups_id", "gurb_id", "owner_cups"])
             search_params = [
                 ("state", "=", "activa"),
-                ("cups", "=", cups_id),
+                ("cups", "=", gurb_vals["cups_id"][0]),
             ]
 
-            pol_ids = pol_obj.search(cursor, uid, search_params, context=context, limit=1)
+            pol_ids = pol_o.search(cursor, uid, search_params, context=context, limit=1)
             if not pol_ids:
                 error_title = _("No hi ha pòlisses actives per aquest CUPS"),
                 error_info = _(
                     "El CUPS id {} no té pòlisses actives. No es pot afegir cap servei".format(
-                        cups_id
+                        gurb_vals["cups_id"][0]
                     )
                 )
                 raise osv.except_osv(error_title, error_info)
 
+            # Get related GURB service pricelist
+            pricelist_id = gurb_o.read(
+                cursor, uid, gurb_vals["gurb_id"][0], ["pricelist_id"], context=context
+            )["pricelist_id"]
+
             # Afegim el servei
             creation_vals = {
                 "pricelist_id": pricelist_id,
-                "product_id": product_id,
+                "product_id": owner_product_id if gurb_vals["owner_cups"] else gurb_product_id,
                 "data_inici": data_inici,
             }
+
             wiz_id = wiz_service_o.create(cursor, uid, creation_vals, context=context)
 
             context['active_ids'] = pol_ids
