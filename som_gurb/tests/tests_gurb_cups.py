@@ -34,13 +34,23 @@ class TestsGurbCups(TestsGurbBase):
         gurb_cups_id_2 = imd_o.get_object_reference(
             self.cursor, self.uid, "som_gurb", "gurb_cups_0002"
         )[1]
-        gurb_cups_1 = gurb_cups_o.browse(self.cursor, self.uid, gurb_cups_id_1)
-        gurb_cups_2 = gurb_cups_o.browse(self.cursor, self.uid, gurb_cups_id_2)
+        owner_cups_1 = gurb_cups_o.read(
+            self.cursor, self.uid, gurb_cups_id_1, ["owner_cups"]
+        )["owner_cups"]
+        owner_cups_2 = gurb_cups_o.read(
+            self.cursor, self.uid, gurb_cups_id_2, ["owner_cups"]
+        )["owner_cups"]
 
-        self.assertEqual(gurb_cups_1.owner_cups, False)
+        self.assertEqual(owner_cups_1, False)
         self.activar_polissa_CUPS()
-        self.assertEqual(gurb_cups_1.owner_cups, True)
-        self.assertEqual(gurb_cups_2.owner_cups, False)
+        owner_cups_1 = gurb_cups_o.read(
+            self.cursor, self.uid, gurb_cups_id_1, ["owner_cups"]
+        )["owner_cups"]
+        self.assertEqual(owner_cups_1, True)
+        self.assertEqual(owner_cups_2, False)
         context["polissa_xml_id"] = "polissa_0002"
         self.activar_polissa_CUPS(context=context)
-        self.assertEqual(gurb_cups_2.owner_cups, False)
+        owner_cups_2 = gurb_cups_o.read(
+            self.cursor, self.uid, gurb_cups_id_2, ["owner_cups"]
+        )["owner_cups"]
+        self.assertEqual(owner_cups_2, False)
