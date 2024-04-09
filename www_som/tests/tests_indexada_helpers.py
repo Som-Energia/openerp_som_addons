@@ -3,6 +3,7 @@ from som_indexada.tests.test_wizard_change_to_indexada import TestChangeToIndexa
 from datetime import datetime, timedelta
 import json
 
+
 class TestIndexadaHelpers(TestChangeToIndexada):
     def test_change_to_indexada_www__with_indexada_exception(self):
         polissa_obj = self.pool.get("giscedata.polissa")
