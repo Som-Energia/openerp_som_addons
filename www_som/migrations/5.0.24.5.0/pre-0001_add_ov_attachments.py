@@ -12,7 +12,7 @@ def up(cursor, installed_version):
     pool = pooler.get_pool(cursor.dbname)
 
     wiz_obj = pool.get('wizard.import.ref.cadastral.from.csv')
-    wiz_obj._auto_init(cursor, context={'module': 'som_polissa'})
+    wiz_obj._auto_init(cursor, context={'module': 'www_som'})
 
     logger.info("Adding column ov_available to ir_attachment_category")
     add_columns(
@@ -26,7 +26,7 @@ def up(cursor, installed_version):
 
     logger.info("Update XMLs")
     load_data(
-        cursor, 'som_polissa', "ir_attachment_view.xml", idref=None, mode='update'
+        cursor, 'www_som', "ir_attachment_view.xml", idref=None, mode='update'
     )
     logger.info("XMLs succesfully updated.")
 
