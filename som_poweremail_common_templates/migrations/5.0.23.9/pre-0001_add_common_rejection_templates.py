@@ -3,9 +3,8 @@ import logging
 from oopgrade.oopgrade import load_data_records
 import pooler
 
+
 # Bug [ids]: Copy delete_record from PR https://github.com/gisce/oopgrade/pull/32#issuecomment-2044624005 # noqa: E501
-
-
 def delete_record(cursor, module_name, record_names):
     logger = logging.getLogger('openerp.migration')
     uid = 1
