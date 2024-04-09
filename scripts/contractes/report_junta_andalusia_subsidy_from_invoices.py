@@ -19,7 +19,7 @@
 
 from tqdm import tqdm
 import csv
-import configdb
+import dbconfig
 from erppeek import Client
 
 csv_reader = False
@@ -37,10 +37,11 @@ with open('input_invoices.csv', mode='r') as file:
         data_dict_list.append(row)
 
 # Connect to ERP
-c = Client(**configdb.erppeek)
+c = Client(**dbconfig.erppeek)
 
 pol_obj = c.model('giscedata.polissa')
 fact_obj = c.model('giscedata.facturacio.factura')
+linia_obj = c.model('giscedata.facturacio.factura.linia')
 
 for data_dict in tqdm(data_dict_list):
     invoice_num = data_dict['Nº FACTURA']
@@ -53,7 +54,7 @@ for data_dict in tqdm(data_dict_list):
     signe = 1
     if fact.type == 'out_refund':
         signe = -1
-    data_dict['CONSUMO FACTURADO (KWh)'] = fact.energia_kwh * signe
+    data_dict['CONSUMO FACTURADO (KWh)'] = round(fact.energia_kwh * signe)
 
     # Tema imports
     taxes = {}
@@ -64,7 +65,7 @@ for data_dict in tqdm(data_dict_list):
     import_energia = 0
     import_factura = fact.amount_total * signe
     if not taxes:
-        import_energia = 'OJO: IESE NO TROBAT'
+        import_energia = fact.total_potencia
     elif taxes['IESE'].tax_id.name == u'Impuesto especial sobre la electricidad':
         import_energia = (fact.amount_total - (
             fact.total_altres + fact.total_lloguers + fact.amount_tax)) * signe
@@ -75,6 +76,13 @@ for data_dict in tqdm(data_dict_list):
                                + fact.amount_tax + float(taxes['IESE'].base))) * signe, 2)
     else:
         import_energia = 'OJO: IESE DIFERENT'
+
+    total_descomptes = 0
+    for linia in fact.linia_ids:
+        if linia.product_id and linia.product_id.id == 2306:
+            total_descomptes += linia.price_subtotal
+
+    import_energia = round(fact.total_potencia + fact.total_energia + total_descomptes, 2)
 
     data_dict['IMPORTE ENERGÍA'] = import_energia
     data_dict['IMPORTE TOTAL DE LA FACTURA'] = import_factura
