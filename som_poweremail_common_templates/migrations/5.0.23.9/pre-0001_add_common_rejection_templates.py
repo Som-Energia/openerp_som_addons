@@ -10,7 +10,8 @@ def up(cursor, installed_version):
     logger = logging.getLogger('openerp.migration')
     logger.info("Updating XMLs")
 
-    list_of_records = ["common_template_modi_rejection_text"]
+    list_of_records = ["common_template_modi_rejection_text",
+                       "common_template_rejection_text"]
     load_data_records(
         cursor,
         'som_poweremail_common_templates',
