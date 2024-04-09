@@ -29,20 +29,32 @@ class WizardImportarLeadsComercials(osv.osv):
         wiz = self.browse(cursor, uid, wiz_id, context=context)
         lead_o = self.pool.get("giscedata.crm.lead")
 
-        write_vals = {
+        wiz_vals = {
             "llista_preu": wiz.llista_preus.id,
             "condicions_generals_id": wiz.condicions_generals_id.id,
             "atr_proces_name": wiz.atr_proces_name,
+            "coeficient_k": wiz.coeficient_k
         }
 
-        lead_o.write(cursor, uid, leads_ids, write_vals, context=context)
+        for lead_id in leads_ids:
+            lead_vals = lead_o.read(
+                cursor, uid, lead_id, list(wiz_vals.keys()), context=context
+            )
+
+            write_vals = {}
+            for val in lead_vals:
+                if not lead_vals[val]:
+                    write_vals[val] = wiz_vals[val]
+
+            lead_o.write(cursor, uid, lead_id, write_vals, context=context)
 
     _columns = {
-        "llista_preus": fields.many2one("product.pricelist", "Tarifa", required=True),
+        "llista_preus": fields.many2one("product.pricelist", "Tarifa", required=False),
         "condicions_generals_id": fields.many2one(
-            "giscedata.polissa.condicions.generals", "Condicions Generals", required=True),
-        'atr_proces_name': fields.selection(
-            [('A3', 'A3'), ('C1', 'C1')], "Procés d'alta", required=True),
+            "giscedata.polissa.condicions.generals", "Condicions Generals", required=False),
+        "atr_proces_name": fields.selection(
+            [("A3", "A3"), ("C1", "C1")], "Procés d'alta", required=False),
+        "coeficient_k": fields.float("Coeficient K €/MWh", digits=(5, 3)),
     }
 
 
