@@ -27,6 +27,7 @@ Mòdul per la integració de l'oficina virtual
         "res_partner_view.xml",
         "wizard/wizard_model_list_from_file_data.xml",
         "security/ir.model.access.csv",
+        "ir_attachment_view.xml",
     ],
     "active": False,
     "installable": True,
