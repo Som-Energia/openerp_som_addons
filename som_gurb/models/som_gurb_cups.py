@@ -78,7 +78,7 @@ class SomGurbCups(osv.osv):
         pol_o = self.pool.get("giscedata.polissa")
         gurb_o = self.pool.get("som.gurb")
         wiz_service_o = self.pool.get("wizard.create.service")
-        imd_o = self.openerp.pool.get("ir.model.data")
+        imd_o = self.pool.get("ir.model.data")
 
         owner_product_id = imd_o.get_object_reference(
             cursor, uid, "som_gurb", "product_owner_gurb"

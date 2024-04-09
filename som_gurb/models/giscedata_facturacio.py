@@ -16,14 +16,20 @@ class GiscedataFacturacioServices(osv.osv):
 
         gurb_cups_o = self.pool.get("som.gurb.cups")
         imd_o = self.pool.get("ir.model.data")
-        product_id = imd_o.get_object_reference(
+        gurb_product_id = imd_o.get_object_reference(
             cursor, uid, "som_gurb", "product_gurb"
+        )[1]
+        owner_product_id = imd_o.get_object_reference(
+            cursor, uid, "som_gurb", "product_owner_gurb"
         )[1]
 
         for vals in super(GiscedataFacturacioServices, self)._get_vals_linia(
             cursor, uid, service, inv, context=context
         ):
-            if product_id == vals.get("product_id", False):
+            if (
+                gurb_product_id == vals.get("product_id", False)
+                or owner_product_id == vals.get("product_id", False)
+            ):
                 for gurb_cups_id in self._get_gurb_cups_ids(
                     cursor, uid, inv, vals, context=context
                 ):
