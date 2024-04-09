@@ -11,7 +11,7 @@
         <record id="gurb_cups_0002" model="som.gurb.cups">
             <field name="start_date">2019-01-22</field>
             <field name="gurb_id" ref="gurb_0001" />
-            <field name="cups_id" ref="giscedata_cups.cups_02" />
+            <field name="cups_id" ref="giscedata_cups.cups_tarifa_018" />
             <field name="beta_kw">3</field>
             <field name="extra_beta_kw">0</field>
         </record>
