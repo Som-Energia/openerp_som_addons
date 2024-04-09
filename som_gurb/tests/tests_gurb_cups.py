@@ -42,7 +42,8 @@ class TestsGurbCups(TestsGurbBase):
         )["owner_cups"]
 
         self.assertEqual(owner_cups_1, False)
-        self.activar_polissa_CUPS()
+        context["polissa_xml_id"] = "polissa_0001"
+        self.activar_polissa_CUPS(context=context)
         owner_cups_1 = gurb_cups_o.read(
             self.cursor, self.uid, gurb_cups_id_1, ["owner_cups"]
         )["owner_cups"]

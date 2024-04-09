@@ -23,7 +23,7 @@ class TestsGurbBase(testing.OOTestCase):
         imd_obj = self.openerp.pool.get("ir.model.data")
         polissa_obj = self.openerp.pool.get("giscedata.polissa")
         polissa_id = imd_obj.get_object_reference(
-            cursor, uid, "giscedata_polissa", context.get("polissa_xml_id", "polissa_0001")
+            cursor, uid, "giscedata_polissa", context.get("polissa_xml_id", "polissa_tarifa_018")
         )[1]
         polissa_obj.send_signal(cursor, uid, [polissa_id], [
             "validar", "contracte"
@@ -43,17 +43,29 @@ class TestsGurbBase(testing.OOTestCase):
 
         vals = {}
 
-        vals['gurb_cups_id'] = imd_o.get_object_reference(
+        vals['owner_gurb_cups_id'] = imd_o.get_object_reference(
             self.cursor, self.uid, "som_gurb", "gurb_cups_0001"
+        )[1]
+        vals['gurb_cups_id'] = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_0002"
         )[1]
         vals['pricelist_id'] = imd_o.get_object_reference(
             self.cursor, self.uid, "som_gurb", "pricelist_gurb_demo"
         )[1]
+        vals['pricelist_version_id'] = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "version_pricelist_gurb_demo"
+        )[1]
         vals['product_id'] = imd_o.get_object_reference(
             self.cursor, self.uid, "som_gurb", "product_gurb"
         )[1]
-        vals['pol_id'] = imd_o.get_object_reference(
+        vals['owner_product_id'] = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "product_owner_gurb"
+        )[1]
+        vals['owner_pol_id'] = imd_o.get_object_reference(
             self.cursor, self.uid, "giscedata_polissa", "polissa_0001"
+        )[1]
+        vals['pol_id'] = imd_o.get_object_reference(
+            self.cursor, self.uid, "giscedata_polissa", "polissa_tarifa_018"
         )[1]
 
         return vals
