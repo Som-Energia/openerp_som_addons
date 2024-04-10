@@ -19,6 +19,7 @@
                         <field name="beta_percentage" />
                         <field name="owner_cups" />
                     </group>
+                        <field name="betas_ids" nolabel="1" colspan="4" readonly="1"/>
                 </form>
             </field>
         </record>
@@ -38,6 +39,22 @@
                     <field name="start_date" select="1" />
                     <field name="end_date" select="1" />
                     <field name="owner_cups" />
+                </tree>
+            </field>
+        </record>
+        <!-- Llistat per defecte d'hitòric de Betes dels CUPS de GURBs-->
+        <record model="ir.ui.view" id="view_gurbs_cups_tree">
+            <field name="name">som.gurb.cups.beta.tree</field>
+            <field name="model">som.gurb.cups.beta</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Betes dels CUPS GURB" colors="red:active == False">
+                    <field name="active" select="1" />
+                    <field name="name" select="1" />
+                    <field name="beta_kw" />
+                    <field name="extra_beta_kw" />
+                    <field name="start_date" select="1" />
+                    <field name="end_date" select="1" />
                 </tree>
             </field>
         </record>
