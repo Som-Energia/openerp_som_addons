@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 import logging
-from oopgrade.oopgrade import load_data, add_columns
+from oopgrade.oopgrade import load_data, load_data_records, add_columns
 import pooler
 
 
@@ -25,8 +25,10 @@ def up(cursor, installed_version):
     logger.info("Column added succesfully.")
 
     logger.info("Update XMLs")
-    load_data(
-        cursor, 'www_som', "ir_attachment_view.xml", idref=None, mode='update'
+    load_data(cursor, 'www_som', "ir_attachment_view.xml", idref=None, mode='update')
+    load_data_records(
+        cursor, "www_som", "www_som_data.xml",
+        ["ir_attachment_category_ov_fiscal"], mode="update",
     )
     logger.info("XMLs succesfully updated.")
 
