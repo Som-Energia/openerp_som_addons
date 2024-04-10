@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+"access_som_consulta_pobresa_read","som.consulta.pobresa.read",model_som_consulta_pobresa,crm.group_crm_user,1,0,0,0
+"access_som_consulta_pobresa_write","som.consulta.pobresa.write",model_som_consulta_pobresa,crm.group_crm_manager,1,1,1,1
