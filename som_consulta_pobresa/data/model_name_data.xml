@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <!-- Els valors dels records que hi hagi aqui dins sempre s'actualitaran -->
+    <data>
+
+        <record id="som_template_fixed_record" model="som.template">
+            <field name="name">Som Template</field>
+        </record>
+
+    </data>
+
+    <!-- Els records que hi hagin aquí dins es crearan però no s'actualitzaran-->
+    <data noupdate="1">
+
+        <record id="som_template_user_editable_record" model="som.template">
+            <field name="name">Som Template modificable</field>
+        </record>
+
+    </data>
+
+</openerp>

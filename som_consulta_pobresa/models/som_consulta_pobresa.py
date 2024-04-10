@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
+from tools.translate import _
 
 RESOLUTION_STATES = [
     ('positiva', 'Positiva'),
@@ -7,7 +8,7 @@ RESOLUTION_STATES = [
 ]
 
 
-class SomConsultaPobresa(osv.OsvInherits):
+class SomConsultaPobresa(osv.osv):
     _name = 'som.consulta.pobresa'
     _inherits = {"crm.case": "crm_id"}
     _description = 'Model per gestionar les consultes de pobresa energètica'
