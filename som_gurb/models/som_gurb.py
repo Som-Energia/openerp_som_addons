@@ -91,13 +91,17 @@ class SomGurb(osv.osv):
             assigned_betas_percentage = 0
             if gen_power:
                 assigned_betas_percentage = (
-                    assigned_betas_kw + assigned_extra_betas_kw
+                    assigned_betas_kw
+                ) * 100 / gen_power
+                assigned_extra_betas_percentage = (
+                    assigned_extra_betas_kw
                 ) * 100 / gen_power
 
             res[gurb_id] = {
-                "assigned_betas_kw": assigned_betas_kw + assigned_extra_betas_kw,
-                "available_betas_kw": gen_power - assigned_betas_kw - assigned_extra_betas_kw,
+                "assigned_betas_kw": assigned_betas_kw,
+                "available_betas_kw": gen_power - assigned_betas_kw,
                 "assigned_betas_percentage": assigned_betas_percentage,
+                "assigned_extra_betas_percentage": assigned_extra_betas_percentage,
                 "available_betas_percentage": 100 - assigned_betas_percentage,
             }
 
@@ -310,6 +314,13 @@ class SomGurb(osv.osv):
         "assigned_betas_percentage": fields.function(
             _ff_total_betas,
             string="Betes assignades (%)",
+            type="float",
+            method=True,
+            multi="betas",
+        ),
+        "assigned_extra_betas_percentage": fields.function(
+            _ff_total_betas,
+            string="Betes extra assignades (%)",
             type="float",
             method=True,
             multi="betas",
