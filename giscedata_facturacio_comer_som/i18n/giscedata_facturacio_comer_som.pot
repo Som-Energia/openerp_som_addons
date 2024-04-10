@@ -2267,4 +2267,3 @@ msgstr ""
 #: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:110
 msgid "Més informació sobre l'origen de la seva electricitat a"
 msgstr ""
-
