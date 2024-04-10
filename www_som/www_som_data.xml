@@ -37,8 +37,8 @@
     <data noupdate="1">
         <record id="ir_attachment_category_ov_fiscal" model="ir.attachment.category">
             <field name="name">OV Fiscal Attachment</field>
-            <field name="code">FISCAL</field>
-            <field name="ov_available">1</field>
+            <field name="code">FISC</field>
+            <field name="ov_available" eval="1"/>
         </record>
     </data>
 </openerp>
