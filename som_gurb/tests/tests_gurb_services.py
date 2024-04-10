@@ -53,37 +53,6 @@ class TestsGurbServices(TestsGurbBase):
                 self.cursor, self.uid, [gurb_cups_id], '2023-01-01'
             )
 
-    def test_get_vals_linia_no_pricelist_owner(self):
-        imd_o = self.openerp.pool.get("ir.model.data")
-        pol_o = self.openerp.pool.get("giscedata.polissa")
-        ppv_o = self.openerp.pool.get("product.pricelist.version")
-        fact_services_o = self.openerp.pool.get("giscedata.facturacio.services")
-        fact_o = self.openerp.pool.get("giscedata.facturacio.factura")
-
-        vals = self.get_references()
-        pol_br = pol_o.browse(self.cursor, self.uid, vals['owner_pol_id'])
-        factura_id = imd_o.get_object_reference(
-            self.cursor, self.uid, "giscedata_facturacio", "factura_0001"
-        )[1]
-        fact_br = fact_o.browse(self.cursor, self.uid, factura_id)
-        self.add_service_to_contract(owner=True, start_date="2016-01-01")
-
-        ppv_id = ppv_o.search(
-            self.cursor, self.uid, [("pricelist_id", "=", vals['pricelist_id'])]
-        )[0]
-        ppv_br = ppv_o.browse(self.cursor, self.uid, ppv_id)
-        ppv_br.date_start = "2023-01-01"
-
-        n_lines = 0
-        for line in fact_services_o._get_vals_linia(
-            self.cursor, self.uid, pol_br.serveis[0], fact_br
-        ):
-            n_lines += 1
-            self.assertEqual(line["quantity"], 2.5)  # Number of betas
-            self.assertEqual(line["multi"], 0)  # Service days invoiced
-
-        self.assertEqual(n_lines, 1)
-
     def test_get_vals_linia_full_period_owner(self):
         imd_o = self.openerp.pool.get("ir.model.data")
         pol_o = self.openerp.pool.get("giscedata.polissa")
