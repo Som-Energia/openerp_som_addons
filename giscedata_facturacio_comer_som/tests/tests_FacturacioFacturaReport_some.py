@@ -2591,8 +2591,8 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                         "data": "2021-05-01",
                         "days": 61,
                         "date_from": "01/05/2021",
-                        "date_to": "30/06/2021",
-                        "date_to_d": "2021-06-30",
+                        "date_to": "31/05/2021",
+                        "date_to_d": "2021-05-31",
                         "iva": "",
                     },
                     {
@@ -2752,8 +2752,8 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                         "data": "2021-05-01",
                         "days": 61,
                         "date_from": "01/05/2021",
-                        "date_to": "30/06/2021",
-                        "date_to_d": "2021-06-30",
+                        "date_to": "31/05/2021",
+                        "date_to_d": "2021-05-31",
                         "iva": "",
                     },
                     {
