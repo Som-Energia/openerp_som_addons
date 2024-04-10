@@ -25,6 +25,7 @@
         "views/som_gurb_webview.xml",
         "workflow/som_gurb_workflow.xml",
         "security/ir.model.access.csv",
+        "wizard/wizard_gurb_create_new_beta_view.xml"
     ],
     "init_xml": [],
     "active": False,

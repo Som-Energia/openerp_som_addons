@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_create_new_beta_form">
+            <field name="name">Wizard Create new Beta</field>
+            <field name="model">wizard.gurb.create.new.beta</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Crear nova beta">
+                    <field name="beta_kw" />
+                    <field name="extra_beta_kw" />
+                    <field name="start_date" />
+                    <button special="cancel" string="Sortir" icon="gtk-cancel" />
+                    <button name="create_new_beta" type="object" string="Crear nova beta" icon="gtk-execute" />
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_create_new_beta_form">
+            <field name="name">Crear nova beta</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.gurb.create.new.beta</field>
+            <field name="view_type">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_create_new_beta_form" />
+        </record>
+        <record id="values_wizard_create_new_beta_form" model="ir.values">
+            <field name="object" eval="1" />
+            <field name="name">Crear nova beta</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">som.gurb.cups</field>
+            <field name="value"
+                eval="'ir.actions.act_window,'+str(ref('action_wizard_create_new_beta_form'))" />
+        </record>
+    </data>
+</openerp>
