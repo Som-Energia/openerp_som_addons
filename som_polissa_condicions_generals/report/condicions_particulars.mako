@@ -441,10 +441,10 @@ CONTRACT_TYPES = dict(TABLA_9)
                     if iva_10_active and polissa.potencia <= 10 and dades_tarifa['date_start'] >= start_date_iva_10 and dades_tarifa['date_start'] <= end_date_iva_10 and omie_mon_price_45:
                         fp_id = imd_obj.get_object_reference(cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
                         iva_reduit = True
-                        text_vigencia += " (IVA 10%, IE 2,5%)"
+                        text_vigencia += " (IVA 10%, IE 3,8%)"
                     else:
-                        fp_id = imd_obj.get_object_reference(cursor, uid, 'giscedata_facturacio_iese', 'fp_nacional_2024_rdl_8_2023_25')[1]
-                        text_vigencia += " (IVA 21%, IE 2,5%)"
+                        fp_id = imd_obj.get_object_reference(cursor, uid, 'giscedata_facturacio_iese', 'fp_nacional_2024_rdl_8_2023_38')[1]
+                        text_vigencia += " (IVA 21%, IE 3,8%)"
                     ctx.update({'force_fiscal_position': fp_id})
             %>
             %if text_vigencia:

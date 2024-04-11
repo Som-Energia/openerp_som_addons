@@ -5,13 +5,6 @@
             <field name="vat">ES78106306P</field>
             <field name="name">Física, Persona</field>
         </record>
-        <record model="payment.mode" id="payment_mode_demo_som">
-            <field name="name">ENGINYERS</field>
-            <field name="type" ref="account_payment.payment_type_demo"/>
-            <field name="bank_id" ref="base.main_bank"/>
-            <field name="journal" model="account.journal" search="[('type','=','cash')]"/>
-            <field name="sepa_creditor_code">ES62000B98670003</field>
-        </record>
         <record id="res_partner_bank_som_iban" model="res.partner.bank">
             <field name="name">0001_som_iban_bank</field>
             <field name="state">iban</field>
@@ -53,7 +46,7 @@
             <field name="tipo_pago">1</field>
             <field name="contract_type">01</field>
             <field name="property_unitat_potencia" search="[('name','=','kW/dia')]"/>
-            <field name="payment_mode_id" ref="payment_mode_demo_som"/>
+            <field name="payment_mode_id" ref="som_switching.payment_mode_demo_som"/>
         </record>
         <record model="payment.mode" id="payment_mode_enginyers">
             <field name="name">ENGINYERS</field>

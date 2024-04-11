@@ -9,10 +9,11 @@ class GiscedataSwitchingHelpers(osv.osv):
     _name = "giscedata.switching.helpers"
     _inherit = "giscedata.switching.helpers"
 
-    def activar_polissa_from_m1_canvi_titular_subrogacio(self, cursor, uid, sw_id, context=None):
+    def activar_polissa_from_m1_canvi_titular_subrogacio(
+            self, cursor, uid, sw_id, old_polissa, context=None):
         res = super(
             GiscedataSwitchingHelpers, self
-        ).activar_polissa_from_m1_canvi_titular_subrogacio(cursor, uid, sw_id, context=context)
+        ).activar_polissa_from_m1_canvi_titular_subrogacio(cursor, uid, sw_id, old_polissa, context)
 
         sw_obj = self.pool.get("giscedata.switching")
         payment_mode_o = self.pool.get("payment.mode")

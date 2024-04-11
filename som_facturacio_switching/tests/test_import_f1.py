@@ -2,11 +2,11 @@
 
 from destral.transaction import Transaction
 from expects import *
-from giscedata_facturacio_switching.tests.test_import_f1 import TestImportF1
+from giscedata_facturacio_switching.tests.test_import_f1 import TestImportF1Base
 from addons import get_module_resource
 
 
-class TestImportF1Som(TestImportF1):
+class TestImportF1Som(TestImportF1Base):
     def test_validation_3035S_ok(self):
         line_obj = self.openerp.pool.get("giscedata.facturacio.importacio.linia")
         imd_obj = self.openerp.pool.get("ir.model.data")

@@ -5,7 +5,7 @@ Repository whith OpenERP addons customization made by [Som Energia](https://www.
   [![GISCE_MODULES](https://github.com/Som-Energia/som_modules_fulla/actions/workflows/schedule_all_installed_modules.yml/badge.svg)](https://github.com/Som-Energia/som_modules_fulla/actions/workflows/schedule_all_installed_modules.yml)
   [![Coverage Status](https://coveralls.io/repos/github/Som-Energia/openerp_som_addons/badge.svg?branch=)](https://coveralls.io/github/Som-Energia/openerp_som_addons?branch=)
 
-List of modules
+List of modules ([add new module](docs/crear_nou_modul.md))
 ----------------
 tests | name | description
 --- | --- | ---
@@ -33,6 +33,7 @@ tests | name | description
 [![som_facturacio_flux_solar](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_facturacio_flux_solar.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_facturacio_flux_solar.yml) | [som_facturacio_flux_solar](som_facturacio_flux_solar/) |
 [![som_facturacio_switching](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_facturacio_switching.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_facturacio_switching.yml) | [som_facturacio_switching](som_facturacio_switching/) |
 [![som_factures_paper](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_factures_paper.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_factures_paper.yml) | [som_factures_paper](som_factures_paper/) |
+[![som_gurb](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_gurb.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_gurb.yml) | [som_gurb](som_gurb/) | A module to manage collective self-production
 [![som_indexada](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_indexada.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_indexada.yml) | [som_indexada](som_indexada/) |
 [![som_infoenergia](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_infoenergia.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_infoenergia.yml) | [som_infoenergia](som_infoenergia/) |
 [![som_informe](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_informe.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_informe.yml) | [som_informe](som_informe/) |
