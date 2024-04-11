@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- Els records que hi hagi aquí només hi seran si en el moment d'instal·lar així s'indica (o s'instal·la amb l'eina Destral) -->
+        <record id="som_consulta_pobresa_demo_record" model="som.consulta.pobresa">
+            <field name="name">Som Template demo</field>
+            <field name="crm_id" ref="crm.crm_case_0001" />
+            <field name="section_id" ref="crm.crm_section_0001"/>
+            <field name="active" eval="True"/>
+            <field name="user_id" ref="base.user_demo"/>
+            <field name="numero_registre">23423</field>
+            <field name="polissa_id" ref="giscedata_polissa.polissa_0001" />
+            <field name="partner_id" ref="base.res_partner_asus" />
+        </record>
+    </data>
+</openerp>
