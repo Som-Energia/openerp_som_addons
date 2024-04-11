@@ -7,9 +7,11 @@ RESOLUTION_STATES = [
 ]
 
 
-class SomConsultaPobresa(osv.OsvInherits):
+class SomConsultaPobresa(osv.osv):
+    # class SomConsultaPobresa(osv.OsvInherits):
     _name = 'som.consulta.pobresa'
-    _inherits = {"crm.case": "crm_id"}
+    _inherit = "crm.case"
+    # _inherits = {"crm.case": "crm_id"}
     _description = 'Model per gestionar les consultes de pobresa energètica'
 
     def case_close(self, cr, uid, ids, *args):
@@ -66,7 +68,7 @@ class SomConsultaPobresa(osv.OsvInherits):
         scp_obj = self.pool.get('som.consulta.pobresa')
         consultes = scp_obj.browse(cr, uid, ids)
         for c in consultes:
-            res[c.id] = (c.polissa_id and c.polissa_id.titular.www_email
+            res[c.id] = (c.polissa_id and c.polissa_id.direccio_notificacio.email
                          or False)
         return res
 

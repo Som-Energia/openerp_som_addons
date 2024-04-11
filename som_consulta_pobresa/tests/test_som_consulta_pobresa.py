@@ -46,4 +46,4 @@ class TestConsultaPobresa(testing.OOTestCase):
         cons_obj.case_close(cursor, uid, [reg_id])
 
         state = cons_obj.read(cursor, uid, reg_id, ['state'])['state']
-        self.assertEqual(state, 'closed')
+        self.assertEqual(state, 'done')
