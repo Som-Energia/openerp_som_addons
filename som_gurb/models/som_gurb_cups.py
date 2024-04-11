@@ -6,57 +6,6 @@ import logging
 logger = logging.getLogger("openerp.{}".format(__name__))
 
 
-class SomGurbCupsBeta(osv.osv):
-    _name = "som.gurb.cups.beta"
-    _description = _("Log of betas and changes for som.gurb.cups")
-    _order = "start_date desc"
-
-    def create(self, cursor, uid, vals, context=None):
-        if context is None:
-            context = {}
-
-        context['active_test'] = False
-        betas_ids = self.search(
-            cursor, uid, [('gurb_cups_id', '=', vals['gurb_cups_id'])], context=context
-        )
-        vals['name'] = len(betas_ids) + 1
-
-        res = super(SomGurbCupsBeta, self).create(
-            cursor, uid, vals, context=context
-        )
-
-        return res
-
-    _columns = {
-        "active": fields.boolean("Activa"),
-        'name': fields.char('Codi modificació', size=64, readonly=True),
-        "start_date": fields.date("Data inici", required=True),
-        "end_date": fields.date("Data fi"),
-        "gurb_cups_id": fields.many2one(
-            "som.gurb.cups", "GURB CUPS", required=True, ondelete="cascade"
-        ),
-        "beta_kw": fields.float(
-            "Beta (kW)",
-            digits=(10, 3),
-            required=True,
-        ),
-        "extra_beta_kw": fields.float(
-            "Extra Beta (kW)",
-            digits=(10, 3),
-            required=True,
-        ),
-    }
-
-    _sql_constraints = [
-        ('seq_unique',
-         'unique (gurb_cups_id, name)',
-         _('The combination of name and gurb_cups_id must be unique for this register!')),
-    ]
-
-
-SomGurbCupsBeta()
-
-
 class SomGurbCups(osv.osv):
     _name = "som.gurb.cups"
     _rec_name = "cups_id"
@@ -221,3 +170,54 @@ class SomGurbCups(osv.osv):
 
 
 SomGurbCups()
+
+
+class SomGurbCupsBeta(osv.osv):
+    _name = "som.gurb.cups.beta"
+    _description = _("Log of betas and changes for som.gurb.cups")
+    _order = "start_date desc"
+
+    def create(self, cursor, uid, vals, context=None):
+        if context is None:
+            context = {}
+
+        context['active_test'] = False
+        betas_ids = self.search(
+            cursor, uid, [('gurb_cups_id', '=', vals['gurb_cups_id'])], context=context
+        )
+        vals['name'] = len(betas_ids) + 1
+
+        res = super(SomGurbCupsBeta, self).create(
+            cursor, uid, vals, context=context
+        )
+
+        return res
+
+    _columns = {
+        "active": fields.boolean("Activa"),
+        'name': fields.char('Codi modificació', size=64, readonly=True),
+        "start_date": fields.date("Data inici", required=True),
+        "end_date": fields.date("Data fi"),
+        "gurb_cups_id": fields.many2one(
+            "som.gurb.cups", "GURB CUPS", required=True, ondelete="cascade"
+        ),
+        "beta_kw": fields.float(
+            "Beta (kW)",
+            digits=(10, 3),
+            required=True,
+        ),
+        "extra_beta_kw": fields.float(
+            "Extra Beta (kW)",
+            digits=(10, 3),
+            required=True,
+        ),
+    }
+
+    _sql_constraints = [
+        ('seq_unique',
+         'unique (gurb_cups_id, name)',
+         _('The combination of name and gurb_cups_id must be unique for this register!')),
+    ]
+
+
+SomGurbCupsBeta()
