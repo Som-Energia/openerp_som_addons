@@ -30,18 +30,22 @@ class GiscedataFacturacioServices(osv.osv):
                 gurb_product_id == vals.get("product_id", False)
                 or owner_product_id == vals.get("product_id", False)
             ):
+                line_start_date = _str_to_date(vals["data_desde"])
+                line_end_date = _str_to_date(vals["data_fins"])
                 for gurb_cups_beta_id in self._get_gurb_cups_betas_ids(
                     cursor, uid, inv, vals, context=context
                 ):
+                    res_vals = vals.copy()
                     gurb_cups_beta_br = gurb_cups_beta_o.browse(cursor, uid, gurb_cups_beta_id)
 
-                    gurb_cups_start_date = _str_to_date(gurb_cups_beta_br["start_date"])
-                    if gurb_cups_beta_br["end_date"]:
-                        gurb_cups_end_date = _str_to_date(gurb_cups_beta_br["end_date"])
+                    gurb_cups_start_date = _str_to_date(gurb_cups_beta_br.start_date)
+                    if gurb_cups_beta_br.end_date:
+                        gurb_cups_end_date = _str_to_date(gurb_cups_beta_br.end_date)
                     else:
                         gurb_cups_end_date = False
+
                     line_start_date = _str_to_date(vals["data_desde"])
-                    line_end_date = _str_to_date(vals["data_fins"])
+                    line_end_date = _str_to_date(-["data_fins"])
 
                     if not gurb_cups_end_date:
                         end_date = line_end_date
@@ -51,10 +55,12 @@ class GiscedataFacturacioServices(osv.osv):
 
                     days = (end_date - start_date).days + 1
 
-                    vals["quantity"] = gurb_cups_beta_br.beta_kw
-                    vals["multi"] = days if days > 0 else 0
+                    res_vals["data_desde"] = datetime.strftime(start_date, "%Y-%m-%d")
+                    res_vals["data_fins"] = datetime.strftime(end_date, "%Y-%m-%d")
+                    res_vals["quantity"] = gurb_cups_beta_br.beta_kw
+                    res_vals["multi"] = days if days > 0 else 0
 
-                    yield vals
+                    yield res_vals
             else:
                 yield vals
 
