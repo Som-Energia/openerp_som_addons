@@ -69,3 +69,18 @@ class TestsGurbBase(testing.OOTestCase):
         )[1]
 
         return vals
+
+    def create_new_gurb_cups_beta(
+        self, gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw, context=None
+    ):
+        context = {"active_id": gurb_cups_id}
+        wiz_o = self.openerp.pool.get("wizard.gurb.create.new.beta")
+
+        vals = {
+            "start_date": start_date,
+            "beta_kw": new_beta_kw,
+            "extra_beta_kw": new_extra_beta_kw,
+        }
+
+        wiz_id = wiz_o.create(self.cursor, self.uid, vals, context=context)
+        wiz_o.create_new_beta(self.cursor, self.uid, [wiz_id], context=context)

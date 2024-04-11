@@ -53,7 +53,7 @@ class TestsGurbServices(TestsGurbBase):
                 self.cursor, self.uid, [gurb_cups_id], '2023-01-01'
             )
 
-    def test_get_vals_linia_full_period_owner(self):
+    def test_get_vals_linia_full_period(self):
         imd_o = self.openerp.pool.get("ir.model.data")
         pol_o = self.openerp.pool.get("giscedata.polissa")
         fact_services_o = self.openerp.pool.get("giscedata.facturacio.services")
@@ -76,3 +76,36 @@ class TestsGurbServices(TestsGurbBase):
             self.assertEqual(line["multi"], 60)  # Service days invoiced
 
         self.assertEqual(n_lines, 1)
+
+    def test_get_vals_linia_beta_change(self):
+        imd_o = self.openerp.pool.get("ir.model.data")
+        pol_o = self.openerp.pool.get("giscedata.polissa")
+        fact_services_o = self.openerp.pool.get("giscedata.facturacio.services")
+        fact_o = self.openerp.pool.get("giscedata.facturacio.factura")
+
+        vals = self.get_references()
+        pol_br = pol_o.browse(self.cursor, self.uid, vals['owner_pol_id'])
+        factura_id = imd_o.get_object_reference(
+            self.cursor, self.uid, "giscedata_facturacio", "factura_0001"
+        )[1]
+        fact_br = fact_o.browse(self.cursor, self.uid, factura_id)
+        self.add_service_to_contract(owner=True, start_date="2016-01-01")
+        self.create_new_gurb_cups_beta(vals["owner_gurb_cups_id"], "2016-02-01", 1.5, 0.5)
+
+        lines = []
+        for line in fact_services_o._get_vals_linia(
+            self.cursor, self.uid, pol_br.serveis[0], fact_br
+        ):
+            lines.append(line)
+
+        self.assertEqual(lines[1]["data_desde"], "2016-01-01")  # Line start date
+        self.assertEqual(lines[1]["data_fins"], "2016-01-31")  # Line end date
+        self.assertEqual(lines[1]["quantity"], 2.5)  # Number of betas
+        self.assertEqual(lines[1]["multi"], 31)  # Service days invoiced
+
+        self.assertEqual(lines[0]["data_desde"], "2016-02-01")  # Line start date
+        self.assertEqual(lines[0]["data_fins"], "2016-02-29")  # Line end date
+        self.assertEqual(lines[0]["quantity"], 1.5)  # Number of betas
+        self.assertEqual(lines[0]["multi"], 29)  # Service days invoiced
+
+        self.assertEqual(len(lines), 2)
