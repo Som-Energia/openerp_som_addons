@@ -79,7 +79,7 @@ for data_dict in tqdm(data_dict_list):
 
     total_descomptes = 0
     for linia in fact.linia_ids:
-        if linia.product_id and linia.product_id.id == 2306:
+        if linia.product_id and linia.product_id.id in [2306, 2307]:
             total_descomptes += linia.price_subtotal
 
     import_energia = round(fact.total_potencia + fact.total_energia + total_descomptes, 2)
