@@ -14,12 +14,15 @@
     'depends': [
         'crm',
         'giscedata_polissa',
+        'www_som',
     ],
     'init_xml': [],
     'update_xml': [
         'security/ir.model.access.csv',
         'views/som_consulta_pobresa_view.xml',
-        'demo/som_consulta_pobresa_demo.xml',
+        'views/agrupacio_supramunicipal_view.xml',
+        'wizard/wizard_crear_consulta_pobresa.xml',
+        'data/agrupacio_supramunicipal_data.xml',
     ],
     'demo_xml': [
         'demo/som_consulta_pobresa_demo.xml',
