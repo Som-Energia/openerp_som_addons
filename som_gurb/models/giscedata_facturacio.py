@@ -45,7 +45,7 @@ class GiscedataFacturacioServices(osv.osv):
                         gurb_cups_end_date = False
 
                     line_start_date = _str_to_date(vals["data_desde"])
-                    line_end_date = _str_to_date(-["data_fins"])
+                    line_end_date = _str_to_date(vals["data_fins"])
 
                     if not gurb_cups_end_date:
                         end_date = line_end_date
