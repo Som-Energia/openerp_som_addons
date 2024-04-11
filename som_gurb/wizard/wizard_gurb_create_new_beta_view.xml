@@ -7,11 +7,14 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Crear nova beta">
-                    <field name="beta_kw" />
-                    <field name="extra_beta_kw" />
-                    <field name="start_date" />
-                    <button special="cancel" string="Sortir" icon="gtk-cancel" />
-                    <button name="create_new_beta" type="object" string="Crear nova beta" icon="gtk-execute" />
+                    <group colspan="4">
+                        <field name="beta_kw" />
+                        <field name="extra_beta_kw" />
+                        <field name="start_date" />
+                    </group>
+                    <group colspan="4">
+                        <button name="create_new_beta" type="object" string="Crear nova beta" icon="gtk-execute" />
+                    </group>
                 </form>
             </field>
         </record>

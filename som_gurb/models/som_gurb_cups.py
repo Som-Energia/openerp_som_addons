@@ -29,7 +29,7 @@ class SomGurbCupsBeta(osv.osv):
         return res
 
     _columns = {
-        "active": fields.boolean("Actiu"),
+        "active": fields.boolean("Activa"),
         'name': fields.char('Codi modificació', size=64, readonly=True),
         "start_date": fields.date("Data inici", required=True),
         "end_date": fields.date("Data fi"),
