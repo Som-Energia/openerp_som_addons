@@ -14,6 +14,7 @@
                         <field name="numero_registre" />
                         <field name="polissa_id" />
                         <field name="partner_id" />
+                        <field name="titular_id" />
                         <field name="municipi" />
                         <field name="agrupacio_supramunicipal" />
                         <field name="section_id" />
@@ -37,7 +38,7 @@
             <field name="arch" type="xml">
                 <tree string="Consultes pobresa">
                     <field name="polissa_id" select="1"/>
-                    <field name="partner_id" select="1"/>
+                    <field name="titular_id" select="1"/>
                     <field name="municipi" select="1"/>
                     <field name="numero_registre" select="1"/>
                     <field name="state" select="1"/>
@@ -50,9 +51,9 @@
             <field name="name">Consultes pobresa</field>
             <field name="res_model">som.consulta.pobresa</field>
             <field name="type">ir.actions.act_window</field>
-            <field name="view_type">tree</field>
+            <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
         </record>
-        <menuitem action="som_consulta_pobresa_action" id="menu_som_consulta_pobresa_action" parent="crm.next_id_51"/>
+        <menuitem action="som_consulta_pobresa_action" id="menu_som_consulta_pobresa_action" parent="crm.next_id_52"/>
     </data>
 </openerp>

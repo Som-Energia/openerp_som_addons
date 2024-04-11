@@ -29,7 +29,9 @@ class SomConsultaPobresa(osv.osv):
         'crm_id': fields.many2one('crm.case', required=True),
         'polissa_id': fields.many2one('giscedata.polissa',
                                       _('Contracte'), required=True),
-        'partner_id': fields.function(_ff_get_titular, method=True, string='Titular'),
+        'titular_id': fields.function(
+            _ff_get_titular, method=True,
+            string='Titular', type='text', stored=True),
         'municipi': fields.char("Número de registre", size=128),  # _ff ?
         'numero_registre': fields.char("Número de registre", size=128),
         'agrupacio_supramunicipal': fields.char("Número de registre", size=128),

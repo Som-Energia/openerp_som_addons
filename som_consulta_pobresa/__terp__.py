@@ -19,8 +19,9 @@
     'update_xml': [
         'security/ir.model.access.csv',
         'views/som_consulta_pobresa_view.xml',
+        'demo/som_consulta_pobresa_demo.xml',
     ],
     'demo_xml': [
-        # 'demo/res_partner_demo.xml',
+        'demo/som_consulta_pobresa_demo.xml',
     ],
 }
