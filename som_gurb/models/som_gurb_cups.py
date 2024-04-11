@@ -2,7 +2,6 @@
 from osv import osv, fields
 from tools.translate import _
 import logging
-from datetime import datetime
 
 logger = logging.getLogger("openerp.{}".format(__name__))
 
@@ -105,22 +104,25 @@ class SomGurbCups(osv.osv):
                     res[gurb_cups_vals["id"]] = 0
         return res
 
-    # TODO: pensar
-    def _ff_is_model_active(self, cursor, uid, ids, field_name, arg, context=None):
+    def _ff_active_beta(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
             context = {}
+
+        gurb_cups_beta_o = self.pool.get("som.gurb.cups.beta")
         res = dict.fromkeys(ids, False)
-        for cups_gurb_id in ids:
-            end_date = self.read(cursor, uid, cups_gurb_id, ["end_date"])["end_date"]
-            if end_date:
-                end_date_datetime = datetime.strptime(end_date, "%Y-%m-%d")
-                today_time = datetime.strptime(datetime.today().strftime("%Y-%m-%d"), "%Y-%m-%d")
-                if today_time > end_date_datetime:
-                    res[cups_gurb_id] = False
-                else:
-                    res[cups_gurb_id] = True
-            else:
-                res[cups_gurb_id] = True
+        for gurb_cups_id in ids:
+            search_params = [
+                ("active", "=", True),
+                ("gurb_cups_id", "=", gurb_cups_id)
+            ]
+            active_beta_id = gurb_cups_beta_o.search(cursor, uid, search_params, context=context)
+            read_vals = ["beta_kw", "extra_beta_kw"]
+            active_beta_vals = gurb_cups_beta_o.read(
+                cursor, uid, active_beta_id[0], read_vals, context=context
+            )
+
+            res[gurb_cups_id] = active_beta_vals
+
         return res
 
     def add_service_to_contract(self, cursor, uid, ids, data_inici, context=None):
@@ -181,15 +183,21 @@ class SomGurbCups(osv.osv):
         "gurb_id": fields.many2one("som.gurb", "GURB", required=True, ondelete="cascade"),
         "cups_id": fields.many2one("giscedata.cups.ps", "CUPS", required=True),
         "betas_ids": fields.one2many("som.gurb.cups.beta", "gurb_cups_id", "Betes"),
-        "beta_kw": fields.float(
-            "Beta (kW)",
+        "beta_kw": fields.function(
+            _ff_active_beta,
+            string="Beta (kW)",
+            type="float",
             digits=(10, 3),
-            required=True,
+            method=True,
+            multi="betas",
         ),
-        "extra_beta_kw": fields.float(
-            "Extra Beta (kW)",
+        "extra_beta_kw": fields.function(
+            _ff_active_beta,
+            string="Extra Beta (kW)",
+            type="float",
             digits=(10, 3),
-            required=True,
+            method=True,
+            multi="betas",
         ),
         "beta_percentage": fields.function(
             _ff_get_beta_percentage,

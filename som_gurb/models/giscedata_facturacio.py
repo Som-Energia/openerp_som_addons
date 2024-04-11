@@ -14,7 +14,7 @@ class GiscedataFacturacioServices(osv.osv):
         if context is None:
             context = {}
 
-        gurb_cups_o = self.pool.get("som.gurb.cups")
+        gurb_cups_beta_o = self.pool.get("som.gurb.cups.beta")
         imd_o = self.pool.get("ir.model.data")
         gurb_product_id = imd_o.get_object_reference(
             cursor, uid, "som_gurb", "product_gurb"
@@ -30,14 +30,14 @@ class GiscedataFacturacioServices(osv.osv):
                 gurb_product_id == vals.get("product_id", False)
                 or owner_product_id == vals.get("product_id", False)
             ):
-                for gurb_cups_id in self._get_gurb_cups_ids(
+                for gurb_cups_beta_id in self._get_gurb_cups_betas_ids(
                     cursor, uid, inv, vals, context=context
                 ):
-                    gurb_cups_br = gurb_cups_o.browse(cursor, uid, gurb_cups_id)
+                    gurb_cups_beta_br = gurb_cups_beta_o.browse(cursor, uid, gurb_cups_beta_id)
 
-                    gurb_cups_start_date = _str_to_date(gurb_cups_br["start_date"])
-                    if gurb_cups_br["end_date"]:
-                        gurb_cups_end_date = _str_to_date(gurb_cups_br["end_date"])
+                    gurb_cups_start_date = _str_to_date(gurb_cups_beta_br["start_date"])
+                    if gurb_cups_beta_br["end_date"]:
+                        gurb_cups_end_date = _str_to_date(gurb_cups_beta_br["end_date"])
                     else:
                         gurb_cups_end_date = False
                     line_start_date = _str_to_date(vals["data_desde"])
@@ -51,31 +51,41 @@ class GiscedataFacturacioServices(osv.osv):
 
                     days = (end_date - start_date).days + 1
 
-                    vals["quantity"] = gurb_cups_br.beta_kw
+                    vals["quantity"] = gurb_cups_beta_br.beta_kw
                     vals["multi"] = days if days > 0 else 0
 
                     yield vals
             else:
                 yield vals
 
-    def _get_gurb_cups_ids(self, cursor, uid, inv, vals, context=None):
+    def _get_gurb_cups_betas_ids(self, cursor, uid, inv, vals, context=None):
         if context is None:
             context = {}
-
         context["active_test"] = False
-        gurb_cups_o = self.pool.get("som.gurb.cups")
-        cups_id = inv.polissa_id.cups.id
-        start_date = vals["data_desde"]
-        end_date = vals["data_fins"]
-        search_params = [
-            ("cups_id", "=", cups_id),
-            "|",
-            ("start_date", "<=", end_date),
-            ("end_date", ">=", start_date),
-        ]
 
+        gurb_cups_o = self.pool.get("som.gurb.cups")
+        gurb_cups_beta_o = self.pool.get("som.gurb.cups.beta")
+
+        search_params = [
+            ("cups_id", "=", inv.polissa_id.cups.id),
+            "|",
+            ("start_date", "<=", vals["data_fins"]),
+            ("end_date", ">=", vals["data_desde"]),
+        ]
         gurb_cups_ids = gurb_cups_o.search(cursor, uid, search_params, context=context)
-        return gurb_cups_ids
+
+        if not gurb_cups_ids:
+            return False
+
+        search_params = [
+            ("gurb_cups_id", "=", gurb_cups_ids[0]),
+            "|",
+            ("start_date", "<=", vals["data_fins"]),
+            ("end_date", ">=", vals["data_desde"]),
+        ]
+        gurb_cups_beta_ids = gurb_cups_beta_o.search(cursor, uid, search_params, context=context)
+
+        return gurb_cups_beta_ids
 
 
 GiscedataFacturacioServices()

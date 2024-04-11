@@ -57,6 +57,11 @@ class WizardGurbCreateNewBeta(osv.osv_memory):
                     _("Data incorrecte!"),
                     _("La nova data inici ha de ser més gran que la data inici de la beta activa.")
                 )
+            if wiz.start_date > datetime.strftime(datetime.today(), "%Y-%m-%d"):
+                raise osv.except_osv(
+                    _("Data incorrecte!"),
+                    _("No es pot fer un canvi de beta a futur.")
+                )
 
             write_params = {
                 "active": False,
@@ -82,8 +87,8 @@ class WizardGurbCreateNewBeta(osv.osv_memory):
         ),
     }
 
-    _default = {
-        "start_date": datetime.strftime(datetime.today(), "%Y-%m-%d"),
+    _defaults = {
+        "start_date": lambda *a: datetime.strftime(datetime.today(), "%Y-%m-%d"),
     }
 
 
