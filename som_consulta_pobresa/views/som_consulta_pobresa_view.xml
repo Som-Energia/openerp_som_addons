@@ -8,25 +8,33 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Consultes pobresa">
-                    <group name="data">
+                    <group name="header">
                         <field name="user_id" />
-                        <field name="description" />
-                        <field name="numero_registre" />
-                        <field name="polissa_id" />
-                        <field name="partner_id" />
-                        <field name="titular_id" />
-                        <field name="municipi" />
-                        <field name="agrupacio_supramunicipal" />
+                        <field name="description" string="Descripcio"/>
                         <field name="section_id" />
+                        <field name="polissa_id" />
                         <field name="date" />
                         <field name="date_deadline" />
-                        <field name="direccio_cups" />
-                        <field name="email_partner" />
+                    </group>
+                    <group name="data">
+                        <field name="numero_registre" />
+                        <field name="partner_id" />
+                        <field name="titular_id" />
+                        <field name="municipi" attrs="{'readonly': True}"/>
+                        <field name="agrupacio_supramunicipal" />
+                        <field name="direccio_cups" attrs="{'readonly': True}"/>
+                        <field name="email_partner" attrs="{'readonly': True}"/>
                         <field name="history_line" />
                         <field name="canal_id" />
                         <field name="state" />
-                        <field name="create_date" />
+                        <field name="create_date" attrs="{'readonly': True}"/>
                         <field name="date_closed" />
+                    </group>
+                    <group col="4" colspan="4">
+                        <field name="state" select="1"/>
+                        <button name="case_close" states="open,pending" string="Close" type="object"/>
+                        <button name="case_open" states="pending" string="Open" type="object"/>
+                        <button name="case_pending" states="open" string="Pending" type="object"/>
                     </group>
                 </form>
             </field>
