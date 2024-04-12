@@ -8,7 +8,7 @@
             <field name="model">wizard.crear.consulta.pobresa</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <form string="Crear una consulta pobresa">
+                <form string="Crear una consulta de pobresa">
                     <group>
                         <button special="cancel" string="Cancel·lar" icon="gtk-cancel"/>
                         <button name="crear_consulta_pobresa" type="object" icon="gtk-ok" string="Crea"/>
@@ -19,7 +19,7 @@
 
         <!-- Declaració de l'acció que obra la vista -->
         <record model="ir.actions.act_window" id="action_wizard_consulta_pobresa">
-            <field name="name">Crea una consuta de pobresa</field>
+            <field name="name">Crear una consulta de pobresa</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wizard.crear.consulta.pobresa</field>
             <field name="view_type">form</field>
@@ -31,7 +31,7 @@
         <!-- Afegim l'accio al model Polissa-->
         <record id="values_wizard_crear_consulta_pobresa_form" model="ir.values">
             <field name="object" eval="1"/>
-            <field name="name">Crea una consuta de pobresa</field>
+            <field name="name">Crear una consulta de pobresa</field>
             <field name="key2">client_action_multi</field>
             <field name="key">action</field>
             <field name="model">giscedata.polissa</field>
