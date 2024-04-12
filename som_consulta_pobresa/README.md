@@ -2,6 +2,11 @@
 
 Mòdul per gestionar les peticions de pobresa energètica dels contractes amb factures impades, als ajuntaments
 
+## Models
+
+* som.consulta.pobresa: Hereda de crm.case i representa una consulta a una administració pública sobre si aquell titular es una persona suscetible de ser considerada pobresa energètica
+* agrupacions.supramunicipals: Administracions públiques competents per gestionar aquestes consultes
+
 ## Funcionalitats
 
 * Polissa -> Acció 'Crear consulta pobresa': Assitent que des de una pòlissa, permet crear una consulta pobresa. Es pot cridar per múltiples pòlisses a la vegada.
