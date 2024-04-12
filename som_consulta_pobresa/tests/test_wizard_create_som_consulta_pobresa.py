@@ -19,14 +19,20 @@ class TestWizardCrearConsultaPobresa(testing.OOTestCase):
         cons_obj = self.openerp.pool.get("som.consulta.pobresa")
         wiz_obj = self.openerp.pool.get("wizard.crear.consulta.pobresa")
         imd_obj = self.openerp.pool.get('ir.model.data')
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
         pol_id = imd_obj.get_object_reference(
             cursor, uid, "giscedata_polissa", "polissa_0002"
         )[1]
         context = {"active_ids": [pol_id], "active_id": pol_id}
         wiz_id = wiz_obj.create(cursor, uid, {}, context=context)
-        wiz_obj.crear_consulta_pobresa(cursor, uid, wiz_id, context=context)
+
+        result = wiz_obj.crear_consulta_pobresa(cursor, uid, wiz_id, context=context)
 
         cons_list = cons_obj.search(cursor, uid, [('polissa_id', '=', pol_id)])
-
         cons_data = cons_obj.browse(cursor, uid, cons_list[0])
-        self.assertEqual(cons_data['name'], u'[0002] Camptocamp (Alegr\xeda-Dulantzi)')
+        pol = pol_obj.browse(cursor, uid, pol_id)
+        self.assertTrue(str(cons_list) in result['domain'])
+        self.assertEqual(cons_data.name, u'[0002] Camptocamp (Alegr\xeda-Dulantzi)')
+        self.assertEqual(cons_data.titular_id, u'Camptocamp')
+        self.assertEqual(cons_data.direccio_cups, pol.cups.direccio)
+        # self.assertEqual(cons_data.email_partner, polissa_id.direccio_notificacio.email) # no es pot testejar perque direccio_notificacio depen de giscedata_facturacio # noqa: 501
