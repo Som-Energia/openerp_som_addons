@@ -16,7 +16,6 @@ class TestWizardCrearConsultaPobresa(testing.OOTestCase):
     def test_wizard_crear_consulta_pobresa(self):
         cursor = self.cursor
         uid = self.uid
-
         cons_obj = self.openerp.pool.get("som.consulta.pobresa")
         wiz_obj = self.openerp.pool.get("wizard.crear.consulta.pobresa")
         imd_obj = self.openerp.pool.get('ir.model.data')
@@ -28,4 +27,6 @@ class TestWizardCrearConsultaPobresa(testing.OOTestCase):
         wiz_obj.crear_consulta_pobresa(cursor, uid, wiz_id, context=context)
 
         cons_list = cons_obj.search(cursor, uid, [('polissa_id', '=', pol_id)])
-        self.assertEqual(len(cons_list), 1)
+
+        cons_data = cons_obj.browse(cursor, uid, cons_list[0])
+        self.assertEqual(cons_data['name'], u'[0002] Camptocamp (Alegr\xeda-Dulantzi)')
