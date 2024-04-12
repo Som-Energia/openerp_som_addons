@@ -7,13 +7,12 @@ RESOLUTION_STATES = [
 ]
 
 
-class SomConsultaPobresa(osv.osv):
-    # class SomConsultaPobresa(osv.OsvInherits):
+class SomConsultaPobresa(osv.OsvInherits):
     _name = 'som.consulta.pobresa'
-    _inherit = "crm.case"
+    _inherits = {"crm.case": "crm_id"}
     _description = 'Model per gestionar les consultes de pobresa energètica'
 
-    def case_close(self, cr, uid, ids, *args):
+    def close_case(self, cr, uid, ids, *args):
         casos = self.browse(cr, uid, ids)
         for cas in casos:
             if not cas.resolucio:
@@ -21,7 +20,7 @@ class SomConsultaPobresa(osv.osv):
                     "Falta resolució",
                     "Per poder tancar la consulta s'ha d'informar el camp resolució.")
 
-        return super(SomConsultaPobresa, self).case_close(cr, uid, ids, args)
+        return self.case_close(cr, uid, ids, args)
 
     def _ff_get_titular(self, cr, uid, ids, field, arg, context=None):
         """ Anem a buscar el titular de la pólissa assignada (si en té) """
@@ -72,6 +71,7 @@ class SomConsultaPobresa(osv.osv):
         return res
 
     _columns = {
+        'crm_id': fields.many2one('crm.case', required=True),
         'polissa_id': fields.many2one('giscedata.polissa',
                                       'Contracte', required=True),
         'titular_id': fields.function(

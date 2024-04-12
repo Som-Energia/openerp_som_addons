@@ -25,7 +25,7 @@ class TestConsultaPobresa(testing.OOTestCase):
         )[1]
 
         with self.assertRaises(osv.except_osv) as e:
-            cons_obj.case_close(cursor, uid, [reg_id])
+            cons_obj.close_case(cursor, uid, [reg_id])
 
         self.assertEqual(
             e.exception.message,
@@ -43,7 +43,7 @@ class TestConsultaPobresa(testing.OOTestCase):
         )[1]
         cons_obj.write(cursor, uid, reg_id, {'resolucio': 'positiva'})
 
-        cons_obj.case_close(cursor, uid, [reg_id])
+        cons_obj.close_case(cursor, uid, [reg_id])
 
         state = cons_obj.read(cursor, uid, reg_id, ['state'])['state']
         self.assertEqual(state, 'done')
