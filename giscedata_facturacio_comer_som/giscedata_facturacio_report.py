@@ -2704,7 +2704,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             lines_data[block]["date_to_d"] = (
                 val(l.data_fins)
                 if "date_to_d" not in lines_data[block]
-                or lines_data[block]["date_to_d"] < val(l.data_fins)
+                or lines_data[block]["date_to_d"] > val(l.data_fins)
                 else lines_data[block]["date_to_d"]
             )
             lines_data[block]["date_to"] = dateformat(lines_data[block]["date_to_d"])

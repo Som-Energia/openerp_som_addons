@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+
+        <!-- Declaració de la vista -->
+        <record model="ir.ui.view" id="wizard_crear_consulta_pobresa_form">
+            <field name="name">wizard.consulta.pobresa.view.form</field>
+            <field name="model">wizard.crear.consulta.pobresa</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Crear una consulta pobresa">
+                    <group>
+                        <button special="cancel" string="Cancel·lar" icon="gtk-cancel"/>
+                        <button name="crear_consulta_pobresa" type="object" icon="gtk-ok" string="Crea"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <!-- Declaració de l'acció que obra la vista -->
+        <record model="ir.actions.act_window" id="action_wizard_consulta_pobresa">
+            <field name="name">Crea una consuta de pobresa</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.crear.consulta.pobresa</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="wizard_crear_consulta_pobresa_form"/>
+        </record>
+
+        <!-- Afegim l'accio al model Polissa-->
+        <record id="values_wizard_crear_consulta_pobresa_form" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Crea una consuta de pobresa</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_consulta_pobresa'))"/>
+        </record>
+
+    </data>
+</openerp>

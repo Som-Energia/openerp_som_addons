@@ -331,7 +331,7 @@
         ]]></field>
         </record>
         <record model="poweremail.templates" id="correu_confirmacio_subministraments_essencials">
-            <field name="name">Correu confirmació sobministraments essencials</field>
+            <field name="name">Correu confirmació subministraments essencials</field>
             <field name="object_name" model="ir.model" search="[('model', '=', 'som.enviament.massiu')]"/>
             <field eval="0" name="save_to_drafts"/>
             <field name="model_int_name">som.enviament.massiu</field>
