@@ -11,11 +11,5 @@
             <field name="polissa_id" ref="giscedata_polissa.polissa_0001" />
             <field name="partner_id" ref="base.res_partner_asus" />
         </record>
-        <!-- Aquest demo existeix a productiu però és del mòdul giscedata_facturacio_comer_bono_social i el posem com a demo data per no haver de dependre d'aquest mòdul només per tenir aquest registre-->
-        <record model="crm.case.section" id="crm_section_bono_social_consulta_pobresa">
-            <field name="name">Consultes pobresa energètica ajuntaments</field>
-            <field name="code">BSCPE</field>
-            <field name="allow_unlink" eval="True"/>
-        </record>
     </data>
 </openerp>

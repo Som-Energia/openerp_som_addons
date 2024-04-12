@@ -14,6 +14,7 @@
     'depends': [
         'crm',
         'giscedata_polissa',
+        'giscedata_facturacio_comer_bono_social',
     ],
     'init_xml': [],
     'demo_xml': [

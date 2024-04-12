@@ -11,7 +11,6 @@ class SomConsultaPobresa(osv.osv):
     # class SomConsultaPobresa(osv.OsvInherits):
     _name = 'som.consulta.pobresa'
     _inherit = "crm.case"
-    # _inherits = {"crm.case": "crm_id"}
     _description = 'Model per gestionar les consultes de pobresa energètica'
 
     def case_close(self, cr, uid, ids, *args):
@@ -77,19 +76,19 @@ class SomConsultaPobresa(osv.osv):
                                       'Contracte', required=True),
         'titular_id': fields.function(
             _ff_get_titular, method=True,
-            string='Titular', type='text', stored=True),
+            string='Titular', type='char', size=128, stored=True),
         'municipi': fields.function(
             _ff_get_municipi, method=True,
-            string="Municipi", type='text', stored=True),
+            string="Municipi", type='char', size=128, stored=True),
         'numero_registre': fields.char("Número de registre", size=128),
         'agrupacio_supramunicipal': fields.many2one('agrupacio.supramunicipal',
                                                     'Agrupació supramunicipal'),
         'direccio_cups': fields.function(
             _ff_get_direccio_cups, method=True,
-            string="Direcció CUPS", type='text', stored=True),
+            string="Direcció CUPS", type='char', size=128, stored=True),
         'email_partner': fields.function(
             _ff_get_email_titular, method=True,
-            string="Email titular", type='text', stored=True),
+            string="Email titular", type='char', size=128, stored=True),
         'resolucio': fields.selection(RESOLUTION_STATES, 'Resolució', size=16),
     }
 

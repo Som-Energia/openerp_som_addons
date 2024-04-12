@@ -112,7 +112,7 @@
             <field name="res_model">som.consulta.pobresa</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="som_consulta_pobresa_view_form"/>
+            <field name="view_id" ref="som_consulta_pobresa_view_tree"/>
             <field name="type">ir.actions.act_window</field>
         </record>
         <menuitem action="som_consulta_pobresa_action" id="menu_som_consulta_pobresa_action" parent="crm.next_id_52"/>

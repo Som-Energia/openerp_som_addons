@@ -35,4 +35,4 @@ class TestWizardCrearConsultaPobresa(testing.OOTestCase):
         self.assertEqual(cons_data.name, u'[0002] Camptocamp (Alegr\xeda-Dulantzi)')
         self.assertEqual(cons_data.titular_id, u'Camptocamp')
         self.assertEqual(cons_data.direccio_cups, pol.cups.direccio)
-        # self.assertEqual(cons_data.email_partner, polissa_id.direccio_notificacio.email) # no es pot testejar perque direccio_notificacio depen de giscedata_facturacio # noqa: 501
+        self.assertEqual(cons_data.email_partner, pol.direccio_notificacio.email)

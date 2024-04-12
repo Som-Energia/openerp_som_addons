@@ -35,7 +35,7 @@ class WizardCrearConsultaPobresa(osv.osv_memory):
         return {
             "domain": "[('id','in', %s)]" % str(scp_creades),
             "name": "Consultes pobresa creades",
-            "view_type": "form",
+            "view_type": "tree",
             "view_mode": "tree,form",
             "res_model": "som.consulta.pobresa",
             "type": "ir.actions.act_window",
