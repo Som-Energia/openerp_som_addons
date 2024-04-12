@@ -20,10 +20,10 @@
         'demo/som_consulta_pobresa_demo.xml',
     ],
     'update_xml': [
-        'security/ir.model.access.csv',
         'views/som_consulta_pobresa_view.xml',
         'views/agrupacio_supramunicipal_view.xml',
         'wizard/wizard_crear_consulta_pobresa.xml',
         'data/agrupacio_supramunicipal_data.xml',
+        'security/ir.model.access.csv',
     ],
 }

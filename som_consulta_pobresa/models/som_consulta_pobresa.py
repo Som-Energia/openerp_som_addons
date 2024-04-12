@@ -73,7 +73,6 @@ class SomConsultaPobresa(osv.osv):
         return res
 
     _columns = {
-        'crm_id': fields.many2one('crm.case', required=True),
         'polissa_id': fields.many2one('giscedata.polissa',
                                       'Contracte', required=True),
         'titular_id': fields.function(
