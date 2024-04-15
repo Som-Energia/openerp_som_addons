@@ -74,7 +74,7 @@ class SomGurbCups(osv.osv):
 
         return res
 
-    def get_polisses_gurb_cups(self, cursor, uid, gurb_cups_id, context=None):
+    def get_polissa_gurb_cups(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:
             context = {}
 
@@ -87,9 +87,19 @@ class SomGurbCups(osv.osv):
             ("cups", "=", gurb_vals["cups_id"][0]),
         ]
 
-        pol_ids = pol_o.search(cursor, uid, search_params, context=context, limit=1)
+        pol_id = pol_o.search(cursor, uid, search_params, context=context, limit=1)
 
-        return pol_ids
+        return pol_id
+
+    def get_titular_gurb_cups(self, cursor, uid, gurb_cups_id, context=None):
+        if context is None:
+            context = {}
+        pol_o = self.pool.get("giscedata.polissa")
+        pol_id = self.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
+        partner_id = pol_o.read(cursor, uid, pol_id, ['titular'], context=context)
+        if partner_id:
+            partner_id = partner_id[0]["titular"][0]
+        return partner_id
 
     def add_service_to_contract(self, cursor, uid, ids, data_inici, context=None):
         if context is None:
@@ -141,6 +151,14 @@ class SomGurbCups(osv.osv):
         if context is None:
             context = {}
 
+        imd_o = self.pool.get("ir.model.data")
+        invoice_o = self.pool.get("account.invoice")
+
+        # Initial quota base gurb
+        product_id = imd_o.get_object_reference(
+            cursor, uid, "som_gurb", "initial_quota_gurb"
+        )[1]
+
         errors = []
 
         for gurb_cups_br in self.browse(cursor, uid, gurb_cups_ids, context=context):
@@ -151,9 +169,37 @@ class SomGurbCups(osv.osv):
                 )
                 continue
 
-            # The product
-            # product = False  # TODO: Quin producte fem servir per la quota d'entrada?
-            # partner_id = investment.member_id.partner_id.id
+            partner_id = self.get_titular_gurb_cups(cursor, uid, gurb_cups_br.id, context=context)
+
+            gurb_line = {
+                "name": "Quota inicial Gurb",
+                "product_id": product_id,
+                "price_unit": 1,
+                "account_id": False,
+                "quantity": 1
+            }
+
+            invoice_lines = [
+                (0, 0, gurb_line)
+            ]
+
+            invoice_vals = {
+                "partner_id": partner_id,
+                "invoice_lines": invoice_lines,
+
+                "account_id": False,
+                "address_invoice_id": False,
+                "journal_id": False,
+                "reference_type": False
+            }
+
+            invoice_id = invoice_o.create(cursor, uid, invoice_vals, context=context)
+
+            write_vals = {
+                "invoice_ref": "account.invoice,{}".format(invoice_id)
+            }
+
+            self.write(cursor, uid, gurb_cups_br.id, write_vals, context=context)
 
     _columns = {
         "active": fields.boolean("Actiu"),
