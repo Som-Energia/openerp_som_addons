@@ -16,6 +16,8 @@
                     </group>
                     <field name="date" select="1"/>
                     <field name="date_deadline" select="2"/>
+                    <field name="active" select="2"/>
+                    <field name="date_closed"/>
                     <newline />
                     <notebook colspan="4">
                         <page string="General">
@@ -60,15 +62,6 @@
                                 </group>
                             </group>
                         </page>
-                        <page string="Extra Info">
-                            <field name="id" select="1"/>
-                            <field name="active" select="2"/>
-                            <separator colspan="4" string="Dates"/>
-                            <field name="create_date"/>
-                            <field name="date_closed"/>
-                            <field name="date_action_last"/>
-                            <field name="date_action_next"/>
-                        </page>
                         <page string="History">
                             <field colspan="4" name="log_ids" nolabel="1">
                                 <form string="Actions">
@@ -104,6 +97,8 @@
                     <field name="state" select="1"/>
                     <field name="date" select="1"/>
                     <field name="resolucio" select="1"/>
+                    <field name="date_closed" select="1"/>
+                    <field name="agrupacio_supramunicipal" select="1"/>
                 </tree>
             </field>
         </record>
@@ -116,5 +111,23 @@
             <field name="type">ir.actions.act_window</field>
         </record>
         <menuitem action="som_consulta_pobresa_action" id="menu_som_consulta_pobresa_action" parent="crm.next_id_52"/>
+        <!-- Enllaç des de la pòlissa a les consultes de pobresa -->
+        <record model="ir.actions.act_window" id="action_consultes_pobresa_de_polisses">
+            <field name="name">Consultes Pobresa</field>
+            <field name="res_model">som.consulta.pobresa</field>
+            <field name="src_model">giscedata.polissa</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('polissa_id', '=', active_id)]</field>
+            <field name="context">{'active_test': False}</field>
+        </record>
+        <record id="value_action_consultes_pobresa_de_polisses" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Consultes Pobresa</field>
+            <field name="key2">client_action_relate</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_consultes_pobresa_de_polisses'))" />
+        </record>
     </data>
 </openerp>

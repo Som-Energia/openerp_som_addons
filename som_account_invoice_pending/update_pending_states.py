@@ -917,6 +917,20 @@ class UpdatePendingStates(osv.osv_memory):
         pol_obj = self.pool.get("giscedata.polissa")
         polissa_state = pol_obj.read(cursor, uid, [polissa_id], ["cups_np"])[0]["cups_np"]
         return True if polissa_state in ["Barcelona", "Girona", "Lleida", "Tarragona"] else False
+        # Aqui podriem aprofitar per mirar si té alguna consulta de pobresa de fa menys d'un any
+        # return False if polissa_state not in ["Barcelona", "Girona", "Lleida", "Tarragona"]
+        # scp_obj = self.pool.get("som.consulta.pobresa")
+        # cp_ids = scp_obj.search(cursor, uid, ["polissa_id", "=", polissa_id])
+
+        # for cp_id in cp_ids:
+        #     cp = scp_obj.browse(cp_id)
+        #     # aquest if no el tinc clar, si ja n'hi una que mai s'ha tancat que fariem?
+        #     date_cp = datetime.strptime(cp.date_closed, "%Y-%m-%d %H:%M:%S")
+        #     date_diff = datetime.today() - date_cp
+        #     if date_diff < 365:
+        #         return False
+
+        # return True
 
     def update_pending_ask_poverty(self, cursor, uid, context=None):
         if context is None:

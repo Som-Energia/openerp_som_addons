@@ -17,15 +17,17 @@ class WizardCrearConsultaPobresa(osv.osv_memory):
         scp_obj = self.pool.get('som.consulta.pobresa')
         sec_obj = self.pool.get('crm.case.section')
         pol_obj = self.pool.get('giscedata.polissa')
+        gff_obj = self.pool.get('giscedata.facturacio.factura')
 
         active_ids = context.get("active_ids")
         scp_creades = []
         sec_pobresa = sec_obj.search(cursor, uid, [('code', '=', 'BSCPE')])[0]
 
         for _id in active_ids:
-            pol = pol_obj.browse(cursor, uid, _id)
+            pol_id = gff_obj.read(cursor, uid, _id, ['polissa_id'])
+            pol = pol_obj.browse(cursor, uid, pol_id)
             scp_id = scp_obj.create(cursor, uid, {
-                'polissa_id': _id,
+                'polissa_id': pol_id,
                 'section_id': sec_pobresa,
                 'name': '[{}] {} ({})'.format(
                     pol.name, pol.titular.name, pol.cups.id_municipi.name),
