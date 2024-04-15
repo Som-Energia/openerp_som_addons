@@ -74,11 +74,27 @@ class SomGurbCups(osv.osv):
 
         return res
 
-    def add_service_to_contract(self, cursor, uid, ids, data_inici, context=None):
+    def get_polisses_gurb_cups(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:
             context = {}
 
         pol_o = self.pool.get("giscedata.polissa")
+
+        gurb_vals = self.read(cursor, uid, gurb_cups_id, ["cups_id", "gurb_id", "owner_cups"])
+
+        search_params = [
+            ("state", "=", "activa"),
+            ("cups", "=", gurb_vals["cups_id"][0]),
+        ]
+
+        pol_ids = pol_o.search(cursor, uid, search_params, context=context, limit=1)
+
+        return pol_ids
+
+    def add_service_to_contract(self, cursor, uid, ids, data_inici, context=None):
+        if context is None:
+            context = {}
+
         gurb_o = self.pool.get("som.gurb")
         wiz_service_o = self.pool.get("wizard.create.service")
         imd_o = self.pool.get("ir.model.data")
@@ -93,12 +109,8 @@ class SomGurbCups(osv.osv):
 
         for gurb_cups_id in ids:
             gurb_vals = self.read(cursor, uid, gurb_cups_id, ["cups_id", "gurb_id", "owner_cups"])
-            search_params = [
-                ("state", "=", "activa"),
-                ("cups", "=", gurb_vals["cups_id"][0]),
-            ]
 
-            pol_ids = pol_o.search(cursor, uid, search_params, context=context, limit=1)
+            pol_ids = self.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
             if not pol_ids:
                 error_title = _("No hi ha pòlisses actives per aquest CUPS"),
                 error_info = _(
@@ -124,6 +136,24 @@ class SomGurbCups(osv.osv):
 
             context['active_ids'] = pol_ids
             wiz_service_o.create_services(cursor, uid, [wiz_id], context=context)
+
+    def create_initial_invoices(self, cursor, uid, gurb_cups_ids, context=None):
+        if context is None:
+            context = {}
+
+        errors = []
+
+        for gurb_cups_br in self.browse(cursor, uid, gurb_cups_ids, context=context):
+            # TODO: Més validacions?
+            if gurb_cups_br.invoice_ref:
+                errors.append(
+                    "Initial Invoice {} already exists".format(gurb_cups_br.invoice_ref.name)
+                )
+                continue
+
+            # The product
+            # product = False  # TODO: Quin producte fem servir per la quota d'entrada?
+            # partner_id = investment.member_id.partner_id.id
 
     _columns = {
         "active": fields.boolean("Actiu"),
@@ -160,7 +190,10 @@ class SomGurbCups(osv.osv):
             type="boolean",
             string="Cups de la persona propietària",
             method=True
-        )
+        ),
+        "invoice_ref": fields.reference(
+            "Factura d'inscripció", selection=[("account.invoice", "Factura")], size=128
+        ),
     }
 
     _defaults = {
