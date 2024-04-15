@@ -74,22 +74,35 @@ class GiscedataFacturacioServices(osv.osv):
 
         search_params = [
             ("cups_id", "=", inv.polissa_id.cups.id),
-            "|",
             ("start_date", "<=", vals["data_fins"]),
-            ("end_date", ">=", vals["data_desde"]),
+            ("end_date", "=", False),
         ]
         gurb_cups_ids = gurb_cups_o.search(cursor, uid, search_params, context=context)
 
-        if not gurb_cups_ids:
-            return False
-
         search_params = [
-            ("gurb_cups_id", "=", gurb_cups_ids[0]),
-            "|",
+            ("cups_id", "=", inv.polissa_id.cups.id),
             ("start_date", "<=", vals["data_fins"]),
             ("end_date", ">=", vals["data_desde"]),
         ]
+        gurb_cups_o.search(cursor, uid, search_params, context=context)
+        gurb_cups_ids += gurb_cups_o.search(cursor, uid, search_params, context=context)
+
+        if not gurb_cups_ids:
+            return []
+
+        search_params = [
+            ("gurb_cups_id", "=", gurb_cups_ids[0]),
+            ("start_date", "<=", vals["data_fins"]),
+            ("end_date", "=", False),
+        ]
         gurb_cups_beta_ids = gurb_cups_beta_o.search(cursor, uid, search_params, context=context)
+
+        search_params = [
+            ("gurb_cups_id", "=", gurb_cups_ids[0]),
+            ("start_date", "<=", vals["data_fins"]),
+            ("end_date", ">=", vals["data_desde"]),
+        ]
+        gurb_cups_beta_ids += gurb_cups_beta_o.search(cursor, uid, search_params, context=context)
 
         return gurb_cups_beta_ids
 
