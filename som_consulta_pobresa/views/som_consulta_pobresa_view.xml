@@ -85,7 +85,7 @@
                 <group col="6" colspan="4">
                         <field name="state" select="1"/>
                         <button name="case_open" states="draft,pending" string="Open" type="object"/>
-                        <button name="case_close" states="draft,open,pending" string="Close" type="object"/>
+                        <button name="close_case" states="draft,open,pending" string="Close" type="object"/>
                         <button name="case_pending" states="draft,open" string="Pending" type="object"/>
                     </group>
                 </form>

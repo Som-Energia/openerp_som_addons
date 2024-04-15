@@ -72,8 +72,6 @@ class SomConsultaPobresa(osv.OsvInherits):
 
     _columns = {
         'crm_id': fields.many2one('crm.case', required=True),
-        'polissa_id': fields.many2one('giscedata.polissa',
-                                      'Contracte', required=True),
         'titular_id': fields.function(
             _ff_get_titular, method=True,
             string='Titular', type='char', size=128, stored=True),
