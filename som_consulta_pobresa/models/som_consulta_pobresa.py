@@ -90,6 +90,10 @@ class SomConsultaPobresa(osv.OsvInherits):
         'resolucio': fields.selection(RESOLUTION_STATES, 'Resolució', size=16),
     }
 
+    _defaults = {
+        'section_id': lambda obj, cr, uid, context: obj.pool.get('crm.case.section').search(cr, uid, [('code', '=', 'BSCPE')])[0],  # noqa: E501
+    }
+
     _order = "id desc"
 
 

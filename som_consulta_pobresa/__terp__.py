@@ -13,7 +13,7 @@
     'installable': True,
     'depends': [
         'crm',
-        'giscedata_polissa',
+        'giscedata_polissa_crm',
         'giscedata_facturacio_comer_bono_social',
     ],
     'init_xml': [],
