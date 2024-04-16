@@ -119,8 +119,8 @@ class SomGurbCups(osv.osv):
         for gurb_cups_id in ids:
             gurb_vals = self.read(cursor, uid, gurb_cups_id, ["cups_id", "gurb_id", "owner_cups"])
 
-            pol_ids = self.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
-            if not pol_ids:
+            pol_id = self.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
+            if not pol_id:
                 error_title = _("No hi ha pòlisses actives per aquest CUPS"),
                 error_info = _(
                     "El CUPS id {} no té pòlisses actives. No es pot afegir cap servei".format(
@@ -143,7 +143,7 @@ class SomGurbCups(osv.osv):
 
             wiz_id = wiz_service_o.create(cursor, uid, creation_vals, context=context)
 
-            context['active_ids'] = pol_ids
+            context['active_ids'] = [pol_id]
             wiz_service_o.create_services(cursor, uid, [wiz_id], context=context)
 
     def create_initial_invoices(self, cursor, uid, gurb_cups_ids, context=None):
