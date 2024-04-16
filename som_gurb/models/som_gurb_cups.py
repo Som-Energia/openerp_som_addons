@@ -86,12 +86,9 @@ class SomGurbCups(osv.osv):
             ("state", "=", "activa"),
             ("cups", "=", gurb_vals["cups_id"][0]),
         ]
+        pol_ids = pol_o.search(cursor, uid, search_params, context=context, limit=1)
 
-        pol_id = pol_o.search(
-            cursor, uid, search_params, context=context, limit=1
-        )[0]  # TODO: comprovar no empty
-
-        return pol_id
+        return pol_ids[0] if pol_ids else False
 
     def get_titular_gurb_cups(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:
