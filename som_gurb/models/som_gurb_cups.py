@@ -87,7 +87,8 @@ class SomGurbCups(osv.osv):
             ("cups", "=", gurb_vals["cups_id"][0]),
         ]
 
-        pol_id = pol_o.search(cursor, uid, search_params, context=context, limit=1)
+        pol_id = pol_o.search(cursor, uid, search_params, context=context, limit=1)[
+            0]  # TODO: comprovar no empty
 
         return pol_id
 
@@ -98,7 +99,7 @@ class SomGurbCups(osv.osv):
         pol_id = self.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
         partner_id = pol_o.read(cursor, uid, pol_id, ['titular'], context=context)
         if partner_id:
-            partner_id = partner_id[0]["titular"][0]
+            partner_id = partner_id["titular"][0]
         return partner_id
 
     def add_service_to_contract(self, cursor, uid, ids, data_inici, context=None):
@@ -150,6 +151,8 @@ class SomGurbCups(osv.osv):
     def create_initial_invoices(self, cursor, uid, gurb_cups_ids, context=None):
         if context is None:
             context = {}
+        if not isinstance(gurb_cups_ids, list):
+            gurb_cups_ids = [gurb_cups_ids]
 
         imd_o = self.pool.get("ir.model.data")
         invoice_o = self.pool.get("account.invoice")
@@ -165,7 +168,7 @@ class SomGurbCups(osv.osv):
             # TODO: Més validacions?
             if gurb_cups_br.invoice_ref:
                 errors.append(
-                    "Initial Invoice {} already exists".format(gurb_cups_br.invoice_ref.name)
+                    "Initial Invoice {} already exists".format(gurb_cups_br.invoice_ref)
                 )
                 continue
 
@@ -174,23 +177,21 @@ class SomGurbCups(osv.osv):
             gurb_line = {
                 "name": "Quota inicial Gurb",
                 "product_id": product_id,
-                "price_unit": 1,
+                "price_unit": 1,  # TODO: Ficar preu x beta
                 "account_id": False,
-                "quantity": 1
+                "quantity": 1  # TODO: posar n betes
             }
-
             invoice_lines = [
                 (0, 0, gurb_line)
             ]
-
             invoice_vals = {
                 "partner_id": partner_id,
                 "invoice_lines": invoice_lines,
 
-                "account_id": False,
-                "address_invoice_id": False,
-                "journal_id": False,
-                "reference_type": False
+                # "account_id": False,
+                # "address_invoice_id": False,
+                # "journal_id": False,
+                # "reference_type": False,
             }
 
             invoice_id = invoice_o.create(cursor, uid, invoice_vals, context=context)
@@ -198,8 +199,9 @@ class SomGurbCups(osv.osv):
             write_vals = {
                 "invoice_ref": "account.invoice,{}".format(invoice_id)
             }
-
             self.write(cursor, uid, gurb_cups_br.id, write_vals, context=context)
+
+        print errors
 
     _columns = {
         "active": fields.boolean("Actiu"),
