@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="som_stash_tree_view" model="ir.ui.view">
+            <field name="name">som.stash.tree</field>
+            <field name="model">som.stash</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Backup de dades">
+                    <field name="res_model"/>
+                    <field name="res_id"/>
+                    <field name="res_field"/>
+                    <field name="value"/>
+                    <field name="date_stashed"/>
+                    <field name="date_expiry"/>
+                    <field name="origin_partner_id"/>
+                    <field name="origin_partner_id_int"/>
+                </tree>
+            </field>
+        </record>
+        <record id="som_stash_form_view" model="ir.ui.view">
+            <field name="name">som.stash.form</field>
+            <field name="model">som.stash</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group colspan="6" col="2" string="Identificació">
+                        <field name="res_model" select="1" readonly="1"/>
+                        <field name="res_id" select="1" readonly="1"/>
+                        <field name="res_field" select="1" readonly="1"/>
+                    </group>
+                    <group colspan="6" col="2" string="Dades">
+                        <field name="value" select="1" readonly="1"/>
+                        <field name="date_stashed" select="1" readonly="1"/>
+                    </group>
+                    <group colspan="6" col="2" string="Meta - dades">
+                        <field name="date_expiry" select="1" readonly="1"/>
+                        <field name="origin_partner_id" select="1" readonly="1"/>
+                        <field name="origin_partner_id_int" select="1" readonly="1"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_som_stash_tree" model="ir.actions.act_window">
+            <field name="name">Som stash data</field>
+            <field name="res_model">som.stash</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="som_stash_tree_view"/>
+        </record>
+        <menuitem id="menu_som_stash_folder"
+                groups="som_stash.group_som_stash"
+                name = "Stash de dades"
+                parent="base.menu_base_config"/>
+        <menuitem action="action_som_stash_tree"
+                id="menu_som_stash_tree"
+                parent="menu_som_stash_folder"/>
+    </data>
+</openerp>

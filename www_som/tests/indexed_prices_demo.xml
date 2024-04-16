@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data noupdate="0">
+        <record model="giscedata.polissa.tarifa" id="tarifa_20TD_test">
+            <field name="name">2.0TDTest</field>
+        </record>
+        <record model="giscedata.next.days.energy.price" id="giscedata_indexada_prices_test_hour0">
+            <field name="name">hour0</field>
+            <field name="tarifa_id" ref="tarifa_20TD_test"/>
+            <field name="geom_zone">PENINSULA</field>
+            <field name="prm_diari">1.1</field>
+            <field name='initial_price'>0.1</field>
+            <field name="maturity">C3</field>
+            <field name="hour_timestamp">2023-05-01 00:00:00</field>
+            <field name="season">S</field>
+        </record>
+        <record model="giscedata.next.days.energy.price" id="giscedata_indexada_prices_test_hour1">
+            <field name="name">hour1</field>
+            <field name="tarifa_id" ref="tarifa_20TD_test"/>
+            <field name="geom_zone">PENINSULA</field>
+            <field name="prm_diari">1.2</field>
+            <field name='initial_price'>0.2</field>
+            <field name="maturity">C3</field>
+            <field name="hour_timestamp">2023-05-01 01:00:00</field>
+            <field name="season">S</field>
+        </record>
+        <record model="giscedata.next.days.energy.price" id="giscedata_indexada_prices_test_hour2">
+            <field name="name">hour2</field>
+            <field name="tarifa_id" ref="tarifa_20TD_test"/>
+            <field name="geom_zone">PENINSULA</field>
+            <field name="prm_diari">1.3</field>
+            <field name='initial_price'>0.3</field>
+            <field name="maturity">C3</field>
+            <field name="hour_timestamp">2023-05-01 02:00:00</field>
+            <field name="season">S</field>
+        </record>
+        <record model="giscedata.next.days.energy.price" id="giscedata_indexada_prices_test_hour3">
+            <field name="name">hour3</field>
+            <field name="tarifa_id" ref="tarifa_20TD_test"/>
+            <field name="geom_zone">PENINSULA</field>
+            <field name="prm_diari">1.4</field>
+            <field name='initial_price'>0.4</field>
+            <field name="maturity">C3</field>
+            <field name="hour_timestamp">2023-05-01 03:00:00</field>
+            <field name="season">S</field>
+        </record>
+        <record model="giscedata.next.days.energy.price" id="giscedata_indexada_prices_test_hour4">
+            <field name="name">hour4</field>
+            <field name="tarifa_id" ref="tarifa_20TD_test"/>
+            <field name="geom_zone">PENINSULA</field>
+            <field name="prm_diari">1.5</field>
+            <field name='initial_price'>0.5</field>
+            <field name="maturity">C3</field>
+            <field name="hour_timestamp">2023-05-01 04:00:00</field>
+            <field name="season">S</field>
+        </record>
+        <record model="giscedata.next.days.energy.price" id="giscedata_indexada_prices_test_hour5">
+            <field name="name">hour5</field>
+            <field name="tarifa_id" ref="tarifa_20TD_test"/>
+            <field name="geom_zone">PENINSULA</field>
+            <field name="prm_diari">1.6</field>
+            <field name='initial_price'>0.6</field>
+            <field name="maturity">C3</field>
+            <field name="hour_timestamp">2023-05-01 05:00:00</field>
+            <field name="season">S</field>
+        </record>
+    </data>
+</openerp>

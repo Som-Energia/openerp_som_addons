@@ -107,9 +107,8 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
                 f1_dict[cups_text] = []
             f1_dict[cups_text].append(f1)
 
-        for k, f1ns in f1_dict.items():
-            sorted_list = sorted(f1ns, key=lambda x: x["fecha_factura_desde"])
-            line_ids = [x["id"] for x in sorted_list]
+        for f1ns in f1_dict.values():
+            line_ids = [x["id"] for x in f1ns]
             for line in line_ids:
                 self.process_line(cursor, uid, line, context=context)
 
@@ -146,36 +145,27 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
 
         fase1_ids = []
         f1_ids = []
-        days_to_check = data.get("days_to_check", 30)
-        date_to_check = (datetime.today() - timedelta(days_to_check)).strftime("%Y-%m-%d")
-        for error_code in data["error_codes"]:
-            code = error_code.get("code", "")
-            text = error_code.get("text", "")
-            _ids = self.search(
-                cursor,
-                uid,
-                [
-                    ("state", "=", "erroni"),
-                    ("info", "ilike", "%[{}]%{}%".format(code, text)),
-                    ("fecha_factura", ">=", date_to_check),
-                ],
-            )
+        days_to_check = data.get('days_to_check', 30)
+        date_to_check = (datetime.today() - timedelta(days_to_check)).strftime('%Y-%m-%d')
+        for error_code in data['error_codes']:
+            code = error_code.get('code', '')
+            text = error_code.get('text', '')
+            _ids = self.search(cursor, uid, [
+                ('state', '=', 'erroni'),
+                ('info', 'ilike', '%[{}]%{}%'.format(code, text)),
+                ('data_carrega', '>=', date_to_check)
+            ])
             f1_ids += _ids
+        msg = "Trobats {} fitxers F1 mitjançant codi d'error, amb data factura entre {} i avui ({})"
         logger.info(
-            "Trobats {} fitxers F1 mitjançant codi d'error, amb data factura entre {} i avui ({})".format(  # noqa: E501
-                len(f1_ids), date_to_check, datetime.today().strftime("%Y-%m-%d")
-            )
+            msg.format(len(f1_ids), date_to_check, datetime.today().strftime('%Y-%m-%d'))
         )
 
-        fase1_ids = self.search(
-            cursor,
-            uid,
-            [
-                ("state", "=", False),
-                ("import_phase", "=", IMPORT_PHASE_1),
-                ("fecha_factura", ">=", date_to_check),
-            ],
-        )
+        fase1_ids = self.search(cursor, uid, [
+            ('state', 'in', [False, 'valid']),
+            ('import_phase', '=', IMPORT_PHASE_1),
+            ('data_carrega', '>=', date_to_check),
+        ])
         f1_ids += fase1_ids
         logger.info(
             "Trobats {} fitxers F1 en fase 1 sense estat, amb data factura entre {} i avui ({})".format(  # noqa: E501
