@@ -22,6 +22,15 @@
             <field name="sequence">11</field>
             <field name="product_id" ref="product_gurb"/>
         </record>
+        <record model="product.pricelist.item" id="item_version_pricelist_gurb_demo_2">
+            <field name="name">GURB Demo Pricelist Item 2</field>
+            <field name="price_version_id" ref="version_pricelist_gurb_demo"/>
+            <field name="base" eval="-3"/>
+            <field name="base_price">3.75</field>
+            <field name="price_surcharge">0.0</field>
+            <field name="sequence">11</field>
+            <field name="product_id" ref="initial_quota_gurb"/>
+        </record>
         <record model="product.pricelist.services" id="product_pricelist_services_gurb_demo">
             <field name="pricelist_id" ref="pricelist_gurb_demo"/>
             <field name="product_ids" eval="[(6,0,[ref('product_gurb')])]"/>
