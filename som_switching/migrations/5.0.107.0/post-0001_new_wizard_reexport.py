@@ -7,13 +7,16 @@ def up(cursor, installed_version):
     if not installed_version:
         return
 
-    logger = logging.getLogger('openerp.migration')
+    logger = logging.getLogger("openerp.migration")
 
     # UPATAR UN XML SENCER#
     logger.info("Updating XML giscedata_switching_log_reexport_wizard_view.xml")
     load_data(
-        cursor, 'som_switching', 'wizard/giscedata_switching_log_reexport_wizard_view.xml',
-        idref=None, mode='update'
+        cursor,
+        "som_switching",
+        "wizard/giscedata_switching_log_reexport_wizard_view.xml",
+        idref=None,
+        mode="update",
     )
     logger.info("XMLs succesfully updated.")
 

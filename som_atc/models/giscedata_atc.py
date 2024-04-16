@@ -20,14 +20,14 @@ class GiscedataAtc(osv.osv):
         """
         Funció per especificar els IDs a recalcular
         """
-        sw_obj = self.pool.get('giscedata.switching')
-        sw_vals = sw_obj.read(cursor, uid, ids, ['ref', 'ref2'])
+        sw_obj = self.pool.get("giscedata.switching")
+        sw_vals = sw_obj.read(cursor, uid, ids, ["ref", "ref2"])
         atc_ids = []
         for sw_val in sw_vals:
-            if sw_val['ref'] and sw_val['ref'].split(',')[0] == 'giscedata.atc':
-                atc_ids.append(int(sw_val['ref'].split(',')[1]))
-            elif sw_val['ref2'] and sw_val['ref2'].split(',')[0] == 'giscedata.atc':
-                atc_ids.append(int(sw_val['ref2'].split(',')[1]))
+            if sw_val["ref"] and sw_val["ref"].split(",")[0] == "giscedata.atc":
+                atc_ids.append(int(sw_val["ref"].split(",")[1]))
+            elif sw_val["ref2"] and sw_val["ref2"].split(",")[0] == "giscedata.atc":
+                atc_ids.append(int(sw_val["ref2"].split(",")[1]))
         return atc_ids
 
     _columns = {
@@ -60,13 +60,20 @@ class GiscedataAtc(osv.osv):
         "polissa_active": fields.related(
             "polissa_id", "active", type="boolean", string="polissa activa", readonly=True
         ),
-        'process_step': fields.function(
-            _ff_get_process_step, method=True,
-            string=u"Pas del R1", type='char',
-            size=10, store={
-                'giscedata.atc': (lambda self, cr, uid, ids, c={}: ids, ['ref', 'ref2','history_line'], 10),
-                'giscedata.switching': (_trg_switching, ['step_id', 'step_ids'], 10),
-            }
+        "process_step": fields.function(
+            _ff_get_process_step,
+            method=True,
+            string=u"Pas del R1",
+            type="char",
+            size=10,
+            store={
+                "giscedata.atc": (
+                    lambda self, cr, uid, ids, c={}: ids,
+                    ["ref", "ref2", "history_line"],
+                    10,
+                ),
+                "giscedata.switching": (_trg_switching, ["step_id", "step_ids"], 10),
+            },
         ),
     }
 

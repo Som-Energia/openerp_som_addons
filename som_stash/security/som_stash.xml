@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="res.groups" id="group_som_stash">
+            <field name="name">Som Stash</field>
+        </record>
+        <record model="res.groups" id="group_som_stash_can_stash">
+            <field name="name">Som Stash pot fer stash</field>
+        </record>
+     </data>
+</openerp>

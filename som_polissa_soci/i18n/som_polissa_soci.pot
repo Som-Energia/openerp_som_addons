@@ -330,4 +330,3 @@ msgstr ""
 #, python-format
 msgid "Camp per indicar si la factura sera visible a la Oficina Virtual"
 msgstr ""
-

@@ -1,5 +1,3 @@
-
-
 def get_gkwh_atr_price(cursor, uid, polissa, pname, context, with_taxes=False):
     if context is None:
         context = {}
@@ -24,7 +22,7 @@ def get_gkwh_atr_price(cursor, uid, polissa, pname, context, with_taxes=False):
 
     preu_final = price_atr
     if with_taxes:
-        fp = polissa.fiscal_position_id
+        fp = polissa.fiscal_position_id or polissa.titular.property_account_position
         if "force_fiscal_position" in context:
             fp_id = context["force_fiscal_position"]
             fp = fiscal_pos_obj.browse(cursor, uid, fp_id, context) if fp_id else False

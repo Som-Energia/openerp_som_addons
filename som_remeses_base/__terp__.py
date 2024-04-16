@@ -9,10 +9,8 @@
         "l10n_ES_remesas",
     ],
     "init_xml": [],
-    "demo_xml": [
-    ],
-    "update_xml": [
-    ],
+    "demo_xml": [],
+    "update_xml": [],
     "active": False,
-    "installable": True
+    "installable": True,
 }

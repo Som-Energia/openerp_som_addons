@@ -7,4 +7,3 @@ type = PO
 file_filter = <lang>.po
 source_lang = ca_ES
 lang_map = es_ES: es, ca_ES: ca
-

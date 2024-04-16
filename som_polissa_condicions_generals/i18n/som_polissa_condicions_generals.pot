@@ -948,4 +948,3 @@ msgstr ""
 #: rml:som_polissa_condicions_generals/report/contracte.mako:470
 msgid "EL CLIENT"
 msgstr ""
-

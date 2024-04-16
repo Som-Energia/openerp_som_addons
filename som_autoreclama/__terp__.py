@@ -25,6 +25,7 @@
         "wizard/wizard_som_autoreclama_generated_atc_view.xml",
         "wizard/wizard_som_autoreclama_set_disable_state_view.xml",
         "giscedata_atc_view.xml",
+        "giscedata_polissa_view.xml",
         "security/som_autoreclama.xml",
         "security/ir.model.access.csv",
         "wizard/wizard_massive_create_r1029_view.xml",

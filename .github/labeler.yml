@@ -8,6 +8,8 @@ giscedata_facturacio_comer_som:
 -  giscedata_facturacio_comer_som/**
 giscedata_facturacio_som:
 -  giscedata_facturacio_som/**
+GithubActions:
+-  .github/**
 powersms:
 -  powersms/**
 scripts:
@@ -46,6 +48,8 @@ som_facturacio_switching:
 -  som_facturacio_switching/**
 som_factures_paper:
 -  som_factures_paper/**
+som_gurb:
+-  som_gurb/**
 som_indexada:
 -  som_indexada/**
 som_infoenergia:
