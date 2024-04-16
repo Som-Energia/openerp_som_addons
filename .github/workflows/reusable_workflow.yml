@@ -11,6 +11,10 @@ on:
         required: false
         type: string
         default: '["2.7"]'
+      erp_branch:
+        required: false
+        type: string
+        default: 'rolling_erp01'
     secrets:
         ACCESS_TOKEN_GA:
             required: true
@@ -83,7 +87,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_GA }}
         run: |
           export ROOT_DIR_SRC=${{github.workspace}}/..
-          git clone --depth 1 https://$GITHUB_TOKEN@github.com/Som-Energia/erp.git -b developer $ROOT_DIR_SRC/erp
+          git clone --depth 1 https://$GITHUB_TOKEN@github.com/Som-Energia/erp.git -b ${{ fromJSON(inputs.erp_branch) }} $ROOT_DIR_SRC/erp
           git clone --depth 1 https://$GITHUB_TOKEN@github.com/Som-Energia/libFacturacioATR.git $ROOT_DIR_SRC/libFacturacioATR
           if [ ! -d "$ROOT_DIR_SRC/somenergia-generationkwh" ]; then
                   git clone --depth 1 https://github.com/Som-Energia/somenergia-generationkwh.git $ROOT_DIR_SRC/somenergia-generationkwh
