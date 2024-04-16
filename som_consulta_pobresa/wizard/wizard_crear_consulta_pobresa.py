@@ -24,7 +24,7 @@ class WizardCrearConsultaPobresa(osv.osv_memory):
         sec_pobresa = sec_obj.search(cursor, uid, [('code', '=', 'BSCPE')])[0]
 
         for _id in active_ids:
-            pol_id = gff_obj.read(cursor, uid, _id, ['polissa_id'])
+            pol_id = gff_obj.read(cursor, uid, _id, ['polissa_id'])['polissa_id'][0]
             pol = pol_obj.browse(cursor, uid, pol_id)
             scp_id = scp_obj.create(cursor, uid, {
                 'polissa_id': pol_id,
