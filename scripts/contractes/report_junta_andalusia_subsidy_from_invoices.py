@@ -78,11 +78,16 @@ for data_dict in tqdm(data_dict_list):
         import_energia = 'OJO: IESE DIFERENT'
 
     total_descomptes = 0
+    total_bosocial = 0
     for linia in fact.linia_ids:
+        # Descomptes cargos energia
         if linia.product_id and linia.product_id.id in [2306, 2307]:
             total_descomptes += linia.price_subtotal
+        if linia.product_id and linia.product_id.id == 416:
+            total_bosocial += linia.price_subtotal
 
-    import_energia = round(fact.total_potencia + fact.total_energia + total_descomptes, 2)
+    import_energia = round(fact.total_potencia + fact.total_energia + total_descomptes
+                           + fact.total_reactiva + total_bosocial, 2)
 
     data_dict['IMPORTE ENERGÍA'] = import_energia
     data_dict['IMPORTE TOTAL DE LA FACTURA'] = import_factura
