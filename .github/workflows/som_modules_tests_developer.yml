@@ -21,14 +21,14 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - id: set-matrix
-        run: echo "name=matrix::$(ls -d */ | sed 's|[/]||g' | egrep -v '^scripts|docs' | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+        run: |
+          echo "matrix=$(ls -d */ | sed 's|[/]||g' | egrep -v '^scripts|docs' | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
 
   test-modules:
     name: test-modules
     needs: [list-modules]
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       max-parallel: 10
@@ -37,8 +37,5 @@ jobs:
     uses: ./.github/workflows/reusable_workflow.yml
     with:
       module: ${{matrix.module}}
-      erp_branch: developer
-    secrets:
-      ACCESS_TOKEN_GA: ${{ secrets.ACCESS_TOKEN_GA }}
-      ESIOS_TOKEN: ${{ secrets.ESIOS_TOKEN }}
-      SRID: ${{ secrets.SRID }}
+      erpbranch: developer
+    secrets: inherit
