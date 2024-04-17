@@ -27,7 +27,6 @@ _REQUIRED_FIRST_OPENING_FIELDS = [
     "province",
     "zip_code",
     "roof_owner_id",
-    "joining_fee",
     "pricelist_id",
     "max_power",
     "min_power",
@@ -35,6 +34,7 @@ _REQUIRED_FIRST_OPENING_FIELDS = [
     "reopening_days",
     "critical_incomplete_state",
     "generation_power",
+    "pricelist_id",
 ]
 
 
@@ -272,7 +272,6 @@ class SomGurb(osv.osv):
         "state": fields.selection(_GURB_STATES, "Estat del GURB", readonly=True),
         "state_date": fields.date("Data activació estat", readonly=True),
         "gurb_cups_ids": fields.one2many("som.gurb.cups", "gurb_id", "Betes", readonly=False),
-        "joining_fee": fields.float("Tarifa cost adhesió"),  # TODO: New model
         "max_power": fields.float("Topall max. per contracte (kW)"),
         "min_power": fields.float("Topall min. per contracte (kW)"),
         "critical_incomplete_state": fields.integer("Estat crític incomplet (%)"),
@@ -354,7 +353,7 @@ class SomGurb(osv.osv):
             type="one2many",
             relation="ir.attachment"
         ),
-        "pricelist_id": fields.many2one("product.pricelist", "Quota mensual"),
+        "pricelist_id": fields.many2one("product.pricelist", "Preus del GURB"),
     }
     _defaults = {
         "logo": lambda *a: False,

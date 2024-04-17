@@ -10,7 +10,6 @@
             <field name="sig_data">SIGDATA</field>
             <field name="pricelist_id" ref="pricelist_gurb_demo" ></field>
             <field name="generation_power">10</field>
-            <field name="joining_fee">4.5</field>
         </record>
     </data>
 </openerp>
