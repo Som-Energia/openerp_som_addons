@@ -19,7 +19,7 @@
                         <field name="beta_percentage" />
                         <field name="owner_cups" />
                     </group>
-                        <field name="betas_ids" nolabel="1" colspan="4" readonly="1"/>
+                    <field name="betas_ids" nolabel="1" colspan="4" readonly="1" />
                 </form>
             </field>
         </record>
@@ -43,7 +43,7 @@
             </field>
         </record>
         <!-- Llistat per defecte d'hitòric de Betes dels CUPS de GURBs-->
-        <record model="ir.ui.view" id="view_gurbs_cups_tree">
+        <record model="ir.ui.view" id="view_gurbs_cups_beta_tree">
             <field name="name">som.gurb.cups.beta.tree</field>
             <field name="model">som.gurb.cups.beta</field>
             <field name="type">tree</field>
