@@ -18,6 +18,7 @@
                         <field name="extra_beta_kw" />
                         <field name="beta_percentage" />
                         <field name="owner_cups" />
+                        <field name="invoice_ref" />
                     </group>
                     <field name="betas_ids" nolabel="1" colspan="4" readonly="1" />
                 </form>
