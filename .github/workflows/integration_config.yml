@@ -15,23 +15,9 @@ env:
   POSTGRES_PASSWORD: erp
 
 jobs:
-  build:
-    name: Test PR
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-      - name: Get changed modules in PR
-        id: changed-files
-        uses: tj-actions/changed-files@v44
-        with:
-          dir_names: 'True'
-          dir_names_exclude_current_dir: 'True'
-          dir_names_max_depth: '1'
-
-      - name: Run tests
-        uses: ./.github/workflows/reusable_workflow.yml
-        with:
-          module: ''
+  erp-tests-module:
+    name: Run test PR
+    uses: ./.github/workflows/reusable_workflow.yml
+    with:
+      module: ''
+    secrets: inherit
