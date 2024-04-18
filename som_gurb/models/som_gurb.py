@@ -85,7 +85,7 @@ class SomGurb(osv.osv):
             gen_power = self.read(cursor, uid, gurb_id, ["generation_power"])["generation_power"]
 
             assigned_betas_kw = sum(gurb_cups["beta_kw"] for gurb_cups in gurb_cups_data)
-            assigned_extra_betas_kw = sum(
+            extra_betas_kw = sum(
                 gurb_cups["extra_beta_kw"] for gurb_cups in gurb_cups_data
             )
             assigned_betas_percentage = 0
@@ -94,13 +94,14 @@ class SomGurb(osv.osv):
                     assigned_betas_kw
                 ) * 100 / gen_power
                 assigned_extra_betas_percentage = (
-                    assigned_extra_betas_kw
+                    assigned_betas_kw + extra_betas_kw
                 ) * 100 / gen_power
 
             res[gurb_id] = {
                 "assigned_betas_kw": assigned_betas_kw,
                 "available_betas_kw": gen_power - assigned_betas_kw,
                 "assigned_betas_percentage": assigned_betas_percentage,
+                "extra_betas_kw": extra_betas_kw,
                 "assigned_extra_betas_percentage": assigned_extra_betas_percentage,
                 "available_betas_percentage": 100 - assigned_betas_percentage,
             }
@@ -296,13 +297,6 @@ class SomGurb(osv.osv):
             method=True,
             multi="betas",
         ),
-        "assigned_extra_betas_kw": fields.function(
-            _ff_total_betas,
-            string="Betes extres assignades (kW)",
-            type="float",
-            method=True,
-            multi="betas",
-        ),
         "available_betas_percentage": fields.function(
             _ff_total_betas,
             string="Betes disponibles (%)",
@@ -317,9 +311,16 @@ class SomGurb(osv.osv):
             method=True,
             multi="betas",
         ),
+        "extra_betas_kw": fields.function(
+            _ff_total_betas,
+            string="Betes extres (kW)",
+            type="float",
+            method=True,
+            multi="betas",
+        ),
         "assigned_extra_betas_percentage": fields.function(
             _ff_total_betas,
-            string="Betes extra assignades (%)",
+            string="Betes assginades + extres (%)",
             type="float",
             method=True,
             multi="betas",
