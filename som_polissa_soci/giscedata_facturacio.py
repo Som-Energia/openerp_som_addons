@@ -78,7 +78,6 @@ class GiscedataFacturacioFacturador(osv.osv):
                                 if x.tipus == "energia" and x.product_id.code != "RMAG"
                             ]
                         )
-                        kwh = max(kwh, 0.0)
                         vals = {
                             "data_desde": fact.data_inici,
                             "data_fins": fact.data_final,
