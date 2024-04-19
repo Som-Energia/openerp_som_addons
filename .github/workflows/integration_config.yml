@@ -15,9 +15,68 @@ env:
   POSTGRES_PASSWORD: erp
 
 jobs:
+  get-pr-modified-files:
+    name: Get PR modified files
+    runs-on: ubuntu-latest
+    outputs:
+      module_list: ${{ steps.output_modules.outputs.stdout }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - uses: ruslandulina/compare-basehead-commits@v1
+        id: output_files
+        with:
+          # Format of the steps output context.
+          # Can be 'space-delimited', 'csv', or 'json'.
+          # Default: 'space-delimited'
+          format: 'json'
+
+      - uses: jannekem/run-python-script-action@v1
+        id: output_modules
+        with:
+          script: |
+                import os
+                def detect_module(path):
+                    """Detect if a path is part of a openerp module or not
+
+                    :param path: to examine
+                    :return: None if is not a module or the module name
+                    """
+                    stack = path.split(os.path.sep)
+                    if not stack[0]:
+                        stack[0] = os.path.sep
+                    stack = [x for x in stack if x]
+                    while stack:
+                        path = os.path.join(*stack)
+                        module = stack.pop()
+                        if not os.path.isdir(path):
+                            continue
+                        files = os.listdir(path)
+                        if '__terp__.py' in files:
+                            return module
+                    return None
+
+                modules_to_test = []
+                for path in ${{ steps.output_files.outputs.all }}:
+                    module = detect_module(path)
+                    if module and module not in modules_to_test:
+                        modules_to_test.append(module)
+                if len(modules_to_test) > 0:
+                    output = modules_to_test[0]
+                    for module in modules_to_test[1:]:
+                        output += ' -m {}'.format(module)
+                    print(output)
+
   erp-tests-module:
     name: Run test PR
+    if: ${{needs.get-pr-modified-files.outputs.module_list}}
     uses: ./.github/workflows/reusable_workflow.yml
+    needs: get-pr-modified-files
     with:
-      module: ''
+      module: ${{needs.get-pr-modified-files.outputs.module_list}}
     secrets: inherit
