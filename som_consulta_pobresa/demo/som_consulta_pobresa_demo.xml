@@ -12,5 +12,11 @@
             <field name="polissa_id" ref="giscedata_polissa.polissa_0002" />
             <field name="partner_id" ref="base.res_partner_asus" />
         </record>
+        <record id="giscedata_atc.polissa_w1" model="giscedata.polissa">
+            <field name="pending_state">Correcte</field>
+        </record>
+        <record id="som_polissa.polissa_domestica_0100" model="giscedata.polissa">
+            <field name="pending_state">Correcte</field>
+        </record>
     </data>
 </openerp>

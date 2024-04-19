@@ -15,6 +15,9 @@
         'crm',
         'giscedata_polissa_crm',
         'giscedata_facturacio_comer_bono_social',
+        'som_account_invoice_pending',
+        'som_polissa',
+        'giscedata_atc',
     ],
     'init_xml': [],
     'demo_xml': [

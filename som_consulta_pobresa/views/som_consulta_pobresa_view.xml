@@ -102,15 +102,37 @@
                 </tree>
             </field>
         </record>
+        <menuitem id="som_consulta_pobresa_folder" name="Consulta Pobresa" parent="crm.menu_crm"/>
+        <record id="som_consulta_pobresa_draft_action" model="ir.actions.act_window">
+            <field name="name">Consultes pobresa en esborrany</field>
+            <field name="res_model">som.consulta.pobresa</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="som_consulta_pobresa_view_tree"/>
+            <field name="type">ir.actions.act_window</field>
+            <field name="domain">[('state','=', 'draft')]</field>
+        </record>
+        <menuitem id="menu_som_consulta_pobresa_draft_action" action="som_consulta_pobresa_draft_action" parent="som_consulta_pobresa_folder"/>
         <record id="som_consulta_pobresa_action" model="ir.actions.act_window">
-            <field name="name">Consultes pobresa</field>
+            <field name="name">Totes les consultes pobresa</field>
             <field name="res_model">som.consulta.pobresa</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="som_consulta_pobresa_view_tree"/>
             <field name="type">ir.actions.act_window</field>
         </record>
-        <menuitem action="som_consulta_pobresa_action" id="menu_som_consulta_pobresa_action" parent="crm.next_id_52"/>
+        <menuitem id="menu_som_consulta_pobresa_action" action="som_consulta_pobresa_action" parent="som_consulta_pobresa_folder"/>
+
+        <record id="giscedata_polissa_pendent_consulta_pobresa_action" model="ir.actions.act_window">
+            <field name="name">Polisses amb consultes de pobresa pendents</field>
+            <field name="res_model">giscedata.polissa</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="domain">[('consulta_pobresa_pendent','=', 'draft')]</field>
+        </record>
+        <menuitem id="menu_giscedata_polissa_pendent_consulta_pobresa_action" action="giscedata_polissa_pendent_consulta_pobresa_action" parent="som_consulta_pobresa_folder"/>
+
         <!-- Enllaç des de la pòlissa a les consultes de pobresa -->
         <record model="ir.actions.act_window" id="action_consultes_pobresa_de_polisses">
             <field name="name">Consultes Pobresa</field>
