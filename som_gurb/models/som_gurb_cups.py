@@ -195,6 +195,7 @@ class SomGurbCups(osv.osv):
                 partner_id=partner_id,
                 type="out_invoice",
             ).get("value", {})
+            gurb_line["invoice_line_tax_id"] = [(6, 0, gurb_line.get("invoice_line_tax_id", []))]
             gurb_line.update({
                 "name": "Quota inicial Gurb",
                 "product_id": product_id,
