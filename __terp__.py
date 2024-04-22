@@ -20,7 +20,6 @@
     'som_partner_account',
     'giscedata_signatura_documents_signaturit',
     'account_invoice_som',
-    'www_som',
     'c2c_webkit_report',
     'async_reports',
     'custom_search',
