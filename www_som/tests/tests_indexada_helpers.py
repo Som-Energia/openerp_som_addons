@@ -186,7 +186,7 @@ class TestIndexadaHelpers(TestChangeToIndexada):
                              None, None, None, None, None, None, None, None, None, None,
                              None, None, None, None],
                 "compensation_euros_kwh": [0.0012, 0.0013, 0.0014, 0.0015, 0.0016,
-					   None, None, None, None, None, None, None,
+                                           None, None, None, None, None, None, None,
                                            None, None, None, None, None, None, None,
                                            None, None, None, None, None]
             }
