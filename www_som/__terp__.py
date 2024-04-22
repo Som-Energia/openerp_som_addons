@@ -19,8 +19,8 @@ Mòdul per la integració de l'oficina virtual
     ],
     "init_xml": [],
     "demo_xml": [
-        "tests/res_partner_demo.xml",
-        "tests/indexed_prices_demo.xml",
+        "demo/res_partner_demo.xml",
+        "demo/indexed_prices_demo.xml",
     ],
     "update_xml": [
         "www_som_data.xml",

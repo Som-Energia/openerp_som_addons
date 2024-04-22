@@ -143,7 +143,9 @@ class TestIndexadaHelpers(TestChangeToIndexada):
                   "maturity": "C3.3",
                   "hour_timestamp": "2023-05-01 01:00:00",
                   "season": 'S',
-                  "id": 7
+                  "id": 7,
+                  "file_date": "2023-05-03 00:00:00",
+                  "initial_file_date": "2023-05-03 00:00:00",
                   }
 
         prices_obj.create(self.cursor, self.uid, values)
