@@ -90,7 +90,7 @@ jobs:
           git clone --depth 1 https://$GITHUB_TOKEN@github.com/Som-Energia/erp.git -b ${{ inputs.erpbranch }} $ROOT_DIR_SRC/erp
           git clone --depth 1 https://$GITHUB_TOKEN@github.com/Som-Energia/libFacturacioATR.git $ROOT_DIR_SRC/libFacturacioATR
           if [ ! -d "$ROOT_DIR_SRC/somenergia-generationkwh" ]; then
-                  git clone --depth 1 https://github.com/Som-Energia/somenergia-generationkwh.git $ROOT_DIR_SRC/somenergia-generationkwh
+                  git clone --depth 1 https://github.com/Som-Energia/somenergia-generationkwh.git -b FIX_www_som_dependence $ROOT_DIR_SRC/somenergia-generationkwh
           fi
           if [ ! -d "$ROOT_DIR_SRC/plantmeter" ]; then
                 git clone --depth 1 https://github.com/Som-Energia/plantmeter.git $ROOT_DIR_SRC/plantmeter
