@@ -10,7 +10,7 @@ def up(cursor, installed_version):
 
     logger.info("Moving ir_model_data/ir_model_fields")
     cursor.execute('''
-        UPDATE  ir_model_data
+        UPDATE ir_model_data
         SET module = 'base_extended_som'
         WHERE id IN (
             SELECT data.id
@@ -22,6 +22,21 @@ def up(cursor, installed_version):
                 'www_email', 'www_soci', 'www_street', 'www_zip',
                 'www_mobile', 'www_phone', 'www_provincia', 'www_municipi'
             )
+        )
+    ''')
+    logger.info("Moved succesfully.")
+
+    logger.info("Moving ir_model_data/ir_ui_view")
+    cursor.execute('''
+        UPDATE ir_model_data
+        SET module = 'base_extended_som'
+        WHERE id IN (
+            SELECT data.id
+            FROM ir_ui_view vview
+            INNER JOIN ir_model_data data on data.res_id = vview.id
+            WHERE vview.model = 'res.partner'
+            AND data.model = 'ir.ui.view'
+            AND vview.name = 'res.partner.www.form'
         )
     ''')
     logger.info("Moved succesfully.")

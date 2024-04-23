@@ -28,7 +28,6 @@ Mòdul per la integració de l'oficina virtual
     ],
     "update_xml": [
         "www_som_data.xml",
-        "res_partner_view.xml",
         "wizard/wizard_model_list_from_file_data.xml",
         "security/ir.model.access.csv",
         "ir_attachment_view.xml",
