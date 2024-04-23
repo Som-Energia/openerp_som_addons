@@ -242,9 +242,16 @@ class UpdatePendingStates(osv.osv_memory):
         for factura_id in sorted(factura_bs_ids):
             invoice = fact_obj.read(cursor, uid, factura_id, ["id", "polissa_id"])
             polissa_id = invoice["polissa_id"][0]
-            polissa_state = pol_obj.read(cursor, uid, polissa_id, ["state"])["state"]
+            pol = pol_obj.browse(cursor, uid, polissa_id)
             try:
-                if polissa_state == "baixa":
+                if pol.consulta_pobresa_pendent:
+                    logger.info(
+                        "ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}".format(  # noqa: E501
+                            factura_id=factura_id, exc="Falta consulta pobresa"
+                        )
+                    )
+                    continue
+                if pol.state == "baixa":
                     self.update_waiting_for_annex_cancelled_contracts(
                         cursor, uid, factura_id, traspas_advocats_bs, context
                     )
@@ -388,8 +395,9 @@ class UpdatePendingStates(osv.osv_memory):
             try:
                 invoice = fact_obj.read(cursor, uid, factura_id, ["id", "polissa_id"])
                 polissa_id = invoice["polissa_id"][0]
-                polissa_state = pol_obj.read(cursor, uid, polissa_id, ["state"])["state"]
-                if polissa_state == "baixa":
+                pol = pol_obj.browse(cursor, uid, polissa_id)
+
+                if pol.state == "baixa":
                     self.update_waiting_for_annex_cancelled_contracts(
                         cursor, uid, factura_id, traspas_advocats_dp, context
                     )
@@ -443,9 +451,16 @@ class UpdatePendingStates(osv.osv_memory):
         for factura_id in sorted(factura_bs_ids):
             invoice = fact_obj.read(cursor, uid, factura_id, ["id", "polissa_id"])
             polissa_id = invoice["polissa_id"][0]
-            polissa_state = pol_obj.read(cursor, uid, polissa_id, ["state"])["state"]
+            pol = pol_obj.browse(cursor, uid, polissa_id)
+            if pol.consulta_pobresa_pendent:
+                logger.info(
+                    "ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(  # noqa: E501
+                        factura_id=factura_id, exc="Falta consulta pobresa"
+                    )
+                )
+                continue
             try:
-                if polissa_state == "baixa":
+                if pol.state == "baixa":
                     self.update_waiting_for_annex_cancelled_contracts(
                         cursor, uid, factura_id, traspas_advocats_bs, context
                     )
@@ -915,22 +930,11 @@ class UpdatePendingStates(osv.osv_memory):
 
     def poverty_eligible(self, cursor, uid, polissa_id):
         pol_obj = self.pool.get("giscedata.polissa")
-        polissa_state = pol_obj.read(cursor, uid, [polissa_id], ["cups_np"])[0]["cups_np"]
-        return True if polissa_state in ["Barcelona", "Girona", "Lleida", "Tarragona"] else False
-        # Aqui podriem aprofitar per mirar si té alguna consulta de pobresa de fa menys d'un any
-        # return False if polissa_state not in ["Barcelona", "Girona", "Lleida", "Tarragona"]
-        # scp_obj = self.pool.get("som.consulta.pobresa")
-        # cp_ids = scp_obj.search(cursor, uid, ["polissa_id", "=", polissa_id])
+        pol = pol_obj.browse(cursor, uid, [polissa_id])[0]
+        if pol.cups_np not in ["Barcelona", "Girona", "Lleida", "Tarragona"]:
+            return False
 
-        # for cp_id in cp_ids:
-        #     cp = scp_obj.browse(cp_id)
-        #     # aquest if no el tinc clar, si ja n'hi una que mai s'ha tancat que fariem?
-        #     date_cp = datetime.strptime(cp.date_closed, "%Y-%m-%d %H:%M:%S")
-        #     date_diff = datetime.today() - date_cp
-        #     if date_diff < 365:
-        #         return False
-
-        # return True
+        return pol.consulta_pobresa_pendent
 
     def update_pending_ask_poverty(self, cursor, uid, context=None):
         if context is None:
@@ -961,7 +965,14 @@ class UpdatePendingStates(osv.osv_memory):
                     cursor, uid, factura_id, traspas_advocats_bs, context
                 )
             else:
-                if not self.poverty_eligible(cursor, uid, polissa_id):
+                if self.poverty_eligible(cursor, uid, polissa_id):
+                    wiz_obj = self.pool.get("wizard.crear.consulta.pobresa")
+                    context = {"active_ids": [factura_id], "active_id": factura_id}
+                    wiz_id = wiz_obj.create(cursor, uid, {}, context=context)
+                    result = wiz_obj.crear_consulta_pobresa(cursor, uid, wiz_id, context=context)
+                    if result:
+                        fact_obj.set_pending(cursor, uid, [factura_id], warning_cut_off_state)
+                else:
                     fact_obj.set_pending(cursor, uid, [factura_id], warning_cut_off_state)
 
     def send_fue_reminder_emails(self, cursor, uid, context=None):
