@@ -19,7 +19,7 @@
       </record>
       <record model="tg.sftp" id="sftp_eon_01">
         <field name="name">E.on</field>
-        <field name="host">cst.eonesn.com</field>
+        <field name="host">cst.viesgoesn.com</field>
         <field name="port">22</field>
         <field name="user">0762</field>
         <field name="root_dir">/</field>
