@@ -225,7 +225,7 @@ class SomIndexadaWebformsHelpers(osv.osv_memory):
                         geom_zone,
                         tarifa_id,
                         CASE
-                            WHEN %(tariff_id)s IS NULL THEN prm_diari
+                            WHEN %(tariff_id)s IS NULL THEN prm_diari / 1000
                             ELSE initial_price
                         END AS price,
                         maturity,
