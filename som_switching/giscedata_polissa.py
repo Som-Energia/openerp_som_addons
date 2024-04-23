@@ -52,6 +52,10 @@ class GiscedataPolissaModcontractual(osv.osv):
         fields_to_read = ["autoconsumo", "data_inici", "modcontractual_ant", "polissa_id"]
 
         modcon_info = self.read(cursor, uid, mod_id, fields_to_read)
+
+        polissa_obj = self.pool.get("giscedata.polissa")
+        polissa_id = modcon_info["polissa_id"][0]
+
         auto_vals = {}
         if modcon_info.get("modcontractual_ant"):
             modcon_ant_info = self.read(
@@ -62,6 +66,13 @@ class GiscedataPolissaModcontractual(osv.osv):
                 and modcon_ant_info["autoconsumo"] == "00"
             ):
                 auto_vals.update({"data_alta_autoconsum": modcon_info["data_inici"]})
+
+                auto_data_baixa = polissa_obj.read(cursor, uid, polissa_id, ['data_baixa_autoconsum'])['data_baixa_autoconsum']
+                if (
+                        auto_data_baixa
+                        and auto_data_baixa <= modcon_info['data_inici']
+                ):
+                    auto_vals.update({'data_baixa_autoconsum': False})
             elif (
                 modcon_ant_info.get("autoconsumo") != modcon_info["autoconsumo"]
                 and modcon_info["autoconsumo"] == "00"
@@ -72,11 +83,10 @@ class GiscedataPolissaModcontractual(osv.osv):
                 auto_vals.update({"data_alta_autoconsum": modcon_info["data_inici"]})
 
         if auto_vals:
-            polissa_obj = self.pool.get("giscedata.polissa")
             polissa_obj.write(
                 cursor,
                 uid,
-                [modcon_info["polissa_id"][0]],
+                [polissa_id],
                 auto_vals,
                 context={"skip_cnt_llista_preu_compatible": True},
             )
