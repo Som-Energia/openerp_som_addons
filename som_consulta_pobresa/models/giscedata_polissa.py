@@ -3,8 +3,6 @@ from osv import osv, fields
 from datetime import datetime, timedelta
 from addons.giscedata_facturacio.giscedata_polissa import _get_polissa_from_invoice
 
-DIES_VIGENCIA_CONSULTA = 335
-
 
 class GiscedataPolissa(osv.osv):
     _name = 'giscedata.polissa'
@@ -15,6 +13,8 @@ class GiscedataPolissa(osv.osv):
         imd_obj = self.pool.get('ir.model.data')
         aips_obj = self.pool.get('account.invoice.pending.state')
         scp_obj = self.pool.get('som.consulta.pobresa')
+        cfg_obj = self.pool.get('res.config')
+        ndays = int(cfg_obj.get(cr, uid, 'nombre_dies_consulta_pobresa_vigent', '335'))
 
         consulta_state_id = imd_obj.get_object_reference(
             cr, uid, 'som_account_invoice_pending', 'pendent_consulta_probresa_pending_state',
@@ -24,8 +24,7 @@ class GiscedataPolissa(osv.osv):
         )[1]
         weight_consulta = aips_obj.browse(cr, uid, consulta_state_id).weight
         weight_tall = aips_obj.browse(cr, uid, tall_state_id).weight
-        start_day_valid = (datetime.today()
-                           - timedelta(days=DIES_VIGENCIA_CONSULTA)).strftime('%Y-%m-%d')
+        start_day_valid = (datetime.today() - timedelta(days=ndays)).strftime('%Y-%m-%d')
 
         for pol_id in res:
             res[pol_id] = False
@@ -59,8 +58,8 @@ class GiscedataPolissa(osv.osv):
 
     def change_state(self, cursor, uid, ids, context):
         values = self.read(cursor, uid, ids, ['invoice_id'])
-        return _get_polissa_from_invoice(self,
-                                         cursor, uid, [value['invoice_id'][0] for value in values])
+        return _get_polissa_from_invoice(
+            self, cursor, uid, [value['invoice_id'][0] for value in values])
 
     _CHANGE_PENDING_STATE = {
         'giscedata.polissa': (lambda self, cr, uid, ids, c={}: ids, ['pending_state'], 20),

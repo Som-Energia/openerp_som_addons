@@ -28,6 +28,7 @@
         'views/agrupacio_supramunicipal_view.xml',
         'wizard/wizard_crear_consulta_pobresa.xml',
         'data/agrupacio_supramunicipal_data.xml',
+        'data/som_consulta_pobresa_data.xml',
         'security/ir.model.access.csv',
     ],
 }

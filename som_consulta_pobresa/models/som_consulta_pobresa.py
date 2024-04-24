@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
+from datetime import datetime, timedelta
 
 RESOLUTION_STATES = [
     ('positiva', 'Positiva'),
@@ -21,7 +22,49 @@ class SomConsultaPobresa(osv.osv):
                     "Falta resolució",
                     "Per poder tancar la consulta s'ha d'informar el camp resolució.")
 
-        return self.case_close(cr, uid, ids, args)
+        response = self.case_close(cr, uid, ids, args)
+
+        for cas in casos:
+            if cas.state == 'done' and cas.resolucio:
+                self.moure_factures_pobresa(cr, uid, cas)
+
+        return response
+
+    def moure_factures_pobresa(self, cr, uid, cas):
+        gff_obj = self.pool.get('giscedata.facturacio.factura')
+        imd_obj = self.pool.get("ir.model.data")
+        pobresa_state_id = imd_obj.get_object_reference(
+            cr, uid, "som_account_invoice_pending", "probresa_energetica_certificada_pending_state"
+        )[1]
+        search_params = [
+            ('partner_id', '=', cas.partner_id.id),
+            ('polissa_id', '=', cas.polissa_id.id),
+        ]
+        gff_ids = gff_obj.search(cr, uid, search_params)
+        gffs = gff_obj.browse(cr, uid, gff_ids)
+        for gff in gffs:
+            if gff.pending_state.weight > 0:
+                gff_obj.set_pending(cr, uid, [gff.id], pobresa_state_id)
+
+    @staticmethod
+    def consulta_pobresa_activa(self, cr, uid, partner_id, polissa_id, context=None):
+        cfg_obj = self.pool.get('res.config')
+        ndays = int(cfg_obj.get(cr, uid, 'password_policy', '335'))
+        start_day_valid = (datetime.today()
+                           - timedelta(days=ndays)).strftime('%Y-%m-%d')
+
+        search_params = [
+            ('titular_id', '=', partner_id),
+            ('polissa_id', '=', polissa_id),
+        ]
+        scp_list = self.search(cr, uid, search_params, context)
+        scps = self.browse(cr, uid, scp_list, context)
+
+        for scp in scps:
+            if (scp.state == 'done' and scp.date_closed < start_day_valid) or (
+                    scp.state == 'pending' and scp.date < start_day_valid):
+                return scp
+        return False
 
     def _ff_get_titular(self, cr, uid, ids, field, arg, context=None):
         """ Anem a buscar el titular de la pólissa assignada (si en té) """
