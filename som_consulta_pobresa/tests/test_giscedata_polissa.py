@@ -56,7 +56,8 @@ class TestGiscedataPolissa(testing.OOTestCase):
         fact = gff_obj.browse(cursor, uid, fact_id)
         fact.write({
             'state': 'open',
-            'type': 'out_invoice'
+            'type': 'out_invoice',
+            'pending_state': consulta_state_id,
         })
         fact.set_pending(consulta_state_id)
 
