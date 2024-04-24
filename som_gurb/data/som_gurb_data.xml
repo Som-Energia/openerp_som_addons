@@ -22,6 +22,7 @@
             <field name="procure_method">make_to_stock</field>
             <field name="list_price">10</field>
             <field name="supply_method">buy</field>
+            <field model="account.tax" name="taxes_id" search="[('name','=','IVA 21%')]"/>
         </record>
         <record model="product.product" id="product_owner_gurb">
             <field name="name">Producte GURB persona propietària</field>
@@ -30,6 +31,7 @@
             <field name="procure_method">make_to_stock</field>
             <field name="list_price">0</field>
             <field name="supply_method">buy</field>
+            <field model="account.tax" name="taxes_id" search="[('name','=','IVA 21%')]"/>
         </record>
         <record model="product.product" id="initial_quota_gurb">
             <field name="name">Quota inicial del GURB</field>
