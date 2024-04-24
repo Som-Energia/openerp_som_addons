@@ -34,6 +34,7 @@ class TestGiscedataPolissa(testing.OOTestCase):
         pol_obj = self.openerp.pool.get('giscedata.polissa')
         gff_obj = self.openerp.pool.get('giscedata.facturacio.factura')
         imd_obj = self.openerp.pool.get('ir.model.data')
+        cups_obj = self.openerp.pool.get('giscedata.cups.ps')
         pol_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_polissa', 'polissa_0002'
         )[1]
@@ -42,6 +43,7 @@ class TestGiscedataPolissa(testing.OOTestCase):
             'bono_social_pending_state_process'
         )[1]
         pol_obj.write(cursor, uid, pol_id, {'state': 'activa', 'process_id': process_id})
+        pol = pol_obj.browse(cursor, uid, pol_id)
         consulta_state_id = imd_obj.get_object_reference(
             cursor, uid, 'som_account_invoice_pending', 'pendent_consulta_probresa_pending_state',
         )[1]
@@ -53,12 +55,16 @@ class TestGiscedataPolissa(testing.OOTestCase):
         )[1]
         cons_obj.write(cursor, uid, consulta_id, {
                        'state': 'done', 'date_closed': '2020-01-01 00:00:00'})
+        girona_id = imd_obj.get_object_reference(
+            cursor, uid, 'l10n_ES_toponyms', 'ES17',
+        )[1]
         fact = gff_obj.browse(cursor, uid, fact_id)
         fact.write({
             'state': 'open',
             'type': 'out_invoice',
             'pending_state': consulta_state_id,
         })
+        cups_obj.write(cursor, uid, pol.cups.id, {'id_provincia': girona_id})
         fact.set_pending(consulta_state_id)
 
         pol = pol_obj.browse(cursor, uid, pol_id)
@@ -70,6 +76,7 @@ class TestGiscedataPolissa(testing.OOTestCase):
         pol_obj = self.openerp.pool.get('giscedata.polissa')
         imd_obj = self.openerp.pool.get('ir.model.data')
         gff_obj = self.openerp.pool.get('giscedata.facturacio.factura')
+        cups_obj = self.openerp.pool.get('giscedata.cups.ps')
         pol_id = imd_obj.get_object_reference(
             cursor, uid,
             'giscedata_polissa', 'polissa_0001'
@@ -79,18 +86,22 @@ class TestGiscedataPolissa(testing.OOTestCase):
             'bono_social_pending_state_process'
         )[1]
         pol_obj.write(cursor, uid, pol_id, {'state': 'activa', 'process_id': process_id})
+        pol = pol_obj.browse(cursor, uid, pol_id)
         consulta_state_id = imd_obj.get_object_reference(
             cursor, uid, 'som_account_invoice_pending', 'pendent_consulta_probresa_pending_state',
         )[1]
         fact_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_facturacio', 'factura_0002',
         )[1]
+        girona_id = imd_obj.get_object_reference(
+            cursor, uid, 'l10n_ES_toponyms', 'ES17',
+        )[1]
         fact = gff_obj.browse(cursor, uid, fact_id)
         fact.write({
             'state': 'open',
             'type': 'out_invoice'
         })
-
+        cups_obj.write(cursor, uid, pol.cups.id, {'id_provincia': girona_id})
         fact.set_pending(consulta_state_id)
 
         pol = pol_obj.browse(cursor, uid, pol_id)

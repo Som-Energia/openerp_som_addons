@@ -46,8 +46,7 @@ class SomConsultaPobresa(osv.osv):
             if gff.pending_state.weight > 0:
                 gff_obj.set_pending(cr, uid, [gff.id], pobresa_state_id)
 
-    @staticmethod
-    def consulta_pobresa_activa(self, cr, uid, partner_id, polissa_id, context=None):
+    def consulta_pobresa_activa(self, cr, uid, ids, partner_id, polissa_id, context=None):
         cfg_obj = self.pool.get('res.config')
         ndays = int(cfg_obj.get(cr, uid, 'password_policy', '335'))
         start_day_valid = (datetime.today()
@@ -61,8 +60,8 @@ class SomConsultaPobresa(osv.osv):
         scps = self.browse(cr, uid, scp_list, context)
 
         for scp in scps:
-            if (scp.state == 'done' and scp.date_closed < start_day_valid) or (
-                    scp.state == 'pending' and scp.date < start_day_valid):
+            if (scp.state == 'done' and scp.date_closed > start_day_valid) or (
+                    scp.state == 'pending' and scp.date > start_day_valid):
                 return scp
         return False
 
