@@ -941,7 +941,7 @@ class UpdatePendingStates(osv.osv_memory):
             context = {}
 
         pol_obj = self.pool.get("giscedata.polissa")
-        scp_obj = self.pool.get("som_consulta_pobresa")
+        scp_obj = self.pool.get("som.consulta.pobresa")
 
         pending_ask_poverty_state = self.get_object_id(
             cursor, uid, "som_account_invoice_pending", "pendent_consulta_probresa_pending_state"

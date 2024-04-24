@@ -265,7 +265,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
         self.assertEqual(inv_data.pending_state.id, self.def_waiting_unpaid_id)
 
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email")
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
     def test__update_unpaid_invoice_waiting_for_annexII(self, mock_function):
         cursor = self.txn.cursor
         uid = self.txn.user
@@ -282,7 +282,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
         self.assertEqual(inv_data.pending_state.id, self.annexII_sent)
 
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email")
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
     def test__update_two_unpaid_invoice_waiting_for_annexII_same_contract(self, mock_function):
         cursor = self.txn.cursor
         uid = self.txn.user
@@ -316,7 +316,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
         self.assertNotEqual(inv_data.pending_state.id, self.annexIII_first_sent)
 
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email")
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
     def test__update_unpaid_invoice_waiting_for_annexIII_first_one_invoice(self, mock_function):
         cursor = self.txn.cursor
         uid = self.txn.user
@@ -359,8 +359,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
         self.assertEqual(inv_data.pending_state.id, self.annexIII_second_sent)
 
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email")
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_sms")
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_sms")  # noqa: E501
     def test__update_unpaid_invoice_waiting_for_annexIV_def(self, mock_sms, mock_mail):
         cursor = self.txn.cursor
         uid = self.txn.user
@@ -390,8 +390,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
         self.assertEqual(inv_data.pending_state.id, self.annexIV_sent_def)
 
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email")
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_sms")
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_sms")  # noqa: E501
     def test__update_unpaid_invoice_waiting_for_annexIV_bs(self, mock_sms, mock_mail):
         cursor = self.txn.cursor
         uid = self.txn.user
@@ -416,8 +416,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
         self.assertEqual(inv_data.pending_state.id, self.annexIV_sent_bs)
 
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email")
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_sms")
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_sms")  # noqa: E501
     def test__update_two_unpaid_invoice_waiting_for_annexIV_same_contract(
         self, mock_sms, mock_mail
     ):
@@ -443,8 +443,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         inv_data = fact_obj.browse(cursor, uid, self.invoice_2_id)
         self.assertEqual(inv_data.pending_state.id, self.annexIV_sent_def)
 
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email")
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_sms")
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_sms")  # noqa: E501
     def test__update_unpaid_invoice_waiting_for_48h_def(self, mock_sms, mock_mail):
         cursor = self.txn.cursor
         uid = self.txn.user
@@ -469,8 +469,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
         self.assertEqual(inv_data.pending_state.id, self.sent_48h_def)
 
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email")
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_sms")
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_sms")  # noqa: E501
     def test__update_unpaid_invoice_waiting_for_48_bs(self, mock_sms, mock_mail):
         cursor = self.txn.cursor
         uid = self.txn.user
@@ -495,8 +495,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
         self.assertEqual(inv_data.pending_state.id, self.sent_48h_bs)
 
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email")
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_sms")
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_sms")  # noqa: E501
     def test__update_two_unpaid_invoice_waiting_for_48_same_contract_single_sms(
         self, mock_sms, mock_mail
     ):
@@ -530,8 +530,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         inv_data = fact_obj.browse(cursor, uid, self.invoice_2_id)
         self.assertEqual(inv_data.pending_state.id, self.sent_48h_def)
 
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email")
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_sms")
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_sms")  # noqa: E501
     def test__update_two_unpaid_invoice_bs_waiting_for_48_raisesError(self, mock_sms, mock_mail):
         cursor = self.txn.cursor
         uid = self.txn.user
@@ -542,7 +542,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         self.assertEqual(inv_data.pending_state.id, self.waiting_48h_bs)
 
         with mock.patch(
-            "som_account_invoice_pending.update_pending_states.UpdatePendingStates.update_waiting_for_48h_active_contracts"  # noqa: E501
+            "som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.update_waiting_for_48h_active_contracts"  # noqa: E501
         ) as updateMock:
             updateMock.side_effect = UpdateWaitingFor48hException("test")
             with self.assertRaises(UpdateWaitingFor48hException):
@@ -557,7 +557,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             self.assertEqual(inv_data.pending_state.id, self.waiting_48h_bs)
 
         with mock.patch(
-            "som_account_invoice_pending.update_pending_states.UpdatePendingStates.update_waiting_for_48h_active_contracts"  # noqa: E501
+            "som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.update_waiting_for_48h_active_contracts"  # noqa: E501
         ) as updateMock:
             updateMock.side_effect = Exception("general exception test")
             with self.assertRaises(Exception):
@@ -578,8 +578,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
         self.assertEqual(inv_data.pending_state.id, self.sent_48h_bs)
 
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email")
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_sms")
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_sms")  # noqa: E501
     def test__update_two_unpaid_invoice_dp_waiting_for_48_raisesError(self, mock_sms, mock_mail):
         cursor = self.txn.cursor
         uid = self.txn.user
@@ -590,7 +590,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         self.assertEqual(inv_data.pending_state.id, self.waiting_48h_def)
 
         with mock.patch(
-            "som_account_invoice_pending.update_pending_states.UpdatePendingStates.update_waiting_for_48h_active_contracts"  # noqa: E501
+            "som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.update_waiting_for_48h_active_contracts"  # noqa: E501
         ) as updateMock:
             updateMock.side_effect = UpdateWaitingFor48hException("test")
             with self.assertRaises(UpdateWaitingFor48hException):
@@ -605,7 +605,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             self.assertEqual(inv_data.pending_state.id, self.waiting_48h_def)
 
         with mock.patch(
-            "som_account_invoice_pending.update_pending_states.UpdatePendingStates.update_waiting_for_48h_active_contracts"  # noqa: E501
+            "som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.update_waiting_for_48h_active_contracts"  # noqa: E501
         ) as send_SMSMock:
             send_SMSMock.side_effect = Exception("general exception test")
             with self.assertRaises(Exception):
@@ -626,8 +626,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
         self.assertEqual(inv_data.pending_state.id, self.sent_48h_def)
 
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email")
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_sms")
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_sms")  # noqa: E501
     def test__update_waiting_48h_invoice_bs_polissa_baixa_raisesError(self, mock_sms, mock_mail):
         cursor = self.txn.cursor
         uid = self.txn.user
@@ -642,7 +642,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         pol_obj.write(cursor, uid, [pol_id], {"state": "baixa"})
 
         with mock.patch(
-            "som_account_invoice_pending.update_pending_states.UpdatePendingStates.update_waiting_for_annex_cancelled_contracts"  # noqa: E501
+            "som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.update_waiting_for_annex_cancelled_contracts"  # noqa: E501
         ) as send_SMSMock:
             send_SMSMock.side_effect = UpdateWaitingCancelledContractsException("test")
 
@@ -654,8 +654,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
             self.assertEqual(inv_data.pending_state.id, self.waiting_48h_bs)
 
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email")
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_sms")
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_sms")  # noqa: E501
     def test__update_waiting_48h_invoice_dp_polissa_baixa_raisesError(self, mock_sms, mock_mail):
         cursor = self.txn.cursor
         uid = self.txn.user
@@ -670,7 +670,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         pol_obj.write(cursor, uid, [pol_id], {"state": "baixa"})
 
         with mock.patch(
-            "som_account_invoice_pending.update_pending_states.UpdatePendingStates.update_waiting_for_annex_cancelled_contracts"  # noqa: E501
+            "som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.update_waiting_for_annex_cancelled_contracts"  # noqa: E501
         ) as send_SMSMock:
             send_SMSMock.side_effect = UpdateWaitingCancelledContractsException("test")
 
@@ -682,8 +682,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
             self.assertEqual(inv_data.pending_state.id, self.waiting_48h_def)
 
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email")
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_sms")
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_sms")  # noqa: E501
     def test__update_waiting_annexIV_invoice_bs_polissa_baixa_raisesError(
         self, mock_sms, mock_mail
     ):
@@ -700,7 +700,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         pol_obj.write(cursor, uid, [pol_id], {"state": "baixa"})
 
         with mock.patch(
-            "som_account_invoice_pending.update_pending_states.UpdatePendingStates.update_waiting_for_annex_cancelled_contracts"  # noqa: E501
+            "som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.update_waiting_for_annex_cancelled_contracts"  # noqa: E501
         ) as send_SMSMock:
             send_SMSMock.side_effect = UpdateWaitingCancelledContractsException("test")
 
@@ -712,8 +712,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
             self.assertEqual(inv_data.pending_state.id, self.waiting_annexIV_bs)
 
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email")
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_sms")
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_sms")  # noqa: E501
     def test__update_waiting_annexIV_invoice_dp_polissa_baixa_raisesError(
         self, mock_sms, mock_mail
     ):
@@ -730,7 +730,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         pol_obj.write(cursor, uid, [pol_id], {"state": "baixa"})
 
         with mock.patch(
-            "som_account_invoice_pending.update_pending_states.UpdatePendingStates.update_waiting_for_annex_cancelled_contracts"  # noqa: E501
+            "som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.update_waiting_for_annex_cancelled_contracts"  # noqa: E501
         ) as send_SMSMock:
             send_SMSMock.side_effect = UpdateWaitingCancelledContractsException("test")
 
@@ -742,8 +742,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             inv_data = fact_obj.browse(cursor, uid, self.invoice_1_id)
             self.assertEqual(inv_data.pending_state.id, self.waiting_annexIV_def)
 
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email")
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_sms")
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_sms")  # noqa: E501
     def test__update_two_unpaid_invoice_dp_waiting_for_annexIV_raisesError(
         self, mock_sms, mock_mail
     ):
@@ -756,7 +756,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         self.assertEqual(inv_data.pending_state.id, self.waiting_annexIV_def)
 
         with mock.patch(
-            "som_account_invoice_pending.update_pending_states.UpdatePendingStates.update_waiting_for_annexIV_active_contracts"  # noqa: E501
+            "som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.update_waiting_for_annexIV_active_contracts"  # noqa: E501
         ) as send_SMSMock:
             send_SMSMock.side_effect = UpdateWaitingForAnnexIVException("test")
             with self.assertRaises(UpdateWaitingForAnnexIVException):
@@ -771,7 +771,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             self.assertEqual(inv_data.pending_state.id, self.waiting_annexIV_def)
 
         with mock.patch(
-            "som_account_invoice_pending.update_pending_states.UpdatePendingStates.update_waiting_for_annexIV_active_contracts"  # noqa: E501
+            "som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.update_waiting_for_annexIV_active_contracts"  # noqa: E501
         ) as updateMock:
             updateMock.side_effect = Exception("general exception test")
             with self.assertRaises(Exception):
@@ -828,8 +828,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         )
         self.assertEqual(len(sms_to_send), 1)
 
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email")
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_sms")
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_sms")  # noqa: E501
     def test__sms_callback_historize_annexIV(self, mock_sms, mock_mail):
         cursor = self.txn.cursor
         uid = self.txn.user
@@ -858,8 +858,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             u"Comunicació feta a través de la factura amb id:{}".format(first_inv),
         )
 
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email")
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_sms")
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_sms")  # noqa: E501
     def test__sms_callback_historize_48h(self, mock_sms, mock_mail):
         cursor = self.txn.cursor
         uid = self.txn.user
@@ -886,8 +886,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             u"Comunicació feta a través de la factura amb id:{}".format(first_inv),
         )
 
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email")
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_sms")
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_sms")  # noqa: E501
     def test__sms_callback_historize_48h_with_previous_observation(self, mock_sms, mock_mail):
         cursor = self.txn.cursor
         uid = self.txn.user
@@ -916,8 +916,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             u"New message\nComunicació feta a través de la factura amb id:{}".format(first_inv),
         )
 
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email")
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_sms")
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_sms")  # noqa: E501
     def test__update_waiting_for_annex_cancelled_contracts_baixa(self, mock_sms, mock_mail):
         cursor = self.txn.cursor
         uid = self.txn.user
@@ -979,7 +979,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         factura = fact_obj.browse(cursor, uid, self.invoice_1_id)
         self.assertEqual(factura.pending_state.id, self.avis_tall)
 
-    @mock.patch("som_account_invoice_pending.update_pending_states.UpdatePendingStates.send_email")
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
     @freeze_time("2024-03-26")
     def test__send_fue_reminder_emails(self, mock_mail):
         cursor = self.txn.cursor
