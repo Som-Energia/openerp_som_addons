@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv
 from datetime import datetime, timedelta, date
-from som_account_invoice_pending_exceptions import (
+from addons.som_account_invoice_pending.models.som_account_invoice_pending_exceptions import (
     UpdateWaitingFor48hException,
     UpdateWaitingCancelledContractsException,
     UpdateWaitingForAnnexIVException,

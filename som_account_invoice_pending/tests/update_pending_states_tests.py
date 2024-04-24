@@ -2,7 +2,7 @@
 from destral import testing
 import mock
 from mock import ANY
-from ..som_account_invoice_pending_exceptions import (
+from addons.som_account_invoice_pending.models.som_account_invoice_pending_exceptions import (
     UpdateWaitingFor48hException,
     UpdateWaitingCancelledContractsException,
     UpdateWaitingForAnnexIVException,
