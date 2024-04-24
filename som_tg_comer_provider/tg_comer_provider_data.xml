@@ -73,10 +73,6 @@
         <field name="p5d_syntax">P5D_0022_0762_(\d{8})</field>
         <field name="p5d_dir">/</field>
       </record>
-      <record model="res.config" id="tg_comer_cch_dir" forcecreate="1">
-        <field name="name">tg_comer_cch_dir</field>
-        <field name="value">/var/data/cch</field>
-      </record>
 
     </data>
 </openerp>
