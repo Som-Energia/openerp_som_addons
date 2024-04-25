@@ -24,6 +24,7 @@ class SomConsultaPobresa(osv.osv):
 
         response = self.case_close(cr, uid, ids, args)
 
+        casos = self.browse(cr, uid, ids)
         for cas in casos:
             if cas.state == 'done' and cas.resolucio:
                 self.moure_factures_pobresa(cr, uid, cas)

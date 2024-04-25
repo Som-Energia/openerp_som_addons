@@ -3,7 +3,7 @@
     <data>
         <!-- Els records que hi hagi aquí només hi seran si en el moment d'instal·lar així s'indica (o s'instal·la amb l'eina Destral) -->
         <record id="som_consulta_pobresa_demo_record" model="som.consulta.pobresa">
-            <field name="name">Som Template demo</field>
+            <field name="name">Consulta pobresa polissa 0002 partner ASUS</field>
             <field name="crm_id" ref="crm.crm_case_0001"/>
             <field name="section_id" ref="crm.crm_section_0001"/>
             <field name="active" eval="True"/>
@@ -14,11 +14,12 @@
         </record>
         <!-- Factures per canviar el pending state -->
         <record id="factura_conceptes_0001" model="giscedata.facturacio.factura">
-            <field name="name">FC0001</field>
+            <field name="name">FC0002</field>
             <field name="date_invoice">2016-11-01</field>
             <field name="date_due">2016-11-21</field>
-            <field name="number">FC/0001</field>
+            <field name="number">FC/0002</field>
             <field name="polissa_id" ref="giscedata_polissa.polissa_0002"/>
+            <field name="partner_id" ref="base.res_partner_asus"/>
             <field name="account_id" ref="account.a_recv"/>
             <field name="company_id" ref="base.main_company"/>
             <field name="date_boe">2016-01-01</field>
@@ -27,11 +28,33 @@
             <field name="cups_id" ref="giscedata_cups.cups_01"/>
             <field eval="1" name="facturacio"/>
             <field name="currency_id" ref="base.EUR"/>
-            <field name="address_invoice_id" ref="base.res_partner_address_c2c_1"/>
+            <field name="address_invoice_id" ref="base.res_partner_address_tang"/>
             <field name="potencia">6.0</field>
             <field name="tarifa_acces_id" ref="giscedata_polissa.tarifa_20A_new"/>
             <field name="llista_preu" ref="giscedata_facturacio.pricelist_tarifas_electricidad"/>
-            <field name="partner_id" ref="base.res_partner_c2c"/>
+            <field name="data_inici">2016-09-01</field>
+            <field name="data_final">2016-10-31</field>
+            <field name="payment_type" eval="2"/>
+        </record>
+        <record id="factura_conceptes_0003" model="giscedata.facturacio.factura">
+            <field name="name">FC0003</field>
+            <field name="date_invoice">2016-11-01</field>
+            <field name="date_due">2016-11-21</field>
+            <field name="number">FC/0003</field>
+            <field name="polissa_id" ref="giscedata_polissa.polissa_0002"/>
+            <field name="partner_id" ref="base.res_partner_asus"/>
+            <field name="account_id" ref="account.a_recv"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="date_boe">2016-01-01</field>
+            <field name="reference_type">none</field>
+            <field name="journal_id" ref="account_invoice_base.facturacio_journal_caja"/>
+            <field name="cups_id" ref="giscedata_cups.cups_01"/>
+            <field eval="1" name="facturacio"/>
+            <field name="currency_id" ref="base.EUR"/>
+            <field name="address_invoice_id" ref="base.res_partner_address_tang"/>
+            <field name="potencia">6.0</field>
+            <field name="tarifa_acces_id" ref="giscedata_polissa.tarifa_20A_new"/>
+            <field name="llista_preu" ref="giscedata_facturacio.pricelist_tarifas_electricidad"/>
             <field name="data_inici">2016-09-01</field>
             <field name="data_final">2016-10-31</field>
             <field name="payment_type" eval="2"/>

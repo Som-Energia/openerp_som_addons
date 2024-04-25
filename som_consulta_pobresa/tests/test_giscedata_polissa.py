@@ -106,3 +106,17 @@ class TestGiscedataPolissa(testing.OOTestCase):
 
         pol = pol_obj.browse(cursor, uid, pol_id)
         self.assertTrue(pol.consulta_pobresa_pendent)
+
+    def test_ff_consulta_pobresa_pendent_polissa_correcte(self):
+        cursor = self.cursor
+        uid = self.uid
+        self.openerp.pool.get('som.consulta.pobresa')
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        pol_id = imd_obj.get_object_reference(
+            cursor, uid,
+            'giscedata_polissa', 'polissa_0003'
+        )[1]
+        pol = pol_obj.browse(cursor, uid, pol_id)
+
+        self.assertFalse(pol.consulta_pobresa_pendent)
