@@ -12,6 +12,7 @@
         "giscedata_polissa_category",
         "giscedata_switching",
         "giscedata_facturacio",
+        "report_puppeteer",
     ],
     "demo_xml": [
         "demo/som_gurb_service_demo.xml",
@@ -25,7 +26,8 @@
         "views/som_gurb_webview.xml",
         "workflow/som_gurb_workflow.xml",
         "security/ir.model.access.csv",
-        "wizard/wizard_gurb_create_new_beta_view.xml"
+        "wizard/wizard_gurb_create_new_beta_view.xml",
+        "reports/som_gurb_reports.xml",
     ],
     "init_xml": [],
     "active": False,

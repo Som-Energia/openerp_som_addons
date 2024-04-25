@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.actions.report.xml" id="action_report_som_gurb_consentiment_baixa">
+            <field name="report_name">report_som_gurb_consentiment_baixa</field>
+            <field name="name">Generar consentiment baixa GURB</field>
+            <field name="model">som.gurb.cups</field>
+            <field name="report_type">pdf</field>
+            <field name="report_webkit" eval=""/>
+            <field name="header" eval="0"/>
+            <field name="auto" eval="0"/>
+        </record>
+
+        <record model="ir.values" id="value_report_som_gurb_consentiment_baixa">
+            <field name="object" eval="1"/>
+           <field name="name">Generar consentiment baixa GURB</field>
+           <field name="key2">client_print_multi</field>
+           <field name="model">som.gurb.cups</field>
+           <field name="value" eval="'ir.actions.report.xml,'+str(ref('action_report_som_gurb_consentiment_baixa'))"/>
+        </record>
+    </data>
+</openerp>
