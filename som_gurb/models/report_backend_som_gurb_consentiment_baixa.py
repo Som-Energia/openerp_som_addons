@@ -2,6 +2,22 @@
 from __future__ import absolute_import, unicode_literals
 from report_backend.report_backend import ReportBackend, report_browsify
 from report_puppeteer.report_puppeteer import PuppeteerParser
+from datetime import datetime
+
+MONTHS = {
+    "1": "de gener",
+    "2": "de febrer",
+    "3": "de març",
+    "4": "d'abril",
+    "5": "de maig",
+    "6": "de juny",
+    "7": "de juliol",
+    "8": "d'agost",
+    "9": "de setembre",
+    "10": "d'octubre",
+    "11": "de novembre",
+    "12": "de desembre",
+}
 
 
 class ReportBackendSomGurbConsentimentBaixa(ReportBackend):
@@ -16,14 +32,33 @@ class ReportBackendSomGurbConsentimentBaixa(ReportBackend):
         pol_o = self.pool.get("giscedata.polissa")
 
         gurb_cups_br = gurb_cups_o.browse(cursor, uid, record_id, context=context)
-        pol_id = gurb_cups_br.get_polissa_gurb_cups()
+        pol_id = gurb_cups_o.get_polissa_gurb_cups(cursor, uid, gurb_cups_br.id)
         pol_br = pol_o.browse(cursor, uid, pol_id, context=context)
 
         return pol_br.titular.lang
 
     @report_browsify
     def get_data(self, cursor, uid, gurb_cups, context=None):
-        return {}
+        if context is None:
+            context = {}
+
+        gurb_cups_o = self.pool.get("som.gurb.cups")
+        pol_o = self.pool.get("giscedata.polissa")
+
+        pol_id = gurb_cups_o.get_polissa_gurb_cups(cursor, uid, gurb_cups.id)
+        pol_br = pol_o.browse(cursor, uid, pol_id, context=context)
+
+        data = {
+            "name": pol_br.titular.name,
+            "address": pol_br.cups.direccio,
+            "nif": pol_br.titular.vat,
+            "cups": pol_br.cups.name,
+            "day": datetime.now().day,
+            "month": MONTHS[str(datetime.now().month)],
+            "year": datetime.now().year,
+        }
+
+        return data
 
 
 ReportBackendSomGurbConsentimentBaixa()
