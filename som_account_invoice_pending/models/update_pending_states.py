@@ -971,8 +971,8 @@ class UpdatePendingStates(osv.osv_memory):
                 )
                 continue
 
-            scp_activa = scp_obj.consulta_pobresa_activa(cursor, uid,
-                                                         invoice.partner_id, polissa_id)
+            scp_activa = scp_obj.consulta_pobresa_activa(
+                cursor, uid, [], partner_id=invoice['partner_id'], polissa_id=polissa_id)
 
             if scp_activa and scp_activa.resolucio:
                 fact_obj.set_pending(cursor, uid, [factura_id], pobresa_certificada)
