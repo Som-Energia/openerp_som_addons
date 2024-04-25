@@ -3,3 +3,4 @@ from __future__ import absolute_import
 from . import agrupacio_supramunicipal
 from . import som_consulta_pobresa
 from . import giscedata_polissa
+from . import update_pending_states
