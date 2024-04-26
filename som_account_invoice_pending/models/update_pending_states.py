@@ -149,9 +149,7 @@ class UpdatePendingStates(osv.osv_memory):
             raise e
 
     def consulta_pobresa_pendent(self, cursor, uid, polissa):
-        raise Exception(
-            "UpdatePendingStates.consulta_pobresa_pendent() "
-            "needs to be implemented on a child module")
+        return False
 
     def update_waiting_for_48h(self, cursor, uid, context=None):
         logger = logging.getLogger(__name__)
@@ -958,6 +956,9 @@ class UpdatePendingStates(osv.osv_memory):
         traspas_advocats_bs = self.get_object_id(
             cursor, uid, "som_account_invoice_pending", "pendent_traspas_advocats_pending_state"
         )
+        warning_cut_off_state = self.get_object_id(
+            cursor, uid, "giscedata_facturacio_comer_bono_social", "avis_tall_pending_state"
+        )
 
         polissa_id = invoice["polissa_id"][0]
         polissa_state = pol_obj.read(cursor, uid, [polissa_id], ["state"])[0]["state"]
@@ -965,6 +966,8 @@ class UpdatePendingStates(osv.osv_memory):
             self.update_waiting_for_annex_cancelled_contracts(
                 cursor, uid, factura_id, traspas_advocats_bs, context
             )
+        elif not self.poverty_eligible(cursor, uid, polissa_id):
+            fact_obj.set_pending(cursor, uid, [factura_id], warning_cut_off_state)
 
     def send_fue_reminder_emails(self, cursor, uid, context=None):
         if context is None:
