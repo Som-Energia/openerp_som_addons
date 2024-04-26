@@ -21,7 +21,7 @@ class TestConsultaPobresa(testing.OOTestCase):
         imd_obj = self.openerp.pool.get('ir.model.data')
         cons_id = imd_obj.get_object_reference(
             cursor, uid,
-            'som_consulta_pobresa', 'som_consulta_pobresa_demo_record'
+            'som_account_invoice_pending', 'som_consulta_pobresa_demo_record'
         )[1]
 
         with self.assertRaises(osv.except_osv) as e:
@@ -39,7 +39,7 @@ class TestConsultaPobresa(testing.OOTestCase):
         imd_obj = self.openerp.pool.get('ir.model.data')
         cons_id = imd_obj.get_object_reference(
             cursor, uid,
-            'som_consulta_pobresa', 'som_consulta_pobresa_demo_record'
+            'som_account_invoice_pending', 'som_consulta_pobresa_demo_record'
         )[1]
         cons_obj.write(cursor, uid, cons_id, {'resolucio': 'positiva'})
 
@@ -69,7 +69,7 @@ class TestConsultaPobresa(testing.OOTestCase):
         imd_obj = self.openerp.pool.get('ir.model.data')
         cons_id = imd_obj.get_object_reference(
             cursor, uid,
-            'som_consulta_pobresa', 'som_consulta_pobresa_demo_record'
+            'som_account_invoice_pending', 'som_consulta_pobresa_demo_record'
         )[1]
         polissa_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_polissa', 'polissa_0002')[1]
@@ -114,13 +114,13 @@ class TestConsultaPobresa(testing.OOTestCase):
         partner_id = imd_obj.get_object_reference(
             cursor, uid, 'base', 'res_partner_asus')[1]
         fact_id = imd_obj.get_object_reference(
-            cursor, uid, 'som_consulta_pobresa', 'factura_conceptes_0001',
+            cursor, uid, 'som_account_invoice_pending', 'factura_conceptes_0001',
         )[1]
         fact3_id = imd_obj.get_object_reference(
-            cursor, uid, 'som_consulta_pobresa', 'factura_conceptes_0003',
+            cursor, uid, 'som_account_invoice_pending', 'factura_conceptes_0003',
         )[1]
         consulta_id = imd_obj.get_object_reference(
-            cursor, uid, 'som_consulta_pobresa', 'som_consulta_pobresa_demo_record',
+            cursor, uid, 'som_account_invoice_pending', 'som_consulta_pobresa_demo_record',
         )[1]
         girona_id = imd_obj.get_object_reference(
             cursor, uid, 'l10n_ES_toponyms', 'ES17',

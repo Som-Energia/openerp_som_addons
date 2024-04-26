@@ -48,10 +48,10 @@ class TestGiscedataPolissa(testing.OOTestCase):
             cursor, uid, 'som_account_invoice_pending', 'pendent_consulta_probresa_pending_state',
         )[1]
         fact_id = imd_obj.get_object_reference(
-            cursor, uid, 'som_consulta_pobresa', 'factura_conceptes_0001',
+            cursor, uid, 'som_account_invoice_pending', 'factura_conceptes_0001',
         )[1]
         consulta_id = imd_obj.get_object_reference(
-            cursor, uid, 'som_consulta_pobresa', 'som_consulta_pobresa_demo_record',
+            cursor, uid, 'som_account_invoice_pending', 'som_consulta_pobresa_demo_record',
         )[1]
         cons_obj.write(cursor, uid, consulta_id, {
                        'state': 'done', 'date_closed': '2020-01-01 00:00:00'})

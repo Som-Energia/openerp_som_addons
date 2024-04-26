@@ -935,19 +935,21 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         self.assertIn("(auto.): Enviat correu previ advocats + SMS.", factura.comment)
         self.assertEqual(factura.pending_state.id, self.traspas_advocats_dp)
 
-    @mock.patch("giscedata_polissa.giscedata_polissa.GiscedataPolissa.read")
-    def test__update_pendent_consulta_pobresa_poverty_eligible(self, mock_polissa_read):
-        mock_polissa_read.return_value = [
-            {
-                "id": 1,
-                "name": "1",
-                "cups_np": "Girona",
-                "state": "activa",
-            }
-        ]
-
+    def test__update_pendent_consulta_pobresa_poverty_eligible(self):
         cursor = self.txn.cursor
         uid = self.txn.user
+        cups_obj = self.openerp.pool.get('giscedata.cups.ps')
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
+        girona_id = imd_obj.get_object_reference(
+            cursor, uid, 'l10n_ES_toponyms', 'ES17',
+        )[1]
+        pol_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_polissa', 'polissa_0001'
+        )[1]
+        pol = pol_obj.browse(cursor, uid, pol_id)
+        cups_obj.write(cursor, uid, pol.cups.id, {'id_provincia': girona_id})
+        pol_obj.write(cursor, uid, pol_id, {'state': 'activa'})
         self._load_data_unpaid_invoices(cursor, uid, [self.consulta_pobresa])
         pending_obj = self.pool.get("update.pending.states")
         fact_obj = self.pool.get("giscedata.facturacio.factura")
@@ -955,7 +957,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         pending_obj.update_pending_ask_poverty(cursor, uid, context=None)
 
         factura = fact_obj.browse(cursor, uid, self.invoice_1_id)
-        self.assertEqual(factura.pending_state.id, self.consulta_pobresa)
+        self.assertEqual(factura.pending_state.id, self.avis_tall)
 
     @mock.patch("giscedata_polissa.giscedata_polissa.GiscedataPolissa.read")
     def test__update_pendent_consulta_pobresa_poverty_not_eligible(self, mock_polissa_read):

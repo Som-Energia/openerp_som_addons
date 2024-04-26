@@ -1,7 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-"access_som_consulta_pobresa_read","som.consulta.pobresa.read",model_som_consulta_pobresa,crm.group_crm_user,1,0,0,0
-"access_som_consulta_pobresa_write","som.consulta.pobresa.write",model_som_consulta_pobresa,crm.group_crm_manager,1,1,1,1
-"access_agrupacio_supramunicipal_read","agrupacio.supramunicipal,read",model_agrupacio_supramunicipal,crm.group_crm_user,1,0,0,0
-"access_agrupacio_supramunicipal_write","agrupacio.supramunicipal.write",model_agrupacio_supramunicipal,crm.group_crm_manager,1,1,1,1
-"access_wizard_crear_consulta_pobresa_read","wizard.crear.consulta.pobresa.read",model_wizard_crear_consulta_pobresa,crm.group_crm_user,1,0,0,0
-"access_wizard_crear_consulta_pobresa_write","wizard.crear.consulta.pobresa.write",model_wizard_crear_consulta_pobresa,crm.group_crm_manager,1,1,1,1
