@@ -13,6 +13,7 @@
         "giscedata_switching",
         "giscedata_facturacio",
         "report_puppeteer",
+        "giscedata_polissa_representante",
     ],
     "demo_xml": [
         "demo/som_gurb_service_demo.xml",

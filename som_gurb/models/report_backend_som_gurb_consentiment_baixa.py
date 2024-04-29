@@ -20,9 +20,9 @@ MONTHS = {
 }
 
 
-class ReportBackendSomGurbConsentimentBaixa(ReportBackend):
+class ReportBackendSomGurbDocuments(ReportBackend):
     _source_model = "som.gurb.cups"
-    _name = "report.backend.som.gurb.consentiment.baixa"
+    _name = "report.backend.som.gurb.documents"
 
     def get_lang(self, cursor, uid, record_id, context=None):
         if context is None:
@@ -43,6 +43,7 @@ class ReportBackendSomGurbConsentimentBaixa(ReportBackend):
             context = {}
 
         gurb_cups_o = self.pool.get("som.gurb.cups")
+        partner_o = self.pool.get("res.partner")
         pol_o = self.pool.get("giscedata.polissa")
 
         pol_id = gurb_cups_o.get_polissa_gurb_cups(cursor, uid, gurb_cups.id)
@@ -56,17 +57,31 @@ class ReportBackendSomGurbConsentimentBaixa(ReportBackend):
             "day": datetime.now().day,
             "month": MONTHS[str(datetime.now().month)],
             "year": datetime.now().year,
+            "cau": gurb_cups.gurb_id.self_consumption_id.name,
         }
+
+        data["is_enterprise"] = partner_o.is_enterprise_vat(pol_br.titular.vat)
+        if data["is_enterprise"]:
+            data["representative"] = {
+                "name": pol_br.representante_id.name,
+                "vat": pol_br.representante_id.vat,
+            }
 
         return data
 
 
-ReportBackendSomGurbConsentimentBaixa()
-
+ReportBackendSomGurbDocuments()
 
 PuppeteerParser(
     "report.report_som_gurb_consentiment_baixa",
-    "report.backend.som.gurb.consentiment.baixa",
+    "report.backend.som.gurb.documents",
     "som_gurb/reports/som_gurb_consentiment_baixa.mako",
+    params={},
+)
+
+PuppeteerParser(
+    "report.report_som_gurb_consentiment_baixa",
+    "report.backend.som.gurb.documents",
+    "som_gurb/reports/som_gurb_autoritzacio_representant.mako",
     params={},
 )
