@@ -21,7 +21,9 @@
         "giscedata_facturacio_comer_bono_social",
         "giscedata_atc",
     ],
-    "init_xml": [],
+    "init_xml": [
+        "data/som_account_invoice_pending_data.xml",
+    ],
     "demo_xml": [
         "demo/som_account_invoice_pending_demo_data.xml",
         "demo/som_consulta_pobresa_demo.xml",
