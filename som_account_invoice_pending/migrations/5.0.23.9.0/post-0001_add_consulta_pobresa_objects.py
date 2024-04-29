@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import pooler
-from oopgrade.oopgrade import load_data, load_data_records
+from oopgrade.oopgrade import load_data
 
 
 def up(cursor, installed_version):
@@ -85,17 +85,6 @@ def up(cursor, installed_version):
         "wizard/wizard_crear_consulta_pobresa.xml",
         idref=None,
         mode="update",
-    )
-    logger.info("XMLs succesfully updated.")
-
-    #  UPDATAR UNA PART DE L'XML (POSAR LA ID)
-    list_of_records = ["som_account_invoice_pending.pendent_consulta_probresa_pending_state"]
-    load_data_records(
-        cursor,
-        'som_account_invoice_pending',
-        'data/som_account_invoice_pending_data.xml',
-        list_of_records,
-        mode='update'
     )
     logger.info("XMLs succesfully updated.")
 

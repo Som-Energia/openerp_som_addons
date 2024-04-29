@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 from osv import osv, fields
 from datetime import datetime, timedelta
 from addons.giscedata_facturacio.giscedata_polissa import _get_polissa_from_invoice
@@ -9,16 +10,24 @@ class GiscedataPolissa(osv.osv):
     _inherit = 'giscedata.polissa'
 
     def _ff_consulta_pobresa_pendent(self, cr, uid, ids, name, args, context=None):
-        res = dict.fromkeys(ids, 0)
+        logger = logging.getLogger(__name__)
+        res = dict.fromkeys(ids, False)
         imd_obj = self.pool.get('ir.model.data')
         aips_obj = self.pool.get('account.invoice.pending.state')
         scp_obj = self.pool.get('som.consulta.pobresa')
         cfg_obj = self.pool.get('res.config')
         ndays = int(cfg_obj.get(cr, uid, 'nombre_dies_consulta_pobresa_vigent', '335'))
 
-        consulta_state_id = imd_obj.get_object_reference(
-            cr, uid, 'som_account_invoice_pending', 'pendent_consulta_probresa_pending_state',
-        )[1]
+        try:
+            consulta_state_id = imd_obj.get_object_reference(
+                cr, uid, 'som_account_invoice_pending', 'pendent_consulta_probresa_pending_state',
+            )[1]
+        except ValueError as e:
+            logger.warn(
+                "pendent_consulta_probresa_pending_state is not ready "
+                "(first installation), returning False as default\n", e.message
+            )
+            return res
         tall_state_id = imd_obj.get_object_reference(
             cr, uid, 'giscedata_facturacio_comer_bono_social', 'tall_pending_state',
         )[1]
@@ -27,7 +36,6 @@ class GiscedataPolissa(osv.osv):
         start_day_valid = (datetime.today() - timedelta(days=ndays)).strftime('%Y-%m-%d')
 
         for pol_id in res:
-            res[pol_id] = False
             pol = self.browse(cr, uid, pol_id)
             if pol.cups_np not in ["Barcelona", "Girona", "Lleida", "Tarragona"]:
                 continue
