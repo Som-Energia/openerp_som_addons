@@ -27,8 +27,8 @@
         "demo/som_consulta_pobresa_demo.xml",
     ],
     "update_xml": [
-        "data/custom_search_data.xml",
         "data/som_account_invoice_pending_data.xml",
+        "data/custom_search_data.xml",
         "data/agrupacio_supramunicipal_data.xml",
         "data/som_consulta_pobresa_data.xml",
         "wizard/wizard_returned_invoices_export.xml",
