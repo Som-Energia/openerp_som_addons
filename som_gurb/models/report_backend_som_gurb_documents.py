@@ -80,7 +80,7 @@ PuppeteerParser(
 )
 
 PuppeteerParser(
-    "report.report_som_gurb_consentiment_baixa",
+    "report.report_som_gurb_autoritzacio_representant",
     "report.backend.som.gurb.documents",
     "som_gurb/reports/som_gurb_autoritzacio_representant.mako",
     params={},
