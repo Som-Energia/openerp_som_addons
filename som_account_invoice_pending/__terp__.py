@@ -22,7 +22,6 @@
         "giscedata_atc",
     ],
     "init_xml": [
-        "data/som_account_invoice_pending_data.xml",
     ],
     "demo_xml": [
         "demo/som_account_invoice_pending_demo_data.xml",

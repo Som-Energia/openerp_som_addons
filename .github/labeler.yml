@@ -22,8 +22,6 @@ som_autofactura:
 -  som_autofactura/**
 som_autoreclama:
 -  som_autoreclama/**
-som_consulta_pobresa:
--  som_consulta_pobresa/**
 som_control_reports:
 -  som_control_reports/**
 som_crawlers:
