@@ -28,7 +28,7 @@
             <field name="view_id" ref="wizard_crear_consulta_pobresa_form"/>
         </record>
 
-        <!-- Afegim l'accio al model Polissa-->
+        <!-- Afegim l'accio al model Factura-->
         <record id="values_wizard_crear_consulta_pobresa_form" model="ir.values">
             <field name="object" eval="1"/>
             <field name="name">Crear una consulta de pobresa</field>

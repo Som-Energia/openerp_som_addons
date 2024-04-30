@@ -69,10 +69,18 @@ class GiscedataPolissa(osv.osv):
         return _get_polissa_from_invoice(
             self, cursor, uid, [value['invoice_id'][0] for value in values])
 
+    def _get_polissa_from_crm_case(self, cursor, uid, ids, context):
+        scp_obj = self.pool.get('som.consulta.pobresa')
+        scp_ids = scp_obj.search(cursor, uid, [('crm_id', 'in', ids)])
+        scp_data = scp_obj.read(cursor, uid, scp_ids, ['polissa_id'], context)
+        pol_ids = [scp['polissa_id'][0] for scp in scp_data]
+        return pol_ids
+
     _CHANGE_PENDING_STATE = {
         'giscedata.polissa': (lambda self, cr, uid, ids, c={}: ids, ['pending_state'], 20),
         'account.invoice': (_get_polissa_from_invoice, ['state', 'residual', 'pending_state'], 30),
         'account.invoice.pending.history': (change_state, ['change_date'], 10),
+        'crm.case': (_get_polissa_from_crm_case, ['state'], 10),
     }
 
     _columns = {
