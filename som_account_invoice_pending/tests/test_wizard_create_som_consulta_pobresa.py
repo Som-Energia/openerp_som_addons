@@ -40,3 +40,4 @@ class TestWizardCrearConsultaPobresa(testing.OOTestCase):
         self.assertEqual(cons_data.titular_id, u'Gil, Pere')
         self.assertEqual(cons_data.direccio_cups, pol.cups.direccio)
         self.assertEqual(cons_data.email_partner, pol.direccio_notificacio.email)
+        self.assertEqual(cons_data.partner_id.id, pol.titular.id)

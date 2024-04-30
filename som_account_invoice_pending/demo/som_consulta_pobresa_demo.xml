@@ -34,7 +34,7 @@
             <field name="llista_preu" ref="giscedata_facturacio.pricelist_tarifas_electricidad"/>
             <field name="data_inici">2016-09-01</field>
             <field name="data_final">2016-10-31</field>
-            <field name="payment_type" eval="2"/>
+            <field name="payment_type" ref="account_payment.payment_type_demo"/>
         </record>
         <record id="factura_conceptes_0003" model="giscedata.facturacio.factura">
             <field name="name">FC0003</field>
@@ -57,7 +57,7 @@
             <field name="llista_preu" ref="giscedata_facturacio.pricelist_tarifas_electricidad"/>
             <field name="data_inici">2016-09-01</field>
             <field name="data_final">2016-10-31</field>
-            <field name="payment_type" eval="2"/>
+            <field name="payment_type" ref="account_payment.payment_type_demo"/>
         </record>
     </data>
 </openerp>

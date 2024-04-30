@@ -14,7 +14,8 @@ class SomConsultaPobresa(osv.osv):
     _inherits = {"crm.case": "crm_id"}
     _description = 'Model per gestionar les consultes de pobresa energètica'
 
-    def close_case(self, cr, uid, ids, *args):
+    def case_close_pobresa(self, cr, uid, ids, *args):
+        crm_obj = self.pool.get('crm.case')
         casos = self.browse(cr, uid, ids)
         for cas in casos:
             if not cas.resolucio:
@@ -22,11 +23,12 @@ class SomConsultaPobresa(osv.osv):
                     "Falta resolució",
                     "Per poder tancar la consulta s'ha d'informar el camp resolució.")
 
-        response = self.case_close(cr, uid, ids, args)
+        crm_ids = [cas.crm_id for cas in casos]
+        response = crm_obj.case_close(cr, uid, ids, crm_ids)
 
         casos = self.browse(cr, uid, ids)
         for cas in casos:
-            if cas.state == 'done' and cas.resolucio:
+            if cas.state == 'done' and cas.resolucio == 'positiva':
                 self.moure_factures_pobresa(cr, uid, cas)
 
         return response

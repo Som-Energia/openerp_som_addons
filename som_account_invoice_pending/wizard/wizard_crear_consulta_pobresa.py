@@ -31,6 +31,7 @@ class WizardCrearConsultaPobresa(osv.osv_memory):
                 'section_id': sec_pobresa,
                 'name': '[{}] {} ({})'.format(
                     pol.name, pol.titular.name, pol.cups.id_municipi.name),
+                'parnter_id': pol.titular.id,
             })
             scp_creades.append(scp_id)
 
