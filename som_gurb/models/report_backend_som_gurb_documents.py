@@ -35,7 +35,7 @@ class ReportBackendSomGurbDocuments(ReportBackend):
         pol_id = gurb_cups_o.get_polissa_gurb_cups(cursor, uid, gurb_cups_br.id)
         pol_br = pol_o.browse(cursor, uid, pol_id, context=context)
 
-        return pol_br.titular.lang
+        return pol_br.titular.lang or 'en_US'
 
     @report_browsify
     def get_data(self, cursor, uid, gurb_cups, context=None):
@@ -62,9 +62,14 @@ class ReportBackendSomGurbDocuments(ReportBackend):
 
         data["is_enterprise"] = partner_o.is_enterprise_vat(pol_br.titular.vat)
         if data["is_enterprise"]:
+            representative = pol_br.representante_id
+            address = ""
+            if representative and representative.address[0]:
+                address = representative.address[0].street
             data["representative"] = {
-                "name": pol_br.representante_id.name,
-                "vat": pol_br.representante_id.vat,
+                "name": representative.name,
+                "vat": representative.vat,
+                "address": address
             }
 
         return data
