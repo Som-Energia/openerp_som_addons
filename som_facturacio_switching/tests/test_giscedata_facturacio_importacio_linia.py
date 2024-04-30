@@ -119,7 +119,7 @@ class TestGiscedataFacturacioImportacioLinia(testing.OOTestCaseWithCursor):
             f1_id,
             {
                 "info": "* [2999] Undefined error: no file in gridfs collection Collection(Database(MongoClient('', ), u''), u'fs') with _id ObjectId('5')",  # noqa: E501
-                "create_date": test_date,  # data_carrega _ff de create_date
+                # "create_date": test_date,  # data_carrega _ff de create_date
                 "fecha_factura": test_date,
             },
         )
