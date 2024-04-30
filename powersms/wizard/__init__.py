@@ -1,2 +1,3 @@
 # -*- coding: utf-8 -*-
-import wizard_send_sms
+from __future__ import absolute_import
+from . import wizard_send_sms
