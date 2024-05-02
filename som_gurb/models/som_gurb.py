@@ -89,6 +89,7 @@ class SomGurb(osv.osv):
                 gurb_cups["extra_beta_kw"] for gurb_cups in gurb_cups_data
             )
             assigned_betas_percentage = 0
+            assigned_extra_betas_percentage = 0
             if gen_power:
                 assigned_betas_percentage = (
                     assigned_betas_kw
