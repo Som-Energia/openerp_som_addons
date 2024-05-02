@@ -22,6 +22,11 @@ class SomGurbCups(osv.osv):
         for gurb_cups_vals in self.read(cursor, uid, ids, ["gurb_id"]):
             gurb_vals = gurb_obj.read(cursor, uid, gurb_cups_vals["gurb_id"][0], ["roof_owner_id"])
             cups_id = self.read(cursor, uid, gurb_cups_vals["id"], ["cups_id"])["cups_id"][0]
+
+            if not gurb_vals["roof_owner_id"]:
+                res[gurb_cups_vals["id"]] = False
+                continue
+
             search_params = [
                 ("state", "=", "activa"),
                 ("cups", "=", cups_id),
@@ -66,7 +71,10 @@ class SomGurbCups(osv.osv):
             ]
             active_beta_id = gurb_cups_beta_o.search(cursor, uid, search_params, context=context)
             read_vals = ["beta_kw", "extra_beta_kw"]
-            active_beta_vals = 0.0
+            active_beta_vals = {
+                "beta_kw": 0.0,
+                "extra_beta_kw": 0.0
+            }
             if active_beta_id:
                 active_beta_vals = gurb_cups_beta_o.read(
                     cursor, uid, active_beta_id[0], read_vals, context=context
