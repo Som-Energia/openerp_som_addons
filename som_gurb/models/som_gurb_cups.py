@@ -66,9 +66,11 @@ class SomGurbCups(osv.osv):
             ]
             active_beta_id = gurb_cups_beta_o.search(cursor, uid, search_params, context=context)
             read_vals = ["beta_kw", "extra_beta_kw"]
-            active_beta_vals = gurb_cups_beta_o.read(
-                cursor, uid, active_beta_id[0], read_vals, context=context
-            )
+            active_beta_vals = 0.0
+            if active_beta_id:
+                active_beta_vals = gurb_cups_beta_o.read(
+                    cursor, uid, active_beta_id[0], read_vals, context=context
+                )
 
             res[gurb_cups_id] = active_beta_vals
 
