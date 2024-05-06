@@ -1,2 +1,3 @@
 import giscedata_facturacio
+import giscedata_polissa
 import wizard
