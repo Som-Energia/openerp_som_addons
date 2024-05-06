@@ -333,6 +333,20 @@
             <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
             <field name="pending_days_type">natural</field>
         </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.perdues_fact_bo_social_pending_state">
+            <field name="name">Pèrdues FACT (Bo Social)</field>
+            <field name="weight">1138</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.perdues_fact_default_pending_state">
+            <field name="name">Pèrdues FACT (Default Process)</field>
+            <field name="weight">1139</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
 
         <!-- Template de annex 2 Bo social -->
         <record model="poweremail.templates" id="email_impagats_annex2">
