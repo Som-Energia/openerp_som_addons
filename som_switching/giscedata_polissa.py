@@ -67,7 +67,8 @@ class GiscedataPolissaModcontractual(osv.osv):
             ):
                 auto_vals.update({"data_alta_autoconsum": modcon_info["data_inici"]})
 
-                auto_data_baixa = polissa_obj.read(cursor, uid, polissa_id, ['data_baixa_autoconsum'])['data_baixa_autoconsum']
+                auto_data_baixa = polissa_obj.read(cursor, uid, polissa_id, ['data_baixa_autoconsum'])[
+                    'data_baixa_autoconsum']
                 if (
                         auto_data_baixa
                         and auto_data_baixa <= modcon_info['data_inici']
