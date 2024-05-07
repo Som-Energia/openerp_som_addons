@@ -7,7 +7,7 @@
     "version": "0-dev",
     "author": "GISCE",
     "category": "Master",
-    "depends": ["base", "www_som", "mongodb_backend"],
+    "depends": ["base", "base_extended_som", "www_som", "mongodb_backend"],
     "init_xml": [],
     "demo_xml": [],
     "update_xml": ["res_partner_view.xml"],
