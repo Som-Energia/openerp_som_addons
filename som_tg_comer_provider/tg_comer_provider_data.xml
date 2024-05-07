@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data noupdate="1">
+      <record model="tg.sftp" id="sftp_endesa_01">
+        <field name="name">Endesa</field>
+        <field name="host">ftp.endesa.es</field>
+        <field name="port">22</field>
+        <field name="user">0762</field>
+        <field name="root_dir">/</field>
+        <field name="read_dir">/</field>
+      </record>
+      <record model="tg.sftp" id="sftp_iberdrola_01">
+        <field name="name">Iberdrola</field>
+        <field name="host">serafin.iberdrola.es</field>
+        <field name="port">22</field>
+        <field name="user">CCH00210762</field>
+        <field name="root_dir">/</field>
+        <field name="read_dir">/</field>
+      </record>
+      <record model="tg.sftp" id="sftp_eon_01">
+        <field name="name">E.on</field>
+        <field name="host">cst.viesgoesn.com</field>
+        <field name="port">22</field>
+        <field name="user">0762</field>
+        <field name="root_dir">/</field>
+        <field name="read_dir">/</field>
+      </record>
+      <record model="tg.sftp" id="sftp_unionfenosa_01">
+        <field name="name">Unión Fenosa</field>
+        <field name="host">ufdagentessimel.net.gasnaturalfenosa.com</field>
+        <field name="port">22</field>
+        <field name="user">gme0762</field>
+        <field name="root_dir">/</field>
+        <field name="read_dir">/</field>
+      </record>
+      <record model="tg.comer.provider" id="tg_provider_endesa_01">
+        <field name="name">Endesa</field>
+        <field name="enabled">True</field>
+        <field search="[('ref','=','0031')]" model='res.partner' name='distribuidora'/>
+        <field name="sftp" ref="sftp_endesa_01"/>
+        <field name="f5d_syntax">F5D_0031_0762_(\d{8})</field>
+        <field name="f5d_dir">/</field>
+        <field name="p5d_syntax">P5D_0031_0762_(\d{8})</field>
+        <field name="p5d_dir">/</field>
+      </record>
+      <record model="tg.comer.provider" id="tg_provider_iberdrola_01">
+        <field name="name">Iberdrola</field>
+        <field name="enabled">True</field>
+        <field search="[('ref','=','0021')]" model='res.partner' name='distribuidora'/>
+        <field name="sftp" ref="sftp_iberdrola_01"/>
+        <field name="f5d_syntax">F5D_0021_0762_(\d{8})</field>
+        <field name="f5d_dir">/</field>
+        <field name="p5d_syntax">P5D_0021_0762_(\d{8})</field>
+        <field name="p5d_dir">/</field>
+      </record>
+      <record model="tg.comer.provider" id="tg_provider_eon_01">
+        <field name="name">E.ON</field>
+        <field name="enabled">True</field>
+        <field search="[('ref','=','0027')]" model='res.partner' name='distribuidora'/>
+        <field name="sftp" ref="sftp_eon_01"/>
+        <field name="f5d_syntax">F5D_0027_0762_(\d{8})</field>
+        <field name="f5d_dir">/</field>
+        <field name="p5d_syntax">P5D_0027_0762_(\d{8})</field>
+        <field name="p5d_dir">/</field>
+      </record>
+      <record model="tg.comer.provider" id="tg_provider_unionfenosa_01">
+        <field name="name">Unión Fenosa</field>
+        <field name="enabled">True</field>
+        <field search="[('ref','=','0022')]" model='res.partner' name='distribuidora'/>
+        <field name="sftp" ref="sftp_unionfenosa_01"/>
+        <field name="f5d_syntax">F5D_0022_0762_(\d{8})</field>
+        <field name="f5d_dir">/</field>
+        <field name="p5d_syntax">P5D_0022_0762_(\d{8})</field>
+        <field name="p5d_dir">/</field>
+      </record>
+
+    </data>
+</openerp>
