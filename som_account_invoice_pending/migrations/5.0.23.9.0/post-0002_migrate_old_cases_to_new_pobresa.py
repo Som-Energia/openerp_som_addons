@@ -1,7 +1,6 @@
 # coding=utf-8
 import logging
 import pooler
-import netsvc
 logger = logging.getLogger('openerp.' + __name__)
 
 
@@ -22,6 +21,7 @@ def up(cursor, installed_version):
     )[1]
     search_vals = [
         ("section_id", "=", section_id),
+        ('state', 'in', ['pending', 'done'])
     ]
     crm_list = crm_obj.search(cursor, uid, search_vals)
     logger.info('Trobats {} crm.case de pobresa energètica'.format(len(crm_list)))
@@ -59,15 +59,6 @@ def up(cursor, installed_version):
             "description": message
         }
         crmh_obj.create(cursor, uid, write_vals)
-
-        # Creem el workflow si no està creat
-        wf_service = netsvc.LocalService("workflow")
-        cursor.execute("select id from wkf_instance where "
-                       "res_type = 'crm.case' and res_id = %s",
-                       (nou_scp.crm_id.id,))
-        res = cursor.fetchall()
-        if not res:
-            wf_service.trg_create(uid, 'crm.case', nou_scp.crm_id.id, cursor)
 
     logger.info('S\'han creat les consultes pobresa')
 

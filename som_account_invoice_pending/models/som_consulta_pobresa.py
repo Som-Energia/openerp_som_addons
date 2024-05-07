@@ -16,20 +16,20 @@ class SomConsultaPobresa(osv.osv):
 
     def case_close_pobresa(self, cr, uid, ids, *args):
         crm_obj = self.pool.get('crm.case')
-        casos = self.browse(cr, uid, ids)
-        for cas in casos:
-            if not cas.resolucio:
+        consultes = self.browse(cr, uid, ids)
+        for consulta in consultes:
+            if not consulta.resolucio:
                 raise osv.except_osv(
                     "Falta resolució",
                     "Per poder tancar la consulta s'ha d'informar el camp resolució.")
+        args[0]['origin'] = self._name
+        crm_ids = [consulta.crm_id.id for consulta in consultes]
+        response = crm_obj.case_close(cr, uid, crm_ids, *args)
 
-        crm_ids = [cas.crm_id for cas in casos]
-        response = crm_obj.case_close(cr, uid, ids, crm_ids)
-
-        casos = self.browse(cr, uid, ids)
-        for cas in casos:
-            if cas.state == 'done' and cas.resolucio == 'positiva':
-                self.moure_factures_pobresa(cr, uid, cas)
+        consultes = self.browse(cr, uid, ids)
+        for consulta in consultes:
+            if consulta.state == 'done' and consulta.resolucio == 'positiva':
+                self.moure_factures_pobresa(cr, uid, consulta)
 
         return response
 
