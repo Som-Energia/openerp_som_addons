@@ -25,7 +25,7 @@ class TestConsultaPobresa(testing.OOTestCase):
         )[1]
 
         with self.assertRaises(osv.except_osv) as e:
-            cons_obj.case_close_pobresa(cursor, uid, [cons_id])
+            cons_obj.case_close_pobresa(cursor, uid, [cons_id], ({}))
 
         self.assertEqual(
             e.exception.message,
@@ -43,7 +43,7 @@ class TestConsultaPobresa(testing.OOTestCase):
         )[1]
         cons_obj.write(cursor, uid, cons_id, {'resolucio': 'positiva'})
 
-        cons_obj.case_close_pobresa(cursor, uid, [cons_id])
+        cons_obj.case_close_pobresa(cursor, uid, [cons_id], ({}))
 
         state = cons_obj.read(cursor, uid, cons_id, ['state'])['state']
         self.assertEqual(state, 'done')
@@ -76,7 +76,7 @@ class TestConsultaPobresa(testing.OOTestCase):
         partner_id = imd_obj.get_object_reference(
             cursor, uid, 'base', 'res_partner_asus')[1]
         cons_obj.write(cursor, uid, cons_id, {'resolucio': 'positiva'})
-        cons_obj.case_close_pobresa(cursor, uid, [cons_id])
+        cons_obj.case_close_pobresa(cursor, uid, [cons_id], ({}))
 
         result = cons_obj.consulta_pobresa_activa(cursor, uid, [], partner_id, polissa_id)
 
@@ -143,7 +143,7 @@ class TestConsultaPobresa(testing.OOTestCase):
         fact.set_pending(consulta_state_id)
         cons_obj.write(cursor, uid, consulta_id, {
                        'resolucio': 'positiva'})
-        cons_obj.case_close_pobresa(cursor, uid, [consulta_id])
+        cons_obj.case_close_pobresa(cursor, uid, [consulta_id], ({}))
 
         fact = gff_obj.browse(cursor, uid, fact_id)
         fact3 = gff_obj.browse(cursor, uid, fact3_id)

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
-from tools.translate import _
 from datetime import datetime, timedelta
 
 RESOLUTION_STATES = [
