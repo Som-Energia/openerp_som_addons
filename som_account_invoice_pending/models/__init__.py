@@ -8,3 +8,4 @@ from . import giscedata_polissa
 from . import agrupacio_supramunicipal
 from . import som_consulta_pobresa
 from . import crm
+from . import account_invoice
