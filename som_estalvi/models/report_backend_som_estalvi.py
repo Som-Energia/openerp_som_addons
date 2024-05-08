@@ -45,7 +45,9 @@ class ReportBackendSomEstalvi(ReportBackend):
             cursor, uid, factura_id, ['data_final'], context=context
         )["data_final"]
         start_date = datetime.strftime(
-            datetime.strptime(end_date, "%Y-%m-%d") - relativedelta(years=1),
+            datetime.strptime(
+                end_date, "%Y-%m-%d"
+            ) - relativedelta(years=1) + relativedelta(days=1),
             '%Y-%m-%d'
         )
 
@@ -131,6 +133,11 @@ class ReportBackendSomEstalvi(ReportBackend):
         wiz_browse = wiz_opti_obj.browse(cursor, uid, wiz_id, context=ctx)
         optimizations = wiz_opti_obj.execute_optimization_script(
             cursor, uid, wiz_id, pol.id, context=context)
+
+        ctx['decimal'] = True
+
+        wiz_opti_obj.get_maximeters_power(cursor, uid, wiz_id, pol.id, context=ctx)
+
         wiz_maximeters_powers = wiz_browse.maximeters_powers
         maximeters_powers = json.loads(wiz_maximeters_powers)
 

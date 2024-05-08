@@ -206,7 +206,10 @@ class WizardContractPowerOptimization(osv.osv_memory):
                         maximeters[month_lectura_date][period] = 0
                         maximeters_float[month_lectura_date][period] = 0
                     if maximeters[month_lectura_date][period] < lectura.lectura:
-                        maximeters[month_lectura_date][period] = int(round(lectura.lectura))
+                        if context.get('decimal', False):
+                            maximeters[month_lectura_date][period] = lectura.lectura
+                        else:
+                            maximeters[month_lectura_date][period] = int(round(lectura.lectura))
                         maximeters_float[month_lectura_date][period] = lectura.lectura
 
         vals = {'maximeters_powers': json.dumps(maximeters, sort_keys=True, indent=4)}

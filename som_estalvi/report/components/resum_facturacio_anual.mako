@@ -42,7 +42,7 @@
             </table>
         </div>
         <div class="distribucio-costos">
-            <div class="distribucio-costos-title"><b>${_(u"Distribució dels costos")}</b></div>
+            <div class="distribucio-costos-title"><b>${_(u"DISTRIBUCIÓ DELS COSTOS")}</b></div>
             <div id="grafic-costos"></div>
         </div>
     </div>
