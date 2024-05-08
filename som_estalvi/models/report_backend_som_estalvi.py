@@ -38,12 +38,12 @@ class ReportBackendSomEstalvi(ReportBackend):
         ]
 
         factura_id = factura_obj.search(
-            cursor, uid, search_params, context=context, order="date_invoice DESC", limit=1
+            cursor, uid, search_params, context=context, order="data_final DESC", limit=1
         )[0]
 
         end_date = factura_obj.read(
-            cursor, uid, factura_id, ['date_invoice'], context=context
-        )['date_invoice']
+            cursor, uid, factura_id, ['data_final'], context=context
+        )["data_final"]
         start_date = datetime.strftime(
             datetime.strptime(end_date, "%Y-%m-%d") - relativedelta(years=1),
             '%Y-%m-%d'
