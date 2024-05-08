@@ -1489,7 +1489,6 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         return data
 
-
     def get_conany_kwh_energy_consumption_graphic_td_data(self, cursor, uid, fact_id, context=None):
         """
         Simplification to avoid generate all the invoice data to get the year's kwh
@@ -1497,7 +1496,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         fac_obj = self.pool.get('giscedata.facturacio.factura')
         fact = fac_obj.browse(cursor, uid, fact_id, context)
         (historic, historic_js) = self.get_historic_data(fact)
-        mes_any_inicial = (datetime.strptime(fact.data_inici,'%Y-%m-%d') - timedelta(days=365)).strftime("%Y/%m")
+
+        data_inici_any = datetime.strptime(fact.data_inici, '%Y-%m-%d') - timedelta(days=365)
+        mes_any_inicial = data_inici_any.strftime("%Y/%m")
 
         conany_kwh = 0.0
         conany_kwh_p1 = 0.0
@@ -1533,7 +1534,6 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'conany_kwh_p6': conany_kwh_p6,
         }
         return data
-
 
     def get_component_energy_consumption_graphic_td_data(self, fact, pol):
         """
