@@ -58,6 +58,8 @@ class ReportBackendSomGurbDocuments(ReportBackend):
             "month": MONTHS[str(datetime.now().month)],
             "year": datetime.now().year,
             "cau": gurb_cups.gurb_id.self_consumption_id.cau,
+            "beta_kw": gurb_cups.beta_kw,
+            "beta_percentatge": gurb_cups.beta_percentatge,
         }
 
         data["is_enterprise"] = partner_o.is_enterprise_vat(pol_br.titular.vat)
