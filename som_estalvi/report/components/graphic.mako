@@ -30,13 +30,15 @@
           radius: ['50%', '70%'],
           center: ['50%', '50%'],
           padAngle: 0,
-          // adjust the start and end angle
           startAngle: 0,
           endAngle: 360,
           label: {
-              show: true,
-              fontSize: 12,
-            },
+            position: 'outside',
+            formatter: '{b} {d}%',
+            show: true,
+            fontSize: 11,
+          },
+          percentPrecision: 0,
           data: [
             { value: 3137.65, name: "Energia" },
             { value: 765.14, name: "Potencia" },
