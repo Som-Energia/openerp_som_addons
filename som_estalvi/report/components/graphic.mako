@@ -40,10 +40,10 @@
           },
           percentPrecision: 0,
           data: [
-            { value: 3137.65, name: "Energia" },
-            { value: 765.14, name: "Potencia" },
-            { value: 41.45, name: "Exces" },
-            { value: 81.19, name: "Reactiva" },
+            { value: ${costs['energia'].val}, name: ${_(u'Energia')} },
+            { value: ${costs['potencia'].val}, name: ${_(u'Potencia')} },
+            { value: ${costs['exces'].val}, name: ${_(u'Exces')} },
+            { value: ${costs['reactiva'].val}, name: ${_(u'Reactiva')} },
           ]
         }
       ]
