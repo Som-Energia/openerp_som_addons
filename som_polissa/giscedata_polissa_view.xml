@@ -249,7 +249,7 @@
                     <field name="potencia_generacio" select="1"/>
                 </xpath>
                 <xpath expr="//field[@name='autoconsum_cups_ids']" position="replace">
-                    <field name="autoconsum_cups_ids" colspan="8" height="200" nolabel="1" string="CAU" select="1"/>
+                    <field name="autoconsum_cups_ids" size="26" colspan="8" height="200" nolabel="1" string="CAU" select="1"/>
                 </xpath>
                 <xpath expr="//field[@name='is_autoconsum_collectiu']" position="replace">
                     <field name="is_autoconsum_collectiu" select="2"/>
