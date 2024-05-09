@@ -9,7 +9,7 @@
 <html lang="es">
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <head>
-        <script src="${addons_path}/som_estalvi/report/assets/d3.v6.js"></script>
+        <script src="${addons_path}/som_estalvi/report/assets/echarts-5.5.0.min.js"></script>
         <link rel="stylesheet" href="${addons_path}/som_estalvi/report/som_estalvi.css">
         <title>${_(u"SomEnergia informe anual")}</title>
         <style>

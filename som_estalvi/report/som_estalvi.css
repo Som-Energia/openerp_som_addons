@@ -255,3 +255,8 @@ body {
 .text-grafic {
     font-size: 5pt;
 }
+
+#grafic-costos {
+    height: 60mm;
+    width: 100mm;
+}
