@@ -1497,7 +1497,10 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         fact = fac_obj.browse(cursor, uid, fact_id, context)
         (historic, historic_js) = self.get_historic_data(fact)
 
-        data_inici_any = datetime.strptime(fact.data_inici, '%Y-%m-%d') - timedelta(days=365)
+        def get_as_time(text):
+            return datetime.strptime(text, '%Y-%m-%d')
+
+        data_inici_any = get_as_time(fact.data_inici) - timedelta(days=365)
         mes_any_inicial = data_inici_any.strftime("%Y/%m")
 
         conany_kwh = 0.0
@@ -1507,6 +1510,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         conany_kwh_p4 = 0.0
         conany_kwh_p5 = 0.0
         conany_kwh_p6 = 0.0
+        data_ini = None
+        data_fin = None
 
         for h in historic:
             if h['mes'] > mes_any_inicial:
@@ -1523,15 +1528,25 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     conany_kwh_p5 += h['consum']
                 elif h['periode'] == 'P6':
                     conany_kwh_p6 += h['consum']
+                if data_ini is None or data_ini > h["data_ini"]:
+                    data_ini = h["data_ini"]
+                if data_fin is None or data_fin > h["data_fin"]:
+                    data_fin = h["data_fin"]
+
+        if data_ini and data_fin:
+            historic_dies = (get_as_time(data_fin) - get_as_time(data_ini)).days
+        else:
+            historic_dies = 0
 
         data = {
-            'conany_kwh': conany_kwh,
-            'conany_kwh_p1': conany_kwh_p1,
-            'conany_kwh_p2': conany_kwh_p2,
-            'conany_kwh_p3': conany_kwh_p3,
-            'conany_kwh_p4': conany_kwh_p4,
-            'conany_kwh_p5': conany_kwh_p5,
-            'conany_kwh_p6': conany_kwh_p6,
+            'consum': conany_kwh,
+            'p1': conany_kwh_p1,
+            'p2': conany_kwh_p2,
+            'p3': conany_kwh_p3,
+            'p4': conany_kwh_p4,
+            'p5': conany_kwh_p5,
+            'p6': conany_kwh_p6,
+            'days': historic_dies,
         }
         return data
 
