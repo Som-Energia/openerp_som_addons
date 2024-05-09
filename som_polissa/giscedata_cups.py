@@ -71,7 +71,7 @@ class GiscedataCupsPs(osv.osv):
                 "priority": 3,
                 "model": "giscedata.polissa",
                 "func": "get_consum_anual_backend_gisce",
-                "origen": "consums",
+                "origen": "consums_periods",
                 "periods": True,
             },
             {
