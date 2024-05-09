@@ -53,7 +53,7 @@
                 <% it += 1 %>
             %endfor
             <tr>
-                <td colspan="3">${_(u"Tots els valors es mostre en kW")}</td>
+                <td colspan="3">${_(u"Tots els valors es mostren en kW")}</td>
                 %for val in mesos_ordenats:
                     <%
                         mesos = {'01': _('GEN'), '02': _('FEB'), '03': _('MAR'), '04': _('ABR'), '05': _('MAI'), '06': _('JUN'), '07': _('JUL'), '08': _('AGO'), '09': _('SET'), '10': _('OCT'), '11': _('NOV'), '12': _('DES')}
