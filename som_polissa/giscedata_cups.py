@@ -12,7 +12,7 @@ class GiscedataCupsPs(osv.osv):
     _NEW_ORIGENS_CONANY = [
         ("consums", _(u"Historic consums")),
         ("factures", _(u"Historic factures")),
-        ("pdf", _(u"Pdf última factura")),
+        ("pdf", _(u"Consum 12 factures")),
         ("consums_periods", _(u"> 12 factures: Historic consums per periodes")),
         ("estadistic", _(u"< 3 factures: Estadística SOM")),
         ("usuari", _(u"usuari (webforms)")),
@@ -55,10 +55,11 @@ class GiscedataCupsPs(osv.osv):
                 "origen": "factures",
             },
             {
-                "priority": 3,
+                "priority": 1,
                 "model": "giscedata.polissa",
                 "func": "get_consum_anual_pdf",
                 "origen": "pdf",
+                "periods": True,
             },
             {
                 "priority": 100,
