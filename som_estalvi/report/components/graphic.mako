@@ -16,18 +16,23 @@
         top: 'center',
         textStyle: {
           fontSize: 12,
+          lineHeight: 14,
+          fontWeight: 600,
+          fontFamily: 'Montserrat-Medium',
         }
       },
       series: [
         {
           type: 'pie',
+          left: '-15%',
+          right: '-15%',
           color: [
             '#4d4d4d',
             '#80a82d',
             '#bec8a9',
             '#71805b',
           ],
-          radius: ['50%', '70%'],
+          radius: ['45%', '65%'],
           center: ['50%', '50%'],
           padAngle: 0,
           startAngle: 0,
