@@ -1,6 +1,6 @@
 ## -*- coding: utf-8 -*-
 <%def name="resum_facturacio_anual(costs)">
-    <div class="seccio">
+    <div class="seccio container-resum">
         <span>${_(u"RESUM DE LA TEVA FACTURACIÓ ANUAL")}</span>
         <hr/>
     </div>

@@ -44,9 +44,9 @@ body {
 }
 
 .dades-titular {
-    width: 60%;
-    padding: 5mm 0 0 15mm;
-    border-right: 1px solid #4d4d4d;
+    width: 70%;
+    padding-bottom: 4mm;
+    /* border-right: 1px solid #4d4d4d; */
 }
 
 .dades-titular table td {
@@ -54,7 +54,7 @@ body {
 }
 
 .titol {
-    width: 40%;
+    width: 30%;
 }
 
 .dades-resum {
@@ -88,8 +88,8 @@ body {
 }
 
 .logo {
-    height: 20mm;
-    padding: 5mm 20mm;
+    height: 16mm;
+    padding: 3mm 17mm;
 }
 
 .secondary-text {
@@ -98,9 +98,9 @@ body {
 }
 
 .titol span {
-    font-size: 15pt;
+    font-size: 14pt;
     font-weight: 800;
-    padding-left: 16mm;
+    padding-left: 10mm;
 }
 
 .dades-titular table tr td:first-child {
@@ -259,4 +259,8 @@ body {
 #grafic-costos {
     height: 60mm;
     width: 100mm;
+}
+
+.container-resum {
+    margin-top: 1mm;
 }
