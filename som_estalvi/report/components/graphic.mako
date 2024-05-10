@@ -11,7 +11,7 @@
         trigger: 'item'
       },
       title: {
-        text: 'DISTRIBUCIÓ\nDELS COSTOS',
+        text: "${_(u"DISTRIBUCIÓ\nDELS COSTOS")}",
         left: 'center',
         top: 'center',
         textStyle: {
@@ -41,7 +41,8 @@
             position: 'outside',
             formatter: '{b} {d}%',
             show: true,
-            fontSize: 11,
+            fontSize: 10,
+            lineHeight: 12,
           },
           percentPrecision: 0,
           data: [

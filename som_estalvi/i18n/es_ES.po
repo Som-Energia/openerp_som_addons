@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2024-03-26 10:09+0000\n"
-"PO-Revision-Date: 2024-03-26 09:17+0000\n"
+"POT-Creation-Date: 2024-05-10 13:25+0000\n"
+"PO-Revision-Date: 2024-05-10 11:32+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Generated-By: Babel 2.7.0\n"
+"Generated-By: Babel 2.9.1\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
@@ -312,7 +312,7 @@ msgid ""
 msgstr "Si los tres tres valores del mes corresponden al 85% de la potencia contratada, son estimados."
 
 #: rml:som_estalvi/report/components/analisi_potencies.mako:56
-msgid "Tots els valors es mostre en kW"
+msgid "Tots els valors es mostren en kW"
 msgstr "Todos los valores se muestran en kW"
 
 #: rml:som_estalvi/report/components/analisi_potencies.mako:59
@@ -412,7 +412,7 @@ msgstr "Peaje:"
 msgid "Tarifa:"
 msgstr "Tarifa:"
 
-#: rml:som_estalvi/report/components/capcalera.mako:28
+#: rml:som_estalvi/report/components/capcalera.mako:29
 msgid "INFORME ANUAL"
 msgstr "INFORME ANUAL"
 
@@ -428,27 +428,25 @@ msgid ""
 "Som Energia, SCCL - CIF F55091367 | Pic de Peguera, 9 - 17003 - Girona | "
 msgstr "Som Energia, SCCL - CIF F55091367 | Pic de Peguera, 9 - 17003 - Girona | "
 
-#: rml:som_estalvi/report/components/graphic.mako:6
-#: rml:som_estalvi/report/components/graphic.mako:35
-#: rml:som_estalvi/report/components/graphic.mako:60
+#: rml:som_estalvi/report/components/graphic.mako:14
+msgid ""
+"DISTRIBUCIÓ\n"
+"DELS COSTOS"
+msgstr "DISTRIBUCIÓN\nDE LOS COSTES"
+
+#: rml:som_estalvi/report/components/graphic.mako:49
 msgid "Energia"
 msgstr "Energía"
 
-#: rml:som_estalvi/report/components/graphic.mako:7
-#: rml:som_estalvi/report/components/graphic.mako:36
-#: rml:som_estalvi/report/components/graphic.mako:61
-msgid "Potencia"
+#: rml:som_estalvi/report/components/graphic.mako:50
+msgid "Potència"
 msgstr "Potencia"
 
-#: rml:som_estalvi/report/components/graphic.mako:9
-#: rml:som_estalvi/report/components/graphic.mako:38
-#: rml:som_estalvi/report/components/graphic.mako:63
-msgid "Exces"
+#: rml:som_estalvi/report/components/graphic.mako:51
+msgid "Excés"
 msgstr "Exceso"
 
-#: rml:som_estalvi/report/components/graphic.mako:12
-#: rml:som_estalvi/report/components/graphic.mako:41
-#: rml:som_estalvi/report/components/graphic.mako:66
+#: rml:som_estalvi/report/components/graphic.mako:52
 msgid "Reactiva"
 msgstr "Reactiva"
 
@@ -457,8 +455,8 @@ msgid "RESUM DE LA TEVA FACTURACIÓ ANUAL"
 msgstr "RESUMEN DE TU FACTURACIÓN ANUAL"
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:16
-msgid "Cost de l'electricitat utilitzada"
-msgstr "Coste de la electricidad utilizada"
+msgid "Cost de l'electricitat utilitzada:"
+msgstr "Coste de la electricidad utilizada:"
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:17
 msgid "Oferim 2 tarifes diferents:"
@@ -527,38 +525,34 @@ msgstr "https://es.support.somenergia.coop/article/180-como-puedo-reducir-el-con
 msgid "Més informació."
 msgstr "Más información."
 
-#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:45
-msgid "Distribució dels costos"
-msgstr "Distribución de los costes"
-
-#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:54
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:53
 msgid "Descompte pels excedents:"
 msgstr "Descuento por los excedentes:"
 
-#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:55
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:54
 msgid "Inclou la compensació i el Flux Solar."
 msgstr "Incluye la compensación y el Flux Solar"
 
-#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:65
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:64
 msgid ""
 "No s'inclou el lloguer del comptador ni els impostos. Dades dels últims 12 "
 "mesos facturats."
 msgstr "No se incluye el alquiler del contador ni los impuestos. Datos de los últimos 12 meses facturados."
 
-#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:75
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:74
 msgid ""
 "Pots consultar i descarregar les corbes horàries d'ús d'energia per dies, "
 "setmanes, mesos i anys, i fer comparatives per aquests períodes a l'"
 msgstr "Puedes consultar y descargar las curvas horarias de uso de energía por días, semanas, meses y años, y hacer comparativas por estos periodos en la"
 
-#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:75
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:74
 msgid "https://oficinavirtual.somenergia.coop/ca/"
 msgstr "https://oficinavirtual.somenergia.coop/es/"
 
-#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:75
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:74
 msgid "Oficina Virtual"
 msgstr "Oficina Virtual"
 
-#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:75
-msgid "a l'apartat Infoenergia > Veure les corbes horàries"
-msgstr "en el apartado Infoenergia > Ver las curvas horarias"
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:74
+msgid "a l'apartat Infoenergia > Veure l'ús de l'energia"
+msgstr "en el apartado Infoenergia > Ver el uso de la energía"
