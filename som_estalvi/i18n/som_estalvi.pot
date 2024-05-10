@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2024-05-10 13:25+0000\n"
-"PO-Revision-Date: 2024-05-10 13:25+0000\n"
+"POT-Creation-Date: 2024-05-10 13:49+0000\n"
+"PO-Revision-Date: 2024-05-10 13:49+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -425,9 +425,11 @@ msgid "Som Energia, SCCL - CIF F55091367 | Pic de Peguera, 9 - 17003 - Girona | 
 msgstr ""
 
 #: rml:som_estalvi/report/components/graphic.mako:14
-msgid ""
-"DISTRIBUCIÓ\n"
-"DELS COSTOS"
+msgid "DISTRIBUCIÓ"
+msgstr ""
+
+#: rml:som_estalvi/report/components/graphic.mako:14
+msgid "DELS COSTOS"
 msgstr ""
 
 #: rml:som_estalvi/report/components/graphic.mako:49

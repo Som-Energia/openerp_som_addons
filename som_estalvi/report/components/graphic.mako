@@ -11,7 +11,7 @@
         trigger: 'item'
       },
       title: {
-        text: "${_(u"DISTRIBUCIÓ\nDELS COSTOS")}",
+        text: "${_(u"DISTRIBUCIÓ")}\n${_(u"DELS COSTOS")}",
         left: 'center',
         top: 'center',
         textStyle: {
