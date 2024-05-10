@@ -29,7 +29,7 @@ class WizardCrearConsultaPobresa(osv.osv_memory):
             pol = pol_obj.browse(cursor, uid, _id)
             if pol.process_id.name == "Default Process":
                 raise osv.except_osv(
-                    "La pòlissa {} no és bo social".format(pol.name))
+                    "Error", "La pòlissa {} no té procés de tall bo social".format(pol.name))
             scp_id = scp_obj.create(cursor, uid, {
                 'polissa_id': _id,
                 'section_id': sec_pobresa,
