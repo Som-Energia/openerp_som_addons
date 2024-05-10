@@ -40,10 +40,10 @@
           },
           percentPrecision: 0,
           data: [
-            { value: ${costs['energia'].val}, name: ${_(u'Energia')} },
-            { value: ${costs['potencia'].val}, name: ${_(u'Potencia')} },
-            { value: ${costs['exces'].val}, name: ${_(u'Exces')} },
-            { value: ${costs['reactiva'].val}, name: ${_(u'Reactiva')} },
+            { value: ${costs['energia'].val}, name: "${_(u"Energia")}" },
+            { value: ${costs['potencia'].val}, name: "${_(u"Potència")}" },
+            { value: ${costs['exces'].val}, name: "${_(u"Excés")}" },
+            { value: ${costs['reactiva'].val}, name: "${_(u"Reactiva")}" },
           ]
         }
       ]
