@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2024-05-10 13:25+0000\n"
-"PO-Revision-Date: 2024-05-10 11:32+0000\n"
+"POT-Creation-Date: 2024-05-10 13:49+0000\n"
+"PO-Revision-Date: 2024-05-10 11:50+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -429,10 +429,12 @@ msgid ""
 msgstr "Som Energia, SCCL - CIF F55091367 | Pic de Peguera, 9 - 17003 - Girona | "
 
 #: rml:som_estalvi/report/components/graphic.mako:14
-msgid ""
-"DISTRIBUCIÓ\n"
-"DELS COSTOS"
-msgstr "DISTRIBUCIÓN\nDE LOS COSTES"
+msgid "DISTRIBUCIÓ"
+msgstr "DISTRIBUCIÓN"
+
+#: rml:som_estalvi/report/components/graphic.mako:14
+msgid "DELS COSTOS"
+msgstr "DE LOS COSTES"
 
 #: rml:som_estalvi/report/components/graphic.mako:49
 msgid "Energia"
