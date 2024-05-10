@@ -9,7 +9,7 @@
 <html lang="es">
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <head>
-        <script src="${addons_path}/som_estalvi/report/assets/echarts-5.5.0.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.common.min.js" integrity="sha512-klHlINboj5r1sfTjdyb2PJn7ixcYb5zN+WC/gbFlK3r8/nmhmwQ3yvi5q49tX39DcHX/HwPnXTIblG5/cb6IEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <link rel="stylesheet" href="${addons_path}/som_estalvi/report/som_estalvi.css">
         <title>${_(u"SomEnergia informe anual")}</title>
         <style>
