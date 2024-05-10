@@ -16,7 +16,6 @@ class WizardCrearConsultaPobresa(osv.osv_memory):
 
         scp_obj = self.pool.get('som.consulta.pobresa')
         pol_obj = self.pool.get('giscedata.polissa')
-        gff_obj = self.pool.get('giscedata.facturacio.factura')
         imd_obj = self.pool.get('ir.model.data')
 
         active_ids = context.get("active_ids")
@@ -27,10 +26,12 @@ class WizardCrearConsultaPobresa(osv.osv_memory):
         )[1]
 
         for _id in active_ids:
-            pol_id = gff_obj.read(cursor, uid, _id, ['polissa_id'])['polissa_id'][0]
-            pol = pol_obj.browse(cursor, uid, pol_id)
+            pol = pol_obj.browse(cursor, uid, _id)
+            if pol.process_id.name == "Default Process":
+                raise osv.except_osv(
+                    "La pòlissa {} no és bo social".format(pol.name))
             scp_id = scp_obj.create(cursor, uid, {
-                'polissa_id': pol_id,
+                'polissa_id': _id,
                 'section_id': sec_pobresa,
                 'name': '[{}] {} ({})'.format(
                     pol.name, pol.titular.name, pol.cups.id_municipi.name),

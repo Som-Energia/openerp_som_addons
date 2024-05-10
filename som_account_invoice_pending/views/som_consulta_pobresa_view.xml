@@ -17,7 +17,7 @@
                     <field name="date" select="1"/>
                     <field name="date_deadline" select="2"/>
                     <field name="active" select="2"/>
-                    <field name="date_closed"/>
+                    <field name="date_closed" readonly="0"/>
                     <newline />
                     <notebook colspan="4">
                         <page string="General">

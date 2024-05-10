@@ -34,7 +34,7 @@
             <field name="name">Crear una consulta de pobresa</field>
             <field name="key2">client_action_multi</field>
             <field name="key">action</field>
-            <field name="model">giscedata.facturacio.factura</field>
+            <field name="model">giscedata.polissa</field>
             <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_consulta_pobresa'))"/>
         </record>
 
