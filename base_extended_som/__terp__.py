@@ -13,7 +13,9 @@
     "demo_xml": [
         "demo/poweremail_demo_data.xml",
     ],
-    "update_xml": [],
+    "update_xml": [
+        "res_partner_view.xml",
+    ],
     "active": False,
     "installable": True,
 }

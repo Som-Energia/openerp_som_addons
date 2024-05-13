@@ -154,3 +154,42 @@ class TariffCodeNotSupported(SomPolissaException):
             super(TariffCodeNotSupported, self).to_dict(),
             tariff_code=self.tariff_code,
         )
+
+
+class TariffNonExists(SomPolissaException):
+    def __init__(self, tariff):
+        super(TariffNonExists, self).__init__(
+            title=_("Tariff not found"),
+            text="Tariff {} not found".format(tariff)
+        )
+
+    def to_dict(self):
+        return dict(
+            super(TariffNonExists, self).to_dict(),
+        )
+
+
+class InvalidSubsystem(SomPolissaException):
+    def __init__(self, geo_zone):
+        super(InvalidSubsystem, self).__init__(
+            title=_("Wrong geo zone"),
+            text="Wrong geo zone {}".format(geo_zone)
+        )
+
+    def to_dict(self):
+        return dict(
+            super(InvalidSubsystem, self).to_dict(),
+        )
+
+
+class InvalidDates(SomPolissaException):
+    def __init__(self, first_date, last_date):
+        super(InvalidDates, self).__init__(
+            title="Invalid range dates",
+            text="Invalid range dates [{} - {}]".format(first_date, last_date)
+        )
+
+    def to_dict(self):
+        return dict(
+            super(InvalidDates, self).to_dict(),
+        )

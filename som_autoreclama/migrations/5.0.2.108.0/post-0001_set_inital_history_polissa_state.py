@@ -27,6 +27,11 @@ def up(cursor, installed_version):
     if not installed_version:
         return
 
+    return
+    # do not execute, make the setup in phases, too many objects, see:
+    # PR https://github.com/Som-Energia/somenergia-scripts/pull/86
+    # PR https://github.com/Som-Energia/somenergia-scripts/pull/85
+    # PR https://github.com/Som-Energia/somenergia-scripts/pull/84
     uid = 1
     pool = pooler.get_pool(cursor.dbname)
 

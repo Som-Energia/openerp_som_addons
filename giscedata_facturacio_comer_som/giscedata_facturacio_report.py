@@ -2704,7 +2704,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             lines_data[block]["date_to_d"] = (
                 val(l.data_fins)
                 if "date_to_d" not in lines_data[block]
-                or lines_data[block]["date_to_d"] < val(l.data_fins)
+                or lines_data[block]["date_to_d"] > val(l.data_fins)
                 else lines_data[block]["date_to_d"]
             )
             lines_data[block]["date_to"] = dateformat(lines_data[block]["date_to_d"])
@@ -3389,10 +3389,19 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         if not is_TD(pol):
             return {"is_visible": False}
 
-        # Repartiment segons BOE
-        rep_BOE = {"r": 0.0, "d": 81.0, "t": 18.0, "o": 1.0}
+        # Remove the discounts from the amount total
+        flux_solar = 0
+        for line in fact.linia_ids:
+            if line.tipus in ("altres", "cobrament") and line.product_id.code == "PBV":
+                flux_solar += line.price_subtotal
 
-        pie_total = round(fact.amount_total, 2)
+        has_flux = flux_solar > 0
+        amount_total = fact.amount_total - flux_solar
+
+        # Repartiment segons BOE
+        rep_BOE = {"r": 0.76, "d": 71.0, "t": 27.58, "o": 0.66}
+
+        pie_total = round(amount_total, 2)
         pie_renting = round(fact.total_lloguers, 2)
         pie_taxes = round(float(fact.amount_tax), 2)
         pie_tolls = round(fact.total_atr, 2)
@@ -3440,7 +3449,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data = {
             "is_visible": is_TD(pol),
             "factura_id": fact.id,
-            "amount_total": fact.amount_total,
+            "amount_total": amount_total,
             "pie_renting": pie_renting,
             "pie_taxes": pie_taxes,
             "pie_tolls": pie_tolls,
@@ -3448,6 +3457,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "pie_energy": pie_energy,
             "pie_total": pie_total,
             "rep_BOE": rep_BOE,
+            "has_flux": has_flux,
         }
         return data
 

@@ -34,4 +34,11 @@
             <field name="description">Estats pendents no pagables per mostrar "EN PROCES" a la OV. Ex: [3,12,33]</field>
         </record>
     </data>
+    <data noupdate="1">
+        <record id="ir_attachment_category_ov_fiscal" model="ir.attachment.category">
+            <field name="name">OV Fiscal Attachment</field>
+            <field name="code">FISC</field>
+            <field name="ov_available">True</field>
+        </record>
+    </data>
 </openerp>

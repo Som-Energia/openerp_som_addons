@@ -1,20 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
-        <!-- Fer readonly el camp del MAG de pòlissa-->
-        <record model="ir.ui.view" id="giscedata_polissa_mag_readonly_som_tree">
-            <field name="name">giscedata.polissa.mag.readonly.som.tree</field>
-            <field name="model">giscedata.polissa</field>
-            <field name="type">tree</field>
-            <field name="inherit_id" ref="giscedata_repercussio_mecanismo_ajuste_gas.view_giscedata_polissa_form"/>
-            <field name="arch" type="xml">
-                <field name="coef_repercusio_gas" position="replace">
-                    <field name="coef_repercusio_gas" readonly="1"/>
-                </field>
-            </field>
-        </record>
-
-
         <!--     Nova vista de impagats &ndash;&gt;-->
                 <record model="ir.ui.view" id="view_giscedata_polissa_deute_som_tree">
                     <field name="name">giscedata_polissa_deute_som.tree</field>
