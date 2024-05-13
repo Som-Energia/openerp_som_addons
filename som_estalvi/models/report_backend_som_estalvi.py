@@ -13,7 +13,13 @@ class ReportBackendSomEstalvi(ReportBackend):
     _name = "report.backend.som.estalvi"
 
     _decimals = {
-        ('potencia', 'potencies_contractades'): 0,
+        ('potencia', 'potencies_contractades'): 3,
+        ('potencia', 'optimizations', 'optimal_powers_P1'): 3,
+        ('potencia', 'optimizations', 'optimal_powers_P2'): 3,
+        ('potencia', 'optimizations', 'optimal_powers_P3'): 3,
+        ('potencia', 'optimizations', 'optimal_powers_P4'): 3,
+        ('potencia', 'optimizations', 'optimal_powers_P5'): 3,
+        ('potencia', 'optimizations', 'optimal_powers_P6'): 3,
     }
 
     def get_lang(self, cursor, uid, record_id, context=None):
@@ -149,7 +155,9 @@ class ReportBackendSomEstalvi(ReportBackend):
             "potencies_optimes": [],
             "optimizations": optimizations
         }
-        data["optimizations"]["optimal_powers_P6"] = int(data["optimizations"]["optimal_powers_P6"])
+
+        for optimization in data["optimizations"].keys():
+            data["optimizations"][optimization] = float(data["optimizations"][optimization])
 
         for periode in pol.potencies_periode:
             data["potencies_contractades"].append(periode.potencia)
