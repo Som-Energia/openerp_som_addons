@@ -15,6 +15,7 @@
     "init_xml": [],
     "demo_xml": [],
     "update_xml": [
+        "security/ir.model.access.csv",
         "wizard/wizard_contract_power_optimization_view.xml",
         "report/som_estalvi_report.xml",
     ],
