@@ -10,14 +10,14 @@
     "depends": [
         "report_puppeteer",
         "som_polissa",
+        "som_assets",
     ],
     "init_xml": [],
-    "demo_xml": [
-    ],
+    "demo_xml": [],
     "update_xml": [
         "wizard/wizard_contract_power_optimization_view.xml",
         "report/som_estalvi_report.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

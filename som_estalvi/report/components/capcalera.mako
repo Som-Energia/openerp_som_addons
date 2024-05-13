@@ -26,7 +26,7 @@
         </div>
         <div class="titol">
             <span>${_(u"INFORME ANUAL")}</span>
-            <img class="logo" src="${addons_path}/som_estalvi/report/assets/logo.svg" alt="Logo SomEnergia">
+            <img class="logo" src="${addons_path}/som_assets/img/logo.svg" alt="Logo SomEnergia">
         </div>
     </div>
 </%def>
