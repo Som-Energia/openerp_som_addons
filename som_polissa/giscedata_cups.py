@@ -10,13 +10,13 @@ class GiscedataCupsPs(osv.osv):
     _inherit = "giscedata.cups.ps"
 
     _NEW_ORIGENS_CONANY = [
-        ("consums", _(u"Historic consums")),
-        ("factures", _(u"Historic factures")),
-        ("pdf", _(u"Consum 12 factures")),
-        ("consums_periods", _(u"> 12 factures: Historic consums per periodes")),
-        ("estadistic", _(u"< 3 factures: Estadística SOM")),
-        ("usuari", _(u"usuari (webforms)")),
-        ("cnmc", _(u"Entre 3 i 12 factures: Estadística CNMC")),
+        ("consums", _(u"5_Historic consums")),
+        ("factures", _(u"4_Historic factures")),
+        ("pdf", _(u"1_Consum 12 factures")),
+        ("consums_periods", _(u"3_> 12 factures: Historic consums per periodes")),
+        ("estadistic", _(u"1000_< 3 factures: Estadística SOM")),
+        ("usuari", _(u"100_usuari (webforms)")),
+        ("cnmc", _(u"500_Entre 3 i 12 factures: Estadística CNMC")),
     ]
 
     def __init__(self, pool, cursor):

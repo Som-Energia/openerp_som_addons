@@ -1530,7 +1530,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     conany_kwh_p6 += h['consum']
                 if data_ini is None or data_ini > h["data_ini"]:
                     data_ini = h["data_ini"]
-                if data_fin is None or data_fin > h["data_fin"]:
+                if data_fin is None or data_fin < h["data_fin"]:
                     data_fin = h["data_fin"]
 
         if data_ini and data_fin:
@@ -1540,12 +1540,12 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         data = {
             'consum': conany_kwh,
-            'p1': conany_kwh_p1,
-            'p2': conany_kwh_p2,
-            'p3': conany_kwh_p3,
-            'p4': conany_kwh_p4,
-            'p5': conany_kwh_p5,
-            'p6': conany_kwh_p6,
+            'P1': conany_kwh_p1,
+            'P2': conany_kwh_p2,
+            'P3': conany_kwh_p3,
+            'P4': conany_kwh_p4,
+            'P5': conany_kwh_p5,
+            'P6': conany_kwh_p6,
             'days': historic_dies,
         }
         return data
