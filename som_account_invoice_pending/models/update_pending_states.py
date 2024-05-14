@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv
 from datetime import datetime, timedelta, date
-from som_account_invoice_pending_exceptions import (
+from addons.som_account_invoice_pending.models.som_account_invoice_pending_exceptions import (
     UpdateWaitingFor48hException,
     UpdateWaitingCancelledContractsException,
     UpdateWaitingForAnnexIVException,
@@ -148,6 +148,9 @@ class UpdatePendingStates(osv.osv_memory):
             )
             raise e
 
+    def consulta_pobresa_pendent(self, cursor, uid, polissa):
+        return polissa.consulta_pobresa_pendent
+
     def update_waiting_for_48h(self, cursor, uid, context=None):
         logger = logging.getLogger(__name__)
 
@@ -242,9 +245,16 @@ class UpdatePendingStates(osv.osv_memory):
         for factura_id in sorted(factura_bs_ids):
             invoice = fact_obj.read(cursor, uid, factura_id, ["id", "polissa_id"])
             polissa_id = invoice["polissa_id"][0]
-            polissa_state = pol_obj.read(cursor, uid, polissa_id, ["state"])["state"]
+            pol = pol_obj.browse(cursor, uid, polissa_id)
             try:
-                if polissa_state == "baixa":
+                if self.consulta_pobresa_pendent(cursor, uid, pol):
+                    logger.info(
+                        "ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}".format(  # noqa: E501
+                            factura_id=factura_id, exc="Falta consulta pobresa"
+                        )
+                    )
+                    continue
+                if pol.state == "baixa":
                     self.update_waiting_for_annex_cancelled_contracts(
                         cursor, uid, factura_id, traspas_advocats_bs, context
                     )
@@ -388,8 +398,9 @@ class UpdatePendingStates(osv.osv_memory):
             try:
                 invoice = fact_obj.read(cursor, uid, factura_id, ["id", "polissa_id"])
                 polissa_id = invoice["polissa_id"][0]
-                polissa_state = pol_obj.read(cursor, uid, polissa_id, ["state"])["state"]
-                if polissa_state == "baixa":
+                pol = pol_obj.browse(cursor, uid, polissa_id)
+
+                if pol.state == "baixa":
                     self.update_waiting_for_annex_cancelled_contracts(
                         cursor, uid, factura_id, traspas_advocats_dp, context
                     )
@@ -443,9 +454,16 @@ class UpdatePendingStates(osv.osv_memory):
         for factura_id in sorted(factura_bs_ids):
             invoice = fact_obj.read(cursor, uid, factura_id, ["id", "polissa_id"])
             polissa_id = invoice["polissa_id"][0]
-            polissa_state = pol_obj.read(cursor, uid, polissa_id, ["state"])["state"]
+            pol = pol_obj.browse(cursor, uid, polissa_id)
+            if self.consulta_pobresa_pendent(cursor, uid, pol):
+                logger.info(
+                    "ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(  # noqa: E501
+                        factura_id=factura_id, exc="Falta consulta pobresa"
+                    )
+                )
+                continue
             try:
-                if polissa_state == "baixa":
+                if pol.state == "baixa":
                     self.update_waiting_for_annex_cancelled_contracts(
                         cursor, uid, factura_id, traspas_advocats_bs, context
                     )
@@ -921,25 +939,28 @@ class UpdatePendingStates(osv.osv_memory):
     def update_pending_ask_poverty(self, cursor, uid, context=None):
         if context is None:
             context = {}
-
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
         pol_obj = self.pool.get("giscedata.polissa")
+        scp_obj = self.pool.get("som.consulta.pobresa")
 
         pending_ask_poverty_state = self.get_object_id(
             cursor, uid, "som_account_invoice_pending", "pendent_consulta_probresa_pending_state"
         )
-        warning_cut_off_state = self.get_object_id(
-            cursor, uid, "giscedata_facturacio_comer_bono_social", "avis_tall_pending_state"
-        )
         traspas_advocats_bs = self.get_object_id(
             cursor, uid, "som_account_invoice_pending", "pendent_traspas_advocats_pending_state"
         )
+        warning_cut_off_state = self.get_object_id(
+            cursor, uid, "giscedata_facturacio_comer_bono_social", "avis_tall_pending_state"
+        )
+        pobresa_certificada = self.get_object_id(
+            cursor, uid, "som_account_invoice_pending",
+            "probresa_energetica_certificada_pending_state"
+        )
 
         factura_ids = self.get_invoices_with_pending_state(cursor, uid, pending_ask_poverty_state)
-        fact_obj = self.pool.get("giscedata.facturacio.factura")
 
         for factura_id in factura_ids:
             invoice = fact_obj.read(cursor, uid, factura_id)
-
             polissa_id = invoice["polissa_id"][0]
             polissa_state = pol_obj.read(cursor, uid, [polissa_id], ["state"])[0]["state"]
             if polissa_state == "baixa":
@@ -947,8 +968,20 @@ class UpdatePendingStates(osv.osv_memory):
                     cursor, uid, factura_id, traspas_advocats_bs, context
                 )
             else:
-                if not self.poverty_eligible(cursor, uid, polissa_id):
-                    fact_obj.set_pending(cursor, uid, [factura_id], warning_cut_off_state)
+                scp_activa = scp_obj.consulta_pobresa_activa(
+                    cursor, uid, [], partner_id=invoice['partner_id'], polissa_id=polissa_id)
+
+                if not scp_activa and self.poverty_eligible(cursor, uid, polissa_id):
+                    wiz_obj = self.pool.get("wizard.crear.consulta.pobresa")
+                    context = {"active_ids": [factura_id], "active_id": factura_id}
+                    wiz_id = wiz_obj.create(cursor, uid, {}, context=context)
+                    wiz_obj.crear_consulta_pobresa(cursor, uid, wiz_id, context=context)
+
+                new_state = warning_cut_off_state
+                if scp_activa and scp_activa.resolucio:
+                    new_state = pobresa_certificada
+
+                fact_obj.set_pending(cursor, uid, [factura_id], new_state)
 
     def send_fue_reminder_emails(self, cursor, uid, context=None):
         if context is None:

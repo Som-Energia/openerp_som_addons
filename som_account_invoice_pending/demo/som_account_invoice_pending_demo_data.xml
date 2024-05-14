@@ -113,5 +113,8 @@
             <field name="pending_state" ref="som_account_invoice_pending.fue_bo_social_pending_state"/>
             <field name="pending_state_date">2023-05-01 00:00:00</field>
         </record>
+        <record id="giscedata_polissa.polissa_0001" model="giscedata.polissa">
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+        </record>
     </data>
 </openerp>

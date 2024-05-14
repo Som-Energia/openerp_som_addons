@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <!-- Els valors dels records que hi hagi aqui dins sempre s'actualitaran -->
+    <data noupdate="1">
+        <record id="nombre_dies_consulta_pobresa_vigent" model="res.config">
+            <field name="name">nombre_dies_consulta_pobresa_vigent</field>
+            <field name="description">Número de dies en que serà vigent la consulta pobresa</field>
+            <field name="value">335</field>
+        </record>
+    </data>
+</openerp>
