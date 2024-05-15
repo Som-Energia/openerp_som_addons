@@ -46,6 +46,20 @@ class SomConsultaPobresa(osv.osv):
         response = crm_obj.case_pending(cr, uid, crm_ids, *args)
         return response
 
+    def case_log_pobresa(self, cr, uid, ids, *args):
+        crm_obj = self.pool.get('crm.case')
+        consultes = self.browse(cr, uid, ids)
+        crm_ids = [consulta.crm_id.id for consulta in consultes]
+        response = crm_obj.case_log(cr, uid, crm_ids, *args)
+        return response
+
+    def autoassign_pobresa(self, cr, uid, ids, *args):
+        crm_obj = self.pool.get('crm.case')
+        consultes = self.browse(cr, uid, ids)
+        crm_ids = [consulta.crm_id.id for consulta in consultes]
+        response = crm_obj.autoassign(cr, uid, crm_ids, *args)
+        return response
+
     def moure_factures_pobresa(self, cr, uid, cas):
         gff_obj = self.pool.get('giscedata.facturacio.factura')
         imd_obj = self.pool.get("ir.model.data")
