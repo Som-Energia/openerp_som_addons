@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2024-05-10 13:49+0000\n"
-"PO-Revision-Date: 2024-05-10 13:49+0000\n"
+"POT-Creation-Date: 2024-05-15 11:20+0000\n"
+"PO-Revision-Date: 2024-05-15 11:20+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -280,7 +280,7 @@ msgstr ""
 msgid "Optimització de potències maximetre"
 msgstr ""
 
-#: rml:som_estalvi/report/som_estalvi.mako:14
+#: rml:som_estalvi/report/som_estalvi.mako:17
 msgid "SomEnergia informe anual"
 msgstr ""
 
@@ -362,8 +362,8 @@ msgstr ""
 #: rml:som_estalvi/report/components/analisi_potencies.mako:67
 msgid ""
 "Les potències òptimes proposades minimitzen el cost anual total de "
-"potència i són vàlides si es manté un ús similar d’energia en les "
-"mateixes hores."
+"potència i són vàlides si durant el pròxim any es manté un ús similar "
+"d’energia en les mateixes hores."
 msgstr ""
 
 #: rml:som_estalvi/report/components/analisi_potencies.mako:71
@@ -409,14 +409,14 @@ msgstr ""
 msgid "Tarifa:"
 msgstr ""
 
-#: rml:som_estalvi/report/components/capcalera.mako:29
+#: rml:som_estalvi/report/components/capcalera.mako:28
 msgid "INFORME ANUAL"
 msgstr ""
 
 #: rml:som_estalvi/report/components/footer.mako:8
 msgid ""
 "Fins al juny del 2024, es manté la possibilitat de fer més d'una "
-"modificació de potències per als contractes d'empreses i treballador/es "
+"modificació de potències per als contractes d'empreses i treballadors/es "
 "autònoms/es, així com la gratuïtat del tràmit."
 msgstr ""
 
@@ -505,7 +505,7 @@ msgid ""
 msgstr ""
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:37
-msgid "Cost per energia reactiva:"
+msgid "Cost de l'energia reactiva:"
 msgstr ""
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:38
@@ -527,19 +527,19 @@ msgid "Descompte pels excedents:"
 msgstr ""
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:54
-msgid "Inclou la compensació i el Flux Solar."
+msgid "Inclou la compensació i el Flux Solar descomptats."
 msgstr ""
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:64
 msgid ""
-"No s'inclou el lloguer del comptador ni els impostos. Dades dels últims "
-"12 mesos facturats."
+"No incloem el lloguer del comptador i els impostos. Dades dels últims 12 "
+"mesos facturats."
 msgstr ""
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:74
 msgid ""
 "Pots consultar i descarregar les corbes horàries d'ús d'energia per dies,"
-" setmanes, mesos i anys, i fer comparatives per aquests períodes a l'"
+" setmanes, mesos i anys, i fer comparatives entre aquests períodes a l'"
 msgstr ""
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:74

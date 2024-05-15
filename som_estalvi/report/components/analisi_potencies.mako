@@ -58,13 +58,13 @@
                     <%
                         mesos = {'01': _('GEN'), '02': _('FEB'), '03': _('MAR'), '04': _('ABR'), '05': _('MAI'), '06': _('JUN'), '07': _('JUL'), '08': _('AGO'), '09': _('SET'), '10': _('OCT'), '11': _('NOV'), '12': _('DES')}
                     %>
-                    <td>${mesos[val[4:]]}</td>
+                    <td><b>${mesos[val[4:]]}</b></td>
                 %endfor
             </tr>
         </table>
     </div>
     <div class="container">
-    <span class="text-estimacio">${_(u"Les potències òptimes proposades minimitzen el cost anual total de potència i són vàlides si es manté un ús similar d’energia en les mateixes hores.")}</span>
+    <span class="text-estimacio">${_(u"Les potències òptimes proposades minimitzen el cost anual total de potència i són vàlides si durant el pròxim any es manté un ús similar d’energia en les mateixes hores.")}</span>
     </div>
     <div class="container">
         <div class="estimacio">

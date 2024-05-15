@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2024-05-10 13:49+0000\n"
-"PO-Revision-Date: 2024-05-10 11:50+0000\n"
+"POT-Creation-Date: 2024-05-15 11:20+0000\n"
+"PO-Revision-Date: 2024-05-15 09:23+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -284,7 +284,7 @@ msgstr "Precio potencia P6"
 msgid "Optimització de potències maximetre"
 msgstr "Optimización de potencias maxímetro"
 
-#: rml:som_estalvi/report/som_estalvi.mako:14
+#: rml:som_estalvi/report/som_estalvi.mako:17
 msgid "SomEnergia informe anual"
 msgstr "SomEnergia informe anual"
 
@@ -298,7 +298,7 @@ msgstr "Potencias actuales"
 
 #: rml:som_estalvi/report/components/analisi_potencies.mako:16
 msgid "Potències òptimes"
-msgstr "Potencias optimas"
+msgstr "Potencias óptimas"
 
 #: rml:som_estalvi/report/components/analisi_potencies.mako:19
 msgid "Potència màxima registrada"
@@ -309,7 +309,7 @@ msgstr "Potencia máxima registrada"
 msgid ""
 "Si els tres valors del mes corresponen al 85% de la potència contractada, "
 "són estimats."
-msgstr "Si los tres tres valores del mes corresponden al 85% de la potencia contratada, son estimados."
+msgstr "Si los tres valores del mes corresponden al 85% de la potencia contratada, son estimados."
 
 #: rml:som_estalvi/report/components/analisi_potencies.mako:56
 msgid "Tots els valors es mostren en kW"
@@ -333,7 +333,7 @@ msgstr "ABR"
 
 #: rml:som_estalvi/report/components/analisi_potencies.mako:59
 msgid "MAI"
-msgstr "MAI"
+msgstr "MAY"
 
 #: rml:som_estalvi/report/components/analisi_potencies.mako:59
 msgid "JUN"
@@ -366,8 +366,9 @@ msgstr "DIC"
 #: rml:som_estalvi/report/components/analisi_potencies.mako:67
 msgid ""
 "Les potències òptimes proposades minimitzen el cost anual total de potència "
-"i són vàlides si es manté un ús similar d’energia en les mateixes hores."
-msgstr "Las potencias optimas propuestas minimizan el coste anual total de potencia y son validas si se mantiene un uso similar de la energía en las mismas horas."
+"i són vàlides si durant el pròxim any es manté un ús similar d’energia en "
+"les mateixes hores."
+msgstr "Las potencias óptimas propuestas minimizan el coste anual total de potencia y son válidas si durante el próximo año se mantiene un uso similar de energía en las mismas horas."
 
 #: rml:som_estalvi/report/components/analisi_potencies.mako:71
 #: rml:som_estalvi/report/components/analisi_potencies.mako:74
@@ -412,16 +413,16 @@ msgstr "Peaje:"
 msgid "Tarifa:"
 msgstr "Tarifa:"
 
-#: rml:som_estalvi/report/components/capcalera.mako:29
+#: rml:som_estalvi/report/components/capcalera.mako:28
 msgid "INFORME ANUAL"
 msgstr "INFORME ANUAL"
 
 #: rml:som_estalvi/report/components/footer.mako:8
 msgid ""
 "Fins al juny del 2024, es manté la possibilitat de fer més d'una modificació"
-" de potències per als contractes d'empreses i treballador/es autònoms/es, "
+" de potències per als contractes d'empreses i treballadors/es autònoms/es, "
 "així com la gratuïtat del tràmit."
-msgstr "Hasta el junio del 2024, se mantiene la posibilidad de hacer más de una modificación de potencias para los contratos de empresas y trabajador/es autónomos/as, así como la gratuidad del trámite."
+msgstr "Hasta junio de 2024, se mantiene la posibilidad de hacer más de una modificación de potencias para los contratos de empresas y trabajadores/as autónomos/as, así como la gratuidad del trámite."
 
 #: rml:som_estalvi/report/components/footer.mako:13
 msgid ""
@@ -509,8 +510,8 @@ msgid ""
 msgstr "También regulado. Lo analizaremos a continuación junto con el coste de las potencias contratadas."
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:37
-msgid "Cost per energia reactiva:"
-msgstr "Coste para energía reactiva:"
+msgid "Cost de l'energia reactiva:"
+msgstr "Coste de la energía reactiva:"
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:38
 msgid ""
@@ -532,20 +533,20 @@ msgid "Descompte pels excedents:"
 msgstr "Descuento por los excedentes:"
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:54
-msgid "Inclou la compensació i el Flux Solar."
-msgstr "Incluye la compensación y el Flux Solar"
+msgid "Inclou la compensació i el Flux Solar descomptats."
+msgstr "Incluye la compensación y el Flux Solar descontados."
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:64
 msgid ""
-"No s'inclou el lloguer del comptador ni els impostos. Dades dels últims 12 "
+"No incloem el lloguer del comptador i els impostos. Dades dels últims 12 "
 "mesos facturats."
-msgstr "No se incluye el alquiler del contador ni los impuestos. Datos de los últimos 12 meses facturados."
+msgstr "No incluimos el alquiler del contador y los impuestos. Datos de los últimos 12 meses facturados."
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:74
 msgid ""
 "Pots consultar i descarregar les corbes horàries d'ús d'energia per dies, "
-"setmanes, mesos i anys, i fer comparatives per aquests períodes a l'"
-msgstr "Puedes consultar y descargar las curvas horarias de uso de energía por días, semanas, meses y años, y hacer comparativas por estos periodos en la"
+"setmanes, mesos i anys, i fer comparatives entre aquests períodes a l'"
+msgstr "Puedes consultar y descargar las curvas horarias de uso de energía por días, semanas, meses y años, y hacer comparativas entre estos periodos en la "
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:74
 msgid "https://oficinavirtual.somenergia.coop/ca/"

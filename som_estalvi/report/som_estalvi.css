@@ -144,9 +144,10 @@ body {
 
 .taula-potencies th, .taula-potencies td {
     border-collapse: collapse;
-    padding: 2mm;
+    padding: 2mm 1mm;
     text-align: center;
-    font-size: 8pt;
+    font-size: 7pt;
+    min-width: 9mm;
 }
 
 .taula-potencies tr:not(:last-child) td {
