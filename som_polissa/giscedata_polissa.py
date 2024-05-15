@@ -744,7 +744,7 @@ class GiscedataPolissa(osv.osv):
 
         return factura_backend_obj.get_grafica_historic_consum_14_mesos(
             cursor, uid, last_inv[0], context=context
-        )[0]
+        )
 
     def get_consum_anual_backend_gisce(self, cursor, uid, polissa_id, context=None):
         """Consum anual segons query de del backend de la factura de GISCE"""
