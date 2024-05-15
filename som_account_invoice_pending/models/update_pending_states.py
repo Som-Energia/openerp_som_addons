@@ -973,7 +973,8 @@ class UpdatePendingStates(osv.osv_memory):
 
                 if not scp_activa and self.poverty_eligible(cursor, uid, polissa_id):
                     wiz_obj = self.pool.get("wizard.crear.consulta.pobresa")
-                    context = {"active_ids": [factura_id], "active_id": factura_id}
+                    context = {"active_ids": [factura_id],
+                               "active_id": factura_id, "origin": __name__}
                     wiz_id = wiz_obj.create(cursor, uid, {}, context=context)
                     wiz_obj.crear_consulta_pobresa(cursor, uid, wiz_id, context=context)
 
