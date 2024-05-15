@@ -8,8 +8,8 @@
         <div class="dades-resum">
             <table>
                 <colgroup>
-                    <col width="72%"/>
-                    <col width="28%"/>
+                    <col width="70%"/>
+                    <col width="30%"/>
                 </colgroup>
                 <tr>
                     <td>
