@@ -15,6 +15,7 @@ class SomAutoreclamaStateCondition(osv.osv):
         ("F1ok", _("F1 a data correcta a pòlissa")),
         ("CACR1006closed", _("Dies des de ATC R1 006 actual tancat")),
         ("oldPolissa", _("Polissa de baixa x dies o baixa facturada")),
+        ("2_006_in_a_row", _("Dues 006 seguides en X dies")),
     ]
 
     def fit_condition(self, cursor, uid, id, data, namespace, context=None):
@@ -28,6 +29,8 @@ class SomAutoreclamaStateCondition(osv.osv):
                 return data["days_since_current_CACR1006_closed"] > cond_data["days"]
             if cond_data['condition_code'] == 'oldPolissa':
                 return data["days_since_baixa"] >= cond_data["days"] or data["baixa_facturada"]
+            if cond_data['condition_code'] == '2_006_in_a_row':
+                return False
         if namespace == "atc":
             cond_data = self.read(cursor, uid, id, ["subtype_id", "days"], context=context)
             return (
