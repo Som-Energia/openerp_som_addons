@@ -666,7 +666,7 @@
             <field name="priority">10</field>
             <field name="active" eval="True"/>
         </record>
-        <record model="som.autoreclama.state.condition" id="conditions_from_correct_2_006_in_a_row_review_state_workflow_polissa">
+        <record model="som.autoreclama.state.condition" id="conditions_correct_2_006_inarow_review_state_workflow_polissa">
             <field name="days">120</field>
             <field name="condition_code">2_006_in_a_row</field>
             <field name="state_id" ref="correct_state_workflow_polissa"/>
@@ -674,12 +674,12 @@
             <field name="priority">30</field>
             <field name="active" eval="True"/>
         </record>
-        <record model="som.autoreclama.state.condition" id="conditions_from_bucle_2_006_in_a_row_review_state_workflow_polissa">
+        <record model="som.autoreclama.state.condition" id="conditions_bucle_2_006_inarow_review_state_workflow_polissa">
             <field name="days">120</field>
             <field name="condition_code">2_006_in_a_row</field>
             <field name="state_id" ref="loop_state_workflow_polissa"/>
             <field name="next_state_id" ref="review_state_workflow_polissa"/>
-            <field name="priority">30</field>
+            <field name="priority">25</field>
             <field name="active" eval="True"/>
         </record>
         <record id="ir_cron_autoreclama_states_updater" model="ir.cron" forcecreate="1">
