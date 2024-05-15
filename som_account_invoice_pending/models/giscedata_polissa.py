@@ -41,6 +41,8 @@ class GiscedataPolissa(osv.osv):
                 continue
             if not pol.pending_state:
                 continue
+            if pol.process_id.name != 'Bo Social':
+                continue
 
             pol_state_id = aips_obj.search(cr, uid, [
                 ('process_id', '=', pol.process_id.id),
