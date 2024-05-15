@@ -5,7 +5,7 @@
         </div>
         <div>
             <p class="alert-text">
-                    ${_(u"Fins al juny del 2024, es manté la possibilitat de fer més d'una modificació de potències per als contractes d'empreses i treballador/es autònoms/es, així com la gratuïtat del tràmit.")}</div>
+                    ${_(u"Fins al juny del 2024, es manté la possibilitat de fer més d'una modificació de potències per als contractes d'empreses i treballadors/es autònoms/es, així com la gratuïtat del tràmit.")}</div>
             </p>
         </div>
     </div>

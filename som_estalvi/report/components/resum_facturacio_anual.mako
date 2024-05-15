@@ -34,7 +34,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <p><b>${_(u"Cost per energia reactiva:")}</b></p>
+                        <p><b>${_(u"Cost de l'energia reactiva:")}</b></p>
                         <p class="secondary-text">${_(u"A partir de 400 € recomanem la instal·lació de bateries de condensadors.")} <a href="${_(u"https://ca.support.somenergia.coop/article/259-energia-reactiva-que-es-efectes-en-la-factura-i-com-eliminar-la")}">${_(u"Més informació.")}</a></p>
                     </td>
                     <td><b><span style="color: #71805b">${costs['reactiva']} €</span></b></td>
@@ -51,7 +51,7 @@
                 <tr>
                     <td>
                         <p class="text-descompte">${_(u"Descompte pels excedents:")}</p>
-                        <p class="secondary-text text-negre">${_(u"Inclou la compensació i el Flux Solar.")}</p>
+                        <p class="secondary-text text-negre">${_(u"Inclou la compensació i el Flux Solar descomptats.")}</p>
                     </td>
                     <td class="text-descompte"><b>${costs['descompte_generacio']} €</b></td>
                 </tr>
@@ -61,7 +61,7 @@
     <div class="container">
         <div class="note">
             <span>
-                ${_(u"No s'inclou el lloguer del comptador ni els impostos. Dades dels últims 12 mesos facturats.")}
+                ${_(u"No incloem el lloguer del comptador i els impostos. Dades dels últims 12 mesos facturats.")}
             </span>
         </div>
     </div>
@@ -71,7 +71,7 @@
         </div>
         <div>
             <p class="alert-text">
-                ${_(u"Pots consultar i descarregar les corbes horàries d'ús d'energia per dies, setmanes, mesos i anys, i fer comparatives per aquests períodes a l'")}<a href="${_(u"https://oficinavirtual.somenergia.coop/ca/")}">${_(u"Oficina Virtual")}</a>, <b>${_(u"a l'apartat Infoenergia > Veure l'ús de l'energia")}</b>.
+                ${_(u"Pots consultar i descarregar les corbes horàries d'ús d'energia per dies, setmanes, mesos i anys, i fer comparatives entre aquests períodes a l'")}<a href="${_(u"https://oficinavirtual.somenergia.coop/ca/")}">${_(u"Oficina Virtual")}</a>, <b>${_(u"a l'apartat Infoenergia > Veure l'ús de l'energia")}</b>.
             </p>
         </div>
     </div>
