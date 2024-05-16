@@ -1,0 +1,4 @@
+logger = logging.getLogger(
+    'openerp.{0}.move_to_unpaid'.format(__name__)
+)
+logger.error(u"Error has occurred trying to move to unpaid the following invoice IDS: %s", err)
