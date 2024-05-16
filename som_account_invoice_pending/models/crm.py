@@ -16,6 +16,8 @@ class crm_case(osv.osv):
         )[1]
 
         if args and args[0] and args[0].get('origin', False) == 'som.consulta.pobresa':
+            pass
+        else:
             consultes = self.browse(cr, uid, ids)
             for consulta in consultes:
                 if consulta.section_id.id == section_id:
