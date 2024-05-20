@@ -140,7 +140,8 @@ class GiscedataPolissa(osv.osv):
 
         distributor_ids = partner_obj.search(cursor, uid,
             [('ref', '=', distributor_code)]
-        )
+            )
+
         if distributor_ids:
             return distributor_ids[0]
 
