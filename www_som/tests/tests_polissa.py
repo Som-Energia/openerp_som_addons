@@ -282,7 +282,7 @@ class TestPolissaWwwDistri(testing.OOTestCase):
         self.txn.stop()
 
     def test_www_get_distributor_id__without_REE_CODE_TRANSLATION(self):
-        cups = 'ES0031XXXXXXXXXXXXXXXX'  #ENDESA DISTRIBUCIÓN ELÉCTRICA S. L.
+        cups = 'ES0031XXXXXXXXXXXXXXXX'  # ENDESA DISTRIBUCIÓN ELÉCTRICA S. L.
 
         result = self.pol_obj.www_get_distributor_id(
             self.cursor, self.uid, cups
@@ -292,7 +292,7 @@ class TestPolissaWwwDistri(testing.OOTestCase):
 
     @mock.patch.object(res_partner.ResPartner, "search")
     def test_www_get_distributor_id__with_REE_CODE_TRANSLATION(self, mock_res_partner_search):
-        cups = 'ES0390XXXXXXXXXXXXXXXX'  #Electra del Jallas -> Fenosa
+        cups = 'ES0390XXXXXXXXXXXXXXXX'  # Electra del Jallas -> Fenosa
 
         mock_res_partner_search.return_value = [1]
 
@@ -303,7 +303,7 @@ class TestPolissaWwwDistri(testing.OOTestCase):
         self.assertEqual(result, 1)
 
     def test_www_get_distributor_id__distri_non_exists(self):
-        cups = 'ES0390XXXXXXXXXXXXXXXX'  #Electra del Jallas -> Fenosa
+        cups = 'ES0390XXXXXXXXXXXXXXXX'  # Electra del Jallas -> Fenosa
 
         result = self.pol_obj.www_get_distributor_id(
             self.cursor, self.uid, cups
