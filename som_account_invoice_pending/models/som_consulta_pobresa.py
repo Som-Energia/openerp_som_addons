@@ -107,6 +107,18 @@ class SomConsultaPobresa(osv.osv):
                          or False)
         return res
 
+    def _ff_get_nif_titular(self, cr, uid, ids, field, arg, context=None):
+        """ Anem a buscar el titular de la pólissa assignada (si en té) """
+        res = {}
+        if not context:
+            context = {}
+        scp_obj = self.pool.get('som.consulta.pobresa')
+        consultes = scp_obj.browse(cr, uid, ids)
+        for c in consultes:
+            res[c.id] = (c.polissa_id and c.polissa_id.titular_nif
+                         or False)
+        return res
+
     def _ff_get_municipi(self, cr, uid, ids, field, arg, context=None):
         """ Anem a buscar el municipi del cups de la pólissa assignada (si en té) """
         res = {}
@@ -161,6 +173,9 @@ class SomConsultaPobresa(osv.osv):
             _ff_get_email_titular, method=True,
             string="Email titular", type='char', size=128, stored=True),
         'resolucio': fields.selection(RESOLUTION_STATES, 'Resolució', size=16),
+        'nif_titular': fields.function(
+            _ff_get_nif_titular, method=True,
+            string='NIF Titular', type='char', size=128, stored=True),
     }
 
     _defaults = {

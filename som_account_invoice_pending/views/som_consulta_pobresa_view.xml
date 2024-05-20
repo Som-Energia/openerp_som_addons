@@ -26,6 +26,7 @@
                                 <field colspan="4" name="direccio_cups" select="2"/>
                                 <newline/>
                                 <field colspan="3" name="email_partner" select="2"/>
+                                <field colspan="3" name="nif_titular" select="2"/>
                                 <field name="user_id" select="1" domain="[('id','!=', 0)]"/>
                                 <button name="autoassign_pobresa" string="Assign to me" type="object"/>
                             </group>
