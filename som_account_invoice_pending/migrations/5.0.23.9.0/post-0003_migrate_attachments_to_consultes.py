@@ -36,6 +36,9 @@ def up(cursor, installed_version):
 
         scp_id = scp_obj.search(cursor, uid, [("name", "=", crm.name)])
 
+        logger.info('Trobats {} attachments de pobresa energètica per la consulta {}.'.format(
+            len(attachment_list), scp_id[0]))
+
         for att_id in attachment_list:
             if scp_id:
                 att = att_obj.browse(cursor, uid, att_id)
@@ -46,6 +49,8 @@ def up(cursor, installed_version):
                     "datas_fname": att.datas_fname,
                 }
                 att_obj.create(cursor, uid, create_vals)
+                logger.info('Creats {} attachments de pobresa energètica per la consulta {}.'.format(  # noqa: E501
+                    len(attachment_list), scp_id[0]))
 
     logger.info('S\'han creat els adjunts')
 
