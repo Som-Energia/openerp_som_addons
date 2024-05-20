@@ -139,8 +139,8 @@ class GiscedataPolissa(osv.osv):
         partner_obj = self.pool.get("res.partner")
 
         distributor_ids = partner_obj.search(cursor, uid,
-                                            [('ref', '=', distributor_code)]
-                                            )
+                                             [('ref', '=', distributor_code)]
+                                             )
 
         if distributor_ids:
             return distributor_ids[0]
