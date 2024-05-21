@@ -981,6 +981,39 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         factura = fact_obj.browse(cursor, uid, self.invoice_1_id)
         self.assertEqual(factura.pending_state.id, self.avis_tall)
 
+    @mock.patch("giscedata_polissa.giscedata_polissa.GiscedataPolissa.read")
+    def test__update_waiting_for_48h_pending_consulta(self, mock_polissa_read):
+        mock_polissa_read.return_value = [
+            {
+                "id": 1,
+                "name": "1",
+                "cups_np": "Girona",
+                "state": "activa",
+                "consulta_pobresa_pendent": True
+            }
+        ]
+        cursor = self.txn.cursor
+        uid = self.txn.user
+
+        pending_obj = self.pool.get("update.pending.states")
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+        aiph_obj = self.pool.get("account.invoice.pending.history")
+        self._load_data_unpaid_invoices(cursor, uid, [self.waiting_48h_bs, self.waiting_48h_bs])
+
+        pending_obj.update_waiting_for_48h(cursor, uid)
+
+        last_inv = max(self.invoice_1_id, self.invoice_2_id)
+
+        last_pending_id = min(
+            fact_obj.read(cursor, uid, last_inv, ["pending_history_ids"])["pending_history_ids"]
+        )
+        last_pending = aiph_obj.browse(cursor, uid, last_pending_id)
+
+        self.assertEqual(
+            last_pending.observations,
+            u"No s'ha canviat a un altre estat per tenir una consulta de pobresa pendent.",
+        )
+
     @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
     @freeze_time("2024-03-26")
     def test__send_fue_reminder_emails(self, mock_mail):
