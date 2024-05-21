@@ -667,15 +667,15 @@
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_correct_2_006_inarow_review_state_workflow_polissa">
-            <field name="days">120</field>
+            <field name="days">75</field>
             <field name="condition_code">2_006_in_a_row</field>
             <field name="state_id" ref="correct_state_workflow_polissa"/>
             <field name="next_state_id" ref="review_state_workflow_polissa"/>
-            <field name="priority">30</field>
+            <field name="priority">15</field>
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_bucle_2_006_inarow_review_state_workflow_polissa">
-            <field name="days">120</field>
+            <field name="days">20</field>
             <field name="condition_code">2_006_in_a_row</field>
             <field name="state_id" ref="loop_state_workflow_polissa"/>
             <field name="next_state_id" ref="review_state_workflow_polissa"/>

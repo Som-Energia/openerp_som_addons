@@ -112,10 +112,17 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         return updated, not_updated, errors, msg, summary
 
     def update_item_if_possible(self, cursor, uid, item_id, namespace, context=None):
+        if not context:
+            context = {}
+
         item_obj = self.pool.get("giscedata." + namespace)
         history_obj = self.pool.get("som.autoreclama.state.history." + namespace)
         state_obj = self.pool.get("som.autoreclama.state")
         cond_obj = self.pool.get("som.autoreclama.state.condition")
+        cfg_obj = self.pool.get('res.config')
+        context['days_ago_R1006'] = int(cfg_obj.get(
+            cursor, uid, "som_autoreclama_2_006_in_a_row_days_ago", "120")
+        )
         item_data = item_obj.get_autoreclama_data(cursor, uid, item_id, context)
 
         state = item_obj.read(cursor, uid, item_id, ["autoreclama_state"], context)

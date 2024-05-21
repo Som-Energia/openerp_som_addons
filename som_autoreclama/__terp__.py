@@ -29,6 +29,7 @@
         "security/som_autoreclama.xml",
         "security/ir.model.access.csv",
         "wizard/wizard_massive_create_r1029_view.xml",
+        "res_config_data.xml",
     ],
     "active": False,
     "installable": True,

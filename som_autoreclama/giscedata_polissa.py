@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 
 class GiscedataPolissa(osv.osv):
@@ -10,6 +10,9 @@ class GiscedataPolissa(osv.osv):
     _inherit = "giscedata.polissa"
 
     def get_autoreclama_data(self, cursor, uid, id, context=None):
+        atc_obj = self.pool.get("giscedata.atc")
+        data_obj = self.pool.get("ir.model.data")
+
         data = self.read(
             cursor,
             uid,
@@ -54,7 +57,6 @@ class GiscedataPolissa(osv.osv):
                 context=context
             )
             if values['generated_atc_id']:
-                atc_obj = self.pool.get("giscedata.atc")
                 atc_data = atc_obj.read(
                     cursor, uid,
                     values['generated_atc_id'][0],
@@ -71,11 +73,27 @@ class GiscedataPolissa(osv.osv):
                 cacr1006_closed_dt = datetime.strptime(cacr1006_closed, "%Y-%m-%d")
                 days_since_current_cacr1006 = (datetime.today() - cacr1006_closed_dt).days
 
+        days_ago = context['days_ago_R1006']
+        id_r1_006 = data_obj.get_object_reference(
+            cursor, uid, "giscedata_subtipus_reclamacio", "subtipus_reclamacio_006"
+        )[1]
+        str_date_limit = (date.today() - timedelta(days=days_ago)).strftime("%Y-%m-%d")
+        atc_006_ids = atc_obj.search(
+            cursor, uid,
+            [
+                ('polissa_id', '=', id),
+                ('subtipus_id', '=', id_r1_006),
+                ('date', '>', str_date_limit),
+            ],
+            context={'active_test': False}
+        )
+
         return {
             'days_without_F1': days_since_last_f1,
             'days_since_current_CACR1006_closed': days_since_current_cacr1006,
             'days_since_baixa': days_baixa,
             'baixa_facturada': baixa and facturada,
+            'CACR1006s_in_last_conf_days': len(atc_006_ids),
         }
 
     # Create and setup autoreclama history to the new created polissa object

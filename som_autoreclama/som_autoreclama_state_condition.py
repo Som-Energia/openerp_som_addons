@@ -30,7 +30,10 @@ class SomAutoreclamaStateCondition(osv.osv):
             if cond_data['condition_code'] == 'oldPolissa':
                 return data["days_since_baixa"] >= cond_data["days"] or data["baixa_facturada"]
             if cond_data['condition_code'] == '2_006_in_a_row':
-                return False
+                return (
+                    data["days_since_current_CACR1006_closed"] > cond_data["days"]
+                    and data["CACR1006s_in_last_conf_days"] >= 2
+                )
         if namespace == "atc":
             cond_data = self.read(cursor, uid, id, ["subtype_id", "days"], context=context)
             return (
