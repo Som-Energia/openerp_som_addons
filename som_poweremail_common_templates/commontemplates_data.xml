@@ -42,7 +42,7 @@
         </record>
     </data>
     <data noupdate="1">
-        <record model="poweremail.templates" id="common_template_rejection_footer">
+        <record model="poweremail.templates" id="common_template_rejection_text">
             <field name="name">Common template rejection text</field>
             <field name="object_name" model="ir.model" search="[('model', '=', 'poweremail.templates')]"/>
             <field eval="0" name="save_to_drafts"/>
@@ -58,25 +58,11 @@
             <field name="lang"></field>
             <field name="copyvalue"></field>
             <field eval="0" name="send_on_write"/>
-            <field name="def_body_text"><![CDATA[<!doctype html>
-<font size="1" style="color:grey">
-    <p>
-        <p>
-            [CA] <strong>Dret de desistiment.</strong> <br>Totes les persones consumidores de la cooperativa disposen de 14 dies naturals des de la data del contracte per desistir dels serveis. En cas que vulguis desistir, és necessari que ens notifiquis la teva decisió per correu electrònic a <a href="mailto:comercialitzacio@somenergia.coop">comercialitzacio@somenergia.coop</a>, o per correu postal a SOM ENERGIA SCCL c/ Pic de Peguera 11, 17003 Girona. Si vols, pots utilitzar el text de desistiment que tens <b><a href="https://docs.google.com/document/d/10CzheqAYQs5lwvKpJBkaiBEdsHZjY6TZoeBDN-mOfT0/edit">en aquesta plantilla</a></b>.<br>
-            <strong>Conseqüències del desistiment.</strong> <br>Et tornarem els pagaments que hagis fet, si és el cas, com a molt tard en 14 dies naturals a partir de la data en què ens comuniquis la teva decisió. Efectuarem el reemborsament, sense que això suposi cap despesa per part teva, seguint el mateix mètode de pagament que hagis utilitzat, a no ser que ens n'indiquis un altre. En cas que s'hagi activat el subministrament d'electricitat, hauràs d'abonar el consum corresponent als dies pels quals t'haguem prestat el servei.<br>
-            A Som Energia <strong>no tens cap obligació de permanència</strong>. En el moment que vulguis, pots canviar de companyia comercialitzadora. Som una cooperativa d'electricitat 100% renovable sense ànim de lucre i un dels nostres principis és oferir el preu més ajustat possible. No oferim ofertes especials, ni clàusules addicionals, ni lletra petita. La transparència, el bon tracte, uns preus ajustats, el treball per un canvi de model energètic, són alguns dels valors de Som Energia i el motiu pel qual tanta gent se suma al projecte i continua amb nosaltres sense cap clàusula de permanència.
-        </p>
-        <p>
-            [ES] <b>Derecho de desistimiento.</b> Todas las personas consumidoras de la cooperativa disponen de 14 días naturales desde la fecha del contrato para desistir de los servicios. Si quieres desistir, es necesario que nos notifiques tu decisión por correo electrónico a <a href="mailto:comercializacion@somenergia.coop">comercializacion@somenergia.coop</a>, o por correo postal a SOM ENERGIA SCCL c/Pic de Peguera 11, 17003 Girona. Para hacerlo, puedes utilizar el texto que figura <b><a href="https://docs.google.com/document/d/1KOnlw370Fkv8VX8mw2qfC7zvPKnAmptcGsvXU-4tMCc/edit">en esta plantilla</a></b>. <br>
-            <b>Consecuencias del desistimiento.</b> Te devolveremos todos los pagos recibidos, si los hay, dentro de 14 días naturales a partir de la fecha en la que nos comuniques tu decisión. Efectuaremos dicho reembolso, sin que esto suponga ningún gasto para ti, utilizando el mismo medio de pago que hayas empleado para la transacción inicial, a no ser que nos indiques lo contrario. En caso de que ya se encuentre activo el suministro de electricidad, deberás abonarnos el consumo correspondiente a los días en que te hayamos prestado servicio. <br>
-            En Som Energia <b>no tienes obligación de permanencia.</b> Cuando quieras, puedes cambiar de compañia comercializadora. Somos una cooperativa 100% renovable sin ánimo de lucro y uno de nuestros principios es ofrecer el precio lo más ajustado posible. No ofrecemos ofertas especiales, ni cláusulas adicionales ni letra pequeña. La transparencia, el buen trato, unos precios ajustados, el trabajo para un cambio de modelo energético, son algunos de los valores de Som Energia y el motivo por el cual tanta gente se suma al proyecto y sigue con nosotros, sin ninguna cláusula de permanencia.
-        </p>
-    </p>
-</font>]]> </field>
+            <field name="def_body_text"><![CDATA[ Text desistiment]]> </field>
         </record>
 
-        <record model="poweremail.templates" id="common_template_rejection_text_ca">
-            <field name="name">Common template rejection text ca_ES</field>
+        <record model="poweremail.templates" id="common_template_modi_rejection_text">
+            <field name="name">Common template modi rejection text</field>
             <field name="object_name" model="ir.model" search="[('model', '=', 'poweremail.templates')]"/>
             <field eval="0" name="save_to_drafts"/>
             <field name="model_int_name">poweremail.templates</field>
@@ -91,26 +77,7 @@
             <field name="lang"></field>
             <field name="copyvalue"></field>
             <field eval="0" name="send_on_write"/>
-            <field name="def_body_text"><![CDATA[ Text desistiment ca_ES ]]> </field>
-        </record>
-
-        <record model="poweremail.templates" id="common_template_rejection_text_es">
-            <field name="name">Common template rejection text es_ES</field>
-            <field name="object_name" model="ir.model" search="[('model', '=', 'poweremail.templates')]"/>
-            <field eval="0" name="save_to_drafts"/>
-            <field name="model_int_name">poweremail.templates</field>
-            <field name="def_to">""</field>
-            <field name="def_bcc"></field>
-            <field eval="0" name="auto_email"/>
-            <field eval="0" name="single_email"/>
-            <field eval="0" name="use_sign"/>
-            <field name="def_subject"></field>
-            <field name="template_language">mako</field>
-            <field eval="0" name="send_on_create"/>
-            <field name="lang"></field>
-            <field name="copyvalue"></field>
-            <field eval="0" name="send_on_write"/>
-            <field name="def_body_text"><![CDATA[ Texto desistimiento es_ES ]]> </field>
+            <field name="def_body_text"><![CDATA[ Text desistiment modi]]> </field>
         </record>
     </data>
     <data noupdate="1">
