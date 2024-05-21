@@ -86,7 +86,7 @@ class GiscedataPolissa(osv.osv):
                 cacr1006_closed_dt = datetime.strptime(cacr1006_closed, "%Y-%m-%d")
                 days_since_current_cacr1006 = (datetime.today() - cacr1006_closed_dt).days
 
-        days_ago = context['days_ago_R1006']
+        days_ago = context.get('days_ago_R1006', 0)
         id_r1_006 = data_obj.get_object_reference(
             cursor, uid, "giscedata_subtipus_reclamacio", "subtipus_reclamacio_006"
         )[1]

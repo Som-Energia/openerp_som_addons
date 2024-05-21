@@ -1172,6 +1172,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
             'days_since_current_CACR1006_closed': 21,
             'days_since_baixa': 0,
             'baixa_facturada': False,
+            'CACR1006s_in_last_conf_days': 1,
         })
         with mock.patch(
             'som_autoreclama.giscedata_polissa.GiscedataPolissa.get_autoreclama_data',
@@ -1208,6 +1209,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
             'days_since_current_CACR1006_closed': 20,
             'days_since_baixa': 0,
             'baixa_facturada': False,
+            'CACR1006s_in_last_conf_days': 1,
         })
         with mock.patch(
             'som_autoreclama.giscedata_polissa.GiscedataPolissa.get_autoreclama_data',
