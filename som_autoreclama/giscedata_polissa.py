@@ -9,6 +9,19 @@ class GiscedataPolissa(osv.osv):
     _name = "giscedata.polissa"
     _inherit = "giscedata.polissa"
 
+    def som_autoreclama_add_to_info_gestio_endarrerida(self, cursor, uid, pol_id, params, context=None):  # noqa: E501
+        data = self.read(cursor, uid, pol_id, ['info_gestio_endarrerida'])
+        if 'info_gestio_endarrerida' in data and data['info_gestio_endarrerida']:
+            text = "\n" + data['info_gestio_endarrerida']
+        else:
+            text = ""
+
+        head = params.get("message", "")
+        timestamp = datetime.today().strftime("%Y-%m-%d_%H:%M:%S")
+        line = u"{} {}".format(timestamp, head)
+
+        self.write(cursor, uid, pol_id, {'info_gestio_endarrerida': line + text})
+
     def get_autoreclama_data(self, cursor, uid, id, context=None):
         atc_obj = self.pool.get("giscedata.atc")
         data_obj = self.pool.get("ir.model.data")
