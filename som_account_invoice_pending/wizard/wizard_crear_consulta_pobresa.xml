@@ -26,6 +26,7 @@
             <field name="view_mode">form</field>
             <field name="target">new</field>
             <field name="view_id" ref="wizard_crear_consulta_pobresa_form"/>
+            <field name="context">{'origin': 'giscedata.polissa'}</field>
         </record>
 
         <!-- Afegim l'accio al model Factura-->

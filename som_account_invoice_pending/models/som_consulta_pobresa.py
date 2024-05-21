@@ -32,6 +32,34 @@ class SomConsultaPobresa(osv.osv):
 
         return response
 
+    def case_open_pobresa(self, cr, uid, ids, *args):
+        crm_obj = self.pool.get('crm.case')
+        consultes = self.browse(cr, uid, ids)
+        crm_ids = [consulta.crm_id.id for consulta in consultes]
+        response = crm_obj.case_open(cr, uid, crm_ids, *args)
+        return response
+
+    def case_pending_pobresa(self, cr, uid, ids, *args):
+        crm_obj = self.pool.get('crm.case')
+        consultes = self.browse(cr, uid, ids)
+        crm_ids = [consulta.crm_id.id for consulta in consultes]
+        response = crm_obj.case_pending(cr, uid, crm_ids, *args)
+        return response
+
+    def case_log_pobresa(self, cr, uid, ids, *args):
+        crm_obj = self.pool.get('crm.case')
+        consultes = self.browse(cr, uid, ids)
+        crm_ids = [consulta.crm_id.id for consulta in consultes]
+        response = crm_obj.case_log(cr, uid, crm_ids, *args)
+        return response
+
+    def autoassign_pobresa(self, cr, uid, ids, *args):
+        crm_obj = self.pool.get('crm.case')
+        consultes = self.browse(cr, uid, ids)
+        crm_ids = [consulta.crm_id.id for consulta in consultes]
+        response = crm_obj.autoassign(cr, uid, crm_ids, *args)
+        return response
+
     def moure_factures_pobresa(self, cr, uid, cas):
         gff_obj = self.pool.get('giscedata.facturacio.factura')
         imd_obj = self.pool.get("ir.model.data")
@@ -76,6 +104,18 @@ class SomConsultaPobresa(osv.osv):
         consultes = scp_obj.browse(cr, uid, ids)
         for c in consultes:
             res[c.id] = (c.polissa_id and c.polissa_id.titular.name
+                         or False)
+        return res
+
+    def _ff_get_nif_titular(self, cr, uid, ids, field, arg, context=None):
+        """ Anem a buscar el titular de la pólissa assignada (si en té) """
+        res = {}
+        if not context:
+            context = {}
+        scp_obj = self.pool.get('som.consulta.pobresa')
+        consultes = scp_obj.browse(cr, uid, ids)
+        for c in consultes:
+            res[c.id] = (c.polissa_id and c.polissa_id.titular_nif
                          or False)
         return res
 
@@ -133,6 +173,9 @@ class SomConsultaPobresa(osv.osv):
             _ff_get_email_titular, method=True,
             string="Email titular", type='char', size=128, stored=True),
         'resolucio': fields.selection(RESOLUTION_STATES, 'Resolució', size=16),
+        'nif_titular': fields.function(
+            _ff_get_nif_titular, method=True,
+            string='NIF Titular', type='char', size=128, stored=True),
     }
 
     _defaults = {

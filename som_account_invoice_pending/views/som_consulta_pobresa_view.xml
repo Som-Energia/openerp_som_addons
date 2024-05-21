@@ -26,10 +26,9 @@
                                 <field colspan="4" name="direccio_cups" select="2"/>
                                 <newline/>
                                 <field colspan="3" name="email_partner" select="2"/>
-                                <button name="remind_partner" states="open,pending" string="Send Reminder" type="object"/>
+                                <field colspan="3" name="nif_titular" select="2"/>
                                 <field name="user_id" select="1" domain="[('id','!=', 0)]"/>
-                                <button name="autoassign" string="Assign to me" type="object"/>
-                                <button name="remind_user" states="open,pending" string="Send Reminder" type="object"/>
+                                <button name="autoassign_pobresa" string="Assign to me" type="object"/>
                             </group>
                             <group col="8">
                             <field colspan="2" name="numero_registre" select="1"/>
@@ -54,11 +53,8 @@
                                 </field>
                                 <group col="2" colspan="2" expand="1">
                                     <field name="canal_id"/>
-                                    <button colspan="2" name="add_reply" states="open" string="Add Last Mail for Replying" type="object"/>
                                     <field colspan="2" name="description" nolabel="1" select="2"/>
-                                    <button name="case_log_reply" states="open" string="Send Partner &amp; Historize" type="object" colspan="1"/>
-                                    <button name="case_log_remind_partner" states="open" string="Remind Partner &amp; Historize" type="object" colspan="1"/>
-                                    <button name="case_log" states="open" string="Historize" type="object" colspan="2"/>
+                                    <button name="case_log_pobresa" states="open" string="Historize" type="object" colspan="2"/>
                                 </group>
                             </group>
                         </page>
@@ -77,9 +73,9 @@
                     </notebook>
                     <group col="6" colspan="4">
                         <field name="state" select="1" readonly="1"/>
-                        <button name="case_open" states="draft,pending" string="Open" type="object"/>
+                        <button name="case_open_pobresa" states="draft,pending" string="Open" type="object"/>
                         <button name="case_close_pobresa" states="draft,open,pending" string="Close" type="object"/>
-                        <button name="case_pending" states="draft,open" string="Pending" type="object"/>
+                        <button name="case_pending_pobresa" states="draft,open" string="Pending" type="object"/>
                     </group>
                 </form>
             </field>

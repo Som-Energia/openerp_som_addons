@@ -180,6 +180,7 @@ class UpdatePendingStates(osv.osv_memory):
         factura_dp_ids = self.get_invoices_with_pending_state(cursor, uid, waiting_48h_dp)
         fact_obj = self.pool.get("giscedata.facturacio.factura")
         pol_obj = self.pool.get("giscedata.polissa")
+        aiph_obj = self.pool.get("account.invoice.pending.history")
 
         polisses_factures = {}
 
@@ -252,6 +253,26 @@ class UpdatePendingStates(osv.osv_memory):
                         "ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}".format(  # noqa: E501
                             factura_id=factura_id, exc="Falta consulta pobresa"
                         )
+                    )
+                    pending_ids = fact_obj.read(cursor, uid, factura_id, ["pending_history_ids"])[
+                        "pending_history_ids"
+                    ]
+                    current_state_id = fact_obj.read(cursor, uid, factura_id, ["pending_state"])[
+                        "pending_state"
+                    ][0]
+                    current_peding_id = max(
+                        aiph_obj.search(
+                            cursor,
+                            uid,
+                            [
+                                ("id", "in", pending_ids),
+                                ("pending_state_id", "=", current_state_id),
+                            ],
+                        )
+                    )
+                    current_pending = aiph_obj.browse(cursor, uid, current_peding_id)
+                    current_pending.historize(
+                        message=u"No s'ha canviat a un altre estat per tenir una consulta de pobresa pendent."  # noqa: E501
                     )
                     continue
                 if pol.state == "baixa":
@@ -973,7 +994,9 @@ class UpdatePendingStates(osv.osv_memory):
 
                 if not scp_activa and self.poverty_eligible(cursor, uid, polissa_id):
                     wiz_obj = self.pool.get("wizard.crear.consulta.pobresa")
-                    context = {"active_ids": [factura_id], "active_id": factura_id}
+                    context = {"active_ids": [factura_id],
+                               "active_id": factura_id,
+                               "origin": 'giscedata.facturacio.factura'}
                     wiz_id = wiz_obj.create(cursor, uid, {}, context=context)
                     wiz_obj.crear_consulta_pobresa(cursor, uid, wiz_id, context=context)
 
