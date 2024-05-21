@@ -142,14 +142,22 @@ class GiscedataPolissaInfoenergia(osv.osv):
         if not ids:
             return False
 
-        conany = False
         try:
-            data = rprt_obj.get_components_data(cursor, uid, [ids[0]])
-            conany = data[data.keys()[0]].energy_consumption_graphic_td.total_any
+            data = rprt_obj.get_conany_kwh_energy_consumption_graphic_td_data(cursor, uid, ids[0])
         except Exception:
-            pass
+            return False
 
-        return conany
+        limit_days = eval(self.pool.get("res.config").get(
+            cursor, uid, "som_conany_pdf_days_limit", "[355,375]"
+        ))
+        min_days = min(limit_days)
+        max_days = max(limit_days)
+        if min_days > data['days'] or data['days'] > max_days:
+            return False
+
+        data.pop('days')
+        data.pop('consum')
+        return data
 
     def _conany_updater(self, cursor, uid, context=None):
         cups_obj = self.pool.get("giscedata.cups.ps")

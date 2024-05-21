@@ -370,5 +370,10 @@
             <field name="value">0</field>
             <field name="description">Numero màxim de workers dedicats a crear enviaments d'Infoenergia en paral·lel. Si s'indica '0' (per defecte), no hi ha limit.</field>
         </record>
+        <record model="res.config" id="som_conany_pdf_days_limit" >
+            <field name="name">som_conany_pdf_days_limit</field>
+            <field name="value">[355,375]</field>
+            <field name="description">Dies minim i maxim per considerar que el consum anual calculat via pdf és correcte.</field>
+        </record>
     </data>
 </openerp>
