@@ -86,20 +86,38 @@ class GiscedataPolissa(osv.osv):
                 cacr1006_closed_dt = datetime.strptime(cacr1006_closed, "%Y-%m-%d")
                 days_since_current_cacr1006 = (datetime.today() - cacr1006_closed_dt).days
 
-        days_ago = context.get('days_ago_R1006', 0)
-        id_r1_006 = data_obj.get_object_reference(
-            cursor, uid, "giscedata_subtipus_reclamacio", "subtipus_reclamacio_006"
-        )[1]
-        str_date_limit = (date.today() - timedelta(days=days_ago)).strftime("%Y-%m-%d")
-        atc_006_ids = atc_obj.search(
-            cursor, uid,
-            [
-                ('polissa_id', '=', id),
-                ('subtipus_id', '=', id_r1_006),
-                ('date', '>', str_date_limit),
-            ],
-            context={'active_test': False}
-        )
+        atc_006_ids = []
+        if 'days_ago_R1006' in context:
+            days_ago = context.get('days_ago_R1006', 0)
+            str_date_limit = (date.today() - timedelta(days=days_ago)).strftime("%Y-%m-%d")
+
+            id_r1_006 = data_obj.get_object_reference(
+                cursor, uid, "giscedata_subtipus_reclamacio", "subtipus_reclamacio_006"
+            )[1]
+            review_state_id = data_obj.get_object_reference(
+                cursor, uid, "som_autoreclama", "review_state_workflow_polissa"
+            )[1]
+            history_obj = self.pool.get("som.autoreclama.state.history.polissa")
+            h_ids = history_obj.search(cursor, uid, [
+                ("polissa_id", "=", id),
+                ("state_id", "=", review_state_id),
+            ])
+            if h_ids:
+                last_date_review = history_obj.read(
+                    cursor, uid, h_ids[0], ['change_date']
+                )['change_date']
+                if last_date_review and last_date_review > str_date_limit:
+                    str_date_limit = last_date_review
+
+            atc_006_ids = atc_obj.search(
+                cursor, uid,
+                [
+                    ('polissa_id', '=', id),
+                    ('subtipus_id', '=', id_r1_006),
+                    ('date', '>', str_date_limit),
+                ],
+                context={'active_test': False}
+            )
 
         return {
             'days_without_F1': days_since_last_f1,

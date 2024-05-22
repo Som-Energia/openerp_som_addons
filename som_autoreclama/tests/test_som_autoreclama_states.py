@@ -566,6 +566,8 @@ class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
         agent_actual="10",
         state="pending",
         active=True,
+        date_closed=None,
+        date=None,
     ):
         atc_obj = self.get_model("giscedata.atc")
         _, polissa_id = self.get_object_reference(
@@ -596,16 +598,20 @@ class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
         atc_id = atc_obj.create_general_atc_r1_case_via_wizard(
             self.cursor, self.uid, new_case_data, {}
         )
-
+        last_write = {
+            "agent_actual": agent_actual,
+            "state": state,
+            "active": active,
+        }
+        if date_closed:
+            last_write['date_closed'] = date_closed
+        if date:
+            last_write['date'] = date
         atc_obj.write(
             self.cursor,
             self.uid,
             atc_id,
-            {
-                "agent_actual": agent_actual,
-                "state": state,
-                "active": active,
-            },
+            last_write,
         )
         atc = atc_obj.browse(self.cursor, self.uid, atc_id)
         log_obj = self.get_model("crm.case.log")
@@ -854,6 +860,143 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
         _, cond_id = self.get_object_reference(
             "som_autoreclama",
             "conditions_receive_f1_loop_state_workflow_polissa"
+        )
+
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa", {})
+        self.assertEqual(ok, False)
+
+    def test_fit_polissa_condition__2_006_in_a_row_yes(self):
+        polissa_obj = self.get_model("giscedata.polissa")
+        cond_obj = self.get_model("som.autoreclama.state.condition")
+        imd_obj = self.get_model("ir.model.data")
+        polh_obj = self.get_model("som.autoreclama.state.history.polissa")
+
+        context = {'days_ago_R1006': 120}
+        pol_id = self.build_polissa(f1_date_days_from_today=76)
+        atc1_id = self.build_atc(
+            subtype="006", state='done', date_closed=today_minus_str(85), date=today_minus_str(85),
+            r1=False)
+        atc2_id = self.build_atc(
+            subtype="006", state='done', date_closed=today_minus_str(80), date=today_minus_str(80),
+            r1=False)
+
+        correct_state_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_autoreclama", "correct_state_workflow_polissa"
+        )[1]
+        polh_obj.historize(
+            self.cursor, self.uid, pol_id, correct_state_id, today_minus_str(85), atc1_id)
+        polh_obj.historize(
+            self.cursor, self.uid, pol_id, correct_state_id, today_minus_str(80), atc2_id)
+
+        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, context)
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_correct_2_006_inarow_review_state_workflow_polissa"
+        )
+
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa", {})
+        self.assertEqual(ok, True)
+
+    def test_fit_polissa_condition__2_006_in_a_row_no(self):
+        polissa_obj = self.get_model("giscedata.polissa")
+        cond_obj = self.get_model("som.autoreclama.state.condition")
+        imd_obj = self.get_model("ir.model.data")
+        polh_obj = self.get_model("som.autoreclama.state.history.polissa")
+
+        context = {'days_ago_R1006': 120}
+        pol_id = self.build_polissa(f1_date_days_from_today=76)
+        atc1_id = self.build_atc(
+            subtype="006", state='done', date_closed=today_minus_str(85), date=today_minus_str(85),
+            r1=False)
+        atc2_id = self.build_atc(
+            subtype="006", state='done', date_closed=today_minus_str(20), date=today_minus_str(85),
+            r1=False)
+
+        correct_state_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_autoreclama", "correct_state_workflow_polissa"
+        )[1]
+        polh_obj.historize(
+            self.cursor, self.uid, pol_id, correct_state_id, today_minus_str(85), atc1_id)
+        polh_obj.historize(
+            self.cursor, self.uid, pol_id, correct_state_id, today_minus_str(20), atc2_id)
+
+        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, context)
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_correct_2_006_inarow_review_state_workflow_polissa"
+        )
+
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa", {})
+        self.assertEqual(ok, False)
+
+    def test_fit_polissa_condition__2_006_in_a_row_with_previous_review_state_yes(self):
+        polissa_obj = self.get_model("giscedata.polissa")
+        cond_obj = self.get_model("som.autoreclama.state.condition")
+        imd_obj = self.get_model("ir.model.data")
+        polh_obj = self.get_model("som.autoreclama.state.history.polissa")
+
+        context = {'days_ago_R1006': 120}
+        pol_id = self.build_polissa(f1_date_days_from_today=76)
+        atc1_id = self.build_atc(
+            subtype="006", state='done', date_closed=today_minus_str(85), date=today_minus_str(85),
+            r1=False)
+        atc2_id = self.build_atc(
+            subtype="006", state='done', date_closed=today_minus_str(80), date=today_minus_str(85),
+            r1=False)
+
+        correct_state_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_autoreclama", "correct_state_workflow_polissa"
+        )[1]
+        review_state_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_autoreclama", "review_state_workflow_polissa"
+        )[1]
+        polh_obj.historize(
+            self.cursor, self.uid, pol_id, review_state_id, today_minus_str(90), atc1_id)
+        polh_obj.historize(
+            self.cursor, self.uid, pol_id, correct_state_id, today_minus_str(85), atc1_id)
+        polh_obj.historize(
+            self.cursor, self.uid, pol_id, correct_state_id, today_minus_str(80), atc2_id)
+
+        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, context)
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_correct_2_006_inarow_review_state_workflow_polissa"
+        )
+
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa", {})
+        self.assertEqual(ok, True)
+
+    def test_fit_polissa_condition__2_006_in_a_row_with_previous_review_state_no(self):
+        polissa_obj = self.get_model("giscedata.polissa")
+        cond_obj = self.get_model("som.autoreclama.state.condition")
+        imd_obj = self.get_model("ir.model.data")
+        polh_obj = self.get_model("som.autoreclama.state.history.polissa")
+
+        context = {'days_ago_R1006': 120}
+        pol_id = self.build_polissa(f1_date_days_from_today=76)
+        atc1_id = self.build_atc(
+            subtype="006", state='done', date_closed=today_minus_str(85), date=today_minus_str(85),
+            r1=False)
+        atc2_id = self.build_atc(
+            subtype="006", state='done', date_closed=today_minus_str(80), date=today_minus_str(80),
+            r1=False)
+
+        correct_state_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_autoreclama", "correct_state_workflow_polissa"
+        )[1]
+        review_state_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_autoreclama", "review_state_workflow_polissa"
+        )[1]
+        polh_obj.historize(
+            self.cursor, self.uid, pol_id, correct_state_id, today_minus_str(85), atc1_id)
+        polh_obj.historize(
+            self.cursor, self.uid, pol_id, review_state_id, today_minus_str(82), None)
+        polh_obj.historize(
+            self.cursor, self.uid, pol_id, correct_state_id, today_minus_str(80), atc2_id)
+        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, context)
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_correct_2_006_inarow_review_state_workflow_polissa"
         )
 
         ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa", {})
