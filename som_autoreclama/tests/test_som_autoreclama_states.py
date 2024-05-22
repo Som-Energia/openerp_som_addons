@@ -1241,6 +1241,77 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         self.assertGreaterEqual(len(pol.autoreclama_history_ids), 1)
         self.assertEqual(cnd_id, None)
 
+    def test_update_polissa_if_possible__on_correct__review__do_action(self):
+        pol_obj = self.get_model("giscedata.polissa")
+        pol_id = self.build_polissa(
+            f1_date_days_from_today=75 + 1,
+            initial_state='correct',
+            data_baixa=False,
+        )
+
+        atc1_id = self.add_done_006_to_polissa(pol_id, 85)
+        atc2_id = self.add_done_006_to_polissa(pol_id, 80)
+        self.add_correct_to_history(pol_id, 85, atc1_id)
+        self.add_correct_to_history(pol_id, 80, atc2_id)
+
+        updtr_obj = self.get_model("som.autoreclama.state.updater")
+        status, cnd_id, message = updtr_obj.update_item_if_possible(
+            self.cursor, self.uid, pol_id, "polissa", {}
+        )
+
+        self.assertEqual(status, True)
+        self.assertTrue(
+            message.startswith(u"Estat Revisar executat")
+        )
+        _, e_cnd_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_correct_2_006_inarow_review_state_workflow_polissa"
+        )
+        self.assertEqual(cnd_id, e_cnd_id)
+
+        pol = pol_obj.browse(self.cursor, self.uid, pol_id)
+        self.assertEqual(pol.autoreclama_state.name, u"Revisar")
+        self.assertEqual(pol.autoreclama_state_date, today_str())
+        self.assertGreaterEqual(len(pol.autoreclama_history_ids), 2 + 1)
+
+        text = pol.info_gestio_endarrerida.split("/n")[0]
+        self.assertEqual(text[:10], today_str())
+        self.assertEqual(text[20:], "Autoreclama passat a estat 'Revisar'")
+
+    def test_update_polissa_if_possible__on_correct__nof1_review_between__do_action_full(self):
+        pol_obj = self.get_model("giscedata.polissa")
+
+        pol_id = self.build_polissa(
+            f1_date_days_from_today=75 + 1,
+            initial_state='correct',
+            data_baixa=False,
+        )
+        atc1_id = self.add_done_006_to_polissa(pol_id, 85)
+        atc2_id = self.add_done_006_to_polissa(pol_id, 80)
+        self.add_correct_to_history(pol_id, 85, atc1_id)
+        self.add_review_to_history(pol_id, 82)
+        self.add_correct_to_history(pol_id, 80, atc2_id)
+
+        updtr_obj = self.get_model("som.autoreclama.state.updater")
+        status, cnd_id, message = updtr_obj.update_item_if_possible(
+            self.cursor, self.uid, pol_id, "polissa", {}
+        )
+
+        self.assertEqual(status, True)
+        self.assertTrue(
+            message.startswith(u"Estat Reclamació Bucle executat, nou atc creat amb id ")
+        )
+
+        pol = pol_obj.browse(self.cursor, self.uid, pol_id)
+        self.assertEqual(pol.autoreclama_state.name, u"Reclamació Bucle")
+        self.assertEqual(pol.autoreclama_state_date, today_str())
+        self.assertGreaterEqual(len(pol.autoreclama_history_ids), 2)
+        _, e_cnd_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_days_since_last_f1_correct_state_workflow_polissa"
+        )
+        self.assertEqual(cnd_id, e_cnd_id)
+
     def test_update_polissa_if_possible__on_loop__f1ok__do_action_full_back(self):
         pol_obj = self.get_model("giscedata.polissa")
 

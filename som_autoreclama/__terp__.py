@@ -14,6 +14,7 @@
         "base",
         "giscedata_subtipus_reclamacio",
         "som_switching",
+        "som_polissa",
     ],
     "init_xml": [],
     "demo_xml": [],
