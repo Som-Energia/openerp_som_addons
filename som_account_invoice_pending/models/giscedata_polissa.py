@@ -36,12 +36,16 @@ class GiscedataPolissa(osv.osv):
         start_day_valid = (datetime.today() - timedelta(days=ndays)).strftime('%Y-%m-%d')
 
         for pol_id in res:
+            res[pol_id] = True
             pol = self.browse(cr, uid, pol_id)
             if pol.cups_np not in ["Barcelona", "Girona", "Lleida", "Tarragona"]:
+                res[pol_id] = False
                 continue
             if not pol.pending_state:
+                res[pol_id] = False
                 continue
             if pol.process_id.name != 'Bo Social':
+                res[pol_id] = False
                 continue
 
             pol_state_id = aips_obj.search(cr, uid, [
@@ -49,19 +53,19 @@ class GiscedataPolissa(osv.osv):
                 ('name', '=', pol.pending_state)])[0]
             weight_polissa_state = aips_obj.browse(cr, uid, pol_state_id).weight
             if weight_polissa_state < weight_consulta or weight_polissa_state > weight_tall:
+                res[pol_id] = False
                 continue
 
             scp_list = scp_obj.search(cr, uid, [('polissa_id', '=', pol_id)])
             if not scp_list:  # No s'ha fet mai consulta pobresa
-                res[pol_id] = True
                 continue
 
             # Check consulta pobresa activa < 11 mesos data_tancament (closed) o obertura (pending)  # noqa: 501
             for scp_id in scp_list:
                 scp = scp_obj.browse(cr, uid, scp_id)
-                if (scp.state == 'done' and scp.date_closed < start_day_valid) or (
-                        scp.state == 'pending' and scp.date < start_day_valid):
-                    res[pol_id] = True
+                if (scp.state == 'done' and scp.date_closed > start_day_valid) or (
+                        scp.state == 'pending' and scp.date > start_day_valid):
+                    res[pol_id] = False
                     break
 
         return res
