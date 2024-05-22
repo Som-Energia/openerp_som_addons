@@ -66,7 +66,7 @@ class GiscedataPolissa(osv.osv):
                 if (scp.state == 'done' and scp.date_closed > start_day_valid) or (
                         scp.state == 'pending' and scp.date > start_day_valid):
                     res[pol_id] = False
-                    continue
+                    break
 
         return res
 
