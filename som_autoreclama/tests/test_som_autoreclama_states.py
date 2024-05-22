@@ -683,6 +683,28 @@ class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
 
         return polissa_id
 
+    def add_done_006_to_polissa(self, pol_id, days):
+        dat = today_minus_str(days)
+        return self.build_atc(subtype="006", state='done', date_closed=dat, date=dat, r1=False)
+
+    def add_correct_to_history(self, pol_id, days, atc_id=None):
+        imd_obj = self.get_model("ir.model.data")
+        polh_obj = self.get_model("som.autoreclama.state.history.polissa")
+        correct_state_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_autoreclama", "correct_state_workflow_polissa"
+        )[1]
+        polh_obj.historize(
+            self.cursor, self.uid, pol_id, correct_state_id, today_minus_str(days), atc_id)
+
+    def add_review_to_history(self, pol_id, days, atc_id=None):
+        imd_obj = self.get_model("ir.model.data")
+        polh_obj = self.get_model("som.autoreclama.state.history.polissa")
+        review_state_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_autoreclama", "review_state_workflow_polissa"
+        )[1]
+        polh_obj.historize(
+            self.cursor, self.uid, pol_id, review_state_id, today_minus_str(days), atc_id)
+
 
 class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
     def test_fit_atc_condition__001_c_no(self):
@@ -868,25 +890,13 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
     def test_fit_polissa_condition__2_006_in_a_row_yes(self):
         polissa_obj = self.get_model("giscedata.polissa")
         cond_obj = self.get_model("som.autoreclama.state.condition")
-        imd_obj = self.get_model("ir.model.data")
-        polh_obj = self.get_model("som.autoreclama.state.history.polissa")
 
         context = {'days_ago_R1006': 120}
         pol_id = self.build_polissa(f1_date_days_from_today=76)
-        atc1_id = self.build_atc(
-            subtype="006", state='done', date_closed=today_minus_str(85), date=today_minus_str(85),
-            r1=False)
-        atc2_id = self.build_atc(
-            subtype="006", state='done', date_closed=today_minus_str(80), date=today_minus_str(80),
-            r1=False)
-
-        correct_state_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, "som_autoreclama", "correct_state_workflow_polissa"
-        )[1]
-        polh_obj.historize(
-            self.cursor, self.uid, pol_id, correct_state_id, today_minus_str(85), atc1_id)
-        polh_obj.historize(
-            self.cursor, self.uid, pol_id, correct_state_id, today_minus_str(80), atc2_id)
+        atc1_id = self.add_done_006_to_polissa(pol_id, 85)
+        atc2_id = self.add_done_006_to_polissa(pol_id, 80)
+        self.add_correct_to_history(pol_id, 85, atc1_id)
+        self.add_correct_to_history(pol_id, 80, atc2_id)
 
         pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, context)
         _, cond_id = self.get_object_reference(
@@ -900,25 +910,14 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
     def test_fit_polissa_condition__2_006_in_a_row_no(self):
         polissa_obj = self.get_model("giscedata.polissa")
         cond_obj = self.get_model("som.autoreclama.state.condition")
-        imd_obj = self.get_model("ir.model.data")
-        polh_obj = self.get_model("som.autoreclama.state.history.polissa")
 
         context = {'days_ago_R1006': 120}
         pol_id = self.build_polissa(f1_date_days_from_today=76)
-        atc1_id = self.build_atc(
-            subtype="006", state='done', date_closed=today_minus_str(85), date=today_minus_str(85),
-            r1=False)
-        atc2_id = self.build_atc(
-            subtype="006", state='done', date_closed=today_minus_str(20), date=today_minus_str(85),
-            r1=False)
 
-        correct_state_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, "som_autoreclama", "correct_state_workflow_polissa"
-        )[1]
-        polh_obj.historize(
-            self.cursor, self.uid, pol_id, correct_state_id, today_minus_str(85), atc1_id)
-        polh_obj.historize(
-            self.cursor, self.uid, pol_id, correct_state_id, today_minus_str(20), atc2_id)
+        atc1_id = self.add_done_006_to_polissa(pol_id, 85)
+        atc2_id = self.add_done_006_to_polissa(pol_id, 20)
+        self.add_correct_to_history(pol_id, 85, atc1_id)
+        self.add_correct_to_history(pol_id, 20, atc2_id)
 
         pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, context)
         _, cond_id = self.get_object_reference(
@@ -932,30 +931,14 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
     def test_fit_polissa_condition__2_006_in_a_row_with_previous_review_state_yes(self):
         polissa_obj = self.get_model("giscedata.polissa")
         cond_obj = self.get_model("som.autoreclama.state.condition")
-        imd_obj = self.get_model("ir.model.data")
-        polh_obj = self.get_model("som.autoreclama.state.history.polissa")
 
         context = {'days_ago_R1006': 120}
         pol_id = self.build_polissa(f1_date_days_from_today=76)
-        atc1_id = self.build_atc(
-            subtype="006", state='done', date_closed=today_minus_str(85), date=today_minus_str(85),
-            r1=False)
-        atc2_id = self.build_atc(
-            subtype="006", state='done', date_closed=today_minus_str(80), date=today_minus_str(85),
-            r1=False)
-
-        correct_state_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, "som_autoreclama", "correct_state_workflow_polissa"
-        )[1]
-        review_state_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, "som_autoreclama", "review_state_workflow_polissa"
-        )[1]
-        polh_obj.historize(
-            self.cursor, self.uid, pol_id, review_state_id, today_minus_str(90), atc1_id)
-        polh_obj.historize(
-            self.cursor, self.uid, pol_id, correct_state_id, today_minus_str(85), atc1_id)
-        polh_obj.historize(
-            self.cursor, self.uid, pol_id, correct_state_id, today_minus_str(80), atc2_id)
+        atc1_id = self.add_done_006_to_polissa(pol_id, 85)
+        atc2_id = self.add_done_006_to_polissa(pol_id, 80)
+        self.add_review_to_history(pol_id, 90)
+        self.add_correct_to_history(pol_id, 85, atc1_id)
+        self.add_correct_to_history(pol_id, 80, atc2_id)
 
         pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, context)
         _, cond_id = self.get_object_reference(
@@ -969,30 +952,15 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
     def test_fit_polissa_condition__2_006_in_a_row_with_previous_review_state_no(self):
         polissa_obj = self.get_model("giscedata.polissa")
         cond_obj = self.get_model("som.autoreclama.state.condition")
-        imd_obj = self.get_model("ir.model.data")
-        polh_obj = self.get_model("som.autoreclama.state.history.polissa")
 
         context = {'days_ago_R1006': 120}
         pol_id = self.build_polissa(f1_date_days_from_today=76)
-        atc1_id = self.build_atc(
-            subtype="006", state='done', date_closed=today_minus_str(85), date=today_minus_str(85),
-            r1=False)
-        atc2_id = self.build_atc(
-            subtype="006", state='done', date_closed=today_minus_str(80), date=today_minus_str(80),
-            r1=False)
+        atc1_id = self.add_done_006_to_polissa(pol_id, 85)
+        atc2_id = self.add_done_006_to_polissa(pol_id, 80)
+        self.add_correct_to_history(pol_id, 85, atc1_id)
+        self.add_review_to_history(pol_id, 82)
+        self.add_correct_to_history(pol_id, 80, atc2_id)
 
-        correct_state_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, "som_autoreclama", "correct_state_workflow_polissa"
-        )[1]
-        review_state_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, "som_autoreclama", "review_state_workflow_polissa"
-        )[1]
-        polh_obj.historize(
-            self.cursor, self.uid, pol_id, correct_state_id, today_minus_str(85), atc1_id)
-        polh_obj.historize(
-            self.cursor, self.uid, pol_id, review_state_id, today_minus_str(82), None)
-        polh_obj.historize(
-            self.cursor, self.uid, pol_id, correct_state_id, today_minus_str(80), atc2_id)
         pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, context)
         _, cond_id = self.get_object_reference(
             "som_autoreclama",
