@@ -124,8 +124,8 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                 summary += _("Número de les pòlisses que han canviat d'estat\n").format(names)
             else:
                 summary += _("Id's de {} que han canviat d'estat\n").format(names)
-            updated = self.get_names(cursor, uid, updated, namespace, context)
-            summary += ",".join(str(upd) for upd in updated)
+            updated_names = self.get_names(cursor, uid, updated, namespace, context)
+            summary += ",".join(str(upd) for upd in updated_names)
             summary += _("\n\n")
 
         if errors:
@@ -133,8 +133,8 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                 summary += _("Número de les pòlisses que han donat error (REVISAR)\n").format(names)
             else:
                 summary += _("Id's de {} que han donat error (REVISAR)\n").format(names)
-            errors = self.get_names(cursor, uid, errors, namespace, context)
-            summary += ",".join(str(error) for error in errors)
+            error_names = self.get_names(cursor, uid, errors, namespace, context)
+            summary += ",".join(str(error) for error in error_names)
             summary += _("\n\n")
 
         if reviews:
@@ -142,8 +142,8 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                 summary += _("Número de les pòlisses que han passat a estat 'Revisar'\n").format(names)  # noqa: E501
             else:
                 summary += _("Id's de {} que han passat a estat 'Revisar'\n").format(names)
-            reviews = self.get_names(cursor, uid, reviews, namespace, context)
-            summary += ",".join(str(review) for review in reviews)
+            review_names = self.get_names(cursor, uid, reviews, namespace, context)
+            summary += ",".join(str(review) for review in review_names)
             summary += _("\n\n")
 
         return updated, not_updated, errors, msg, summary
