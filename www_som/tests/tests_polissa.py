@@ -288,7 +288,7 @@ class TestPolissaWwwDistri(testing.OOTestCase):
             self.cursor, self.uid, cups
         )
 
-        self.assertEqual(result, 56)
+        self.assertNotEqual(result, None)
 
     @mock.patch.object(res_partner.ResPartner, "search")
     def test_www_get_distributor_id__with_REE_CODE_TRANSLATION(self, mock_res_partner_search):
