@@ -491,15 +491,13 @@ class GiscedataPolissa(osv.osv):
         cups_obj = self.pool.get("giscedata.cups.ps")
         res = dict.fromkeys(ids, False)
 
-        for pol_id in ids:
-            provincia = (
-                cups_obj.q(cursor, uid)
-                .read(["id_provincia"])
-                .where([("polissa_polissa", "=", pol_id)])
-            )
-            if provincia:
-                provincia = provincia[0]["id_provincia"][1]
-                res[pol_id] = provincia
+        cups_ids = cups_obj.search(
+            cursor, uid, [('polissa_polissa', 'in', ids)], context=context
+        )
+        provincies = cups_obj.read(cursor, uid, cups_ids, ['polissa_polissa', 'id_provincia'])
+
+        for provincia in provincies:
+            res[provincia['polissa_polissa'][0]] = provincia["id_provincia"][1]
 
         return res
 
@@ -746,7 +744,7 @@ class GiscedataPolissa(osv.osv):
 
         return factura_backend_obj.get_grafica_historic_consum_14_mesos(
             cursor, uid, last_inv[0], context=context
-        )
+        )[0]
 
     def get_consum_anual_backend_gisce(self, cursor, uid, polissa_id, context=None):
         """Consum anual segons query de del backend de la factura de GISCE"""

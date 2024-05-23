@@ -5,7 +5,8 @@
 <%
 import json
 
-reparto = { 'd': float((ad.pie_charges * ad.rep_BOE['d'])/100),
+reparto = { 'r': float((ad.pie_charges * ad.rep_BOE['r'])/100),
+            'd': float((ad.pie_charges * ad.rep_BOE['d'])/100),
             't': float((ad.pie_charges * ad.rep_BOE['t'])/100),
             'o': float((ad.pie_charges * ad.rep_BOE['o'])/100)
             }
@@ -18,6 +19,7 @@ def add_reparto(l, percent, increment, tag, text, value, y_offset):
 percent = 0.0
 dades_reparto = []
 percent = add_reparto(dades_reparto, percent, ad.rep_BOE['d'], 'd', _(u"Anualitat del dèficit"), reparto['d'], 15)
+percent = add_reparto(dades_reparto, percent, ad.rep_BOE['r'], 'r', _(u"RECORE: retribució a les renovables, cogeneració i residus"), reparto['r'], 17)
 percent = add_reparto(dades_reparto, percent, ad.rep_BOE['t'], 't', _(u"Sobrecost de generació a territoris no peninsulars (TNP)"), reparto['t'], 15)
 percent = add_reparto(dades_reparto, percent, ad.rep_BOE['o'], 'o', _(u"Altres costos regulats"), reparto['o'], 7)
 %>
@@ -44,7 +46,11 @@ var dades_reparto = ${json.dumps(dades_reparto)}
     % if ad.is_visible:
         <div class="destination">
             <h1>${_(u"DESTÍ DE L'IMPORT DE LA FACTURA")}</h1>
-            <p>${_(u"El destí de l'import de la teva factura, %s euros, és el següent:") % formatLang(ad.amount_total)}</p>
+            % if ad.has_flux:
+                <p>${_(u"El destí de l'import de la teva factura sense flux solar, %s euros, és el següent:") % formatLang(ad.amount_total)}</p>
+            % else:
+                <p>${_(u"El destí de l'import de la teva factura, %s euros, és el següent:") % formatLang(ad.amount_total)}</p>
+            %endif
             <div class="chart_desti" id="chart_desti_${ad.factura_id}"></div>
         </div>
     % endif

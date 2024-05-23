@@ -333,6 +333,20 @@
             <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
             <field name="pending_days_type">natural</field>
         </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.perdues_fact_bo_social_pending_state">
+            <field name="name">Pèrdues FACT (Bo Social)</field>
+            <field name="weight">1138</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.perdues_fact_default_pending_state">
+            <field name="name">Pèrdues FACT (Default Process)</field>
+            <field name="weight">1139</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
 
         <!-- Template de annex 2 Bo social -->
         <record model="poweremail.templates" id="email_impagats_annex2">
@@ -681,6 +695,27 @@ import_factura = object.residual
                 </body>
                 </html>
                 ]]></field>
+        </record>
+
+        <record model="poweremail.templates" id="email_fue_reminder">
+            <field name="name">Impagats: Plantilla recordatori factura en estat FUE</field>
+            <field name="object_name" model="ir.model" search="[('name', '=', 'giscedata.facturacio.factura')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">giscedata.facturacio.factura</field>
+            <field name="def_to">${object.address_invoice_id.email}, ${object.polissa_id.direccio_notificacio.email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Recordatori factura aturada pendent resolució Organisme competent / Recordatorio factura parada pendiente resolución Organismo competente</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang"/>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="def_cc">correo@certificado.lleida.net</field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Gestió de Cobraments')]"/>
+            <field name="def_body_text"><![CDATA[<!doctype html><html>Missatge generat automaticament</html>]]>
+            </field>
         </record>
     </data>
 

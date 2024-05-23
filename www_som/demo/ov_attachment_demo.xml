@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    <record model="ir.attachment" id="ov_attachment_partner_asus">
+      <field name="name">OV Attachment Partner Asus</field>
+      <field name="category_id" ref="ir_attachment_category_ov_fiscal"/>
+      <field name="res_model">res.partner</field>
+      <field name="res_id" ref="base.res_partner_asus"/>
+    </record>
+    <record model="ir.attachment" id="ov_attachment_partner_agrolait">
+      <field name="name">OV Attachment Partner Agrolait</field>
+      <field name="category_id" ref="ir_attachment_category_ov_fiscal"/>
+      <field name="res_model">res.partner</field>
+      <field name="res_id" ref="base.res_partner_agrolait"/>
+    </record>
+    <record model="som.infoenergia.lot.enviament" id="lot_enviament_ov_attachments">
+      <field name="name">XXX</field>
+      <field name="estat">obert</field>
+      <field name="tipus">altres</field>
+      <field name="email_template" ref="poweremail.default_template_poweremail"/>
+    </record>
+    <record model="som.enviament.massiu" id="enviament_massiu_partner_asus">
+      <field name="estat">obert</field>
+      <field name="lot_enviament" ref="lot_enviament_ov_attachments"/>
+      <field name="partner_id" ref="base.res_partner_asus"/>
+    </record>
+    <record model="poweremail.mailbox" id="mail_partner_asus">
+      <field name="pem_account_id" ref="base_extended_som.info_energia_from_email"/>
+      <field name="reference" eval="'som.enviament.massiu,'+str(ref('enviament_massiu_partner_asus'))" />
+      <field name="pem_subject">Subject</field>
+      <field name="folder">sent</field>
+      <field name="state">read</field>
+    </record>
+    <record model="ir.attachment" id="ov_attachment_mail_partner_asus_ov">
+      <field name="name">OV Attachment Mail Partner Asus OV</field>
+      <field name="category_id" ref="ir_attachment_category_ov_fiscal"/>
+      <field name="res_model">poweremail.mailbox</field>
+      <field name="res_id" ref="mail_partner_asus"/>
+    </record>
+    <record model="ir.attachment" id="ov_attachment_mail_partner_asus_not_ov">
+      <field name="name">OV Attachment Mail Partner Asus NOT OV</field>
+      <field name="res_model">poweremail.mailbox</field>
+      <field name="res_id" ref="mail_partner_asus"/>
+    </record>
+  </data>
+</openerp>
