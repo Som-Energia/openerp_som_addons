@@ -32,4 +32,18 @@
             </div>
         </div>
     </div>
+    <div id="titol">
+        <h2>${_(u"CONDICIONS PARTICULARS DEL CONTRACTE DE SUBMINISTRAMENT D'ENERGIA ELÈCTRICA")}</h2>
+    </div>
+    %if polissa['state'] and not polissa['lead']:
+        <div class="esborrany_warning">
+            <img src="${addons_path}/som_polissa_condicions_generals/report/assets/warning_icon.png"/>
+            <h2>
+                ${_("LES DADES D'AQUEST CONTRACTE ESTAN PENDENTS DE VALIDACIÓ.")}
+            </h2>
+            <h3>
+                ${_(u"Les tarifes que s’aplicaran seran les vigents al moment d'activar el contracte.")}
+            </h3>
+        </div>
+    %endif
 </%def>

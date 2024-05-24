@@ -107,10 +107,32 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             es_ct_subrogacio = False
 
         res['client_name'] = dades_client.name if es_ct_subrogacio and dades_client else pol.titular.name  # noqa: E501
-        res['client_vat'] = dades_client.vat if es_ct_subrogacio and dades_client else pol.titular.vat  # noqa: E501
-        res['direccio_titular'] = dades_client.address[0] if es_ct_subrogacio and dades_client else pol.titular.address[0]  # noqa: E501
-        res['direccio_envio'] = dades_envio if es_ct_subrogacio and dades_envio else pol.direccio_notificacio  # noqa: E501
-        res['diferent'] = (res['direccio_envio'] != res['direccio_titular'])
+        client_vat = dades_client.vat if es_ct_subrogacio and dades_client else pol.titular.vat  # noqa: E501
+        res['client_vat'] = client_vat.replace('ES', '')
+        direccio_titular = dades_client.address[0] if es_ct_subrogacio and dades_client else pol.titular.address[0]  # noqa: E501
+        res['direccio_titular'] = direccio_titular
+        direccio_envio = dades_envio if es_ct_subrogacio and dades_envio else pol.direccio_notificacio  # noqa: E501
+        res['direccio_envio'] = direccio_envio
+        res['diferent'] = (direccio_envio != direccio_titular)
+        res['street'] = direccio_titular.street or ''
+        res['zip'] = direccio_titular.zip or ''
+        res['city'] = direccio_titular.city or ''
+        res['state'] = direccio_titular.state_id.name or ''
+        res['country'] = direccio_titular.country_id.name or ''
+        res['email'] = direccio_titular.email or ''
+        res['mobile'] = direccio_titular.mobile or ''
+        res['phone'] = direccio_titular.phone or ''
+        res['diferent'] = (direccio_envio != direccio_titular)
+        res['name_envio'] = direccio_envio.name or ''
+        res['street_envio'] = direccio_envio.street or ''
+        res['zip_envio'] = direccio_envio.zip or ''
+        res['city_envio'] = direccio_envio.city or ''
+        res['state_envio'] = direccio_envio.state_id.name or ''
+        res['country_envio'] = direccio_envio.country_id.name or ''
+        res['email_envio'] = direccio_envio.email or ''
+        res['mobile_envio'] = direccio_envio.mobile or ''
+        res['phone_envio'] = direccio_envio.phone or ''
+
         return res
 
     def get_potencies_data(self, cursor, uid, polissa, pas01, context=None):
@@ -136,11 +158,6 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         res['name'] = pol.name
         res['state'] = pol.state
         res['lead'] = context.get('lead', False)
-        res['last_modcon_state'] = pol.modcontractuals_ids[0].state
-        res['last_modcon_facturacio'] = pol.modcontractuals_ids[0].mode_facturacio
-        res['modcon_pendent_indexada'] = res['last_modcon_state'] == 'pendent' and res['last_modcon_facturacio'] == 'index'  # noqa: E501
-        res['modcon_pendent_periodes'] = res['last_modcon_state'] == 'pendent' and res['last_modcon_facturacio'] == 'atr'  # noqa: E501
-        res['last_modcon_pricelist'] = pol.modcontractuals_ids[0].llista_preu
         res['pricelist'] = pol.llista_preu
         res['tarifa_provisional'] = context.get('tarifa_provisional', False)
         res['auto'] = pol.autoconsumo
@@ -166,19 +183,25 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         else:
             res['is_business'] = False
         # pol.pagador.name if not pas01 else dict_titular['client_name']
+        if res['state'] != 'esborrany' and not res['lead']:
+            res['last_modcon_state'] = pol.modcontractuals_ids[0].state
+            res['last_modcon_facturacio'] = pol.modcontractuals_ids[0].mode_facturacio
+            res['modcon_pendent_indexada'] = res['last_modcon_state'] == 'pendent' and res['last_modcon_facturacio'] == 'index'  # noqa: E501
+            res['modcon_pendent_periodes'] = res['last_modcon_state'] == 'pendent' and res['last_modcon_facturacio'] == 'atr'  # noqa: E501
+            res['last_modcon_pricelist'] = pol.modcontractuals_ids[0].llista_preu
         return res
 
     def get_cups_data(self, cursor, uid, pol, context=None):
         res = {}
-        res['adreca'] = pol.cups.direccio
+        res['direccio'] = pol.cups.direccio
         res['provincia'] = pol.cups.id_provincia.name
-        res['pais'] = pol.cups.id_provincia.country_id.name
+        res['country'] = pol.cups.id_provincia.country_id.name
         res['name'] = pol.cups.name
-        res['cnae'] = pol.cups.cnae
-        res['ref_dist'] = pol.ref_dist
+        res['cnae'] = pol.cnae.name
+        res['ref_dist'] = pol.ref_dist or ''
         res['cnae_des'] = pol.cnae.descripcio
         res['distri'] = pol.cups.distribuidora_id.name
-        res['tensio'] = pol.tensio
+        res['tensio'] = pol.tensio or ''
 
         return res
 
