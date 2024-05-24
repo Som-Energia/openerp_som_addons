@@ -1,6 +1,7 @@
 # coding=utf-8
 import logging
 import pooler
+from psycopg2.extensions import AsIs
 logger = logging.getLogger('openerp.' + __name__)
 
 
@@ -42,15 +43,25 @@ def up(cursor, installed_version):
         for att_id in attachment_list:
             if scp_id:
                 att = att_obj.browse(cursor, uid, att_id)
-                create_vals = {
-                    "res_model": "som.consulta.pobresa",
-                    "res_id": scp_id[0],
-                    "name": att.name,
-                    "datas_fname": att.datas_fname,
-                }
-                att_obj.create(cursor, uid, create_vals)
-                logger.info('Creats {} attachments de pobresa energètica per la consulta {}.'.format(  # noqa: E501
-                    len(attachment_list), scp_id[0]))
+                search_vals = [
+                    ("res_model", '=', "som.consulta.pobresa"),
+                    ("res_id", '=', scp_id[0]),
+                    ("name", '=', att.name),
+                    ("datas_fname", '=', att.datas_fname),
+                    ("create_date", '<', '2024-05-21 16:00:00'),
+                ]
+                att_ids = att_obj.search(cursor, uid, search_vals)
+
+                sql = '''
+                    UPDATE ir_attachment
+                    SET datas_mongo = %{datas_mongo}
+                    WHERE id IN %(ids);
+                '''
+                cursor.execute(sql,
+                               {'ids': tuple(att_ids[0]),
+                                'datas_mongo': AsIs(att.datas_mongo)})
+
+                logger.info('Attachments actualitzat de pobresa energètica {}.'.format(scp_id[0]))
 
     logger.info('S\'han creat els adjunts')
 
