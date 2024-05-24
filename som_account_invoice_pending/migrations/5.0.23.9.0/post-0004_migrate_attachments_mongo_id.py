@@ -9,9 +9,12 @@ def up(cursor, installed_version):
     if not installed_version:
         return
     uid = 1
-
     pool = pooler.get_pool(cursor.dbname)
+
+    logger.info("Updating table table: giscedata.polissa")
     scp_obj = pool.get('som.consulta.pobresa')
+    scp_obj._auto_init(cursor, context={"module": "som_account_invoice_pending"})
+
     crm_obj = pool.get('crm.case')
     imd_obj = pool.get('ir.model.data')
     att_obj = pool.get('ir.attachment')
