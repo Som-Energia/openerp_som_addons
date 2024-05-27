@@ -39,18 +39,19 @@ TABLA_113_dict = {  # Table extracted from gestionatr.defs TABLA_113, not import
     '74': _(u"Amb excedents sense compensació Col·lectiu amb cte. de Serv. Aux. a través de xarxa i xarxa interior - SSAA"),  # noqa: E501
 }
 
+CONTRACT_TYPES = dict(TABLA_9)
 
-def clean_text(text):
-    return text or ''
+# def clean_text(text):
+#     return text or ''
 
 
 class ReportBackendCondicionsParticulars(ReportBackend):
     _source_model = "giscedata.polissa"
     _name = "report.backend.condicions.particulars"
 
-    _decimals = {
-        ('potencia', 'potencies_contractades'): 0,
-    }
+    # _decimals = {
+    #     ('potencia', 'potencies_contractades'): 0,
+    # }
 
     def get_lang(self, cursor, uid, record_id, context=None):
         if context is None:
@@ -148,23 +149,36 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         res['es_canvi_tecnic'] = es_canvi_tecnic
         res['periodes_energia'] = sorted(polissa.tarifa.get_periodes(context=context).keys())
         res['periodes_potencia'] = sorted(polissa.tarifa.get_periodes('tp', context=context).keys())
+        pots = res['potencies']
+        periodes = []
+        for i in range(0, 6):
+            if i < len(pots):
+                periode = pots[i]
+            else:
+                periode = False
+            periodes.append((i + 1, periode))
+
+        if polissa.tarifa_codi == "2.0TD":
+            periodes[2] = periodes[1]
+            periodes[1] = False
+        res['periodes'] = periodes
 
         return res
 
     def get_polissa_data(self, cursor, uid, pol, context=None):
+        pol_o = self.pool.get('giscedata.polissa')
+        llista_preu_o = self.pool.get('product.pricelist')
         res = {}
         res['data_final'] = pol.modcontractual_activa.data_final or ''
         res['data_inici'] = pol.data_alta or ''
         res['name'] = pol.name
         res['state'] = pol.state
         res['lead'] = context.get('lead', False)
-        res['pricelist'] = pol.llista_preu
-        res['tarifa_provisional'] = context.get('tarifa_provisional', False)
         res['auto'] = pol.autoconsumo
-        res['contract_type'] = pol.contract_type
+        res['contract_type'] = CONTRACT_TYPES[pol.contract_type]
         res['tarifa'] = pol.tarifa_codi
         res['data_baixa'] = pol.data_baixa
-        res['fiscal_poisition'] = pol.fiscal_poisition
+        # res['fiscal_poisition'] = pol.fiscal_poisition
         res['potencia_max'] = pol.potencia
         res['mode_facturacio'] = pol.mode_facturacio
         res['coeficient_k'] = pol.coeficient_k
@@ -182,13 +196,31 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             res['is_business'] = True
         else:
             res['is_business'] = False
-        # pol.pagador.name if not pas01 else dict_titular['client_name']
-        if res['state'] != 'esborrany' and not res['lead']:
+
+        if pol.state == 'esborrany':
+            res['modcon_pendent_indexada'] = False
+            res['modcon_pendent_periodes'] = False
+        elif pol.state != 'esborrany' and not res['lead']:
             res['last_modcon_state'] = pol.modcontractuals_ids[0].state
             res['last_modcon_facturacio'] = pol.modcontractuals_ids[0].mode_facturacio
             res['modcon_pendent_indexada'] = res['last_modcon_state'] == 'pendent' and res['last_modcon_facturacio'] == 'index'  # noqa: E501
             res['modcon_pendent_periodes'] = res['last_modcon_state'] == 'pendent' and res['last_modcon_facturacio'] == 'atr'  # noqa: E501
             res['last_modcon_pricelist'] = pol.modcontractuals_ids[0].llista_preu
+
+        if res['modcon_pendent_indexada'] or res['modcon_pendent_periodes']:
+            res['pricelist'] = pol.modcontractuals_ids[0].llista_preu
+        elif pol.llista_preu:
+            res['pricelist'] = pol.llista_preu
+        else:
+            tarifes_ids = llista_preu_o.search(cursor, uid, [])
+            res['pricelist'] = pol_o.escull_llista_preus(cursor, uid, pol.id, tarifes_ids, context=context)  # noqa: E501
+
+        if context.get('tarifa_provisional', False):
+            res['tarifa_mostrar'] = 'Tarifa Períodes Empresa'
+        else:
+            res['tarifa_mostrar'] = res['pricelist'].nom_comercial or res['pricelist'].name
+
+        # pol.pagador.name if not pas01 else dict_titular['client_name']
         return res
 
     def get_cups_data(self, cursor, uid, pol, context=None):

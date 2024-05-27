@@ -35,7 +35,7 @@
     <div id="titol">
         <h2>${_(u"CONDICIONS PARTICULARS DEL CONTRACTE DE SUBMINISTRAMENT D'ENERGIA ELÈCTRICA")}</h2>
     </div>
-    %if polissa['state'] and not polissa['lead']:
+    %if polissa['state'] == 'esborrany' and not polissa['lead']:
         <div class="esborrany_warning">
             <img src="${addons_path}/som_polissa_condicions_generals/report/assets/warning_icon.png"/>
             <h2>
