@@ -4,6 +4,8 @@ from destral import testing
 from destral.transaction import Transaction
 
 from datetime import date, datetime, timedelta
+from .. import res_partner
+import mock
 
 
 class TestPolissaWwwAutolectura(testing.OOTestCase):
@@ -261,3 +263,50 @@ class TestPolissaWwwAutolectura(testing.OOTestCase):
         )
         self.assertEqual(result["error"], u"Pòlissa 0018 not active")
         self.assertEqual(result["code"], u"PolissaNotActive")
+
+
+class TestPolissaWwwDistri(testing.OOTestCase):
+    def model(self, model_name):
+        return self.openerp.pool.get(model_name)
+
+    def setUp(self):
+        self.pol_obj = self.model("giscedata.polissa")
+        self.partner_obj = self.model("res.partner")
+
+        self.txn = Transaction().start(self.database)
+
+        self.cursor = self.txn.cursor
+        self.uid = self.txn.user
+
+    def tearDown(self):
+        self.txn.stop()
+
+    def test_www_get_distributor_id__without_REE_CODE_TRANSLATION(self):
+        cups = 'ES0031XXXXXXXXXXXXXXXX'  # ENDESA DISTRIBUCIÓN ELÉCTRICA S. L.
+
+        result = self.pol_obj.www_get_distributor_id(
+            self.cursor, self.uid, cups
+        )
+
+        self.assertNotEqual(result, None)
+
+    @mock.patch.object(res_partner.ResPartner, "search")
+    def test_www_get_distributor_id__with_REE_CODE_TRANSLATION(self, mock_res_partner_search):
+        cups = 'ES0390XXXXXXXXXXXXXXXX'  # Electra del Jallas -> Fenosa
+
+        mock_res_partner_search.return_value = [1]
+
+        result = self.pol_obj.www_get_distributor_id(
+            self.cursor, self.uid, cups
+        )
+
+        self.assertEqual(result, 1)
+
+    def test_www_get_distributor_id__distri_non_exists(self):
+        cups = 'ES0390XXXXXXXXXXXXXXXX'  # Electra del Jallas -> Fenosa
+
+        result = self.pol_obj.www_get_distributor_id(
+            self.cursor, self.uid, cups
+        )
+
+        self.assertEqual(result, None)
