@@ -136,19 +136,17 @@ class ReportBackendCondicionsParticulars(ReportBackend):
 
         return res
 
-    def get_potencies_data(self, cursor, uid, polissa, pas01, context=None):
+    def get_potencies_data(self, cursor, uid, pol, pas01, context=None):
         res = {}
         if pas01:
             es_canvi_tecnic = pas01.pas_id.sollicitudadm == "N"
         else:
             es_canvi_tecnic = False
-        res['potencies'] = pas01.pas_id.pot_ids if es_canvi_tecnic else polissa.potencies_periode
-        res['autoconsum'] = pas01.pas_id.tipus_autoconsum if es_canvi_tecnic else polissa.autoconsumo  # noqa: E501
+        res['potencies'] = pas01.pas_id.pot_ids if es_canvi_tecnic else pol.potencies_periode
+        res['autoconsum'] = pas01.pas_id.tipus_autoconsum if es_canvi_tecnic else pol.autoconsumo  # noqa: E501
         if res['autoconsum'] and res['autoconsum'] in TABLA_113_dict:
             res['autoconsum'] = TABLA_113_dict[res['autoconsum']]
         res['es_canvi_tecnic'] = es_canvi_tecnic
-        res['periodes_energia'] = sorted(polissa.tarifa.get_periodes(context=context).keys())
-        res['periodes_potencia'] = sorted(polissa.tarifa.get_periodes('tp', context=context).keys())
         pots = res['potencies']
         periodes = []
         for i in range(0, 6):
@@ -158,7 +156,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 periode = False
             periodes.append((i + 1, periode))
 
-        if polissa.tarifa_codi == "2.0TD":
+        if pol.tarifa_codi == "2.0TD":
             periodes[2] = periodes[1]
             periodes[1] = False
         res['periodes'] = periodes
@@ -168,6 +166,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
     def get_polissa_data(self, cursor, uid, pol, context=None):
         pol_o = self.pool.get('giscedata.polissa')
         llista_preu_o = self.pool.get('product.pricelist')
+        imd_obj = self.pool.get('ir.model.data')
         res = {}
         res['data_final'] = pol.modcontractual_activa.data_final or ''
         res['data_inici'] = pol.data_alta or ''
@@ -181,12 +180,13 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         # res['fiscal_poisition'] = pol.fiscal_poisition
         res['potencia_max'] = pol.potencia
         res['mode_facturacio'] = pol.mode_facturacio
-        res['coeficient_k'] = pol.coeficient_k
-        res['coeficient_d'] = pol.coeficient_d
+
         res['te_assignacio_gkwh'] = pol.te_assignacio_gkwh
         res['bank'] = pol.bank
         res['printable_iban'] = pol.bank.printable_iban[5:]
-        imd_obj = self.pool.get('ir.model.data')
+        res['periodes_energia'] = sorted(pol.tarifa.get_periodes(context=context).keys())
+        res['periodes_potencia'] = sorted(pol.tarifa.get_periodes('tp', context=context).keys())
+
         polissa_categ_obj = self.pool.get('giscedata.polissa.category')
         polissa_categ_id = imd_obj.get_object_reference(
             cursor, uid, 'som_polissa', 'categ_tarifa_empresa'
@@ -219,6 +219,26 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             res['tarifa_mostrar'] = 'Tarifa Períodes Empresa'
         else:
             res['tarifa_mostrar'] = res['pricelist'].nom_comercial or res['pricelist'].name
+
+        coeficient_k = (pol.coeficient_k + pol.coeficient_d) / 1000
+        if pol.mode_facturacio == 'index' and not res['modcon_pendent_periodes'] or res['modcon_pendent_indexada']:  # noqa: E501
+            if coeficient_k == 0:
+                today = datetime.today().strftime("%Y-%m-%d")
+                vlp = None
+                if res['modcon_pendent_indexada']:
+                    llista_preus = pol.modcontractuals_ids[0].llista_preu.version_id
+                else:
+                    llista_preus = pol.llista_preu.version_id
+                for lp in llista_preus:
+                    if lp.date_start <= today and (not lp.date_end or lp.date_end >= today):
+                        vlp = lp
+                        break
+                if vlp:
+                    for item in vlp.items_id:
+                        if item.name == 'Coeficient K':
+                            coeficient_k = item.base_price
+                            break
+            res['coeficient_k'] = coeficient_k
 
         # pol.pagador.name if not pas01 else dict_titular['client_name']
         return res

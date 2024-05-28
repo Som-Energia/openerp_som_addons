@@ -687,6 +687,7 @@ CONTRACT_TYPES = dict(TABLA_9)
             %>
             %endfor
         </div>
+        ## pendent ubicar els blocs d'aqui sota
         <div class="styled_box padding_bottom">
             <div class="center avis_impostos">
                 %if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:
