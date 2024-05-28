@@ -6,6 +6,20 @@ import logging
 logger = logging.getLogger("openerp.{}".format(__name__))
 
 
+class SomGurbGeneralConditions(osv.osv):
+    _name = "som.gurb.general.conditions"
+
+    _columns = {
+        "active": fields.boolean("Activa"),
+        "name": fields.char("Nom", size=64, readonly=True),
+        "attachment_id": fields.many2one("ir.attachment", "Document", required=True),
+        "lang_id": fields.many2one("res.lang", "Idioma", required=True),
+    }
+
+
+SomGurbGeneralConditions()
+
+
 class SomGurbCups(osv.osv):
     _name = "som.gurb.cups"
     _rec_name = "cups_id"
@@ -339,17 +353,3 @@ class SomGurbCupsBeta(osv.osv):
 
 
 SomGurbCupsBeta()
-
-
-class SomGurbGeneralConditions(osv.osv):
-    _name = "som.gurb.general.conditions"
-
-    _columns = {
-        "active": fields.boolean("Activa"),
-        "name": fields.char("Nom", size=64, readonly=True),
-        "attachment_id": fields.many2one("ir.attachment", "Document", required=True),
-        "lang_id": fields.many2one("res.lang", "Idioma", required=True),
-    }
-
-
-SomGurbGeneralConditions()
