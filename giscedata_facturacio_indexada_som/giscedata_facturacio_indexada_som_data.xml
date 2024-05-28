@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <!-- Garantías de origen - GDOS [€/MWh]-->
+        <record model="product.product" id="product_gdos_som">
+            <field name="name">GDOS</field>
+            <field name="default_code">GDOS</field>
+            <field name="categ_id" ref="giscedata_facturacio_indexada.categ_indexada"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="product.product_uom_unit"/>
+            <field name="uom_po_id" ref="product.product_uom_unit"/>
+            <field name="description">Garanties d'Origen (€/MWh)</field>
+        </record>
+    </data>
+</openerp>

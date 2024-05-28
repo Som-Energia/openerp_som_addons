@@ -9,7 +9,7 @@ class GiscedataFacturacioFacturador(osv.osv):
 
     def get_tarifa_class(self, modcontractual):
         parent = super(GiscedataFacturacioFacturador, self).get_tarifa_class
-        if modcontractual.mode_facturacio == 'index':
+        if modcontractual.mode_facturacio == 'index' or modcontractual.mode_facturacio_generacio == 'index':
             return TARIFFS_FACT[modcontractual.tarifa.name]
         else:
             return parent(modcontractual)
@@ -22,6 +22,12 @@ class GiscedataFacturacioFacturador(osv.osv):
 
         pricelist_obj = self.pool.get('product.pricelist')
         polissa_obj = self.pool.get('giscedata.polissa')
+        imd_obj = self.pool.get('ir.model.data')
+
+        # Afegim els productes nous
+        gdos_som = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_facturacio_indexada_som', 'product_gdos_som'
+        )[1]
 
         # Fem un browse amb la data final per obtenir quin mode de facturació té
         polissa = polissa_obj.browse(cursor, uid, polissa_id, context={
@@ -30,14 +36,18 @@ class GiscedataFacturacioFacturador(osv.osv):
 
         ctx = context.copy()
 
-        if polissa.mode_facturacio == 'index':
+        if polissa.mode_facturacio == 'index' or polissa.mode_facturacio_generacio == 'index':
             if context.get('llista_preu', False):
                 llista_preu_id = context['llista_preu']
             else:
                 llista_preu_id = polissa.llista_preu.id
 
-            if pricelist_obj.browse(cursor, uid, llista_preu_id).indexed_formula == u'Indexada Península':
-                for date_version in res:
+            for date_version in res:
+                res[date_version]['gdos'] = pricelist_obj.price_get(
+                    cursor, uid, [llista_preu_id], gdos_som, 1, context=ctx
+                )[llista_preu_id]
+
+                if pricelist_obj.browse(cursor, uid, llista_preu_id).indexed_formula == u'Indexada Península':
                     ctx['date'] = date_version
                     # Fem un browse amb la data final per obtenir quina tarifa té
                     polissa = polissa_obj.browse(cursor, uid, polissa_id, context={'date': date_version})
