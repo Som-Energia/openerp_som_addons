@@ -83,7 +83,7 @@ class SomConsultaPobresa(osv.osv):
                            - timedelta(days=ndays)).strftime('%Y-%m-%d')
 
         search_params = [
-            ('titular_id', '=', partner_id),
+            ('partner_id', '=', partner_id),
             ('polissa_id', '=', polissa_id),
         ]
         scp_list = self.search(cr, uid, search_params, context)
