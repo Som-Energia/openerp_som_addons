@@ -13,3 +13,9 @@
 "access_wizard_create_distribution_agreement_r","wizard.create.distribution.agreement","model_wizard_create_distribution_agreement","giscedata_polissa.group_giscedata_polissa_r",0,0,0,0
 "access_wizard_create_distribution_agreement_w","wizard.create.distribution.agreement","model_wizard_create_distribution_agreement","giscedata_polissa.group_giscedata_polissa_w",1,1,1,1
 "access_wizard_create_distribution_agreement_u","wizard.create.distribution.agreement","model_wizard_create_distribution_agreement","giscedata_polissa.group_giscedata_polissa_u",1,1,1,1
+"access_report_backend_som_gurb_documents_u","report.backend.som.gurb.documents","model_report_backend_som_gurb_documents","giscedata_polissa.group_giscedata_polissa_u",1,1,1,1
+"access_report_backend_som_gurb_documents_r","report.backend.som.gurb.documents","model_report_backend_som_gurb_documents","giscedata_polissa.group_giscedata_polissa_r",1,1,1,1
+"access_report_backend_som_gurb_documents_w","report.backend.som.gurb.documents","model_report_backend_som_gurb_documents","giscedata_polissa.group_giscedata_polissa_w",1,1,1,1
+"access_som_gurb_general_conditions_u","som.gurb.general.conditions","model_som_gurb_general_conditions","giscedata_polissa.group_giscedata_polissa_u",1,1,1,1
+"access_som_gurb_general_conditions_r","som.gurb.general.conditions","model_som_gurb_general_conditions","giscedata_polissa.group_giscedata_polissa_r",1,0,0,0
+"access_som_gurb_general_conditions_w","som.gurb.general.conditions","model_som_gurb_general_conditions","giscedata_polissa.group_giscedata_polissa_w",1,1,1,0
