@@ -206,7 +206,10 @@ class WizardContractPowerOptimization(osv.osv_memory):
                         maximeters[month_lectura_date][period] = 0
                         maximeters_float[month_lectura_date][period] = 0
                     if maximeters[month_lectura_date][period] < lectura.lectura:
-                        maximeters[month_lectura_date][period] = int(round(lectura.lectura))
+                        if context.get('decimal', False):
+                            maximeters[month_lectura_date][period] = lectura.lectura
+                        else:
+                            maximeters[month_lectura_date][period] = int(round(lectura.lectura))
                         maximeters_float[month_lectura_date][period] = lectura.lectura
 
         vals = {'maximeters_powers': json.dumps(maximeters, sort_keys=True, indent=4)}
@@ -514,9 +517,11 @@ class WizardContractPowerOptimization(osv.osv_memory):
                 state = 'multiple'
         return state
 
-    def _compute_end_date(self, cursor, uid, ids, context={}):
+    def _compute_end_date(self, cursor, uid, ids, context=None):
+        if not context:
+            context = {}
         result = {}
-        for wiz in self.browse(cursor, uid, ids, context):
+        for wiz in self.browse(cursor, uid, ids, context=context):
             end_date = datetime.strptime(wiz.start_date, '%Y-%m-%d') + relativedelta(years=+1)
             result[wiz.id] = datetime.strftime(end_date, '%Y-%m-%d')
             wiz.write({'end_date': datetime.strftime(end_date, '%Y-%m-%d')})

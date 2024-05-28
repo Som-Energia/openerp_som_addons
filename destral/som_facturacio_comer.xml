@@ -1,6 +1,0 @@
-<?xml version="1.0" ?>
-<testsuites disabled="0" errors="0" failures="0" tests="1" time="13.0909678936">
-	<testsuite disabled="0" errors="0" failures="0" name="som_facturacio_comer" skipped="0" tests="1" time="13.0909678936">
-		<testcase classname="som_facturacio_comer.tests.tests_facturacio_warnings.TestsFacturesValidation" name="test_check_origin_readings_by_contract_category__contract_without_category" status="Success" time="13.090968"/>
-	</testsuite>
-</testsuites>

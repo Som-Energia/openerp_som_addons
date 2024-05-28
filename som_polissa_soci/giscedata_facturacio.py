@@ -73,7 +73,7 @@ class GiscedataFacturacioFacturador(osv.osv):
                         # identificar la línia d'energia excloent el preu del MAG (RD 10/2022)
                         kwh = sum(
                             [
-                                x.quantity
+                                x.quantity if x.price_unit >= 0 else -x.quantity
                                 for x in fact.linia_ids
                                 if x.tipus == "energia" and x.product_id.code != "RMAG"
                             ]

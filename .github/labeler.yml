@@ -36,6 +36,8 @@ som_facturacio_comer:
 -  som_facturacio_comer/**
 som_energetica:
 -  som_energetica/**
+som_estalvi:
+-  som_estalvi/**
 som_extend_facturacio_comer:
 -  som_extend_facturacio_comer/**
 som_extend_facturacio_facturae:
