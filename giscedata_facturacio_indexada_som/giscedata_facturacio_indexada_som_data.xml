@@ -13,5 +13,17 @@
             <field name="uom_po_id" ref="product.product_uom_unit"/>
             <field name="description">Garanties d'Origen (€/MWh)</field>
         </record>
+        <!-- Factor desviaments - FACTORDSV [%]-->
+        <record model="product.product" id="product_factor_dsv_som">
+            <field name="name">Factor desviaments</field>
+            <field name="default_code">FACTORDSV</field>
+            <field name="categ_id" ref="giscedata_facturacio_indexada.categ_indexada"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="product.product_uom_unit"/>
+            <field name="uom_po_id" ref="product.product_uom_unit"/>
+            <field name="description">Factor desviaments (%)</field>
+        </record>
     </data>
 </openerp>

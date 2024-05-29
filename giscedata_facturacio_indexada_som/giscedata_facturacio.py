@@ -28,7 +28,9 @@ class GiscedataFacturacioFacturador(osv.osv):
         gdos_som = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_facturacio_indexada_som', 'product_gdos_som'
         )[1]
-
+        factor_dsv = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_facturacio_indexada_som', 'product_gdos_som'
+        )[1]
         # Fem un browse amb la data final per obtenir quin mode de facturació té
         polissa = polissa_obj.browse(cursor, uid, polissa_id, context={
             'date': data_final
@@ -43,14 +45,17 @@ class GiscedataFacturacioFacturador(osv.osv):
                 llista_preu_id = polissa.llista_preu.id
 
             for date_version in res:
+                ctx['date'] = date_version
                 res[date_version]['gdos'] = pricelist_obj.price_get(
                     cursor, uid, [llista_preu_id], gdos_som, 1, context=ctx
                 )[llista_preu_id]
+                res[date_version]['factor_dsv'] = pricelist_obj.price_get(
+                    cursor, uid, [llista_preu_id], factor_dsv, 1, context=ctx
+                )[llista_preu_id]
 
                 if pricelist_obj.browse(cursor, uid, llista_preu_id).indexed_formula == u'Indexada Península':
-                    ctx['date'] = date_version
                     # Fem un browse amb la data final per obtenir quina tarifa té
-                    polissa = polissa_obj.browse(cursor, uid, polissa_id, context={'date': date_version})
+                    polissa = polissa_obj.browse(cursor, uid, polissa_id, context=ctx)
                     res[date_version]['h'] = polissa.coeficient_h * 0.001  # H is expressed in €/MWh in contract
 
         return res

@@ -307,7 +307,7 @@ class TarifaPoolSOM(TarifaPool):
     def phf_calc_peninsula_2024(self, curve, start_date):
         """
         Calcs component PHF as:
-        PHF = (1 + IMU) * [(PMD + PC + SC + DSV + OMIE_REE + GDOs + H) * (1 + Perdidas) + FNEE + K + D] + PA
+        PHF = (1 + IMU) * [(PMD + PC + SC + DSV + OMIE_REE + GDOs) * (1 + Perdidas) + FNEE + K + D] + PA
         :param curve: Component curve
         :param start_date: component start date
         :return: returns a component
@@ -328,7 +328,6 @@ class TarifaPoolSOM(TarifaPool):
         # Contract specific coeficients
         k = self.get_coeficient_component(start_date, 'k')  # [€/kWh]
         d = self.get_coeficient_component(start_date, 'd')  # [€/kWh]
-        h = self.get_coeficient_component(start_date, 'h')  # [€/kWh]
 
         # From pricelist
         factor_dsv = self.get_coeficient_component(start_date, 'factor_dsv')  # [%]
