@@ -28,6 +28,11 @@ class TarifaPoolSOM(TarifaPool):
         if '2024' in self.phf_function:
             res['dsv'] = 'dsv'
             res['gdos'] = 'gdos'
+            res['pmd'] = 'prmdiari'
+            if 'ajom' in res:
+                del res['ajom']
+            if 'peninsula' in self.phf_function:
+                res['pos'] = 'sobrecostos'
 
         if self.phf_function == 'phf_calc_peninsula':
             # only if 'phf_calc_peninsula' formula is used
@@ -42,15 +47,11 @@ class TarifaPoolSOM(TarifaPool):
             res['k'] = 'k'
             res['d'] = 'd'
             res['si'] = 'si'
-            if '2024' in self.phf_function:
-                res['pos'] = 'sobrecostos'
 
         if self.phf_function in EXTRAPENINSULAR_FORMULAS:
             # only if 'phf_calc_peninsula' formula is used
             res['pmd'] = 'sphdem'
             res['pc3_ree'] = 'pc3_ree'
-            if 'ajom' in res:
-                del res['ajom']
 
         if self.phf_function == 'phf_calc_esmasa':
             # only if 'phf_calc_esmasa' formula is used
@@ -358,9 +359,9 @@ class TarifaPoolSOM(TarifaPool):
         compodem = MonthlyCompodem('C2_monthlycompodem_%(postfix)s' % locals(), esios_token)
         rad3 = compodem.get_component("RAD3")
         bs3 = compodem.get_component("BS3")
-        dsv = (0.5 * (csdvbaj + csdvsub) + rad3 + bs3) * factor_dsv
+        dsv = (0.5 * (csdvbaj + csdvsub) + rad3 + bs3) * (factor_dsv * 0.01)
 
-        A = ((prmdiari + sobrecostos + dsv + gdos + omie) * 0.001) + pc3_boe + h
+        A = ((prmdiari + sobrecostos + dsv + gdos + omie) * 0.001) + pc3_boe
         B = (1 + (perdues * 0.01))
         C = A * B
         D = (fe * 0.001) + k + d
@@ -498,7 +499,7 @@ class TarifaPoolSOM(TarifaPool):
 
         # Desvios
         scdsvdem = Scdsvdem('C2_Scdsvdem_%(postfix)s' % locals())  # [€/MWh]
-        dsv = scdsvdem * factor_dsv
+        dsv = scdsvdem * (factor_dsv * 0.01)
 
         # Coste remuneración REE
         ree = self.get_coeficient_component(start_date, 'omie')  # [€/MWh]
@@ -649,7 +650,7 @@ class TarifaPoolSOM(TarifaPool):
 
         # Desvios
         scdsvdem = Scdsvdem('C2_Scdsvdem_%(postfix)s' % locals())  # [€/MWh]
-        dsv = scdsvdem * factor_dsv
+        dsv = scdsvdem * (factor_dsv * 0.01)
 
         # Coste remuneración REE
         ree = self.get_coeficient_component(start_date, 'omie')  # [€/MWh]
