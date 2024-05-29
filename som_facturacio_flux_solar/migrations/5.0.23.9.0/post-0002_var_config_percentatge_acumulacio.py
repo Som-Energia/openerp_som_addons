@@ -10,11 +10,12 @@ def up(cursor, installed_version):
     logger = logging.getLogger('openerp.migration')
 
     logger.info("Updating XML records")
+    data_file = 'giscedata_bateria_virtual_percentatges_acumulacio_data.xml'
     list_of_records = [
         "percentatge_acumulacio"
     ]
     load_data_records(
-        cursor, 'som_facturacio_flux_solar', 'giscedata_bateria_virtual_percentatges_acumulacio_data.xml', list_of_records, mode='update'
+        cursor, 'som_facturacio_flux_solar', data_file, list_of_records, mode='update'
     )
     logger.info("XML records succesfully updated.")
 
