@@ -162,8 +162,8 @@ class TarifaPoolSOM(TarifaPool):
 
         # Use AJOM if invoice includes june'22 or later days and variable is activated
         if maj_activated and (
-                (start_date.year >= 2022 and start_date.month >= 6) or
-                (start_date.year == 2023 and start_date.month < 6)
+                (start_date.year == 2022 and start_date.month >= 6) or
+                (start_date.year == 2023)
         ):
             ajom = self.get_coeficient_from_dict(start_date, 'ajom')
             A += ajom * 0.001
@@ -260,8 +260,8 @@ class TarifaPoolSOM(TarifaPool):
 
         # Use AJOM if invoice includes june'22 or later days and variable is activated
         if maj_activated and (
-                (start_date.year >= 2022 and start_date.month >= 6) or
-                (start_date.year == 2023 and start_date.month < 6)
+                (start_date.year == 2022 and start_date.month >= 6) or
+                (start_date.year == 2023)
         ):
             ajom = self.get_coeficient_from_dict(start_date, 'ajom')
             A += ajom * 0.001
@@ -489,8 +489,8 @@ class TarifaPoolSOM(TarifaPool):
         # Use AJOM if invoice includes june'22 or later days and variable is activated
         maj_activated = self.conf.get('maj_activated', 0)
         if maj_activated and (
-                (start_date.year >= 2022 and start_date.month >= 6) or
-                (start_date.year == 2023 and start_date.month < 6)
+                (start_date.year == 2022 and start_date.month >= 6) or
+                (start_date.year == 2023)
         ):
             ajom = self.get_coeficient_from_dict(start_date, 'ajom')  # [€/MWh]
         else:
