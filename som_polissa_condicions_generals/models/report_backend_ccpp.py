@@ -8,6 +8,7 @@ from dateutil.relativedelta import relativedelta
 from osv import osv
 from gestionatr.defs import TABLA_9
 from giscedata_facturacio.report.utils import get_atr_price, get_comming_atr_price
+from som_extend_facturacio_comer.utils import get_gkwh_atr_price
 from tools.translate import _
 
 
@@ -88,8 +89,8 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             "potencies": self.get_potencies_data(cursor, uid, pol, pas01, context=context),
             "polissa": self.get_polissa_data(cursor, uid, pol, context=context),
             "cups": self.get_cups_data(cursor, uid, pol, context=context),
-            #"prices": self.get_prices_data(cursor, uid, pol, context=context),
-            "fiscal_poisition": self.calculate_fiscal_position(cursor, uid, pol, context=context),
+            "prices": self.get_prices_data(cursor, uid, pol, context=context),
+            # "fiscal_poisition": self.calculate_fiscal_position(cursor, uid, pol, context=context),
         }
         return data
 
@@ -290,9 +291,9 @@ class ReportBackendCondicionsParticulars(ReportBackend):
 
     def get_prices_data(self, cursor, uid, pol, context=None):
         res = {}
-        # lead = context.get('lead')
-        # dict_preus_tp_potencia = False
-        # dict_preus_tp_energia = False
+        lead = context.get('lead')
+        dict_preus_tp_potencia = False
+        dict_preus_tp_energia = False
         omie_obj = self.pool.get('giscedata.monthly.price.omie')
         imd_obj = self.pool.get('ir.model.data')
         cfg_obj = self.pool.get('res.config')
@@ -317,10 +318,18 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             tarifes_a_mostrar = get_comming_atr_price(cursor, uid, pol, ctx)
         res['tarifes_a_mostrar'] = tarifes_a_mostrar
 
-        dades_tarifa = tarifes_a_mostrar
+        dades_tarifa = tarifes_a_mostrar[0]
+        text_vigencia = ''
+
+        if pol.state != 'esborrany':
+            ultima_modcon = pol.modcontractuals_ids[0]
+            modcon_pendent_indexada = ultima_modcon.state == 'pendent' and \
+                ultima_modcon.mode_facturacio == 'index'
+            modcon_pendent_periodes = ultima_modcon.state == 'pendent' and \
+                ultima_modcon.mode_facturacio == 'atr'
         if modcon_pendent_indexada or modcon_pendent_periodes or lead:
             text_vigencia = ''
-        elif not data_final and dades_tarifa['date_end']:
+        elif not pol.modcontractual_activa.data_final and dades_tarifa['date_end']:
             text_vigencia = _(u"(vigents fins al {})").format(dades_tarifa['date_end'])
         elif dades_tarifa['date_end'] and dades_tarifa['date_start']:
             text_vigencia = _(u"(vigents fins al {})").format(
@@ -330,8 +339,9 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d').strftime('%d/%m/%Y'))
 
         try:
-            omie_mon_price_45 = omie_obj.has_to_charge_10_percent_requeriments_oficials(cursor, uid, ctx['date'], pol.potencia)
-        except:
+            omie_mon_price_45 = omie_obj.has_to_charge_10_percent_requeriments_oficials(
+                cursor, uid, ctx['date'], pol.potencia)
+        except Exception:
             omie_mon_price_45 = False
 
         res['omie_mon_price_45'] = omie_mon_price_45
@@ -345,18 +355,40 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             cursor, uid, 'charge_iva_10_percent_when_available', '0'
         ))
 
-        iva_reduit = False
         if not pol.fiscal_position_id and not lead:
-            if iva_10_active and pol.potencia <= 10 and dades_tarifa['date_start'] >= start_date_iva_10 and dades_tarifa['date_start'] <= end_date_iva_10 and omie_mon_price_45:
-                fp_id = imd_obj.get_object_reference(cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
-                iva_reduit = True
+            if iva_10_active and pol.potencia <= 10 and dades_tarifa['date_start'] >= start_date_iva_10 and dades_tarifa['date_start'] <= end_date_iva_10 and omie_mon_price_45:  # noqa: E501
+                # fp_id = imd_obj.get_object_reference(
+                #     cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
                 text_vigencia += " (IVA 10%, IE 3,8%)"
             else:
-                fp_id = imd_obj.get_object_reference(cursor, uid, 'giscedata_facturacio_iese', 'fp_nacional_2024_rdl_8_2023_38')[1]
+                # fp_id = imd_obj.get_object_reference(
+                #     cursor, uid, 'giscedata_facturacio_iese', 'fp_nacional_2024_rdl_8_2023_38')[1]
                 text_vigencia += " (IVA 21%, IE 3,8%)"
+            fp_id = False  # tmp
             ctx.update({'force_fiscal_position': fp_id})
+        res['text_vigencia'] = text_vigencia
 
-            res['text_vigencia'] = text_vigencia
+        periodes_energia = sorted(pol.tarifa.get_periodes(context=context).keys())
+        periodes_potencia = sorted(pol.tarifa.get_periodes('tp', context=context).keys())
+
+        power_prices = []
+        for p in periodes_potencia:
+            power_prices.append(get_atr_price(cursor, uid, pol, p, 'tp', ctx, with_taxes=True)[0])
+        res['power_prices'] = power_prices
+
+        energy_prices = []
+        for p in periodes_potencia:
+            energy_prices.append(get_atr_price(cursor, uid, pol, p, 'te', ctx, with_taxes=True)[0])
+        res['energy_prices'] = energy_prices
+
+        generation_prices = []
+        for p in periodes_potencia:
+            generation_prices.append(get_gkwh_atr_price(
+                cursor, uid, pol, p, 'te', ctx, with_taxes=True)[0])
+        res['generation_prices'] = generation_prices
+
+        res['price_auto'] = get_atr_price(
+            cursor, uid, pol, periodes_energia[0], 'ac', ctx, with_taxes=True)[0]
 
         return res
 

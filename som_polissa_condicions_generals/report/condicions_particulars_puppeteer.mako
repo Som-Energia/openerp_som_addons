@@ -2,6 +2,7 @@
 <%namespace file="som_polissa_condicions_generals/report/components/capcalera.mako" import="capcalera"/>
 <%namespace file="som_polissa_condicions_generals/report/components/contact_info.mako" import="contact_info"/>
 <%namespace file="som_polissa_condicions_generals/report/components/potencies_info.mako" import="potencies_info"/>
+<%namespace file="som_polissa_condicions_generals/report/components/prices_info.mako" import="prices_info"/>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -36,6 +37,7 @@
                         ${capcalera(informe['polissa'])}
                         ${contact_info(informe['titular'], informe['cups'])}
                         ${potencies_info(informe['polissa'], informe['potencies'])}
+                        ${prices_info(informe['polissa'], informe['prices'])}
                     </div>
                 </div>
             </div>
