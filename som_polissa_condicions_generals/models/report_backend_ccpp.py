@@ -88,7 +88,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             "potencies": self.get_potencies_data(cursor, uid, pol, pas01, context=context),
             "polissa": self.get_polissa_data(cursor, uid, pol, context=context),
             "cups": self.get_cups_data(cursor, uid, pol, context=context),
-            "prices": self.get_prices_data(cursor, uid, pol, context=context),
+            #"prices": self.get_prices_data(cursor, uid, pol, context=context),
             "fiscal_poisition": self.calculate_fiscal_position(cursor, uid, pol, context=context),
         }
         return data
@@ -295,7 +295,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         # dict_preus_tp_energia = False
         omie_obj = self.pool.get('giscedata.monthly.price.omie')
         imd_obj = self.pool.get('ir.model.data')
-        cfg_obj = polissa.pool.get('res.config')
+        cfg_obj = self.pool.get('res.config')
 
         if context.get('tarifa_provisional', False):
             dict_preus_tp_energia = context.get('tarifa_provisional')['preus_provisional_energia']
@@ -330,9 +330,9 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d').strftime('%d/%m/%Y'))
 
         try:
-		    omie_mon_price_45 = omie_obj.has_to_charge_10_percent_requeriments_oficials(cursor, uid, ctx['date'], pol.potencia)
-		except:
-		    omie_mon_price_45 = False
+            omie_mon_price_45 = omie_obj.has_to_charge_10_percent_requeriments_oficials(cursor, uid, ctx['date'], pol.potencia)
+        except:
+            omie_mon_price_45 = False
 
         res['omie_mon_price_45'] = omie_mon_price_45
         start_date_iva_10 = cfg_obj.get(
@@ -358,7 +358,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
 
             res['text_vigencia'] = text_vigencia
 
-    return res
+        return res
 
 
 ReportBackendCondicionsParticulars()
