@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <record model="poweremail.templates" id="email_TODO">
+            <field name="name">Email TODO</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'TODO')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">TODO</field>
+            <field name="def_to">${object.direccio_pagament.email},${object.direccio_notificacio.email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">TODO ${object.name}</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.titular.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Som Energia - Modificacions')]"/>
+            <field name="def_body_text"><![CDATA[
+                <!doctype html>
+                <html>
+                <head></head>
+                <body>
+                Email text
+                </body>
+                </html>
+                ]]>
+            </field>
+    	</record>
+    </data>
+</openerp>

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from destral import testing
-from destral.transaction import Transaction
+from tests_gurb_base import TestsGurbBase
 from addons import get_module_resource
 from tools.misc import cache
 import mock
@@ -24,17 +23,7 @@ class GiscedataSwitching(osv.osv):
 GiscedataSwitching()
 
 
-class TestsGurbSwitching(testing.OOTestCase):
-    def setUp(self):
-        self.txn = Transaction().start(self.database)
-        self.cursor = self.txn.cursor
-        self.uid = self.txn.user
-
-    def tearDown(self):
-        self.txn.stop()
-
-    def get_model(self, model_name):
-        return self.openerp.pool.get(model_name)
+class TestsGurbSwitching(TestsGurbBase):
 
     def get_contract_id(self, txn, xml_id="polissa_0001"):
         uid = txn.user
@@ -140,29 +129,6 @@ class TestsGurbSwitching(testing.OOTestCase):
         pol_obj.write(cursor, uid, [pol_id], {
             "comercialitzadora": new_comer_id
         })
-
-    def activar_polissa_CUPS(self, txn, set_gurb_category=False, context=None):
-        if context is None:
-            context = {}
-        cursor = txn.cursor
-        uid = txn.user
-        imd_obj = self.openerp.pool.get("ir.model.data")
-        polissa_obj = self.openerp.pool.get("giscedata.polissa")
-        polissa_id = imd_obj.get_object_reference(
-            cursor, uid, "giscedata_polissa", context.get("polissa_xml_id", "polissa_0001")
-        )[1]
-        polissa_obj.send_signal(cursor, uid, [polissa_id], [
-            "validar", "contracte"
-        ])
-        # Set GURB category to contract
-        if set_gurb_category:
-            imd_obj = self.openerp.pool.get("ir.model.data")
-            gurb_categ_id = imd_obj.get_object_reference(
-                self.cursor, self.uid, "som_gurb", "categ_gurb_pilot"  # TODO: Use the real category
-            )[1]
-            polissa_obj.write(
-                self.cursor, self.uid, polissa_id, {"category_id": [(4, gurb_categ_id)]}
-            )
 
     def create_case_and_step(
             self, cursor, uid, contract_id, proces_name, step_name, sw_id_origin=None, context=None
@@ -290,7 +256,8 @@ class TestsGurbSwitching(testing.OOTestCase):
 
         self.change_polissa_comer(self.txn)
         self.update_polissa_distri(self.txn)
-        self.activar_polissa_CUPS(self.txn, set_gurb_category=True)
+        self.activar_polissa_CUPS(set_gurb_category=True, context={
+                                  "polissa_xml_id": "polissa_0001"})
 
         step_id = self.create_case_and_step(
             self.cursor, self.uid, contract_id, "M1", "01"
@@ -352,7 +319,8 @@ class TestsGurbSwitching(testing.OOTestCase):
 
         self.change_polissa_comer(self.txn)
         self.update_polissa_distri(self.txn)
-        self.activar_polissa_CUPS(self.txn, set_gurb_category=False)
+        self.activar_polissa_CUPS(set_gurb_category=False, context={
+                                  "polissa_xml_id": "polissa_0001"})
 
         step_id = self.create_case_and_step(
             self.cursor, self.uid, contract_id, "M1", "01"
@@ -414,7 +382,8 @@ class TestsGurbSwitching(testing.OOTestCase):
 
         self.change_polissa_comer(self.txn)
         self.update_polissa_distri(self.txn)
-        self.activar_polissa_CUPS(self.txn, set_gurb_category=True)
+        self.activar_polissa_CUPS(set_gurb_category=True, context={
+                                  "polissa_xml_id": "polissa_0001"})
 
         step_id = self.create_case_and_step(
             self.cursor, self.uid, contract_id, "M1", "01"
@@ -472,7 +441,8 @@ class TestsGurbSwitching(testing.OOTestCase):
         sw_obj = self.openerp.pool.get("giscedata.switching")
 
         self.switch(self.txn, "comer")
-        self.activar_polissa_CUPS(self.txn, set_gurb_category=True)
+        self.activar_polissa_CUPS(set_gurb_category=True, context={
+                                  "polissa_xml_id": "polissa_0001"})
 
         # Import XML
         sw_obj.importar_xml(
@@ -515,7 +485,8 @@ class TestsGurbSwitching(testing.OOTestCase):
 
         self.change_polissa_comer(self.txn)
         self.update_polissa_distri(self.txn)
-        self.activar_polissa_CUPS(self.txn, set_gurb_category=True)
+        self.activar_polissa_CUPS(set_gurb_category=True, context={
+                                  "polissa_xml_id": "polissa_0001"})
 
         step_id = self.create_case_and_step(
             self.cursor, self.uid, contract_id, "M1", "01"
@@ -582,7 +553,8 @@ class TestsGurbSwitching(testing.OOTestCase):
 
         self.change_polissa_comer(self.txn)
         self.update_polissa_distri(self.txn)
-        self.activar_polissa_CUPS(self.txn, set_gurb_category=False)
+        self.activar_polissa_CUPS(set_gurb_category=False, context={
+                                  "polissa_xml_id": "polissa_0001"})
 
         step_id = self.create_case_and_step(
             self.cursor, self.uid, contract_id, "M1", "01"
@@ -638,7 +610,8 @@ class TestsGurbSwitching(testing.OOTestCase):
 
         sw_obj = self.openerp.pool.get("giscedata.switching")
         self.switch(self.txn, "comer")
-        self.activar_polissa_CUPS(self.txn, set_gurb_category=True)
+        self.activar_polissa_CUPS(set_gurb_category=True, context={
+                                  "polissa_xml_id": "polissa_0001"})
         sw_obj.importar_xml(
             self.cursor, self.uid, d1_xml, "d101.xml"
         )
