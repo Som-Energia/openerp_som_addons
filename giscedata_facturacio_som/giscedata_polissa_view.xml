@@ -8,11 +8,11 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <field name="lot_facturacio" position="after">
-                    <field name="cobrament_bloquejat" colspan="2" select="2" on_change="onchange_bloquejat(cobrament_bloquejat)"/>
                     <group colspan="2" col="2" attrs="{'invisible': [('cobrament_bloquejat','=',False)]}">
+                        <field name="estat_pendent_cobrament" domain="[('process_id','=',process_id)]"/>
                         <field name="observacions_cobrament" height="50" widget="text"/>
-                        <field name="estat_pendent_cobrament" domain="[('proces_id', '=', active_id.process_id)]" widget="selection"/>
                     </group>
+                    <field name="cobrament_bloquejat" colspan="2" select="2" on_change="onchange_bloquejat(cobrament_bloquejat)"/>
                 </field>
             </field>
         </record>
