@@ -1,4 +1,4 @@
-<%def name="capcalera(polissa)">
+<%def name="footer(polissa)">
     <div id="footer">
         <div class="city_date">
         <%
