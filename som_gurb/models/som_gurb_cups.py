@@ -291,7 +291,7 @@ class SomGurbCups(osv.osv):
         "general_conditions_id": fields.many2one(
             "som.gurb.general.conditions",
             "Condicions generals",
-            required=True
+            required=False,
         ),
     }
 
