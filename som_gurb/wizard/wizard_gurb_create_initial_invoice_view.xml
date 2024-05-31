@@ -15,11 +15,11 @@
                         <field name="errors" nolabel="1" readonly="1" height="200" width="800" />
                     </group>
                     <group colspan="4" attrs="{'invisible': [('state', '!=', 'init')]}">
-                        <button string="Cancel·lar" special="cancel" icon="gtk-close" colspan="2"/>
                         <button string="Crear factures" name="create_initial_invoices" type="object" icon="gtk-go-forward" colspan="2" />
+                        <button string="Cancel·lar" special="cancel" icon="gtk-close" colspan="2"/>
                     </group>
                     <group colspan="4" attrs="{'invisible': [('state', '=', 'init')]}">
-                        <button string="Veure factures" name="get_created_invoices" type="object" colspan="2"/>
+                        <button string="Veure factures" name="get_created_invoices" type="object" icon="gtk-go-forward" colspan="2"/>
                         <button string="Sortir" special="cancel" icon="gtk-close" colspan="2"/>
                     </group>
                 </form>
