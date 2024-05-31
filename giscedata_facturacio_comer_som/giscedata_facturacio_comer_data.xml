@@ -58,7 +58,7 @@ div.back{
         <field name="active">True</field>
     </record>
     </data>
-        <data noupdate="1">
+    <data noupdate="0">
         <record model="res.config" id="first_date_qr_pot_max">
             <field name="name">first_date_qr_pot_max</field>
             <field name="description">Data d'emisió de la factura a partir de la qual ha d'aparèixer el codi QR i potències màximes demandades a la factura</field>
