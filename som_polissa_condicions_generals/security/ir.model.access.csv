@@ -2,3 +2,6 @@
 "access_report_backend_mailcanvipreus_r","report.backend.mailcanvipreus","model_report_backend_mailcanvipreus","giscedata_facturacio.group_giscedata_facturacio_r",1,0,0,0
 "access_report_backend_mailcanvipreus_u","report.backend.mailcanvipreus","model_report_backend_mailcanvipreus","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
 "access_report_backend_mailcanvipreus_w","report.backend.mailcanvipreus","model_report_backend_mailcanvipreus","giscedata_facturacio.group_giscedata_facturacio_w",1,1,1,0
+"access_report_backend_condicions_particulars_r","report.backend.condicions.particulars","model_report_backend_condicions_particulars","giscedata_facturacio.group_giscedata_facturacio_r",1,0,0,0
+"access_report_backend_condicions_particulars_u","report.backend.condicions.particulars","model_report_backend_condicions_particulars","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
+"access_report_backend_condicions_particulars_w","report.backend.condicions.particulars","model_report_backend_condicions_particulars","giscedata_facturacio.group_giscedata_facturacio_w",1,1,1,0
