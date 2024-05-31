@@ -7,7 +7,7 @@ from gestionatr.defs import TABLA_9
 from giscedata_facturacio.report.utils import get_atr_price, get_comming_atr_price
 from som_extend_facturacio_comer.utils import get_gkwh_atr_price
 from tools.translate import _
-from giscedata_polissa.report.utils import localize_period, datetime_to_date
+from giscedata_polissa.report.utils import localize_period
 
 
 TABLA_113_dict = {  # Table extracted from gestionatr.defs TABLA_113, not imported due translations issues # noqa: E501
