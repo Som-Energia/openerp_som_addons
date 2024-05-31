@@ -1,8 +1,8 @@
 <%def name="prices_info(polissa, prices)">
     <div class="styled_box">
-    %for dades_tarifa in tarifes_a_mostrar:
+    %for dades_tarifa in prices['tarifes_a_mostrar']:
         %if prices['text_vigencia']:
-            <h5> ${_("TARIFES D'ELECTRICITAT")} ${text_vigencia}</h5>
+            <h5> ${_("TARIFES D'ELECTRICITAT")} ${prices['text_vigencia']}</h5>
         %else:
             <h5> ${_("TARIFES D'ELECTRICITAT")}</h5>
         %endif
@@ -106,7 +106,6 @@
                     %else:
                         %for p in polissa['periodes_energia']:
                             %if polissa['pricelist'] and not polissa['lead']:
-                                <% ctx['force_pricelist'] = polissa['pricelist'].id %>
                                 <td class="center">
                                     <span class="">${formatLang(prices['power_prices'][p], digits=6)}</span>
                                 </td>

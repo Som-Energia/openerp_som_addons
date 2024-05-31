@@ -313,7 +313,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 tarifes_a_mostrar = [dict_preus_tp_potencia]
         else:
             tarifes_a_mostrar = get_comming_atr_price(cursor, uid, pol, ctx)
-        res['tarifes_a_mostrar'] = tarifes_a_mostrar
+        res['tarifes_a_mostrar'] = tarifes_a_mostrar if isinstance(tarifes_a_mostrar, list) else [tarifes_a_mostrar]
 
         dades_tarifa = tarifes_a_mostrar[0]
         text_vigencia = ''
@@ -365,23 +365,25 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             ctx.update({'force_fiscal_position': fp_id})
         res['text_vigencia'] = text_vigencia
 
+        # <% ctx['force_pricelist'] = polissa['pricelist'].id %>
+
         periodes_energia = sorted(pol.tarifa.get_periodes(context=context).keys())
         periodes_potencia = sorted(pol.tarifa.get_periodes('tp', context=context).keys())
 
-        power_prices = []
+        power_prices = {}
         for p in periodes_potencia:
-            power_prices.append(get_atr_price(cursor, uid, pol, p, 'tp', ctx, with_taxes=True)[0])
+            power_prices[p] = get_atr_price(cursor, uid, pol, p, 'tp', ctx, with_taxes=True)[0]
         res['power_prices'] = power_prices
 
-        energy_prices = []
+        energy_prices = {}
         for p in periodes_potencia:
-            energy_prices.append(get_atr_price(cursor, uid, pol, p, 'te', ctx, with_taxes=True)[0])
+            energy_prices[p] = get_atr_price(cursor, uid, pol, p, 'te', ctx, with_taxes=True)[0]
         res['energy_prices'] = energy_prices
 
-        generation_prices = []
+        generation_prices = {}
         for p in periodes_potencia:
-            generation_prices.append(get_gkwh_atr_price(
-                cursor, uid, pol, p, 'te', ctx, with_taxes=True)[0])
+            generation_prices[p] = get_gkwh_atr_price(
+                cursor, uid, pol, p, ctx, with_taxes=True)[0]
         res['generation_prices'] = generation_prices
 
         res['price_auto'] = get_atr_price(
