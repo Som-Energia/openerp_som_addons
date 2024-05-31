@@ -264,7 +264,9 @@ class SomGurbCups(osv.osv):
         invoice_vals.update(invoice_o.onchange_partner_id(  # Get invoice default values
             cursor, uid, [], "out_invoice", partner_id).get("value", {})
         )
+
         invoice_id = invoice_o.create(cursor, uid, invoice_vals, context=context)
+        invoice_o.button_reset_taxes(cursor, uid, [invoice_id])
 
         # Update reference
         write_vals = {
