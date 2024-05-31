@@ -1,11 +1,8 @@
-<%def name="footer(polissa)">
+<%def name="footer(polissa, titular)">
     <div id="footer">
         <div class="city_date">
-        <%
-            data_firma =  datetime.today()
-        %>
             ${company.partner_id.address[0]['city']},
-            ${_(u"a {0}".format(localize_period(data_firma, lang)))}
+            ${_(u"a {0}".format(titular['sign_date']))}
         </div>
         <div class="acceptacio_digital">
             % if polissa['is_business']:
@@ -24,16 +21,16 @@
                 <div class="acceptacio_digital_txt">${_(u"Acceptat digitalment via formulari web")}</div>
             % endif
 
-            <div><b>${polissa.pagador.name if not pas01 else dict_titular['client_name']}</b></div>
+            <div><b>${titular['client_name']}</b></div>
         </div>
         <div class="signatura">
             <div><b>${_(u"La comercialitzadora")}</b></div>
             <img src="${addons_path}/som_polissa_condicions_generals/report/assets/signatura_contracte.png"/>
             <div><b>${company.name}</b></div>
         </div>
-        <div class="observacions">
-            ${polissa.print_observations or ""}
-        </div>
+        ## <div class="observacions">
+        ##     ${polissa.print_observations or ""}
+        ## </div>
     </div>
     %if polissa['state'] == 'esborrany':
         <div class="esborrany_footer">

@@ -3,6 +3,8 @@
 <%namespace file="som_polissa_condicions_generals/report/components/contact_info.mako" import="contact_info"/>
 <%namespace file="som_polissa_condicions_generals/report/components/potencies_info.mako" import="potencies_info"/>
 <%namespace file="som_polissa_condicions_generals/report/components/prices_info.mako" import="prices_info"/>
+<%namespace file="som_polissa_condicions_generals/report/components/disclaimers.mako" import="disclaimers"/>
+<%namespace file="som_polissa_condicions_generals/report/components/footer.mako" import="footer"/>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -38,6 +40,8 @@
                         ${contact_info(informe['titular'], informe['cups'])}
                         ${potencies_info(informe['polissa'], informe['potencies'])}
                         ${prices_info(informe['polissa'], informe['prices'])}
+                        ${disclaimers(informe['polissa'])}
+                        ${footer(informe['polissa'], informe['titular'])}
                     </div>
                 </div>
             </div>

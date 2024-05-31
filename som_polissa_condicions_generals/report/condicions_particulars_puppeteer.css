@@ -252,6 +252,10 @@ a {
     padding: 1em;
 }
 
+.divisio_impostos {
+    border-left: 1px solid black;
+    border-collapse: collapse;
+}
 .peatge_access_content {
     padding: 1em;
 }

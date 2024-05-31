@@ -7,6 +7,7 @@ from gestionatr.defs import TABLA_9
 from giscedata_facturacio.report.utils import get_atr_price, get_comming_atr_price
 from som_extend_facturacio_comer.utils import get_gkwh_atr_price
 from tools.translate import _
+from giscedata_polissa.report.utils import localize_period, datetime_to_date
 
 
 TABLA_113_dict = {  # Table extracted from gestionatr.defs TABLA_113, not imported due translations issues # noqa: E501
@@ -131,6 +132,8 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         res['email_envio'] = direccio_envio.email or ''
         res['mobile_envio'] = direccio_envio.mobile or ''
         res['phone_envio'] = direccio_envio.phone or ''
+        data_firma = datetime.today()
+        res['sign_date'] = localize_period(data_firma, pol.titular.lang)
 
         return res
 
@@ -181,7 +184,8 @@ class ReportBackendCondicionsParticulars(ReportBackend):
 
         res['te_assignacio_gkwh'] = pol.te_assignacio_gkwh
         res['bank'] = pol.bank
-        res['printable_iban'] = pol.bank.printable_iban[5:]
+        iban = pol.bank and pol.bank.printable_iban[5:] or ''
+        res['printable_iban'] = iban[-4:]
 
         # context['potencia_anual'] = True
         # context['sense_agrupar'] = True
@@ -313,7 +317,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 tarifes_a_mostrar = [dict_preus_tp_potencia]
         else:
             tarifes_a_mostrar = get_comming_atr_price(cursor, uid, pol, ctx)
-        res['tarifes_a_mostrar'] = tarifes_a_mostrar if isinstance(tarifes_a_mostrar, list) else [tarifes_a_mostrar]
+        res['tarifes_a_mostrar'] = tarifes_a_mostrar if isinstance(tarifes_a_mostrar, list) else [tarifes_a_mostrar]  # noqa: E501
 
         dades_tarifa = tarifes_a_mostrar[0]
         text_vigencia = ''
@@ -370,18 +374,32 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         periodes_energia = sorted(pol.tarifa.get_periodes(context=context).keys())
         periodes_potencia = sorted(pol.tarifa.get_periodes('tp', context=context).keys())
 
+        ctx['potencia_anual'] = True
+        ctx['sense_agrupar'] = True
         power_prices = {}
         for p in periodes_potencia:
             power_prices[p] = get_atr_price(cursor, uid, pol, p, 'tp', ctx, with_taxes=True)[0]
         res['power_prices'] = power_prices
 
-        energy_prices = {}
+        power_prices_untaxed = {}
         for p in periodes_potencia:
+            power_prices_untaxed[p] = get_atr_price(
+                cursor, uid, pol, p, 'tp', ctx, with_taxes=False)[0]
+        res['power_prices_untaxed'] = power_prices_untaxed
+
+        energy_prices = {}
+        for p in periodes_energia:
             energy_prices[p] = get_atr_price(cursor, uid, pol, p, 'te', ctx, with_taxes=True)[0]
         res['energy_prices'] = energy_prices
 
+        energy_prices_untaxed = {}
+        for p in periodes_energia:
+            energy_prices_untaxed[p] = get_atr_price(
+                cursor, uid, pol, p, 'te', ctx, with_taxes=False)[0]
+        res['energy_prices_untaxed'] = energy_prices_untaxed
+
         generation_prices = {}
-        for p in periodes_potencia:
+        for p in periodes_energia:
             generation_prices[p] = get_gkwh_atr_price(
                 cursor, uid, pol, p, ctx, with_taxes=True)[0]
         res['generation_prices'] = generation_prices
