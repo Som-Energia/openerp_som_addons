@@ -18,7 +18,7 @@
                         <field name="extra_beta_kw" />
                         <field name="beta_percentage" />
                         <field name="owner_cups" />
-                        <field name="invoice_ref" />
+                        <field name="initial_invoice_id" />
                         <field name="general_conditions_id" />
                     </group>
                     <field name="betas_ids" nolabel="1" colspan="4" readonly="1" />

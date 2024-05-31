@@ -119,6 +119,8 @@ class SomGurbCups(osv.osv):
             context = {}
         pol_o = self.pool.get("giscedata.polissa")
         pol_id = self.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
+        if not pol_id:
+            return False
         partner_id = pol_o.read(cursor, uid, pol_id, ['titular'], context=context)
         if partner_id:
             partner_id = partner_id["titular"][0]
@@ -170,13 +172,12 @@ class SomGurbCups(osv.osv):
             context['active_ids'] = [pol_id]
             wiz_service_o.create_services(cursor, uid, [wiz_id], context=context)
 
-    def create_initial_invoices(self, cursor, uid, gurb_cups_ids, context=None):
+    def create_initial_invoice(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:
             context = {}
-        if not isinstance(gurb_cups_ids, list):
-            gurb_cups_ids = [gurb_cups_ids]
 
         imd_o = self.pool.get("ir.model.data")
+
         invoice_o = self.pool.get("account.invoice")
         invoice_line_o = self.pool.get("account.invoice.line")
         product_o = self.pool.get("product.product")
@@ -187,67 +188,105 @@ class SomGurbCups(osv.osv):
             cursor, uid, "som_gurb", "initial_quota_gurb"
         )[1]
 
-        errors = []
+        gurb_cups_br = self.browse(cursor, uid, gurb_cups_id, context=context)
 
-        for gurb_cups_br in self.browse(cursor, uid, gurb_cups_ids, context=context):
-            # TODO: Més validacions?
-            if gurb_cups_br.invoice_ref:
-                errors.append(
-                    "Initial Invoice {} already exists".format(gurb_cups_br.invoice_ref)
-                )
-                continue
-
-            partner_id = self.get_titular_gurb_cups(cursor, uid, gurb_cups_br.id, context=context)
-            product_br = product_o.browse(cursor, uid, product_id, context=context)
-
-            # Get product price_unit from GURB pricelist
-            price_unit = pricelist_o.price_get(
-                cursor,
-                uid,
-                [gurb_cups_br.gurb_id.pricelist_id.id],
-                product_id,
-                gurb_cups_br.beta_kw,
-            )[gurb_cups_br.gurb_id.pricelist_id.id]
-
-            # Create invoice line
-            gurb_line = invoice_line_o.product_id_change(  # Get line default values
-                cursor,
-                uid,
-                [],
-                product=product_br.id,
-                uom=product_br.uom_id.id,
-                partner_id=partner_id,
-                type="out_invoice",
-            ).get("value", {})
-            gurb_line["invoice_line_tax_id"] = [(6, 0, gurb_line.get("invoice_line_tax_id", []))]
-            gurb_line.update({
-                "name": "Quota inicial Gurb",
-                "product_id": product_id,
-                "price_unit": price_unit,
-                "quantity": gurb_cups_br.beta_kw,
-            })
-
-            # Create invoice
-            invoice_lines = [
-                (0, 0, gurb_line)
-            ]
-            invoice_vals = {
-                "partner_id": partner_id,
-                "type": "out_invoice",
-                "invoice_line": invoice_lines,
-            }
-            invoice_vals.update(invoice_o.onchange_partner_id(  # Get invoice default values
-                cursor, uid, [], "out_invoice", partner_id).get("value", {})
+        if gurb_cups_br.initial_invoice_id:
+            error = "[GURB CUPS ID {}]: La factura d'inscripció {} ja existeix.".format(
+                gurb_cups_br.id,
+                gurb_cups_br.initial_invoice_id.number,
             )
-            invoice_id = invoice_o.create(cursor, uid, invoice_vals, context=context)
+            return (False, error)
 
-            # Update reference
-            write_vals = {
-                "invoice_ref": "account.invoice,{}".format(invoice_id)
-            }
-            self.write(cursor, uid, gurb_cups_br.id, write_vals, context=context)
+        partner_id = self.get_titular_gurb_cups(
+            cursor, uid, gurb_cups_br.id, context=context
+        )
 
-        return errors
+        if not partner_id:
+            error = "[GURB CUPS ID {}]: Error al buscar el titular de la pòlissa associada.".format(
+                gurb_cups_br.id,
+            )
+            return (False, error)
+
+        product_br = product_o.browse(cursor, uid, product_id, context=context)
+
+        # Get product price_unit from GURB pricelist
+        price_unit = pricelist_o.price_get(
+            cursor,
+            uid,
+            [gurb_cups_br.gurb_id.pricelist_id.id],
+            product_id,
+            gurb_cups_br.beta_kw,
+        )[gurb_cups_br.gurb_id.pricelist_id.id]
+
+        # Create invoice line
+        gurb_line = invoice_line_o.product_id_change(  # Get line default values
+            cursor,
+            uid,
+            [],
+            product=product_br.id,
+            uom=product_br.uom_id.id,
+            partner_id=partner_id,
+            type="out_invoice",
+        ).get("value", {})
+        gurb_line["invoice_line_tax_id"] = [
+            (6, 0, gurb_line.get("invoice_line_tax_id", []))
+        ]
+        gurb_line.update({
+            "name": "Quota inicial Gurb",
+            "product_id": product_id,
+            "price_unit": price_unit,
+            "quantity": gurb_cups_br.beta_kw,
+        })
+
+        # Create invoice
+        invoice_lines = [
+            (0, 0, gurb_line)
+        ]
+        invoice_vals = {
+            "partner_id": partner_id,
+            "type": "out_invoice",
+            "invoice_line": invoice_lines,
+        }
+        invoice_vals.update(invoice_o.onchange_partner_id(  # Get invoice default values
+            cursor, uid, [], "out_invoice", partner_id).get("value", {})
+        )
+        invoice_id = invoice_o.create(cursor, uid, invoice_vals, context=context)
+
+        # Update reference
+        write_vals = {
+            "initial_invoice_id": invoice_id,
+        }
+        self.write(cursor, uid, gurb_cups_br.id, write_vals, context=context)
+
+        return (invoice_id, False)
+
+    def create_initial_invoices(self, cursor, uid, gurb_cups_ids, context=None):
+        if context is None:
+            context = {}
+        if not isinstance(gurb_cups_ids, list):
+            gurb_cups_ids = [gurb_cups_ids]
+
+        errors = []
+        invoice_ids = []
+
+        for gurb_cups_id in gurb_cups_ids:
+            try:
+                invoice_id, error = self.create_initial_invoice(
+                    cursor, uid, gurb_cups_id, context=context
+                )
+                if error:
+                    errors.append(error)
+                else:
+                    invoice_ids.append(invoice_id)
+            except Exception as e:
+                errors.append(
+                    "[GURB CUPS ID {}]: {}".format(
+                        gurb_cups_id,
+                        e.message,
+                    )
+                )
+
+        return (invoice_ids, errors)
 
     _columns = {
         "active": fields.boolean("Actiu"),
@@ -285,9 +324,7 @@ class SomGurbCups(osv.osv):
             string="Cups de la persona propietària",
             method=True
         ),
-        "invoice_ref": fields.reference(
-            "Factura d'inscripció", selection=[("account.invoice", "Factura")], size=128
-        ),
+        "initial_invoice_id": fields.many2one("account.invoice", "Factura"),
         "general_conditions_id": fields.many2one(
             "som.gurb.general.conditions",
             "Condicions generals",
