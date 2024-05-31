@@ -191,9 +191,8 @@ class SomGurbCups(osv.osv):
         gurb_cups_br = self.browse(cursor, uid, gurb_cups_id, context=context)
 
         if gurb_cups_br.initial_invoice_id:
-            error = "[GURB CUPS ID {}]: La factura d'inscripció {} ja existeix.".format(
+            error = "[GURB CUPS ID {}]: La factura d'inscripció ja existeix.".format(
                 gurb_cups_br.id,
-                gurb_cups_br.initial_invoice_id.number,
             )
             return (False, error)
 
