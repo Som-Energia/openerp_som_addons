@@ -177,16 +177,13 @@ class SomGurbCups(osv.osv):
             context = {}
 
         imd_o = self.pool.get("ir.model.data")
-
         invoice_o = self.pool.get("account.invoice")
+        account_o = self.pool.get("account.account")
+        journal_o = self.pool.get("account.journal")
+        payment_type_o = self.pool.get("payment.type")
         invoice_line_o = self.pool.get("account.invoice.line")
         product_o = self.pool.get("product.product")
         pricelist_o = self.pool.get("product.pricelist")
-
-        # Initial quota base gurb
-        product_id = imd_o.get_object_reference(
-            cursor, uid, "som_gurb", "initial_quota_gurb"
-        )[1]
 
         gurb_cups_br = self.browse(cursor, uid, gurb_cups_id, context=context)
 
@@ -206,6 +203,10 @@ class SomGurbCups(osv.osv):
             )
             return (False, error)
 
+        # Initial quota base gurb
+        product_id = imd_o.get_object_reference(
+            cursor, uid, "som_gurb", "initial_quota_gurb"
+        )[1]
         product_br = product_o.browse(cursor, uid, product_id, context=context)
 
         # Get product price_unit from GURB pricelist
@@ -227,9 +228,7 @@ class SomGurbCups(osv.osv):
             partner_id=partner_id,
             type="out_invoice",
         ).get("value", {})
-        gurb_line["invoice_line_tax_id"] = [
-            (6, 0, gurb_line.get("invoice_line_tax_id", []))
-        ]
+        gurb_line["invoice_line_tax_id"] = [(6, 0, gurb_line.get("invoice_line_tax_id", []))]
         gurb_line.update({
             "name": "Quota inicial Gurb",
             "product_id": product_id,
@@ -238,6 +237,15 @@ class SomGurbCups(osv.osv):
         })
 
         # Create invoice
+        invoice_account_ids = account_o.search(
+            cursor, uid, [("code", "=", "430000000000")], context=context
+        )
+        journal_ids = journal_o.search(
+            cursor, uid, [("code", "=", "VENTA")], context=context
+        )
+        payment_type_id = payment_type_o.search(
+            cursor, uid, [("code", "=", "TRANSFERENCIA_CSB")], context=context
+        )[0]
         invoice_lines = [
             (0, 0, gurb_line)
         ]
@@ -245,7 +253,14 @@ class SomGurbCups(osv.osv):
             "partner_id": partner_id,
             "type": "out_invoice",
             "invoice_line": invoice_lines,
+            "payment_type": payment_type_id,
         }
+
+        if invoice_account_ids:
+            invoice_vals.update({"account_id": invoice_account_ids[0]})
+        if journal_ids:
+            invoice_vals.update({"journal_id": journal_ids[0]})
+
         invoice_vals.update(invoice_o.onchange_partner_id(  # Get invoice default values
             cursor, uid, [], "out_invoice", partner_id).get("value", {})
         )
