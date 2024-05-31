@@ -2,10 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 from report_backend.report_backend import ReportBackend, report_browsify
 from report_puppeteer.report_puppeteer import PuppeteerParser
-import json
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
-from osv import osv
 from gestionatr.defs import TABLA_9
 from giscedata_facturacio.report.utils import get_atr_price, get_comming_atr_price
 from som_extend_facturacio_comer.utils import get_gkwh_atr_price
@@ -289,13 +286,13 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         # res['text_impostos'] = text_impostos
         return res
 
-    def get_prices_data(self, cursor, uid, pol, context=None):
+    def get_prices_data(self, cursor, uid, pol, context=None):  # noqa: C901
         res = {}
         lead = context.get('lead')
         dict_preus_tp_potencia = False
         dict_preus_tp_energia = False
         omie_obj = self.pool.get('giscedata.monthly.price.omie')
-        imd_obj = self.pool.get('ir.model.data')
+        self.pool.get('ir.model.data')
         cfg_obj = self.pool.get('res.config')
 
         if context.get('tarifa_provisional', False):
