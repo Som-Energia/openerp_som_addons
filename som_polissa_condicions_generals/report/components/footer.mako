@@ -1,4 +1,5 @@
 <%def name="footer(polissa, titular)">
+    <br><br>
     <div id="footer">
         <div class="city_date">
             ${company.partner_id.address[0]['city']},

@@ -1,18 +1,18 @@
 <%def name="prices_info(polissa, prices)">
     <div class="styled_box">
-    %for dades_tarifa in prices['tarifes_a_mostrar']:
+    %for pricelist in prices['pricelists']:
         %if polissa['tarifa'] == "2.0TD":
-            <h5> ${_("TARIFES D'ELECTRICITAT")}</h5>
+            <h5> ${_("TARIFES D'ELECTRICITAT")} ${pricelist['text_vigencia']}</h5>
         %else:
-            <h5> ${_("TARIFES D'ELECTRICITAT SENSE IMPOSTOS")}</h5>
+            <h5> ${_("TARIFES D'ELECTRICITAT SENSE IMPOSTOS")} ${pricelist['text_vigencia']}</h5>
         %endif
         <div class="tarifes_electricitat">
             <table class="taula_custom new_taula_custom">
                 % if polissa['tarifa'] == "2.0TD":
                     <tr style="background-color: #0fdb46;">
                         <th></th>
-                        <th colspan="3">Amb impostos ${prices['text_vigencia']}</th>
-                        <th class="divisio_impostos" colspan="3">Sense impostos</th>
+                        <th colspan="3">Sense impostos</th>
+                        <th class="divisio_impostos" colspan="3">Amb impostos ${pricelist['text_impostos']}</th>
                     </tr>
                 %endif
                 <tr style="background-color: #878787;">
@@ -37,19 +37,19 @@
                     <td class="bold">${_("Terme potència (€/kW i any)")}</td>
                     %if polissa['tarifa'] == "2.0TD":
                         %if polissa['pricelist']:
-                            <td class="center">
-                                <span>${formatLang(prices['power_prices'][polissa['periodes_potencia'][0]], digits=6)}</span>
+                            <td class="center ">
+                                <span>${formatLang(pricelist['power_prices_untaxed'][polissa['periodes_potencia'][0]], digits=6)}</span>
                             </td>
                             <td></td>
                             <td class="center">
-                                <span>${formatLang(prices['power_prices'][polissa['periodes_potencia'][1]], digits=6)}</span>
+                                <span>${formatLang(pricelist['power_prices_untaxed'][polissa['periodes_potencia'][1]], digits=6)}</span>
                             </td>
                             <td class="center divisio_impostos">
-                                <span>${formatLang(prices['power_prices_untaxed'][polissa['periodes_potencia'][0]], digits=6)}</span>
+                                <span>${formatLang(pricelist['power_prices'][polissa['periodes_potencia'][0]], digits=6)}</span>
                             </td>
                             <td></td>
                             <td class="center">
-                                <span>${formatLang(prices['power_prices_untaxed'][polissa['periodes_potencia'][1]], digits=6)}</span>
+                                <span>${formatLang(pricelist['power_prices'][polissa['periodes_potencia'][1]], digits=6)}</span>
                             </td>
                         %else:
                             %for p in range(0, 6):
@@ -62,7 +62,7 @@
                         %for p in polissa['periodes_potencia']:
                             %if polissa['pricelist']:
                                 <td class="center">
-                                    <span><span>${formatLang(prices['power_prices_untaxed'][p], digits=6)}</span></span>
+                                    <span><span>${formatLang(pricelist['power_prices_untaxed'][p], digits=6)}</span></span>
                                 </td>
                             %else:
                                 %if lead:
@@ -113,38 +113,15 @@
                             <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(pol['coeficient_k'], digits=6)}</span>
                         </td>
                     %else:
-                        %for p in polissa['periodes_energia']:
-                            %if polissa['pricelist'] and not polissa['lead']:
-                                %if polissa['tarifa'] == "2.0TD":
-                                    <td class="center">
-                                        <span class="">${formatLang(prices['energy_prices'][p], digits=6)}</span>
-                                    </td>
-                                %else:
-                                    <td class="center">
-                                        <span class="">${formatLang(prices['energy_prices_untaxed'][p], digits=6)}</span>
-                                    </td>
-                                %endif
-                            %else:
-                                %if lead:
-                                    <td class="center">
-                                        <span><span>${formatLang(preus['dict_preus_tp_energia'][p], digits=6)}</span></span>
-                                    </td>
-                                %else:
-                                    <td class="">
-                                        &nbsp;
-                                    </td>
-                                %endif
-                            %endif
-                        %endfor
                         %if len(polissa['periodes_energia']) < 6:
                             %if polissa['pricelist'] and not polissa['lead']:
-                                <td class="center divisio_impostos">
-                                    <span class="">${formatLang(prices['energy_prices_untaxed'][polissa['periodes_energia'][0]], digits=6)}</span>
+                                <td class="center">
+                                    <span class="">${formatLang(pricelist['energy_prices_untaxed'][polissa['periodes_energia'][0]], digits=6)}</span>
                                 </td>
                             %else:
                                 %if lead:
-                                    <td class="center divisio_impostos">
-                                        <span><span>${formatLang(preus['dict_preus_tp_energia'][polissa['periodes_energia'][0]], digits=6)}</span></span>
+                                    <td class="center">
+                                        <span><span>${formatLang(prices['dict_preus_tp_energia'][polissa['periodes_energia'][0]], digits=6)}</span></span>
                                     </td>
                                 %else:
                                     <td class="">
@@ -155,12 +132,12 @@
                             %for p in polissa['periodes_energia'][1:]:
                                 %if polissa['pricelist'] and not polissa['lead']:
                                     <td class="center">
-                                        <span class="">${formatLang(prices['energy_prices_untaxed'][p], digits=6)}</span>
+                                        <span class="">${formatLang(pricelist['energy_prices_untaxed'][p], digits=6)}</span>
                                     </td>
                                 %else:
                                     %if lead:
                                         <td class="center">
-                                            <span><span>${formatLang(preus['dict_preus_tp_energia'][p], digits=6)}</span></span>
+                                            <span><span>${formatLang(prices['dict_preus_tp_energia'][p], digits=6)}</span></span>
                                         </td>
                                     %else:
                                         <td class="">
@@ -170,6 +147,37 @@
                                 %endif
                             %endfor
                         %endif
+                        <% first_column = True %>
+                        %for p in polissa['periodes_energia']:
+                            %if polissa['pricelist'] and not polissa['lead']:
+                                %if polissa['tarifa'] == "2.0TD":
+                                    %if first_column:
+                                        <td class="center divisio_impostos">
+                                            <span class="">${formatLang(pricelist['energy_prices_untaxed'][p], digits=6)}</span>
+                                        </td>
+                                        <% first_column = False %>
+                                    %else:
+                                        <td class="center">
+                                            <span class="">${formatLang(pricelist['energy_prices_untaxed'][p], digits=6)}</span>
+                                        </td>
+                                    %endif
+                                %else:
+                                    <td class="center">
+                                        <span class="">${formatLang(pricelist['energy_prices'][p], digits=6)}</span>
+                                    </td>
+                                %endif
+                            %else:
+                                %if lead:
+                                    <td class="center">
+                                        <span><span>${formatLang(prices['dict_preus_tp_energia'][p], digits=6)}</span></span>
+                                    </td>
+                                %else:
+                                    <td class="">
+                                        &nbsp;
+                                    </td>
+                                %endif
+                            %endif
+                        %endfor
                     %endif
                 </tr>
                 %if polissa['te_assignacio_gkwh']:
@@ -178,7 +186,7 @@
                     %for p in polissa['periodes_energia']:
                         %if polissa['pricelist']:
                             <td class="center">
-                                <span class="">${formatLang(prices['generation_prices'][p], digits=6)}</span>
+                                <span class="">${formatLang(pricelist['generation_prices'][p], digits=6)}</span>
                             </td>
                         %else:
                             <td class="">
@@ -205,7 +213,7 @@
                     %else:
                         %if polissa['pricelist']:
                             <td colspan="6">
-                                <hr class="hr-text" data-content="${formatLang(prices['price_auto'], digits=6)}"/>
+                                <hr class="hr-text" data-content="${formatLang(pricelist['price_auto'], digits=6)}"/>
                             </td>
                         %else:
                             <td colspan="6">
@@ -237,13 +245,13 @@
         <!-- Bloc amb impostos de 3.X i 6.X -->
 
         %if polissa['tarifa'] != "2.0TD":
-            <h5> ${_("TARIFES D'ELECTRICITAT AMB IMPOSTOS")} ${prices['text_vigencia']}</h5>
+            <h5> ${_("TARIFES D'ELECTRICITAT AMB IMPOSTOS")} ${pricelist['text_impostos']} ${pricelist['text_vigencia']}</h5>
             <div class="tarifes_electricitat">
                 <table class="taula_custom new_taula_custom">
                     % if polissa['tarifa'] == "2.0TD":
                         <tr style="background-color: #0fdb46;">
                             <th></th>
-                            <th colspan="3">Amb impostos ${prices['text_vigencia']}</th>
+                            <th colspan="3">Amb impostos ${pricelist['text_impostos']}</th>
                             <th class="divisio_impostos" colspan="3">Sense impostos</th>
                         </tr>
                     %endif
@@ -270,18 +278,18 @@
                         %if polissa['tarifa'] == "2.0TD":
                             %if polissa['pricelist']:
                                 <td class="center">
-                                    <span>${formatLang(prices['power_prices'][polissa['periodes_potencia'][0]], digits=6)}</span>
+                                    <span>${formatLang(pricelist['power_prices'][polissa['periodes_potencia'][0]], digits=6)}</span>
                                 </td>
                                 <td></td>
                                 <td class="center">
-                                    <span>${formatLang(prices['power_prices'][polissa['periodes_potencia'][1]], digits=6)}</span>
+                                    <span>${formatLang(pricelist['power_prices'][polissa['periodes_potencia'][1]], digits=6)}</span>
                                 </td>
                                 <td class="center divisio_impostos">
-                                    <span>${formatLang(prices['power_prices'][polissa['periodes_potencia'][0]], digits=6)}</span>
+                                    <span>${formatLang(pricelist['power_prices'][polissa['periodes_potencia'][0]], digits=6)}</span>
                                 </td>
                                 <td></td>
                                 <td class="center">
-                                    <span>${formatLang(prices['power_prices'][polissa['periodes_potencia'][1]], digits=6)}</span>
+                                    <span>${formatLang(pricelist['power_prices'][polissa['periodes_potencia'][1]], digits=6)}</span>
                                 </td>
                             %else:
                                 %for p in range(0, 6):
@@ -294,7 +302,7 @@
                             %for p in polissa['periodes_potencia']:
                                 %if polissa['pricelist']:
                                     <td class="center">
-                                        <span><span>${formatLang(prices['power_prices'][p], digits=6)}</span></span>
+                                        <span><span>${formatLang(pricelist['power_prices'][p], digits=6)}</span></span>
                                     </td>
                                 %else:
                                     %if lead:
@@ -349,17 +357,17 @@
                                 %if polissa['pricelist'] and not polissa['lead']:
                                     %if polissa['tarifa'] == "2.0TD":
                                         <td class="center">
-                                            <span class="">${formatLang(prices['energy_prices'][p], digits=6)}</span>
+                                            <span class="">${formatLang(pricelist['energy_prices'][p], digits=6)}</span>
                                         </td>
                                     %else:
                                         <td class="center">
-                                            <span class="">${formatLang(prices['energy_prices'][p], digits=6)}</span>
+                                            <span class="">${formatLang(pricelist['energy_prices'][p], digits=6)}</span>
                                         </td>
                                     %endif
                                 %else:
                                     %if lead:
                                         <td class="center">
-                                            <span><span>${formatLang(preus['dict_preus_tp_energia'][p], digits=6)}</span></span>
+                                            <span><span>${formatLang(prices['dict_preus_tp_energia'][p], digits=6)}</span></span>
                                         </td>
                                     %else:
                                         <td class="">
@@ -371,12 +379,12 @@
                             %if len(polissa['periodes_energia']) < 6:
                                 %if polissa['pricelist'] and not polissa['lead']:
                                     <td class="center divisio_impostos">
-                                        <span class="">${formatLang(prices['energy_prices'][polissa['periodes_energia'][0]], digits=6)}</span>
+                                        <span class="">${formatLang(pricelist['energy_prices'][polissa['periodes_energia'][0]], digits=6)}</span>
                                     </td>
                                 %else:
                                     %if lead:
                                         <td class="center divisio_impostos">
-                                            <span><span>${formatLang(preus['dict_preus_tp_energia'][polissa['periodes_energia'][0]], digits=6)}</span></span>
+                                            <span><span>${formatLang(prices['dict_preus_tp_energia'][polissa['periodes_energia'][0]], digits=6)}</span></span>
                                         </td>
                                     %else:
                                         <td class="">
@@ -387,12 +395,12 @@
                                 %for p in polissa['periodes_energia'][1:]:
                                     %if polissa['pricelist'] and not polissa['lead']:
                                         <td class="center">
-                                            <span class="">${formatLang(prices['energy_prices'][p], digits=6)}</span>
+                                            <span class="">${formatLang(pricelist['energy_prices'][p], digits=6)}</span>
                                         </td>
                                     %else:
                                         %if lead:
                                             <td class="center">
-                                                <span><span>${formatLang(preus['dict_preus_tp_energia'][p], digits=6)}</span></span>
+                                                <span><span>${formatLang(prices['dict_preus_tp_energia'][p], digits=6)}</span></span>
                                             </td>
                                         %else:
                                             <td class="">
@@ -410,7 +418,7 @@
                         %for p in polissa['periodes_energia']:
                             %if polissa['pricelist']:
                                 <td class="center">
-                                    <span class="">${formatLang(prices['generation_prices'][p], digits=6)}</span>
+                                    <span class="">${formatLang(pricelist['generation_prices'][p], digits=6)}</span>
                                 </td>
                             %else:
                                 <td class="">
@@ -437,7 +445,7 @@
                         %else:
                             %if polissa['pricelist']:
                                 <td colspan="6">
-                                    <hr class="hr-text" data-content="${formatLang(prices['price_auto'], digits=6)}"/>
+                                    <hr class="hr-text" data-content="${formatLang(pricelist['price_auto'], digits=6)}"/>
                                 </td>
                             %else:
                                 <td colspan="6">
