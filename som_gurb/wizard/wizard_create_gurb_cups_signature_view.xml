@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_sign_gurb_cups_documents_form">
+            <field name="name">Signar GURB documents</field>
+            <field name="model">wizard.create.gurb.cups.signature</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Firmar els documents d'aquest GURB CUPS">
+                    <group colspan="4">
+                        <field name="email" />
+                    </group>
+                    <group colspan="4">
+                        <button name="start_signature_process" type="object" string="Enviar documents a signar!" icon="gtk-execute" />
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_sign_gurb_cups_documents_form">
+            <field name="name">Signar GURB documents</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.create.gurb.cups.signature</field>
+            <field name="view_type">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_sign_gurb_cups_documents_form" />
+        </record>
+        <record id="values_wizard_create_new_beta_form" model="ir.values">
+            <field name="object" eval="1" />
+            <field name="name">Signar GURB documets</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">som.gurb.cups</field>
+            <field name="value"
+                eval="'ir.actions.act_window,'+str(ref('action_wizard_sign_gurb_cups_documents_form'))" />
+        </record>
+    </data>
+</openerp>
