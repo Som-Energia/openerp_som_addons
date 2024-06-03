@@ -16,6 +16,7 @@
         "som_leads_polissa",
         "report_puppeteer",
         "som_infoenergia",
+        "giscedata_facturacio_iese",
     ],
     "init_xml": [],
     "demo_xml": [],

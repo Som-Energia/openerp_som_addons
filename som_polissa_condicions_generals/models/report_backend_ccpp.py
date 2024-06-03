@@ -341,7 +341,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                     text_impostos = " (IVA 10%, IE 3,8%)"
                 else:
                     # fp_id = imd_obj.get_object_reference(
-                    #     cursor, uid, 'giscedata_facturacio_iese', 'fp_nacional_2024_rdl_8_2023_38')[1]
+                    #     cursor, uid, 'giscedata_facturacio_iese', 'fp_nacional_2024_rdl_8_2023_38')[1] # noqa: E501
                     text_impostos = " (IVA 21%, IE 3,8%)"
                 fp_id = False  # tmp
                 ctx.update({'force_fiscal_position': fp_id})

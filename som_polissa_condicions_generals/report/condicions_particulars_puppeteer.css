@@ -20,12 +20,8 @@ table{
 
 table td{
     text-align: left;
-    font-size: 10px;
+    font-size: 11px;
     width: auto;
-}
-
-h3 {
-   font-size: 12px;
 }
 
 #logo {
@@ -51,7 +47,6 @@ h3 {
 }
 
 .esborrany_warning h2 {
-    font-size: 0.9em;
     color: white;
     margin: 0.6em 0em 0.6em 0em;
     display: inline;
@@ -59,14 +54,12 @@ h3 {
 }
 
 .esborrany_warning h3 {
-    font-size: 0.9em;
     color: white;
     display: inline;
     vertical-align: middle;
 }
 
 .esborrany_warning h3 {
-    font-size: 0.9em;
     color: white;
     display: inline;
     vertical-align: middle;
@@ -76,7 +69,7 @@ h3 {
     width: 100%;
     text-align: center;
     font-weight: bold;
-    font-size: 8.5px;
+    font-size: 11px;
     padding: 0px;
     margin-top: 0px;
     margin-bottom: 10px;
@@ -87,9 +80,6 @@ h3 {
 }
 .bold{
     font-weight: bold;
-}
-.auto{
-    font-size: 0.92em;
 }
 
 /* Estils custom C1 */
@@ -108,8 +98,7 @@ h3 {
 }
 
 #address_capcelera {
-    font-size: 9px;
-    /*padding-left: 5px;*/
+    font-size: 11px;
     width: 31%;
     display: inline-block;
     vertical-align: middle;
@@ -136,7 +125,6 @@ h3 {
 }
 
 #bloc_dades_capcelera {
-    /*margin: 7px;*/
     font-family: "Roboto";
     padding-left: 10px;
     padding-top: 5px;
@@ -153,7 +141,7 @@ h3 {
 }
 
 .pujar{
-     font-size: 11px;
+    font-size: 11px;
 }
 
 .caixa_index {
@@ -216,6 +204,7 @@ a {
     background: #f7f7f8;
     border-bottom: 2px solid #5b5b5f;
     margin-bottom: 10px;
+    break-inside: avoid;
 }
 
 .inside_styled_box {
@@ -232,7 +221,6 @@ a {
     padding-top: 0.4em;
     padding-bottom: 0.4em;
     margin: 0;
-    font-size: 0.95em;
 }
 
 .taula_custom {
@@ -248,7 +236,6 @@ a {
 .taula_custom tr:nth-child(odd){background-color: #efeff1}
 
 .taula_custom th {
-    font-size: 0.6em;
     background-color: #878787;
     color: white;
     text-align: center;
@@ -299,7 +286,6 @@ a {
 }
 .acceptacio_digital_txt {
     text-align: center;
-    /*width: 20%;*/
     padding-left: 30px;
     padding-right: 30px;
 }
@@ -340,7 +326,6 @@ a {
 .esborrany_footer {
     margin-top: 1em;
     width: 100%;
-    font-size: 0.90em;
     background-color: #f7f7f8;
 }
 #footer{
@@ -354,13 +339,12 @@ a {
 .avis_impostos {
     margin: 0;
     padding: 1em 1em 0em 1em;
-    font-size: 0.90em;
 }
 
 .modi_condicions {
-    font-size: 0.90em;
     text-align: justify;
     margin: 0em 1em 0em 1em;
+    break-inside: avoid;
 }
 
 .new_taula_custom {
