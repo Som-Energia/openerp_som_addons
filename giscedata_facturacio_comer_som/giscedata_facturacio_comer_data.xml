@@ -66,7 +66,7 @@ div.back{
         </record>
         <record model="res.config" id="gdo_and_impact_yearly_switch_date">
             <field name="name">gdo_and_impact_yearly_switch_date</field>
-            <field name="description">Darrera data de publicació de canvi annual dels valors de Impacte Ambiental i de Garantia d'Origen. Alerta: cal modificar també: 1) Valors de la taula d'impacto ambiental de Som Energia, 2) Valors de la taula d'impacto ambiental mitjana nacional i 3) Valors de la taula de Garantia d'Origen (gdo)</field>
+            <field name="description">Data a partir de la cual es fa servir el nou widget i els valors de Impacte Ambiental i de Garantia d'Origen que hi ha al xml data.</field>
             <field name="value">2022-05-01</field>
         </record>
         <record model="res.config" id="som_environmental_impact_data">
