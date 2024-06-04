@@ -2,14 +2,12 @@ body{
     color: #5b5b5f;
     font-family: "Roboto";
     font-size: 11px;
-    margin-right: 50px;
-    margin-left: 50px;
 }
 
 @page
 {
     size: A4 portrait;
-    margin:50px;
+    margin:25px;
 }
 
 table{
@@ -36,6 +34,7 @@ table td{
     background-color: #ffc306;
     margin-bottom: 0.5em;
     margin-top: 0.5em;
+    text-align: center;
 }
 
 .esborrany_warning img {
@@ -55,13 +54,7 @@ table td{
 
 .esborrany_warning h3 {
     color: white;
-    display: inline;
-    vertical-align: middle;
-}
-
-.esborrany_warning h3 {
-    color: white;
-    display: inline;
+    display: block;
     vertical-align: middle;
 }
 
@@ -334,6 +327,7 @@ a {
     width: 100%;
     display: table;
     height: auto;
+    break-inside: avoid;
 }
 
 .avis_impostos {
