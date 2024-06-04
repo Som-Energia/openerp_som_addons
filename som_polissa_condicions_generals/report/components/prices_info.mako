@@ -207,18 +207,36 @@
                 <tr>
                     <td><span class="bold auto">${_("Excedents d'autoconsum (€/kWh)")}</span></td>
                     %if (polissa['mode_facturacio'] == 'index' and not polissa['modcon_pendent_periodes']) or polissa['modcon_pendent_indexada']:
-                        <td class="center reset_line_height" colspan="6">
+                        <td class="center" colspan="6">
                             <span class="normal_font_weight">${_(u"Tarifa indexada(2) - el preu horari de la compensació d'excedents és igual al PHM")}</span>
                         </td>
                     %else:
                         %if polissa['pricelist']:
-                            <td colspan="6">
-                                <hr class="hr-text" data-content="${formatLang(pricelist['price_auto'], digits=6)}"/>
-                            </td>
+                            %if polissa['tarifa'] == "2.0TD":
+                                <td colspan="3">
+                                    <hr class="hr-text" data-content="${formatLang(pricelist['price_auto_untaxed'], digits=6)}"/>
+                                </td>
+                                <td colspan="3">
+                                    <hr class="hr-text" data-content="${formatLang(pricelist['price_auto'], digits=6)}"/>
+                                </td>
+                            %else:
+                                <td colspan="6">
+                                    <hr class="hr-text" data-content="${formatLang(pricelist['price_auto'], digits=6)}"/>
+                                </td>
+                            %endif
                         %else:
-                            <td colspan="6">
-                                &nbsp;
-                            </td>
+                            %if polissa['tarifa'] == "2.0TD":
+                                <td colspan="3">
+                                    &nbsp;
+                                </td>
+                                <td class="center divisio_impostos" colspan="3">
+                                    &nbsp;
+                                </td>
+                            %else:
+                                <td colspan="6">
+                                    &nbsp;
+                                </td>
+                            %endif
                         %endif
                     %endif
                 </tr>

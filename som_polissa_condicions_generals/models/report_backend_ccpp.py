@@ -384,7 +384,8 @@ class ReportBackendCondicionsParticulars(ReportBackend):
 
             pricelist['price_auto'] = get_atr_price(
                 cursor, uid, pol, periodes_energia[0], 'ac', ctx, with_taxes=True)[0]
-
+            pricelist['price_auto_untaxed'] = get_atr_price(
+                cursor, uid, pol, periodes_energia[0], 'ac', ctx, with_taxes=False)[0]
             res['pricelists'].append(pricelist)
 
         return res
