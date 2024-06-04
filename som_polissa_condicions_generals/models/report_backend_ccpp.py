@@ -268,9 +268,8 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         dict_preus_tp_energia = False
         omie_obj = self.pool.get('giscedata.monthly.price.omie')
         pol_obj = self.pool.get('giscedata.polissa')
-        self.pool.get('ir.model.data')
         cfg_obj = self.pool.get('res.config')
-
+        polissa = pol_obj.browse(cursor, uid, pol.id)
         if context.get('tarifa_provisional', False):
             dict_preus_tp_energia = context.get('tarifa_provisional')['preus_provisional_energia']
             if context.get('tarifa_provisional', False):
@@ -281,14 +280,13 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         res['dict_preus_tp_potencia'] = dict_preus_tp_potencia
 
         ctx = {'date': datetime.today()}
-        if pol.data_baixa:
-            ctx = {'date': datetime.strptime(pol.data_baixa, '%Y-%m-%d')}
+        if polissa.data_baixa:
+            ctx = {'date': datetime.strptime(polissa.data_baixa, '%Y-%m-%d')}
         if not pol.llista_preu:
             tarifes_a_mostrar = []
             if dict_preus_tp_potencia:
                 tarifes_a_mostrar = [dict_preus_tp_potencia]
         else:
-            polissa = pol_obj.browse(cursor, uid, pol.id)
             tarifes_a_mostrar = get_comming_atr_price(cursor, uid, polissa, ctx)
         tarifes_a_mostrar if isinstance(tarifes_a_mostrar, list) else [tarifes_a_mostrar]
 
@@ -304,7 +302,9 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 modcon_pendent_periodes = ultima_modcon.state == 'pendent' and \
                     ultima_modcon.mode_facturacio == 'atr'
 
-            if modcon_pendent_indexada or modcon_pendent_periodes or lead:
+            if pol.state == 'esborrany':
+                text_vigencia = ''
+            elif modcon_pendent_indexada or modcon_pendent_periodes or lead:
                 text_vigencia = ''
             elif not pol.modcontractual_activa.data_final and dades_tarifa['date_end']:
                 text_vigencia = _(u"(vigents fins al {})").format(dades_tarifa['date_end'])
