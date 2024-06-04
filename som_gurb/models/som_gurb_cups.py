@@ -253,17 +253,16 @@ class SomGurbCups(osv.osv):
             "partner_id": partner_id,
             "type": "out_invoice",
             "invoice_line": invoice_lines,
-            "payment_type": payment_type_id,
         }
+        invoice_vals.update(invoice_o.onchange_partner_id(  # Get invoice default values
+            cursor, uid, [], "out_invoice", partner_id).get("value", {})
+        )
+        invoice_vals.update({"payment_type": payment_type_id})
 
         if invoice_account_ids:
             invoice_vals.update({"account_id": invoice_account_ids[0]})
         if journal_ids:
             invoice_vals.update({"journal_id": journal_ids[0]})
-
-        invoice_vals.update(invoice_o.onchange_partner_id(  # Get invoice default values
-            cursor, uid, [], "out_invoice", partner_id).get("value", {})
-        )
 
         invoice_id = invoice_o.create(cursor, uid, invoice_vals, context=context)
         invoice_o.button_reset_taxes(cursor, uid, [invoice_id])
