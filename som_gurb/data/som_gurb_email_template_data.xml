@@ -15,7 +15,7 @@
             <field eval="0" name="send_on_create"/>
             <field name="lang">${object.titular.lang}</field>
             <field eval="0" name="send_on_write"/>
-            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="def_bcc"></field>
             <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Som Energia - Modificacions')]"/>
             <field name="def_body_text"><![CDATA[
                 <!doctype html>
@@ -27,6 +27,35 @@
                 </html>
                 ]]>
             </field>
-    	</record>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record model="poweremail.templates" id="email_signature_process_gurb">
+            <field name="name">Email Proces Signatura GURB</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'som.gurb.cups')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">som.gurb.cups</field>
+            <field name="def_to">${env['signature']['recipient']['email']}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Firma de documents per entrar al GURB!</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang"></field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_bcc"></field>
+            <field name="def_body_text"><![CDATA[
+                <!doctype html>
+                <html>
+                <head></head>
+                <body>
+                Email text
+                          <a href="${env['signature']['signature_url']}" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 16px 36px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; border-radius: 6px;">Firmar documents</a>
+                </body>
+                </html>
+                ]]>
+            </field>
+        </record>
     </data>
 </openerp>

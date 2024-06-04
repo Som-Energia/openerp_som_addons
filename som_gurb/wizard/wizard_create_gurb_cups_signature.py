@@ -80,7 +80,7 @@ class WizardGurbCreateGurbCupsSignature(osv.osv_memory):
         email = wiz.email
 
         tmpl_id = imd_obj.get_object_reference(
-            cursor, uid, "som_gurb", "signature_process_gurb"
+            cursor, uid, "som_gurb", "email_signature_process_gurb"
         )[1]
         cc = pro_obj.get_cc_signature(
             cursor, uid, [gurb_cups_id], "gurb", context=context
