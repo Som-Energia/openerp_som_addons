@@ -29,7 +29,7 @@ class GiscedataFacturacioFacturador(osv.osv):
             cursor, uid, 'giscedata_facturacio_indexada_som', 'product_gdos_som'
         )[1]
         factor_dsv = imd_obj.get_object_reference(
-            cursor, uid, 'giscedata_facturacio_indexada_som', 'product_gdos_som'
+            cursor, uid, 'giscedata_facturacio_indexada_som', 'product_factor_dsv_som'
         )[1]
         # Fem un browse amb la data final per obtenir quin mode de facturació té
         polissa = polissa_obj.browse(cursor, uid, polissa_id, context={

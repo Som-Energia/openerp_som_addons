@@ -33,6 +33,11 @@ class TarifaPoolSOM(TarifaPool):
                 del res['ajom']
             if 'peninsula' in self.phf_function:
                 res['pos'] = 'sobrecostos'
+                res['csdvbaj'] = 'csdvbaj'
+                res['csdvsub'] = 'csdvsub'
+                res['rad3'] = 'rad3'
+                res['bs3'] = 'bs3'
+                res['factor_dsv'] = 'factor_dsv'
 
         if self.phf_function == 'phf_calc_peninsula':
             # only if 'phf_calc_peninsula' formula is used
