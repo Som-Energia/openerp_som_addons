@@ -205,7 +205,7 @@
                 %endif
                 %if polissa['auto'] != '00':
                 <tr>
-                    <td><span class="bold auto">${_("Excedents d'autoconsum (€/kWh)")}</span></td>
+                    <td class="bold">${_("Excedents d'autoconsum (€/kWh)")}</td>
                     %if (polissa['mode_facturacio'] == 'index' and not polissa['modcon_pendent_periodes']) or polissa['modcon_pendent_indexada']:
                         <td class="center" colspan="6">
                             <span class="normal_font_weight">${_(u"Tarifa indexada(2) - el preu horari de la compensació d'excedents és igual al PHM")}</span>
@@ -216,12 +216,12 @@
                                 <td colspan="3">
                                     <hr class="hr-text" data-content="${formatLang(pricelist['price_auto_untaxed'], digits=6)}"/>
                                 </td>
-                                <td colspan="3">
+                                <td class="divisio_impostos" colspan="3">
                                     <hr class="hr-text" data-content="${formatLang(pricelist['price_auto'], digits=6)}"/>
                                 </td>
                             %else:
                                 <td colspan="6">
-                                    <hr class="hr-text" data-content="${formatLang(pricelist['price_auto'], digits=6)}"/>
+                                    <hr class="hr-text" data-content="${formatLang(pricelist['price_auto_untaxed'], digits=6)}"/>
                                 </td>
                             %endif
                         %else:
@@ -455,7 +455,7 @@
                     %endif
                     %if polissa['auto'] != '00':
                     <tr>
-                        <td><span class="bold auto">${_("Excedents d'autoconsum (€/kWh)")}</span></td>
+                        <td><span class="bold">${_("Excedents d'autoconsum (€/kWh)")}</span></td>
                         %if (polissa['mode_facturacio'] == 'index' and not polissa['modcon_pendent_periodes']) or polissa['modcon_pendent_indexada']:
                             <td class="center reset_line_height" colspan="6">
                                 <span class="normal_font_weight">${_(u"Tarifa indexada(2) - el preu horari de la compensació d'excedents és igual al PHM")}</span>
