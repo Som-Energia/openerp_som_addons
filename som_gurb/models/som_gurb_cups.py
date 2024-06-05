@@ -136,7 +136,7 @@ class SomGurbCups(osv.osv):
         gurb_vals = self.read(cursor, uid, gurb_cups_id, ["cups_id", "gurb_id", "owner_cups"])
 
         search_params = [
-            ("state", "=", "activa"),
+            ("state", "in", ["activa", "esborrany"]),
             ("cups", "=", gurb_vals["cups_id"][0]),
         ]
         pol_ids = pol_o.search(cursor, uid, search_params, context=context, limit=1)
