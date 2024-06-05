@@ -57,9 +57,9 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             context = {}
 
         pol_o = self.pool.get("giscedata.polissa")
-        pol_br = pol_o.browse(cursor, uid, record_id, context=context)
-
-        return pol_br.titular.lang
+        sw_o = self.pool.get("giscedata.switching")
+        lang = pol_o.browse(cursor, uid, record_id,  context=context).titular.lang
+        return lang
 
     def get_pas01(self, cursor, uid, pol, context=None):
         sw_obj = self.pool.get("giscedata.switching")
@@ -97,9 +97,12 @@ class ReportBackendCondicionsParticulars(ReportBackend):
 
         res = {}
         if pas01:
-            dades_client = pas01.pas_id.dades_client
-            dades_envio = pas01.pas_id.direccio_notificacio
-            es_ct_subrogacio = pas01.pas_id.sollicitudadm == "S" and pas01.pas_id.canvi_titular == "S"  # noqa: E501
+            m101_obj = self.pool.get("giscedata.switching.m1.01")
+            pas_id = pas01.pas_id.split(",")[1]
+            pas = m101_obj.browse(cursor, uid, pas_id)
+            dades_client = pas.dades_client
+            dades_envio = pas.direccio_notificacio
+            es_ct_subrogacio = pas.sollicitudadm == "S" and pascanvi_titular == "S"
         else:
             dades_client = False
             dades_envio = False
@@ -139,11 +142,14 @@ class ReportBackendCondicionsParticulars(ReportBackend):
     def get_potencies_data(self, cursor, uid, pol, pas01, context=None):
         res = {}
         if pas01:
-            es_canvi_tecnic = pas01.pas_id.sollicitudadm == "N"
+            m101_obj = self.pool.get("giscedata.switching.m1.01")
+            pas_id = pas01.pas_id.split(",")[1]
+            pas = m101_obj.browse(cursor, uid, pas_id)
+            es_canvi_tecnic = pas.sollicitudadm == "N"
         else:
             es_canvi_tecnic = False
-        res['potencies'] = pas01.pas_id.pot_ids if es_canvi_tecnic else pol.potencies_periode
-        res['autoconsum'] = pas01.pas_id.tipus_autoconsum if es_canvi_tecnic else pol.autoconsumo  # noqa: E501
+        res['potencies'] = pas.pot_ids if es_canvi_tecnic else pol.potencies_periode
+        res['autoconsum'] = pas.tipus_autoconsum if es_canvi_tecnic else pol.autoconsumo
         if res['autoconsum'] and res['autoconsum'] in TABLA_113_dict:
             res['autoconsum'] = TABLA_113_dict[res['autoconsum']]
         res['es_canvi_tecnic'] = es_canvi_tecnic

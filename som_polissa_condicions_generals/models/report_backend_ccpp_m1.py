@@ -6,12 +6,24 @@ class ReportBackendCondicionsParticularsM1(ReportBackend):
     _source_model = "giscedata.switching"
     _name = "report.backend.condicions.particulars.m1"
 
+    def get_lang(self, cursor, uid, record_id, context=None):
+        if context is None:
+            context = {}
+
+        sw_o = self.pool.get('giscedata.switching')
+        sw = sw_o.browse(cursor, uid, record_id, context)
+        lang = sw.cups_polissa_id.titular.lang
+        return lang
+
     @report_browsify
     def get_data(self, cursor, uid, sw, context=None):
-        bcknd_obj = self.pool.get('report.backend.condicions.particulars')
-        pol_id = sw.polissa_id
+        if context is None:
+            context = {}
+        pol_id = sw.cups_polissa_id.id
+
+        pol_id = sw.cups_polissa_id.id
         context.update({"m1_id": sw.id})
-        return bcknd_obj.get_data(pol_id, context)
+        return self.pool.get("report.backend.condicions.particulars").get_data(cursor, uid, pol_id, context=context)  # noqa: E501
 
 
 ReportBackendCondicionsParticularsM1()
