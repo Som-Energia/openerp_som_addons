@@ -167,6 +167,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         pol_o = self.pool.get('giscedata.polissa')
         llista_preu_o = self.pool.get('product.pricelist')
         imd_obj = self.pool.get('ir.model.data')
+        polissa = pol_o.browse(cursor, uid, pol.id)
         res = {}
         res['data_final'] = pol.modcontractual_activa.data_final or ''
         res['data_inici'] = pol.data_alta or ''
@@ -225,14 +226,16 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             res['tarifa_mostrar'] = res['pricelist'].nom_comercial or res['pricelist'].name
 
         coeficient_k = (pol.coeficient_k + pol.coeficient_d) / 1000
-        if pol.mode_facturacio == 'index' and not res['modcon_pendent_periodes'] or res['modcon_pendent_indexada']:  # noqa: E501
+        res['mostra_indexada'] = False
+        if polissa.mode_facturacio == 'index' and not res['modcon_pendent_periodes'] or res['modcon_pendent_indexada']:  # noqa: E501
+            res['mostra_indexada'] = True
             if coeficient_k == 0:
                 today = datetime.today().strftime("%Y-%m-%d")
                 vlp = None
                 if res['modcon_pendent_indexada']:
-                    llista_preus = pol.modcontractuals_ids[0].llista_preu.version_id
+                    llista_preus = polissa.modcontractuals_ids[0].llista_preu.version_id
                 else:
-                    llista_preus = pol.llista_preu.version_id
+                    llista_preus = polissa.llista_preu.version_id
                 for lp in llista_preus:
                     if lp.date_start <= today and (not lp.date_end or lp.date_end >= today):
                         vlp = lp
@@ -242,7 +245,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                         if item.name == 'Coeficient K':
                             coeficient_k = item.base_price
                             break
-            res['coeficient_k'] = coeficient_k
+        res['coeficient_k'] = coeficient_k
 
         # pol.pagador.name if not pas01 else dict_titular['client_name']
         return res

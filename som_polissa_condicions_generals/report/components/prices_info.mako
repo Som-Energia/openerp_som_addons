@@ -85,23 +85,30 @@
                         %endif
                     %endif
                 </tr>
-
-                % if polissa['tarifa'] == "2.0TD":
-            </table>
-            <table class="taula_custom doble_table new_taula_custom">
-                <tr style="background-color: #878787;">
-                        <th></th>
-                        <th>${_(u"Punta")}</th>
-                        <th>${_(u"Pla")}</th>
-                        <th>${_(u"Vall")}</th>
-                        <th class="divisio_impostos">${_(u"Punta")}</th>
-                        <th>${_(u"Pla")}</th>
-                        <th>${_(u"Vall")}</th>
-                </tr>
-                %endif
-                <tr>
-                    <td class="bold">${_("Terme energia (€/kWh)")}</td>
-                    %if (polissa['mode_facturacio'] == 'index' and not polissa['modcon_pendent_periodes']) or polissa['modcon_pendent_indexada']:
+            % if polissa['tarifa'] == "2.0TD":
+                </table>
+                <table class="taula_custom doble_table new_taula_custom">
+                    %if not polissa['mostra_indexada']:
+                        <tr style="background-color: #878787;">
+                            <th></th>
+                            <th>${_(u"Punta")}</th>
+                            <th>${_(u"Pla")}</th>
+                            <th>${_(u"Vall")}</th>
+                            <th class="divisio_impostos">${_(u"Punta")}</th>
+                            <th>${_(u"Pla")}</th>
+                            <th>${_(u"Vall")}</th>
+                        </tr>
+                    %else:
+                        %for p in range(0, 7):
+                            <th class="">
+                                &nbsp;
+                            </th>
+                        %endfor
+                    %endif
+            %endif
+                    <tr>
+                        <td class="bold">${_("Terme energia (€/kWh)")}</td>
+                    %if polissa['mostra_indexada']:
                         <td class="center reset_line_height" colspan="6">
                             <span class="normal_font_weight">
                                 <b>${_(u"Tarifa indexada")}</b>${_(u"(2) - el preu horari (PH) es calcula d'acord amb la fórmula:")}
@@ -110,7 +117,7 @@
                             <span>${_(u"PH = 1,015 * [(PHM + Pc + Sc + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + PTD + CA")}</span>
                             <br/>
                             <span class="normal_font_weight">${_(u"on la franja de la cooperativa")}</span>
-                            <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(pol['coeficient_k'], digits=6)}</span>
+                            <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(polissa['coeficient_k'], digits=6)}</span>
                         </td>
                     %else:
                         %if len(polissa['periodes_energia']) < 6:
@@ -345,21 +352,22 @@
                     </tr>
 
                     % if polissa['tarifa'] == "2.0TD":
-                </table>
-                <table class="taula_custom doble_table new_taula_custom">
-                    <tr style="background-color: #878787;">
-                            <th></th>
-                            <th>${_(u"Punta")}</th>
-                            <th>${_(u"Pla")}</th>
-                            <th>${_(u"Vall")}</th>
-                            <th class="divisio_impostos">${_(u"Punta")}</th>
-                            <th>${_(u"Pla")}</th>
-                            <th>${_(u"Vall")}</th>
-                    </tr>
+                        </table>
+                        <table class="taula_custom doble_table new_taula_custom">
+
+                            <tr style="background-color: #878787;">
+                                    <th></th>
+                                    <th>${_(u"Punta")}</th>
+                                    <th>${_(u"Pla")}</th>
+                                    <th>${_(u"Vall")}</th>
+                                    <th class="divisio_impostos">${_(u"Punta")}</th>
+                                    <th>${_(u"Pla")}</th>
+                                    <th>${_(u"Vall")}</th>
+                            </tr>
                     %endif
                     <tr>
                         <td class="bold">${_("Terme energia (€/kWh)")}</td>
-                        %if (polissa['mode_facturacio'] == 'index' and not polissa['modcon_pendent_periodes']) or polissa['modcon_pendent_indexada']:
+                        %if polissa['mostra_indexada']:
                             <td class="center reset_line_height" colspan="6">
                                 <span class="normal_font_weight">
                                     <b>${_(u"Tarifa indexada")}</b>${_(u"(2) - el preu horari (PH) es calcula d'acord amb la fórmula:")}
@@ -368,7 +376,7 @@
                                 <span>${_(u"PH = 1,015 * [(PHM + Pc + Sc + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + PTD + CA")}</span>
                                 <br/>
                                 <span class="normal_font_weight">${_(u"on la franja de la cooperativa")}</span>
-                                <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(pol['coeficient_k'], digits=6)}</span>
+                                <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(polissa['coeficient_k'], digits=6)}</span>
                             </td>
                         %else:
                             %for p in polissa['periodes_energia']:
