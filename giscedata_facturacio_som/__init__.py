@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 import giscedata_facturacio
 import wizard
-import report_deute_backend
+import _backend_puppeteer_reports
