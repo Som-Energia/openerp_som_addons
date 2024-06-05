@@ -329,7 +329,7 @@ class SomGurbCups(osv.osv):
         "owner_cups": fields.function(
             _ff_is_owner,
             type="boolean",
-            string="Cups de la persona propietària",
+            string="Persona propietària",
             method=True
         ),
         "invoice_ref": fields.reference(
