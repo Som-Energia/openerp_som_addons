@@ -19,7 +19,11 @@
                         <field name="beta_percentage" />
                         <field name="owner_cups" />
                         <field name="invoice_ref" />
-                        <field name="general_conditions_id" />
+                    </group>
+                    <group col="4" colspan="4" string="Relacions">
+                        <field name="polissa_id" />
+                        <field name="polissa_state" />
+                        <field name="partner_id" />
                     </group>
                     <field name="betas_ids" nolabel="1" colspan="4" readonly="1" />
                 </form>
@@ -41,6 +45,8 @@
                     <field name="start_date" select="1" />
                     <field name="end_date" select="1" />
                     <field name="owner_cups" />
+                    <field name="partner_id" />
+                    <field name="polissa_state" />
                 </tree>
             </field>
         </record>
