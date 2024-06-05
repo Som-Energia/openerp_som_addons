@@ -148,10 +148,9 @@ class SomGurbCups(osv.osv):
             context = {}
         pol_o = self.pool.get("giscedata.polissa")
         pol_id = self.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
-        partner_id = pol_o.read(cursor, uid, pol_id, ['titular'], context=context)
-        if partner_id:
-            partner_id = partner_id["titular"][0]
-        return partner_id
+        partner_id = pol_o.read(cursor, uid, pol_id, ["titular"], context=context)
+
+        return partner_id["titular"][0] if partner_id else False
 
     def add_service_to_contract(self, cursor, uid, ids, data_inici, context=None):
         if context is None:
