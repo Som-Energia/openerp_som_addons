@@ -18,5 +18,23 @@
            <field name="model">giscedata.polissa</field>
            <field name="value" eval="'ir.actions.report.xml,'+str(ref('action_report_condicions_particulars'))"/>
         </record>
+
+        <record model="ir.actions.report.xml" id="action_report_condicions_particulars_m1">
+            <field name="report_name">report_condicions_particulars_m1</field>
+            <field name="name">Generar condicions particulars M1</field>
+            <field name="model">giscedata.switching</field>
+            <field name="report_type">pdf</field>
+            <field name="report_webkit" eval=""/>
+            <field name="header" eval="0"/>
+            <field name="auto" eval="0"/>
+        </record>
+
+        <record model="ir.values" id="value_report_condicions_particulars_m1">
+            <field name="object" eval="1"/>
+           <field name="name">Generar condicions particulars M1</field>
+           <field name="key2">client_print_multi</field>
+           <field name="model">giscedata.switching</field>
+           <field name="value" eval="'ir.actions.report.xml,'+str(ref('action_report_condicions_particulars_m1'))"/>
+        </record>
     </data>
 </openerp>
