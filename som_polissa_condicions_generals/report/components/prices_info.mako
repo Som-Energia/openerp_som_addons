@@ -117,7 +117,7 @@
                             <span>${_(u"PH = 1,015 * [(PHM + Pc + Sc + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + PTD + CA")}</span>
                             <br/>
                             <span class="normal_font_weight">${_(u"on la franja de la cooperativa")}</span>
-                            <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(polissa['coeficient_k'], digits=6)}</span>
+                            <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(polissa['coeficient_k_untaxed'], digits=6)}</span>
                         </td>
                     %else:
                         %if len(polissa['periodes_energia']) < 6:

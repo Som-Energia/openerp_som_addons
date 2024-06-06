@@ -250,7 +250,8 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                         if item.name == 'Coeficient K':
                             coeficient_k = item.base_price
                             break
-        res['coeficient_k'] = coeficient_k
+        res['coeficient_k_untaxed'] = coeficient_k
+        res['coeficient_k'] = coeficient_k * 1.038 * 1.21
 
         # pol.pagador.name if not pas01 else dict_titular['client_name']
         return res
