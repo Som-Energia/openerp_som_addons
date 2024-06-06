@@ -193,7 +193,7 @@
                     %for p in polissa['periodes_energia']:
                         %if polissa['pricelist']:
                             <td class="center">
-                                <span class="">${formatLang(pricelist['generation_prices'][p], digits=6)}</span>
+                                <span class="">${formatLang(pricelist['generation_prices_untaxed'][p], digits=6)}</span>
                             </td>
                         %else:
                             <td class="">
@@ -201,11 +201,25 @@
                             </td>
                         %endif
                     %endfor
-                    %if len(polissa['periodes_energia']) < 6:
-                        %for p in range(0, 6-len(polissa['periodes_energia'])):
-                            <td class="">
-                                &nbsp;
-                            </td>
+                    %if polissa['tarifa'] == "2.0TD":
+                        <% first_column = True %>
+                        %for p in polissa['periodes_energia']:
+                            %if polissa['pricelist']:
+                                %if first_column:
+                                    <td class="center divisio_impostos">
+                                        <span class="">${formatLang(pricelist['generation_prices'][p], digits=6)}</span>
+                                    </td>
+                                    <% first_column = False %>
+                                %else:
+                                    <td class="center">
+                                        <span class="">${formatLang(pricelist['generation_prices'][p], digits=6)}</span>
+                                    </td>
+                                %endif
+                            %else:
+                                <td class="">
+                                    &nbsp;
+                                </td>
+                            %endif
                         %endfor
                     %endif
                 </tr>
@@ -452,13 +466,6 @@
                                 </td>
                             %endif
                         %endfor
-                        %if len(polissa['periodes_energia']) < 6:
-                            %for p in range(0, 6-len(polissa['periodes_energia'])):
-                                <td class="">
-                                    &nbsp;
-                                </td>
-                            %endfor
-                        %endif
                     </tr>
                     %endif
                     %if polissa['auto'] != '00':

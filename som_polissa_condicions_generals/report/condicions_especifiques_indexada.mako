@@ -133,9 +133,7 @@
 <h3>6. FACTURACIÓ</h3>
 
 <p>6.1. Les parts acorden afegir la clàusula 7.2. bis de les Condicions Generals del Contracte de Subministrament, que queda redactada de la manera següent:</p>
-<p style="page-break-after:always;"></p>
-<br>
-<br>
+
 <p>Sense perjudici del que estableix la clàusula 7.2, els consums horaris per a l'aplicació de la Tarifa Indexada seran determinats a partir de les corbes horàries facilitades per l'encarregat de la lectura. En cas que SOM ENERGIA, SCCL, no pugui facturar a partir de les corbes horàries, SOM ENERGIA, SCCL, aplicarà als consums informats per l'encarregat de la lectura o obtinguts d'alguna de les maneres previstes a la clàusula 7.2. de les Condicions Generals del Contracte de Subministrament, els coeficients perfilats publicats per l'operador del sistema, d'acord amb el que s'estableix en la normativa vigent per a cada tipus de peatge d'accés a la xarxa de la distribuïdora<sup><a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></sup>. En el cas dels punts de subministrament amb peatge d'accés a la xarxa de distribució 6.1TD, s'aplicaran els coeficients perfilats previstos en la normativa per al peatge d'accés 3.0TD .</p>
 
 <p>SOM ENERGIA, SCCL, ha posat a la disposició de la contractant aquestes Condicions Específiques prèviament a la seva contractació a través de la seva pàgina web <a href="http://www.somenergia.coop"><em>www.somenergia.coop</em></a>. Aquestes han estat subscrites mitjançant sistemes de contractació electrònica, i s'ha remès un exemplar en suport durador a la contractant una vegada finalitzada la contractació.</p>

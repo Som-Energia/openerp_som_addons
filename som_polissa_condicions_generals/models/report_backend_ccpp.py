@@ -390,6 +390,12 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                     cursor, uid, pol, p, ctx, with_taxes=True)[0]
             pricelist['generation_prices'] = generation_prices
 
+            generation_prices_untaxed = {}
+            for p in periodes_energia:
+                generation_prices_untaxed[p] = get_gkwh_atr_price(
+                    cursor, uid, pol, p, ctx, with_taxes=False)[0]
+            pricelist['generation_prices_untaxed'] = generation_prices_untaxed
+
             pricelist['price_auto'] = get_atr_price(
                 cursor, uid, pol, periodes_energia[0], 'ac', ctx, with_taxes=True)[0]
             pricelist['price_auto_untaxed'] = get_atr_price(
