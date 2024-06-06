@@ -277,6 +277,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         omie_obj = self.pool.get('giscedata.monthly.price.omie')
         pol_obj = self.pool.get('giscedata.polissa')
         cfg_obj = self.pool.get('res.config')
+        imd_obj = self.pool.get('ir.model.data')
         polissa = pol_obj.browse(cursor, uid, pol.id)
         if context.get('tarifa_provisional', False):
             dict_preus_tp_energia = context.get('tarifa_provisional')['preus_provisional_energia']
@@ -344,18 +345,15 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             text_impostos = ''
             if not pol.fiscal_position_id and not lead:
                 if iva_10_active and pol.potencia <= 10 and dades_tarifa['date_start'] >= start_date_iva_10 and dades_tarifa['date_start'] <= end_date_iva_10 and omie_mon_price_45:  # noqa: E501
-                    # fp_id = imd_obj.get_object_reference(
-                    #     cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
+                    fp_id = imd_obj.get_object_reference(
+                        cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
                     text_impostos = " (IVA 10%, IE 3,8%)"
                 else:
-                    # fp_id = imd_obj.get_object_reference(
-                    #     cursor, uid, 'giscedata_facturacio_iese', 'fp_nacional_2024_rdl_8_2023_38')[1] # noqa: E501
+                    fp_id = imd_obj.get_object_reference(
+                        cursor, uid, 'giscedata_facturacio_iese', 'fp_nacional_2024_rdl_8_2023_38')[1]  # noqa: E501
                     text_impostos = " (IVA 21%, IE 3,8%)"
-                fp_id = False  # tmp
                 ctx.update({'force_fiscal_position': fp_id})
             pricelist['text_impostos'] = text_impostos
-
-            # <% ctx['force_pricelist'] = polissa['pricelist'].id %>
 
             periodes_energia = sorted(pol.tarifa.get_periodes(context=context).keys())
             periodes_potencia = sorted(pol.tarifa.get_periodes('tp', context=context).keys())
