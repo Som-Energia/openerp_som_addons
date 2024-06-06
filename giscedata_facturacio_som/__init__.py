@@ -1,5 +1,5 @@
 from __future__ import absolute_import
 
-import giscedata_facturacio
-import wizard
-import _backend_puppeteer_reports
+from . import giscedata_facturacio
+from . import wizard
+from . import _backend_puppeteer_reports
