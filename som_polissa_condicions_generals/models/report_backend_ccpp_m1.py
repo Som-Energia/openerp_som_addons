@@ -10,8 +10,8 @@ class ReportBackendCondicionsParticularsM1(ReportBackend):
         if context is None:
             context = {}
 
-        sw_o = self.pool.get('giscedata.switching')
-        sw = sw_o.browse(cursor, uid, record_id, context)
+        sw_obj = self.pool.get('giscedata.switching')
+        sw = sw_obj.browse(cursor, uid, record_id, context)
         lang = sw.cups_polissa_id.titular.lang
         return lang
 
@@ -19,7 +19,6 @@ class ReportBackendCondicionsParticularsM1(ReportBackend):
     def get_data(self, cursor, uid, sw, context=None):
         if context is None:
             context = {}
-        pol_id = sw.cups_polissa_id.id
 
         pol_id = sw.cups_polissa_id.id
         context.update({"m1_id": sw.id})

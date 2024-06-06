@@ -56,9 +56,8 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         if context is None:
             context = {}
 
-        pol_o = self.pool.get("giscedata.polissa")
-        sw_o = self.pool.get("giscedata.switching")
-        lang = pol_o.browse(cursor, uid, record_id,  context=context).titular.lang
+        pol_obj = self.pool.get("giscedata.polissa")
+        lang = pol_obj.browse(cursor, uid, record_id, context=context).titular.lang
         return lang
 
     def get_pas01(self, cursor, uid, pol, context=None):
@@ -102,7 +101,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             pas = m101_obj.browse(cursor, uid, pas_id)
             dades_client = pas.dades_client
             dades_envio = pas.direccio_notificacio
-            es_ct_subrogacio = pas.sollicitudadm == "S" and pascanvi_titular == "S"
+            es_ct_subrogacio = pas.sollicitudadm == "S" and pas.canvi_titular == "S"
         else:
             dades_client = False
             dades_envio = False
