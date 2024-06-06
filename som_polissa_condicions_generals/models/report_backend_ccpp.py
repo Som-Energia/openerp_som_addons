@@ -360,6 +360,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
 
             ctx['potencia_anual'] = True
             ctx['sense_agrupar'] = True
+            ctx['pricelist_base_price'] = 0.0  # Dummy base price to avoid error
             power_prices = {}
             for p in periodes_potencia:
                 power_prices[p] = get_atr_price(cursor, uid, pol, p, 'tp', ctx, with_taxes=True)[0]
