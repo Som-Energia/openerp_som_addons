@@ -383,7 +383,7 @@ a {
     background-color: #efeff1;
 }
 .taula_custom tr:nth-child(even) .hr-text:after {
-    background-color: #ffffff;
+    background-color: #f7f7f8;
 }
 ol.decimal-list {
     counter-reset:alpha;
