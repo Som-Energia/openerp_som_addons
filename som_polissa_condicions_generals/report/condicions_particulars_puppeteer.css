@@ -379,12 +379,11 @@ a {
     display: inline-block;
     padding: 0 .5em;
 }
-
-.taula_custom .hr-text:after {
-    background-color: #efeff1
+.taula_custom tr:nth-child(odd) .hr-text:after {
+    background-color: #efeff1;
 }
-.doble_table .hr-text:after {
-    background-color: #efeff1
+.taula_custom tr:nth-child(even) .hr-text:after {
+    background-color: #ffffff;
 }
 ol.decimal-list {
     counter-reset:alpha;
