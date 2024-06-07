@@ -66,12 +66,12 @@ class WizardGurbCreateGurbCupsSignature(osv.osv_memory):
 
         process_files = [
             (0, 0, {
-                "model": "gurb.cups,{}".format(gurb_cups_id),
+                "model": "som.gurb.cups,{}".format(gurb_cups_id),
                 "report_id": autoritzacio_id,
                 "category_id": doc_categ_id
             }),
             (0, 0, {
-                "model": "gurb.cups,{}".format(gurb_cups_id),
+                "model": "som.gurb.cups,{}".format(gurb_cups_id),
                 "report_id": baixa_id,
                 "category_id": doc_categ_id
             }),
