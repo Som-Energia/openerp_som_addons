@@ -254,6 +254,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "text_legal": self.get_text_legal(cursor, uid, env, context=context),
             "lang": env.polissa_id.titular.lang,
             "nom_titular": self.getPartnerName(cursor, uid, env),
+            "dades_index": self.indexada_consum_tipus[env.polissa_id.tarifa.name],
             # "te_gkwh": env.polissa_id.te_assignacio_gkwh,
             # "preus_antics": preus_antics,
             # "preus_nous": preus_nous,
