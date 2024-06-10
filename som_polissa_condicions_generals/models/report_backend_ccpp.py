@@ -251,7 +251,10 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                             coeficient_k = item.base_price
                             break
         res['coeficient_k_untaxed'] = coeficient_k
-        res['coeficient_k'] = coeficient_k * 1.038 * 1.21
+        coeficient_id = 420  # TODO
+        res['coeficient_k'] = res['pricelist'].get_atr_price(
+            tipus='', product_id=coeficient_id, fiscal_position=polissa.fiscal_position_id,
+            with_taxes=True)[0]
 
         # pol.pagador.name if not pas01 else dict_titular['client_name']
         return res
@@ -279,6 +282,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         pol_obj = self.pool.get('giscedata.polissa')
         cfg_obj = self.pool.get('res.config')
         imd_obj = self.pool.get('ir.model.data')
+        pricelist_obj = self.pool.get('product.pricelist')
         polissa = pol_obj.browse(cursor, uid, pol.id)
         if context.get('tarifa_provisional', False):
             dict_preus_tp_energia = context.get('tarifa_provisional')['preus_provisional_energia']
@@ -299,7 +303,12 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         else:
             tarifes_a_mostrar = get_comming_atr_price(cursor, uid, polissa, ctx)
         tarifes_a_mostrar if isinstance(tarifes_a_mostrar, list) else [tarifes_a_mostrar]
-
+        if polissa.state == 'esborrany':
+            tarifes_ids = pricelist_obj.search(cursor, uid, [])
+            tarifa_id = pol_obj.escull_llista_preus(
+                cursor, uid, pol.id, tarifes_ids, context=context)
+            ctx.update({'force_pricelist': tarifa_id.id})
+            tarifes_a_mostrar = [{'date_start': False, 'date_end': False}]
         res['pricelists'] = []
         for dades_tarifa in tarifes_a_mostrar:
             text_vigencia = ''
