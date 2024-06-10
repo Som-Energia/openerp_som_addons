@@ -110,6 +110,11 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "impacte_perc": 2.80,
             "factor_eie_preu_antic": 133.781131630073,
             "factor_eie_preu_nou": 139.600101568505,
+            "iva": 21,
+            "ie": 5.11,
+            "import_total_anual_antiga_amb_impost": 660.78,
+            "import_total_anual_nova_amb_impost": 679.28,
+            "impacte_import_amb_impost": 18.50,
         },
         "3.0TD": {
             "conany": 10000,
@@ -125,6 +130,11 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "impacte_perc": 3.07,
             "factor_eie_preu_antic": 120.017809474036,
             "factor_eie_preu_nou": 125.837481976305,
+            "iva": 21,
+            "ie": 5.11,
+            "import_total_anual_antiga_amb_impost": 2407.80,
+            "import_total_anual_nova_amb_impost": 2481.81,
+            "impacte_import_amb_impost": 74.02,
         },
         "6.1TD": {
             "conany": 15000,
@@ -140,6 +150,11 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "impacte_perc": 2.16,
             "factor_eie_preu_antic": 106.055050891024,
             "factor_eie_preu_nou": 111.316018940409,
+            "iva": 21,
+            "ie": 5.11,
+            "import_total_anual_antiga_amb_impost": 3919.87,
+            "import_total_anual_nova_amb_impost": 4020.24,
+            "impacte_import_amb_impost": 100.37,
         },
         "3.0TDVE": {
             "conany": 10000,
@@ -155,6 +170,11 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "impacte_perc": 3.47,
             "factor_eie_preu_antic": 0,
             "factor_eie_preu_nou": 0,
+            "iva": 21,
+            "ie": 5.11,
+            "import_total_anual_antiga_amb_impost": 2131.40,
+            "import_total_anual_nova_amb_impost": 2205.42,
+            "impacte_import_amb_impost": 74.02,
         },
     }
 
