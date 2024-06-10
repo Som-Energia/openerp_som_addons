@@ -638,48 +638,45 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
     def getTarifaCorreu(self, cursor, uid, env, context=False):
         data = {
-            "Periodes20TDPeninsulaFins10kw": False,
-            "Periodes20TDPeninsulaMesDe10kw": False,
-            "Periodes20TDCanaries": False,
-            "Periodes30i60TDPeninsula": False,
-            "Periodes30i60TDCanaries": False,
-            "igic": False,
-            "Indexada20TDPeninsulaBalearsFins10kw": False,
-            "Indexada20TDPeninsulaBalearsMesDe10kw": False,
+            "Indexada20TDPeninsula": False,
             "Indexada20TDCanaries": False,
+            "Indexada30TDPeninsula": False,
+            "Indexada30TDCanaries": False,
+            "Indexada61TDPeninsula": False,
+            "Indexada61TDCanaries": False,
+            "Indexada30TDVEPeninsula": False,
+            "Indexada30TDVECanaries": False,
+            "igic": False,
             "indexada": False,
             "periodes": False,
         }
         mode_facturacio = env.polissa_id.mode_facturacio
         tarifa = env.polissa_id.tarifa.name
-        potencies = self.getPotenciesPolissa(cursor, uid, env.polissa_id)
 
         if "index" in mode_facturacio:
             if "2.0TD" in tarifa:
                 if self.esCanaries(cursor, uid, env):
                     data["Indexada20TDCanaries"] = True
-                    data["igic"] = self.getIGIC(cursor, uid, env)
+                    # data["igic"] = self.getIGIC(cursor, uid, env)
                 else:
-                    if int(potencies["P1"]) < 10:
-                        data["Indexada20TDPeninsulaBalearsFins10kw"] = True
-                    else:
-                        data["Indexada20TDPeninsulaBalearsMesDe10kw"] = True
+                    data['Indexada20TDPeninsula'] = True
+            elif "3.0TD" in tarifa:
+                if self.esCanaries(cursor, uid, env):
+                    data["Indexada30TDCanaries"] = True
+                else:
+                    data["Indexada30TDPeninsula"] = True
+            elif "6.1TD" in tarifa:
+                if self.esCanaries(cursor, uid, env):
+                    data["Indexada61TDCanaries"] = True
+                else:
+                    data["Indexada61TDPeninsula"] = True
+            elif "3.0TDVE" in tarifa:
+                if self.esCanaries(cursor, uid, env):
+                    data["Indexada30TDVECanaries"] = True
+                else:
+                    data["Indexada30TDVEPeninsula"] = True
             data["indexada"] = True
         else:
-            if "2.0TD" in tarifa:
-                if self.esCanaries(cursor, uid, env):
-                    data["Periodes20TDCanaries"] = True
-                    data["igic"] = self.getIGIC(cursor, uid, env)
-                else:
-                    if int(potencies["P1"]) < 10:
-                        data["Periodes20TDPeninsulaFins10kw"] = True
-                    else:
-                        data["Periodes20TDPeninsulaMesDe10kw"] = True
-            elif "3.0TD" in tarifa or "6.1TD" in tarifa:
-                if self.esCanaries(cursor, uid, env):
-                    data["Periodes30i60TDCanaries"] = True
-                else:
-                    data["Periodes30i60TDPeninsula"] = True
             data["periodes"] = True
         return data
 
