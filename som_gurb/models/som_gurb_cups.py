@@ -253,6 +253,7 @@ class SomGurbCups(osv.osv):
             "partner_id": partner_id,
             "type": "out_invoice",
             "invoice_line": invoice_lines,
+            "origin": "GURBCUPSID{}".format(gurb_cups_br.id),
         }
         invoice_vals.update(invoice_o.onchange_partner_id(  # Get invoice default values
             cursor, uid, [], "out_invoice", partner_id).get("value", {})
