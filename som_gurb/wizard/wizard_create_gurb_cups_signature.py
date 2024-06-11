@@ -58,6 +58,9 @@ class WizardGurbCreateGurbCupsSignature(osv.osv_memory):
         baixa_id = self.get_document_action_report(
             cursor, uid, "action_report_som_gurb_consentiment_baixa", context=context
         )
+        condicions_id = self.get_document_action_report(
+            cursor, uid, "action_report_som_gurb_conditions", context=context
+        )
 
         process_data = context.get("process_data", {}).copy()
         data = json.dumps(process_data)
@@ -73,6 +76,11 @@ class WizardGurbCreateGurbCupsSignature(osv.osv_memory):
             (0, 0, {
                 "model": "som.gurb.cups,{}".format(gurb_cups_id),
                 "report_id": baixa_id,
+                "category_id": doc_categ_id
+            }),
+            (0, 0, {
+                "model": "som.gurb.cups,{}".format(gurb_cups_id),
+                "report_id": condicions_id,
                 "category_id": doc_categ_id
             }),
         ]
@@ -126,7 +134,14 @@ class WizardGurbCreateGurbCupsSignature(osv.osv_memory):
 
         # Executar l'inici del proces
         pro_obj.start(cursor, uid, [process_id], context=None)
-        return process_id
+        res = {
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'giscedata.signatura.process',
+            'type': 'ir.actions.act_window',
+            'domain': [('id', 'in', [process_id])]
+        }
+        return res
 
     _columns = {
         "email": fields.char("Email", size=320, required=True),
