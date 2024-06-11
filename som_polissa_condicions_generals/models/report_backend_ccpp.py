@@ -397,10 +397,18 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         if polissa.mode_facturacio == 'index' and not modcon_pendent_periodes or modcon_pendent_indexada:  # noqa: E501
             res['mostra_indexada'] = True
             if coeficient_k_untaxed == 0:
-                coeficient_k_untaxed = res['pricelist'].get_atr_price(
+                if modcon_pendent_indexada or modcon_pendent_periodes:
+                    pricelist_index = pol.modcontractuals_ids[0].llista_preu
+                elif pol.llista_preu:
+                    pricelist_index = pol.llista_preu
+                else:
+                    tarifes_ids = pricelist_obj.search(cursor, uid, [])
+                    pricelist_index = pol_obj.escull_llista_preus(
+                        cursor, uid, pol.id, tarifes_ids, context=context)
+                coeficient_k_untaxed = pricelist_index.get_atr_price(
                     tipus='', product_id=coeficient_id, fiscal_position=polissa.fiscal_position_id,
                     with_taxes=False)[0]
-                coeficient_k = res['pricelist'].get_atr_price(
+                coeficient_k = pricelist_index.get_atr_price(
                     tipus='', product_id=coeficient_id, fiscal_position=polissa.fiscal_position_id,
                     with_taxes=True)[0]
             else:
