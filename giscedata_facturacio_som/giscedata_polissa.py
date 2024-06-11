@@ -14,13 +14,15 @@ class GiscedataPolissa(osv.osv):
             }
         return {'value': {}}
 
-
-
-
     _columns = {
-        'cobrament_bloquejat': fields.boolean(string=u"Facturació amb cobrament bloquejat"),
-        'observacions_cobrament': fields.char(string=u"Observacions f. cobrament bloquejat", size=170),
-        'estat_pendent_cobrament': fields.many2one('account.invoice.pending.state', string=u"Estat pendent f. cobrament bloquejat")
+        'cobrament_bloquejat': fields.boolean(
+            string=u"Facturació amb cobrament bloquejat"),
+        'observacions_cobrament': fields.char(
+            string=u"Observacions f. cobrament bloquejat", size=170),
+        'estat_pendent_cobrament': fields.many2one(
+            'account.invoice.pending.state',
+            string=u"Estat pendent f. cobrament bloquejat"
+        )
     }
 
     _defaults = {

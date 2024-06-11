@@ -49,6 +49,7 @@ class GiscedataFacturacio(osv.osv):
 
 GiscedataFacturacio()
 
+
 class GiscedataFacturacioFactura(osv.osv):
     _name = 'giscedata.facturacio.factura'
     _inherit = 'giscedata.facturacio.factura'
@@ -60,12 +61,14 @@ class GiscedataFacturacioFactura(osv.osv):
         for fact_id in ids:
             polissa_id = self.read(cursor, uid, fact_id, ['polissa_id'])['polissa_id'][0]
             polissa_obj = self.pool.get('giscedata.polissa')
-            pol_data = polissa_obj.read(cursor, uid, polissa_id, ['cobrament_bloquejat', 'estat_pendent_cobrament'])
+            pol_data = polissa_obj.read(cursor, uid, polissa_id, [
+                                        'cobrament_bloquejat', 'estat_pendent_cobrament'])
             if pol_data['cobrament_bloquejat']:
                 ptype_obj = self.pool.get('payment.type')
                 ptype_id = ptype_obj.search(cursor, uid, [('name', '=', 'No remesables')])[0]
                 now = datetime.today().strftime('%Y-%m-%d')
-                observations = now + "EQUIP FACTURA - Pólissa en estat Facturació amb cobrament bloquejat"
+                observations = (
+                    now + "EQUIP FACTURA - Pólissa en estat Facturació amb cobrament bloquejat")
                 write_vals = {'payment_type': ptype_id,
                               'pending_state': pol_data['estat_pendent_cobrament'],
                               'comment': observations}
@@ -77,12 +80,14 @@ class GiscedataFacturacioFactura(osv.osv):
         for fact_id in ids:
             polissa_id = self.read(cursor, uid, fact_id, ['polissa_id'])['polissa_id'][0]
             polissa_obj = self.pool.get('giscedata.polissa')
-            pol_data = polissa_obj.read(cursor, uid, polissa_id, ['cobrament_bloquejat', 'estat_pendent_cobrament'])
+            pol_data = polissa_obj.read(cursor, uid, polissa_id, [
+                                        'cobrament_bloquejat', 'estat_pendent_cobrament'])
             if pol_data['cobrament_bloquejat']:
                 ptype_obj = self.pool.get('payment.type')
                 ptype_id = ptype_obj.search(cursor, uid, [('name', '=', 'No remesables')])[0]
                 now = datetime.today().strftime('%Y-%m-%d')
-                observations = now + "EQUIP FACTURA - Pólissa en estat Facturació amb cobrament bloquejat"
+                observations = (
+                    now + "EQUIP FACTURA - Pólissa en estat Facturació amb cobrament bloquejat")
                 write_vals = {'payment_type': ptype_id,
                               'comment': observations}
                 self.write(cursor, uid, fact_id, write_vals)
