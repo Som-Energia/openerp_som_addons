@@ -232,31 +232,18 @@ class ReportBackendCondicionsParticulars(ReportBackend):
 
         coeficient_k = (pol.coeficient_k + pol.coeficient_d) / 1000
         res['mostra_indexada'] = False
+        coeficient_id = 420
         if polissa.mode_facturacio == 'index' and not res['modcon_pendent_periodes'] or res['modcon_pendent_indexada']:  # noqa: E501
             res['mostra_indexada'] = True
             if coeficient_k == 0:
-                today = datetime.today().strftime("%Y-%m-%d")
-                vlp = None
-                if res['modcon_pendent_indexada']:
-                    llista_preus = polissa.modcontractuals_ids[0].llista_preu.version_id
-                else:
-                    llista_preus = polissa.llista_preu.version_id
-                for lp in llista_preus:
-                    if lp.date_start <= today and (not lp.date_end or lp.date_end >= today):
-                        vlp = lp
-                        break
-                if vlp:
-                    for item in vlp.items_id:
-                        if item.name == 'Coeficient K':
-                            coeficient_k = item.base_price
-                            break
+                coeficient_k = res['pricelist'].get_atr_price(
+                    tipus='', product_id=coeficient_id, fiscal_position=polissa.fiscal_position_id,
+                    with_taxes=False)[0]
         res['coeficient_k_untaxed'] = coeficient_k
-        coeficient_id = 420  # TODO
         res['coeficient_k'] = res['pricelist'].get_atr_price(
             tipus='', product_id=coeficient_id, fiscal_position=polissa.fiscal_position_id,
             with_taxes=True)[0]
 
-        # pol.pagador.name if not pas01 else dict_titular['client_name']
         return res
 
     def get_cups_data(self, cursor, uid, pol, context=None):
