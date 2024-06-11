@@ -119,6 +119,16 @@
                             <span class="normal_font_weight">${_(u"on la franja de la cooperativa")}</span>
                             <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(prices['coeficient_k_untaxed'], digits=6)}</span>
                         </td>
+                        </tr>
+                        <tr>
+                            <td class="bold">${_(u"on la franja de la cooperativa")}</td>
+                            <td class="center">
+                                <span class="">${("(F) = %s €/kWh</B>") % formatLang(prices['coeficient_k_untaxed'], digits=6)}</span>
+                            </td>
+                            <td class="center divisio_impostos">
+                                <span class="">${("(F) = %s €/kWh</B>") % formatLang(prices['coeficient_k'], digits=6)}</span>
+                            </td>
+                        </tr>
                     %else:
                         %if len(polissa['periodes_energia']) < 6:
                             %for p in polissa['periodes_energia']:
@@ -170,8 +180,8 @@
                                 %endif
                             %endif
                         %endfor
+                        </tr>
                     %endif
-                </tr>
                 <!-- INICI Bloc Generationkwh -->
                 %if polissa['te_assignacio_gkwh']:
                 <tr>
