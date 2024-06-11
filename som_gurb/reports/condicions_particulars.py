@@ -1,12 +1,14 @@
 import os
+import uuid
 import pooler
 import netsvc
 import pypdftk
 import tempfile
-from report.nterface import report_int
+from base64 import b64decode
+from report.interface import report_int
 
 
-class CondicionsGurbReport(report_int):
+class ConditionsGurbReport(report_int):
 
     def create(self, cursor, uid, ids, datas, context=None):
         if context is None:
@@ -20,27 +22,37 @@ class CondicionsGurbReport(report_int):
 
             report = netsvc.LocalService('report.giscedata.polissa')
 
-            result, result_format = report.create(cursor, uid, [pol_id], {}, context=context)
+            res = []
+            contract_pdf, _ = report.create(cursor, uid, [pol_id], {}, context=context)
 
-    def join_pdfs(self, plain_pdf_files):
+            pool = pooler.get_pool(cursor.dbname)
+            pdfs = [
+                contract_pdf, b64decode(gurb_cups_o.browse(
+                    cursor, uid, gurb_cups_id).general_conditions_id.attachment_id.datas)
+            ]
+            tmp_dir = tempfile.gettempdir()
+            for pdf in pdfs:
+                pdf_file_name = '{}.pdf'.format(uuid.uuid4())
+                pdf_file_path = os.path.join(tmp_dir, pdf_file_name.replace(' ', ''))
+                with open(pdf_file_path, 'w') as pdf_file:
+                    pdf_file.write(pdf)
+                res.append(pdf_file_path)
+
+            result = self.join_pdfs(res)
+
+            return result, 'pdf'
+
+    def join_pdfs(self, pdf_paths):
         """
         Joins pdf files.
-        :param plain_pdf_files: list of pdf files to be joined.
-        :type plain_pdf_files: list[str]
+        :param pdf_files: list of pdf path files to be joined.
+        :type pdf_files: list[str]
         :return: Joined pdf files as plain text.
         :rtype: str
         """
-        if len(plain_pdf_files) == 1:
-            res = plain_pdf_files[0]
+        if len(pdf_paths) == 1:
+            res = pdf_paths[0]
         else:
-            pdf_paths = []
-            for plain_pdf in plain_pdf_files:
-                fd, attachment_path = tempfile.mkstemp('-join.pdf', 'report-')
-                os.write(fd, plain_pdf)
-                os.close(fd)
-
-                pdf_paths.append(attachment_path)
-
             pdf_path = pypdftk.concat(files=pdf_paths)
 
             for tmp_file in pdf_paths:
@@ -54,4 +66,4 @@ class CondicionsGurbReport(report_int):
         return res
 
 
-CondicionsGurbReport()
+ConditionsGurbReport('report.som.gurb.conditions')
