@@ -88,7 +88,7 @@
             % if polissa['tarifa'] == "2.0TD":
                 </table>
                 <table class="taula_custom doble_table new_taula_custom">
-                    %if not polissa['mostra_indexada']:
+                    %if not prices['mostra_indexada']:
                         <tr style="background-color: #878787;">
                             <th></th>
                             <th>${_(u"Punta")}</th>
@@ -108,7 +108,7 @@
             %endif
                     <tr>
                         <td class="bold">${_("Terme energia (€/kWh)")}</td>
-                    %if polissa['mostra_indexada']:
+                    %if prices['mostra_indexada']:
                         <td class="center reset_line_height" colspan="6">
                             <span class="normal_font_weight">
                                 <b>${_(u"Tarifa indexada")}</b>${_(u"(2) - el preu horari (PH) es calcula d'acord amb la fórmula:")}
@@ -117,7 +117,7 @@
                             <span>${_(u"PH = 1,015 * [(PHM + Pc + Sc + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + PTD + CA")}</span>
                             <br/>
                             <span class="normal_font_weight">${_(u"on la franja de la cooperativa")}</span>
-                            <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(polissa['coeficient_k_untaxed'], digits=6)}</span>
+                            <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(prices['coeficient_k_untaxed'], digits=6)}</span>
                         </td>
                     %else:
                         %if len(polissa['periodes_energia']) < 6:
@@ -302,7 +302,7 @@
                     </tr>
                     <tr>
                         <td class="bold">${_("Terme energia (€/kWh)")}</td>
-                        %if polissa['mostra_indexada']:
+                        %if prices['mostra_indexada']:
                             <td class="center reset_line_height" colspan="6">
                                 <span class="normal_font_weight">
                                     <b>${_(u"Tarifa indexada")}</b>${_(u"(2) - el preu horari (PH) es calcula d'acord amb la fórmula:")}
@@ -311,7 +311,7 @@
                                 <span>${_(u"PH = 1,015 * [(PHM + Pc + Sc + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + PTD + CA")}</span>
                                 <br/>
                                 <span class="normal_font_weight">${_(u"on la franja de la cooperativa")}</span>
-                                <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(polissa['coeficient_k'], digits=6)}</span>
+                                <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(prices['coeficient_k'], digits=6)}</span>
                             </td>
                         %else:
                             %for p in polissa['periodes_energia']:

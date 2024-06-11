@@ -101,8 +101,6 @@ class TestReportBackendCCPP(testing.OOTestCase):
         self.assertEqual(result, {
             u'auto': u'00',
             u'bank': False,
-            u'coeficient_k': False,
-            u'coeficient_k_untaxed': 0.0,
             u'contract_type': u'Anual',
             u'data_baixa': '2099-01-01',
             u'data_final': u'',
@@ -112,7 +110,6 @@ class TestReportBackendCCPP(testing.OOTestCase):
             u'modcon_pendent_indexada': False,
             u'modcon_pendent_periodes': False,
             u'mode_facturacio': u'atr',
-            u'mostra_indexada': False,
             u'name': u'0018',
             u'periodes_energia': [u'P1', u'P2', u'P3'],
             u'periodes_potencia': [u'P1', u'P2'],
@@ -132,8 +129,11 @@ class TestReportBackendCCPP(testing.OOTestCase):
 
         self.pricelist_obj.browse(self.cursor, self.uid, 12)
         self.assertEqual(result, {
+            u'coeficient_k': False,
+            u'coeficient_k_untaxed': 0.0,
             u'dict_preus_tp_energia': False,
             u'dict_preus_tp_potencia': False,
+            u'mostra_indexada': False,
             u'pricelists': [{
                 u'energy_prices': {
                     u'P1': 0.0,
@@ -157,5 +157,5 @@ class TestReportBackendCCPP(testing.OOTestCase):
                 u'price_auto': 0.01,
                 u'price_auto_untaxed': 0.01,
                 u'text_impostos': u' (IVA 21%, IE 3,8%)',
-                u'text_vigencia': u''}]}
-        )
+                u'text_vigencia': u''}]
+        })

@@ -172,8 +172,6 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         pol_o = self.pool.get('giscedata.polissa')
         llista_preu_o = self.pool.get('product.pricelist')
         imd_obj = self.pool.get('ir.model.data')
-        prod_obj = self.pool.get("product.product")
-        polissa = pol_o.browse(cursor, uid, pol.id)
         res = {}
         res['data_final'] = pol.modcontractual_activa.data_final or ''
         res['data_inici'] = pol.data_alta or ''
@@ -232,30 +230,6 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         else:
             res['tarifa_mostrar'] = res['pricelist'].nom_comercial or res['pricelist'].name
 
-        coeficient_k_untaxed = (pol.coeficient_k + pol.coeficient_d) / 1000
-        coeficient_k = False
-        res['mostra_indexada'] = False
-        coeficient_id = imd_obj.get_object_reference(
-            cursor, uid, 'giscedata_facturacio_indexada', 'product_factor_k'
-        )[1]
-        if polissa.mode_facturacio == 'index' and not res['modcon_pendent_periodes'] or res['modcon_pendent_indexada']:  # noqa: E501
-            res['mostra_indexada'] = True
-            if coeficient_k_untaxed == 0:
-                coeficient_k_untaxed = res['pricelist'].get_atr_price(
-                    tipus='', product_id=coeficient_id, fiscal_position=polissa.fiscal_position_id,
-                    with_taxes=False)[0]
-                coeficient_k = res['pricelist'].get_atr_price(
-                    tipus='', product_id=coeficient_id, fiscal_position=polissa.fiscal_position_id,
-                    with_taxes=True)[0]
-            else:
-                coeficient_k = prod_obj.add_taxes(
-                    cursor, uid, coeficient_id, coeficient_k, polissa.fiscal_position_id,
-                    direccio_pagament=polissa.direccio_pagament, titular=polissa.titular,
-                    context=context,
-                )
-        res['coeficient_k_untaxed'] = coeficient_k_untaxed
-        res['coeficient_k'] = coeficient_k
-
         return res
 
     def get_cups_data(self, cursor, uid, pol, context=None):
@@ -281,6 +255,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         pol_obj = self.pool.get('giscedata.polissa')
         cfg_obj = self.pool.get('res.config')
         imd_obj = self.pool.get('ir.model.data')
+        prod_obj = self.pool.get("product.product")
         pricelist_obj = self.pool.get('product.pricelist')
         polissa = pol_obj.browse(cursor, uid, pol.id)
         if context.get('tarifa_provisional', False):
@@ -313,6 +288,8 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             text_vigencia = ''
             pricelist = {}
 
+            modcon_pendent_indexada = False
+            modcon_pendent_periodes = False
             if pol.state != 'esborrany':
                 ultima_modcon = pol.modcontractuals_ids[0]
                 modcon_pendent_indexada = ultima_modcon.state == 'pendent' and \
@@ -408,7 +385,32 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 cursor, uid, pol, periodes_energia[0], 'ac', ctx, with_taxes=True)[0]
             pricelist['price_auto_untaxed'] = get_atr_price(
                 cursor, uid, pol, periodes_energia[0], 'ac', ctx, with_taxes=False)[0]
+
             res['pricelists'].append(pricelist)
+
+        coeficient_k_untaxed = (pol.coeficient_k + pol.coeficient_d) / 1000
+        coeficient_k = False
+        res['mostra_indexada'] = False
+        coeficient_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_facturacio_indexada', 'product_factor_k'
+        )[1]
+        if polissa.mode_facturacio == 'index' and not modcon_pendent_periodes or modcon_pendent_indexada:  # noqa: E501
+            res['mostra_indexada'] = True
+            if coeficient_k_untaxed == 0:
+                coeficient_k_untaxed = res['pricelist'].get_atr_price(
+                    tipus='', product_id=coeficient_id, fiscal_position=polissa.fiscal_position_id,
+                    with_taxes=False)[0]
+                coeficient_k = res['pricelist'].get_atr_price(
+                    tipus='', product_id=coeficient_id, fiscal_position=polissa.fiscal_position_id,
+                    with_taxes=True)[0]
+            else:
+                coeficient_k = prod_obj.add_taxes(
+                    cursor, uid, coeficient_id, coeficient_k, polissa.fiscal_position_id,
+                    direccio_pagament=polissa.direccio_pagament, titular=polissa.titular,
+                    context=context,
+                )
+        res['coeficient_k_untaxed'] = coeficient_k_untaxed
+        res['coeficient_k'] = coeficient_k
 
         return res
 
