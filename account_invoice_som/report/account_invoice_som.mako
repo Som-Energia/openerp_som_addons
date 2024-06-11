@@ -168,7 +168,7 @@
                     <div class="quantity_section">
                         %for i in sorted(altres_lines):
                             <div class="preu_concepte center">
-                                ${formatLang(i.quantity, 0)}
+                                ${formatLang(i.quantity, 2)}
                             </div>
                         %endfor
                     </div>

@@ -1636,7 +1636,7 @@ class Tests_FacturacioFacturaReport_invoice_details_reactive(Tests_FacturacioFac
                         "quantity": 60.0,
                     }
                 ],
-                "is_visible": False,
+                "is_visible": True,
             },
         )
 
@@ -1869,11 +1869,11 @@ class Tests_FacturacioFacturaReport_amount_destination(Tests_FacturacioFacturaRe
                 "is_visible": True,
                 "factura_id": 14,
                 "amount_total": 547.36,
-                "total_lloguers": 3.0,
-                "pie_total": 544.36,
+                "total_lloguers": 0.0,
+                "pie_total": 547.36,
                 "pie_regulats": 3.0,
                 "pie_impostos": 0.0,
-                "pie_costos": 541.36,
+                "pie_costos": 544.36,
                 "rep_BOE": {"i": 39.44, "c": 40.33, "o": 20.23},
             },
         )

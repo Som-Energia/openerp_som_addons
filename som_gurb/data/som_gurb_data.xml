@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="1">
+        <record id="seq_gurb_type" model="ir.sequence.type">
+            <field name="name">Seqüència de GURB</field>
+            <field name="code">som.gurb</field>
+        </record>
+        <record id="seq_gurb" model="ir.sequence">
+            <field name="name">GURB</field>
+            <field name="code">som.gurb</field>
+            <field name="prefix">G</field>
+            <field name="padding">3</field>
+            <field name="number_increment">1</field>
+        </record>
+        <record model="product.category" id="categ_product_gurb">
+            <field name="name">Categoria GURB</field>
+        </record>
+        <record model="product.product" id="product_gurb">
+            <field name="name">Producte GURB</field>
+            <field name="categ_id" ref="categ_product_gurb"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="list_price">10</field>
+            <field name="supply_method">buy</field>
+            <field model="account.tax" name="taxes_id" search="[('name','=','IVA 21%')]"/>
+            <field model="account.account" name="property_account_income" search="[('code','=','705000')]"/>
+        </record>
+        <record model="product.product" id="product_owner_gurb">
+            <field name="name">Producte GURB persona propietària</field>
+            <field name="categ_id" ref="categ_product_gurb"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="list_price">0</field>
+            <field name="supply_method">buy</field>
+            <field model="account.tax" name="taxes_id" search="[('name','=','IVA 21%')]"/>
+            <field model="account.account" name="property_account_income" search="[('code','=','705000')]"/>
+        </record>
+        <record model="product.product" id="initial_quota_gurb">
+            <field name="name">Quota inicial del GURB</field>
+            <field name="description">Cost adhesió</field>
+            <field name="categ_id" ref="categ_product_gurb"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="standard_price">0</field>
+            <field name="supply_method">buy</field>
+            <field model="account.tax" name="taxes_id" search="[('name','=','IVA 21%')]"/>
+            <field model="account.account" name="property_account_income" search="[('code','=','705000')]"/>
+        </record>
+        <record id="ir_attachment_gurb_ritsic_attachment_category" model="ir.attachment.category">
+            <field name="code">gurb_ritsic_attachment_category</field>
+            <field name="name">GURB: Fitxer RITSIC</field>
+        </record>
+        <record id="ir_attachment_gurb_cie_attachment_category" model="ir.attachment.category">
+            <field name="code">gurb_cie_attachment_category</field>
+            <field name="name">GURB: Fitxer CIE</field>
+        </record>
+        <record id="ir_attachment_gurb_rac_attachment_category" model="ir.attachment.category">
+            <field name="code">gurb_rac_attachment_category</field>
+            <field name="name">GURB: Fitxer RAC</field>
+        </record>
+        <record id="categ_gurb_pilot" model="giscedata.polissa.category">
+            <field name="name">GURB Pilot</field>
+            <field name="code">GURBP</field>
+        </record>
+    </data>
+</openerp>

@@ -1,0 +1,27 @@
+/* BASE STYLE */
+/* Body */
+body {
+    padding: 0;
+    margin: 0;
+}
+
+/* Page */
+.a4{
+    height: 297mm;
+    width: 210mm;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-content {
+    margin: 10mm 10mm 10mm 10mm;
+    height: 277mm;
+    width: 190mm;
+    position: relative;
+}
+
+.content {
+    margin-left: 5mm;
+    margin-right: 5mm;
+}

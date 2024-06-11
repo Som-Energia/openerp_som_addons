@@ -36,7 +36,7 @@ class SomAutoreclamaState(osv.osv):
             model_obj = self.pool.get(model)
             model_method = getattr(model_obj, method)
             if params:
-                new_atc_id = model_method(cursor, uid, params, context)
+                new_atc_id = model_method(cursor, uid, item_id, params, context)
             else:
                 new_atc_id = model_method(cursor, uid, item_id, context)
         except Exception as e:

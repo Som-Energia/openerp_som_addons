@@ -27,8 +27,8 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             and data["autoreclama_state"]
             and len(data["autoreclama_state"]) > 1
         ):
-            return data["autoreclama_state"][1]
-        return "No initial state"
+            return data["autoreclama_state"][0], data["autoreclama_state"][1]
+        return None, "No initial state"
 
     def get_polissa_candidates_to_update(self, cursor, uid, context=None):
         pol_obj = self.pool.get("giscedata.polissa")
@@ -36,7 +36,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             ("state", "in", ['activa', 'baixa', 'impagament', 'modcontractual']),
             ("autoreclama_state.is_last", "=", False),
         ]
-        return pol_obj.search(cursor, uid, search_params)
+        return pol_obj.search(cursor, uid, search_params, context={"active_test": False})
 
     def get_item_name(self, cursor, uid, item_id, namespace, context=None):
         if namespace != 'polissa':
@@ -46,10 +46,27 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         pol_data = pol_obj.read(cursor, uid, item_id, ['name'], context=context)
         return "{} - {}".format(item_id, pol_data['name'])
 
+    def get_names(self, cursor, uid, item_ids, namespace, context=None):
+        if namespace != 'polissa':
+            return item_ids
+
+        pol_obj = self.pool.get('giscedata.polissa')
+        pol_datas = pol_obj.read(cursor, uid, item_ids, ['name'], context=context)
+        return [pol_data['name'] for pol_data in pol_datas]
+
+    def get_review_states(self, cursor, uid):
+        data_obj = self.pool.get("ir.model.data")
+        review_state_id = data_obj.get_object_reference(
+            cursor, uid, "som_autoreclama", "review_state_workflow_polissa"
+        )[1]
+        return [review_state_id]
+
     def update_items_if_possible(self, cursor, uid, ids, namespace, verbose=True, context=None):
         updated = []
         not_updated = []
         errors = []
+        reviews = []
+        review_states = self.get_review_states(cursor, uid)
 
         if namespace == 'atc':
             name = _('Cas ATC')
@@ -64,19 +81,22 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         msg = _("Accions {}\n").format(names)
 
         for item_id in tqdm(ids):
-            actual_state = self.get_autoreclama_state_name(cursor, uid, item_id, namespace, context)
+            actual_state_id, actual_state = self.get_autoreclama_state_name(
+                cursor, uid, item_id, namespace, context)
             result, condition_id, message = self.update_item_if_possible(
                 cursor, uid, item_id, namespace, context
             )
             item_name = self.get_item_name(cursor, uid, item_id, namespace, context)
             if result:
                 updated.append(item_id)
-                next_state = self.get_autoreclama_state_name(
+                next_state_id, next_state = self.get_autoreclama_state_name(
                     cursor, uid, item_id, namespace, context)
                 msg += _("{} amb id {} ha canviat d'estat: {} --> {} => condició {}\n").format(
                     name, item_name, actual_state, next_state, condition_id
                 )
                 msg += _(" - {}\n").format(message)
+                if next_state_id in review_states:
+                    reviews.append(item_id)
             elif result is False:
                 not_updated.append(item_id)
                 if verbose:
@@ -100,22 +120,46 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         summary += _("\n")
 
         if updated:
-            summary += _("Id's de {} que han canviat d'estat\n").format(names)
-            summary += ",".join(str(upd) for upd in updated)
+            if namespace == 'polissa':
+                summary += _("Número de les pòlisses que han canviat d'estat\n").format(names)
+            else:
+                summary += _("Id's de {} que han canviat d'estat\n").format(names)
+            updated_names = self.get_names(cursor, uid, updated, namespace, context)
+            summary += ", ".join(str(upd) for upd in updated_names)
             summary += _("\n\n")
 
         if errors:
-            summary += _("Id's de {} que han donat error (REVISAR)\n").format(names)
-            summary += ",".join(str(error) for error in errors)
+            if namespace == 'polissa':
+                summary += _("Número de les pòlisses que han donat error (REVISAR)\n").format(names)
+            else:
+                summary += _("Id's de {} que han donat error (REVISAR)\n").format(names)
+            error_names = self.get_names(cursor, uid, errors, namespace, context)
+            summary += ", ".join(str(error) for error in error_names)
+            summary += _("\n\n")
+
+        if reviews:
+            if namespace == 'polissa':
+                summary += _("Número de les pòlisses que han passat a estat 'Revisar'\n").format(names)  # noqa: E501
+            else:
+                summary += _("Id's de {} que han passat a estat 'Revisar'\n").format(names)
+            review_names = self.get_names(cursor, uid, reviews, namespace, context)
+            summary += ", ".join(str(review) for review in review_names)
             summary += _("\n\n")
 
         return updated, not_updated, errors, msg, summary
 
     def update_item_if_possible(self, cursor, uid, item_id, namespace, context=None):
+        if not context:
+            context = {}
+
         item_obj = self.pool.get("giscedata." + namespace)
         history_obj = self.pool.get("som.autoreclama.state.history." + namespace)
         state_obj = self.pool.get("som.autoreclama.state")
         cond_obj = self.pool.get("som.autoreclama.state.condition")
+        cfg_obj = self.pool.get('res.config')
+        context['days_ago_R1006'] = int(cfg_obj.get(
+            cursor, uid, "som_autoreclama_2_006_in_a_row_days_ago", "120")
+        )
         item_data = item_obj.get_autoreclama_data(cursor, uid, item_id, context)
 
         state = item_obj.read(cursor, uid, item_id, ["autoreclama_state"], context)

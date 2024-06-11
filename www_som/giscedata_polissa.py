@@ -2,6 +2,7 @@
 from datetime import datetime, timedelta
 from som_polissa.exceptions import exceptions
 from www_som.helpers import www_entry_point
+from giscedata_cups.dso_cups.cups import get_dso
 
 from osv import osv
 from osv import fields
@@ -132,6 +133,19 @@ class GiscedataPolissa(osv.osv):
         return self.check_modifiable_polissa(
             cursor, uid, polissa_id, skip_atr_check, excluded_cases, context=context
         )
+
+    def www_get_distributor_id(self, cursor, uid, cups):
+        distributor_code = get_dso(cups)
+        partner_obj = self.pool.get("res.partner")
+
+        distributor_ids = partner_obj.search(cursor, uid,
+                                             [('ref', '=', distributor_code)]
+                                             )
+
+        if distributor_ids:
+            return distributor_ids[0]
+
+        return None
 
     _columns = {
         "www_current_pagament": fields.function(
