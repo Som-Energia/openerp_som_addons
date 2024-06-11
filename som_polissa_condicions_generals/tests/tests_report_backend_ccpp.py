@@ -66,7 +66,7 @@ class TestReportBackendCCPP(testing.OOTestCase):
             u'mobile_envio': u'',
             u'name_envio': u'Michel Schumacher',
             u'phone': u'',
-            u'phone_envio': u'',
+            u'phone_envio': u'(+32) 2 123 456',
             u'sign_date': '',
             u'state': u'',
             u'state_envio': u'',
