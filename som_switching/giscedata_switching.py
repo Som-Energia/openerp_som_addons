@@ -312,6 +312,42 @@ class GiscedataSwitching(osv.osv):
             cursor, uid, ids, tarifa_atr, context=context
         )
 
+    def unlink(self, cursor, uid, ids, context=None):
+        return self.case_and_cacs_cancel(cursor, uid, ids, context)
+
+    def case_and_cacs_cancel(self, cursor, uid, ids, *args):
+        cac_obj = self.pool.get("giscedata.atc")
+        if not isinstance(ids, (list, tuple)):
+            ids = [ids]
+
+        self.case_cancel(cursor, uid, ids, *args)
+
+        cacs_to_cancel = []
+        for switching in self.browse(cursor, uid, ids):
+            ref = switching.ref or switching.ref2
+            if ref and 'giscedata.atc,' in ref:
+                cacs_to_cancel.append(int(ref.split(',')[1]))
+
+        if cacs_to_cancel:
+            cac_obj.case_cancel(cursor, uid, cacs_to_cancel, *args)
+        return True
+
+    def case_cancel(self, cursor, uid, ids, *args):
+        if not isinstance(ids, (list, tuple)):
+            ids = [ids]
+
+        for switching in self.browse(cursor, uid, ids):
+            step = switching.step_id and switching.step_id.name
+            if switching.enviament_pendent is False or step not in [None, '01']:
+                raise osv.except_osv(
+                    _(u"Warning"),
+                    _(
+                        "No es poden cancel·lar casos ATR en marxa, "
+                        "revisa els protocols o demana ajuda."
+                    ).format(switching.id),
+                )
+        return super(GiscedataSwitching, self).case_cancel(cursor, uid, ids, *args)
+
     _columns = {
         "user_observations": fields.text("Observaciones del usuario"),
         "last_observation_line": fields.function(
