@@ -172,6 +172,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         pol_o = self.pool.get('giscedata.polissa')
         llista_preu_o = self.pool.get('product.pricelist')
         imd_obj = self.pool.get('ir.model.data')
+        prod_obj = self.pool.get("product.product")
         polissa = pol_o.browse(cursor, uid, pol.id)
         res = {}
         res['data_final'] = pol.modcontractual_activa.data_final or ''
@@ -188,7 +189,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         res['mode_facturacio'] = pol.mode_facturacio
 
         res['te_assignacio_gkwh'] = pol.te_assignacio_gkwh
-        res['bank'] = pol.bank
+        res['bank'] = pol.bank or False
         iban = pol.bank and pol.bank.printable_iban[5:] or ''
         res['printable_iban'] = iban[-4:]
 
@@ -223,26 +224,37 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             res['pricelist'] = pol.llista_preu
         else:
             tarifes_ids = llista_preu_o.search(cursor, uid, [])
-            res['pricelist'] = pol_o.escull_llista_preus(cursor, uid, pol.id, tarifes_ids, context=context)  # noqa: E501
+            res['pricelist'] = pol_o.escull_llista_preus(
+                cursor, uid, pol.id, tarifes_ids, context=context)
 
         if context.get('tarifa_provisional', False):
             res['tarifa_mostrar'] = 'Tarifa Períodes Empresa'
         else:
             res['tarifa_mostrar'] = res['pricelist'].nom_comercial or res['pricelist'].name
 
-        coeficient_k = (pol.coeficient_k + pol.coeficient_d) / 1000
+        coeficient_k_untaxed = (pol.coeficient_k + pol.coeficient_d) / 1000
+        coeficient_k = False
         res['mostra_indexada'] = False
-        coeficient_id = 420
+        coeficient_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_facturacio_indexada', 'product_factor_k'
+        )[1]
         if polissa.mode_facturacio == 'index' and not res['modcon_pendent_periodes'] or res['modcon_pendent_indexada']:  # noqa: E501
             res['mostra_indexada'] = True
-            if coeficient_k == 0:
-                coeficient_k = res['pricelist'].get_atr_price(
+            if coeficient_k_untaxed == 0:
+                coeficient_k_untaxed = res['pricelist'].get_atr_price(
                     tipus='', product_id=coeficient_id, fiscal_position=polissa.fiscal_position_id,
                     with_taxes=False)[0]
-        res['coeficient_k_untaxed'] = coeficient_k
-        res['coeficient_k'] = res['pricelist'].get_atr_price(
-            tipus='', product_id=coeficient_id, fiscal_position=polissa.fiscal_position_id,
-            with_taxes=True)[0]
+                coeficient_k = res['pricelist'].get_atr_price(
+                    tipus='', product_id=coeficient_id, fiscal_position=polissa.fiscal_position_id,
+                    with_taxes=True)[0]
+            else:
+                coeficient_k = prod_obj.add_taxes(
+                    cursor, uid, coeficient_id, coeficient_k, polissa.fiscal_position_id,
+                    direccio_pagament=polissa.direccio_pagament, titular=polissa.titular,
+                    context=context,
+                )
+        res['coeficient_k_untaxed'] = coeficient_k_untaxed
+        res['coeficient_k'] = coeficient_k
 
         return res
 
@@ -290,11 +302,11 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         else:
             tarifes_a_mostrar = get_comming_atr_price(cursor, uid, polissa, ctx)
         tarifes_a_mostrar if isinstance(tarifes_a_mostrar, list) else [tarifes_a_mostrar]
-        if polissa.state == 'esborrany':
+        if polissa.state == 'esborrany' and not polissa.llista_preu:
             tarifes_ids = pricelist_obj.search(cursor, uid, [])
-            tarifa_id = pol_obj.escull_llista_preus(
+            pricelist_id = pol_obj.escull_llista_preus(
                 cursor, uid, pol.id, tarifes_ids, context=context)
-            ctx.update({'force_pricelist': tarifa_id.id})
+            ctx.update({'force_pricelist': pricelist_id.id})
             tarifes_a_mostrar = [{'date_start': False, 'date_end': False}]
         res['pricelists'] = []
         for dades_tarifa in tarifes_a_mostrar:
