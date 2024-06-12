@@ -178,13 +178,47 @@ class ReportBackendMailcanvipreus(ReportBackend):
         },
     }
 
+    def get_fs(self, cursor, uid, env, context=None):
+        if context is None:
+            context = {}
+        som_polissa_k_change_obj = self.pool.get("som.polissa.k.change")
+
+        search_params = [
+            ('polissa_id', '=', env.polissa_id.id)
+        ]
+
+        k_change_id = som_polissa_k_change_obj.search(
+            cursor, uid, search_params, context=context
+        )[0]
+
+        res = som_polissa_k_change_obj.read(
+            cursor, uid, k_change_id, ['k_old', 'k_new'], context=context
+        )
+
+        return res
+
+    def is_eie(self, cursor, uid, env, context=None):
+        if context is None:
+            context = {}
+
+        ir_model_data = self.pool.get("ir.model.data")
+        eie_categ_id = ir_model_data.get_object_reference(
+            cursor, uid,
+            "som_polissa",
+            "categ_entitat_o_empresa"
+        )[1]
+
+        pol_categories = env.polissa_id.category_id
+
+        return eie_categ_id in pol_categories
+
     @report_browsify
     def calculate_new_eie_indexed_prices(self, cursor, uid, env, context=None):
         if context is None:
             context = {}
 
-        f_antiga = self.get_f_antiga()
-        f_nova = self.get_f_nova()
+        f_antiga = self.get_fs()['k_old']
+        f_nova = self.get_fs()['k_new']
 
         tarifa_acces = env.polissa_id.tarifa.name
 
@@ -274,6 +308,12 @@ class ReportBackendMailcanvipreus(ReportBackend):
             #             ['41', '42', '43']
             #     },
         }
+
+        eie = self.is_eie(cursor, uid, env, context=context)
+        if eie:
+            data['dades_index'] = self.calculate_new_eie_indexed_prices(
+                cursor, uid, env, context=context
+            )
 
         # if data["te_gkwh"]:
         #     data["preus_antics_generation"] = self.get_preus_gkwh(
