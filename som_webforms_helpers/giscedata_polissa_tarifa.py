@@ -209,11 +209,15 @@ class GiscedataPolissaTarifa(osv.osv):
             cursor, uid, "iva_reduit_get_tariff_prices_start_date", "2021-06-01"
         )
         end_date_iva_reduit = conf_obj.get(
-            cursor, uid, "iva_reduit_get_tariff_prices_end_date", "2099-12-31"
+            cursor, uid, "iva_reduit_get_tariff_prices_end_date", "2024-12-31"
         )
+        iva_10_active = eval(conf_obj.get(
+            cursor, uid, 'charge_iva_10_percent_when_available', '0'
+        ))
+
         if (
             date_from <= end_date_iva_reduit and date_to >= start_date_iva_reduit
-        ) and max_power <= 10000:
+        ) and max_power <= 10000 and iva_10_active:
             fiscal_position_id = imd_obj.get_object_reference(
                 cursor, uid, "som_polissa_condicions_generals", "fp_iva_reduit"
             )[1]

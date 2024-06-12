@@ -10,6 +10,7 @@ class tarifes_tests(testing.OOTestCase):
         self.pool = self.openerp.pool
         self.imd_obj = self.pool.get("ir.model.data")
         self.tariff_model = self.pool.get("giscedata.polissa.tarifa")
+        self.res_config = self.pool.get("res.config")
 
     def tearDown(self):
         pass
@@ -235,8 +236,8 @@ class tarifes_tests(testing.OOTestCase):
                         u"P3": {"unit": "\xe2\x82\xac/kWh", "value": 0.095},
                     },
                     "potencia": {
-                        u"P1": {"unit": "\xe2\x82\xac/kW/dia", "value": 0.074529},
-                        u"P2": {"unit": "\xe2\x82\xac/kW/dia", "value": 0.008666},
+                        u"P1": {"unit": "\xe2\x82\xac/kW/dia", "value": 0.074325},
+                        u"P2": {"unit": "\xe2\x82\xac/kW/dia", "value": 0.008642},
                     },
                     "reactiva": {},
                     "start_date": "2023-01-01",
@@ -263,7 +264,6 @@ class tarifes_tests(testing.OOTestCase):
             result = tariff_obj.get_tariff_prices_by_range(
                 cursor, uid, tariff_id, 5386, 15000, None, False, False, "2022-10-15", "2023-01-15"
             )
-
             prices = {
                 "current": {
                     "bo_social": {"unit": "\xe2\x82\xac/dia", "value": 0.0},
@@ -281,8 +281,8 @@ class tarifes_tests(testing.OOTestCase):
                         u"P3": {"unit": "\xe2\x82\xac/kWh", "value": 0.095},
                     },
                     "potencia": {
-                        u"P1": {"unit": "\xe2\x82\xac/kW/dia", "value": 0.074529},
-                        u"P2": {"unit": "\xe2\x82\xac/kW/dia", "value": 0.008666},
+                        u"P1": {"unit": "\xe2\x82\xac/kW/dia", "value": 0.074325},
+                        u"P2": {"unit": "\xe2\x82\xac/kW/dia", "value": 0.008642},
                     },
                     "reactiva": {},
                     "start_date": "2023-01-01",
@@ -305,8 +305,8 @@ class tarifes_tests(testing.OOTestCase):
                             u"P3": {"unit": "\xe2\x82\xac/kWh", "value": 0.182},
                         },
                         "potencia": {
-                            u"P1": {"unit": "\xe2\x82\xac/kW/dia", "value": 0.047132},
-                            u"P2": {"unit": "\xe2\x82\xac/kW/dia", "value": 0.005926},
+                            u"P1": {"unit": "\xe2\x82\xac/kW/dia", "value": 0.047003},
+                            u"P2": {"unit": "\xe2\x82\xac/kW/dia", "value": 0.00591},
                         },
                         "start_date": "2022-06-01",
                         "version_name": u"2.0TD_SOM 2022-06-01",
@@ -489,10 +489,51 @@ class tarifes_tests(testing.OOTestCase):
                     u"P3": {"uom": "\xe2\x82\xac/kWh", "value": 0.182},
                 },
                 u"tp": {
-                    u"P1": {"uom": "\xe2\x82\xac/kW/dia", "value": 0.047132},
-                    u"P2": {"uom": "\xe2\x82\xac/kW/dia", "value": 0.005926},
+                    u"P1": {"uom": "\xe2\x82\xac/kW/dia", "value": 0.047003},
+                    u"P2": {"uom": "\xe2\x82\xac/kW/dia", "value": 0.00591},
                 },
                 "version_name": u"2.0TD_SOM 2022-06-01",
             }
 
             self.assertEqual(result, prices)
+
+    def test___get_fiscal_position_reduced__apply(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            tariff_obj = self.tariff_model
+            self.res_config.set(cursor, uid, 'charge_iva_10_percent_when_available', 1)
+
+            result = tariff_obj._get_fiscal_position_reduced(
+                cursor, uid, 10000, "2022-06-15", "2022-06-30"
+            )
+
+            self.assertEqual(result[0][0], u'2021-06-01')
+            self.assertEqual(result[0][1], u'2024-12-31')
+            self.assertEqual(result[0][2].id, 31)
+
+    def test___get_fiscal_position_reduced__max_power_gt_10000__NOTapply(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            tariff_obj = self.tariff_model
+            self.res_config.set(cursor, uid, 'charge_iva_10_percent_when_available', 1)
+
+            result = tariff_obj._get_fiscal_position_reduced(
+                cursor, uid, 15000, "2022-06-15", "2022-06-30"
+            )
+
+            self.assertEqual(result, [])
+
+    def test___get_fiscal_position_reduced__reduction_not_actuve__NOTapply(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            tariff_obj = self.tariff_model
+            self.res_config.set(cursor, uid, 'charge_iva_10_percent_when_available', 0)
+
+            result = tariff_obj._get_fiscal_position_reduced(
+                cursor, uid, 10000, "2022-06-15", "2022-06-30"
+            )
+
+            self.assertEqual(result, [])
