@@ -2,3 +2,4 @@
 "access_wizard_change_to_indexada_rcwd","wizard.change.to.indexada","model_wizard_change_to_indexada","base.group_user",1,1,1,1
 "access_wizard_massive_k_change_rcwd","wizard.massive.k.change","model_wizard_massive_k_change","base.group_user",1,1,1,1
 "access_wizard_change_to_indexada_multi_rcwd","wizard.change.to.indexada.multi","model_wizard_change_to_indexada_multi","base.group_user",1,1,1,1
+"access_som_polissa_k_change_rcwd","som.polissa.k.change","model_som_polissa_k_change","base.group_user",1,1,1,1

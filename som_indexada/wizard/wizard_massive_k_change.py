@@ -154,8 +154,8 @@ class WizardMassiveKChange(osv.osv_memory):
                 data = result[polissa_name]
                 dict_create = {
                     'polissa_id': polissa_id[0],
-                    'k_old': float(data.values()[1].replace(',', '.')),
-                    'k_new': float(data.values()[0].replace(',', '.')),
+                    'k_old': float(data['F_actual'].replace(',', '.')),
+                    'k_new': float(data['F_nova'].replace(',', '.')),
                 }
                 som_polissa_k_change_obj.create(cursor, uid, dict_create)
                 count_loaded += 1

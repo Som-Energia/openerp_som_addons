@@ -28,7 +28,7 @@
                                 <label string="Importar versions de K des de CSV"
                                     colspan="4" />
                                 <label
-                                    string="Format del CSV: nº contracte, F actual i F nova"
+                                    string="Format del CSV: Contracte, F_actual i F_nova"
                                     colspan="4" />
                                 <field name="csv_file" colspan="4" filename="name" string="Arxiu CSV" attrs="{'readonly':[('state','!=', 'init')]}"/>
                                 <button attrs="{'invisible': [('state','!=', 'init')]}" special="cancel" string="Sortir" icon="gtk-cancel" />
