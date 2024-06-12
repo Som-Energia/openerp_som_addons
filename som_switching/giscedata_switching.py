@@ -338,7 +338,7 @@ class GiscedataSwitching(osv.osv):
 
         for switching in self.browse(cursor, uid, ids):
             step = switching.step_id and switching.step_id.name
-            if switching.enviament_pendent is False or step not in [None, '01']:
+            if not switching.enviament_pendent or step not in [None, '01']:
                 raise osv.except_osv(
                     _(u"Warning"),
                     _(
