@@ -1,10 +1,10 @@
-<%def name="prices_info(polissa, prices)">
+<%def name="upcoming_index(polissa, prices)">
     <div class="styled_box">
     %for pricelist in prices['pricelists']:
         %if polissa['tarifa'] == "2.0TD":
-            <h5> ${_("TARIFES D'ELECTRICITAT")} ${pricelist['text_vigencia']}</h5>
+            <h5> ${_("TARIFES D'ELECTRICITAT (vigents a partir del 01/08/2024)")}</h5>
         %else:
-            <h5> ${_("TARIFES D'ELECTRICITAT SENSE IMPOSTOS")} ${pricelist['text_vigencia']}</h5>
+            <h5> ${_("TARIFES D'ELECTRICITAT SENSE IMPOSTOS (vigents a partir del 01/08/2024)")}</h5>
         %endif
         <div class="tarifes_electricitat">
             <table class="taula_custom new_taula_custom">
@@ -114,7 +114,7 @@
                                 <b>${_(u"Tarifa indexada")}</b>${_(u"(2) - el preu horari (PH) es calcula d'acord amb la fórmula:")}
                             </span>
                             <br/>
-                            <span>${_(u"PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + F] + PTD + CA")}</span>
+                            <span>${_(u"PH = 1,015 * [(PHM + Pc + Sc + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + PTD + CA")}</span>
                         </td>
                         </tr>
                         <tr>
@@ -275,7 +275,7 @@
 
         <!-- INICI Bloc amb impostos de 3.X i 6.X -->
         %if polissa['tarifa'] != "2.0TD":
-            <h5> ${_("TARIFES D'ELECTRICITAT AMB IMPOSTOS")} ${pricelist['text_impostos']} ${pricelist['text_vigencia']}</h5>
+            <h5> ${_("TARIFES D'ELECTRICITAT AMB IMPOSTOS")} ${pricelist['text_impostos']} ${_(" (vigents a partir del 01/08/2024)")}</h5>
             <div class="tarifes_electricitat">
                 <table class="taula_custom new_taula_custom">
                     <tr style="background-color: #878787;">
@@ -315,7 +315,7 @@
                                     <b>${_(u"Tarifa indexada")}</b>${_(u"(2) - el preu horari (PH) es calcula d'acord amb la fórmula:")}
                                 </span>
                                 <br/>
-                                <span>${_(u"PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + F] + PTD + CA")}</span>
+                                <span>${_(u"PH = 1,015 * [(PHM + Pc + Sc + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + PTD + CA")}</span>
                                 <br/>
                                 <span class="normal_font_weight">${_(u"on la franja de la cooperativa")}</span>
                                 <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(prices['coeficient_k'], digits=6)}</span>
@@ -392,20 +392,4 @@
             %>
         %endif
         <!-- FI Bloc amb impostos de 3.X i 6.X -->
-    %endfor
-    </div>
-    %if prices['mostra_indexada']:
-        <%namespace file="som_polissa_condicions_generals/report/components/upcoming_index.mako" import="upcoming_index"/>
-        ${upcoming_index(polissa, prices)}
-    %endif
-    <div class="styled_box padding_bottom">
-        <div class="center avis_impostos">
-            %if (polissa['mode_facturacio'] == 'index' and not polissa['modcon_pendent_periodes']) or polissa['modcon_pendent_indexada']:
-                ${_(u"Els preus del terme de potència")}
-            %else:
-                ${_(u"Tots els preus que apareixen en aquest contracte")}
-            %endif
-            ${_(u"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent actualment per a cada tipus de contracte sense perjudici de les exempcions o bonificacions que puguin ser d'aplicació.")}
-        </div>
-    </div>
 </%def>
