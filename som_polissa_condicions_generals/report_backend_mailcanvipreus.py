@@ -216,6 +216,19 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
         return eie_categ_id in categories
 
+    def get_data_eie(self, cursor, uid, env, context=None):
+        if context is None:
+            context = {}
+
+        data = {
+            'cups': env.polissa_id.cups.name,
+            'direccio_cups': env.polissa_id.cups.direccio,
+            'titular': env.polissa_id.titular.name,
+            'numero': env.polissa_id.name
+        }
+
+        return data
+
     @report_browsify
     def calculate_new_eie_indexed_prices(self, cursor, uid, env, context=None):
         if context is None:
@@ -239,11 +252,17 @@ class ReportBackendMailcanvipreus(ReportBackend):
             cursor, uid, env.polissa_id, with_taxes=True, context=context
         )['tp'].values())
 
-        import_total_anual_antiga = (preu_mitja_antic * conany)
-        import_total_anual_nova = (preu_mitja_nou * conany)
+        cost_potencia = preu_potencia * potencia
+
+        import_total_anual_antiga = (preu_mitja_antic * conany) + cost_potencia
+        import_total_anual_nova = (preu_mitja_nou * conany) + cost_potencia
         impacte_import = import_total_anual_nova - import_total_anual_antiga
 
-        cost_potencia = preu_potencia * potencia
+        import_total_anual_antiga_amb_impost = import_total_anual_antiga * 1.015 * 1.21
+        import_total_anual_nova_amb_impost = import_total_anual_nova * 1.015 * 1.21
+        impacte_import_amb_impost = (
+            import_total_anual_nova_amb_impost - import_total_anual_antiga_amb_impost
+        )
 
         consum_eie = {
             "conany": conany,
@@ -253,12 +272,17 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "f_nova": f_nova,
             "preu_mig_anual_antiga": preu_mitja_antic,
             "preu_mig_anual_nova": preu_mitja_nou,
-            "import_total_anual_antiga": (preu_mitja_antic * conany) + cost_potencia,
-            "import_total_anual_nova": (preu_mitja_nou * conany) + cost_potencia,
+            "import_total_anual_antiga": import_total_anual_antiga,
+            "import_total_anual_nova": import_total_anual_nova,
             "import_total_anual_antiga_sense_pot": (preu_mitja_antic * conany),
             "import_total_anual_nova_sense_pot": (preu_mitja_nou * conany),
             "impacte_import": impacte_import,
             "impacte_perc": impacte_import / 100,
+            "iva": 21,
+            "ie": 5.11,
+            "import_total_anual_antiga_amb_impost": import_total_anual_antiga_amb_impost,
+            "import_total_anual_nova_amb_impost": import_total_anual_nova_amb_impost,
+            "impacte_import_amb_impost": impacte_import_amb_impost,
         }
 
         return consum_eie
@@ -318,6 +342,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
             data['dades_index'] = self.calculate_new_eie_indexed_prices(
                 cursor, uid, env, context=context
             )
+            data['contract'] = self.get_data_eie(cursor, uid, env, context=context)
 
         # if data["te_gkwh"]:
         #     data["preus_antics_generation"] = self.get_preus_gkwh(
