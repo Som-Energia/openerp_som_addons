@@ -9,18 +9,13 @@ import base64
 class WizardMassiveKChange(osv.osv_memory):
     _name = "wizard.massive.k.change"
 
-    def change_k_from_csv(self, cursor, uid, ids, context=None):  # noqa: C901
-        if context is None:
-            context = {}
+    def _default_process_type(self, cursor, uid, context=None):
+        process_type = "massive_k_change"
+        if context:
+            process_type = context.get("process_type", "massive_k_change")
+        return process_type
 
-        wiz_og = self.browse(cursor, uid, ids[0], context=context)
-        polissa_obj = self.pool.get("giscedata.polissa")
-        sw_obj = self.pool.get("giscedata.switching")
-
-        failed_polisses = []
-        inexistent_polisses = []
-
-        csv_file = StringIO(base64.b64decode(wiz_og.csv_file))
+    def _get_result_from_csv(self, csv_file):
         reader = csv.reader(csv_file)
         lines = list(reader)
         first_line = 0
@@ -47,6 +42,21 @@ class WizardMassiveKChange(osv.osv_memory):
                 i += 1
             if result_extra_info:
                 result[line[0]] = result_extra_info
+        return item_list, result
+
+    def change_k_from_csv(self, cursor, uid, ids, context=None):  # noqa: C901
+        if context is None:
+            context = {}
+
+        wiz_og = self.browse(cursor, uid, ids[0], context=context)
+        polissa_obj = self.pool.get("giscedata.polissa")
+        sw_obj = self.pool.get("giscedata.switching")
+
+        failed_polisses = []
+        inexistent_polisses = []
+
+        csv_file = StringIO(base64.b64decode(wiz_og.csv_file))
+        item_list, result = self._get_result_from_csv(csv_file)
 
         if result:
             for polissa_name in item_list:
@@ -120,6 +130,45 @@ class WizardMassiveKChange(osv.osv_memory):
 
         return True
 
+    def import_k_from_csv(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+        wiz_og = self.browse(cursor, uid, ids[0], context=context)
+        polissa_obj = self.pool.get("giscedata.polissa")
+        som_polissa_k_change_obj = self.pool.get("som.polissa.k.change")
+
+        ids = som_polissa_k_change_obj.search(cursor, uid, [])
+        som_polissa_k_change_obj.unlink(cursor, uid, ids)
+
+        csv_file = StringIO(base64.b64decode(wiz_og.csv_file))
+        item_list, result = self._get_result_from_csv(csv_file)
+        inexistent_polisses = []
+        count_loaded = 0
+
+        if result:
+            for polissa_name in item_list:
+                polissa_id = polissa_obj.search(cursor, uid, [("name", "=", polissa_name)])
+                if not polissa_id:
+                    inexistent_polisses.append(polissa_name)
+                    continue
+                data = result[polissa_name]
+                dict_create = {
+                    'polissa_id': polissa_id[0],
+                    'k_old': float(data.values()[1].replace(',', '.')),
+                    'k_new': float(data.values()[0].replace(',', '.')),
+                }
+                som_polissa_k_change_obj.create(cursor, uid, dict_create)
+                count_loaded += 1
+
+        info = ""
+        if inexistent_polisses:
+            info = "Les pòlisses següents no existeixen: {}".format(str(inexistent_polisses))
+        if not inexistent_polisses:
+            info = "S'han carregat {} registres correctament!".format(str(count_loaded))
+
+        wiz_og.write({"state": "end", "info": info})
+        return True
+
     _columns = {
         "state": fields.selection(
             [("init", "Init"), ("end", "End")],
@@ -130,10 +179,19 @@ class WizardMassiveKChange(osv.osv_memory):
             "CSV File", required=True, help=(u"CSV amb les pòlisses a canviar la K")
         ),
         "info": fields.text("Description"),
+        "process_type": fields.selection(
+            [
+                ("massive_k_change", "Massive K change"),
+                ("import_k_version", "Import K vesrions"),
+            ],
+            "Process type",
+            required=True,
+        ),
     }
 
     _defaults = {
         "state": lambda *a: "init",
+        "process_type": _default_process_type,
     }
 
 
