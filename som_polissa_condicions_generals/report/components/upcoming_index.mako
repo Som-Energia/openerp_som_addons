@@ -115,17 +115,24 @@
                             </span>
                             <br/>
                             <span>${_(u"PH = 1,015 * [(PHM + Pc + Sc + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + PTD + CA")}</span>
-                        </td>
-                        </tr>
-                        <tr>
-                            <td class="bold">${_(u"on la franja de la cooperativa")}</td>
-                            <td class="center" colspan="3">
-                                <span class="">${("(F) = %s €/kWh</B>") % formatLang(prices['coeficient_k_untaxed'], digits=6)}</span>
+                        %if polissa['tarifa'] == "2.0TD":
                             </td>
-                            <td class="center divisio_impostos" colspan="3">
-                                <span class="">${("(F) = %s €/kWh</B>") % formatLang(prices['coeficient_k'], digits=6)}</span>
+                            </tr>
+                            <tr>
+                                <td class="bold">${_(u"on la franja de la cooperativa")}</td>
+                                <td class="center" colspan="3">
+                                        <span class="">${("(F) = %s €/kWh</B>") % formatLang(prices['coeficient_k_untaxed'], digits=6)}</span>
+                                </td>
+                                <td class="center divisio_impostos" colspan="3">
+                                        <span class="">${("(F) = %s €/kWh</B>") % formatLang(prices['coeficient_k'], digits=6)}</span>
+                                </td>
+                            </tr>
+                        %else:
+                            <br/>
+                            <span class="normal_font_weight">${_(u"on la franja de la cooperativa")}</span>
+                            <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(prices['coeficient_k_untaxed'], digits=6)}</span>
                             </td>
-                        </tr>
+                        %endif
                     %else:
                         %if len(polissa['periodes_energia']) < 6:
                             %for p in polissa['periodes_energia']:
@@ -391,5 +398,6 @@
                     break
             %>
         %endif
-        <!-- FI Bloc amb impostos de 3.X i 6.X -->
+    %endfor
+    </div>
 </%def>
