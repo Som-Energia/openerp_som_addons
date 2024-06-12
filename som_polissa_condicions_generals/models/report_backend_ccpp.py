@@ -413,7 +413,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                     with_taxes=True)[0]
             else:
                 coeficient_k = prod_obj.add_taxes(
-                    cursor, uid, coeficient_id, coeficient_k, polissa.fiscal_position_id,
+                    cursor, uid, coeficient_id, coeficient_k_untaxed, polissa.fiscal_position_id,
                     direccio_pagament=polissa.direccio_pagament, titular=polissa.titular,
                     context=context,
                 )
