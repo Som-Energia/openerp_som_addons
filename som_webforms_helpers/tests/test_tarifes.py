@@ -3,6 +3,7 @@ from destral import testing
 from destral.transaction import Transaction
 from datetime import datetime
 from ..exceptions.som_webforms_exceptions import TariffNonExists
+import mock
 
 
 class tarifes_tests(testing.OOTestCase):
@@ -497,12 +498,14 @@ class tarifes_tests(testing.OOTestCase):
 
             self.assertEqual(result, prices)
 
-    def test___get_fiscal_position_reduced__apply(self):
+    @mock.patch("giscedata_facturacio_iva_10.giscedata_facturacio_iva_10.GiscedataMonthlyPriceOmie.has_to_charge_10_percent_requeriments_oficials")
+    def test___get_fiscal_position_reduced__apply(self, mock_omie_price):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
             tariff_obj = self.tariff_model
             self.res_config.set(cursor, uid, 'charge_iva_10_percent_when_available', 1)
+            mock_omie_price.return_value = True
 
             result = tariff_obj._get_fiscal_position_reduced(
                 cursor, uid, 10000, "2022-06-15", "2022-06-30"
@@ -525,12 +528,27 @@ class tarifes_tests(testing.OOTestCase):
 
             self.assertEqual(result, [])
 
-    def test___get_fiscal_position_reduced__reduction_not_actuve__NOTapply(self):
+    def test___get_fiscal_position_reduced__reduction_not_active__NOTapply(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
             tariff_obj = self.tariff_model
             self.res_config.set(cursor, uid, 'charge_iva_10_percent_when_available', 0)
+
+            result = tariff_obj._get_fiscal_position_reduced(
+                cursor, uid, 10000, "2022-06-15", "2022-06-30"
+            )
+
+            self.assertEqual(result, [])
+
+    @mock.patch("giscedata_facturacio_iva_10.giscedata_facturacio_iva_10.GiscedataMonthlyPriceOmie.has_to_charge_10_percent_requeriments_oficials")
+    def test___get_fiscal_position_reduced__not_omie_price__NOTapply(self, mock_omie_price):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            tariff_obj = self.tariff_model
+            self.res_config.set(cursor, uid, 'charge_iva_10_percent_when_available', 1)
+            mock_omie_price.return_value = False
 
             result = tariff_obj._get_fiscal_position_reduced(
                 cursor, uid, 10000, "2022-06-15", "2022-06-30"

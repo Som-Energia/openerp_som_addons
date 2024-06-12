@@ -202,6 +202,7 @@ class GiscedataPolissaTarifa(osv.osv):
         conf_obj = self.pool.get("res.config")
         imd_obj = self.pool.get("ir.model.data")
         fp_obj = self.pool.get("account.fiscal.position")
+        omie_obj = self.pool.get('giscedata.monthly.price.omie')
 
         fiscal_position_data = []
 
@@ -215,9 +216,14 @@ class GiscedataPolissaTarifa(osv.osv):
             cursor, uid, 'charge_iva_10_percent_when_available', '0'
         ))
 
+        try:
+            omie_mon_price_45 = omie_obj.has_to_charge_10_percent_requeriments_oficials(cursor, uid, datetime.today(), max_power)
+        except:
+            omie_mon_price_45 = False
+
         if (
             date_from <= end_date_iva_reduit and date_to >= start_date_iva_reduit
-        ) and max_power <= 10000 and iva_10_active:
+        ) and max_power <= 10000 and iva_10_active and omie_mon_price_45:
             fiscal_position_id = imd_obj.get_object_reference(
                 cursor, uid, "som_polissa_condicions_generals", "fp_iva_reduit"
             )[1]
