@@ -60,7 +60,7 @@
         <li>
             <p><strong>PH </strong>= preu horari de l'energia.</p>
             <p><strong>PHM</strong> = preu horari del mercat diari. Per als contractes de la península és el preu publicat per l'Operador del Mercat Ibèric de l'Energia (*OMIE), mentre que per a les illes Balears i Canàries és el preu de la demanda del Sistema Elèctric Insular.</p>
-            <p style="text-align=right">Península: <a href="https://www.omie.es/es/spot-hoy"><em>https://www.omie.es/es/spot-hoy</em></a></p>
+            <p style="text-align: right">Península: <a href="https://www.omie.es/es/spot-hoy"><em>https://www.omie.es/es/spot-hoy</em></a></p>
         </li>
         <li>
             <p><strong>Pc</strong> = pagaments per capacitat publicats pel Ministeri anualment, en funció del peatge d'accés contractat per la contractant i aplicat a l'energia consumida per la contractant.</p>
