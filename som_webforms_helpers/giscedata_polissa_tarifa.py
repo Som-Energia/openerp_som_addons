@@ -217,7 +217,8 @@ class GiscedataPolissaTarifa(osv.osv):
         ))
 
         try:
-            omie_mon_price_45 = omie_obj.has_to_charge_10_percent_requeriments_oficials(cursor, uid, datetime.today(), max_power)
+            omie_mon_price_45 = omie_obj.has_to_charge_10_percent_requeriments_oficials(
+                cursor, uid, datetime.today(), max_power)
         except:
             omie_mon_price_45 = False
 

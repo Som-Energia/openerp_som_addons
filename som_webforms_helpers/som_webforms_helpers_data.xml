@@ -14,7 +14,7 @@
         <record model="res.config" id="fiscal_position_igic">
             <field name="name">fiscal_position_igic</field>
             <field name="description">Fiscal position IGIC</field>
-            <field name="value">[('2000-01-01', '2021-05-31', 19, 25),('2021-06-01', '2023-12-31', 33, 34),('2024-01-01', '2024-03-31', 47, 48),('2024-04-01', '2999-12-31', 56, 57)]</field>
+            <field name="value">[('2000-01-01', '2021-05-31', 19, 25),('2021-06-01', '2023-12-31', 33, 34),('2024-01-01', '2024-03-31', 48, 47),('2024-04-01', '2999-12-31', 57, 56)]</field>
         </record>
     </data>
 </openerp>
