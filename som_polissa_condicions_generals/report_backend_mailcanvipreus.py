@@ -84,6 +84,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
         ("preus_antics_imp", "tp", "P4"): 3,
         ("preus_antics_imp", "tp", "P5"): 3,
         ("preus_antics_imp", "tp", "P6"): 3,
+        ("dades_index", "f_antiga"): 3,
+        ("dades_index", "f_nova"): 3,
         ("preu_nou",): 0,
         ("preu_nou_imp",): 0,
         ("preu_vell",): 0,
