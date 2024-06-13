@@ -111,9 +111,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         client_vat = dades_client.vat if es_ct_subrogacio and dades_client else pol.titular.vat  # noqa: E501
         res['client_vat'] = client_vat.replace('ES', '')
         direccio_titular = dades_client.address[0] if es_ct_subrogacio and dades_client else pol.titular.address[0]  # noqa: E501
-        res['direccio_titular'] = direccio_titular
         direccio_envio = dades_envio if es_ct_subrogacio and dades_envio else pol.direccio_notificacio  # noqa: E501
-        res['direccio_envio'] = direccio_envio
         res['diferent'] = (direccio_envio != direccio_titular)
         res['street'] = direccio_titular.street or ''
         res['zip'] = direccio_titular.zip or ''
@@ -135,6 +133,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         res['phone_envio'] = direccio_envio.phone or ''
         data_firma = datetime.today()
         res['sign_date'] = localize_period(data_firma, pol.titular.lang)
+        res['lang'] = pol.titular.lang
 
         return res
 
@@ -147,16 +146,15 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             es_canvi_tecnic = pas.sollicitudadm == "N"
         else:
             es_canvi_tecnic = False
-        res['potencies'] = pas.pot_ids if es_canvi_tecnic else pol.potencies_periode
+        pots = pas.pot_ids if es_canvi_tecnic else pol.potencies_periode
         res['autoconsum'] = pas.tipus_autoconsum if es_canvi_tecnic else pol.autoconsumo
         if res['autoconsum'] and res['autoconsum'] in TABLA_113_dict:
             res['autoconsum'] = TABLA_113_dict[res['autoconsum']]
         res['es_canvi_tecnic'] = es_canvi_tecnic
-        pots = res['potencies']
         periodes = []
         for i in range(0, 6):
             if i < len(pots):
-                periode = pots[i]
+                periode = pots[i].potencia
             else:
                 periode = False
             periodes.append((i + 1, periode))
@@ -214,7 +212,6 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             res['last_modcon_facturacio'] = pol.modcontractuals_ids[0].mode_facturacio
             res['modcon_pendent_indexada'] = res['last_modcon_state'] == 'pendent' and res['last_modcon_facturacio'] == 'index'  # noqa: E501
             res['modcon_pendent_periodes'] = res['last_modcon_state'] == 'pendent' and res['last_modcon_facturacio'] == 'atr'  # noqa: E501
-            res['last_modcon_pricelist'] = pol.modcontractuals_ids[0].llista_preu
 
         if res['modcon_pendent_indexada'] or res['modcon_pendent_periodes']:
             res['pricelist'] = pol.modcontractuals_ids[0].llista_preu
@@ -229,6 +226,9 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             res['tarifa_mostrar'] = 'Tarifa Períodes Empresa'
         else:
             res['tarifa_mostrar'] = res['pricelist'].nom_comercial or res['pricelist'].name
+
+        if res['pricelist']:
+            res['pricelist'] = res['pricelist'].id
 
         return res
 

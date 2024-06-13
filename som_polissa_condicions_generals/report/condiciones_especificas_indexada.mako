@@ -1,3 +1,4 @@
+<%def name="indexada_es()">
 <div id="capcelera" style="margin-top: 20px;position: relative;">
     <div id="logo_capcelera" style="width: 22%;height: auto;display: inline-block;vertical-align: middle;">
         <img id="logo" src="${addons_path}/som_polissa_condicions_generals/report/assets/logo.png"/>
@@ -154,3 +155,4 @@
 <li id="fn1"><p> Circular 3/2020, de 15 de enero, de la Comisión Nacional de los Mercados y la Competencia, por la que se establece la metodología para el cálculo de los peajes de transporte y distribución de electricidad.</p>
 </ol>
 </section>
+</%def>

@@ -6,6 +6,10 @@
 <%namespace file="som_polissa_condicions_generals/report/components/payment_info.mako" import="payment_info"/>
 <%namespace file="som_polissa_condicions_generals/report/components/disclaimers.mako" import="disclaimers"/>
 <%namespace file="som_polissa_condicions_generals/report/components/footer.mako" import="footer"/>
+<%namespace file="som_polissa_condicions_generals/report/condicions_generals.mako" import="generals_ca"/>
+<%namespace file="som_polissa_condicions_generals/report/condiciones_generales.mako" import="generals_es"/>
+<%namespace file="som_polissa_condicions_generals/report/condicions_especifiques_indexada.mako" import="indexada_ca"/>
+<%namespace file="som_polissa_condicions_generals/report/condiciones_especificas_indexada.mako" import="indexada_es"/>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -44,6 +48,20 @@
                         ${payment_info(informe['polissa'])}
                         ${disclaimers(informe['polissa'])}
                         ${footer(informe['polissa'], informe['titular'])}
+                        <p style="page-break-after:always;"></p>
+                        %if informe['titular']['lang'] == 'ca_ES':
+                            %if informe['prices']['mostra_indexada']:
+                                ${indexada_ca()}
+                                <p style="page-break-after:always;"></p>
+                            %endif
+                            ${generals_ca()}
+                        %else:
+                            %if informe['prices']['mostra_indexada']:
+                                ${indexada_es()}
+                                <p style="page-break-after:always;"></p>
+                            %endif
+                            ${generals_es()}
+                        %endif
                     </div>
                 </div>
             </div>

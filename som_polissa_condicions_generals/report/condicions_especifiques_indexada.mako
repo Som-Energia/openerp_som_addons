@@ -1,3 +1,4 @@
+<%def name="indexada_ca()">
 <div id="capcelera" style="margin-top: 20px;position: relative;">
     <div id="logo_capcelera" style="width: 22%;height: auto;display: inline-block;vertical-align: middle;">
         <img id="logo" src="${addons_path}/som_polissa_condicions_generals/report/assets/logo.png"/>
@@ -146,3 +147,4 @@
 <li id="fn1"><p> Circular 3/2020, de 15 de gener, de la Comissió Nacional dels Mercats i la Competència, per al qual s’estableix la metodologia per al càlcul dels peatges de transport i distribució d’electricitat.</p>
 </ol>
 </section>
+</%def>

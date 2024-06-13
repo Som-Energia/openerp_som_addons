@@ -16,7 +16,6 @@ class TestReportBackendCCPP(testing.OOTestCase):
         self.pol_obj = self.openerp.pool.get("giscedata.polissa")
         self.backend_obj = self.openerp.pool.get("report.backend.condicions.particulars")
         self.rpa_obj = self.openerp.pool.get("res.partner.address")
-        self.gppcp_obj = self.openerp.pool.get("giscedata.polissa.potencia.contractada.periode")
         self.pricelist_obj = self.openerp.pool.get("product.pricelist")
         self.contract1_id = self.get_ref("giscedata_polissa", "polissa_0001")
         self.contract_20TD_id = self.get_ref("giscedata_polissa", "polissa_tarifa_018")
@@ -48,8 +47,6 @@ class TestReportBackendCCPP(testing.OOTestCase):
 
         result = self.backend_obj.get_titular_data(self.cursor, self.uid, pol_20td, None)
 
-        direccio_envio = self.rpa_obj.browse(self.cursor, self.uid, 2)
-        direccio_titular = self.rpa_obj.browse(self.cursor, self.uid, 52)
         self.assertEqual(result, {
             u'city': u'Girona',
             u'city_envio': u'Bruxelles',
@@ -58,8 +55,6 @@ class TestReportBackendCCPP(testing.OOTestCase):
             u'country': u'',
             u'country_envio': u'Belgium',
             u'diferent': True,
-            u'direccio_envio': direccio_envio,
-            u'direccio_titular': direccio_titular,
             u'email': u'',
             u'email_envio': u'info@openroad.be',
             u'mobile': u'',
@@ -81,23 +76,22 @@ class TestReportBackendCCPP(testing.OOTestCase):
 
         result = self.backend_obj.get_potencies_data(self.cursor, self.uid, pol_20td, None)
 
-        p2 = self.gppcp_obj.browse(self.cursor, self.uid, 2)
-        p3 = self.gppcp_obj.browse(self.cursor, self.uid, 3)
+        p2 = pol_20td.potencies_periode[0].potencia
+        p3 = pol_20td.potencies_periode[1].potencia
         self.assertEqual(result, {
             u'autoconsum': u'Sense Autoconsum',
             u'es_canvi_tecnic': False,
             u'periodes': [
                 (1, p2), False, (2, p3),
                 (4, False), (5, False), (6, False)],
-            u'potencies': [p2, p3]}
-        )
+        })
 
     def test_get_polissa_data_ok(self):
         pol_20td = self.pol_obj.browse(self.cursor, self.uid, self.contract_20TD_id)
 
         result = self.backend_obj.get_polissa_data(self.cursor, self.uid, pol_20td, context={})
 
-        pricelist = self.pricelist_obj.browse(self.cursor, self.uid, 12)
+        pricelist = 12
         self.assertEqual(result, {
             u'auto': u'00',
             u'bank': False,
@@ -127,7 +121,6 @@ class TestReportBackendCCPP(testing.OOTestCase):
 
         result = self.backend_obj.get_prices_data(self.cursor, self.uid, pol_20td, context={})
 
-        self.pricelist_obj.browse(self.cursor, self.uid, 12)
         self.assertEqual(result, {
             u'coeficient_k': False,
             u'coeficient_k_untaxed': 0.0,

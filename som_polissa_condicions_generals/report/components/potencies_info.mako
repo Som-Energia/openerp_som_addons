@@ -26,34 +26,13 @@
                 </tr>
                 <tr>
                     <td class="bold">${_(u"Potència contractada (kW):")}</td>
-                    %if polissa['tarifa'] == "2.0TD":
+                    %for p in potencies['periodes']:
                         <td class="center">
-                        %if potencies['periodes'][0][1] and potencies['periodes'][0][1].potencia:
-                            <span>${formatLang(potencies['periodes'][0][1].potencia / 1000.0 if potencies['es_canvi_tecnic'] else potencies['periodes'][0][1].potencia, digits=3)}</span>
+                        %if p and p[1]:
+                            <span>${formatLang(p[1] / 1000.0 if potencies['es_canvi_tecnic'] else p[1], digits=3)}</span>
                         %endif
                         </td>
-                        <td></td>
-                        <td class="center">
-                        %if potencies['periodes'][2][1] and potencies['periodes'][2][1].potencia:
-                            <span>${formatLang(potencies['periodes'][2][1].potencia / 1000.0 if potencies['es_canvi_tecnic'] else potencies['periodes'][2][1].potencia, digits=3)}</span>
-                        %endif
-                        </td>
-                    %else:
-                        %for p in potencies['periodes']:
-                            <td class="center">
-                            %if p[1] and p[1].potencia:
-                                <span>${formatLang(p[1].potencia / 1000.0 if potencies['es_canvi_tecnic'] else p[1].potencia, digits=3)}</span>
-                            %endif
-                            </td>
-                        %endfor
-                    %endif
-                    %if len(potencies['periodes']) < 6:
-                        %for p in range(0, 6-len(potencies['periodes'])):
-                            <td class="">
-                                &nbsp;
-                            </td>
-                        %endfor
-                    %endif
+                    %endfor
                 </tr>
             </table>
         </div>
