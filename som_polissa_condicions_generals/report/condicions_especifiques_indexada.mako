@@ -6,7 +6,7 @@
 <br>
 <br>
 <div id="titol">
-    <h2 style="font-size: 13px;">CONDICIONS ESPECÍFIQUES DE LA TARIFA INDEXADA</h2>
+    <h2 style="font-size: 14px;">CONDICIONS ESPECÍFIQUES DE LA TARIFA INDEXADA</h2>
 </div>
 
 <div class="content_generals">
@@ -48,7 +48,7 @@
 
     <p style="padding-left: 40px"><strong> Import del terme energia = Suma horària (kWh Energia Activa entrant </strong><em><strong>h</strong></em><sub><em><strong>i</strong></em></sub><em><strong> </strong></em><strong>* PH)</strong></p>
 
-    <p>Sent <em><strong>h</strong></em><sub><em><strong>i </strong></em></sub>cada una de les hores del període de facturació en qüestió.</p>
+    <p>Sent <em><strong>h</strong></em><sub><em><strong>i&nbsp;</strong></em></sub> cada una de les hores del període de facturació en qüestió.</p>
 
     <p>Sent PH el preu horari de l'energia calculat seguint la fórmula següent:</p>
 
@@ -60,7 +60,7 @@
         <li>
             <p><strong>PH </strong>= preu horari de l'energia.</p>
             <p><strong>PHM</strong> = preu horari del mercat diari. Per als contractes de la península és el preu publicat per l'Operador del Mercat Ibèric de l'Energia (*OMIE), mentre que per a les illes Balears i Canàries és el preu de la demanda del Sistema Elèctric Insular.</p>
-            <p>Península: <a href="https://www.omie.es/es/spot-hoy"><em>https://www.omie.es/es/spot-hoy</em></a></p>
+            <p style="text-align=right">Península: <a href="https://www.omie.es/es/spot-hoy"><em>https://www.omie.es/es/spot-hoy</em></a></p>
         </li>
         <li>
             <p><strong>Pc</strong> = pagaments per capacitat publicats pel Ministeri anualment, en funció del peatge d'accés contractat per la contractant i aplicat a l'energia consumida per la contractant.</p>
@@ -119,7 +119,7 @@
     <p style="padding-left: 40px">
         <strong>Import de compensació d’excedents = SUMA HORÀRIA (kWh excedentaris </strong><em><strong>h</strong></em><sub><em><strong>i</strong></em></sub><em><strong> </strong></em><strong>x PHC </strong><em><strong>h</strong></em><sub><em><strong>i</strong></em></sub>)
     </p>
-
+    <p>I, <em>h<sub>i</sub></em> representa cada una de les hores del període de facturació en qüestió.</p>
     <p>On PHC representa el preu horari de compensació d’excedents que, per als contractes de la península, és el preu d'OMIE, mentre que per a les Balears i Canàries és el preu horari de la demanda del Sistema Elèctric Insular (balear i canari) menys el preu que han d’aportar els excedents insulars pels costos de serveis d’ajustament de serveis en l’operació del sistema.</p>
 
     <p>
