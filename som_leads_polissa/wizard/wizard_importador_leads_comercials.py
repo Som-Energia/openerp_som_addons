@@ -31,7 +31,6 @@ class WizardImportarLeadsComercials(osv.osv):
 
         wiz_vals = {
             "llista_preu": wiz.llista_preus.id,
-            "condicions_generals_id": wiz.condicions_generals_id.id,
             "atr_proces_name": wiz.atr_proces_name,
             "coeficient_k": wiz.coeficient_k
         }
@@ -50,8 +49,6 @@ class WizardImportarLeadsComercials(osv.osv):
 
     _columns = {
         "llista_preus": fields.many2one("product.pricelist", "Tarifa", required=False),
-        "condicions_generals_id": fields.many2one(
-            "giscedata.polissa.condicions.generals", "Condicions Generals", required=False),
         "atr_proces_name": fields.selection(
             [("A3", "A3"), ("C1", "C1")], "Procés d'alta", required=False),
         "coeficient_k": fields.float("Coeficient K €/MWh", digits=(5, 3)),
