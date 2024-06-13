@@ -6,9 +6,9 @@
             <field name="object_name" model="ir.model" search="[('model', '=', 'som.gurb.cups')]"/>
             <field name="model_int_name">som.gurb.cups</field>
             <field name="def_to">${object.partner_id.address[0].email}</field>
-            <field name="def_subject">TODO ${object.name}</field>
+            <field name="def_subject">TODO</field>
             <field name="template_language">mako</field>
-            <field name="lang">${object.titular.lang}</field>
+            <field name="lang">${object.partner_id.lang}</field>
             <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
             <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Som Energia - Modificacions')]"/>
             <field name="def_body_text"><![CDATA[
@@ -27,9 +27,9 @@
             <field name="object_name" model="ir.model" search="[('model', '=', 'som.gurb.cups')]"/>
             <field name="model_int_name">som.gurb.cups</field>
             <field name="def_to">${object.partner_id.address[0].email}</field>
-            <field name="def_subject">TODO ${object.name}</field>
+            <field name="def_subject">TODO</field>
             <field name="template_language">mako</field>
-            <field name="lang">${object.titular.lang}</field>
+            <field name="lang">${object.partner_id.lang}</field>
             <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
             <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Som Energia - Modificacions')]"/>
             <field name="def_body_text"><![CDATA[
@@ -48,9 +48,9 @@
             <field name="object_name" model="ir.model" search="[('model', '=', 'som.gurb.cups')]"/>
             <field name="model_int_name">som.gurb.cups</field>
             <field name="def_to">${object.partner_id.address[0].email}</field>
-            <field name="def_subject">TODO ${object.name}</field>
+            <field name="def_subject">TODO</field>
             <field name="template_language">mako</field>
-            <field name="lang">${object.titular.lang}</field>
+            <field name="lang">${object.partner_id.lang}</field>
             <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
             <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Som Energia - Modificacions')]"/>
             <field name="def_body_text"><![CDATA[
