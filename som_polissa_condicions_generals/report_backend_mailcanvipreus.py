@@ -313,6 +313,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
         # )
 
         data = {
+            "canaries": self.esCanaries(cursor, uid, env, context=context),
+            "balears": self.esBalears(cursor, uid, env, context=context),
             "tarifa_acces": env.polissa_id.tarifa.name,
             "text_legal": self.get_text_legal(cursor, uid, env, context=context),
             "lang": env.polissa_id.titular.lang,
@@ -726,6 +728,9 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
     def esCanaries(self, cursor, uid, env, context=False):
         return env.polissa_id.fiscal_position_id.id in [33, 34, 47, 48, 52, 53]
+
+    def esBalears(self, cursor, uid, env, context=False):
+        return env.polissa_id.llista_preus.id in [127]
 
     def getTarifaCorreu(self, cursor, uid, env, context=False):
         data = {
