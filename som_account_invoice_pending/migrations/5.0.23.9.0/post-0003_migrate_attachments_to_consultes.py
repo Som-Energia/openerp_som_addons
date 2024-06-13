@@ -35,9 +35,9 @@ def up(cursor, installed_version):
         attachment_list = att_obj.search(cursor, uid, search_vals)
 
         scp_id = scp_obj.search(cursor, uid, [("name", "=", crm.name)])
-
-        logger.info('Trobats {} attachments de pobresa energètica per la consulta {}.'.format(
-            len(attachment_list), scp_id[0]))
+        if scp_id:
+            logger.info('Trobats {} attachments de pobresa energètica per la consulta {}.'.format(
+                len(attachment_list), scp_id[0]))
 
         for att_id in attachment_list:
             if scp_id:

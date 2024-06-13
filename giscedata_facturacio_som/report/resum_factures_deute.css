@@ -1,0 +1,18 @@
+.titol {
+    border-bottom: #bac92a 2.5mm solid;
+}
+
+.dades-polissa div.title,
+.info-dreta div.title {
+    border-bottom: #bac92a 1mm solid;
+}
+
+table.factures > tbody > tr > th:first-child,
+table.factures > tbody > tr > td:first-child
+{
+    border-left: #bac92a 2.5mm solid;
+}
+
+table.factures > tbody > tr.factura-item:nth-child(2n) > td {
+    background-color: white;
+}

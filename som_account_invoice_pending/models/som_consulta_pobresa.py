@@ -83,7 +83,7 @@ class SomConsultaPobresa(osv.osv):
                            - timedelta(days=ndays)).strftime('%Y-%m-%d')
 
         search_params = [
-            ('titular_id', '=', partner_id),
+            ('partner_id', '=', partner_id),
             ('polissa_id', '=', polissa_id),
         ]
         scp_list = self.search(cr, uid, search_params, context)
@@ -159,23 +159,23 @@ class SomConsultaPobresa(osv.osv):
         'crm_id': fields.many2one('crm.case', required=True),
         'titular_id': fields.function(
             _ff_get_titular, method=True,
-            string='Titular', type='char', size=128, stored=True),
+            string='Titular', type='char', size=128, store=True),
         'municipi': fields.function(
             _ff_get_municipi, method=True,
-            string="Municipi", type='char', size=128, stored=True),
+            string="Municipi", type='char', size=128, store=True),
         'numero_registre': fields.char("Número de registre", size=128),
         'agrupacio_supramunicipal': fields.many2one('agrupacio.supramunicipal',
                                                     'Agrupació supramunicipal'),
         'direccio_cups': fields.function(
             _ff_get_direccio_cups, method=True,
-            string="Direcció CUPS", type='char', size=128, stored=True),
+            string="Direcció CUPS", type='char', size=128, store=True),
         'email_partner': fields.function(
             _ff_get_email_titular, method=True,
-            string="Email titular", type='char', size=128, stored=True),
+            string="Email titular", type='char', size=128, store=True),
         'resolucio': fields.selection(RESOLUTION_STATES, 'Resolució', size=16),
         'nif_titular': fields.function(
             _ff_get_nif_titular, method=True,
-            string='NIF Titular', type='char', size=128, stored=True),
+            string='NIF Titular', type='char', size=128, store=True),
     }
 
     _defaults = {

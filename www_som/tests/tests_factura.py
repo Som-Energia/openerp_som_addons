@@ -236,7 +236,7 @@ class TestFacturaWwwUltimesFactures(testing.OOTestCase):
 
     def set_pending_state(self, fact_id, pending_state_id):
         inv_id = self.fact_obj.read(self.cursor, self.uid, fact_id, ["invoice_id"])["invoice_id"][0]
-        self.i_obj.set_pending(self.cursor, self.uid, inv_id, pending_state_id)
+        self.i_obj.set_pending(self.cursor, self.uid, [inv_id], pending_state_id)
 
     def create_dummy_group_move(self, inv_id):
         am_id = self.am_obj.create(

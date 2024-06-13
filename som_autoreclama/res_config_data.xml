@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <record model="res.config" id="som_autoreclama_2_006_in_a_row_days_ago" forcecreate="1">
+            <field name="name">som_autoreclama_2_006_in_a_row_days_ago</field>
+            <field name="value">120</field>
+            <field name="description">Dies a cercar cap en radera els R1 006 d'una polissa per el sistema autoreclama</field>
+        </record>
+    </data>
+</openerp>
