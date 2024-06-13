@@ -135,6 +135,7 @@ class WizardMassiveKChange(osv.osv_memory):
             context = {}
         wiz_og = self.browse(cursor, uid, ids[0], context=context)
         polissa_obj = self.pool.get("giscedata.polissa")
+        res_partner_obj = self.pool.get("res.partner")
         som_polissa_k_change_obj = self.pool.get("som.polissa.k.change")
 
         ids = som_polissa_k_change_obj.search(cursor, uid, [])
@@ -146,19 +147,25 @@ class WizardMassiveKChange(osv.osv_memory):
         count_loaded = 0
 
         if result:
-            for polissa_name in item_list:
-                polissa_id = polissa_obj.search(cursor, uid, [("name", "=", polissa_name)])
-                if not polissa_id:
-                    inexistent_polisses.append(polissa_name)
+            for value in item_list:
+                partner_id = res_partner_obj.search(cursor, uid, [("vat", "=", value)])
+                polissa_id = polissa_obj.search(cursor, uid, [("name", "=", value)])
+                if not polissa_id and not partner_id:
+                    inexistent_polisses.append(value)
                     continue
-                data = result[polissa_name]
+                data = result[value]
                 dict_create = {
-                    'polissa_id': polissa_id[0],
                     'k_old': float(data['F_actual'].replace(',', '.')),
                     'k_new': float(data['F_nova'].replace(',', '.')),
                 }
+                if polissa_id:
+                    dict_create['polissa_id'] = polissa_id[0],
+                if partner_id:
+                    dict_create['partner_id'] = partner_id[0],
                 som_polissa_k_change_obj.create(cursor, uid, dict_create)
                 count_loaded += 1
+
+        som_polissa_k_change_obj.calculate_multipunt_values(cursor, uid, context=context)
 
         info = ""
         if inexistent_polisses:
