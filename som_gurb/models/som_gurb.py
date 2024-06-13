@@ -39,6 +39,7 @@ _REQUIRED_FIRST_OPENING_FIELDS = [
 
 
 class SomGurb(osv.osv):
+    # TEST 1
     _name = "som.gurb"
     _description = _("Grup generació urbana")
 
