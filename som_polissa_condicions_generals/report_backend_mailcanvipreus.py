@@ -730,7 +730,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
         return env.polissa_id.fiscal_position_id.id in [33, 34, 47, 48, 52, 53]
 
     def esBalears(self, cursor, uid, env, context=False):
-        return env.polissa_id.llista_preus.id in [127]
+        return env.polissa_id.llista_preu.id in [127]
 
     def getTarifaCorreu(self, cursor, uid, env, context=False):
         data = {
