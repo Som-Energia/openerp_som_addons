@@ -72,6 +72,25 @@ jobs:
                         output += ' -m {}'.format(module)
                     print(output)
 
+  set-erp-branch:
+    name: Set ERP Branch
+    runs-on: ubuntu-latest
+    needs: get-pr-modified-files
+    outputs:
+      erpbranch: ${{ steps.set_erp_branch.outputs.branch }}
+    steps:
+      - name: Set ERP Branch
+        id: set_erp_branch
+        run: |
+          branch="rolling_erp01"
+          for tag in "${{ github.event.pull_request.labels.*.name }}"; do
+            if [[ $tag == GHA_branch_* ]]; then
+              branch=${tag#GHA_branch_}
+              break
+            fi
+          done
+          echo "::set-output name=branch::$branch"
+
   erp-tests-module:
     name: Run test PR
     if: ${{needs.get-pr-modified-files.outputs.module_list}}
@@ -79,4 +98,5 @@ jobs:
     needs: get-pr-modified-files
     with:
       module: ${{needs.get-pr-modified-files.outputs.module_list}}
+      erpbranch: ${{ needs.set-erp-branch.outputs.erpbranch }}
     secrets: inherit
