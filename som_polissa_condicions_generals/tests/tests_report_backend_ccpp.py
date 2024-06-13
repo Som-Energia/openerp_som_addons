@@ -57,6 +57,7 @@ class TestReportBackendCCPP(testing.OOTestCase):
             u'diferent': True,
             u'email': u'',
             u'email_envio': u'info@openroad.be',
+            u'lang': False,
             u'mobile': u'',
             u'mobile_envio': u'',
             u'name_envio': u'Michel Schumacher',
