@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
+from giscedata_facturacio.report.utils import get_atr_price
 
 import logging
 
@@ -33,11 +34,10 @@ class SomPolissaKChange(osv.osv):
     def get_fs(self, cursor, uid, pol, context=None):
         if context is None:
             context = {}
-
         som_polissa_k_change_obj = self.pool.get("som.polissa.k.change")
 
         search_params = [
-            ('polissa_id', '=', pol.id)
+            ('partner_id', '=', context['partner_id'])
         ]
 
         k_change_id = som_polissa_k_change_obj.search(
@@ -50,6 +50,26 @@ class SomPolissaKChange(osv.osv):
             )
 
         return res
+
+    def get_preus(self, cursor, uid, pol, with_taxes=False, context=None):
+        if context is None:
+            context = {}
+        context["potencia_anual"] = True
+
+        result = {}
+        periods = {
+            "tp": sorted(pol.tarifa.get_periodes("tp", context=context).keys()),
+            "te": sorted(pol.tarifa.get_periodes("te", context=context).keys()),
+            # 'ac': [sorted(pol.tarifa.get_periodes('te', context=context).keys())[0]], # not working for non auto pol  # noqa: E501
+        }
+        for terme, values in periods.items():
+            result[terme] = {}
+            for periode in values:
+                preu_periode = get_atr_price(
+                    cursor, uid, pol, periode, terme, context=context, with_taxes=with_taxes
+                )[0]
+                result[terme][periode] = preu_periode
+        return result
 
     def calculate_new_eie_indexed_prices(self, cursor, uid, pol, context=None):
         if context is None:
@@ -126,6 +146,7 @@ class SomPolissaKChange(osv.osv):
             import_total_anual_antiga_amb_impost = 0
             pol_ids = pol_obj.search(cursor, uid, [('titular', '=', partner_id)])
             for pol in pol_ids:
+                context['partner_id'] = partner_id
                 pol_browse = pol_obj.browse(cursor, uid, pol, context=context)
                 data = self.calculate_new_eie_indexed_prices(
                     cursor, uid, pol_browse, context=context
