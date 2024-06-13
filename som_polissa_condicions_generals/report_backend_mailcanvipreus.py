@@ -238,16 +238,14 @@ class ReportBackendMailcanvipreus(ReportBackend):
         f_nova = self.get_fs(cursor, uid, env, context=context)['k_new']
 
         tarifa_acces = env.polissa_id.tarifa.name
-
         factor_eie_preu_antic = self.indexada_consum_tipus[tarifa_acces]["factor_eie_preu_antic"]
         factor_eie_preu_nou = self.indexada_consum_tipus[tarifa_acces]["factor_eie_preu_nou"]
 
-        preu_mitja_antic = 1.015 * f_antiga + factor_eie_preu_antic
-        preu_mitja_nou = 1.015 * f_nova + factor_eie_preu_nou
+        preu_mitja_antic = (1.015 * f_antiga + factor_eie_preu_antic) / 1000
+        preu_mitja_nou = (1.015 * f_nova + factor_eie_preu_nou) / 1000
 
         conany = env.polissa_id.cups.conany_kwh
         potencia = env.polissa_id.potencia
-
         preu_potencia = sum(self.get_preus(
             cursor, uid, env.polissa_id, with_taxes=True, context=context
         )['tp'].values())
@@ -263,21 +261,22 @@ class ReportBackendMailcanvipreus(ReportBackend):
         impacte_import_amb_impost = (
             import_total_anual_nova_amb_impost - import_total_anual_antiga_amb_impost
         )
+        impacte_perc = impacte_import_amb_impost / import_total_anual_antiga_amb_impost
 
         consum_eie = {
             "conany": conany,
             "pot_contractada": potencia,
             "preu_pot_contractada": preu_potencia,
+            "factor_eie_preu_antic": factor_eie_preu_antic,
+            "factor_eie_preu_nou": factor_eie_preu_nou,
             "f_antiga": f_antiga,
             "f_nova": f_nova,
             "preu_mig_anual_antiga": preu_mitja_antic,
             "preu_mig_anual_nova": preu_mitja_nou,
             "import_total_anual_antiga": import_total_anual_antiga,
             "import_total_anual_nova": import_total_anual_nova,
-            "import_total_anual_antiga_sense_pot": (preu_mitja_antic * conany),
-            "import_total_anual_nova_sense_pot": (preu_mitja_nou * conany),
             "impacte_import": impacte_import,
-            "impacte_perc": impacte_import / 100,
+            "impacte_perc": impacte_perc * 100,
             "iva": 21,
             "ie": 5.11,
             "import_total_anual_antiga_amb_impost": import_total_anual_antiga_amb_impost,
