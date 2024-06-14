@@ -8,35 +8,7 @@ from giscedata_facturacio.report.utils import get_atr_price, get_comming_atr_pri
 from som_extend_facturacio_comer.utils import get_gkwh_atr_price
 from tools.translate import _
 from giscedata_polissa.report.utils import localize_period
-
-
-TABLA_113_dict = {  # Table extracted from gestionatr.defs TABLA_113, not imported due translations issues # noqa: E501
-    '00': _(u"Sense Autoconsum"),
-    '01': _(u"Autoconsum Tipus 1"),
-    '2A': _(u"Autoconsum tipus 2 (segons l'Art. 13. 2. a) RD 900/2015)"),
-    '2B': _(u"Autoconsum tipus 2 (segons l'Art. 13. 2. b) RD 900/2015)"),
-    '2G': _(u"Serveis auxiliars de generació lligada a un autoconsum tipus 2"),
-    '31': _(u"Sense Excedents Individual - Consum"),
-    '32': _(u"Sense Excedents Col·lectiu - Consum"),
-    '33': _(u"Sense Excedents Col·lectiu amb acord de compensació – Consum"),
-    '41': _(u"Amb excedents i compensació Individual-Consum"),
-    '42': _(u"Amb excedents i compensació Col·lectiu-Consum"),
-    '43': _(u"Amb excedents i compensació Col·lectiu a través de xarxa - Consum"),
-    '51': _(u"Amb excedents sense compensació Individual sense cte. de Serv. Aux. en Xarxa Interior - Consum"),  # noqa: E501
-    '52': _(u"Amb excedents sense compensació Col·lectiu sense cte. de Serv. Aux. en Xarxa Interior - Consum"),  # noqa: E501
-    '53': _(u"Amb excedents sense compensació Individual amb cte. de Serv. Aux. en Xarxa Interior - Consum"),  # noqa: E501
-    '54': _(u"Amb excedents sense compensació individual amb cte. de Serv. Aux. en Xarxa Interior - Serv. Aux."),  # noqa: E501
-    '55': _(u"Amb excedents sense compensació Col·lectiu / en Xarxa Interior - Consum"),
-    '56': _(u"Amb excedents sense compensació Col·lectiu / en Xarxa Interior - Serv. Aux."),
-    '61': _(u"Amb excedents sense compensació Individual amb cte. de Serv. Aux. a través de xarxa - Consum"),  # noqa: E501
-    '62': _(u"Amb excedents sense compensació individual amb cte. de Serv. Aux. a través de xarxa - Serv. Aux."),  # noqa: E501
-    '63': _(u"Amb excedents sense compensació Col·lectiu a través de xarxa - Consum"),
-    '64': _(u"Amb excedents sense compensació Col·lectiu a través de xarxa - Serv. Aux."),
-    '71': _(u"Amb excedents sense compensació Individual amb cte. de Serv. Aux. a través de xarxa i xarxa interior - Consum"),  # noqa: E501
-    '72': _(u"Amb excedents sense compensació individual amb cte. de Serv. Aux. a través de xarxa i xarxa interior - Serv. Aux."),  # noqa: E501
-    '73': _(u"Amb excedents sense compensació Col·lectiu amb cte. de Serv. Aux. a través de xarxa i xarxa interior - Consum"),  # noqa: E501
-    '74': _(u"Amb excedents sense compensació Col·lectiu amb cte. de Serv. Aux. a través de xarxa i xarxa interior - SSAA"),  # noqa: E501
-}
+from som_polissa.giscedata_cups import TABLA_113_dict
 
 CONTRACT_TYPES = dict(TABLA_9)
 
