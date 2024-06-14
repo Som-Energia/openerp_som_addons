@@ -499,7 +499,7 @@ class tarifes_tests(testing.OOTestCase):
 
             self.assertEqual(result, prices)
 
-    @mock.patch.object(GiscedataMonthlyPriceOmie,"has_to_charge_10_percent_requeriments_oficials")
+    @mock.patch.object(GiscedataMonthlyPriceOmie, "has_to_charge_10_percent_requeriments_oficials")
     def test___get_fiscal_position_reduced__apply(self, mock_omie_price):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
@@ -542,7 +542,7 @@ class tarifes_tests(testing.OOTestCase):
 
             self.assertEqual(result, [])
 
-    @mock.patch.object(GiscedataMonthlyPriceOmie,"has_to_charge_10_percent_requeriments_oficials")
+    @mock.patch.object(GiscedataMonthlyPriceOmie, "has_to_charge_10_percent_requeriments_oficials")
     def test___get_fiscal_position_reduced__not_omie_price__NOTapply(self, mock_omie_price):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
