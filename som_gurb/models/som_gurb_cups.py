@@ -337,7 +337,7 @@ class SomGurbCups(osv.osv):
         "owner_cups": fields.function(
             _ff_is_owner,
             type="boolean",
-            string="Cups de la persona propietària",
+            string="CUPS de la persona propietària",
             method=True
         ),
         "initial_invoice_id": fields.many2one("account.invoice", "Factura"),
