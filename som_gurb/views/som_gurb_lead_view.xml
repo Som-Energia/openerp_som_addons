@@ -43,5 +43,15 @@
                 </tree>
             </field>
         </record>
+        <!-- Acció per obrir el llistat de leads GURBs-->
+        <record model="ir.actions.act_window" id="action_gurb_lead">
+            <field name="name">GURBs</field>
+            <field name="view_id" ref="view_gurbs_lead_tree" />
+            <field name="res_model">som.gurb.lead</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <!-- Menú per llistar els lead GURBs-->
+        <menuitem id="menu_llistar_lead_gurbs" parent="menu_gurbs" action="action_gurb_lead" />
     </data>
 </openerp>
