@@ -26,6 +26,7 @@
         "views/som_gurb_cups_view.xml",
         "views/som_gurb_view.xml",
         "views/som_gurb_webview.xml",
+        "views/som_gurb_lead_view.xml",
         "workflow/som_gurb_workflow.xml",
         "security/ir.model.access.csv",
         "wizard/wizard_gurb_create_new_beta_view.xml",

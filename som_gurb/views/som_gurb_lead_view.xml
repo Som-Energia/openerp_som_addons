@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- Formulari per defecte dels GURBs Leads -->
+        <record model="ir.ui.view" id="view_gurbs_lead_form">
+            <field name="name">som.gurb.lead.form</field>
+            <field name="model">som.gurb.lead</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="GURB">
+                    <group col="4" colspan="4" string="General">
+                        <field name="active" />
+                        <field name="signed" />
+                        <field name="payed" />
+                        <field name="cups_id" />
+                        <field name="gurb_id" />
+                        <field name="beta_kw" />
+                        <field name="extra_beta_kw" />
+                        <field name="owner_cups" />
+                        <field name="initial_invoice_id" />
+                        <field name="general_conditions_id" />
+                    </group>
+                </form>
+            </field>
+        </record>
+        <!-- Llistat per defecte dels Leads de GURBs-->
+        <record model="ir.ui.view" id="view_gurbs_lead_tree">
+            <field name="name">som.gurb.lead.tree</field>
+            <field name="model">som.gurb.lead</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Leads GURB" colors="red:active == False">
+                    <field name="active" />
+                    <field name="signed" select="2" />
+                    <field name="payed" select="2" />
+                    <field name="cups_id" select="1" />
+                    <field name="gurb_id" select="1"/>
+                    <field name="beta_kw" />
+                    <field name="extra_beta_kw" />
+                    <field name="owner_cups" select="1"/>
+                    <field name="initial_invoice_id" />
+                    <field name="general_conditions_id" />
+                </tree>
+            </field>
+        </record>
+    </data>
+</openerp>
