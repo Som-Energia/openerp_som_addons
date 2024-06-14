@@ -24,7 +24,7 @@
             <field name="target">new</field>
             <field name="view_id" ref="view_wizard_sign_gurb_cups_documents_form" />
         </record>
-        <record id="values_wizard_create_new_beta_form" model="ir.values">
+        <record id="values_wizard_sign_gurb_cups_documents_form" model="ir.values">
             <field name="object" eval="1" />
             <field name="name">Signar GURB documets</field>
             <field name="key2">client_action_multi</field>
