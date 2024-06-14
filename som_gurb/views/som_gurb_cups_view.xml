@@ -38,7 +38,6 @@
                     <field name="beta_kw" />
                     <field name="extra_beta_kw" />
                     <field name="beta_percentage" />
-                    <field name="gurb_id" />
                     <field name="start_date" select="1" />
                     <field name="end_date" select="1" />
                     <field name="owner_cups" />
