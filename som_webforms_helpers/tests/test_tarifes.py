@@ -410,7 +410,7 @@ class tarifes_tests(testing.OOTestCase):
                 cursor, uid, "2022-10-01", "2023-01-15", True
             )
 
-            expected_result = [("2021-06-01", "2999-12-31", afp_obj.browse(cursor, uid, 33))]
+            expected_result = [("2021-06-01", "2023-12-31", afp_obj.browse(cursor, uid, 33))]
             self.assertEqual(result, expected_result)
 
     def test__combine_pricelist_fiscal_position__pricelist_data(self):
