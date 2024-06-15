@@ -10,6 +10,8 @@
         "giscedata_facturacio_comer",
         "som_facturacio_switching",
         "som_generationkwh",
+        "giscedata_facturacio_iva_10_som",
+        "som_polissa_condicions_generals",
     ],
     "init_xml": [],
     "demo_xml": [

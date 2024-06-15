@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data noupdate="0">
+        <record model="res.config" id="giscedata_facturacio_iva_10.charge_iva_10_percent_when_available">
+            <field name="value">0</field>
+        </record>
         <record model="product.pricelist" id="giscedata_facturacio.pricelist_tarifas_electricidad_test">
             <field name="name">2.0A_SOM</field>
             <field name="type">sale</field>
