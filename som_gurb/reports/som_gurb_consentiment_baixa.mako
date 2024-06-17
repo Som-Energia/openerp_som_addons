@@ -30,7 +30,7 @@
                         ${_(u"Confirmació de baixa en autoconsum col·lectiu")}
                         </h1>
                         <br />
-                        % if not data["is_enterprise"]:
+                        % if not informe["is_enterprise"]:
                         <p>
                         ${informe['name']}, ${_(u"major d'edat, amb domicili a")} ${informe['address']} ${_(u"i DNI número")} ${informe['nif']}, ${_(u"de forma lliure i voluntària i en ple ús de les meves facultats, i en tant que titular del CUPS")} ${informe['cups']}.
                         </p>
