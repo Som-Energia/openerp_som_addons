@@ -737,12 +737,16 @@ class ReportBackendMailcanvipreus(ReportBackend):
         data = {
             "Indexada20TDPeninsula": False,
             "Indexada20TDCanaries": False,
+            "Indexada20TDBalears": False,
             "Indexada30TDPeninsula": False,
             "Indexada30TDCanaries": False,
+            "Indexada30TDBalears": False,
             "Indexada61TDPeninsula": False,
             "Indexada61TDCanaries": False,
+            "Indexada61TDBalears": False,
             "Indexada30TDVEPeninsula": False,
             "Indexada30TDVECanaries": False,
+            "Indexada30TDVEBalears": False,
             "igic": False,
             "indexada": False,
             "periodes": False,
@@ -754,22 +758,29 @@ class ReportBackendMailcanvipreus(ReportBackend):
             if "2.0TD" in tarifa:
                 if self.esCanaries(cursor, uid, env):
                     data["Indexada20TDCanaries"] = True
-                    # data["igic"] = self.getIGIC(cursor, uid, env)
+                elif self.esBalears(cursor, uid, env):
+                    data["Indexada20TDBalears"] = True
                 else:
                     data['Indexada20TDPeninsula'] = True
             elif "3.0TD" in tarifa:
                 if self.esCanaries(cursor, uid, env):
                     data["Indexada30TDCanaries"] = True
+                elif self.esBalears(cursor, uid, env):
+                    data["Indexada30TDBalears"] = True
                 else:
                     data["Indexada30TDPeninsula"] = True
             elif "6.1TD" in tarifa:
                 if self.esCanaries(cursor, uid, env):
                     data["Indexada61TDCanaries"] = True
+                elif self.esBalears(cursor, uid, env):
+                    data["Indexada61TDBalears"] = True
                 else:
                     data["Indexada61TDPeninsula"] = True
             elif "3.0TDVE" in tarifa:
                 if self.esCanaries(cursor, uid, env):
                     data["Indexada30TDVECanaries"] = True
+                elif self.esBalears(cursor, uid, env):
+                    data["Indexada30TDVEBalears"] = True
                 else:
                     data["Indexada30TDVEPeninsula"] = True
             data["indexada"] = True
