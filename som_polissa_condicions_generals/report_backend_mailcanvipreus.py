@@ -333,11 +333,10 @@ class ReportBackendMailcanvipreus(ReportBackend):
                 != env.polissa_id.modcontractuals_ids[0].mode_facturacio
                 and env.polissa_id.modcontractuals_ids[0].mode_facturacio
             ),
-            #     'autoconsum': {
-            #         'es_autoconsum': env.polissa_id.es_autoconsum,
-            #         'compensacio': env.polissa_id.autoconsum_id.tipus_autoconsum in \
-            #             ['41', '42', '43']
-            #     },
+            'autoconsum': {
+                'es_autoconsum': env.polissa_id.es_autoconsum,
+                'compensacio': env.polissa_id.autoconsum_id.tipus_autoconsum in ['41', '42', '43']
+            },
         }
 
         eie = self.is_eie(cursor, uid, env, context=context)
