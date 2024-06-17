@@ -84,8 +84,10 @@ class ReportBackendMailcanvipreus(ReportBackend):
         ("preus_antics_imp", "tp", "P4"): 3,
         ("preus_antics_imp", "tp", "P5"): 3,
         ("preus_antics_imp", "tp", "P6"): 3,
-        ("dades_index", "f_antiga"): 6,
-        ("dades_index", "f_nova"): 6,
+        ("dades_index", "f_antiga"): 2,
+        ("dades_index", "f_nova"): 2,
+        ("dades_index", "f_antiga_eie"): 6,
+        ("dades_index", "f_nova_eie"): 6,
         ("preu_nou",): 0,
         ("preu_nou_imp",): 0,
         ("preu_vell",): 0,
@@ -102,8 +104,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "conany": 2500,
             "pot_contractada": 4.40,
             "preu_pot_contractada": 30.533,
-            "f_antiga": 20,
-            "f_nova": 20,
+            "f_antiga": 0.02,
+            "f_nova": 0.02,
             "preu_mig_anual_antiga": 154.08,
             "preu_mig_anual_nova": 159.90,
             "import_total_anual_antiga": 519.55,
@@ -122,8 +124,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "conany": 10000,
             "pot_contractada": 14,
             "preu_pot_contractada": 37.89701,
-            "f_antiga": 16,
-            "f_nova": 16,
+            "f_antiga": 0.16,
+            "f_nova": 0.16,
             "preu_mig_anual_antiga": 136.26,
             "preu_mig_anual_nova": 142.08,
             "import_total_anual_antiga": 1893.17,
@@ -142,8 +144,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "conany": 15000,
             "pot_contractada": 20,
             "preu_pot_contractada": 62.382142,
-            "f_antiga": 16,
-            "f_nova": 16,
+            "f_antiga": 0.16,
+            "f_nova": 0.16,
             "preu_mig_anual_antiga": 122.30,
             "preu_mig_anual_nova": 127.56,
             "import_total_anual_antiga": 3082.07,
@@ -162,8 +164,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "conany": 10000,
             "pot_contractada": 14,
             "preu_pot_contractada": 7.005884,
-            "f_antiga": 16,
-            "f_nova": 16,
+            "f_antiga": 0.16,
+            "f_nova": 0.16,
             "preu_mig_anual_antiga": 157.78,
             "preu_mig_anual_nova": 163.60,
             "import_total_anual_antiga": 1675.85,
@@ -271,8 +273,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "preu_pot_contractada": preu_potencia,
             "factor_eie_preu_antic": factor_eie_preu_antic,
             "factor_eie_preu_nou": factor_eie_preu_nou,
-            "f_antiga": f_antiga / 1000,
-            "f_nova": f_nova / 1000,
+            "f_antiga_eie": f_antiga / 1000,
+            "f_nova_eie": f_nova / 1000,
             "preu_mig_anual_antiga": preu_mitja_antic,
             "preu_mig_anual_nova": preu_mitja_nou,
             "import_total_anual_antiga": import_total_anual_antiga,
@@ -333,11 +335,10 @@ class ReportBackendMailcanvipreus(ReportBackend):
                 != env.polissa_id.modcontractuals_ids[0].mode_facturacio
                 and env.polissa_id.modcontractuals_ids[0].mode_facturacio
             ),
-            #     'autoconsum': {
-            #         'es_autoconsum': env.polissa_id.es_autoconsum,
-            #         'compensacio': env.polissa_id.autoconsum_id.tipus_autoconsum in \
-            #             ['41', '42', '43']
-            #     },
+            'autoconsum': {
+                'es_autoconsum': env.polissa_id.es_autoconsum,
+                'compensacio': env.polissa_id.autoconsum_id.tipus_autoconsum in ['41', '42', '43']
+            },
         }
 
         eie = self.is_eie(cursor, uid, env, context=context)
@@ -736,12 +737,16 @@ class ReportBackendMailcanvipreus(ReportBackend):
         data = {
             "Indexada20TDPeninsula": False,
             "Indexada20TDCanaries": False,
+            "Indexada20TDBalears": False,
             "Indexada30TDPeninsula": False,
             "Indexada30TDCanaries": False,
+            "Indexada30TDBalears": False,
             "Indexada61TDPeninsula": False,
             "Indexada61TDCanaries": False,
+            "Indexada61TDBalears": False,
             "Indexada30TDVEPeninsula": False,
             "Indexada30TDVECanaries": False,
+            "Indexada30TDVEBalears": False,
             "igic": False,
             "indexada": False,
             "periodes": False,
@@ -753,22 +758,29 @@ class ReportBackendMailcanvipreus(ReportBackend):
             if "2.0TD" in tarifa:
                 if self.esCanaries(cursor, uid, env):
                     data["Indexada20TDCanaries"] = True
-                    # data["igic"] = self.getIGIC(cursor, uid, env)
+                elif self.esBalears(cursor, uid, env):
+                    data["Indexada20TDBalears"] = True
                 else:
                     data['Indexada20TDPeninsula'] = True
             elif "3.0TD" in tarifa:
                 if self.esCanaries(cursor, uid, env):
                     data["Indexada30TDCanaries"] = True
+                elif self.esBalears(cursor, uid, env):
+                    data["Indexada30TDBalears"] = True
                 else:
                     data["Indexada30TDPeninsula"] = True
             elif "6.1TD" in tarifa:
                 if self.esCanaries(cursor, uid, env):
                     data["Indexada61TDCanaries"] = True
+                elif self.esBalears(cursor, uid, env):
+                    data["Indexada61TDBalears"] = True
                 else:
                     data["Indexada61TDPeninsula"] = True
             elif "3.0TDVE" in tarifa:
                 if self.esCanaries(cursor, uid, env):
                     data["Indexada30TDVECanaries"] = True
+                elif self.esBalears(cursor, uid, env):
+                    data["Indexada30TDVEBalears"] = True
                 else:
                     data["Indexada30TDVEPeninsula"] = True
             data["indexada"] = True
