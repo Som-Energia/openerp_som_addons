@@ -36,7 +36,7 @@
                         </p>
                         % else:
                         <p>
-                        ${informe["representative"]["name"]}, ${_(u"major d'edat, amb NIF número")} ${informe["representative"]["vat"]} ${_(u"i domicili a")} ${informe["representative"]["address"]}, ${_(u"actuant en la meva condició de")} ________________, ${_(u"i manifestant que en aquesta condició disposo de les facultats suficients, actuant EN NOM I REPRESENTACIÓ DE")} ${informe["name"]} , ${_(u"amb NIF")} ${informe['nif']} ${_(u"i domicili social a")} ${informe['address']} ${_(u"com a titular del CUPS")} ${informe['cups']}.
+                        ${informe["representative"]["name"]}, ${_(u"major d'edat, amb NIF número")} ${informe["representative"]["vat"]} ${_(u"i domicili a")} ${informe["representative"]["address"]}, ${_(u"actuant en la meva condició de")} ${_(u"REPRESENTANT")}, ${_(u"i manifestant que en aquesta condició disposo de les facultats suficients, actuant EN NOM I REPRESENTACIÓ DE")} ${informe["name"]} , ${_(u"amb NIF")} ${informe['nif']} ${_(u"i domicili social a")} ${informe['address']} ${_(u"com a titular del CUPS")} ${informe['cups']}.
                         </p>
                         % endif
                         <p>
