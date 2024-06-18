@@ -7,9 +7,11 @@
     "category": "Master",
     "depends": [
         "base",
+        "giscedata_facturacio_iva_10_som",
         "giscedata_facturacio_comer",
         "som_facturacio_switching",
         "som_generationkwh",
+        "som_polissa_condicions_generals",
     ],
     "init_xml": [],
     "demo_xml": [
