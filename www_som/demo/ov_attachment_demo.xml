@@ -17,7 +17,7 @@
       <field name="name">XXX</field>
       <field name="estat">obert</field>
       <field name="tipus">altres</field>
-      <field name="email_template" ref="poweremail.default_template_poweremail"/>
+      <field name="email_template" ref="poweremail_campaign.default_template_poweremail"/>
     </record>
     <record model="som.enviament.massiu" id="enviament_massiu_partner_asus">
       <field name="estat">obert</field>
