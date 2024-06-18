@@ -44,8 +44,8 @@ class ProcesATR:
             ]
             swl_ids = swl_obj.search(cursor, uid, search_params)
             if len(swl_ids) > 0:
-                swl = swl_obj.browse(cursor, uid, swl_ids[0])
-                day = swl.case_date
+                swl = swl_obj.read(cursor, uid, swl_ids[0], ['case_date'])
+                day = swl['case_date']
             else:
                 day = None
         except Exception:
