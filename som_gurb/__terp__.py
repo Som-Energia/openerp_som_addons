@@ -23,6 +23,7 @@
     ],
     "update_xml": [
         "data/som_gurb_data.xml",
+        "data/som_gurb_email_template_data.xml",
         "views/som_gurb_cups_view.xml",
         "views/som_gurb_view.xml",
         "views/som_gurb_webview.xml",

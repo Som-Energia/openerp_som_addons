@@ -109,7 +109,7 @@ class WizardGurbCreateGurbCupsSignature(osv.osv_memory):
         values = {
             "template_id": tmpl_id,
             "template_res_id": gurb_cups_id,
-            "delivery_type": context.get("delivery_type", "email"),
+            "delivery_type": context.get("delivery_type", "poweremail"),
             "branding_id": branding_id,
             "recipients": [
                 (0, 0, {
