@@ -990,7 +990,7 @@ class UpdatePendingStates(osv.osv_memory):
                 )
             else:
                 scp_activa = scp_obj.consulta_pobresa_activa(
-                    cursor, uid, [], partner_id=invoice['partner_id'], polissa_id=polissa_id)
+                    cursor, uid, [], partner_id=invoice['partner_id'][0], polissa_id=polissa_id)
 
                 if not scp_activa and self.poverty_eligible(cursor, uid, polissa_id):
                     wiz_obj = self.pool.get("wizard.crear.consulta.pobresa")

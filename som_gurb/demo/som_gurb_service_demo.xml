@@ -1,0 +1,40 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>
+        <record model="product.pricelist" id="pricelist_gurb_demo">
+            <field name="name">GURB Demo Pricelist</field>
+            <field name="type">sale</field>
+            <field name="active">True</field>
+        </record>
+        <record model="product.pricelist.version" id="version_pricelist_gurb_demo">
+            <field name="name">GURB Demo Pricelist Version</field>
+            <field name="active">True</field>
+            <field name="date_start">2016-01-01</field>
+            <field name="date_end" eval="False"/>
+            <field name="pricelist_id" ref="pricelist_gurb_demo"/>
+        </record>
+        <record model="product.pricelist.item" id="item_version_pricelist_gurb_demo">
+            <field name="name">GURB Demo Pricelist Item</field>
+            <field name="price_version_id" ref="version_pricelist_gurb_demo"/>
+            <field name="base" eval="-3"/>
+            <field name="base_price">5</field>
+            <field name="price_surcharge">0.0</field>
+            <field name="sequence">11</field>
+            <field name="product_id" ref="product_gurb"/>
+        </record>
+        <record model="product.pricelist.item" id="item_version_pricelist_gurb_demo_2">
+            <field name="name">GURB Demo Pricelist Item 2</field>
+            <field name="price_version_id" ref="version_pricelist_gurb_demo"/>
+            <field name="base" eval="-3"/>
+            <field name="base_price">3.75</field>
+            <field name="price_surcharge">0.0</field>
+            <field name="sequence">11</field>
+            <field name="product_id" ref="initial_quota_gurb"/>
+        </record>
+        <record model="product.pricelist.services" id="product_pricelist_services_gurb_demo">
+            <field name="pricelist_id" ref="pricelist_gurb_demo"/>
+            <field name="product_ids" eval="[(6,0,[ref('product_gurb')])]"/>
+            <field name="description">GURB Service DEMO</field>
+        </record>
+    </data>
+</openerp>
