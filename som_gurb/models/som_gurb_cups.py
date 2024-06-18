@@ -25,6 +25,35 @@ class SomGurbCups(osv.osv):
     _rec_name = "cups_id"
     _description = _("CUPS en grup de generació urbana")
 
+    def create(self, cursor, uid, vals, context=None):
+        if context is None:
+            context = {}
+
+        gurb_cups_id = super(SomGurbCups, self).create(cursor, uid, vals, context=context)
+
+        if "cups_id" in vals:
+            gurb_cups_o = self.pool.get("som.gurb.cups")
+            polissa_id = gurb_cups_o.get_polissa_gurb_cups(cursor, uid, gurb_cups_id)
+            gurb_cups_o.write(cursor, uid, gurb_cups_id, {"polissa_id": polissa_id})
+
+        return gurb_cups_id
+
+    def write(self, cursor, uid, ids, vals, context=None):
+        if context is None:
+            context = {}
+
+        if not isinstance(ids, (tuple, list)):
+            ids = [ids]
+
+        res = super(SomGurbCups, self).write(cursor, uid, ids, vals, context=context)
+
+        if "cups_id" in vals:
+            gurb_cups_o = self.pool.get("som.gurb.cups")
+            polissa_id = gurb_cups_o.get_polissa_gurb_cups(cursor, uid, ids[0])
+            gurb_cups_o.write(cursor, uid, ids, {"polissa_id": polissa_id})
+
+        return res
+
     def _ff_is_owner(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
             context = {}
@@ -107,7 +136,7 @@ class SomGurbCups(osv.osv):
         gurb_vals = self.read(cursor, uid, gurb_cups_id, ["cups_id", "gurb_id", "owner_cups"])
 
         search_params = [
-            ("state", "=", "activa"),
+            ("state", "in", ["activa", "esborrany"]),
             ("cups", "=", gurb_vals["cups_id"][0]),
         ]
         pol_ids = pol_o.search(cursor, uid, search_params, context=context, limit=1)
@@ -310,6 +339,25 @@ class SomGurbCups(osv.osv):
         "end_date": fields.date("Data sortida GURB",),
         "gurb_id": fields.many2one("som.gurb", "GURB", required=True, ondelete="cascade"),
         "cups_id": fields.many2one("giscedata.cups.ps", "CUPS", required=True),
+        "polissa_id": fields.many2one("giscedata.polissa", "Pòlissa", readonly=True),
+        "partner_id": fields.related(
+            "polissa_id",
+            "titular",
+            type="many2one",
+            relation="res.partner",
+            string="Client",
+            store=False,
+            readonly=True,
+        ),
+        "polissa_state": fields.related(
+            "polissa_id",
+            "state",
+            type="char",
+            relation="giscedata.polissa",
+            string="Estat pòlissa",
+            store=False,
+            readonly=True,
+        ),
         "betas_ids": fields.one2many("som.gurb.cups.beta", "gurb_cups_id", "Betes"),
         "beta_kw": fields.function(
             _ff_active_beta,
@@ -337,7 +385,7 @@ class SomGurbCups(osv.osv):
         "owner_cups": fields.function(
             _ff_is_owner,
             type="boolean",
-            string="Cups de la persona propietària",
+            string="Persona propietària",
             method=True
         ),
         "initial_invoice_id": fields.many2one("account.invoice", "Factura"),

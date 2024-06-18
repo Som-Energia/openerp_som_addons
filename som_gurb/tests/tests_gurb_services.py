@@ -75,13 +75,37 @@ class TestsGurbServices(TestsGurbBase):
         self.assertEqual(pol_br.serveis[0].producte.id, vals['product_id'])
         self.assertEqual(pol_br.serveis[0].polissa_id.id, vals['pol_id'])
 
-    def test_fail_add_service_to_unactivated_contract(self):
+    def test_fail_add_service_to_draft_contract(self):
+        pol_o = self.openerp.pool.get("giscedata.polissa")
         imd_o = self.openerp.pool.get("ir.model.data")
         gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
+        vals = self.get_references()
 
         gurb_cups_id = imd_o.get_object_reference(
             self.cursor, self.uid, "som_gurb", "gurb_cups_0001"
         )[1]
+        gurb_cups_o.add_service_to_contract(
+            self.cursor, self.uid, [gurb_cups_id], '2023-01-01'
+        )
+
+        polissa_id = imd_o.get_object_reference(
+            self.cursor, self.uid, "giscedata_polissa", "polissa_0001"
+        )[1]
+        pol_br = pol_o.browse(self.cursor, self.uid, polissa_id)
+
+        self.assertEqual(pol_br.serveis[0].llista_preus.id, vals['pricelist_id'])
+        self.assertEqual(pol_br.serveis[0].producte.id, vals['product_id'])
+        self.assertEqual(pol_br.serveis[0].polissa_id.state, "esborrany")
+        self.assertEqual(pol_br.serveis[0].polissa_id.id, polissa_id)
+
+    def test_fail_add_service_to_baixa_contract(self):
+        pol_o = self.openerp.pool.get("giscedata.polissa")
+        gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
+        vals = self.get_references()
+
+        gurb_cups_id = vals["gurb_cups_id"]
+        polissa_id = vals["pol_id"]
+        pol_o.write(self.cursor, self.uid, polissa_id, {"state": "baixa"})
 
         with self.assertRaises(osv.except_osv):
             gurb_cups_o.add_service_to_contract(

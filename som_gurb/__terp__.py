@@ -14,6 +14,7 @@
         "giscedata_facturacio",
         "report_puppeteer",
         "giscedata_polissa_representante",
+        "som_poweremail_common_templates",
         "giscedata_signatura_documents_signaturit",
     ],
     "demo_xml": [
