@@ -62,5 +62,8 @@
             <field name="name">GURB Pilot</field>
             <field name="code">GURBP</field>
         </record>
+        <record model="giscedata.signatura.models" id="signatura_model_som_gurb_cups">
+            <field name="name" ref="som_gurb.model_som_gurb_cups"/>
+        </record>
     </data>
 </openerp>
