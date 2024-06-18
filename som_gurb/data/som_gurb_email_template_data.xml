@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-    <data noupdate="0">
+    <data noupdate="1">
         <record model="poweremail.templates" id="email_gurb_welcome">
             <field name="name">[GURB] Mail de benvinguda</field>
             <field name="object_name" model="ir.model" search="[('model', '=', 'som.gurb.cups')]"/>
@@ -9,8 +9,31 @@
             <field name="def_subject">TODO</field>
             <field name="template_language">mako</field>
             <field name="lang">${object.partner_id.lang}</field>
-            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="def_bcc"></field>
             <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Som Energia - Modificacions')]"/>
+            <field name="def_body_text"><![CDATA[
+                <!doctype html>
+                <html>
+                <head></head>
+                <body>
+                Email text
+                </body>
+                </html>
+                ]]>
+            </field>
+        </record>
+        <record model="poweremail.templates" id="email_signature_process_gurb">
+            <field name="name">GURB: Firma documents (signaturit)</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'som.gurb.cups')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">som.gurb.cups</field>
+            <field eval="0" name="use_filter"/>
+            <field name="file_name" eval="False"/>
+            <field name="def_to">${env['signature']['recipient']['email']}</field>
+            <field name="def_subject">CORREU DEMANANT LA SIGNATURA I PAGAMENT COST ADHESIÓ GURB</field>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="template_language">mako</field>
+            <field name="def_priority">2</field>
             <field name="def_body_text"><![CDATA[
                 <!doctype html>
                 <html>
@@ -30,7 +53,7 @@
             <field name="def_subject">TODO</field>
             <field name="template_language">mako</field>
             <field name="lang">${object.partner_id.lang}</field>
-            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="def_bcc"></field>
             <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Som Energia - Modificacions')]"/>
             <field name="def_body_text"><![CDATA[
                 <!doctype html>
@@ -51,8 +74,31 @@
             <field name="def_subject">TODO</field>
             <field name="template_language">mako</field>
             <field name="lang">${object.partner_id.lang}</field>
-            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="def_bcc"></field>
             <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Som Energia - Modificacions')]"/>
+            <field name="def_body_text"><![CDATA[
+                <!doctype html>
+                <html>
+                <head></head>
+                <body>
+                Email text
+                </body>
+                </html>
+                ]]>
+            </field>
+        </record>
+        <record model="poweremail.templates" id="email_signature_process_gurb_lead">
+            <field name="name">GURB: Firma documents lead (signaturit)</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'som.gurb.lead')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">som.gurb.lead</field>
+            <field eval="0" name="use_filter"/>
+            <field name="file_name" eval="False"/>
+            <field name="def_to">${env['signature']['recipient']['email']}</field>
+            <field name="def_subject">CORREU DEMANANT LA SIGNATURA I PAGAMENT COST ADHESIÓ GURB</field>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="template_language">mako</field>
+            <field name="def_priority">2</field>
             <field name="def_body_text"><![CDATA[
                 <!doctype html>
                 <html>

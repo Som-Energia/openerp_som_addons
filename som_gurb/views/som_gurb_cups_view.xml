@@ -10,6 +10,7 @@
                 <form string="GURB">
                     <group col="4" colspan="4" string="General">
                         <field name="active" />
+                        <field name="id" />
                         <field name="cups_id" />
                         <field name="start_date" />
                         <field name="end_date" />
@@ -18,12 +19,14 @@
                         <field name="extra_beta_kw" />
                         <field name="beta_percentage" />
                         <field name="owner_cups" />
-                        <field name="invoice_ref" />
                     </group>
                     <group col="4" colspan="4" string="Relacions">
                         <field name="polissa_id" />
                         <field name="polissa_state" />
                         <field name="partner_id" />
+                        <field name="initial_invoice_id" />
+                        <field name="invoice_state" />
+                        <field name="general_conditions_id" />
                     </group>
                     <field name="betas_ids" nolabel="1" colspan="4" readonly="1" />
                 </form>
@@ -41,12 +44,12 @@
                     <field name="beta_kw" />
                     <field name="extra_beta_kw" />
                     <field name="beta_percentage" />
-                    <field name="gurb_id" />
                     <field name="start_date" select="1" />
                     <field name="end_date" select="1" />
                     <field name="owner_cups" />
                     <field name="partner_id" />
                     <field name="polissa_state" />
+                    <field name="invoice_state" />
                 </tree>
             </field>
         </record>
@@ -65,6 +68,22 @@
                     <field name="end_date" select="1" />
                 </tree>
             </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_invoices_from_gurb_cups">
+            <field name="name">Factures del GURB CUPS</field>
+            <field name="res_model">account.invoice</field>
+            <field name="src_model">som.gurb.cups</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('origin', '=', 'GURBCUPS'+id)]</field>
+        </record>
+        <record id="value_action_invoices_from_gurb_cups" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Factures del GURB CUPS</field>
+            <field name="key2">client_action_relate</field>
+            <field name="key">action</field>
+            <field name="model">som.gurb.cups</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_invoices_from_gurb_cups'))" />
         </record>
     </data>
 </openerp>

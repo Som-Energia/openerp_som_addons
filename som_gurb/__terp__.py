@@ -15,6 +15,7 @@
         "report_puppeteer",
         "giscedata_polissa_representante",
         "som_poweremail_common_templates",
+        "giscedata_signatura_documents_signaturit",
     ],
     "demo_xml": [
         "demo/som_gurb_service_demo.xml",
@@ -30,7 +31,10 @@
         "workflow/som_gurb_workflow.xml",
         "security/ir.model.access.csv",
         "wizard/wizard_gurb_create_new_beta_view.xml",
+        "wizard/wizard_create_gurb_cups_signature_view.xml",
+        "wizard/wizard_gurb_create_initial_invoice_view.xml",
         "reports/som_gurb_reports.xml",
+        "report/som_gurb_reports.xml",
     ],
     "init_xml": [],
     "active": False,

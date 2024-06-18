@@ -3,7 +3,7 @@
 <html lang="es">
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <head>
-        <link rel="stylesheet" href="${addons_path}/som_gurb/reports/som_gurb.css">
+        <link rel="stylesheet" href="${addons_path}/som_gurb/report/som_gurb.css">
         <title>${_(u"Autorització del representant de l’autoconsum col·lectiu")}</title>
         <style>
             @font-face {
@@ -29,7 +29,7 @@
                         </p>
                         %if informe['is_enterprise']:
                             <p>
-                                ${informe["representative"]["name"]}, ${_(u"major d'edat, amb NIF número")} ${informe["representative"]['vat']} ${_(u"i domicili a")} ${informe["representative"]["address"]}, ${_(u"actuant en la meva condició de")} ${_(u"REPRESENTANT")}, ${_(u"i manifestant que en aquesta condició disposo de les facultats suficients, actuant EN NOM I REPRESENTACIÓ DE")} ${informe["name"]} , ${_(u"amb NIF")} ${informe['nif']} ${_(u"i domicili social a")} ${informe['address']} ${_(u"com a titular del CUPS")} ${informe['cups']}${_(u"(“Autoritzant”)")}
+                                ${informe["representative"]["name"]}, ${_(u"major d'edat, amb NIF número")} ${informe["representative"]['vat']} ${_(u"i domicili a")} ${informe["representative"]["address"]}, ${_(u"actuant en la meva condició de")} ${_(u"REPRESENTANT")}, ${_(u"i manifestant que en aquesta condició disposo de les facultats suficients, actuant EN NOM I REPRESENTACIÓ DE")} ${informe["name"]} , ${_(u"amb NIF")} ${informe['nif']} ${_(u"i domicili social a")} ${informe['address']} ${_(u"com a titular del CUPS")} ${informe['cups']} ${_(u"(“Autoritzant”)")}
                             </p>
                         %else:
                             <p>
