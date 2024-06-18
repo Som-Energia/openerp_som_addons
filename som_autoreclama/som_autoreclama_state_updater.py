@@ -36,7 +36,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             ("state", "in", ['activa', 'baixa', 'impagament', 'modcontractual']),
             ("autoreclama_state.is_last", "=", False),
         ]
-        return pol_obj.search(cursor, uid, search_params)
+        return pol_obj.search(cursor, uid, search_params, context={"active_test": False})
 
     def get_item_name(self, cursor, uid, item_id, namespace, context=None):
         if namespace != 'polissa':
@@ -125,7 +125,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             else:
                 summary += _("Id's de {} que han canviat d'estat\n").format(names)
             updated_names = self.get_names(cursor, uid, updated, namespace, context)
-            summary += ",".join(str(upd) for upd in updated_names)
+            summary += ", ".join(str(upd) for upd in updated_names)
             summary += _("\n\n")
 
         if errors:
@@ -134,7 +134,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             else:
                 summary += _("Id's de {} que han donat error (REVISAR)\n").format(names)
             error_names = self.get_names(cursor, uid, errors, namespace, context)
-            summary += ",".join(str(error) for error in error_names)
+            summary += ", ".join(str(error) for error in error_names)
             summary += _("\n\n")
 
         if reviews:
@@ -143,7 +143,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             else:
                 summary += _("Id's de {} que han passat a estat 'Revisar'\n").format(names)
             review_names = self.get_names(cursor, uid, reviews, namespace, context)
-            summary += ",".join(str(review) for review in review_names)
+            summary += ", ".join(str(review) for review in review_names)
             summary += _("\n\n")
 
         return updated, not_updated, errors, msg, summary

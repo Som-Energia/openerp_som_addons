@@ -1,0 +1,1051 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+# * som_gurb
+#
+# Translators:
+# Som Energia  <itcrowd@somenergia.coop>, 2024.
+msgid ""
+msgstr ""
+"Project-Id-Version: Som Energia\n"
+"Report-Msgid-Bugs-To: support@openerp.com\n"
+"POT-Creation-Date: 2024-06-18 11:30+0000\n"
+"PO-Revision-Date: 2024-06-18 09:36+0000\n"
+"Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
+"Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Generated-By: Babel 2.9.1\n"
+"Language: es_ES\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: som_gurb
+#: field:wizard.gurb.create.initial.invoice,errors:0
+#: view:wizard.gurb.create.initial.invoice:0
+msgid "Errors"
+msgstr "Errores"
+
+#. module: som_gurb
+#: field:som.gurb,assigned_betas_percentage:0
+msgid "Betes assignades (%)"
+msgstr "Betas asignadas (%)"
+
+#. module: som_gurb
+#: field:som.gurb,notes:0 view:som.gurb:0
+msgid "Observacions"
+msgstr "Observaciones"
+
+#. module: som_gurb
+#: model:ir.module.module,shortdesc:som_gurb.module_meta_information
+msgid "Generació urbana"
+msgstr "Generación urbana"
+
+#. module: som_gurb
+#: field:som.gurb.cups.beta,end_date:0
+msgid "Data fi"
+msgstr "Fecha fin"
+
+#. module: som_gurb
+#: constraint:ir.actions.act_window:0
+msgid "Invalid model name in the action definition."
+msgstr "Invalid model name in the action definition."
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Vols tancar la reobertura del GURB?"
+msgstr "¿Quieres cerrar la reapertura del GURB?"
+
+#. module: som_gurb
+#: field:som.gurb.cups.beta,gurb_cups_id:0
+msgid "GURB CUPS"
+msgstr "GURB CUPS"
+
+#. module: som_gurb
+#: field:som.gurb.general.conditions,attachment_id:0
+msgid "Document"
+msgstr "Documento"
+
+#. module: som_gurb
+#: field:som.gurb.general.conditions,name:0
+msgid "Nom"
+msgstr "Nombre"
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Activar"
+msgstr "Activar"
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Vols activar el GURB?"
+msgstr "¿Quieres activar el GURB?"
+
+#. module: som_gurb
+#: model:ir.actions.act_window,name:som_gurb.action_gurbs
+#: model:ir.ui.menu,name:som_gurb.menu_llistar_gurbs view:som.gurb:0
+msgid "GURBs"
+msgstr "GURBs"
+
+#. module: som_gurb
+#: field:som.gurb,state_date:0
+msgid "Data activació estat"
+msgstr "Fecha activación estado"
+
+#. module: som_gurb
+#: field:som.gurb.cups,end_date:0
+msgid "Data sortida GURB"
+msgstr "Fecha salida GURB"
+
+#. module: som_gurb
+#: field:som.gurb,available_betas_percentage:0
+msgid "Betes disponibles (%)"
+msgstr "Betas disponibles (%)"
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Documents rel."
+msgstr "Documentos rel."
+
+#. module: som_gurb
+#: constraint:product.pricelist.services:0
+msgid "Ja existeix un servei amb aquesta llista de preus."
+msgstr "Ya existe un servicio con esa lista de precios."
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Betes assignades + extres"
+msgstr "Betas asignadas + extras"
+
+#. module: som_gurb
+#: model:ir.model,name:som_gurb.model_report_backend_som_gurb_documents
+msgid "report.backend.som.gurb.documents"
+msgstr "report.backend.som.gurb.documents"
+
+#. module: som_gurb
+#: field:som.gurb,state:0
+msgid "Estat del GURB"
+msgstr "Estado del GURB"
+
+#. module: som_gurb
+#: field:som.gurb,address_id:0
+msgid "Adreça"
+msgstr "Dirección"
+
+#. module: som_gurb
+#: field:som.gurb,critical_incomplete_state:0
+msgid "Estat crític incomplet (%)"
+msgstr "Estado crítico incompleto (%)"
+
+#. module: som_gurb
+#: selection:som.gurb,state:0
+msgid "Reobertura"
+msgstr "Reobertura"
+
+#. module: som_gurb
+#: code:addons/som_gurb/wizard/wizard_gurb_create_initial_invoice.py:14
+msgid "Es crearan {} factures d'inscripció."
+msgstr "Se crearán {} facturas de inscripción."
+
+#. module: som_gurb
+#: selection:som.gurb,state:0
+msgid "Grup registrat"
+msgstr "Grupo registrado"
+
+#. module: som_gurb
+#: field:som.gurb,gurb_cups_ids:0 field:som.gurb.cups,betas_ids:0
+#: view:som.gurb:0
+msgid "Betes"
+msgstr "Betas"
+
+#. module: som_gurb
+#: field:som.gurb,min_power:0
+msgid "Topall min. per contracte (kW)"
+msgstr "Tope min. por contrato (kW)"
+
+#. module: som_gurb
+#: field:som.gurb,available_betas_kw:0
+msgid "Betes disponibles (kW)"
+msgstr "Betas disponibles (kW)"
+
+#. module: som_gurb
+#: model:ir.actions.act_window,name:som_gurb.action_invoices_from_gurb_cups
+msgid "Factures del GURB CUPS"
+msgstr "Facturas del GURB CUPS"
+
+#. module: som_gurb
+#: constraint:product.category:0
+msgid "Error ! You can not create recursive categories."
+msgstr "Error ! You can not create recursive categories."
+
+#. module: som_gurb
+#: code:addons/som_gurb/models/giscedata_switching.py:82
+msgid "Cas cancel·lat per GURB"
+msgstr "Caso cancelado por GURB"
+
+#. module: som_gurb
+#: field:som.gurb.cups,initial_invoice_id:0
+msgid "Factura"
+msgstr "Factura"
+
+#. module: som_gurb
+#: field:som.gurb.cups,gurb_id:0 view:som.gurb:0 view:som.gurb.cups:0
+msgid "GURB"
+msgstr "GURB"
+
+#. module: som_gurb
+#: selection:som.gurb,state:0
+msgid "No Complet"
+msgstr "No Completo"
+
+#. module: som_gurb
+#: constraint:giscedata.polissa.category:0
+msgid "Error ! No pots crear categories recursives."
+msgstr "Error! No puedes crear categorías recursivas."
+
+#. module: som_gurb
+#: code:addons/som_gurb/models/som_gurb.py:196
+msgid "Per poder obrir el GURB s'ha d'omplir el camp: {}"
+msgstr "Para poder abrir el GURB se debe rellenar el campo: {}"
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Vols tornar a la primera obertura?"
+msgstr "¿Quieres volver a la primera apertura?"
+
+#. module: som_gurb
+#: selection:wizard.gurb.create.initial.invoice,state:0
+msgid "End"
+msgstr "End"
+
+#. module: som_gurb
+#: field:som.gurb,reopening_days:0
+msgid "Dies reobertura"
+msgstr "Días reapertura"
+
+#. module: som_gurb
+#: field:som.gurb,extra_betas_kw:0
+msgid "Betes extres (kW)"
+msgstr "Betas extras (kW)"
+
+#. module: som_gurb
+#: model:product.template,name:som_gurb.initial_quota_gurb_product_template
+msgid "Quota inicial del GURB"
+msgstr "Cuota inicial del GURB"
+
+#. module: som_gurb
+#: model:ir.actions.act_window,name:som_gurb.action_wizard_create_new_beta_form
+#: view:wizard.gurb.create.new.beta:0
+msgid "Crear nova beta"
+msgstr "Crear nueva beta"
+
+#. module: som_gurb
+#: code:addons/som_gurb/wizard/wizard_gurb_create_new_beta.py:48
+msgid "La nova beta ha de ser més gran o igual que zero."
+msgstr "La nueva beta debe ser mayor o igual que cero."
+
+#. module: som_gurb
+#: field:som.gurb.cups,cups_id:0
+msgid "CUPS"
+msgstr "CUPS"
+
+#. module: som_gurb
+#: view:som.gurb.cups:0
+msgid "CUPS GURB"
+msgstr "CUPS GURB"
+
+#. module: som_gurb
+#: selection:som.gurb,state:0
+msgid "Complet"
+msgstr "Completo"
+
+#. module: som_gurb
+#: code:addons/som_gurb/models/som_gurb_cups.py:152
+msgid "El CUPS id {} no té pòlisses actives. No es pot afegir cap servei"
+msgstr "El CUPS id {} no tiene pólizas activas. No se puede añadir ningún servicio"
+
+#. module: som_gurb
+#: code:addons/som_gurb/wizard/wizard_gurb_create_new_beta.py:53
+msgid "El total de la beta i la beta extra ha de ser més gran a zero."
+msgstr "El total de la beta y beta extra debe ser mayor a cero."
+
+#. module: som_gurb
+#: code:addons/som_gurb/models/giscedata_switching.py:85
+msgid "Cas importat correctament."
+msgstr "Caso importado correctamente."
+
+#. module: som_gurb
+#: view:wizard.gurb.create.initial.invoice:0
+msgid "Creació factures inscripció"
+msgstr "Creación facturas inscripción"
+
+#. module: som_gurb
+#: field:som.gurb,history_box:0
+msgid "Històric del GURB"
+msgstr "Histórico del GURB"
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Obrir GURB"
+msgstr "Abrir GURB"
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Tramitar"
+msgstr "Tramitar"
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Històric"
+msgstr "Histórico"
+
+#. module: som_gurb
+#: field:som.gurb,meter_id:0
+msgid "Registrador (comptador)"
+msgstr "Registrador (contador)"
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Característiques"
+msgstr "Características"
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Betes assignades"
+msgstr "Betas asignadas"
+
+#. module: som_gurb
+#: constraint:ir.ui.view:0
+msgid "Invalid XML for View Architecture!"
+msgstr "Invalid XML for View Architecture!"
+
+#. module: som_gurb
+#: constraint:product.template:0
+msgid "Error: UOS must be in a different category than the UOM"
+msgstr "Error: UOS must be in a different category than the UOM"
+
+#. module: som_gurb
+#: field:som.gurb.cups.beta,start_date:0
+#: field:wizard.gurb.create.new.beta,start_date:0
+msgid "Data inici"
+msgstr "Fecha inicio"
+
+#. module: som_gurb
+#: model:product.category,name:som_gurb.categ_product_gurb
+msgid "Categoria GURB"
+msgstr "Categoría GURB"
+
+#. module: som_gurb
+#: field:som.gurb,name:0
+msgid "Nom GURB"
+msgstr "Nombre GURB"
+
+#. module: som_gurb
+#: code:addons/som_gurb/wizard/wizard_gurb_create_new_beta.py:63
+msgid "No es pot fer un canvi de beta a futur."
+msgstr "No se puede realizar un cambio de beta a futuro."
+
+#. module: som_gurb
+#: code:addons/som_gurb/wizard/wizard_gurb_create_new_beta.py:47
+#: code:addons/som_gurb/wizard/wizard_gurb_create_new_beta.py:52
+msgid "Beta incorrecte!"
+msgstr "Beta incorrecta!"
+
+#. module: som_gurb
+#: model:ir.model,name:som_gurb.model_wizard_gurb_create_initial_invoice
+msgid "wizard.gurb.create.initial.invoice"
+msgstr "wizard.gurb.create.initial.invoice"
+
+#. module: som_gurb
+#: field:som.gurb.general.conditions,lang_id:0
+msgid "Idioma"
+msgstr "Idioma"
+
+#. module: som_gurb
+#: model:ir.actions.act_window,name:som_gurb.action_wizard_gurb_create_initial_invoice_form
+msgid "Crear factura inscripció GURB"
+msgstr "Crear factura inscripción GURB"
+
+#. module: som_gurb
+#: field:som.gurb,code:0
+msgid "Codi GURB"
+msgstr "Código GURB"
+
+#. module: som_gurb
+#: field:wizard.gurb.create.initial.invoice,state:0
+msgid "State"
+msgstr "State"
+
+#. module: som_gurb
+#: field:som.gurb,pricelist_id:0
+msgid "Preus del GURB"
+msgstr "Precios del GURB"
+
+#. module: som_gurb
+#: selection:som.gurb,state:0
+msgid "Actiu no complet critic"
+msgstr "Activo no completo crítico"
+
+#. module: som_gurb
+#: model:ir.model,name:som_gurb.model_som_gurb_cups_beta
+#: code:addons/som_gurb/models/som_gurb_cups.py:371
+msgid "Log of betas and changes for som.gurb.cups"
+msgstr "Log of betas and changes for som.gurb.cups"
+
+#. module: som_gurb
+#: field:som.gurb,max_power:0
+msgid "Topall max. per contracte (kW)"
+msgstr "Tope max. por contrato (kW)"
+
+#. module: som_gurb
+#: field:som.gurb.cups.beta,active:0
+#: field:som.gurb.general.conditions,active:0
+msgid "Activa"
+msgstr "Activa"
+
+#. module: som_gurb
+#: field:som.gurb,logo:0
+msgid "Logo"
+msgstr "Logo"
+
+#. module: som_gurb
+#: model:ir.actions.report.xml,name:som_gurb.action_report_som_gurb_autoritzacio_representant
+msgid "Generar autoritzacio representant GURB"
+msgstr "Generar autorizacion representante GURB"
+
+#. module: som_gurb
+#: field:som.gurb,first_opening_days:0
+msgid "Dies primera obertura"
+msgstr "Días primera apertura"
+
+#. module: som_gurb
+#: code:addons/som_gurb/wizard/wizard_gurb_create_initial_invoice.py:44
+msgid "No s'han seleccionat IDs"
+msgstr "No se han seleccionado IDs"
+
+#. module: som_gurb
+#: field:som.gurb.cups,owner_cups:0
+msgid "Cups de la persona propietària"
+msgstr "Cups de la persona propietaria"
+
+#. module: som_gurb
+#: constraint:product.template:0
+msgid ""
+"Error: The default UOM and the purchase UOM must be in the same category."
+msgstr "Error: The default UOM and the purchase UOM must be in the same category."
+
+#. module: som_gurb
+#: constraint:product.pricelist:0
+msgid ""
+"Error: La data inici ofertable ha de ser més petita que la data fi ofertable"
+msgstr "Error: La fecha inicio ofertable debe ser anterior a la fecha fin ofertable"
+
+#. module: som_gurb
+#: field:som.gurb.cups,active:0 selection:som.gurb,state:0
+msgid "Actiu"
+msgstr "Activo"
+
+#. module: som_gurb
+#: model:ir.model,name:som_gurb.model_wizard_gurb_create_new_beta
+msgid "wizard.gurb.create.new.beta"
+msgstr "wizard.gurb.create.new.beta"
+
+#. module: som_gurb
+#: field:som.gurb,assigned_betas_kw:0
+msgid "Betes assignades (kW)"
+msgstr "Betas asignadas (kW)"
+
+#. module: som_gurb
+#: code:addons/som_gurb/models/som_gurb_cups.py:150
+msgid "No hi ha pòlisses actives per aquest CUPS"
+msgstr "No hay pólizas activas para este CUPS"
+
+#. module: som_gurb
+#: field:som.gurb.cups,beta_percentage:0
+msgid "Total Beta (%)"
+msgstr "Total Beta (%)"
+
+#. module: som_gurb
+#: selection:som.gurb,state:0
+msgid "En tràmit"
+msgstr "En trámite"
+
+#. module: som_gurb
+#: selection:som.gurb,state:0
+msgid "Esborrany"
+msgstr "Borrador"
+
+#. module: som_gurb
+#: model:ir.model,name:som_gurb.model_som_gurb
+#: code:addons/som_gurb/models/som_gurb.py:43
+msgid "Grup generació urbana"
+msgstr "Grupo generación urbana"
+
+#. module: som_gurb
+#: field:som.gurb,generation_power:0
+msgid "Potència generació"
+msgstr "Potencia generación"
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Reobrir"
+msgstr "Reabrir"
+
+#. module: som_gurb
+#: model:giscedata.polissa.category,name:som_gurb.categ_gurb_pilot
+msgid "GURB Pilot"
+msgstr "GURB Piloto"
+
+#. module: som_gurb
+#: view:wizard.gurb.create.initial.invoice:0
+msgid "Cancel·lar"
+msgstr "Cancelar"
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Tancar primera obertura"
+msgstr "Cerrar primera apertura"
+
+#. module: som_gurb
+#: view:wizard.gurb.create.initial.invoice:0
+msgid "Crear factures"
+msgstr "Crear facturas"
+
+#. module: som_gurb
+#: model:ir.actions.act_window,name:som_gurb.action_som_gurb_cups_tree
+msgid "Tots els CUPS del GURB"
+msgstr "Todos los CUPS del GURB"
+
+#. module: som_gurb
+#: model:ir.actions.report.xml,name:som_gurb.action_report_som_gurb_consentiment_baixa
+msgid "Generar consentiment baixa GURB"
+msgstr "Generar consentimiento baja GURB"
+
+#. module: som_gurb
+#: model:product.template,description:som_gurb.initial_quota_gurb_product_template
+msgid "Cost adhesió"
+msgstr "Coste adhesión"
+
+#. module: som_gurb
+#: constraint:product.pricelist.version:0
+msgid "You cannot have 2 pricelist versions that overlap!"
+msgstr "You cannot have 2 pricelist versions that overlap!"
+
+#. module: som_gurb
+#: field:som.gurb,roof_owner_id:0
+msgid "Propietari teulada"
+msgstr "Propietario tejado"
+
+#. module: som_gurb
+#: selection:som.gurb,state:0
+msgid "Actiu no complet"
+msgstr "Activo no completo"
+
+#. module: som_gurb
+#: model:product.template,name:som_gurb.product_gurb_product_template
+msgid "Producte GURB"
+msgstr "Producto GURB"
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Vols obrir el GURB?"
+msgstr "¿Quieres abrir el GURB?"
+
+#. module: som_gurb
+#: constraint:product.pricelist.item:0
+msgid ""
+"Error ! You cannot assign the Main Pricelist as Other Pricelist in PriceList"
+" Item!"
+msgstr "Error ! You cannot assign the Main Pricelist as Other Pricelist in PriceList Item!"
+
+#. module: som_gurb
+#: code:addons/som_gurb/wizard/wizard_gurb_create_new_beta.py:58
+msgid ""
+"La nova data inici ha de ser més gran que la data inici de la beta activa."
+msgstr "La nueva fecha de inicio debe ser mayor que la fecha de inicio de la beta activa."
+
+#. module: som_gurb
+#: field:som.gurb,has_compensation:0
+msgid "Amb compensació"
+msgstr "Con compensación"
+
+#. module: som_gurb
+#: view:wizard.gurb.create.initial.invoice:0
+msgid "Veure factures"
+msgstr "Ver facturas"
+
+#. module: som_gurb
+#: field:giscedata.switching,_attachments_field:0
+msgid "Attachments"
+msgstr "Attachments"
+
+#. module: som_gurb
+#: code:addons/som_gurb/models/som_gurb.py:195
+msgid "Error al canviar d'estat"
+msgstr "Error al cambiar de estado"
+
+#. module: som_gurb
+#: field:som.gurb.cups,beta_kw:0 field:som.gurb.cups.beta,beta_kw:0
+#: field:wizard.gurb.create.new.beta,beta_kw:0
+msgid "Beta (kW)"
+msgstr "Beta (kW)"
+
+#. module: som_gurb
+#: field:som.gurb.cups,general_conditions_id:0
+msgid "Condicions generals"
+msgstr "Condiciones generales"
+
+#. module: som_gurb
+#: field:som.gurb,self_consumption_state:0
+msgid "Estat"
+msgstr "Estado"
+
+#. module: som_gurb
+#: view:som.gurb:0 view:som.gurb.cups:0
+msgid "General"
+msgstr "General"
+
+#. module: som_gurb
+#: model:ir.ui.menu,name:som_gurb.menu_gurbs
+msgid "Gestió GURB"
+msgstr "Gestión GURB"
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Observacions sobre el GURB"
+msgstr "Observaciones sobre el GURB"
+
+#. module: som_gurb
+#: code:addons/som_gurb/wizard/wizard_gurb_create_new_beta.py:57
+#: code:addons/som_gurb/wizard/wizard_gurb_create_new_beta.py:62
+msgid "Data incorrecte!"
+msgstr "¡Fecha incorrecta!"
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Vols registar el GURB?"
+msgstr "¿Quieres registar al GURB?"
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Altres"
+msgstr "Otros"
+
+#. module: som_gurb
+#: code:addons/som_gurb/wizard/wizard_gurb_create_new_beta.py:42
+msgid "Mateixos valors!"
+msgstr "Mismos valores!"
+
+#. module: som_gurb
+#: field:wizard.gurb.create.initial.invoice,invoice_ids:0
+msgid "IDs de les factures"
+msgstr "IDs de las facturas"
+
+#. module: som_gurb
+#: field:som.gurb,assigned_extra_betas_percentage:0
+msgid "Betes assginades + extres (%)"
+msgstr "Betas asignadas + extras (%)"
+
+#. module: som_gurb
+#: constraint:ir.model:0
+msgid ""
+"The Object name must start with x_ and not contain any special character !"
+msgstr "The Object name must start with x_ and not contain any special character !"
+
+#. module: som_gurb
+#: model:ir.module.module,description:som_gurb.module_meta_information
+msgid "Mòdul per gestionar els grups de generació urbana"
+msgstr "Módulo para gestionar los grupos de generación urbana"
+
+#. module: som_gurb
+#: code:addons/som_gurb/models/som_gurb_cups.py:413
+msgid ""
+"The combination of name and gurb_cups_id must be unique for this register!"
+msgstr "The combination of name and gurb_cups_id must be unique for this register!"
+
+#. module: som_gurb
+#: model:ir.model,name:som_gurb.model_som_gurb_general_conditions
+msgid "som.gurb.general.conditions"
+msgstr "som.gurb.general.conditions"
+
+#. module: som_gurb
+#: field:som.gurb,self_consumption_start_date:0
+msgid "Data alta"
+msgstr "Fecha alta"
+
+#. module: som_gurb
+#: field:som.gurb.cups,extra_beta_kw:0
+#: field:som.gurb.cups.beta,extra_beta_kw:0
+#: field:wizard.gurb.create.new.beta,extra_beta_kw:0
+msgid "Extra Beta (kW)"
+msgstr "Extra Beta (kW)"
+
+#. module: som_gurb
+#: field:som.gurb,self_consumption_id:0
+msgid "CAU"
+msgstr "CAU"
+
+#. module: som_gurb
+#: field:som.gurb,activation_date:0
+msgid "Data activació GURB"
+msgstr "Fecha activación GURB"
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "CUPS del GURB"
+msgstr "CUPS del GURB"
+
+#. module: som_gurb
+#: selection:wizard.gurb.create.initial.invoice,state:0
+msgid "Init"
+msgstr "Init"
+
+#. module: som_gurb
+#: field:som.gurb,related_attachments:0
+msgid "Adjunts relacionats"
+msgstr "Adjuntos relacionados"
+
+#. module: som_gurb
+#: field:wizard.gurb.create.initial.invoice,info:0
+#: view:wizard.gurb.create.initial.invoice:0
+msgid "Informació"
+msgstr "Información"
+
+#. module: som_gurb
+#: code:addons/som_gurb/wizard/wizard_gurb_create_new_beta.py:43
+msgid "S'està creant una beta amb els mateixos valors que la beta anterior."
+msgstr "Se está creando una beta con los mismos valores que la anterior."
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Vols tancar la primera obertura del GURB?"
+msgstr "¿Quieres cerrar la primera apertura del GURB?"
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Canvis realitzats al GURB"
+msgstr "Cambios realizados en el GURB"
+
+#. module: som_gurb
+#: model:product.template,name:som_gurb.product_owner_gurb_product_template
+msgid "Producte GURB persona propietària"
+msgstr "Producto GURB persona propietaria"
+
+#. module: som_gurb
+#: model:product.pricelist,name:som_gurb.pricelist_gurb_demo
+msgid "GURB Demo Pricelist"
+msgstr "GURB Demo Pricelist"
+
+#. module: som_gurb
+#: field:som.gurb,self_consumption_end_date:0
+msgid "Data baixa"
+msgstr "Fecha baja"
+
+#. module: som_gurb
+#: field:som.gurb,sig_data:0
+msgid "Dades SIG"
+msgstr "Datos SIG"
+
+#. module: som_gurb
+#: view:wizard.gurb.create.initial.invoice:0
+msgid "Sortir"
+msgstr "Salir"
+
+#. module: som_gurb
+#: field:som.gurb.cups.beta,name:0
+msgid "Codi modificació"
+msgstr "Código modificación"
+
+#. module: som_gurb
+#: selection:som.gurb,state:0
+msgid "Primera Obertura"
+msgstr "Primera Apertura"
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Tancar reobertura"
+msgstr "Cerrar reapertura"
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Vols reobrir el GURB?"
+msgstr "¿Quieres reabrir el GURB?"
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Tornar a primera obertura"
+msgstr "Volver a primera apertura"
+
+#. module: som_gurb
+#: model:ir.ui.menu,name:som_gurb.menu_agrupacions
+msgid "Agrupacions"
+msgstr "Agrupaciones"
+
+#. module: som_gurb
+#: view:som.gurb.cups.beta:0
+msgid "Betes dels CUPS GURB"
+msgstr "Betas de los CUPS GURB"
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Autoconsum"
+msgstr "Autoconsumo"
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Registrar"
+msgstr "Registrar"
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Vols tramitar el GURB?"
+msgstr "¿Quieres tramitar el GURB?"
+
+#. module: som_gurb
+#: field:som.gurb,zip_code:0
+msgid "Codi postal"
+msgstr "Código postal"
+
+#. module: som_gurb
+#: field:som.gurb.cups,start_date:0
+msgid "Data entrada GURB"
+msgstr "Fecha entrada GURB"
+
+#. module: som_gurb
+#: field:som.gurb,province:0
+msgid "Província"
+msgstr "Provincia"
+
+#. module: som_gurb
+#: model:ir.model,name:som_gurb.model_som_gurb_cups
+#: code:addons/som_gurb/models/som_gurb_cups.py:26
+msgid "CUPS en grup de generació urbana"
+msgstr "CUPS en grupo de generación urbana"
+
+#. module: som_gurb
+#: model:ir.model,name:som_gurb.model_wizard_create_distribution_agreement
+msgid "wizard.create.distribution.agreement"
+msgstr "wizard.create.distribution.agreement"
+
+#. module: som_gurb
+#: field:som.gurb.cups,invoice_state:0
+msgid "Estat factura"
+msgstr "Estado factura"
+
+#. module: som_gurb
+#: view:som.gurb:0
+msgid "Estats"
+msgstr "Estados"
+
+#. module: som_gurb
+#: constraint:product.product:0
+msgid "Error: Invalid ean code"
+msgstr "Error: Invalid ean code"
+
+#. module: som_gurb
+#: model:product.pricelist.version,name:som_gurb.version_pricelist_gurb_demo
+msgid "GURB Demo Pricelist Version"
+msgstr "GURB Demo Pricelist Version"
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:7
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:26
+msgid "Autorització del representant de l’autoconsum col·lectiu"
+msgstr "Autorización al representante del autoconsumo colectivo"
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:28
+msgid ""
+"Atès el que preveu la normativa sectorial aplicable i en particular els "
+"articles 9 i 44 de la Llei 24/2013; els articles 3, 4, 16 bis de l’Annex I "
+"del RD 244/2019; i la disposició transitòria segona de l'Ordre TED "
+"/1247/2021, així com els principis generals, en particular el de llibertat "
+"de forma, i els articles 1710 i 1280 del Codi Civil Espanyol."
+msgstr "Visto lo que prevé la normativa sectorial aplicable y en particular los artículos 9 y 44 de la Ley 24/2013; los artículos 3, 4, 16 bis del Anexo I del RD 244/2019; la disposición transitoria segunda de la Orden TED /1247/2021, así como los principios generales, en particular el de libertad de forma, y los artículos 1710 y 1280 del Código Civil Español."
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:32
+#: rml:som_gurb/report/som_gurb_consentiment_baixa.mako:39
+msgid "major d'edat, amb NIF número"
+msgstr "mayor de edad, con NIF número"
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:32
+#: rml:som_gurb/report/som_gurb_consentiment_baixa.mako:39
+msgid "i domicili a"
+msgstr "y domicilio en"
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:32
+#: rml:som_gurb/report/som_gurb_consentiment_baixa.mako:39
+msgid "actuant en la meva condició de"
+msgstr "actuando en mi condición de"
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:32
+#: rml:som_gurb/report/som_gurb_consentiment_baixa.mako:39
+msgid "REPRESENTANT"
+msgstr "REPRESENTANTE"
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:32
+#: rml:som_gurb/report/som_gurb_consentiment_baixa.mako:39
+msgid ""
+"i manifestant que en aquesta condició disposo de les facultats suficients, "
+"actuant EN NOM I REPRESENTACIÓ DE"
+msgstr "y manifestando que en esta condición dispongo de las facultades suficientes, actuando en NOMBRE Y REPRESENTACIÓN DE"
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:32
+#: rml:som_gurb/report/som_gurb_consentiment_baixa.mako:39
+msgid "amb NIF"
+msgstr "con NIF"
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:32
+#: rml:som_gurb/report/som_gurb_consentiment_baixa.mako:39
+msgid "i domicili social a"
+msgstr "y domicilio social en"
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:32
+#: rml:som_gurb/report/som_gurb_consentiment_baixa.mako:39
+msgid "com a titular del CUPS"
+msgstr "como titular del CUPS"
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:32
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:36
+msgid "(“Autoritzant”)"
+msgstr "(“Autorizante”)"
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:36
+#: rml:som_gurb/report/som_gurb_consentiment_baixa.mako:35
+msgid "major d'edat, amb domicili a"
+msgstr "mayor de edad, con domicilio en"
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:36
+#: rml:som_gurb/report/som_gurb_consentiment_baixa.mako:35
+msgid "i DNI número"
+msgstr "y DNI número"
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:36
+#: rml:som_gurb/report/som_gurb_consentiment_baixa.mako:35
+msgid ""
+"de forma lliure i voluntària i en ple ús de les meves facultats, i en tant "
+"que titular del CUPS"
+msgstr "de forma libre y voluntaria y en pleno uso de mis facultades, y como titular del CUPS"
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:36
+msgid "associat a l'autoconsum col·lectiu CAU"
+msgstr "asociado al autoconsumo colectivo CAU"
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:40
+msgid "AUTORITZO:"
+msgstr "AUTORIZO A:"
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:43
+msgid ""
+"SOM ENERGIA, SCCL, amb NIF F55091367 i domicili social al carrer  Pic de "
+"Peguera 11, planta, 17003 Girona (“Autoritzada”) a actuar com a representant"
+"  integral del meu CUPS en tant que associat a l'autoconsum col·lectiu CAU "
+"provisional"
+msgstr "SOM ENERGIA, SCCL, con NIF F55091367 y domicilio social en la calle Pic de Peguera 11, planta, 17003 Girona (“Autorizada”) a actuar como representante integral del mi CUPS como asociado al autoconsumo colectivo CAU provisional"
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:43
+msgid ""
+"per termini il·limitat, a fi que pugui dur a terme les ACTUACIONS següents:"
+msgstr "por plazo ilimitado, a fin de que pueda realizar las siguientes ACTUACIONES:"
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:47
+msgid ""
+"Signar en nom meu l’acord de repartiment que reculli els coeficients de "
+"repartiment pels quals s'assignen coeficients de repartiment a CUPS de la "
+"meva titularitat, així com qualsevol modificació d'aquests acords."
+msgstr "Firmar en mi nombre el acuerdo de reparto que recoja los coeficientes de reparto por los que se asignan coeficientes de reparto a CUPS de mi titularidad, así como cualquier modificación de estos acuerdos."
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:50
+msgid ""
+"Comunicar directament en nom meu aquest acord de repartiment (i les seves "
+"modificacions), així com el fitxer de coeficients de repartiment "
+"corresponent a l'empresa distribuïdora propietària de la xarxa a la qual em "
+"connecto, així com a l'empresa comercialitzadora amb què tingui en cada "
+"moment contractat el subministrament elèctric."
+msgstr "Comunicar directamente en mi nombre este acuerdo de reparto (y sus modificaciones), así como el fichero de coeficientes de reparto correspondiente a la empresa distribuidora propietaria de la red a la que me conecto y a la empresa comercializadora con la que tenga en cada momento contratado el suministro eléctrico."
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:53
+msgid ""
+"Fer en nom meu qualsevol gestió o comunicació amb la distribuïdora que sigui"
+" necessària, convenient, accessòria o relacionada amb l'aplicació del terme "
+"de descompte per retard en activació d'autoconsum (art. 16.bis Reial decret "
+"244/2019)."
+msgstr "Realizar en mi nombre cualquier gestión o comunicación con la distribuidora que sea necesaria, conveniente, accesoria o relacionada con la aplicación del término de descuento por retraso en activación de autoconsumo (art. 16.bis del Real Decreto 244/2019)."
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:56
+msgid ""
+"Recepcionar i ventilar en nom meu, per qualsevol via, qualsevol comunicació "
+"necessària, convenient, accessòria o relacionada amb les actuacions "
+"indicades més amunt, incloent-hi aquelles per les quals es tractin o "
+"comparteixin els acords de repartiment o les seves modificacions, sigui amb "
+"la distribuïdora, l'Autoritzada o altres signants, presents o futurs."
+msgstr "Recepcionar y ventilar en mi nombre, por cualquier vía, cualquier comunicación necesaria, conveniente, accesoria o relacionada con las actuaciones arriba indicadas, incluidas aquellas por las que se traten o compartan los acuerdos de reparto o sus modificaciones, sea con la distribuidora, la Autorizada u otros firmantes, presentes o futuros."
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:59
+msgid ""
+"Cedir les meves dades personals recollides en aquest document a la resta de "
+"participants en l'autoconsum col·lectiu CAU provisional"
+msgstr "Ceder mis datos personales recogidos en este documento al resto de participantes en el autoconsumo colectivo CAU provisional"
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:59
+msgid ""
+"a les seves respectives comercialitzadores, a la distribuïdora propietària "
+"de la xarxa a la qual es connectin, a les autoritats competents, a l'empresa"
+" instal·ladora o mantenidora de la instal·lació associada, amb la sola "
+"finalitat de gestionar i tramitar l'aplicació de l'acord de repartiment i "
+"l'activació, modificació o baixa de l'autoconsum col·lectiu al qual fa "
+"referència."
+msgstr "a sus respectivas comercializadoras, a la distribuidora propietaria de la red a la que se conecten, a las autoridades competentes, a la empresa instaladora o mantenedora de la instalación asociada, con la sola finalidad de gestionar y tramitar la aplicación del acuerdo de reparto y la activación, modificación o baja del autoconsumo colectivo al que hace referencia."
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:63
+msgid ""
+"Llevat l'obligada cessió indicada, declaro que conec que Som Energia, SCCL, "
+"és la responsable del tractament de les dades personals objecte d'aquesta "
+"autorització, que m'ha informat clarament que les dades no seran cedides, "
+"excepte en els supòsits legalment exigits, que només es conservaran mentre "
+"la present autorització estigui vigent i, una vegada finalitzada aquesta, "
+"dins dels terminis legals previstos. Així mateix, declaro que Som Energia, "
+"SCCL, m'ha informat que puc retirar el meu consentiment en qualsevol moment "
+"i exercir el meu dret d'accés, rectificació, supressió, portabilitat, "
+"limitació i oposició dirigint-me a somenergia@delegado-datos.com (delegat de"
+" protecció de dades). En cas de divergències, puc presentar una reclamació "
+"davant l'Agència de Protecció de Dades (www.aepd.es)."
+msgstr "Salvo la obligada cesión indicada, declaro que conozco que Som Energia, SCCL, es la responsable del tratamiento de los datos personales objeto de esta autorización, que me ha informado claramente de que los datos no serán cedidos, excepto en los supuestos legalmente exigidos, que solo se conservarán mientras la presente autorización esté vigente y, una vez finalizada esta, dentro de los plazos legales previstos. Así mismo, declaro que Som Energia, SCCL, me ha informado de que puedo retirar mi consentimiento en cualquier momento y ejercer mi derecho de acceso, rectificación, supresión, portabilidad, limitación y oposición dirigiéndome a  somenergia@delegado-datos.com (delegado de protección de datos). En caso de divergencias, puedo presentar una reclamación ante la Agencia de Protección de Datos (www.aepd.es)."
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:67
+msgid ""
+"A dur a terme qualsevol altra actuació que, segons el parer de "
+"l'Autoritzada, sigui necessària, convenient, accessòria o relacionada amb "
+"les actuacions indicades més amunt."
+msgstr "A realizar cualquier otra actuación que, según el parecer de la Autorizada, sea necesaria, conveniente, accesoria o relacionada con las actuaciones antes indicadas."
+
+#: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:71
+#: rml:som_gurb/report/som_gurb_consentiment_baixa.mako:51
+msgid "L'Autoritzant"
+msgstr "El Autorizante"
+
+#: rml:som_gurb/report/som_gurb_consentiment_baixa.mako:7
+msgid "CCEE GURB"
+msgstr "CCEE GURB"
+
+#: rml:som_gurb/report/som_gurb_consentiment_baixa.mako:26
+msgid "Annex III"
+msgstr "Anexo III"
+
+#: rml:som_gurb/report/som_gurb_consentiment_baixa.mako:30
+msgid "Confirmació de baixa en autoconsum col·lectiu"
+msgstr "Confirmación de baja en autoconsumo colectivo"
+
+#: rml:som_gurb/report/som_gurb_consentiment_baixa.mako:43
+msgid ""
+"CONFIRMO que tant en el cas de la resolució del Contracte de Subministrament"
+" amb SOM ENERGIA, SCCL, com en el cas de la meva baixa del GURB, segons "
+"preveuen les seves Condicions Específiques, deixaré de formar part de "
+"l’autoconsum col·lectiu CAU que se m’hagi assignat per part de la "
+"distribuïdora i notificat per part de SOM ENERGIA, SCCL, a través de correu "
+"electrònic; per tant, autoritzo SOM ENERGIA, SCCL, com a representant "
+"d’aquest autoconsum col·lectiu, i en particular Núria Palmada García o "
+"qualsevol altra persona apoderada de SOM ENERGIA, SCCL, a fer tots els "
+"tràmits necessaris per gestionar-ne la modificació."
+msgstr "CONFIRMO que tanto en el caso de la resolución del Contrato de Suministro con SOM ENERGIA, SCCL, como  en el caso de mi baja del GURB, según prevén sus Condiciones Específicas, dejaré de formar parte del autoconsumo colectivo CAU que se me haya asignado por parte de la distribuidora y notificado por parte de SOM ENERGIA, SCCL, a través de correo electrónico; por lo tanto, autorizo a SOM ENERGIA, SCCL, como representante de este autoconsumo colectivo, y en particular a Núria Palmada García o cualquier otra persona apoderada de SOM ENERGIA, SCCL, a hacer todos los trámites necesarios para tramitar su modificación."
+
+#: rml:som_gurb/report/som_gurb_consentiment_baixa.mako:47
+msgid "Girona"
+msgstr "Gerona"
