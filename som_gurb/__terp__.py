@@ -23,6 +23,7 @@
     ],
     "update_xml": [
         "data/som_gurb_data.xml",
+        "data/som_gurb_email_template_data.xml",
         "views/som_gurb_cups_view.xml",
         "views/som_gurb_view.xml",
         "views/som_gurb_webview.xml",
@@ -31,6 +32,7 @@
         "wizard/wizard_gurb_create_new_beta_view.xml",
         "wizard/wizard_create_gurb_cups_signature_view.xml",
         "wizard/wizard_gurb_create_initial_invoice_view.xml",
+        "reports/som_gurb_reports.xml",
         "report/som_gurb_reports.xml",
     ],
     "init_xml": [],
