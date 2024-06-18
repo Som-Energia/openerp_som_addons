@@ -3,7 +3,7 @@
 <html lang="es">
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <head>
-        <link rel="stylesheet" href="${addons_path}/som_gurb/reports/som_gurb.css">
+        <link rel="stylesheet" href="${addons_path}/som_gurb/report/som_gurb.css">
         <title>${_(u"CCEE GURB")}</title>
         <style>
             @font-face {
