@@ -20,6 +20,7 @@
                         <field name="beta_percentage" />
                         <field name="owner_cups" />
                         <field name="initial_invoice_id" />
+                        <field name="invoice_state" />
                         <field name="general_conditions_id" />
                     </group>
                     <field name="betas_ids" nolabel="1" colspan="4" readonly="1" />
@@ -38,10 +39,10 @@
                     <field name="beta_kw" />
                     <field name="extra_beta_kw" />
                     <field name="beta_percentage" />
-                    <field name="gurb_id" />
                     <field name="start_date" select="1" />
                     <field name="end_date" select="1" />
                     <field name="owner_cups" />
+                    <field name="invoice_state" />
                 </tree>
             </field>
         </record>

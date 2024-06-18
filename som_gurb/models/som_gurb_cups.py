@@ -346,6 +346,15 @@ class SomGurbCups(osv.osv):
             "Condicions generals",
             required=False,
         ),
+        "invoice_state": fields.related(
+            "initial_invoice_id",
+            "state",
+            type="char",
+            relation="account.invoice",
+            string="Estat factura",
+            store=False,
+            readonly=True,
+        ),
     }
 
     _defaults = {
