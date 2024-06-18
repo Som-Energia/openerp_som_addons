@@ -1,2 +1,3 @@
 https://github.com/gisce/lleida_net_api/archive/master.zip
 mako
+rq==1.12;python_version>"2.7.18"

@@ -59,7 +59,7 @@ class ReportBackendSomGurbDocuments(ReportBackend):
             "year": datetime.now().year,
             "cau": gurb_cups.gurb_id.self_consumption_id.cau,
             "beta_kw": gurb_cups.beta_kw,
-            "beta_percentatge": gurb_cups.beta_percentatge,
+            "beta_percentage": gurb_cups.beta_percentage,
         }
 
         data["is_enterprise"] = partner_o.is_enterprise_vat(pol_br.titular.vat)
@@ -82,13 +82,13 @@ ReportBackendSomGurbDocuments()
 PuppeteerParser(
     "report.report_som_gurb_consentiment_baixa",
     "report.backend.som.gurb.documents",
-    "som_gurb/reports/som_gurb_consentiment_baixa.mako",
+    "som_gurb/report/som_gurb_consentiment_baixa.mako",
     params={},
 )
 
 PuppeteerParser(
     "report.report_som_gurb_autoritzacio_representant",
     "report.backend.som.gurb.documents",
-    "som_gurb/reports/som_gurb_autoritzacio_representant.mako",
+    "som_gurb/report/som_gurb_autoritzacio_representant.mako",
     params={},
 )
