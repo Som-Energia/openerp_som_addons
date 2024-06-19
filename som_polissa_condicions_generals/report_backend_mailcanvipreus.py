@@ -327,8 +327,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
             # "preus_nous": preus_nous,
             # "preus_antics_imp": preus_antics_imp,
             # "preus_nous_imp": preus_nous_imp,
-            # "impostos_str": self.getImpostosString(
-            #     env.polissa_id.fiscal_position_id, context),
+            "impostos_str": self.getImpostosString(
+                env.polissa_id.fiscal_position_id, context),
             "modcon": (
                 env.polissa_id.modcontractuals_ids[0].state == "pendent"
                 and env.polissa_id.mode_facturacio
