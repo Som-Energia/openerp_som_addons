@@ -67,6 +67,8 @@ class TarifaPoolSOM(TarifaPool):
         """
         res = super(TarifaPoolSOM, self).get_available_audit_coefs()
         res['pvpc_gen'] = 'prmdiari'
+        res['sphdem'] = 'sphdem'
+        res['sphauto'] = 'sphauto'
         return res
 
     def phf_calc_generacio(self, curve, start_date):
@@ -88,10 +90,18 @@ class TarifaPoolSOM(TarifaPool):
         if self.geom_zone == '1' or not self.geom_zone:  # Peninsula
             prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         else:
-            filename = 'SphdemDD_{}'.format(SUBSYSTEMS_SPHDEM[self.geom_zone])
-            classname = globals()[filename]
-            sphdem = classname('C2_%(filename)s_%(postfix)s' % locals(), esios_token)  # [€/MWh]
-            prmdiari = sphdem
+            # Subsystems are the same for SPHDEM and SPHAUTO
+            subsystem = SUBSYSTEMS_SPHDEM[self.geom_zone]
+
+            filename_dem = 'SphdemDD_{}'.format(subsystem)
+            classname_dem = globals()[filename_dem]
+            sphdem = classname_dem('C2_%(filename_dem)s_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+
+            filename_auto = 'Sphauto_{}'.format(subsystem)
+            classname_auto = globals()[filename_auto]
+            sphauto = classname_auto('C2_%(filename_auto)s_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+
+            prmdiari = sphdem - sphauto
 
         A = (prmdiari * 0.001)
         B = curve * 0.001
