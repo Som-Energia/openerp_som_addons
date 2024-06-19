@@ -1,4 +1,3 @@
-from __future__ import absolute_import, unicode_literals
 from osv import osv, fields
 import tools
 from tools.translate import _
