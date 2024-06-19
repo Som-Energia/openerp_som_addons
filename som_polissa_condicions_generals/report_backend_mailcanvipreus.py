@@ -207,10 +207,10 @@ class ReportBackendMailcanvipreus(ReportBackend):
         if context is None:
             context = {}
 
-        ir_model_data = self.pool.get("ir.model.data")
-        eie_categ_id = ir_model_data.get_object_reference(
-            cursor, uid, "som_polissa", "categ_entitat_o_empresa"
-        )[1]
+        # ir_model_data = self.pool.get("ir.model.data")
+        # eie_categ_id = ir_model_data.get_object_reference(
+        #     cursor, uid, "som_polissa", "categ_entitat_o_empresa"
+        # )[1]
 
         pol_categories = env.polissa_id.category_id
 
@@ -218,7 +218,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
         for categ in pol_categories:
             categories.append(categ.id)
 
-        return eie_categ_id in categories
+        # return eie_categ_id in categories
+        return False
 
     def get_data_eie(self, cursor, uid, env, context=None):
         if context is None:
@@ -327,8 +328,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
             # "preus_nous": preus_nous,
             # "preus_antics_imp": preus_antics_imp,
             # "preus_nous_imp": preus_nous_imp,
-            # "impostos_str": self.getImpostosString(
-            #     env.polissa_id.fiscal_position_id, context),
+            "impostos_str": self.getImpostosString(
+                env.polissa_id.fiscal_position_id, context),
             "modcon": (
                 env.polissa_id.modcontractuals_ids[0].state == "pendent"
                 and env.polissa_id.mode_facturacio
@@ -637,9 +638,9 @@ class ReportBackendMailcanvipreus(ReportBackend):
     def getImpostosString(self, fiscal_position, context=False):
         res = "IVA del 10%" if context and context.get('iva10') else "IVA del 21%"
         if fiscal_position:
-            if fiscal_position.id in [33, 47, 52]:
+            if fiscal_position.id in [33, 47, 56, 52, 61, 38, 21, 19]:
                 res = "IGIC del 3%"
-            if fiscal_position.id in [34, 48, 53]:
+            if fiscal_position.id in [34, 48, 53, 57, 53, 62, 39, 25]:
                 res = "IGIC del 0%"
         return res
 
