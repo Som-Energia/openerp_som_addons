@@ -403,6 +403,7 @@ class SomGurbCups(osv.osv):
             store=False,
             readonly=True,
         ),
+        "signat": fields.boolean("Signat", readonly=1)
     }
 
     _defaults = {
