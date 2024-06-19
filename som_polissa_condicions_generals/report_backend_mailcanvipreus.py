@@ -207,19 +207,9 @@ class ReportBackendMailcanvipreus(ReportBackend):
         if context is None:
             context = {}
 
-        # ir_model_data = self.pool.get("ir.model.data")
-        # eie_categ_id = ir_model_data.get_object_reference(
-        #     cursor, uid, "som_polissa", "categ_entitat_o_empresa"
-        # )[1]
+        pol_llista = env.polissa_id.llista_preu.id
 
-        pol_categories = env.polissa_id.category_id
-
-        categories = []
-        for categ in pol_categories:
-            categories.append(categ.id)
-
-        # return eie_categ_id in categories
-        return False
+        return pol_llista in [56, 127, 128, 148]
 
     def get_data_eie(self, cursor, uid, env, context=None):
         if context is None:
