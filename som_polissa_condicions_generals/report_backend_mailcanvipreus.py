@@ -246,10 +246,10 @@ class ReportBackendMailcanvipreus(ReportBackend):
             cursor, uid, env.polissa_id, with_taxes=True, context=context
         )['tp'].values())
 
-        cost_potencia = preu_potencia * potencia
+        # cost_potencia = preu_potencia * potencia
 
-        import_total_anual_antiga = (preu_mitja_antic * conany) + cost_potencia
-        import_total_anual_nova = (preu_mitja_nou * conany) + cost_potencia
+        import_total_anual_antiga = (preu_mitja_antic * conany)
+        import_total_anual_nova = (preu_mitja_nou * conany)
         impacte_import = import_total_anual_nova - import_total_anual_antiga
 
         import_total_anual_antiga_amb_impost = import_total_anual_antiga * 1.015 * 1.21
