@@ -1,9 +1,4 @@
 <%def name="indexada_ca()">
-<div id="capcelera" style="margin-top: 20px;position: relative;">
-    <div id="logo_capcelera" style="width: 22%;height: auto;display: inline-block;vertical-align: middle;">
-        <img id="logo" src="${addons_path}/som_polissa_condicions_generals/report/assets/logo.png"/>
-    </div>
-</div>
 <br>
 <br>
 <div id="titol">

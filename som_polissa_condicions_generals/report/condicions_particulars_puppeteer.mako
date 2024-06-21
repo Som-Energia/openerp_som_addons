@@ -50,17 +50,17 @@
                         ${footer(informe['polissa'], informe['titular'])}
                         <p style="page-break-after:always;"></p>
                         %if informe['titular']['lang'] == 'ca_ES':
+                            ${generals_ca()}
                             %if informe['prices']['mostra_indexada']:
                                 ${indexada_ca()}
                                 <p style="page-break-after:always;"></p>
                             %endif
-                            ${generals_ca()}
                         %else:
+                            ${generals_es()}
                             %if informe['prices']['mostra_indexada']:
                                 ${indexada_es()}
                                 <p style="page-break-after:always;"></p>
                             %endif
-                            ${generals_es()}
                         %endif
                     </div>
                 </div>

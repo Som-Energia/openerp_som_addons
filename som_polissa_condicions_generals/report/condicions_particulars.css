@@ -170,6 +170,8 @@ h3 {
 .content_generals {
     text-align: justify;
     font-size: 11px;
+    margin-left: 15px;
+    margin-right: 15px;
 }
 
 a {
