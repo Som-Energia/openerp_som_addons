@@ -209,12 +209,7 @@ class SomInfoenergiaEnviament(osv.osv):
             "infoenergia.infoenergia_send",
             job_ids,
         )
-        amax_proc = int(
-            self.pool.get("res.config").get(cursor, uid, "infoenergia_send_tasks_max_procs", "0")
-        )
-        if not amax_proc:
-            amax_proc = None
-        aw = AutoWorker(queue="infoenergia_send", default_result_ttl=24 * 3600, max_procs=amax_proc)
+        aw = AutoWorker(queue="infoenergia_send", default_result_ttl=24 * 3600)
         aw.work()
 
     def send_single_report(self, cursor, uid, _id, context=None):

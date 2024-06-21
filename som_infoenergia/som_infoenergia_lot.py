@@ -126,16 +126,8 @@ class SomInfoenergiaLotEnviament(osv.osv):
             "infoenergia.create_enviaments",
             job_ids,
         )
-        amax_proc = int(
-            self.pool.get("res.config").get(
-                cursor, uid, "infoenergia_create_enviaments_tasks_max_procs", "0"
-            )
-        )
-        if not amax_proc:
-            amax_proc = None
         aw = AutoWorker(
-            queue="infoenergia_create_enviament", default_result_ttl=24 * 3600, max_procs=amax_proc
-        )
+            queue="infoenergia_create_enviament", default_result_ttl=24 * 3600)
         aw.work()
 
         return True
