@@ -9,7 +9,6 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='activate_leads']" position="replace">
                     <field name="llista_preus" colspan="2"/>
-                    <field name="condicions_generals_id" colspan="2"/>
                     <field name="atr_proces_name" colspan="2"/>
                 </xpath>
             </field>
