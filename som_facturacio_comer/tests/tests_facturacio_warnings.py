@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from expects import expect
 from expects import contain
-from destral import testing
+from giscedata_facturacio_indexada.tests import IndexadaTestBase
 from destral.transaction import Transaction
 
 
-class TestsFacturesValidation(testing.OOTestCase):
+class TestsFacturesValidation(IndexadaTestBase):
     def setUp(self):
         self.openerp.pool.get("giscedata.facturacio.factura")
         self.openerp.pool.get("giscedata.facturacio.factura.linia")
