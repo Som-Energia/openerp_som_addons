@@ -8,5 +8,6 @@ from tests_wizard_comment_to_F1 import *
 from tests_wizard_switching_b1 import *
 from tests_wizard_import_atr_and_f1 import *
 from tests_unlink_atc import *
+from tests_unlink_switching import *
 from tests_wizard_validate_d101 import *
 from tests_wizard_reexport_log import *
