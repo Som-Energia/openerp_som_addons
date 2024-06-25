@@ -29,7 +29,7 @@ ReportBackendCondicionsParticularsM1()
 
 
 PuppeteerParser(
-    'report.report_condicions_particulars_m1',
+    'report.somenergia.polissa_m101',
     'report.backend.condicions.particulars.m1',
     'som_polissa_condicions_generals/report/condicions_particulars_puppeteer.mako',
     params={}
