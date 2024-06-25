@@ -24,7 +24,6 @@
         "giscedata_polissa_condicions_generals_data.xml",
         "giscedata_polissa_condicions_generals_report.xml",
         "security/ir.model.access.csv",
-        "report/som_polissa_condicions_generals.xml",
     ],
     "active": False,
     "installable": True,
