@@ -196,7 +196,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
             cursor, uid, search_params, context=context
         )
 
-        res = 0
+        res = {'k_old': 0, 'k_new': 0}
         if k_change_id:
             res = som_polissa_k_change_obj.read(
                 cursor, uid, k_change_id[0], ['k_old', 'k_new'], context=context
