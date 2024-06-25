@@ -724,8 +724,30 @@ class ReportBackendMailcanvipreus(ReportBackend):
             33, 34, 47, 56, 48, 57, 52, 61, 53, 62, 39, 38, 25, 21, 19
         ]
 
+    def _get_list_cups_balears(self, cursor, uid, context=None):
+        xml_id_prov_balears = "ES07"
+        IrModel = self.pool.get("ir.model.data")
+        id_prov_balears = IrModel._get_obj(
+            cursor,
+            uid,
+            "l10n_ES_toponyms",
+            xml_id_prov_balears,
+        ).id
+
+        sql_array = """
+            select array_agg(gcp.id) as cup_ids
+            from giscedata_cups_ps gcp
+            inner join res_municipi rm on rm.id = gcp.id_municipi
+            inner join res_country_state rcs on rcs.id = rm.state
+            where rcs.id = %s and gcp.active=True
+        """
+        cursor.execute(sql_array, (id_prov_balears,))
+        res = cursor.dictfetchone()["cup_ids"]
+        return res or []
+
     def esBalears(self, cursor, uid, env, context=False):
-        return env.polissa_id.llista_preu.id in [127]
+        # return env.polissa_id.llista_preu.id in [127]
+        return env.polissa_id.cups.id in self._get_list_cups_balears(cursor, uid)
 
     def getTarifaCorreu(self, cursor, uid, env, context=False):
         data = {
