@@ -324,5 +324,36 @@
                 </xpath>
             </field>
         </record>
+
+        <!-- Vista mostrar llistat desde CSV -->
+        <record model="ir.ui.view" id="view_giscedata_polissa_list_from_file_tree">
+            <field name="name">giscedata.polissa.list.from.file.tree</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="type">tree</field>
+            <field name="priority" eval="10"/>
+            <field name="arch" type="xml">
+                <tree string="Llistat Pòlisses">
+                    <field name="name"/>
+                    <field name="state"/>
+                    <field name="pending_state"/>
+                    <field name="pending_amount"/>
+                    <field name="data_tall"/>
+                    <field name="info_gestio_endarrerida_curta" string="Gest. Endarrerida"/>
+                    <field name="titular"/>
+                    <field name="cups_direccio"/>
+                    <field name="tarifa"/>
+                    <field name="potencia"/>
+                    <field name="nocutoff"/>
+                    <field name="unpaid_invoices"/>
+                    <field name="data_ultima_lectura"/>
+                    <field name="autoreclama_state" select="2"/>
+                    <field name="refacturacio_pendent"/>
+                    <field name="data_alta"/>
+                    <field name="observacio_suspesa"/>
+                    <field name="resum_observacions_comptables"/>
+                    <field name="data_ultima_factura" />
+                </tree>
+            </field>
+        </record>
     </data>
 </openerp>

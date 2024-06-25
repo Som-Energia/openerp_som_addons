@@ -14,9 +14,9 @@ def up(cursor, installed_version):
 
     logger.info("Updating XMLs")
     load_data_records(
-        cursor, "base_extended_som",
-        "res_partner_view.xml",
-        ["view_res_partner_list_from_file_tree"], mode="update"
+        cursor, "som_polissa",
+        "giscedata_polissa_view.xml",
+        ["view_giscedata_polissa_list_from_file_tree"], mode="update"
     )
     logger.info("XMLs succesfully updatd.")
 

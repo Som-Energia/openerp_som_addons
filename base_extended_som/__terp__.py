@@ -15,7 +15,6 @@
     ],
     "update_xml": [
         "res_partner_view.xml",
-        "giscedata_polissa_view.xml",
     ],
     "active": False,
     "installable": True,
