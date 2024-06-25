@@ -84,8 +84,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
         ("preus_antics_imp", "tp", "P4"): 3,
         ("preus_antics_imp", "tp", "P5"): 3,
         ("preus_antics_imp", "tp", "P6"): 3,
-        ("dades_index", "f_antiga"): 2,
-        ("dades_index", "f_nova"): 2,
+        ("dades_index", "f_antiga"): 3,
+        ("dades_index", "f_nova"): 3,
         ("dades_index", "f_antiga_eie"): 6,
         ("dades_index", "f_nova_eie"): 6,
         ("preu_nou",): 0,
@@ -124,8 +124,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "conany": 10000,
             "pot_contractada": 14,
             "preu_pot_contractada": 37.89701,
-            "f_antiga": 0.16,
-            "f_nova": 0.16,
+            "f_antiga": 0.016,
+            "f_nova": 0.016,
             "preu_mig_anual_antiga": 136.26,
             "preu_mig_anual_nova": 142.08,
             "import_total_anual_antiga": 1893.17,
@@ -144,8 +144,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "conany": 15000,
             "pot_contractada": 20,
             "preu_pot_contractada": 62.382142,
-            "f_antiga": 0.16,
-            "f_nova": 0.16,
+            "f_antiga": 0.016,
+            "f_nova": 0.016,
             "preu_mig_anual_antiga": 122.30,
             "preu_mig_anual_nova": 127.56,
             "import_total_anual_antiga": 3082.07,
@@ -164,8 +164,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "conany": 10000,
             "pot_contractada": 14,
             "preu_pot_contractada": 7.005884,
-            "f_antiga": 0.16,
-            "f_nova": 0.16,
+            "f_antiga": 0.016,
+            "f_nova": 0.016,
             "preu_mig_anual_antiga": 157.78,
             "preu_mig_anual_nova": 163.60,
             "import_total_anual_antiga": 1675.85,
@@ -196,6 +196,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
             cursor, uid, search_params, context=context
         )
 
+        res = {'k_old': 0, 'k_new': 0}
         if k_change_id:
             res = som_polissa_k_change_obj.read(
                 cursor, uid, k_change_id[0], ['k_old', 'k_new'], context=context
@@ -245,10 +246,10 @@ class ReportBackendMailcanvipreus(ReportBackend):
             cursor, uid, env.polissa_id, with_taxes=True, context=context
         )['tp'].values())
 
-        cost_potencia = preu_potencia * potencia
+        # cost_potencia = preu_potencia * potencia
 
-        import_total_anual_antiga = (preu_mitja_antic * conany) + cost_potencia
-        import_total_anual_nova = (preu_mitja_nou * conany) + cost_potencia
+        import_total_anual_antiga = (preu_mitja_antic * conany)
+        import_total_anual_nova = (preu_mitja_nou * conany)
         impacte_import = import_total_anual_nova - import_total_anual_antiga
 
         import_total_anual_antiga_amb_impost = import_total_anual_antiga * 1.015 * 1.21
@@ -723,8 +724,30 @@ class ReportBackendMailcanvipreus(ReportBackend):
             33, 34, 47, 56, 48, 57, 52, 61, 53, 62, 39, 38, 25, 21, 19
         ]
 
+    def _get_list_cups_balears(self, cursor, uid, context=None):
+        xml_id_prov_balears = "ES07"
+        IrModel = self.pool.get("ir.model.data")
+        id_prov_balears = IrModel._get_obj(
+            cursor,
+            uid,
+            "l10n_ES_toponyms",
+            xml_id_prov_balears,
+        ).id
+
+        sql_array = """
+            select array_agg(gcp.id) as cup_ids
+            from giscedata_cups_ps gcp
+            inner join res_municipi rm on rm.id = gcp.id_municipi
+            inner join res_country_state rcs on rcs.id = rm.state
+            where rcs.id = %s and gcp.active=True
+        """
+        cursor.execute(sql_array, (id_prov_balears,))
+        res = cursor.dictfetchone()["cup_ids"]
+        return res or []
+
     def esBalears(self, cursor, uid, env, context=False):
-        return env.polissa_id.llista_preu.id in [127]
+        # return env.polissa_id.llista_preu.id in [127]
+        return env.polissa_id.cups.id in self._get_list_cups_balears(cursor, uid)
 
     def getTarifaCorreu(self, cursor, uid, env, context=False):
         data = {
