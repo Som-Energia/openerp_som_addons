@@ -6,7 +6,7 @@
             <field name="name">giscedata.polissa.list.from.file.tree</field>
             <field name="model">giscedata.polissa</field>
             <field name="type">tree</field>
-            <field name="priority" eval="10"/>
+            <field name="priority" eval="99"/>
             <field name="arch" type="xml">
                 <tree string="Llistat Pòlisses">
                     <field name="name"/>

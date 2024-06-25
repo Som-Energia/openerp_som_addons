@@ -6,7 +6,7 @@
             <field name="name">res.partner.list.from.file.tree</field>
             <field name="model">res.partner</field>
             <field name="type">tree</field>
-            <field eval="10" name="priority"/>
+            <field eval="99" name="priority"/>
             <field name="arch" type="xml">
                 <tree string="Partners">
                     <field name="name"/>
