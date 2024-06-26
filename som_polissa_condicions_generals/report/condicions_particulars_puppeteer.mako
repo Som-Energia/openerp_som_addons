@@ -10,6 +10,7 @@
 <%namespace file="som_polissa_condicions_generals/report/condiciones_generales.mako" import="generals_es"/>
 <%namespace file="som_polissa_condicions_generals/report/condicions_especifiques_indexada.mako" import="indexada_ca"/>
 <%namespace file="som_polissa_condicions_generals/report/condiciones_especificas_indexada.mako" import="indexada_es"/>
+<%namespace file="som_polissa_condicions_generals/report/components/gurb.mako" import="gurb"/>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -45,6 +46,9 @@
                         ${contact_info(informe['titular'], informe['cups'])}
                         ${potencies_info(informe['polissa'], informe['potencies'])}
                         ${prices_info(informe['polissa'], informe['prices'])}
+                        %if "gurb" in informe:
+                            ${gurb(informe['gurb'])}
+                        %endif
                         ${payment_info(informe['polissa'])}
                         ${disclaimers(informe['polissa'])}
                         ${footer(informe['polissa'], informe['titular'])}

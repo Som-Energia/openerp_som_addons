@@ -5,3 +5,4 @@ from . import som_gurb_cups
 from . import giscedata_switching
 from . import giscedata_facturacio
 from . import report_backend_som_gurb_documents
+from . import report_backend_ccpp

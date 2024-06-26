@@ -16,6 +16,7 @@
         "giscedata_polissa_representante",
         "som_poweremail_common_templates",
         "giscedata_signatura_documents_signaturit",
+        "som_polissa_condicions_generals"
     ],
     "demo_xml": [
         "demo/som_gurb_service_demo.xml",
