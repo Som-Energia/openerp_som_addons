@@ -1,7 +1,7 @@
 <%def name="contact_info(titular, cups)">
     <div class="contact_info">
         <div class="persona_titular styled_box ${"width33" if titular['diferent'] else "width49"}">
-            <h5>${_("PERSONA TITULAR")}</h5>
+            <h5>${_(u"PERSONA TITULAR")}</h5>
             <div class="inside_styled_box">
                 <b>${_(u"Nom/Raó social: ")}</b>
                 ${titular['client_name']}<br/>
@@ -23,7 +23,7 @@
         </div>
 
         <div class="dades_subministrament styled_box ${"width33" if titular['diferent'] else "width49"}">
-            <h5> ${_("DADES DEL PUNT DE SUBMINISTRAMENT")} </h5>
+            <h5> ${_(u"DADES DEL PUNT DE SUBMINISTRAMENT")} </h5>
 
             <div class="inside_styled_box">
                 <b>${_(u"Adreça: ")}</b>
@@ -47,7 +47,7 @@
 
         %if titular['diferent']:
         <div class="dades_de_contacte styled_box ${"width33" if titular['diferent'] else "width49"}">
-            <h5> ${_("DADES DE CONTACTE")} </h5>
+            <h5> ${_(u"DADES DE CONTACTE")} </h5>
             <div class="inside_styled_box">
                 <b>${_(u"Nom/Raó social: ")}</b>
                 ${titular['name_envio']}<br/>

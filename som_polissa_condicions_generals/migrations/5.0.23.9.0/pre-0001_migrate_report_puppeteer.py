@@ -31,15 +31,17 @@ def up(cursor, installed_version):
         "value_report_contracte_m101",
     ]
     load_data_records(
-        cursor, "som_polissa_condicions_generals_m101",
-        "giscedata_polissa_condicions_generals_m101_report.xml", list_of_records, mode="update"
+        cursor, "som_polissa_condicions_generals",
+        "report/giscedata_polissa_condicions_generals_m101_report.xml",
+        list_of_records, mode="update"
     )
     logger.info("giscedata_polissa_condicions_generals_m101_report.xml successfully updated")
 
     # Actualitzar tots els permisos
     logger.info("Updating access CSV")
     load_data(
-        cursor, 'som_template', 'security/ir.model.access.csv', idref=None, mode='update'
+        cursor, 'som_polissa_condicions_generals', 'security/ir.model.access.csv',
+        idref=None, mode='update'
     )
     logger.info("CSV succesfully updated.")
 

@@ -1,6 +1,6 @@
 <%def name="potencies_info(polissa, potencies)">
     <div class="peatge_acces styled_box">
-        <h5> ${_("PEATGE I CÀRRECS (definits a la Circular de la CNMC 3/2020 i al Reial decret 148/2021)")} </h5>
+        <h5> ${_(u"PEATGE I CÀRRECS (definits a la Circular de la CNMC 3/2020 i al Reial decret 148/2021)")} </h5>
         <div class="peatge_access_content">
             <div class="padding_left"><b>${_(u"Peatge de transport i distribució: ")}</b>${polissa['tarifa']}</div>
             <div class="padding_left"><b>${_(u"Tipus de contracte: ")}</b> ${polissa['contract_type']} ${"({0})".format(potencies['autoconsum']) if polissa['auto'] != '00' else ""}</div>

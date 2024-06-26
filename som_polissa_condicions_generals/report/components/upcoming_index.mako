@@ -2,9 +2,9 @@
     <div class="styled_box">
     %for pricelist in prices['pricelists']:
         %if polissa['tarifa'] == "2.0TD":
-            <h5> ${_("TARIFES D'ELECTRICITAT (vigents a partir del 01/08/2024)")}</h5>
+            <h5> ${_(u"TARIFES D'ELECTRICITAT (vigents a partir del 01/08/2024)")}</h5>
         %else:
-            <h5> ${_("TARIFES D'ELECTRICITAT SENSE IMPOSTOS (vigents a partir del 01/08/2024)")}</h5>
+            <h5> ${_(u"TARIFES D'ELECTRICITAT SENSE IMPOSTOS (vigents a partir del 01/08/2024)")}</h5>
         %endif
         <div class="tarifes_electricitat">
             <table class="taula_custom new_taula_custom">
@@ -34,7 +34,7 @@
                     % endif
                 </tr>
                 <tr>
-                    <td class="bold">${_("Terme potència (€/kW i any)")}</td>
+                    <td class="bold">${_(u"Terme potència (€/kW i any)")}</td>
                     %if polissa['tarifa'] == "2.0TD":
                         %if polissa['pricelist']:
                             <td class="center ">
@@ -107,7 +107,7 @@
                     %endif
             %endif
                     <tr>
-                        <td class="bold">${_("Terme energia (€/kWh)")}</td>
+                        <td class="bold">${_(u"Terme energia (€/kWh)")}</td>
                     %if prices['mostra_indexada']:
                         <td class="center reset_line_height" colspan="6">
                             <span class="normal_font_weight">
@@ -189,7 +189,7 @@
                 <!-- INICI Bloc Generationkwh -->
                 %if polissa['te_assignacio_gkwh']:
                 <tr>
-                    <td class="bold">${_("(1) GenerationkWh (€/kWh)")}</td>
+                    <td class="bold">${_(u"(1) GenerationkWh (€/kWh)")}</td>
                     %for p in polissa['periodes_energia']:
                         %if polissa['pricelist']:
                             <td class="center">
@@ -228,7 +228,7 @@
                 <!-- INICI Bloc Auto -->
                 %if polissa['auto'] != '00':
                 <tr>
-                    <td class="bold">${_("Excedents d'autoconsum (€/kWh)")}</td>
+                    <td class="bold">${_(u"Excedents d'autoconsum (€/kWh)")}</td>
                     %if (polissa['mode_facturacio'] == 'index' and not polissa['modcon_pendent_periodes']) or polissa['modcon_pendent_indexada']:
                         <td class="center" colspan="6">
                             <span class="normal_font_weight">${_(u"Tarifa indexada(2) - el preu horari de la compensació d'excedents és igual al PHM")}</span>
@@ -268,10 +268,10 @@
             </table>
             <div class="padding_top padding_left padding_right">
             %if polissa['te_assignacio_gkwh']:
-                <span class="bold">(1) </span> ${_("Terme d'energia en cas de participar-hi, segons condicions del contracte GenerationkWh.")}<br/>
+                <span class="bold">(1) </span> ${_(u"Terme d'energia en cas de participar-hi, segons condicions del contracte GenerationkWh.")}<br/>
             %endif
             %if (polissa['mode_facturacio'] == 'index' and not polissa['modcon_pendent_periodes']) or polissa['modcon_pendent_indexada']:
-                <span class="bold">(2) </span> ${_("Pots consultar el significat de les variables a les condicions específiques que trobaràs a continuació.")}
+                <span class="bold">(2) </span> ${_(u"Pots consultar el significat de les variables a les condicions específiques que trobaràs a continuació.")}
             %endif
             </div>
         </div>
@@ -282,7 +282,7 @@
 
         <!-- INICI Bloc amb impostos de 3.X i 6.X -->
         %if polissa['tarifa'] != "2.0TD":
-            <h5> ${_("TARIFES D'ELECTRICITAT AMB IMPOSTOS")} ${pricelist['text_impostos']} ${_(" (vigents a partir del 01/08/2024)")}</h5>
+            <h5> ${_(u"TARIFES D'ELECTRICITAT AMB IMPOSTOS")} ${pricelist['text_impostos']} ${_(u" (vigents a partir del 01/08/2024)")}</h5>
             <div class="tarifes_electricitat">
                 <table class="taula_custom new_taula_custom">
                     <tr style="background-color: #878787;">
@@ -295,7 +295,7 @@
                         <th>P6</th>
                     </tr>
                     <tr>
-                        <td class="bold">${_("Terme potència (€/kW i any)")}</td>
+                        <td class="bold">${_(u"Terme potència (€/kW i any)")}</td>
                         %for p in polissa['periodes_potencia']:
                             %if polissa['pricelist']:
                                 <td class="center">
@@ -315,7 +315,7 @@
                         %endfor
                     </tr>
                     <tr>
-                        <td class="bold">${_("Terme energia (€/kWh)")}</td>
+                        <td class="bold">${_(u"Terme energia (€/kWh)")}</td>
                         %if prices['mostra_indexada']:
                             <td class="center reset_line_height" colspan="6">
                                 <span class="normal_font_weight">
@@ -349,7 +349,7 @@
                     </tr>
                     %if polissa['te_assignacio_gkwh']:
                     <tr>
-                        <td class="bold">${_("(1) GenerationkWh (€/kWh)")}</td>
+                        <td class="bold">${_(u"(1) GenerationkWh (€/kWh)")}</td>
                         %for p in polissa['periodes_energia']:
                             %if polissa['pricelist']:
                                 <td class="center">
@@ -365,7 +365,7 @@
                     %endif
                     %if polissa['auto'] != '00':
                     <tr>
-                        <td><span class="bold">${_("Excedents d'autoconsum (€/kWh)")}</span></td>
+                        <td><span class="bold">${_(u"Excedents d'autoconsum (€/kWh)")}</span></td>
                         %if (polissa['mode_facturacio'] == 'index' and not polissa['modcon_pendent_periodes']) or polissa['modcon_pendent_indexada']:
                             <td class="center reset_line_height" colspan="6">
                                 <span class="normal_font_weight">${_(u"Tarifa indexada(2) - el preu horari de la compensació d'excedents és igual al PHM")}</span>
@@ -386,10 +386,10 @@
                 </table>
                 <div class="padding_top padding_left padding_right">
                 %if polissa['te_assignacio_gkwh']:
-                    <span class="bold">(1) </span> ${_("Terme d'energia en cas de participar-hi, segons condicions del contracte GenerationkWh.")}<br/>
+                    <span class="bold">(1) </span> ${_(u"Terme d'energia en cas de participar-hi, segons condicions del contracte GenerationkWh.")}<br/>
                 %endif
                 %if (polissa['mode_facturacio'] == 'index' and not polissa['modcon_pendent_periodes']) or polissa['modcon_pendent_indexada']:
-                    <span class="bold">(2) </span> ${_("Pots consultar el significat de les variables a les condicions específiques que trobaràs a continuació.")}
+                    <span class="bold">(2) </span> ${_(u"Pots consultar el significat de les variables a les condicions específiques que trobaràs a continuació.")}
                 %endif
                 </div>
             </div>

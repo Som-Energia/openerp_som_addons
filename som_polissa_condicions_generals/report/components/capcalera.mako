@@ -39,7 +39,7 @@
         <div class="esborrany_warning">
             <img src="${addons_path}/som_polissa_condicions_generals/report/assets/warning_icon.png"/>
             <h2>
-                ${_("LES DADES D'AQUEST CONTRACTE ESTAN PENDENTS DE VALIDACIÓ.")}
+                ${_(u"LES DADES D'AQUEST CONTRACTE ESTAN PENDENTS DE VALIDACIÓ.")}
             </h2>
             <h3>
                 ${_(u"Les tarifes que s’aplicaran seran les vigents al moment d'activar el contracte.")}
