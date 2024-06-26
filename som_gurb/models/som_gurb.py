@@ -356,6 +356,9 @@ class SomGurb(osv.osv):
             relation="ir.attachment"
         ),
         "pricelist_id": fields.many2one("product.pricelist", "Preus del GURB"),
+        "initial_product_id": fields.many2one("product.product", "Producte quota inicial"),
+        "quota_product_id": fields.many2one("product.product", "Produce quota mensual"),
+
     }
     _defaults = {
         "logo": lambda *a: False,

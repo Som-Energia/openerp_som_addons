@@ -17,7 +17,7 @@
             </field>
         </record>
         <record id="report_contracte_m101" model="ir.actions.report.xml">
-            <field name="report_type">webkit</field>
+            <field name="report_type">pdf</field>
             <field name="report_name">somenergia.polissa_m101</field>
             <field eval="[(6,0,[])]" name="groups_id"/>
             <field eval="0" name="multi"/>
@@ -25,13 +25,19 @@
             <field eval="0" name="header"/>
             <field name="type">ir.actions.report.xml</field>
             <field name="name">Contracte</field>
-            <field name="report_webkit"
-            eval="'som_polissa_condicions_generals_m101/report/condicions_particulars_m101.mako'"/>
-            <field name="webkit_header" ref="webkit_header"/>
+            <field name="report_webkit" eval=""/>
+            <field name="webkit_header" eval="0"/>
             <field name="report_rml" eval="False"/>
             <field name="report_xsl" eval='False'/>
             <field name="report_xml" eval='False'/>
             <field name="model">giscedata.switching</field>
+        </record>
+        <record id="value_report_contracte_m101" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">somenergia.polissa_m101</field>
+            <field name="key2">client_print_multi</field>
+            <field name="model">giscedata.switching</field>
+            <field name="value" eval="'ir.actions.report.xml,'+str(ref('report_contracte_m101'))"/>
         </record>
     </data>
 </openerp>
