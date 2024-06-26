@@ -802,21 +802,21 @@ class ReportBackendMailcanvipreus(ReportBackend):
                     data["Indexada20TDBalears"] = True
                 else:
                     data['Indexada20TDPeninsula'] = True
-            elif "3.0TD" in tarifa:
+            if "3.0TD" in tarifa:
                 if self.esCanaries(cursor, uid, env):
                     data["Indexada30TDCanaries"] = True
                 elif self.esBalears(cursor, uid, env):
                     data["Indexada30TDBalears"] = True
                 else:
                     data["Indexada30TDPeninsula"] = True
-            elif "6.1TD" in tarifa:
+            if "6.1TD" in tarifa:
                 if self.esCanaries(cursor, uid, env):
                     data["Indexada61TDCanaries"] = True
                 elif self.esBalears(cursor, uid, env):
                     data["Indexada61TDBalears"] = True
                 else:
                     data["Indexada61TDPeninsula"] = True
-            elif "3.0TDVE" in tarifa:
+            if "3.0TDVE" in tarifa:
                 if self.esCanaries(cursor, uid, env):
                     data["Indexada30TDVECanaries"] = True
                 elif self.esBalears(cursor, uid, env):
