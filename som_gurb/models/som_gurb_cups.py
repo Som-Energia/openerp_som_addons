@@ -11,7 +11,7 @@ class SomGurbGeneralConditions(osv.osv):
 
     _columns = {
         "active": fields.boolean("Activa"),
-        "name": fields.char("Nom", size=64, readonly=True),
+        "name": fields.char("Nom", size=64, readonly=False),
         "attachment_id": fields.many2one("ir.attachment", "Document", required=True),
         "lang_id": fields.many2one("res.lang", "Idioma", required=True),
     }
