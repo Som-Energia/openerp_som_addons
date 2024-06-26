@@ -818,10 +818,13 @@ class ReportBackendMailcanvipreus(ReportBackend):
                     data["Indexada61TDPeninsula"] = True
             if "3.0TDVE" in tarifa:
                 if self.esCanaries(cursor, uid, env):
+                    data["Indexada30TDCanaries"] = False
                     data["Indexada30TDVECanaries"] = True
                 elif self.esBalears(cursor, uid, env):
+                    data["Indexada30TDBalears"] = False
                     data["Indexada30TDVEBalears"] = True
                 else:
+                    data["Indexada30TDPeninsula"] = False
                     data["Indexada30TDVEPeninsula"] = True
             data["indexada"] = True
         else:
