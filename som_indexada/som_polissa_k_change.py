@@ -85,16 +85,16 @@ class SomPolissaKChange(osv.osv):
         preu_mitja_antic = (1.015 * f_antiga + factor_eie_preu_antic) / 1000
         preu_mitja_nou = (1.015 * f_nova + factor_eie_preu_nou) / 1000
 
-        conany = pol.cups.conany_kwh
+        conany = pol.cups.conany_kwh if pol.cups.conany_kwh > 0 else 1
         potencia = pol.potencia
         preu_potencia = sum(self.get_preus(
             cursor, uid, pol, with_taxes=True, context=context
         )['tp'].values())
 
-        cost_potencia = preu_potencia * potencia
+        # cost_potencia = preu_potencia * potencia
 
-        import_total_anual_antiga = (preu_mitja_antic * conany) + cost_potencia
-        import_total_anual_nova = (preu_mitja_nou * conany) + cost_potencia
+        import_total_anual_antiga = (preu_mitja_antic * conany)
+        import_total_anual_nova = (preu_mitja_nou * conany)
         impacte_import = import_total_anual_nova - import_total_anual_antiga
 
         import_total_anual_antiga_amb_impost = import_total_anual_antiga * 1.015 * 1.21
@@ -144,7 +144,10 @@ class SomPolissaKChange(osv.osv):
 
             import_total_anual_nova_amb_impost = 0
             import_total_anual_antiga_amb_impost = 0
-            pol_ids = pol_obj.search(cursor, uid, [('titular', '=', partner_id)])
+            pol_ids = pol_obj.search(cursor, uid, [
+                ('titular', '=', partner_id),
+                ('state', '=', 'activa'),
+            ])
             for pol in pol_ids:
                 context['partner_id'] = partner_id
                 pol_browse = pol_obj.browse(cursor, uid, pol, context=context)
