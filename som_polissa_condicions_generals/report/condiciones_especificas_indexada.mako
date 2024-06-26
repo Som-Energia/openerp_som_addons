@@ -1,4 +1,5 @@
 <%def name="indexada_es()">
+<p style="page-break-after:always;"></p>
 <br>
 <br>
 <div id="titol">

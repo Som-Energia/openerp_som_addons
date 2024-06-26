@@ -158,6 +158,8 @@ table td{
 .content_generals {
     text-align: justify;
     font-size: 11px;
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 a {
