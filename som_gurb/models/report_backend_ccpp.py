@@ -45,7 +45,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 initial_product_id,
                 gurb_cups_br.beta_kw,
                 context=context,
-            )[grub_pricelist_id]
+            )[grub_pricelist_id] * gurb_cups_br.beta_kw
             initial_product_price_with_taxes = product_obj.add_taxes(
                 cursor, uid, initial_product_id, initial_product_price, False, context=context
             )
