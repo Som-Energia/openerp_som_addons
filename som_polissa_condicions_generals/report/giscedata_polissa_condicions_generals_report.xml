@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record model="ir.header_webkit" id="webkit_header">
+            <field name="format">A4</field>
+            <field name="margin_bottom">1.0</field>
+            <field name="margin_top">1.01</field>
+            <field name="margin_left">0.01</field>
+            <field name="margin_right">0.01</field>
+            <field name="name">Contract header</field>
+            <field name="orientation">Portrait</field>
+            <field name="html"><![CDATA[<html>
+                ]]>
+            </field>
+            <field name="css" ><![CDATA[
+                ]]>
+            </field>
+        </record>
+        <record id="giscedata_polissa.report_contracte" model="ir.actions.report.xml">
+            <field name="report_name">giscedata.polissa</field>
+            <field name="name">Contracte</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="report_webkit" eval=""/>
+            <field name="report_type">pdf</field>
+            <field name="header" eval="0"/>
+            <field name="auto" eval="0"/>
+            <field name="active">True</field>
+        </record>
+        <record id="giscedata_polissa.value_contracte" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">giscedata.polissa</field>
+            <field name="key2">client_print_multi</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="value" eval="'ir.actions.report.xml,'+str(ref('giscedata_polissa.report_contracte'))"/>
+        </record>
+    </data>
+</openerp>

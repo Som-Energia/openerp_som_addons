@@ -21,8 +21,10 @@
     "init_xml": [],
     "demo_xml": ["demo/res_partner_demo.xml"],
     "update_xml": [
-        "giscedata_polissa_condicions_generals_data.xml",
-        "giscedata_polissa_condicions_generals_report.xml",
+        "data/giscedata_polissa_condicions_generals_data.xml",
+        "data/giscedata_switching_data_m1.xml",
+        "report/giscedata_polissa_condicions_generals_report.xml",
+        "report/giscedata_polissa_condicions_generals_m101_report.xml",
         "security/ir.model.access.csv",
     ],
     "active": False,

@@ -20,7 +20,7 @@ def up(cursor, installed_version):
     ]
     load_data_records(
         cursor, "som_polissa_condicions_generals",
-        "giscedata_polissa_condicions_generals_report.xml", list_of_records, mode="update"
+        "report/giscedata_polissa_condicions_generals_report.xml", list_of_records, mode="update"
     )
     logger.info("giscedata_polissa_condicions_generals_report.xml successfully updated")
 
