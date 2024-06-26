@@ -257,7 +257,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
         preu_mitja_antic = (1.015 * f_antiga + factor_eie_preu_antic) / 1000
         preu_mitja_nou = (1.015 * f_nova + factor_eie_preu_nou) / 1000
 
-        conany = env.polissa_id.cups.conany_kwh
+        conany = env.polissa_id.cups.conany_kwh if env.polissa_id.cups.conany_kwh > 0 else 1
         potencia = env.polissa_id.potencia
         preu_potencia = sum(self.get_preus(
             cursor, uid, env.polissa_id, with_taxes=True, context=context
