@@ -1,6 +1,7 @@
 <%def name="generals_ca()">
 <br>
 <br>
+<div class="content_generals">
 <div id="titol">
     <h2 style="font-size: 14px;">CONDICIONS GENERALS DEL CONTRACTE DE SUMINISTRAMENT D'ENERGIA ELÈCTRICA</h2>
 </div>
@@ -488,4 +489,5 @@ Segons el que es preveu en la Llei 60/2003 d’arbitratge, el Reial decret legis
 </div></div></div></div></div><div class="a13_row_container" style="background-position:top left;background-repeat: no-repeat;"><div class="wpb_row vc_row-fluid "><div class="wpb_column vc_column_container vc_col-sm-12"><div class="vc_column-inner"><div class="wpb_wrapper">
 </div></div></div></div></div>
 </section>
+</div>
 </%def>
