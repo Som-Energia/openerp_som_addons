@@ -31,7 +31,6 @@
             <field name="report_xsl" eval='False'/>
             <field name="report_xml" eval='False'/>
             <field name="model">giscedata.switching</field>
-            <field name="active">True</field>
         </record>
         <record id="value_report_contracte_m101" model="ir.values">
             <field name="object" eval="1"/>

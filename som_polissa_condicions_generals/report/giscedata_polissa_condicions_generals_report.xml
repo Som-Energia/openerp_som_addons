@@ -24,7 +24,6 @@
             <field name="report_type">pdf</field>
             <field name="header" eval="0"/>
             <field name="auto" eval="0"/>
-            <field name="active">True</field>
         </record>
         <record id="giscedata_polissa.value_contracte" model="ir.values">
             <field name="object" eval="1"/>
