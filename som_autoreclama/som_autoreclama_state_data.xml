@@ -683,7 +683,7 @@
             <field name="active" eval="True"/>
         </record>
         <record model="som.autoreclama.state.condition" id="conditions_revisar_to_correct_state_workflow_polissa">
-            <field name="days">60</field>
+            <field name="days">61</field>
             <field name="condition_code">F1ok</field>
             <field name="state_id" ref="review_state_workflow_polissa"/>
             <field name="next_state_id" ref="correct_state_workflow_polissa"/>
