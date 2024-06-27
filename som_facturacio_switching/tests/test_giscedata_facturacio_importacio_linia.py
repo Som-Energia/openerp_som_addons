@@ -5,6 +5,7 @@ from tools.misc import cache
 import mock
 from mock import call
 from datetime import datetime, timedelta
+import unittest
 
 
 class TestGiscedataFacturacioImportacioLinia(testing.OOTestCaseWithCursor):
@@ -105,6 +106,7 @@ class TestGiscedataFacturacioImportacioLinia(testing.OOTestCaseWithCursor):
 
         mock_function.assert_called_with(self.cursor, self.uid, [f1_id], context={})
 
+    @unittest.skip("Pending PR 19431 to be deployed")
     @mock.patch(
         "som_facturacio_switching.giscedata_facturacio_importacio_linia.GiscedataFacturacioImportacioLinia.reimport_f1_by_cups"  # noqa: E501
     )
@@ -114,12 +116,10 @@ class TestGiscedataFacturacioImportacioLinia(testing.OOTestCaseWithCursor):
         )[1]
         test_date = (datetime.today() - timedelta(days=40)).strftime("%Y-%m-%d")
         self.f1_obj.write(
-            self.cursor,
-            self.uid,
-            f1_id,
+            self.cursor, self.uid, f1_id,
             {
                 "info": "* [2999] Undefined error: no file in gridfs collection Collection(Database(MongoClient('', ), u''), u'fs') with _id ObjectId('5')",  # noqa: E501
-                "create_date": test_date,  # data_carrega _ff de create_date
+                "create_date": test_date,  # data_carrega _ff de create_date #PR 19431
                 "fecha_factura": test_date,
             },
         )
