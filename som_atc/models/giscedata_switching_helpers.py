@@ -44,11 +44,16 @@ class GiscedataSwitchingHelpers(osv.osv):
 
     def _auto_call_wizard_change_state_atr(self, cursor, uid, atc_ids, new_state):
         wiz_obj = self.pool.get('wizard.change.state.atc')
-        wiz_id = wiz_obj.create(cursor, uid, {'new_state': 'open'})
-        try:
-            wiz_obj.perform_change(cursor, uid, [wiz_id], context={'active_ids': atc_ids})
-        except Exception:
-            raise osv.except_osv('Error', 'Error en ATC multi canvi a ' + new_state)
+        AGENT_COMER = '06'  # this is harcoded in a lot of places :')
+
+        context = {'active_ids': atc_ids}
+        wiz_id = wiz_obj.create(cursor, uid, {'new_state': new_state, 'agent_actual': AGENT_COMER})
+        wiz_values = wiz_obj.onchange_agent_actual(
+            cursor, uid, [wiz_id], AGENT_COMER)['value']
+        wiz_values.update(
+            wiz_obj.onchange_new_state(cursor, uid, [wiz_id], new_state, context)['value'])
+        wiz_obj.write(cursor, uid, [wiz_id], wiz_values)
+        wiz_obj.perform_change(cursor, uid, [wiz_id], context)
 
 
 GiscedataSwitchingHelpers()
