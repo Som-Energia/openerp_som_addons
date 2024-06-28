@@ -12,8 +12,8 @@ def up(cursor, installed_version):
     #  Actualitzar un XML/CSV sencer
     logger.info("Updating XMLs")
     xmls = [
-        "som_crawlers_step_data.xml",
-        "som_crawlers_task_data.xml",
+        "data/som_crawlers_task_data.xml",
+        "data/som_crawlers_step_data.xml",
     ]
     for xml_w in xmls:
         load_data(
