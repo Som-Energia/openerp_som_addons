@@ -9,7 +9,27 @@
         </record>
         <!--hc-->
         <record model="som.crawlers.task" id="descargar_hc">
-            <field name="name">Descargar Hc</field>
+            <field name="name">Descargar HC ATR</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="hc_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_hc_auto">
+            <field name="name">Descargar D Auto</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="hc_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_hc_f1">
+            <field name="name">Descargar F1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="hc_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_hc_unidireccional">
+            <field name="name">Descargar D unidireccional</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="hc_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_hc_r">
+            <field name="name">Descargar R</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="hc_conf"/>
         </record>
