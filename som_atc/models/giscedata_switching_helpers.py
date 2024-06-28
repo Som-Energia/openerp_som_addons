@@ -40,7 +40,9 @@ class GiscedataSwitchingHelpers(osv.osv):
         )
 
         self._auto_call_wizard_change_state_atr(cursor, uid, atc_ids, 'open')
-        self._auto_call_wizard_change_state_atr(cursor, uid, atc_ids, 'close')
+        self._mark_as_pendent_notificar(cursor, uid, step.header_id.id)
+        self._set_cac_as_favorable(cursor, uid, atc_ids)
+        self._auto_call_wizard_change_state_atr(cursor, uid, atc_ids, 'done')
 
     def _auto_call_wizard_change_state_atr(self, cursor, uid, atc_ids, new_state):
         wiz_obj = self.pool.get('wizard.change.state.atc')
@@ -54,6 +56,14 @@ class GiscedataSwitchingHelpers(osv.osv):
             wiz_obj.onchange_new_state(cursor, uid, [wiz_id], new_state, context)['value'])
         wiz_obj.write(cursor, uid, [wiz_id], wiz_values)
         wiz_obj.perform_change(cursor, uid, [wiz_id], context)
+
+    def _mark_as_pendent_notificar(self, cursor, uid, header_id):
+        h_obj = self.pool.get('giscedata.switching.step.header')
+        h_obj.write(cursor, uid, header_id, {'notificacio_pendent': True})
+
+    def _set_cac_as_favorable(self, cursor, uid, atc_ids):
+        atc_obj = self.pool.get("giscedata.atc")
+        atc_obj.write(cursor, uid, atc_ids, {'resultat': '01'})  # from TABLA_80 getionatr.defs
 
 
 GiscedataSwitchingHelpers()
