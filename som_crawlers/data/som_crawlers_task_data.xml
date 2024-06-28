@@ -184,6 +184,11 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="viesgo_conf"/>
         </record>
+        <record model="som.crawlers.task" id="descargar_D_viesgo_unidireccional">
+            <field name="name">Viesgo descargar D unidireccional</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="viesgo_conf"/>
+        </record>
         <!--Guadassuar-->
         <record model="som.crawlers.task" id="descargar_guadassuar">
             <field name="name">Descarregar Guadassuar</field>

@@ -523,6 +523,20 @@
             <field name="params">{}</field>
             <field name="task_id" ref="descargar_D_viesgo"/>
         </record>
+        <record model="som.crawlers.task.step" id="taskStep_viesgo_download_D_unidireccional">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"unidireccional"}</field>
+            <field name="task_id" ref="descargar_D_viesgo_unidireccional"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_viesgo_import_D_unidireccional">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_D_viesgo_unidireccional"/>
+        </record>
         <!--Guadassuar-->
         <record model="som.crawlers.task.step" id="taskStep_guadassuar_download_F1">
             <field name="name">Descarregar fitxers</field>
