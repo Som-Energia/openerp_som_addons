@@ -305,12 +305,11 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 if iva_10_active and pol.potencia <= 10 and dades_tarifa['date_start'] >= start_date_iva_10 and dades_tarifa['date_start'] <= end_date_iva_10 and omie_mon_price_45:  # noqa: E501
                     fp_id = imd_obj.get_object_reference(
                         cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
-                    text_impostos = " (IVA 10%, IE 3,8%)"
+                    text_impostos = " (IVA 10%, IE 5,11%)"
+                    ctx.update({'force_fiscal_position': fp_id})
                 else:
-                    fp_id = imd_obj.get_object_reference(
-                        cursor, uid, 'giscedata_facturacio_iese', 'fp_nacional_2024_rdl_8_2023_38')[1]  # noqa: E501
-                    text_impostos = " (IVA 21%, IE 3,8%)"
-                ctx.update({'force_fiscal_position': fp_id})
+                    text_impostos = " (IVA 21%, IE 5,11%)"
+
             pricelist['text_impostos'] = text_impostos
 
             periodes_energia = sorted(pol.tarifa.get_periodes(context=context).keys())
