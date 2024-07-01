@@ -24,11 +24,13 @@
             <field name="priority">99</field>
             <field name="arch" type="xml">
                 <field name="cpa" position="after">
-                    <separator string="Informació cartogràfica" colspan="4"/>
-                    <field name="coordenada_latitud"/>
-                    <field name="coordenada_longitud"/>
-                    <field name="coordenada_score"/>
-                    <field name="coordenada_procedencia"/>
+                    <group colspan="4">
+                        <separator string="Informació cartogràfica (coordenades)" colspan="4"/>
+                        <field name="coordenada_latitud"/>
+                        <field name="coordenada_longitud"/>
+                        <field name="coordenada_score"/>
+                        <field name="coordenada_procedencia"/>
+                    </group>
                 </field>
             </field>
         </record>
