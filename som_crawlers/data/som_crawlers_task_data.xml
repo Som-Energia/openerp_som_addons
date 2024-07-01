@@ -50,6 +50,11 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="soller_conf"/>
         </record>
+        <record model="som.crawlers.task" id="descargar_soller_f1">
+            <field name="name">Descargar Soller F1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="soller_conf"/>
+        </record>
         <!--Serrania-->
         <record model="som.crawlers.task" id="descargar_serrania">
             <field name="name">Descargar Serrania</field>
