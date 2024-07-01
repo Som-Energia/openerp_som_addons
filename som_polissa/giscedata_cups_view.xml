@@ -15,6 +15,24 @@
             </field>
         </record>
 
+        <!-- Afegim coordenades al CUPS -->
+        <record model="ir.ui.view" id="view_giscedata_cups_ps_form">
+            <field name="name">giscedata.cups.ps.form</field>
+            <field name="model">giscedata.cups.ps</field>
+            <field name="inherit_id" ref="giscedata_cups.view_cups_ps_form"/>
+            <field name="type">tree</field>
+            <field name="priority">99</field>
+            <field name="arch" type="xml">
+                <field name="cpa" position="after">
+                    <separator string="Informació cartogràfica" colspan="4"/>
+                    <field name="coordenada_latitud"/>
+                    <field name="coordenada_longitud"/>
+                    <field name="coordenada_score"/>
+                    <field name="coordenada_procedencia"/>
+                </field>
+            </field>
+        </record>
+
         <!-- Habilitem l'edició de l'històric d'autoconsums -->
         <record model="ir.ui.view" id="view_cups_ps_hist_autoconsum_form_som">
             <field name="name">view.cups.ps.hist.autoconsum.form.som</field>
