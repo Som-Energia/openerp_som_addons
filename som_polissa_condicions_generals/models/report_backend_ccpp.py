@@ -383,8 +383,10 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                     tipus='', product_id=coeficient_id, fiscal_position=polissa.fiscal_position_id,
                     with_taxes=True)[0]
             else:
+                fp_k = polissa.fiscal_poisition_id if pol.fiscal_poisition_id else ctx.get(
+                    'force_fiscal_position', False)
                 coeficient_k = prod_obj.add_taxes(
-                    cursor, uid, coeficient_id, coeficient_k_untaxed, polissa.fiscal_position_id,
+                    cursor, uid, coeficient_id, coeficient_k_untaxed, fp_k,
                     direccio_pagament=polissa.direccio_pagament, titular=polissa.titular,
                     context=context,
                 )
