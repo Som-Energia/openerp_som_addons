@@ -98,6 +98,8 @@
                         </page>
                         <page string="Altres" icon="mist">
                             <field name="meter_id" />
+                            <field name="coordenada_latitud" />
+                            <field name="coordenada_longitud" />
                         </page>
                         <page string="Documents rel." icon="paperclip">
                             <field name="related_attachments" colspan="4" nolabel="1"/>
