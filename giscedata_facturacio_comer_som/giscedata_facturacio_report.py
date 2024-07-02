@@ -1550,6 +1550,37 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         }
         return data
 
+    def complete_historic_js(self, data, length):
+        data_len = len(data)
+        if data_len == 0 or data_len >= length:
+            return data
+
+        first_date = data[0]['mes'].split("/")
+        month = int(first_date[0]) - 1
+        year = int(first_date[1])
+        rest = []
+        for i in range(0, length - len(data)):
+            if month == 0:
+                month = 12
+                year -= 1
+
+            item = {
+                u'P1': 0.0,
+                u'P2': 0.0,
+                u'P3': 0.0,
+                u'mes': '{:02}/{:02}'.format(month, year),
+            }
+            if u'P4' in data[0]:
+                item[u'P4'] = 0.0
+                item[u'P5'] = 0.0
+                item[u'P6'] = 0.0
+            rest.append(item)
+            month -= 1
+
+        rest.reverse()
+        rest.extend(data)
+        return rest
+
     def get_component_energy_consumption_graphic_td_data(self, fact, pol):
         """
         return a dictionary with data needes for the consumption graphic and related text
@@ -1594,6 +1625,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         }
 
         (historic, historic_js) = self.get_historic_data(fact)
+        historic_js = self.complete_historic_js(historic_js, 12)
         for h_js in historic_js:
             periode = h_js["mes"].split("/")
             if (int(periode[0]) >= 6 and int(periode[1]) == 21) or (int(periode[1]) > 21):

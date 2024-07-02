@@ -72,8 +72,6 @@ som_polissa_administradora:
 -  som_polissa_administradora/**
 som_polissa_condicions_generals:
 -  som_polissa_condicions_generals/**
-som_polissa_condicions_generals_m101:
--  som_polissa_condicions_generals_m101/**
 som_polissa_soci:
 -  som_polissa_soci/**
 som_poweremail_common_templates:
