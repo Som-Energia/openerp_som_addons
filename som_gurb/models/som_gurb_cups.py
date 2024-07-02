@@ -2,7 +2,6 @@
 from osv import osv, fields
 from tools.translate import _
 import logging
-from math import radians, cos, sin, asin, sqrt
 
 logger = logging.getLogger("openerp.{}".format(__name__))
 
@@ -127,32 +126,6 @@ class SomGurbCups(osv.osv):
             res[gurb_cups_id] = active_beta_vals
 
         return res
-
-    def compute_haversine_distance(self, cursor, uid, gurb_cups_id, context=None):
-        if context is None:
-            context = {}
-
-        gurb_cups_br = self.browse(cursor, uid, gurb_cups_id, context=context)
-
-        lat_gurb = gurb_cups_br.gurb_id.coordenada_latitud
-        long_gurb = gurb_cups_br.gurb_id.coordenada_longitud
-        lat_address = gurb_cups_br.cups_id.coordenada_latitud
-        long_address = gurb_cups_br.cups_id.coordenada_longitud
-
-        # Convert degrees to radians.
-        long_address = radians(long_address)
-        lat_address = radians(lat_address)
-
-        long_gurb = radians(long_gurb)
-        lat_gurb = radians(lat_gurb)
-
-        # Haversine formula
-        delta_long = long_address - long_gurb
-        delta_lat = lat_address - lat_gurb
-        hav = sin(delta_lat / 2)**2 + cos(lat_gurb) * cos(lat_address) * sin(delta_long / 2)**2
-
-        # 6371 es el radi de la tierra en km
-        return 2 * asin(sqrt(hav)) * 6371
 
     def get_polissa_gurb_cups(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:

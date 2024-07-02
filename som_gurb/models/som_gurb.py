@@ -358,8 +358,8 @@ class SomGurb(osv.osv):
         "pricelist_id": fields.many2one("product.pricelist", "Preus del GURB"),
         "initial_product_id": fields.many2one("product.product", "Producte quota inicial"),
         "quota_product_id": fields.many2one("product.product", "Produce quota mensual"),
-        'coordenada_latitud': fields.char('Latitud (X)', size=128),
-        'coordenada_longitud': fields.char('Longitud (Y)', size=128),
+        "coordenada_latitud": fields.char("Latitud (X)", size=128),
+        "coordenada_longitud": fields.char("Longitud (Y)", size=128),
     }
     _defaults = {
         "logo": lambda *a: False,
