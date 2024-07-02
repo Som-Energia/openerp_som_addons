@@ -34,5 +34,36 @@ class GiscedataSwitchingHelpers(osv.osv):
 
         return ret
 
+    def create_crm_case_titular_autoconsum(self, cursor, uid, partner_vals, step):
+        atc_ids = super(GiscedataSwitchingHelpers, self).create_crm_case_titular_autoconsum(
+            cursor, uid, partner_vals, step
+        )
+
+        self._auto_call_wizard_change_state_atr(cursor, uid, atc_ids, 'open')
+        self._mark_as_pendent_notificar(cursor, uid, step.header_id.id)
+        self._set_cac_as_favorable(cursor, uid, atc_ids)
+        self._auto_call_wizard_change_state_atr(cursor, uid, atc_ids, 'done')
+
+    def _auto_call_wizard_change_state_atr(self, cursor, uid, atc_ids, new_state):
+        wiz_obj = self.pool.get('wizard.change.state.atc')
+        AGENT_COMER = '06'  # this is harcoded in a lot of places :')
+
+        context = {'active_ids': atc_ids}
+        wiz_id = wiz_obj.create(cursor, uid, {'new_state': new_state, 'agent_actual': AGENT_COMER})
+        wiz_values = wiz_obj.onchange_agent_actual(
+            cursor, uid, [wiz_id], AGENT_COMER)['value']
+        wiz_values.update(
+            wiz_obj.onchange_new_state(cursor, uid, [wiz_id], new_state, context)['value'])
+        wiz_obj.write(cursor, uid, [wiz_id], wiz_values)
+        wiz_obj.perform_change(cursor, uid, [wiz_id], context)
+
+    def _mark_as_pendent_notificar(self, cursor, uid, header_id):
+        h_obj = self.pool.get('giscedata.switching.step.header')
+        h_obj.write(cursor, uid, header_id, {'notificacio_pendent': True})
+
+    def _set_cac_as_favorable(self, cursor, uid, atc_ids):
+        atc_obj = self.pool.get("giscedata.atc")
+        atc_obj.write(cursor, uid, atc_ids, {'resultat': '01'})  # from TABLA_80 getionatr.defs
+
 
 GiscedataSwitchingHelpers()
