@@ -70,5 +70,6 @@ class TableReadings:
                     )
 
                     result["taula"].append(linia_taula)
+                    result["taula"].sort(key=lambda x: x['date_from'])
 
         return result
