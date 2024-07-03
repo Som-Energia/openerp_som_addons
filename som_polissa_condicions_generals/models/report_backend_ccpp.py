@@ -285,7 +285,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
 
             try:
                 omie_mon_price_45 = omie_obj.has_to_charge_10_percent_requeriments_oficials(
-                    cursor, uid, ctx['date'], pol.potencia)
+                    cursor, uid, datetime.strftime(ctx['date'], "%Y-%m-%d"), pol.potencia)
             except Exception:
                 omie_mon_price_45 = False
             pricelist['omie_mon_price_45'] = omie_mon_price_45
