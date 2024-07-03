@@ -38,11 +38,24 @@ class GiscedataSwitchingHelpers(osv.osv):
         atc_ids = super(GiscedataSwitchingHelpers, self).create_crm_case_titular_autoconsum(
             cursor, uid, partner_vals, step
         )
+        self._tmp_atc_ids = atc_ids  # Trick to temporally save the ATC_IDS
+        return atc_ids
 
-        self._auto_call_wizard_change_state_atr(cursor, uid, atc_ids, 'open')
-        self._mark_as_pendent_notificar(cursor, uid, step.header_id.id)
-        self._set_cac_as_favorable(cursor, uid, atc_ids)
-        self._auto_call_wizard_change_state_atr(cursor, uid, atc_ids, 'done')
+    def _crear_autoconsum(self, cursor, uid, step, autoconsum_id, context=None):
+        res = super(GiscedataSwitchingHelpers, self)._crear_autoconsum(
+            cursor, uid, step, autoconsum_id, context
+        )
+        # We're in the same transaction, we can recover the case_ids from memory
+        atc_ids = getattr(self, '_tmp_atc_ids', None)
+
+        if atc_ids:
+            self._auto_call_wizard_change_state_atr(cursor, uid, atc_ids, 'open')
+            self._mark_as_pendent_notificar(cursor, uid, step.header_id.id)
+            self._set_cac_as_favorable(cursor, uid, atc_ids)
+            self._auto_call_wizard_change_state_atr(cursor, uid, atc_ids, 'done')
+
+        self._tmp_atc_ids = None  # Extra security to avoid strange behavious
+        return res
 
     def _auto_call_wizard_change_state_atr(self, cursor, uid, atc_ids, new_state):
         wiz_obj = self.pool.get('wizard.change.state.atc')
