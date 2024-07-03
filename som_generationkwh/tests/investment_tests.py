@@ -1978,7 +1978,7 @@ class InvestmentTests(testing.OOTestCase):
                   product_id: '[GENKWH_AMOR] Amortització Generation kWh'
                   invoice_line_tax_id: []
                 journal_id: Amortització GenerationkWh
-                mandate_id: {mandate_id}
+                mandate_id: False
                 name: {investment_name}-DES
                 number: {investment_name}-DES
                 origin: {investment_name}
@@ -2088,7 +2088,7 @@ class InvestmentTests(testing.OOTestCase):
                   quantity: 1.0
                   uos_id: PCE
                 journal_id: Amortització GenerationkWh
-                mandate_id: {mandate_id}
+                mandate_id: False
                 name: {investment_name}-DES
                 number: {investment_name}-DES
                 origin: {investment_name}
@@ -2221,7 +2221,7 @@ class InvestmentTests(testing.OOTestCase):
                   quantity: 1.0
                   uos_id: PCE
                 journal_id: Amortització GenerationkWh
-                mandate_id: {mandate_id}
+                mandate_id: False
                 name: {investment_name}-DES
                 number: {investment_name}-DES
                 origin: {investment_name}
@@ -2358,7 +2358,7 @@ class InvestmentTests(testing.OOTestCase):
                   quantity: 1.0
                   uos_id: PCE
                 journal_id: Amortització GenerationkWh
-                mandate_id: {mandate_id}
+                mandate_id: False
                 name: {investment_name}-DES
                 number: {investment_name}-DES
                 origin: {investment_name}
@@ -2447,7 +2447,7 @@ class InvestmentTests(testing.OOTestCase):
                   product_id: '[APO_AE] Aportacions'
                   invoice_line_tax_id: []
                 journal_id: Factures Liquidació Aportacions
-                mandate_id: {mandate_id}
+                mandate_id: False
                 name: {investment_name}-DES
                 number: {investment_name}-DES
                 origin: {investment_name}
