@@ -229,6 +229,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         imd_obj = self.pool.get('ir.model.data')
         prod_obj = self.pool.get("product.product")
         pricelist_obj = self.pool.get('product.pricelist')
+        fp_obj = self.pool.get('account.fiscal.position')
         polissa = pol_obj.browse(cursor, uid, pol.id)
         if context.get('tarifa_provisional', False):
             dict_preus_tp_energia = context.get('tarifa_provisional')['preus_provisional_energia']
@@ -362,6 +363,12 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         coeficient_k_untaxed = (pol.coeficient_k + pol.coeficient_d) / 1000
         coeficient_k = False
         res['mostra_indexada'] = False
+        fp_k_id = polissa.fiscal_poisition_id if pol.fiscal_poisition_id else ctx.get(
+            'force_fiscal_position', False)
+        if fp_k_id:
+            fp_k = fp_obj.browse(cursor, uid, fp_k_id)
+        else:
+            fp_k = False
         coeficient_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_facturacio_indexada', 'product_factor_k'
         )[1]
@@ -377,16 +384,16 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                     pricelist_index = pol_obj.escull_llista_preus(
                         cursor, uid, pol.id, tarifes_ids, context=context)
                 coeficient_k_untaxed = pricelist_index.get_atr_price(
-                    tipus='', product_id=coeficient_id, fiscal_position=polissa.fiscal_position_id,
+                    tipus='', product_id=coeficient_id, fiscal_position=fp_k,
                     with_taxes=False)[0]
                 coeficient_k = pricelist_index.get_atr_price(
-                    tipus='', product_id=coeficient_id, fiscal_position=polissa.fiscal_position_id,
+                    tipus='', product_id=coeficient_id, fiscal_position=fp_k,
                     with_taxes=True)[0]
             else:
                 fp_k = polissa.fiscal_poisition_id if pol.fiscal_poisition_id else ctx.get(
                     'force_fiscal_position', False)
                 coeficient_k = prod_obj.add_taxes(
-                    cursor, uid, coeficient_id, coeficient_k_untaxed, fp_k,
+                    cursor, uid, coeficient_id, coeficient_k_untaxed, fp_k_id,
                     direccio_pagament=polissa.direccio_pagament, titular=polissa.titular,
                     context=context,
                 )
