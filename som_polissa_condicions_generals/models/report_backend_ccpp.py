@@ -365,8 +365,10 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         res['mostra_indexada'] = False
         fp_k_id = polissa.fiscal_poisition_id if pol.fiscal_poisition_id else ctx.get(
             'force_fiscal_position', False)
-        fp_k = fp_obj.browse(cursor, uid, fp_k_id)
-
+        if fp_k_id:
+            fp_k = fp_obj.browse(cursor, uid, fp_k_id)
+        else:
+            fp_k = False
         coeficient_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_facturacio_indexada', 'product_factor_k'
         )[1]
