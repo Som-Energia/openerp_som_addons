@@ -411,6 +411,21 @@ class GiscedataPolissa(osv.osv):
 
         return res
 
+    def _is_enterprise(self, cursor, uid, id, context=None):
+        pol = self.browse(cursor, uid, id, context)
+        if pol.cnae.name not in ["9810", "9820"]:
+            return True
+
+        partner_obj = self.pool.get("res.partner")
+        if partner_obj.is_enterprise_vat(pol.titular.vat):
+            return True
+
+        for pot in pol.potencies_periode:
+            if pot.potencia > 10.0:
+                return True
+
+        return False
+
     def wkf_activa(self, cursor, uid, ids):
         if not isinstance(ids, list):
             ids = [ids]
@@ -418,6 +433,14 @@ class GiscedataPolissa(osv.osv):
         payment_mode_o = self.pool.get("payment.mode")
         payment_mode_id = payment_mode_o.search(cursor, uid, [("name", "=", "ENGINYERS")])
         self.write(cursor, uid, ids, {"payment_mode_id": payment_mode_id[0]})
+
+        for id in ids:
+            if self._is_enterprise(cursor, uid, id):
+                imd_obj = self.pool.get("ir.model.data")
+                default_process = imd_obj.get_object_reference(
+                    cursor, uid, "account_invoice_pending", "default_pending_state_process"
+                )[1]
+                self.write(cursor, uid, id, {"process_id": default_process})
 
         return super(GiscedataPolissa, self).wkf_activa(cursor, uid, ids)
 
@@ -431,6 +454,14 @@ class GiscedataPolissa(osv.osv):
         payment_mode_o = self.pool.get("payment.mode")
         payment_mode_id = payment_mode_o.search(cursor, uid, [("name", "=", "ENGINYERS")])
         default.update({"payment_mode_id": payment_mode_id[0]})
+
+        if self._is_enterprise(cursor, uid, id, context=context):
+            imd_obj = self.pool.get("ir.model.data")
+            default_process = imd_obj.get_object_reference(
+                cursor, uid, "account_invoice_pending", "default_pending_state_process"
+            )[1]
+            default.update({"process_id": default_process})
+
         return super(GiscedataPolissa, self).copy_data(cursor, uid, id, default, context=context)
 
     def _ff_search_ssaa(self, cursor, uid, ids, field_name, args, context=None):
