@@ -434,13 +434,19 @@ class GiscedataPolissa(osv.osv):
         payment_mode_id = payment_mode_o.search(cursor, uid, [("name", "=", "ENGINYERS")])
         self.write(cursor, uid, ids, {"payment_mode_id": payment_mode_id[0]})
 
+        imd_obj = self.pool.get("ir.model.data")
+        default_process = imd_obj.get_object_reference(
+            cursor, uid, "account_invoice_pending", "default_pending_state_process"
+        )[1]
+        bo_social_process = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_facturacio_comer_bono_social',
+            'bono_social_pending_state_process'
+        )[1]
         for id in ids:
             if self._is_enterprise(cursor, uid, id):
-                imd_obj = self.pool.get("ir.model.data")
-                default_process = imd_obj.get_object_reference(
-                    cursor, uid, "account_invoice_pending", "default_pending_state_process"
-                )[1]
                 self.write(cursor, uid, id, {"process_id": default_process})
+            else:
+                self.write(cursor, uid, id, {"process_id": bo_social_process})
 
         return super(GiscedataPolissa, self).wkf_activa(cursor, uid, ids)
 
@@ -455,12 +461,18 @@ class GiscedataPolissa(osv.osv):
         payment_mode_id = payment_mode_o.search(cursor, uid, [("name", "=", "ENGINYERS")])
         default.update({"payment_mode_id": payment_mode_id[0]})
 
+        imd_obj = self.pool.get("ir.model.data")
         if self._is_enterprise(cursor, uid, id, context=context):
-            imd_obj = self.pool.get("ir.model.data")
             default_process = imd_obj.get_object_reference(
                 cursor, uid, "account_invoice_pending", "default_pending_state_process"
             )[1]
             default.update({"process_id": default_process})
+        else:
+            bo_social_process = imd_obj.get_object_reference(
+                cursor, uid, 'giscedata_facturacio_comer_bono_social',
+                'bono_social_pending_state_process'
+            )[1]
+            default.update({"process_id": bo_social_process})
 
         return super(GiscedataPolissa, self).copy_data(cursor, uid, id, default, context=context)
 

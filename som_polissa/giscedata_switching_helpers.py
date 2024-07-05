@@ -42,14 +42,20 @@ class GiscedataSwitchingHelpers(osv.osv):
         ).activar_polissa_from_m1_canvi_titular_subrogacio(
             cursor, uid, sw_id, old_polissa=old_polissa, context=context)
 
+        imd_obj = self.pool.get("ir.model.data")
         sw_obj = self.pool.get("giscedata.switching")
         sw = sw_obj.browse(cursor, uid, sw_id, context=context)
         if sw.cups_polissa_id._is_enterprise():
-            imd_obj = self.pool.get("ir.model.data")
             default_process = imd_obj.get_object_reference(
                 cursor, uid, "account_invoice_pending", "default_pending_state_process"
             )[1]
             sw.cups_polissa_id.write({"process_id": default_process})
+        else:
+            bo_social_process = imd_obj.get_object_reference(
+                cursor, uid, 'giscedata_facturacio_comer_bono_social',
+                'bono_social_pending_state_process'
+            )[1]
+            sw.cups_polissa_id.write({"process_id": bo_social_process})
 
         return res
 
