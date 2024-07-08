@@ -128,7 +128,7 @@ class GiscedataCupsPs(osv.osv):
             'Incidència Origen Importació', size=128),
         'coordenada_latitud': fields.char('Latitud (X)', size=128),
         'coordenada_longitud': fields.char('Longitud (Y)', size=128),
-        'coordenada_score': fields.char('Fiabilitat coordenada'),
+        'coordenada_score': fields.char('Fiabilitat coordenada', size=128),
         'coordenada_procedencia': fields.selection(
             [("altres", "Altres"), ("google", "API Google")], "Procedència coordenada"
         ),
