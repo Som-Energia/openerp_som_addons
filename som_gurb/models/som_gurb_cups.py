@@ -333,6 +333,22 @@ class SomGurbCups(osv.osv):
 
         return (invoice_ids, errors)
 
+    def sign_gurb(self, cursor, uid, gurb_cups_id, context=None):
+        if not context:
+            context = {}
+
+        self.write(cursor, uid, gurb_cups_id, {'signed': True})
+
+    def process_signature_callback(self, cursor, uid, gurb_cups_id, context=None):
+        if not context:
+            context = {}
+        process_data = context.get('process_data', False)
+        if process_data:
+            method_name = process_data.get('callback_method', False)
+            method = getattr(self, method_name)
+            if method:
+                method(cursor, uid, gurb_cups_id, context=context)
+
     _columns = {
         "active": fields.boolean("Actiu"),
         "start_date": fields.date("Data entrada GURB", required=True),
@@ -403,7 +419,7 @@ class SomGurbCups(osv.osv):
             store=False,
             readonly=True,
         ),
-        "signat": fields.boolean("Signat", readonly=1)
+        "signed": fields.boolean("Signed")
     }
 
     _defaults = {

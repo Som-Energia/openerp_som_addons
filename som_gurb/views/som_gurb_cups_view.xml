@@ -26,6 +26,7 @@
                         <field name="partner_id" />
                         <field name="initial_invoice_id" />
                         <field name="invoice_state" />
+                        <field name="signed" readonly="1" />
                         <field name="general_conditions_id" />
                     </group>
                     <field name="betas_ids" nolabel="1" colspan="4" readonly="1" />
@@ -50,6 +51,7 @@
                     <field name="partner_id" />
                     <field name="polissa_state" />
                     <field name="invoice_state" />
+                    <field name="signed" />
                 </tree>
             </field>
         </record>
