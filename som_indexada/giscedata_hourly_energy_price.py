@@ -465,13 +465,13 @@ class GiscedataNextDaysEnergyPrice(osv.osv):
             versions[data_inici].update({'d': d})
             # GDOS
             gdos_item = imd_obj.get_object_reference(
-                cursor, uid, 'giscedata_facturacio_indexada', 'product_gdos_som'
+                cursor, uid, 'giscedata_facturacio_indexada_som', 'product_gdos_som'
             )[1]
             gdos = pricelist_obj.price_get(cursor, uid, [margins_pl], gdos_item, 1, context=ctx)[margins_pl]
             versions[data_inici].update({'gdos': gdos})
             # Factor DSV
             dsv_item = imd_obj.get_object_reference(
-                cursor, uid, 'giscedata_facturacio_indexada', 'product_factor_dsv_som'
+                cursor, uid, 'giscedata_facturacio_indexada_som', 'product_factor_dsv_som'
             )[1]
             factor_dsv = pricelist_obj.price_get(cursor, uid, [margins_pl], dsv_item, 1, context=ctx)[margins_pl]
             versions[data_inici].update({'factor_dsv': factor_dsv})
@@ -544,3 +544,5 @@ class GiscedataNextDaysEnergyPrice(osv.osv):
             'prmdiari': prmdiari.matrix,
         }
         return res
+
+GiscedataNextDaysEnergyPrice()
