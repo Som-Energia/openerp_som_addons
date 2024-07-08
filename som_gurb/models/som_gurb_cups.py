@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 from osv import osv, fields
+from datetime import datetime
 from tools.translate import _
 import logging
 
@@ -425,6 +426,7 @@ class SomGurbCups(osv.osv):
     _defaults = {
         "active": lambda *a: True,
         "extra_beta_kw": lambda *a: 0,
+        "start_date": lambda *a: str(datetime.today()),
     }
 
 
