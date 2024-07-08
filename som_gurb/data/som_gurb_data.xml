@@ -61,5 +61,8 @@
         <record model="giscedata.signatura.models" id="signatura_model_som_gurb_cups">
             <field name="name" ref="som_gurb.model_som_gurb_cups"/>
         </record>
+        <record model="giscedata.signatura.models" id="signatura_model_som_gurb_lead">
+            <field name="name" ref="som_gurb.model_som_gurb_lead"/>
+        </record>
     </data>
 </openerp>

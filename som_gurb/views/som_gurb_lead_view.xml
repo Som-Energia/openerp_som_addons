@@ -2,29 +2,41 @@
 <openerp>
     <data>
         <!-- Formulari per defecte dels GURBs Leads -->
-        <record model="ir.ui.view" id="view_gurbs_lead_form">
+        <record model="ir.ui.view" id="view_gurb_lead_form">
             <field name="name">som.gurb.lead.form</field>
             <field name="model">som.gurb.lead</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="GURB">
-                    <group col="4" colspan="4" string="General">
-                        <field name="active" />
+                    <group col="6" colspan="4" string="Estat">
                         <field name="signed" />
                         <field name="payed" />
-                        <field name="cups_id" />
+                   </group>
+                    <group col="4" colspan="4" string="Dades Obligatòries">
+                        <field name="cups_id" on_change="onchange_cups_id(cups_id)" />
                         <field name="gurb_id" />
-                        <field name="beta_kw" />
-                        <field name="extra_beta_kw" />
-                        <field name="owner_cups" />
-                        <field name="initial_invoice_id" />
+                        <field name="beta_inicial" />
+                        <field name="extra_beta_inicial" />
+                       <field name="email" />
                         <field name="general_conditions_id" />
                     </group>
+                    <group col="4" colspan="4" string="Altres">
+                        <field name="initial_invoice_id" readonly="True" />
+                        <field name="polissa_id" readonly="True" />
+                        <field name="partner_id" readonly="True" />
+                        <field name="signature_id" readonly="True" />
+                   </group>
+                    <group col="4" colspan="4" string="Acció de Signatura" attrs="{'invisible': [('signed', '=', True)]}">
+                        <button name="sign_gurb_lead" type="object" string="Enviar Proposta a signar" icon="gtk-execute" colspan="4" />
+                   </group>
+                    <group col="4" colspan="4" string="Acció d'Alta" attrs="{'invisible': [('signed', '=', False), ('payed', '=', False)], 'readonly': [('signature_id', '=', True)]}">
+                        <button name="create_gurb_cups" type="object" string="Entrar Proposta al Gurb" icon="gtk-execute" colspan="4" />
+                   </group>
                 </form>
             </field>
         </record>
         <!-- Llistat per defecte dels Leads de GURBs-->
-        <record model="ir.ui.view" id="view_gurbs_lead_tree">
+        <record model="ir.ui.view" id="view_gurb_lead_tree">
             <field name="name">som.gurb.lead.tree</field>
             <field name="model">som.gurb.lead</field>
             <field name="type">tree</field>
@@ -35,9 +47,10 @@
                     <field name="payed" select="2" />
                     <field name="cups_id" select="1" />
                     <field name="gurb_id" select="1"/>
-                    <field name="beta_kw" />
-                    <field name="extra_beta_kw" />
-                    <field name="owner_cups" select="1"/>
+                    <field name="polissa_id" select="1" />
+                    <field name="partner_id" select="1" />
+                    <field name="beta_inicial" />
+                    <field name="extra_beta_inicial" />
                     <field name="initial_invoice_id" />
                     <field name="general_conditions_id" />
                 </tree>
@@ -45,13 +58,13 @@
         </record>
         <!-- Acció per obrir el llistat de leads GURBs-->
         <record model="ir.actions.act_window" id="action_gurb_lead">
-            <field name="name">GURBs</field>
-            <field name="view_id" ref="view_gurbs_lead_tree" />
+            <field name="name">GURBs leads</field>
+            <field name="view_id" ref="view_gurb_lead_tree" />
             <field name="res_model">som.gurb.lead</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
         </record>
         <!-- Menú per llistar els lead GURBs-->
-        <menuitem id="menu_llistar_lead_gurbs" parent="menu_gurbs" action="action_gurb_lead" />
+        <menuitem id="menu_llistar_lead_gurbs" parent="som_gurb.menu_gurbs" action="action_gurb_lead" />
     </data>
 </openerp>
