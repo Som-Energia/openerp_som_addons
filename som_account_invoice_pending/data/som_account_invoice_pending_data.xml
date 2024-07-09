@@ -270,6 +270,20 @@
             <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
             <field name="pending_days_type">natural</field>
         </record>
+        <record model="account.invoice.pending.state" id="pendent_monitori_bo_social_pending_state">
+            <field name="name">Pendent Monitori (Bo Social)</field>
+            <field name="weight">1065</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="pendent_monitori_default_pending_state">
+            <field name="name">Pendent Monitori (Default Process)</field>
+            <field name="weight">1165</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
         <record model="account.invoice.pending.state" id="som_account_invoice_pending.fracc_manual_bo_social_pending_state">
             <field name="name">Fraccionament manual (Bo Social)</field>
             <field name="weight">1022</field>
