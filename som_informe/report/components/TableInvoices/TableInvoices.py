@@ -89,7 +89,7 @@ class TableInvoices:
                 linia_taula["total"] = invoice.signed_amount_total
                 result["taula"].append(linia_taula)
         result["taula"].sort(key=lambda x: datetime.strptime(
-            x['date_from'], "%d-%m-%Y"), reverse=True)
+            x['date_from'], "%d-%m-%Y"))
         return result
 
     def get_invoice_origin(self, cursor, uid, invoice):
