@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from osv import osv, fields
+from osv.expression import OOQuery
 from .erpwrapper import ErpWrapper
 import datetime
 from dateutil.relativedelta import relativedelta
@@ -473,8 +474,8 @@ class GenerationkWhAssignment(osv.osv):
         month_start = datetime.datetime.strptime(month, '%Y-%m')
         next_month = month_start+relativedelta(months=1)
         date_domain = [
-            ('factura_id.date_invoice', '>=', month_start.strftime('%Y-%m-%d')),
-            ('factura_id.date_invoice', '<', next_month.strftime('%Y-%m-%d'))
+            ('factura_id.invoice_id.date_invoice', '>=', month_start.strftime('%Y-%m-%d')),
+            ('factura_id.invoice_id.date_invoice', '<', next_month.strftime('%Y-%m-%d'))
         ]
         return self._get_generationkwh_use(cursor, uid, res_partner_id, date_domain)
 
@@ -484,16 +485,19 @@ class GenerationkWhAssignment(osv.osv):
         year_start = datetime.datetime.strptime(year, '%Y')
         next_year = year_start+relativedelta(years=1)
         date_domain = [
-            ('factura_id.date_invoice', '>=', year_start.strftime('%Y-%m-%d')),
-            ('factura_id.date_invoice', '<', next_year.strftime('%Y-%m-%d'))
+            ('factura_id.invoice_id.date_invoice', '>=', year_start.strftime('%Y-%m-%d')),
+            ('factura_id.invoice_id.date_invoice', '<', next_year.strftime('%Y-%m-%d'))
         ]
         return self._get_generationkwh_use(cursor, uid, res_partner_id, date_domain)
 
     def _get_generationkwh_use(self, cursor, uid, res_partner_id, date_domain):
         GenerationkWhInvoiceLineOwner = self.pool.get('generationkwh.invoice.line.owner')
+        q = OOQuery(GenerationkWhInvoiceLineOwner, cursor, uid)
 
-        generation_line_ids = GenerationkWhInvoiceLineOwner.search(
-                cursor, uid, [('owner_id', '=', res_partner_id)]+date_domain)
+        sql = q.select(['id']).where([('owner_id.id', '=', res_partner_id)]+date_domain)
+        cursor.execute(*sql)
+        res = cursor.fetchall()
+        generation_line_ids = [line[0] for line in res]
 
         response = defaultdict(lambda: defaultdict(int))
         for gkwh_line in GenerationkWhInvoiceLineOwner.browse(cursor, uid, generation_line_ids):
