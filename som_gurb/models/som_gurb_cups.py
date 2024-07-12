@@ -420,7 +420,7 @@ class SomGurbCups(osv.osv):
             store=False,
             readonly=True,
         ),
-        "signed": fields.boolean("Signed")
+        "signed": fields.boolean("Signed", readonly=1)
     }
 
     _defaults = {
