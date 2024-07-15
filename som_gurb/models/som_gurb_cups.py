@@ -350,6 +350,47 @@ class SomGurbCups(osv.osv):
             if method:
                 method(cursor, uid, gurb_cups_id, context=context)
 
+    def onchange_cups_id(self, cursor, uid, ids, cups_id):
+        lang_o = self.pool.get("res.lang")
+        pol_o = self.pool.get("giscedata.polissa")
+        gurb_conditions_o = self.pool.get("som.gurb.general.conditions")
+
+        res = {
+            "value": {},
+            "domain": {},
+            "warning": {},
+        }
+
+        search_params = [
+            ("state", "in", ["activa", "esborrany"]),
+            ("cups", "=", cups_id),
+        ]
+        pol_ids = pol_o.search(cursor, uid, search_params, limit=1)
+
+        if pol_ids:
+            pol_br = pol_o.browse(cursor, uid, pol_ids[0])
+
+            lang = pol_br.titular.lang
+
+            search_params = [
+                ("code", "=", lang)
+            ]
+
+            lang_id = lang_o.search(cursor, uid, search_params)
+
+            if lang_id:
+                search_params = [
+                    ("lang_id", "=", lang_id),
+                    ("active", "=", True)
+                ]
+                conditions_id = gurb_conditions_o.search(cursor, uid, search_params)
+                if conditions_id:
+                    res["value"]["general_conditions_id"] = conditions_id[0]
+                    if ids:
+                        self.write(cursor, uid, ids, {"general_conditions_id": conditions_id[0]})
+
+        return res
+
     _columns = {
         "active": fields.boolean("Actiu"),
         "start_date": fields.date("Data entrada GURB", required=True),
