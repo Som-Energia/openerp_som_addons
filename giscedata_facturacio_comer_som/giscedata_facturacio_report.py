@@ -3895,5 +3895,35 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         return data
 
+    def get_component_solar_flux_info_data(self, fact, pol):
+        if not fact.linies_generacio or not te_autoconsum_amb_excedents(fact, pol):
+            return {"is_visible": False}
+
+        autoconsum_excedents_product_id = self.get_autoconsum_excedents_product_id(fact)
+        ajustment = 0.0
+        surplus_kwh = 0.0
+        surplus_e = 0.0
+
+        for l in fact.linies_generacio:  # noqa: E741
+            if l.product_id.id == autoconsum_excedents_product_id:
+                ajustment += l.price_subtotal
+            else:
+                surplus_kwh += l.quantity
+                surplus_e += l.price_subtotal
+
+        surplus_kwh = surplus_kwh * -1
+        surplus_e = surplus_e * -1
+
+        return {
+            'is_visible': True,
+            'case': '1.1',
+            'surplus_kwh': surplus_kwh,
+            'surplus_e': surplus_e,
+            'compensated_e': surplus_e - ajustment,
+            'rest_e': ajustment,
+            'suns': ajustment * 0.80,
+            'link_help': 'https://ca.support.somenergia.coop/article/1371-que-es-el-flux-solar',
+        }
+
 
 GiscedataFacturacioFacturaReport()
