@@ -42,7 +42,7 @@ class TestIndexadaHelpers(TestChangeToIndexada):
         )["modcontractuals_ids"][1]
 
         new_pricelist_id = IrModel._get_obj(
-            self.cursor, self.uid, "som_indexada", "pricelist_indexada_20td_peninsula"
+            self.cursor, self.uid, "som_indexada", "pricelist_indexada_20td_peninsula_2024"
         ).id
 
         modcon_act = modcon_obj.read(
