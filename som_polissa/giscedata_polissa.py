@@ -461,19 +461,6 @@ class GiscedataPolissa(osv.osv):
         payment_mode_id = payment_mode_o.search(cursor, uid, [("name", "=", "ENGINYERS")])
         default.update({"payment_mode_id": payment_mode_id[0]})
 
-        imd_obj = self.pool.get("ir.model.data")
-        if self._is_enterprise(cursor, uid, id, context=context):
-            default_process = imd_obj.get_object_reference(
-                cursor, uid, "account_invoice_pending", "default_pending_state_process"
-            )[1]
-            default.update({"process_id": default_process})
-        else:
-            bo_social_process = imd_obj.get_object_reference(
-                cursor, uid, 'giscedata_facturacio_comer_bono_social',
-                'bono_social_pending_state_process'
-            )[1]
-            default.update({"process_id": bo_social_process})
-
         return super(GiscedataPolissa, self).copy_data(cursor, uid, id, default, context=context)
 
     def _ff_search_ssaa(self, cursor, uid, ids, field_name, args, context=None):
