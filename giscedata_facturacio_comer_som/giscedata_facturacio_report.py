@@ -3903,7 +3903,6 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         ajustment = 0.0
         surplus_kwh = 0.0
         surplus_e = 0.0
-
         for l in fact.linies_generacio:  # noqa: E741
             if l.product_id.id == autoconsum_excedents_product_id:
                 ajustment += l.price_subtotal
@@ -3911,18 +3910,30 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 surplus_kwh += l.quantity
                 surplus_e += l.price_subtotal
 
-        surplus_kwh = surplus_kwh * -1
-        surplus_e = surplus_e * -1
+        surplus_kwh = surplus_kwh * -1.0
+        surplus_e = surplus_e * -1.0
+
+        flux_lines = [
+            l
+            for l in fact.linia_ids  # noqa: E741
+            if l.tipus in ("altres", "cobrament") and l.invoice_line_id.product_id.code == "PBV"
+        ]
+
+        lang = fact.lang_partner.lower()
+        if lang == 'ca_es':
+            link = 'https://ca.support.somenergia.coop/article/1371-que-es-el-flux-solar'
+        else:
+            link = 'https://es.support.somenergia.coop/article/1372-que-es-el-flux-solar'
 
         return {
             'is_visible': True,
-            'case': '1.1',
             'surplus_kwh': surplus_kwh,
             'surplus_e': surplus_e,
-            'compensated_e': surplus_e - ajustment,
-            'rest_e': ajustment,
-            'suns': ajustment * 0.80,
-            'link_help': 'https://ca.support.somenergia.coop/article/1371-que-es-el-flux-solar',
+            'compensation_e': surplus_e - ajustment,
+            'ajustment_e': ajustment,
+            'suns_generated': ajustment * 0.80,
+            'suns_used': sum([l.price_subtotal for l in flux_lines]) * -1.0,   # noqa: E741
+            'link_help': link,
         }
 
 
