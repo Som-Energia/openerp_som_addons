@@ -19,6 +19,7 @@ def up(cursor, installed_version):
                        "pricelist_indexada_61td_peninsula_2024",
                        "pricelist_indexada_61td_balears_2024",
                        "pricelist_indexada_61td_canaries_2024",
+                       "pricelist_indexada_30tdve_peninsula_2024",
                        "pricelist_indexada_empresa_peninsula_non_standard_2024",
                        "pricelist_indexada_empresa_balears_non_standard_2024",
                        "pricelist_indexada_empresa_canaries_non_standard_2024"]
@@ -26,7 +27,7 @@ def up(cursor, installed_version):
     load_data_records(
         cursor,
         'som_indexada',
-        'product_pricelist_data.xml',
+        'data/product_pricelist_data.xml',
         list_of_records,
         mode='update'
     )
