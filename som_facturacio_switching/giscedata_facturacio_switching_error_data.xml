@@ -14,5 +14,21 @@
             <field name="parameters">{"tolerance_by_period": 1.0}</field>
             <field name="level">warning</field>
         </record>
+        <record model="giscedata.facturacio.switching.error.template" id="error_phase_3_code_S44" forcecreate="1">
+            <field name="code">S44</field>
+            <field name="phase">3</field>
+            <field name="level">critical</field>
+            <field name="description">S'ha detectat un periode anterior no facturat per aquest CUPS.</field>
+            <field name="observation"> </field>
+            <field name="method">check_f1_foradat</field>
+        </record>
+        <record model="giscedata.facturacio.switching.error.template" id="error_phase_4_code_S44" forcecreate="1">
+            <field name="code">S44</field>
+            <field name="phase">4</field>
+            <field name="level">critical</field>
+            <field name="description">S'ha detectat un periode anterior no facturat per aquest CUPS.</field>
+            <field name="observation"> </field>
+            <field name="method">check_f1_foradat_fase_4</field>
+        </record>
     </data>
 </openerp>
