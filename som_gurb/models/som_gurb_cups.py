@@ -284,6 +284,8 @@ class SomGurbCups(osv.osv):
             "type": "out_invoice",
             "invoice_line": invoice_lines,
             "origin": "GURBCUPSID{}".format(gurb_cups_br.id),
+            "origin_date_invoice": datetime.today().strftime("%Y-%m-%d"),
+            "date_invoice": datetime.today().strftime("%Y-%m-%d")
         }
         invoice_vals.update(invoice_o.onchange_partner_id(  # Get invoice default values
             cursor, uid, [], "out_invoice", partner_id).get("value", {})
