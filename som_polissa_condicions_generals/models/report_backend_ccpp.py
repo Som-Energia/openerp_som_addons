@@ -152,7 +152,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         res['contract_type'] = CONTRACT_TYPES[pol.contract_type]
         res['tarifa'] = pol.tarifa_codi
         res['data_baixa'] = pol.data_baixa
-        # res['fiscal_poisition'] = pol.fiscal_poisition
+        # res['fiscal_position'] = pol.fiscal_position
         res['potencia_max'] = pol.potencia
         res['mode_facturacio'] = pol.mode_facturacio
 
@@ -363,7 +363,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         coeficient_k_untaxed = (pol.coeficient_k + pol.coeficient_d) / 1000
         coeficient_k = False
         res['mostra_indexada'] = False
-        fp_k_id = polissa.fiscal_poisition_id if pol.fiscal_poisition_id else ctx.get(
+        fp_k_id = polissa.fiscal_position_id if pol.fiscal_position_id else ctx.get(
             'force_fiscal_position', False)
         if fp_k_id:
             fp_k = fp_obj.browse(cursor, uid, fp_k_id)
@@ -390,7 +390,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                     tipus='', product_id=coeficient_id, fiscal_position=fp_k,
                     with_taxes=True)[0]
             else:
-                fp_k = polissa.fiscal_poisition_id if pol.fiscal_poisition_id else ctx.get(
+                fp_k = polissa.fiscal_position_id if pol.fiscal_position_id else ctx.get(
                     'force_fiscal_position', False)
                 coeficient_k = prod_obj.add_taxes(
                     cursor, uid, coeficient_id, coeficient_k_untaxed, fp_k_id,
