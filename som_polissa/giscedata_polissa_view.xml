@@ -66,11 +66,13 @@
             <field name="inherit_id" ref="giscedata_polissa.view_polisses_form"/>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <xpath expr="//page[@string='Observacions']" position="inside">
-                    <separator string="Gest. Endarrerida" colspan="4" />
-                    <field name="info_gestio_endarrerida" nolabel="1" colspan="4"/>
-                    <separator string="Gest. Massives" colspan="4" />
-                    <field name="info_gestions_massives" nolabel="1" colspan="4" select="2"/>
+                <xpath expr="//separator[@string='Observacions']" position="before">
+                    <group colspan="4">
+                            <separator string="Gest. Endarrerida" colspan="2"/>
+                            <separator string="Gest. Massives" colspan="2"/>
+                            <field name="info_gestio_endarrerida" nolabel="1" colspan="2" height="100"/>
+                            <field name="info_gestions_massives" nolabel="1" colspan="2" select="2"/>
+                    </group>
                 </xpath>
                 <xpath expr="//page[@string='Agregació']" position="replace">
                     <page string="Agregació" invisible="1"/>

@@ -491,15 +491,13 @@ class GiscedataPolissa(osv.osv):
         cups_obj = self.pool.get("giscedata.cups.ps")
         res = dict.fromkeys(ids, False)
 
-        for pol_id in ids:
-            provincia = (
-                cups_obj.q(cursor, uid)
-                .read(["id_provincia"])
-                .where([("polissa_polissa", "=", pol_id)])
-            )
-            if provincia:
-                provincia = provincia[0]["id_provincia"][1]
-                res[pol_id] = provincia
+        cups_ids = cups_obj.search(
+            cursor, uid, [('polissa_polissa', 'in', ids)], context=context
+        )
+        provincies = cups_obj.read(cursor, uid, cups_ids, ['polissa_polissa', 'id_provincia'])
+
+        for provincia in provincies:
+            res[provincia['polissa_polissa'][0]] = provincia["id_provincia"][1]
 
         return res
 
@@ -746,7 +744,7 @@ class GiscedataPolissa(osv.osv):
 
         return factura_backend_obj.get_grafica_historic_consum_14_mesos(
             cursor, uid, last_inv[0], context=context
-        )
+        )[0]
 
     def get_consum_anual_backend_gisce(self, cursor, uid, polissa_id, context=None):
         """Consum anual segons query de del backend de la factura de GISCE"""
@@ -949,6 +947,37 @@ class GiscedataPolissa(osv.osv):
                     break
 
         return res
+
+    def calculate_fiscal_position_from_cups(self, cursor, uid, cups_id, cnae, powers, context=None):  # noqa: E501
+        municipi_obj = self.pool.get("res.municipi")
+        cups_obj = self.pool.get("giscedata.cups.ps")
+        cfg_obj = self.pool.get("res.config")
+
+        cups = cups_obj.browse(cursor, uid, cups_id)
+        municipi = municipi_obj.browse(cursor, uid, cups.id_municipi.id, context=context)
+        posicio_id = None
+        is_canarias = municipi and municipi.subsistema_id and municipi.subsistema_id.code in [
+            'TF', 'PA', 'LG', 'HI', 'GC', 'FL']
+        is_pdlc = cups.distribuidora_id.ref == '0401'
+        is_vivienda = cnae and cnae == "9820"
+        power = max(powers or [0])
+
+        if is_canarias:
+            if is_vivienda and power < 10.0:
+                posicio_id = cfg_obj.get(cursor, uid, "fp_canarias_vivienda_id", 25)
+            else:
+                posicio_id = cfg_obj.get(cursor, uid, "fp_canarias_id", 19)
+
+        if is_pdlc:
+            if is_vivienda and power < 10.0:
+                posicio_id = cfg_obj.get(cursor, uid, "fp_pdlc_vivienda_id", 39)
+            else:
+                posicio_id = cfg_obj.get(cursor, uid, "fp_pdlc_id", 38)
+
+        if posicio_id:
+            posicio_id = int(posicio_id)
+
+        return posicio_id
 
     _columns = {
         "info_gestio_endarrerida": fields.text("Informació gestió endarrerida"),

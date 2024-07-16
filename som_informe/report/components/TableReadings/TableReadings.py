@@ -49,7 +49,8 @@ class TableReadings:
                     linia_taula["tipus_factura"] = (
                         "R" if invoice.tipo_rectificadora == "RA" else invoice.tipo_rectificadora
                     )
-                    linia_taula["date_from"] = dateformat(invoice.data_inici)
+                    linia_taula["date_from"] = dateformat(
+                        invoice.data_inici) if invoice.data_inici else linia_taula["date"]
                     if invoice.data_inici:
                         if not result["date_from"] or datetime.strptime(
                             invoice.data_inici, "%Y-%m-%d"
@@ -70,5 +71,7 @@ class TableReadings:
                     )
 
                     result["taula"].append(linia_taula)
+        result["taula"].sort(key=lambda x: datetime.strptime(
+            x['date_from'], "%d-%m-%Y"), reverse=True)
 
         return result

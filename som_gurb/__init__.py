@@ -1,1 +1,3 @@
-import giscedata_switching
+from . import models
+from . import wizard
+from . import report

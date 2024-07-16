@@ -48,14 +48,30 @@ class GiscedataAtc(osv.osv):
         return res
 
     def unlink(self, cursor, uid, ids, context=None):
-        return self.case_cancel(cursor, uid, ids, context)
+        return self.case_and_atrs_cancel(cursor, uid, ids, context)
+
+    def case_and_atrs_cancel(self, cursor, uid, ids, *args):
+        r101_obj = self.pool.get("giscedata.switching")
+        if not isinstance(ids, (list, tuple)):
+            ids = [ids]
+
+        self.case_cancel(cursor, uid, ids, *args)
+
+        cancel_r1_ids = []
+        for atc in self.browse(cursor, uid, ids):
+            ref = atc.ref if atc.ref else atc.ref2
+            if ref and 'giscedata.switching,' in ref:
+                cancel_r1_ids.append(int(ref.split(',')[1]))
+
+        if cancel_r1_ids:
+            r101_obj.case_cancel(cursor, uid, cancel_r1_ids, *args)
+        return True
 
     def case_cancel(self, cursor, uid, ids, *args):  # noqa: C901
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
 
         cancel_ids = []
-        cancel_r1_ids = []
         for atc_id in ids:
             atc = self.browse(cursor, uid, atc_id)
 
@@ -174,13 +190,8 @@ class GiscedataAtc(osv.osv):
                 )
 
             cancel_ids.append(atc_id)
-            if atc.process_step == "01" and r1 and r1.enviament_pendent == True:  # noqa: E712
-                cancel_r1_ids.append(r1.id)
 
         if cancel_ids:
-            if cancel_r1_ids:
-                r101_obj = self.pool.get("giscedata.switching")
-                r101_obj.case_cancel(cursor, uid, cancel_r1_ids, *args)
             return super(GiscedataAtc, self).case_cancel(cursor, uid, cancel_ids, *args)
 
         return True

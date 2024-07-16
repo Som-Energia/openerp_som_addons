@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.actions.report.xml" id="action_report_som_gurb_consentiment_baixa">
+            <field name="report_name">report_som_gurb_consentiment_baixa</field>
+            <field name="name">Generar consentiment baixa GURB</field>
+            <field name="model">som.gurb.cups</field>
+            <field name="report_type">pdf</field>
+            <field name="report_webkit" eval=""/>
+            <field name="header" eval="0"/>
+            <field name="auto" eval="0"/>
+           <field name="signature_in_coordinates">[{"top": 53, "left": 5, "height": 5, "width": 13}]</field>
+        </record>
+
+        <record model="ir.values" id="value_report_som_gurb_consentiment_baixa">
+            <field name="object" eval="1"/>
+           <field name="name">Generar consentiment baixa GURB</field>
+           <field name="key2">client_print_multi</field>
+           <field name="model">som.gurb.cups</field>
+           <field name="value" eval="'ir.actions.report.xml,'+str(ref('action_report_som_gurb_consentiment_baixa'))"/>
+        </record>
+
+        <record model="ir.actions.report.xml" id="action_report_som_gurb_autoritzacio_representant">
+            <field name="report_name">report_som_gurb_autoritzacio_representant</field>
+            <field name="name">Generar autoritzacio representant GURB</field>
+            <field name="model">som.gurb.cups</field>
+            <field name="report_type">pdf</field>
+            <field name="report_webkit" eval=""/>
+            <field name="header" eval="0"/>
+            <field name="auto" eval="0"/>
+           <field name="signature_in_coordinates">[{"top": 90, "left": 5, "height": 8, "width": 19}]</field>
+        </record>
+
+        <record model="ir.values" id="value_report_som_gurb_autoritzacio_representant">
+            <field name="object" eval="1"/>
+           <field name="name">Generar autoritzacio representant GURB</field>
+           <field name="key2">client_print_multi</field>
+           <field name="model">som.gurb.cups</field>
+          <field name="value" eval="'ir.actions.report.xml,'+str(ref('action_report_som_gurb_autoritzacio_representant'))"/>
+        </record>
+
+        <record model="ir.actions.report.xml" id="action_report_som_gurb_conditions">
+            <field name="report_name">som.gurb.conditions</field>
+            <field name="name">Generar condicions GURB</field>
+            <field name="model">som.gurb.cups</field>
+            <field name="report_type">pdf</field>
+            <field name="report_webkit" eval=""/>
+            <field name="header" eval="0"/>
+            <field name="auto" eval="0"/>
+           <field name="signature_in_coordinates">[{"top": 90, "left": 5, "height": 8, "width": 19}]</field>
+        </record>
+
+        <record model="ir.values" id="value_report_som_gurb_condicions">
+            <field name="object" eval="1"/>
+           <field name="name">Generar condicions GURB</field>
+           <field name="key2">client_print_multi</field>
+           <field name="model">som.gurb.cups</field>
+           <field name="value" eval="'ir.actions.report.xml,'+str(ref('action_report_som_gurb_conditions'))"/>
+        </record>
+    </data>
+</openerp>

@@ -1,5 +1,7 @@
+<%def name="generals_es()">
 <br>
 <br>
+<div class="content_generals">
 <div id="titol">
     <h2 style="font-size: 14px;">CONDICIONES GENERALES DEL CONTRATO DE SUMINISTRO DE ENERGÍA ELÉCTRICA</h2>
 </div>
@@ -486,3 +488,5 @@ Según lo previsto en la Ley 60/2003 de Arbitraje, el Real Decreto Legislativo 1
 </div></div></div></div></div><div class="a13_row_container" style="background-position:top left;background-repeat: no-repeat;"><div class="wpb_row vc_row-fluid "><div class="wpb_column vc_column_container vc_col-sm-12"><div class="vc_column-inner"><div class="wpb_wrapper">
 </div></div></div></div></div>
 </section>
+</div>
+</%def>

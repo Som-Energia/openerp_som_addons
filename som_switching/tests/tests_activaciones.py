@@ -251,8 +251,8 @@ class TestsAutoActiva(testing.OOTestCase):
         wiz_o = self.openerp.pool.get("wizard.generate.r1.from.atc.case")
         wiz_id = wiz_o.create(cursor, uid, {}, {"active_ids": [cas.id]})
         res = wiz_o.generate_r1(cursor, uid, [wiz_id], {"active_id": cas.id})
-        context = eval(dict(res).get("context", "{}"))
-        extra_values = context.get("extra_values")
+        context = res.get("context", "{}")
+        extra_values = context["extra_values"]
         self.assertEqual(extra_values["auto_r1_atc"], True)
         self.assertEqual(context["polissa_id"], pol.id)
         self.assertEqual(extra_values["ref_id"], [cas.id])
@@ -405,7 +405,7 @@ class TestsAutoActiva(testing.OOTestCase):
         wiz_o = self.openerp.pool.get("wizard.generate.r1.from.atc.case")
         wiz_id = wiz_o.create(cursor, uid, {}, {"active_ids": [cas.id]})
         res = wiz_o.generate_r1(cursor, uid, [wiz_id], {"active_id": cas.id})
-        context = eval(dict(res).get("context", "{}"))
+        context = res.get("context", "{}")
         extra_values = context.get("extra_values")
         self.assertEqual(extra_values["auto_r1_atc"], True)
         self.assertEqual(context["polissa_id"], pol.id)
@@ -557,12 +557,12 @@ class TestsAutoActiva(testing.OOTestCase):
         ctx2 = {"active_ids": [cas.id], "from_model": pol_obj._name}
         wiz_id = wiz_o.create(cursor, uid, {}, context=ctx2)
         res = wiz_o.generate_r1(cursor, uid, [wiz_id], {"active_id": cas.id})
-        context = eval(dict(res).get("context", "{}"))
-        extra_values = context.get("extra_values")
-        self.assertEqual(extra_values["auto_r1_atc"], True)
-        self.assertEqual(context["polissa_id"], pol.id)
-        self.assertEqual(extra_values["ref_id"], [cas.id])
-        self.assertEqual(extra_values["ref_model"], "giscedata.atc")
+        context = res.get("context", "{}")
+        extra_values = context.get("extra_values", "{}")
+        self.assertEqual(extra_values.get("auto_r1_atc", False), True)
+        self.assertEqual(context.get("polissa_id", 0), pol.id)
+        self.assertEqual(extra_values.get("ref_id", [0]), [cas.id])
+        self.assertEqual(extra_values.get("ref_model", 0), "giscedata.atc")
 
         # Cridem l'assistent de crear R1 amb el context obringut.
         wiz_o = self.openerp.pool.get("wizard.subtype.r1")

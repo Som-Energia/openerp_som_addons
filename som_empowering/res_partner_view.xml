@@ -5,7 +5,7 @@
             <field name="name">res.partner.empowering.form</field>
             <field name="model">res.partner</field>
             <field name="type">form</field>
-            <field name="inherit_id" ref="www_som.view_partner_www_form"/>
+            <field name="inherit_id" ref="base_extended_som.view_partner_www_form"/>
             <field name="arch" type="xml">
                 <page string="Oficina virtual" position="inside">
                     <group colspan="4">

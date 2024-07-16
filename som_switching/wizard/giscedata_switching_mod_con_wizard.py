@@ -31,11 +31,11 @@ class GiscedataSwitchingModConWizard(osv.osv_memory):
                 )
             new_vals.update(
                 {
-                    "empowering_profile_id": False,
-                    "empowering_channels_log": [(6, 0, [])],
-                    "empowering_profile": False,
-                    "empowering_service": False,
-                    "etag": False,
+                    # "empowering_profile_id": False,
+                    # "empowering_channels_log": [(6, 0, [])],
+                    # "empowering_profile": False,
+                    # "empowering_service": False,
+                    # "etag": False,
                     "enviament": "email",
                 }
             )

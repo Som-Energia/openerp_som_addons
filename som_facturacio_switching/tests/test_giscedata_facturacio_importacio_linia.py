@@ -5,11 +5,13 @@ from tools.misc import cache
 import mock
 from mock import call
 from datetime import datetime, timedelta
+import unittest
 
 
 class TestGiscedataFacturacioImportacioLinia(testing.OOTestCaseWithCursor):
     def setUp(self):
         self.f1_obj = self.openerp.pool.get("giscedata.facturacio.importacio.linia")
+        self.cups_obj = self.openerp.pool.get("giscedata.cups.ps")
         self.imd_obj = self.openerp.pool.get("ir.model.data")
         super(TestGiscedataFacturacioImportacioLinia, self).setUp()
         f1_ids = self.f1_obj.search(
@@ -104,6 +106,7 @@ class TestGiscedataFacturacioImportacioLinia(testing.OOTestCaseWithCursor):
 
         mock_function.assert_called_with(self.cursor, self.uid, [f1_id], context={})
 
+    @unittest.skip("Pending PR 19431 to be deployed")
     @mock.patch(
         "som_facturacio_switching.giscedata_facturacio_importacio_linia.GiscedataFacturacioImportacioLinia.reimport_f1_by_cups"  # noqa: E501
     )
@@ -111,19 +114,17 @@ class TestGiscedataFacturacioImportacioLinia(testing.OOTestCaseWithCursor):
         f1_id = self.imd_obj.get_object_reference(
             self.cursor, self.uid, "giscedata_facturacio_switching", "line_01_f1_import_01"
         )[1]
-
-        fecha_factura = (datetime.today() - timedelta(days=40)).strftime("%Y-%m-%d")
+        test_date = (datetime.today() - timedelta(days=40)).strftime("%Y-%m-%d")
         self.f1_obj.write(
-            self.cursor,
-            self.uid,
-            f1_id,
+            self.cursor, self.uid, f1_id,
             {
                 "info": "* [2999] Undefined error: no file in gridfs collection Collection(Database(MongoClient('', ), u''), u'fs') with _id ObjectId('5')",  # noqa: E501
-                "fecha_factura": fecha_factura,
+                "create_date": test_date,  # data_carrega _ff de create_date #PR 19431
+                "fecha_factura": test_date,
             },
         )
-
         data = {"error_codes": [{"code": "2999", "text": "no file in gridfs"}], "days_to_check": 30}
+
         self.f1_obj.do_reimport_f1(self.cursor, self.uid, data=data, context=None)
 
         mock_function.assert_not_called()
@@ -141,20 +142,26 @@ class TestGiscedataFacturacioImportacioLinia(testing.OOTestCaseWithCursor):
         cups_id = self.imd_obj.get_object_reference(
             self.cursor, self.uid, "giscedata_cups", "cups_04"
         )[1]
+        cups_text = self.cups_obj.read(self.cursor, self.uid, cups_id, ['name'])['name']
         fecha_factura = (datetime.today() - timedelta(days=30)).strftime("%Y-%m-%d")
         vals = {
             "info": "* [2999] Undefined error: no file in gridfs collection Collection(Database(MongoClient('', ), u''), u'fs') with _id ObjectId('5')",  # noqa: E501
             "fecha_factura": fecha_factura,
-            "cups_id": cups_id,
+            "cups_text": cups_text,
         }
-
         self.f1_obj.write(self.cursor, self.uid, [f1_id, f2_id], vals)
         self.f1_obj.write(self.cursor, self.uid, f1_id, {"fecha_factura_desde": "2022-02-02"})
         self.f1_obj.write(self.cursor, self.uid, f2_id, {"fecha_factura_desde": "2022-01-02"})
         data = {"error_codes": [{"code": "2999", "text": "no file in gridfs"}], "days_to_check": 30}
+
         self.f1_obj.do_reimport_f1(self.cursor, self.uid, data=data, context=None)
 
-        mock_function.assert_called_with(self.cursor, self.uid, [f2_id, f1_id], context={})
+        mock_function.assert_has_calls(
+            [
+                call(self.cursor, self.uid, f1_id, context={}),
+                call(self.cursor, self.uid, f2_id, context={}),
+            ]
+        )
 
     @mock.patch(
         "giscedata_facturacio_switching.giscedata_facturacio_switching.GiscedataFacturacioImportacioLinia.process_line"  # noqa: E501
@@ -177,13 +184,16 @@ class TestGiscedataFacturacioImportacioLinia(testing.OOTestCaseWithCursor):
             "info": "* [2999] Undefined error: no file in gridfs collection Collection(Database(MongoClient('', ), u''), u'fs') with _id ObjectId('5')",  # noqa: E501
             "fecha_factura": fecha_factura,
         }
-
+        cups_text_1 = self.cups_obj.read(self.cursor, self.uid, cups1_id, ['name'])['name']
+        cups_text_2 = self.cups_obj.read(self.cursor, self.uid, cups2_id, ['name'])['name']
         self.f1_obj.write(self.cursor, self.uid, [f1_id, f2_id], vals)
         self.f1_obj.write(
-            self.cursor, self.uid, f1_id, {"fecha_factura_desde": "2022-01-02", "cups_id": cups1_id}
+            self.cursor, self.uid, f1_id, {
+                "fecha_factura_desde": "2022-01-02", "cups_text": cups_text_1}
         )
         self.f1_obj.write(
-            self.cursor, self.uid, f2_id, {"fecha_factura_desde": "2022-02-02", "cups_id": cups2_id}
+            self.cursor, self.uid, f2_id, {
+                "fecha_factura_desde": "2022-02-02", "cups_text": cups_text_2}
         )
         data = {"error_codes": [{"code": "2999", "text": "no file in gridfs"}], "days_to_check": 30}
         self.f1_obj.do_reimport_f1(self.cursor, self.uid, data=data, context=None)
@@ -191,7 +201,7 @@ class TestGiscedataFacturacioImportacioLinia(testing.OOTestCaseWithCursor):
         self.assertEqual(mock_function.call_count, 2)
         mock_function.assert_has_calls(
             [
-                call(self.cursor, self.uid, [f1_id], context={}),
-                call(self.cursor, self.uid, [f2_id], context={}),
+                call(self.cursor, self.uid, f2_id, context={}),
+                call(self.cursor, self.uid, f1_id, context={}),
             ]
         )

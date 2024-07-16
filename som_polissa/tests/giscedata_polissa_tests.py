@@ -29,7 +29,7 @@ class TestGisceDataCups(testing.OOTestCase):
         "giscedata_facturacio_comer.giscedata_facturacio_report_v2.GiscedataFacturacioFacturaReportV2.get_grafica_historic_consum_14_mesos"  # noqa: E501
     )
     def test__get_consum_anual_backend_gisce__lessThan12(self, mock_function):
-        mock_function.return_value = {
+        mock_function.return_value = [{
             u"historic": {
                 u"average_consumption": u"23,35",
                 u"average_cost": u"4,95",
@@ -45,7 +45,10 @@ class TestGisceDataCups(testing.OOTestCase):
                 {u"P1": u"132,00", u"P2": u"92,00", u"P3": u"194,00", u"mes": u"2023/07"},
                 {u"P1": u"183,00", u"P2": u"99,00", u"P3": u"256,00", u"mes": u"2023/08"},
             ],
-        }
+        }, {
+            'columns': [['P1'], ['P2'], ['P3'], ['P4'], ['P5'], ['P6']],
+            'x_labels': [u"2023/07", u"2023/08"],
+        }]
 
         result = self.pol_obj.get_consum_anual_backend_gisce(
             self.cursor, self.uid, self.contract_20TD_id
@@ -57,7 +60,7 @@ class TestGisceDataCups(testing.OOTestCase):
         "giscedata_facturacio_comer.giscedata_facturacio_report_v2.GiscedataFacturacioFacturaReportV2.get_grafica_historic_consum_14_mesos"  # noqa: E501
     )
     def test__get_consum_anual_backend_gisce__noInvoices(self, mock_function):
-        mock_function.return_value = {}
+        mock_function.return_value = [{}, {}]
 
         result = self.pol_obj.get_consum_anual_backend_gisce(
             self.cursor, self.uid, self.contract_20TD_id
@@ -69,7 +72,7 @@ class TestGisceDataCups(testing.OOTestCase):
         "giscedata_facturacio_comer.giscedata_facturacio_report_v2.GiscedataFacturacioFacturaReportV2.get_grafica_historic_consum_14_mesos"  # noqa: E501
     )
     def test__get_consum_anual_backend_gisce__moreThan12(self, mock_function):
-        mock_function.return_value = {
+        mock_function.return_value = [{
             u"historic": {
                 u"average_consumption": u"23,35",
                 u"average_cost": u"4,95",
@@ -97,7 +100,12 @@ class TestGisceDataCups(testing.OOTestCase):
                 {u"P1": u"132,00", u"P2": u"92,00", u"P3": u"194,00", u"mes": u"2023/07"},
                 {u"P1": u"183,00", u"P2": u"99,00", u"P3": u"256,00", u"mes": u"2023/08"},
             ],
-        }
+        }, {
+            'columns': [['P1'], ['P2'], ['P3'], ['P4'], ['P5'], ['P6']],
+            'x_labels': [
+                u"2022/07", u"2022/08", u"2022/09"
+            ],
+        }]
 
         result = self.pol_obj.get_consum_anual_backend_gisce(
             self.cursor, self.uid, self.contract1_id
@@ -109,7 +117,7 @@ class TestGisceDataCups(testing.OOTestCase):
         "giscedata_facturacio_comer.giscedata_facturacio_report_v2.GiscedataFacturacioFacturaReportV2.get_grafica_historic_consum_14_mesos"  # noqa: E501
     )
     def test__get_consum_prorrageig_cnmc__lessThan2(self, mock_function):
-        mock_function.return_value = {
+        mock_function.return_value = [{
             u"historic": {
                 u"average_consumption": u"23,35",
                 u"average_cost": u"4,95",
@@ -125,7 +133,10 @@ class TestGisceDataCups(testing.OOTestCase):
                 {u"P1": u"132,00", u"P2": u"92,00", u"P3": u"194,00", u"mes": u"2023/07"},
                 {u"P1": u"183,00", u"P2": u"99,00", u"P3": u"256,00", u"mes": u"2023/08"},
             ],
-        }
+        }, {
+            'columns': [['P1'], ['P2'], ['P3'], ['P4'], ['P5'], ['P6']],
+            'x_labels': [u"2023/07", u"2023/08"],
+        }]
 
         result = self.pol_obj.get_consum_prorrageig_cnmc(
             self.cursor, self.uid, self.contract_20TD_id
@@ -137,7 +148,7 @@ class TestGisceDataCups(testing.OOTestCase):
         "giscedata_facturacio_comer.giscedata_facturacio_report_v2.GiscedataFacturacioFacturaReportV2.get_grafica_historic_consum_14_mesos"  # noqa: E501
     )
     def test__get_consum_prorrageig_cnmc__noInvoices(self, mock_function):
-        mock_function.return_value = {}
+        mock_function.return_value = [{}, {}]
 
         result = self.pol_obj.get_consum_prorrageig_cnmc(
             self.cursor, self.uid, self.contract_20TD_id
@@ -149,7 +160,7 @@ class TestGisceDataCups(testing.OOTestCase):
         "giscedata_facturacio_comer.giscedata_facturacio_report_v2.GiscedataFacturacioFacturaReportV2.get_grafica_historic_consum_14_mesos"  # noqa: E501
     )
     def test__get_consum_prorrageig_cnmc__moreThan2(self, mock_function):
-        mock_function.return_value = {
+        mock_function.return_value = [{
             u"historic": {
                 u"average_consumption": u"23,35",
                 u"average_cost": u"4,95",
@@ -170,7 +181,12 @@ class TestGisceDataCups(testing.OOTestCase):
                 {u"P1": u"93,00", u"P2": u"67,00", u"P3": u"234,00", u"mes": u"2023/05"},
                 {u"P1": u"88,00", u"P2": u"66,00", u"P3": u"172,00", u"mes": u"2023/06"},
             ],
-        }
+        }, {
+            'columns': [['P1'], ['P2'], ['P3'], ['P4'], ['P5'], ['P6']],
+            'x_labels': [
+                u"2022/07", u"2022/08", u"2023/02", u"2023/03", u"2023/04", u"2023/05", u"2023/06"
+            ],
+        }]
 
         result = self.pol_obj.get_consum_prorrageig_cnmc(self.cursor, self.uid, self.contract1_id)
 

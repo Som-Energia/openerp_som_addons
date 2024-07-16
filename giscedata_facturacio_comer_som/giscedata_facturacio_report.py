@@ -1489,6 +1489,98 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         return data
 
+    def get_conany_kwh_energy_consumption_graphic_td_data(self, cursor, uid, fact_id, context=None):
+        """
+        Simplification to avoid generate all the invoice data to get the year's kwh
+        """
+        fac_obj = self.pool.get('giscedata.facturacio.factura')
+        fact = fac_obj.browse(cursor, uid, fact_id, context)
+        (historic, historic_js) = self.get_historic_data(fact)
+
+        def get_as_time(text):
+            return datetime.strptime(text, '%Y-%m-%d')
+
+        data_inici_any = get_as_time(fact.data_inici) - timedelta(days=365)
+        mes_any_inicial = data_inici_any.strftime("%Y/%m")
+
+        conany_kwh = 0.0
+        conany_kwh_p1 = 0.0
+        conany_kwh_p2 = 0.0
+        conany_kwh_p3 = 0.0
+        conany_kwh_p4 = 0.0
+        conany_kwh_p5 = 0.0
+        conany_kwh_p6 = 0.0
+        data_ini = None
+        data_fin = None
+
+        for h in historic:
+            if h['mes'] > mes_any_inicial:
+                conany_kwh += h['consum']
+                if h['periode'] == 'P1':
+                    conany_kwh_p1 += h['consum']
+                elif h['periode'] == 'P2':
+                    conany_kwh_p2 += h['consum']
+                elif h['periode'] == 'P3':
+                    conany_kwh_p3 += h['consum']
+                elif h['periode'] == 'P4':
+                    conany_kwh_p4 += h['consum']
+                elif h['periode'] == 'P5':
+                    conany_kwh_p5 += h['consum']
+                elif h['periode'] == 'P6':
+                    conany_kwh_p6 += h['consum']
+                if data_ini is None or data_ini > h["data_ini"]:
+                    data_ini = h["data_ini"]
+                if data_fin is None or data_fin < h["data_fin"]:
+                    data_fin = h["data_fin"]
+
+        if data_ini and data_fin:
+            historic_dies = (get_as_time(data_fin) - get_as_time(data_ini)).days
+        else:
+            historic_dies = 0
+
+        data = {
+            'consum': conany_kwh,
+            'P1': conany_kwh_p1,
+            'P2': conany_kwh_p2,
+            'P3': conany_kwh_p3,
+            'P4': conany_kwh_p4,
+            'P5': conany_kwh_p5,
+            'P6': conany_kwh_p6,
+            'days': historic_dies,
+        }
+        return data
+
+    def complete_historic_js(self, data, length):
+        data_len = len(data)
+        if data_len == 0 or data_len >= length:
+            return data
+
+        first_date = data[0]['mes'].split("/")
+        month = int(first_date[0]) - 1
+        year = int(first_date[1])
+        rest = []
+        for i in range(0, length - len(data)):
+            if month == 0:
+                month = 12
+                year -= 1
+
+            item = {
+                u'P1': 0.0,
+                u'P2': 0.0,
+                u'P3': 0.0,
+                u'mes': '{:02}/{:02}'.format(month, year),
+            }
+            if u'P4' in data[0]:
+                item[u'P4'] = 0.0
+                item[u'P5'] = 0.0
+                item[u'P6'] = 0.0
+            rest.append(item)
+            month -= 1
+
+        rest.reverse()
+        rest.extend(data)
+        return rest
+
     def get_component_energy_consumption_graphic_td_data(self, fact, pol):
         """
         return a dictionary with data needes for the consumption graphic and related text
@@ -1533,6 +1625,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         }
 
         (historic, historic_js) = self.get_historic_data(fact)
+        historic_js = self.complete_historic_js(historic_js, 12)
         for h_js in historic_js:
             periode = h_js["mes"].split("/")
             if (int(periode[0]) >= 6 and int(periode[1]) == 21) or (int(periode[1]) > 21):
@@ -2704,7 +2797,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             lines_data[block]["date_to_d"] = (
                 val(l.data_fins)
                 if "date_to_d" not in lines_data[block]
-                or lines_data[block]["date_to_d"] < val(l.data_fins)
+                or lines_data[block]["date_to_d"] > val(l.data_fins)
                 else lines_data[block]["date_to_d"]
             )
             lines_data[block]["date_to"] = dateformat(lines_data[block]["date_to_d"])
@@ -3389,10 +3482,19 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         if not is_TD(pol):
             return {"is_visible": False}
 
-        # Repartiment segons BOE
-        rep_BOE = {"r": 0.0, "d": 81.0, "t": 18.0, "o": 1.0}
+        # Remove the discounts from the amount total
+        flux_solar = 0
+        for line in fact.linia_ids:
+            if line.tipus in ("altres", "cobrament") and line.product_id.code == "PBV":
+                flux_solar += line.price_subtotal
 
-        pie_total = round(fact.amount_total, 2)
+        has_flux = flux_solar > 0
+        amount_total = fact.amount_total - flux_solar
+
+        # Repartiment segons BOE
+        rep_BOE = {"r": 0.76, "d": 71.0, "t": 27.58, "o": 0.66}
+
+        pie_total = round(amount_total, 2)
         pie_renting = round(fact.total_lloguers, 2)
         pie_taxes = round(float(fact.amount_tax), 2)
         pie_tolls = round(fact.total_atr, 2)
@@ -3440,7 +3542,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data = {
             "is_visible": is_TD(pol),
             "factura_id": fact.id,
-            "amount_total": fact.amount_total,
+            "amount_total": amount_total,
             "pie_renting": pie_renting,
             "pie_taxes": pie_taxes,
             "pie_tolls": pie_tolls,
@@ -3448,6 +3550,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "pie_energy": pie_energy,
             "pie_total": pie_total,
             "rep_BOE": rep_BOE,
+            "has_flux": has_flux,
         }
         return data
 
