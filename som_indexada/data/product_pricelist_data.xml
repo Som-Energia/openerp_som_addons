@@ -107,7 +107,7 @@
             <field name="currency_id" ref="base.EUR"/>
         </record>
         <record model="product.pricelist" id="pricelist_indexada_empresa_canaries_non_standard_2024">
-            <field name="name">Indexada Empresa Canaries 2024</field>
+            <field name="name">Indexada Empresa Canàries 2024</field>
             <field name="type">sale</field>
             <field name="currency_id" ref="base.EUR"/>
         </record>

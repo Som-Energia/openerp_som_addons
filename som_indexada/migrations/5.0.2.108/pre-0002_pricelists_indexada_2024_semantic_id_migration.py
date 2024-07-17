@@ -27,7 +27,7 @@ def up(cursor, installed_version):
                         ("pricelist_indexada_empresa_balears_non_standard_2024",
                         "Indexada Empresa Balears 2024")
                         ("pricelist_indexada_empresa_canaries_non_standard_2024",
-                        "Indexada Empresa Canaries 2024")]
+                        "Indexada Empresa Canàries 2024")]
 
     logger.info("Starting Pricelist Indexada 2024 semantic id creation migration script")
     pool = pooler.get_pool(cursor.dbname)
