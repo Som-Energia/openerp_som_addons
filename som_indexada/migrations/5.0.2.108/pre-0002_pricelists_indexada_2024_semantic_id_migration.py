@@ -11,21 +11,21 @@ def up(cursor, installed_version):
     logger = logging.getLogger('openerp.migration')
     logger.info("Updating XMLs")
 
-    list_of_xml_name = [("pricelist_indexada_20td_peninsula_2024", "Indexada 2.0TD Península 2024")
-                        ("pricelist_indexada_20td_balears_2024", "Indexada 2.0TD Balears 2024")
-                        ("pricelist_indexada_20td_canaries_2024", "Indexada 2.0TD Canàries 2024")
-                        ("pricelist_indexada_30td_peninsula_2024", "Indexada 3.0TD Península 2024")
-                        ("pricelist_indexada_30td_balears_2024", "Indexada 3.0TD Balears 2024")
-                        ("pricelist_indexada_30td_canaries_2024", "Indexada 3.0TD Canàries 2024")
-                        ("pricelist_indexada_61td_peninsula_2024", "Indexada 6.1TD Península 2024")
-                        ("pricelist_indexada_61td_balears_2024", "Indexada 6.1TD Balears 2024")
-                        ("pricelist_indexada_61td_canaries_2024", "Indexada 6.1TD Canàries 2024")
+    list_of_xml_name = [("pricelist_indexada_20td_peninsula_2024", "Indexada 2.0TD Península 2024"),
+                        ("pricelist_indexada_20td_balears_2024", "Indexada 2.0TD Balears 2024"),
+                        ("pricelist_indexada_20td_canaries_2024", "Indexada 2.0TD Canàries 2024"),
+                        ("pricelist_indexada_30td_peninsula_2024", "Indexada 3.0TD Península 2024"),
+                        ("pricelist_indexada_30td_balears_2024", "Indexada 3.0TD Balears 2024"),
+                        ("pricelist_indexada_30td_canaries_2024", "Indexada 3.0TD Canàries 2024"),
+                        ("pricelist_indexada_61td_peninsula_2024", "Indexada 6.1TD Península 2024"),
+                        ("pricelist_indexada_61td_balears_2024", "Indexada 6.1TD Balears 2024"),
+                        ("pricelist_indexada_61td_canaries_2024", "Indexada 6.1TD Canàries 2024"),
                         ("pricelist_indexada_30tdve_peninsula_2024",
-                        "Indexada 3.0TVE Península 2024")
+                        "Indexada 3.0TVE Península 2024"),
                         ("pricelist_indexada_empresa_peninsula_non_standard_2024",
-                        "Indexada Empresa Peninsula 2024")
+                        "Indexada Empresa Peninsula 2024"),
                         ("pricelist_indexada_empresa_balears_non_standard_2024",
-                        "Indexada Empresa Balears 2024")
+                        "Indexada Empresa Balears 2024"),
                         ("pricelist_indexada_empresa_canaries_non_standard_2024",
                         "Indexada Empresa Canàries 2024")]
 
