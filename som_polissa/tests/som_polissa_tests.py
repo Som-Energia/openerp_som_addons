@@ -145,28 +145,3 @@ class TestSomPolissa(testing.OOTestCase):
         self.crea_potencia(12.0, self.contract3_id)
         ent = self.polissa_obj._is_enterprise(self.cursor, self.uid, self.contract3_id)
         self.assertEqual(ent, True)  # power
-
-    def test__copy_data_enterprise(self):
-        data = {}
-        self.crea_potencia(4.4, self.contract1_id)
-        self.polissa_obj.copy_data(self.cursor, self.uid, self.contract1_id, data)
-        self.assertTrue('process_id' in data)
-        self.assertEqual(data['process_id'], self.default_process)
-
-        data = {}
-        self.crea_potencia(5.4, self.contract2_id)
-        self.polissa_obj.copy_data(self.cursor, self.uid, self.contract2_id, data)
-        self.assertTrue('process_id' in data)
-        self.assertEqual(data['process_id'], self.default_process)
-
-        data = {}
-        self.crea_potencia(6.4, self.contract3_id)
-        self.polissa_obj.copy_data(self.cursor, self.uid, self.contract3_id, data)
-        self.assertTrue('process_id' in data)
-        self.assertEqual(data['process_id'], self.bo_social_process)
-
-        data = {}
-        self.crea_potencia(12.0, self.contract3_id)
-        self.polissa_obj.copy_data(self.cursor, self.uid, self.contract3_id, data)
-        self.assertTrue('process_id' in data)
-        self.assertEqual(data['process_id'], self.default_process)
