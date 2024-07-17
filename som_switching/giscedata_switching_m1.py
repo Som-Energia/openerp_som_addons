@@ -18,27 +18,27 @@ class GiscedataSwitchingM1_01(osv.osv):
 
         res = super(GiscedataSwitchingM1_01, self).config_step(cursor, uid, ids, vals, context)
 
-        titular_id = new_contract_values.get('titular')
-        if titular_id:
+        if new_contract_values:
+            titular_id = new_contract_values.get('titular')
+            if titular_id:
+                m1 = self.browse(cursor, uid, ids, context=context)
+                new_polissa_id = m1.sw_id.polissa_ref_id.id
 
-            m1 = self.browse(cursor, uid, ids, context=context)
-            new_polissa_id = m1.sw_id.polissa_ref_id.id
-
-            imd_obj = self.pool.get("ir.model.data")
-            partner_obj = self.pool.get("res.partner")
-            pol_obj = self.pool.get("giscedata.polissa")
-            vat = partner_obj.read(cursor, uid, titular_id, ['vat'])['vat']
-            if partner_obj.is_enterprise_vat(vat):
-                new_process = imd_obj.get_object_reference(
-                    cursor, uid, "account_invoice_pending", "default_pending_state_process"
-                )[1]
-
-            else:
-                new_process = imd_obj.get_object_reference(
-                    cursor, uid, 'giscedata_facturacio_comer_bono_social',
-                    'bono_social_pending_state_process'
-                )[1]
-            pol_obj.write(cursor, uid, new_polissa_id, {'process_id': new_process}, context=context)
+                imd_obj = self.pool.get("ir.model.data")
+                partner_obj = self.pool.get("res.partner")
+                pol_obj = self.pool.get("giscedata.polissa")
+                vat = partner_obj.read(cursor, uid, titular_id, ['vat'])['vat']
+                if partner_obj.is_enterprise_vat(vat):
+                    new_process = imd_obj.get_object_reference(
+                        cursor, uid, "account_invoice_pending", "default_pending_state_process"
+                    )[1]
+                else:
+                    new_process = imd_obj.get_object_reference(
+                        cursor, uid, 'giscedata_facturacio_comer_bono_social',
+                        'bono_social_pending_state_process'
+                    )[1]
+                pol_obj.write(cursor, uid, new_polissa_id, {
+                              'process_id': new_process}, context=context)
 
         return res
 
