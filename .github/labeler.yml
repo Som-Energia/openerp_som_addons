@@ -78,6 +78,8 @@ som_poweremail_common_templates:
 -  som_poweremail_common_templates/**
 som_remeses_base:
 -  som_remeses_base/**
+som_signatura_digital:
+-  som_signatura_digital/**
 som_switching:
 -  som_switching/**
 som_telemesura:
