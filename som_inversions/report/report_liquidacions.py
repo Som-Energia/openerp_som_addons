@@ -1,3 +1,5 @@
+import re
+
 from osv import osv
 from yamlns import namespace as ns
 import pooler
@@ -5,6 +7,9 @@ from datetime import datetime, timedelta
 from report import report_sxw
 from tools import config
 from c2c_webkit_report import webkit_report
+
+
+_DATE_REGEX = r'(\d\d\/\d\d\/\d\d\d\d)'
 
 
 class AccountInvoice(osv.osv):
@@ -16,10 +21,11 @@ class AccountInvoice(osv.osv):
         data = ns()
         data.lines = []
         for line in inv.invoice_line:
+            dates = re.findall(_DATE_REGEX, line.name)
             data.lines.append(
                 ns(
-                    date_ini=line.name.split(" ")[1],
-                    date_end=line.name.split(" ")[3],
+                    date_ini=dates[0],
+                    date_end=dates[1],
                     quantity=line.quantity,
                     interest_type=float(line.note.split(" ")[6].split("/")[0]) * 100,
                     generated_interests=line.price_subtotal,
@@ -47,10 +53,11 @@ class AccountInvoice(osv.osv):
         data = ns()
         data.lines = []
         for line in inv.invoice_line:
+            dates = re.findall(_DATE_REGEX, line.name)
             data.lines.append(
                 ns(
-                    date_ini=line.name.split(" ")[3],
-                    date_end=line.name.split(" ")[6],
+                    date_ini=dates[0],
+                    date_end=dates[1],
                     quantity=float(line.note.split("investmentInitialAmount: ")[1].split("\n")[0]),
                     interest_type=float(line.note.split("interestRate: ")[1].split("\n")[0]),
                     generated_interests=line.price_subtotal,
