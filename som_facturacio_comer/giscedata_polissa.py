@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
-from giscegas_facturacio.giscegas_polissa import INTERVAL_INVOICING_FIELDS
+from giscedata_facturacio.giscedata_polissa import INTERVAL_INVOICING_FIELDS
 
 INTERVAL_INVOICING_FIELDS += ['indexed_formula']
 
@@ -91,12 +91,12 @@ class GiscedataPolissa(osv.osv):
             llista_preu_dades.append((
                 dates_de_tall[mod_data]['id'],
                 mod_data,
-                modcon_dades['llista_preu_id'][0],
+                modcon_dades['llista_preu'][0],
                 modcon_dades['data_inici'],
                 modcon_dades['data_final']
             ))
-
-        if len(set(llista_preu_dades)) > 1:
+        llista_preus = [dada[2] for dada in llista_preu_dades]
+        if len(set(llista_preus)) > 1:
 
             for modcon_id, mod_data, llista_preu_id, data_inici, data_final in llista_preu_dades:
                 indexed_formula = price_o.read(cursor, uid, llista_preu_id, ['indexed_formula'],
