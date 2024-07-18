@@ -437,20 +437,6 @@ class GiscedataPolissa(osv.osv):
         payment_mode_id = payment_mode_o.search(cursor, uid, [("name", "=", "ENGINYERS")])
         self.write(cursor, uid, ids, {"payment_mode_id": payment_mode_id[0]})
 
-        imd_obj = self.pool.get("ir.model.data")
-        default_process = imd_obj.get_object_reference(
-            cursor, uid, "account_invoice_pending", "default_pending_state_process"
-        )[1]
-        bo_social_process = imd_obj.get_object_reference(
-            cursor, uid, 'giscedata_facturacio_comer_bono_social',
-            'bono_social_pending_state_process'
-        )[1]
-        for id in ids:
-            if self._is_enterprise(cursor, uid, id):
-                self.write(cursor, uid, id, {"process_id": default_process})
-            else:
-                self.write(cursor, uid, id, {"process_id": bo_social_process})
-
         return super(GiscedataPolissa, self).wkf_activa(cursor, uid, ids)
 
     def copy_data(self, cursor, uid, id, default=None, context=None):
