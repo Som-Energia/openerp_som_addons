@@ -43,9 +43,10 @@ class GiscedataSwitchingHelpers(osv.osv):
             cursor, uid, sw_id, old_polissa=old_polissa, context=context)
 
         imd_obj = self.pool.get("ir.model.data")
+        pol_obj = self.pool.get("giscedata.polissa")
         sw_obj = self.pool.get("giscedata.switching")
         sw = sw_obj.browse(cursor, uid, sw_id, context=context)
-        if sw.cups_polissa_id._is_enterprise():
+        if pol_obj._is_enterprise(cursor, uid, sw.cups_polissa_id.id, context=context):
             default_process = imd_obj.get_object_reference(
                 cursor, uid, "account_invoice_pending", "default_pending_state_process"
             )[1]

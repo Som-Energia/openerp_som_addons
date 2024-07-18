@@ -412,6 +412,9 @@ class GiscedataPolissa(osv.osv):
         return res
 
     def _is_enterprise(self, cursor, uid, id, context=None):
+        if isinstance(id, list):
+            id = id[0]
+
         pol = self.browse(cursor, uid, id, context)
         if pol.cnae.name not in ["9810", "9820"]:
             return True
