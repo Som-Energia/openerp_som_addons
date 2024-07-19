@@ -119,7 +119,7 @@ class GiscedataNextDaysEnergyPrice(osv.osv):
             om_item = imd_obj.get_object_reference(
                 cursor, uid, 'giscedata_facturacio_indexada', 'product_omie'
             )[1]
-            om = pricelist_obj.price_get(cursor, uid, [om_pl], om_pl, 1, context=ctx)[om_pl]
+            om = pricelist_obj.price_get(cursor, uid, [om_pl], om_item, 1, context=ctx)[om_pl]
             versions[data_inici].update({'om': om})
 
         ## DECLARATION OF THE CURRENT TARIF
