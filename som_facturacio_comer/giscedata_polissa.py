@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from osv import osv, fields
 from tools.translate import _
 from giscedata_facturacio.giscedata_polissa import INTERVAL_INVOICING_FIELDS
@@ -76,8 +77,13 @@ class GiscedataPolissa(osv.osv):
 
         modcon_o = self.pool.get('giscedata.polissa.modcontractual')
         price_o = self.pool.get('product.pricelist')
+        ctx = context.copy()
+        ctx.update({
+            'ffields': INTERVAL_INVOICING_FIELDS + ['llista_preu']
+        })
+
         dates_de_tall = super(GiscedataPolissa, self).get_modcontractual_intervals(cursor, uid, polissa_id, data_inici,
-                                                                                   data_final, context)
+                                                                                   data_final, ctx)
 
         llista_preu_dades = []
         indexed_formula_old = ""
@@ -92,26 +98,17 @@ class GiscedataPolissa(osv.osv):
                 dates_de_tall[mod_data]['id'],
                 mod_data,
                 modcon_dades['llista_preu'][0],
-                modcon_dades['data_inici'],
-                modcon_dades['data_final']
             ))
         llista_preus = [dada[2] for dada in llista_preu_dades]
         if len(set(llista_preus)) > 1:
 
-            for modcon_id, mod_data, llista_preu_id, data_inici, data_final in llista_preu_dades:
+            for modcon_id, mod_data, llista_preu_id in llista_preu_dades:
                 indexed_formula = price_o.read(cursor, uid, llista_preu_id, ['indexed_formula'],
                                                context=context)['indexed_formula']
 
                 if indexed_formula != indexed_formula_old and indexed_formula_old != "":
-                    changes[modcon_id] = ['indexed_formula']
-                    dates[modcon_id] = (data_inici, data_final)
-
-                    # crear nou registre
-                    dates_de_tall[mod_data].append({
-                        'id': modcon_id,
-                        'changes': changes,
-                        'dates': dates
-                    })
+                    # updatar registre
+                    dates_de_tall[mod_data]['changes'] = ['indexed_formula']
 
                 indexed_formula_old = indexed_formula
 
