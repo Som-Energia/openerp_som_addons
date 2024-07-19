@@ -1309,7 +1309,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         }
 
         data["autoconsum_caus"] = []
-        for mcau in pol.p.autoconsum_cups_ids:
+        for mcau in pol.autoconsum_cups_ids:
             data["autoconsum_caus"].append(mcau.autoconsum_id.cau)
 
         data["segment_tariff"] = segment_tarif.get(pol.tarifa.name, "")

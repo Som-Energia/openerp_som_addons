@@ -72,7 +72,7 @@ autoconsum_text = TABLA_113_dict[cd.autoconsum] if cd.autoconsum in TABLA_113_di
                     %if cd.is_autoconsum:
                         ${_(u"Autoproducció tipus:")} <span style="font-weight: bold;">${autoconsum_text}</span> <br />
                         % for autoconsum_cau in cd.autoconsum_caus:
-                            ${_(u"CAU (Codi d'autoconsum unificat):")} <span style="font-weight: bold;">${autoconsum_cau}</span>
+                            ${_(u"CAU (Codi d'autoconsum unificat):")} <span style="font-weight: bold;">${autoconsum_cau}</span> <br />
                         % endfor
                     %endif
                 </p>
