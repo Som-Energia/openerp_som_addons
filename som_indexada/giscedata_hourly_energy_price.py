@@ -125,7 +125,7 @@ class GiscedataNextDaysEnergyPrice(osv.osv):
         ## DECLARATION OF THE CURRENT TARIF
         TariffClass = self.get_tarifa_class(cursor, uid, tarifa['name'])
         holidays = list(set(get_holidays(data_inici_dt.year)))
-        Tarifa = TariffClass({}, {}, data_inici, data_final, versions=versions, holidays=holidays)
+        Tarifa = TariffClass({}, {}, data_inici, data_final, versions=versions, holidays=holidays, geom_zone='2')
 
         ## COMPONENTS
         postfix = '%s_%s' % (data_inici.replace("-", ""), data_final.replace("-", ""))
@@ -283,7 +283,7 @@ class GiscedataNextDaysEnergyPrice(osv.osv):
         ## DECLARATION OF THE CURRENT TARIF
         TariffClass = self.get_tarifa_class(cursor, uid, tarifa['name'])
         holidays = list(set(get_holidays(data_inici_dt.year)))
-        Tarifa = TariffClass({}, {}, data_inici, data_final, versions=versions, holidays=holidays)
+        Tarifa = TariffClass({}, {}, data_inici, data_final, versions=versions, holidays=holidays, geom_zone='3')
 
         ## COMPONENTS
         postfix = '%s_%s' % (data_inici.replace("-", ""), data_final.replace("-", ""))
