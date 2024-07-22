@@ -22,7 +22,7 @@
             ${_(u"Per tant, en aquesta factura no es generen Sols. Pots consultar els teus Sols disponibles a la teva")} <a href=${sf.link_ov_suns}>${_(u"Oficina Virtual")}</a>.
         % endif
         <br>
-        ${_(u"Tens més detalls del càlcul de Sols i del sistema de")} <a href=${sf.link_help}>${_(u"Flux Solar")}</a> ${_(u"al nostre Centre d’Ajuda.")}
+        ${_(u"Al nostre Centre d’Ajuda tens més detalls del càlcul de Sols i del sistema de")} <a href=${sf.link_help}>${_(u"Flux Solar")}</a>.
         </td>
     </tr>
     </table>
