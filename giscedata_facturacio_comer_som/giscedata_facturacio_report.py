@@ -3933,9 +3933,11 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         if lang == 'ca_es':
             link_help = 'https://ca.support.somenergia.coop/article/1371-que-es-el-flux-solar'
             link_ov_suns = 'https://oficinavirtual.somenergia.coop/ca/flux-solar/'
+            link_nc = 'https://ca.support.somenergia.coop/article/1397-que-son-els-excedents-no-compensats'  # noqa: E501
         else:
             link_help = 'https://es.support.somenergia.coop/article/1372-que-es-el-flux-solar'
             link_ov_suns = 'https://oficinavirtual.somenergia.coop/es/flux-solar/'
+            link_nc = 'https://es.support.somenergia.coop/article/1398-que-son-los-excedentes-no-compensados'  # noqa: E501
 
         return {
             'is_visible': True,
@@ -3947,6 +3949,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'suns_used': sum([l.price_subtotal for l in flux_lines]) * -1.0,   # noqa: E741
             'link_help': link_help,
             'link_ov_suns': link_ov_suns,
+            'link_no_compens': link_nc,
         }
 
 
