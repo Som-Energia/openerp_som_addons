@@ -3896,7 +3896,17 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return data
 
     def get_component_solar_flux_info_data(self, fact, pol):
-        if not fact.linies_generacio or not te_autoconsum_amb_excedents(fact, pol):
+
+        def has_active_flux_solar(fact, pol):
+            for fl in pol.bateria_ids:
+                if not fl.data_final or fl.data_final > fact.data_inici:
+                    return True
+            return False
+
+        if not(te_autoconsum_amb_excedents(fact, pol) or pol.autoconsumo == '33'):
+            return {"is_visible": False}
+
+        if not has_active_flux_solar(fact, pol):
             return {"is_visible": False}
 
         autoconsum_excedents_product_id = self.get_autoconsum_excedents_product_id(fact)
@@ -3921,9 +3931,11 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         lang = fact.lang_partner.lower()
         if lang == 'ca_es':
-            link = 'https://ca.support.somenergia.coop/article/1371-que-es-el-flux-solar'
+            link_help = 'https://ca.support.somenergia.coop/article/1371-que-es-el-flux-solar'
+            link_ov_suns = 'https://oficinavirtual.somenergia.coop/ca/flux-solar/'
         else:
-            link = 'https://es.support.somenergia.coop/article/1372-que-es-el-flux-solar'
+            link_help = 'https://es.support.somenergia.coop/article/1372-que-es-el-flux-solar'
+            link_ov_suns = 'https://oficinavirtual.somenergia.coop/es/flux-solar/'
 
         return {
             'is_visible': True,
@@ -3933,7 +3945,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'ajustment_e': ajustment,
             'suns_generated': ajustment * 0.80,
             'suns_used': sum([l.price_subtotal for l in flux_lines]) * -1.0,   # noqa: E741
-            'link_help': link,
+            'link_help': link_help,
+            'link_ov_suns': link_ov_suns,
         }
 
 
