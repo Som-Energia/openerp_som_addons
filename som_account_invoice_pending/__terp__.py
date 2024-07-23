@@ -20,6 +20,7 @@
         "giscedata_polissa_crm",
         "giscedata_facturacio_comer_bono_social",
         "giscedata_atc",
+        "giscedata_facturacio_comer_som",
     ],
     "init_xml": [
     ],
