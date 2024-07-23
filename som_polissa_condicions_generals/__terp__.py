@@ -15,7 +15,6 @@
         "giscedata_facturacio_indexada_som",
         "som_leads_polissa",
         "report_puppeteer",
-        "som_infoenergia",
         "giscedata_facturacio_iese",
     ],
     "init_xml": [],
