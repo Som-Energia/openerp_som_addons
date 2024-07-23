@@ -399,7 +399,7 @@ class SomGurbCups(osv.osv):
         "end_date": fields.date("Data sortida GURB",),
         "gurb_id": fields.many2one("som.gurb", "GURB", required=True, ondelete="cascade"),
         "cups_id": fields.many2one("giscedata.cups.ps", "CUPS", required=True),
-        "polissa_id": fields.many2one("giscedata.polissa", "Pòlissa", readonly=True),
+        "polissa_id": fields.many2one("giscedata.polissa", "Pòlissa", readonly=False),
         "partner_id": fields.related(
             "polissa_id",
             "titular",
