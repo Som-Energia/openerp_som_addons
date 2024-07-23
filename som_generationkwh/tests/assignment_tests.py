@@ -28,11 +28,8 @@ class AssignmentTests(testing.OOTestCase):
             partner_id = self.IrModelData.get_object_reference(
                 cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
             )[1]
-            contract_id = self.IrModelData.get_object_reference(
-                cursor, uid, 'giscedata_polissa', 'polissa_0001'
-            )[1]
             result = self.Assignement.get_generationkwh_monthly_use(cursor, uid, partner_id, '2016-03')
-            self.assertEqual(result[str(contract_id)]['P1'], 1)
+            self.assertEqual(result['0001C']['P1'], 1)
 
     def test__get_generationkwh_yearly_use(self):
         with Transaction().start(self.database) as txn:
@@ -41,11 +38,8 @@ class AssignmentTests(testing.OOTestCase):
             partner_id = self.IrModelData.get_object_reference(
                 cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
             )[1]
-            contract_id = self.IrModelData.get_object_reference(
-                cursor, uid, 'giscedata_polissa', 'polissa_0001'
-            )[1]
             result = self.Assignement.get_generationkwh_yearly_use(cursor, uid, partner_id, '2016')
-            self.assertEqual(result[str(contract_id)]['P1'], 1)
+            self.assertEqual(result['0001C']['P1'], 1)
 
     def test__get_generationkwh_use_contract_data(self):
         with Transaction().start(self.database) as txn:
@@ -54,9 +48,5 @@ class AssignmentTests(testing.OOTestCase):
             partner_id = self.IrModelData.get_object_reference(
                 cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
             )[1]
-            contract_id = self.IrModelData.get_object_reference(
-                cursor, uid, 'giscedata_polissa', 'polissa_0001'
-            )[1]
             result = self.Assignement.get_generationkwh_yearly_use(cursor, uid, partner_id, '2016')
-            self.assertEqual(result[str(contract_id)]['number'], '0001C')
-            self.assertIn("carrer inventat", result[str(contract_id)]['address'])
+            self.assertIn("carrer inventat", result['0001C']['address'])
