@@ -505,9 +505,8 @@ class GenerationkWhAssignment(osv.osv):
             line = gkwh_line.factura_line_id
             contract = invoice.polissa_id
             multiplier = 1 if invoice.type in ('out_invoice', 'in_refund') else -1
-            response[str(contract.id)]['number'] = contract.name
-            response[str(contract.id)]['address'] = contract.cups_direccio
-            response[str(contract.id)][str(line.product_id.name)] += (
+            response[str(contract.name)]['address'] = contract.cups_direccio
+            response[str(contract.name)][str(line.product_id.name)] += (
                 line.quantity*multiplier)
 
         # clean defaultdict for serialization
