@@ -235,3 +235,31 @@ class TestGisceDataCups(testing.OOTestCase):
         )
 
         self.assertEqual(result, False)
+
+    def test__related_attachment(self):
+        ir_model_o = self.model("ir.model.data")
+        ir_attachment_o = self.model("ir.attachment")
+        pol_o = self.model("giscedata.polissa")
+
+        dni_categ_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "som_polissa", "ir_attachment_vat_dni_category"
+        )[1]
+
+        pol = pol_o.read(
+            self.cursor, self.uid, self.contract_20TD_id, ['related_attachments', 'titular']
+        )
+        self.assertEqual(len(pol['related_attachments']), 0)
+
+        create_vals = {
+            "res_model": "res.partner",
+            "res_id": pol['titular'][0],
+            "category_id": dni_categ_id,
+            "name": "DNI DEMO"
+        }
+
+        ir_attachment_o.create(self.cursor, self.uid, create_vals)
+
+        pol_att = pol_o.read(
+            self.cursor, self.uid, self.contract_20TD_id, ['related_attachments']
+        )['related_attachments']
+        self.assertEqual(len(pol_att), 1)
