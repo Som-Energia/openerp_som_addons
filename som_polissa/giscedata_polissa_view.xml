@@ -190,7 +190,6 @@
                     <field name="llista_preu"/>
                     <field name="data_alta"/>
                     <field name="data_alta_autoconsum"/>
-                    <field name="ac_state" string="Estat de l'auto"/>
                     <field name="data_baixa_autoconsum"/>
                     <field name="data_baixa"/>
                     <field name="facturacio_suspesa"/>
