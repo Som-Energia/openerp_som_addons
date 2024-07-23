@@ -60,6 +60,8 @@ class TarifaPoolSOM(TarifaPool):
             # only if 'phf_calc_peninsula' formula is used
             res['pmd'] = 'sphdem'
             res['pc3_ree'] = 'pc3_ree'
+            if 'ajom' in res:
+                del res['ajom']
 
         if self.phf_function == 'phf_calc_esmasa':
             # only if 'phf_calc_esmasa' formula is used
