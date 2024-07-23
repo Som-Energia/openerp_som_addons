@@ -998,37 +998,6 @@ class GiscedataPolissa(osv.osv):
 
         return posicio_id
 
-    def _related_attachments(self, cursor, uid, ids, field_name, arg, context=None):
-        if context is None:
-            context = {}
-        ctx = context.copy()
-        ctx['active_test'] = False
-        ir_model_obj = self.pool.get("ir.model.data")
-        attach_obj = self.pool.get("ir.attachment")
-        pol_obj = self.pool.get("giscedata.polissa")
-
-        dni_categ_id = ir_model_obj.get_object_reference(
-            cursor, uid, "som_polissa", "ir_attachment_vat_dni_category"
-        )[1]
-
-        res = super(GiscedataPolissa, self)._related_attachments(
-            cursor, uid, ids, field_name, arg, context=ctx
-        )
-
-        polisses = pol_obj.read(cursor, uid, ids, ["titular"], context=ctx)
-        for polissa in polisses:
-            if polissa["titular"]:
-                polissa_id = polissa["id"]
-                titular_id = polissa["titular"][0]
-
-                attachment_ids = attach_obj.search(cursor, uid, [
-                    ("res_model", "=", "res.partner"),
-                    ("res_id", "=", titular_id),
-                    ("category_id", "=", dni_categ_id)
-                ])
-                if attachment_ids:
-                    res[polissa_id].extend(attachment_ids)
-
     _columns = {
         "info_gestio_endarrerida": fields.text("Informació gestió endarrerida"),
         "info_gestio_endarrerida_curta": fields.function(
