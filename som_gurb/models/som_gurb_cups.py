@@ -72,7 +72,7 @@ class SomGurbCups(osv.osv):
                 continue
 
             search_params = [
-                ("state", "=", "activa"),
+                ("state", "not in", ["baixa", "cancelada"]),
                 ("cups", "=", cups_id),
                 ("titular", "=", gurb_vals["roof_owner_id"][0])
             ]
@@ -177,9 +177,9 @@ class SomGurbCups(osv.osv):
 
             pol_id = self.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
             if not pol_id:
-                error_title = _("No hi ha pòlisses actives per aquest CUPS"),
+                error_title = _("No hi ha pòlisses actives o en esborrany per aquest CUPS"),
                 error_info = _(
-                    "El CUPS id {} no té pòlisses actives. No es pot afegir cap servei".format(
+                    "El CUPS id {} no té pòlisses actives o en esborrany. No es pot afegir.".format(
                         gurb_vals["cups_id"][0]
                     )
                 )
