@@ -32,9 +32,12 @@ class TarifaPoolSOM(TarifaPool):
             if 'ajom' in res:
                 del res['ajom']
             if 'peninsula' in self.phf_function:
-                res['pos'] = 'sobrecostos'
+                res['prdemcad'] = 'prdemcad'
                 res['csdvbaj'] = 'csdvbaj'
                 res['csdvsub'] = 'csdvsub'
+                res['pc3_boe'] = 'pc3_boe'
+                res['peatges'] = 'pa'
+                res['fe'] = 'fe'
                 res['rad3'] = 'rad3'
                 res['bs3'] = 'bs3'
                 res['factor_dsv'] = 'factor_dsv'
@@ -367,7 +370,7 @@ class TarifaPoolSOM(TarifaPool):
 
         fname = self.perdclass.name
         perdues = self.perdclass('C2_%(fname)s_%(postfix)s' % locals(), esios_token)
-        sobrecostos = Prdemcad('C2_prdemcad_%(postfix)s' % locals(), esios_token)  # prdemcad [€/MWh]
+        prdemcad = Prdemcad('C2_prdemcad_%(postfix)s' % locals(), esios_token)  # prdemcad [€/MWh]
 
         # Desvios
         csdvbaj = Codsvbaj('C2_codsvbaj_%(postfix)s' % locals(), esios_token)  # [€/MWh]
@@ -378,7 +381,7 @@ class TarifaPoolSOM(TarifaPool):
         bs3 = compodem.get_component("BS3")
         dsv = (0.5 * (csdvbaj + csdvsub) + rad3 + bs3) * (factor_dsv * 0.01)
 
-        A = ((prmdiari + sobrecostos + dsv + gdos + omie) * 0.001) + pc3_boe
+        A = ((prmdiari + prdemcad + dsv + gdos + omie) * 0.001) + pc3_boe
         B = (1 + (perdues * 0.01))
         C = A * B
         D = (fe * 0.001) + k + d
