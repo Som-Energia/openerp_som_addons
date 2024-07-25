@@ -75,9 +75,18 @@ def te_autoconsum_amb_excedents(fact, pol):
 
 def te_autoconsum_collectiu(fact, pol):
     if te_autoconsum(fact, pol):
-        if pol.autoconsum_id:
-            if pol.autoconsum_id.collectiu:
+        for cups_autoconsum in pol.autoconsum_cups_ids:
+            if cups_autoconsum.autoconsum_id and cups_autoconsum.autoconsum_id.collectiu:
                 return True
+    return False
+
+
+def te_autoconsum_no_collectiu(fact, pol):
+    if te_autoconsum(fact, pol):
+        for cups_autoconsum in pol.autoconsum_cups_ids:
+            if cups_autoconsum.autoconsum_id:
+                if cups_autoconsum.autoconsum_id.collectiu is False:
+                    return True
     return False
 
 
@@ -3501,9 +3510,19 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
             adjust_reason.append(data["adjust_reason"])
 
+        collectives = []
+        for coll in pol.autoconsum_cups_ids:
+            if coll.autoconsum_id.collectiu:
+                data = self.get_sub_component_energy_consumption_detail_collective_td_data(
+                    fact, pol, coll)
+                if data["is_visible"]:
+                    collectives.append(data)
+                adjust_reason.append(data["adjust_reason"])
+
         highest_adjust_reason = self.adjust_readings_priority(adjust_reason)
         data = {
             "meters": meters,
+            "collectives": collectives,
             "info": self.get_sub_component_energy_consumption_detail_td_info_data(
                 fact, pol, highest_adjust_reason
             ),
@@ -3613,8 +3632,10 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         adjust_reason = []
         if meter.name in lectures:
-            data["is_visible"] = len(lectures[meter.name]) > 0 and te_autoconsum_amb_excedents(
-                fact, pol
+            data["is_visible"] = (
+                len(lectures[meter.name]) > 0
+                and te_autoconsum_amb_excedents(fact, pol)
+                and te_autoconsum_no_collectiu(fact, pol)
             )
             for reading in lectures[meter.name]:
                 data[reading[0]] = {
@@ -3744,6 +3765,60 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "web_distri": pol.distribuidora.website,
             "distri_name": pol.distribuidora.name,
         }
+        return data
+
+    def get_sub_component_energy_consumption_detail_collective_td_data(self, fact, pol, collective):
+
+        def adjust_reason(subs):
+            return [sub["adjust_reason"] for sub in subs]
+
+        def visibility(subs):
+            return any([sub["is_visible"] for sub in subs])
+
+        generated = self.get_sub_component_energy_consumption_detail_td_collective_data_data(
+            fact, pol, collective)
+        generated["last_visible"] = True
+        data = {
+            "name": collective.autoconsum_id.cau,
+            "showing_periods": self.get_matrix_show_periods(pol),
+            "generated": generated,
+            "is_visible": visibility([generated]),
+            "adjust_reason": self.adjust_readings_priority(
+                adjust_reason([generated])
+            ),
+        }
+        return data
+
+    def get_sub_component_energy_consumption_detail_td_collective_data_data(self, fact, pol, collective):  # noqa: E501
+        # TODO: this function generates dummy data for developing purposes
+        (a, a, a, a, a, a, a, lectures_g, a, a, a, a, a, a, a, a, a, a, a) = self.get_readings_data(
+            fact
+        )
+        lectures = lectures_g
+        data = {
+            "showing_periods": self.get_matrix_show_periods(pol),
+            "is_visible": False,
+            "title": _(u"Autoconsum compartit (kWh)"),
+            "is_active": False,
+        }
+
+        meter_name = "304798778"
+        adjust_reason = []
+        if meter_name in lectures:
+            data["is_visible"] = len(lectures[meter_name]) > 0 and te_autoconsum_amb_excedents(
+                fact, pol
+            )
+            for reading in lectures[meter_name]:
+                data[reading[0]] = {
+                    "generated_coef": reading[1],
+                    "auto_consumed": reading[2],
+                    "surplus": reading[3],
+                }
+                data["initial_date"] = reading[4]
+                data["final_date"] = reading[5]
+                adjust_reason.append(reading[9])
+
+        data["adjust_reason"] = self.adjust_readings_priority(adjust_reason)
         return data
 
     def get_component_cnmc_comparator_qr_link_data(self, fact, pol):
