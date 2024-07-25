@@ -19,7 +19,7 @@ def up(cursor, installed_version):
     ]
     for xml_w in xmls:
         load_data_records(
-            cursor, 'som_crawlers', xml_w, records, idref=None, mode='update'
+            cursor, 'som_crawlers', xml_w, records, mode='update'
         )
     logger.info("XMLs succesfully updatd.")
 
