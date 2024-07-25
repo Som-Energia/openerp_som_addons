@@ -25,6 +25,18 @@ class TestSomPolissa(testing.OOTestCase):
         self.eie_vat_id = self.get_ref("som_polissa", "categ_eie_persona_juridic")
         self.eie_cnae_vat_id = self.get_ref("som_polissa", "categ_eie_CNAE_CIF")
 
+        self.potencia_obj = self.openerp.pool.get("giscedata.polissa.potencia.contractada.periode")
+        self.periodes_obj = self.openerp.pool.get("giscedata.polissa.tarifa.periodes")
+        self.imd_obj = self.openerp.pool.get("ir.model.data")
+        self.default_process = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "account_invoice_pending",
+            "default_pending_state_process"
+        )[1]
+        self.bo_social_process = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, 'giscedata_facturacio_comer_bono_social',
+            'bono_social_pending_state_process'
+        )[1]
+
     def tearDown(self):
         self.txn.stop()
 
@@ -108,3 +120,28 @@ class TestSomPolissa(testing.OOTestCase):
         self.polissa_obj.create(self.cursor, self.uid, vals)
 
         self.assertEqual(mock_func.call_count, 1)
+
+    def crea_potencia(self, potencia, polissa_id):
+        vals = {
+            'potencia': potencia,
+            'polissa_id': polissa_id,
+            'periode_id': self.periodes_obj.search(self.cursor, self.uid, [])[0]
+        }
+        return self.potencia_obj.create(self.cursor, self.uid, vals)
+
+    def test__is_enterprise(self):
+        self.crea_potencia(4.4, self.contract1_id)
+        ent = self.polissa_obj._is_enterprise(self.cursor, self.uid, self.contract1_id)
+        self.assertEqual(ent, True)  # CNAE
+
+        self.crea_potencia(5.4, self.contract2_id)
+        ent = self.polissa_obj._is_enterprise(self.cursor, self.uid, self.contract2_id)
+        self.assertEqual(ent, True)  # VAT
+
+        self.crea_potencia(6.4, self.contract3_id)
+        ent = self.polissa_obj._is_enterprise(self.cursor, self.uid, self.contract3_id)
+        self.assertEqual(ent, False)  # nothing
+
+        self.crea_potencia(12.0, self.contract3_id)
+        ent = self.polissa_obj._is_enterprise(self.cursor, self.uid, self.contract3_id)
+        self.assertEqual(ent, True)  # power

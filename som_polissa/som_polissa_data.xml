@@ -62,4 +62,10 @@
             <field name="name">DESESTIMENT (Moure Flux Solar)</field>
         </record>
     </data>
+    <data>
+        <record id="ir_attachment_vat_dni_category" model="ir.attachment.category">
+            <field name="code">vat_dni_attachment_category</field>
+            <field name="name">Document d'Identitat</field>
+        </record>
+    </data>
 </openerp>

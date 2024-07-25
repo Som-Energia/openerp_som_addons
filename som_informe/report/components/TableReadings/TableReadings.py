@@ -72,6 +72,6 @@ class TableReadings:
 
                     result["taula"].append(linia_taula)
         result["taula"].sort(key=lambda x: datetime.strptime(
-            x['date_from'], "%d-%m-%Y"), reverse=True)
+            x['date_from'], "%d-%m-%Y"))
 
         return result

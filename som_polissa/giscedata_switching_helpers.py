@@ -36,5 +36,29 @@ class GiscedataSwitchingHelpers(osv.osv):
 
         return True
 
+    def activar_polissa_from_m1_canvi_titular_subrogacio(self, cursor, uid, sw_id, old_polissa=None, context=None):  # noqa: E501
+        res = super(
+            GiscedataSwitchingHelpers, self
+        ).activar_polissa_from_m1_canvi_titular_subrogacio(
+            cursor, uid, sw_id, old_polissa=old_polissa, context=context)
+
+        imd_obj = self.pool.get("ir.model.data")
+        pol_obj = self.pool.get("giscedata.polissa")
+        sw_obj = self.pool.get("giscedata.switching")
+        sw = sw_obj.browse(cursor, uid, sw_id, context=context)
+        if pol_obj._is_enterprise(cursor, uid, sw.cups_polissa_id.id, context=context):
+            default_process = imd_obj.get_object_reference(
+                cursor, uid, "account_invoice_pending", "default_pending_state_process"
+            )[1]
+            sw.cups_polissa_id.write({"process_id": default_process})
+        else:
+            bo_social_process = imd_obj.get_object_reference(
+                cursor, uid, 'giscedata_facturacio_comer_bono_social',
+                'bono_social_pending_state_process'
+            )[1]
+            sw.cups_polissa_id.write({"process_id": bo_social_process})
+
+        return res
+
 
 GiscedataSwitchingHelpers()

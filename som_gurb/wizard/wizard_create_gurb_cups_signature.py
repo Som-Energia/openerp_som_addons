@@ -87,7 +87,9 @@ class WizardGurbCreateGurbCupsSignature(osv.osv_memory):
             cursor, uid, "action_report_som_gurb_conditions", context=context
         )
 
-        process_data = context.get("process_data", {}).copy()
+        process_data = {
+            'callback_method': 'sign_gurb'
+        }
         data = json.dumps(process_data)
         doc_categ_id = attach_obj.get_category_for(
             cursor, uid, "gurb", context=context)

@@ -11,7 +11,7 @@
                     <group col="4" colspan="4" string="General">
                         <field name="active" />
                         <field name="id" />
-                        <field name="cups_id" />
+                        <field name="cups_id" on_change="onchange_cups_id(cups_id)" />
                         <field name="start_date" />
                         <field name="end_date" />
                         <field name="gurb_id" />
@@ -26,6 +26,7 @@
                         <field name="partner_id" />
                         <field name="initial_invoice_id" />
                         <field name="invoice_state" />
+                        <field name="signed" readonly="1" />
                         <field name="general_conditions_id" />
                     </group>
                     <field name="betas_ids" nolabel="1" colspan="4" readonly="1" />
@@ -40,6 +41,7 @@
             <field name="arch" type="xml">
                 <tree string="CUPS GURB" colors="red:active == False">
                     <field name="active" select="1" />
+                    <field name="signed" />
                     <field name="cups_id" select="1" />
                     <field name="beta_kw" />
                     <field name="extra_beta_kw" />
