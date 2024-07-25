@@ -100,7 +100,7 @@ class WizardMassiveKChange(osv.osv_memory):
                         ):
                             pricelist_id = ir_model_data.get_object_reference(
                                 cursor, uid, "som_indexada",
-                                "pricelist_indexada_empresa_peninsula_non_standard_2024"
+                                "pricelist_indexada_empresa_canaries_non_standard_2024"
                             )[1]
                         elif polissa.cups.id in wiz_indexada._get_list_cups_balears(cursor, uid):
                             pricelist_id = ir_model_data.get_object_reference(
@@ -110,7 +110,7 @@ class WizardMassiveKChange(osv.osv_memory):
                         else:
                             pricelist_id = ir_model_data.get_object_reference(
                                 cursor, uid, "som_indexada",
-                                "pricelist_indexada_empresa_canaries_non_standard_2024"
+                                "pricelist_indexada_empresa_peninsula_non_standard_2024"
                             )[1]
                         vals_mod['llista_preu'] = pricelist_id
                     polissa.send_signal("modcontractual")
