@@ -3909,6 +3909,14 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         if not has_active_flux_solar(fact, pol):
             return {"is_visible": False}
 
+        imd_obj = self.pool.get("ir.model.data")
+        hidden_flux_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_polissa", "categ_flux_solar_ocult_ov"
+        )[1]
+        for categ in pol.category_id:
+            if categ.id == hidden_flux_id:
+                return {"is_visible": False}
+
         autoconsum_excedents_product_id = self.get_autoconsum_excedents_product_id(fact)
         ajustment = 0.0
         surplus_kwh = 0.0
