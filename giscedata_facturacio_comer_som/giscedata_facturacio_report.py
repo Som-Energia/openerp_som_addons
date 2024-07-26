@@ -83,6 +83,9 @@ def te_autoconsum_collectiu(fact, pol):
 
 def te_autoconsum_no_collectiu(fact, pol):
     if te_autoconsum(fact, pol):
+        if len(pol.autoconsum_cups_ids) == 0:  # old cases not migrated
+            return True
+
         for cups_autoconsum in pol.autoconsum_cups_ids:
             if cups_autoconsum.autoconsum_id:
                 if cups_autoconsum.autoconsum_id.collectiu is False:
