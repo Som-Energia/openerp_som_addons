@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2024-06-18 11:30+0000\n"
-"PO-Revision-Date: 2024-06-18 11:30+0000\n"
+"POT-Creation-Date: 2024-07-24 15:51+0000\n"
+"PO-Revision-Date: 2024-07-24 15:51+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -43,6 +43,25 @@ msgid "Data fi"
 msgstr ""
 
 #. module: som_gurb
+#: model:poweremail.templates,def_body_text:som_gurb.email_gurb_activation
+#: model:poweremail.templates,def_body_text:som_gurb.email_gurb_in_progress
+#: model:poweremail.templates,def_body_text:som_gurb.email_gurb_welcome
+#: model:poweremail.templates,def_body_text:som_gurb.email_signature_process_gurb
+#: model:poweremail.templates,def_body_text:som_gurb.email_signature_process_gurb_lead
+msgid ""
+"\n"
+"                <!doctype html>\n"
+"                <html>\n"
+"                <head></head>\n"
+"                <body>\n"
+"                Email text\n"
+"                </body>\n"
+"                </html>\n"
+"                \n"
+"            "
+msgstr ""
+
+#. module: som_gurb
 #: constraint:ir.actions.act_window:0
 msgid "Invalid model name in the action definition."
 msgstr ""
@@ -65,6 +84,11 @@ msgstr ""
 #. module: som_gurb
 #: field:som.gurb.general.conditions,name:0
 msgid "Nom"
+msgstr ""
+
+#. module: som_gurb
+#: field:som.gurb.cups,owner_cups:0
+msgid "Persona propietària"
 msgstr ""
 
 #. module: som_gurb
@@ -115,6 +139,11 @@ msgid "Betes assignades + extres"
 msgstr ""
 
 #. module: som_gurb
+#: model:ir.model,name:som_gurb.model_wizard_create_gurb_cups_signature
+msgid "Wizard per crear la Signatura d'un Gurb Cups"
+msgstr ""
+
+#. module: som_gurb
 #: model:ir.model,name:som_gurb.model_report_backend_som_gurb_documents
 msgid "report.backend.som.gurb.documents"
 msgstr ""
@@ -142,6 +171,13 @@ msgstr ""
 #. module: som_gurb
 #: code:addons/som_gurb/wizard/wizard_gurb_create_initial_invoice.py:14
 msgid "Es crearan {} factures d'inscripció."
+msgstr ""
+
+#. module: som_gurb
+#: model:poweremail.templates,def_subject:som_gurb.email_gurb_activation
+#: model:poweremail.templates,def_subject:som_gurb.email_gurb_in_progress
+#: model:poweremail.templates,def_subject:som_gurb.email_gurb_welcome
+msgid "TODO"
 msgstr ""
 
 #. module: som_gurb
@@ -182,6 +218,12 @@ msgid "Cas cancel·lat per GURB"
 msgstr ""
 
 #. module: som_gurb
+#: model:poweremail.templates,def_subject:som_gurb.email_signature_process_gurb
+#: model:poweremail.templates,def_subject:som_gurb.email_signature_process_gurb_lead
+msgid "CORREU DEMANANT LA SIGNATURA I PAGAMENT COST ADHESIÓ GURB"
+msgstr ""
+
+#. module: som_gurb
 #: field:som.gurb.cups,initial_invoice_id:0
 msgid "Factura"
 msgstr ""
@@ -209,11 +251,6 @@ msgid "Per poder obrir el GURB s'ha d'omplir el camp: {}"
 msgstr ""
 
 #. module: som_gurb
-#: view:som.gurb:0
-msgid "Vols tornar a la primera obertura?"
-msgstr ""
-
-#. module: som_gurb
 #: selection:wizard.gurb.create.initial.invoice,state:0
 msgid "End"
 msgstr ""
@@ -226,6 +263,11 @@ msgstr ""
 #. module: som_gurb
 #: field:som.gurb,extra_betas_kw:0
 msgid "Betes extres (kW)"
+msgstr ""
+
+#. module: som_gurb
+#: model:ir.actions.act_window,name:som_gurb.action_wizard_sign_gurb_cups_documents_form
+msgid "Signar GURB documents"
 msgstr ""
 
 #. module: som_gurb
@@ -255,13 +297,18 @@ msgid "CUPS GURB"
 msgstr ""
 
 #. module: som_gurb
+#: field:wizard.create.gurb.cups.signature,email:0
+msgid "Email"
+msgstr ""
+
+#. module: som_gurb
 #: selection:som.gurb,state:0
 msgid "Complet"
 msgstr ""
 
 #. module: som_gurb
-#: code:addons/som_gurb/models/som_gurb_cups.py:152
-msgid "El CUPS id {} no té pòlisses actives. No es pot afegir cap servei"
+#: field:som.gurb,quota_product_id:0
+msgid "Produce quota mensual"
 msgstr ""
 
 #. module: som_gurb
@@ -270,8 +317,18 @@ msgid "El total de la beta i la beta extra ha de ser més gran a zero."
 msgstr ""
 
 #. module: som_gurb
+#: model:ir.actions.report.xml,name:som_gurb.action_report_som_gurb_conditions
+msgid "Generar condicions GURB"
+msgstr ""
+
+#. module: som_gurb
 #: code:addons/som_gurb/models/giscedata_switching.py:85
 msgid "Cas importat correctament."
+msgstr ""
+
+#. module: som_gurb
+#: code:addons/som_gurb/models/som_gurb_cups.py:180
+msgid "No hi ha pòlisses actives o en esborrany per aquest CUPS"
 msgstr ""
 
 #. module: som_gurb
@@ -320,8 +377,18 @@ msgid "Invalid XML for View Architecture!"
 msgstr ""
 
 #. module: som_gurb
+#: view:wizard.create.gurb.cups.signature:0
+msgid "Firmar els documents d'aquest GURB CUPS"
+msgstr ""
+
+#. module: som_gurb
 #: constraint:product.template:0
 msgid "Error: UOS must be in a different category than the UOM"
+msgstr ""
+
+#. module: som_gurb
+#: field:som.gurb.cups,polissa_id:0
+msgid "Pòlissa"
 msgstr ""
 
 #. module: som_gurb
@@ -349,6 +416,11 @@ msgstr ""
 #: code:addons/som_gurb/wizard/wizard_gurb_create_new_beta.py:47
 #: code:addons/som_gurb/wizard/wizard_gurb_create_new_beta.py:52
 msgid "Beta incorrecte!"
+msgstr ""
+
+#. module: som_gurb
+#: field:som.gurb.cups,signed:0
+msgid "Signed"
 msgstr ""
 
 #. module: som_gurb
@@ -388,7 +460,7 @@ msgstr ""
 
 #. module: som_gurb
 #: model:ir.model,name:som_gurb.model_som_gurb_cups_beta
-#: code:addons/som_gurb/models/som_gurb_cups.py:371
+#: code:addons/som_gurb/models/som_gurb_cups.py:481
 msgid "Log of betas and changes for som.gurb.cups"
 msgstr ""
 
@@ -424,8 +496,8 @@ msgid "No s'han seleccionat IDs"
 msgstr ""
 
 #. module: som_gurb
-#: field:som.gurb.cups,owner_cups:0
-msgid "Cups de la persona propietària"
+#: view:som.gurb.cups:0
+msgid "Relacions"
 msgstr ""
 
 #. module: som_gurb
@@ -457,8 +529,8 @@ msgid "Betes assignades (kW)"
 msgstr ""
 
 #. module: som_gurb
-#: code:addons/som_gurb/models/som_gurb_cups.py:150
-msgid "No hi ha pòlisses actives per aquest CUPS"
+#: view:som.gurb:0
+msgid "Vols tornar a la primera obertura?"
 msgstr ""
 
 #. module: som_gurb
@@ -493,6 +565,11 @@ msgid "Reobrir"
 msgstr ""
 
 #. module: som_gurb
+#: field:som.gurb.cups,polissa_state:0
+msgid "Estat pòlissa"
+msgstr ""
+
+#. module: som_gurb
 #: model:giscedata.polissa.category,name:som_gurb.categ_gurb_pilot
 msgid "GURB Pilot"
 msgstr ""
@@ -510,6 +587,11 @@ msgstr ""
 #. module: som_gurb
 #: view:wizard.gurb.create.initial.invoice:0
 msgid "Crear factures"
+msgstr ""
+
+#. module: som_gurb
+#: code:addons/som_gurb/models/som_gurb_cups.py:523
+msgid "The combination of name and gurb_cups_id must be unique for this register!"
 msgstr ""
 
 #. module: som_gurb
@@ -543,8 +625,8 @@ msgid "Actiu no complet"
 msgstr ""
 
 #. module: som_gurb
-#: model:product.template,name:som_gurb.product_gurb_product_template
-msgid "Producte GURB"
+#: field:som.gurb.cups,partner_id:0
+msgid "Client"
 msgstr ""
 
 #. module: som_gurb
@@ -572,11 +654,6 @@ msgstr ""
 #. module: som_gurb
 #: view:wizard.gurb.create.initial.invoice:0
 msgid "Veure factures"
-msgstr ""
-
-#. module: som_gurb
-#: field:giscedata.switching,_attachments_field:0
-msgid "Attachments"
 msgstr ""
 
 #. module: som_gurb
@@ -659,8 +736,8 @@ msgid "Mòdul per gestionar els grups de generació urbana"
 msgstr ""
 
 #. module: som_gurb
-#: code:addons/som_gurb/models/som_gurb_cups.py:413
-msgid "The combination of name and gurb_cups_id must be unique for this register!"
+#: field:som.gurb,initial_product_id:0
+msgid "Producte quota inicial"
 msgstr ""
 
 #. module: som_gurb
@@ -722,6 +799,11 @@ msgid "Vols tancar la primera obertura del GURB?"
 msgstr ""
 
 #. module: som_gurb
+#: model:product.template,name:som_gurb.product_gurb_product_template
+msgid "Producte GURB"
+msgstr ""
+
+#. module: som_gurb
 #: view:som.gurb:0
 msgid "Canvis realitzats al GURB"
 msgstr ""
@@ -772,6 +854,11 @@ msgid "Vols reobrir el GURB?"
 msgstr ""
 
 #. module: som_gurb
+#: view:wizard.create.gurb.cups.signature:0
+msgid "Enviar documents a signar!"
+msgstr ""
+
+#. module: som_gurb
 #: view:som.gurb:0
 msgid "Tornar a primera obertura"
 msgstr ""
@@ -818,8 +905,13 @@ msgstr ""
 
 #. module: som_gurb
 #: model:ir.model,name:som_gurb.model_som_gurb_cups
-#: code:addons/som_gurb/models/som_gurb_cups.py:26
+#: code:addons/som_gurb/models/som_gurb_cups.py:27
 msgid "CUPS en grup de generació urbana"
+msgstr ""
+
+#. module: som_gurb
+#: code:addons/som_gurb/models/som_gurb_cups.py:182
+msgid "El CUPS id {} no té pòlisses actives o en esborrany. No es pot afegir."
 msgstr ""
 
 #. module: som_gurb
