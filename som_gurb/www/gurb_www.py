@@ -19,7 +19,8 @@ def compute_haversine_distance(lat_gurb, long_gurb, lat_address, long_address):
     return 2 * asin(sqrt(hav)) * 6371
 
 
-class GurbWWW(osv.osv_memory):
+class SomGurbWWW(osv.osv_memory):
+    _name = "som.gurb.www"
 
     def get_open_gurbs(self, cursor, uid, context=None):
         if context is None:
@@ -106,4 +107,4 @@ class GurbWWW(osv.osv_memory):
         return distance_from_gurb < 2.1
 
 
-GurbWWW()
+SomGurbWWW()
