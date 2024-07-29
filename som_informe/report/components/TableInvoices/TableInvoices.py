@@ -68,7 +68,8 @@ class TableInvoices:
                 linia_taula = {}
                 linia_taula["invoice_number"] = invoice.number
                 linia_taula["date"] = dateformat(invoice.date_invoice)
-                linia_taula["date_from"] = dateformat(invoice.data_inici)
+                linia_taula["date_from"] = dateformat(
+                    invoice.data_inici) if invoice.data_inici else linia_taula["date"]
                 if invoice.data_inici:
                     if not result["date_from"] or datetime.strptime(
                         invoice.data_inici, "%Y-%m-%d"
@@ -87,6 +88,8 @@ class TableInvoices:
                 linia_taula["invoiced_days"] = invoice.dies or 0
                 linia_taula["total"] = invoice.signed_amount_total
                 result["taula"].append(linia_taula)
+        result["taula"].sort(key=lambda x: datetime.strptime(
+            x['date_from'], "%d-%m-%Y"))
         return result
 
     def get_invoice_origin(self, cursor, uid, invoice):

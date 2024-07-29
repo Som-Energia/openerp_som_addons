@@ -150,6 +150,6 @@ class TestReportBackendCCPP(testing.OOTestCase):
                 u'power_prices_untaxed': {u'P1': 0.0, u'P2': 0.0},
                 u'price_auto': 0.01,
                 u'price_auto_untaxed': 0.01,
-                u'text_impostos': u' (IVA 21%, IE 3,8%)',
+                u'text_impostos': u' (IVA 21%, IE 5,11%)',
                 u'text_vigencia': u''}]
         })

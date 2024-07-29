@@ -87,7 +87,9 @@ class WizardGurbCreateGurbCupsSignature(osv.osv_memory):
             cursor, uid, "action_report_som_gurb_conditions", context=context
         )
 
-        process_data = context.get("process_data", {}).copy()
+        process_data = {
+            'callback_method': 'sign_gurb'
+        }
         data = json.dumps(process_data)
         doc_categ_id = attach_obj.get_category_for(
             cursor, uid, "gurb", context=context)
@@ -128,8 +130,8 @@ class WizardGurbCreateGurbCupsSignature(osv.osv_memory):
             cursor, uid, [gurb_cups_id], "gurb", context=context
         )
 
-        partner_address = ""
-        name = ""
+        partner_address = titular.address[0].id
+        name = titular.address[0].name
 
         values = {
             "template_id": tmpl_id,

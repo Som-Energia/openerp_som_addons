@@ -152,7 +152,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         res['contract_type'] = CONTRACT_TYPES[pol.contract_type]
         res['tarifa'] = pol.tarifa_codi
         res['data_baixa'] = pol.data_baixa
-        # res['fiscal_poisition'] = pol.fiscal_poisition
+        # res['fiscal_position'] = pol.fiscal_position
         res['potencia_max'] = pol.potencia
         res['mode_facturacio'] = pol.mode_facturacio
 
@@ -229,6 +229,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         imd_obj = self.pool.get('ir.model.data')
         prod_obj = self.pool.get("product.product")
         pricelist_obj = self.pool.get('product.pricelist')
+        fp_obj = self.pool.get('account.fiscal.position')
         polissa = pol_obj.browse(cursor, uid, pol.id)
         if context.get('tarifa_provisional', False):
             dict_preus_tp_energia = context.get('tarifa_provisional')['preus_provisional_energia']
@@ -285,7 +286,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
 
             try:
                 omie_mon_price_45 = omie_obj.has_to_charge_10_percent_requeriments_oficials(
-                    cursor, uid, ctx['date'], pol.potencia)
+                    cursor, uid, datetime.strftime(ctx['date'], "%Y-%m-%d"), pol.potencia)
             except Exception:
                 omie_mon_price_45 = False
             pricelist['omie_mon_price_45'] = omie_mon_price_45
@@ -305,12 +306,11 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 if iva_10_active and pol.potencia <= 10 and dades_tarifa['date_start'] >= start_date_iva_10 and dades_tarifa['date_start'] <= end_date_iva_10 and omie_mon_price_45:  # noqa: E501
                     fp_id = imd_obj.get_object_reference(
                         cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
-                    text_impostos = " (IVA 10%, IE 3,8%)"
+                    text_impostos = " (IVA 10%, IE 5,11%)"
+                    ctx.update({'force_fiscal_position': fp_id})
                 else:
-                    fp_id = imd_obj.get_object_reference(
-                        cursor, uid, 'giscedata_facturacio_iese', 'fp_nacional_2024_rdl_8_2023_38')[1]  # noqa: E501
-                    text_impostos = " (IVA 21%, IE 3,8%)"
-                ctx.update({'force_fiscal_position': fp_id})
+                    text_impostos = " (IVA 21%, IE 5,11%)"
+
             pricelist['text_impostos'] = text_impostos
 
             periodes_energia = sorted(pol.tarifa.get_periodes(context=context).keys())
@@ -363,6 +363,12 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         coeficient_k_untaxed = (pol.coeficient_k + pol.coeficient_d) / 1000
         coeficient_k = False
         res['mostra_indexada'] = False
+        fp_k_id = polissa.fiscal_position_id if pol.fiscal_position_id else ctx.get(
+            'force_fiscal_position', False)
+        if fp_k_id:
+            fp_k = fp_obj.browse(cursor, uid, fp_k_id)
+        else:
+            fp_k = False
         coeficient_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_facturacio_indexada', 'product_factor_k'
         )[1]
@@ -378,14 +384,16 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                     pricelist_index = pol_obj.escull_llista_preus(
                         cursor, uid, pol.id, tarifes_ids, context=context)
                 coeficient_k_untaxed = pricelist_index.get_atr_price(
-                    tipus='', product_id=coeficient_id, fiscal_position=polissa.fiscal_position_id,
+                    tipus='', product_id=coeficient_id, fiscal_position=fp_k,
                     with_taxes=False)[0]
                 coeficient_k = pricelist_index.get_atr_price(
-                    tipus='', product_id=coeficient_id, fiscal_position=polissa.fiscal_position_id,
+                    tipus='', product_id=coeficient_id, fiscal_position=fp_k,
                     with_taxes=True)[0]
             else:
+                fp_k = polissa.fiscal_position_id if pol.fiscal_position_id else ctx.get(
+                    'force_fiscal_position', False)
                 coeficient_k = prod_obj.add_taxes(
-                    cursor, uid, coeficient_id, coeficient_k_untaxed, polissa.fiscal_position_id,
+                    cursor, uid, coeficient_id, coeficient_k_untaxed, fp_k_id,
                     direccio_pagament=polissa.direccio_pagament, titular=polissa.titular,
                     context=context,
                 )
