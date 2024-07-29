@@ -94,7 +94,7 @@ class TestsGurbServices(TestsGurbBase):
         pol_br = pol_o.browse(self.cursor, self.uid, polissa_id)
 
         self.assertEqual(pol_br.serveis[0].llista_preus.id, vals['pricelist_id'])
-        self.assertEqual(pol_br.serveis[0].producte.id, vals['product_id'])
+        self.assertEqual(pol_br.serveis[0].producte.id, vals['owner_product_id'])
         self.assertEqual(pol_br.serveis[0].polissa_id.state, "esborrany")
         self.assertEqual(pol_br.serveis[0].polissa_id.id, polissa_id)
 
@@ -104,8 +104,11 @@ class TestsGurbServices(TestsGurbBase):
         vals = self.get_references()
 
         gurb_cups_id = vals["gurb_cups_id"]
-        polissa_id = vals["pol_id"]
-        pol_o.write(self.cursor, self.uid, polissa_id, {"state": "baixa"})
+        cups_id = vals["cups_id"]
+
+        pol_ids = pol_o.search(self.cursor, self.uid, [('cups', '=', cups_id)])
+
+        pol_o.write(self.cursor, self.uid, pol_ids, {"state": "baixa"})
 
         with self.assertRaises(osv.except_osv):
             gurb_cups_o.add_service_to_contract(
