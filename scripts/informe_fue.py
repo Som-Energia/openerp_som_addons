@@ -3,6 +3,7 @@ from datetime import datetime
 import dbconfig
 from consolemsg import step, success
 from erppeek import Client
+from tqdm import tqdm
 
 # Estimacions a tenir en compte
 # CALCULADA_SOM = [('LC', 'ES')] # Calculada Som
@@ -20,10 +21,10 @@ TOTS_CONTRACTES = 'True'  # En cas de canvi de titular, comptem 2 contractes
 def obtenir_llista_factures_estimades_som(c):
     fact_ids = []
     lect_factura_ids = c.GiscedataFacturacioLecturesEnergia.search(
-        [('data_actual', '>=', '2021-06-01'),
+        [('data_actual', '>=', START_DATE),
          ('origen_id', 'in', ESTIMACIO_DISTRI)]
     )
-    for lect_facura_id in lect_factura_ids:
+    for lect_facura_id in tqdm(lect_factura_ids):
         lect_factura = c.GiscedataFacturacioLecturesEnergia.browse(lect_facura_id)
         llista_lectures = c.GiscedataLecturesLectura.search(
             [('comptador', '=', lect_factura.comptador_id.id),
