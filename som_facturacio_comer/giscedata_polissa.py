@@ -108,7 +108,7 @@ class GiscedataPolissa(osv.osv):
 
                 if indexed_formula != indexed_formula_old and indexed_formula_old != "":
                     # updatar registre
-                    dates_de_tall[mod_data]['changes'] = ['indexed_formula']
+                    dates_de_tall[mod_data]['changes'] = ['potencia']
 
                 indexed_formula_old = indexed_formula
 
