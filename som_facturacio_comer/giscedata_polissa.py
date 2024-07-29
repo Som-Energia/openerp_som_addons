@@ -4,7 +4,6 @@ from osv import osv, fields
 from tools.translate import _
 from giscedata_facturacio.giscedata_polissa import INTERVAL_INVOICING_FIELDS
 
-INTERVAL_INVOICING_FIELDS += ['indexed_formula']
 
 class GiscedataPolissa(osv.osv):
     """Pòlissa per afegir el camp teoric_maximum_consume_gc."""
