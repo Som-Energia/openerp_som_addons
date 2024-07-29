@@ -1307,6 +1307,14 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             u"6.3TD": 5,
             u"6.4TD": 6,
         }
+
+        if len(pol.autoconsum_cups_ids) == 0:
+            data["autoconsum_caus"] = [data["autoconsum_cau"]]
+        else:
+            data["autoconsum_caus"] = []
+            for mcau in pol.autoconsum_cups_ids:
+                data["autoconsum_caus"].append(mcau.autoconsum_id.cau)
+
         data["segment_tariff"] = segment_tarif.get(pol.tarifa.name, "")
         return data
 
