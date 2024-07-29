@@ -16,7 +16,7 @@
             <field name="name">Categoria GURB</field>
         </record>
         <record model="product.product" id="product_gurb">
-            <field name="name">Producte GURB</field>
+            <field name="name">Producte GURB domèstic</field>
             <field name="categ_id" ref="categ_product_gurb"/>
             <field name="type">service</field>
             <field name="procure_method">make_to_stock</field>
@@ -26,11 +26,21 @@
             <field model="account.account" name="property_account_income" search="[('code','=','705000')]"/>
         </record>
         <record model="product.product" id="product_owner_gurb">
-            <field name="name">Producte GURB persona propietària</field>
+            <field name="name">Producte GURB beta extra</field>
             <field name="categ_id" ref="categ_product_gurb"/>
             <field name="type">service</field>
             <field name="procure_method">make_to_stock</field>
             <field name="list_price">0</field>
+            <field name="supply_method">buy</field>
+            <field model="account.tax" name="taxes_id" search="[('name','=','IVA 21%')]"/>
+            <field model="account.account" name="property_account_income" search="[('code','=','705000')]"/>
+        </record>
+        <record model="product.product" id="product_enterprise_gurb">
+            <field name="name">Producte GURB empresa</field>
+            <field name="categ_id" ref="categ_product_gurb"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="list_price">5</field>
             <field name="supply_method">buy</field>
             <field model="account.tax" name="taxes_id" search="[('name','=','IVA 21%')]"/>
             <field model="account.account" name="property_account_income" search="[('code','=','705000')]"/>
