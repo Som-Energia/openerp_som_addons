@@ -55,6 +55,9 @@ class TestsGurbBase(testing.OOTestCase):
         vals['cups_id'] = imd_o.get_object_reference(
             self.cursor, self.uid, "giscedata_cups", "cups_tarifa_018"
         )[1]
+        vals['cups_id_2'] = imd_o.get_object_reference(
+            self.cursor, self.uid, "giscedata_cups", "cups_tarifa_018"
+        )[1]
         vals['pricelist_id'] = imd_o.get_object_reference(
             self.cursor, self.uid, "som_gurb", "pricelist_gurb_demo"
         )[1]

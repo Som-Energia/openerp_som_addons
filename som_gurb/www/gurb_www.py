@@ -4,11 +4,11 @@ from math import radians, cos, sin, asin, sqrt
 
 def compute_haversine_distance(lat_gurb, long_gurb, lat_address, long_address):
     # Convert degrees to radians.
-    long_address = radians(long_address)
-    lat_address = radians(lat_address)
+    long_address = radians(float(long_address))
+    lat_address = radians(float(lat_address))
 
-    long_gurb = radians(long_gurb)
-    lat_gurb = radians(lat_gurb)
+    long_gurb = radians(float(long_gurb))
+    lat_gurb = radians(float(lat_gurb))
 
     # Haversine formula
     delta_long = long_address - long_gurb
