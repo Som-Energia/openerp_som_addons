@@ -3895,5 +3895,70 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         return data
 
+    def get_component_solar_flux_info_data(self, fact, pol):
+
+        def has_active_flux_solar(fact, pol):
+            for fl in pol.bateria_ids:
+                if not fl.data_final or fl.data_final > fact.data_inici:
+                    return True
+            return False
+
+        if not(te_autoconsum_amb_excedents(fact, pol) or pol.autoconsumo == '33'):
+            return {"is_visible": False}
+
+        if not has_active_flux_solar(fact, pol):
+            return {"is_visible": False}
+
+        imd_obj = self.pool.get("ir.model.data")
+        hidden_flux_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_polissa", "categ_flux_solar_ocult_ov"
+        )[1]
+        for categ in pol.category_id:
+            if categ.id == hidden_flux_id:
+                return {"is_visible": False}
+
+        autoconsum_excedents_product_id = self.get_autoconsum_excedents_product_id(fact)
+        ajustment = 0.0
+        surplus_kwh = 0.0
+        surplus_e = 0.0
+        for l in fact.linies_generacio:  # noqa: E741
+            if l.product_id.id == autoconsum_excedents_product_id:
+                ajustment += l.price_subtotal
+            else:
+                surplus_kwh += l.quantity
+                surplus_e += l.price_subtotal
+
+        surplus_kwh = surplus_kwh * -1.0
+        surplus_e = surplus_e * -1.0
+
+        flux_lines = [
+            l
+            for l in fact.linia_ids  # noqa: E741
+            if l.tipus in ("altres", "cobrament") and l.invoice_line_id.product_id.code == "PBV"
+        ]
+
+        lang = fact.lang_partner.lower()
+        if lang == 'ca_es':
+            link_help = 'https://ca.support.somenergia.coop/article/1371-que-es-el-flux-solar'
+            link_ov_suns = 'https://oficinavirtual.somenergia.coop/ca/flux-solar/'
+            link_nc = 'https://ca.support.somenergia.coop/article/1397-que-son-els-excedents-no-compensats'  # noqa: E501
+        else:
+            link_help = 'https://es.support.somenergia.coop/article/1372-que-es-el-flux-solar'
+            link_ov_suns = 'https://oficinavirtual.somenergia.coop/es/flux-solar/'
+            link_nc = 'https://es.support.somenergia.coop/article/1398-que-son-los-excedentes-no-compensados'  # noqa: E501
+
+        return {
+            'is_visible': True,
+            'surplus_kwh': surplus_kwh,
+            'surplus_e': surplus_e,
+            'compensation_e': surplus_e - ajustment,
+            'ajustment_e': ajustment,
+            'suns_generated': ajustment * 0.80,
+            'suns_used': sum([l.price_subtotal for l in flux_lines]) * -1.0,   # noqa: E741
+            'link_help': link_help,
+            'link_ov_suns': link_ov_suns,
+            'link_no_compens': link_nc,
+        }
+
 
 GiscedataFacturacioFacturaReport()

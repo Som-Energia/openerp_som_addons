@@ -70,6 +70,7 @@ report_data = r_obj.get_report_data(cursor, uid, objects)
         <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td/invoice_details_td.mako" args="id=factura_data.invoice_details_td" />
         <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_info_td/invoice_details_info_td.mako" args="id_info=factura_data.invoice_details_info_td" />
     </div>
+    <%include file="/giscedata_facturacio_comer_som/report/components/solar_flux_info/solar_flux_info.mako" args="sf=factura_data.solar_flux_info" />
     <%include file="/giscedata_facturacio_comer_som/report/components/cnmc_comparator_qr_link/cnmc_comparator_qr_link.mako" args="comparator=factura_data.cnmc_comparator_qr_link" />
     <%include file="/giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako" args="ad=factura_data.amount_destination_td" />
     <p style="page-break-after:always"></p>
