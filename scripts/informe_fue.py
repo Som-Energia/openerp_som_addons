@@ -5,7 +5,8 @@ from consolemsg import step, success, warn
 from erppeek import Client
 from tqdm import tqdm
 import psycopg2
-
+import StringIO
+import csv
 
 """_summary_
 Dades per informe FUE sobre les refacturacions
@@ -50,6 +51,50 @@ DATA_FALTEN_LECTURES = (datetime.today() - timedelta(days=62)).strftime('%Y-%m-%
 DATA_FALTEN_LECTURES = '2023-01-01'
 
 TOTS_CONTRACTES = 'True'  # En cas de canvi de titular, comptem 2 contractes
+
+
+def write_csv(report, header, filename):
+    csv_doc = StringIO.StringIO()
+    writer_report = csv.writer(csv_doc, delimiter=';')
+    writer_report.writerow(header)
+    writer_report.writerows(report)
+    doc = csv_doc.getvalue()
+    with open(filename, 'w') as f:
+        f.write(doc)
+
+
+def parse_csv_line(fields, data, error='Err'):
+    line = []
+    for field in fields:
+        if type(field) == str:
+            line.append(data.get(field, error))
+        elif type(field) == list and len(field) == 2:
+            val = data.get(field[0], [])
+            if type(val) == list and len(val) == field[1] + 1:
+                line.append(val[field[1]])
+            else:
+                line.append(error)
+    return line
+
+
+def write_csv_factura(c, fact_ids, filename):
+    fields = ['id', 'number', ['polissa_id', 1], 'data_inici', 'data_final']
+    header = ['id', 'number', 'polissa_id', 'data_inici', 'data_final']
+    result = []
+    for data in c.GiscedataFacturacioFactura.read(fact_ids, header):
+        result.append(parse_csv_line(fields, data))
+
+    write_csv(result, header, filename)
+
+
+def write_csv_polissa(c, pol_ids, filename):
+    fields = ['id', 'name', 'data_alta', 'active', 'state']
+    header = fields
+    result = []
+    for data in c.GiscedataPolissa.read(pol_ids, fields):
+        result.append(parse_csv_line(fields, data))
+
+    write_csv(result, header, filename)
 
 
 def get_db_cursor():
