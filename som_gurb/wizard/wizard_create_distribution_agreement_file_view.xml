@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_create_gurb_distribution_agreement_form">
+            <field name="name">Crear Acord de Repartiment</field>
+            <field name="model">wizard.create.gurb.distribution.agreement</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Crear acord de repartiment d'aquest GURB a data d'avui">
+                    <group colspan="4">
+                        <button name="create_distribution_agreement_txt" type="object" string="Crear acord de repartiment" icon="gtk-execute" />
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_create_gurb_distribution_agreement_form">
+            <field name="name">Crear Acord de Repatiment</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">som.gurb</field>
+            <field name="view_type">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_create_gurb_distribution_agreement_form" />
+        </record>
+        <record id="values_wizard_create_gurb_distribution_agreement_form" model="ir.values">
+            <field name="object" eval="1" />
+            <field name="name">Crear Acord de Repatiment</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">som.gurb</field>
+            <field name="value"
+                eval="'ir.actions.act_window,'+str(ref('action_wizard_create_gurb_distribution_agreement_form'))" />
+        </record>
+    </data>
+</openerp>
