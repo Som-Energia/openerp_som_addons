@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-from ..component_utils import dateformat, get_description, get_invoice_line, get_unit_magnitude
+from ..component_utils import dateformat, get_description, get_invoice_lines, get_unit_magnitude
 
 
 class InvoiceF1NG:
@@ -78,11 +78,11 @@ class InvoiceF1NG:
                     dict_linia["lectura_final"] = linia.lectura_actual
                     dict_linia["consum_entre"] = linia.lectura_actual - linia.lectura_desde
                     dict_linia["ajust"] = linia.ajust
-                    i_line = get_invoice_line(invoice, linia.magnitud, linia.periode)
+                    i_lines = get_invoice_lines(invoice, linia.magnitud, linia.periode)
                     if dict_linia["magnitud_desc"] == "Excesos de potencia":
-                        dict_linia["total_facturat"] = i_line.price_unit if i_line else 0
+                        dict_linia["total_facturat"] = i_lines[0].price_unit if i_lines else 0
                     else:
-                        dict_linia["total_facturat"] = i_line.quantity if i_line else 0
+                        dict_linia["total_facturat"] = sum(i_line.quantity for i_line in i_lines)
                     dict_linia["unit"] = get_unit_magnitude(linia.magnitud)
                     result["linies"].append(dict_linia)
             elif f1.tipo_factura_f1 == "otros":
