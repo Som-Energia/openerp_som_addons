@@ -4,8 +4,6 @@ import dbconfig
 from consolemsg import step, success
 from erppeek import Client
 from tqdm import tqdm
-<<<<<<< HEAD
-=======
 
 
 """_summary_
@@ -33,7 +31,6 @@ where
 LIMIT
   10
 """
->>>>>>> f8e20179 (Change browse for read to speed script)
 
 # Estimacions a tenir en compte
 # CALCULADA_SOM = [('LC', 'ES')] # Calculada Som
