@@ -86,12 +86,13 @@ class GiscedataPolissa(osv.osv):
 
         llista_preu_dades = []
         indexed_formula_old = ""
-        changes = {}
-        dates = {}
 
         for mod_data in sorted(dates_de_tall.keys()):
             values = ['llista_preu', 'data_inici', 'data_final']
-            modcon_dades = modcon_o.read(cursor, uid, dates_de_tall[mod_data]['id'], values, context=context)
+            modcon_dades = modcon_o.read(
+                cursor, uid, dates_de_tall[mod_data]['id'],
+                values, context=context
+            )
 
             llista_preu_dades.append((
                 dates_de_tall[mod_data]['id'],
