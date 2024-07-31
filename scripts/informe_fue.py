@@ -200,12 +200,17 @@ def contractes_estimats_no_refactures(cur):
         select distinct gp.id
         from
         giscedata_polissa gp ,
+        giscedata_cups_ps gcp,
+        res_municipi rm,
         giscedata_facturacio_factura gff ,
         account_invoice ai,
         giscedata_lectures_lectura gll ,
         giscedata_lectures_comptador glc
         where
         gp.id = gff.polissa_id and
+        gcp.id = gp.cups and
+        gcp.id_municipi = rm.id and
+        rm.state in (9, 20, 28, 45) and
         ai.id = gff.invoice_id and
         glc.polissa = gp.id and
         gll.comptador = glc.id and
