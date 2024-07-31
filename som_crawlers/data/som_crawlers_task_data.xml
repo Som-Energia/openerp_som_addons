@@ -384,6 +384,12 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="escuer_conf"/>
         </record>
+        <!-- UDESA -->
+        <record model="som.crawlers.task" id="descarregar_udesa_ftp">
+            <field name="name">Descarregar FTP UDESA</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="udesa_ftp_conf"/>
+        </record>
         <!-- TASQUES D'EXPORTACIÓ -->
         <record model="som.crawlers.task" id="carregar_anselmo">
             <field name="name">Carregar Anselmo</field>
