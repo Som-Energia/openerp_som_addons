@@ -51,5 +51,70 @@
             <field name="type">sale</field>
             <field name="currency_id" ref="base.EUR"/>
         </record>
+        <record model="product.pricelist" id="pricelist_indexada_20td_peninsula_2024">
+            <field name="name">Indexada 2.0TD Península 2024</field>
+            <field name="type">sale</field>
+            <field name="currency_id" ref="base.EUR"/>
+        </record>
+        <record model="product.pricelist" id="pricelist_indexada_20td_balears_2024">
+            <field name="name">Indexada 2.0TD Balears 2024</field>
+            <field name="type">sale</field>
+            <field name="currency_id" ref="base.EUR"/>
+        </record>
+        <record model="product.pricelist" id="pricelist_indexada_20td_canaries_2024">
+            <field name="name">Indexada 2.0TD Canàries 2024</field>
+            <field name="type">sale</field>
+            <field name="currency_id" ref="base.EUR"/>
+        </record>
+        <record model="product.pricelist" id="pricelist_indexada_30td_peninsula_2024">
+            <field name="name">Indexada 3.0TD Península 2024</field>
+            <field name="type">sale</field>
+            <field name="currency_id" ref="base.EUR"/>
+        </record>
+        <record model="product.pricelist" id="pricelist_indexada_30td_balears_2024">
+            <field name="name">Indexada 3.0TD Balears 2024</field>
+            <field name="type">sale</field>
+            <field name="currency_id" ref="base.EUR"/>
+        </record>
+        <record model="product.pricelist" id="pricelist_indexada_30td_canaries_2024">
+            <field name="name">Indexada 3.0TD Canàries 2024</field>
+            <field name="type">sale</field>
+            <field name="currency_id" ref="base.EUR"/>
+        </record>
+        <record model="product.pricelist" id="pricelist_indexada_61td_peninsula_2024">
+            <field name="name">Indexada 6.1TD Península 2024</field>
+            <field name="type">sale</field>
+            <field name="currency_id" ref="base.EUR"/>
+        </record>
+        <record model="product.pricelist" id="pricelist_indexada_61td_balears_2024">
+            <field name="name">Indexada 6.1TD Balears 2024</field>
+            <field name="type">sale</field>
+            <field name="currency_id" ref="base.EUR"/>
+        </record>
+        <record model="product.pricelist" id="pricelist_indexada_61td_canaries_2024">
+            <field name="name">Indexada 6.1TD Canàries 2024</field>
+            <field name="type">sale</field>
+            <field name="currency_id" ref="base.EUR"/>
+        </record>
+        <record model="product.pricelist" id="pricelist_indexada_empresa_peninsula_non_standard_2024">
+            <field name="name">Indexada Empresa Peninsula 2024</field>
+            <field name="type">sale</field>
+            <field name="currency_id" ref="base.EUR"/>
+        </record>
+        <record model="product.pricelist" id="pricelist_indexada_empresa_balears_non_standard_2024">
+            <field name="name">Indexada Empresa Balears 2024</field>
+            <field name="type">sale</field>
+            <field name="currency_id" ref="base.EUR"/>
+        </record>
+        <record model="product.pricelist" id="pricelist_indexada_empresa_canaries_non_standard_2024">
+            <field name="name">Indexada Empresa Canàries 2024</field>
+            <field name="type">sale</field>
+            <field name="currency_id" ref="base.EUR"/>
+        </record>
+        <record model="product.pricelist" id="pricelist_indexada_30tdve_peninsula_2024">
+            <field name="name">Indexada 3.0TDVE Península 2024</field>
+            <field name="type">sale</field>
+            <field name="currency_id" ref="base.EUR"/>
+        </record>
     </data>
 </openerp>
