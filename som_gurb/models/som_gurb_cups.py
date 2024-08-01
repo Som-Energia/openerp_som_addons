@@ -82,6 +82,11 @@ class SomGurbCups(osv.osv):
 
         return res
 
+    def get_beta_percentatge(self, cursor, uid, ids, context=None):
+        if not isinstance(ids, list):
+            ids = [ids]
+        return self._ff_get_beta_percentage(cursor, uid, ids, [], [], context=context)
+
     def _ff_get_beta_percentage(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
             context = {}

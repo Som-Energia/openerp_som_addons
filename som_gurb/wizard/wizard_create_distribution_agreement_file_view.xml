@@ -3,12 +3,18 @@
     <data>
         <record model="ir.ui.view" id="view_wizard_create_gurb_distribution_agreement_form">
             <field name="name">Crear Acord de Repartiment</field>
-            <field name="model">wizard.create.gurb.distribution.agreement</field>
+            <field name="model">wizard.create.distribution.agreement</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Crear acord de repartiment d'aquest GURB a data d'avui">
-                    <group colspan="4">
-                        <button name="create_distribution_agreement_txt" type="object" string="Crear acord de repartiment" icon="gtk-execute" />
+                    <field name="state" invisible="True"/>
+                    <group colspan="4" attrs="{'invisible': [('state', '==', 'done')]}">
+                        <button name="create_distribution_agreement_txt" type="object" string="Crear acord de repartiment" icon="gtk-execute" colspan="4"/>
+                    </group>
+                    <group colspan="4" attrs="{'invisible': [('state', '==', 'init')]}">
+                        <field name="file" colspan="4" />
+                        <field name="file_name" colspan="4"/>
+                        <button special="cancel" string="Tancar" icon="gtk-close" colspan="4" />
                     </group>
                 </form>
             </field>
@@ -16,7 +22,7 @@
         <record model="ir.actions.act_window" id="action_wizard_create_gurb_distribution_agreement_form">
             <field name="name">Crear Acord de Repatiment</field>
             <field name="type">ir.actions.act_window</field>
-            <field name="res_model">som.gurb</field>
+            <field name="res_model">wizard.create.distribution.agreement</field>
             <field name="view_type">form</field>
             <field name="target">new</field>
             <field name="view_id" ref="view_wizard_create_gurb_distribution_agreement_form" />
