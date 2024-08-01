@@ -18,6 +18,7 @@
                                     string="Format del CSV: a la primera columna hi ha d'haver els números dels contractes, un a cada fila. Les següents columnes que hi hagi han de correspondre al valors K, D i H"
                                     colspan="4" />
                                 <field name="pending_modcon" colspan="4" string="Modcon Pendent" attrs="{'readonly':[('state','!=', 'init')]}"/>
+                                <field name="modcon_actual" colspan="4" string="Modcon Actual" attrs="{'readonly':[('state','!=', 'init')]}"/>
                                 <field name="update_pricelist" colspan="4" string="Actualitzar la llista de preus" attrs="{'readonly':[('state','!=', 'init')]}"/>
                                 <button
                                     attrs="{'invisible': [('state','!=', 'init')]}"
