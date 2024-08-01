@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
-        <record model="ir.ui.view" id="view_wizard_create_gurb_distribution_agreement_form">
-            <field name="name">Crear Acord de Repartiment</field>
-            <field name="model">wizard.create.distribution.agreement</field>
+        <record model="ir.ui.view" id="view_wizard_create_gurb_coeficients_file_form">
+            <field name="name">Crear Fitxer de Coeficients</field>
+            <field name="model">wizard.create.coeficients.file</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <form string="Crear acord de repartiment d'aquest GURB a data d'avui">
+                <form string="Crear fitxer de coeficients d'aquest GURB a data d'avui">
                     <field name="state" invisible="1"/>
                     <group colspan="4" attrs="{'invisible': [('state', '==', 'done')]}">
-                        <button name="create_distribution_agreement_txt" type="object" string="Crear acord de repartiment" icon="gtk-execute" colspan="4"/>
+                        <button name="create_coeficients_file_txt" type="object" string="Crear fitxer de Coeficients" icon="gtk-execute" colspan="4"/>
                     </group>
                     <group colspan="4" attrs="{'invisible': [('state', '==', 'init')]}">
                         <field name="file" colspan="4" />
@@ -19,22 +19,22 @@
                 </form>
             </field>
         </record>
-        <record model="ir.actions.act_window" id="action_wizard_create_gurb_distribution_agreement_form">
-            <field name="name">Crear Acord de Repatiment</field>
+        <record model="ir.actions.act_window" id="action_wizard_create_gurb_coeficients_file_form">
+            <field name="name">Crear Fitxer de Coeficients</field>
             <field name="type">ir.actions.act_window</field>
-            <field name="res_model">wizard.create.distribution.agreement</field>
+            <field name="res_model">wizard.create.coeficients.file</field>
             <field name="view_type">form</field>
             <field name="target">new</field>
-            <field name="view_id" ref="view_wizard_create_gurb_distribution_agreement_form" />
+            <field name="view_id" ref="view_wizard_create_gurb_coeficients_file_form" />
         </record>
-        <record id="values_wizard_create_gurb_distribution_agreement_form" model="ir.values">
+        <record id="values_wizard_create_gurb_coeficients_file_form" model="ir.values">
             <field name="object" eval="1" />
-            <field name="name">Crear Acord de Repatiment</field>
+            <field name="name">Crear Fitxer de Coeficients</field>
             <field name="key2">client_action_multi</field>
             <field name="key">action</field>
             <field name="model">som.gurb</field>
             <field name="value"
-                eval="'ir.actions.act_window,'+str(ref('action_wizard_create_gurb_distribution_agreement_form'))" />
+                eval="'ir.actions.act_window,'+str(ref('action_wizard_create_gurb_coeficients_file_form'))" />
         </record>
     </data>
 </openerp>

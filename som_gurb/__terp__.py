@@ -34,7 +34,7 @@
         "wizard/wizard_gurb_create_new_beta_view.xml",
         "wizard/wizard_create_gurb_cups_signature_view.xml",
         "wizard/wizard_gurb_create_initial_invoice_view.xml",
-        "wizard/wizard_create_distribution_agreement_file_view.xml",
+        "wizard/wizard_create_coef_file_view.xml",
         "report/som_gurb_reports.xml",
     ],
     "init_xml": [],

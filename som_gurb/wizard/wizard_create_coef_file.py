@@ -4,9 +4,9 @@ from osv import osv, fields
 from datetime import datetime
 
 
-class WizardCreateDistributionAgreement(osv.osv_memory):
+class WizardCreateCoeficicientsFile(osv.osv_memory):
 
-    _name = 'wizard.create.distribution.agreement'
+    _name = "wizard.create.coeficients.file"
 
     def get_items(self, cursor, uid, today, context=None):
         if context is None:
@@ -47,7 +47,7 @@ class WizardCreateDistributionAgreement(osv.osv_memory):
         if context is None:
             context = {}
 
-        file_name = "acord_de_repartiment_{}.txt".format(date)
+        file_name = "fitxer_de_coeficients_{}.txt".format(date)
 
         txt = ""
 
@@ -59,7 +59,7 @@ class WizardCreateDistributionAgreement(osv.osv_memory):
 
         return file_name, mfile
 
-    def create_distribution_agreement_txt(self, cursor, uid, ids, context=None):
+    def create_coeficients_file_txt(self, cursor, uid, ids, context=None):
         if context is None:
             context = {}
 
@@ -89,7 +89,7 @@ class WizardCreateDistributionAgreement(osv.osv_memory):
             ],
             "State",
         ),
-        "file": fields.binary("Acord de Repartiment"),
+        "file": fields.binary("Fitxer de Coeficients"),
         "file_name": fields.char("Nom fitxer", size=128),
     }
 
@@ -98,4 +98,4 @@ class WizardCreateDistributionAgreement(osv.osv_memory):
     }
 
 
-WizardCreateDistributionAgreement()
+WizardCreateCoeficicientsFile()
