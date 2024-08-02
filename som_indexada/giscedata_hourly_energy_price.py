@@ -382,10 +382,13 @@ class GiscedataNextDaysEnergyPrice(osv.osv):
             else:
                 prmdiari = marginalpdbc
                 maturity_res = 'PDBC'
-
         # DESV
-        csdvbaj = Codsvbaj('C2_codsvbaj_%(postfix)s' % locals(), esios_token)  # [€/MWh]
-        csdvsub = Codsvsub('C2_codsvsub_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        try:
+            csdvbaj = Codsvbaj('C2_codsvbaj_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+            csdvsub = Codsvsub('C2_codsvsub_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        except REECoeficientsNotFound as e:
+            csdvbaj = Component(datetime.strptime(data_inici, "%Y-%m-%d"))
+            csdvsub = Component(datetime.strptime(data_inici, "%Y-%m-%d"))
 
         ## IN CASE OF A SINGLE DAY CALCULATION WE CHECK FOR THE DAY'S PRICE
         if day is not None:
