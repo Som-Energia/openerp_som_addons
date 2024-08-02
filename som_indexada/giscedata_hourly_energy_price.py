@@ -371,8 +371,17 @@ class GiscedataNextDaysEnergyPrice(osv.osv):
 
         ## COMPONENTS
         postfix = '%s_%s' % (data_inici.replace("-", ""), data_final.replace("-", ""))
-        prmdiari = Prmdiari('A1_prmdiari_{}'.format(postfix), esios_token)
         maturity_res = False
+        try:
+            prmdiari = Prmdiari('A1_prmdiari_{}'.format(postfix), esios_token)
+        except REECoeficientsNotFound as e:
+            marginal_date = day.replace('-', '')
+            marginalpdbc = self.get_marginalpbdc(cursor, uid, marginal_date, context=context)
+            if sum(marginalpdbc.matrix[int(datetime.strptime(day, '%Y-%m-%d').day) - 1]) == 0:
+                raise Exception(_('El precio para el día {} aún no está disponible.\n').format(day))
+            else:
+                prmdiari = marginalpdbc
+                maturity_res = 'PDBC'
 
         # DESV
         csdvbaj = Codsvbaj('C2_codsvbaj_%(postfix)s' % locals(), esios_token)  # [€/MWh]
