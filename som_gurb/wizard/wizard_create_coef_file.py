@@ -47,7 +47,14 @@ class WizardCreateCoeficicientsFile(osv.osv_memory):
         if context is None:
             context = {}
 
-        file_name = "fitxer_de_coeficients_{}.txt".format(date)
+        current_gurb = context.get('active_id')
+
+        gurb_o = self.pool.get('som.gurb')
+        self_cons_name = gurb_o.read(
+            cursor, uid, current_gurb, ['self_consumption_id']
+        )['self_consumption_id'][1]
+
+        file_name = "{}_{}.txt".format(self_cons_name, date[:4])
 
         txt = ""
 
