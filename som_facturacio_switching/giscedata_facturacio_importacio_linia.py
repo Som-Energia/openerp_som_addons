@@ -45,7 +45,10 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
 
         tipus_autoconsum = re.findall("<TipoAutoconsumo>(.*)</TipoAutoconsumo>", xml_data)
         if tipus_autoconsum:
-            vals["tipus_autoconsum"] = tipus_autoconsum[0]
+            tipus = tipus_autoconsum[0]
+            if tipus in ["01", "2A", "2B", "2G"]:
+                tipus = "00"
+            vals["tipus_autoconsum"] = tipus
 
         tarifaATR = re.findall("<TarifaATRFact>(.*)</TarifaATRFact>", xml_data)
         if tarifaATR:
