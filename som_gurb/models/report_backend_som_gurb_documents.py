@@ -29,7 +29,11 @@ class ReportBackendSomGurbAcordRepartiment(ReportBackend):
         if context is None:
             context = {}
 
-        data = {}
+        data = {
+            "day": datetime.now().day,
+            "month": MONTHS[str(datetime.now().month)],
+            "year": datetime.now().year,
+        }
         partner_o = self.pool.get("res.partner")
         gurb_cups_o = self.pool.get("som.gurb.cups")
 
@@ -37,7 +41,7 @@ class ReportBackendSomGurbAcordRepartiment(ReportBackend):
 
         data["productora"] = {
             "nom": gurb.roof_owner_id.name,
-            "nif": gurb.roof_owner_id.vat,
+            "nif": gurb.roof_owner_id.vat.replace("ES", ""),
             "cil": gurb.cil,
             "cau": gurb.self_consumption_id.cau
         }
@@ -69,7 +73,7 @@ class ReportBackendSomGurbAcordRepartiment(ReportBackend):
 
             consumidor = {
                 "nom": partner_vals["name"],
-                "nif": partner_vals["vat"],
+                "nif": partner_vals["vat"].replace("ES", ""),
                 "cups": grub_vals["cups_id"][1],
                 "coef": coef,
                 "nombre": number,

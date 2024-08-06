@@ -179,9 +179,23 @@
                                 ${_(u"Totes les parts queden informades que el responsable del tractament de les dades personals objecte de la cessió és Som Energia SCCL, en tant que actua com a representant de l'autoconsum col·lectiu, amb la finalitat de gestionar i tramitar l'aplicació del present acord de repartiment i del autoconsum col·lectiu al que fa referència. Per tant, tret l'obligada cessió indicada, les dades no seran cedides excepte en els supòsits legalment exigits i només es conservaran mentre el titular de les dades estigui associat al autoconsum col·lectiu i, un cop finalitzada aquesta pertinença, dins dels terminis legals previstos. Pots retirar el teu consentiment en qualsevol moment i exercir el teu dret d'accés, rectificació, supressió, portabilitat, limitació i oposició dirigint-te a somenergia@delegado-datos.com (delegat de protecció de dades). En cas de divergèncias, pots presentar una reclamació davant l'Agència de Protecció de Dades (www.aepd.es)")}
                             </li>
                         </ul>
-                        ##<!-- <p> Girona, ${informe['data']}</p> -->
-                        <p>${_(u"L'Autoritzant")}</p>
-                        ##<p>${informe['name']} ${informe['nif']}</p>
+                        <p>A Girona, ${informe['day']} ${informe['month']} ${informe['year']}</p>
+                        <p>${_(u"Les CONSUMIDORES associades:")}</p>
+                        <p>${_(u"Som Energia SCCL")}</p>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <p>${_(u"F55091367")}</p>
+                        <p>${_(u"La PRODUCTORA associada:")}</p>
+                        <p>${informe["productora"]["nom"]}</p>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <p>${informe["productora"]["nif"]}</p>
                     </div>
                 </div>
             </div>
