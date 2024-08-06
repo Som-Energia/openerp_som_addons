@@ -68,6 +68,7 @@
                         <field name="quota_product_id" />
                         <field name="max_power" />
                         <field name="min_power" />
+                        <field name="cil" />
                     </group>
                     <group col="6" colspan="4" string="Autoconsum" icon="solar-panel">
                         <field name="self_consumption_id" select="1" />
