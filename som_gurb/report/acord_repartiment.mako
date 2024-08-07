@@ -18,7 +18,7 @@
                 border-collapse: collapse;
                 border: 2px solid rgb(140 140 140);
                 font-family: sans-serif;
-                font-size: 0.8rem;
+                font-size: 7pt;
                 letter-spacing: 1px;
             }
 
@@ -37,6 +37,10 @@
             td {
                 border: 1px solid rgb(160 160 160);
                 padding: 8px 10px;
+            }
+
+            th {
+                text-align: center;
             }
 
             td:last-of-type {
@@ -127,11 +131,10 @@
                                         ${_("CUPS")}
                                     </th>
                                     <th>
-                                        ${_("Coeficient de repartiment (β)")}
+                                        ${_("Coef. de repartiment (β)")}
                                     </th>
                                 </tr>
                             </thead>
-
                             %for consumidor in informe["consumidors"]:
                                 <tbody>
                                     <tr>
