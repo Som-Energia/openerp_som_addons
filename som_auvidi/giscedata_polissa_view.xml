@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record id="view_giscedata_polissa_form_auvidi" model="ir.ui.view">
+            <field name="name">giscedata.polissa.form.auvidi</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_facturacio.view_giscedata_polissa_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='versio_primera_factura']" position="after">
+                    <field name="te_auvidi"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+    <data>
+        <record id="view_giscedata_polissa_modcontractual_form_auvidi" model="ir.ui.view">
+            <field name="name">giscedata.polissa.modcontractual.form.auvidi</field>
+            <field name="model">giscedata.polissa.modcontractual</field>
+            <field name="inherit_id" ref="giscedata_polissa.view_modcontractuals_form"/>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='nocutoff']" position="after">
+                    <field name="te_auvidi"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
