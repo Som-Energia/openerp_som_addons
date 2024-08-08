@@ -4,6 +4,7 @@ from destral import testing
 from destral.transaction import Transaction
 
 
+
 class powersms_tests(testing.OOTestCase):
     def setUp(self):
         self.pool = self.openerp.pool
