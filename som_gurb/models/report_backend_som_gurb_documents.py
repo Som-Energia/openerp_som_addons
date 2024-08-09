@@ -40,8 +40,8 @@ class ReportBackendSomGurbAcordRepartiment(ReportBackend):
         data["compensacio"] = gurb.has_compensation
 
         data["productora"] = {
-            "nom": gurb.roof_owner_id.name,
-            "nif": gurb.roof_owner_id.vat.replace("ES", ""),
+            "nom": gurb.producer.name,
+            "nif": gurb.producer.vat.replace("ES", ""),
             "cil": gurb.cil,
             "cau": gurb.self_consumption_id.cau
         }
