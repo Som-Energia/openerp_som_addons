@@ -58,7 +58,19 @@
             tfoot td {
                 font-weight: bold;
             }
+            /* Create three equal columns that floats next to each other */
+            .column {
+              float: left;
+              width: 30%;
+              padding: 10px;
+            }
 
+            /* Clear floats after the columns */
+            .row:after {
+              content: "";
+              display: table;
+              clear: both;
+            }
         </style>
     </head>
     <body>
@@ -188,20 +200,33 @@
                                 ${_(u"Totes les parts queden informades que el responsable del tractament de les dades personals objecte de la cessió és Som Energia, SCCL, en tant que actua com a representant de l’autoconsum col·lectiu, amb la finalitat de gestionar i tramitar l’aplicació del present acord de repartiment i de l'autoconsum col·lectiu al qual fa referència. Per tant, tret de l'obligada cessió indicada, les dades no seran cedides, excepte en els supòsits legalment exigits, i només es conservaran mentre el titular de les dades estigui associat a l'autoconsum col·lectiu i, un cop finalitzada aquesta pertinença, dins dels terminis legals previstos. Es pot retirar el consentiment en qualsevol moment i exercir el dret d'accés, rectificació, supressió, portabilitat, limitació i oposició dirigint-se a somenergia@delegado-datos.com (delegat de protecció de dades). En cas de divergències, es pot presentar una reclamació davant l'Agència de Protecció de Dades (www.aepd.es).")}
                             </li>
                         </ul>
+                        <p style="page-break-after:always"></p>
                         <p>A Girona, ${informe['day']} de ${informe['month']} de ${informe['year']}</p>
                         <p>${_(u"Les CONSUMIDORES associades:")}</p>
-                        <p>${_(u"Som Energia SCCL")}</p>
-                        <br/>
-                        <br/>
-                        <br/>
-                        <br/>
-                        <br/>
-                        <p>${_(u"F55091367")}</p>
+                        <% i = 0 %>
+                        %for consumidor in informe["consumidors"]:
+                            %if i % 3 == 0:
+                                <div class="row">
+                            %endif
+                            <div class="column">
+                                <p>${consumidor["nom"]}</p>
+                                <br/>
+                                <br/>
+                                <p>${consumidor["nif"]}</p>
+                            </div>
+                            <% i += 1 %>
+                            %if i % 3 == 0:
+                                </div>
+                            %endif
+                            %if i % 21 == 0:
+                                <p style="page-break-after:always"></p>
+                            %endif
+                        %endfor
+                        %if not (i % 3 == 0):
+                            </div>
+                        %endif
                         <p>${_(u"La PRODUCTORA associada:")}</p>
                         <p>${informe["productora"]["nom"]}</p>
-                        <br/>
-                        <br/>
-                        <br/>
                         <br/>
                         <br/>
                         <p>${informe["productora"]["nif"]}</p>
