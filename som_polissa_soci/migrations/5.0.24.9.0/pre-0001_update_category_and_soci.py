@@ -10,14 +10,13 @@ def up(cursor, installed_version):
     logger = logging.getLogger('openerp.migration')
 
     logger.info("Updating soci and category CT campaign")
-    data_records = ["origen_ct_sense_socia"]
+    data_records = ["origen_ct_sense_socia_category"]
     load_data_records(
         cursor, 'som_polissa_soci', 'giscedata_polissa_category_data.xml', data_records,
         mode='update'
     )
     load_data(
-        cursor, 'som_polissa_soci', 'somenergia_soci_data.xml',
-        mode='init'
+        cursor, 'som_polissa_soci', 'somenergia_soci_data.xml', mode='init'
     )
     logger.info("XMLs succesfully updated.")
 
