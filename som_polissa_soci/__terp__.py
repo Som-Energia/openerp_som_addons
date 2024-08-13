@@ -28,6 +28,7 @@
         "wizard/wizard_subscribe_client_mailchimp.xml",
         "wizard/wizard_subscribe_soci_mailchimp.xml",
         "wizard/wizard_unsubscribe_soci_mailchimp.xml",
+        "somenergia_soci_data.xml",
     ],
     "active": False,
     "installable": True,

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <!-- Partner -->
+        <record id="res_partner_soci_ct" model="res.partner">
+            <field name="name">Campanya de facilitació del CT sense sòcia</field>
+            <field name="ref">S999998</field>
+            <field name="vat">ES99999998T</field>
+        </record>
+        <!-- Soci -->
+        <record id="soci_ct_sense_soci" model="somenergia.soci">
+            <field name="partner_id" ref="res_partner_soci_ct"/>
+        </record>
+     </data>
+</openerp>
