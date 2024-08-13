@@ -70,7 +70,8 @@ class WizardLoadServeiGenRecordsFromFile(osv.osv_memory):
 
         # Condicions especifiques
         compleix_condicions = not len(altres_auvidis) and not len(matching_category_ids) \
-                              and not te_auto_collectiu and not te_generationkwh
+                              and not te_auto_collectiu and not te_generationkwh \
+                              and polissa.mode_facturacio == 'index'
 
         real_state = 'vinculat'
         # Let's check VAT is the correct one
@@ -88,6 +89,8 @@ class WizardLoadServeiGenRecordsFromFile(osv.osv_memory):
             elif polissa.state == 'activa':
                 if compleix_condicions and te_auvidi_category:
                     real_state = 'confirmat'
+                elif te_auvidi_category:
+                    real_state = 'confirmat_incidencia'
                 elif compleix_condicions:
                     real_state = 'pendent'
                 else:
