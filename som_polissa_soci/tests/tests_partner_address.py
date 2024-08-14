@@ -4,7 +4,7 @@ import mock
 from destral import testing
 from destral.transaction import Transaction
 
-from .. import res_partner_address
+from som_polissa_soci.models import res_partner_address
 
 
 class FakeMailchimpLists:
