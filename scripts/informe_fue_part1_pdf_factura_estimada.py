@@ -50,11 +50,11 @@ for cups_id in tqdm(cups_ids):
         cups_name = O.GiscedataCupsPs.read(cups_id, ['name'])['name']
         carpeta = '/mnt/nfs/factures/{}'.format(cups_name)
         os.makedirs(carpeta)
-        pol_ids = O.GiscedataPolissa.search([('cups', '=', cups_id)])
+        pol_ids = O.GiscedataPolissa.search([('cups', '=', cups_id)], context={'active_test': False})
         for pol_id in pol_ids:
             fac_ids = O.GiscedataFacturacioFactura.search([('polissa_id', '=', pol_id), ('data_inici', '>', '2021-06-01'),
                                                            ('type', '=', 'out_invoice')])
-            numbers = O.GiscedataFacturacioFactura.read(fac_ids, ['number'])
+            numbers = O.GiscedataFacturacioFactura.read(fac_ids, ['number']) or []
             for number in numbers:
                 try:
                     mail_id = O.PoweremailMailbox.search(

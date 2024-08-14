@@ -42,9 +42,9 @@ def parse_csv_line(fields, data, error='Err'):
 
 def write_csv_factura(c, fact_ids, filename):
     fields = ['id', 'number', 'energia_kwh', ['rectifying_id', 1], 'rectifying_id.energia_kwh', [
-        'polissa_id', 1], ['cups_id', 1], 'data_inici', 'data_final']
-    header = ['id', 'number', 'energia_kwh', 'rectifying_id',
-              'rectifying_id.energia_kwh', 'polissa_id', 'cups_id', 'data_inici', 'data_final']
+        'polissa_id', 1], ['cups_id', 1], ['tarifa_acces_id', 1], 'data_inici', 'data_final']
+    header = ['id', 'number', 'energia_kwh', 'rectifying_id', 'rectifying_id.energia_kwh',
+        'polissa_id', 'cups_id', 'tarifa_acces_id', 'data_inici', 'data_final']
     result = []
     for data in c.GiscedataFacturacioFactura.read(fact_ids, header):
         for field in header:
@@ -168,11 +168,11 @@ ncontractes_actius = obtenir_subministres_actius_periode(
     O, START_DATE, datetime.today().strftime('%Y-%m-%d'))
 percentatge_estimats = round(llista_polisses * 100.0 / ncontractes_actius, 2)
 
-print("Nombre de factures amb lectures estimades {}".format(len(amb_a_r)))
+print("Nombre de factures amb lectures estimades {}".format(len(invoice_numbers)))
 print(u"Percentatge de contractes amb alguna estimació respecte totals: {}%".format(percentatge_estimats))  # noqa: E501
 nrefacturades = len(llista_factures_refacturades)
-print(u"Nombre de factures refacturades: {}".format(nrefacturades))
-print(u"Nombre de factures refacturades sobrestimades: {}".format(
+print(u"Nombre de factures estimades refacturades: {}".format(nrefacturades))
+print(u"Nombre de factures estimades refacturades sobrestimades: {}".format(
     len(sobrestimades_ids)))
 print(u"Total kwh sobrestimats: {}".format(round(total_sobrestimat)))
 
