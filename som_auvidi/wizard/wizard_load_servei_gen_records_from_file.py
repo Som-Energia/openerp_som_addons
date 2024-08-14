@@ -31,6 +31,7 @@ class WizardLoadServeiGenRecordsFromFile(osv.osv_memory):
         if context is None:
             context = {}
 
+        imd = self.pool.get('ir.model.data')
         polissa_obj = self.pool.get('giscedata.polissa')
         polissa_category_obj = self.pool.get('giscedata.polissa.category')
         servei_gen_pol_obj = self.pool.get('giscedata.servei.generacio.polissa')
@@ -44,7 +45,8 @@ class WizardLoadServeiGenRecordsFromFile(osv.osv_memory):
         not_allowed_pol_category_ids = polissa_category_obj.search(cursor, 1, [('code', 'ilike', 'GURB')])
 
         # Categories AUVIDI
-        auvidi_category_ids = polissa_category_obj.search(cursor, 1, [('code', 'ilike', 'AUVIDI')])
+        auvidi_base_categ_id = imd.get_object_reference(cursor, uid, 'som_auvidi', 'polissa_category_auvidi_base')[1]
+        auvidi_category_ids = polissa_category_obj.search(cursor, 1, [('parent_id', '=', auvidi_base_categ_id)])
 
         # Te autoconsum col.lectiu
         te_auto_collectiu = polissa_obj.te_autoconsum(cursor, uid, polissa_id, amb_o_sense_excedents=5, context=context)
@@ -66,7 +68,7 @@ class WizardLoadServeiGenRecordsFromFile(osv.osv_memory):
         ]))
 
         # TODO validar generationkwh
-        te_generationkwh = False
+        te_generationkwh = polissa.te_assignacio_gkwh
 
         # Condicions especifiques
         compleix_condicions = not len(altres_auvidis) and not len(matching_category_ids) \
@@ -82,7 +84,7 @@ class WizardLoadServeiGenRecordsFromFile(osv.osv_memory):
         else:
             # Mirem l'estat de la pòlissa i les validacions específiques
             if polissa.state == 'esborrany':
-                if compleix_condicions and te_auvidi_category:
+                if compleix_condicions:
                     real_state = 'pendent'
                 else:
                     real_state = 'pendent_incidencia'
