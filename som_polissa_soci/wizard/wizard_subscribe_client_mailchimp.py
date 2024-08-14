@@ -5,6 +5,8 @@ from tools.translate import _
 import mailchimp_marketing as MailchimpMarketing
 from tools import config
 
+mail_ningu = "ningu@somenergia.coop"
+
 
 class WizardSubscribeClientMailchimp(osv.osv_memory):
     """Assistent per subscriure una persona clienta no sòcia al Mailchimp"""
@@ -43,6 +45,8 @@ class WizardSubscribeClientMailchimp(osv.osv_memory):
             address_data = address_obj.read(cursor, uid, address, ["email", "partner_id"])
             if not address_data["email"]:
                 raise osv.except_osv(u"Error", u"L'adreça seleccionada no té email")
+            if address_data["email"] == mail_ningu:
+                continue
 
             is_member = soci_obj.search(
                 cursor,
