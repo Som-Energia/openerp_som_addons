@@ -17,3 +17,7 @@ echo "=============================="
 
 # Discontinued forks, our repo is ahead than forked
 #gh repo sync Som-Energia/heman -b master
+
+# Push local branch to repo
+cd /home/erp/src/erp
+git push
