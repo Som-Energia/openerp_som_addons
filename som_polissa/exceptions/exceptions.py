@@ -21,6 +21,21 @@ class SomPolissaException(osv.except_osv):
         )
 
 
+class PolissaModcontractual(SomPolissaException):
+    def __init__(self, polissa_number):
+        super(PolissaModcontractual, self).__init__(
+            title=_("Pòlissa modcon"),
+            text=_("Pòlissa {} in modcontractual state").format(polissa_number),
+        )
+        self.polissa_number = polissa_number
+
+    def to_dict(self):
+        return dict(
+            super(PolissaModcontractual, self).to_dict(),
+            polissa_number=self.polissa_number,
+        )
+
+
 class PolissaNotActive(SomPolissaException):
     def __init__(self, polissa_number):
         super(PolissaNotActive, self).__init__(
