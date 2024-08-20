@@ -15,28 +15,38 @@ class AssignmentTests(testing.OOTestCase):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
-            assignment_id = self.IrModelData.get_object_reference(
-                cursor, uid, 'som_generationkwh', 'assignment_0001'
+            partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
             )[1]
-            result = self.Assignement.get_generationkwh_monthly_use(cursor, uid, [assignment_id], '1990-08')
-            self.assertEqual(result, {str(assignment_id): {}})
+            result = self.Assignement.get_generationkwh_monthly_use(cursor, uid, partner_id, '1990-08')
+            self.assertEqual(result, {})
 
     def test__get_generationkwh_monthly_use(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
-            assignment_id = self.IrModelData.get_object_reference(
-                cursor, uid, 'som_generationkwh', 'assignment_0001'
+            partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
             )[1]
-            result = self.Assignement.get_generationkwh_monthly_use(cursor, uid, [assignment_id], '2016-03')
-            self.assertEqual(result[str(assignment_id)]['P1'], 1)
+            result = self.Assignement.get_generationkwh_monthly_use(cursor, uid, partner_id, '2016-03')
+            self.assertEqual(result['0001C']['P1'], 1)
 
     def test__get_generationkwh_yearly_use(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
-            assignment_id = self.IrModelData.get_object_reference(
-                cursor, uid, 'som_generationkwh', 'assignment_0001'
+            partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
             )[1]
-            result = self.Assignement.get_generationkwh_yearly_use(cursor, uid, [assignment_id], '2016')
-            self.assertEqual(result[str(assignment_id)]['P1'], 1)
+            result = self.Assignement.get_generationkwh_yearly_use(cursor, uid, partner_id, '2016')
+            self.assertEqual(result['0001C']['P1'], 1)
+
+    def test__get_generationkwh_use_contract_data(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+            )[1]
+            result = self.Assignement.get_generationkwh_yearly_use(cursor, uid, partner_id, '2016')
+            self.assertIn("carrer inventat", result['0001C']['address'])

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from osv import osv, fields
+from osv.expression import OOQuery
 from .erpwrapper import ErpWrapper
 import datetime
 from dateutil.relativedelta import relativedelta
@@ -468,49 +469,48 @@ class GenerationkWhAssignment(osv.osv):
         result = [ id for id, in cursor.fetchall() ]
         return result
 
-    def get_generationkwh_monthly_use(self, cursor, uid, assignment_ids, month):
+    def get_generationkwh_monthly_use(self, cursor, uid, res_partner_id, month):
         """Month must be in the format YYYY-MM"""
         month_start = datetime.datetime.strptime(month, '%Y-%m')
         next_month = month_start+relativedelta(months=1)
         date_domain = [
-            ('date_invoice', '>=', month_start.strftime('%Y-%m-%d')),
-            ('date_invoice', '<', next_month.strftime('%Y-%m-%d'))
+            ('factura_id.invoice_id.date_invoice', '>=', month_start.strftime('%Y-%m-%d')),
+            ('factura_id.invoice_id.date_invoice', '<', next_month.strftime('%Y-%m-%d'))
         ]
-        return self._get_generationkwh_use(cursor, uid, assignment_ids, date_domain)
+        return self._get_generationkwh_use(cursor, uid, res_partner_id, date_domain)
 
 
-    def get_generationkwh_yearly_use(self, cursor, uid, assignment_ids, year):
+    def get_generationkwh_yearly_use(self, cursor, uid, res_partner_id, year):
         """Year must be in the format YYYY"""
         year_start = datetime.datetime.strptime(year, '%Y')
         next_year = year_start+relativedelta(years=1)
         date_domain = [
-            ('date_invoice', '>=', year_start.strftime('%Y-%m-%d')),
-            ('date_invoice', '<', next_year.strftime('%Y-%m-%d'))
+            ('factura_id.invoice_id.date_invoice', '>=', year_start.strftime('%Y-%m-%d')),
+            ('factura_id.invoice_id.date_invoice', '<', next_year.strftime('%Y-%m-%d'))
         ]
-        return self._get_generationkwh_use(cursor, uid, assignment_ids, date_domain)
+        return self._get_generationkwh_use(cursor, uid, res_partner_id, date_domain)
 
-    def _get_generationkwh_use(self, cursor, uid, assignment_ids, date_domain):
-        GisceInvoice = self.pool.get('giscedata.facturacio.factura')
+    def _get_generationkwh_use(self, cursor, uid, res_partner_id, date_domain):
         GenerationkWhInvoiceLineOwner = self.pool.get('generationkwh.invoice.line.owner')
+        q = OOQuery(GenerationkWhInvoiceLineOwner, cursor, uid)
 
-        response = {}
-        for assignment in self.browse(cursor, uid, assignment_ids):
-            gisce_invoice_ids = GisceInvoice.search(cursor, uid, date_domain+[
-                ('polissa_id', '=', assignment.contract_id.id)])
-            generation_line_ids = GenerationkWhInvoiceLineOwner.search(cursor, uid, [
-                ('factura_id', 'in', gisce_invoice_ids)])
-            generation_lines = GenerationkWhInvoiceLineOwner.browse(
-                cursor, uid, generation_line_ids)
+        sql = q.select(['id']).where([('owner_id.id', '=', res_partner_id)]+date_domain)
+        cursor.execute(*sql)
+        res = cursor.fetchall()
+        generation_line_ids = [line[0] for line in res]
 
-            response[str(assignment.id)] = defaultdict(int)
-            for generation_line in generation_lines:
-                invoice = generation_line.factura_id
-                line = generation_line.factura_line_id
-                multiplier = 1 if invoice.type in ('out_invoice', 'in_refund') else -1
-                response[str(assignment.id)][str(line.product_id.name)] += (
-                    line.quantity*multiplier)
-            response[str(assignment.id)] = dict(response[str(assignment.id)])
+        response = defaultdict(lambda: defaultdict(int))
+        for gkwh_line in GenerationkWhInvoiceLineOwner.browse(cursor, uid, generation_line_ids):
+            invoice = gkwh_line.factura_id
+            line = gkwh_line.factura_line_id
+            contract = invoice.polissa_id
+            multiplier = 1 if invoice.type in ('out_invoice', 'in_refund') else -1
+            response[str(contract.name)]['address'] = contract.cups_direccio
+            response[str(contract.name)][str(line.product_id.name)] += (
+                line.quantity*multiplier)
 
+        # clean defaultdict for serialization
+        response = {k: dict(v) for k, v in response.items()}
         return response
 
 
