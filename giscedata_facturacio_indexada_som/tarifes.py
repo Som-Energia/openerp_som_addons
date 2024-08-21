@@ -518,7 +518,7 @@ class TarifaPoolSOM(TarifaPool):
         gdos = self.get_coeficient_component(start_date, 'gdos')  # [€/MWh]
 
         # Desvios
-        scdsvdem = Scdsvdem('C2_Scdsvdem_%(postfix)s' % locals())  # [€/MWh]
+        scdsvdem = Scdsvdem('C2_Scdsvdem_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         dsv = scdsvdem * (factor_dsv * 0.01)
 
         # Coste remuneración REE
@@ -669,7 +669,7 @@ class TarifaPoolSOM(TarifaPool):
         gdos = self.get_coeficient_component(start_date, 'gdos')  # [€/MWh]
 
         # Desvios
-        scdsvdem = Scdsvdem('C2_Scdsvdem_%(postfix)s' % locals())  # [€/MWh]
+        scdsvdem = Scdsvdem('C2_Scdsvdem_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         dsv = scdsvdem * (factor_dsv * 0.01)
 
         # Coste remuneración REE
