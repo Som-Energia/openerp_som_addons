@@ -198,6 +198,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         super(GiscedataFacturacioFacturaReport, self).__init__(pool, cursor)
         self.readings_cache = {}
         self.historic_cache = {}
+        self.text_real = _(u"real")
+        self.text_estimada_distri = _(u"estimada distribuïdora")
+        self.text_calculada_som = _(u"calculada per Som Energia")
 
     def get_components_data(self, cursor, uid, ids, context=None):
         """
@@ -303,15 +306,15 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         origen_obj = lectura.pool.get("giscedata.lectures.origen")
         origen_comer_obj = lectura.pool.get("giscedata.lectures.origen_comer")
 
-        estimada_id = origen_obj.search(self.cursor, self.uid, [("codi", "=", "40")])[0]
-        sin_lectura_id = origen_obj.search(self.cursor, self.uid, [("codi", "=", "99")])[0]
-        estimada_som_id = origen_comer_obj.search(self.cursor, self.uid, [("codi", "=", "ES")])[0]
-        calculada_som_id = origen_obj.search(self.cursor, self.uid, [("codi", "=", "LC")])
-        calculada_som_id = calculada_som_id[0] if calculada_som_id else None
-
         # Busquem la tarifa
         tarifa_id = tarifa_obj.search(self.cursor, self.uid, [("name", "=", lectura.name[:-5])])
         if tarifa_id:
+            estimada_id = origen_obj.search(self.cursor, self.uid, [("codi", "=", "40")])[0]
+            sin_lectura_id = origen_obj.search(self.cursor, self.uid, [("codi", "=", "99")])[0]
+            estimada_som_id = origen_comer_obj.search(
+                self.cursor, self.uid, [("codi", "=", "ES")])[0]
+            calculada_som_id = origen_obj.search(self.cursor, self.uid, [("codi", "=", "LC")])
+            calculada_som_id = calculada_som_id[0] if calculada_som_id else None
             tipus = lectura.tipus == "activa" and "A" or "R"
 
             search_vals = [
@@ -330,14 +333,14 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 # Si Estimada (40) o Sin Lectura (99) i Estimada (ES): Estimada Somenergia
                 # Si Estimada (40) o Sin Lectura (99) i F1/Q1/etc...(!ES): Estimada distribuïdora
                 # La resta: Real
-                origen_txt = _(u"real")
+                origen_txt = self.text_real
                 if lect["origen_id"][0] in [estimada_id, sin_lectura_id]:
                     if lect["origen_comer_id"][0] == estimada_som_id:
-                        origen_txt = _(u"calculada per Som Energia")
+                        origen_txt = self.text_calculada_som
                     else:
                         origen_txt = _(u"estimada distribuïdora")
                 if lect["origen_id"][0] == calculada_som_id:
-                    origen_txt = _(u"calculada")
+                    origen_txt = self.text_estimada_distri
                 res[lect["name"]] = "%s" % (origen_txt)
 
         return res
