@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data noupdate="0">
+		<record id="res_groups_som_municipal_taxes_manager" model="res.groups">
+			<field name="name">SomMunicipalTaxes / Manager</field>
+		</record>
+		<record id="res_groups_som_municipal_taxes_user" model="res.groups">
+			<field name="name">SomMunicipalTaxes / Users</field>
+		</record>
+	</data>
+</openerp>
