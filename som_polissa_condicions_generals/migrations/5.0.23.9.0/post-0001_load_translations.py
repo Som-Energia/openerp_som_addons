@@ -11,7 +11,7 @@ def up(cursor, installed_version):
     module_name = 'som_polissa_condicions_generals'
 
     logger.info("Updating translations")
-    trans_load(cursor, '{}/{}/i18n/ca_ES.po'.format(config['addons_path'], module_name), 'es_ES')
+    trans_load(cursor, '{}/{}/i18n/es_ES.po'.format(config['addons_path'], module_name), 'es_ES')
     logger.info("Translations succesfully updated.")
 
 
