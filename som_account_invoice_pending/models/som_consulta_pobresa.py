@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 RESOLUTION_STATES = [
     ('positiva', 'Positiva'),
-    ('negaviva', 'Negativa'),
+    ('negativa', 'Negativa'),
 ]
 
 
