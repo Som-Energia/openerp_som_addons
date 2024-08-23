@@ -6,6 +6,20 @@ class WizardLoadServeiGenRecordsFromFile(osv.osv_memory):
     _name = 'wizard.load.servei.gen.records.from.file'
     _inherit = 'wizard.load.servei.gen.records.from.file'
 
+    def get_polissa_from_record_data(self, cursor, uid, cups_name, data, context=None):
+        if context is None:
+            context = {}
+
+        pol_obj = self.pool.get('giscedata.polissa')
+
+        ctx = context.copy()
+        ctx.update({'active_test': False})
+        polissa_id = pol_obj.search(cursor, uid, [
+            ('cups.name', '=', cups_name),
+        ], order='id desc', context=ctx)
+
+        return polissa_id
+
     def validate_data_and_get_state_contract(self, cursor, uid, polissa_id, record_data, context=None):
         """
         Valida les dades aportades a record_data i retorna un estat adient a la validació.
@@ -83,7 +97,10 @@ class WizardLoadServeiGenRecordsFromFile(osv.osv_memory):
 
         else:
             # Mirem l'estat de la pòlissa i les validacions específiques
-            if polissa.state == 'esborrany':
+            if polissa.state in ['baixa', 'cancelada']:
+                if te_auvidi_category:
+                    real_state = 'anullat'
+            elif polissa.state == 'esborrany':
                 if compleix_condicions:
                     real_state = 'pendent'
                 else:
