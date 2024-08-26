@@ -100,6 +100,7 @@ class ReportBackendInvoiceEmail(ReportBackend):
 
         report_o = self.pool.get("giscedata.facturacio.factura.report.v2")
         polissa_categ_o = self.pool.get("giscedata.polissa.category")
+        cups_o = self.pool.get("giscedata.cups.ps")
         imd_o = self.pool.get("ir.model.data")
 
         data = report_o.get_polissa(cursor, uid, fra, context=context)
@@ -126,6 +127,10 @@ class ReportBackendInvoiceEmail(ReportBackend):
         )[1]
         polissa_categ = polissa_categ_o.browse(cursor, uid, polissa_categ_id)
         data["has_business_tariff"] = polissa_categ in fra.polissa_id.category_id
+
+        cups_id = cups_o.search(fra._cr, fra._uid, [('name', '=', data["cups"]["codi"])])
+        cups = cups_o.browse(fra._cr, fra._uid, cups_id)[0]
+        data["cups"]["is_peninsula"] = cups.id_municipi.subsistema_id.code == "PE"
 
         return data
 
