@@ -59,8 +59,6 @@ class TestAccountInvoiceSom(testing.OOTestCaseWithCursor):
 
         self.assertGreater(len(ai_ids), 1)
 
-    #####
-
     def set_invoice_origin_cerca_exacte(self, cursor, uid, value):
         res_obj = self.openerp.pool.get("res.config")
         cache.clean_caches_for_db(cursor.dbname)
