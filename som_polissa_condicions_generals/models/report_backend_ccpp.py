@@ -241,6 +241,16 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         res['dict_preus_tp_potencia'] = dict_preus_tp_potencia
 
         ctx = {'date': datetime.today()}
+        modcon_pendent_indexada = False
+        modcon_pendent_periodes = False
+        if pol.state != 'esborrany':
+            ultima_modcon = pol.modcontractuals_ids[0]
+            modcon_pendent_indexada = ultima_modcon.state == 'pendent' and \
+                ultima_modcon.mode_facturacio == 'index'
+            modcon_pendent_periodes = ultima_modcon.state == 'pendent' and \
+                ultima_modcon.mode_facturacio == 'atr'
+            if modcon_pendent_indexada or modcon_pendent_indexada:
+                ctx.update({'force_pricelist': pol.modcontractuals_ids[0].llista_preu.id})
         if polissa.data_baixa:
             ctx = {'date': datetime.strptime(polissa.data_baixa, '%Y-%m-%d')}
         if not pol.llista_preu:
@@ -261,20 +271,11 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             text_vigencia = ''
             pricelist = {}
 
-            modcon_pendent_indexada = False
-            modcon_pendent_periodes = False
-            if pol.state != 'esborrany':
-                ultima_modcon = pol.modcontractuals_ids[0]
-                modcon_pendent_indexada = ultima_modcon.state == 'pendent' and \
-                    ultima_modcon.mode_facturacio == 'index'
-                modcon_pendent_periodes = ultima_modcon.state == 'pendent' and \
-                    ultima_modcon.mode_facturacio == 'atr'
-
             if pol.state == 'esborrany':
                 text_vigencia = ''
-            elif modcon_pendent_indexada or modcon_pendent_periodes or lead:
+            elif lead:
                 text_vigencia = ''
-            elif not pol.modcontractual_activa.data_final and dades_tarifa['date_end']:
+            elif (not pol.modcontractual_activa.data_final and not (modcon_pendent_indexada or modcon_pendent_indexada)) and dades_tarifa['date_end']:  # noqa: E501
                 text_vigencia = _(u"(vigents fins al {})").format(dades_tarifa['date_end'])
             elif dades_tarifa['date_end'] and dades_tarifa['date_start']:
                 text_vigencia = _(u"(vigents fins al {})").format(
@@ -372,10 +373,10 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         coeficient_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_facturacio_indexada', 'product_factor_k'
         )[1]
-        if polissa.mode_facturacio == 'index' and not modcon_pendent_periodes or modcon_pendent_indexada:  # noqa: E501
+        if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:  # noqa: E501
             res['mostra_indexada'] = True
             if coeficient_k_untaxed == 0:
-                if modcon_pendent_indexada or modcon_pendent_periodes:
+                if modcon_pendent_indexada:
                     pricelist_index = pol.modcontractuals_ids[0].llista_preu
                 elif pol.llista_preu:
                     pricelist_index = pol.llista_preu
