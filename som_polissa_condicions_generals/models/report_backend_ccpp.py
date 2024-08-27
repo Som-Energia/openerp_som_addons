@@ -249,7 +249,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 ultima_modcon.mode_facturacio == 'index'
             modcon_pendent_periodes = ultima_modcon.state == 'pendent' and \
                 ultima_modcon.mode_facturacio == 'atr'
-            if modcon_pendent_indexada or modcon_pendent_indexada:
+            if modcon_pendent_indexada or modcon_pendent_periodes:
                 ctx.update({'force_pricelist': pol.modcontractuals_ids[0].llista_preu.id})
         if polissa.data_baixa:
             ctx = {'date': datetime.strptime(polissa.data_baixa, '%Y-%m-%d')}
