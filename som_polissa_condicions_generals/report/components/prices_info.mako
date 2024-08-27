@@ -11,8 +11,8 @@
                 % if polissa['tarifa'] == "2.0TD":
                     <tr style="background-color: #0fdb46;">
                         <th></th>
-                        <th colspan="3">Sense impostos</th>
-                        <th class="divisio_impostos" colspan="3">Amb impostos ${pricelist['text_impostos']}</th>
+                        <th colspan="3">${_(u"Sense impostos")}</th>
+                        <th class="divisio_impostos" colspan="3">${_(u"Amb impostos")} ${pricelist['text_impostos']}</th>
                     </tr>
                 %endif
                 <tr style="background-color: #878787;">
