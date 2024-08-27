@@ -149,3 +149,70 @@ class TestConsultaPobresa(testing.OOTestCase):
         fact3 = gff_obj.browse(cursor, uid, fact3_id)
         self.assertEqual(fact.pending_state.id, pobresa_state_id)
         self.assertEqual(fact3.pending_state.id, correcte_state_id)
+
+    def test_not_move_pobresa_negative_resolution(self):
+        cursor = self.cursor
+        uid = self.uid
+        cons_obj = self.openerp.pool.get('som.consulta.pobresa')
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
+        gff_obj = self.openerp.pool.get('giscedata.facturacio.factura')
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        cups_obj = self.openerp.pool.get('giscedata.cups.ps')
+        pol_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_polissa', 'polissa_0002'
+        )[1]
+        process_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_facturacio_comer_bono_social',
+            'bono_social_pending_state_process'
+        )[1]
+        pol_obj.write(cursor, uid, pol_id, {'state': 'activa', 'process_id': process_id})
+        pol = pol_obj.browse(cursor, uid, pol_id)
+        consulta_state_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_account_invoice_pending',
+            'pendent_consulta_probresa_pending_state',
+        )[1]
+        warning_cut_off_state = imd_obj.get_object_reference(
+            cursor, uid, "giscedata_facturacio_comer_bono_social", "avis_tall_pending_state",
+        )[1]
+        correcte_state_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_facturacio_comer_bono_social',
+            'correct_bono_social_pending_state',
+        )[1]
+        partner_id = imd_obj.get_object_reference(
+            cursor, uid, 'base', 'res_partner_asus')[1]
+        fact_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_account_invoice_pending', 'factura_conceptes_0001',
+        )[1]
+        fact3_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_account_invoice_pending', 'factura_conceptes_0003',
+        )[1]
+        consulta_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_account_invoice_pending', 'som_consulta_pobresa_demo_record',
+        )[1]
+        girona_id = imd_obj.get_object_reference(
+            cursor, uid, 'l10n_ES_toponyms', 'ES17',
+        )[1]
+        cups_obj.write(cursor, uid, pol.cups.id, {'id_provincia': girona_id})
+        fact3 = gff_obj.browse(cursor, uid, fact3_id)
+        fact3.write({
+            'state': 'open',
+            'type': 'out_invoice',
+            'pending_state': correcte_state_id,
+            'partner_id': partner_id,
+        })
+        fact = gff_obj.browse(cursor, uid, fact_id)
+        fact.write({
+            'state': 'open',
+            'type': 'out_invoice',
+            'pending_state': consulta_state_id,
+            'partner_id': partner_id,
+        })
+        fact.set_pending(consulta_state_id)
+        cons_obj.write(cursor, uid, consulta_id, {
+                       'resolucio': 'negativa'})
+        cons_obj.case_close_pobresa(cursor, uid, [consulta_id], ({}))
+
+        fact = gff_obj.browse(cursor, uid, fact_id)
+        fact3 = gff_obj.browse(cursor, uid, fact3_id)
+        self.assertEqual(fact.pending_state.id, warning_cut_off_state)
+        self.assertEqual(fact3.pending_state.id, correcte_state_id)

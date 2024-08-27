@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 RESOLUTION_STATES = [
     ('positiva', 'Positiva'),
-    ('negaviva', 'Negativa'),
+    ('negativa', 'Negativa'),
 ]
 
 
@@ -29,6 +29,8 @@ class SomConsultaPobresa(osv.osv):
         for consulta in consultes:
             if consulta.state == 'done' and consulta.resolucio == 'positiva':
                 self.moure_factures_pobresa(cr, uid, consulta)
+            elif consulta.state == 'done' and consulta.resolucio == 'negativa':
+                self.moure_factures_impagament(cr, uid, consulta)
 
         return response
 
@@ -75,6 +77,24 @@ class SomConsultaPobresa(osv.osv):
         for gff in gffs:
             if gff.pending_state.weight > 0:
                 gff_obj.set_pending(cr, uid, [gff.id], pobresa_state_id)
+
+    def moure_factures_impagament(self, cr, uid, cas):
+        gff_obj = self.pool.get('giscedata.facturacio.factura')
+        imd_obj = self.pool.get("ir.model.data")
+
+        warning_cut_off_state = imd_obj.get_object_reference(
+            cr, uid, "giscedata_facturacio_comer_bono_social", "avis_tall_pending_state",
+        )[1]
+
+        search_params = [
+            ('partner_id', '=', cas.partner_id.id),
+            ('polissa_id', '=', cas.polissa_id.id),
+        ]
+        gff_ids = gff_obj.search(cr, uid, search_params)
+        gffs = gff_obj.browse(cr, uid, gff_ids)
+        for gff in gffs:
+            if gff.pending_state.weight > 0:
+                gff_obj.set_pending(cr, uid, [gff.id], warning_cut_off_state)
 
     def consulta_pobresa_activa(self, cr, uid, ids, partner_id, polissa_id, context=None):
         cfg_obj = self.pool.get('res.config')
