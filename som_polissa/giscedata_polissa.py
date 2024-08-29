@@ -124,6 +124,9 @@ class GiscedataPolissa(osv.osv):
 
         polissa = self.browse(cursor, uid, polissa_id, context=context)
 
+        if polissa.state == "modcontractual":
+            raise exceptions.PolissaModcontractual(polissa.name)
+
         if polissa.state != "activa":
             raise exceptions.PolissaNotActive(polissa.name)
 

@@ -10,9 +10,9 @@
 "access_som_gurb_cups_beta_r","som.gurb.cups.beta","model_som_gurb_cups_beta","giscedata_polissa.group_giscedata_polissa_r",1,0,0,0
 "access_som_gurb_cups_beta_rcw","som.gurb.cups.beta","model_som_gurb_cups_beta","giscedata_polissa.group_giscedata_polissa_w",1,1,1,0
 "access_som_gurb_cups_beta_rcwd","som.gurb.cups.beta","model_som_gurb_cups_beta","giscedata_polissa.group_giscedata_polissa_u",1,1,1,1
-"access_wizard_create_distribution_agreement_r","wizard.create.distribution.agreement","model_wizard_create_distribution_agreement","giscedata_polissa.group_giscedata_polissa_r",0,0,0,0
-"access_wizard_create_distribution_agreement_w","wizard.create.distribution.agreement","model_wizard_create_distribution_agreement","giscedata_polissa.group_giscedata_polissa_w",1,1,1,1
-"access_wizard_create_distribution_agreement_u","wizard.create.distribution.agreement","model_wizard_create_distribution_agreement","giscedata_polissa.group_giscedata_polissa_u",1,1,1,1
+"access_wizard_create_coeficients_file_r","wizard.create.distribution.agreement","model_wizard_create_coeficients_file","giscedata_polissa.group_giscedata_polissa_r",0,0,0,0
+"access_wizard_create_coeficients_file_w","wizard.create.distribution.agreement","model_wizard_create_coeficients_file","giscedata_polissa.group_giscedata_polissa_w",1,1,1,1
+"access_wizard_create_coeficients_file_u","wizard.create.distribution.agreement","model_wizard_create_coeficients_file","giscedata_polissa.group_giscedata_polissa_u",1,1,1,1
 "access_report_backend_som_gurb_documents_u","report.backend.som.gurb.documents","model_report_backend_som_gurb_documents","giscedata_polissa.group_giscedata_polissa_u",1,1,1,1
 "access_report_backend_som_gurb_documents_r","report.backend.som.gurb.documents","model_report_backend_som_gurb_documents","giscedata_polissa.group_giscedata_polissa_r",1,1,1,1
 "access_report_backend_som_gurb_documents_w","report.backend.som.gurb.documents","model_report_backend_som_gurb_documents","giscedata_polissa.group_giscedata_polissa_w",1,1,1,1
@@ -23,3 +23,6 @@
 "access_wizard_gurb_create_initial_invoice_r","wizard.gurb.create.initial.invoice","model_wizard_gurb_create_initial_invoice","giscedata_polissa.group_giscedata_polissa_r",0,0,0,0
 "access_wizard_gurb_create_initial_invoice_w","wizard.gurb.create.initial.invoice","model_wizard_gurb_create_initial_invoice","giscedata_polissa.group_giscedata_polissa_w",1,1,1,1
 "access_wizard_create_gurb_cups_signature_rcwd","wizard.create.gurb.cups.signature","model_wizard_create_gurb_cups_signature","giscedata_polissa.group_giscedata_polissa_u",1,1,1,1
+"access_report_backend_som_gurb_acord_repartiment_rcwd","report.backend.som.gurb.acord.repartiment","model_report_backend_som_gurb_acord_repartiment","giscedata_polissa.group_giscedata_polissa_u",1,1,1,1
+"access_report_backend_som_gurb_acord_repartiment_rcwd","report.backend.som.gurb.acord.repartiment","model_report_backend_som_gurb_acord_repartiment","giscedata_polissa.group_giscedata_polissa_r",0,0,0,0
+"access_report_backend_som_gurb_acord_repartiment_rcwd","report.backend.som.gurb.acord.repartiment","model_report_backend_som_gurb_acord_repartiment","giscedata_polissa.group_giscedata_polissa_w",1,1,1,1
