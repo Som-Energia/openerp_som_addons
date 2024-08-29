@@ -1,1 +1,4 @@
 import res_partner
+import ir_actions
+import ir_values
+import som_action_logger
