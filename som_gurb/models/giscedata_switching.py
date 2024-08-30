@@ -127,3 +127,46 @@ class GiscedataSwitchingM1_02(osv.osv):
 
 
 GiscedataSwitchingM1_02()
+
+
+class GiscedataSwitchingM1_05(osv.osv):
+    _inherit = "giscedata.switching.m1.05"
+
+    def create_from_xml(self, cursor, uid, sw_id, xml, context=None):
+        if context is None:
+            context = {}
+
+        pas_id = super(GiscedataSwitchingM1_05, self).create_from_xml(
+            cursor, uid, sw_id, xml, context=context
+        )
+
+        sw_obj = self.pool.get("giscedata.switching")
+        gurb_obj = self.pool.get("som.gurb")
+        step_m101_obj = self.pool.get("giscedata.switching.m1.01")
+        sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
+        sw = sw_obj.browse(cursor, uid, sw_id, context=context)
+
+        if sw and _contract_has_gurb_category(
+            cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
+        ):
+            step_m101_auto = step_m101_obj.search(
+                cursor,
+                uid,
+                [("sw_id", "=", sw.id), ("solicitud_autoconsum", "=", "S")],
+                context=context,
+            )
+            if step_m101_auto:
+                gurb_id = gurb_obj.get_gurb_from_sw_id(cursor, uid, sw_id, context=context)
+                data_activacio = xml.datos_activacion.fecha
+                gurb_obj.add_services_to_gurb_contracts(
+                    cursor, uid, gurb_id, data_activacio, context=context
+                )
+                sw_step_header_id = self.read(cursor, uid, pas_id, ['header_id'])['header_id'][0]
+                sw_step_header_obj.write(
+                    cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
+                )
+
+        return pas_id
+
+
+GiscedataSwitchingM1_05()
