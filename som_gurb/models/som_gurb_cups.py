@@ -161,6 +161,25 @@ class SomGurbCups(osv.osv):
             partner_id = partner_id["titular"][0]
         return partner_id
 
+    def send_gurb_activation_email(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+        tmpl_obj = self.pool.get("poweremail.templates")
+        imd_o = self.pool.get("ir.model.data")
+
+        tmpl = imd_o.get_object_reference(cursor, uid, "som_gurb", "email_gurb_activation")[1]
+
+        ctx = context.copy()
+        ctx['prefetch'] = False
+        for gurb in self.browse(cursor, uid, ids, context=ctx):
+            resource = gurb.id
+            ctx['src_rec_id'] = resource
+
+            logger.debug(
+                "Generating poweremail template (id: {}) resource: {}".format(tmpl, resource)
+            )
+            tmpl_obj.generate_mail(cursor, uid, tmpl, resource, context=ctx)
+
     def add_service_to_contract(self, cursor, uid, ids, data_inici, context=None):
         if context is None:
             context = {}
@@ -206,6 +225,18 @@ class SomGurbCups(osv.osv):
 
             context['active_ids'] = [pol_id]
             wiz_service_o.create_services(cursor, uid, [wiz_id], context=context)
+
+    def unsubscribe_gurb_cups(self, cursor, uid, gurb_cups_id, context=None):
+        if context is None:
+            context = {}
+
+        # Donar de baixa Servei Contractat
+
+        # Tancar beta
+
+        # Desactivar Gurb CUPS
+
+        # Enviar mail (?)
 
     def create_initial_invoice(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:

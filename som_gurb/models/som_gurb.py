@@ -205,6 +205,19 @@ class SomGurb(osv.osv):
         for record in self.browse(cursor, uid, ids, context=context):
             return record.assigned_betas_percentage < record.critical_incomplete_state
 
+    def activate_gurb_from_m1_05(self, cursor, uid, sw_id, activation_date, context=None):
+        if context is None:
+            context = {}
+
+        gurb_id = self.get_gurb_from_sw_id(cursor, uid, sw_id, context=context)
+        self.add_services_to_gurb_contracts(cursor, uid, gurb_id, activation_date, context=context)
+        gurb_date = self.read(cursor, uid, gurb_id, ["activation_date"])["activation_date"]
+        if not gurb_date:
+            write_vals = {
+                "activation_date": activation_date
+            }
+            self.write(cursor, uid, gurb_id, write_vals, context=context)
+
     def get_gurb_from_sw_id(self, cursor, uid, sw_id, context=None):
         if context is None:
             context = {}
@@ -241,15 +254,9 @@ class SomGurb(osv.osv):
         gurb_cups_obj = self.pool.get("som.gurb.cups")
 
         for gurb_id in ids:
-            search_params = [
-                ("gurb_id", "=", gurb_id)
-            ]
-            gurb_cups_ids = gurb_cups_obj.search(
-                cursor, uid, search_params, context=context
-            )
-            gurb_cups_obj.add_service_to_contract(
-                cursor, uid, gurb_cups_ids, context=context
-            )
+            search_params = [("gurb_id", "=", gurb_id)]
+            gurb_cups_ids = gurb_cups_obj.search(cursor, uid, search_params, context=context)
+            gurb_cups_obj.add_service_to_contract(cursor, uid, gurb_cups_ids, context=context)
 
         return True
 

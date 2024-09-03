@@ -156,14 +156,13 @@ class GiscedataSwitchingM1_05(osv.osv):
                 context=context,
             )
             if step_m101_auto:
-                gurb_id = gurb_obj.get_gurb_from_sw_id(cursor, uid, sw_id, context=context)
-                data_activacio = xml.datos_activacion.fecha
-                gurb_obj.add_services_to_gurb_contracts(
-                    cursor, uid, gurb_id, data_activacio, context=context
-                )
                 sw_step_header_id = self.read(cursor, uid, pas_id, ['header_id'])['header_id'][0]
                 sw_step_header_obj.write(
                     cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
+                )
+                data_activacio = xml.datos_activacion.fecha
+                gurb_obj.activate_gurb_from_m1_05(
+                    cursor, uid, sw_id, data_activacio, context=context
                 )
 
         return pas_id
