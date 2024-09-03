@@ -336,6 +336,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "dades_index": self.calculate_new_indexed_prices(
                 cursor, uid, env, canaries, impostos_value, context=context
             ),
+            "potencia": env.polissa_id.potencia,
             # "te_gkwh": env.polissa_id.te_assignacio_gkwh,
             # "preus_antics": preus_antics,
             # "preus_nous": preus_nous,
@@ -773,63 +774,170 @@ class ReportBackendMailcanvipreus(ReportBackend):
         # return env.polissa_id.llista_preu.id in [127]
         return env.polissa_id.cups.id in self._get_list_cups_balears(cursor, uid)
 
+    # def getTarifaCorreu(self, cursor, uid, env, context=False):
+    #     data = {
+    #         "Indexada20TDPeninsula": False,
+    #         "Indexada20TDCanaries": False,
+    #         "Indexada20TDBalears": False,
+    #         "Indexada30TDPeninsula": False,
+    #         "Indexada30TDCanaries": False,
+    #         "Indexada30TDBalears": False,
+    #         "Indexada61TDPeninsula": False,
+    #         "Indexada61TDCanaries": False,
+    #         "Indexada61TDBalears": False,
+    #         "Indexada30TDVEPeninsula": False,
+    #         "Indexada30TDVECanaries": False,
+    #         "Indexada30TDVEBalears": False,
+    #         "Periodes20TDPeninsula": False,
+    #         "Periodes20TDCanaries": False,
+    #         "Periodes20TDBalears": False,
+    #         "Periodes30TDPeninsula": False,
+    #         "Periodes30TDCanaries": False,
+    #         "Periodes30TDBalears": False,
+    #         "Periodes61TDPeninsula": False,
+    #         "Periodes61TDCanaries": False,
+    #         "Periodes61TDBalears": False,
+    #         "Periodes30TDVEPeninsula": False,
+    #         "Periodes30TDVECanaries": False,
+    #         "Periodes30TDVEBalears": False,
+    #         "igic": False,
+    #         "indexada": False,
+    #         "periodes": False,
+    #     }
+    #     mode_facturacio = env.polissa_id.mode_facturacio
+    #     tarifa = env.polissa_id.tarifa.name
+
+    #     if "index" in mode_facturacio:
+    #         if "2.0TD" in tarifa:
+    #             if self.esCanaries(cursor, uid, env):
+    #                 data["Indexada20TDCanaries"] = True
+    #             elif self.esBalears(cursor, uid, env):
+    #                 data["Indexada20TDBalears"] = True
+    #             else:
+    #                 data['Indexada20TDPeninsula'] = True
+    #         if "3.0TD" in tarifa:
+    #             if self.esCanaries(cursor, uid, env):
+    #                 data["Indexada30TDCanaries"] = True
+    #             elif self.esBalears(cursor, uid, env):
+    #                 data["Indexada30TDBalears"] = True
+    #             else:
+    #                 data["Indexada30TDPeninsula"] = True
+    #         if "6.1TD" in tarifa:
+    #             if self.esCanaries(cursor, uid, env):
+    #                 data["Indexada61TDCanaries"] = True
+    #             elif self.esBalears(cursor, uid, env):
+    #                 data["Indexada61TDBalears"] = True
+    #             else:
+    #                 data["Indexada61TDPeninsula"] = True
+    #         if "3.0TDVE" in tarifa:
+    #             if self.esCanaries(cursor, uid, env):
+    #                 data["Indexada30TDCanaries"] = False
+    #                 data["Indexada30TDVECanaries"] = True
+    #             elif self.esBalears(cursor, uid, env):
+    #                 data["Indexada30TDBalears"] = False
+    #                 data["Indexada30TDVEBalears"] = True
+    #             else:
+    #                 data["Indexada30TDPeninsula"] = False
+    #                 data["Indexada30TDVEPeninsula"] = True
+    #         data["indexada"] = True
+    #     else:
+    #         if "2.0TD" in tarifa:
+    #             if self.esCanaries(cursor, uid, env):
+    #                 data["Periodes20TDCanaries"] = True
+    #             elif self.esBalears(cursor, uid, env):
+    #                 data["Periodes20TDBalears"] = True
+    #             else:
+    #                 data['Periodes20TDPeninsula'] = True
+    #         if "3.0TD" in tarifa:
+    #             if self.esCanaries(cursor, uid, env):
+    #                 data["Periodes30TDCanaries"] = True
+    #             elif self.esBalears(cursor, uid, env):
+    #                 data["Periodes30TDBalears"] = True
+    #             else:
+    #                 data["Periodes30TDPeninsula"] = True
+    #         if "6.1TD" in tarifa:
+    #             if self.esCanaries(cursor, uid, env):
+    #                 data["Periodes61TDCanaries"] = True
+    #             elif self.esBalears(cursor, uid, env):
+    #                 data["Periodes61TDBalears"] = True
+    #             else:
+    #                 data["Periodes61TDPeninsula"] = True
+    #         if "3.0TDVE" in tarifa:
+    #             if self.esCanaries(cursor, uid, env):
+    #                 data["Periodes30TDCanaries"] = False
+    #                 data["Periodes30TDVECanaries"] = True
+    #             elif self.esBalears(cursor, uid, env):
+    #                 data["Periodes30TDBalears"] = False
+    #                 data["Periodes30TDVEBalears"] = True
+    #             else:
+    #                 data["Periodes30TDPeninsula"] = False
+    #                 data["Periodes30TDVEPeninsula"] = True
+    #         data["periodes"] = True
+    #     return data
+
     def getTarifaCorreu(self, cursor, uid, env, context=False):
-        data = {
-            "Indexada20TDPeninsula": False,
-            "Indexada20TDCanaries": False,
-            "Indexada20TDBalears": False,
-            "Indexada30TDPeninsula": False,
-            "Indexada30TDCanaries": False,
-            "Indexada30TDBalears": False,
-            "Indexada61TDPeninsula": False,
-            "Indexada61TDCanaries": False,
-            "Indexada61TDBalears": False,
-            "Indexada30TDVEPeninsula": False,
-            "Indexada30TDVECanaries": False,
-            "Indexada30TDVEBalears": False,
-            "igic": False,
-            "indexada": False,
-            "periodes": False,
-        }
+        key_prefixes = ["Indexada", "Periodes"]
+        tariffs = ["20TD", "30TD", "61TD", "30TDVE"]
+        regions = ["Peninsula", "Canaries", "Balears"]
+
+        data = {}
+        for prefix in key_prefixes:
+            for tariff in tariffs:
+                for region in regions:
+                    data["{}{}{}".format(prefix, tariff, region)] = False
+        data.update({"igic": False, "indexada": False, "periodes": False})
+
         mode_facturacio = env.polissa_id.mode_facturacio
         tarifa = env.polissa_id.tarifa.name
 
-        if "index" in mode_facturacio:
-            if "2.0TD" in tarifa:
+        operation = "Indexada" if "index" in mode_facturacio else "Periodes"
+        data[operation.lower()] = True
+
+        for t in tariffs:
+            if t in tarifa:
                 if self.esCanaries(cursor, uid, env):
-                    data["Indexada20TDCanaries"] = True
+                    region_key = "Canaries"
                 elif self.esBalears(cursor, uid, env):
-                    data["Indexada20TDBalears"] = True
+                    region_key = "Balears"
                 else:
-                    data['Indexada20TDPeninsula'] = True
-            if "3.0TD" in tarifa:
-                if self.esCanaries(cursor, uid, env):
-                    data["Indexada30TDCanaries"] = True
-                elif self.esBalears(cursor, uid, env):
-                    data["Indexada30TDBalears"] = True
-                else:
-                    data["Indexada30TDPeninsula"] = True
-            if "6.1TD" in tarifa:
-                if self.esCanaries(cursor, uid, env):
-                    data["Indexada61TDCanaries"] = True
-                elif self.esBalears(cursor, uid, env):
-                    data["Indexada61TDBalears"] = True
-                else:
-                    data["Indexada61TDPeninsula"] = True
-            if "3.0TDVE" in tarifa:
-                if self.esCanaries(cursor, uid, env):
-                    data["Indexada30TDCanaries"] = False
-                    data["Indexada30TDVECanaries"] = True
-                elif self.esBalears(cursor, uid, env):
-                    data["Indexada30TDBalears"] = False
-                    data["Indexada30TDVEBalears"] = True
-                else:
-                    data["Indexada30TDPeninsula"] = False
-                    data["Indexada30TDVEPeninsula"] = True
-            data["indexada"] = True
-        else:
-            data["periodes"] = True
+                    region_key = "Peninsula"
+
+                data["{}{}{}".format(operation, t, region_key)] = True
+
+                if t == "30TDVE":
+                    data["{}30TD{}".format(operation, region_key)] = False
+
+                break
+
         return data
+
+        # {'Indexada20TDBalears': False,
+        # 'Indexada20TDCanaries': False,
+        # 'Indexada20TDPeninsula': False,
+        # 'Indexada30TDBalears': False,
+        # 'Indexada30TDCanaries': False,
+        # 'Indexada30TDPeninsula': False,
+        # 'Indexada30TDVEBalears': False,
+        # 'Indexada30TDVECanaries': False,
+        # 'Indexada30TDVEPeninsula': False,
+        # 'Indexada61TDBalears': False,
+        # 'Indexada61TDCanaries': False,
+        # 'Indexada61TDPeninsula': False,
+        # 'Periodes20TDBalears': False,
+        # 'Periodes20TDCanaries': False,
+        # 'Periodes20TDPeninsula': False,
+        # 'Periodes30TDBalears': False,
+        # 'Periodes30TDCanaries': False,
+        # 'Periodes30TDPeninsula': False,
+        # 'Periodes30TDVEBalears': False,
+        # 'Periodes30TDVECanaries': False,
+        # 'Periodes30TDVEPeninsula': False,
+        # 'Periodes61TDBalears': False,
+        # 'Periodes61TDCanaries': False,
+        # 'Periodes61TDPeninsula': False,
+        # 'igic': False,
+        # 'indexada': False,
+        # 'periodes': False}
 
     def getPartnerName(self, cursor, uid, env):
         try:
