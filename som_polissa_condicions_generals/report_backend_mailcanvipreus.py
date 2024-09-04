@@ -301,30 +301,39 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
     @report_browsify
     def get_data(self, cursor, uid, env, context=None):
+        imd_obj = self.pool.get('ir.model.data')
         if context is None:
             context = {}
+
+        context['iva10'] = env.polissa_id.potencia <= 10
+
+        impostos_str, impostos_value = self.getImpostos(env.polissa_id.fiscal_position_id, context)
+
+        if impostos_str == 'IVA del 10%':
+            fp_id = imd_obj.get_object_reference(
+                cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
+            context.update({'force_fiscal_position': fp_id})
 
         context_preus_antics = dict(context)
         context_preus_antics["date"] = date.today().strftime("%Y-%m-%d")
 
         context_preus_nous = dict(context)
-        context_preus_nous["date"] = (date.today() + timedelta(days=50)).strftime("%Y-%m-%d")
+        context_preus_nous["date"] = (date.today() + timedelta(days=60)).strftime("%Y-%m-%d")
 
-        # preus_antics = self.get_preus(
-        #     cursor, uid, env.polissa_id, with_taxes=False, context=context_preus_antics
-        # )
-        # preus_nous = self.get_preus(
-        #     cursor, uid, env.polissa_id, with_taxes=False, context=context_preus_nous
-        # )
-        # preus_antics_imp = self.get_preus(
-        #     cursor, uid, env.polissa_id, with_taxes=True, context=context_preus_antics
-        # )
-        # preus_nous_imp = self.get_preus(
-        #     cursor, uid, env.polissa_id, with_taxes=True, context=context_preus_nous
-        # )
+        preus_antics = self.get_preus(
+            cursor, uid, env.polissa_id, with_taxes=False, context=context_preus_antics
+        )
+        preus_nous = self.get_preus(
+            cursor, uid, env.polissa_id, with_taxes=False, context=context_preus_nous
+        )
+        preus_antics_imp = self.get_preus(
+            cursor, uid, env.polissa_id, with_taxes=True, context=context_preus_antics
+        )
+        preus_nous_imp = self.get_preus(
+            cursor, uid, env.polissa_id, with_taxes=True, context=context_preus_nous
+        )
         canaries = self.esCanaries(cursor, uid, env, context=context)
         balears = self.esBalears(cursor, uid, env, context=context)
-        impostos_str, impostos_value = self.getImpostos(env.polissa_id.fiscal_position_id, context)
 
         data = {
             "canaries": canaries,
@@ -333,15 +342,15 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "text_legal": self.get_text_legal(cursor, uid, env, context=context),
             "lang": env.polissa_id.titular.lang,
             "nom_titular": self.getPartnerName(cursor, uid, env),
-            "dades_index": self.calculate_new_indexed_prices(
-                cursor, uid, env, canaries, impostos_value, context=context
-            ),
+            # "dades_index": self.calculate_new_indexed_prices(
+            #     cursor, uid, env, canaries, impostos_value, context=context
+            # ),
             "potencia": env.polissa_id.potencia,
             # "te_gkwh": env.polissa_id.te_assignacio_gkwh,
-            # "preus_antics": preus_antics,
-            # "preus_nous": preus_nous,
-            # "preus_antics_imp": preus_antics_imp,
-            # "preus_nous_imp": preus_nous_imp,
+            "preus_antics": preus_antics,
+            "preus_nous": preus_nous,
+            "preus_antics_imp": preus_antics_imp,
+            "preus_nous_imp": preus_nous_imp,
             "impostos_str": impostos_str,
             "modcon": (
                 env.polissa_id.modcontractuals_ids[0].state == "pendent"
