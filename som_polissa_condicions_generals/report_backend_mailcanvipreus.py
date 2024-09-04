@@ -888,7 +888,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
         data.update({"igic": False, "indexada": False, "periodes": False})
 
         mode_facturacio = env.polissa_id.mode_facturacio
-        tarifa = env.polissa_id.tarifa.name
+        tarifa = env.polissa_id.tarifa.name.replace(".", "")
 
         operation = "Indexada" if "index" in mode_facturacio else "Periodes"
         data[operation.lower()] = True
