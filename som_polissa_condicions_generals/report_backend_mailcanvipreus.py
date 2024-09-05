@@ -332,6 +332,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
         preus_nous_imp = self.get_preus(
             cursor, uid, env.polissa_id, with_taxes=True, context=context_preus_nous
         )
+
         canaries = self.esCanaries(cursor, uid, env, context=context)
         balears = self.esBalears(cursor, uid, env, context=context)
 
@@ -346,11 +347,13 @@ class ReportBackendMailcanvipreus(ReportBackend):
             #     cursor, uid, env, canaries, impostos_value, context=context
             # ),
             "potencia": env.polissa_id.potencia,
+            "iva_reduit": env.polissa_id.potencia <= 10 and not canaries,
             # "te_gkwh": env.polissa_id.te_assignacio_gkwh,
             "preus_antics": preus_antics,
             "preus_nous": preus_nous,
             "preus_antics_imp": preus_antics_imp,
             "preus_nous_imp": preus_nous_imp,
+
             "impostos_str": impostos_str,
             "modcon": (
                 env.polissa_id.modcontractuals_ids[0].state == "pendent"
@@ -370,6 +373,22 @@ class ReportBackendMailcanvipreus(ReportBackend):
                 cursor, uid, env, context=context
             )
             data['contract'] = self.get_data_eie(cursor, uid, env, context=context)
+        if data['autoconsum']['compensacio']:
+            preu_auto_antic = get_atr_price(
+                cursor, uid, env.polissa_id, 'P1', 'ac', context_preus_antics, with_taxes=False)[0]
+
+            preu_auto_nou = get_atr_price(
+                cursor, uid, env.polissa_id, 'P1', 'ac', context_preus_nous, with_taxes=False)[0]
+
+            preu_auto_antic_imp = get_atr_price(
+                cursor, uid, env.polissa_id, 'P1', 'ac', context_preus_antics, with_taxes=True)[0]
+
+            preu_auto_nou_imp = get_atr_price(
+                cursor, uid, env.polissa_id, 'P1', 'ac', context_preus_nous, with_taxes=True)[0]
+            data['preu_auto_antic'] = preu_auto_antic
+            data['preu_auto_nou'] = preu_auto_nou
+            data['preu_auto_antic_imp'] = preu_auto_antic_imp
+            data['preu_auto_nou_imp'] = preu_auto_nou_imp
 
         # if data["te_gkwh"]:
         #     data["preus_antics_generation"] = self.get_preus_gkwh(
@@ -387,7 +406,6 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
         data.update(self.getEstimacioData(cursor, uid, env, context=context_preus_nous))
         data.update(self.getTarifaCorreu(cursor, uid, env, context))
-        # data.update(self.getPreuCompensacioExcedents(cursor, uid, env, context))
         return data
 
     def get_lang(self, cursor, uid, record_id, context=None):
@@ -535,28 +553,34 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
         return estimacions[tarifa][periode]
 
-    def getPreuCompensacioExcedents(self, cursor, uid, env, context):
-        iva = 0.1 if context and context.get('iva10') else 0.21
-        if env.polissa_id.fiscal_position_id:
-            if env.polissa_id.fiscal_position_id.id in [33, 47, 52]:
-                iva = 0.03
-            if env.polissa_id.fiscal_position_id.id in [34, 48, 53]:
-                iva = 0.0
+    # def getPreuCompensacioExcedents(self, cursor, uid, env, context):
+    #     # iva = 0.1 if context and context.get('iva10') else 0.21
+    #     # if env.polissa_id.fiscal_position_id:
+    #     #     if env.polissa_id.fiscal_position_id.id in [33, 47, 52]:
+    #     #         iva = 0.03
+    #     #     if env.polissa_id.fiscal_position_id.id in [34, 48, 53]:
+    #     #         iva = 0.0
 
-        PREU_NOU = 0.06
-        PREU_VELL = 0.07
-        return {
-            "auto": {
-                "nous": {
-                    "amb_impostos": PREU_NOU * 1.038 * (1 + iva),
-                    "sense_impostos": PREU_NOU,
-                },
-                "vells": {
-                    "amb_impostos": PREU_VELL * 1.025 * (1 + iva),
-                    "sense_impostos": PREU_VELL,
-                },
-            }
-        }
+    #     # PREU_NOU = 0.05
+    #     # PREU_VELL = 0.06
+    #     result = {}
+    #     result['price_auto'] = get_atr_price(
+    #         cursor, uid, pol, periodes_energia[0], 'ac', ctx, with_taxes=True)[0]
+    #     result['price_auto_untaxed'] = get_atr_price(
+    #         cursor, uid, pol, periodes_energia[0], 'ac', ctx, with_taxes=False)[0]
+    #     return result
+    #     # return {
+    #     #     "auto": {
+    #     #         "nous": {
+    #     #             "amb_impostos": PREU_NOU * 1.038 * (1 + iva),
+    #     #             "sense_impostos": PREU_NOU,
+    #     #         },
+    #     #         "vells": {
+    #     #             "amb_impostos": PREU_VELL * 1.025 * (1 + iva),
+    #     #             "sense_impostos": PREU_VELL,
+    #     #         },
+    #     #     }
+    #     # }
 
     def calcularPreuTotal(
         self,
@@ -742,7 +766,6 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "preu_vell_imp": preu_vell_imp,
             "preu_nou_imp": preu_nou_imp,
             "consum_total": consum_total,
-            "potencia_max": env.polissa_id.potencia,
         }
 
     def getIGIC(self, cursor, uid, env, context=False):
