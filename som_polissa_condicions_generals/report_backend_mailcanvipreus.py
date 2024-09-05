@@ -673,7 +673,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
         return format(number, "1,.0f").replace(",", ".")
 
     def getEstimacioData(self, cursor, uid, env, context=False):
-        PRICE_CHANGE_DATE = "2024-04-01"
+        PRICE_CHANGE_DATE = "2024-11-01"
 
         potencies = self.getPotenciesPolissa(cursor, uid, env.polissa_id)
 
