@@ -283,7 +283,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             elif datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d') > datetime.today():
                 text_vigencia = _(u"(vigents a partir del {})").format(
                     datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d').strftime('%d/%m/%Y'))
-                ctx = {'date': datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d')}
+                ctx.update({'date': datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d')})
             pricelist['text_vigencia'] = text_vigencia
 
             try:
