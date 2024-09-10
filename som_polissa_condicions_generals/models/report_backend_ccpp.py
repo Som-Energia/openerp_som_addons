@@ -283,11 +283,12 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             elif datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d') > datetime.today():
                 text_vigencia = _(u"(vigents a partir del {})").format(
                     datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d').strftime('%d/%m/%Y'))
+                ctx = {'date': datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d')}
             pricelist['text_vigencia'] = text_vigencia
 
             try:
                 omie_mon_price_45 = omie_obj.has_to_charge_10_percent_requeriments_oficials(
-                    cursor, uid, datetime.strftime(ctx['date'], "%Y-%m-%d"), pol.potencia)
+                    cursor, uid, datetime.strftime(datetime.today(), "%Y-%m-%d"), pol.potencia)
             except Exception:
                 omie_mon_price_45 = False
             pricelist['omie_mon_price_45'] = omie_mon_price_45
