@@ -50,7 +50,7 @@ var svg = d3.select("#chart_consum_" + factura_id)
           "translate(" + marges.left + "," + marges.top + ")");
 
 // List of subgroups (periodes)
-var subgroups = Object.keys(data_consum[0]).filter((key) => key[0] == "P").sort()
+var subgroups = Object.keys(data_consum[0]).filter(function(key){return key[0] == "P"}).sort()
 
 // List of groups (months)
 var groups = d3.map(data_consum, function(d){return(d.mes)}).keys()
