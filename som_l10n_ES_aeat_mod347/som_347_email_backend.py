@@ -7,6 +7,16 @@ class ReportBackend347Email(ReportBackend):
     _source_model = "l10n.es.aeat.mod347.partner_record"
     _name = "report.backend.347.email"
 
+    _decimals_default = 2
+
+    def get_lang(self, cursor, uid, record_id, context=None):
+        if context is None:
+            context = {}
+
+        partner_obj = self.pool.get("l10n.es.aeat.mod347.partner_record")
+        lang = partner_obj.browse(cursor, uid, record_id, context=context).partner_id.lang
+        return lang
+
     @report_browsify
     def get_data(self, cursor, uid, partner, context=None):
         if context is None:
