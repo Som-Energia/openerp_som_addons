@@ -210,7 +210,8 @@ class SomGurb(osv.osv):
             context = {}
 
         gurb_id = self.get_gurb_from_sw_id(cursor, uid, sw_id, context=context)
-        self.add_services_to_gurb_contracts(cursor, uid, gurb_id, activation_date, context=context)
+        self.add_services_to_gurb_contracts(
+            cursor, uid, [gurb_id], activation_date, context=context)
         gurb_date = self.read(cursor, uid, gurb_id, ["activation_date"])["activation_date"]
         if not gurb_date:
             write_vals = {
@@ -224,7 +225,8 @@ class SomGurb(osv.osv):
 
         switching_obj = self.pool.get("giscedata.switching")
 
-        pol_id = switching_obj.read(cursor, uid, sw_id, ["cups_polissa_id"], context=context)
+        pol_id = switching_obj.read(
+            cursor, uid, sw_id, ["cups_polissa_id"], context=context)["cups_polissa_id"][0]
 
         return self.get_gurb_from_pol_id(cursor, uid, pol_id, context=context)
 
@@ -243,11 +245,11 @@ class SomGurb(osv.osv):
         if len(gurb_cups_ids) == 1:
             gurb_id = gurb_cups_obj.read(
                 cursor, uid, gurb_cups_ids[0], ["gurb_id"], context=context
-            )
+            )["gurb_id"][0]
 
         return gurb_id
 
-    def add_services_to_gurb_contracts(self, cursor, uid, ids, context=None):
+    def add_services_to_gurb_contracts(self, cursor, uid, ids, activation_date, context=None):
         if context is None:
             context = {}
 
@@ -256,7 +258,8 @@ class SomGurb(osv.osv):
         for gurb_id in ids:
             search_params = [("gurb_id", "=", gurb_id)]
             gurb_cups_ids = gurb_cups_obj.search(cursor, uid, search_params, context=context)
-            gurb_cups_obj.add_service_to_contract(cursor, uid, gurb_cups_ids, context=context)
+            gurb_cups_obj.add_service_to_contract(
+                cursor, uid, gurb_cups_ids, activation_date, context=context)
 
         return True
 
