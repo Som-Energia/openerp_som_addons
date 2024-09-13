@@ -12,30 +12,30 @@ class ReportBackendMailcanvipreus(ReportBackend):
     _name = "report.backend.mailcanvipreus"
 
     _decimals = {
-        ("preus_nous_generation", "P1"): 3,
-        ("preus_nous_generation", "P2"): 3,
-        ("preus_nous_generation", "P3"): 3,
-        ("preus_nous_generation", "P4"): 3,
-        ("preus_nous_generation", "P5"): 3,
-        ("preus_nous_generation", "P6"): 3,
-        ("preus_nous_generation_imp", "P1"): 3,
-        ("preus_nous_generation_imp", "P2"): 3,
-        ("preus_nous_generation_imp", "P3"): 3,
-        ("preus_nous_generation_imp", "P4"): 3,
-        ("preus_nous_generation_imp", "P5"): 3,
-        ("preus_nous_generation_imp", "P6"): 3,
-        ("preus_antics_generation", "P1"): 3,
-        ("preus_antics_generation", "P2"): 3,
-        ("preus_antics_generation", "P3"): 3,
-        ("preus_antics_generation", "P4"): 3,
-        ("preus_antics_generation", "P5"): 3,
-        ("preus_antics_generation", "P6"): 3,
-        ("preus_antics_generation_imp", "P1"): 3,
-        ("preus_antics_generation_imp", "P2"): 3,
-        ("preus_antics_generation_imp", "P3"): 3,
-        ("preus_antics_generation_imp", "P4"): 3,
-        ("preus_antics_generation_imp", "P5"): 3,
-        ("preus_antics_generation_imp", "P6"): 3,
+        # ("preus_nous_generation", "P1"): 3,
+        # ("preus_nous_generation", "P2"): 3,
+        # ("preus_nous_generation", "P3"): 3,
+        # ("preus_nous_generation", "P4"): 3,
+        # ("preus_nous_generation", "P5"): 3,
+        # ("preus_nous_generation", "P6"): 3,
+        # ("preus_nous_generation_imp", "P1"): 3,
+        # ("preus_nous_generation_imp", "P2"): 3,
+        # ("preus_nous_generation_imp", "P3"): 3,
+        # ("preus_nous_generation_imp", "P4"): 3,
+        # ("preus_nous_generation_imp", "P5"): 3,
+        # ("preus_nous_generation_imp", "P6"): 3,
+        # ("preus_antics_generation", "P1"): 3,
+        # ("preus_antics_generation", "P2"): 3,
+        # ("preus_antics_generation", "P3"): 3,
+        # ("preus_antics_generation", "P4"): 3,
+        # ("preus_antics_generation", "P5"): 3,
+        # ("preus_antics_generation", "P6"): 3,
+        # ("preus_antics_generation_imp", "P1"): 3,
+        # ("preus_antics_generation_imp", "P2"): 3,
+        # ("preus_antics_generation_imp", "P3"): 3,
+        # ("preus_antics_generation_imp", "P4"): 3,
+        # ("preus_antics_generation_imp", "P5"): 3,
+        # ("preus_antics_generation_imp", "P6"): 3,
         ("preus_nous", "te", "P1"): 3,
         ("preus_nous", "te", "P2"): 3,
         ("preus_nous", "te", "P3"): 3,
@@ -84,25 +84,22 @@ class ReportBackendMailcanvipreus(ReportBackend):
         ("preus_antics_imp", "tp", "P4"): 3,
         ("preus_antics_imp", "tp", "P5"): 3,
         ("preus_antics_imp", "tp", "P6"): 3,
-        ("dades_index", "f_antiga"): 3,
-        ("dades_index", "f_nova"): 3,
-        ("dades_index", "f_antiga_eie"): 6,
-        ("dades_index", "f_nova_eie"): 6,
+        # ("dades_index", "f_antiga"): 3,
+        # ("dades_index", "f_nova"): 3,
+        # ("dades_index", "f_antiga_eie"): 6,
+        # ("dades_index", "f_nova_eie"): 6,
         ("preu_nou",): 0,
         ("preu_nou_imp",): 0,
         ("preu_vell",): 0,
         ("preu_vell_imp",): 0,
         ("consum_total",): 0,
-        ("auto", "nous", "amb_impostos"): 3,
-        ("auto", "nous", "sense_impostos"): 3,
-        ("auto", "vells", "amb_impostos"): 3,
-        ("auto", "vells", "sense_impostos"): 3,
         ("preu_auto_antic", ): 3,
         ("preu_auto_nou", ): 3,
         ("preu_auto_antic_imp", ): 3,
         ("preu_auto_nou_imp", ): 3,
     }
 
+    # nomes index
     indexada_consum_tipus = {
         "2.0TD": {
             "conany": 2500,
@@ -186,6 +183,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
         },
     }
 
+    # nomes index
     def get_fs(self, cursor, uid, env, context=None):
         if context is None:
             context = {}
@@ -208,6 +206,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
         return res
 
+    # nomes index
     def is_eie(self, cursor, uid, env, context=None):
         if context is None:
             context = {}
@@ -216,6 +215,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
         return pol_llista in [150, 153, 154]
 
+    # nomes index
     def get_data_eie(self, cursor, uid, env, context=None):
         if context is None:
             context = {}
@@ -229,6 +229,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
         return data
 
+    # nomes index
     def calculate_new_indexed_prices(self, cursor, uid, env, is_canaries, imp_value, context=None):
         if context is None:
             context = {}
@@ -246,6 +247,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
             data["impacte_import_amb_impost"] = impacte_amb_impostos
         return data
 
+    # nomes index
     @report_browsify
     def calculate_new_eie_indexed_prices(self, cursor, uid, env, context=None):
         if context is None:
@@ -371,12 +373,12 @@ class ReportBackendMailcanvipreus(ReportBackend):
             },
         }
 
-        eie = self.is_eie(cursor, uid, env, context=context)
-        if eie:
-            data['dades_index'] = self.calculate_new_eie_indexed_prices(
-                cursor, uid, env, context=context
-            )
-            data['contract'] = self.get_data_eie(cursor, uid, env, context=context)
+        # eie = self.is_eie(cursor, uid, env, context=context)
+        # if eie:
+        #     data['dades_index'] = self.calculate_new_eie_indexed_prices(
+        #         cursor, uid, env, context=context
+        #     )
+        #     data['contract'] = self.get_data_eie(cursor, uid, env, context=context)
         if data['autoconsum']['compensacio']:
             preu_auto_antic = get_atr_price(
                 cursor, uid, env.polissa_id, 'P1', 'ac', context_preus_antics, with_taxes=False)[0]
@@ -521,6 +523,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
                 result[terme][periode] = preu_periode
         return result
 
+    # nomes index
     def preusEstimatsIndexada(self, cursor, uid, tarifa, periode):
         estimacions = {
             "2.0TD": {
@@ -574,7 +577,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
             ctx["date"] = date
         ctx["potencia_anual"] = True
         ctx["sense_agrupar"] = True
-        maj_price = 0  # €/kWh
+        # maj_price = 0  # €/kWh
         bo_social_price = 2.299047
         types = {"tp": potencies or {}, "te": consums or {}}
         imports = 0
@@ -583,10 +586,10 @@ class ReportBackendMailcanvipreus(ReportBackend):
                 preu_periode = get_atr_price(
                     cursor, uid, polissa_id, periode, terme, ctx, with_taxes=False
                 )[0]
-                if afegir_maj and terme == "te":
-                    preu_periode += maj_price
-                if terme == "te" and origen == "indexada":
-                    preu_periode = self.preusEstimatsIndexada(cursor, uid, tarifa, periode)
+                # if afegir_maj and terme == "te":
+                #     preu_periode += maj_price
+                # if terme == "te" and origen == "indexada":
+                #     preu_periode = self.preusEstimatsIndexada(cursor, uid, tarifa, periode)
                 imports += preu_periode * quantity
         if bo_social_separat:
             imports += bo_social_price
