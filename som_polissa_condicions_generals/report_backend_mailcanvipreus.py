@@ -97,6 +97,10 @@ class ReportBackendMailcanvipreus(ReportBackend):
         ("auto", "nous", "sense_impostos"): 3,
         ("auto", "vells", "amb_impostos"): 3,
         ("auto", "vells", "sense_impostos"): 3,
+        ("preu_auto_antic", ): 3,
+        ("preu_auto_nou", ): 3,
+        ("preu_auto_antic_imp", ): 3,
+        ("preu_auto_nou_imp", ): 3,
     }
 
     indexada_consum_tipus = {
@@ -210,7 +214,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
         pol_llista = env.polissa_id.llista_preu.id
 
-        return pol_llista in [56, 127, 128, 148]
+        return pol_llista in [150, 153, 154]
 
     def get_data_eie(self, cursor, uid, env, context=None):
         if context is None:
@@ -507,7 +511,6 @@ class ReportBackendMailcanvipreus(ReportBackend):
         periods = {
             "tp": sorted(pol.tarifa.get_periodes("tp", context=context).keys()),
             "te": sorted(pol.tarifa.get_periodes("te", context=context).keys()),
-            # 'ac': [sorted(pol.tarifa.get_periodes('te', context=context).keys())[0]], # not working for non auto pol  # noqa: E501
         }
         for terme, values in periods.items():
             result[terme] = {}
@@ -664,9 +667,6 @@ class ReportBackendMailcanvipreus(ReportBackend):
                 imp_value = 0
         return imp_str, float(imp_value)
 
-    def formatNumber(self, number):
-        return format(number, "1,.0f").replace(",", ".")
-
     def getEstimacioData(self, cursor, uid, env, context=False):
         PRICE_CHANGE_DATE = "2024-11-01"
 
@@ -720,15 +720,12 @@ class ReportBackendMailcanvipreus(ReportBackend):
             origen,
         )
 
-        preu_vell_imp_int = self.calcularImpostosPerCostAnualEstimat(
+        preu_vell_imp = self.calcularImpostosPerCostAnualEstimat(
             preu_vell, env.polissa_id.fiscal_position_id, context=context
         )
-        preu_nou_imp_int = self.calcularImpostosPerCostAnualEstimat(
+        preu_nou_imp = self.calcularImpostosPerCostAnualEstimat(
             preu_nou, env.polissa_id.fiscal_position_id, context=context
         )
-
-        preu_vell_imp = self.formatNumber(preu_vell_imp_int)
-        preu_nou_imp = self.formatNumber(preu_nou_imp_int)
 
         return {
             "origen": origen,
