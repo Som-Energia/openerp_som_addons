@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+ 	<data>
+        <record id="ajuntament_baga" model="som.municipal.taxes.config">
+            <field name="name">Ajuntament Baga</field>
+            <field name="municipi_id"></field>
+            <field name="partner_id"></field>
+            <field name="type"></field>
+        </record>
+    </data>
+</openerp>

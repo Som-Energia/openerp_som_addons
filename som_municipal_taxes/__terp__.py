@@ -20,5 +20,6 @@
         'security/ir.model.access.csv',
         'views/som_municipal_taxes_config_view.xml',
         'views/som_municipal_taxes_payment_view.xml',
+        'wizard/wizard_creacio_remesa_pagament_taxes.xml',
     ],
 }

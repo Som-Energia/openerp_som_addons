@@ -42,7 +42,7 @@
             </field>
         </record>
          <record id="action_som_municipal_taxes_payment_tree" model="ir.actions.act_window">
-            <field name="name">pagament municipal</field>
+            <field name="name">Pagaments taxa municipal</field>
             <field name="res_model">som.municipal.taxes.payment</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>

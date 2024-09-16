@@ -15,9 +15,9 @@
                         <field name="municipi_id"/>
                     </group>
                     <group colspan="2" col="2" string="Tipus">
-                        <field name="type"/>
+                        <field name="type" readonly="1"/>
                     </group>
-                    <group colspan="2" col="2" string="Contacte">
+                    <group colspan="2" col="2" string="Contacte" attrs="{'invisible': [('type','!=','remesa')]}">
                         <field name="url_portal" />
                         <field name="usuari"/>
                         <field name="password"/>
@@ -35,9 +35,6 @@
                     <field name="name" select="1"/>
                     <field name="municipi_id" select="1"/>
                     <field name="type" select="1"/>
-                    <field name="url_portal" select="2"/>
-                    <field name="usuari" select="2"/>
-                    <field name="password" select="2"/>
                 </tree>
             </field>
         </record>

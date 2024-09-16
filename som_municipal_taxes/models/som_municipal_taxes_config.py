@@ -8,6 +8,7 @@ class SomMunicipalTaxesConfig(osv.osv):
     _columns = {
         'name': fields.char("Nom", size=128),
         'municipi_id': fields.many2one('res.municipi', 'Municipi', required=True),
+        'partner_id': fields.many2one('res.partner', 'Partner', required=True),
         'type': fields.selection([("remesa", "remesa"), ("crawler", "crawler")], "tipus"),
         'url_portal': fields.char(
             "URL del portal",
