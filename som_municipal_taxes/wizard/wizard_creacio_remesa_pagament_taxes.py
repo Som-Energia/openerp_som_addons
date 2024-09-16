@@ -27,9 +27,9 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
         order_obj = self.pool.get('payment.order')
         line_obj = self.pool.get('payment.line')
 
-        municipis = config_obj.search(cursor, uid, [('type', '=', 'remesa')])
+        municipis_conf_ids = config_obj.search(cursor, uid, [('type', '=', 'remesa')])
 
-        if not municipis:
+        if not municipis_conf_ids:
             vals = {
                 'info': "No hi ha municipis configurats per remesar",
                 'state': 'done',
@@ -37,7 +37,9 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             self.write(cursor, uid, [ids], vals, context)
             return res
 
-        res_municipi_ids = config_obj.read(municipis, ['municipi_id'])
+        res_municipi_ids = [
+            m['id'] for m in config_obj.read(cursor, uid, municipis_conf_ids, ['municipi_id'])
+        ]
 
         # Calcular els imports
         start_date = '2024-01-01'
@@ -59,15 +61,14 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
 
         # Crear remesa
         # order_id = 11603
-        order = order_obj.create(dict(
+        order = order_obj.create(cursor, uid, dict(
             date_prefered='fixed',
             user_id=uid,
             state='draft',
-            mode=wiz.payment_mode,
+            mode=wiz.payment_mode.id,
             type='payable',
             create_account_moves='direct-payment',
         ))
-        order_id = order.id
 
         for city in totals_by_city:
             total_tax = round(city[4] - city[3] * (tax / 100.0), 2)
@@ -80,10 +81,10 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             account_id = wiz.account
 
             # Crear les línies
-            euro_id = currency_obj.search([('code', '=', 'EUR')])
+            euro_id = currency_obj.search(cursor, uid, [('code', '=', 'EUR')])
             vals = {
                 'name': 'Ajuntament de {} taxa 1,5%'.format(city[0]),
-                'order_id': order_id,
+                'order_id': order.id,
                 'currency': euro_id,
                 'partner_id': partner_id,
                 'company_currency': euro_id,

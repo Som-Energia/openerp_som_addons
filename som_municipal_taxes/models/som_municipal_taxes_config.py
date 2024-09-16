@@ -29,5 +29,9 @@ class SomMunicipalTaxesConfig(osv.osv):
         ),
     }
 
+    _defaults = {
+        'type': lambda *_: 'remesa',
+    }
+
 
 SomMunicipalTaxesConfig()
