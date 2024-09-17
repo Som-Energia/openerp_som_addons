@@ -514,6 +514,16 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "tp": sorted(pol.tarifa.get_periodes("tp", context=context).keys()),
             "te": sorted(pol.tarifa.get_periodes("te", context=context).keys()),
         }
+        if (pol.modcontractuals_ids[0].state == "pendent"
+            and pol.mode_facturacio
+            != pol.modcontractuals_ids[0].mode_facturacio
+                and pol.modcontractuals_ids[0].mode_facturacio == 'index'):
+            context["force_pricelist"] = pol.modcontractuals_ids[1].llista_preu.id
+        elif(pol.modcontractuals_ids[0].state == "pendent"
+             and pol.mode_facturacio
+             != pol.modcontractuals_ids[0].mode_facturacio
+                and pol.modcontractuals_ids[0].mode_facturacio == 'atr'):
+            context["force_pricelist"] = pol.modcontractuals_ids[0].llista_preu.id
         for terme, values in periods.items():
             result[terme] = {}
             for periode in values:
