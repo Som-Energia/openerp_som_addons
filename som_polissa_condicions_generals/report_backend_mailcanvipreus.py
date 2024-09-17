@@ -675,15 +675,21 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
         potencies = self.getPotenciesPolissa(cursor, uid, env.polissa_id)
 
-        tarifa = env.polissa_id.tarifa.name
-        mode_facturacio = env.polissa_id.mode_facturacio
+        if (env.polissa_id.modcontractuals_ids[0].state == "pendent"
+            and env.polissa_id.mode_facturacio
+            != env.polissa_id.modcontractuals_ids[0].mode_facturacio
+                and env.polissa_id.modcontractuals_ids[0].mode_facturacio):
+            tarifa = env.polissa_id.modcontractuals_ids[1].tarifa.name
+        else:
+            tarifa = env.polissa_id.tarifa.name
+        # mode_facturacio = env.polissa_id.mode_facturacio
         consums = ""
         origen = ""
-        if "index" in mode_facturacio:
-            origen = "indexada"
-            consums = self.getConanyDict(cursor, uid, env)
-            consum_total = env.polissa_id.cups.conany_kwh
-        elif any(
+        # if "index" in mode_facturacio:
+        #     origen = "indexada"
+        #     consums = self.getConanyDict(cursor, uid, env)
+        #     consum_total = env.polissa_id.cups.conany_kwh
+        if any(
             [
                 env.polissa_id.cups.conany_kwh_p1,
                 env.polissa_id.cups.conany_kwh_p2,
