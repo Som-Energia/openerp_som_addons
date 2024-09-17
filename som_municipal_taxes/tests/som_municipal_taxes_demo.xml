@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
  	<data>
-        <record id="ajuntament_baga" model="som.municipal.taxes.config">
-            <field name="name">Ajuntament Baga</field>
-            <field name="municipi_id"></field>
-            <field name="partner_id"></field>
-            <field name="type"></field>
+        <record id="ajuntament_girona" model="som.municipal.taxes.config">
+            <field name="name">Ajuntament Alegría-Dulantzi</field>
+            <field name="municipi_id" ref="base_extended.ine_01001" />
+            <field name="partner_id" ref="giscedata_switching.sw_ccaa_09_catalunya" />
+            <field name="type">remesa</field>
         </record>
     </data>
 </openerp>
