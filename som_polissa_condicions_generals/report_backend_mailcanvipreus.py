@@ -577,6 +577,16 @@ class ReportBackendMailcanvipreus(ReportBackend):
             ctx["date"] = date
         ctx["potencia_anual"] = True
         ctx["sense_agrupar"] = True
+        if (polissa_id.modcontractuals_ids[0].state == "pendent"
+            and polissa_id.mode_facturacio
+            != polissa_id.modcontractuals_ids[0].mode_facturacio
+                and polissa_id.modcontractuals_ids[0].mode_facturacio == 'index'):
+            ctx["force_pricelist"] = polissa_id.modcontractuals_ids[1].llista_preu.id
+        elif(polissa_id.modcontractuals_ids[0].state == "pendent"
+             and polissa_id.mode_facturacio
+             != polissa_id.modcontractuals_ids[0].mode_facturacio
+                and polissa_id.modcontractuals_ids[0].mode_facturacio == 'atr'):
+            ctx["force_pricelist"] = polissa_id.modcontractuals_ids[0].llista_preu.id
         # maj_price = 0  # €/kWh
         bo_social_price = 2.299047
         types = {"tp": potencies or {}, "te": consums or {}}
@@ -675,13 +685,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
         potencies = self.getPotenciesPolissa(cursor, uid, env.polissa_id)
 
-        if (env.polissa_id.modcontractuals_ids[0].state == "pendent"
-            and env.polissa_id.mode_facturacio
-            != env.polissa_id.modcontractuals_ids[0].mode_facturacio
-                and env.polissa_id.modcontractuals_ids[0].mode_facturacio):
-            tarifa = env.polissa_id.modcontractuals_ids[1].tarifa.name
-        else:
-            tarifa = env.polissa_id.tarifa.name
+        tarifa = env.polissa_id.tarifa.name
         # mode_facturacio = env.polissa_id.mode_facturacio
         consums = ""
         origen = ""
