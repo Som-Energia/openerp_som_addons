@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
+import datetime
 from destral import testing
+from osv.osv import except_osv
+
+from som_municipal_taxes.wizard.wizard_creacio_remesa_pagament_taxes import get_dates_from_quarter
 
 
 class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
@@ -14,7 +18,7 @@ class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
             "account": 7,
             "payment_mode": 1,
             "year": 2016,
-            "quarter": 'T1',
+            "quarter": 1,
         }
         wiz_id = wiz_o.create(
             self.cursor,
@@ -36,12 +40,11 @@ class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
 
     def test_create_remesa_pagaments__error_ja_pagat(self):
         wiz_o = self.pool.get("wizard.creacio.remesa.pagament.taxes")
-        order_o = self.pool.get("payment.order")
         wiz_init = {
             "account": 7,
             "payment_mode": 1,
             "year": 2016,
-            "quarter": 'T1',
+            "quarter": 1,
         }
         wiz_id = wiz_o.create(
             self.cursor,
@@ -56,13 +59,26 @@ class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
             [wiz_id],
             {},
         )
-        wiz_o.create_remesa_pagaments(
-            self.cursor,
-            self.uid,
-            [wiz_id],
-            {},
-        )
 
-        payment_orders = order_o.search(self.cursor, self.uid, [], limit=1, order="id desc")
-        po = order_o.browse(self.cursor, self.uid, payment_orders[0])
-        self.assertEqual(len(po.line_ids), 1)
+        with self.assertRaises(except_osv) as validate_error:
+            wiz_o.create_remesa_pagaments(
+                self.cursor,
+                self.uid,
+                [wiz_id],
+                {},
+            )
+        self.assertIn("Ja s'ha pagat el trimestre", validate_error.exception.message)
+
+    def test_get_dates_from_quarter(self):
+        assert get_dates_from_quarter(2024, 1) == (
+            datetime.date(2024, 1, 1),
+            datetime.date(2024, 3, 31),
+        )
+        assert get_dates_from_quarter(2023, 4) == (
+            datetime.date(2023, 10, 1),
+            datetime.date(2023, 12, 31),
+        )
+        assert get_dates_from_quarter(1984, 0) == (
+            datetime.date(1984, 1, 1),
+            datetime.date(1984, 12, 31),
+        )

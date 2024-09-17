@@ -2,6 +2,8 @@
 from osv import fields, osv
 import sys
 import logging
+import datetime
+from dateutil.relativedelta import relativedelta
 from giscedata_municipal_taxes.taxes.municipal_taxes_invoicing import MunicipalTaxesInvoicingReport
 from psycopg2.errors import UniqueViolation
 
@@ -38,12 +40,12 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             return True
 
         res_municipi_ids = [
-            m['municipi_id'][0] for m in config_obj.read(cursor, uid, municipis_conf_ids, ['municipi_id'])
+            m['municipi_id'][0]
+            for m in config_obj.read(cursor, uid, municipis_conf_ids, ['municipi_id'])
         ]
 
         # Calcular els imports
-        start_date = '2016-01-01'
-        end_date = '2016-03-31'
+        start_date, end_date = get_dates_from_quarter(wizard.year, wizard.quarter)
         tax = 1.5
         polissa_categ_imu_ex_id = (
             self.pool.get('ir.model.data').get_object_reference(
@@ -69,7 +71,7 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
 
         # Crear remesa
         # order_id = 11603
-        order = order_obj.create(cursor, uid, dict(
+        order_id = order_obj.create(cursor, uid, dict(
             date_prefered='fixed',
             user_id=uid,
             state='draft',
@@ -94,7 +96,7 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             euro_id = currency_obj.search(cursor, uid, [('code', '=', 'EUR')])[0]
             vals = {
                 'name': 'Ajuntament de {} taxa 1,5%'.format(city[0]),
-                'order_id': order,
+                'order_id': order_id,
                 'currency': euro_id,
                 'partner_id': partner_id,
                 'company_currency': euro_id,
@@ -109,14 +111,18 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
                 line_obj.create(cursor, uid, vals)
             except UniqueViolation:
                 raise osv.except_osv(
-                    ('Error!'), ("Ja s'ha pagat el trimestre {}-{} per a l'ajuntament {}".format(wizard.year, wizard.quarter, city[0])))
+                    ('Error!'), (
+                        "Ja s'ha pagat el trimestre {}-{} per a l'ajuntament {}".format(
+                            wizard.year, wizard.quarter, city[0])
+                    )
+                )
 
         vals = {
             'info': "S'ha creat la remesa amb {} línies".format(len(totals_by_city)),
             'state': 'done',
         }
         wizard.write(vals, context)
-        return True
+        return vals
 
     _columns = {
         'state': fields.char('Estat', size=16, required=True),
@@ -125,12 +131,26 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
         "payment_mode": fields.many2one("payment.mode", "Mode de pagament"),
         "info": fields.text("info"),
         "year": fields.integer("Any", required=True),
-        "quarter": fields.selection([('1t', '1T'), ('2t', '2T'), ('3t', '3T'), ('4t', '4T')], 'Trimestre', required=True),
+        "quarter": fields.selection(
+            [(0, 'Anual'), (1, '1T'), (2, '2T'), (3, '3T'), (4, '4T')],
+            'Trimestre', required=True
+        ),
     }
 
     _defaults = {
         'state': lambda *a: 'init',
     }
+
+
+def get_dates_from_quarter(year, quarter):
+    if quarter == 0:
+        return datetime.date(year, 1, 1), datetime.date(year, 12, 31)
+    else:
+        start_date = datetime.date(year, (quarter - 1) * 3 + 1, day=1)
+        return (
+            start_date,
+            start_date + relativedelta(months=3) - datetime.timedelta(days=1)
+        )
 
 
 WizardCreacioRemesaPagamentTaxes()

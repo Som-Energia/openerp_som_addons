@@ -3,3 +3,5 @@
 "access_som_municipal_taxes_config_users","som.municipal.taxes.config","model_som_municipal_taxes_config","res_groups_som_municipal_taxes_user",1,0,0,0
 "access_som_municipal_taxes_payment_manager","som.municipal.taxes.payment","model_som_municipal_taxes_payment","res_groups_som_municipal_taxes_manager",1,1,1,1
 "access_som_municipal_taxes_payment_users","som.municipal.taxes.payment","model_som_municipal_taxes_payment","res_groups_som_municipal_taxes_user",1,0,0,0
+"access_wizard_creacio_remesa_pagament_taxes_manager","wizard.creacio.remesa.pagament.taxes","model_wizard_creacio_remesa_pagament_taxes","res_groups_som_municipal_taxes_manager",1,1,1,1
+"access_wizard_creacio_remesa_pagament_taxes_user","wizard.creacio.remesa.pagament.taxes","model_wizard_creacio_remesa_pagament_taxes","res_groups_som_municipal_taxes_user",1,0,0,0
