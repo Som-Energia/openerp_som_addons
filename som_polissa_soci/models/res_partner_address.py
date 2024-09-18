@@ -47,6 +47,8 @@ FIELDS_SOCIS = {
     "Compra Coletiva": "MMERGE19",
 }
 
+mail_ningu = "ningu@somenergia.coop"
+
 
 class ResPartnerAddress(osv.osv):
     """Class to manage Mailchimp lists subscriptions"""
@@ -61,20 +63,20 @@ class ResPartnerAddress(osv.osv):
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
 
-        MAILCHIMP_CLIENT = MailchimpMarketing.Client(
-            dict(
-                api_key=config.options.get("mailchimp_apikey"),
-                server=config.options.get("mailchimp_server_prefix"),
-            )
-        )
         if "email" in vals:
+            MAILCHIMP_CLIENT = MailchimpMarketing.Client(
+                dict(
+                    api_key=config.options.get("mailchimp_apikey"),
+                    server=config.options.get("mailchimp_server_prefix"),
+                )
+            )
             for _id in ids:
                 old_email = self.read(cursor, uid, _id, ["email"])["email"]
                 email = vals["email"]
                 if not old_email or old_email == email:
                     continue
 
-                if not email:
+                if not email or email == mail_ningu:
                     self.unsubscribe_client_email_in_all_lists_async(
                         cursor, uid, _id, old_email, MAILCHIMP_CLIENT
                     )
@@ -260,6 +262,12 @@ class ResPartnerAddress(osv.osv):
         all_lists = mailchimp_conn.lists.get_all_lists(
             fields=["lists.id,lists.name"], count=100, email=old_email
         )["lists"]
+        if not all_lists:
+            logger.warning(
+                "El email {} no s'ha actualitzat ja que no està subscrit en cap llista.\n".format(
+                    old_email
+                )
+            )
 
         for _id in ids:
             for mchimp_list in all_lists:
